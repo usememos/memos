@@ -1,0 +1,72 @@
+@import "./mixin.less";
+@import "./memos-header.less";
+
+.preference-wrapper {
+  .flex(column, flex-start, flex-start);
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  overflow-y: scroll;
+  .hide-scroll-bar();
+
+  > .section-header-container {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 0;
+
+    > .title-text {
+      font-weight: bold;
+      font-size: 18px;
+      color: @text-black;
+    }
+  }
+
+  > .tip-text-container {
+    width: 100%;
+    height: 128px;
+    .flex(column, center, center);
+  }
+
+  > .sections-wrapper {
+    .flex(column, flex-start, flex-start);
+    flex-grow: 1;
+    width: 100%;
+    overflow-y: scroll;
+    padding-bottom: 64px;
+    .hide-scroll-bar();
+
+    > .section-container {
+      .flex(column, flex-start, flex-start);
+      width: 100%;
+      background-color: white;
+      margin: 8px 0;
+      padding: 16px;
+      padding-bottom: 8px;
+      border-radius: 8px;
+
+      > .title-text {
+        font-size: 15px;
+        color: @text-black;
+        font-weight: bold;
+        margin-bottom: 8px;
+      }
+
+      > .form-label {
+        .flex(row, flex-start, center);
+        width: 100%;
+        font-size: 14px;
+        margin-bottom: 8px;
+
+        > .normal-text {
+          flex-shrink: 0;
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .sections-wrapper {
+    padding: 0 12px;
+  }
+}

@@ -1,0 +1,55 @@
+@import "./mixin.less";
+
+.toast-list-container {
+  .flex(column, flex-start, flex-end);
+  position: fixed;
+  top: 8px;
+  right: 16px;
+  z-index: 1000;
+  max-height: 100%;
+
+  > .toast-wrapper {
+    .flex(column, flex-start, flex-start);
+    position: relative;
+    left: 100%;
+    visibility: hidden;
+    min-width: 6em;
+    min-height: 40px;
+    margin-top: 24px;
+    padding: 8px 16px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.4s ease;
+
+    &.showup {
+      left: 0;
+      visibility: visible;
+    }
+
+    &.destory {
+      left: calc(100% + 32px);
+      visibility: hidden;
+    }
+
+    > .toast-container {
+      > .content-text {
+        line-height: 24px;
+        max-width: 160px;
+        word-wrap: break-word;
+      }
+    }
+
+    &::before {
+      content: "";
+      position: absolute;
+      top: 12px;
+      right: -8px;
+      border-left: 8px solid white;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+    }
+  }
+}

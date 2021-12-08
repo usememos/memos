@@ -1,0 +1,54 @@
+@import "./mixin.less";
+
+.section-header-container,
+.memos-header-container {
+  .flex(row, space-between, center);
+  width: 100%;
+  height: 40px;
+  flex-wrap: nowrap;
+  margin-top: 16px;
+  margin-bottom: 8px;
+  flex-shrink: 0;
+
+  > .title-text {
+    .flex(row, flex-start, center);
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 40px;
+    color: @text-black;
+    margin-right: 8px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 0;
+    cursor: pointer;
+
+    > .action-btn {
+      .flex(row, center, center);
+      width: 24px;
+      height: 24px;
+      margin-right: 4px;
+      flex-shrink: 0;
+      background-color: unset;
+
+      > .icon-img {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  > .btns-container {
+    .flex(row, flex-end, center);
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .section-header-container,
+  .memos-header-container {
+    height: auto;
+    margin-top: 16px;
+    margin-bottom: 0;
+    padding: 0 12px;
+    padding-bottom: 8px;
+  }
+}

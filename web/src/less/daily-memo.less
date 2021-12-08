@@ -1,0 +1,72 @@
+@import "./mixin.less";
+
+.daily-memo-wrapper {
+  .flex(row, flex-start, flex-start);
+  position: relative;
+  width: calc(100% - 24px);
+  margin-left: 24px;
+  padding: 0;
+  padding-bottom: 24px;
+  border: none;
+  border-left: 2px solid @bg-whitegray;
+
+  &:last-child {
+    border-left: none;
+    padding-bottom: 0;
+  }
+
+  > .time-wrapper {
+    .flex(column, center, center);
+    position: relative;
+    left: -24px;
+    margin-top: -2px;
+    flex-shrink: 0;
+    width: 48px;
+    height: 28px;
+    border-radius: 6px;
+    background-color: @bg-lightgray;
+    color: @text-gray;
+    border: 2px solid white;
+
+    > .normal-text {
+      margin: 0 auto;
+      font-size: 11px;
+      line-height: 24px;
+    }
+  }
+
+  > .memo-content-container {
+    .flex(column, flex-start, flex-start);
+    width: 100%;
+    margin-left: -12px;
+    padding: 0;
+    font-size: 16px;
+
+    > .memo-content-text {
+      .tag-span {
+        cursor: unset;
+
+        &:hover {
+          color: @text-blue;
+          background-color: @bg-light-blue;
+        }
+      }
+    }
+
+    > .images-container {
+      .flex(column, flex-start, flex-start);
+      width: 100%;
+
+      > img {
+        width: 100%;
+        height: auto;
+        border-radius: 4px;
+        margin-bottom: 8px;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}

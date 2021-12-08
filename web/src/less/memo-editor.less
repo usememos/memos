@@ -1,0 +1,37 @@
+@import "./mixin.less";
+
+.memo-editor-wrapper {
+  .flex(column, flex-start, flex-start);
+  position: relative;
+  width: 100%;
+  height: auto;
+  background-color: white;
+  padding: 16px;
+  border-radius: 8px;
+  border: 2px solid @bg-gray;
+
+  &.edit-ing {
+    border-color: @text-blue;
+  }
+
+  > .tip-text {
+    font-size: 12px;
+    line-height: 20px;
+    color: @text-lightgray;
+  }
+
+  > .memo-editor {
+    .flex(column, flex-start, flex-start);
+    position: relative;
+    width: 100%;
+    height: auto;
+    background-color: white;
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .memo-editor-wrapper {
+    width: calc(100% - 24px);
+    margin: auto;
+  }
+}

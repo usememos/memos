@@ -1,0 +1,87 @@
+@import "../mixin.less";
+
+.selector-wrapper {
+  .flex(column, flex-start, flex-start);
+  position: relative;
+  height: 28px;
+
+  > .current-value-container {
+    .flex(row, space-between, center);
+    width: 100%;
+    height: 100%;
+    border: 1px solid @bg-gray;
+    border-radius: 4px;
+    padding: 0 8px;
+    padding-right: 4px;
+    background-color: white;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover,
+    &.active {
+      background-color: @bg-whitegray;
+    }
+
+    > .value-text {
+      margin-right: 0px;
+      font-size: 13px;
+      line-height: 32px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: calc(100% - 20px);
+    }
+
+    > .arrow-text {
+      .flex(row, center, center);
+      width: 16px;
+      flex-shrink: 0;
+
+      > .icon-img {
+        width: 16px;
+        height: auto;
+        opacity: 0.6;
+        transform: rotate(90deg);
+      }
+    }
+  }
+
+  > .items-wrapper {
+    .flex(column, flex-start, flex-start);
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: auto;
+    min-width: calc(100% + 16px);
+    max-height: 256px;
+    padding: 4px;
+    overflow: auto;
+    margin-top: 2px;
+    margin-left: -8px;
+    z-index: 1;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
+    .hide-scroll-bar();
+
+    > .item-container {
+      .flex(column, flex-start, flex-start);
+      width: 100%;
+      padding-left: 12px;
+      line-height: 30px;
+      white-space: nowrap;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 4px;
+      user-select: none;
+
+      &:hover {
+        background-color: @bg-whitegray;
+      }
+
+      &.selected {
+        color: @text-green;
+      }
+    }
+  }
+}

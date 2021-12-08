@@ -1,0 +1,16 @@
+@import "./mixin.less";
+
+.image-container {
+  width: 200px;
+  height: auto;
+  overflow-y: scroll;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  .pretty-scroll-bar(2px, 0);
+
+  > img {
+    margin: auto;
+    width: 100%;
+    height: auto;
+  }
+}

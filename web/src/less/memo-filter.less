@@ -1,0 +1,41 @@
+@import "./mixin.less";
+
+.filter-query-container {
+  .flex(row, flex-start, flex-start);
+  width: 100%;
+  flex-wrap: wrap;
+  padding: 12px 12px;
+  padding-bottom: 4px;
+  font-size: 13px;
+  line-height: 1.8;
+
+  > .tip-text {
+    padding: 2px 0;
+  }
+
+  > .filter-item-container {
+    padding: 2px 8px;
+    margin-right: 6px;
+    cursor: pointer;
+    background-color: @bg-gray;
+    border-radius: 4px;
+    max-width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    > .icon-text {
+      letter-spacing: 2px;
+    }
+
+    &:hover {
+      text-decoration: line-through;
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .filter-query-container {
+    padding-left: 20px;
+  }
+}

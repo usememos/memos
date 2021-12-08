@@ -1,0 +1,113 @@
+@import "./mixin.less";
+
+// ⚠️ This font is only free for personal use but not for commercial.
+@font-face {
+  font-family: "DINPro";
+  src: url("/fonts/DINPro-Regular.otf");
+  font-weight: normal;
+}
+
+@font-face {
+  font-family: "DINPro";
+  src: url("/fonts/DINPro-Bold.otf");
+  font-weight: bold;
+}
+
+@font-face {
+  font-family: "ubuntu-mono";
+  src: url("/fonts/UbuntuMono.ttf");
+  font-style: normal;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  color: @text-black;
+  -webkit-tap-highlight-color: transparent;
+  font-family: "DINPro", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif,
+    "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+body,
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-size: 15px;
+}
+
+code {
+  .mono-font-family();
+  background-color: pink;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+pre {
+  .mono-font-family();
+
+  * {
+    .mono-font-family();
+  }
+}
+
+label,
+input,
+button,
+textarea,
+img {
+  background-color: transparent;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  border: none;
+  outline: none;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  box-shadow: 0 0 0 30px white inset !important;
+}
+
+li {
+  list-style-type: none;
+
+  &::before {
+    content: "•";
+    font-weight: bold;
+    margin-right: 4px;
+  }
+}
+
+a {
+  cursor: pointer;
+  color: @text-blue;
+  text-underline-offset: 2px;
+
+  &:hover {
+    background-color: @bg-gray;
+  }
+}
+
+.btn {
+  border: unset;
+  background-color: unset;
+  text-align: unset;
+  font-size: unset;
+  user-select: none;
+  cursor: pointer;
+  text-align: center;
+}
+
+.hidden {
+  display: none !important;
+}
+
+@media only screen and (max-width: 875px) {
+  body,
+  html {
+    -webkit-overflow-scrolling: touch;
+  }
+}

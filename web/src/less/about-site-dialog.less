@@ -1,0 +1,43 @@
+@import "./mixin.less";
+
+.about-site-dialog {
+  > .dialog-container {
+    width: 420px;
+
+    > .dialog-content-container {
+      line-height: 1.8;
+
+      > ul {
+        margin: 4px 0;
+        padding-left: 4px;
+        width: 100%;
+      }
+
+      > hr {
+        margin: 4px 0;
+        width: 100%;
+        height: 1px;
+        background-color: lightgray;
+        border: none;
+      }
+
+      .normal-text {
+        .flex(row, flex-start, center);
+        font-size: 13px;
+        color: gray;
+        white-space: pre-wrap;
+      }
+
+      .pre-text {
+        .mono-font-family();
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .dialog-wrapper.about-site-dialog {
+    padding: 24px 16px;
+    padding-top: 64px;
+  }
+}

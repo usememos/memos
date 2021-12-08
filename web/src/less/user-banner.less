@@ -1,0 +1,102 @@
+@import "./mixin.less";
+
+.user-banner-container {
+  .flex(column, flex-start, flex-start);
+  width: 100%;
+  height: 128px;
+
+  > .userinfo-header-container {
+    .flex(row, space-between, center);
+    width: 100%;
+    padding: 0 24px;
+    flex-wrap: nowrap;
+    margin-bottom: 4px;
+
+    > .username-text {
+      max-width: calc(100% - 32px);
+      font-weight: bold;
+      font-size: 18px;
+      line-height: 36px;
+      color: @text-black;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      cursor: pointer;
+      margin-right: auto;
+      flex-shrink: 0;
+    }
+
+    > .action-btn {
+      flex-shrink: 0;
+      user-select: none;
+      border: none;
+      background-color: unset;
+
+      &.menu-popup-btn {
+        .flex(column, center, center);
+        width: 36px;
+        height: 40px;
+        margin-right: -8px;
+        cursor: pointer;
+
+        > .icon-img {
+          width: 20px;
+          height: auto;
+        }
+      }
+    }
+  }
+
+  > .status-text-container {
+    .flex(row, space-between, flex-start);
+    padding: 0 24px;
+    width: 100%;
+    user-select: none;
+
+    > .status-text {
+      .flex(column, flex-start, flex-start);
+
+      > .amount-text {
+        font-weight: bold;
+        font-size: 28px;
+        line-height: 1.8;
+        color: @text-black;
+        opacity: 0.8;
+      }
+
+      > .type-text {
+        color: gray;
+        font-size: 12px;
+        .mono-font-family();
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .user-banner-container {
+    height: 154px;
+    z-index: 1;
+    padding-top: 16px !important;
+
+    > .userinfo-header-container {
+      padding: 0 16px;
+
+      > .username-text {
+        font-size: 22px;
+      }
+    }
+
+    > .status-text-container {
+      padding: 0 16px;
+
+      > .status-text {
+        > .amount-text {
+          font-size: 32px;
+        }
+        > .type-text {
+          font-size: 14px;
+        }
+      }
+    }
+  }
+}

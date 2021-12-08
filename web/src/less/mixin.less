@@ -1,0 +1,55 @@
+@text-black: #37352f;
+@text-gray: #52504b;
+@text-lightgray: #cac8c4;
+@text-blue: #5783f7;
+@text-green: #55bb8e;
+@text-red: #d28653;
+
+@bg-black: #2f3437;
+@bg-gray: #e4e4e4;
+@bg-whitegray: #f8f8f8;
+@bg-lightgray: #eaeaea;
+@bg-blue: #1337a3;
+@bg-yellow: yellow;
+@bg-light-blue: #eef3fe;
+@bg-paper-yellow: #fbf4de;
+
+.mono-font-family {
+  font-family: "ubuntu-mono", SFMono-Regular, Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace;
+}
+
+.hide-scroll-bar {
+  .pretty-scroll-bar(0, 0);
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.pretty-scroll-bar(@width: 0px, @height: 0px) {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    width: @width;
+    height: @height;
+    cursor: pointer;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    width: @width;
+    height: @height;
+    border-radius: 8px;
+    background-color: #d5d5d5;
+
+    &:hover {
+      background-color: #ccc;
+    }
+  }
+}
+
+.flex(@direction, @justify, @align) {
+  display: flex;
+  flex-direction: @direction;
+  justify-content: @justify;
+  align-items: @align;
+}

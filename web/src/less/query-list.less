@@ -1,0 +1,199 @@
+@import "./mixin.less";
+
+.queries-wrapper {
+  .flex(column, flex-start, flex-start);
+  width: 100%;
+  padding: 0 8px;
+  height: auto;
+  flex-wrap: nowrap;
+  .hide-scroll-bar();
+
+  > .title-text {
+    .flex(row, space-between, center);
+    width: 100%;
+    padding: 4px 16px;
+
+    > * {
+      font-size: 12px;
+      line-height: 24px;
+      color: @text-black;
+      opacity: 0.5;
+      font-weight: bold;
+    }
+
+    > .btn {
+      display: none;
+      padding: 0 4px;
+      font-size: 18px;
+    }
+
+    &:hover,
+    &:active {
+      > .btn {
+        display: block;
+      }
+    }
+  }
+
+  > .create-query-btn-container {
+    .flex(row, center, center);
+    width: 100%;
+    margin-top: 8px;
+    margin-bottom: 12px;
+
+    > .btn {
+      display: flex;
+      padding: 4px 8px;
+      border: 1px dashed @bg-blue;
+      border-radius: 8px;
+      font-size: 13px;
+
+      &:hover {
+        background-color: @bg-blue;
+        color: white;
+      }
+    }
+  }
+
+  > .queries-container {
+    .flex(column, flex-start, flex-start);
+    position: relative;
+    width: 100%;
+    height: auto;
+    flex-wrap: nowrap;
+    margin-bottom: 8px;
+
+    > .query-item-container {
+      .flex(row, space-between, center);
+      width: 100%;
+      height: 40px;
+      padding: 0 16px;
+      margin-top: 4px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      user-select: none;
+
+      &:hover {
+        background-color: @bg-gray;
+
+        > .btns-container {
+          display: flex;
+        }
+      }
+
+      &.active {
+        background-color: @text-green !important;
+
+        > .query-text-container {
+          font-weight: bold;
+
+          > * {
+            color: white;
+          }
+        }
+      }
+
+      > .query-text-container {
+        .flex(row, flex-start, center);
+        max-width: calc(100% - 24px);
+        color: @text-black;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-shrink: 0;
+        line-height: 20px;
+
+        > .icon-text {
+          display: block;
+          width: 16px;
+          flex-shrink: 0;
+        }
+
+        > .query-text {
+          flex-shrink: 0;
+        }
+      }
+
+      > .btns-container {
+        .flex(row, flex-end, center);
+        display: none;
+
+        > .action-btn {
+          .flex(row, center, center);
+          width: 24px;
+          height: 24px;
+          flex-shrink: 0;
+
+          > .icon-img {
+            width: 18px;
+            height: auto;
+          }
+        }
+
+        > .action-btns-wrapper {
+          .flex(column, flex-start, flex-start);
+          position: absolute;
+          right: 0;
+          width: auto;
+          height: auto;
+          padding: 8px;
+          transform: translateY(60px);
+          z-index: 1;
+
+          > .action-btns-container {
+            .flex(column, flex-start, flex-start);
+            width: 86px;
+            height: auto;
+            white-space: nowrap;
+            border-radius: 6px;
+            padding: 4px;
+            background-color: white;
+            box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
+
+            > .btn {
+              width: 100%;
+              padding: 6px 0;
+              padding-left: 12px;
+              border-radius: 4px;
+              font-size: 13px;
+              height: unset;
+              line-height: unset;
+              text-align: left;
+
+              &:hover {
+                background-color: @bg-whitegray;
+              }
+
+              &.delete-btn {
+                color: @text-red;
+
+                &.final-confirm {
+                  font-weight: bold;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .queries-container {
+    height: auto;
+
+    &:last-child {
+      flex-grow: 1;
+    }
+
+    > .title-text {
+      font-size: 13px;
+    }
+
+    > .query-item-container {
+      font-size: 15px;
+    }
+  }
+}

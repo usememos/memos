@@ -1,0 +1,44 @@
+@import "./mixin.less";
+@import "./memos-header.less";
+
+.memo-trash-wrapper {
+  .flex(column, flex-start, flex-start);
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  overflow-y: scroll;
+  .hide-scroll-bar();
+
+  > .section-header-container {
+    width: 100%;
+    height: 40px;
+    margin-bottom: 0;
+
+    > .title-text {
+      font-weight: bold;
+      font-size: 18px;
+      color: @text-black;
+    }
+  }
+
+  > .tip-text-container {
+    width: 100%;
+    height: 128px;
+    .flex(column, center, center);
+  }
+
+  > .deleted-memos-container {
+    .flex(column, flex-start, flex-start);
+    flex-grow: 1;
+    width: 100%;
+    overflow-y: scroll;
+    padding-bottom: 64px;
+    .hide-scroll-bar();
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .deleted-memos-container {
+    padding: 0 12px;
+  }
+}

@@ -1,0 +1,203 @@
+@import "./mixin.less";
+
+.tags-wrapper {
+  .flex(column, flex-start, flex-start);
+  width: 100%;
+  padding: 0 8px;
+  height: auto;
+  flex-wrap: nowrap;
+  padding-bottom: 16px;
+  flex-grow: 1;
+  .hide-scroll-bar();
+
+  > .title-text {
+    width: 100%;
+    padding: 4px 16px;
+    font-size: 12px;
+    line-height: 24px;
+    color: @text-black;
+    opacity: 0.5;
+  }
+
+  > .tags-container {
+    .flex(column, flex-start, flex-start);
+    position: relative;
+    width: 100%;
+    height: auto;
+    flex-wrap: nowrap;
+    margin-bottom: 8px;
+
+    .subtags-container {
+      .flex(column, flex-start, flex-start);
+      width: calc(100% - 18px);
+      min-width: 80px;
+      height: auto;
+      margin-top: 4px;
+      margin-left: 18px;
+      border-left: 2px solid @bg-gray;
+      padding-left: 6px;
+
+      > .tag-item-container {
+        &:first-child {
+          margin-top: 0;
+        }
+      }
+    }
+
+    .tag-item-container {
+      .flex(row, space-between, center);
+      width: 100%;
+      height: 40px;
+      padding: 0 16px;
+      margin-top: 4px;
+      border-radius: 8px;
+      font-size: 14px;
+      cursor: pointer;
+      flex-shrink: 0;
+      user-select: none;
+
+      &:hover {
+        background-color: @bg-gray;
+      }
+
+      &.active {
+        > .tag-text-container {
+          > * {
+            color: @text-green;
+            font-weight: bold;
+          }
+        }
+      }
+
+      > .tag-text-container {
+        .flex(row, flex-start, center);
+        max-width: calc(100% - 24px);
+        color: @text-black;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        flex-shrink: 0;
+        line-height: 20px;
+
+        > .icon-text {
+          display: block;
+          width: 16px;
+          flex-shrink: 0;
+          flex-shrink: 0;
+        }
+
+        > .tag-text {
+          flex-shrink: 0;
+        }
+      }
+
+      > .btns-container {
+        .flex(row, flex-end, center);
+
+        > .action-btn {
+          .flex(row, center, center);
+          width: 24px;
+          height: 24px;
+          flex-shrink: 0;
+          transition: all 0.1s linear;
+          transform: rotate(0);
+
+          > .icon-img {
+            width: 18px;
+            height: 18px;
+            opacity: 0.8;
+          }
+
+          &.shown {
+            transform: rotate(90deg);
+          }
+        }
+      }
+    }
+
+    > .tag-tip-container {
+      width: 100%;
+      margin-top: 8px;
+      padding-left: 16px;
+      font-size: 12px;
+      line-height: 1.6;
+      color: gray;
+
+      > .code-text {
+        color: @text-blue;
+        padding: 4px;
+        margin: 0 2px;
+        white-space: pre-line;
+        background-color: @bg-light-blue;
+        border-radius: 4px;
+      }
+    }
+  }
+}
+
+.rename-tag-dialog {
+  > .dialog-container {
+    width: 320px;
+
+    > .dialog-content-container {
+      .flex(column, flex-start, flex-start);
+
+      > .tag-text {
+        margin-bottom: 8px;
+        font-size: 14px;
+      }
+
+      > .text-input {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid lightgray;
+        border-radius: 4px;
+        font-size: 14px;
+        margin-bottom: 12px;
+      }
+
+      > .btns-container {
+        .flex(row, flex-end, center);
+        width: 100%;
+
+        > .btn-text {
+          font-size: 14px;
+          margin-left: 12px;
+          cursor: pointer;
+
+          &:hover {
+            opacity: 0.8;
+          }
+
+          &.cancel-btn {
+            color: @text-gray;
+          }
+
+          &.confirm-btn {
+            background-color: @text-green;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 4px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .tags-wrapper {
+    background-color: white;
+
+    > .tags-container {
+      height: auto;
+
+      &:last-child {
+        flex-grow: 1;
+      }
+    }
+  }
+
+  .rename-tag-dialog {
+    padding-top: 64px;
+  }
+}

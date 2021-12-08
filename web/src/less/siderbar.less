@@ -1,0 +1,48 @@
+@import "./mixin.less";
+
+.sidebar-wrapper {
+  .flex(column, flex-start, flex-start);
+  width: 240px;
+  height: 100%;
+  padding: 16px 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  flex-shrink: 0;
+  .hide-scroll-bar();
+
+  > * {
+    flex-shrink: 0;
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  body.mobile-show-sidebar {
+    #page-wrapper {
+      > .sidebar-wrapper {
+        transform: translateX(0);
+        box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
+      }
+    }
+  }
+
+  .sidebar-wrapper {
+    .flex(column, flex-start, center);
+    z-index: 99;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 320px;
+    height: 100%;
+    padding: 0;
+    background-color: white;
+    transition: all 0.4s ease;
+    transform: translateX(-320px);
+
+    > * {
+      width: 320px;
+      max-width: 95%;
+      flex-shrink: 0;
+      padding-left: 32px;
+    }
+  }
+}

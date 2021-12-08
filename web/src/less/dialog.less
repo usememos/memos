@@ -1,0 +1,83 @@
+@import "./mixin.less";
+
+.dialog-wrapper {
+  .flex(column, flex-start, center);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: transparent;
+  z-index: 100;
+  transition: all 0.2s ease;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  padding: 64px 0;
+  .hide-scroll-bar();
+
+  &.showup {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
+  &.showoff {
+    display: none;
+  }
+
+  > .dialog-container {
+    .flex(column, flex-start, flex-start);
+    background-color: white;
+    padding: 16px;
+    border-radius: 8px;
+
+    > .dialog-header-container {
+      .flex(row, space-between, center);
+      width: 100%;
+      margin-bottom: 16px;
+
+      > .title-text {
+        > .icon-text {
+          margin-right: 6px;
+          font-size: 16px;
+        }
+      }
+
+      .btn {
+        width: 24px;
+        height: 24px;
+        padding: 2px;
+        border-radius: 4px;
+
+        > .icon-img {
+          width: 20px;
+          height: 20px;
+        }
+
+        &:hover {
+          background-color: lightgray;
+        }
+      }
+    }
+
+    > .dialog-content-container {
+      .flex(column, flex-start, flex-start);
+      width: 100%;
+    }
+
+    > .dialog-footer-container {
+      .flex(row, flex-end, center);
+      width: 100%;
+      margin-top: 16px;
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .dialog-wrapper {
+    width: 100%;
+    padding: 0 16px;
+
+    > .dialog-container {
+      max-width: 100%;
+    }
+  }
+}

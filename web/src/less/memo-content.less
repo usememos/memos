@@ -1,0 +1,87 @@
+@import "./mixin.less";
+
+.memo-content-text {
+  .flex(column, flex-start, flex-start);
+  width: 100%;
+  word-wrap: break-word;
+  word-break: break-word;
+  white-space: pre-wrap;
+
+  > p {
+    display: inline-block;
+    width: 100%;
+    height: auto;
+    margin-bottom: 4px;
+    font-size: 15px;
+    line-height: 24px;
+    min-height: 24px;
+    white-space: pre-wrap;
+  }
+
+  .tag-span {
+    display: inline-block;
+    width: auto;
+    padding: 0 6px;
+    line-height: 24px;
+    font-size: 13px;
+    border: none;
+    border-radius: 4px;
+    color: @text-blue;
+    background-color: @bg-light-blue;
+    cursor: pointer;
+    vertical-align: bottom;
+
+    &:hover {
+      background-color: @text-blue;
+      color: white;
+    }
+  }
+
+  .memo-link-text {
+    display: inline-block;
+    color: @text-blue;
+    font-weight: bold;
+    border-bottom: none;
+    text-decoration: none;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .counter-block,
+  .todo-block {
+    display: inline-block;
+    text-align: center;
+    width: 2rem;
+    .mono-font-family();
+  }
+
+  pre {
+    width: 100%;
+    margin: 4px 0;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-size: 15px;
+    line-height: 1.5;
+    background-color: #f6f5f4;
+    white-space: pre-wrap;
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .memo-content-text {
+    > p {
+      font-size: 15px;
+      line-height: 26px;
+      min-height: 26px;
+      white-space: pre-wrap;
+    }
+
+    .tag-span {
+      line-height: 26px;
+      font-size: 14px;
+    }
+  }
+}

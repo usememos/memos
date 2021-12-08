@@ -1,0 +1,164 @@
+@import "./mixin.less";
+
+.daily-memo-diary-dialog {
+  > .dialog-container {
+    width: 440px;
+    max-width: 100%;
+    padding: 0;
+
+    > .dialog-header-container {
+      .flex(column, center, center);
+      position: relative;
+      width: 100%;
+      padding: 24px;
+      margin-bottom: 0;
+      padding-bottom: 0;
+
+      > .header-wrapper {
+        .flex(row, space-between, center);
+        width: 100%;
+
+        > .btns-container {
+          .flex(row, flex-start, center);
+
+          > .btn-text {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+
+            &:last-child {
+              margin-right: 0;
+            }
+
+            > .icon-img {
+              width: 100%;
+              height: auto;
+            }
+
+            &:hover {
+              background-color: lightgray;
+            }
+
+            &.share-btn {
+              padding: 2px;
+            }
+          }
+        }
+      }
+    }
+
+    > .dialog-content-container {
+      .flex(column, flex-start, flex-start);
+      width: 440px;
+      max-width: 100%;
+      height: auto;
+      padding: 24px 24px;
+
+      > .date-card-container {
+        .flex(column, center, center);
+        margin: auto;
+        padding-bottom: 24px;
+        z-index: 1;
+        user-select: none;
+
+        > .year-text {
+          margin: auto;
+          font-weight: bold;
+          color: gray;
+          text-align: center;
+          line-height: 24px;
+          margin-bottom: 12px;
+        }
+
+        > .date-container {
+          .flex(column, center, center);
+          margin: auto;
+          width: 96px;
+          height: 96px;
+          border-radius: 32px;
+          box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
+          border: 1px solid rgb(0 0 0 / 10%);
+          text-align: center;
+          z-index: 1;
+
+          > .month-text,
+          > .day-text {
+            .flex(column, center, center);
+            width: 100%;
+            height: 24px;
+            font-size: 14px;
+          }
+
+          > .month-text {
+            background-color: @bg-blue;
+            color: white;
+            border-top-left-radius: 32px;
+            border-top-right-radius: 32px;
+          }
+
+          > .date-text {
+            .flex(column, center, center);
+            width: 100%;
+            padding-top: 4px;
+            height: 48px;
+            font-size: 44px;
+            font-weight: bold;
+          }
+
+          > .day-text {
+            font-size: 12px;
+          }
+        }
+      }
+
+      > .date-picker {
+        margin: 0 auto;
+        border: 1px solid lightgray;
+        border-radius: 8px;
+        margin-bottom: 24px;
+      }
+
+      > .tip-container {
+        margin: auto;
+        padding: 16px 0;
+
+        > .tip-text {
+          font-style: italic;
+        }
+      }
+
+      > .dailymemos-wrapper {
+        .flex(column, flex-start, flex-start);
+        margin-top: 8px;
+        width: 100%;
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .dialog-wrapper.daily-memo-diary-dialog {
+    padding: 0;
+    .hide-scroll-bar();
+
+    > .dialog-container {
+      width: 100%;
+      height: 100%;
+      border-radius: 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding-bottom: 16px;
+
+      > .dialog-header-container {
+        padding-top: 32px;
+      }
+
+      &::-webkit-scrollbar {
+        display: none;
+      }
+    }
+  }
+}

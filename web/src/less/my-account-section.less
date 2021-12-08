@@ -1,0 +1,107 @@
+@import "./mixin.less";
+
+.account-section-container {
+  > .form-label {
+    height: 28px;
+
+    &.username-label {
+      > input {
+        flex-grow: 0 !important;
+        width: 128px;
+        padding: 0 8px;
+        margin-right: 4px;
+        font-size: 14px;
+        border: 1px solid lightgray;
+        border-radius: 0;
+        border-radius: 4px;
+        line-height: 26px;
+        background-color: transparent;
+
+        &:focus {
+          border-color: black;
+        }
+      }
+
+      > .btns-container {
+        .flex(row, flex-start, center);
+        margin-left: 4px;
+        flex-shrink: 0;
+
+        > .btn {
+          font-size: 12px;
+          padding: 0 16px;
+          border-radius: 4px;
+          line-height: 28px;
+          margin-right: 8px;
+          background-color: lightgray;
+
+          &:hover {
+            opacity: 0.8;
+          }
+
+          &.cancel-btn {
+            background-color: unset;
+          }
+
+          &.confirm-btn {
+            background-color: @text-green;
+            color: white;
+          }
+        }
+      }
+    }
+
+    &.password-label {
+      > .btn {
+        color: @text-blue;
+        cursor: pointer;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
+    }
+  }
+}
+
+.connect-section-container {
+  > .form-label {
+    height: 28px;
+
+    > .value-text {
+      max-width: 128px;
+      min-height: 20px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    > .btn-text {
+      padding: 0 8px;
+      margin-left: 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      cursor: pointer;
+      line-height: 28px;
+
+      &:hover {
+        opacity: 0.8;
+      }
+
+      &.bind-btn,
+      &.link-btn {
+        color: white;
+        background-color: @text-green;
+        text-decoration: none;
+      }
+
+      &.unbind-btn {
+        color: #d28653;
+        background-color: @bg-lightgray;
+
+        &.final-confirm {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}

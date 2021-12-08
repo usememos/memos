@@ -1,0 +1,110 @@
+@import "./mixin.less";
+
+.search-bar-container {
+  width: 160px;
+
+  > .search-bar-inputer {
+    .flex(row, flex-start, center);
+    background-color: @bg-lightgray;
+    width: 100%;
+    padding: 8px 16px;
+    border-radius: 8px;
+
+    > .icon-img {
+      margin-right: 8px;
+      width: 14px;
+      height: auto;
+      opacity: 0.6;
+    }
+
+    > .text-input {
+      width: 100%;
+      font-size: 15px;
+    }
+
+    &:hover {
+      + .quickly-action-wrapper {
+        display: flex;
+      }
+    }
+  }
+
+  > .quickly-action-wrapper {
+    display: none;
+    position: absolute;
+    top: 52px;
+    right: -8px;
+    z-index: 2;
+    padding: 8px;
+    width: 320px;
+
+    > .quickly-action-container {
+      .flex(column, flex-start, flex-start);
+      width: 100%;
+      background-color: white;
+      padding: 12px 16px;
+      border-radius: 8px;
+      box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
+
+      > .title-text {
+        color: gray;
+        font-size: 12px;
+      }
+
+      > .types-container {
+        .flex(row, flex-start, flex-start);
+        width: 100%;
+        font-size: 13px;
+        margin-top: 8px;
+
+        > .section-text {
+          color: gray;
+          margin-right: 4px;
+          flex-shrink: 0;
+          line-height: 26px;
+        }
+
+        > .values-container {
+          .flex(row, flex-start, flex-start);
+          flex-wrap: wrap;
+          user-select: none;
+
+          > div {
+            .flex(row, flex-start, center);
+            line-height: 26px;
+
+            .type-item {
+              cursor: pointer;
+              padding: 0 4px;
+              border-radius: 6px;
+
+              &:hover {
+                background-color: @bg-whitegray;
+              }
+
+              &.selected {
+                background-color: @text-green;
+                color: white;
+              }
+            }
+
+            .split-text {
+              color: lightgray;
+              margin: 0 2px;
+            }
+          }
+        }
+      }
+    }
+
+    &:hover {
+      display: flex;
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .search-bar-container > .quickly-action-wrapper {
+    right: 4px;
+  }
+}

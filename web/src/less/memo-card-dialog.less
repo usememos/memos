@@ -1,0 +1,196 @@
+@import "./mixin.less";
+
+.dialog-wrapper.memo-card-dialog {
+  > .dialog-container {
+    padding: 0;
+    background-color: transparent;
+
+    > * {
+      flex-shrink: 0;
+    }
+
+    > .memo-card-container {
+      position: relative;
+      .flex(column, flex-start, flex-start);
+      width: 512px;
+      min-height: 64px;
+      max-width: 100%;
+      padding: 12px 24px;
+      margin-bottom: 12px;
+      border-radius: 8px;
+      background-color: @bg-paper-yellow;
+
+      > * {
+        z-index: 1;
+      }
+
+      > .header-container {
+        .flex(row, space-between, center);
+        width: 100%;
+        height: auto;
+        padding-bottom: 0;
+        margin-bottom: 0;
+        margin-top: 0;
+
+        > .time-text {
+          font-size: 14px;
+          color: gray;
+          .mono-font-family();
+        }
+
+        > .btns-container {
+          .flex(row, flex-end, center);
+
+          > .btn {
+            .flex(row, center, center);
+            width: 24px;
+            height: 24px;
+            margin-left: 4px;
+            border-radius: 4px;
+
+            &:hover {
+              background-color: white;
+            }
+
+            > .icon-img {
+              width: 20px;
+              height: 20px;
+            }
+          }
+        }
+      }
+
+      > .memo-container {
+        .flex(column, flex-start, flex-start);
+        width: 100%;
+        padding-top: 8px;
+
+        > .memo-content-text {
+          width: 100%;
+          font-size: 16px;
+          line-height: 1.6;
+          word-wrap: break-word;
+          word-break: break-all;
+
+          .tag-span {
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+            color: @text-blue;
+            background-color: unset;
+            cursor: unset;
+          }
+        }
+
+        > .images-wrapper {
+          .flex(row, flex-start, flex-start);
+          margin-top: 8px;
+          width: 100%;
+          overflow-x: auto;
+          overflow-y: hidden;
+          padding-bottom: 2px;
+          .pretty-scroll-bar(0, 2px);
+
+          > .memo-img {
+            margin-right: 8px;
+            width: auto;
+            height: 128px;
+            flex-shrink: 0;
+            flex-grow: 0;
+            overflow-y: hidden;
+            .hide-scroll-bar();
+
+            &:hover {
+              border-color: lightgray;
+            }
+
+            &:last-child {
+              margin-right: 0;
+            }
+
+            > img {
+              width: auto;
+              max-height: 128px;
+              border-radius: 8px;
+            }
+          }
+        }
+      }
+
+      > .normal-text {
+        margin-top: 8px;
+        font-size: 13px;
+        color: gray;
+      }
+
+      > .layer-container,
+      > .background-layer-container {
+        position: absolute;
+        bottom: -3px;
+        left: 3px;
+        width: calc(100% - 6px);
+        height: 100%;
+        border-radius: 8px;
+        z-index: -1;
+        background-color: @bg-paper-yellow;
+        border-bottom: 1px solid lightgray;
+      }
+
+      > .layer-container {
+        z-index: 0;
+        background-color: @bg-paper-yellow;
+        border: 1px solid lightgray;
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+    }
+
+    > .linked-memos-wrapper {
+      .flex(column, flex-start, flex-start);
+      width: 512px;
+      max-width: 100%;
+      margin-top: 8px;
+      padding: 12px 24px;
+      border-radius: 8px;
+      background-color: white;
+
+      &:last-child {
+        margin-bottom: 36px;
+      }
+
+      > .normal-text {
+        font-size: 13px;
+      }
+
+      > .linked-memo-container {
+        font-size: 13px;
+        line-height: 24px;
+        margin-top: 8px;
+        cursor: pointer;
+        max-width: 100%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+          opacity: 0.8;
+        }
+
+        > .time-text {
+          color: gray;
+          .mono-font-family();
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .dialog-wrapper.memo-card-dialog {
+    padding: 24px 16px;
+    padding-top: 64px;
+  }
+}

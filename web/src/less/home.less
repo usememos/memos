@@ -1,0 +1,48 @@
+@import "./mixin.less";
+
+#root {
+  background-color: #f6f5f4;
+}
+
+#page-wrapper {
+  .flex(row, flex-start, flex-start);
+  width: 848px;
+  max-width: 100%;
+  height: 100%;
+  margin: auto;
+  transform: translateX(-16px);
+
+  > .content-wrapper {
+    .flex(column, flex-start, flex-start);
+    position: relative;
+    width: 600px;
+    height: 100%;
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  body.mobile-show-sidebar {
+    #page-wrapper {
+      > .content-wrapper {
+        transform: translateX(320px);
+      }
+    }
+  }
+
+  #page-wrapper {
+    .flex(column, flex-start, flex-start);
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    transform: translateX(0);
+
+    > .content-wrapper {
+      width: 100%;
+      height: 100%;
+      margin-left: 0;
+      padding-top: 0;
+      transition: all 0.4s ease;
+      transform: translateX(0);
+    }
+  }
+}

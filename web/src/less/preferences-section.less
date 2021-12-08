@@ -1,0 +1,44 @@
+@import "./mixin.less";
+
+.preferences-section-container {
+  > .demo-content-container {
+    padding: 16px;
+    border-radius: 8px;
+    border: 2px solid @bg-gray;
+    margin: 12px 0;
+  }
+
+  > .form-label {
+    height: 28px;
+    cursor: pointer;
+
+    > .icon-img {
+      width: 18px;
+      height: 18px;
+      margin: 0 8px;
+    }
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  > .btn-container {
+    .flex(row, flex-start, center);
+    width: 100%;
+    margin: 4px 0;
+
+    .btn {
+      height: 28px;
+      padding: 0 12px;
+      margin-right: 8px;
+      border: 1px solid gray;
+      border-radius: 8px;
+      cursor: pointer;
+
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+}
