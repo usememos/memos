@@ -16,26 +16,27 @@ const MemoEditor: React.FC<Props> = (props: Props) => {
   const { className, editMemoId } = props;
   const { globalState } = useContext(appContext);
   const editorRef = useRef<EditorRefActions>(null);
-  const prevGlobalStateRef = useRef(globalState);
 
   useEffect(() => {
     if (globalState.markMemoId) {
-      const editorCurrentValue = editorRef.current?.getContent();
-      const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: [@MEMO](${globalState.markMemoId})`;
-      editorRef.current?.insertText(memoLinkText);
-      globalStateService.setMarkMemoId("");
+      if (editMemoId === globalState.editMemoId || (!editMemoId && !globalState.editMemoId)) {
+        const editorCurrentValue = editorRef.current?.getContent();
+        const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: [@MEMO](${globalState.markMemoId})`;
+        editorRef.current?.insertText(memoLinkText);
+        globalStateService.setMarkMemoId("");
+      }
     }
+  }, [globalState.markMemoId]);
 
-    if (editMemoId && globalState.editMemoId) {
-      const editMemo = memoService.getMemoById(globalState.editMemoId);
+  useEffect(() => {
+    if (editMemoId) {
+      const editMemo = memoService.getMemoById(editMemoId);
       if (editMemo) {
         editorRef.current?.setContent(editMemo.content ?? "");
         editorRef.current?.focus();
       }
     }
-
-    prevGlobalStateRef.current = globalState;
-  }, [globalState.markMemoId, globalState.editMemoId]);
+  }, [editMemoId]);
 
   const handleSaveBtnClick = useCallback(async (content: string) => {
     if (content === "") {

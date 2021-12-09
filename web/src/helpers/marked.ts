@@ -54,7 +54,7 @@ const parseCodeToPrism = (codeStr: string): string => {
 
 const parseMarkedToHtml = (markedStr: string): string => {
   const htmlText = parseCodeToPrism(markedStr)
-    .replace(DOT_LI_REG, "<span class='counter-block'>•</span>")
+    .replace(DOT_LI_REG, "<span class='counter-block'>◦</span>")
     .replace(NUM_LI_REG, "<span class='counter-block'>$1.</span>")
     .replace(TODO_BLOCK_REG, "<span class='todo-block' data-type='todo'>⬜</span>")
     .replace(DONE_BLOCK_REG, "<span class='todo-block' data-type='done'>✅</span>")

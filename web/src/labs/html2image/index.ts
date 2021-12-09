@@ -5,8 +5,8 @@
  * 1. html-to-image: https://github.com/bubkoo/html-to-image
  * 2. <foreignObject>: https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject
  */
-import convertResourceToDataURL from "./convertResourceToDataURL";
 import getCloneStyledElement from "./getCloneStyledElement";
+import getFontsStyleElement from "./getFontsStyleElement";
 
 type Options = Partial<{
   backgroundColor: string;
@@ -29,14 +29,14 @@ function convertSVGToDataURL(svg: SVGElement): string {
 }
 
 function generateSVGElement(width: number, height: number, element: HTMLElement): SVGSVGElement {
-  const xmlns = "http://www.w3.org/2000/svg";
-  const svg = document.createElementNS(xmlns, "svg");
+  const xmlNS = "http://www.w3.org/2000/svg";
+  const svgElement = document.createElementNS(xmlNS, "svg");
 
-  svg.setAttribute("width", `${width}`);
-  svg.setAttribute("height", `${height}`);
-  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svgElement.setAttribute("width", `${width}`);
+  svgElement.setAttribute("height", `${height}`);
+  svgElement.setAttribute("viewBox", `0 0 ${width} ${height}`);
 
-  const foreignObject = document.createElementNS(xmlns, "foreignObject");
+  const foreignObject = document.createElementNS(xmlNS, "foreignObject");
 
   foreignObject.setAttribute("width", "100%");
   foreignObject.setAttribute("height", "100%");
@@ -45,44 +45,9 @@ function generateSVGElement(width: number, height: number, element: HTMLElement)
   foreignObject.setAttribute("externalResourcesRequired", "true");
 
   foreignObject.appendChild(element);
-  svg.appendChild(foreignObject);
+  svgElement.appendChild(foreignObject);
 
-  return svg;
-}
-
-// TODO need rethink how to get the needed font-family
-async function getFontsStyleElement() {
-  const styleElement = document.createElement("style");
-
-  const fonts = [
-    {
-      name: "DINPro",
-      url: "/fonts/DINPro-Regular.otf",
-      weight: "normal",
-    },
-    {
-      name: "DINPro",
-      url: "/fonts/DINPro-Bold.otf",
-      weight: "bold",
-    },
-    {
-      name: "ubuntu-mono",
-      url: "/fonts/UbuntuMono.ttf",
-      weight: "normal",
-    },
-  ];
-
-  for (const f of fonts) {
-    const base64Url = await convertResourceToDataURL(f.url);
-    styleElement.innerHTML += `
-      @font-face {
-        font-family: "${f.name}";
-        src: url("${base64Url}");
-        font-weight: ${f.weight};
-      }`;
-  }
-
-  return styleElement;
+  return svgElement;
 }
 
 export async function toSVG(element: HTMLElement, options?: Options) {
@@ -95,7 +60,7 @@ export async function toSVG(element: HTMLElement, options?: Options) {
   }
 
   const svg = generateSVGElement(width, height, clonedElement);
-  svg.prepend(await getFontsStyleElement());
+  svg.prepend(await getFontsStyleElement(element));
 
   const url = convertSVGToDataURL(svg);
 
