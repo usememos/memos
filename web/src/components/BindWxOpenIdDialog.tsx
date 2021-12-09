@@ -6,8 +6,8 @@ import "../less/change-password-dialog.less";
 
 interface Props extends DialogProps {}
 
-const BindWxUserIdDialog: React.FC<Props> = ({ destroy }: Props) => {
-  const [wxUserId, setWxUserId] = useState("");
+const BindWxOpenIdDialog: React.FC<Props> = ({ destroy }: Props) => {
+  const [wxOpenId, setWxOpenId] = useState("");
 
   useEffect(() => {
     // do nth
@@ -17,19 +17,19 @@ const BindWxUserIdDialog: React.FC<Props> = ({ destroy }: Props) => {
     destroy();
   };
 
-  const handleWxUserIdChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleWxOpenIdChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
-    setWxUserId(text);
+    setWxOpenId(text);
   };
 
   const handleSaveBtnClick = async () => {
-    if (wxUserId === "") {
+    if (wxOpenId === "") {
       toastHelper.error("微信 id 不能为空");
       return;
     }
 
     try {
-      await userService.updateWxUserId(wxUserId);
+      await userService.updateWxOpenId(wxOpenId);
       userService.doSignIn();
       toastHelper.info("绑定成功！");
       handleCloseBtnClick();
@@ -51,8 +51,8 @@ const BindWxUserIdDialog: React.FC<Props> = ({ destroy }: Props) => {
           关注微信公众号“小谈闲事”，主动发送任意消息，即可获取 <strong>OpenID</strong> 。
         </p>
         <label className="form-label input-form-label">
-          <span className={"normal-text " + (wxUserId === "" ? "" : "not-null")}>微信 OpenID</span>
-          <input type="text" value={wxUserId} onChange={handleWxUserIdChanged} />
+          <span className={"normal-text " + (wxOpenId === "" ? "" : "not-null")}>微信 OpenID</span>
+          <input type="text" value={wxOpenId} onChange={handleWxOpenIdChanged} />
         </label>
         <div className="btns-container">
           <span className="btn cancel-btn" onClick={handleCloseBtnClick}>
@@ -67,13 +67,13 @@ const BindWxUserIdDialog: React.FC<Props> = ({ destroy }: Props) => {
   );
 };
 
-function showBindWxUserIdDialog() {
+function showBindWxOpenIdDialog() {
   showDialog(
     {
       className: "bind-wxid-dialog",
     },
-    BindWxUserIdDialog
+    BindWxOpenIdDialog
   );
 }
 
-export default showBindWxUserIdDialog;
+export default showBindWxOpenIdDialog;

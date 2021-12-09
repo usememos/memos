@@ -117,6 +117,11 @@ class MemoService {
     });
   }
 
+  public async getLinkedMemos(memoId: string): Promise<Model.Memo[]> {
+    const { memos } = this.getState();
+    return memos.filter((m) => m.content.includes(memoId));
+  }
+
   public async createMemo(text: string): Promise<Model.Memo> {
     const { data: memo } = await api.createMemo(text);
     return memo;
@@ -125,11 +130,6 @@ class MemoService {
   public async updateMemo(memoId: string, text: string): Promise<Model.Memo> {
     const { data: memo } = await api.updateMemo(memoId, text);
     return memo;
-  }
-
-  public async getLinkedMemos(memoId: string): Promise<Model.Memo[]> {
-    const { data } = await api.getLinkedMemos(memoId);
-    return data;
   }
 }
 

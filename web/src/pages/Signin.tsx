@@ -154,14 +154,6 @@ const Signin: React.FC<Props> = () => {
                 已有账号，我要自己登录
               </div>
             </div>
-            <p className="tip-text">
-              仅用于作品展示。
-              <br />
-              <span className="btn" onClick={handleAboutBtnClick}>
-                <span className="icon-text">🤠</span>
-                关于本站
-              </span>
-            </p>
           </>
         ) : (
           <>

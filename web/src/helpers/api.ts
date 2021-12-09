@@ -1,143 +1,123 @@
+import utils from "./utils";
+
 type ResponseType<T = unknown> = {
   succeed: boolean;
-  status: number;
   message: string;
   data: T;
 };
 
-async function get<T>(url: string): Promise<ResponseType<T>> {
-  const response = await fetch(url, {
-    method: "GET",
-  });
-  const resData = (await response.json()) as ResponseType<T>;
+async function request<T>(method: string, url: string, data?: BasicType): Promise<ResponseType<T>> {
+  const requestConfig: RequestInit = {
+    method,
+  };
 
-  if (!resData.succeed) {
-    throw resData;
-  }
-
-  return resData;
-}
-
-async function post<T>(url: string, data?: BasicType): Promise<ResponseType<T>> {
-  const response = await fetch(url, {
-    method: "POST",
-    headers: {
+  if (method !== "GET") {
+    requestConfig.headers = {
       "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data),
-  });
-
-  const resData = (await response.json()) as ResponseType<T>;
-
-  if (!resData.succeed) {
-    throw resData;
+    };
+    if (data !== null) {
+    }
+    requestConfig.body = JSON.stringify(data);
   }
 
-  return resData;
+  const response = await fetch(url, requestConfig);
+  const responseData = (await response.json()) as ResponseType<T>;
+
+  if (!responseData.succeed) {
+    throw responseData;
+  }
+
+  return responseData;
 }
 
 namespace api {
   export function getUserInfo() {
-    return get<Model.User>("/api/user/me");
+    return request<Model.User>("GET", "/api/user/me");
   }
 
   export function signin(username: string, password: string) {
-    return post("/api/user/signin", { username, password });
+    return request("POST", "/api/auth/signin", { username, password });
   }
 
   export function signup(username: string, password: string) {
-    return post("/api/user/signup", { username, password });
+    return request("POST", "/api/auth/signup", { username, password });
   }
 
   export function signout() {
-    return post("/api/user/signout");
+    return request("POST", "/api/auth/signout");
   }
 
   export function checkUsernameUsable(username: string) {
-    return get<boolean>("/api/user/checkusername?username=" + username);
+    return request<boolean>("POST", "/api/user/checkusername", { username });
   }
 
   export function checkPasswordValid(password: string) {
-    return post<boolean>("/api/user/checkpassword", { password });
+    return request<boolean>("POST", "/api/user/validpassword", { password });
   }
 
-  export function updateUserinfo(username?: string, password?: string, githubName?: string, wxUserId?: string) {
-    return post("/api/user/update", {
+  export function updateUserinfo(username?: string, password?: string, githubName?: string, wxOpenId?: string) {
+    return request("PATCH", "/api/user/me", {
       username,
       password,
       githubName,
-      wxUserId,
+      wxOpenId,
     });
   }
 
   export function getMyMemos() {
-    return get<Model.Memo[]>("/api/memo/all");
+    return request<Model.Memo[]>("GET", "/api/memo/all");
   }
 
   export function getMyDeletedMemos() {
-    return get<Model.Memo[]>("/api/memo/deleted");
+    return request<Model.Memo[]>("GET", "/api/memo/all?deleted=true");
   }
 
   export function createMemo(content: string) {
-    return post<Model.Memo>("/api/memo/new", { content });
+    return request<Model.Memo>("PUT", "/api/memo/", { content });
   }
 
-  export function getMemoById(id: string) {
-    return get<Model.Memo>("/api/memo/?id=" + id);
+  export function updateMemo(memoId: string, content: string) {
+    return request<Model.Memo>("PATCH", `/api/memo/${memoId}`, { content });
   }
 
   export function hideMemo(memoId: string) {
-    return post("/api/memo/hide", {
-      memoId,
+    return request("PATCH", `/api/memo/${memoId}`, {
+      deletedAt: utils.getDateTimeString(Date.now()),
     });
   }
 
   export function restoreMemo(memoId: string) {
-    return post("/api/memo/restore", {
-      memoId,
+    return request("PATCH", `/api/memo/${memoId}`, {
+      deletedAt: "",
     });
   }
 
   export function deleteMemo(memoId: string) {
-    return post("/api/memo/delete", {
-      memoId,
-    });
-  }
-
-  export function updateMemo(memoId: string, content: string) {
-    return post<Model.Memo>("/api/memo/update", { memoId, content });
-  }
-
-  export function getLinkedMemos(memoId: string) {
-    return get<Model.Memo[]>("/api/memo/linked?memoId=" + memoId);
-  }
-
-  export function removeGithubName() {
-    return post("/api/user/updategh", { githubName: "" });
+    return request("DELETE", `/api/memo/${memoId}`);
   }
 
   export function getMyQueries() {
-    return get<Model.Query[]>("/api/query/all");
+    return request<Model.Query[]>("GET", "/api/query/all");
   }
 
   export function createQuery(title: string, querystring: string) {
-    return post<Model.Query>("/api/query/new", { title, querystring });
+    return request<Model.Query>("PUT", "/api/query/", { title, querystring });
   }
 
   export function updateQuery(queryId: string, title: string, querystring: string) {
-    return post<Model.Query>("/api/query/update", { queryId, title, querystring });
+    return request<Model.Query>("PATCH", `/api/query/${queryId}`, { title, querystring });
   }
 
   export function deleteQueryById(queryId: string) {
-    return post("/api/query/delete", { queryId });
+    return request("DELETE", `/api/query/${queryId}`);
   }
 
   export function pinQuery(queryId: string) {
-    return post("/api/query/pin", { queryId });
+    return request("PATCH", `/api/query/${queryId}`, { pinnedAt: utils.getDateTimeString(Date.now()) });
   }
 
   export function unpinQuery(queryId: string) {
-    return post("/api/query/unpin", { queryId });
+    return request("PATCH", `/api/query/${queryId}`, { pinnedAt: "" });
   }
 }
 

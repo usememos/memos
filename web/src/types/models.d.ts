@@ -8,7 +8,7 @@ declare namespace Model {
   interface User extends BaseModel {
     username: string;
     githubName?: string;
-    wxUserId?: string;
+    wxOpenId?: string;
   }
 
   interface Memo extends BaseModel {

@@ -25,7 +25,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <p>You are in charge of your data and customizations.</p>
         <p>Built with React and Go.</p>
         <br />
-        <p>Enjoy it and have fun~ </p>
+        <p>Enjoy it and have fun~</p>
         <hr />
         <p className="normal-text">
           Last updated on <span className="pre-text">2021/12/09 10:14:32</span> 🎉

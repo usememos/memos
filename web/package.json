@@ -7,13 +7,11 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "prismjs": "^1.25.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "tiny-undo": "^0.0.8"
   },
   "devDependencies": {
-    "@types/prismjs": "^1.16.6",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
     "@vitejs/plugin-react": "^1.0.0",

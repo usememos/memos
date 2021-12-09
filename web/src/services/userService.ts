@@ -51,8 +51,8 @@ class UserService {
     await api.updateUserinfo(undefined, password);
   }
 
-  public async updateWxUserId(wxUserId: string): Promise<void> {
-    await api.updateUserinfo(undefined, undefined, undefined, wxUserId);
+  public async updateWxOpenId(wxOpenId: string): Promise<void> {
+    await api.updateUserinfo(undefined, undefined, undefined, wxOpenId);
   }
 }
 

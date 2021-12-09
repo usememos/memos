@@ -6,7 +6,7 @@ import { validate, ValidatorConfig } from "../helpers/validator";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import showChangePasswordDialog from "./ChangePasswordDialog";
-import showBindWxUserIdDialog from "./BindWxUserIdDialog";
+import showBindWxOpenIdDialog from "./BindWxOpenIdDialog";
 import "../less/my-account-section.less";
 
 const validateConfig: ValidatorConfig = {
@@ -91,7 +91,7 @@ const MyAccountSection: React.FC<Props> = () => {
   const handleUnbindWxBtnClick = async () => {
     if (showConfirmUnbindWxBtn) {
       try {
-        await userService.updateWxUserId("");
+        await userService.updateWxOpenId("");
         await userService.doSignIn();
       } catch (error: any) {
         toastHelper.error(error.message);
@@ -157,7 +157,7 @@ const MyAccountSection: React.FC<Props> = () => {
           <p className="title-text">关联账号</p>
           <label className="form-label input-form-label">
             <span className="normal-text">微信 OpenID：</span>
-            {user.wxUserId ? (
+            {user.wxOpenId ? (
               <>
                 <span className="value-text">************</span>
                 <span
@@ -174,7 +174,7 @@ const MyAccountSection: React.FC<Props> = () => {
                 <span
                   className="btn-text bind-btn"
                   onClick={() => {
-                    showBindWxUserIdDialog();
+                    showBindWxOpenIdDialog();
                   }}
                 >
                   绑定 ID
