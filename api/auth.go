@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"memos/common/error"
+	"memos/api/e"
 	"memos/store"
 	"net/http"
 
@@ -15,22 +15,34 @@ type UserSignUp struct {
 }
 
 func handleUserSignUp(w http.ResponseWriter, r *http.Request) {
-	var userSignup UserSignUp
+	userSignup := UserSignUp{}
 	err := json.NewDecoder(r.Body).Decode(&userSignup)
 
 	if err != nil {
-		error.ErrorHandler(w, "REQUEST_BODY_ERROR")
+		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
 		return
 	}
 
 	user, err := store.CreateNewUser(userSignup.Username, userSignup.Password, "", "")
 
 	if err != nil {
-		error.ErrorHandler(w, "")
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	userIdCookie := &http.Cookie{
+		Name:   "user_id",
+		Value:  user.Id,
+		Path:   "/",
+		MaxAge: 3600 * 24 * 30,
+	}
+	http.SetCookie(w, userIdCookie)
+
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    user,
+	})
 }
 
 type UserSignin struct {
@@ -39,38 +51,50 @@ type UserSignin struct {
 }
 
 func handleUserSignIn(w http.ResponseWriter, r *http.Request) {
-	var userSignin UserSignin
+	userSignin := UserSignin{}
 	err := json.NewDecoder(r.Body).Decode(&userSignin)
 
 	if err != nil {
-		error.ErrorHandler(w, "")
+		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
 		return
 	}
 
 	user, err := store.GetUserByUsernameAndPassword(userSignin.Username, userSignin.Password)
 
 	if err != nil {
-		error.ErrorHandler(w, "")
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
 		return
 	}
 
 	userIdCookie := &http.Cookie{
 		Name:   "user_id",
 		Value:  user.Id,
+		Path:   "/",
 		MaxAge: 3600 * 24 * 30,
 	}
 	http.SetCookie(w, userIdCookie)
 
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    user,
+	})
 }
 
 func handleUserSignOut(w http.ResponseWriter, r *http.Request) {
 	userIdCookie := &http.Cookie{
 		Name:   "user_id",
 		Value:  "",
+		Path:   "/",
 		MaxAge: 0,
 	}
 	http.SetCookie(w, userIdCookie)
+
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    nil,
+	})
 }
 
 func RegisterAuthRoutes(r *mux.Router) {

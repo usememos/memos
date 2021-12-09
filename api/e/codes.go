@@ -1,4 +1,4 @@
-package error
+package e
 
 var Codes = map[string]int{
 	"NOT_AUTH": 20001,

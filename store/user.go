@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"memos/common"
+	"strings"
 )
 
 type User struct {
@@ -34,55 +35,66 @@ func CreateNewUser(username string, password string, githubName string, wxOpenId
 	return newUser, err
 }
 
-func UpdateUser(id string, username string, password string, githubName string, wxOpenId string) (User, error) {
-	nowDateTimeStr := common.GetNowDateTimeStr()
+type UserPatch struct {
+	Username   *string
+	Password   *string
+	GithubName *string
+	WxOpenId   *string
+}
+
+func UpdateUser(id string, userPatch *UserPatch) (User, error) {
 	user, _ := GetUserById(id)
+	set, args := []string{}, []interface{}{}
 
-	if username != "" {
-		user.Username = username
+	if v := userPatch.Username; v != nil {
+		user.Username = *v
+		set, args = append(set, "username=?"), append(args, *v)
 	}
-	if password != "" {
-		user.Password = password
+	if v := userPatch.Password; v != nil {
+		user.Password = *v
+		set, args = append(set, "password=?"), append(args, *v)
 	}
-	if githubName != "" {
-		user.GithubName = githubName
+	if v := userPatch.GithubName; v != nil {
+		user.GithubName = *v
+		set, args = append(set, "github_name=?"), append(args, *v)
 	}
-	if wxOpenId != "" {
-		user.WxOpenId = wxOpenId
+	if v := userPatch.WxOpenId; v != nil {
+		user.WxOpenId = *v
+		set, args = append(set, "wx_open_id=?"), append(args, *v)
 	}
+	set, args = append(set, "updated_at=?"), append(args, common.GetNowDateTimeStr())
+	args = append(args, id)
 
-	user.UpdatedAt = nowDateTimeStr
-
-	query := `UPDATE users SET (username, password, wx_open_id, github_name, updated_at) VALUES (?, ?, ?, ?, ?)`
-	_, err := DB.Exec(query, user.Username, user.Password, user.WxOpenId, user.GithubName, user.UpdatedAt)
+	sqlQuery := `UPDATE users SET ` + strings.Join(set, ",") + ` WHERE id=?`
+	_, err := DB.Exec(sqlQuery, args...)
 
 	return user, err
 }
 
 func GetUserById(id string) (User, error) {
 	query := `SELECT id, username, password, wx_open_id, github_name, created_at, updated_at FROM users WHERE id=?`
-	var user User
+	user := User{}
 	err := DB.QueryRow(query, id).Scan(&user.Id, &user.Username, &user.Password, &user.WxOpenId, &user.GithubName, &user.CreatedAt, &user.UpdatedAt)
 	return user, err
 }
 
 func GetUserByUsernameAndPassword(username string, password string) (User, error) {
 	query := `SELECT id, username, password, wx_open_id, github_name, created_at, updated_at FROM users WHERE username=? AND password=?`
-	var user User
+	user := User{}
 	err := DB.QueryRow(query, username, password).Scan(&user.Id, &user.Username, &user.Password, &user.WxOpenId, &user.GithubName, &user.CreatedAt, &user.UpdatedAt)
 	return user, err
 }
 
 func GetUserByGithubName(githubName string) (User, error) {
 	query := `SELECT id, username, password, wx_open_id, github_name, created_at, updated_at FROM users WHERE github_name=?`
-	var user User
+	user := User{}
 	err := DB.QueryRow(query, githubName).Scan(&user.Id, &user.Username, &user.Password, &user.WxOpenId, &user.GithubName, &user.CreatedAt, &user.UpdatedAt)
 	return user, err
 }
 
 func GetUserByWxOpenId(wxOpenId string) (User, error) {
 	query := `SELECT id, username, password, wx_open_id, github_name, created_at, updated_at FROM users WHERE id=?`
-	var user User
+	user := User{}
 	err := DB.QueryRow(query, wxOpenId).Scan(&user.Id, &user.Username, &user.Password, &user.WxOpenId, &user.GithubName, &user.CreatedAt, &user.UpdatedAt)
 	return user, err
 }

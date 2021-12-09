@@ -1,4 +1,4 @@
-package error
+package e
 
 import (
 	"encoding/json"
@@ -11,17 +11,19 @@ type ServerError struct {
 }
 
 type ErrorResponse struct {
-	StatusCode    int         `json:"statusCode"`
-	StatusMessage string      `json:"statusMessage"`
-	Succeed       bool        `json:"succeed"`
-	Data          interface{} `json:"data"`
+	Succeed    bool        `json:"succeed"`
+	Message    string      `json:"message"`
+	StatusCode int         `json:"statusCode"`
+	Data       interface{} `json:"data"`
 }
 
 func getServerError(err string) ServerError {
 	code, exists := Codes[err]
 
+	println(err)
+
 	if !exists {
-		err = "Bad Request"
+		err = "BAD_REQUEST"
 		code = 40000
 	}
 
@@ -31,14 +33,14 @@ func getServerError(err string) ServerError {
 	}
 }
 
-func ErrorHandler(w http.ResponseWriter, err string) {
+func ErrorHandler(w http.ResponseWriter, err string, message string) {
 	serverError := getServerError(err)
 
 	res := ErrorResponse{
-		StatusCode:    serverError.Code,
-		StatusMessage: serverError.Message,
-		Succeed:       false,
-		Data:          nil,
+		Succeed:    false,
+		Message:    message,
+		StatusCode: serverError.Code,
+		Data:       nil,
 	}
 
 	statusCode := int(serverError.Code / 100)

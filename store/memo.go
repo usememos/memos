@@ -1,6 +1,9 @@
 package store
 
-import "memos/common"
+import (
+	"memos/common"
+	"strings"
+)
 
 type Memo struct {
 	Id        string `json:"id"`
@@ -28,45 +31,68 @@ func CreateNewMemo(content string, userId string) (Memo, error) {
 	return newMemo, err
 }
 
-func UpdateMemo(id string, content string, deletedAt string) (Memo, error) {
-	nowDateTimeStr := common.GetNowDateTimeStr()
+type MemoPatch struct {
+	Content   *string
+	DeletedAt *string
+}
+
+func UpdateMemo(id string, memoPatch *MemoPatch) (Memo, error) {
 	memo, _ := GetMemoById(id)
+	set, args := []string{}, []interface{}{}
 
-	if content != "" {
-		memo.Content = content
+	if v := memoPatch.Content; v != nil {
+		memo.Content = *v
+		set, args = append(set, "content=?"), append(args, *v)
 	}
-	if deletedAt != "" {
-		memo.DeletedAt = deletedAt
+	if v := memoPatch.DeletedAt; v != nil {
+		memo.DeletedAt = *v
+		set, args = append(set, "deleted_at=?"), append(args, *v)
 	}
+	set, args = append(set, "updated_at=?"), append(args, common.GetNowDateTimeStr())
+	args = append(args, id)
 
-	memo.UpdatedAt = nowDateTimeStr
-
-	query := `UPDATE memos SET (content, deleted_at, updated_at) VALUES (?, ?, ?)`
-	_, err := DB.Exec(query, memo.Content, memo.DeletedAt, memo.UpdatedAt)
+	sqlQuery := `UPDATE memos SET ` + strings.Join(set, ",") + ` WHERE id=?`
+	_, err := DB.Exec(sqlQuery, args...)
 
 	return memo, err
+}
+
+func DeleteMemo(memoId string) (error, error) {
+	query := `DELETE FROM memos WHERE id=?`
+	_, err := DB.Exec(query, memoId)
+
+	return nil, err
 }
 
 func GetMemoById(id string) (Memo, error) {
 	query := `SELECT id, content, user_id, deleted_at, created_at, updated_at FROM memos WHERE id=?`
-	var memo Memo
+	memo := Memo{}
 	err := DB.QueryRow(query, id).Scan(&memo.Id, &memo.Content, &memo.UserId, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
 	return memo, err
 }
 
-func GetMemosByUserId(userId string) ([]Memo, error) {
+func GetMemosByUserId(userId string, deleted bool) ([]Memo, error) {
 	query := `SELECT id, content, user_id, deleted_at, created_at, updated_at FROM memos WHERE user_id=?`
 
-	rows, err := DB.Query(query, userId)
+	if deleted {
+		query = query + ` AND deleted_at!=""`
+	} else {
+		query = query + ` AND deleted_at=""`
+	}
 
-	var memos []Memo
+	rows, _ := DB.Query(query, userId)
+	defer rows.Close()
+
+	memos := []Memo{}
 
 	for rows.Next() {
-		var memo Memo
-		err = rows.Scan(&memo.Id, &memo.Content, &memo.UserId, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
+		memo := Memo{}
+		rows.Scan(&memo.Id, &memo.Content, &memo.UserId, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
 
 		memos = append(memos, memo)
 	}
+
+	err := rows.Err()
 
 	return memos, err
 }

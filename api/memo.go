@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"memos/common/error"
+	"memos/api/e"
 	"memos/store"
 	"net/http"
 
@@ -11,15 +11,22 @@ import (
 
 func handleGetMyMemos(w http.ResponseWriter, r *http.Request) {
 	userId, _ := GetUserIdInCookie(r)
+	urlParams := r.URL.Query()
+	deleted := urlParams.Get("deleted")
+	onlyDeletedFlag := deleted == "true"
 
-	memos, err := store.GetMemosByUserId(userId)
+	memos, err := store.GetMemosByUserId(userId, onlyDeletedFlag)
 
 	if err != nil {
-		error.ErrorHandler(w, "DATABASE_ERROR")
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
 		return
 	}
 
-	json.NewEncoder(w).Encode(memos)
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    memos,
+	})
 }
 
 type CreateMemo struct {
@@ -29,54 +36,77 @@ type CreateMemo struct {
 func handleCreateMemo(w http.ResponseWriter, r *http.Request) {
 	userId, _ := GetUserIdInCookie(r)
 
-	var createMemo CreateMemo
+	createMemo := CreateMemo{}
 	err := json.NewDecoder(r.Body).Decode(&createMemo)
 
 	if err != nil {
-		error.ErrorHandler(w, "")
+		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
 		return
 	}
 
 	memo, err := store.CreateNewMemo(createMemo.Content, userId)
 
 	if err != nil {
-		error.ErrorHandler(w, "")
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
 		return
 	}
 
-	json.NewEncoder(w).Encode(memo)
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    memo,
+	})
 }
 
 func handleUpdateMemo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	memoId := vars["id"]
 
-	userId, _ := GetUserIdInCookie(r)
-
-	var createMemo CreateMemo
-	err := json.NewDecoder(r.Body).Decode(&createMemo)
+	memoPatch := store.MemoPatch{}
+	err := json.NewDecoder(r.Body).Decode(&memoPatch)
 
 	if err != nil {
-		error.ErrorHandler(w, "")
+		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
 		return
 	}
 
-	memo, err := store.UpdateMemo(memoId, createMemo.Content, userId)
+	memo, err := store.UpdateMemo(memoId, &memoPatch)
 
 	if err != nil {
-		error.ErrorHandler(w, "")
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
 		return
 	}
 
-	json.NewEncoder(w).Encode(memo)
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    memo,
+	})
+}
+
+func handleDeleteMemo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	memoId := vars["id"]
+
+	_, err := store.DeleteMemo(memoId)
+
+	if err != nil {
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
+		return
+	}
+
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    nil,
+	})
 }
 
 func RegisterMemoRoutes(r *mux.Router) {
 	memoRouter := r.PathPrefix("/api/memo").Subrouter()
 
-	memoRouter.Use(AuthCheckerMiddleWare)
-
 	memoRouter.HandleFunc("/all", handleGetMyMemos).Methods("GET")
 	memoRouter.HandleFunc("/", handleCreateMemo).Methods("PUT")
 	memoRouter.HandleFunc("/{id}", handleUpdateMemo).Methods("PATCH")
+	memoRouter.HandleFunc("/{id}", handleDeleteMemo).Methods("DELETE")
 }

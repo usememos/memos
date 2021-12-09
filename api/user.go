@@ -2,7 +2,7 @@ package api
 
 import (
 	"encoding/json"
-	"memos/common/error"
+	"memos/api/e"
 	"memos/store"
 	"net/http"
 
@@ -15,39 +15,95 @@ func handleGetMyUserInfo(w http.ResponseWriter, r *http.Request) {
 	user, err := store.GetUserById(userId)
 
 	if err != nil {
-		error.ErrorHandler(w, "DATABASE_ERROR")
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
-}
-
-type UpdateUser struct {
-	Username   string `json:"username"`
-	Password   string `json:"password"`
-	GithubName string `json:"githubName"`
-	WxOpenId   string `json:"wxOpenId"`
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    user,
+	})
 }
 
 func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 	userId, _ := GetUserIdInCookie(r)
 
-	user, err := store.GetUserById(userId)
+	userPatch := store.UserPatch{}
+	err := json.NewDecoder(r.Body).Decode(&userPatch)
 
 	if err != nil {
-		error.ErrorHandler(w, "DATABASE_ERROR")
+		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
 		return
 	}
 
-	var updateUser UpdateUser
-	err = json.NewDecoder(r.Body).Decode(&updateUser)
+	user, err := store.UpdateUser(userId, &userPatch)
 
 	if err != nil {
-		error.ErrorHandler(w, "REQUEST_BODY_ERROR")
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
 		return
 	}
 
-	json.NewEncoder(w).Encode(user)
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    user,
+	})
+}
+
+type CheckUsername struct {
+	Username string
+}
+
+func handleCheckUsername(w http.ResponseWriter, r *http.Request) {
+	checkUsername := CheckUsername{}
+	err := json.NewDecoder(r.Body).Decode(&checkUsername)
+
+	if err != nil {
+		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
+		return
+	}
+
+	usable, err := store.CheckUsernameUsable(checkUsername.Username)
+
+	if err != nil {
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
+		return
+	}
+
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    usable,
+	})
+}
+
+type ValidPassword struct {
+	Password string
+}
+
+func handleValidPassword(w http.ResponseWriter, r *http.Request) {
+	userId, _ := GetUserIdInCookie(r)
+	validPassword := ValidPassword{}
+	err := json.NewDecoder(r.Body).Decode(&validPassword)
+
+	if err != nil {
+		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
+		return
+	}
+
+	valid, err := store.CheckPasswordValid(userId, validPassword.Password)
+
+	if err != nil {
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
+		return
+	}
+
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    valid,
+	})
 }
 
 func RegisterUserRoutes(r *mux.Router) {
@@ -57,4 +113,6 @@ func RegisterUserRoutes(r *mux.Router) {
 
 	userRouter.HandleFunc("/me", handleGetMyUserInfo).Methods("GET")
 	userRouter.HandleFunc("/me", handleUpdateMyUserInfo).Methods("PATCH")
+	userRouter.HandleFunc("/checkusername", handleCheckUsername).Methods("POST")
+	userRouter.HandleFunc("/validpassword", handleValidPassword).Methods("POST")
 }

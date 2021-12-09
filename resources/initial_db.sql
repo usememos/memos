@@ -1,3 +1,6 @@
+/*
+ * Re-create tables and insert initial data(todo)
+ */
 CREATE TABLE `users` (
 	`id` TEXT NOT NULL PRIMARY KEY,
 	`username` TEXT NOT NULL,
