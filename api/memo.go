@@ -10,7 +10,7 @@ import (
 )
 
 func handleGetMyMemos(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInCookie(r)
+	userId, _ := GetUserIdInSession(r)
 	urlParams := r.URL.Query()
 	deleted := urlParams.Get("deleted")
 	onlyDeletedFlag := deleted == "true"
@@ -34,7 +34,7 @@ type CreateMemo struct {
 }
 
 func handleCreateMemo(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInCookie(r)
+	userId, _ := GetUserIdInSession(r)
 
 	createMemo := CreateMemo{}
 	err := json.NewDecoder(r.Body).Decode(&createMemo)
@@ -104,6 +104,8 @@ func handleDeleteMemo(w http.ResponseWriter, r *http.Request) {
 
 func RegisterMemoRoutes(r *mux.Router) {
 	memoRouter := r.PathPrefix("/api/memo").Subrouter()
+
+	memoRouter.Use(AuthCheckerMiddleWare)
 
 	memoRouter.HandleFunc("/all", handleGetMyMemos).Methods("GET")
 	memoRouter.HandleFunc("/", handleCreateMemo).Methods("PUT")

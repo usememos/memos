@@ -10,7 +10,7 @@ import (
 )
 
 func handleGetMyUserInfo(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInCookie(r)
+	userId, _ := GetUserIdInSession(r)
 
 	user, err := store.GetUserById(userId)
 
@@ -27,7 +27,7 @@ func handleGetMyUserInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInCookie(r)
+	userId, _ := GetUserIdInSession(r)
 
 	userPatch := store.UserPatch{}
 	err := json.NewDecoder(r.Body).Decode(&userPatch)
@@ -83,7 +83,7 @@ type ValidPassword struct {
 }
 
 func handleValidPassword(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInCookie(r)
+	userId, _ := GetUserIdInSession(r)
 	validPassword := ValidPassword{}
 	err := json.NewDecoder(r.Body).Decode(&validPassword)
 

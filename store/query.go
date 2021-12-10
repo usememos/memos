@@ -27,8 +27,8 @@ func CreateNewQuery(title string, querystring string, userId string) (Query, err
 		UpdatedAt:   nowDateTimeStr,
 	}
 
-	query := `INSERT INTO queries (id, title, querystring, user_id, pinned_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
-	_, err := DB.Exec(query, newQuery.Id, newQuery.Title, newQuery.Querystring, newQuery.UserId, newQuery.PinnedAt, newQuery.CreatedAt, newQuery.UpdatedAt)
+	sqlQuery := `INSERT INTO queries (id, title, querystring, user_id, pinned_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
+	_, err := DB.Exec(sqlQuery, newQuery.Id, newQuery.Title, newQuery.Querystring, newQuery.UserId, newQuery.PinnedAt, newQuery.CreatedAt, newQuery.UpdatedAt)
 
 	return newQuery, err
 }
@@ -72,14 +72,14 @@ func DeleteQuery(queryId string) (error, error) {
 }
 
 func GetQueryById(queryId string) (Query, error) {
-	sqlQuery := `SELECT id, title, querystring, user_id, pinned_at, created_at, updated_at FROM queries WHERE id=?`
+	sqlQuery := `SELECT id, title, querystring, pinned_at, created_at, updated_at FROM queries WHERE id=?`
 	query := Query{}
-	err := DB.QueryRow(sqlQuery, queryId).Scan(&query.Id, &query.Title, &query.Querystring, &query.UserId, &query.PinnedAt, &query.CreatedAt, &query.UpdatedAt)
+	err := DB.QueryRow(sqlQuery, queryId).Scan(&query.Id, &query.Title, &query.Querystring, &query.PinnedAt, &query.CreatedAt, &query.UpdatedAt)
 	return query, err
 }
 
 func GetQueriesByUserId(userId string) ([]Query, error) {
-	query := `SELECT id, title, querystring, user_id, pinned_at, created_at, updated_at FROM queries WHERE user_id=?`
+	query := `SELECT id, title, querystring, pinned_at, created_at, updated_at FROM queries WHERE user_id=?`
 
 	rows, _ := DB.Query(query, userId)
 	defer rows.Close()
@@ -88,12 +88,14 @@ func GetQueriesByUserId(userId string) ([]Query, error) {
 
 	for rows.Next() {
 		query := Query{}
-		rows.Scan(&query.Id, &query.Title, &query.Querystring, &query.UserId, &query.PinnedAt, &query.CreatedAt, &query.UpdatedAt)
+		rows.Scan(&query.Id, &query.Title, &query.Querystring, &query.PinnedAt, &query.CreatedAt, &query.UpdatedAt)
 
 		queries = append(queries, query)
 	}
 
-	err := rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
-	return queries, err
+	return queries, nil
 }

@@ -30,13 +30,10 @@ func handleUserSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userIdCookie := &http.Cookie{
-		Name:   "user_id",
-		Value:  user.Id,
-		Path:   "/",
-		MaxAge: 3600 * 24 * 30,
-	}
-	http.SetCookie(w, userIdCookie)
+	session, _ := SessionStore.Get(r, "session")
+
+	session.Values["user_id"] = user.Id
+	session.Save(r, w)
 
 	json.NewEncoder(w).Encode(Response{
 		Succeed: true,
@@ -66,13 +63,10 @@ func handleUserSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userIdCookie := &http.Cookie{
-		Name:   "user_id",
-		Value:  user.Id,
-		Path:   "/",
-		MaxAge: 3600 * 24 * 30,
-	}
-	http.SetCookie(w, userIdCookie)
+	session, _ := SessionStore.Get(r, "session")
+
+	session.Values["user_id"] = user.Id
+	session.Save(r, w)
 
 	json.NewEncoder(w).Encode(Response{
 		Succeed: true,
@@ -82,13 +76,10 @@ func handleUserSignIn(w http.ResponseWriter, r *http.Request) {
 }
 
 func handleUserSignOut(w http.ResponseWriter, r *http.Request) {
-	userIdCookie := &http.Cookie{
-		Name:   "user_id",
-		Value:  "",
-		Path:   "/",
-		MaxAge: 0,
-	}
-	http.SetCookie(w, userIdCookie)
+	session, _ := SessionStore.Get(r, "session")
+
+	session.Values["user_id"] = ""
+	session.Save(r, w)
 
 	json.NewEncoder(w).Encode(Response{
 		Succeed: true,

@@ -10,7 +10,7 @@ import (
 )
 
 func handleGetMyQueries(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInCookie(r)
+	userId, _ := GetUserIdInSession(r)
 
 	queries, err := store.GetQueriesByUserId(userId)
 
@@ -32,7 +32,7 @@ type QueryPut struct {
 }
 
 func handleCreateQuery(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInCookie(r)
+	userId, _ := GetUserIdInSession(r)
 
 	queryPut := QueryPut{}
 	err := json.NewDecoder(r.Body).Decode(&queryPut)
@@ -102,6 +102,8 @@ func handleDeleteQuery(w http.ResponseWriter, r *http.Request) {
 
 func RegisterQueryRoutes(r *mux.Router) {
 	queryRouter := r.PathPrefix("/api/query").Subrouter()
+
+	queryRouter.Use(AuthCheckerMiddleWare)
 
 	queryRouter.HandleFunc("/all", handleGetMyQueries).Methods("GET")
 	queryRouter.HandleFunc("/", handleCreateQuery).Methods("PUT")

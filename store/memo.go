@@ -65,34 +65,36 @@ func DeleteMemo(memoId string) (error, error) {
 }
 
 func GetMemoById(id string) (Memo, error) {
-	query := `SELECT id, content, user_id, deleted_at, created_at, updated_at FROM memos WHERE id=?`
+	query := `SELECT id, content, deleted_at, created_at, updated_at FROM memos WHERE id=?`
 	memo := Memo{}
-	err := DB.QueryRow(query, id).Scan(&memo.Id, &memo.Content, &memo.UserId, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
+	err := DB.QueryRow(query, id).Scan(&memo.Id, &memo.Content, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
 	return memo, err
 }
 
-func GetMemosByUserId(userId string, deleted bool) ([]Memo, error) {
-	query := `SELECT id, content, user_id, deleted_at, created_at, updated_at FROM memos WHERE user_id=?`
+func GetMemosByUserId(userId string, onlyDeleted bool) ([]Memo, error) {
+	sqlQuery := `SELECT id, content, deleted_at, created_at, updated_at FROM memos WHERE user_id=?`
 
-	if deleted {
-		query = query + ` AND deleted_at!=""`
+	if onlyDeleted {
+		sqlQuery = sqlQuery + ` AND deleted_at!=""`
 	} else {
-		query = query + ` AND deleted_at=""`
+		sqlQuery = sqlQuery + ` AND deleted_at=""`
 	}
 
-	rows, _ := DB.Query(query, userId)
+	rows, _ := DB.Query(sqlQuery, userId)
 	defer rows.Close()
 
 	memos := []Memo{}
 
 	for rows.Next() {
 		memo := Memo{}
-		rows.Scan(&memo.Id, &memo.Content, &memo.UserId, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
+		rows.Scan(&memo.Id, &memo.Content, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
 
 		memos = append(memos, memo)
 	}
 
-	err := rows.Err()
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 
-	return memos, err
+	return memos, nil
 }

@@ -10,12 +10,14 @@ type Response struct {
 	Data    interface{} `json:"data"`
 }
 
-func GetUserIdInCookie(r *http.Request) (string, error) {
-	userIdCookie, err := r.Cookie("user_id")
+func GetUserIdInSession(r *http.Request) (string, error) {
+	session, _ := SessionStore.Get(r, "session")
 
-	if err != nil {
-		return "", err
+	userId, ok := session.Values["user_id"].(string)
+
+	if !ok {
+		return "", http.ErrNoCookie
 	}
 
-	return userIdCookie.Value, err
+	return userId, nil
 }

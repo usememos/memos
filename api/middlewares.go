@@ -7,9 +7,9 @@ import (
 
 func AuthCheckerMiddleWare(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		userId, err := GetUserIdInCookie(r)
+		session, _ := SessionStore.Get(r, "session")
 
-		if err != nil || userId == "" {
+		if userId, ok := session.Values["user_id"].(string); !ok || userId == "" {
 			e.ErrorHandler(w, "NOT_AUTH", "Need authorize")
 			return
 		}
