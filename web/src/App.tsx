@@ -3,7 +3,6 @@ import appContext from "./stores/appContext";
 import { appRouterSwitch } from "./routers";
 import { globalStateService } from "./services";
 import "./less/app.less";
-import 'prismjs/themes/prism.css';
 
 function App() {
   const {

@@ -13,8 +13,8 @@ func main() {
 
 	r := mux.NewRouter().StrictSlash(true)
 
-	api.RegisterUserRoutes(r)
 	api.RegisterAuthRoutes(r)
+	api.RegisterUserRoutes(r)
 	api.RegisterMemoRoutes(r)
 	api.RegisterQueryRoutes(r)
 

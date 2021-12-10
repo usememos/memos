@@ -155,7 +155,7 @@ const MyAccountSection: React.FC<Props> = () => {
       <Only when={window.location.origin.includes("justsven.top")}>
         <div className="section-container connect-section-container">
           <p className="title-text">关联账号</p>
-          <label className="form-label input-form-label">
+          <label className="form-label input-form-label hidden">
             <span className="normal-text">微信 OpenID：</span>
             {user.wxOpenId ? (
               <>

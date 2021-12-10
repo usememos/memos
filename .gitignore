@@ -13,6 +13,9 @@
 *.log
 tmp
 
+# Config
+config
+
 # Air (hot reload) generated
 .air
 
