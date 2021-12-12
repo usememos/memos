@@ -14,7 +14,7 @@ import (
 var DB *sql.DB
 
 func InitDBConn() {
-	dbFilePath := "/data/memos.db"
+	dbFilePath := "/var/opt/memos/data/memos.db"
 
 	if _, err := os.Stat(dbFilePath); err != nil {
 		dbFilePath = "./resources/memos.db"
@@ -27,7 +27,7 @@ func InitDBConn() {
 	db, err := sql.Open("sqlite3", dbFilePath)
 
 	if err != nil {
-		println("connect failed")
+		panic("db connect failed")
 	} else {
 		DB = db
 		println("connect to sqlite succeed")
