@@ -103,6 +103,7 @@ func handleDeleteQuery(w http.ResponseWriter, r *http.Request) {
 func RegisterQueryRoutes(r *mux.Router) {
 	queryRouter := r.PathPrefix("/api/query").Subrouter()
 
+	queryRouter.Use(JSONResponseMiddleWare)
 	queryRouter.Use(AuthCheckerMiddleWare)
 
 	queryRouter.HandleFunc("/all", handleGetMyQueries).Methods("GET")

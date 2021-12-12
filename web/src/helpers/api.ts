@@ -55,14 +55,7 @@ namespace api {
     return request<boolean>("POST", "/api/user/validpassword", { password });
   }
 
-  interface UserInfoPatch {
-    username?: string;
-    password?: string;
-    githubName?: string;
-    wxOpenId?: string;
-  }
-
-  export function updateUserinfo(userinfo: UserInfoPatch) {
+  export function updateUserinfo(userinfo: Partial<{ username: string; password: string; githubName: string }>) {
     return request("PATCH", "/api/user/me", userinfo);
   }
 

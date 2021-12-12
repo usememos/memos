@@ -18,12 +18,12 @@ func main() {
 	api.RegisterMemoRoutes(r)
 	api.RegisterQueryRoutes(r)
 
-	spa := api.SPAHandler{
+	webServe := api.SPAHandler{
 		StaticPath: "./web/dist",
 		IndexPath:  "index.html",
 	}
 
-	r.PathPrefix("/").Handler(spa)
+	r.PathPrefix("/").Handler(webServe)
 
 	http.ListenAndServe(":8080", r)
 }

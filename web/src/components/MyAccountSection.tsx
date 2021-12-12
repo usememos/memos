@@ -6,7 +6,6 @@ import { validate, ValidatorConfig } from "../helpers/validator";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import showChangePasswordDialog from "./ChangePasswordDialog";
-import showBindWxOpenIdDialog from "./BindWxOpenIdDialog";
 import "../less/my-account-section.less";
 
 const validateConfig: ValidatorConfig = {
@@ -88,20 +87,6 @@ const MyAccountSection: React.FC<Props> = () => {
     }
   };
 
-  const handleUnbindWxBtnClick = async () => {
-    if (showConfirmUnbindWxBtn) {
-      try {
-        await userService.updateWxOpenId("");
-        await userService.doSignIn();
-      } catch (error: any) {
-        toastHelper.error(error.message);
-      }
-      setShowConfirmUnbindWxBtn(false);
-    } else {
-      setShowConfirmUnbindWxBtn(true);
-    }
-  };
-
   const handlePreventDefault = (e: React.MouseEvent) => {
     e.preventDefault();
   };
@@ -155,33 +140,6 @@ const MyAccountSection: React.FC<Props> = () => {
       <Only when={window.location.origin.includes("justsven.top")}>
         <div className="section-container connect-section-container">
           <p className="title-text">关联账号</p>
-          <label className="form-label input-form-label hidden">
-            <span className="normal-text">微信 OpenID：</span>
-            {user.wxOpenId ? (
-              <>
-                <span className="value-text">************</span>
-                <span
-                  className={`btn-text unbind-btn ${showConfirmUnbindWxBtn ? "final-confirm" : ""}`}
-                  onMouseLeave={() => setShowConfirmUnbindWxBtn(false)}
-                  onClick={handleUnbindWxBtnClick}
-                >
-                  {showConfirmUnbindWxBtn ? "确定取消绑定！" : "取消绑定"}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="value-text">空</span>
-                <span
-                  className="btn-text bind-btn"
-                  onClick={() => {
-                    showBindWxOpenIdDialog();
-                  }}
-                >
-                  绑定 ID
-                </span>
-              </>
-            )}
-          </label>
           <label className="form-label input-form-label">
             <span className="normal-text">GitHub：</span>
             {user.githubName ? (

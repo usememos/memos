@@ -61,18 +61,6 @@ func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if userPatch.WxOpenId != nil {
-		wxOpenIdUsable, _ := store.CheckWxOpenIdUsable(*userPatch.GithubName)
-		if !wxOpenIdUsable {
-			json.NewEncoder(w).Encode(Response{
-				Succeed: false,
-				Message: "Wx open id is existed",
-				Data:    nil,
-			})
-			return
-		}
-	}
-
 	user, err := store.UpdateUser(userId, &userPatch)
 
 	if err != nil {
@@ -145,6 +133,7 @@ func handleValidPassword(w http.ResponseWriter, r *http.Request) {
 func RegisterUserRoutes(r *mux.Router) {
 	userRouter := r.PathPrefix("/api/user").Subrouter()
 
+	userRouter.Use(JSONResponseMiddleWare)
 	userRouter.Use(AuthCheckerMiddleWare)
 
 	userRouter.HandleFunc("/me", handleGetMyUserInfo).Methods("GET")

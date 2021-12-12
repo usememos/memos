@@ -39,7 +39,7 @@ func handleUserSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := store.CreateNewUser(userSignup.Username, userSignup.Password, "", "")
+	user, err := store.CreateNewUser(userSignup.Username, userSignup.Password, "")
 
 	if err != nil {
 		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
@@ -225,7 +225,7 @@ func handleGithubAuthCallback(w http.ResponseWriter, r *http.Request) {
 			username = githubUser.Name + utils.GenUUID()
 			usernameUsable, _ = store.CheckUsernameUsable(username)
 		}
-		user, _ = store.CreateNewUser(username, username, githubUser.Login, "")
+		user, _ = store.CreateNewUser(username, username, githubUser.Login)
 	}
 
 	session.Values["user_id"] = user.Id
@@ -236,6 +236,8 @@ func handleGithubAuthCallback(w http.ResponseWriter, r *http.Request) {
 
 func RegisterAuthRoutes(r *mux.Router) {
 	authRouter := r.PathPrefix("/api/auth").Subrouter()
+
+	authRouter.Use(JSONResponseMiddleWare)
 
 	authRouter.HandleFunc("/signup", handleUserSignUp).Methods("POST")
 	authRouter.HandleFunc("/signin", handleUserSignIn).Methods("POST")

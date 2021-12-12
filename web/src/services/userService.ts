@@ -56,12 +56,6 @@ class UserService {
       password,
     });
   }
-
-  public async updateWxOpenId(wxOpenId: string): Promise<void> {
-    await api.updateUserinfo({
-      wxOpenId,
-    });
-  }
 }
 
 const userService = new UserService();

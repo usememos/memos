@@ -7,18 +7,17 @@ declare namespace Model {
 
   interface User extends BaseModel {
     username: string;
-    githubName?: string;
-    wxOpenId?: string;
+    githubName: string;
   }
 
   interface Memo extends BaseModel {
     content: string;
-    deletedAt?: string;
+    deletedAt: string;
   }
 
   interface Query extends BaseModel {
     title: string;
     querystring: string;
-    pinnedAt?: string;
+    pinnedAt: string;
   }
 }

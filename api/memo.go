@@ -105,6 +105,7 @@ func handleDeleteMemo(w http.ResponseWriter, r *http.Request) {
 func RegisterMemoRoutes(r *mux.Router) {
 	memoRouter := r.PathPrefix("/api/memo").Subrouter()
 
+	memoRouter.Use(JSONResponseMiddleWare)
 	memoRouter.Use(AuthCheckerMiddleWare)
 
 	memoRouter.HandleFunc("/all", handleGetMyMemos).Methods("GET")
