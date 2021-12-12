@@ -35,11 +35,15 @@ class UserService {
   }
 
   public async updateUsername(username: string): Promise<void> {
-    await api.updateUserinfo(username);
+    await api.updateUserinfo({
+      username,
+    });
   }
 
   public async removeGithubName(): Promise<void> {
-    await api.updateUserinfo(undefined, undefined, "");
+    await api.updateUserinfo({
+      githubName: "",
+    });
   }
 
   public async checkPasswordValid(password: string): Promise<boolean> {
@@ -48,11 +52,15 @@ class UserService {
   }
 
   public async updatePassword(password: string): Promise<void> {
-    await api.updateUserinfo(undefined, password);
+    await api.updateUserinfo({
+      password,
+    });
   }
 
   public async updateWxOpenId(wxOpenId: string): Promise<void> {
-    await api.updateUserinfo(undefined, undefined, undefined, wxOpenId);
+    await api.updateUserinfo({
+      wxOpenId,
+    });
   }
 }
 

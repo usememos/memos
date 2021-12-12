@@ -4,7 +4,6 @@ import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
 import { locationService, userService } from "../services";
 import Only from "../components/common/OnlyWhen";
-import showAboutSiteDialog from "../components/AboutSiteDialog";
 import toastHelper from "../components/Toast";
 import "../less/signin.less";
 
@@ -50,8 +49,8 @@ const Signin: React.FC<Props> = () => {
     setPassword(text);
   };
 
-  const handleAboutBtnClick = () => {
-    showAboutSiteDialog();
+  const handleSignUpBtnClick = async () => {
+    toastHelper.info("注册已关闭");
   };
 
   const handleSignInBtnClick = async () => {
@@ -186,7 +185,7 @@ const Signin: React.FC<Props> = () => {
                   体验一下
                 </button>
                 <span className="split-text">/</span>
-                <button className="btn signup-btn disabled" onClick={() => toastHelper.info("注册已关闭")}>
+                <button className="btn signup-btn" onClick={handleSignUpBtnClick}>
                   注册
                 </button>
                 <span className="split-text">/</span>

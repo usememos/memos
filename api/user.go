@@ -37,6 +37,42 @@ func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if *userPatch.Username != "" {
+		usernameUsable, _ := store.CheckUsernameUsable(*userPatch.Username)
+		if !usernameUsable {
+			json.NewEncoder(w).Encode(Response{
+				Succeed: false,
+				Message: "Username is existed",
+				Data:    nil,
+			})
+			return
+		}
+	}
+
+	if *userPatch.GithubName != "" {
+		githubNameUsable, _ := store.CheckGithubNameUsable(*userPatch.GithubName)
+		if !githubNameUsable {
+			json.NewEncoder(w).Encode(Response{
+				Succeed: false,
+				Message: "GitHub name is existed",
+				Data:    nil,
+			})
+			return
+		}
+	}
+
+	if *userPatch.WxOpenId != "" {
+		wxOpenIdUsable, _ := store.CheckWxOpenIdUsable(*userPatch.GithubName)
+		if !wxOpenIdUsable {
+			json.NewEncoder(w).Encode(Response{
+				Succeed: false,
+				Message: "Wx open id is existed",
+				Data:    nil,
+			})
+			return
+		}
+	}
+
 	user, err := store.UpdateUser(userId, &userPatch)
 
 	if err != nil {

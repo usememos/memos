@@ -29,6 +29,16 @@ func handleUserSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	usernameUsable, _ := store.CheckUsernameUsable(userSignup.Username)
+	if !usernameUsable {
+		json.NewEncoder(w).Encode(Response{
+			Succeed: false,
+			Message: "Username is existed",
+			Data:    nil,
+		})
+		return
+	}
+
 	user, err := store.CreateNewUser(userSignup.Username, userSignup.Password, "", "")
 
 	if err != nil {
@@ -65,7 +75,16 @@ func handleUserSignIn(w http.ResponseWriter, r *http.Request) {
 	user, err := store.GetUserByUsernameAndPassword(userSignin.Username, userSignin.Password)
 
 	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
+		if err == sql.ErrNoRows {
+			json.NewEncoder(w).Encode(Response{
+				Succeed: false,
+				Message: "Username and password not allowed",
+				Data:    nil,
+			})
+		} else {
+			e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
+		}
+
 		return
 	}
 
@@ -202,8 +221,9 @@ func handleGithubAuthCallback(w http.ResponseWriter, r *http.Request) {
 	if err == sql.ErrNoRows {
 		username := githubUser.Name
 		usernameUsable, _ := store.CheckUsernameUsable(username)
-		if !usernameUsable {
-			username = username + common.GenUUID()
+		for !usernameUsable {
+			username = githubUser.Name + common.GenUUID()
+			usernameUsable, _ = store.CheckUsernameUsable(username)
 		}
 		user, _ = store.CreateNewUser(username, username, githubUser.Login, "")
 	}

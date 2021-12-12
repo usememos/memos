@@ -6,7 +6,7 @@ type ResponseType<T = unknown> = {
   data: T;
 };
 
-async function request<T>(method: string, url: string, data?: BasicType): Promise<ResponseType<T>> {
+async function request<T>(method: string, url: string, data?: any): Promise<ResponseType<T>> {
   const requestConfig: RequestInit = {
     method,
   };
@@ -55,13 +55,15 @@ namespace api {
     return request<boolean>("POST", "/api/user/validpassword", { password });
   }
 
-  export function updateUserinfo(username?: string, password?: string, githubName?: string, wxOpenId?: string) {
-    return request("PATCH", "/api/user/me", {
-      username,
-      password,
-      githubName,
-      wxOpenId,
-    });
+  interface UserInfoPatch {
+    username?: string;
+    password?: string;
+    githubName?: string;
+    wxOpenId?: string;
+  }
+
+  export function updateUserinfo(userinfo: UserInfoPatch) {
+    return request("PATCH", "/api/user/me", userinfo);
   }
 
   export function getMyMemos() {

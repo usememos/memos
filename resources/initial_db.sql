@@ -29,7 +29,8 @@ CREATE TABLE `users` (
 	`github_name` TEXT DEFAULT '',
   `wx_open_id` TEXT DEFAULT '',
 	`created_at` TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+  `updated_at` TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE(`username`, `github_name`, `wx_open_id`)
 );
 
 INSERT INTO `users`

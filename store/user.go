@@ -133,6 +133,23 @@ func CheckGithubNameUsable(githubName string) (bool, error) {
 	}
 }
 
+func CheckWxOpenIdUsable(wxOpenId string) (bool, error) {
+	query := `SELECT * FROM users WHERE wx_open_id=?`
+	query = fmt.Sprintf("SELECT COUNT(*) FROM (%s)", query)
+
+	var count uint
+	err := DB.QueryRow(query, wxOpenId).Scan(&count)
+	if err != nil && err != sql.ErrNoRows {
+		return false, FormatDBError(err)
+	}
+
+	if count > 0 {
+		return false, nil
+	} else {
+		return true, nil
+	}
+}
+
 func CheckPasswordValid(id string, password string) (bool, error) {
 	query := `SELECT * FROM users WHERE id=? AND password=?`
 	query = fmt.Sprintf("SELECT COUNT(*) FROM (%s)", query)
