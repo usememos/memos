@@ -2,7 +2,9 @@ package store
 
 import (
 	"database/sql"
+	"io/ioutil"
 	"os"
+	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -18,7 +20,6 @@ func InitDBConn() {
 
 	if _, err := os.Stat(dbFilePath); err != nil {
 		dbFilePath = "./resources/memos.db"
-		resetDataInDefaultDatabase()
 		println("use the default database")
 	} else {
 		println("use the custom database")
@@ -31,6 +32,10 @@ func InitDBConn() {
 	} else {
 		DB = db
 		println("connect to sqlite succeed")
+	}
+
+	if dbFilePath == "./resources/memos.db" {
+		resetDataInDefaultDatabase()
 	}
 }
 
@@ -46,5 +51,16 @@ func FormatDBError(err error) error {
 }
 
 func resetDataInDefaultDatabase() {
-	// do nth
+	initialSQLFilePath := filepath.Join("resources", "initial_db.sql")
+	c, err := ioutil.ReadFile(initialSQLFilePath)
+
+	if err != nil {
+		// do nth
+		return
+	}
+
+	sql := string(c)
+	DB.Exec(sql)
+
+	println("Initial data succeed")
 }
