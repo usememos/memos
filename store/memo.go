@@ -1,7 +1,7 @@
 package store
 
 import (
-	"memos/common"
+	"memos/utils"
 	"strings"
 )
 
@@ -15,9 +15,9 @@ type Memo struct {
 }
 
 func CreateNewMemo(content string, userId string) (Memo, error) {
-	nowDateTimeStr := common.GetNowDateTimeStr()
+	nowDateTimeStr := utils.GetNowDateTimeStr()
 	newMemo := Memo{
-		Id:        common.GenUUID(),
+		Id:        utils.GenUUID(),
 		Content:   content,
 		UserId:    userId,
 		DeletedAt: "",
@@ -48,7 +48,7 @@ func UpdateMemo(id string, memoPatch *MemoPatch) (Memo, error) {
 		memo.DeletedAt = *v
 		set, args = append(set, "deleted_at=?"), append(args, *v)
 	}
-	set, args = append(set, "updated_at=?"), append(args, common.GetNowDateTimeStr())
+	set, args = append(set, "updated_at=?"), append(args, utils.GetNowDateTimeStr())
 	args = append(args, id)
 
 	sqlQuery := `UPDATE memos SET ` + strings.Join(set, ",") + ` WHERE id=?`

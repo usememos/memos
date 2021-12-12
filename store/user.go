@@ -3,7 +3,7 @@ package store
 import (
 	"database/sql"
 	"fmt"
-	"memos/common"
+	"memos/utils"
 	"strings"
 )
 
@@ -18,9 +18,9 @@ type User struct {
 }
 
 func CreateNewUser(username string, password string, githubName string, wxOpenId string) (User, error) {
-	nowDateTimeStr := common.GetNowDateTimeStr()
+	nowDateTimeStr := utils.GetNowDateTimeStr()
 	newUser := User{
-		Id:         common.GenUUID(),
+		Id:         utils.GenUUID(),
 		Username:   username,
 		Password:   password,
 		WxOpenId:   wxOpenId,
@@ -62,7 +62,7 @@ func UpdateUser(id string, userPatch *UserPatch) (User, error) {
 		user.WxOpenId = *v
 		set, args = append(set, "wx_open_id=?"), append(args, *v)
 	}
-	set, args = append(set, "updated_at=?"), append(args, common.GetNowDateTimeStr())
+	set, args = append(set, "updated_at=?"), append(args, utils.GetNowDateTimeStr())
 	args = append(args, id)
 
 	sqlQuery := `UPDATE users SET ` + strings.Join(set, ",") + ` WHERE id=?`

@@ -1,9 +1,9 @@
 package api
 
 import (
-	"memos/common"
+	"memos/utils"
 
 	"github.com/gorilla/sessions"
 )
 
-var SessionStore = sessions.NewCookieStore([]byte(common.GenUUID()))
+var SessionStore = sessions.NewCookieStore([]byte(utils.GenUUID()))

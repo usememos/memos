@@ -1,7 +1,7 @@
 package store
 
 import (
-	"memos/common"
+	"memos/utils"
 	"strings"
 )
 
@@ -16,9 +16,9 @@ type Query struct {
 }
 
 func CreateNewQuery(title string, querystring string, userId string) (Query, error) {
-	nowDateTimeStr := common.GetNowDateTimeStr()
+	nowDateTimeStr := utils.GetNowDateTimeStr()
 	newQuery := Query{
-		Id:          common.GenUUID(),
+		Id:          utils.GenUUID(),
 		Title:       title,
 		Querystring: querystring,
 		UserId:      userId,
@@ -55,7 +55,7 @@ func UpdateQuery(id string, queryPatch *QueryPatch) (Query, error) {
 		query.PinnedAt = *v
 		set, args = append(set, "pinned_at=?"), append(args, *v)
 	}
-	set, args = append(set, "updated_at=?"), append(args, common.GetNowDateTimeStr())
+	set, args = append(set, "updated_at=?"), append(args, utils.GetNowDateTimeStr())
 	args = append(args, id)
 
 	sqlQuery := `UPDATE queries SET ` + strings.Join(set, ",") + ` WHERE id=?`

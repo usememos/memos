@@ -7,9 +7,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"memos/api/e"
-	"memos/common"
 	"memos/config"
 	"memos/store"
+	"memos/utils"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -222,7 +222,7 @@ func handleGithubAuthCallback(w http.ResponseWriter, r *http.Request) {
 		username := githubUser.Name
 		usernameUsable, _ := store.CheckUsernameUsable(username)
 		for !usernameUsable {
-			username = githubUser.Name + common.GenUUID()
+			username = githubUser.Name + utils.GenUUID()
 			usernameUsable, _ = store.CheckUsernameUsable(username)
 		}
 		user, _ = store.CreateNewUser(username, username, githubUser.Login, "")
