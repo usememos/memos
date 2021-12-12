@@ -28,9 +28,6 @@ COPY --from=backend /backend-build/memos /usr/local/memos/
 COPY --from=backend /backend-build/resources /usr/local/memos/resources
 COPY --from=frontend /frontend-build/dist /usr/local/memos/web/dist
 
-# Directory to store the data, which can be referenced as the mounting point.
-RUN mkdir -p /var/opt/memos/data
-
 CMD ["./memos"]
 
 EXPOSE 8080

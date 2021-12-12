@@ -16,7 +16,8 @@ import (
 var DB *sql.DB
 
 func InitDBConn() {
-	dbFilePath := "/var/opt/memos/data/memos.db"
+	// mounting point in docker is "/usr/local/memos/data"
+	dbFilePath := "./data/memos.db"
 
 	if _, err := os.Stat(dbFilePath); err != nil {
 		dbFilePath = "./resources/memos.db"
