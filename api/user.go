@@ -37,7 +37,7 @@ func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if *userPatch.Username != "" {
+	if userPatch.Username != nil {
 		usernameUsable, _ := store.CheckUsernameUsable(*userPatch.Username)
 		if !usernameUsable {
 			json.NewEncoder(w).Encode(Response{
@@ -49,7 +49,7 @@ func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if *userPatch.GithubName != "" {
+	if userPatch.GithubName != nil {
 		githubNameUsable, _ := store.CheckGithubNameUsable(*userPatch.GithubName)
 		if !githubNameUsable {
 			json.NewEncoder(w).Encode(Response{
@@ -61,7 +61,7 @@ func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if *userPatch.WxOpenId != "" {
+	if userPatch.WxOpenId != nil {
 		wxOpenIdUsable, _ := store.CheckWxOpenIdUsable(*userPatch.GithubName)
 		if !wxOpenIdUsable {
 			json.NewEncoder(w).Encode(Response{
