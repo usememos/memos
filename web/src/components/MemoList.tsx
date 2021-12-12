@@ -6,7 +6,6 @@ import utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import Memo from "./Memo";
 import toastHelper from "./Toast";
-import MemoEditor from "./MemoEditor";
 import "../less/memolist.less";
 
 interface Props {}
@@ -95,13 +94,9 @@ const MemoList: React.FC<Props> = () => {
 
   return (
     <div className={`memolist-wrapper ${isFetching ? "" : "completed"}`} onClick={handleMemoListClick} ref={wrapperElement}>
-      {shownMemos.map((memo) =>
-        globalState.editMemoId === memo.id ? (
-          <MemoEditor key={memo.id} className="memo-edit" editMemoId={memo.id} />
-        ) : (
-          <Memo key={`${memo.id}-${memo.updatedAt}`} memo={memo} />
-        )
-      )}
+      {shownMemos.map((memo) => (
+        <Memo key={`${memo.id}-${memo.updatedAt}`} memo={memo} />
+      ))}
       <div className="status-text-container">
         <p className="status-text">
           {isFetching ? "努力请求数据中..." : shownMemos.length === 0 ? "空空如也" : showMemoFilter ? "" : "所有数据加载完啦 🎉"}

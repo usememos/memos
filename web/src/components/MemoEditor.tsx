@@ -7,42 +7,39 @@ import toastHelper from "./Toast";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import "../less/memo-editor.less";
 
-interface Props {
-  className?: string;
-  editMemoId?: string;
-}
+interface Props {}
 
-const MemoEditor: React.FC<Props> = (props: Props) => {
-  const { className, editMemoId } = props;
+const MemoEditor: React.FC<Props> = () => {
   const { globalState } = useContext(appContext);
   const editorRef = useRef<EditorRefActions>(null);
+  const prevGlobalStateRef = useRef(globalState);
 
   useEffect(() => {
     if (globalState.markMemoId) {
-      if (editMemoId === globalState.editMemoId || (!editMemoId && !globalState.editMemoId)) {
-        const editorCurrentValue = editorRef.current?.getContent();
-        const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: [@MEMO](${globalState.markMemoId})`;
-        editorRef.current?.insertText(memoLinkText);
-        globalStateService.setMarkMemoId("");
-      }
+      const editorCurrentValue = editorRef.current?.getContent();
+      const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: [@MEMO](${globalState.markMemoId})`;
+      editorRef.current?.insertText(memoLinkText);
+      globalStateService.setMarkMemoId("");
     }
-  }, [globalState.markMemoId]);
 
-  useEffect(() => {
-    if (editMemoId) {
-      const editMemo = memoService.getMemoById(editMemoId);
+    if (globalState.editMemoId && globalState.editMemoId !== prevGlobalStateRef.current.editMemoId) {
+      const editMemo = memoService.getMemoById(globalState.editMemoId);
       if (editMemo) {
         editorRef.current?.setContent(editMemo.content ?? "");
         editorRef.current?.focus();
       }
     }
-  }, [editMemoId]);
+
+    prevGlobalStateRef.current = globalState;
+  }, [globalState.markMemoId, globalState.editMemoId]);
 
   const handleSaveBtnClick = useCallback(async (content: string) => {
     if (content === "") {
       toastHelper.error("内容不能为空呀");
       return;
     }
+
+    const { editMemoId } = globalStateService.getState();
 
     content = content.replaceAll("&nbsp;", " ");
 
@@ -83,7 +80,7 @@ const MemoEditor: React.FC<Props> = (props: Props) => {
     setEditorContentCache(content);
   }, []);
 
-  const showEditStatus = Boolean(editMemoId);
+  const showEditStatus = Boolean(globalState.editMemoId);
 
   const editorConfig = useMemo(
     () => ({
@@ -97,12 +94,12 @@ const MemoEditor: React.FC<Props> = (props: Props) => {
       onCancelBtnClick: handleCancelBtnClick,
       onContentChange: handleContentChange,
     }),
-    [editMemoId]
+    [showEditStatus]
   );
 
   return (
-    <div className={`memo-editor-wrapper ${className} ${editMemoId ? "edit-ing" : ""}`}>
-      <p className={"tip-text " + (editMemoId ? "" : "hidden")}>正在修改中...</p>
+    <div className={"memo-editor-wrapper " + (showEditStatus ? "edit-ing" : "")}>
+      <p className={"tip-text " + (showEditStatus ? "" : "hidden")}>正在修改中...</p>
       <Editor ref={editorRef} {...editorConfig} />
     </div>
   );
