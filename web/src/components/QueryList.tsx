@@ -115,7 +115,7 @@ const QueryItemContainer: React.FC<QueryItemContainerProps> = (props: QueryItemC
         await queryService.unpinQuery(query.id);
         queryService.editQuery({
           ...query,
-          pinnedAt: undefined,
+          pinnedAt: "",
         });
       } else {
         await queryService.pinQuery(query.id);
