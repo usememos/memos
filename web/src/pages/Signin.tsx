@@ -185,7 +185,7 @@ const Signin: React.FC<Props> = () => {
                   体验一下
                 </button>
                 <span className="split-text">/</span>
-                <button className="btn signup-btn" onClick={handleSignUpBtnClick}>
+                <button className="btn signup-btn disabled" onClick={handleSignUpBtnClick}>
                   注册
                 </button>
                 <span className="split-text">/</span>

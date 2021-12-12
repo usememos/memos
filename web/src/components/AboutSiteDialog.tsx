@@ -12,7 +12,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">
-          <span className="icon-text">🤠</span>About <b>Memos</b>
+          <span className="icon-text">🤠</span>关于 <b>Memos</b>
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <img className="icon-img" src="/icons/close.svg" />
@@ -20,15 +20,17 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <p>
-          An open-source alternative to <a href="https://flomoapp.com">flomo</a>.
+          把玩 <a href="https://flomoapp.com">flomo</a> 后有感而作的开源项目
         </p>
-        <p>You are in charge of your data and customizations.</p>
-        <p>Built with React and Go.</p>
+        <p>特点：精美且细节的视觉样式、体验优良的交互逻辑</p>
         <br />
-        <p>Enjoy it and have fun~</p>
+        <p>
+          🏗 This project is working in progress, <br /> and very pleasure to welcome your{" "}
+          <a href="https://github.com/justmemos/memos/issues">issues</a> and <a href="https://github.com/justmemos/memos/pulls">PR</a>.
+        </p>
         <hr />
         <p className="normal-text">
-          Last updated on <span className="pre-text">2021/12/09 10:14:32</span> 🎉
+          Last updated on <span className="pre-text">2021/12/12 14:38:15</span> 🎉
         </p>
       </div>
     </>
