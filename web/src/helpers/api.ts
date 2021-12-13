@@ -16,8 +16,8 @@ async function request<T>(method: string, url: string, data?: any): Promise<Resp
       "Content-Type": "application/json",
     };
     if (data !== null) {
+      requestConfig.body = JSON.stringify(data);
     }
-    requestConfig.body = JSON.stringify(data);
   }
 
   const response = await fetch(url, requestConfig);

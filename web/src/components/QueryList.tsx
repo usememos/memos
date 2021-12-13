@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import appContext from "../stores/appContext";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";

@@ -14,7 +14,6 @@ const MemoList: React.FC<Props> = () => {
   const {
     locationState: { query },
     memoState: { memos },
-    globalState,
   } = useContext(appContext);
   const [isFetching, setFetchStatus] = useState(true);
   const wrapperElement = useRef<HTMLDivElement>(null);

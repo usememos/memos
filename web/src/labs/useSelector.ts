@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-type State = Readonly<Object>;
+type State = Readonly<Record<string, any>>;
 interface Action {
   type: string;
 }

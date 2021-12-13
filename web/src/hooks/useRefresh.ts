@@ -1,7 +1,7 @@
 import { useCallback, useState } from "react";
 
 function useRefresh() {
-  const [_, setBoolean] = useState<Boolean>(false);
+  const [, setBoolean] = useState<boolean>(false);
 
   const refresh = useCallback(() => {
     setBoolean((ps) => {

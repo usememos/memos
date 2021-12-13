@@ -25,6 +25,7 @@ interface Props {
   onContentChange: (content: string) => void;
 }
 
+// eslint-disable-next-line react/display-name
 const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefActions>) => {
   const {
     globalState: { useTinyUndoHistoryCache },
@@ -45,16 +46,21 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
   const refresh = useRefresh();
 
   useEffect(() => {
-    if (initialContent) {
-      editorRef.current!.value = initialContent;
+    if (initialContent && editorRef.current) {
+      editorRef.current.value = initialContent;
       refresh();
     }
   }, []);
 
   useEffect(() => {
     if (useTinyUndoHistoryCache) {
+      if (!editorRef.current) {
+        return;
+      }
+
       const { tinyUndoActionsCache, tinyUndoIndexCache } = storage.get(["tinyUndoActionsCache", "tinyUndoIndexCache"]);
-      tinyUndoRef.current = new TinyUndo(editorRef.current!, {
+
+      tinyUndoRef.current = new TinyUndo(editorRef.current, {
         interval: 5000,
         initialActions: tinyUndoActionsCache,
         initialIndex: tinyUndoIndexCache,
@@ -88,17 +94,23 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
     ref,
     () => ({
       focus: () => {
-        editorRef.current!.focus();
+        editorRef.current?.focus();
       },
       insertText: (rawText: string) => {
-        const prevValue = editorRef.current!.value;
-        editorRef.current!.value = prevValue + rawText;
-        handleContentChangeCallback(editorRef.current!.value);
+        if (!editorRef.current) {
+          return;
+        }
+
+        const prevValue = editorRef.current.value;
+        editorRef.current.value = prevValue + rawText;
+        handleContentChangeCallback(editorRef.current.value);
         refresh();
       },
       setContent: (text: string) => {
-        editorRef.current!.value = text;
-        refresh();
+        if (editorRef.current) {
+          editorRef.current.value = text;
+          refresh();
+        }
       },
       getContent: (): string => {
         return editorRef.current?.value ?? "";
@@ -108,7 +120,7 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
   );
 
   const handleEditorInput = useCallback(() => {
-    handleContentChangeCallback(editorRef.current!.value);
+    handleContentChangeCallback(editorRef.current?.value ?? "");
     refresh();
   }, []);
 
@@ -124,8 +136,12 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
   }, []);
 
   const handleCommonConfirmBtnClick = useCallback(() => {
-    handleConfirmBtnClickCallback(editorRef.current!.value);
-    editorRef.current!.value = "";
+    if (!editorRef.current) {
+      return;
+    }
+
+    handleConfirmBtnClickCallback(editorRef.current.value);
+    editorRef.current.value = "";
     refresh();
     // After confirm btn clicked, tiny-undo should reset state(clear actions and index)
     tinyUndoRef.current?.resetState();

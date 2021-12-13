@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "lint": "eslint --ext .js,.ts,.tsx, src"
   },
   "dependencies": {
     "react": "^17.0.2",
@@ -14,8 +15,15 @@
   "devDependencies": {
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
+    "@typescript-eslint/eslint-plugin": "^5.6.0",
+    "@typescript-eslint/parser": "^5.6.0",
     "@vitejs/plugin-react": "^1.0.0",
+    "eslint": "^8.4.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "eslint-plugin-react": "^7.27.1",
     "less": "^4.1.1",
+    "prettier": "2.5.1",
     "typescript": "^4.3.2",
     "vite": "^2.6.14"
   },

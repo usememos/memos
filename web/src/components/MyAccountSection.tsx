@@ -23,7 +23,6 @@ const MyAccountSection: React.FC<Props> = () => {
   const [username, setUsername] = useState<string>(user.username);
   const [showEditUsernameInputs, setShowEditUsernameInputs] = useState(false);
   const [showConfirmUnbindGithubBtn, setShowConfirmUnbindGithubBtn] = useState(false);
-  const [showConfirmUnbindWxBtn, setShowConfirmUnbindWxBtn] = useState(false);
 
   const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nextUsername = e.target.value as string;

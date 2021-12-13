@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function useLoading(initialState: boolean = true) {
+function useLoading(initialState = true) {
   const [state, setState] = useState({ isLoading: initialState, isFailed: false, isSucceed: false });
 
   return {

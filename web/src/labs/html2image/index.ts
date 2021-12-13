@@ -73,10 +73,15 @@ export const toCanvas = async (element: HTMLElement, options?: Options): Promise
   const imageEl = new Image();
   imageEl.src = url;
 
-  const canvas = document.createElement("canvas");
-  const context = canvas.getContext("2d")!;
   const ratio = options?.pixelRatio || 1;
   const { width, height } = getElementSize(element);
+
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext("2d");
+
+  if (!context) {
+    return Promise.reject("Canvas error");
+  }
 
   canvas.width = width * ratio;
   canvas.height = height * ratio;

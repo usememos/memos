@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useState } from "react";
+import { memo, useCallback, useEffect, useState } from "react";
 import { memoService, queryService } from "../services";
 import { checkShouldShowMemoWithFilters, filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
 import useLoading from "../hooks/useLoading";
@@ -143,7 +143,7 @@ interface MemoFilterInputerProps {
   handleFilterRemove: (index: number) => void;
 }
 
-const MemoFilterInputer: React.FC<MemoFilterInputerProps> = memo((props: MemoFilterInputerProps) => {
+const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInputerProps) => {
   const { index, filter, handleFilterChange, handleFilterRemove } = props;
   const { type } = filter;
   const [inputElements, setInputElements] = useState<JSX.Element>(<></>);
@@ -294,7 +294,9 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = memo((props: MemoFil
       <img className="remove-btn" src="/icons/close.svg" onClick={handleRemoveBtnClick} />
     </div>
   );
-});
+};
+
+const MemoFilterInputer: React.FC<MemoFilterInputerProps> = memo(FilterInputer);
 
 export default function showCreateQueryDialog(queryId?: string): void {
   showDialog(

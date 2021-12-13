@@ -169,7 +169,7 @@ namespace utils {
           finalObject[key] = temp;
         }
       } else {
-        if (Boolean(val)) {
+        if (val) {
           finalObject[key] = val;
         }
       }

@@ -11,7 +11,7 @@ const PreferencesSection: React.FC<Props> = () => {
   const { globalState } = useContext(appContext);
   const { useTinyUndoHistoryCache, shouldHideImageUrl, shouldSplitMemoWord, shouldUseMarkdownParser } = globalState;
 
-  const demoMemoContent = `👋 你好呀～\n我是一个demo：\n* 👏 欢迎使用memos；`;
+  const demoMemoContent = "👋 你好呀～\n我是一个demo：\n* 👏 欢迎使用memos；";
 
   const handleOpenTinyUndoChanged = () => {
     globalStateService.setAppSetting({
@@ -87,7 +87,7 @@ const PreferencesSection: React.FC<Props> = () => {
         <label className="form-label checkbox-form-label" onClick={handleOpenTinyUndoChanged}>
           <span className="normal-text">
             启用{" "}
-            <a target="_blank" href="https://github.com/boojack/tiny-undo" onClick={(e) => e.stopPropagation()}>
+            <a target="_blank" href="https://github.com/boojack/tiny-undo" onClick={(e) => e.stopPropagation()} rel="noreferrer">
               tiny-undo
             </a>
           </span>

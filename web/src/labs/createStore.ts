@@ -1,4 +1,4 @@
-export type State = Readonly<Object>;
+export type State = Readonly<Record<string, any>>;
 export type Action = {
   type: string;
   payload: any;

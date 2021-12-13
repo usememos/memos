@@ -21,7 +21,7 @@ const getFontsStyleElement = async (element: HTMLElement) => {
     const resourceUrls = src.split(",").map((s) => {
       return s.replace(/url\("?(.+?)"?\)/, "$1");
     });
-    let base64Urls = [];
+    const base64Urls: string[] = [];
 
     for (const url of resourceUrls) {
       try {
