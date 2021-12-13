@@ -1,6 +1,6 @@
 import convertResourceToDataURL from "./convertResourceToDataURL";
 
-async function getFontsStyleElement(element: HTMLElement) {
+const getFontsStyleElement = async (element: HTMLElement) => {
   const styleSheets = element.ownerDocument.styleSheets;
   const fontFamilyStyles: CSSStyleDeclaration[] = [];
 
@@ -41,6 +41,6 @@ async function getFontsStyleElement(element: HTMLElement) {
   }
 
   return styleElement;
-}
+};
 
 export default getFontsStyleElement;

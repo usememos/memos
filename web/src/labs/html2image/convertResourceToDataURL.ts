@@ -1,6 +1,6 @@
 const cachedResourceMap = new Map<string, string>();
 
-function convertResourceToDataURL(url: string, useCache = true): Promise<string> {
+const convertResourceToDataURL = (url: string, useCache = true): Promise<string> => {
   if (useCache && cachedResourceMap.has(url)) {
     return Promise.resolve(cachedResourceMap.get(url) as string);
   }
@@ -16,6 +16,6 @@ function convertResourceToDataURL(url: string, useCache = true): Promise<string>
     };
     reader.readAsDataURL(blob);
   });
-}
+};
 
 export default convertResourceToDataURL;

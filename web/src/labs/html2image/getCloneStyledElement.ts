@@ -1,6 +1,6 @@
 import convertResourceToDataURL from "./convertResourceToDataURL";
 
-async function getCloneStyledElement(element: HTMLElement) {
+const getCloneStyledElement = async (element: HTMLElement) => {
   const clonedElementContainer = document.createElement(element.tagName);
   clonedElementContainer.innerHTML = element.innerHTML;
 
@@ -32,6 +32,6 @@ async function getCloneStyledElement(element: HTMLElement) {
   await applyStyles(element, clonedElementContainer);
 
   return clonedElementContainer;
-}
+};
 
 export default getCloneStyledElement;

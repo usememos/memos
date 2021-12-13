@@ -13,22 +13,22 @@ type Options = Partial<{
   pixelRatio: number;
 }>;
 
-function getElementSize(element: HTMLElement) {
+const getElementSize = (element: HTMLElement) => {
   const { width, height } = window.getComputedStyle(element);
 
   return {
     width: parseInt(width.replace("px", "")),
     height: parseInt(height.replace("px", "")),
   };
-}
+};
 
-function convertSVGToDataURL(svg: SVGElement): string {
+const convertSVGToDataURL = (svg: SVGElement): string => {
   const xml = new XMLSerializer().serializeToString(svg);
   const url = encodeURIComponent(xml);
   return `data:image/svg+xml;charset=utf-8,${url}`;
-}
+};
 
-function generateSVGElement(width: number, height: number, element: HTMLElement): SVGSVGElement {
+const generateSVGElement = (width: number, height: number, element: HTMLElement): SVGSVGElement => {
   const xmlNS = "http://www.w3.org/2000/svg";
   const svgElement = document.createElementNS(xmlNS, "svg");
 
@@ -48,9 +48,9 @@ function generateSVGElement(width: number, height: number, element: HTMLElement)
   svgElement.appendChild(foreignObject);
 
   return svgElement;
-}
+};
 
-export async function toSVG(element: HTMLElement, options?: Options) {
+export const toSVG = async (element: HTMLElement, options?: Options) => {
   const { width, height } = getElementSize(element);
 
   const clonedElement = await getCloneStyledElement(element);
@@ -65,9 +65,9 @@ export async function toSVG(element: HTMLElement, options?: Options) {
   const url = convertSVGToDataURL(svg);
 
   return url;
-}
+};
 
-export async function toCanvas(element: HTMLElement, options?: Options): Promise<HTMLCanvasElement> {
+export const toCanvas = async (element: HTMLElement, options?: Options): Promise<HTMLCanvasElement> => {
   const url = await toSVG(element, options);
 
   const imageEl = new Image();
@@ -96,12 +96,12 @@ export async function toCanvas(element: HTMLElement, options?: Options): Promise
       resolve(canvas);
     };
   });
-}
+};
 
-async function toImage(element: HTMLElement, options?: Options) {
+const toImage = async (element: HTMLElement, options?: Options) => {
   const canvas = await toCanvas(element, options);
 
   return canvas.toDataURL();
-}
+};
 
 export default toImage;
