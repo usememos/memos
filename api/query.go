@@ -86,7 +86,7 @@ func handleDeleteQuery(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	queryId := vars["id"]
 
-	_, err := store.DeleteQuery(queryId)
+	err := store.DeleteQuery(queryId)
 
 	if err != nil {
 		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())

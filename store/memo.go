@@ -57,11 +57,11 @@ func UpdateMemo(id string, memoPatch *MemoPatch) (Memo, error) {
 	return memo, err
 }
 
-func DeleteMemo(memoId string) (error, error) {
+func DeleteMemo(memoId string) error {
 	query := `DELETE FROM memos WHERE id=?`
 	_, err := DB.Exec(query, memoId)
 
-	return nil, err
+	return err
 }
 
 func GetMemoById(id string) (Memo, error) {

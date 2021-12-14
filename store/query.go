@@ -64,11 +64,11 @@ func UpdateQuery(id string, queryPatch *QueryPatch) (Query, error) {
 	return query, err
 }
 
-func DeleteQuery(queryId string) (error, error) {
+func DeleteQuery(queryId string) error {
 	query := `DELETE FROM queries WHERE id=?`
 	_, err := DB.Exec(query, queryId)
 
-	return nil, err
+	return err
 }
 
 func GetQueryById(queryId string) (Query, error) {
