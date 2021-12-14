@@ -6,26 +6,29 @@
 
     &.username-label {
       > input {
-        flex-grow: 0 !important;
+        flex-grow: 0;
         width: 128px;
         padding: 0 8px;
-        margin-right: 4px;
         font-size: 14px;
         border: 1px solid lightgray;
-        border-radius: 0;
         border-radius: 4px;
         line-height: 26px;
         background-color: transparent;
 
         &:focus {
           border-color: black;
+
+          + .btns-container {
+            display: flex;
+          }
         }
       }
 
       > .btns-container {
         .flex(row, flex-start, center);
-        margin-left: 4px;
+        margin-left: 8px;
         flex-shrink: 0;
+        display: none;
 
         > .btn {
           font-size: 12px;
@@ -80,15 +83,14 @@
       margin-left: 12px;
       border-radius: 4px;
       font-size: 12px;
-      cursor: pointer;
       line-height: 28px;
+      cursor: pointer;
 
       &:hover {
         opacity: 0.8;
       }
 
-      &.bind-btn,
-      &.link-btn {
+      &.bind-btn {
         color: white;
         background-color: @text-green;
         text-decoration: none;
