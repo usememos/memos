@@ -88,7 +88,7 @@ func handleDeleteMemo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	memoId := vars["id"]
 
-	_, err := store.DeleteMemo(memoId)
+	err := store.DeleteMemo(memoId)
 
 	if err != nil {
 		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
