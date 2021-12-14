@@ -75,6 +75,23 @@ func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func handleRefreshUserOpenId(w http.ResponseWriter, r *http.Request) {
+	userId, _ := GetUserIdInSession(r)
+
+	openId, err := store.UpdateUserOpenId(userId)
+
+	if err != nil {
+		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
+		return
+	}
+
+	json.NewEncoder(w).Encode(Response{
+		Succeed: true,
+		Message: "",
+		Data:    openId,
+	})
+}
+
 type CheckUsername struct {
 	Username string
 }
@@ -138,6 +155,7 @@ func RegisterUserRoutes(r *mux.Router) {
 
 	userRouter.HandleFunc("/me", handleGetMyUserInfo).Methods("GET")
 	userRouter.HandleFunc("/me", handleUpdateMyUserInfo).Methods("PATCH")
+	userRouter.HandleFunc("/open_id/new", handleRefreshUserOpenId).Methods("POST")
 	userRouter.HandleFunc("/checkusername", handleCheckUsername).Methods("POST")
 	userRouter.HandleFunc("/validpassword", handleValidPassword).Methods("POST")
 }
