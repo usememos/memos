@@ -3,11 +3,11 @@ DROP TABLE IF EXISTS `queries`;
 DROP TABLE IF EXISTS `users`;
 
 CREATE TABLE `users` (
-	`id` TEXT NOT NULL PRIMARY KEY,
-	`username` TEXT NOT NULL,
-	`password` TEXT NOT NULL,
-	`github_name` TEXT NOT NULL DEFAULT '',
-	`created_at` TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
+  `id` TEXT NOT NULL PRIMARY KEY,
+  `username` TEXT NOT NULL,
+  `password` TEXT NOT NULL,
+  `github_name` TEXT NOT NULL DEFAULT '',
+  `created_at` TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
   `updated_at` TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
   UNIQUE(`username`, `github_name`)
 );
