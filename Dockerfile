@@ -23,6 +23,9 @@ RUN go build \
 FROM alpine:3.14.3 AS monolithic
 WORKDIR /usr/local/memos
 
+RUN apk add --no-cache tzdata
+ENV TZ="Asia/Shanghai"
+
 COPY --from=backend /backend-build/memos /usr/local/memos/
 # Copy default resources, like db file.
 COPY --from=backend /backend-build/resources /usr/local/memos/resources
