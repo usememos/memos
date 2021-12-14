@@ -6,16 +6,26 @@ type ResponseType<T = unknown> = {
   data: T;
 };
 
-async function request<T>(method: string, url: string, data?: any): Promise<ResponseType<T>> {
+type RequestConfig = {
+  method: string;
+  url: string;
+  data?: any;
+  dataType?: "json" | "file";
+};
+
+async function request<T>(config: RequestConfig): Promise<ResponseType<T>> {
+  const { method, url, data, dataType } = config;
   const requestConfig: RequestInit = {
     method,
   };
 
-  if (method !== "GET") {
-    requestConfig.headers = {
-      "Content-Type": "application/json",
-    };
-    if (data !== null) {
+  if (data !== undefined) {
+    if (dataType === "file") {
+      requestConfig.body = data;
+    } else {
+      requestConfig.headers = {
+        "Content-Type": "application/json",
+      };
       requestConfig.body = JSON.stringify(data);
     }
   }
@@ -32,87 +42,169 @@ async function request<T>(method: string, url: string, data?: any): Promise<Resp
 
 namespace api {
   export function getUserInfo() {
-    return request<Model.User>("GET", "/api/user/me");
+    return request<Model.User>({
+      method: "GET",
+      url: "/api/user/me",
+    });
   }
 
   export function signin(username: string, password: string) {
-    return request("POST", "/api/auth/signin", { username, password });
+    return request({
+      method: "POST",
+      url: "/api/auth/signin",
+      data: { username, password },
+    });
   }
 
   export function signup(username: string, password: string) {
-    return request("POST", "/api/auth/signup", { username, password });
+    return request({
+      method: "POST",
+      url: "/api/auth/signup",
+      data: { username, password },
+    });
   }
 
   export function signout() {
-    return request("POST", "/api/auth/signout");
+    return request({
+      method: "POST",
+      url: "/api/auth/signout",
+    });
   }
 
   export function checkUsernameUsable(username: string) {
-    return request<boolean>("POST", "/api/user/checkusername", { username });
+    return request<boolean>({
+      method: "POST",
+      url: "/api/user/checkusername",
+      data: { username },
+    });
   }
 
   export function checkPasswordValid(password: string) {
-    return request<boolean>("POST", "/api/user/validpassword", { password });
+    return request<boolean>({
+      method: "POST",
+      url: "/api/user/validpassword",
+      data: { password },
+    });
   }
 
   export function updateUserinfo(userinfo: Partial<{ username: string; password: string; githubName: string }>) {
-    return request("PATCH", "/api/user/me", userinfo);
+    return request({
+      method: "PATCH",
+      url: "/api/user/me",
+      data: userinfo,
+    });
   }
 
   export function getMyMemos() {
-    return request<Model.Memo[]>("GET", "/api/memo/all");
+    return request<Model.Memo[]>({
+      method: "GET",
+      url: "/api/memo/all",
+    });
   }
 
   export function getMyDeletedMemos() {
-    return request<Model.Memo[]>("GET", "/api/memo/all?deleted=true");
+    return request<Model.Memo[]>({
+      method: "GET",
+      url: "/api/memo/all?deleted=true",
+    });
   }
 
   export function createMemo(content: string) {
-    return request<Model.Memo>("PUT", "/api/memo/", { content });
+    return request<Model.Memo>({
+      method: "PUT",
+      url: "/api/memo/",
+      data: { content },
+    });
   }
 
   export function updateMemo(memoId: string, content: string) {
-    return request<Model.Memo>("PATCH", `/api/memo/${memoId}`, { content });
+    return request<Model.Memo>({
+      method: "PATCH",
+      url: `/api/memo/${memoId}`,
+      data: { content },
+    });
   }
 
   export function hideMemo(memoId: string) {
-    return request("PATCH", `/api/memo/${memoId}`, {
-      deletedAt: utils.getDateTimeString(Date.now()),
+    return request({
+      method: "PATCH",
+      url: `/api/memo/${memoId}`,
+      data: {
+        deletedAt: utils.getDateTimeString(Date.now()),
+      },
     });
   }
 
   export function restoreMemo(memoId: string) {
-    return request("PATCH", `/api/memo/${memoId}`, {
-      deletedAt: "",
+    return request({
+      method: "PATCH",
+      url: `/api/memo/${memoId}`,
+      data: {
+        deletedAt: "",
+      },
     });
   }
 
   export function deleteMemo(memoId: string) {
-    return request("DELETE", `/api/memo/${memoId}`);
+    return request({
+      method: "DELETE",
+      url: `/api/memo/${memoId}`,
+    });
   }
 
   export function getMyQueries() {
-    return request<Model.Query[]>("GET", "/api/query/all");
+    return request<Model.Query[]>({
+      method: "GET",
+      url: "/api/query/all",
+    });
   }
 
   export function createQuery(title: string, querystring: string) {
-    return request<Model.Query>("PUT", "/api/query/", { title, querystring });
+    return request<Model.Query>({
+      method: "PUT",
+      url: "/api/query/",
+      data: { title, querystring },
+    });
   }
 
   export function updateQuery(queryId: string, title: string, querystring: string) {
-    return request<Model.Query>("PATCH", `/api/query/${queryId}`, { title, querystring });
+    return request<Model.Query>({
+      method: "PATCH",
+      url: `/api/query/${queryId}`,
+      data: { title, querystring },
+    });
   }
 
   export function deleteQueryById(queryId: string) {
-    return request("DELETE", `/api/query/${queryId}`);
+    return request({
+      method: "DELETE",
+      url: `/api/query/${queryId}`,
+    });
   }
 
   export function pinQuery(queryId: string) {
-    return request("PATCH", `/api/query/${queryId}`, { pinnedAt: utils.getDateTimeString(Date.now()) });
+    return request({
+      method: "PATCH",
+      url: `/api/query/${queryId}`,
+      data: { pinnedAt: utils.getDateTimeString(Date.now()) },
+    });
   }
 
   export function unpinQuery(queryId: string) {
-    return request("PATCH", `/api/query/${queryId}`, { pinnedAt: "" });
+    return request({
+      method: "PATCH",
+      url: `/api/query/${queryId}`,
+      data: { pinnedAt: "" },
+    });
+  }
+
+  export function uploadFile(formData: FormData) {
+    return request({
+      method: "PUT",
+      url: "/api/resource/",
+      data: formData,
+      dataType: "file",
+    });
   }
 }
 
