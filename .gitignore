@@ -13,8 +13,8 @@
 *.log
 tmp
 
-# Config
-config
+# Config (Need to put in env)
+# config
 
 # Air (hot reload) generated
 .air
