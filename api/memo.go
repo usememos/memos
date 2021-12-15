@@ -29,14 +29,14 @@ func handleGetMyMemos(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-type CreateMemo struct {
-	Content string `json:"content"`
-}
-
 func handleCreateMemo(w http.ResponseWriter, r *http.Request) {
 	userId, _ := GetUserIdInSession(r)
 
-	createMemo := CreateMemo{}
+	type CreateMemoDataBody struct {
+		Content string `json:"content"`
+	}
+
+	createMemo := CreateMemoDataBody{}
 	err := json.NewDecoder(r.Body).Decode(&createMemo)
 
 	if err != nil {

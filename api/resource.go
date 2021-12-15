@@ -93,7 +93,7 @@ func handleGetResource(w http.ResponseWriter, r *http.Request) {
 	resource, err := store.GetResourceByIdAndFilename(resourceId, filename)
 
 	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
+		e.ErrorHandler(w, "RESOURCE_NOT_FOUND", err.Error())
 		return
 	}
 

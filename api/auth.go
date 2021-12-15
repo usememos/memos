@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -15,13 +14,13 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type UserSignUp struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 func handleUserSignUp(w http.ResponseWriter, r *http.Request) {
-	userSignup := UserSignUp{}
+	type UserSignUpDataBody struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	userSignup := UserSignUpDataBody{}
 	err := json.NewDecoder(r.Body).Decode(&userSignup)
 
 	if err != nil {
@@ -58,13 +57,13 @@ func handleUserSignUp(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-type UserSignin struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 func handleUserSignIn(w http.ResponseWriter, r *http.Request) {
-	userSignin := UserSignin{}
+	type UserSigninDataBody struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	userSignin := UserSigninDataBody{}
 	err := json.NewDecoder(r.Body).Decode(&userSignin)
 
 	if err != nil {
@@ -75,16 +74,11 @@ func handleUserSignIn(w http.ResponseWriter, r *http.Request) {
 	user, err := store.GetUserByUsernameAndPassword(userSignin.Username, userSignin.Password)
 
 	if err != nil {
-		if err == sql.ErrNoRows {
-			json.NewEncoder(w).Encode(Response{
-				Succeed: false,
-				Message: "Username and password not allowed",
-				Data:    nil,
-			})
-		} else {
-			e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		}
-
+		json.NewEncoder(w).Encode(Response{
+			Succeed: false,
+			Message: "Username and password not allowed",
+			Data:    nil,
+		})
 		return
 	}
 
@@ -218,7 +212,7 @@ func handleGithubAuthCallback(w http.ResponseWriter, r *http.Request) {
 
 	user, err := store.GetUserByGithubName(githubUser.Login)
 
-	if err == sql.ErrNoRows {
+	if err != nil {
 		username := githubUser.Name
 		usernameUsable, _ := store.CheckUsernameUsable(username)
 		for !usernameUsable {

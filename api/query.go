@@ -26,23 +26,23 @@ func handleGetMyQueries(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-type QueryPut struct {
-	Title       string `json:"title"`
-	Querystring string `json:"querystring"`
-}
-
 func handleCreateQuery(w http.ResponseWriter, r *http.Request) {
 	userId, _ := GetUserIdInSession(r)
 
-	queryPut := QueryPut{}
-	err := json.NewDecoder(r.Body).Decode(&queryPut)
+	type CreateQueryDataBody struct {
+		Title       string `json:"title"`
+		Querystring string `json:"querystring"`
+	}
+
+	queryData := CreateQueryDataBody{}
+	err := json.NewDecoder(r.Body).Decode(&queryData)
 
 	if err != nil {
 		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
 		return
 	}
 
-	query, err := store.CreateNewQuery(queryPut.Title, queryPut.Querystring, userId)
+	query, err := store.CreateNewQuery(queryData.Title, queryData.Querystring, userId)
 
 	if err != nil {
 		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())

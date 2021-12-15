@@ -5,6 +5,9 @@ var Codes = map[string]int{
 
 	"REQUEST_BODY_ERROR": 40001,
 	"UPLOAD_FILE_ERROR":  40002,
+	"NOT_FOUND":          40400,
+	"USER_NOT_FOUND":     40401,
+	"RESOURCE_NOT_FOUND": 40402,
 
 	"DATABASE_ERROR": 50001,
 }

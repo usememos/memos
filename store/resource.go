@@ -26,7 +26,7 @@ func CreateResource(userId string, filename string, blob []byte, filetype string
 	query := `INSERT INTO resources (id, user_id, filename, blob, type, size, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
 	_, err := DB.Exec(query, newResource.Id, newResource.UserId, newResource.Filename, newResource.Blob, newResource.Type, newResource.Size, newResource.CreatedAt)
 
-	return newResource, err
+	return newResource, FormatDBError(err)
 }
 
 func GetResourcesByUserId(userId string) ([]Resource, error) {
@@ -43,7 +43,7 @@ func GetResourcesByUserId(userId string) ([]Resource, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, FormatDBError(err)
 	}
 
 	return resources, nil
@@ -53,11 +53,11 @@ func GetResourceByIdAndFilename(id string, filename string) (Resource, error) {
 	query := `SELECT id, filename, blob, type, size FROM resources WHERE id=? AND filename=?`
 	resource := Resource{}
 	err := DB.QueryRow(query, id, filename).Scan(&resource.Id, &resource.Filename, &resource.Blob, &resource.Type, &resource.Size)
-	return resource, err
+	return resource, FormatDBError(err)
 }
 
 func DeleteResourceById(id string) error {
 	query := `DELETE FROM resources WHERE id=?`
 	_, err := DB.Exec(query, id)
-	return err
+	return FormatDBError(err)
 }

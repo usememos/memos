@@ -28,7 +28,7 @@ func CreateNewMemo(content string, userId string) (Memo, error) {
 	query := `INSERT INTO memos (id, content, user_id, deleted_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`
 	_, err := DB.Exec(query, newMemo.Id, newMemo.Content, newMemo.UserId, newMemo.DeletedAt, newMemo.CreatedAt, newMemo.UpdatedAt)
 
-	return newMemo, err
+	return newMemo, FormatDBError(err)
 }
 
 type MemoPatch struct {
@@ -54,21 +54,20 @@ func UpdateMemo(id string, memoPatch *MemoPatch) (Memo, error) {
 	sqlQuery := `UPDATE memos SET ` + strings.Join(set, ",") + ` WHERE id=?`
 	_, err := DB.Exec(sqlQuery, args...)
 
-	return memo, err
+	return memo, FormatDBError(err)
 }
 
 func DeleteMemo(memoId string) error {
 	query := `DELETE FROM memos WHERE id=?`
 	_, err := DB.Exec(query, memoId)
-
-	return err
+	return FormatDBError(err)
 }
 
 func GetMemoById(id string) (Memo, error) {
 	query := `SELECT id, content, deleted_at, created_at, updated_at FROM memos WHERE id=?`
 	memo := Memo{}
 	err := DB.QueryRow(query, id).Scan(&memo.Id, &memo.Content, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
-	return memo, err
+	return memo, FormatDBError(err)
 }
 
 func GetMemosByUserId(userId string, onlyDeleted bool) ([]Memo, error) {
@@ -93,7 +92,7 @@ func GetMemosByUserId(userId string, onlyDeleted bool) ([]Memo, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, FormatDBError(err)
 	}
 
 	return memos, nil

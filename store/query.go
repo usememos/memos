@@ -30,7 +30,7 @@ func CreateNewQuery(title string, querystring string, userId string) (Query, err
 	sqlQuery := `INSERT INTO queries (id, title, querystring, user_id, pinned_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
 	_, err := DB.Exec(sqlQuery, newQuery.Id, newQuery.Title, newQuery.Querystring, newQuery.UserId, newQuery.PinnedAt, newQuery.CreatedAt, newQuery.UpdatedAt)
 
-	return newQuery, err
+	return newQuery, FormatDBError(err)
 }
 
 type QueryPatch struct {
@@ -61,21 +61,20 @@ func UpdateQuery(id string, queryPatch *QueryPatch) (Query, error) {
 	sqlQuery := `UPDATE queries SET ` + strings.Join(set, ",") + ` WHERE id=?`
 	_, err := DB.Exec(sqlQuery, args...)
 
-	return query, err
+	return query, FormatDBError(err)
 }
 
 func DeleteQuery(queryId string) error {
 	query := `DELETE FROM queries WHERE id=?`
 	_, err := DB.Exec(query, queryId)
-
-	return err
+	return FormatDBError(err)
 }
 
 func GetQueryById(queryId string) (Query, error) {
 	sqlQuery := `SELECT id, title, querystring, pinned_at, created_at, updated_at FROM queries WHERE id=?`
 	query := Query{}
 	err := DB.QueryRow(sqlQuery, queryId).Scan(&query.Id, &query.Title, &query.Querystring, &query.PinnedAt, &query.CreatedAt, &query.UpdatedAt)
-	return query, err
+	return query, FormatDBError(err)
 }
 
 func GetQueriesByUserId(userId string) ([]Query, error) {
@@ -94,7 +93,7 @@ func GetQueriesByUserId(userId string) ([]Query, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, FormatDBError(err)
 	}
 
 	return queries, nil
