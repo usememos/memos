@@ -15,7 +15,7 @@ func handleGetMyUserInfo(w http.ResponseWriter, r *http.Request) {
 	user, err := store.GetUserById(userId)
 
 	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
+		e.ErrorHandler(w, "USER_NOT_FOUND", err.Error())
 		return
 	}
 
@@ -92,12 +92,12 @@ func handleRefreshUserOpenId(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-type CheckUsername struct {
-	Username string
-}
-
 func handleCheckUsername(w http.ResponseWriter, r *http.Request) {
-	checkUsername := CheckUsername{}
+	type CheckUsernameDataBody struct {
+		Username string
+	}
+
+	checkUsername := CheckUsernameDataBody{}
 	err := json.NewDecoder(r.Body).Decode(&checkUsername)
 
 	if err != nil {
@@ -119,13 +119,13 @@ func handleCheckUsername(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-type ValidPassword struct {
-	Password string
-}
-
 func handleValidPassword(w http.ResponseWriter, r *http.Request) {
+	type ValidPasswordDataBody struct {
+		Password string
+	}
+
 	userId, _ := GetUserIdInSession(r)
-	validPassword := ValidPassword{}
+	validPassword := ValidPasswordDataBody{}
 	err := json.NewDecoder(r.Body).Decode(&validPassword)
 
 	if err != nil {

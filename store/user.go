@@ -32,7 +32,7 @@ func CreateNewUser(username string, password string, githubName string) (User, e
 	query := `INSERT INTO users (id, username, password, open_id, github_name, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)`
 	_, err := DB.Exec(query, newUser.Id, newUser.Username, newUser.Password, newUser.OpenId, newUser.GithubName, newUser.CreatedAt, newUser.UpdatedAt)
 
-	return newUser, err
+	return newUser, FormatDBError(err)
 }
 
 type UserPatch struct {
@@ -42,7 +42,13 @@ type UserPatch struct {
 }
 
 func UpdateUser(id string, userPatch *UserPatch) (User, error) {
-	user, _ := GetUserById(id)
+	user := User{}
+	user, err := GetUserById(id)
+
+	if err != nil {
+		return user, FormatDBError(err)
+	}
+
 	set, args := []string{}, []interface{}{}
 
 	if v := userPatch.Username; v != nil {
@@ -61,39 +67,37 @@ func UpdateUser(id string, userPatch *UserPatch) (User, error) {
 	args = append(args, id)
 
 	sqlQuery := `UPDATE users SET ` + strings.Join(set, ",") + ` WHERE id=?`
-	_, err := DB.Exec(sqlQuery, args...)
+	_, err = DB.Exec(sqlQuery, args...)
 
-	return user, err
+	return user, FormatDBError(err)
 }
 
 func UpdateUserOpenId(userId string) (string, error) {
 	openId := utils.GenUUID()
-
 	query := `UPDATE users SET open_id=? WHERE id=?`
 	_, err := DB.Exec(query, openId, userId)
-
-	return openId, err
+	return openId, FormatDBError(err)
 }
 
 func GetUserById(id string) (User, error) {
 	query := `SELECT id, username, password, open_id, github_name, created_at, updated_at FROM users WHERE id=?`
 	user := User{}
 	err := DB.QueryRow(query, id).Scan(&user.Id, &user.Username, &user.Password, &user.OpenId, &user.GithubName, &user.CreatedAt, &user.UpdatedAt)
-	return user, err
+	return user, FormatDBError(err)
 }
 
 func GetUserByUsernameAndPassword(username string, password string) (User, error) {
 	query := `SELECT id, username, password, open_id, github_name, created_at, updated_at FROM users WHERE username=? AND password=?`
 	user := User{}
 	err := DB.QueryRow(query, username, password).Scan(&user.Id, &user.Username, &user.Password, &user.OpenId, &user.GithubName, &user.CreatedAt, &user.UpdatedAt)
-	return user, err
+	return user, FormatDBError(err)
 }
 
 func GetUserByGithubName(githubName string) (User, error) {
 	query := `SELECT id, username, password, open_id, github_name, created_at, updated_at FROM users WHERE github_name=?`
 	user := User{}
 	err := DB.QueryRow(query, githubName).Scan(&user.Id, &user.Username, &user.Password, &user.OpenId, &user.GithubName, &user.CreatedAt, &user.UpdatedAt)
-	return user, err
+	return user, FormatDBError(err)
 }
 
 func CheckUsernameUsable(username string) (bool, error) {
@@ -106,11 +110,12 @@ func CheckUsernameUsable(username string) (bool, error) {
 		return false, FormatDBError(err)
 	}
 
+	usable := true
 	if count > 0 {
-		return false, nil
-	} else {
-		return true, nil
+		usable = false
 	}
+
+	return usable, nil
 }
 
 func CheckGithubNameUsable(githubName string) (bool, error) {

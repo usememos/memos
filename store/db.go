@@ -2,6 +2,7 @@ package store
 
 import (
 	"database/sql"
+	"errors"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -45,7 +46,9 @@ func FormatDBError(err error) error {
 		return nil
 	}
 
-	switch err.Error() {
+	switch err {
+	case sql.ErrNoRows:
+		return errors.New("data not found")
 	default:
 		return err
 	}
