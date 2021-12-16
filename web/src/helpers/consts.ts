@@ -17,7 +17,7 @@ export const TAG_REG = /#\s(.+?)\s/g;
 export const LINK_REG = /(https?:\/\/[^\s<\\*>']+)/g;
 
 // 图片 正则
-export const IMAGE_URL_REG = /(https?:\/\/[^\s<\\*>']+\.(jpeg|jpg|gif|png|svg))/g;
+export const IMAGE_URL_REG = /([^\s<\\*>']+\.(jpeg|jpg|gif|png|svg))/g;
 
 // memo 关联正则
 export const MEMO_LINK_REG = /\[@(.+?)\]\((.+?)\)/g;

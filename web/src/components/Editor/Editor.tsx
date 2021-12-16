@@ -73,8 +73,8 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
             return;
           }
 
-          const resource = await resourceService.upload(file);
-          const url = `https://memos.justsven.top/r/${resource.id}/${resource.filename}`;
+          const image = await resourceService.upload(file);
+          const url = `/r/${image.id}/${image.filename}`;
 
           const prevValue = editorRef.current.value;
           editorRef.current.value =
