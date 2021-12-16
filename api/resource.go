@@ -31,7 +31,12 @@ func handleGetMyResources(w http.ResponseWriter, r *http.Request) {
 func handleUploadResource(w http.ResponseWriter, r *http.Request) {
 	userId, _ := GetUserIdInSession(r)
 
-	r.ParseMultipartForm(10 << 20)
+	err := r.ParseMultipartForm(5 << 20)
+
+	if err != nil {
+		e.ErrorHandler(w, "OVERLOAD_MAX_SIZE", "The max size of resource is 5Mb.")
+		return
+	}
 
 	file, handler, err := r.FormFile("file")
 
