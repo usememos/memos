@@ -199,7 +199,7 @@ namespace api {
   }
 
   export function uploadFile(formData: FormData) {
-    return request({
+    return request<Model.Resource>({
       method: "PUT",
       url: "/api/resource/",
       data: formData,

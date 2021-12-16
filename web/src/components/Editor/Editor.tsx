@@ -1,6 +1,8 @@
 import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef } from "react";
 import TinyUndo from "tiny-undo";
+import toastHelper from "../Toast";
 import appContext from "../../stores/appContext";
+import resourceService from "../../services/resourceService";
 import { storage } from "../../helpers/storage";
 import useRefresh from "../../hooks/useRefresh";
 import Only from "../common/OnlyWhen";
@@ -46,10 +48,50 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
   const refresh = useRefresh();
 
   useEffect(() => {
-    if (initialContent && editorRef.current) {
+    if (!editorRef.current) {
+      return;
+    }
+
+    if (initialContent) {
       editorRef.current.value = initialContent;
       refresh();
     }
+
+    const handlePasteEvent = async (event: ClipboardEvent) => {
+      if (event.clipboardData && event.clipboardData.files.length > 0) {
+        const file = event.clipboardData.files[0];
+        const { type } = file;
+
+        if (!type.startsWith("image")) {
+          return;
+        }
+
+        event.preventDefault();
+
+        try {
+          if (!editorRef.current) {
+            return;
+          }
+
+          const resource = await resourceService.upload(file);
+          const url = `https://memos.justsven.top/r/${resource.id}/${resource.filename}`;
+
+          const prevValue = editorRef.current.value;
+          editorRef.current.value =
+            prevValue.slice(0, editorRef.current.selectionStart) + url + prevValue.slice(editorRef.current.selectionStart);
+          handleContentChangeCallback(editorRef.current.value);
+          refresh();
+        } catch (error: any) {
+          toastHelper.error(error);
+        }
+      }
+    };
+
+    editorRef.current.addEventListener("paste", handlePasteEvent);
+
+    return () => {
+      editorRef.current?.removeEventListener("paste", handlePasteEvent);
+    };
   }, []);
 
   useEffect(() => {
@@ -102,7 +144,8 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
         }
 
         const prevValue = editorRef.current.value;
-        editorRef.current.value = prevValue + rawText;
+        editorRef.current.value =
+          prevValue.slice(0, editorRef.current.selectionStart) + rawText + prevValue.slice(editorRef.current.selectionStart);
         handleContentChangeCallback(editorRef.current.value);
         refresh();
       },
