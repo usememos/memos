@@ -1,5 +1,6 @@
 import api from "../helpers/api";
 import { TAG_REG } from "../helpers/consts";
+import utils from "../helpers/utils";
 import appStore from "../stores/appStore";
 import userService from "./userService";
 
@@ -40,6 +41,7 @@ class MemoService {
     }
 
     const { data } = await api.getMyDeletedMemos();
+    data.sort((a, b) => utils.getTimeStampByDate(b.deletedAt) - utils.getTimeStampByDate(a.deletedAt));
     return data;
   }
 

@@ -12,7 +12,7 @@ export default defineConfig({
         target: "https://memos.justsven.top/",
         changeOrigin: true,
       },
-      "/r": {
+      "/r/": {
         target: "https://memos.justsven.top/",
         changeOrigin: true,
       },
