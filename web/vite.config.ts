@@ -12,6 +12,10 @@ export default defineConfig({
         target: "https://memos.justsven.top/",
         changeOrigin: true,
       },
+      "/r": {
+        target: "https://memos.justsven.top/",
+        changeOrigin: true,
+      },
     },
   },
 });
