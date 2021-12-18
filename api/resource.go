@@ -2,11 +2,11 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"memos/api/e"
 	"memos/store"
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -55,7 +55,7 @@ func handleUploadResource(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		e.ErrorHandler(w, "UPLOAD_FILE_ERROR", "Read file error")
-		fmt.Println(err)
+		return
 	}
 
 	resource, err := store.CreateResource(userId, filename, fileBytes, filetype, size)
@@ -94,6 +94,17 @@ func handleGetResource(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	resourceId := vars["id"]
 	filename := vars["filename"]
+
+	etag := `"` + resourceId + "/" + filename + `"`
+	w.Header().Set("Etag", etag)
+	w.Header().Set("Cache-Control", "max-age=2592000")
+
+	if match := r.Header.Get("If-None-Match"); match != "" {
+		if strings.Contains(match, etag) {
+			w.WriteHeader(http.StatusNotModified)
+			return
+		}
+	}
 
 	resource, err := store.GetResourceByIdAndFilename(resourceId, filename)
 
