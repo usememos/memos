@@ -43,7 +43,8 @@
     }
 
     > .btns-container {
-      .flex(row, flex-end, center);
+      width: 100%;
+      .flex(row, space-between, center);
       flex-grow: 0;
       flex-shrink: 0;
 
@@ -65,6 +66,16 @@
         color: gray;
         background-color: transparent;
         margin-right: 8px;
+      }
+
+      > .image-upload {
+        > input {
+          display: none;
+        }
+      }
+
+      > .file-upload {
+        display: inline-block;
       }
 
       > .confirm-btn {

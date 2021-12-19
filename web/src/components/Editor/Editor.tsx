@@ -21,9 +21,11 @@ interface Props {
   showConfirmBtn: boolean;
   showCancelBtn: boolean;
   showTools: boolean;
+  showFileUpload: boolean;
   onConfirmBtnClick: (content: string) => void;
   onCancelBtnClick: () => void;
   onContentChange: (content: string) => void;
+  onFileUpload: () => void;
 }
 
 // eslint-disable-next-line react/display-name
@@ -38,9 +40,11 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
     showConfirmBtn,
     showCancelBtn,
     showTools,
+    showFileUpload,
     onConfirmBtnClick: handleConfirmBtnClickCallback,
     onCancelBtnClick: handleCancelBtnClickCallback,
     onContentChange: handleContentChangeCallback,
+    onFileUpload: handleFileUpload,
   } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const tinyUndoRef = useRef<TinyUndo | null>(null);
@@ -177,6 +181,14 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
             <button className="action-btn cancel-btn" onClick={handleCommonCancelBtnClick}>
               撤销修改
             </button>
+          </Only>
+          <Only when={showFileUpload}>
+            <div className="image-upload">
+              <label htmlFor="file-input">
+                <img className="action-btn file-upload" src="/icons/image.svg" onClick={handleFileUpload}></img>
+              </label>
+              <input id="file-input" type="file" />
+            </div>
           </Only>
           <Only when={showConfirmBtn}>
             <button className="action-btn confirm-btn" disabled={!editorRef.current?.value} onClick={handleCommonConfirmBtnClick}>

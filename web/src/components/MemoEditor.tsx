@@ -131,6 +131,10 @@ const MemoEditor: React.FC<Props> = () => {
     setEditorContentCache(content);
   }, []);
 
+  const handleFileUpload = useCallback(() => {
+    console.warn("test fileUpload");
+  }, []);
+
   const showEditStatus = Boolean(globalState.editMemoId);
 
   const editorConfig = useMemo(
@@ -141,9 +145,11 @@ const MemoEditor: React.FC<Props> = () => {
       showConfirmBtn: true,
       showCancelBtn: showEditStatus,
       showTools: true,
+      showFileUpload: true,
       onConfirmBtnClick: handleSaveBtnClick,
       onCancelBtnClick: handleCancelBtnClick,
       onContentChange: handleContentChange,
+      onFileUpload: handleFileUpload,
     }),
     [showEditStatus]
   );
