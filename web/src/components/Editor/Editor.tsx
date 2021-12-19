@@ -14,22 +14,22 @@ export interface EditorRefActions {
   getContent: () => string;
 }
 
-interface Props {
+export interface EditorProps {
   className: string;
   initialContent: string;
   placeholder: string;
   showConfirmBtn: boolean;
   showCancelBtn: boolean;
   showTools: boolean;
-  showFileUpload: boolean;
   onConfirmBtnClick: (content: string) => void;
   onCancelBtnClick: () => void;
+  onTagTextBtnClick: () => void;
+  onUploadFileBtnClick: () => void;
   onContentChange: (content: string) => void;
-  onFileUpload: () => void;
 }
 
 // eslint-disable-next-line react/display-name
-const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefActions>) => {
+const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRefActions>) => {
   const {
     globalState: { useTinyUndoHistoryCache },
   } = useContext(appContext);
@@ -40,11 +40,11 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
     showConfirmBtn,
     showCancelBtn,
     showTools,
-    showFileUpload,
     onConfirmBtnClick: handleConfirmBtnClickCallback,
     onCancelBtnClick: handleCancelBtnClickCallback,
+    onTagTextBtnClick: handleTagTextBtnClickCallback,
+    onUploadFileBtnClick: handleUploadFileBtnClickCallback,
     onContentChange: handleContentChangeCallback,
-    onFileUpload: handleFileUpload,
   } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const tinyUndoRef = useRef<TinyUndo | null>(null);
@@ -173,22 +173,19 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
         onKeyDown={handleEditorKeyDown}
       ></textarea>
       <div className="common-tools-wrapper">
-        <Only when={showTools}>
-          <div className={"common-tools-container"}>{/* nth */}</div>
-        </Only>
+        <div className="common-tools-container">
+          <Only when={showTools}>
+            <>
+              <img className="action-btn file-upload" src="/icons/tag.svg" onClick={handleTagTextBtnClickCallback} />
+              <img className="action-btn file-upload" src="/icons/image.svg" onClick={handleUploadFileBtnClickCallback} />
+            </>
+          </Only>
+        </div>
         <div className="btns-container">
           <Only when={showCancelBtn}>
             <button className="action-btn cancel-btn" onClick={handleCommonCancelBtnClick}>
               撤销修改
             </button>
-          </Only>
-          <Only when={showFileUpload}>
-            <div className="image-upload">
-              <label htmlFor="file-input">
-                <img className="action-btn file-upload" src="/icons/image.svg" onClick={handleFileUpload}></img>
-              </label>
-              <input id="file-input" type="file" />
-            </div>
           </Only>
           <Only when={showConfirmBtn}>
             <button className="action-btn confirm-btn" disabled={!editorRef.current?.value} onClick={handleCommonConfirmBtnClick}>

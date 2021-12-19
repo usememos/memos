@@ -4,7 +4,7 @@ import { globalStateService, locationService, memoService, resourceService } fro
 import utils from "../helpers/utils";
 import { storage } from "../helpers/storage";
 import toastHelper from "./Toast";
-import Editor, { EditorRefActions } from "./Editor/Editor";
+import Editor, { EditorProps, EditorRefActions } from "./Editor/Editor";
 import "../less/memo-editor.less";
 
 interface Props {}
@@ -131,13 +131,19 @@ const MemoEditor: React.FC<Props> = () => {
     setEditorContentCache(content);
   }, []);
 
-  const handleFileUpload = useCallback(() => {
-    console.warn("test fileUpload");
+  const handleTagTextBtnClick = useCallback(() => {
+    console.log("tag text btn clicked");
+    // ...wait to think how and where to show the tag list
+  }, []);
+
+  const handleUploadFileBtnClick = useCallback(() => {
+    console.log("file upload btn clicked");
+    // Do upload file operation right here.
   }, []);
 
   const showEditStatus = Boolean(globalState.editMemoId);
 
-  const editorConfig = useMemo(
+  const editorConfig: EditorProps = useMemo(
     () => ({
       className: "memo-editor",
       initialContent: getEditorContentCache(),
@@ -145,11 +151,11 @@ const MemoEditor: React.FC<Props> = () => {
       showConfirmBtn: true,
       showCancelBtn: showEditStatus,
       showTools: true,
-      showFileUpload: true,
       onConfirmBtnClick: handleSaveBtnClick,
       onCancelBtnClick: handleCancelBtnClick,
+      onTagTextBtnClick: handleTagTextBtnClick,
+      onUploadFileBtnClick: handleUploadFileBtnClick,
       onContentChange: handleContentChange,
-      onFileUpload: handleFileUpload,
     }),
     [showEditStatus]
   );
