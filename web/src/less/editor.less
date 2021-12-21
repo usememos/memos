@@ -10,7 +10,9 @@
   > .common-editor-inputer {
     display: inline-block;
     width: 100%;
-    min-height: 24px;
+    padding-top: 4px;
+    padding-bottom: 12px;
+    min-height: 40px;
     max-height: 300px;
     font-size: 15px;
     line-height: 24px;
@@ -19,7 +21,6 @@
     overflow-y: scroll;
     background-color: transparent;
     z-index: 1;
-    margin-bottom: 4px;
     white-space: pre-wrap;
     .hide-scroll-bar();
 
@@ -40,6 +41,19 @@
 
     > .common-tools-container {
       .flex(row, flex-start, center);
+
+      > .action-btn {
+        width: 18px;
+        height: auto;
+        margin-right: 8px;
+        user-select: none;
+        cursor: pointer;
+        opacity: 0.5;
+
+        &:hover {
+          opacity: 0.8;
+        }
+      }
     }
 
     > .btns-container {

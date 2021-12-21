@@ -14,7 +14,7 @@ export interface EditorRefActions {
   getContent: () => string;
 }
 
-interface Props {
+export interface EditorProps {
   className: string;
   initialContent: string;
   placeholder: string;
@@ -23,11 +23,13 @@ interface Props {
   showTools: boolean;
   onConfirmBtnClick: (content: string) => void;
   onCancelBtnClick: () => void;
+  onTagTextBtnClick: () => void;
+  onUploadFileBtnClick: () => void;
   onContentChange: (content: string) => void;
 }
 
 // eslint-disable-next-line react/display-name
-const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefActions>) => {
+const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRefActions>) => {
   const {
     globalState: { useTinyUndoHistoryCache },
   } = useContext(appContext);
@@ -40,6 +42,8 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
     showTools,
     onConfirmBtnClick: handleConfirmBtnClickCallback,
     onCancelBtnClick: handleCancelBtnClickCallback,
+    onTagTextBtnClick: handleTagTextBtnClickCallback,
+    onUploadFileBtnClick: handleUploadFileBtnClickCallback,
     onContentChange: handleContentChangeCallback,
   } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
@@ -169,9 +173,14 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
         onKeyDown={handleEditorKeyDown}
       ></textarea>
       <div className="common-tools-wrapper">
-        <Only when={showTools}>
-          <div className={"common-tools-container"}>{/* nth */}</div>
-        </Only>
+        <div className="common-tools-container">
+          <Only when={showTools}>
+            <>
+              <img className="action-btn file-upload" src="/icons/tag.svg" onClick={handleTagTextBtnClickCallback} />
+              <img className="action-btn file-upload" src="/icons/image.svg" onClick={handleUploadFileBtnClickCallback} />
+            </>
+          </Only>
+        </div>
         <div className="btns-container">
           <Only when={showCancelBtn}>
             <button className="action-btn cancel-btn" onClick={handleCommonCancelBtnClick}>
