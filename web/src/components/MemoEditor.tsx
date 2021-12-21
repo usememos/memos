@@ -38,32 +38,14 @@ const MemoEditor: React.FC<Props> = () => {
       return;
     }
 
-    const handleUploadFile = async (file: File) => {
-      const { type } = file;
-
-      if (!type.startsWith("image")) {
-        return;
-      }
-
-      try {
-        if (!editorRef.current) {
-          return;
-        }
-
-        const image = await resourceService.upload(file);
-        const url = `/r/${image.id}/${image.filename}`;
-
-        editorRef.current.insertText(url);
-      } catch (error: any) {
-        toastHelper.error(error);
-      }
-    };
-
     const handlePasteEvent = async (event: ClipboardEvent) => {
       if (event.clipboardData && event.clipboardData.files.length > 0) {
         event.preventDefault();
         const file = event.clipboardData.files[0];
-        handleUploadFile(file);
+        const url = await handleUploadFile(file);
+        if (url) {
+          editorRef.current?.insertText(url);
+        }
       }
     };
 
@@ -71,7 +53,10 @@ const MemoEditor: React.FC<Props> = () => {
       if (event.dataTransfer && event.dataTransfer.files.length > 0) {
         event.preventDefault();
         const file = event.dataTransfer.files[0];
-        handleUploadFile(file);
+        const url = await handleUploadFile(file);
+        if (url) {
+          editorRef.current?.insertText(url);
+        }
       }
     };
 
@@ -82,6 +67,23 @@ const MemoEditor: React.FC<Props> = () => {
       editorRef.current?.element.removeEventListener("paste", handlePasteEvent);
       editorRef.current?.element.removeEventListener("drop", handleDropEvent);
     };
+  }, []);
+
+  const handleUploadFile = useCallback(async (file: File) => {
+    const { type } = file;
+
+    if (!type.startsWith("image")) {
+      return;
+    }
+
+    try {
+      const image = await resourceService.upload(file);
+      const url = `/r/${image.id}/${image.filename}`;
+
+      return url;
+    } catch (error: any) {
+      toastHelper.error(error);
+    }
   }, []);
 
   const handleSaveBtnClick = useCallback(async (content: string) => {
@@ -132,13 +134,47 @@ const MemoEditor: React.FC<Props> = () => {
   }, []);
 
   const handleTagTextBtnClick = useCallback(() => {
-    console.log("tag text btn clicked");
-    // ...wait to think how and where to show the tag list
+    if (!editorRef.current) {
+      return;
+    }
+
+    const currentValue = editorRef.current.getContent();
+    const selectionStart = editorRef.current.element.selectionStart;
+    const prevString = currentValue.slice(0, selectionStart);
+    const nextString = currentValue.slice(selectionStart);
+    let cursorIndex = prevString.length;
+
+    if (prevString.endsWith("# ") && nextString.startsWith(" ")) {
+      editorRef.current.setContent(prevString.slice(0, prevString.length - 2) + nextString.slice(1));
+      cursorIndex = prevString.length - 2;
+    } else {
+      editorRef.current.element.value = prevString + "#  " + nextString;
+      cursorIndex = prevString.length + 2;
+    }
+
+    setTimeout(() => {
+      editorRef.current?.element.setSelectionRange(cursorIndex, cursorIndex);
+      editorRef.current?.focus();
+    });
   }, []);
 
   const handleUploadFileBtnClick = useCallback(() => {
-    console.log("file upload btn clicked");
-    // Do upload file operation right here.
+    const inputEl = document.createElement("input");
+    inputEl.type = "file";
+    inputEl.multiple = false;
+    inputEl.accept = "image/png, image/gif, image/jpeg";
+    inputEl.onchange = async () => {
+      if (!inputEl.files || inputEl.files.length === 0) {
+        return;
+      }
+
+      const file = inputEl.files[0];
+      const url = await handleUploadFile(file);
+      if (url) {
+        editorRef.current?.insertText(url);
+      }
+    };
+    inputEl.click();
   }, []);
 
   const showEditStatus = Boolean(globalState.editMemoId);
