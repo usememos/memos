@@ -21,7 +21,6 @@ const MyAccountSection: React.FC<Props> = () => {
   const { userState } = useContext(appContext);
   const user = userState.user as Model.User;
   const [username, setUsername] = useState<string>(user.username);
-  const [showEditUsernameInputs, setShowEditUsernameInputs] = useState(false);
   const [showConfirmUnbindGithubBtn, setShowConfirmUnbindGithubBtn] = useState(false);
 
   const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,7 +35,6 @@ const MyAccountSection: React.FC<Props> = () => {
     }
 
     if (username === user.username) {
-      setShowEditUsernameInputs(false);
       return;
     }
 
@@ -56,7 +54,6 @@ const MyAccountSection: React.FC<Props> = () => {
 
       await userService.updateUsername(username);
       await userService.doSignIn();
-      setShowEditUsernameInputs(false);
       toastHelper.info("修改成功~");
     } catch (error: any) {
       toastHelper.error(error.message);
@@ -88,6 +85,7 @@ const MyAccountSection: React.FC<Props> = () => {
 
   const handlePreventDefault = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
   };
 
   return (
@@ -104,24 +102,15 @@ const MyAccountSection: React.FC<Props> = () => {
         </label>
         <label className="form-label input-form-label username-label">
           <span className="normal-text">账号：</span>
-          <input
-            type="text"
-            readOnly={!showEditUsernameInputs}
-            value={username}
-            onClick={() => {
-              setShowEditUsernameInputs(true);
-            }}
-            onChange={handleUsernameChanged}
-          />
-          <div className="btns-container" onClick={handlePreventDefault}>
-            <span className={"btn confirm-btn " + (showEditUsernameInputs ? "" : "hidden")} onClick={handleConfirmEditUsernameBtnClick}>
+          <input type="text" value={username} onChange={handleUsernameChanged} />
+          <div className={`btns-container ${username === user.username ? "hidden" : ""}`} onClick={handlePreventDefault}>
+            <span className="btn confirm-btn" onClick={handleConfirmEditUsernameBtnClick}>
               保存
             </span>
             <span
-              className={"btn cancel-btn " + (showEditUsernameInputs ? "" : "hidden")}
+              className="btn cancel-btn"
               onClick={() => {
                 setUsername(user.username);
-                setShowEditUsernameInputs(false);
               }}
             >
               撤销
