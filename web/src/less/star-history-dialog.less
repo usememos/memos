@@ -1,0 +1,18 @@
+@import "./mixin.less";
+
+.star-history-dialog {
+  > .dialog-container {
+    width: auto;
+
+    > .dialog-content-container {
+      overflow-x: scroll;
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .dialog-wrapper.star-history-dialog {
+    padding: 24px 16px;
+    padding-top: 64px;
+  }
+}
