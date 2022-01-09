@@ -8,10 +8,9 @@ CREATE TABLE `users` (
   `username` TEXT NOT NULL,
   `password` TEXT NOT NULL,
   `open_id` TEXT NOT NULL DEFAULT '',
-  `github_name` TEXT NOT NULL DEFAULT '',
   `created_at` TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
   `updated_at` TEXT NOT NULL DEFAULT (DATETIME('now', 'localtime')),
-  UNIQUE(`username`, `github_name`)
+  UNIQUE(`username`, `open_id`)
 );
 
 CREATE TABLE `queries`  (
@@ -48,10 +47,10 @@ CREATE TABLE `resources`  (
 
 
 INSERT INTO `users`
-  (`id`, `username`, `password`)
+  (`id`, `username`, `password`, `open_id`)
 VALUES
-  ('1', 'guest', '123456'),
-  ('2', 'test', '123456');
+  ('1', 'guest', '123456', 'guest_open_id'),
+  ('2', 'mine', '123456', 'mine_open_id');
 
 INSERT INTO `memos`
   (`id`, `content`, `user_id`)

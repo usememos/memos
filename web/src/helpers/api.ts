@@ -87,11 +87,18 @@ namespace api {
     });
   }
 
-  export function updateUserinfo(userinfo: Partial<{ username: string; password: string; githubName: string }>) {
+  export function updateUserinfo(userinfo: Partial<{ username: string; password: string }>) {
     return request({
       method: "PATCH",
       url: "/api/user/me",
       data: userinfo,
+    });
+  }
+
+  export function resetOpenId() {
+    return request<string>({
+      method: "POST",
+      url: "/api/user/open_id/new",
     });
   }
 

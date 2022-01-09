@@ -18,6 +18,7 @@ func main() {
 	api.RegisterMemoRoutes(r)
 	api.RegisterQueryRoutes(r)
 	api.RegisterResourceRoutes(r)
+	api.RegisterWebHooksRoutes(r)
 
 	webServe := api.SPAHandler{
 		StaticPath: "./web/dist",

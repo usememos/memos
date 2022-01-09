@@ -2,7 +2,7 @@
 
 .account-section-container {
   > .form-label {
-    height: 28px;
+    min-height: 28px;
 
     &.username-label {
       > input {
@@ -62,43 +62,52 @@
   }
 }
 
-.connect-section-container {
-  > .form-label {
-    height: 28px;
+.openapi-section-container {
+  > .value-text {
+    width: 100%;
+    border: 1px solid lightgray;
+    padding: 4px 6px;
+    border-radius: 4px;
+    line-height: 1.6;
+  }
 
-    > .value-text {
-      max-width: 128px;
-      min-height: 20px;
-      overflow: hidden;
-      text-overflow: ellipsis;
+  > .reset-btn {
+    margin-top: 4px;
+    padding: 4px 8px;
+    background-color: @bg-red;
+    border: 1px solid red;
+    color: red;
+    border-radius: 4px;
+    line-height: 1.6;
+    cursor: pointer;
+    user-select: none;
+
+    &:hover {
+      opacity: 0.8;
     }
 
-    > .btn-text {
-      padding: 0 8px;
-      margin-left: 12px;
+    &.loading {
+      opacity: 0.6;
+      cursor: wait;
+    }
+  }
+
+  > .usage-guide-container {
+    .flex(column, flex-start, flex-start);
+    margin-top: 8px;
+
+    > .title-text {
+      line-height: 2;
+    }
+
+    > pre {
+      background-color: @bg-whitegray;
+      padding: 8px 12px;
       border-radius: 4px;
-      font-size: 12px;
-      line-height: 28px;
-      cursor: pointer;
-
-      &:hover {
-        opacity: 0.8;
-      }
-
-      &.bind-btn {
-        color: white;
-        background-color: @text-green;
-        text-decoration: none;
-      }
-
-      &.unbind-btn {
-        color: #d28653;
-        background-color: @bg-lightgray;
-
-        &.final-confirm {
-          font-weight: bold;
-        }
-      }
+      line-height: 1.4;
+      word-break: break-all;
+      word-wrap: break-word;
+      white-space: pre-wrap;
     }
   }
 }

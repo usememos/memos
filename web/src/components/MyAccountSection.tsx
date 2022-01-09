@@ -3,7 +3,8 @@ import appContext from "../stores/appContext";
 import { userService } from "../services";
 import utils from "../helpers/utils";
 import { validate, ValidatorConfig } from "../helpers/validator";
-import Only from "./common/OnlyWhen";
+import useLoading from "../hooks/useLoading";
+import useToggle from "../hooks/useToggle";
 import toastHelper from "./Toast";
 import showChangePasswordDialog from "./ChangePasswordDialog";
 import "../less/my-account-section.less";
@@ -21,7 +22,9 @@ const MyAccountSection: React.FC<Props> = () => {
   const { userState } = useContext(appContext);
   const user = userState.user as Model.User;
   const [username, setUsername] = useState<string>(user.username);
-  const [showConfirmUnbindGithubBtn, setShowConfirmUnbindGithubBtn] = useState(false);
+  const resetBtnClickLoadingState = useLoading(false);
+  const [showConfirmResetAPIBtn, toggleConfirmResetAPIBtn] = useToggle(false);
+  const openAPIRoute = `${window.location.origin}/api/whs/memo/${user.openId}`;
 
   const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nextUsername = e.target.value as string;
@@ -69,18 +72,23 @@ const MyAccountSection: React.FC<Props> = () => {
     showChangePasswordDialog();
   };
 
-  const handleUnbindGithubBtnClick = async () => {
-    if (showConfirmUnbindGithubBtn) {
-      try {
-        await userService.removeGithubName();
-        await userService.doSignIn();
-      } catch (error: any) {
-        toastHelper.error(error.message);
-      }
-      setShowConfirmUnbindGithubBtn(false);
-    } else {
-      setShowConfirmUnbindGithubBtn(true);
+  const handleResetOpenIdBtnClick = async () => {
+    if (!showConfirmResetAPIBtn) {
+      toggleConfirmResetAPIBtn(true);
+      return;
     }
+    if (resetBtnClickLoadingState.isLoading) {
+      return;
+    }
+
+    resetBtnClickLoadingState.setLoading();
+    try {
+      await userService.resetOpenId();
+    } catch (error) {
+      // do nth
+    }
+    resetBtnClickLoadingState.setFinish();
+    toggleConfirmResetAPIBtn(false);
   };
 
   const handlePreventDefault = (e: React.MouseEvent) => {
@@ -124,39 +132,17 @@ const MyAccountSection: React.FC<Props> = () => {
           </span>
         </label>
       </div>
-      {/* Account Binding Settings: only can use for domain: memos.justsven.top */}
-      <Only when={window.location.origin.includes("justsven.top")}>
-        <div className="section-container connect-section-container">
-          <p className="title-text">关联账号</p>
-          <label className="form-label input-form-label">
-            <span className="normal-text">GitHub：</span>
-            {user.githubName ? (
-              <>
-                <a className="value-text" href={"https://github.com/" + user.githubName}>
-                  {user.githubName}
-                </a>
-                <span
-                  className={`btn-text unbind-btn ${showConfirmUnbindGithubBtn ? "final-confirm" : ""}`}
-                  onMouseLeave={() => setShowConfirmUnbindGithubBtn(false)}
-                  onClick={handleUnbindGithubBtnClick}
-                >
-                  {showConfirmUnbindGithubBtn ? "确定取消绑定！" : "取消绑定"}
-                </span>
-              </>
-            ) : (
-              <>
-                <span className="value-text">空</span>
-                <a
-                  className="btn-text link-btn"
-                  href="https://github.com/login/oauth/authorize?client_id=187ba36888f152b06612&scope=read:user,gist"
-                >
-                  前往绑定
-                </a>
-              </>
-            )}
-          </label>
+      <div className="section-container openapi-section-container">
+        <p className="title-text">Open API（实验性功能）</p>
+        <p className="value-text">{openAPIRoute}</p>
+        <span className={`reset-btn ${resetBtnClickLoadingState.isLoading ? "loading" : ""}`} onClick={handleResetOpenIdBtnClick}>
+          {showConfirmResetAPIBtn ? "⚠️ 确定重置 API" : "重置 API"}
+        </span>
+        <div className="usage-guide-container">
+          <p className="title-text">使用方法：</p>
+          <pre>{`POST ${openAPIRoute}\nContent-type: application/json\n{\n  "content": "Hello, #memos ${window.location.origin}"\n}`}</pre>
         </div>
-      </Only>
+      </div>
     </>
   );
 };

@@ -3,7 +3,6 @@ import api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
 import { locationService, userService } from "../services";
-import Only from "../components/common/OnlyWhen";
 import toastHelper from "../components/Toast";
 import "../less/signin.less";
 
@@ -20,7 +19,7 @@ const Signin: React.FC<Props> = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showAutoSigninAsGuest, setShowAutoSigninAsGuest] = useState(true);
-  const signinBtnClickLoadingState = useLoading(false);
+  const signinBtnsClickLoadingState = useLoading(false);
   const autoSigninAsGuestBtn = useRef<HTMLDivElement>(null);
   const signinBtn = useRef<HTMLButtonElement>(null);
 
@@ -49,12 +48,8 @@ const Signin: React.FC<Props> = () => {
     setPassword(text);
   };
 
-  const handleSignUpBtnClick = async () => {
-    toastHelper.info("注册已关闭");
-  };
-
-  const handleSignInBtnClick = async () => {
-    if (signinBtnClickLoadingState.isLoading) {
+  const handleSigninBtnsClick = async (action: "signin" | "signup" = "signin") => {
+    if (signinBtnsClickLoadingState.isLoading) {
       return;
     }
 
@@ -71,8 +66,11 @@ const Signin: React.FC<Props> = () => {
     }
 
     try {
-      signinBtnClickLoadingState.setLoading();
-      const actionFunc = api.signin;
+      signinBtnsClickLoadingState.setLoading();
+      let actionFunc = api.signin;
+      if (action === "signup") {
+        actionFunc = api.signup;
+      }
       const { succeed, message } = await actionFunc(username, password);
 
       if (!succeed && message) {
@@ -90,11 +88,11 @@ const Signin: React.FC<Props> = () => {
       console.error(error);
       toastHelper.error("😟 " + error.message);
     }
-    signinBtnClickLoadingState.setFinish();
+    signinBtnsClickLoadingState.setFinish();
   };
 
   const handleSwitchAccountSigninBtnClick = () => {
-    if (signinBtnClickLoadingState.isLoading) {
+    if (signinBtnsClickLoadingState.isLoading) {
       return;
     }
 
@@ -102,12 +100,12 @@ const Signin: React.FC<Props> = () => {
   };
 
   const handleAutoSigninAsGuestBtnClick = async () => {
-    if (signinBtnClickLoadingState.isLoading) {
+    if (signinBtnsClickLoadingState.isLoading) {
       return;
     }
 
     try {
-      signinBtnClickLoadingState.setLoading();
+      signinBtnsClickLoadingState.setLoading();
       const { succeed, message } = await api.signin("guest", "123456");
 
       if (!succeed && message) {
@@ -125,7 +123,7 @@ const Signin: React.FC<Props> = () => {
       console.error(error);
       toastHelper.error("😟 " + error.message);
     }
-    signinBtnClickLoadingState.setFinish();
+    signinBtnsClickLoadingState.setFinish();
   };
 
   return (
@@ -141,13 +139,13 @@ const Signin: React.FC<Props> = () => {
             <div className="quickly-btns-container">
               <div
                 ref={autoSigninAsGuestBtn}
-                className={`btn guest-signin ${signinBtnClickLoadingState.isLoading ? "requesting" : ""}`}
+                className={`btn guest-signin ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                 onClick={handleAutoSigninAsGuestBtnClick}
               >
                 👉 快速登录进行体验
               </div>
               <div
-                className={`btn ${signinBtnClickLoadingState.isLoading ? "requesting" : ""}`}
+                className={`btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                 onClick={handleSwitchAccountSigninBtnClick}
               >
                 已有账号，我要自己登录
@@ -167,32 +165,26 @@ const Signin: React.FC<Props> = () => {
               </div>
             </div>
             <div className="page-footer-container">
-              <div className="btns-container">
-                <Only when={window.location.origin.includes("justsven.top")}>
-                  <a
-                    className="btn-text"
-                    href="https://github.com/login/oauth/authorize?client_id=187ba36888f152b06612&scope=read:user,gist"
-                  >
-                    Sign In with GitHub
-                  </a>
-                </Only>
-              </div>
+              <div className="btns-container">{/* nth */}</div>
               <div className="btns-container">
                 <button
-                  className={`btn ${signinBtnClickLoadingState.isLoading ? "requesting" : ""}`}
+                  className={`btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                   onClick={handleAutoSigninAsGuestBtnClick}
                 >
                   体验一下
                 </button>
                 <span className="split-text">/</span>
-                <button className="btn signup-btn disabled" onClick={handleSignUpBtnClick}>
+                <button
+                  className={`btn signin-btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
+                  onClick={() => handleSigninBtnsClick("signup")}
+                >
                   注册
                 </button>
                 <span className="split-text">/</span>
                 <button
-                  className={`btn signin-btn ${signinBtnClickLoadingState.isLoading ? "requesting" : ""}`}
                   ref={signinBtn}
-                  onClick={handleSignInBtnClick}
+                  className={`btn signin-btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
+                  onClick={() => handleSigninBtnsClick("signin")}
                 >
                   登录
                 </button>

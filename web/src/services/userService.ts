@@ -40,12 +40,6 @@ class UserService {
     });
   }
 
-  public async removeGithubName(): Promise<void> {
-    await api.updateUserinfo({
-      githubName: "",
-    });
-  }
-
   public async checkPasswordValid(password: string): Promise<boolean> {
     const { data: isValid } = await api.checkPasswordValid(password);
     return isValid;
@@ -55,6 +49,15 @@ class UserService {
     await api.updateUserinfo({
       password,
     });
+  }
+
+  public async resetOpenId(): Promise<string> {
+    const { data: openId } = await api.resetOpenId();
+    appStore.dispatch({
+      type: "RESET_OPENID",
+      payload: openId,
+    });
+    return openId;
   }
 }
 

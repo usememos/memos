@@ -7,7 +7,7 @@ declare namespace Model {
 
   interface User extends BaseModel {
     username: string;
-    githubName: string;
+    openId: string;
   }
 
   interface Memo extends BaseModel {

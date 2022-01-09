@@ -29,16 +29,16 @@ func handleGetMyUserInfo(w http.ResponseWriter, r *http.Request) {
 func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 	userId, _ := GetUserIdInSession(r)
 
-	userPatch := store.UserPatch{}
-	err := json.NewDecoder(r.Body).Decode(&userPatch)
+	updateUserPatch := store.UpdateUserPatch{}
+	err := json.NewDecoder(r.Body).Decode(&updateUserPatch)
 
 	if err != nil {
 		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
 		return
 	}
 
-	if userPatch.Username != nil {
-		usernameUsable, _ := store.CheckUsernameUsable(*userPatch.Username)
+	if updateUserPatch.Username != nil {
+		usernameUsable, _ := store.CheckUsernameUsable(*updateUserPatch.Username)
 		if !usernameUsable {
 			json.NewEncoder(w).Encode(Response{
 				Succeed: false,
@@ -49,19 +49,7 @@ func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if userPatch.GithubName != nil {
-		githubNameUsable, _ := store.CheckGithubNameUsable(*userPatch.GithubName)
-		if !githubNameUsable {
-			json.NewEncoder(w).Encode(Response{
-				Succeed: false,
-				Message: "GitHub name is existed",
-				Data:    nil,
-			})
-			return
-		}
-	}
-
-	user, err := store.UpdateUser(userId, &userPatch)
+	user, err := store.UpdateUser(userId, &updateUserPatch)
 
 	if err != nil {
 		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
@@ -75,10 +63,10 @@ func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func handleRefreshUserOpenId(w http.ResponseWriter, r *http.Request) {
+func handleResetUserOpenId(w http.ResponseWriter, r *http.Request) {
 	userId, _ := GetUserIdInSession(r)
 
-	openId, err := store.UpdateUserOpenId(userId)
+	openId, err := store.ResetUserOpenId(userId)
 
 	if err != nil {
 		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
@@ -155,7 +143,7 @@ func RegisterUserRoutes(r *mux.Router) {
 
 	userRouter.HandleFunc("/me", handleGetMyUserInfo).Methods("GET")
 	userRouter.HandleFunc("/me", handleUpdateMyUserInfo).Methods("PATCH")
-	userRouter.HandleFunc("/open_id/new", handleRefreshUserOpenId).Methods("POST")
+	userRouter.HandleFunc("/open_id/new", handleResetUserOpenId).Methods("POST")
 	userRouter.HandleFunc("/checkusername", handleCheckUsername).Methods("POST")
 	userRouter.HandleFunc("/validpassword", handleValidPassword).Methods("POST")
 }
