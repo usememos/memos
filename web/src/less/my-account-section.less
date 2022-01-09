@@ -69,6 +69,8 @@
     padding: 4px 6px;
     border-radius: 4px;
     line-height: 1.6;
+    word-break: break-all;
+    white-space: pre-wrap;
   }
 
   > .reset-btn {
@@ -81,14 +83,10 @@
     line-height: 1.6;
     cursor: pointer;
     user-select: none;
+    font-size: 12px;
 
     &:hover {
       opacity: 0.8;
-    }
-
-    &.loading {
-      opacity: 0.6;
-      cursor: wait;
     }
   }
 
@@ -106,7 +104,6 @@
       border-radius: 4px;
       line-height: 1.4;
       word-break: break-all;
-      word-wrap: break-word;
       white-space: pre-wrap;
     }
   }

@@ -1,0 +1,61 @@
+@import "./mixin.less";
+
+.confirm-reset-openid-dialog {
+  > .dialog-container {
+    width: 300px;
+    border-radius: 8px;
+
+    > .dialog-content-container {
+      .flex(column, flex-start, flex-start);
+      width: 100%;
+
+      > .warn-text {
+        padding: 8px 0;
+      }
+
+      > .btns-container {
+        .flex(row, flex-end, center);
+        margin-top: 8px;
+        width: 100%;
+
+        > .btn {
+          font-size: 14px;
+          padding: 6px 12px;
+          border-radius: 4px;
+          margin-right: 8px;
+          background-color: lightgray;
+
+          &:hover {
+            opacity: 0.8;
+          }
+
+          &.cancel-btn {
+            background-color: unset;
+          }
+
+          &.confirm-btn {
+            background-color: @bg-red;
+            border: 1px solid red;
+            color: red;
+
+            &.loading {
+              opacity: 0.8;
+              cursor: wait;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media only screen and (max-width: 875px) {
+  .dialog-wrapper.confirm-reset-openid-dialog {
+    padding: 24px 16px;
+    padding-top: 64px;
+
+    > .dialog-container {
+      width: 100%;
+    }
+  }
+}

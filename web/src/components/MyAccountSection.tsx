@@ -3,10 +3,9 @@ import appContext from "../stores/appContext";
 import { userService } from "../services";
 import utils from "../helpers/utils";
 import { validate, ValidatorConfig } from "../helpers/validator";
-import useLoading from "../hooks/useLoading";
-import useToggle from "../hooks/useToggle";
 import toastHelper from "./Toast";
 import showChangePasswordDialog from "./ChangePasswordDialog";
+import showConfirmResetOpenIdDialog from "./ConfirmResetOpenIdDialog";
 import "../less/my-account-section.less";
 
 const validateConfig: ValidatorConfig = {
@@ -22,8 +21,6 @@ const MyAccountSection: React.FC<Props> = () => {
   const { userState } = useContext(appContext);
   const user = userState.user as Model.User;
   const [username, setUsername] = useState<string>(user.username);
-  const resetBtnClickLoadingState = useLoading(false);
-  const [showConfirmResetAPIBtn, toggleConfirmResetAPIBtn] = useToggle(false);
   const openAPIRoute = `${window.location.origin}/api/whs/memo/${user.openId}`;
 
   const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -73,22 +70,7 @@ const MyAccountSection: React.FC<Props> = () => {
   };
 
   const handleResetOpenIdBtnClick = async () => {
-    if (!showConfirmResetAPIBtn) {
-      toggleConfirmResetAPIBtn(true);
-      return;
-    }
-    if (resetBtnClickLoadingState.isLoading) {
-      return;
-    }
-
-    resetBtnClickLoadingState.setLoading();
-    try {
-      await userService.resetOpenId();
-    } catch (error) {
-      // do nth
-    }
-    resetBtnClickLoadingState.setFinish();
-    toggleConfirmResetAPIBtn(false);
+    showConfirmResetOpenIdDialog();
   };
 
   const handlePreventDefault = (e: React.MouseEvent) => {
@@ -135,8 +117,8 @@ const MyAccountSection: React.FC<Props> = () => {
       <div className="section-container openapi-section-container">
         <p className="title-text">Open API（实验性功能）</p>
         <p className="value-text">{openAPIRoute}</p>
-        <span className={`reset-btn ${resetBtnClickLoadingState.isLoading ? "loading" : ""}`} onClick={handleResetOpenIdBtnClick}>
-          {showConfirmResetAPIBtn ? "⚠️ 确定重置 API" : "重置 API"}
+        <span className="reset-btn" onClick={handleResetOpenIdBtnClick}>
+          重置 API
         </span>
         <div className="usage-guide-container">
           <p className="title-text">使用方法：</p>
