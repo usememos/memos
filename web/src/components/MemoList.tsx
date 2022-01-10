@@ -34,7 +34,7 @@ const MemoList: React.FC<Props> = () => {
             }
           }
 
-          if (tagQuery && !memo.content.includes(`# ${tagQuery}`)) {
+          if (tagQuery && !memo.content.includes(`#${tagQuery} `) && !memo.content.includes(`# ${tagQuery} `)) {
             shouldShow = false;
           }
           if (

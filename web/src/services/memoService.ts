@@ -105,7 +105,7 @@ class MemoService {
     appStore.dispatch({
       type: "SET_TAGS",
       payload: {
-        tags: Array.from(tagsSet),
+        tags: Array.from(tagsSet).filter((t) => Boolean(t)),
       },
     });
   }

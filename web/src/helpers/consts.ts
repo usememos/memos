@@ -11,7 +11,7 @@ export const TOAST_ANIMATION_DURATION = 400;
 export const DAILY_TIMESTAMP = 3600 * 24 * 1000;
 
 // 标签 正则
-export const TAG_REG = /#\s(.+?)\s/g;
+export const TAG_REG = /#\s?(.+?)\s/g;
 
 // URL 正则
 export const LINK_REG = /(https?:\/\/[^\s<\\*>']+)/g;

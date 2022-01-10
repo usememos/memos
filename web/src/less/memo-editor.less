@@ -27,6 +27,31 @@
     height: auto;
     background-color: white;
   }
+
+  > .tag-list {
+    .flex(column, flex-start, flex-start);
+    position: absolute;
+    z-index: 10;
+    background-color: rgba(30, 30, 30, 0.9);
+    padding: 2px;
+    border-radius: 4px;
+    width: 128px;
+    max-height: 200px;
+    overflow: auto;
+
+    > span {
+      width: 100%;
+      padding: 2px 6px;
+      color: white;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 13px;
+
+      &:hover {
+        background-color: #505050;
+      }
+    }
+  }
 }
 
 @media only screen and (max-width: 875px) {

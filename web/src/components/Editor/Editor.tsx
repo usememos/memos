@@ -120,6 +120,7 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
       setContent: (text: string) => {
         if (editorRef.current) {
           editorRef.current.value = text;
+          handleContentChangeCallback(editorRef.current.value);
           refresh();
         }
       },
