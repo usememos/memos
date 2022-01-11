@@ -5,7 +5,7 @@ import utils from "../helpers/utils";
 import { storage } from "../helpers/storage";
 import useToggle from "../hooks/useToggle";
 import toastHelper from "./Toast";
-import Editor, { EditorProps, EditorRefActions } from "./Editor/Editor";
+import Editor, { EditorRefActions } from "./Editor/Editor";
 import "../less/memo-editor.less";
 
 const getCursorPostion = (input: HTMLTextAreaElement) => {
@@ -20,7 +20,6 @@ const getCursorPostion = (input: HTMLTextAreaElement) => {
   div.style.visibility = "hidden";
   div.style.whiteSpace = "pre-wrap";
 
-  // we need a character that will replace whitespace when filling our dummy element if it's a single line <input/>
   const swap = ".";
   const inputValue = input.tagName === "INPUT" ? input.value.replace(/ /g, swap) : input.value;
   const textContent = inputValue.substring(0, selectionPoint || 0);
@@ -100,9 +99,7 @@ const MemoEditor: React.FC<Props> = () => {
     };
 
     const handleClickEvent = () => {
-      setTimeout(() => {
-        handleContentChange(editorRef.current?.element.value ?? "");
-      });
+      handleContentChange(editorRef.current?.element.value ?? "");
     };
 
     const handleKeyDownEvent = () => {
@@ -184,20 +181,18 @@ const MemoEditor: React.FC<Props> = () => {
     setEditorContentCache(content);
 
     if (editorRef.current) {
-      const currentValue = editorRef.current.getContent();
       const selectionStart = editorRef.current.element.selectionStart;
-      const prevString = currentValue.slice(0, selectionStart);
+      const prevString = content.slice(0, selectionStart);
+      const nextString = content.slice(selectionStart);
 
-      if (prevString.endsWith("#")) {
+      if (prevString.endsWith("#") && (nextString.startsWith(" ") || nextString === "")) {
         toggleTagSeletor(true);
         updateTagSelectorPopupPosition();
       } else {
         toggleTagSeletor(false);
       }
 
-      setTimeout(() => {
-        editorRef.current?.focus();
-      });
+      editorRef.current?.focus();
     }
   }, []);
 
@@ -219,16 +214,10 @@ const MemoEditor: React.FC<Props> = () => {
       cursorIndex = prevString.length - 1;
     }
 
-    setTimeout(() => {
-      if (!editorRef.current) {
-        return;
-      }
-
-      editorRef.current.element.value = nextValue;
-      editorRef.current.element.setSelectionRange(cursorIndex, cursorIndex);
-      editorRef.current.focus();
-      handleContentChange(editorRef.current.element.value);
-    });
+    editorRef.current.element.value = nextValue;
+    editorRef.current.element.setSelectionRange(cursorIndex, cursorIndex);
+    editorRef.current.focus();
+    handleContentChange(editorRef.current.element.value);
   }, []);
 
   const updateTagSelectorPopupPosition = useCallback(() => {
@@ -236,13 +225,15 @@ const MemoEditor: React.FC<Props> = () => {
       return;
     }
 
+    const seletorPopupWidth = 128;
+    const editorWidth = editorRef.current.element.clientWidth;
     const { x, y } = getCursorPostion(editorRef.current.element);
-    if (x + 128 + 16 > editorRef.current.element.clientWidth) {
-      tagSeletorRef.current.style.left = `${editorRef.current.element.clientWidth + 20 - 128}px`;
-    } else {
-      tagSeletorRef.current.style.left = `${x + 2}px`;
-    }
-    tagSeletorRef.current.style.top = `${y + 32 + 6}px`;
+    const left = x + seletorPopupWidth + 16 > editorWidth ? editorWidth + 20 - seletorPopupWidth : x + 2;
+    const top = y + 32 + 6;
+
+    tagSeletorRef.current.scroll(0, 0);
+    tagSeletorRef.current.style.left = `${left}px`;
+    tagSeletorRef.current.style.top = `${top}px`;
   }, []);
 
   const handleUploadFileBtnClick = useCallback(() => {
@@ -267,23 +258,21 @@ const MemoEditor: React.FC<Props> = () => {
   const handleTagSeletorClick = useCallback((event: React.MouseEvent) => {
     if (tagSeletorRef.current !== event.target && tagSeletorRef.current?.contains(event.target as Node)) {
       editorRef.current?.insertText((event.target as HTMLElement).textContent ?? "");
+      toggleTagSeletor(false);
     }
   }, []);
 
   const showEditStatus = Boolean(globalState.editMemoId);
 
-  const editorConfig: EditorProps = useMemo(
+  const editorConfig = useMemo(
     () => ({
       className: "memo-editor",
       initialContent: getEditorContentCache(),
       placeholder: "现在的想法是...",
       showConfirmBtn: true,
       showCancelBtn: showEditStatus,
-      showTools: true,
       onConfirmBtnClick: handleSaveBtnClick,
       onCancelBtnClick: handleCancelBtnClick,
-      onTagTextBtnClick: handleTagTextBtnClick,
-      onUploadFileBtnClick: handleUploadFileBtnClick,
       onContentChange: handleContentChange,
     }),
     [showEditStatus]
@@ -292,7 +281,16 @@ const MemoEditor: React.FC<Props> = () => {
   return (
     <div className={"memo-editor-wrapper " + (showEditStatus ? "edit-ing" : "")}>
       <p className={"tip-text " + (showEditStatus ? "" : "hidden")}>正在修改中...</p>
-      <Editor ref={editorRef} {...editorConfig} />
+      <Editor
+        ref={editorRef}
+        {...editorConfig}
+        tools={
+          <>
+            <img className="action-btn file-upload" src="/icons/tag.svg" onClick={handleTagTextBtnClick} />
+            <img className="action-btn file-upload" src="/icons/image.svg" onClick={handleUploadFileBtnClick} />
+          </>
+        }
+      />
       <div
         ref={tagSeletorRef}
         className={`tag-list ${isTagSeletorShown && tags.length > 0 ? "" : "hidden"}`}

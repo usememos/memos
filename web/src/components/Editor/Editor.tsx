@@ -1,4 +1,4 @@
-import { forwardRef, useCallback, useContext, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, ReactNode, useCallback, useContext, useEffect, useImperativeHandle, useRef } from "react";
 import TinyUndo from "tiny-undo";
 import appContext from "../../stores/appContext";
 import { storage } from "../../helpers/storage";
@@ -14,17 +14,15 @@ export interface EditorRefActions {
   getContent: () => string;
 }
 
-export interface EditorProps {
+interface EditorProps {
   className: string;
   initialContent: string;
   placeholder: string;
   showConfirmBtn: boolean;
   showCancelBtn: boolean;
-  showTools: boolean;
+  tools?: ReactNode;
   onConfirmBtnClick: (content: string) => void;
   onCancelBtnClick: () => void;
-  onTagTextBtnClick: () => void;
-  onUploadFileBtnClick: () => void;
   onContentChange: (content: string) => void;
 }
 
@@ -39,15 +37,13 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
     placeholder,
     showConfirmBtn,
     showCancelBtn,
-    showTools,
     onConfirmBtnClick: handleConfirmBtnClickCallback,
     onCancelBtnClick: handleCancelBtnClickCallback,
-    onTagTextBtnClick: handleTagTextBtnClickCallback,
-    onUploadFileBtnClick: handleUploadFileBtnClickCallback,
     onContentChange: handleContentChangeCallback,
   } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const tinyUndoRef = useRef<TinyUndo | null>(null);
+  // NOTE: auto-justify textarea height
   const refresh = useRefresh();
 
   useEffect(() => {
@@ -175,12 +171,7 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
       ></textarea>
       <div className="common-tools-wrapper">
         <div className="common-tools-container">
-          <Only when={showTools}>
-            <>
-              <img className="action-btn file-upload" src="/icons/tag.svg" onClick={handleTagTextBtnClickCallback} />
-              <img className="action-btn file-upload" src="/icons/image.svg" onClick={handleUploadFileBtnClickCallback} />
-            </>
-          </Only>
+          <Only when={props.tools !== undefined}>{props.tools}</Only>
         </div>
         <div className="btns-container">
           <Only when={showCancelBtn}>
