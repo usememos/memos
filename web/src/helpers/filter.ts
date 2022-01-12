@@ -119,7 +119,21 @@ export const checkShouldShowMemo = (memo: Model.Memo, filter: Filter) => {
   let shouldShow = true;
 
   if (type === "TAG") {
-    let contained = memo.content.includes(`#${value} `) || memo.content.includes(`# ${value} `);
+    let contained = true;
+    const tagsSet = new Set<string>();
+    for (const t of Array.from(memo.content.match(TAG_REG) ?? [])) {
+      const tag = t.replace(TAG_REG, "$1").trim();
+      const items = tag.split("/");
+      let temp = "";
+      for (const i of items) {
+        temp += i;
+        tagsSet.add(temp);
+        temp += "/";
+      }
+    }
+    if (!tagsSet.has(value)) {
+      contained = false;
+    }
     if (operator === "NOT_CONTAIN") {
       contained = !contained;
     }

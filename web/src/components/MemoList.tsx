@@ -19,23 +19,36 @@ const MemoList: React.FC<Props> = () => {
   const wrapperElement = useRef<HTMLDivElement>(null);
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, filter: queryId } = query;
-  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery);
+  const queryFilter = queryService.getQueryById(queryId);
+  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || queryFilter);
 
   const shownMemos =
-    showMemoFilter || queryId
+    showMemoFilter || queryFilter
       ? memos.filter((memo) => {
           let shouldShow = true;
 
-          const query = queryService.getQueryById(queryId);
-          if (query) {
-            const filters = JSON.parse(query.querystring) as Filter[];
+          if (queryFilter) {
+            const filters = JSON.parse(queryFilter.querystring) as Filter[];
             if (Array.isArray(filters)) {
               shouldShow = checkShouldShowMemoWithFilters(memo, filters);
             }
           }
 
-          if (tagQuery && !memo.content.includes(`#${tagQuery} `) && !memo.content.includes(`# ${tagQuery} `)) {
-            shouldShow = false;
+          if (tagQuery) {
+            const tagsSet = new Set<string>();
+            for (const t of Array.from(memo.content.match(TAG_REG) ?? [])) {
+              const tag = t.replace(TAG_REG, "$1").trim();
+              const items = tag.split("/");
+              let temp = "";
+              for (const i of items) {
+                temp += i;
+                tagsSet.add(temp);
+                temp += "/";
+              }
+            }
+            if (!tagsSet.has(tagQuery)) {
+              shouldShow = false;
+            }
           }
           if (
             duration &&

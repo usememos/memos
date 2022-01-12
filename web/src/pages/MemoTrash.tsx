@@ -37,8 +37,21 @@ const MemoTrash: React.FC<Props> = () => {
             }
           }
 
-          if (tagQuery && !memo.content.includes(`# ${tagQuery}`)) {
-            shouldShow = false;
+          if (tagQuery) {
+            const tagsSet = new Set<string>();
+            for (const t of Array.from(memo.content.match(TAG_REG) ?? [])) {
+              const tag = t.replace(TAG_REG, "$1").trim();
+              const items = tag.split("/");
+              let temp = "";
+              for (const i of items) {
+                temp += i;
+                tagsSet.add(temp);
+                temp += "/";
+              }
+            }
+            if (!tagsSet.has(tagQuery)) {
+              shouldShow = false;
+            }
           }
           if (
             duration &&
