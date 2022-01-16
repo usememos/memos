@@ -8,21 +8,19 @@
   <a href="https://github.com/justmemos/memos/blob/main/LICENSE"><img alt="GitHub license" src="https://img.shields.io/github/license/justmemos/memos"></a>
 </p>
 <p align="center">
-  <a href="memos.onrender.com">演示站</a> •
+  <a href="https://memos.onrender.com/"> Demo </a> •
   <a href="https://t.me/+M-AqruZmJBhkYWQ1">Telegram 群组</a> 
 </p>
 
 
-Memos是一款开源的flomo替代工具。/ An open-source alternative to flomo.
+Memos 是一款开源的 flomo 替代工具。/ An open-source alternative to flomo.
 
 您可以很方便快捷的私有化部署出属于您自己的碎片化知识管理工具！
 
 ## 为何做这个？
 
 ### 用于记录：
-- 📅 每日/周计划、
-- 💡 突发奇想、
-- 📕 读后感...
+- 📅 每日/周计划、💡突发奇想、📕读后感...
 - 🏗️ 代替了我在微信上经常使用的“文件传输助手”；
 - 📒 打造一个属于自己的轻量化“卡片”笔记簿；
 
@@ -48,6 +46,6 @@ wget --no-check-certificate https://github.com/justmemos/memos/blob/main/resourc
 docker run --rm --pull always --name memos -p 8080:8080 -v ~/data/:/usr/local/memos/data/ -d neosmemo/memos
 ```
 
-! 默认数据库内会有两个帐号，分别为`test`和`guest`，密码均为`123456`，**部署完成后请及时更改你的密码**
+! 默认数据库内会有两个帐号，分别为 `test` 和 `guest` ，密码均为 `123456` ，**部署完成后请及时更改你的密码**
 
 enjoy!
