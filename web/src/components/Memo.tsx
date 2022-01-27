@@ -146,17 +146,17 @@ export function formatMemoContent(content: string) {
     content = content.replace(IMAGE_URL_REG, "");
   }
 
+  content = content
+    .replace(TAG_REG, "<span class='tag-span'>#$1</span>")
+    .replace(LINK_REG, "<a class='link' target='_blank' rel='noreferrer' href='$1'>$1</a>")
+    .replace(MEMO_LINK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>");
+
   // 中英文之间加空格
   if (shouldSplitMemoWord) {
     content = content
       .replace(/([\u4e00-\u9fa5])([A-Za-z0-9?.,;[\]]+)/g, "$1 $2")
       .replace(/([A-Za-z0-9?.,;[\]]+)([\u4e00-\u9fa5])/g, "$1 $2");
   }
-
-  content = content
-    .replace(TAG_REG, "<span class='tag-span'>#$1</span>")
-    .replace(LINK_REG, "<a class='link' target='_blank' rel='noreferrer' href='$1'>$1</a>")
-    .replace(MEMO_LINK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>");
 
   const tempDivContainer = document.createElement("div");
   tempDivContainer.innerHTML = content;

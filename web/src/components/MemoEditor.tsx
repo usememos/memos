@@ -116,6 +116,8 @@ const MemoEditor: React.FC<Props> = () => {
     return () => {
       editorRef.current?.element.removeEventListener("paste", handlePasteEvent);
       editorRef.current?.element.removeEventListener("drop", handleDropEvent);
+      editorRef.current?.element.removeEventListener("click", handleClickEvent);
+      editorRef.current?.element.removeEventListener("keydown", handleKeyDownEvent);
     };
   }, []);
 
