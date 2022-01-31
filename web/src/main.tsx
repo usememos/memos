@@ -6,6 +6,7 @@ import appStore from "./stores/appStore";
 import App from "./App";
 import "./helpers/polyfill";
 import "./less/global.less";
+import "./css/index.css";
 
 ReactDOM.render(
   <React.StrictMode>

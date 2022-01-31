@@ -40,13 +40,14 @@ const PreferencesSection: React.FC<Props> = () => {
   const handleExportBtnClick = async () => {
     const formatedMemos = memoService.getState().memos.map((m) => {
       return {
-        ...m,
+        content: m.content,
+        createdAt: m.createdAt,
       };
     });
 
     const jsonStr = JSON.stringify(formatedMemos);
     const element = document.createElement("a");
-    element.setAttribute("href", "data:text/plain;charset=utf-8," + encodeURIComponent(jsonStr));
+    element.setAttribute("href", "data:text/json;charset=utf-8," + encodeURIComponent(jsonStr));
     element.setAttribute("download", "data.json");
     element.style.display = "none";
     document.body.appendChild(element);
@@ -94,13 +95,13 @@ const PreferencesSection: React.FC<Props> = () => {
           <img className="icon-img" src={useTinyUndoHistoryCache ? "/icons/checkbox-active.svg" : "/icons/checkbox.svg"} />
         </label>
       </div>
-      <div className="section-container hidden">
+      <div className="section-container">
         <p className="title-text">其他</p>
-        <div className="btn-container">
-          <button className="btn export-btn" onClick={handleExportBtnClick}>
+        <div className="w-full flex flex-row justify-start items-center">
+          <button className="px-2 py-1 border rounded text-base hover:opacity-80" onClick={handleExportBtnClick}>
             导出数据(JSON)
           </button>
-          <button className="btn format-btn" onClick={handleFormatMemosBtnClick}>
+          <button className="btn format-btn hidden" onClick={handleFormatMemosBtnClick}>
             格式化数据
           </button>
         </div>
