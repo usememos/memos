@@ -21,33 +21,49 @@ func getUserIdContextKey() string {
 }
 
 // Purpose of this cookie is to store the user's id.
-func setUserSession(c echo.Context, user *api.User) {
-	sess, _ := session.Get("session", c)
+func setUserSession(c echo.Context, user *api.User) error {
+	sess, err := session.Get("session", c)
+	if err != nil {
+		return fmt.Errorf("failed to get session")
+	}
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   1000 * 3600 * 24 * 30,
 		HttpOnly: true,
 	}
-	sess.Values[userIdContextKey] = strconv.Itoa(user.Id)
-	sess.Save(c.Request(), c.Response())
+	sess.Values[userIdContextKey] = user.Id
+	err = sess.Save(c.Request(), c.Response())
+	if err != nil {
+		return fmt.Errorf("failed to set session")
+	}
+
+	return nil
 }
 
-func removeUserSession(c echo.Context) {
-	sess, _ := session.Get("session", c)
+func removeUserSession(c echo.Context) error {
+	sess, err := session.Get("session", c)
+	if err != nil {
+		return fmt.Errorf("failed to get session")
+	}
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   0,
 		HttpOnly: true,
 	}
 	sess.Values[userIdContextKey] = nil
-	sess.Save(c.Request(), c.Response())
+	err = sess.Save(c.Request(), c.Response())
+	if err != nil {
+		return fmt.Errorf("failed to set session")
+	}
+
+	return nil
 }
 
 // Use session instead of jwt in the initial version
 func JWTMiddleware(us api.UserService, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// Skips auth, test
-		if common.HasPrefixes(c.Path(), "/api/auth", "/api/test") {
+		// Skips auth
+		if common.HasPrefixes(c.Path(), "/api/auth") {
 			return next(c)
 		}
 
@@ -55,7 +71,13 @@ func JWTMiddleware(us api.UserService, next echo.HandlerFunc) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing session")
 		}
-		userId, err := strconv.Atoi(fmt.Sprintf("%v", sess.Values[userIdContextKey]))
+
+		userIdValue := sess.Values[userIdContextKey]
+		if userIdValue == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing userId in session")
+		}
+
+		userId, err := strconv.Atoi(fmt.Sprintf("%v", userIdValue))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Failed to malformatted user id in the session.")
 		}

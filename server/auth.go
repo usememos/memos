@@ -34,26 +34,31 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect password").SetInternal(err)
 		}
 
+		err = setUserSession(c, user)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set login session").SetInternal(err)
+		}
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := jsonapi.MarshalPayload(c.Response().Writer, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal create user response").SetInternal(err)
 		}
 
-		setUserSession(c, user)
-
 		return nil
 	})
 	g.POST("/auth/logout", func(c echo.Context) error {
-		removeUserSession(c)
+		err := removeUserSession(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set logout session").SetInternal(err)
+		}
 
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		c.Response().WriteHeader(http.StatusOK)
 		return nil
 	})
 	g.POST("/auth/signup", func(c echo.Context) error {
 		signup := &api.Signup{}
 		if err := jsonapi.UnmarshalPayload(c.Request().Body, signup); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted login request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
 		}
 
 		userFind := &api.UserFind{
@@ -77,12 +82,16 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
 
+		err = setUserSession(c, user)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set signup session").SetInternal(err)
+		}
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := jsonapi.MarshalPayload(c.Response().Writer, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal create user response").SetInternal(err)
 		}
 
-		setUserSession(c, user)
 		return nil
 	})
 }

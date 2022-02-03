@@ -5,25 +5,25 @@ type User struct {
 	CreatedTs int64 `jsonapi:"attr,createdTs"`
 	UpdatedTs int64 `jsonapi:"attr,updatedTs"`
 
+	OpenId   string `jsonapi:"attr,openId"`
 	Name     string `jsonapi:"attr,name"`
 	Password string
-	OpenId   string `jsonapi:"attr,openId"`
 }
 
 type UserCreate struct {
+	OpenId   string `jsonapi:"attr,openId"`
 	Name     string `jsonapi:"attr,name"`
 	Password string `jsonapi:"attr,password"`
-	OpenId   string `jsonapi:"attr,openId"`
 }
 
 type UserPatch struct {
 	Id int
 
-	Name     *string `jsonapi:"attr,name"`
-	Password *string `jsonapi:"attr,password"`
-	OpenId   *string
+	OpenId *string
 
-	ResetOpenId *bool `jsonapi:"attr,resetOpenId"`
+	Name        *string `jsonapi:"attr,name"`
+	Password    *string `jsonapi:"attr,password"`
+	ResetOpenId *bool   `jsonapi:"attr,resetOpenId"`
 }
 
 type UserFind struct {

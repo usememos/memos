@@ -124,7 +124,7 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 }
 
 func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
-	where, args := []string{}, []interface{}{}
+	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.Id; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)
@@ -142,7 +142,7 @@ func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 			name,
 			password,
 			open_id,
-			created_ts
+			created_ts,
 			updated_ts
 		FROM user
 		WHERE `+strings.Join(where, " AND "),
@@ -164,6 +164,7 @@ func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 			&user.CreatedTs,
 			&user.UpdatedTs,
 		); err != nil {
+			fmt.Println(err)
 			return nil, FormatError(err)
 		}
 

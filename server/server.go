@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"memos/api"
+	"memos/common"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -33,7 +34,7 @@ func NewServer() *Server {
 		HTML5:  true,
 	}))
 
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("secret"))))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(common.GenUUID()))))
 
 	s := &Server{
 		e:    e,
