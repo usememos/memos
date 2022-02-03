@@ -1,99 +1,207 @@
 package store
 
 import (
-	"memos/utils"
+	"fmt"
+	"memos/api"
+	"memos/common"
 	"strings"
 )
 
-type Memo struct {
-	Id        string `json:"id"`
-	Content   string `json:"content"`
-	UserId    string `json:"userId"`
-	DeletedAt string `json:"deletedAt"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+type MemoService struct {
+	db *DB
 }
 
-func CreateNewMemo(content string, userId string) (Memo, error) {
-	nowDateTimeStr := utils.GetNowDateTimeStr()
-	newMemo := Memo{
-		Id:        utils.GenUUID(),
-		Content:   content,
-		UserId:    userId,
-		DeletedAt: "",
-		CreatedAt: nowDateTimeStr,
-		UpdatedAt: nowDateTimeStr,
+func NewMemoService(db *DB) *MemoService {
+	return &MemoService{db: db}
+}
+
+func (s *MemoService) CreateMemo(create *api.MemoCreate) (*api.Memo, error) {
+	memo, err := createMemo(s.db, create)
+	if err != nil {
+		return nil, err
 	}
 
-	query := `INSERT INTO memos (id, content, user_id, deleted_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`
-	_, err := DB.Exec(query, newMemo.Id, newMemo.Content, newMemo.UserId, newMemo.DeletedAt, newMemo.CreatedAt, newMemo.UpdatedAt)
-
-	return newMemo, FormatDBError(err)
+	return memo, nil
 }
 
-type MemoPatch struct {
-	Content   *string
-	DeletedAt *string
+func (s *MemoService) PatchMemo(patch *api.MemoPatch) (*api.Memo, error) {
+	memo, err := patchMemo(s.db, patch)
+	if err != nil {
+		return nil, err
+	}
+
+	return memo, nil
 }
 
-func UpdateMemo(id string, memoPatch *MemoPatch) (Memo, error) {
-	memo, _ := GetMemoById(id)
+func (s *MemoService) FindMemoList(find *api.MemoFind) ([]*api.Memo, error) {
+	list, err := findMemoList(s.db, find)
+	if err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+func (s *MemoService) FindMemo(find *api.MemoFind) (*api.Memo, error) {
+	list, err := findMemoList(s.db, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(list) == 0 {
+		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+	}
+
+	return list[0], nil
+}
+
+func (s *MemoService) DeleteMemo(delete *api.MemoDelete) error {
+	err := deleteMemo(s.db, delete)
+	if err != nil {
+		return FormatError(err)
+	}
+
+	return nil
+}
+
+func createMemo(db *DB, create *api.MemoCreate) (*api.Memo, error) {
+	row, err := db.Db.Query(`
+		INSERT INTO memo (
+			creator_id,
+			content
+		)
+		VALUES (?, ?)
+		RETURNING id, creator_id, created_ts, updated_ts, content, row_status
+	`,
+		create.CreatorId,
+		create.Content,
+	)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer row.Close()
+
+	if !row.Next() {
+		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+	}
+
+	var memo api.Memo
+	if err := row.Scan(
+		&memo.Id,
+		&memo.CreatorId,
+		&memo.CreatedTs,
+		&memo.UpdatedTs,
+		&memo.Content,
+		&memo.RowStatus,
+	); err != nil {
+		return nil, FormatError(err)
+	}
+
+	return &memo, nil
+}
+
+func patchMemo(db *DB, patch *api.MemoPatch) (*api.Memo, error) {
 	set, args := []string{}, []interface{}{}
 
-	if v := memoPatch.Content; v != nil {
-		memo.Content = *v
-		set, args = append(set, "content=?"), append(args, *v)
+	if v := patch.Content; v != nil {
+		set, args = append(set, "content = ?"), append(args, v)
 	}
-	if v := memoPatch.DeletedAt; v != nil {
-		memo.DeletedAt = *v
-		set, args = append(set, "deleted_at=?"), append(args, *v)
-	}
-	set, args = append(set, "updated_at=?"), append(args, utils.GetNowDateTimeStr())
-	args = append(args, id)
-
-	sqlQuery := `UPDATE memos SET ` + strings.Join(set, ",") + ` WHERE id=?`
-	_, err := DB.Exec(sqlQuery, args...)
-
-	return memo, FormatDBError(err)
-}
-
-func DeleteMemo(memoId string) error {
-	query := `DELETE FROM memos WHERE id=?`
-	_, err := DB.Exec(query, memoId)
-	return FormatDBError(err)
-}
-
-func GetMemoById(id string) (Memo, error) {
-	query := `SELECT id, content, deleted_at, created_at, updated_at FROM memos WHERE id=?`
-	memo := Memo{}
-	err := DB.QueryRow(query, id).Scan(&memo.Id, &memo.Content, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
-	return memo, FormatDBError(err)
-}
-
-func GetMemosByUserId(userId string, onlyDeleted bool) ([]Memo, error) {
-	sqlQuery := `SELECT id, content, deleted_at, created_at, updated_at FROM memos WHERE user_id=?`
-
-	if onlyDeleted {
-		sqlQuery = sqlQuery + ` AND deleted_at!=""`
-	} else {
-		sqlQuery = sqlQuery + ` AND deleted_at=""`
+	if v := patch.RowStatus; v != nil {
+		set, args = append(set, "row_status = ?"), append(args, v)
 	}
 
-	rows, _ := DB.Query(sqlQuery, userId)
+	args = append(args, patch.Id)
+
+	row, err := db.Db.Query(`
+		UPDATE memo
+		SET `+strings.Join(set, ", ")+`
+		WHERE id = ?
+		RETURNING id, created_ts, updated_ts, content, row_status
+	`, args...)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer row.Close()
+
+	if !row.Next() {
+		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+	}
+
+	var memo api.Memo
+	if err := row.Scan(
+		&memo.Id,
+		&memo.CreatedTs,
+		&memo.UpdatedTs,
+		&memo.Content,
+		&memo.RowStatus,
+	); err != nil {
+		return nil, FormatError(err)
+	}
+
+	return &memo, nil
+}
+
+func findMemoList(db *DB, find *api.MemoFind) ([]*api.Memo, error) {
+	where, args := []string{"1 = 1"}, []interface{}{}
+
+	if v := find.Id; v != nil {
+		where, args = append(where, "id = ?"), append(args, *v)
+	}
+	if v := find.CreatorId; v != nil {
+		where, args = append(where, "creator_id = ?"), append(args, *v)
+	}
+
+	rows, err := db.Db.Query(`
+		SELECT
+			id,
+			creator_id,
+			created_ts,
+			updated_ts,
+			content,
+			row_status
+		FROM memo
+		WHERE `+strings.Join(where, " AND "),
+		args...,
+	)
+	if err != nil {
+		return nil, FormatError(err)
+	}
 	defer rows.Close()
 
-	memos := []Memo{}
-
+	list := make([]*api.Memo, 0)
 	for rows.Next() {
-		memo := Memo{}
-		rows.Scan(&memo.Id, &memo.Content, &memo.DeletedAt, &memo.CreatedAt, &memo.UpdatedAt)
+		var memo api.Memo
+		if err := rows.Scan(
+			&memo.Id,
+			&memo.CreatorId,
+			&memo.CreatedTs,
+			&memo.UpdatedTs,
+			&memo.Content,
+			&memo.RowStatus,
+		); err != nil {
+			return nil, FormatError(err)
+		}
 
-		memos = append(memos, memo)
+		list = append(list, &memo)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatDBError(err)
+		return nil, FormatError(err)
 	}
 
-	return memos, nil
+	return list, nil
+}
+
+func deleteMemo(db *DB, delete *api.MemoDelete) error {
+	result, err := db.Db.Exec(`DELETE FROM memo WHERE id = ?`, delete.Id)
+	if err != nil {
+		return FormatError(err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo ID not found: %d", delete.Id)}
+	}
+
+	return nil
 }

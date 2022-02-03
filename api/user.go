@@ -1,149 +1,40 @@
 package api
 
-import (
-	"encoding/json"
-	"memos/api/e"
-	"memos/store"
-	"net/http"
+type User struct {
+	Id        int   `jsonapi:"primary,user"`
+	CreatedTs int64 `jsonapi:"attr,createdTs"`
+	UpdatedTs int64 `jsonapi:"attr,updatedTs"`
 
-	"github.com/gorilla/mux"
-)
-
-func handleGetMyUserInfo(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInSession(r)
-
-	user, err := store.GetUserById(userId)
-
-	if err != nil {
-		e.ErrorHandler(w, "USER_NOT_FOUND", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    user,
-	})
+	Name     string `jsonapi:"attr,name"`
+	Password string
+	OpenId   string `jsonapi:"attr,openId"`
 }
 
-func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInSession(r)
-
-	updateUserPatch := store.UpdateUserPatch{}
-	err := json.NewDecoder(r.Body).Decode(&updateUserPatch)
-
-	if err != nil {
-		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
-		return
-	}
-
-	if updateUserPatch.Username != nil {
-		usernameUsable, _ := store.CheckUsernameUsable(*updateUserPatch.Username)
-		if !usernameUsable {
-			json.NewEncoder(w).Encode(Response{
-				Succeed: false,
-				Message: "Username is existed",
-				Data:    nil,
-			})
-			return
-		}
-	}
-
-	user, err := store.UpdateUser(userId, &updateUserPatch)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    user,
-	})
+type UserCreate struct {
+	Name     string `jsonapi:"attr,name"`
+	Password string `jsonapi:"attr,password"`
+	OpenId   string `jsonapi:"attr,openId"`
 }
 
-func handleResetUserOpenId(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInSession(r)
+type UserPatch struct {
+	Id int
 
-	openId, err := store.ResetUserOpenId(userId)
+	Name     *string `jsonapi:"attr,name"`
+	Password *string `jsonapi:"attr,password"`
+	OpenId   *string
 
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    openId,
-	})
+	ResetOpenId *bool `jsonapi:"attr,resetOpenId"`
 }
 
-func handleCheckUsername(w http.ResponseWriter, r *http.Request) {
-	type CheckUsernameDataBody struct {
-		Username string
-	}
+type UserFind struct {
+	Id *int `jsonapi:"attr,id"`
 
-	checkUsername := CheckUsernameDataBody{}
-	err := json.NewDecoder(r.Body).Decode(&checkUsername)
-
-	if err != nil {
-		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
-		return
-	}
-
-	usable, err := store.CheckUsernameUsable(checkUsername.Username)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    usable,
-	})
+	Name   *string `jsonapi:"attr,name"`
+	OpenId *string
 }
 
-func handleValidPassword(w http.ResponseWriter, r *http.Request) {
-	type ValidPasswordDataBody struct {
-		Password string
-	}
-
-	userId, _ := GetUserIdInSession(r)
-	validPassword := ValidPasswordDataBody{}
-	err := json.NewDecoder(r.Body).Decode(&validPassword)
-
-	if err != nil {
-		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
-		return
-	}
-
-	valid, err := store.CheckPasswordValid(userId, validPassword.Password)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    valid,
-	})
-}
-
-func RegisterUserRoutes(r *mux.Router) {
-	userRouter := r.PathPrefix("/api/user").Subrouter()
-
-	userRouter.Use(JSONResponseMiddleWare)
-	userRouter.Use(AuthCheckerMiddleWare)
-
-	userRouter.HandleFunc("/me", handleGetMyUserInfo).Methods("GET")
-	userRouter.HandleFunc("/me", handleUpdateMyUserInfo).Methods("PATCH")
-	userRouter.HandleFunc("/open_id/new", handleResetUserOpenId).Methods("POST")
-	userRouter.HandleFunc("/checkusername", handleCheckUsername).Methods("POST")
-	userRouter.HandleFunc("/validpassword", handleValidPassword).Methods("POST")
+type UserService interface {
+	CreateUser(create *UserCreate) (*User, error)
+	PatchUser(patch *UserPatch) (*User, error)
+	FindUser(find *UserFind) (*User, error)
 }

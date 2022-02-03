@@ -1,0 +1,122 @@
+package server
+
+import (
+	"fmt"
+	"memos/api"
+	"memos/common"
+	"net/http"
+	"strconv"
+
+	"github.com/google/jsonapi"
+	"github.com/labstack/echo/v4"
+)
+
+func (s *Server) registerMemoRoutes(g *echo.Group) {
+	g.POST("/memo", func(c echo.Context) error {
+		userId := c.Get(getUserIdContextKey()).(int)
+		memoCreate := &api.MemoCreate{
+			CreatorId: userId,
+		}
+		if err := jsonapi.UnmarshalPayload(c.Request().Body, memoCreate); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
+		}
+
+		memo, err := s.MemoService.CreateMemo(memoCreate)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := jsonapi.MarshalPayload(c.Response().Writer, memo); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
+		}
+
+		return nil
+	})
+	g.PATCH("/memo/:memoId", func(c echo.Context) error {
+		memoId, err := strconv.Atoi(c.Param("memoId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		memoPatch := &api.MemoPatch{
+			Id: memoId,
+		}
+		if err := jsonapi.UnmarshalPayload(c.Request().Body, memoPatch); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch memo request").SetInternal(err)
+		}
+
+		memo, err := s.MemoService.PatchMemo(memoPatch)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch memo").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := jsonapi.MarshalPayload(c.Response().Writer, memo); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
+		}
+
+		return nil
+	})
+	g.GET("/memo", func(c echo.Context) error {
+		userId := c.Get(getUserIdContextKey()).(int)
+		memoFind := &api.MemoFind{
+			CreatorId: &userId,
+		}
+		list, err := s.MemoService.FindMemoList(memoFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := jsonapi.MarshalPayload(c.Response().Writer, list); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo list response").SetInternal(err)
+		}
+
+		return nil
+	})
+	g.GET("/memo/:memoId", func(c echo.Context) error {
+		memoId, err := strconv.Atoi(c.Param("memoId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		memoFind := &api.MemoFind{
+			Id: &memoId,
+		}
+		memo, err := s.MemoService.FindMemo(memoFind)
+		if err != nil {
+			if common.ErrorCode(err) == common.NotFound {
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoId))
+			}
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoId)).SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := jsonapi.MarshalPayload(c.Response().Writer, memo); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
+		}
+
+		return nil
+	})
+	g.DELETE("/memo/:memoId", func(c echo.Context) error {
+		memoId, err := strconv.Atoi(c.Param("memoId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		memoDelete := &api.MemoDelete{
+			Id: &memoId,
+		}
+
+		err = s.MemoService.DeleteMemo(memoDelete)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoId)).SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		c.Response().WriteHeader(http.StatusOK)
+
+		return nil
+	})
+}
