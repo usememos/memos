@@ -78,7 +78,7 @@ namespace api {
   export function checkUsernameUsable(name: string) {
     return request<boolean>({
       method: "POST",
-      url: "/api/user/checkusername",
+      url: "/api/user/rename_check",
       data: {
         name,
       },
@@ -88,15 +88,15 @@ namespace api {
   export function checkPasswordValid(password: string) {
     return request<boolean>({
       method: "POST",
-      url: "/api/user/validpassword",
+      url: "/api/user/password_check",
       data: {
         password,
       },
     });
   }
 
-  export function updateUserinfo(userinfo: Partial<{ name: string; password: string }>) {
-    return request({
+  export function updateUserinfo(userinfo: Partial<{ name: string; password: string; resetOpenId: boolean }>) {
+    return request<Model.User>({
       method: "PATCH",
       url: "/api/user/me",
       data: userinfo,
@@ -120,7 +120,7 @@ namespace api {
   export function getMyDeletedMemos() {
     return request<Model.Memo[]>({
       method: "GET",
-      url: "/api/memo/?hidden=true",
+      url: "/api/memo?hidden=true",
     });
   }
 

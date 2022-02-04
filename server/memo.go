@@ -63,6 +63,17 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memoFind := &api.MemoFind{
 			CreatorId: &userId,
 		}
+		showHiddenMemo, err := strconv.ParseBool(c.QueryParam("hidden"))
+		if err != nil {
+			showHiddenMemo = false
+		}
+
+		rowStatus := "NORMAL"
+		if showHiddenMemo {
+			rowStatus = "HIDDEN"
+		}
+		memoFind.RowStatus = &rowStatus
+
 		list, err := s.MemoService.FindMemoList(memoFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)

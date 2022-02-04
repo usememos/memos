@@ -104,10 +104,10 @@ func patchMemo(db *DB, patch *api.MemoPatch) (*api.Memo, error) {
 	set, args := []string{}, []interface{}{}
 
 	if v := patch.Content; v != nil {
-		set, args = append(set, "content = ?"), append(args, v)
+		set, args = append(set, "content = ?"), append(args, *v)
 	}
 	if v := patch.RowStatus; v != nil {
-		set, args = append(set, "row_status = ?"), append(args, v)
+		set, args = append(set, "row_status = ?"), append(args, *v)
 	}
 
 	args = append(args, patch.Id)
@@ -149,6 +149,9 @@ func findMemoList(db *DB, find *api.MemoFind) ([]*api.Memo, error) {
 	}
 	if v := find.CreatorId; v != nil {
 		where, args = append(where, "creator_id = ?"), append(args, *v)
+	}
+	if v := find.RowStatus; v != nil {
+		where, args = append(where, "row_status = ?"), append(args, *v)
 	}
 
 	rows, err := db.Db.Query(`

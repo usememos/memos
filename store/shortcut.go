@@ -69,7 +69,7 @@ func createShortcut(db *DB, create *api.ShortcutCreate) (*api.Shortcut, error) {
 		INSERT INTO shortcut (
 			title, 
 			payload, 
-			creator_id, 
+			creator_id
 		)
 		VALUES (?, ?, ?)
 		RETURNING id, title, payload, creator_id, created_ts, updated_ts, row_status
@@ -103,6 +103,7 @@ func createShortcut(db *DB, create *api.ShortcutCreate) (*api.Shortcut, error) {
 
 func patchShortcut(db *DB, patch *api.ShortcutPatch) (*api.Shortcut, error) {
 	set, args := []string{}, []interface{}{}
+
 	if v := patch.Title; v != nil {
 		set, args = append(set, "title = ?"), append(args, *v)
 	}

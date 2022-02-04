@@ -57,7 +57,11 @@ func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
 		)
 		VALUES (?, ?, ?)
 		RETURNING id, name, password, open_id, created_ts, updated_ts
-	`)
+	`,
+		create.Name,
+		create.Password,
+		create.OpenId,
+	)
 	if err != nil {
 		return nil, FormatError(err)
 	}
@@ -83,14 +87,15 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 	set, args := []string{}, []interface{}{}
 
 	if v := patch.Name; v != nil {
-		set, args = append(set, "name = ?"), append(args, *v)
+		set, args = append(set, "name = ?"), append(args, v)
 	}
 	if v := patch.Password; v != nil {
-		set, args = append(set, "password = ?"), append(args, *v)
+		set, args = append(set, "password = ?"), append(args, v)
 	}
 	if v := patch.OpenId; v != nil {
-		set, args = append(set, "open_id = ?"), append(args, *v)
+		set, args = append(set, "open_id = ?"), append(args, v)
 	}
+
 	args = append(args, patch.Id)
 
 	row, err := db.Db.Query(`

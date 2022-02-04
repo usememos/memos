@@ -55,12 +55,14 @@ class UserService {
   }
 
   public async resetOpenId(): Promise<string> {
-    const openId = await api.resetOpenId();
+    const user = await api.updateUserinfo({
+      resetOpenId: true,
+    });
     appStore.dispatch({
       type: "RESET_OPENID",
-      payload: openId,
+      payload: user.openId,
     });
-    return openId;
+    return user.openId;
   }
 
   private convertResponseModelUser(user: Model.User): Model.User {

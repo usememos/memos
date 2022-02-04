@@ -25,6 +25,7 @@ type MemoPatch struct {
 type MemoFind struct {
 	Id        *int
 	CreatorId *int
+	RowStatus *string
 }
 
 type MemoDelete struct {

@@ -51,14 +51,51 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
 
+		isUsable := true
+		if user != nil {
+			isUsable = false
+		}
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal user response").SetInternal(err)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(isUsable)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal rename check response").SetInternal(err)
 		}
 
 		return nil
 	})
-	g.PATCH("user/me", func(c echo.Context) error {
+	g.POST("/user/password_check", func(c echo.Context) error {
+		userId := c.Get(getUserIdContextKey()).(int)
+		userPasswordCheck := &api.UserPasswordCheck{}
+		if err := json.NewDecoder(c.Request().Body).Decode(userPasswordCheck); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user password check request").SetInternal(err)
+		}
+
+		if userPasswordCheck.Password == "" {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user password check request")
+		}
+
+		userFind := &api.UserFind{
+			Id:       &userId,
+			Password: &userPasswordCheck.Password,
+		}
+		user, err := s.UserService.FindUser(userFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+
+		isValid := false
+		if user != nil {
+			isValid = true
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(isValid)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal password check response").SetInternal(err)
+		}
+
+		return nil
+	})
+	g.PATCH("/user/me", func(c echo.Context) error {
 		userId := c.Get(getUserIdContextKey()).(int)
 		userPatch := &api.UserPatch{
 			Id: userId,
@@ -67,7 +104,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
 		}
 
-		if *userPatch.ResetOpenId {
+		if userPatch.ResetOpenId != nil && *userPatch.ResetOpenId {
 			openId := common.GenUUID()
 			userPatch.OpenId = &openId
 		}

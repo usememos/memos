@@ -29,8 +29,9 @@ type UserPatch struct {
 type UserFind struct {
 	Id *int `json:"id"`
 
-	Name   *string `json:"name"`
-	OpenId *string
+	Name     *string `json:"name"`
+	Password *string
+	OpenId   *string
 }
 
 type UserRenameCheck struct {
