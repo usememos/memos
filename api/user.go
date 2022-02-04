@@ -7,7 +7,7 @@ type User struct {
 
 	OpenId   string `json:"openId"`
 	Name     string `json:"name"`
-	Password string
+	Password string `json:"-"`
 }
 
 type UserCreate struct {
