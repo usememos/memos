@@ -18,7 +18,7 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
   const memo: FormattedMemo = {
     ...propsMemo,
     createdAtStr: utils.getDateTimeString(propsMemo.createdAt),
-    deletedAtStr: utils.getDateTimeString(propsMemo.deletedAt ?? Date.now()),
+    deletedAtStr: utils.getDateTimeString(propsMemo.updatedAt ?? Date.now()),
   };
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []);

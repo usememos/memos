@@ -6,10 +6,10 @@ export interface AppSetting {
 }
 
 export interface State extends AppSetting {
-  markMemoId: string;
-  editMemoId: string;
   isMobileView: boolean;
   showSiderbarInMobileView: boolean;
+  markMemoId: string;
+  editMemoId: string;
 }
 
 interface SetMarkMemoIdAction {

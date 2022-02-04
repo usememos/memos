@@ -3,7 +3,7 @@ export interface State {
 }
 
 interface SignInAction {
-  type: "SIGN_IN";
+  type: "LOGIN";
   payload: State;
 }
 
@@ -21,7 +21,7 @@ export type Actions = SignInAction | SignOutAction | ResetOpenIdAction;
 
 export function reducer(state: State, action: Actions): State {
   switch (action.type) {
-    case "SIGN_IN": {
+    case "LOGIN": {
       return {
         user: action.payload.user,
       };

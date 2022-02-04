@@ -8,11 +8,11 @@ export default defineConfig({
     cors: true,
     proxy: {
       "/api": {
-        // target: "http://localhost:8080/",
-        target: "https://memos.justsven.top/",
+        target: "http://localhost:8080/",
+        // target: "https://memos.justsven.top/",
         changeOrigin: true,
       },
-      "/r/": {
+      "/h/": {
         target: "https://memos.justsven.top/",
         changeOrigin: true,
       },

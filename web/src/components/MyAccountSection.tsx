@@ -20,8 +20,8 @@ interface Props {}
 const MyAccountSection: React.FC<Props> = () => {
   const { userState } = useContext(appContext);
   const user = userState.user as Model.User;
-  const [username, setUsername] = useState<string>(user.username);
-  const openAPIRoute = `${window.location.origin}/api/whs/memo/${user.openId}`;
+  const [username, setUsername] = useState<string>(user.name);
+  const openAPIRoute = `${window.location.origin}/h/${user.openId}/memo`;
 
   const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nextUsername = e.target.value as string;
@@ -29,12 +29,12 @@ const MyAccountSection: React.FC<Props> = () => {
   };
 
   const handleConfirmEditUsernameBtnClick = async () => {
-    if (user.username === "guest") {
+    if (user.name === "guest") {
       toastHelper.info("🈲 不要修改我的用户名");
       return;
     }
 
-    if (username === user.username) {
+    if (username === user.name) {
       return;
     }
 
@@ -61,7 +61,7 @@ const MyAccountSection: React.FC<Props> = () => {
   };
 
   const handleChangePasswordBtnClick = () => {
-    if (user.username === "guest") {
+    if (user.name === "guest") {
       toastHelper.info("🈲 不要修改我的密码");
       return;
     }
@@ -93,14 +93,14 @@ const MyAccountSection: React.FC<Props> = () => {
         <label className="form-label input-form-label username-label">
           <span className="normal-text">账号：</span>
           <input type="text" value={username} onChange={handleUsernameChanged} />
-          <div className={`btns-container ${username === user.username ? "hidden" : ""}`} onClick={handlePreventDefault}>
+          <div className={`btns-container ${username === user.name ? "hidden" : ""}`} onClick={handlePreventDefault}>
             <span className="btn confirm-btn" onClick={handleConfirmEditUsernameBtnClick}>
               保存
             </span>
             <span
               className="btn cancel-btn"
               onClick={() => {
-                setUsername(user.username);
+                setUsername(user.name);
               }}
             >
               撤销

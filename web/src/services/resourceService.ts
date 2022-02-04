@@ -17,7 +17,7 @@ class ResourceService {
 
     formData.append("file", file, filename);
 
-    const { data } = await api.uploadFile(formData);
+    const data = await api.uploadFile(formData);
 
     return data;
   }

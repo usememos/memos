@@ -130,7 +130,7 @@ const MemoEditor: React.FC<Props> = () => {
 
     try {
       const image = await resourceService.upload(file);
-      const url = `/r/${image.id}/${image.filename}`;
+      const url = `/h/r/${image.id}/${image.filename}`;
 
       return url;
     } catch (error: any) {

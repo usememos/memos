@@ -97,7 +97,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
           </Only>
           <div className="watermark-container">
             <span className="normal-text">
-              <span className="icon-text">✍️</span> by <span className="name-text">{userinfo?.username}</span>
+              <span className="icon-text">✍️</span> by <span className="name-text">{userinfo?.name}</span>
             </span>
           </div>
         </div>

@@ -1,6 +1,6 @@
 export type State = AppLocation;
 
-interface SetLocation {
+interface SetLocationAction {
   type: "SET_LOCATION";
   payload: State;
 }
@@ -12,13 +12,13 @@ interface SetPathnameAction {
   };
 }
 
-interface SetQuery {
+interface SetQueryAction {
   type: "SET_QUERY";
   payload: Query;
 }
 
-interface SetQueryFilterAction {
-  type: "SET_QUERY_FILTER";
+interface SetShortcutIdAction {
+  type: "SET_SHORTCUT_ID";
   payload: string;
 }
 
@@ -58,14 +58,14 @@ interface SetHashAction {
 }
 
 export type Actions =
-  | SetLocation
+  | SetLocationAction
   | SetPathnameAction
-  | SetQuery
+  | SetQueryAction
   | SetTagQueryAction
   | SetFromAndToQueryAction
   | SetTypeAction
   | SetTextAction
-  | SetQueryFilterAction
+  | SetShortcutIdAction
   | SetHashAction;
 
 export function reducer(state: State, action: Actions) {
@@ -156,8 +156,8 @@ export function reducer(state: State, action: Actions) {
         },
       };
     }
-    case "SET_QUERY_FILTER": {
-      if (action.payload === state.query.filter) {
+    case "SET_SHORTCUT_ID": {
+      if (action.payload === state.query.shortcutId) {
         return state;
       }
 
@@ -183,6 +183,6 @@ export const defaultState: State = {
     duration: null,
     type: "",
     text: "",
-    filter: "",
+    shortcutId: "",
   },
 };

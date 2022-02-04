@@ -4,17 +4,17 @@ import * as globalStore from "./globalStateStore";
 import * as locationStore from "./locationStore";
 import * as memoStore from "./memoStore";
 import * as userStore from "./userStore";
-import * as queryStore from "./queryStore";
+import * as shortcutStore from "./shortcutStore";
 
 interface AppState {
   globalState: globalStore.State;
   locationState: locationStore.State;
   memoState: memoStore.State;
   userState: userStore.State;
-  queryState: queryStore.State;
+  shortcutState: shortcutStore.State;
 }
 
-type AppStateActions = globalStore.Actions | locationStore.Actions | memoStore.Actions | userStore.Actions | queryStore.Actions;
+type AppStateActions = globalStore.Actions | locationStore.Actions | memoStore.Actions | userStore.Actions | shortcutStore.Actions;
 
 const appStore = createStore<AppState, AppStateActions>(
   {
@@ -22,14 +22,14 @@ const appStore = createStore<AppState, AppStateActions>(
     locationState: locationStore.defaultState,
     memoState: memoStore.defaultState,
     userState: userStore.defaultState,
-    queryState: queryStore.defaultState,
+    shortcutState: shortcutStore.defaultState,
   },
   combineReducers<AppState, AppStateActions>({
     globalState: globalStore.reducer,
     locationState: locationStore.reducer,
     memoState: memoStore.reducer,
     userState: userStore.reducer,
-    queryState: queryStore.reducer,
+    shortcutState: shortcutStore.reducer,
   })
 );
 

@@ -13,7 +13,7 @@ const UserBanner: React.FC<Props> = () => {
     memoState: { memos, tags },
     userState: { user },
   } = useContext(appContext);
-  const username = user ? user.username : "Memos";
+  const username = user ? user.name : "Memos";
   const createdDays = user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdAt)) / 1000 / 3600 / 24) : 0;
 
   const [shouldShowPopupBtns, setShouldShowPopupBtns] = useState(false);

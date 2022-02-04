@@ -67,16 +67,11 @@ const Signin: React.FC<Props> = () => {
 
     try {
       signinBtnsClickLoadingState.setLoading();
-      let actionFunc = api.signin;
+      let actionFunc = api.login;
       if (action === "signup") {
         actionFunc = api.signup;
       }
-      const { succeed, message } = await actionFunc(username, password);
-
-      if (!succeed && message) {
-        toastHelper.error("😟 " + message);
-        return;
-      }
+      await actionFunc(username, password);
 
       const user = await userService.doSignIn();
       if (user) {
@@ -106,12 +101,7 @@ const Signin: React.FC<Props> = () => {
 
     try {
       signinBtnsClickLoadingState.setLoading();
-      const { succeed, message } = await api.signin("guest", "123456");
-
-      if (!succeed && message) {
-        toastHelper.error("😟 " + message);
-        return;
-      }
+      await api.login("guest", "123456");
 
       const user = await userService.doSignIn();
       if (user) {
