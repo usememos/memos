@@ -64,7 +64,8 @@ CREATE TABLE shortcut (
   title TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '',
   creator_id INTEGER NOT NULL,
-  pinned_ts BIGINT NOT NULL DEFAULT 0,
+  -- allowed row status are 'NORMAL', 'ARCHIVED'.
+  row_status TEXT NOT NULL DEFAULT 'NORMAL',
   FOREIGN KEY(creator_id) REFERENCES users(id)
 );
 

@@ -29,9 +29,10 @@ func NewServer() *Server {
 	e.HidePort = false
 
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:   "web/dist",
-		Browse: false,
-		HTML5:  true,
+		Skipper: middleware.DefaultSkipper,
+		Root:    "web/dist",
+		Browse:  false,
+		HTML5:   true,
 	}))
 
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte(common.GenUUID()))))

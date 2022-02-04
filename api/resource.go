@@ -1,31 +1,31 @@
 package api
 
 type Resource struct {
-	Id        int   `jsonapi:"primary,resource"`
-	CreatedTs int64 `jsonapi:"attr,createdTs"`
-	UpdatedTs int64 `jsonapi:"attr,updatedTs"`
+	Id        int   `json:"id"`
+	CreatedTs int64 `json:"createdTs"`
+	UpdatedTs int64 `json:"updatedTs"`
 
-	Filename string `jsonapi:"attr,filename"`
-	Blob     []byte `jsonapi:"attr,blob"`
-	Type     string `jsonapi:"attr,type"`
-	Size     int64  `jsonapi:"attr,size"`
+	Filename string `json:"filename"`
+	Blob     []byte `json:"blob"`
+	Type     string `json:"type"`
+	Size     int64  `json:"size"`
 
-	CreatorId int `jsonapi:"attr,creatorId"`
+	CreatorId int `json:"creatorId"`
 }
 
 type ResourceCreate struct {
-	Filename string `jsonapi:"attr,filename"`
-	Blob     []byte `jsonapi:"attr,blob"`
-	Type     string `jsonapi:"attr,type"`
-	Size     int64  `jsonapi:"attr,size"`
+	Filename string `json:"filename"`
+	Blob     []byte `json:"blob"`
+	Type     string `json:"type"`
+	Size     int64  `json:"size"`
 
-	CreatorId int `jsonapi:"attr,creatorId"`
+	CreatorId int
 }
 
 type ResourceFind struct {
-	Id        *int
-	CreatorId *int
-	Filename  *string
+	Id        *int    `json:"id"`
+	CreatorId *int    `json:"creatorId"`
+	Filename  *string `json:"filename"`
 }
 
 type ResourceDelete struct {

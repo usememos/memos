@@ -1,12 +1,12 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"memos/api"
 	"net/http"
 	"strconv"
 
-	"github.com/google/jsonapi"
 	"github.com/labstack/echo/v4"
 )
 
@@ -31,7 +31,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		memoCreate := &api.MemoCreate{
 			CreatorId: user.Id,
 		}
-		if err := jsonapi.UnmarshalPayload(c.Request().Body, memoCreate); err != nil {
+		if err := json.NewDecoder(c.Request().Body).Decode(memoCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request by open api").SetInternal(err)
 		}
 
@@ -41,7 +41,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, memo); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(memo); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
 		}
 

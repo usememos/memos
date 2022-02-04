@@ -1,13 +1,13 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"memos/api"
 	"memos/common"
 	"net/http"
 	"strconv"
 
-	"github.com/google/jsonapi"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,7 +17,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memoCreate := &api.MemoCreate{
 			CreatorId: userId,
 		}
-		if err := jsonapi.UnmarshalPayload(c.Request().Body, memoCreate); err != nil {
+		if err := json.NewDecoder(c.Request().Body).Decode(memoCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
 		}
 
@@ -27,7 +27,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, memo); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(memo); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
 		}
 
@@ -42,7 +42,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memoPatch := &api.MemoPatch{
 			Id: memoId,
 		}
-		if err := jsonapi.UnmarshalPayload(c.Request().Body, memoPatch); err != nil {
+		if err := json.NewDecoder(c.Request().Body).Decode(memoPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch memo request").SetInternal(err)
 		}
 
@@ -52,7 +52,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, memo); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(memo); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
 		}
 
@@ -69,7 +69,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, list); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(list); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo list response").SetInternal(err)
 		}
 
@@ -93,7 +93,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, memo); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(memo); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
 		}
 

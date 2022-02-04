@@ -72,7 +72,7 @@ func createShortcut(db *DB, create *api.ShortcutCreate) (*api.Shortcut, error) {
 			creator_id, 
 		)
 		VALUES (?, ?, ?)
-		RETURNING id, title, payload, creator_id, created_ts, updated_ts, pinned_ts
+		RETURNING id, title, payload, creator_id, created_ts, updated_ts, row_status
 	`,
 		create.Title,
 		create.Payload,
@@ -93,7 +93,7 @@ func createShortcut(db *DB, create *api.ShortcutCreate) (*api.Shortcut, error) {
 		&shortcut.CreatorId,
 		&shortcut.CreatedTs,
 		&shortcut.UpdatedTs,
-		&shortcut.PinnedTs,
+		&shortcut.RowStatus,
 	); err != nil {
 		return nil, FormatError(err)
 	}
@@ -109,8 +109,8 @@ func patchShortcut(db *DB, patch *api.ShortcutPatch) (*api.Shortcut, error) {
 	if v := patch.Payload; v != nil {
 		set, args = append(set, "payload = ?"), append(args, *v)
 	}
-	if v := patch.PinnedTs; v != nil {
-		set, args = append(set, "pinned_ts = ?"), append(args, *v)
+	if v := patch.RowStatus; v != nil {
+		set, args = append(set, "row_status = ?"), append(args, *v)
 	}
 
 	args = append(args, patch.Id)
@@ -119,7 +119,7 @@ func patchShortcut(db *DB, patch *api.ShortcutPatch) (*api.Shortcut, error) {
 		UPDATE shortcut
 		SET `+strings.Join(set, ", ")+`
 		WHERE id = ?
-		RETURNING id, title, payload, created_ts, updated_ts, pinned_ts
+		RETURNING id, title, payload, created_ts, updated_ts, row_status
 	`, args...)
 	if err != nil {
 		return nil, FormatError(err)
@@ -137,7 +137,7 @@ func patchShortcut(db *DB, patch *api.ShortcutPatch) (*api.Shortcut, error) {
 		&shortcut.Payload,
 		&shortcut.CreatedTs,
 		&shortcut.UpdatedTs,
-		&shortcut.PinnedTs,
+		&shortcut.RowStatus,
 	); err != nil {
 		return nil, FormatError(err)
 	}
@@ -166,7 +166,7 @@ func findShortcutList(db *DB, find *api.ShortcutFind) ([]*api.Shortcut, error) {
 			creator_id,
 			created_ts,
 			updated_ts,
-			pinned_ts
+			row_status
 		FROM shortcut
 		WHERE `+strings.Join(where, " AND "),
 		args...,
@@ -186,7 +186,7 @@ func findShortcutList(db *DB, find *api.ShortcutFind) ([]*api.Shortcut, error) {
 			&shortcut.CreatorId,
 			&shortcut.CreatedTs,
 			&shortcut.UpdatedTs,
-			&shortcut.PinnedTs,
+			&shortcut.RowStatus,
 		); err != nil {
 			return nil, FormatError(err)
 		}

@@ -1,13 +1,13 @@
 package api
 
 type Shortcut struct {
-	Id        int   `jsonapi:"primary,shortcut"`
-	CreatedTs int64 `jsonapi:"attr,createdTs"`
-	UpdatedTs int64 `jsonapi:"attr,updatedTs"`
+	Id        int   `json:"id"`
+	CreatedTs int64 `json:"createdTs"`
+	UpdatedTs int64 `json:"updatedTs"`
 
-	Title     string `jsonapi:"attr,title"`
-	Payload   string `jsonapi:"attr,payload"`
-	PinnedTs  int64  `jsonapi:"attr,pinnedTs"`
+	Title     string `json:"title"`
+	Payload   string `json:"payload"`
+	RowStatus string `json:"rowStatus"`
 	CreatorId int
 }
 
@@ -16,18 +16,16 @@ type ShortcutCreate struct {
 	CreatorId int
 
 	// Domain specific fields
-	Title   string `jsonapi:"attr,title"`
-	Payload string `jsonapi:"attr,payload"`
+	Title   string `json:"title"`
+	Payload string `json:"payload"`
 }
 
 type ShortcutPatch struct {
 	Id int
 
-	Title    *string `jsonapi:"attr,title"`
-	Payload  *string `jsonapi:"attr,payload"`
-	PinnedTs *int64
-
-	Pinned *bool `jsonapi:"attr,pinned"`
+	Title     *string `json:"title"`
+	Payload   *string `json:"payload"`
+	RowStatus *string `json:"rowStatus"`
 }
 
 type ShortcutFind struct {
@@ -37,7 +35,7 @@ type ShortcutFind struct {
 	CreatorId *int
 
 	// Domain specific fields
-	Title *string `jsonapi:"attr,title"`
+	Title *string `json:"title"`
 }
 
 type ShortcutDelete struct {

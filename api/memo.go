@@ -1,17 +1,17 @@
 package api
 
 type Memo struct {
-	Id        int    `jsonapi:"primary,memo"`
-	CreatedTs int64  `jsonapi:"attr,createdTs"`
-	UpdatedTs int64  `jsonapi:"attr,updatedTs"`
-	RowStatus string `jsonapi:"attr,rowStatus"`
+	Id        int    `json:"id"`
+	CreatedTs int64  `json:"createdTs"`
+	UpdatedTs int64  `json:"updatedTs"`
+	RowStatus string `json:"rowStatus"`
 
-	Content   string `jsonapi:"attr,content"`
-	CreatorId int    `jsonapi:"attr,creatorId"`
+	Content   string `json:"content"`
+	CreatorId int    `json:"creatorId"`
 }
 
 type MemoCreate struct {
-	Content   string `jsonapi:"attr,content"`
+	Content   string `json:"content"`
 	CreatorId int
 }
 
@@ -28,7 +28,7 @@ type MemoFind struct {
 }
 
 type MemoDelete struct {
-	Id        *int `jsonapi:"primary,memo"`
+	Id        *int `json:"id"`
 	CreatorId *int
 }
 

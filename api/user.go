@@ -1,19 +1,19 @@
 package api
 
 type User struct {
-	Id        int   `jsonapi:"primary,user"`
-	CreatedTs int64 `jsonapi:"attr,createdTs"`
-	UpdatedTs int64 `jsonapi:"attr,updatedTs"`
+	Id        int   `json:"id"`
+	CreatedTs int64 `json:"createdTs"`
+	UpdatedTs int64 `json:"updatedTs"`
 
-	OpenId   string `jsonapi:"attr,openId"`
-	Name     string `jsonapi:"attr,name"`
+	OpenId   string `json:"openId"`
+	Name     string `json:"name"`
 	Password string
 }
 
 type UserCreate struct {
-	OpenId   string `jsonapi:"attr,openId"`
-	Name     string `jsonapi:"attr,name"`
-	Password string `jsonapi:"attr,password"`
+	OpenId   string `json:"openId"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
 type UserPatch struct {
@@ -21,16 +21,24 @@ type UserPatch struct {
 
 	OpenId *string
 
-	Name        *string `jsonapi:"attr,name"`
-	Password    *string `jsonapi:"attr,password"`
-	ResetOpenId *bool   `jsonapi:"attr,resetOpenId"`
+	Name        *string `json:"name"`
+	Password    *string `json:"password"`
+	ResetOpenId *bool   `json:"resetOpenId"`
 }
 
 type UserFind struct {
-	Id *int `jsonapi:"attr,id"`
+	Id *int `json:"id"`
 
-	Name   *string `jsonapi:"attr,name"`
+	Name   *string `json:"name"`
 	OpenId *string
+}
+
+type UserRenameCheck struct {
+	Name string `json:"name"`
+}
+
+type UserPasswordCheck struct {
+	Password string `json:"password"`
 }
 
 type UserService interface {

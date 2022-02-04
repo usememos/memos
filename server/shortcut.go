@@ -1,13 +1,12 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"memos/api"
 	"net/http"
 	"strconv"
-	"time"
 
-	"github.com/google/jsonapi"
 	"github.com/labstack/echo/v4"
 )
 
@@ -17,7 +16,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		shortcutCreate := &api.ShortcutCreate{
 			CreatorId: userId,
 		}
-		if err := jsonapi.UnmarshalPayload(c.Request().Body, shortcutCreate); err != nil {
+		if err := json.NewDecoder(c.Request().Body).Decode(shortcutCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post shortcut request").SetInternal(err)
 		}
 
@@ -27,7 +26,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, shortcut); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(shortcut); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal shortcut response").SetInternal(err)
 		}
 
@@ -42,16 +41,8 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		shortcutPatch := &api.ShortcutPatch{
 			Id: shortcutId,
 		}
-		if err := jsonapi.UnmarshalPayload(c.Request().Body, shortcutPatch); err != nil {
+		if err := json.NewDecoder(c.Request().Body).Decode(shortcutPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch shortcut request").SetInternal(err)
-		}
-
-		if shortcutPatch.Pinned != nil {
-			pinnedTs := int64(0)
-			if *shortcutPatch.Pinned {
-				pinnedTs = time.Now().Unix()
-			}
-			shortcutPatch.PinnedTs = &pinnedTs
 		}
 
 		shortcut, err := s.ShortcutService.PatchShortcut(shortcutPatch)
@@ -60,7 +51,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, shortcut); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(shortcut); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal shortcut response").SetInternal(err)
 		}
 
@@ -71,13 +62,13 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		shortcutFind := &api.ShortcutFind{
 			CreatorId: &userId,
 		}
-		list, err := s.ShortcutService.FindShortcut(shortcutFind)
+		list, err := s.ShortcutService.FindShortcutList(shortcutFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch shortcut list").SetInternal(err)
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, list); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(list); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal shortcut list response").SetInternal(err)
 		}
 
@@ -98,7 +89,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, shortcut); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(shortcut); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal shortcut response").SetInternal(err)
 		}
 

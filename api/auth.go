@@ -1,11 +1,11 @@
 package api
 
 type Login struct {
-	Name     string `jsonapi:"attr,name"`
-	Password string `jsonapi:"attr,password"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
 type Signup struct {
-	Name     string `jsonapi:"attr,name"`
-	Password string `jsonapi:"attr,password"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }

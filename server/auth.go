@@ -1,19 +1,19 @@
 package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"memos/api"
 	"memos/common"
 	"net/http"
 
-	"github.com/google/jsonapi"
 	"github.com/labstack/echo/v4"
 )
 
 func (s *Server) registerAuthRoutes(g *echo.Group) {
 	g.POST("/auth/login", func(c echo.Context) error {
 		login := &api.Login{}
-		if err := jsonapi.UnmarshalPayload(c.Request().Body, login); err != nil {
+		if err := json.NewDecoder(c.Request().Body).Decode(login); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted login request").SetInternal(err)
 		}
 
@@ -40,7 +40,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, user); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal create user response").SetInternal(err)
 		}
 
@@ -57,7 +57,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 	})
 	g.POST("/auth/signup", func(c echo.Context) error {
 		signup := &api.Signup{}
-		if err := jsonapi.UnmarshalPayload(c.Request().Body, signup); err != nil {
+		if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
 		}
 
@@ -88,7 +88,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := jsonapi.MarshalPayload(c.Response().Writer, user); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal create user response").SetInternal(err)
 		}
 
