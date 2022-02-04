@@ -30,20 +30,20 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		size := file.Size
 		src, err := file.Open()
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Failed to open file").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open file").SetInternal(err)
 		}
 		defer src.Close()
 
-		blob, err := ioutil.ReadAll(src)
+		fileBytes, err := ioutil.ReadAll(src)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Failed to read file").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
 		}
 
 		resourceCreate := &api.ResourceCreate{
 			Filename:  filename,
 			Type:      filetype,
 			Size:      size,
-			Blob:      blob,
+			Blob:      fileBytes,
 			CreatorId: userId,
 		}
 

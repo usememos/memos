@@ -24,13 +24,26 @@ func (s *ResourceService) CreateResource(create *api.ResourceCreate) (*api.Resou
 	return resource, nil
 }
 
-func (s *ResourceService) FindResouceList(find *api.ResourceFind) ([]*api.Resource, error) {
+func (s *ResourceService) FindResourceList(find *api.ResourceFind) ([]*api.Resource, error) {
 	list, err := findResourceList(s.db, find)
 	if err != nil {
 		return nil, err
 	}
 
 	return list, nil
+}
+
+func (s *ResourceService) FindResource(find *api.ResourceFind) (*api.Resource, error) {
+	list, err := findResourceList(s.db, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(list) == 0 {
+		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+	}
+
+	return list[0], nil
 }
 
 func (s *ResourceService) DeleteResource(delete *api.ResourceDelete) error {

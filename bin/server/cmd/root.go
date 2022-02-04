@@ -84,6 +84,8 @@ func (m *Main) Run() error {
 	s.ShortcutService = store.NewShortcutService(db)
 	s.MemoService = store.NewMemoService(db)
 	s.UserService = store.NewUserService(db)
+	s.ShortcutService = store.NewShortcutService(db)
+	s.ResourceService = store.NewResourceService(db)
 
 	m.server = s
 

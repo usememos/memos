@@ -3,7 +3,7 @@ package server
 import (
 	"fmt"
 	"memos/api"
-	"memos/common"
+	"time"
 
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
@@ -28,6 +28,16 @@ func NewServer() *Server {
 	e.HideBanner = true
 	e.HidePort = false
 
+	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+		Format: "${method} ${uri} ${status}\n",
+	}))
+
+	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
+		Skipper:      middleware.DefaultSkipper,
+		ErrorMessage: "Request timeout",
+		Timeout:      30 * time.Second,
+	}))
+
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Skipper: middleware.DefaultSkipper,
 		Root:    "web/dist",
@@ -35,7 +45,7 @@ func NewServer() *Server {
 		HTML5:   true,
 	}))
 
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(common.GenUUID()))))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte("just_memos"))))
 
 	s := &Server{
 		e:    e,
@@ -47,7 +57,7 @@ func NewServer() *Server {
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s.UserService, next)
+		return BasicAuthMiddleware(s.UserService, next)
 	})
 	s.registerAuthRoutes(apiGroup)
 	s.registerUserRoutes(apiGroup)

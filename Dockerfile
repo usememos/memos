@@ -23,9 +23,6 @@ RUN go build \
 FROM alpine:3.14.3 AS monolithic
 WORKDIR /usr/local/memos
 
-# RUN apk add --no-cache tzdata
-# ENV TZ="Asia/Shanghai"
-
 COPY --from=backend /backend-build/memos /usr/local/memos/
 COPY --from=frontend /frontend-build/dist /usr/local/memos/web/dist
 

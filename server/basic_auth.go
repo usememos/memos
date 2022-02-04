@@ -24,7 +24,7 @@ func getUserIdContextKey() string {
 func setUserSession(c echo.Context, user *api.User) error {
 	sess, err := session.Get("session", c)
 	if err != nil {
-		return fmt.Errorf("failed to get session")
+		return fmt.Errorf("failed to get session, err: %w", err)
 	}
 	sess.Options = &sessions.Options{
 		Path:     "/",
@@ -34,7 +34,7 @@ func setUserSession(c echo.Context, user *api.User) error {
 	sess.Values[userIdContextKey] = user.Id
 	err = sess.Save(c.Request(), c.Response())
 	if err != nil {
-		return fmt.Errorf("failed to set session")
+		return fmt.Errorf("failed to set session, err: %w", err)
 	}
 
 	return nil
@@ -43,7 +43,7 @@ func setUserSession(c echo.Context, user *api.User) error {
 func removeUserSession(c echo.Context) error {
 	sess, err := session.Get("session", c)
 	if err != nil {
-		return fmt.Errorf("failed to get session")
+		return fmt.Errorf("failed to get session, err: %w", err)
 	}
 	sess.Options = &sessions.Options{
 		Path:     "/",
@@ -53,14 +53,14 @@ func removeUserSession(c echo.Context) error {
 	sess.Values[userIdContextKey] = nil
 	err = sess.Save(c.Request(), c.Response())
 	if err != nil {
-		return fmt.Errorf("failed to set session")
+		return fmt.Errorf("failed to set session, err: %w", err)
 	}
 
 	return nil
 }
 
 // Use session instead of jwt in the initial version
-func JWTMiddleware(us api.UserService, next echo.HandlerFunc) echo.HandlerFunc {
+func BasicAuthMiddleware(us api.UserService, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Skips auth
 		if common.HasPrefixes(c.Path(), "/api/auth") {
@@ -69,7 +69,7 @@ func JWTMiddleware(us api.UserService, next echo.HandlerFunc) echo.HandlerFunc {
 
 		sess, err := session.Get("session", c)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing session")
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing session").SetInternal(err)
 		}
 
 		userIdValue := sess.Values[userIdContextKey]

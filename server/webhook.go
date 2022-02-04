@@ -47,7 +47,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 
 		return nil
 	})
-	g.GET("r/:resourceId/:filename", func(c echo.Context) error {
+	g.GET("/r/:resourceId/:filename", func(c echo.Context) error {
 		resourceId, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
