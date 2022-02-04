@@ -70,14 +70,14 @@ const TagList: React.FC<Props> = () => {
 
   return (
     <div className="tags-wrapper">
-      <p className="title-text">常用标签</p>
+      <p className="title-text">Tags</p>
       <div className="tags-container">
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={tagQuery} />
         ))}
         <Only when={tags.length < 5 && memoService.initialized}>
           <p className="tag-tip-container">
-            输入<span className="code-text"># Tag </span>来创建标签吧~
+            Enter <span className="code-text"># Tag </span> to create a tag
           </p>
         </Only>
       </div>

@@ -18,7 +18,7 @@ const MemoFilter: React.FC<FilterProps> = () => {
 
   return (
     <div className={`filter-query-container ${showFilter ? "" : "hidden"}`}>
-      <span className="tip-text">筛选：</span>
+      <span className="tip-text">Filter:</span>
       <div
         className={"filter-item-container " + (queryFilter ? "" : "hidden")}
         onClick={() => {

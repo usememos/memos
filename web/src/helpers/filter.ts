@@ -1,68 +1,68 @@
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "./consts";
 
 export const relationConsts = [
-  { text: "且", value: "AND" },
-  { text: "或", value: "OR" },
+  { text: "And", value: "AND" },
+  { text: "Or", value: "OR" },
 ];
 
 export const filterConsts = {
   TAG: {
+    text: "Tag",
     value: "TAG",
-    text: "标签",
     operators: [
       {
-        text: "包括",
+        text: "Contains",
         value: "CONTAIN",
       },
       {
-        text: "排除",
+        text: "Does not contain",
         value: "NOT_CONTAIN",
       },
     ],
   },
   TYPE: {
+    text: "Type",
     value: "TYPE",
-    text: "类型",
     operators: [
       {
+        text: "Is",
         value: "IS",
-        text: "是",
       },
       {
+        text: "Is not",
         value: "IS_NOT",
-        text: "不是",
       },
     ],
     values: [
       {
+        text: "Connected",
         value: "CONNECTED",
-        text: "有关联",
       },
       {
+        text: "No tags",
         value: "NOT_TAGGED",
-        text: "无标签",
       },
       {
+        text: "Has links",
         value: "LINKED",
-        text: "有超链接",
       },
       {
+        text: "Has images",
         value: "IMAGED",
-        text: "有图片",
       },
     ],
   },
   TEXT: {
+    text: "Text",
     value: "TEXT",
-    text: "文本",
     operators: [
       {
+        text: "Contain",
         value: "CONTAIN",
-        text: "包括",
       },
       {
+        text: "Does not contain",
         value: "NOT_CONTAIN",
-        text: "排除",
       },
     ],
   },

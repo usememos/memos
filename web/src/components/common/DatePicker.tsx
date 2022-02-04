@@ -58,7 +58,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
           <img className="icon-img" src="/icons/arrow-left.svg" />
         </span>
         <span className="normal-text">
-          {firstDate.getFullYear()} 年 {firstDate.getMonth() + 1} 月
+          {firstDate.getFullYear()}/{firstDate.getMonth() + 1}
         </span>
         <span className="btn-text" onClick={() => handleChangeMonthBtnClick(1)}>
           <img className="icon-img" src="/icons/arrow-right.svg" />
@@ -66,13 +66,13 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
       </div>
       <div className="date-picker-day-container">
         <div className="date-picker-day-header">
-          <span className="day-item">周一</span>
-          <span className="day-item">周二</span>
-          <span className="day-item">周三</span>
-          <span className="day-item">周四</span>
-          <span className="day-item">周五</span>
-          <span className="day-item">周六</span>
-          <span className="day-item">周日</span>
+          <span className="day-item">Mon</span>
+          <span className="day-item">Tue</span>
+          <span className="day-item">Web</span>
+          <span className="day-item">Thu</span>
+          <span className="day-item">Fri</span>
+          <span className="day-item">Sat</span>
+          <span className="day-item">Sun</span>
         </div>
 
         {dayList.map((d) => {

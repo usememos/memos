@@ -83,7 +83,7 @@ const MemoList: React.FC<Props> = () => {
         setFetchStatus(false);
       })
       .catch(() => {
-        toastHelper.error("😭 请求数据失败了");
+        toastHelper.error("😭 Refresh failed, please try again later.");
       });
   }, []);
 
@@ -111,7 +111,13 @@ const MemoList: React.FC<Props> = () => {
       ))}
       <div className="status-text-container">
         <p className="status-text">
-          {isFetching ? "努力请求数据中..." : shownMemos.length === 0 ? "空空如也" : showMemoFilter ? "" : "所有数据加载完啦 🎉"}
+          {isFetching
+            ? "Fetching data..."
+            : shownMemos.length === 0
+            ? "Oops, there is nothing"
+            : showMemoFilter
+            ? ""
+            : "Fetching completed 🎉"}
         </p>
       </div>
     </div>

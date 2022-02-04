@@ -1,15 +1,15 @@
-// 验证器
-// * 主要用于验证表单
+// Validator
+// * use for validating form data
 const chineseReg = /[\u3000\u3400-\u4DBF\u4E00-\u9FFF]/;
 
 export interface ValidatorConfig {
-  // 最小长度
+  // min length
   minLength: number;
-  // 最大长度
+  // max length
   maxLength: number;
-  // 无空格
+  // no space
   noSpace: boolean;
-  // 无中文
+  // no chinese
   noChinese: boolean;
 }
 
@@ -18,7 +18,7 @@ export function validate(text: string, config: Partial<ValidatorConfig>): { resu
     if (text.length < config.minLength) {
       return {
         result: false,
-        reason: "长度过短",
+        reason: "Too short",
       };
     }
   }
@@ -27,7 +27,7 @@ export function validate(text: string, config: Partial<ValidatorConfig>): { resu
     if (text.length > config.maxLength) {
       return {
         result: false,
-        reason: "长度超出",
+        reason: "Too long",
       };
     }
   }
@@ -35,14 +35,14 @@ export function validate(text: string, config: Partial<ValidatorConfig>): { resu
   if (config.noSpace && text.includes(" ")) {
     return {
       result: false,
-      reason: "不应含有空格",
+      reason: "Don't allow space",
     };
   }
 
   if (config.noChinese && chineseReg.test(text)) {
     return {
       result: false,
-      reason: "不应含有中文字符",
+      reason: "Don't allow chinese",
     };
   }
 

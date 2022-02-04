@@ -40,7 +40,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
 
   const handleSaveBtnClick = async () => {
     if (!title) {
-      toastHelper.error("标题不能为空！");
+      toastHelper.error("Title is required");
       return;
     }
 
@@ -62,7 +62,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
     if (filters.length > 0) {
       const lastFilter = filters[filters.length - 1];
       if (lastFilter.value.value === "") {
-        toastHelper.info("先完善上一个过滤器吧");
+        toastHelper.info("Please fill in previous filter value");
         return;
       }
     }
@@ -90,7 +90,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">
           <span className="icon-text">🔖</span>
-          {shortcutId ? "编辑检索" : "创建检索"}
+          {shortcutId ? "Edit Shortcut" : "Create Shortcut"}
         </p>
         <button className="btn close-btn" onClick={destroy}>
           <img className="icon-img" src="/icons/close.svg" />
@@ -98,11 +98,11 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container">
         <div className="form-item-container input-form-container">
-          <span className="normal-text">标题</span>
+          <span className="normal-text">Title</span>
           <input className="title-input" type="text" value={title} onChange={handleTitleInputChange} />
         </div>
         <div className="form-item-container filter-form-container">
-          <span className="normal-text">过滤器</span>
+          <span className="normal-text">Filter</span>
           <div className="filters-wrapper">
             {filters.map((f, index) => {
               return (
@@ -116,7 +116,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
               );
             })}
             <div className="create-filter-btn" onClick={handleAddFilterBenClick}>
-              添加筛选条件
+              New Filter
             </div>
           </div>
         </div>
@@ -125,10 +125,10 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
         <div></div>
         <div className="btns-container">
           <span className={`tip-text ${filters.length === 0 && "hidden"}`}>
-            符合条件的 Memo 有 <strong>{shownMemoLength}</strong> 条
+            <strong>{shownMemoLength}</strong> eligible memo
           </span>
           <button className={`btn save-btn ${requestState.isLoading ? "requesting" : ""}`} onClick={handleSaveBtnClick}>
-            保存
+            Save
           </button>
         </div>
       </div>

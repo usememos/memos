@@ -15,7 +15,7 @@ interface Props {
 }
 
 const nullItem = {
-  text: "请选择",
+  text: "Select",
   value: "",
 };
 

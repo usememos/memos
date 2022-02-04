@@ -27,29 +27,31 @@ const ConfirmResetOpenIdDialog: React.FC<Props> = ({ destroy }: Props) => {
     try {
       await userService.resetOpenId();
     } catch (error) {
-      toastHelper.error("请求重置 Open API 失败");
+      toastHelper.error("Request reset open API failed.");
       return;
     }
-    toastHelper.success("重置成功！");
+    toastHelper.success("Reset open API succeeded.");
     handleCloseBtnClick();
   };
 
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">重置 Open API</p>
+        <p className="title-text">Reset Open API</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <img className="icon-img" src="/icons/close.svg" />
         </button>
       </div>
       <div className="dialog-content-container">
-        <p className="warn-text">⚠️ 现有 API 将失效，并生成新的 API，确定要重置吗?</p>
+        <p className="warn-text">
+          ⚠️ The existing API will be invalidated and a new one will be generated, are you sure you want to reset?
+        </p>
         <div className="btns-container">
           <span className="btn cancel-btn" onClick={handleCloseBtnClick}>
-            取消
+            Cancel
           </span>
           <span className={`btn confirm-btn ${resetBtnClickLoadingState.isLoading ? "loading" : ""}`} onClick={handleConfirmBtnClick}>
-            确定重置！
+            Reset!
           </span>
         </div>
       </div>

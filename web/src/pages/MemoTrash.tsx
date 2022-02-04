@@ -114,13 +114,13 @@ const MemoTrash: React.FC<Props> = () => {
               <img className="icon-img" src="/icons/menu.svg" alt="menu" />
             </button>
           </Only>
-          <span className="normal-text">回收站</span>
+          <span className="normal-text">Recycle Bin</span>
         </div>
       </div>
       <MemoFilter />
       {loadingState.isLoading ? (
         <div className="tip-text-container">
-          <p className="tip-text">努力请求数据中...</p>
+          <p className="tip-text">fetching data...</p>
         </div>
       ) : deletedMemos.length === 0 ? (
         <div className="tip-text-container">

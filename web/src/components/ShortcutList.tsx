@@ -37,7 +37,7 @@ const ShortcutList: React.FC<Props> = () => {
   return (
     <div className="shortcuts-wrapper">
       <p className="title-text">
-        <span className="normal-text">快速检索</span>
+        <span className="normal-text">Shortcuts</span>
         <span className="btn" onClick={() => showCreateQueryDialog()}>
           +
         </span>
@@ -45,7 +45,7 @@ const ShortcutList: React.FC<Props> = () => {
       <Only when={loadingState.isSucceed && sortedShortcuts.length === 0}>
         <div className="create-shortcut-btn-container">
           <span className="btn" onClick={() => showCreateQueryDialog()}>
-            创建检索
+            New shortcut
           </span>
         </div>
       </Only>
@@ -147,17 +147,17 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
           <div className={`action-btns-wrapper ${showActionBtns ? "" : "hidden"}`} onMouseLeave={handleActionBtnContainerMouseLeave}>
             <div className="action-btns-container">
               <span className="btn" onClick={handlePinQueryBtnClick}>
-                {shortcut.rowStatus === "ARCHIVED" ? "取消置顶" : "置顶"}
+                {shortcut.rowStatus === "ARCHIVED" ? "Unpin" : "Pin"}
               </span>
               <span className="btn" onClick={handleEditQueryBtnClick}>
-                编辑
+                Edit
               </span>
               <span
                 className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`}
                 onClick={handleDeleteMemoClick}
                 onMouseLeave={handleDeleteBtnMouseLeave}
               >
-                {showConfirmDeleteBtn ? "确定删除！" : "删除"}
+                {showConfirmDeleteBtn ? "Delete!" : "Delete"}
               </span>
             </div>
           </div>

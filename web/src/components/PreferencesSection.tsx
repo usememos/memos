@@ -11,7 +11,7 @@ const PreferencesSection: React.FC<Props> = () => {
   const { globalState } = useContext(appContext);
   const { useTinyUndoHistoryCache, shouldHideImageUrl, shouldSplitMemoWord, shouldUseMarkdownParser } = globalState;
 
-  const demoMemoContent = "👋 你好呀～欢迎使用memos!\n* ✨ **开源项目**；\n* 😋 精美且细节的视觉样式；\n* 📑 体验优良的交互逻辑；";
+  const demoMemoContent = "👋 Hiya, welcome to memos!\n* ✨ **Open source project**;\n* 😋 What do you think;\n* 📑 Tell me something plz;";
 
   const handleOpenTinyUndoChanged = () => {
     globalStateService.setAppSetting({
@@ -65,29 +65,29 @@ const PreferencesSection: React.FC<Props> = () => {
   return (
     <>
       <div className="section-container preferences-section-container">
-        <p className="title-text">Memo 显示相关</p>
+        <p className="title-text">Memo Display</p>
         <div
           className="demo-content-container memo-content-text"
           dangerouslySetInnerHTML={{ __html: formatMemoContent(demoMemoContent) }}
         ></div>
-        <label className="form-label checkbox-form-label" onClick={handleSplitWordsValueChanged}>
-          <span className="normal-text">中英文内容自动间隔</span>
+        <label className="form-label checkbox-form-label hidden" onClick={handleSplitWordsValueChanged}>
+          <span className="normal-text">Auto-space in English and Chinese</span>
           <img className="icon-img" src={shouldSplitMemoWord ? "/icons/checkbox-active.svg" : "/icons/checkbox.svg"} />
         </label>
         <label className="form-label checkbox-form-label" onClick={handleUseMarkdownParserChanged}>
-          <span className="normal-text">部分 markdown 格式解析</span>
+          <span className="normal-text">Partial markdown format parsing</span>
           <img className="icon-img" src={shouldUseMarkdownParser ? "/icons/checkbox-active.svg" : "/icons/checkbox.svg"} />
         </label>
         <label className="form-label checkbox-form-label" onClick={handleHideImageUrlValueChanged}>
-          <span className="normal-text">隐藏图片链接地址</span>
+          <span className="normal-text">Hide image url</span>
           <img className="icon-img" src={shouldHideImageUrl ? "/icons/checkbox-active.svg" : "/icons/checkbox.svg"} />
         </label>
       </div>
       <div className="section-container preferences-section-container">
-        <p className="title-text">编辑器</p>
+        <p className="title-text">Editor Extensions</p>
         <label className="form-label checkbox-form-label" onClick={handleOpenTinyUndoChanged}>
           <span className="normal-text">
-            启用{" "}
+            Use{" "}
             <a target="_blank" href="https://github.com/boojack/tiny-undo" onClick={(e) => e.stopPropagation()} rel="noreferrer">
               tiny-undo
             </a>
@@ -96,13 +96,13 @@ const PreferencesSection: React.FC<Props> = () => {
         </label>
       </div>
       <div className="section-container">
-        <p className="title-text">其他</p>
+        <p className="title-text">Others</p>
         <div className="w-full flex flex-row justify-start items-center">
           <button className="px-2 py-1 border rounded text-base hover:opacity-80" onClick={handleExportBtnClick}>
-            导出数据(JSON)
+            Export data as JSON
           </button>
           <button className="btn format-btn hidden" onClick={handleFormatMemosBtnClick}>
-            格式化数据
+            Format Data
           </button>
         </div>
       </div>

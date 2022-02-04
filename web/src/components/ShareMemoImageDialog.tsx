@@ -65,7 +65,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">
-          <span className="icon-text">🥰</span>分享 Memo 图片
+          <span className="icon-text">🥰</span>Share Memo
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <img className="icon-img" src="/icons/close.svg" />
@@ -73,7 +73,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container">
         <div className={`tip-words-container ${shortcutImgUrl ? "finish" : "loading"}`}>
-          <p className="tip-text">{shortcutImgUrl ? "右键或长按即可保存图片 👇" : "图片生成中..."}</p>
+          <p className="tip-text">{shortcutImgUrl ? "Right click or long press to save image 👇" : "Generating the screenshot..."}</p>
         </div>
         <div className="memo-container" ref={memoElRef}>
           <Only when={shortcutImgUrl !== ""}>

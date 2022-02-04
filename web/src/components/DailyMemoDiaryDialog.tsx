@@ -106,11 +106,11 @@ const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
         />
         {loadingState.isLoading ? (
           <div className="tip-container">
-            <p className="tip-text">努力加载中...</p>
+            <p className="tip-text">Loading...</p>
           </div>
         ) : memos.length === 0 ? (
           <div className="tip-container">
-            <p className="tip-text">空空如也</p>
+            <p className="tip-text">Oops, there is nothing.</p>
           </div>
         ) : (
           <div className="dailymemos-wrapper">

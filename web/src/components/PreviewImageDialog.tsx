@@ -43,8 +43,8 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrl }: Props) => {
 
       <div className="img-container">
         <img className={imgWidth <= 0 ? "hidden" : ""} ref={imgRef} width={imgWidth + "%"} src={imgUrl} />
-        <span className={"loading-text " + (imgWidth === -1 ? "" : "hidden")}>图片加载中...</span>
-        <span className={"loading-text " + (imgWidth === 0 ? "" : "hidden")}>😟 图片加载失败，可能是无效的链接</span>
+        <span className={"loading-text " + (imgWidth === -1 ? "" : "hidden")}>Loading image...</span>
+        <span className={"loading-text " + (imgWidth === 0 ? "" : "hidden")}>😟 Failed to load image</span>
       </div>
 
       <div className="action-btns-container">

@@ -15,8 +15,8 @@ export interface Store<S extends State, A extends Action> {
 }
 
 /**
- * 简单实现的 Redux
- * @param preloadedState 初始 state
+ * Toy-Redux
+ * @param preloadedState initial state
  * @param reducer reducer pure function
  * @returns store
  */

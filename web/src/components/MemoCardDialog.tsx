@@ -148,7 +148,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
       </div>
       {linkMemos.length > 0 ? (
         <div className="linked-memos-wrapper">
-          <p className="normal-text">关联了 {linkMemos.length} 个 MEMO</p>
+          <p className="normal-text">{linkMemos.length} related MEMO</p>
           {linkMemos.map((m) => {
             const rawtext = parseHtmlToRawText(formatMemoContent(m.content)).replaceAll("\n", " ");
             return (
@@ -162,7 +162,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
       ) : null}
       {linkedMemos.length > 0 ? (
         <div className="linked-memos-wrapper">
-          <p className="normal-text">{linkedMemos.length} 个链接至此的 MEMO</p>
+          <p className="normal-text">{linkedMemos.length} linked MEMO</p>
           {linkedMemos.map((m) => {
             const rawtext = parseHtmlToRawText(formatMemoContent(m.content)).replaceAll("\n", " ");
             return (
