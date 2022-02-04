@@ -2,8 +2,7 @@
 
 <p align="center">
   <a href="https://memos.onrender.com/">Live Demo</a> •
-  <a href="https://github.com/justmemos/memos/discussions">Discussions</a> •
-  <a href="https://t.me/+M-AqruZmJBhkYWQ1">Telegram</a>
+  <a href="https://github.com/justmemos/memos/discussions">Discussions</a>
 </p>
 
 <p align="center">
@@ -13,23 +12,30 @@
   <img alt="GitHub license" src="https://img.shields.io/github/license/justmemos/memos" />
 </p>
 
-Memos 是一款开源的 [flomo](https://flomoapp.com/) 替代工具，为了快速方便的部署属于自己的碎片化知识管理工具。
+Memos is an open source, self-hosted alternative to [flomo](https://flomoapp.com/). Built with `Golang` and `React`.
 
-## 🎯 产品意图
+Making sure that you are in charge of your data and more customizations.
 
-- 📅 用于记录：每日/周计划、💡 突发奇想、📕 读后感...
-- 🏗️ 代替了微信“文件传输助手”；
-- 📒 打造一个属于自己的轻量化“卡片”笔记簿；
+## 🎯 Intentions
 
-## ✨ 特色亮点
+- ✍️ For noting 📅 daily/weekly plans, 💡 fantastic ideas, 📕 reading thoughts...
+- 📒 Write down the lightweight card memos easily;
+- 🏗️ Build your own fragmented knowledge management tools;
 
-- 🦄 开源项目；
-- 😋 精美且细节的视觉样式；
-- 📑 体验优良的交互逻辑；
-- ⚡️ 快速地私有化部署；
+## ✨ Features
 
-## 📕 文档
+- 🦄 Open source project;
+- 😋 Beautiful and detailed visual styles;
+- 📑 Experience excellent interaction logic;
+- ⚡️ Quick privatization deployment;
 
-- [使用 Docker 部署](https://github.com/justmemos/memos/tree/main/docs/deploy)
+<!--
+WIP
+## 📕 Docs
 
-Enjoy it and welcome your contributions
+- [Guide to self host with Docker](https://github.com/justmemos/memos/tree/main/docs/deploy)
+ -->
+
+---
+
+Just enjoy it.
