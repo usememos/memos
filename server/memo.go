@@ -98,8 +98,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memo, err := s.MemoService.FindMemo(memoFind)
 		if err != nil {
 			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoId))
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoId)).SetInternal(err)
 			}
+
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoId)).SetInternal(err)
 		}
 

@@ -47,6 +47,47 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 
 		return nil
 	})
+	g.GET("/:openId/memo", func(c echo.Context) error {
+		openId := c.Param("openId")
+
+		userFind := &api.UserFind{
+			OpenId: &openId,
+		}
+		user, err := s.UserService.FindUser(userFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Unauthorized: %s", openId))
+		}
+
+		memoFind := &api.MemoFind{
+			CreatorId: &user.Id,
+		}
+		showHiddenMemo, err := strconv.ParseBool(c.QueryParam("hidden"))
+		if err != nil {
+			showHiddenMemo = false
+		}
+
+		rowStatus := "NORMAL"
+		if showHiddenMemo {
+			rowStatus = "HIDDEN"
+		}
+		memoFind.RowStatus = &rowStatus
+
+		list, err := s.MemoService.FindMemoList(memoFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo list response").SetInternal(err)
+		}
+
+		return nil
+	})
+
 	g.GET("/r/:resourceId/:filename", func(c echo.Context) error {
 		resourceId, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {

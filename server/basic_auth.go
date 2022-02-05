@@ -72,14 +72,14 @@ func BasicAuthMiddleware(us api.UserService, next echo.HandlerFunc) echo.Handler
 
 		userId, err := strconv.Atoi(fmt.Sprintf("%v", userIdValue))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Failed to malformatted user id in the session.")
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to malformatted user id in the session.").SetInternal(err)
 		}
 
 		// Even if there is no error, we still need to make sure the user still exists.
-		principalFind := &api.UserFind{
+		userFind := &api.UserFind{
 			Id: &userId,
 		}
-		user, err := us.FindUser(principalFind)
+		user, err := us.FindUser(userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userId)).SetInternal(err)
 		}
@@ -89,6 +89,7 @@ func BasicAuthMiddleware(us api.UserService, next echo.HandlerFunc) echo.Handler
 
 		// Stores userId into context.
 		c.Set(getUserIdContextKey(), userId)
+
 		return next(c)
 	}
 }

@@ -30,8 +30,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 
 		// Compare the stored password
 		if login.Password != user.Password {
-			// If the two passwords don't match, return a 401 status.
-			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect password").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Incorrect password").SetInternal(err)
 		}
 
 		err = setUserSession(c, user)
