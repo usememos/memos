@@ -59,7 +59,7 @@ func removeUserSession(c echo.Context) error {
 	return nil
 }
 
-// Use session instead of jwt in the initial version
+// Use session in the initial version
 func BasicAuthMiddleware(us api.UserService, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Skips auth
@@ -88,13 +88,13 @@ func BasicAuthMiddleware(us api.UserService, next echo.HandlerFunc) echo.Handler
 		}
 		user, err := us.FindUser(principalFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Server error to find user ID: %d", userId)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userId)).SetInternal(err)
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Failed to find user ID: %d", userId))
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Not found user ID: %d", userId))
 		}
 
-		// Stores principalID into context.
+		// Stores userId into context.
 		c.Set(getUserIdContextKey(), userId)
 		return next(c)
 	}

@@ -11,7 +11,7 @@ import (
 func GetDevProfile(dataDir string) Profile {
 	return Profile{
 		mode: "8080",
-		port: 1234,
+		port: 8080,
 		dsn:  fmt.Sprintf("file:%s/memos_dev.db", dataDir),
 	}
 }

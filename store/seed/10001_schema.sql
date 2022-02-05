@@ -12,7 +12,7 @@ CREATE TABLE user (
 INSERT INTO
   sqlite_sequence (name, seq)
 VALUES
-  ('user', 0);
+  ('user', 100);
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_user_modification_time`
 AFTER
@@ -72,7 +72,7 @@ CREATE TABLE shortcut (
 INSERT INTO
   sqlite_sequence (name, seq)
 VALUES
-  ('shortcut', 0);
+  ('shortcut', 100);
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_shortcut_modification_time`
 AFTER
@@ -99,6 +99,11 @@ CREATE TABLE resource (
   FOREIGN KEY(creator_id) REFERENCES users(id)
 );
 
+INSERT INTO
+  sqlite_sequence (name, seq)
+VALUES
+  ('resource', 100);
+
 CREATE TRIGGER IF NOT EXISTS `trigger_update_resource_modification_time`
 AFTER
 UPDATE
@@ -116,10 +121,8 @@ INSERT INTO user
   (`id`, `name`, `password`, `open_id`)
 VALUES
   (1, 'guest', '123456', 'guest_open_id'),
-  (2, 'mine', '123456', 'mine_open_id');
 
 INSERT INTO memo
   (`content`, `creator_id`)
 VALUES
   ('👋 Welcome to memos', 1),
-  ('👋 Welcome to memos', 2);

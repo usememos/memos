@@ -22,7 +22,7 @@ type Server struct {
 	port int
 }
 
-func NewServer() *Server {
+func NewServer(port int) *Server {
 	e := echo.New()
 	e.Debug = true
 	e.HideBanner = true
@@ -49,7 +49,7 @@ func NewServer() *Server {
 
 	s := &Server{
 		e:    e,
-		port: 8080,
+		port: port,
 	}
 
 	webhookGroup := e.Group("/h")

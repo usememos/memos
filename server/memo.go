@@ -28,7 +28,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
 
 		return nil
@@ -53,7 +53,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
 
 		return nil
@@ -81,7 +81,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo list response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo list response").SetInternal(err)
 		}
 
 		return nil
@@ -105,7 +105,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
 
 		return nil

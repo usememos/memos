@@ -18,14 +18,14 @@ type MemoCreate struct {
 type MemoPatch struct {
 	Id int
 
-	Content   *string
-	RowStatus *string
+	Content   *string `json:"content"`
+	RowStatus *string `json:"rowStatus"`
 }
 
 type MemoFind struct {
-	Id        *int
-	CreatorId *int
-	RowStatus *string
+	Id        *int    `json:"id"`
+	CreatorId *int    `json:"creatorId"`
+	RowStatus *string `json:"rowStatus"`
 }
 
 type MemoDelete struct {

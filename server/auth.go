@@ -28,7 +28,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found: %s", login.Name))
 		}
 
-		// Compare the stored hashed password, with the hashed version of the password that was received.
+		// Compare the stored password
 		if login.Password != user.Password {
 			// If the two passwords don't match, return a 401 status.
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect password").SetInternal(err)
@@ -41,7 +41,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal create user response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
 		}
 
 		return nil
@@ -69,7 +69,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to authenticate user").SetInternal(err)
 		}
 		if user != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Exist user found: %s", signup.Name))
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Existed user found: %s", signup.Name))
 		}
 
 		userCreate := &api.UserCreate{
@@ -89,7 +89,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal create user response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode created user response").SetInternal(err)
 		}
 
 		return nil

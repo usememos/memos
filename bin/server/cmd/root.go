@@ -79,7 +79,7 @@ func (m *Main) Run() error {
 
 	m.db = db
 
-	s := server.NewServer()
+	s := server.NewServer(m.profile.port)
 
 	s.ShortcutService = store.NewShortcutService(db)
 	s.MemoService = store.NewMemoService(db)

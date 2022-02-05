@@ -42,7 +42,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal memo response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
 
 		return nil

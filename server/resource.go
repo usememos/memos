@@ -54,7 +54,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal shortcut response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
 		}
 
 		return nil
@@ -71,7 +71,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal resource list response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource list response").SetInternal(err)
 		}
 
 		return nil

@@ -27,7 +27,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal shortcut response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
 		}
 
 		return nil
@@ -52,7 +52,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal shortcut response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
 		}
 
 		return nil
@@ -69,7 +69,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal shortcut list response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut list response").SetInternal(err)
 		}
 
 		return nil
@@ -90,7 +90,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal shortcut response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
 		}
 
 		return nil

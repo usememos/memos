@@ -28,7 +28,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal user response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
 		}
 
 		return nil
@@ -58,7 +58,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(isUsable)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal rename check response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode rename check response").SetInternal(err)
 		}
 
 		return nil
@@ -90,7 +90,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(isValid)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal password check response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode password check response").SetInternal(err)
 		}
 
 		return nil
@@ -116,7 +116,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to marshal user response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
 		}
 
 		return nil
