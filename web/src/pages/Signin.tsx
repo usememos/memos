@@ -146,7 +146,7 @@ const Signin: React.FC<Props> = () => {
           <>
             <div className="page-content-container">
               <div className="form-item-container input-form-container">
-                <span className={"normal-text " + (username === "" ? "" : "not-null")}>Usernmae</span>
+                <span className={"normal-text " + (username === "" ? "" : "not-null")}>Username</span>
                 <input type="text" autoComplete="off" value={username} onChange={handleUsernameInputChanged} />
               </div>
               <div className="form-item-container input-form-container">

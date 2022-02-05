@@ -6,7 +6,6 @@
  * 2. <foreignObject>: https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject
  */
 import getCloneStyledElement from "./getCloneStyledElement";
-import getFontsStyleElement from "./getFontsStyleElement";
 
 type Options = Partial<{
   backgroundColor: string;
@@ -60,8 +59,6 @@ export const toSVG = async (element: HTMLElement, options?: Options) => {
   }
 
   const svg = generateSVGElement(width, height, clonedElement);
-  svg.prepend(await getFontsStyleElement(element));
-
   const url = convertSVGToDataURL(svg);
 
   return url;

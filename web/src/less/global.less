@@ -1,32 +1,11 @@
 @import "./mixin.less";
 
-// ⚠️ This font is only free for personal use but not for commercial.
-@font-face {
-  font-family: "DINPro";
-  src: url("/fonts/DINPro-Regular.otf");
-  font-weight: normal;
-}
-
-@font-face {
-  font-family: "DINPro";
-  src: url("/fonts/DINPro-Bold.otf");
-  font-weight: bold;
-}
-
-@font-face {
-  font-family: "ubuntu-mono";
-  src: url("/fonts/UbuntuMono.ttf");
-  font-style: normal;
-}
-
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   color: @text-black;
   -webkit-tap-highlight-color: transparent;
-  font-family: "DINPro", ui-sans-serif, -apple-system, "system-ui", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif,
-    "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 body,
@@ -35,6 +14,9 @@ html {
   height: 100%;
   overflow: hidden;
   font-size: 15px;
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans", "Noto Sans CJK SC", "Microsoft YaHei UI", "Microsoft YaHei",
+    "WenQuanYi Micro Hei", sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+    "Noto Color Emoji";
 }
 
 code {
