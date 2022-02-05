@@ -5,6 +5,7 @@ import (
 	"memos/api"
 	"time"
 
+	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -45,7 +46,7 @@ func NewServer(port int) *Server {
 		HTML5:   true,
 	}))
 
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte("just_memos"))))
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(securecookie.GenerateRandomKey(16)))))
 
 	s := &Server{
 		e:    e,

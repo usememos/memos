@@ -20,19 +20,15 @@ func getUserIdContextKey() string {
 	return userIdContextKey
 }
 
-// Purpose of this cookie is to store the user's id.
 func setUserSession(c echo.Context, user *api.User) error {
-	sess, err := session.Get("session", c)
-	if err != nil {
-		return fmt.Errorf("failed to get session, err: %w", err)
-	}
+	sess, _ := session.Get("session", c)
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   1000 * 3600 * 24 * 30,
 		HttpOnly: true,
 	}
 	sess.Values[userIdContextKey] = user.Id
-	err = sess.Save(c.Request(), c.Response())
+	err := sess.Save(c.Request(), c.Response())
 	if err != nil {
 		return fmt.Errorf("failed to set session, err: %w", err)
 	}
@@ -41,17 +37,14 @@ func setUserSession(c echo.Context, user *api.User) error {
 }
 
 func removeUserSession(c echo.Context) error {
-	sess, err := session.Get("session", c)
-	if err != nil {
-		return fmt.Errorf("failed to get session, err: %w", err)
-	}
+	sess, _ := session.Get("session", c)
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   0,
 		HttpOnly: true,
 	}
 	sess.Values[userIdContextKey] = nil
-	err = sess.Save(c.Request(), c.Response())
+	err := sess.Save(c.Request(), c.Response())
 	if err != nil {
 		return fmt.Errorf("failed to set session, err: %w", err)
 	}
@@ -59,7 +52,7 @@ func removeUserSession(c echo.Context) error {
 	return nil
 }
 
-// Use session in the initial version
+// Use session to store user.id.
 func BasicAuthMiddleware(us api.UserService, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Skips auth
