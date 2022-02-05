@@ -89,6 +89,8 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 		}
 
+		c.JSON(http.StatusOK, true)
+
 		return nil
 	})
 }

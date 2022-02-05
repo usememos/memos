@@ -203,14 +203,14 @@ func findShortcutList(db *DB, find *api.ShortcutFind) ([]*api.Shortcut, error) {
 }
 
 func deleteShortcut(db *DB, delete *api.ShortcutDelete) error {
-	result, err := db.Db.Exec(`DELETE FROM saved_query WHERE id = ?`, delete.Id)
+	result, err := db.Db.Exec(`DELETE FROM shortcut WHERE id = ?`, delete.Id)
 	if err != nil {
 		return FormatError(err)
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo ID not found: %d", delete.Id)}
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("shortcut ID not found: %d", delete.Id)}
 	}
 
 	return nil
