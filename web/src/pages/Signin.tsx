@@ -121,7 +121,7 @@ const Signin: React.FC<Props> = () => {
       <div className="page-container">
         <div className="page-header-container">
           <p className="title-text">
-            Login to Memos <span className="icon-text">✍️</span>
+            <span className="icon-text">✍️</span> Memos
           </p>
         </div>
         {showAutoSigninAsGuest ? (

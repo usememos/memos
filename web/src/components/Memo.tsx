@@ -1,6 +1,7 @@
 import { memo } from "react";
+import { escape } from "lodash-es";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
-import { encodeHtml, parseMarkedToHtml, parseRawTextToHtml } from "../helpers/marked";
+import { parseMarkedToHtml, parseRawTextToHtml } from "../helpers/marked";
 import utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import { globalStateService, memoService } from "../services";
@@ -128,7 +129,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 };
 
 export function formatMemoContent(content: string) {
-  content = encodeHtml(content);
+  content = escape(content);
   content = parseRawTextToHtml(content)
     .split("<br>")
     .map((t) => {

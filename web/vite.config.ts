@@ -13,7 +13,8 @@ export default defineConfig({
         changeOrigin: true,
       },
       "/h/": {
-        target: "https://memos.justsven.top/",
+        target: "http://localhost:8080/",
+        // target: "https://memos.justsven.top/",
         changeOrigin: true,
       },
     },

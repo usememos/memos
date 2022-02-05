@@ -8,11 +8,13 @@
     "lint": "eslint --ext .js,.ts,.tsx, src"
   },
   "dependencies": {
+    "lodash-es": "^4.17.21",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "tiny-undo": "^0.0.8"
   },
   "devDependencies": {
+    "@types/lodash-es": "^4.17.5",
     "@types/react": "^17.0.2",
     "@types/react-dom": "^17.0.2",
     "@typescript-eslint/eslint-plugin": "^5.6.0",

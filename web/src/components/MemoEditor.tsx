@@ -175,11 +175,6 @@ const MemoEditor: React.FC<Props> = () => {
   }, []);
 
   const handleContentChange = useCallback((content: string) => {
-    const tempDiv = document.createElement("div");
-    tempDiv.innerHTML = content;
-    if (tempDiv.innerText.trim() === "") {
-      content = "";
-    }
     setEditorContentCache(content);
 
     if (editorRef.current) {

@@ -39,10 +39,4 @@ const parseRawTextToHtml = (rawTextStr: string): string => {
   return htmlText;
 };
 
-const encodeHtml = (htmlStr: string): string => {
-  const t = document.createElement("div");
-  t.textContent = htmlStr;
-  return t.innerHTML;
-};
-
-export { encodeHtml, parseMarkedToHtml, parseHtmlToRawText, parseRawTextToHtml };
+export { parseMarkedToHtml, parseHtmlToRawText, parseRawTextToHtml };
