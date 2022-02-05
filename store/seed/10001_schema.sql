@@ -120,9 +120,9 @@ END;
 INSERT INTO user
   (`id`, `name`, `password`, `open_id`)
 VALUES
-  (1, 'guest', '123456', 'guest_open_id'),
+  (1, 'guest', '123456', 'guest_open_id');
 
 INSERT INTO memo
   (`content`, `creator_id`)
 VALUES
-  ('👋 Welcome to memos', 1),
+  ('👋 Welcome to memos', 1);

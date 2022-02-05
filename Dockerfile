@@ -26,6 +26,9 @@ WORKDIR /usr/local/memos
 COPY --from=backend /backend-build/memos /usr/local/memos/
 COPY --from=frontend /frontend-build/dist /usr/local/memos/web/dist
 
-CMD ["./memos"]
+# Directory to store the data, which can be referenced as the mounting point.
+RUN mkdir -p /var/opt/memos
 
-EXPOSE 8080
+CMD ["-mode", "release", "-port", "8080", "-data", "/var/opt/memos"]
+
+ENTRYPOINT ["./memos"]

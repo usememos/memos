@@ -3,46 +3,10 @@ package cmd
 import (
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"memos/server"
 	"memos/store"
 )
-
-var (
-	dataDir string
-)
-
-type Profile struct {
-	// mode can be "release" or "dev"
-	mode string
-	// port is the binding port for server.
-	port int
-	// dsn points to where Memos stores its own data
-	dsn string
-}
-
-func checkDataDir() error {
-	// Convert to absolute path if relative path is supplied.
-	if !filepath.IsAbs(dataDir) {
-		absDir, err := filepath.Abs(filepath.Dir(os.Args[0]) + "/" + dataDir)
-		if err != nil {
-			return err
-		}
-		dataDir = absDir
-	}
-
-	// Trim trailing / in case user supplies
-	dataDir = strings.TrimRight(dataDir, "/")
-
-	if _, err := os.Stat(dataDir); err != nil {
-		error := fmt.Errorf("unable to access --data %s, %w", dataDir, err)
-		return error
-	}
-
-	return nil
-}
 
 type Main struct {
 	profile *Profile
@@ -53,17 +17,11 @@ type Main struct {
 }
 
 func Execute() {
-	err := checkDataDir()
-	if err != nil {
-		fmt.Printf("%+v\n", err)
-		os.Exit(1)
-	}
-
 	m := Main{}
-	profile := GetDevProfile(dataDir)
+	profile := GetProfile()
 	m.profile = &profile
 
-	err = m.Run()
+	err := m.Run()
 	if err != nil {
 		fmt.Printf("%+v\n", err)
 		os.Exit(1)
