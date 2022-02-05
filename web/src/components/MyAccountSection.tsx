@@ -20,8 +20,8 @@ interface Props {}
 const MyAccountSection: React.FC<Props> = () => {
   const { userState } = useContext(appContext);
   const user = userState.user as Model.User;
-  const [username, setUsername] = useState<string>(user.username);
-  const openAPIRoute = `${window.location.origin}/api/whs/memo/${user.openId}`;
+  const [username, setUsername] = useState<string>(user.name);
+  const openAPIRoute = `${window.location.origin}/h/${user.openId}/memo`;
 
   const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nextUsername = e.target.value as string;
@@ -29,18 +29,18 @@ const MyAccountSection: React.FC<Props> = () => {
   };
 
   const handleConfirmEditUsernameBtnClick = async () => {
-    if (user.username === "guest") {
-      toastHelper.info("🈲 不要修改我的用户名");
+    if (user.name === "guest") {
+      toastHelper.info("Do not change my username");
       return;
     }
 
-    if (username === user.username) {
+    if (username === user.name) {
       return;
     }
 
     const usernameValidResult = validate(username, validateConfig);
     if (!usernameValidResult.result) {
-      toastHelper.error("用户名 " + usernameValidResult.reason);
+      toastHelper.error("Username " + usernameValidResult.reason);
       return;
     }
 
@@ -48,21 +48,21 @@ const MyAccountSection: React.FC<Props> = () => {
       const isUsable = await userService.checkUsernameUsable(username);
 
       if (!isUsable) {
-        toastHelper.error("用户名无法使用");
+        toastHelper.error("Username is not available");
         return;
       }
 
       await userService.updateUsername(username);
       await userService.doSignIn();
-      toastHelper.info("修改成功~");
+      toastHelper.info("Username changed");
     } catch (error: any) {
       toastHelper.error(error.message);
     }
   };
 
   const handleChangePasswordBtnClick = () => {
-    if (user.username === "guest") {
-      toastHelper.info("🈲 不要修改我的密码");
+    if (user.name === "guest") {
+      toastHelper.info("Do not change my password");
       return;
     }
 
@@ -81,47 +81,47 @@ const MyAccountSection: React.FC<Props> = () => {
   return (
     <>
       <div className="section-container account-section-container">
-        <p className="title-text">基本信息</p>
+        <p className="title-text">Account Information</p>
         <label className="form-label input-form-label">
-          <span className="normal-text">ID：</span>
+          <span className="normal-text">ID:</span>
           <span className="normal-text">{user.id}</span>
         </label>
         <label className="form-label input-form-label">
-          <span className="normal-text">创建时间：</span>
+          <span className="normal-text">Created at:</span>
           <span className="normal-text">{utils.getDateString(user.createdAt)}</span>
         </label>
         <label className="form-label input-form-label username-label">
-          <span className="normal-text">账号：</span>
+          <span className="normal-text">Username:</span>
           <input type="text" value={username} onChange={handleUsernameChanged} />
-          <div className={`btns-container ${username === user.username ? "hidden" : ""}`} onClick={handlePreventDefault}>
+          <div className={`btns-container ${username === user.name ? "hidden" : ""}`} onClick={handlePreventDefault}>
             <span className="btn confirm-btn" onClick={handleConfirmEditUsernameBtnClick}>
-              保存
+              Save
             </span>
             <span
               className="btn cancel-btn"
               onClick={() => {
-                setUsername(user.username);
+                setUsername(user.name);
               }}
             >
-              撤销
+              Cancel
             </span>
           </div>
         </label>
         <label className="form-label password-label">
-          <span className="normal-text">密码：</span>
+          <span className="normal-text">Password:</span>
           <span className="btn" onClick={handleChangePasswordBtnClick}>
-            修改密码
+            Change It
           </span>
         </label>
       </div>
       <div className="section-container openapi-section-container">
-        <p className="title-text">Open API（实验性功能）</p>
+        <p className="title-text">Open API (Experimental feature)</p>
         <p className="value-text">{openAPIRoute}</p>
         <span className="reset-btn" onClick={handleResetOpenIdBtnClick}>
-          重置 API
+          Reset API
         </span>
         <div className="usage-guide-container">
-          <p className="title-text">使用方法：</p>
+          <p className="title-text">Usage guide:</p>
           <pre>{`POST ${openAPIRoute}\nContent-type: application/json\n{\n  "content": "Hello, #memos ${window.location.origin}"\n}`}</pre>
         </div>
       </div>

@@ -93,19 +93,19 @@ const Memo: React.FC<Props> = (props: Props) => {
           <div className="more-action-btns-wrapper">
             <div className="more-action-btns-container">
               <span className="btn" onClick={handleShowMemoStoryDialog}>
-                查看详情
+                View Story
               </span>
               <span className="btn" onClick={handleMarkMemoClick}>
                 Mark
               </span>
               <span className="btn" onClick={handleGenMemoImageBtnClick}>
-                分享
+                Share
               </span>
               <span className="btn" onClick={handleEditMemoClick}>
-                编辑
+                Edit
               </span>
               <span className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
-                {showConfirmDeleteBtn ? "确定删除！" : "删除"}
+                {showConfirmDeleteBtn ? "Delete!" : "Delete"}
               </span>
             </div>
           </div>
@@ -151,7 +151,7 @@ export function formatMemoContent(content: string) {
     .replace(LINK_REG, "<a class='link' target='_blank' rel='noreferrer' href='$1'>$1</a>")
     .replace(MEMO_LINK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>");
 
-  // 中英文之间加空格
+  // Add space in english and chinese
   if (shouldSplitMemoWord) {
     content = content
       .replace(/([\u4e00-\u9fa5])([A-Za-z0-9?.,;[\]]+)/g, "$1 $2")

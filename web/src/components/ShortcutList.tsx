@@ -5,27 +5,27 @@ import useLoading from "../hooks/useLoading";
 import Only from "./common/OnlyWhen";
 import utils from "../helpers/utils";
 import toastHelper from "./Toast";
-import { locationService, queryService } from "../services";
-import showCreateQueryDialog from "./CreateQueryDialog";
-import "../less/query-list.less";
+import { locationService, shortcutService } from "../services";
+import showCreateQueryDialog from "./CreateShortcutDialog";
+import "../less/shortcut-list.less";
 
 interface Props {}
 
-const QueryList: React.FC<Props> = () => {
+const ShortcutList: React.FC<Props> = () => {
   const {
-    queryState: { queries },
+    shortcutState: { shortcuts },
     locationState: {
-      query: { filter },
+      query: { shortcutId },
     },
   } = useContext(appContext);
   const loadingState = useLoading();
-  const sortedQueries = queries
+  const sortedShortcuts = shortcuts
     .sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt))
-    .sort((a, b) => utils.getTimeStampByDate(b.pinnedAt ?? 0) - utils.getTimeStampByDate(a.pinnedAt ?? 0));
+    .sort((a, b) => utils.getTimeStampByDate(b.updatedAt) - utils.getTimeStampByDate(a.updatedAt));
 
   useEffect(() => {
-    queryService
-      .getMyAllQueries()
+    shortcutService
+      .getMyAllShortcuts()
       .catch(() => {
         // do nth
       })
@@ -35,47 +35,47 @@ const QueryList: React.FC<Props> = () => {
   }, []);
 
   return (
-    <div className="queries-wrapper">
+    <div className="shortcuts-wrapper">
       <p className="title-text">
-        <span className="normal-text">快速检索</span>
+        <span className="normal-text">Shortcuts</span>
         <span className="btn" onClick={() => showCreateQueryDialog()}>
           +
         </span>
       </p>
-      <Only when={loadingState.isSucceed && sortedQueries.length === 0}>
-        <div className="create-query-btn-container">
+      <Only when={loadingState.isSucceed && sortedShortcuts.length === 0}>
+        <div className="create-shortcut-btn-container">
           <span className="btn" onClick={() => showCreateQueryDialog()}>
-            创建检索
+            New shortcut
           </span>
         </div>
       </Only>
-      <div className="queries-container">
-        {sortedQueries.map((q) => {
-          return <QueryItemContainer key={q.id} query={q} isActive={q.id === filter} />;
+      <div className="shortcuts-container">
+        {sortedShortcuts.map((s) => {
+          return <ShortcutContainer key={s.id} shortcut={s} isActive={s.id === shortcutId} />;
         })}
       </div>
     </div>
   );
 };
 
-interface QueryItemContainerProps {
-  query: Model.Query;
+interface ShortcutContainerProps {
+  shortcut: Model.Shortcut;
   isActive: boolean;
 }
 
-const QueryItemContainer: React.FC<QueryItemContainerProps> = (props: QueryItemContainerProps) => {
-  const { query, isActive } = props;
+const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
+  const { shortcut, isActive } = props;
   const [showActionBtns, toggleShowActionBtns] = useToggle(false);
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
   const handleQueryClick = () => {
     if (isActive) {
-      locationService.setMemoFilter("");
+      locationService.setMemoShortcut("");
     } else {
       if (!["/", "/recycle"].includes(locationService.getState().pathname)) {
         locationService.setPathname("/");
       }
-      locationService.setMemoFilter(query.id);
+      locationService.setMemoShortcut(shortcut.id);
     }
   };
 
@@ -93,7 +93,7 @@ const QueryItemContainer: React.FC<QueryItemContainerProps> = (props: QueryItemC
 
     if (showConfirmDeleteBtn) {
       try {
-        await queryService.deleteQuery(query.id);
+        await shortcutService.deleteShortcut(shortcut.id);
       } catch (error: any) {
         toastHelper.error(error.message);
       }
@@ -104,24 +104,24 @@ const QueryItemContainer: React.FC<QueryItemContainerProps> = (props: QueryItemC
 
   const handleEditQueryBtnClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    showCreateQueryDialog(query.id);
+    showCreateQueryDialog(shortcut.id);
   };
 
   const handlePinQueryBtnClick = async (event: React.MouseEvent) => {
     event.stopPropagation();
 
     try {
-      if (query.pinnedAt) {
-        await queryService.unpinQuery(query.id);
-        queryService.editQuery({
-          ...query,
-          pinnedAt: "",
+      if (shortcut.rowStatus === "ARCHIVED") {
+        await shortcutService.unpinShortcut(shortcut.id);
+        shortcutService.editShortcut({
+          ...shortcut,
+          rowStatus: "NORMAL",
         });
       } else {
-        await queryService.pinQuery(query.id);
-        queryService.editQuery({
-          ...query,
-          pinnedAt: utils.getDateTimeString(Date.now()),
+        await shortcutService.pinShortcut(shortcut.id);
+        shortcutService.editShortcut({
+          ...shortcut,
+          rowStatus: "NORMAL",
         });
       }
     } catch (error) {
@@ -135,10 +135,10 @@ const QueryItemContainer: React.FC<QueryItemContainerProps> = (props: QueryItemC
 
   return (
     <>
-      <div className={`query-item-container ${isActive ? "active" : ""}`} onClick={handleQueryClick}>
-        <div className="query-text-container">
+      <div className={`shortcut-container ${isActive ? "active" : ""}`} onClick={handleQueryClick}>
+        <div className="shortcut-text-container">
           <span className="icon-text">#</span>
-          <span className="query-text">{query.title}</span>
+          <span className="shortcut-text">{shortcut.title}</span>
         </div>
         <div className="btns-container">
           <span className="action-btn toggle-btn" onClick={handleShowActionBtnClick}>
@@ -147,17 +147,17 @@ const QueryItemContainer: React.FC<QueryItemContainerProps> = (props: QueryItemC
           <div className={`action-btns-wrapper ${showActionBtns ? "" : "hidden"}`} onMouseLeave={handleActionBtnContainerMouseLeave}>
             <div className="action-btns-container">
               <span className="btn" onClick={handlePinQueryBtnClick}>
-                {query.pinnedAt ? "取消置顶" : "置顶"}
+                {shortcut.rowStatus === "ARCHIVED" ? "Unpin" : "Pin"}
               </span>
               <span className="btn" onClick={handleEditQueryBtnClick}>
-                编辑
+                Edit
               </span>
               <span
                 className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`}
                 onClick={handleDeleteMemoClick}
                 onMouseLeave={handleDeleteBtnMouseLeave}
               >
-                {showConfirmDeleteBtn ? "确定删除！" : "删除"}
+                {showConfirmDeleteBtn ? "Delete!" : "Delete"}
               </span>
             </div>
           </div>
@@ -167,4 +167,4 @@ const QueryItemContainer: React.FC<QueryItemContainerProps> = (props: QueryItemC
   );
 };
 
-export default QueryList;
+export default ShortcutList;

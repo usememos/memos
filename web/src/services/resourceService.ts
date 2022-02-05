@@ -10,14 +10,14 @@ class ResourceService {
     const { name: filename, size } = file;
 
     if (size > 5 << 20) {
-      return Promise.reject("超过最大文件大小 5Mb");
+      return Promise.reject("overload max size: 5Mb");
     }
 
     const formData = new FormData();
 
     formData.append("file", file, filename);
 
-    const { data } = await api.uploadFile(formData);
+    const data = await api.uploadFile(formData);
 
     return data;
   }

@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useRef, useState } from "react";
 import appContext from "../stores/appContext";
-import { locationService, memoService, queryService } from "../services";
+import { locationService, memoService, shortcutService } from "../services";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
 import utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
@@ -18,8 +18,8 @@ const MemoList: React.FC<Props> = () => {
   const [isFetching, setFetchStatus] = useState(true);
   const wrapperElement = useRef<HTMLDivElement>(null);
 
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, filter: queryId } = query;
-  const queryFilter = queryService.getQueryById(queryId);
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
+  const queryFilter = shortcutService.getShortcutById(shortcutId);
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || queryFilter);
 
   const shownMemos =
@@ -28,7 +28,7 @@ const MemoList: React.FC<Props> = () => {
           let shouldShow = true;
 
           if (queryFilter) {
-            const filters = JSON.parse(queryFilter.querystring) as Filter[];
+            const filters = JSON.parse(queryFilter.payload) as Filter[];
             if (Array.isArray(filters)) {
               shouldShow = checkShouldShowMemoWithFilters(memo, filters);
             }
@@ -83,7 +83,7 @@ const MemoList: React.FC<Props> = () => {
         setFetchStatus(false);
       })
       .catch(() => {
-        toastHelper.error("😭 请求数据失败了");
+        toastHelper.error("😭 Refresh failed, please try again later.");
       });
   }, []);
 
@@ -111,7 +111,13 @@ const MemoList: React.FC<Props> = () => {
       ))}
       <div className="status-text-container">
         <p className="status-text">
-          {isFetching ? "努力请求数据中..." : shownMemos.length === 0 ? "空空如也" : showMemoFilter ? "" : "所有数据加载完啦 🎉"}
+          {isFetching
+            ? "Fetching data..."
+            : shownMemos.length === 0
+            ? "Oops, there is nothing"
+            : showMemoFilter
+            ? ""
+            : "Fetching completed 🎉"}
         </p>
       </div>
     </div>

@@ -1,115 +1,42 @@
 package api
 
-import (
-	"encoding/json"
-	"memos/api/e"
-	"memos/store"
-	"net/http"
+type Memo struct {
+	Id        int    `json:"id"`
+	CreatedTs int64  `json:"createdTs"`
+	UpdatedTs int64  `json:"updatedTs"`
+	RowStatus string `json:"rowStatus"`
 
-	"github.com/gorilla/mux"
-)
-
-func handleGetMyMemos(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInSession(r)
-	urlParams := r.URL.Query()
-	deleted := urlParams.Get("deleted")
-	onlyDeletedFlag := deleted == "true"
-
-	memos, err := store.GetMemosByUserId(userId, onlyDeletedFlag)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    memos,
-	})
+	Content   string `json:"content"`
+	CreatorId int    `json:"creatorId"`
 }
 
-func handleCreateMemo(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInSession(r)
-
-	type CreateMemoDataBody struct {
-		Content string `json:"content"`
-	}
-
-	createMemo := CreateMemoDataBody{}
-	err := json.NewDecoder(r.Body).Decode(&createMemo)
-
-	if err != nil {
-		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
-		return
-	}
-
-	memo, err := store.CreateNewMemo(createMemo.Content, userId)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    memo,
-	})
+type MemoCreate struct {
+	Content   string `json:"content"`
+	CreatorId int
 }
 
-func handleUpdateMemo(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	memoId := vars["id"]
+type MemoPatch struct {
+	Id int
 
-	memoPatch := store.MemoPatch{}
-	err := json.NewDecoder(r.Body).Decode(&memoPatch)
-
-	if err != nil {
-		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
-		return
-	}
-
-	memo, err := store.UpdateMemo(memoId, &memoPatch)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    memo,
-	})
+	Content   *string `json:"content"`
+	RowStatus *string `json:"rowStatus"`
 }
 
-func handleDeleteMemo(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	memoId := vars["id"]
-
-	err := store.DeleteMemo(memoId)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    nil,
-	})
+type MemoFind struct {
+	Id        *int    `json:"id"`
+	CreatorId *int    `json:"creatorId"`
+	RowStatus *string `json:"rowStatus"`
 }
 
-func RegisterMemoRoutes(r *mux.Router) {
-	memoRouter := r.PathPrefix("/api/memo").Subrouter()
+type MemoDelete struct {
+	Id        *int `json:"id"`
+	CreatorId *int
+}
 
-	memoRouter.Use(JSONResponseMiddleWare)
-	memoRouter.Use(AuthCheckerMiddleWare)
-
-	memoRouter.HandleFunc("/all", handleGetMyMemos).Methods("GET")
-	memoRouter.HandleFunc("/", handleCreateMemo).Methods("PUT")
-	memoRouter.HandleFunc("/{id}", handleUpdateMemo).Methods("PATCH")
-	memoRouter.HandleFunc("/{id}", handleDeleteMemo).Methods("DELETE")
+type MemoService interface {
+	CreateMemo(create *MemoCreate) (*Memo, error)
+	PatchMemo(patch *MemoPatch) (*Memo, error)
+	FindMemoList(find *MemoFind) ([]*Memo, error)
+	FindMemo(find *MemoFind) (*Memo, error)
+	DeleteMemo(delete *MemoDelete) error
 }

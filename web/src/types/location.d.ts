@@ -8,7 +8,7 @@ interface Query {
   duration: Duration | null;
   type: MemoSpecType | "";
   text: string;
-  filter: string;
+  shortcutId: string;
 }
 
 type AppRouter = "/" | "/signin" | "/recycle" | "/setting";

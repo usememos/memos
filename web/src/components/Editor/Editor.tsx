@@ -176,12 +176,12 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
         <div className="btns-container">
           <Only when={showCancelBtn}>
             <button className="action-btn cancel-btn" onClick={handleCommonCancelBtnClick}>
-              撤销修改
+              Cancel editting
             </button>
           </Only>
           <Only when={showConfirmBtn}>
             <button className="action-btn confirm-btn" disabled={!editorRef.current?.value} onClick={handleCommonConfirmBtnClick}>
-              记下<span className="icon-text">✍️</span>
+              Save <span className="icon-text">✍️</span>
             </button>
           </Only>
         </div>

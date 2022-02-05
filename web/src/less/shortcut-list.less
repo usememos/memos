@@ -1,6 +1,6 @@
 @import "./mixin.less";
 
-.queries-wrapper {
+.shortcuts-wrapper {
   .flex(column, flex-start, flex-start);
   width: 100%;
   padding: 0 8px;
@@ -35,7 +35,7 @@
     }
   }
 
-  > .create-query-btn-container {
+  > .create-shortcut-btn-container {
     .flex(row, center, center);
     width: 100%;
     margin-top: 8px;
@@ -55,7 +55,7 @@
     }
   }
 
-  > .queries-container {
+  > .shortcuts-container {
     .flex(column, flex-start, flex-start);
     position: relative;
     width: 100%;
@@ -63,7 +63,7 @@
     flex-wrap: nowrap;
     margin-bottom: 8px;
 
-    > .query-item-container {
+    > .shortcut-container {
       .flex(row, space-between, center);
       width: 100%;
       height: 40px;
@@ -86,7 +86,7 @@
       &.active {
         background-color: @text-green !important;
 
-        > .query-text-container {
+        > .shortcut-text-container {
           font-weight: bold;
 
           > * {
@@ -95,7 +95,7 @@
         }
       }
 
-      > .query-text-container {
+      > .shortcut-text-container {
         .flex(row, flex-start, center);
         max-width: calc(100% - 24px);
         color: @text-black;
@@ -110,7 +110,7 @@
           flex-shrink: 0;
         }
 
-        > .query-text {
+        > .shortcut-text {
           flex-shrink: 0;
         }
       }
@@ -181,7 +181,7 @@
 }
 
 @media only screen and (max-width: 875px) {
-  .queries-container {
+  .shortcuts-container {
     height: auto;
 
     &:last-child {
@@ -192,7 +192,7 @@
       font-size: 13px;
     }
 
-    > .query-item-container {
+    > .shortcut-container {
       font-size: 15px;
     }
   }

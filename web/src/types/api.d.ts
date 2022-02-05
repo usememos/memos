@@ -1,6 +1,1 @@
-declare namespace Api {
-  interface MemosStat {
-    timestamp: string;
-    amount: number;
-  }
-}
+declare namespace Api {}

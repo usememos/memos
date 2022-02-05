@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import appContext from "../stores/appContext";
-import { locationService, queryService } from "../services";
+import { locationService, shortcutService } from "../services";
 import utils from "../helpers/utils";
 import { getTextWithMemoType } from "../helpers/filter";
 import "../less/memo-filter.less";
@@ -12,17 +12,17 @@ const MemoFilter: React.FC<FilterProps> = () => {
     locationState: { query },
   } = useContext(appContext);
 
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, filter } = query;
-  const queryFilter = queryService.getQueryById(filter);
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
+  const queryFilter = shortcutService.getShortcutById(shortcutId);
   const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || queryFilter);
 
   return (
     <div className={`filter-query-container ${showFilter ? "" : "hidden"}`}>
-      <span className="tip-text">筛选：</span>
+      <span className="tip-text">Filter:</span>
       <div
         className={"filter-item-container " + (queryFilter ? "" : "hidden")}
         onClick={() => {
-          locationService.setMemoFilter("");
+          locationService.setMemoShortcut("");
         }}
       >
         <span className="icon-text">🔖</span> {queryFilter?.title}

@@ -1,4 +1,5 @@
 import api from "../helpers/api";
+import utils from "../helpers/utils";
 import appStore from "../stores/appStore";
 
 class UserService {
@@ -7,11 +8,13 @@ class UserService {
   }
 
   public async doSignIn() {
-    const { data: user } = await api.getUserInfo();
+    const user = await api.getUserInfo();
     if (user) {
       appStore.dispatch({
-        type: "SIGN_IN",
-        payload: { user },
+        type: "LOGIN",
+        payload: {
+          user: this.convertResponseModelUser(user),
+        },
       });
     } else {
       userService.doSignOut();
@@ -30,18 +33,18 @@ class UserService {
   }
 
   public async checkUsernameUsable(username: string): Promise<boolean> {
-    const { data: isUsable } = await api.checkUsernameUsable(username);
+    const isUsable = await api.checkUsernameUsable(username);
     return isUsable;
   }
 
-  public async updateUsername(username: string): Promise<void> {
+  public async updateUsername(name: string): Promise<void> {
     await api.updateUserinfo({
-      username,
+      name,
     });
   }
 
   public async checkPasswordValid(password: string): Promise<boolean> {
-    const { data: isValid } = await api.checkPasswordValid(password);
+    const isValid = await api.checkPasswordValid(password);
     return isValid;
   }
 
@@ -52,12 +55,22 @@ class UserService {
   }
 
   public async resetOpenId(): Promise<string> {
-    const { data: openId } = await api.resetOpenId();
+    const user = await api.updateUserinfo({
+      resetOpenId: true,
+    });
     appStore.dispatch({
       type: "RESET_OPENID",
-      payload: openId,
+      payload: user.openId,
     });
-    return openId;
+    return user.openId;
+  }
+
+  private convertResponseModelUser(user: Model.User): Model.User {
+    return {
+      ...user,
+      createdAt: utils.getDataStringWithTs(user.createdTs),
+      updatedAt: utils.getDataStringWithTs(user.updatedTs),
+    };
   }
 }
 

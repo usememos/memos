@@ -1,129 +1,184 @@
 package store
 
 import (
-	"database/sql"
 	"fmt"
-	"memos/utils"
+	"memos/api"
+	"memos/common"
 	"strings"
 )
 
-type User struct {
-	Id        string `json:"id"`
-	Username  string `json:"username"`
-	Password  string `json:"password"`
-	OpenId    string `json:"openId"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+type UserService struct {
+	db *DB
 }
 
-func CreateNewUser(username string, password string) (User, error) {
-	nowDateTimeStr := utils.GetNowDateTimeStr()
-	newUser := User{
-		Id:        utils.GenUUID(),
-		Username:  username,
-		Password:  password,
-		OpenId:    utils.GenUUID(),
-		CreatedAt: nowDateTimeStr,
-		UpdatedAt: nowDateTimeStr,
-	}
-
-	query := `INSERT INTO users (id, username, password, open_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)`
-	_, err := DB.Exec(query, newUser.Id, newUser.Username, newUser.Password, newUser.OpenId, newUser.CreatedAt, newUser.UpdatedAt)
-
-	return newUser, FormatDBError(err)
+func NewUserService(db *DB) *UserService {
+	return &UserService{db: db}
 }
 
-type UpdateUserPatch struct {
-	Username *string
-	Password *string
-}
-
-func UpdateUser(id string, updateUserPatch *UpdateUserPatch) (User, error) {
-	user := User{}
-	user, err := GetUserById(id)
-
+func (s *UserService) CreateUser(create *api.UserCreate) (*api.User, error) {
+	user, err := createUser(s.db, create)
 	if err != nil {
-		return user, FormatDBError(err)
+		return nil, err
 	}
 
+	return user, nil
+}
+
+func (s *UserService) PatchUser(patch *api.UserPatch) (*api.User, error) {
+	user, err := patchUser(s.db, patch)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
+
+func (s *UserService) FindUser(find *api.UserFind) (*api.User, error) {
+	list, err := findUserList(s.db, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(list) == 0 {
+		return nil, nil
+	} else if len(list) > 1 {
+		return nil, &common.Error{Code: common.Conflict, Err: fmt.Errorf("found %d users with filter %+v, expect 1. ", len(list), find)}
+	}
+
+	return list[0], nil
+}
+
+func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
+	row, err := db.Db.Query(`
+		INSERT INTO user (
+			name,
+			password,
+			open_id
+		)
+		VALUES (?, ?, ?)
+		RETURNING id, name, password, open_id, created_ts, updated_ts
+	`,
+		create.Name,
+		create.Password,
+		create.OpenId,
+	)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer row.Close()
+
+	row.Next()
+	var user api.User
+	if err := row.Scan(
+		&user.Id,
+		&user.Name,
+		&user.Password,
+		&user.OpenId,
+		&user.CreatedTs,
+		&user.UpdatedTs,
+	); err != nil {
+		return nil, FormatError(err)
+	}
+
+	return &user, nil
+}
+
+func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 	set, args := []string{}, []interface{}{}
 
-	if v := updateUserPatch.Username; v != nil {
-		user.Username = *v
-		set, args = append(set, "username=?"), append(args, *v)
+	if v := patch.Name; v != nil {
+		set, args = append(set, "name = ?"), append(args, v)
 	}
-	if v := updateUserPatch.Password; v != nil {
-		user.Password = *v
-		set, args = append(set, "password=?"), append(args, *v)
+	if v := patch.Password; v != nil {
+		set, args = append(set, "password = ?"), append(args, v)
 	}
-	set, args = append(set, "updated_at=?"), append(args, utils.GetNowDateTimeStr())
-	args = append(args, id)
-
-	sqlQuery := `UPDATE users SET ` + strings.Join(set, ",") + ` WHERE id=?`
-	_, err = DB.Exec(sqlQuery, args...)
-
-	return user, FormatDBError(err)
-}
-
-func ResetUserOpenId(userId string) (string, error) {
-	openId := utils.GenUUID()
-	query := `UPDATE users SET open_id=? WHERE id=?`
-	_, err := DB.Exec(query, openId, userId)
-	return openId, FormatDBError(err)
-}
-
-func GetUserById(id string) (User, error) {
-	query := `SELECT id, username, password, open_id, created_at, updated_at FROM users WHERE id=?`
-	user := User{}
-	err := DB.QueryRow(query, id).Scan(&user.Id, &user.Username, &user.Password, &user.OpenId, &user.CreatedAt, &user.UpdatedAt)
-	return user, FormatDBError(err)
-}
-
-func GetUserByOpenId(openId string) (User, error) {
-	query := `SELECT id, username, password, open_id, created_at, updated_at FROM users WHERE open_id=?`
-	user := User{}
-	err := DB.QueryRow(query, openId).Scan(&user.Id, &user.Username, &user.Password, &user.OpenId, &user.CreatedAt, &user.UpdatedAt)
-	return user, FormatDBError(err)
-}
-
-func GetUserByUsernameAndPassword(username string, password string) (User, error) {
-	query := `SELECT id, username, password, open_id, created_at, updated_at FROM users WHERE username=? AND password=?`
-	user := User{}
-	err := DB.QueryRow(query, username, password).Scan(&user.Id, &user.Username, &user.Password, &user.OpenId, &user.CreatedAt, &user.UpdatedAt)
-	return user, FormatDBError(err)
-}
-
-func CheckUsernameUsable(username string) (bool, error) {
-	query := `SELECT * FROM users WHERE username=?`
-	query = fmt.Sprintf("SELECT COUNT(*) FROM (%s)", query)
-
-	var count uint
-	err := DB.QueryRow(query, username).Scan(&count)
-	if err != nil && err != sql.ErrNoRows {
-		return false, FormatDBError(err)
+	if v := patch.OpenId; v != nil {
+		set, args = append(set, "open_id = ?"), append(args, v)
 	}
 
-	usable := true
-	if count > 0 {
-		usable = false
+	args = append(args, patch.Id)
+
+	row, err := db.Db.Query(`
+		UPDATE user
+		SET `+strings.Join(set, ", ")+`
+		WHERE id = ?
+		RETURNING id, name, password, open_id, created_ts, updated_ts
+	`, args...)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer row.Close()
+
+	if row.Next() {
+		var user api.User
+		if err := row.Scan(
+			&user.Id,
+			&user.Name,
+			&user.Password,
+			&user.OpenId,
+			&user.CreatedTs,
+			&user.UpdatedTs,
+		); err != nil {
+			return nil, FormatError(err)
+		}
+
+		return &user, nil
 	}
 
-	return usable, nil
+	return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("user ID not found: %d", patch.Id)}
 }
 
-func CheckPasswordValid(id string, password string) (bool, error) {
-	query := `SELECT * FROM users WHERE id=? AND password=?`
-	query = fmt.Sprintf("SELECT COUNT(*) FROM (%s)", query)
+func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
+	where, args := []string{"1 = 1"}, []interface{}{}
 
-	var count uint
-	err := DB.QueryRow(query, id, password).Scan(&count)
-	if err != nil && err != sql.ErrNoRows {
-		return false, FormatDBError(err)
+	if v := find.Id; v != nil {
+		where, args = append(where, "id = ?"), append(args, *v)
+	}
+	if v := find.Name; v != nil {
+		where, args = append(where, "name = ?"), append(args, *v)
+	}
+	if v := find.OpenId; v != nil {
+		where, args = append(where, "open_id = ?"), append(args, *v)
 	}
 
-	if count > 0 {
-		return true, nil
-	} else {
-		return false, nil
+	rows, err := db.Db.Query(`
+		SELECT 
+			id,
+			name,
+			password,
+			open_id,
+			created_ts,
+			updated_ts
+		FROM user
+		WHERE `+strings.Join(where, " AND "),
+		args...,
+	)
+	if err != nil {
+		return nil, FormatError(err)
 	}
+	defer rows.Close()
+
+	list := make([]*api.User, 0)
+	for rows.Next() {
+		var user api.User
+		if err := rows.Scan(
+			&user.Id,
+			&user.Name,
+			&user.Password,
+			&user.OpenId,
+			&user.CreatedTs,
+			&user.UpdatedTs,
+		); err != nil {
+			fmt.Println(err)
+			return nil, FormatError(err)
+		}
+
+		list = append(list, &user)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, FormatError(err)
+	}
+
+	return list, nil
 }

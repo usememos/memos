@@ -1,149 +1,49 @@
 package api
 
-import (
-	"encoding/json"
-	"memos/api/e"
-	"memos/store"
-	"net/http"
+type User struct {
+	Id        int   `json:"id"`
+	CreatedTs int64 `json:"createdTs"`
+	UpdatedTs int64 `json:"updatedTs"`
 
-	"github.com/gorilla/mux"
-)
-
-func handleGetMyUserInfo(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInSession(r)
-
-	user, err := store.GetUserById(userId)
-
-	if err != nil {
-		e.ErrorHandler(w, "USER_NOT_FOUND", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    user,
-	})
+	OpenId   string `json:"openId"`
+	Name     string `json:"name"`
+	Password string `json:"-"`
 }
 
-func handleUpdateMyUserInfo(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInSession(r)
-
-	updateUserPatch := store.UpdateUserPatch{}
-	err := json.NewDecoder(r.Body).Decode(&updateUserPatch)
-
-	if err != nil {
-		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
-		return
-	}
-
-	if updateUserPatch.Username != nil {
-		usernameUsable, _ := store.CheckUsernameUsable(*updateUserPatch.Username)
-		if !usernameUsable {
-			json.NewEncoder(w).Encode(Response{
-				Succeed: false,
-				Message: "Username is existed",
-				Data:    nil,
-			})
-			return
-		}
-	}
-
-	user, err := store.UpdateUser(userId, &updateUserPatch)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    user,
-	})
+type UserCreate struct {
+	OpenId   string `json:"openId"`
+	Name     string `json:"name"`
+	Password string `json:"password"`
 }
 
-func handleResetUserOpenId(w http.ResponseWriter, r *http.Request) {
-	userId, _ := GetUserIdInSession(r)
+type UserPatch struct {
+	Id int
 
-	openId, err := store.ResetUserOpenId(userId)
+	OpenId *string
 
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    openId,
-	})
+	Name        *string `json:"name"`
+	Password    *string `json:"password"`
+	ResetOpenId *bool   `json:"resetOpenId"`
 }
 
-func handleCheckUsername(w http.ResponseWriter, r *http.Request) {
-	type CheckUsernameDataBody struct {
-		Username string
-	}
+type UserFind struct {
+	Id *int `json:"id"`
 
-	checkUsername := CheckUsernameDataBody{}
-	err := json.NewDecoder(r.Body).Decode(&checkUsername)
-
-	if err != nil {
-		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
-		return
-	}
-
-	usable, err := store.CheckUsernameUsable(checkUsername.Username)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    usable,
-	})
+	Name     *string `json:"name"`
+	Password *string
+	OpenId   *string
 }
 
-func handleValidPassword(w http.ResponseWriter, r *http.Request) {
-	type ValidPasswordDataBody struct {
-		Password string
-	}
-
-	userId, _ := GetUserIdInSession(r)
-	validPassword := ValidPasswordDataBody{}
-	err := json.NewDecoder(r.Body).Decode(&validPassword)
-
-	if err != nil {
-		e.ErrorHandler(w, "REQUEST_BODY_ERROR", "Bad request")
-		return
-	}
-
-	valid, err := store.CheckPasswordValid(userId, validPassword.Password)
-
-	if err != nil {
-		e.ErrorHandler(w, "DATABASE_ERROR", err.Error())
-		return
-	}
-
-	json.NewEncoder(w).Encode(Response{
-		Succeed: true,
-		Message: "",
-		Data:    valid,
-	})
+type UserRenameCheck struct {
+	Name string `json:"name"`
 }
 
-func RegisterUserRoutes(r *mux.Router) {
-	userRouter := r.PathPrefix("/api/user").Subrouter()
+type UserPasswordCheck struct {
+	Password string `json:"password"`
+}
 
-	userRouter.Use(JSONResponseMiddleWare)
-	userRouter.Use(AuthCheckerMiddleWare)
-
-	userRouter.HandleFunc("/me", handleGetMyUserInfo).Methods("GET")
-	userRouter.HandleFunc("/me", handleUpdateMyUserInfo).Methods("PATCH")
-	userRouter.HandleFunc("/open_id/new", handleResetUserOpenId).Methods("POST")
-	userRouter.HandleFunc("/checkusername", handleCheckUsername).Methods("POST")
-	userRouter.HandleFunc("/validpassword", handleValidPassword).Methods("POST")
+type UserService interface {
+	CreateUser(create *UserCreate) (*User, error)
+	PatchUser(patch *UserPatch) (*User, error)
+	FindUser(find *UserFind) (*User, error)
 }

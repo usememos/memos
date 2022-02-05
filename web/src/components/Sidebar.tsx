@@ -3,7 +3,7 @@ import appContext from "../stores/appContext";
 import { SHOW_SIDERBAR_MOBILE_CLASSNAME } from "../helpers/consts";
 import { globalStateService } from "../services";
 import UserBanner from "./UserBanner";
-import QueryList from "./QueryList";
+import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
 import UsageHeatMap from "./UsageHeatMap";
 import "../less/siderbar.less";
@@ -66,7 +66,7 @@ const Sidebar: React.FC<Props> = () => {
     <aside className="sidebar-wrapper" ref={wrapperElRef}>
       <UserBanner />
       <UsageHeatMap />
-      <QueryList />
+      <ShortcutList />
       <TagList />
     </aside>
   );

@@ -16,11 +16,10 @@ class MemoService {
       return false;
     }
 
-    const { data } = await api.getMyMemos();
-    const memos = [];
-    for (const m of data) {
-      memos.push(m);
-    }
+    const data = await api.getMyMemos();
+    const memos: Model.Memo[] = data.map((m) => {
+      return this.convertResponseModelMemo(m);
+    });
     appStore.dispatch({
       type: "SET_MEMOS",
       payload: {
@@ -40,9 +39,11 @@ class MemoService {
       return false;
     }
 
-    const { data } = await api.getMyDeletedMemos();
-    data.sort((a, b) => utils.getTimeStampByDate(b.deletedAt) - utils.getTimeStampByDate(a.deletedAt));
-    return data;
+    const data = await api.getMyDeletedMemos();
+    const deletedMemos: Model.Memo[] = data.map((m) => {
+      return this.convertResponseModelMemo(m);
+    });
+    return deletedMemos;
   }
 
   public pushMemo(memo: Model.Memo) {
@@ -125,13 +126,21 @@ class MemoService {
   }
 
   public async createMemo(text: string): Promise<Model.Memo> {
-    const { data: memo } = await api.createMemo(text);
-    return memo;
+    const memo = await api.createMemo(text);
+    return this.convertResponseModelMemo(memo);
   }
 
   public async updateMemo(memoId: string, text: string): Promise<Model.Memo> {
-    const { data: memo } = await api.updateMemo(memoId, text);
-    return memo;
+    const memo = await api.updateMemo(memoId, text);
+    return this.convertResponseModelMemo(memo);
+  }
+
+  private convertResponseModelMemo(memo: Model.Memo): Model.Memo {
+    return {
+      ...memo,
+      createdAt: utils.getDataStringWithTs(memo.createdTs),
+      updatedAt: utils.getDataStringWithTs(memo.updatedTs),
+    };
   }
 }
 

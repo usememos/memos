@@ -44,19 +44,19 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   const handleSaveBtnClick = async () => {
     if (oldPassword === "" || newPassword === "" || newPasswordAgain === "") {
-      toastHelper.error("密码不能为空");
+      toastHelper.error("Please fill in all fields.");
       return;
     }
 
     if (newPassword !== newPasswordAgain) {
-      toastHelper.error("新密码两次输入不一致");
+      toastHelper.error("New passwords do not match.");
       setNewPasswordAgain("");
       return;
     }
 
     const passwordValidResult = validate(newPassword, validateConfig);
     if (!passwordValidResult.result) {
-      toastHelper.error("密码 " + passwordValidResult.reason);
+      toastHelper.error("Password " + passwordValidResult.reason);
       return;
     }
 
@@ -64,13 +64,13 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       const isValid = await userService.checkPasswordValid(oldPassword);
 
       if (!isValid) {
-        toastHelper.error("旧密码不匹配");
+        toastHelper.error("Old password is invalid.");
         setOldPassword("");
         return;
       }
 
       await userService.updatePassword(newPassword);
-      toastHelper.info("密码修改成功！");
+      toastHelper.info("Password changed.");
       handleCloseBtnClick();
     } catch (error: any) {
       toastHelper.error(error);
@@ -80,30 +80,30 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">修改密码</p>
+        <p className="title-text">Change Password</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <img className="icon-img" src="/icons/close.svg" />
         </button>
       </div>
       <div className="dialog-content-container">
         <label className="form-label input-form-label">
-          <span className={"normal-text " + (oldPassword === "" ? "" : "not-null")}>旧密码</span>
+          <span className={"normal-text " + (oldPassword === "" ? "" : "not-null")}>Old password</span>
           <input type="password" value={oldPassword} onChange={handleOldPasswordChanged} />
         </label>
         <label className="form-label input-form-label">
-          <span className={"normal-text " + (newPassword === "" ? "" : "not-null")}>新密码</span>
+          <span className={"normal-text " + (newPassword === "" ? "" : "not-null")}>New passworld</span>
           <input type="password" value={newPassword} onChange={handleNewPasswordChanged} />
         </label>
         <label className="form-label input-form-label">
-          <span className={"normal-text " + (newPasswordAgain === "" ? "" : "not-null")}>再次输入新密码</span>
+          <span className={"normal-text " + (newPasswordAgain === "" ? "" : "not-null")}>New password again</span>
           <input type="password" value={newPasswordAgain} onChange={handleNewPasswordAgainChanged} />
         </label>
         <div className="btns-container">
           <span className="btn cancel-btn" onClick={handleCloseBtnClick}>
-            取消
+            Cancel
           </span>
           <span className="btn confirm-btn" onClick={handleSaveBtnClick}>
-            保存
+            Save
           </span>
         </div>
       </div>

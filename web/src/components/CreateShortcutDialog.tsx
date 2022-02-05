@@ -1,18 +1,18 @@
 import { memo, useCallback, useEffect, useState } from "react";
-import { memoService, queryService } from "../services";
+import { memoService, shortcutService } from "../services";
 import { checkShouldShowMemoWithFilters, filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
 import useLoading from "../hooks/useLoading";
 import { showDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import Selector from "./common/Selector";
-import "../less/create-query-dialog.less";
+import "../less/create-shortcut-dialog.less";
 
 interface Props extends DialogProps {
-  queryId?: string;
+  shortcutId?: string;
 }
 
-const CreateQueryDialog: React.FC<Props> = (props: Props) => {
-  const { destroy, queryId } = props;
+const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
+  const { destroy, shortcutId } = props;
 
   const [title, setTitle] = useState<string>("");
   const [filters, setFilters] = useState<Filter[]>([]);
@@ -23,15 +23,15 @@ const CreateQueryDialog: React.FC<Props> = (props: Props) => {
   }).length;
 
   useEffect(() => {
-    const queryTemp = queryService.getQueryById(queryId ?? "");
-    if (queryTemp) {
-      setTitle(queryTemp.title);
-      const temp = JSON.parse(queryTemp.querystring);
+    const shortcutTemp = shortcutService.getShortcutById(shortcutId ?? "");
+    if (shortcutTemp) {
+      setTitle(shortcutTemp.title);
+      const temp = JSON.parse(shortcutTemp.payload);
       if (Array.isArray(temp)) {
         setFilters(temp);
       }
     }
-  }, [queryId]);
+  }, [shortcutId]);
 
   const handleTitleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -40,17 +40,17 @@ const CreateQueryDialog: React.FC<Props> = (props: Props) => {
 
   const handleSaveBtnClick = async () => {
     if (!title) {
-      toastHelper.error("标题不能为空！");
+      toastHelper.error("Title is required");
       return;
     }
 
     try {
-      if (queryId) {
-        const editedQuery = await queryService.updateQuery(queryId, title, JSON.stringify(filters));
-        queryService.editQuery(editedQuery);
+      if (shortcutId) {
+        const editedShortcut = await shortcutService.updateShortcut(shortcutId, title, JSON.stringify(filters));
+        shortcutService.editShortcut(shortcutService.convertResponseModelShortcut(editedShortcut));
       } else {
-        const query = await queryService.createQuery(title, JSON.stringify(filters));
-        queryService.pushQuery(query);
+        const shortcut = await shortcutService.createShortcut(title, JSON.stringify(filters));
+        shortcutService.pushShortcut(shortcutService.convertResponseModelShortcut(shortcut));
       }
     } catch (error: any) {
       toastHelper.error(error.message);
@@ -62,7 +62,7 @@ const CreateQueryDialog: React.FC<Props> = (props: Props) => {
     if (filters.length > 0) {
       const lastFilter = filters[filters.length - 1];
       if (lastFilter.value.value === "") {
-        toastHelper.info("先完善上一个过滤器吧");
+        toastHelper.info("Please fill in previous filter value");
         return;
       }
     }
@@ -90,7 +90,7 @@ const CreateQueryDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">
           <span className="icon-text">🔖</span>
-          {queryId ? "编辑检索" : "创建检索"}
+          {shortcutId ? "Edit Shortcut" : "Create Shortcut"}
         </p>
         <button className="btn close-btn" onClick={destroy}>
           <img className="icon-img" src="/icons/close.svg" />
@@ -98,11 +98,11 @@ const CreateQueryDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container">
         <div className="form-item-container input-form-container">
-          <span className="normal-text">标题</span>
+          <span className="normal-text">Title</span>
           <input className="title-input" type="text" value={title} onChange={handleTitleInputChange} />
         </div>
         <div className="form-item-container filter-form-container">
-          <span className="normal-text">过滤器</span>
+          <span className="normal-text">Filter</span>
           <div className="filters-wrapper">
             {filters.map((f, index) => {
               return (
@@ -116,7 +116,7 @@ const CreateQueryDialog: React.FC<Props> = (props: Props) => {
               );
             })}
             <div className="create-filter-btn" onClick={handleAddFilterBenClick}>
-              添加筛选条件
+              New Filter
             </div>
           </div>
         </div>
@@ -125,10 +125,10 @@ const CreateQueryDialog: React.FC<Props> = (props: Props) => {
         <div></div>
         <div className="btns-container">
           <span className={`tip-text ${filters.length === 0 && "hidden"}`}>
-            符合条件的 Memo 有 <strong>{shownMemoLength}</strong> 条
+            <strong>{shownMemoLength}</strong> eligible memo
           </span>
           <button className={`btn save-btn ${requestState.isLoading ? "requesting" : ""}`} onClick={handleSaveBtnClick}>
-            保存
+            Save
           </button>
         </div>
       </div>
@@ -298,12 +298,12 @@ const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInpute
 
 const MemoFilterInputer: React.FC<MemoFilterInputerProps> = memo(FilterInputer);
 
-export default function showCreateQueryDialog(queryId?: string): void {
+export default function showCreateShortcutDialog(shortcutId?: string): void {
   showDialog(
     {
-      className: "create-query-dialog",
+      className: "create-shortcut-dialog",
     },
-    CreateQueryDialog,
-    { queryId }
+    CreateShortcutDialog,
+    { shortcutId }
   );
 }

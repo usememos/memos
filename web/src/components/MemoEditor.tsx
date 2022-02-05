@@ -130,7 +130,7 @@ const MemoEditor: React.FC<Props> = () => {
 
     try {
       const image = await resourceService.upload(file);
-      const url = `/r/${image.id}/${image.filename}`;
+      const url = `/h/r/${image.id}/${image.filename}`;
 
       return url;
     } catch (error: any) {
@@ -140,7 +140,7 @@ const MemoEditor: React.FC<Props> = () => {
 
   const handleSaveBtnClick = useCallback(async (content: string) => {
     if (content === "") {
-      toastHelper.error("内容不能为空呀");
+      toastHelper.error("Content can't be empty");
       return;
     }
 
@@ -270,7 +270,7 @@ const MemoEditor: React.FC<Props> = () => {
     () => ({
       className: "memo-editor",
       initialContent: getEditorContentCache(),
-      placeholder: "现在的想法是...",
+      placeholder: "Any thoughts...",
       showConfirmBtn: true,
       showCancelBtn: showEditStatus,
       onConfirmBtnClick: handleSaveBtnClick,
@@ -282,7 +282,7 @@ const MemoEditor: React.FC<Props> = () => {
 
   return (
     <div className={"memo-editor-wrapper " + (showEditStatus ? "edit-ing" : "")}>
-      <p className={"tip-text " + (showEditStatus ? "" : "hidden")}>正在修改中...</p>
+      <p className={"tip-text " + (showEditStatus ? "" : "hidden")}>Editting...</p>
       <Editor
         ref={editorRef}
         {...editorConfig}

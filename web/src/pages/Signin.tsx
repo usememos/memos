@@ -55,34 +55,29 @@ const Signin: React.FC<Props> = () => {
 
     const usernameValidResult = validate(username, validateConfig);
     if (!usernameValidResult.result) {
-      toastHelper.error("用户名 " + usernameValidResult.reason);
+      toastHelper.error("Username: " + usernameValidResult.reason);
       return;
     }
 
     const passwordValidResult = validate(password, validateConfig);
     if (!passwordValidResult.result) {
-      toastHelper.error("密码 " + passwordValidResult.reason);
+      toastHelper.error("Password: " + passwordValidResult.reason);
       return;
     }
 
     try {
       signinBtnsClickLoadingState.setLoading();
-      let actionFunc = api.signin;
+      let actionFunc = api.login;
       if (action === "signup") {
         actionFunc = api.signup;
       }
-      const { succeed, message } = await actionFunc(username, password);
-
-      if (!succeed && message) {
-        toastHelper.error("😟 " + message);
-        return;
-      }
+      await actionFunc(username, password);
 
       const user = await userService.doSignIn();
       if (user) {
         locationService.replaceHistory("/");
       } else {
-        toastHelper.error("😟 登录失败");
+        toastHelper.error("😟 Login failed");
       }
     } catch (error: any) {
       console.error(error);
@@ -106,18 +101,13 @@ const Signin: React.FC<Props> = () => {
 
     try {
       signinBtnsClickLoadingState.setLoading();
-      const { succeed, message } = await api.signin("guest", "123456");
-
-      if (!succeed && message) {
-        toastHelper.error("😟 " + message);
-        return;
-      }
+      await api.login("guest", "123456");
 
       const user = await userService.doSignIn();
       if (user) {
         locationService.replaceHistory("/");
       } else {
-        toastHelper.error("😟 登录失败");
+        toastHelper.error("😟 Login failed");
       }
     } catch (error: any) {
       console.error(error);
@@ -131,7 +121,7 @@ const Signin: React.FC<Props> = () => {
       <div className="page-container">
         <div className="page-header-container">
           <p className="title-text">
-            登录 Memos <span className="icon-text">✍️</span>
+            Login to Memos <span className="icon-text">✍️</span>
           </p>
         </div>
         {showAutoSigninAsGuest ? (
@@ -142,13 +132,13 @@ const Signin: React.FC<Props> = () => {
                 className={`btn guest-signin ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                 onClick={handleAutoSigninAsGuestBtnClick}
               >
-                👉 快速登录进行体验
+                👉 Login as Guest quickly
               </div>
               <div
                 className={`btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                 onClick={handleSwitchAccountSigninBtnClick}
               >
-                已有账号，我要自己登录
+                I have an account
               </div>
             </div>
           </>
@@ -156,11 +146,11 @@ const Signin: React.FC<Props> = () => {
           <>
             <div className="page-content-container">
               <div className="form-item-container input-form-container">
-                <span className={"normal-text " + (username === "" ? "" : "not-null")}>账号</span>
+                <span className={"normal-text " + (username === "" ? "" : "not-null")}>Usernmae</span>
                 <input type="text" autoComplete="off" value={username} onChange={handleUsernameInputChanged} />
               </div>
               <div className="form-item-container input-form-container">
-                <span className={"normal-text " + (password === "" ? "" : "not-null")}>密码</span>
+                <span className={"normal-text " + (password === "" ? "" : "not-null")}>Password</span>
                 <input type="password" autoComplete="off" value={password} onChange={handlePasswordInputChanged} />
               </div>
             </div>
@@ -171,14 +161,14 @@ const Signin: React.FC<Props> = () => {
                   className={`btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                   onClick={handleAutoSigninAsGuestBtnClick}
                 >
-                  体验一下
+                  Login as Guest
                 </button>
                 <span className="split-text">/</span>
                 <button
                   className={`btn signin-btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                   onClick={() => handleSigninBtnsClick("signup")}
                 >
-                  注册
+                  Sign up
                 </button>
                 <span className="split-text">/</span>
                 <button
@@ -186,7 +176,7 @@ const Signin: React.FC<Props> = () => {
                   className={`btn signin-btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                   onClick={() => handleSigninBtnsClick("signin")}
                 >
-                  登录
+                  Login
                 </button>
               </div>
             </div>

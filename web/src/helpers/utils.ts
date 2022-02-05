@@ -43,6 +43,10 @@ namespace utils {
     return `${year}/${month}/${date}`;
   }
 
+  export function getDataStringWithTs(ts: number): string {
+    return getDateTimeString(ts * 1000);
+  }
+
   export function getTimeString(t: Date | number | string): string {
     const d = new Date(getTimeStampByDate(t));
 

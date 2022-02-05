@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import appContext from "../stores/appContext";
 import useLoading from "../hooks/useLoading";
-import { globalStateService, locationService, memoService, queryService } from "../services";
+import { globalStateService, locationService, memoService, shortcutService } from "../services";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
 import utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
@@ -21,8 +21,8 @@ const MemoTrash: React.FC<Props> = () => {
   const loadingState = useLoading();
   const [deletedMemos, setDeletedMemos] = useState<Model.Memo[]>([]);
 
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, filter: queryId } = query;
-  const queryFilter = queryService.getQueryById(queryId);
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
+  const queryFilter = shortcutService.getShortcutById(shortcutId);
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || queryFilter);
 
   const shownMemos =
@@ -31,7 +31,7 @@ const MemoTrash: React.FC<Props> = () => {
           let shouldShow = true;
 
           if (queryFilter) {
-            const filters = JSON.parse(queryFilter.querystring) as Filter[];
+            const filters = JSON.parse(queryFilter.payload) as Filter[];
             if (Array.isArray(filters)) {
               shouldShow = checkShouldShowMemoWithFilters(memo, filters);
             }
@@ -114,13 +114,13 @@ const MemoTrash: React.FC<Props> = () => {
               <img className="icon-img" src="/icons/menu.svg" alt="menu" />
             </button>
           </Only>
-          <span className="normal-text">回收站</span>
+          <span className="normal-text">Recycle Bin</span>
         </div>
       </div>
       <MemoFilter />
       {loadingState.isLoading ? (
         <div className="tip-text-container">
-          <p className="tip-text">努力请求数据中...</p>
+          <p className="tip-text">fetching data...</p>
         </div>
       ) : deletedMemos.length === 0 ? (
         <div className="tip-text-container">

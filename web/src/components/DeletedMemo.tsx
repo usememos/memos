@@ -18,7 +18,7 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
   const memo: FormattedMemo = {
     ...propsMemo,
     createdAtStr: utils.getDateTimeString(propsMemo.createdAt),
-    deletedAtStr: utils.getDateTimeString(propsMemo.deletedAt ?? Date.now()),
+    deletedAtStr: utils.getDateTimeString(propsMemo.updatedAt ?? Date.now()),
   };
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []);
@@ -40,7 +40,7 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
     try {
       await memoService.restoreMemoById(memo.id);
       handleDeletedMemoAction(memo.id);
-      toastHelper.info("恢复成功");
+      toastHelper.info("Restored successfully");
     } catch (error: any) {
       toastHelper.error(error.message);
     }
@@ -55,7 +55,7 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
-        <span className="time-text">删除于 {memo.deletedAtStr}</span>
+        <span className="time-text">Deleted at {memo.deletedAtStr}</span>
         <div className="btns-container">
           <span className="btn more-action-btn">
             <img className="icon-img" src="/icons/more.svg" />
@@ -63,10 +63,10 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
           <div className="more-action-btns-wrapper">
             <div className="more-action-btns-container">
               <span className="btn restore-btn" onClick={handleRestoreMemoClick}>
-                恢复
+                Restore
               </span>
               <span className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
-                {showConfirmDeleteBtn ? "确定删除！" : "完全删除"}
+                {showConfirmDeleteBtn ? "Delete!" : "Delete"}
               </span>
             </div>
           </div>
