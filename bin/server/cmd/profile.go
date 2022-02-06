@@ -42,7 +42,7 @@ func checkDSN(dataDir string) (string, error) {
 func GetProfile() Profile {
 	mode := flag.String("mode", "dev", "")
 	port := flag.Int("port", 8080, "")
-	data := flag.String("data", "", "")
+	data := flag.String("data", "/var/opt/memos", "")
 	flag.Parse()
 
 	dataDir, err := checkDSN(*data)

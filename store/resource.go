@@ -100,6 +100,7 @@ func createResource(db *DB, create *api.ResourceCreate) (*api.Resource, error) {
 
 func findResourceList(db *DB, find *api.ResourceFind) ([]*api.Resource, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
+
 	if v := find.Id; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)
 	}
