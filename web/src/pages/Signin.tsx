@@ -101,7 +101,7 @@ const Signin: React.FC<Props> = () => {
 
     try {
       signinBtnsClickLoadingState.setLoading();
-      await api.login("guest", "123456");
+      await api.login("guest", "secret");
 
       const user = await userService.doSignIn();
       if (user) {

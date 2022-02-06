@@ -14,4 +14,4 @@
    docker run --name memos --restart always --publish 8080:8080 --volume ~/path/to/your/data/:/var/opt/memos/ neosmemo/memos:next -mode release
    ```
 
-The default user account is `guest` with password `123456`.
+The default user account is `guest` with password `secret`.

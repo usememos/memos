@@ -8,6 +8,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *Server) registerAuthRoutes(g *echo.Group) {
@@ -28,9 +29,10 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found: %s", login.Name))
 		}
 
-		// Compare the stored password
-		if login.Password != user.Password {
-			return echo.NewHTTPError(http.StatusBadRequest, "Incorrect password").SetInternal(err)
+		// Compare the stored hashed password, with the hashed version of the password that was received.
+		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(login.Password)); err != nil {
+			// If the two passwords don't match, return a 401 status.
+			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect password").SetInternal(err)
 		}
 
 		err = setUserSession(c, user)
@@ -60,6 +62,13 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
 		}
 
+		if len(signup.Name) <= 5 {
+			return echo.NewHTTPError(http.StatusBadRequest, "Username is too short, minimum length is 6.")
+		}
+		if len(signup.Password) <= 5 {
+			return echo.NewHTTPError(http.StatusBadRequest, "Password is too short, minimum length is 6.")
+		}
+
 		userFind := &api.UserFind{
 			Name: &signup.Name,
 		}
@@ -71,10 +80,15 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Existed user found: %s", signup.Name))
 		}
 
+		passwordHash, err := bcrypt.GenerateFromPassword([]byte(signup.Password), bcrypt.DefaultCost)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
+		}
+
 		userCreate := &api.UserCreate{
-			Name:     signup.Name,
-			Password: signup.Password,
-			OpenId:   common.GenUUID(),
+			Name:         signup.Name,
+			PasswordHash: string(passwordHash),
+			OpenId:       common.GenUUID(),
 		}
 		user, err = s.UserService.CreateUser(userCreate)
 		if err != nil {

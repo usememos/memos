@@ -5,21 +5,22 @@ type User struct {
 	CreatedTs int64 `json:"createdTs"`
 	UpdatedTs int64 `json:"updatedTs"`
 
-	OpenId   string `json:"openId"`
-	Name     string `json:"name"`
-	Password string `json:"-"`
+	OpenId       string `json:"openId"`
+	Name         string `json:"name"`
+	PasswordHash string `json:"-"`
 }
 
 type UserCreate struct {
-	OpenId   string `json:"openId"`
-	Name     string `json:"name"`
-	Password string `json:"password"`
+	OpenId       string
+	Name         string
+	PasswordHash string
 }
 
 type UserPatch struct {
 	Id int
 
-	OpenId *string
+	OpenId       *string
+	PasswordHash *string
 
 	Name        *string `json:"name"`
 	Password    *string `json:"password"`
@@ -29,9 +30,8 @@ type UserPatch struct {
 type UserFind struct {
 	Id *int `json:"id"`
 
-	Name     *string `json:"name"`
-	Password *string
-	OpenId   *string
+	Name   *string `json:"name"`
+	OpenId *string
 }
 
 type UserRenameCheck struct {

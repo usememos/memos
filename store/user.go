@@ -52,14 +52,14 @@ func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
 	row, err := db.Db.Query(`
 		INSERT INTO user (
 			name,
-			password,
+			password_hash,
 			open_id
 		)
 		VALUES (?, ?, ?)
-		RETURNING id, name, password, open_id, created_ts, updated_ts
+		RETURNING id, name, password_hash, open_id, created_ts, updated_ts
 	`,
 		create.Name,
-		create.Password,
+		create.PasswordHash,
 		create.OpenId,
 	)
 	if err != nil {
@@ -72,7 +72,7 @@ func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
 	if err := row.Scan(
 		&user.Id,
 		&user.Name,
-		&user.Password,
+		&user.PasswordHash,
 		&user.OpenId,
 		&user.CreatedTs,
 		&user.UpdatedTs,
@@ -89,8 +89,8 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 	if v := patch.Name; v != nil {
 		set, args = append(set, "name = ?"), append(args, v)
 	}
-	if v := patch.Password; v != nil {
-		set, args = append(set, "password = ?"), append(args, v)
+	if v := patch.PasswordHash; v != nil {
+		set, args = append(set, "password_hash = ?"), append(args, v)
 	}
 	if v := patch.OpenId; v != nil {
 		set, args = append(set, "open_id = ?"), append(args, v)
@@ -102,7 +102,7 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 		UPDATE user
 		SET `+strings.Join(set, ", ")+`
 		WHERE id = ?
-		RETURNING id, name, password, open_id, created_ts, updated_ts
+		RETURNING id, name, password_hash, open_id, created_ts, updated_ts
 	`, args...)
 	if err != nil {
 		return nil, FormatError(err)
@@ -114,7 +114,7 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 		if err := row.Scan(
 			&user.Id,
 			&user.Name,
-			&user.Password,
+			&user.PasswordHash,
 			&user.OpenId,
 			&user.CreatedTs,
 			&user.UpdatedTs,
@@ -145,7 +145,7 @@ func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 		SELECT 
 			id,
 			name,
-			password,
+			password_hash,
 			open_id,
 			created_ts,
 			updated_ts
@@ -164,7 +164,7 @@ func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 		if err := rows.Scan(
 			&user.Id,
 			&user.Name,
-			&user.Password,
+			&user.PasswordHash,
 			&user.OpenId,
 			&user.CreatedTs,
 			&user.UpdatedTs,

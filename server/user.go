@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func (s *Server) registerUserRoutes(g *echo.Group) {
@@ -75,8 +76,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 
 		userFind := &api.UserFind{
-			Id:       &userId,
-			Password: &userPasswordCheck.Password,
+			Id: &userId,
 		}
 		user, err := s.UserService.FindUser(userFind)
 		if err != nil {
@@ -84,7 +84,8 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 
 		isValid := false
-		if user != nil {
+		// Compare the stored hashed password, with the hashed version of the password that was received.
+		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(userPasswordCheck.Password)); err == nil {
 			isValid = true
 		}
 
@@ -107,6 +108,16 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if userPatch.ResetOpenId != nil && *userPatch.ResetOpenId {
 			openId := common.GenUUID()
 			userPatch.OpenId = &openId
+		}
+
+		if userPatch.Password != nil && *userPatch.Password != "" {
+			passwordHash, err := bcrypt.GenerateFromPassword([]byte(*userPatch.Password), bcrypt.DefaultCost)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
+			}
+
+			passwordHashStr := string(passwordHash)
+			userPatch.PasswordHash = &passwordHashStr
 		}
 
 		user, err := s.UserService.PatchUser(userPatch)

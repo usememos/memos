@@ -2,7 +2,7 @@
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
-  password TEXT NOT NULL,
+  password_hash TEXT NOT NULL,
   open_id TEXT NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
@@ -117,10 +117,21 @@ WHERE
 END;
 
 
-INSERT INTO user
-  (`id`, `name`, `password`, `open_id`)
+INSERT INTO 
+  user (
+    `id`, 
+    `name`, 
+    `open_id`,
+    `password_hash`
+  )
 VALUES
-  (1, 'guest', '123456', 'guest_open_id');
+  (
+    1, 
+    'guest', 
+    'guest_open_id',
+    -- "secret"
+    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
+  );
 
 INSERT INTO memo
   (`content`, `creator_id`)
