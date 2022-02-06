@@ -31,7 +31,7 @@ func checkDSN(dataDir string) (string, error) {
 	dataDir = strings.TrimRight(dataDir, "/")
 
 	if _, err := os.Stat(dataDir); err != nil {
-		error := fmt.Errorf("unable to access --data %s, %w", dataDir, err)
+		error := fmt.Errorf("unable to access -data %s, err %w", dataDir, err)
 		return "", error
 	}
 
@@ -43,12 +43,11 @@ func GetProfile() Profile {
 	mode := flag.String("mode", "dev", "")
 	port := flag.Int("port", 8080, "")
 	data := flag.String("data", "", "")
-
 	flag.Parse()
 
 	dataDir, err := checkDSN(*data)
 	if err != nil {
-		fmt.Printf("%+v\n", err)
+		fmt.Printf("Failed to check dsn: %s, err: %+v\n", dataDir, err)
 		os.Exit(1)
 	}
 

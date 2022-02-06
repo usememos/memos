@@ -29,7 +29,7 @@ func Execute() {
 }
 
 func (m *Main) Run() error {
-	db := store.NewDB(m.profile.dsn)
+	db := store.NewDB(m.profile.dsn, m.profile.mode)
 
 	if err := db.Open(); err != nil {
 		return fmt.Errorf("cannot open db: %w", err)

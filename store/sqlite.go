@@ -17,14 +17,17 @@ var seedFS embed.FS
 type DB struct {
 	Db *sql.DB
 
-	// Datasource name.
+	// datasource name
 	DSN string
+	// mode: release or dev
+	mode string
 }
 
 // NewDB returns a new instance of DB associated with the given datasource name.
-func NewDB(dsn string) *DB {
+func NewDB(dsn string, mode string) *DB {
 	db := &DB{
-		DSN: dsn,
+		DSN:  dsn,
+		mode: mode,
 	}
 	return db
 }
@@ -37,11 +40,14 @@ func (db *DB) Open() (err error) {
 
 	// Connect to the database.
 	if db.Db, err = sql.Open("sqlite3", db.DSN); err != nil {
-		return err
+		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.DSN, err)
 	}
 
-	if err := db.seed(); err != nil {
-		return fmt.Errorf("failed to seed: %w", err)
+	if db.mode == "dev" {
+		// If mode is dev, then we will seed the database.
+		if err := db.seed(); err != nil {
+			return fmt.Errorf("failed to seed: %w", err)
+		}
 	}
 
 	return err
