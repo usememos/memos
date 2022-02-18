@@ -33,6 +33,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.PATCH("/memo/:memoId", func(c echo.Context) error {
 		memoId, err := strconv.Atoi(c.Param("memoId"))
 		if err != nil {
@@ -58,6 +59,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.GET("/memo", func(c echo.Context) error {
 		userId := c.Get(getUserIdContextKey()).(int)
 		memoFind := &api.MemoFind{
@@ -86,6 +88,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.GET("/memo/:memoId", func(c echo.Context) error {
 		memoId, err := strconv.Atoi(c.Param("memoId"))
 		if err != nil {
@@ -111,6 +114,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.DELETE("/memo/:memoId", func(c echo.Context) error {
 		memoId, err := strconv.Atoi(c.Param("memoId"))
 		if err != nil {

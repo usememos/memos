@@ -32,6 +32,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.PATCH("/shortcut/:shortcutId", func(c echo.Context) error {
 		shortcutId, err := strconv.Atoi(c.Param("shortcutId"))
 		if err != nil {
@@ -57,6 +58,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.GET("/shortcut", func(c echo.Context) error {
 		userId := c.Get(getUserIdContextKey()).(int)
 		shortcutFind := &api.ShortcutFind{
@@ -74,6 +76,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.GET("/shortcut/:shortcutId", func(c echo.Context) error {
 		shortcutId, err := strconv.Atoi(c.Param("shortcutId"))
 		if err != nil {
@@ -95,6 +98,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.DELETE("/shortcut/:shortcutId", func(c echo.Context) error {
 		shortcutId, err := strconv.Atoi(c.Param("shortcutId"))
 		if err != nil {

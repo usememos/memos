@@ -59,6 +59,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.GET("/resource", func(c echo.Context) error {
 		userId := c.Get(getUserIdContextKey()).(int)
 		resourceFind := &api.ResourceFind{
@@ -76,6 +77,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
 		resourceId, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {

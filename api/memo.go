@@ -11,8 +11,9 @@ type Memo struct {
 }
 
 type MemoCreate struct {
-	Content   string `json:"content"`
 	CreatorId int
+
+	Content string `json:"content"`
 }
 
 type MemoPatch struct {
@@ -29,8 +30,7 @@ type MemoFind struct {
 }
 
 type MemoDelete struct {
-	Id        *int `json:"id"`
-	CreatorId *int
+	Id *int `json:"id"`
 }
 
 type MemoService interface {

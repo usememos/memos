@@ -1,10 +1,10 @@
 package cmd
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 )
 
@@ -40,22 +40,29 @@ func checkDSN(dataDir string) (string, error) {
 
 // GetDevProfile will return a profile for dev.
 func GetProfile() Profile {
-	mode := flag.String("mode", "dev", "")
-	port := flag.Int("port", 8080, "")
-	data := flag.String("data", "", "")
-	flag.Parse()
+	mode := os.Getenv("mode")
+	if mode != "dev" && mode != "release" {
+		mode = "dev"
+	}
 
-	dataDir, err := checkDSN(*data)
+	port, err := strconv.Atoi(os.Getenv("port"))
+	if err != nil {
+		port = 8080
+	}
+
+	data := os.Getenv("data")
+
+	dataDir, err := checkDSN(data)
 	if err != nil {
 		fmt.Printf("Failed to check dsn: %s, err: %+v\n", dataDir, err)
 		os.Exit(1)
 	}
 
-	dsn := fmt.Sprintf("file:%s/memos_%s.db", dataDir, *mode)
+	dsn := fmt.Sprintf("file:%s/memos_%s.db", dataDir, mode)
 
 	return Profile{
-		mode: *mode,
-		port: *port,
+		mode: mode,
+		port: port,
 		dsn:  dsn,
 	}
 }

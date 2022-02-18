@@ -47,6 +47,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.POST("/auth/logout", func(c echo.Context) error {
 		err := removeUserSession(c)
 		if err != nil {
@@ -56,6 +57,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		c.Response().WriteHeader(http.StatusOK)
 		return nil
 	})
+
 	g.POST("/auth/signup", func(c echo.Context) error {
 		signup := &api.Signup{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {

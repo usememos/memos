@@ -14,6 +14,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 	g.GET("/test", func(c echo.Context) error {
 		return c.HTML(http.StatusOK, "<strong>Hello, World!</strong>")
 	})
+
 	g.POST("/:openId/memo", func(c echo.Context) error {
 		openId := c.Param("openId")
 
@@ -47,6 +48,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.GET("/:openId/memo", func(c echo.Context) error {
 		openId := c.Param("openId")
 

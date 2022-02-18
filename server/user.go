@@ -34,6 +34,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.POST("/user/rename_check", func(c echo.Context) error {
 		userRenameCheck := &api.UserRenameCheck{}
 		if err := json.NewDecoder(c.Request().Body).Decode(userRenameCheck); err != nil {
@@ -64,6 +65,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.POST("/user/password_check", func(c echo.Context) error {
 		userId := c.Get(getUserIdContextKey()).(int)
 		userPasswordCheck := &api.UserPasswordCheck{}
@@ -96,6 +98,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		return nil
 	})
+
 	g.PATCH("/user/me", func(c echo.Context) error {
 		userId := c.Get(getUserIdContextKey()).(int)
 		userPatch := &api.UserPatch{
