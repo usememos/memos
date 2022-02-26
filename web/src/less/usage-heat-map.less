@@ -6,35 +6,22 @@
 @stat-day-L4-bg: #216e39;
 
 .usage-heat-map-wrapper {
+  @apply w-full h-32 flex-wrap pr-6 pb-3;
   .flex(row, flex-start, center);
-  width: 100%;
-  height: 122px;
-  flex-wrap: wrap;
-  padding-right: 24px;
-  padding-bottom: 12px;
 
   &:hover {
     > .day-tip-text-container {
-      visibility: visible;
+      @apply visible;
     }
   }
 
   > .day-tip-text-container {
+    @apply w-6 h-full flex-wrap invisible;
     .flex(column, space-between, center);
-    width: 24px;
-    height: 100%;
-    padding-bottom: 2px;
-    flex-wrap: wrap;
-    visibility: hidden;
 
     > .tip-text {
+      @apply pr-1 w-full text-right font-mono text-gray-400;
       font-size: 10px;
-      line-height: 16px;
-      padding-right: 2px;
-      width: 100%;
-      text-align: right;
-      color: gray;
-      @apply font-mono;
     }
   }
 

@@ -44,16 +44,15 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  box-shadow: 0 0 0 30px white inset !important;
+  @apply shadow-inner;
 }
 
 li {
   list-style-type: none;
 
   &::before {
+    @apply font-bold mr-1;
     content: "•";
-    font-weight: bold;
-    margin-right: 4px;
   }
 }
 
