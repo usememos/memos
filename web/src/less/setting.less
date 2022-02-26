@@ -2,8 +2,8 @@
 @import "./memos-header.less";
 
 .preference-wrapper {
-  @apply w-full h-full grow overflow-y-scroll;
   .flex(column, flex-start, flex-start);
+  @apply w-full h-full grow overflow-y-scroll;
   .hide-scroll-bar();
 
   > .section-header-container {
@@ -16,18 +16,18 @@
   }
 
   > .tip-text-container {
-    @apply w-full h-32;
     .flex(column, center, center);
+    @apply w-full h-32;
   }
 
   > .sections-wrapper {
-    @apply grow w-full overflow-y-scroll pb-16;
     .flex(column, flex-start, flex-start);
+    @apply grow w-full overflow-y-scroll pb-16;
     .hide-scroll-bar();
 
     > .section-container {
-      @apply w-full bg-white my-2 mx-0 p-4 pb-2 rounded-lg;
       .flex(column, flex-start, flex-start);
+      @apply w-full bg-white my-2 mx-0 p-4 pb-2 rounded-lg;
 
       > .title-text {
         @apply text-base font-bold mb-2;
@@ -35,8 +35,8 @@
       }
 
       > .form-label {
-        @apply w-full text-sm mb-2;
         .flex(row, flex-start, center);
+        @apply w-full text-sm mb-2;
 
         > .normal-text {
           @apply shrink-0;

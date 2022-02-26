@@ -1,13 +1,13 @@
 @import "./mixin.less";
 
 .shortcuts-wrapper {
-  @apply w-full py-0 px-2 h-auto flex-nowrap;
   .flex(column, flex-start, flex-start);
+  @apply w-full py-0 px-2 h-auto flex-nowrap;
   .hide-scroll-bar();
 
   > .title-text {
-    @apply w-full py-1 px-4;
     .flex(row, space-between, center);
+    @apply w-full py-1 px-4;
 
     > .normal-text {
       @apply text-xs leading-6 font-bold text-black opacity-50;
@@ -26,8 +26,8 @@
   }
 
   > .create-shortcut-btn-container {
-    @apply w-full mt-2 mb-3;
     .flex(row, center, center);
+    @apply w-full mt-2 mb-3;
 
     > .btn {
       @apply flex py-1 px-2 rounded-lg text-xs border border-dashed border-blue-600;
@@ -39,12 +39,12 @@
   }
 
   > .shortcuts-container {
-    @apply relative w-full h-auto flex-nowrap mb-2;
     .flex(column, flex-start, flex-start);
+    @apply relative w-full h-auto flex-nowrap mb-2;
 
     > .shortcut-container {
-      @apply w-full h-10 py-0 px-4 mt-1 rounded-lg text-sm cursor-pointer select-none shrink-0;
       .flex(row, space-between, center);
+      @apply w-full h-10 py-0 px-4 mt-1 rounded-lg text-sm cursor-pointer select-none shrink-0;
 
       &:hover {
         background-color: @bg-gray;
@@ -67,8 +67,8 @@
       }
 
       > .shortcut-text-container {
-        @apply overflow-hidden text-ellipsis shrink-0 leading-5;
         .flex(row, flex-start, center);
+        @apply overflow-hidden text-ellipsis shrink-0 leading-5;
         max-width: calc(100% - 24px);
         color: @text-black;
 
@@ -86,8 +86,8 @@
         @apply hidden;
 
         > .action-btn {
-          @apply w-6 h-6 shrink-0;
           .flex(row, center, center);
+          @apply w-6 h-6 shrink-0;
 
           > .icon-img {
             @apply w-4 h-auto;
@@ -107,8 +107,8 @@
           @apply absolute right-0 w-auto h-auto p-2 translate-y-14 hidden z-10;
 
           > .action-btns-container {
-            @apply w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white shadow;
             .flex(column, flex-start, flex-start);
+            @apply w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white shadow;
 
             > .btn {
               @apply w-full py-2 px-2 rounded text-sm text-left;

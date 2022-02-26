@@ -1,12 +1,12 @@
 @import "./mixin.less";
 
 .user-banner-container {
-  @apply w-full h-auto;
   .flex(column, flex-start, flex-start);
+  @apply w-full h-auto;
 
   > .userinfo-header-container {
-    @apply w-full px-6 flex-nowrap mb-1;
     .flex(row, space-between, center);
+    @apply w-full px-6 flex-nowrap mb-1;
 
     > .username-text {
       @apply font-bold text-lg text-slate-800 overflow-hidden cursor-pointer shrink-0 text-ellipsis;
@@ -18,8 +18,8 @@
       background-color: unset;
 
       &.menu-popup-btn {
-        @apply w-9 h-10 -mr-2 cursor-pointer;
         .flex(column, center, center);
+        @apply w-9 h-10 -mr-2 cursor-pointer;
 
         > .icon-img {
           @apply w-5 h-auto;
@@ -29,8 +29,8 @@
   }
 
   > .status-text-container {
-    @apply px-6 w-full select-none mb-3;
     .flex(row, space-between, flex-start);
+    @apply px-6 w-full select-none mb-3;
 
     > .status-text {
       .flex(column, flex-start, flex-start);

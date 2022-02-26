@@ -1,15 +1,15 @@
 @import "./mixin.less";
 
 .page-wrapper.signin {
-  @apply w-full h-full bg-white;
   .flex(row, center, center);
+  @apply w-full h-full bg-white;
 
   > .page-container {
     @apply w-80 max-w-full p-4 -mt-16;
 
     > .page-header-container {
-      @apply w-full mb-4;
       .flex(row, space-between, center);
+      @apply w-full mb-4;
 
       > .title-text {
         @apply text-2xl;
@@ -17,12 +17,12 @@
     }
 
     > .page-content-container {
-      @apply flex-nowrap;
       .flex(column, flex-start, flex-start);
+      @apply flex-nowrap;
 
       > .form-item-container {
-        @apply relative w-full text-base m-2;
         .flex(column, flex-start, flex-start);
+        @apply relative w-full text-base m-2;
 
         > .normal-text {
           @apply absolute top-3 left-3 pl-1 leading-10 flex-shrink-0 text-base cursor-text text-gray-400 bg-transparent transition-all select-none;
@@ -47,8 +47,8 @@
     }
 
     > .page-footer-container {
-      @apply w-full mt-3;
       .flex(row, space-between, center);
+      @apply w-full mt-3;
 
       > .btns-container {
         .flex(row, flex-start, center);
@@ -84,8 +84,8 @@
     }
 
     > .quickly-btns-container {
-      @apply w-full mt-6;
       .flex(column, flex-start, flex-start);
+      @apply w-full mt-6;
 
       > .btn {
         @apply mb-6 text-base leading-10 border border-solid border-gray-400 px-4 rounded-3xl;
