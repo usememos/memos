@@ -12,7 +12,7 @@
   <img alt="GitHub license" src="https://img.shields.io/github/license/justmemos/memos" />
 </p>
 
-Memos is an open source, self-hosted alternative to [flomo](https://flomoapp.com/). Built with `Golang` and `React`.
+Memos is an open source, self-hosted alternative to [flomo](https://flomoapp.com/). Built with `Go` and `React`.
 
 Making sure that you are in charge of your data and more customizations.
 
@@ -24,17 +24,10 @@ Making sure that you are in charge of your data and more customizations.
 
 ## ✨ Features
 
-- 🦄 Open source project;
+- 🦄 Fully open source;
 - 😋 Beautiful and detailed visual styles;
 - 📑 Experience excellent interaction logic;
 - ⚡️ Quick privatization deployment;
-
-<!--
-WIP
-## 📕 Docs
-
-- [Guide to self host with Docker](https://github.com/justmemos/memos/tree/main/docs/deploy)
- -->
 
 ---
 
