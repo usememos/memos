@@ -1,53 +1,42 @@
 @import "./mixin.less";
 
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+  @apply m-0 p-0 box-border;
   color: @text-black;
   -webkit-tap-highlight-color: transparent;
 }
 
 body,
 html {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  font-size: 15px;
+  @apply w-full h-full overflow-hidden text-base;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans", "Noto Sans CJK SC", "Microsoft YaHei UI", "Microsoft YaHei",
     "WenQuanYi Micro Hei", sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
     "Noto Color Emoji";
 }
 
 code {
-  .mono-font-family();
-  background-color: pink;
-  padding: 2px 4px;
-  border-radius: 4px;
+  @apply bg-pink-600 p-1 rounded font-mono;
 }
 
 pre {
-  .mono-font-family();
+  @apply font-mono;
 
   * {
-    .mono-font-family();
+    @apply font-mono;
   }
 }
 
 label,
 button,
 img {
-  background-color: transparent;
-  user-select: none;
+  @apply bg-transparent select-none outline-none;
   -webkit-tap-highlight-color: transparent;
-  outline: none;
 }
 
 input,
 textarea {
   @apply appearance-none outline-none !important;
-
-  background-color: transparent;
+  @apply bg-transparent;
   -webkit-tap-highlight-color: transparent;
 }
 
@@ -55,37 +44,32 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-  box-shadow: 0 0 0 30px white inset !important;
+  @apply shadow-inner;
 }
 
 li {
   list-style-type: none;
 
   &::before {
+    @apply font-bold mr-1;
     content: "•";
-    font-weight: bold;
-    margin-right: 4px;
   }
 }
 
 a {
-  cursor: pointer;
-  color: @text-blue;
-  text-underline-offset: 2px;
+  @apply cursor-pointer text-blue-600 underline underline-offset-2;
 
   &:hover {
-    background-color: @bg-gray;
+    @apply opacity-80;
   }
 }
 
 .btn {
+  @apply select-none cursor-pointer text-center;
   border: unset;
   background-color: unset;
   text-align: unset;
   font-size: unset;
-  user-select: none;
-  cursor: pointer;
-  text-align: center;
 }
 
 .hidden {

@@ -2,149 +2,104 @@
 
 .page-wrapper.signin {
   .flex(row, center, center);
-  width: 100%;
-  height: 100%;
-  background-color: white;
+  @apply w-full h-full bg-white;
 
   > .page-container {
-    width: 360px;
-    max-width: 100%;
-    padding: 16px;
-    margin-top: -64px;
+    @apply w-80 max-w-full p-4 -mt-16;
 
     > .page-header-container {
       .flex(row, space-between, center);
-      width: 100%;
-      margin-bottom: 16px;
+      @apply w-full mb-4;
 
       > .title-text {
-        font-size: 24px;
+        @apply text-2xl;
       }
     }
 
     > .page-content-container {
       .flex(column, flex-start, flex-start);
-      flex-wrap: nowrap;
+      @apply flex-nowrap;
 
       > .form-item-container {
         .flex(column, flex-start, flex-start);
-        position: relative;
-        width: 100%;
-        line-height: 1.6;
-        margin-top: 8px;
+        @apply relative w-full text-base m-2;
 
         > .normal-text {
-          position: absolute;
-          top: 18px;
-          left: 12px;
-          flex-shrink: 0;
-          font-size: 13px;
-          line-height: 2;
-          color: gray;
-          cursor: text;
-          padding: 0 4px;
-          background-color: transparent;
-          border-radius: 50%;
-          transition: all 0.3s ease;
+          @apply absolute top-3 left-3 pl-1 leading-10 flex-shrink-0 text-base cursor-text text-gray-400 bg-transparent transition-all select-none;
 
           &.not-null {
-            top: -6px;
-            left: 12px;
-            background-color: white;
+            @apply text-sm top-0 leading-4 bg-white;
           }
         }
 
         &.input-form-container {
-          padding: 8px 0;
+          @apply py-2;
 
           > input {
-            width: 100%;
-            padding: 8px 12px;
-            font-size: 15px;
-            line-height: 2;
-            border-radius: 8px;
-            border: 1px solid lightgray;
+            @apply w-full py-3 px-3 text-base rounded-lg border border-solid border-gray-400;
           }
-        }
 
-        &:hover {
-          opacity: 0.8;
+          &:hover {
+            @apply opacity-80;
+          }
         }
       }
     }
 
     > .page-footer-container {
       .flex(row, space-between, center);
-      width: 100%;
-      margin: 12px 0;
+      @apply w-full mt-3;
 
       > .btns-container {
         .flex(row, flex-start, center);
 
         > .btn {
-          padding: 0 4px;
-          font-size: 13px;
-          line-height: 32px;
-          border-radius: 4px;
+          @apply px-1 py-2 text-sm rounded;
 
           &:hover {
-            opacity: 0.8;
+            @apply opacity-80;
           }
 
           &.disabled {
-            color: lightgray;
-            cursor: not-allowed;
+            @apply text-gray-400 cursor-not-allowed;
           }
 
           &.signin-btn {
-            background-color: @text-green;
-            color: white;
-            padding: 0 12px;
+            @apply bg-green-600 text-white px-3;
 
             &.requesting {
-              cursor: wait;
-              opacity: 0.8;
+              @apply cursor-wait opacity-80;
             }
           }
         }
 
         > .btn-text {
-          font-size: 13px;
+          @apply text-sm;
         }
 
         > .split-text {
-          color: lightgray;
-          margin: 0 8px;
+          @apply text-gray-400 mx-2;
         }
       }
     }
 
     > .quickly-btns-container {
       .flex(column, flex-start, flex-start);
-      width: 100%;
-      margin-top: 24px;
+      @apply w-full mt-6;
 
       > .btn {
-        margin-bottom: 24px;
-        line-height: 40px;
-        border: 2px solid lightgray;
-        border-radius: 22px;
-        padding: 0 16px;
-        font-size: 15px;
+        @apply mb-6 text-base leading-10 border border-solid border-gray-400 px-4 rounded-3xl;
 
         &:hover {
-          opacity: 0.8;
+          @apply opacity-80;
         }
 
         &.guest-signin {
-          color: @text-green;
-          border-color: @text-green;
-          font-weight: bold;
+          @apply text-green-600 border-2 border-green-600 font-bold;
         }
 
         &.requesting {
-          cursor: wait;
-          opacity: 0.8;
+          @apply cursor-wait opacity-80;
         }
       }
     }

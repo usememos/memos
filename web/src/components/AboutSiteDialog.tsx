@@ -33,8 +33,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <span className="btn" onClick={showStarHistoryDialog}>
           Star History
         </span>
-        <hr />
-        <p className="normal-text">
+        <p className="updated-time-text">
           Last updated on <span className="pre-text">2021/12/12 14:38:15</span> 🎉
         </p>
       </div>

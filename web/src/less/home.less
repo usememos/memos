@@ -6,17 +6,11 @@
 
 #page-wrapper {
   .flex(row, flex-start, flex-start);
-  width: 848px;
-  max-width: 100%;
-  height: 100%;
-  margin: auto;
-  transform: translateX(-16px);
+  @apply w-full max-w-4xl h-full m-auto -translate-x-4;
 
   > .content-wrapper {
     .flex(column, flex-start, flex-start);
-    position: relative;
-    width: 600px;
-    height: 100%;
+    @apply relative flex-grow h-auto;
   }
 }
 
@@ -24,25 +18,17 @@
   body.mobile-show-sidebar {
     #page-wrapper {
       > .content-wrapper {
-        transform: translateX(320px);
+        @apply translate-x-80;
       }
     }
   }
 
   #page-wrapper {
     .flex(column, flex-start, flex-start);
-    width: 100%;
-    height: 100%;
-    padding: 0;
-    transform: translateX(0);
+    @apply w-full h-full p-0 translate-x-0;
 
     > .content-wrapper {
-      width: 100%;
-      height: 100%;
-      margin-left: 0;
-      padding-top: 0;
-      transition: all 0.4s ease;
-      transform: translateX(0);
+      @apply w-full h-full ml-0 pt-0 transition-all;
     }
   }
 }

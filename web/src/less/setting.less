@@ -3,63 +3,43 @@
 
 .preference-wrapper {
   .flex(column, flex-start, flex-start);
-  width: 100%;
-  height: 100%;
-  flex-grow: 1;
-  overflow-y: scroll;
+  @apply w-full h-full grow overflow-y-scroll;
   .hide-scroll-bar();
 
   > .section-header-container {
-    width: 100%;
-    height: 40px;
-    margin-bottom: 0;
+    @apply w-full h-10 mb-0;
 
     > .title-text {
-      font-weight: bold;
-      font-size: 18px;
+      @apply font-bold text-lg;
       color: @text-black;
     }
   }
 
   > .tip-text-container {
-    width: 100%;
-    height: 128px;
     .flex(column, center, center);
+    @apply w-full h-32;
   }
 
   > .sections-wrapper {
     .flex(column, flex-start, flex-start);
-    flex-grow: 1;
-    width: 100%;
-    overflow-y: scroll;
-    padding-bottom: 64px;
+    @apply grow w-full overflow-y-scroll pb-16;
     .hide-scroll-bar();
 
     > .section-container {
       .flex(column, flex-start, flex-start);
-      width: 100%;
-      background-color: white;
-      margin: 8px 0;
-      padding: 16px;
-      padding-bottom: 8px;
-      border-radius: 8px;
+      @apply w-full bg-white my-2 mx-0 p-4 pb-2 rounded-lg;
 
       > .title-text {
-        font-size: 15px;
+        @apply text-base font-bold mb-2;
         color: @text-black;
-        font-weight: bold;
-        margin-bottom: 8px;
       }
 
       > .form-label {
         .flex(row, flex-start, center);
-        width: 100%;
-        font-size: 14px;
-        line-height: 20px;
-        margin-bottom: 8px;
+        @apply w-full text-sm mb-2;
 
         > .normal-text {
-          flex-shrink: 0;
+          @apply shrink-0;
         }
       }
     }
@@ -68,6 +48,6 @@
 
 @media only screen and (max-width: 875px) {
   .sections-wrapper {
-    padding: 0 12px;
+    @apply py-0 px-3;
   }
 }

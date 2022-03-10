@@ -2,15 +2,7 @@
 
 .menu-btns-popup {
   .flex(column, flex-start, flex-start);
-  position: absolute;
-  margin-top: 4px;
-  margin-left: 90px;
-  padding: 4px;
-  width: 180px;
-  border-radius: 8px;
-  z-index: 2;
-  box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
-  background-color: white;
+  @apply absolute mt-1 ml-24 p-1 w-44 rounded-lg z-10 shadow bg-white;
 
   &:hover {
     display: flex;
@@ -18,19 +10,10 @@
 
   > .btn {
     .flex(row, flex-start, center);
-    width: 100%;
-    padding: 8px 16px;
-    font-size: 14px;
-    line-height: 1.6;
-    border-radius: 4px;
-    text-align: left;
+    @apply w-full py-2 px-3 text-sm rounded text-left;
 
     > .icon {
-      display: block;
-      width: 28px;
-      text-align: center;
-      margin-right: 4px;
-      font-size: 14px;
+      @apply block w-6 text-center mr-2 text-sm;
     }
 
     &:hover {
@@ -41,6 +24,6 @@
 
 @media only screen and (max-width: 875px) {
   .menu-btns-popup {
-    margin-left: 64px;
+    @apply ml-16;
   }
 }

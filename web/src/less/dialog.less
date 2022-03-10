@@ -2,17 +2,7 @@
 
 .dialog-wrapper {
   .flex(column, flex-start, center);
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: transparent;
-  z-index: 100;
-  transition: all 0.2s ease;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  padding: 64px 0;
+  @apply fixed top-0 left-0 w-full h-full pt-16 z-100 overflow-x-hidden overflow-y-scroll bg-transparent transition-all;
   .hide-scroll-bar();
 
   &.showup {
@@ -25,59 +15,50 @@
 
   > .dialog-container {
     .flex(column, flex-start, flex-start);
-    background-color: white;
-    padding: 16px;
-    border-radius: 8px;
+    @apply bg-white p-4 rounded-lg;
 
     > .dialog-header-container {
       .flex(row, space-between, center);
-      width: 100%;
-      margin-bottom: 16px;
+      @apply w-full mb-4;
 
       > .title-text {
         > .icon-text {
-          margin-right: 6px;
-          font-size: 16px;
+          @apply mr-2 text-base;
         }
       }
 
       .btn {
-        width: 24px;
-        height: 24px;
-        padding: 2px;
-        border-radius: 4px;
+        .flex(column, center, center);
+        @apply w-6 h-6 rounded;
 
         > .icon-img {
-          width: 20px;
-          height: 20px;
+          @apply w-5 h-5;
         }
 
         &:hover {
-          background-color: lightgray;
+          @apply bg-gray-200;
         }
       }
     }
 
     > .dialog-content-container {
       .flex(column, flex-start, flex-start);
-      width: 100%;
+      @apply w-full;
     }
 
     > .dialog-footer-container {
       .flex(row, flex-end, center);
-      width: 100%;
-      margin-top: 16px;
+      @apply w-full mt-4;
     }
   }
 }
 
 @media only screen and (max-width: 875px) {
   .dialog-wrapper {
-    width: 100%;
-    padding: 0 16px;
+    @apply w-full px-4;
 
     > .dialog-container {
-      max-width: 100%;
+      @apply max-w-full;
     }
   }
 }

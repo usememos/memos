@@ -2,84 +2,55 @@
 
 .shortcuts-wrapper {
   .flex(column, flex-start, flex-start);
-  width: 100%;
-  padding: 0 8px;
-  height: auto;
-  flex-wrap: nowrap;
+  @apply w-full py-0 px-2 h-auto flex-nowrap;
   .hide-scroll-bar();
 
   > .title-text {
     .flex(row, space-between, center);
-    width: 100%;
-    padding: 4px 16px;
+    @apply w-full py-1 px-4;
 
-    > * {
-      font-size: 12px;
-      line-height: 24px;
-      color: @text-black;
-      opacity: 0.5;
-      font-weight: bold;
+    > .normal-text {
+      @apply text-xs leading-6 font-bold text-black opacity-50;
     }
 
     > .btn {
-      display: none;
-      padding: 0 4px;
-      font-size: 18px;
+      @apply hidden px-1 text-lg leading-6;
     }
 
     &:hover,
     &:active {
       > .btn {
-        display: block;
+        @apply block;
       }
     }
   }
 
   > .create-shortcut-btn-container {
     .flex(row, center, center);
-    width: 100%;
-    margin-top: 8px;
-    margin-bottom: 12px;
+    @apply w-full mt-2 mb-3;
 
     > .btn {
-      display: flex;
-      padding: 4px 8px;
-      border: 1px dashed @bg-blue;
-      border-radius: 8px;
-      font-size: 13px;
+      @apply flex py-1 px-2 rounded-lg text-xs border border-dashed border-blue-600;
 
       &:hover {
-        background-color: @bg-blue;
-        color: white;
+        @apply bg-blue-600 text-white;
       }
     }
   }
 
   > .shortcuts-container {
     .flex(column, flex-start, flex-start);
-    position: relative;
-    width: 100%;
-    height: auto;
-    flex-wrap: nowrap;
-    margin-bottom: 8px;
+    @apply relative w-full h-auto flex-nowrap mb-2;
 
     > .shortcut-container {
       .flex(row, space-between, center);
-      width: 100%;
-      height: 40px;
-      padding: 0 16px;
-      margin-top: 4px;
-      border-radius: 8px;
-      font-size: 14px;
-      cursor: pointer;
-      flex-shrink: 0;
-      user-select: none;
+      @apply w-full h-10 py-0 px-4 mt-1 rounded-lg text-sm cursor-pointer select-none shrink-0;
 
       &:hover {
         background-color: @bg-gray;
 
         > .btns-container {
-          display: flex;
+          @apply flex;
         }
       }
 
@@ -87,79 +58,60 @@
         background-color: @text-green !important;
 
         > .shortcut-text-container {
-          font-weight: bold;
+          @apply font-bold;
 
           > * {
-            color: white;
+            @apply text-white;
           }
         }
       }
 
       > .shortcut-text-container {
         .flex(row, flex-start, center);
+        @apply overflow-hidden text-ellipsis shrink-0 leading-5;
         max-width: calc(100% - 24px);
         color: @text-black;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        flex-shrink: 0;
-        line-height: 20px;
 
         > .icon-text {
-          display: block;
-          width: 16px;
-          flex-shrink: 0;
+          @apply block w-4 shrink-0;
         }
 
         > .shortcut-text {
-          flex-shrink: 0;
+          @apply shrink-0;
         }
       }
 
       > .btns-container {
         .flex(row, flex-end, center);
-        display: none;
+        @apply hidden;
 
         > .action-btn {
           .flex(row, center, center);
-          width: 24px;
-          height: 24px;
-          flex-shrink: 0;
+          @apply w-6 h-6 shrink-0;
 
           > .icon-img {
-            width: 18px;
-            height: auto;
+            @apply w-4 h-auto;
+          }
+
+          &.toggle-btn {
+            &:hover {
+              & + .action-btns-wrapper {
+                display: flex;
+              }
+            }
           }
         }
 
         > .action-btns-wrapper {
           .flex(column, flex-start, flex-start);
-          position: absolute;
-          right: 0;
-          width: auto;
-          height: auto;
-          padding: 8px;
-          transform: translateY(60px);
-          z-index: 1;
+          @apply absolute right-0 w-auto h-auto p-2 translate-y-14 hidden z-10;
 
           > .action-btns-container {
             .flex(column, flex-start, flex-start);
-            width: 86px;
-            height: auto;
-            white-space: nowrap;
-            border-radius: 6px;
-            padding: 4px;
-            background-color: white;
-            box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
+            @apply w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white shadow;
 
             > .btn {
-              width: 100%;
-              padding: 6px 0;
-              padding-left: 12px;
-              border-radius: 4px;
-              font-size: 13px;
-              height: unset;
-              line-height: unset;
-              text-align: left;
+              @apply w-full py-2 px-2 rounded text-sm text-left;
 
               &:hover {
                 background-color: @bg-whitegray;
@@ -174,6 +126,10 @@
               }
             }
           }
+
+          &:hover {
+            display: flex;
+          }
         }
       }
     }
@@ -182,18 +138,18 @@
 
 @media only screen and (max-width: 875px) {
   .shortcuts-container {
-    height: auto;
+    @apply h-auto;
 
     &:last-child {
-      flex-grow: 1;
+      @apply flex-grow;
     }
 
     > .title-text {
-      font-size: 13px;
+      @apply text-sm;
     }
 
     > .shortcut-container {
-      font-size: 15px;
+      @apply text-base;
     }
   }
 }

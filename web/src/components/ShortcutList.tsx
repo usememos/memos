@@ -65,7 +65,6 @@ interface ShortcutContainerProps {
 
 const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
   const { shortcut, isActive } = props;
-  const [showActionBtns, toggleShowActionBtns] = useToggle(false);
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
   const handleQueryClick = () => {
@@ -77,15 +76,6 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
       }
       locationService.setMemoShortcut(shortcut.id);
     }
-  };
-
-  const handleShowActionBtnClick = (event: React.MouseEvent) => {
-    event.stopPropagation();
-    toggleShowActionBtns();
-  };
-
-  const handleActionBtnContainerMouseLeave = () => {
-    toggleShowActionBtns(false);
   };
 
   const handleDeleteMemoClick = async (event: React.MouseEvent) => {
@@ -141,10 +131,10 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
           <span className="shortcut-text">{shortcut.title}</span>
         </div>
         <div className="btns-container">
-          <span className="action-btn toggle-btn" onClick={handleShowActionBtnClick}>
+          <span className="action-btn toggle-btn">
             <img className="icon-img" src={`/icons/more${isActive ? "-white" : ""}.svg`} />
           </span>
-          <div className={`action-btns-wrapper ${showActionBtns ? "" : "hidden"}`} onMouseLeave={handleActionBtnContainerMouseLeave}>
+          <div className="action-btns-wrapper">
             <div className="action-btns-container">
               <span className="btn" onClick={handlePinQueryBtnClick}>
                 {shortcut.rowStatus === "ARCHIVED" ? "Unpin" : "Pin"}

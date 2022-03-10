@@ -2,16 +2,11 @@
 
 .sidebar-wrapper {
   .flex(column, flex-start, flex-start);
-  width: 240px;
-  height: 100%;
-  padding: 16px 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  flex-shrink: 0;
+  @apply w-60 h-auto py-4 overflow-x-hidden overflow-y-auto shrink-0;
   .hide-scroll-bar();
 
   > * {
-    flex-shrink: 0;
+    @apply shrink-0;
   }
 }
 
@@ -19,30 +14,18 @@
   body.mobile-show-sidebar {
     #page-wrapper {
       > .sidebar-wrapper {
-        transform: translateX(0);
-        box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
+        @apply translate-x-0 shadow;
       }
     }
   }
 
   .sidebar-wrapper {
     .flex(column, flex-start, center);
-    z-index: 99;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 320px;
-    height: 100%;
-    padding: 0;
-    background-color: white;
-    transition: all 0.4s ease;
-    transform: translateX(-320px);
+    @apply z-50 absolute top-0 left-0 w-80 h-full p-0 bg-white transition-all -translate-x-80;
 
     > * {
-      width: 320px;
+      @apply w-80 shrink-0 pl-8;
       max-width: 95%;
-      flex-shrink: 0;
-      padding-left: 32px;
     }
   }
 }

@@ -2,45 +2,27 @@
 
 .user-banner-container {
   .flex(column, flex-start, flex-start);
-  width: 100%;
-  height: 128px;
+  @apply w-full h-auto;
 
   > .userinfo-header-container {
     .flex(row, space-between, center);
-    width: 100%;
-    padding: 0 24px;
-    flex-wrap: nowrap;
-    margin-bottom: 4px;
+    @apply w-full px-6 flex-nowrap mb-1;
 
     > .username-text {
+      @apply font-bold text-lg text-slate-800 overflow-hidden cursor-pointer shrink-0 text-ellipsis;
       max-width: calc(100% - 32px);
-      font-weight: bold;
-      font-size: 18px;
-      line-height: 36px;
-      color: @text-black;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      cursor: pointer;
-      margin-right: auto;
-      flex-shrink: 0;
     }
 
     > .action-btn {
-      flex-shrink: 0;
-      user-select: none;
-      border: none;
+      @apply flex-shrink-0 select-none border-none;
       background-color: unset;
 
       &.menu-popup-btn {
         .flex(column, center, center);
-        width: 36px;
-        height: 40px;
-        margin-right: -8px;
-        cursor: pointer;
+        @apply w-9 h-10 -mr-2 cursor-pointer;
 
         > .icon-img {
-          width: 20px;
-          height: auto;
+          @apply w-5 h-auto;
         }
       }
     }
@@ -48,25 +30,18 @@
 
   > .status-text-container {
     .flex(row, space-between, flex-start);
-    padding: 0 24px;
-    width: 100%;
-    user-select: none;
+    @apply px-6 w-full select-none mb-3;
 
     > .status-text {
       .flex(column, flex-start, flex-start);
 
       > .amount-text {
-        font-weight: bold;
-        font-size: 28px;
-        line-height: 1.8;
+        @apply font-bold text-2xl opacity-80 leading-10;
         color: @text-black;
-        opacity: 0.8;
       }
 
       > .type-text {
-        color: gray;
-        font-size: 12px;
-        .mono-font-family();
+        @apply text-gray-400 text-xs font-mono;
       }
     }
   }
@@ -74,27 +49,22 @@
 
 @media only screen and (max-width: 875px) {
   .user-banner-container {
-    height: 154px;
-    z-index: 1;
-    padding-top: 16px !important;
+    @apply pt-4;
 
     > .userinfo-header-container {
-      padding: 0 16px;
+      @apply px-4;
 
       > .username-text {
-        font-size: 22px;
+        @apply text-xl;
       }
     }
 
     > .status-text-container {
-      padding: 0 16px;
+      @apply px-4;
 
       > .status-text {
-        > .amount-text {
-          font-size: 32px;
-        }
         > .type-text {
-          font-size: 14px;
+          @apply text-sm;
         }
       }
     }
