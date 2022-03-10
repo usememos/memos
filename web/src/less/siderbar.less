@@ -9,23 +9,3 @@
     @apply shrink-0;
   }
 }
-
-@media only screen and (max-width: 875px) {
-  body.mobile-show-sidebar {
-    #page-wrapper {
-      > .sidebar-wrapper {
-        @apply translate-x-0 shadow;
-      }
-    }
-  }
-
-  .sidebar-wrapper {
-    .flex(column, flex-start, center);
-    @apply z-50 absolute top-0 left-0 w-80 h-full p-0 bg-white transition-all -translate-x-80;
-
-    > * {
-      @apply w-80 shrink-0 pl-8;
-      max-width: 95%;
-    }
-  }
-}

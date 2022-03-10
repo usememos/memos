@@ -1,8 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import appContext from "../stores/appContext";
 import SearchBar from "./SearchBar";
-import { globalStateService, memoService, shortcutService } from "../services";
-import Only from "./common/OnlyWhen";
+import { memoService, shortcutService } from "../services";
 import "../less/memos-header.less";
 
 let prevRequestTimestamp = Date.now();
@@ -14,7 +13,6 @@ const MemosHeader: React.FC<Props> = () => {
     locationState: {
       query: { shortcutId },
     },
-    globalState: { isMobileView },
     shortcutState: { shortcuts },
   } = useContext(appContext);
 
@@ -39,18 +37,9 @@ const MemosHeader: React.FC<Props> = () => {
     }
   }, []);
 
-  const handleShowSidebarBtnClick = useCallback(() => {
-    globalStateService.setShowSiderbarInMobileView(true);
-  }, []);
-
   return (
     <div className="section-header-container memos-header-container">
       <div className="title-text" onClick={handleMemoTextClick}>
-        <Only when={isMobileView}>
-          <button className="action-btn" onClick={handleShowSidebarBtnClick}>
-            <img className="icon-img" src="/icons/menu.svg" alt="menu" />
-          </button>
-        </Only>
         <span className="normal-text">{titleText}</span>
       </div>
       <SearchBar />

@@ -1,6 +1,3 @@
-// mobile style addtion classname
-export const SHOW_SIDERBAR_MOBILE_CLASSNAME = "mobile-show-sidebar";
-
 // default animation duration
 export const ANIMATION_DURATION = 200;
 

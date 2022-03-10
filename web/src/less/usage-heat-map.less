@@ -84,33 +84,3 @@
     }
   }
 }
-
-@media only screen and (max-width: 875px) {
-  .usage-heat-map-wrapper {
-    @apply h-40 py-2 pt-3 pr-0 pl-2 !important;
-
-    > .day-tip-text-container {
-      @apply visible w-10 pb-1;
-
-      > .tip-text {
-        @apply pr-1 text-xs;
-      }
-    }
-
-    > .usage-heat-map {
-      @apply w-60;
-
-      > .stat-container {
-        @apply w-4 h-4 mb-1;
-      }
-    }
-
-    > .usage-detail-container {
-      @apply -mt-9 pl-2 text-xs;
-
-      &::before {
-        left: calc(50% - 4px);
-      }
-    }
-  }
-}
