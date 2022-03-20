@@ -11,7 +11,7 @@ interface Query {
   shortcutId: string;
 }
 
-type AppRouter = "/" | "/signin" | "/trash" | "/setting";
+type AppRouter = "/" | "/signin";
 
 interface AppLocation {
   pathname: AppRouter;

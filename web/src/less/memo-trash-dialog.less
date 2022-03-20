@@ -1,0 +1,23 @@
+@import "./mixin.less";
+@import "./memos-header.less";
+
+.memo-trash-dialog {
+  > .dialog-container {
+    @apply w-128 max-w-full mb-8;
+
+    > .dialog-content-container {
+      .flex(column, flex-start, flex-start);
+      @apply w-full overflow-y-scroll;
+
+      > .tip-text-container {
+        @apply w-full h-32;
+        .flex(column, center, center);
+      }
+
+      > .deleted-memos-container {
+        .flex(column, flex-start, flex-start);
+        @apply w-full;
+      }
+    }
+  }
+}

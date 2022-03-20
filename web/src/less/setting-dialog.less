@@ -1,0 +1,33 @@
+@import "./mixin.less";
+@import "./memos-header.less";
+
+.setting-dialog {
+  > .dialog-container {
+    @apply w-3/5 max-w-full mb-8;
+
+    > .dialog-content-container {
+      .flex(column, flex-start, flex-start);
+      @apply w-full overflow-y-scroll;
+      .hide-scroll-bar();
+
+      > .section-container {
+        .flex(column, flex-start, flex-start);
+        @apply w-full my-2;
+
+        > .title-text {
+          @apply text-base font-bold mb-2;
+          color: @text-black;
+        }
+
+        > .form-label {
+          .flex(row, flex-start, center);
+          @apply w-full text-sm mb-2;
+
+          > .normal-text {
+            @apply shrink-0;
+          }
+        }
+      }
+    }
+  }
+}

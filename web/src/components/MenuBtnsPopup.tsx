@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import { locationService, userService } from "../services";
 import showAboutSiteDialog from "./AboutSiteDialog";
+import showSettingDialog from "./SettingDialog";
+import showMemoTrashDialog from "./MemoTrashDialog";
 import "../less/menu-btns-popup.less";
 
 interface Props {
@@ -29,11 +31,11 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   }, [shownStatus]);
 
   const handleMyAccountBtnClick = () => {
-    locationService.pushHistory("/setting");
+    showSettingDialog();
   };
 
   const handleMemosTrashBtnClick = () => {
-    locationService.pushHistory("/trash");
+    showMemoTrashDialog();
   };
 
   const handleAboutBtnClick = () => {
@@ -49,7 +51,7 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   return (
     <div className={`menu-btns-popup ${shownStatus ? "" : "hidden"}`} ref={popupElRef}>
       <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
-        <span className="icon">👤</span> Settings
+        <span className="icon">👤</span> Setting
       </button>
       <button className="btn action-btn" onClick={handleMemosTrashBtnClick}>
         <span className="icon">🗑️</span> Recycle Bin
