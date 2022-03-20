@@ -12,7 +12,7 @@ import "../less/memo-trash.less";
 
 interface Props {}
 
-const MemoTrash: React.FC<Props> = () => {
+const Trash: React.FC<Props> = () => {
   const {
     locationState: { query },
   } = useContext(appContext);
@@ -126,4 +126,4 @@ const MemoTrash: React.FC<Props> = () => {
   );
 };
 
-export default MemoTrash;
+export default Trash;

@@ -3,16 +3,7 @@
 
 .memo-wrapper {
   .flex(column, flex-start, flex-start);
-  width: 100%;
-  padding: 12px 18px;
-  background-color: white;
-  margin-top: 8px;
-  border-radius: 8px;
-  border: 1px solid transparent;
-
-  &:hover {
-    border-color: @bg-gray;
-  }
+  @apply w-full p-4 px-6 mt-2 bg-white rounded-lg border border-transparent hover:border-gray-200;
 
   > .memo-top-wrapper {
     .flex(row, space-between, center);
@@ -21,10 +12,8 @@
     margin-bottom: 4px;
 
     > .time-text {
-      font-size: 12px;
-      line-height: 24px;
+      @apply text-xs;
       color: gray;
-      flex-shrink: 0;
       cursor: pointer;
     }
 
@@ -114,7 +103,7 @@
   }
 
   > .memo-content-text {
-    width: 100%;
+    @apply w-full;
   }
 
   > .images-wrapper {

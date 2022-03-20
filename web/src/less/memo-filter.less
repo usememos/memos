@@ -2,34 +2,18 @@
 
 .filter-query-container {
   .flex(row, flex-start, flex-start);
-  width: 100%;
-  flex-wrap: wrap;
-  padding: 12px 12px;
-  padding-bottom: 4px;
-  font-size: 13px;
-  line-height: 1.8;
+  @apply w-full flex-wrap p-3 pb-1 text-sm leading-7;
 
   > .tip-text {
-    padding: 2px 0;
+    @apply mr-2;
   }
 
   > .filter-item-container {
-    padding: 2px 8px;
-    margin-right: 6px;
-    cursor: pointer;
-    background-color: @bg-gray;
-    border-radius: 4px;
+    @apply px-2 mr-2 cursor-pointer bg-gray-200 rounded whitespace-nowrap truncate hover:line-through;
     max-width: 200px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
 
     > .icon-text {
       letter-spacing: 2px;
-    }
-
-    &:hover {
-      text-decoration: line-through;
     }
   }
 }

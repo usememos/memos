@@ -2,18 +2,10 @@
 
 .common-editor-wrapper {
   .flex(column, flex-start, flex-start);
-  position: relative;
-  width: 100%;
-  height: auto;
-  background-color: white;
+  @apply relative w-full h-full bg-white grow;
 
   > .common-editor-inputer {
-    display: inline-block;
-    width: 100%;
-    padding-top: 4px;
-    padding-bottom: 12px;
-    min-height: 40px;
-    max-height: 300px;
+    @apply w-full h-full pt-1 pb-3 grow;
     font-size: 15px;
     line-height: 24px;
     resize: none;
@@ -22,7 +14,6 @@
     background-color: transparent;
     z-index: 1;
     white-space: pre-wrap;
-    .hide-scroll-bar();
 
     &::placeholder {
       padding-left: 2px;

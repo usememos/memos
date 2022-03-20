@@ -101,7 +101,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       locationService.setTagQuery("");
     } else {
       utils.copyTextToClipboard(`#${tag.text} `);
-      if (!["/", "/recycle"].includes(locationService.getState().pathname)) {
+      if (!["/", "/trash"].includes(locationService.getState().pathname)) {
         locationService.setPathname("/");
       }
       locationService.setTagQuery(tag.text);

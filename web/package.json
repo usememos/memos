@@ -10,8 +10,7 @@
   "dependencies": {
     "lodash-es": "^4.17.21",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2",
-    "tiny-undo": "^0.0.8"
+    "react-dom": "^17.0.2"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.5",

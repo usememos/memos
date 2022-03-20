@@ -1,5 +1,3 @@
-import { InputAction } from "tiny-undo";
-
 /**
  * Define storage data type
  */
@@ -9,14 +7,6 @@ interface StorageData {
   shouldSplitMemoWord: boolean;
   shouldHideImageUrl: boolean;
   shouldUseMarkdownParser: boolean;
-
-  // Editor setting
-  useTinyUndoHistoryCache: boolean;
-
-  // tiny undo actions cache
-  tinyUndoActionsCache: InputAction[];
-  // tiny undo index cache
-  tinyUndoIndexCache: number;
 }
 
 type StorageKey = keyof StorageData;

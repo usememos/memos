@@ -2294,11 +2294,6 @@ text-table@^0.2.0:
   resolved "https://registry.nlark.com/text-table/download/text-table-0.2.0.tgz?cache=0&sync_timestamp=1618846790938&other_urls=https%3A%2F%2Fregistry.nlark.com%2Ftext-table%2Fdownload%2Ftext-table-0.2.0.tgz"
   integrity sha1-f17oI66AUgfACvLfSoTsP8+lcLQ=
 
-tiny-undo@^0.0.8:
-  version "0.0.8"
-  resolved "https://registry.npmjs.org/tiny-undo/-/tiny-undo-0.0.8.tgz"
-  integrity sha512-x/zUWVVoehq0TTLTLngUCvg41bssl5OYloNOE6sRz/2fsEetB87zpj4kEZyrmvzI3Rsq+t9olujqXprlu+lbvw==
-
 to-fast-properties@^2.0.0:
   version "2.0.0"
   resolved "https://registry.npmjs.org/to-fast-properties/-/to-fast-properties-2.0.0.tgz"

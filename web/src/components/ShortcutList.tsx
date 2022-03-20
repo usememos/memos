@@ -67,11 +67,14 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
   const { shortcut, isActive } = props;
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
-  const handleQueryClick = () => {
+  console.log(props);
+
+  const handleShortcutClick = () => {
+    console.log("here");
     if (isActive) {
       locationService.setMemoShortcut("");
     } else {
-      if (!["/", "/recycle"].includes(locationService.getState().pathname)) {
+      if (!["/", "/trash"].includes(locationService.getState().pathname)) {
         locationService.setPathname("/");
       }
       locationService.setMemoShortcut(shortcut.id);
@@ -125,7 +128,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
 
   return (
     <>
-      <div className={`shortcut-container ${isActive ? "active" : ""}`} onClick={handleQueryClick}>
+      <div className={`shortcut-container ${isActive ? "active" : ""}`} onClick={handleShortcutClick}>
         <div className="shortcut-text-container">
           <span className="icon-text">#</span>
           <span className="shortcut-text">{shortcut.title}</span>

@@ -1,9 +1,9 @@
 import Memos from "../pages/Memos";
-import MemoTrash from "../pages/MemoTrash";
+import Trash from "../pages/Trash";
 import Setting from "../pages/Setting";
 
 const homeRouter = {
-  "/recycle": <MemoTrash />,
+  "/trash": <Trash />,
   "/setting": <Setting />,
   "*": <Memos />,
 };

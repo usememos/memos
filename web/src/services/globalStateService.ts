@@ -4,12 +4,11 @@ import { AppSetting } from "../stores/globalStateStore";
 
 class GlobalStateService {
   constructor() {
-    const cachedSetting = storage.get(["shouldSplitMemoWord", "shouldHideImageUrl", "shouldUseMarkdownParser", "useTinyUndoHistoryCache"]);
+    const cachedSetting = storage.get(["shouldSplitMemoWord", "shouldHideImageUrl", "shouldUseMarkdownParser"]);
     const defaultAppSetting = {
       shouldSplitMemoWord: cachedSetting.shouldSplitMemoWord ?? true,
       shouldHideImageUrl: cachedSetting.shouldHideImageUrl ?? true,
       shouldUseMarkdownParser: cachedSetting.shouldUseMarkdownParser ?? true,
-      useTinyUndoHistoryCache: cachedSetting.useTinyUndoHistoryCache ?? false,
     };
 
     this.setAppSetting(defaultAppSetting);

@@ -76,7 +76,7 @@ const UsageHeatMap: React.FC<Props> = () => {
       locationService.setFromAndToQuery(0, 0);
       setCurrentStat(null);
     } else if (item.count > 0) {
-      if (!["/", "/recycle"].includes(locationService.getState().pathname)) {
+      if (!["/", "/trash"].includes(locationService.getState().pathname)) {
         locationService.setPathname("/");
       }
       locationService.setFromAndToQuery(item.timestamp, item.timestamp + DAILY_TIMESTAMP);

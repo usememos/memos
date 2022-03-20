@@ -1,7 +1,6 @@
 import { useRef } from "react";
 import UserBanner from "./UserBanner";
 import ShortcutList from "./ShortcutList";
-import TagList from "./TagList";
 import UsageHeatMap from "./UsageHeatMap";
 import "../less/siderbar.less";
 
@@ -15,7 +14,6 @@ const Sidebar: React.FC<Props> = () => {
       <UserBanner />
       <UsageHeatMap />
       <ShortcutList />
-      <TagList />
     </aside>
   );
 };

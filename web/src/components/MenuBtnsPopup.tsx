@@ -33,7 +33,7 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemosTrashBtnClick = () => {
-    locationService.pushHistory("/recycle");
+    locationService.pushHistory("/trash");
   };
 
   const handleAboutBtnClick = () => {

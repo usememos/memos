@@ -1,7 +1,7 @@
 @import "./mixin.less";
 
 .search-bar-container {
-  width: 160px;
+  @apply relative w-40;
 
   > .search-bar-inputer {
     .flex(row, flex-start, center);
@@ -30,13 +30,8 @@
   }
 
   > .quickly-action-wrapper {
-    display: none;
-    position: absolute;
-    top: 52px;
-    right: -8px;
+    @apply hidden absolute top-9 -right-2 p-2 w-80;
     z-index: 2;
-    padding: 8px;
-    width: 320px;
 
     > .quickly-action-container {
       .flex(column, flex-start, flex-start);

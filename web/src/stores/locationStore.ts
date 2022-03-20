@@ -165,7 +165,7 @@ export function reducer(state: State, action: Actions) {
         ...state,
         query: {
           ...state.query,
-          filter: action.payload,
+          shortcutId: action.payload,
         },
       };
     }

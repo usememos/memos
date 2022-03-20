@@ -276,7 +276,7 @@ const MemoEditor: React.FC<Props> = () => {
   );
 
   return (
-    <div className={"memo-editor-wrapper " + (showEditStatus ? "edit-ing" : "")}>
+    <div className={"memo-editor-container " + (showEditStatus ? "edit-ing" : "")}>
       <p className={"tip-text " + (showEditStatus ? "" : "hidden")}>Editting...</p>
       <Editor
         ref={editorRef}

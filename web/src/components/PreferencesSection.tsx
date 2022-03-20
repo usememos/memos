@@ -9,15 +9,9 @@ interface Props {}
 
 const PreferencesSection: React.FC<Props> = () => {
   const { globalState } = useContext(appContext);
-  const { useTinyUndoHistoryCache, shouldHideImageUrl, shouldSplitMemoWord, shouldUseMarkdownParser } = globalState;
+  const { shouldHideImageUrl, shouldSplitMemoWord, shouldUseMarkdownParser } = globalState;
 
   const demoMemoContent = "👋 Hiya, welcome to memos!\n* ✨ **Open source project**;\n* 😋 What do you think;\n* 📑 Tell me something plz;";
-
-  const handleOpenTinyUndoChanged = () => {
-    globalStateService.setAppSetting({
-      useTinyUndoHistoryCache: !useTinyUndoHistoryCache,
-    });
-  };
 
   const handleSplitWordsValueChanged = () => {
     globalStateService.setAppSetting({
@@ -81,18 +75,6 @@ const PreferencesSection: React.FC<Props> = () => {
         <label className="form-label checkbox-form-label" onClick={handleHideImageUrlValueChanged}>
           <span className="normal-text">Hide image url</span>
           <img className="icon-img" src={shouldHideImageUrl ? "/icons/checkbox-active.svg" : "/icons/checkbox.svg"} />
-        </label>
-      </div>
-      <div className="section-container preferences-section-container">
-        <p className="title-text">Editor Extensions</p>
-        <label className="form-label checkbox-form-label" onClick={handleOpenTinyUndoChanged}>
-          <span className="normal-text">
-            Use{" "}
-            <a target="_blank" href="https://github.com/boojack/tiny-undo" onClick={(e) => e.stopPropagation()} rel="noreferrer">
-              tiny-undo
-            </a>
-          </span>
-          <img className="icon-img" src={useTinyUndoHistoryCache ? "/icons/checkbox-active.svg" : "/icons/checkbox.svg"} />
         </label>
       </div>
       <div className="section-container">

@@ -82,6 +82,7 @@ class ShortcutService {
   public convertResponseModelShortcut(shortcut: Model.Shortcut): Model.Shortcut {
     return {
       ...shortcut,
+      id: String(shortcut.id),
       createdAt: utils.getDataStringWithTs(shortcut.createdTs),
       updatedAt: utils.getDataStringWithTs(shortcut.updatedTs),
     };

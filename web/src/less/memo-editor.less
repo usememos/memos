@@ -1,14 +1,7 @@
 @import "./mixin.less";
 
-.memo-editor-wrapper {
-  .flex(column, flex-start, flex-start);
-  position: relative;
-  width: 100%;
-  height: auto;
-  background-color: white;
-  padding: 16px;
-  border-radius: 8px;
-  border: 2px solid @bg-gray;
+.memo-editor-container {
+  @apply relative w-full h-96 max-h-full flex flex-col justify-start items-start grow bg-white p-4 rounded-lg border-2 border-gray-200;
 
   &.edit-ing {
     border-color: @text-blue;

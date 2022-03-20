@@ -37,7 +37,7 @@ function Home() {
       {loadingState.isLoading ? null : (
         <section id="page-wrapper">
           <Sidebar />
-          <main className="content-wrapper">{homeRouterSwitch(pathname)}</main>
+          {homeRouterSwitch(pathname)}
         </section>
       )}
     </>

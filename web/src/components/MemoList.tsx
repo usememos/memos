@@ -6,7 +6,7 @@ import utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import Memo from "./Memo";
 import toastHelper from "./Toast";
-import "../less/memolist.less";
+import "../less/memo-list.less";
 
 interface Props {}
 
@@ -105,7 +105,7 @@ const MemoList: React.FC<Props> = () => {
   }, []);
 
   return (
-    <div className={`memolist-wrapper ${isFetching ? "" : "completed"}`} onClick={handleMemoListClick} ref={wrapperElement}>
+    <div className={`memo-list-container ${isFetching ? "" : "completed"}`} onClick={handleMemoListClick} ref={wrapperElement}>
       {shownMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.updatedAt}`} memo={memo} />
       ))}
