@@ -2,47 +2,30 @@
 
 .create-shortcut-dialog {
   > .dialog-container {
-    width: 420px;
+    @apply w-128;
 
     > .dialog-content-container {
       .flex(column, flex-start, flex-start);
 
       > .form-item-container {
         .flex(row, flex-start, flex-start);
-        width: 100%;
-        margin-top: 8px;
-        padding: 4px 0;
+        @apply w-full mt-2 py-1;
 
         > .normal-text {
-          display: block;
-          flex-shrink: 0;
-          width: 40px;
-          margin-right: 12px;
-          text-align: right;
+          @apply block flex-shrink-0 w-12 mr-3 text-right text-sm leading-8;
           color: gray;
-          font-size: 13px;
-          line-height: 32px;
         }
 
         > .title-input {
-          width: 100%;
-          padding: 0 8px;
-          font-size: 13px;
-          line-height: 32px;
-          border-radius: 4px;
-          border: 1px solid @bg-gray;
-          resize: none;
+          @apply w-full px-2 text-base leading-8 rounded border resize-none;
         }
 
         > .filters-wrapper {
-          width: calc(100% - 56px);
           .flex(column, flex-start, flex-start);
+          @apply w-full;
 
           > .create-filter-btn {
-            color: @text-green;
-            font-size: 13px;
-            line-height: 32px;
-            cursor: pointer;
+            @apply text-sm leading-8 cursor-pointer text-green-500 hover:text-green-600;
           }
         }
       }
@@ -50,8 +33,7 @@
 
     > .dialog-footer-container {
       .flex(row, space-between, center);
-      width: 100%;
-      margin-top: 0;
+      @apply w-full mt-0;
 
       > .btns-container {
         .flex(row, flex-start, center);
@@ -108,21 +90,20 @@
     flex-shrink: 0;
 
     &.relation-selector {
-      width: 48px;
-      margin-left: -52px;
+      @apply w-16;
+      margin-left: -68px;
     }
 
     &.type-selector {
-      width: 62px;
+      @apply w-20;
     }
 
     &.operator-selector {
-      width: 62px;
+      @apply w-24;
     }
 
     &.value-selector {
       flex-grow: 1;
-      max-width: calc(100% - 152px);
     }
   }
 
