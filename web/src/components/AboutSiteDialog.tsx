@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import utils from "../helpers/utils";
 import { showDialog } from "./Dialog";
 import showStarHistoryDialog from "./StarHistoryDialog";
 import "../less/about-site-dialog.less";
@@ -5,6 +7,19 @@ import "../less/about-site-dialog.less";
 interface Props extends DialogProps {}
 
 const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
+  const [lastUpdatedAt, setLastUpdatedAt] = useState("");
+
+  useEffect(() => {
+    try {
+      fetch("https://api.github.com/repos/justmemos/memos/commits/main").then(async (res) => {
+        const data = (await res.json()) as any;
+        setLastUpdatedAt(utils.getDateTimeString(new Date(data.commit.committer.date)));
+      });
+    } catch (error) {
+      setLastUpdatedAt("2017/12/31");
+    }
+  }, []);
+
   const handleCloseBtnClick = () => {
     destroy();
   };
@@ -26,15 +41,15 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <p>Built with `Golang` and `React`.</p>
         <br />
         <p>
-          🏗 This project is working in progress, <br /> and very pleasure to welcome your{" "}
-          <a href="https://github.com/justmemos/memos/issues">issues</a> and <a href="https://github.com/justmemos/memos/pulls">PR</a>.
+          🏗 <a href="https://github.com/justmemos/memos">This project</a> is working in progress, <br /> and very pleasure to welcome your{" "}
+          <a href="https://github.com/justmemos/memos/issues">issues</a>.
         </p>
         <br />
         <span className="btn" onClick={showStarHistoryDialog}>
           Star History
         </span>
         <p className="updated-time-text">
-          Last updated on <span className="pre-text">2021/12/12 14:38:15</span> 🎉
+          Last updated on <span className="pre-text">{lastUpdatedAt}</span> 🎉
         </p>
       </div>
     </>
