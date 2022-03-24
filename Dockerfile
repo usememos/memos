@@ -29,6 +29,4 @@ COPY --from=frontend /frontend-build/dist /usr/local/memos/web/dist
 # Directory to store the data, which can be referenced as the mounting point.
 RUN mkdir -p /var/opt/memos
 
-CMD ["-mode", "release", "-port", "8080", "-data", "/var/opt/memos"]
-
 ENTRYPOINT ["./memos"]
