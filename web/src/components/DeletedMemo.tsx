@@ -53,23 +53,16 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`memo-wrapper ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
+    <div className={`memo-wrapper deleted-memo ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
         <span className="time-text">Deleted at {memo.deletedAtStr}</span>
         <div className="btns-container">
-          <span className="btn more-action-btn">
-            <img className="icon-img" src="/icons/more.svg" />
+          <span className="btn restore-btn" onClick={handleRestoreMemoClick}>
+            Restore
           </span>
-          <div className="more-action-btns-wrapper">
-            <div className="more-action-btns-container">
-              <span className="btn restore-btn" onClick={handleRestoreMemoClick}>
-                Restore
-              </span>
-              <span className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
-                {showConfirmDeleteBtn ? "Delete!" : "Delete"}
-              </span>
-            </div>
-          </div>
+          <span className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
+            {showConfirmDeleteBtn ? "Delete!" : "Delete"}
+          </span>
         </div>
       </div>
       <div className="memo-content-text" dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}></div>

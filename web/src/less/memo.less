@@ -3,29 +3,27 @@
 
 .memo-wrapper {
   .flex(column, flex-start, flex-start);
-  @apply w-full p-4 px-6 mt-2 bg-white rounded-lg border border-transparent hover:border-gray-200;
+  @apply w-full p-4 px-6 mt-4 first:mt-2 bg-white rounded-lg border border-transparent hover:border-gray-200;
+
+  &.deleted-memo {
+    @apply border-gray-200;
+  }
 
   > .memo-top-wrapper {
     .flex(row, space-between, center);
-    width: 100%;
-    height: 24px;
-    margin-bottom: 4px;
+    @apply w-full h-6 mb-1;
 
     > .time-text {
-      @apply text-xs;
-      color: gray;
-      cursor: pointer;
+      @apply text-xs text-gray-400 cursor-pointer;
     }
 
     > .btns-container {
       .flex(row, flex-end, center);
-      position: relative;
-      flex-shrink: 0;
+      @apply relative flex-shrink-0;
 
       > .more-action-btns-wrapper {
         .flex(column, flex-start, center);
-        position: absolute;
-        flex-wrap: nowrap;
+        @apply absolute flex-nowrap;
         top: calc(100% - 8px);
         right: -16px;
         width: auto;
@@ -49,10 +47,7 @@
           z-index: 1;
 
           > .btn {
-            width: 100%;
-            padding: 8px 0;
-            padding-left: 24px;
-            border-radius: 4px;
+            @apply w-full py-2 px-3 rounded;
             height: unset;
             line-height: unset;
             justify-content: flex-start;
@@ -70,24 +65,14 @@
 
       .btn {
         .flex(row, center, center);
-        width: 100%;
-        height: 28px;
-        font-size: 13px;
-        border-radius: 4px;
-
-        &:hover {
-          background-color: @bg-whitegray;
-        }
+        @apply px-2 leading-6 text-sm rounded hover:bg-gray-100;
 
         &.more-action-btn {
-          width: 28px;
+          @apply w-8 -mr-2 opacity-60;
           cursor: unset;
-          margin-right: -6px;
-          opacity: 0.8;
 
           > .icon-img {
-            width: 16px;
-            height: 16px;
+            @apply w-4 h-auto;
           }
 
           &:hover {

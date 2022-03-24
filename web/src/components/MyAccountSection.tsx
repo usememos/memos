@@ -82,11 +82,11 @@ const MyAccountSection: React.FC<Props> = () => {
     <>
       <div className="section-container account-section-container">
         <p className="title-text">Account Information</p>
-        <label className="form-label input-form-label">
+        <label className="form-label">
           <span className="normal-text">ID:</span>
           <span className="normal-text">{user.id}</span>
         </label>
-        <label className="form-label input-form-label">
+        <label className="form-label">
           <span className="normal-text">Created at:</span>
           <span className="normal-text">{utils.getDateString(user.createdAt)}</span>
         </label>

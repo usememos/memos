@@ -8,7 +8,6 @@
     .flex(column, flex-start, flex-start);
     @apply relative left-full invisible text-base cursor-pointer shadow rounded bg-white mt-6 py-2 px-4;
     min-width: 6em;
-    min-height: 40px;
     transition: all 0.4s ease;
 
     &.showup {
@@ -22,17 +21,9 @@
 
     > .toast-container {
       > .content-text {
-        @apply text-base whitespace-pre-wrap;
-        max-width: 160px;
+        @apply text-sm whitespace-pre-wrap leading-6;
+        max-width: 240px;
       }
-    }
-
-    &::before {
-      content: "";
-      @apply absolute top-3 -right-2;
-      border-left: 8px solid white;
-      border-top: 8px solid transparent;
-      border-bottom: 8px solid transparent;
     }
   }
 }

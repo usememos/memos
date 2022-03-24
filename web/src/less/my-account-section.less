@@ -4,6 +4,10 @@
   > .form-label {
     min-height: 28px;
 
+    > .normal-text {
+      @apply first:mr-2;
+    }
+
     &.username-label {
       > input {
         flex-grow: 0;
@@ -92,19 +96,14 @@
 
   > .usage-guide-container {
     .flex(column, flex-start, flex-start);
-    margin-top: 8px;
+    @apply mt-2 w-full;
 
     > .title-text {
       line-height: 2;
     }
 
     > pre {
-      background-color: @bg-whitegray;
-      padding: 8px 12px;
-      border-radius: 4px;
-      line-height: 1.4;
-      word-break: break-all;
-      white-space: pre-wrap;
+      @apply w-full bg-gray-50 py-2 px-3 text-sm rounded whitespace-pre-wrap;
     }
   }
 }
