@@ -11,6 +11,9 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+//go:embed migration
+var migrationFS embed.FS
+
 //go:embed seed
 var seedFS embed.FS
 
@@ -44,13 +47,33 @@ func (db *DB) Open() (err error) {
 	}
 
 	if db.mode == "dev" {
-		// If mode is dev, then we will seed the database.
+		// If mode is dev, then we will migrate and seed the database.
+		if err := db.migrate(); err != nil {
+			return fmt.Errorf("failed to migrate: %w", err)
+		}
 		if err := db.seed(); err != nil {
 			return fmt.Errorf("failed to seed: %w", err)
 		}
 	}
 
 	return err
+}
+
+func (db *DB) migrate() error {
+	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("%s/*.sql", "migration"))
+	if err != nil {
+		return err
+	}
+
+	sort.Strings(filenames)
+
+	// Loop over all migration files and execute them in order.
+	for _, filename := range filenames {
+		if err := db.executeFile(migrationFS, filename); err != nil {
+			return fmt.Errorf("migrate error: name=%q err=%w", filename, err)
+		}
+	}
+	return nil
 }
 
 func (db *DB) seed() error {
@@ -63,23 +86,23 @@ func (db *DB) seed() error {
 
 	// Loop over all seed files and execute them in order.
 	for _, filename := range filenames {
-		if err := db.seedFile(filename); err != nil {
+		if err := db.executeFile(seedFS, filename); err != nil {
 			return fmt.Errorf("seed error: name=%q err=%w", filename, err)
 		}
 	}
 	return nil
 }
 
-// seedFile runs a single seed file within a transaction.
-func (db *DB) seedFile(name string) error {
+// executeFile runs a single seed file within a transaction.
+func (db *DB) executeFile(FS embed.FS, name string) error {
 	tx, err := db.Db.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
-	// Read and execute migration file.
-	if buf, err := fs.ReadFile(seedFS, name); err != nil {
+	// Read and execute SQL file.
+	if buf, err := fs.ReadFile(FS, name); err != nil {
 		return err
 	} else if _, err := tx.Exec(string(buf)); err != nil {
 		return err

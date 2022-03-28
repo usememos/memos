@@ -1,3 +1,8 @@
+DROP TABLE IF EXISTS `memo`;
+DROP TABLE IF EXISTS `shortcut`;
+DROP TABLE IF EXISTS `resource`;
+DROP TABLE IF EXISTS `user`;
+
 -- user
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -115,25 +120,3 @@ SET
 WHERE
   rowid = old.rowid;
 END;
-
-
-INSERT INTO 
-  user (
-    `id`, 
-    `name`, 
-    `open_id`,
-    `password_hash`
-  )
-VALUES
-  (
-    1, 
-    'guest', 
-    'guest_open_id',
-    -- "secret"
-    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
-  );
-
-INSERT INTO memo
-  (`content`, `creator_id`)
-VALUES
-  ('👋 Welcome to memos', 1);
