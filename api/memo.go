@@ -21,6 +21,7 @@ type MemoPatch struct {
 
 	Content   *string `json:"content"`
 	RowStatus *string `json:"rowStatus"`
+	CreatedTs *int64  `json:"createdTs"`
 }
 
 type MemoFind struct {

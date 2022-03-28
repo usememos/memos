@@ -22,29 +22,6 @@ const (
 	DbConnectionFailure    Code = 101
 	DbStatementSyntaxError Code = 102
 	DbExecutionError       Code = 103
-
-	// 201 db migration error
-	// Db migration is a core feature, so we separate it from the db error
-	MigrationSchemaMissing   Code = 201
-	MigrationAlreadyApplied  Code = 202
-	MigrationOutOfOrder      Code = 203
-	MigrationBaselineMissing Code = 204
-
-	// 301 task error
-	TaskTimingNotAllowed Code = 301
-
-	// 10001 advisor error code
-	CompatibilityDropDatabase  Code = 10001
-	CompatibilityRenameTable   Code = 10002
-	CompatibilityDropTable     Code = 10003
-	CompatibilityRenameColumn  Code = 10004
-	CompatibilityDropColumn    Code = 10005
-	CompatibilityAddPrimaryKey Code = 10006
-	CompatibilityAddUniqueKey  Code = 10007
-	CompatibilityAddForeignKey Code = 10008
-	CompatibilityAddCheck      Code = 10009
-	CompatibilityAlterCheck    Code = 10010
-	CompatibilityAlterColumn   Code = 10011
 )
 
 // Error represents an application-specific error. Application errors can be

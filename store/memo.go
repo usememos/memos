@@ -109,6 +109,9 @@ func patchMemo(db *DB, patch *api.MemoPatch) (*api.Memo, error) {
 	if v := patch.RowStatus; v != nil {
 		set, args = append(set, "row_status = ?"), append(args, *v)
 	}
+	if v := patch.CreatedTs; v != nil {
+		set, args = append(set, "created_ts = ?"), append(args, *v)
+	}
 
 	args = append(args, patch.Id)
 

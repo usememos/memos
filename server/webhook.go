@@ -66,16 +66,10 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		memoFind := &api.MemoFind{
 			CreatorId: &user.Id,
 		}
-		showHiddenMemo, err := strconv.ParseBool(c.QueryParam("hidden"))
-		if err != nil {
-			showHiddenMemo = false
+		rowStatus := c.QueryParam("rowStatus")
+		if rowStatus != "" {
+			memoFind.RowStatus = &rowStatus
 		}
-
-		rowStatus := "NORMAL"
-		if showHiddenMemo {
-			rowStatus = "HIDDEN"
-		}
-		memoFind.RowStatus = &rowStatus
 
 		list, err := s.MemoService.FindMemoList(memoFind)
 		if err != nil {

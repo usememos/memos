@@ -23,10 +23,10 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 		user, err := s.UserService.FindUser(userFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to authenticate user").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by name %s", login.Name)).SetInternal(err)
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found: %s", login.Name))
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found with name %s", login.Name))
 		}
 
 		// Compare the stored hashed password, with the hashed version of the password that was received.
@@ -35,8 +35,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect password").SetInternal(err)
 		}
 
-		err = setUserSession(c, user)
-		if err != nil {
+		if err = setUserSession(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set login session").SetInternal(err)
 		}
 
@@ -64,10 +63,12 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
 		}
 
-		if len(signup.Name) <= 5 {
+		// Validate signup form.
+		// We can do stricter checks later.
+		if len(signup.Name) < 6 {
 			return echo.NewHTTPError(http.StatusBadRequest, "Username is too short, minimum length is 6.")
 		}
-		if len(signup.Password) <= 5 {
+		if len(signup.Password) < 6 {
 			return echo.NewHTTPError(http.StatusBadRequest, "Password is too short, minimum length is 6.")
 		}
 
@@ -76,10 +77,10 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 		user, err := s.UserService.FindUser(userFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to authenticate user").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by name %s", signup.Name)).SetInternal(err)
 		}
 		if user != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Existed user found: %s", signup.Name))
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Existed user found: %s", signup.Name))
 		}
 
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(signup.Password), bcrypt.DefaultCost)

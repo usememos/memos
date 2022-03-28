@@ -113,14 +113,14 @@ namespace api {
   export function getMyMemos() {
     return request<Model.Memo[]>({
       method: "GET",
-      url: "/api/memo",
+      url: "/api/memo?rowStatus=NORMAL",
     });
   }
 
   export function getMyDeletedMemos() {
     return request<Model.Memo[]>({
       method: "GET",
-      url: "/api/memo?hidden=true",
+      url: "/api/memo?rowStatus=HIDDEN",
     });
   }
 
