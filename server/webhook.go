@@ -103,9 +103,8 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		}
 
 		c.Response().Writer.WriteHeader(http.StatusOK)
-		c.Response().Writer.Header().Set("Content-Type", "application/octet-stream")
+		c.Response().Writer.Header().Set("Content-Type", resource.Type)
 		c.Response().Writer.Write(resource.Blob)
-
 		return nil
 	})
 }

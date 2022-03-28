@@ -37,7 +37,7 @@ func (m *Main) Run() error {
 
 	m.db = db
 
-	s := server.NewServer(m.profile.port)
+	s := server.NewServer(m.profile.port, m.profile.mode)
 
 	s.ShortcutService = store.NewShortcutService(db)
 	s.MemoService = store.NewMemoService(db)

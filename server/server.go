@@ -23,7 +23,7 @@ type Server struct {
 	port int
 }
 
-func NewServer(port int) *Server {
+func NewServer(port int, mode string) *Server {
 	e := echo.New()
 	e.Debug = true
 	e.HideBanner = true
@@ -46,7 +46,11 @@ func NewServer(port int) *Server {
 		HTML5:   true,
 	}))
 
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(securecookie.GenerateRandomKey(16)))))
+	secret := []byte("justmemos")
+	if mode != "dev" {
+		secret = securecookie.GenerateRandomKey(16)
+	}
+	e.Use(session.Middleware(sessions.NewCookieStore(secret)))
 
 	s := &Server{
 		e:    e,

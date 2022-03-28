@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import appContext from "../stores/appContext";
 import { globalStateService, memoService } from "../services";
-import { parseHtmlToRawText } from "../helpers/marked";
 import { formatMemoContent } from "./Memo";
 import "../less/preferences-section.less";
 
@@ -49,13 +48,6 @@ const PreferencesSection: React.FC<Props> = () => {
     document.body.removeChild(element);
   };
 
-  const handleFormatMemosBtnClick = async () => {
-    const memos = memoService.getState().memos;
-    for (const m of memos) {
-      memoService.updateMemo(m.id, parseHtmlToRawText(m.content));
-    }
-  };
-
   return (
     <>
       <div className="section-container preferences-section-container">
@@ -82,9 +74,6 @@ const PreferencesSection: React.FC<Props> = () => {
         <div className="w-full flex flex-row justify-start items-center">
           <button className="px-2 py-1 border rounded text-base hover:opacity-80" onClick={handleExportBtnClick}>
             Export data as JSON
-          </button>
-          <button className="btn format-btn hidden" onClick={handleFormatMemosBtnClick}>
-            Format Data
           </button>
         </div>
       </div>

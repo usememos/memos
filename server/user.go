@@ -11,8 +11,8 @@ import (
 )
 
 func (s *Server) registerUserRoutes(g *echo.Group) {
+	// GET /api/user/me is used to check if the user is logged in.
 	g.GET("/user/me", func(c echo.Context) error {
-		// /api/user/me is used to check if the user is logged in,
 		userSessionId := c.Get(getUserIdContextKey())
 		if userSessionId == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing session")
