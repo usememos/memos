@@ -28,4 +28,4 @@ jobs:
           context: ./
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_NEOSMEMO_USERNAME }}/memos:next
+          tags: ${{ secrets.DOCKER_NEOSMEMO_USERNAME }}/memos:dev
