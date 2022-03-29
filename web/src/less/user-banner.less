@@ -1,47 +1,22 @@
 @import "./mixin.less";
 
 .user-banner-container {
-  .flex(column, flex-start, flex-start);
-  @apply w-full h-auto;
+  .flex(row, space-between, center);
+  @apply w-full h-auto px-6 flex-nowrap mb-1;
 
-  > .userinfo-header-container {
-    .flex(row, space-between, center);
-    @apply w-full px-6 flex-nowrap mb-1;
-
-    > .username-text {
-      @apply font-bold text-lg text-slate-800 overflow-hidden cursor-pointer shrink-0 text-ellipsis;
-      max-width: calc(100% - 32px);
-    }
-
-    > .action-btn {
-      @apply flex-shrink-0 select-none border-none;
-      background-color: unset;
-
-      &.menu-popup-btn {
-        .flex(column, center, center);
-        @apply w-9 h-10 -mr-2 cursor-pointer;
-
-        > .icon-img {
-          @apply w-5 h-auto;
-        }
-      }
-    }
+  > .username-text {
+    @apply font-bold text-lg pr-2 text-slate-800 cursor-pointer shrink truncate;
   }
 
-  > .status-text-container {
-    .flex(row, space-between, flex-start);
-    @apply px-6 w-full select-none mb-3;
+  > .action-btn {
+    @apply shrink-0 select-none border-none;
 
-    > .status-text {
-      .flex(column, flex-start, flex-start);
+    &.menu-popup-btn {
+      .flex(column, center, center);
+      @apply w-9 h-10 -mr-2 cursor-pointer;
 
-      > .amount-text {
-        @apply font-bold text-2xl opacity-80 leading-10;
-        color: @text-black;
-      }
-
-      > .type-text {
-        @apply text-gray-400 text-xs font-mono;
+      > .icon-img {
+        @apply w-5 h-auto;
       }
     }
   }

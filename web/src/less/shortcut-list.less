@@ -2,12 +2,12 @@
 
 .shortcuts-wrapper {
   .flex(column, flex-start, flex-start);
-  @apply w-full py-0 px-2 h-auto flex-nowrap;
+  @apply w-full py-0 px-2 mt-1 h-auto grow shrink flex-nowrap;
   .hide-scroll-bar();
 
   > .title-text {
     .flex(row, space-between, center);
-    @apply w-full py-1 px-4;
+    @apply w-full px-4;
 
     > .normal-text {
       @apply text-xs leading-6 font-bold text-black opacity-50;
@@ -58,8 +58,6 @@
         background-color: @text-green !important;
 
         > .shortcut-text-container {
-          @apply font-bold;
-
           > * {
             @apply text-white;
           }
@@ -68,8 +66,7 @@
 
       > .shortcut-text-container {
         .flex(row, flex-start, center);
-        @apply overflow-hidden text-ellipsis shrink-0 leading-5;
-        max-width: calc(100% - 24px);
+        @apply truncate shrink leading-5 mr-1;
         color: @text-black;
 
         > .icon-text {
@@ -77,13 +74,13 @@
         }
 
         > .shortcut-text {
-          @apply shrink-0;
+          @apply truncate;
         }
       }
 
       > .btns-container {
         .flex(row, flex-end, center);
-        @apply hidden;
+        @apply hidden shrink-0;
 
         > .action-btn {
           .flex(row, center, center);

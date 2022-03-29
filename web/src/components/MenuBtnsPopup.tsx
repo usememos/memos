@@ -1,8 +1,6 @@
 import { useEffect, useRef } from "react";
 import { locationService, userService } from "../services";
 import showAboutSiteDialog from "./AboutSiteDialog";
-import showSettingDialog from "./SettingDialog";
-import showMemoTrashDialog from "./MemoTrashDialog";
 import "../less/menu-btns-popup.less";
 
 interface Props {
@@ -12,7 +10,6 @@ interface Props {
 
 const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   const { shownStatus, setShownStatus } = props;
-
   const popupElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,14 +27,6 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
     }
   }, [shownStatus]);
 
-  const handleMyAccountBtnClick = () => {
-    showSettingDialog();
-  };
-
-  const handleMemosTrashBtnClick = () => {
-    showMemoTrashDialog();
-  };
-
   const handleAboutBtnClick = () => {
     showAboutSiteDialog();
   };
@@ -50,12 +39,6 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`menu-btns-popup ${shownStatus ? "" : "hidden"}`} ref={popupElRef}>
-      <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
-        <span className="icon">👤</span> Setting
-      </button>
-      <button className="btn action-btn" onClick={handleMemosTrashBtnClick}>
-        <span className="icon">🗑️</span> Recycle Bin
-      </button>
       <button className="btn action-btn" onClick={handleAboutBtnClick}>
         <span className="icon">🤠</span> About
       </button>

@@ -2,10 +2,36 @@
 
 .sidebar-wrapper {
   .flex(column, flex-start, flex-start);
-  @apply w-60 h-full py-4 overflow-x-hidden overflow-y-auto shrink-0;
+  @apply w-64 h-full py-4 px-2 overflow-x-hidden overflow-y-auto shrink-0;
   .hide-scroll-bar();
 
-  > * {
-    @apply shrink-0;
+  > .action-btns-container {
+    @apply w-full px-2 my-2 flex flex-col justify-start items-start shrink-0;
+
+    > .action-btn {
+      @apply leading-10 px-4 rounded-lg text-base hover:bg-white;
+
+      > .icon {
+        @apply mr-1;
+      }
+    }
+  }
+
+  > .status-text-container {
+    .flex(row, space-between, flex-start);
+    @apply w-full px-10 select-none shrink-0;
+
+    > .status-text {
+      .flex(column, flex-start, flex-start);
+
+      > .amount-text {
+        @apply font-bold text-2xl opacity-80 leading-10;
+        color: @text-black;
+      }
+
+      > .type-text {
+        @apply text-gray-400 text-xs font-mono;
+      }
+    }
   }
 }
