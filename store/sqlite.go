@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"memos/common"
 	"sort"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -19,18 +20,17 @@ var seedFS embed.FS
 
 type DB struct {
 	Db *sql.DB
-
 	// datasource name
 	DSN string
-	// mode: release or dev
+	// mode should be release or dev
 	mode string
 }
 
 // NewDB returns a new instance of DB associated with the given datasource name.
-func NewDB(dsn string, mode string) *DB {
+func NewDB(profile *common.Profile) *DB {
 	db := &DB{
-		DSN:  dsn,
-		mode: mode,
+		DSN:  profile.DSN,
+		mode: profile.Mode,
 	}
 	return db
 }

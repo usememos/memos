@@ -1,4 +1,4 @@
-package cmd
+package common
 
 import (
 	"fmt"
@@ -9,12 +9,12 @@ import (
 )
 
 type Profile struct {
-	// mode can be "release" or "dev"
-	mode string
-	// port is the binding port for server.
-	port int
-	// dsn points to where Memos stores its own data
-	dsn string
+	// Mode can be "release" or "dev"
+	Mode string `json:"mode"`
+	// Port is the binding port for server.
+	Port int `json:"port"`
+	// DSN points to where Memos stores its own data
+	DSN string `json:"-"`
 }
 
 func checkDSN(dataDir string) (string, error) {
@@ -61,8 +61,8 @@ func GetProfile() Profile {
 	dsn := fmt.Sprintf("file:%s/memos_%s.db", dataDir, mode)
 
 	return Profile{
-		mode: mode,
-		port: port,
-		dsn:  dsn,
+		Mode: mode,
+		Port: port,
+		DSN:  dsn,
 	}
 }

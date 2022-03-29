@@ -3,6 +3,7 @@ package server
 import (
 	"fmt"
 	"memos/api"
+	"memos/common"
 	"time"
 
 	"github.com/gorilla/securecookie"
@@ -15,15 +16,15 @@ import (
 type Server struct {
 	e *echo.Echo
 
+	Profile *common.Profile
+
 	UserService     api.UserService
 	MemoService     api.MemoService
 	ShortcutService api.ShortcutService
 	ResourceService api.ResourceService
-
-	port int
 }
 
-func NewServer(port int, mode string) *Server {
+func NewServer(profile *common.Profile) *Server {
 	e := echo.New()
 	e.Debug = true
 	e.HideBanner = true
@@ -46,17 +47,19 @@ func NewServer(port int, mode string) *Server {
 		HTML5:   true,
 	}))
 
+	// In dev mode, set the const secret key to make login session persistence.
 	secret := []byte("justmemos")
-	if mode != "dev" {
+	if profile.Mode == "release" {
 		secret = securecookie.GenerateRandomKey(16)
 	}
 	e.Use(session.Middleware(sessions.NewCookieStore(secret)))
 
 	s := &Server{
-		e:    e,
-		port: port,
+		e:       e,
+		Profile: profile,
 	}
 
+	// Webhooks api skips auth checker.
 	webhookGroup := e.Group("/h")
 	s.registerWebhookRoutes(webhookGroup)
 
@@ -64,6 +67,7 @@ func NewServer(port int, mode string) *Server {
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return BasicAuthMiddleware(s.UserService, next)
 	})
+	s.registerSystemRoutes(apiGroup)
 	s.registerAuthRoutes(apiGroup)
 	s.registerUserRoutes(apiGroup)
 	s.registerMemoRoutes(apiGroup)
@@ -74,5 +78,5 @@ func NewServer(port int, mode string) *Server {
 }
 
 func (server *Server) Run() error {
-	return server.e.Start(fmt.Sprintf(":%d", server.port))
+	return server.e.Start(fmt.Sprintf(":%d", server.Profile.Port))
 }
