@@ -17,9 +17,7 @@ class MemoService {
     }
 
     const data = await api.getMyMemos();
-    const memos: Model.Memo[] = data.map((m) => {
-      return this.convertResponseModelMemo(m);
-    });
+    const memos: Model.Memo[] = data.map((m) => this.convertResponseModelMemo(m));
     appStore.dispatch({
       type: "SET_MEMOS",
       payload: {
@@ -138,6 +136,7 @@ class MemoService {
   private convertResponseModelMemo(memo: Model.Memo): Model.Memo {
     return {
       ...memo,
+      id: String(memo.id),
       createdAt: utils.getDataStringWithTs(memo.createdTs),
       updatedAt: utils.getDataStringWithTs(memo.updatedTs),
     };
