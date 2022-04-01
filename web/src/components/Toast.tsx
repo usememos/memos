@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import ReactDOM from "react-dom";
+import { createRoot, Root } from "react-dom/client";
 import { TOAST_ANIMATION_DURATION } from "../helpers/consts";
 import "../less/toast.less";
 
@@ -39,7 +39,7 @@ const Toast: React.FC<ToastItemProps> = (props: ToastItemProps) => {
 class ToastHelper {
   private shownToastAmount = 0;
   private toastWrapper: HTMLDivElement;
-  private shownToastContainers: HTMLDivElement[] = [];
+  private shownToastContainers: [Root, HTMLDivElement][] = [];
 
   constructor() {
     const wrapperClassName = "toast-list-container";
@@ -63,10 +63,11 @@ class ToastHelper {
 
   private showToast = (config: ToastConfig) => {
     const tempDiv = document.createElement("div");
+    const toast = createRoot(tempDiv);
     tempDiv.className = `toast-wrapper ${config.type}`;
     this.toastWrapper.appendChild(tempDiv);
     this.shownToastAmount++;
-    this.shownToastContainers.push(tempDiv);
+    this.shownToastContainers.push([toast, tempDiv]);
 
     setTimeout(() => {
       tempDiv.classList.add("showup");
@@ -83,9 +84,9 @@ class ToastHelper {
 
           this.shownToastAmount--;
           if (this.shownToastAmount === 0) {
-            for (const d of this.shownToastContainers) {
-              ReactDOM.unmountComponentAtNode(d);
-              d.remove();
+            for (const [root, tempDiv] of this.shownToastContainers) {
+              root.unmount();
+              tempDiv.remove();
             }
             this.shownToastContainers.splice(0, this.shownToastContainers.length);
           }
@@ -93,7 +94,7 @@ class ToastHelper {
       },
     };
 
-    ReactDOM.render(<Toast {...config} destory={cbs.destory} />, tempDiv);
+    toast.render(<Toast {...config} destory={cbs.destory} />);
 
     return cbs;
   };

@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom";
+import { createRoot } from "react-dom/client";
 import Provider from "./labs/Provider";
 import appContext from "./stores/appContext";
 import appStore from "./stores/appStore";
@@ -8,11 +8,12 @@ import "./helpers/polyfill";
 import "./less/global.less";
 import "./css/index.css";
 
-ReactDOM.render(
+const container = document.getElementById("root");
+const root = createRoot(container as HTMLElement);
+root.render(
   <React.StrictMode>
     <Provider store={appStore} context={appContext}>
       <App />
     </Provider>
-  </React.StrictMode>,
-  document.getElementById("root")
+  </React.StrictMode>
 );

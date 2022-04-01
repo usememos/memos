@@ -9,13 +9,13 @@
   },
   "dependencies": {
     "lodash-es": "^4.17.21",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.5",
-    "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2",
+    "@types/react": "^17.0.43",
+    "@types/react-dom": "^17.0.14",
     "@typescript-eslint/eslint-plugin": "^5.6.0",
     "@typescript-eslint/parser": "^5.6.0",
     "@vitejs/plugin-react": "^1.0.0",
@@ -29,7 +29,7 @@
     "prettier": "2.5.1",
     "tailwindcss": "^3.0.18",
     "typescript": "^4.3.2",
-    "vite": "^2.6.14"
+    "vite": "^2.9.0"
   },
   "license": "MIT"
 }
