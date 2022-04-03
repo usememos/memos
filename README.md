@@ -40,6 +40,10 @@ Making sure that you are in charge of your data and more customizations.
 
 The default user account is `guest` with password `secret`.
 
+## 🌟 Star history
+
+[![Star History Chart](https://api.star-history.com/svg?repos=justmemos/memos&type=Date)](https://star-history.com/#justmemos/memos&Date)
+
 ---
 
 Just enjoy it.

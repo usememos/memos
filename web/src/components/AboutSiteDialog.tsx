@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import utils from "../helpers/utils";
 import { showDialog } from "./Dialog";
-import showStarHistoryDialog from "./StarHistoryDialog";
 import "../less/about-site-dialog.less";
 
 interface Props extends DialogProps {}
@@ -45,9 +44,6 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
           <a href="https://github.com/justmemos/memos/issues">issues</a>.
         </p>
         <br />
-        <span className="btn" onClick={showStarHistoryDialog}>
-          Star History
-        </span>
         <p className="updated-time-text">
           Last updated on <span className="pre-text">{lastUpdatedAt}</span> 🎉
         </p>
