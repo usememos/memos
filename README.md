@@ -9,7 +9,6 @@
   <img alt="GitHub stars" src="https://img.shields.io/github/stars/justmemos/memos" />
   <img alt="GitHub forks" src="https://img.shields.io/github/forks/justmemos/memos" />
   <img alt="GitHub Watchers" src="https://img.shields.io/github/watchers/justmemos/memos" />
-  <img alt="GitHub license" src="https://img.shields.io/github/license/justmemos/memos" />
 </p>
 
 Memos is an open source, self-hosted alternative to [flomo](https://flomoapp.com/). Built with `Go` and `React`.
@@ -28,6 +27,18 @@ Making sure that you are in charge of your data and more customizations.
 - 😋 Beautiful and detailed visual styles;
 - 📑 Experience excellent interaction logic;
 - ⚡️ Quick privatization deployment;
+
+## ⚓️ Deploy Guide with Docker
+
+1. download the [initialized db file](https://github.com/justmemos/memos/raw/main/resources/memos_release.db):
+
+2. pull and run docker image:
+
+   ```docker
+   docker run --name memos --publish 8080:8080 --volume ~/path/to/your/data/:/var/opt/memos -e mode=release -e data=/var/opt/memos neosmemo/memos:dev
+   ```
+
+The default user account is `guest` with password `secret`.
 
 ---
 
