@@ -2,14 +2,16 @@
 @import "./memos-header.less";
 
 .memos-wrapper {
-  .flex(row, flex-start, flex-start);
-  @apply w-auto h-full grow;
+  @apply w-full h-full overflow-x-hidden grid;
+  grid-template-columns: 384px 1fr;
 
   > .memo-editor-wrapper {
-    @apply w-96 h-full shrink-0 py-16 px-8 bg-white;
+    @apply w-full h-full py-16 px-8 bg-white;
   }
 
   > .memo-list-wrapper {
-    @apply w-auto h-full grow px-16 flex flex-col justify-start items-start;
+    @apply w-full h-full overflow-y-auto px-16 grid;
+    grid-auto-rows: min-content;
+    grid-auto-flow: dense;
   }
 }
