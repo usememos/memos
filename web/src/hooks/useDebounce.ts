@@ -16,7 +16,7 @@ export default function useDebounce<T extends (...args: any[]) => any>(func: T, 
     }
   }, []);
 
-  const run = useCallback((...args) => {
+  const run = useCallback((...args: any) => {
     cancel();
     timer.current = window.setTimeout(() => {
       func(...args);
