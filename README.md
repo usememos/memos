@@ -28,15 +28,11 @@ Making sure that you are in charge of your data and more customizations.
 - 📑 Experience excellent interaction logic;
 - ⚡️ Quick privatization deployment;
 
-## ⚓️ Deploy Guide with Docker
+## ⚓️ Deploy with Docker
 
-1. download the [initialized db file](https://github.com/justmemos/memos/raw/main/resources/memos_release.db):
-
-2. pull and run docker image:
-
-   ```docker
-   docker run --name memos --publish 8080:8080 --volume ~/path/to/your/data/:/var/opt/memos -e mode=release -e data=/var/opt/memos neosmemo/memos:dev
-   ```
+```docker
+docker run --name memos --publish 8080:8080 --volume ~/path/to/your/data/:/var/opt/memos -e mode=release neosmemo/memos:dev
+```
 
 The default user account is `guest` with password `secret`.
 

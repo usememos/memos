@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/fs"
 	"memos/common"
+	"os"
 	"sort"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -42,17 +43,30 @@ func (db *DB) Open() (err error) {
 	}
 
 	// Connect to the database.
-	if db.Db, err = sql.Open("sqlite3", db.DSN); err != nil {
+	sqlDB, err := sql.Open("sqlite3", db.DSN)
+	if err != nil {
 		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.DSN, err)
 	}
 
-	if db.mode == "dev" {
-		// If mode is dev, then we will migrate and seed the database.
+	db.Db = sqlDB
+
+	// If db file not exists, we should migrate and seed the database.
+	if _, err := os.Stat(db.DSN); errors.Is(err, os.ErrNotExist) {
 		if err := db.migrate(); err != nil {
 			return fmt.Errorf("failed to migrate: %w", err)
 		}
 		if err := db.seed(); err != nil {
 			return fmt.Errorf("failed to seed: %w", err)
+		}
+	} else {
+		// If db file exists and mode is dev, we should migrate and seed the database.
+		if db.mode == "dev" {
+			if err := db.migrate(); err != nil {
+				return fmt.Errorf("failed to migrate: %w", err)
+			}
+			if err := db.seed(); err != nil {
+				return fmt.Errorf("failed to seed: %w", err)
+			}
 		}
 	}
 

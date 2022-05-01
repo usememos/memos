@@ -14,7 +14,7 @@ type Profile struct {
 	// Port is the binding port for server.
 	Port int `json:"port"`
 	// DSN points to where Memos stores its own data
-	DSN string `json:"-"`
+	DSN string `json:"dsn"`
 }
 
 func checkDSN(dataDir string) (string, error) {
@@ -50,7 +50,10 @@ func GetProfile() Profile {
 		port = 8080
 	}
 
-	data := os.Getenv("data")
+	data := ""
+	if mode == "release" {
+		data = "/var/opt/memos"
+	}
 
 	dataDir, err := checkDSN(data)
 	if err != nil {
@@ -58,7 +61,7 @@ func GetProfile() Profile {
 		os.Exit(1)
 	}
 
-	dsn := fmt.Sprintf("file:%s/memos_%s.db", dataDir, mode)
+	dsn := fmt.Sprintf("%s/memos_%s.db", dataDir, mode)
 
 	return Profile{
 		Mode: mode,
