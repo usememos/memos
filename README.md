@@ -11,6 +11,8 @@
   <img alt="GitHub Watchers" src="https://img.shields.io/github/watchers/justmemos/memos" />
 </p>
 
+![demo](https://raw.githubusercontent.com/justmemos/memos/main/resources/demo.webp)
+
 Memos is an open source, self-hosted alternative to [flomo](https://flomoapp.com/). Built with `Go` and `React`.
 
 Making sure that you are in charge of your data and more customizations.
