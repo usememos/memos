@@ -2,7 +2,7 @@
 
 .filter-query-container {
   .flex(row, flex-start, flex-start);
-  @apply w-full flex-wrap p-2 pb-1 text-sm leading-7;
+  @apply w-full flex-wrap p-2 pb-1 text-sm font-mono leading-7;
 
   > .tip-text {
     @apply mr-2;
@@ -10,10 +10,6 @@
 
   > .filter-item-container {
     @apply px-2 mr-2 cursor-pointer bg-gray-200 rounded whitespace-nowrap truncate hover:line-through;
-    max-width: 200px;
-
-    > .icon-text {
-      letter-spacing: 2px;
-    }
+    max-width: 256px;
   }
 }

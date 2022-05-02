@@ -3,7 +3,7 @@
 
 .memo-wrapper {
   .flex(column, flex-start, flex-start);
-  @apply w-full max-w-full p-4 px-6 mt-2 first:mt-2 bg-white rounded-lg border border-transparent hover:border-gray-200;
+  @apply w-full max-w-full p-4 pb-3 mt-2 bg-white rounded-lg border border-transparent hover:border-gray-200;
 
   &.deleted-memo {
     @apply border-gray-200;
@@ -11,7 +11,7 @@
 
   > .memo-top-wrapper {
     .flex(row, space-between, center);
-    @apply w-full h-6 mb-1;
+    @apply w-full h-6 mb-2;
 
     > .time-text {
       @apply text-xs text-gray-400 cursor-pointer;

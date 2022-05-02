@@ -31,7 +31,7 @@ CREATE TABLE memo (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  -- allowed row status are 'NORMAL', 'PINNED', 'HIDDEN'.
+  -- allowed row status are 'NORMAL', 'ARCHIVED', 'HIDDEN'.
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   content TEXT NOT NULL DEFAULT '',
   creator_id INTEGER NOT NULL,
@@ -64,7 +64,7 @@ CREATE TABLE shortcut (
   title TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '',
   creator_id INTEGER NOT NULL,
-  -- allowed row status are 'NORMAL', 'PINNED'.
+  -- allowed row status are 'NORMAL', 'ARCHIVED'.
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   FOREIGN KEY(creator_id) REFERENCES users(id)
 );

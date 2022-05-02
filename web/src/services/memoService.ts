@@ -17,7 +17,7 @@ class MemoService {
     }
 
     const data = await api.getMyMemos();
-    const memos: Model.Memo[] = data.map((m) => this.convertResponseModelMemo(m));
+    const memos: Model.Memo[] = data.filter((m) => m.rowStatus !== "HIDDEN").map((m) => this.convertResponseModelMemo(m));
     appStore.dispatch({
       type: "SET_MEMOS",
       payload: {
@@ -131,6 +131,14 @@ class MemoService {
   public async updateMemo(memoId: string, text: string): Promise<Model.Memo> {
     const memo = await api.updateMemo(memoId, text);
     return this.convertResponseModelMemo(memo);
+  }
+
+  public async pinMemo(memoId: string) {
+    await api.pinMemo(memoId);
+  }
+
+  public async unpinMemo(memoId: string) {
+    await api.unpinMemo(memoId);
   }
 
   private convertResponseModelMemo(memo: Model.Memo): Model.Memo {

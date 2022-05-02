@@ -50,7 +50,7 @@ const MemoFilter: React.FC<FilterProps> = () => {
             locationService.setFromAndToQuery(0, 0);
           }}
         >
-          <span className="icon-text">🗓️</span> {utils.getDateString(duration.from)} 至 {utils.getDateString(duration.to)}
+          <span className="icon-text">🗓️</span> {utils.getDateString(duration.from)} to {utils.getDateString(duration.to)}
         </div>
       ) : null}
       <div

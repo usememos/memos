@@ -76,6 +76,10 @@ const MemoList: React.FC<Props> = () => {
         })
       : memos;
 
+  const pinnedMemos = shownMemos.filter((m) => m.rowStatus === "ARCHIVED");
+  const unpinnedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL");
+  const sortedMemos = pinnedMemos.concat(unpinnedMemos);
+
   useEffect(() => {
     memoService
       .fetchAllMemos()
@@ -84,7 +88,7 @@ const MemoList: React.FC<Props> = () => {
         memoService.updateTagsState();
       })
       .catch(() => {
-        toastHelper.error("😭 Refresh failed, please try again later.");
+        toastHelper.error("😭 Fetching failed, please try again later.");
       });
   }, []);
 
@@ -107,14 +111,14 @@ const MemoList: React.FC<Props> = () => {
 
   return (
     <div className={`memo-list-container ${isFetching ? "" : "completed"}`} onClick={handleMemoListClick} ref={wrapperElement}>
-      {shownMemos.map((memo) => (
+      {sortedMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.updatedAt}`} memo={memo} />
       ))}
       <div className="status-text-container">
         <p className="status-text">
           {isFetching
             ? "Fetching data..."
-            : shownMemos.length === 0
+            : sortedMemos.length === 0
             ? "Oops, there is nothing"
             : showMemoFilter
             ? ""

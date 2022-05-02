@@ -113,7 +113,7 @@ namespace api {
   export function getMyMemos() {
     return request<Model.Memo[]>({
       method: "GET",
-      url: "/api/memo?rowStatus=NORMAL",
+      url: "/api/memo",
     });
   }
 
@@ -140,6 +140,26 @@ namespace api {
       url: `/api/memo/${memoId}`,
       data: {
         content,
+      },
+    });
+  }
+
+  export function pinMemo(memoId: string) {
+    return request({
+      method: "PATCH",
+      url: `/api/memo/${memoId}`,
+      data: {
+        rowStatus: "ARCHIVED",
+      },
+    });
+  }
+
+  export function unpinMemo(shortcutId: string) {
+    return request({
+      method: "PATCH",
+      url: `/api/memo/${shortcutId}`,
+      data: {
+        rowStatus: "NORMAL",
       },
     });
   }

@@ -15,7 +15,7 @@ declare namespace Model {
 
   interface Memo extends BaseModel {
     content: string;
-    rowStatus: "NORMAL" | "HIDDEN";
+    rowStatus: "NORMAL" | "ARCHIVED" | "HIDDEN";
   }
 
   interface Shortcut extends BaseModel {

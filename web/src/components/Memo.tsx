@@ -29,6 +29,26 @@ const Memo: React.FC<Props> = (props: Props) => {
     showMemoCardDialog(memo);
   };
 
+  const handleTogglePinMemoBtnClick = async () => {
+    try {
+      if (memo.rowStatus === "ARCHIVED") {
+        await memoService.unpinMemo(memo.id);
+        memoService.editMemo({
+          ...memo,
+          rowStatus: "NORMAL",
+        });
+      } else {
+        await memoService.pinMemo(memo.id);
+        memoService.editMemo({
+          ...memo,
+          rowStatus: "ARCHIVED",
+        });
+      }
+    } catch (error) {
+      // do nth
+    }
+  };
+
   const handleMarkMemoClick = () => {
     globalStateService.setMarkMemoId(memo.id);
   };
@@ -86,6 +106,9 @@ const Memo: React.FC<Props> = (props: Props) => {
       <div className="memo-top-wrapper">
         <span className="time-text" onClick={handleShowMemoStoryDialog}>
           {memo.createdAtStr}
+          <Only when={memo.rowStatus === "ARCHIVED"}>
+            <span className="ml-2">PINNED</span>
+          </Only>
         </span>
         <div className="btns-container">
           <span className="btn more-action-btn">
@@ -95,6 +118,9 @@ const Memo: React.FC<Props> = (props: Props) => {
             <div className="more-action-btns-container">
               <span className="btn" onClick={handleShowMemoStoryDialog}>
                 View Story
+              </span>
+              <span className="btn" onClick={handleTogglePinMemoBtnClick}>
+                {memo.rowStatus === "NORMAL" ? "Pin" : "Unpin"}
               </span>
               <span className="btn" onClick={handleMarkMemoClick}>
                 Mark

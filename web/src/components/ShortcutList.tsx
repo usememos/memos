@@ -1,12 +1,12 @@
 import { useContext, useEffect } from "react";
+import { locationService, shortcutService } from "../services";
 import appContext from "../stores/appContext";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
-import Only from "./common/OnlyWhen";
 import utils from "../helpers/utils";
+import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
-import { locationService, shortcutService } from "../services";
-import showCreateQueryDialog from "./CreateShortcutDialog";
+import showCreateShortcutDialog from "./CreateShortcutDialog";
 import "../less/shortcut-list.less";
 
 interface Props {}
@@ -19,9 +19,13 @@ const ShortcutList: React.FC<Props> = () => {
     },
   } = useContext(appContext);
   const loadingState = useLoading();
-  const sortedShortcuts = shortcuts
-    .sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt))
-    .sort((a, b) => utils.getTimeStampByDate(b.updatedAt) - utils.getTimeStampByDate(a.updatedAt));
+  const pinnedShortcuts = shortcuts
+    .filter((s) => s.rowStatus === "ARCHIVED")
+    .sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt));
+  const unpinnedShortcuts = shortcuts
+    .filter((s) => s.rowStatus === "NORMAL")
+    .sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt));
+  const sortedShortcuts = pinnedShortcuts.concat(unpinnedShortcuts);
 
   useEffect(() => {
     shortcutService
@@ -38,13 +42,13 @@ const ShortcutList: React.FC<Props> = () => {
     <div className="shortcuts-wrapper">
       <p className="title-text">
         <span className="normal-text">Shortcuts</span>
-        <span className="btn" onClick={() => showCreateQueryDialog()}>
-          +
+        <span className="btn" onClick={() => showCreateShortcutDialog()}>
+          <img src="/icons/add.svg" alt="add shortcut" />
         </span>
       </p>
       <Only when={loadingState.isSucceed && sortedShortcuts.length === 0}>
         <div className="create-shortcut-btn-container">
-          <span className="btn" onClick={() => showCreateQueryDialog()}>
+          <span className="btn" onClick={() => showCreateShortcutDialog()}>
             New shortcut
           </span>
         </div>
@@ -92,12 +96,12 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
     }
   };
 
-  const handleEditQueryBtnClick = (event: React.MouseEvent) => {
+  const handleEditShortcutBtnClick = (event: React.MouseEvent) => {
     event.stopPropagation();
-    showCreateQueryDialog(shortcut.id);
+    showCreateShortcutDialog(shortcut.id);
   };
 
-  const handlePinQueryBtnClick = async (event: React.MouseEvent) => {
+  const handlePinShortcutBtnClick = async (event: React.MouseEvent) => {
     event.stopPropagation();
 
     try {
@@ -136,10 +140,10 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
           </span>
           <div className="action-btns-wrapper">
             <div className="action-btns-container">
-              <span className="btn" onClick={handlePinQueryBtnClick}>
+              <span className="btn" onClick={handlePinShortcutBtnClick}>
                 {shortcut.rowStatus === "ARCHIVED" ? "Unpin" : "Pin"}
               </span>
-              <span className="btn" onClick={handleEditQueryBtnClick}>
+              <span className="btn" onClick={handleEditShortcutBtnClick}>
                 Edit
               </span>
               <span

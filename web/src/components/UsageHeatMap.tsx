@@ -125,7 +125,7 @@ const UsageHeatMap: React.FC<Props> = () => {
             ></span>
           );
         })}
-        {nullCell.map((v, i) => (
+        {nullCell.map((_, i) => (
           <span className="stat-container null" key={i}></span>
         ))}
       </div>

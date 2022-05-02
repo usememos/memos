@@ -42,7 +42,7 @@ class LocationService {
     state.query.tag = urlParams.get("tag") ?? "";
     state.query.type = (urlParams.get("type") ?? "") as MemoSpecType;
     state.query.text = urlParams.get("text") ?? "";
-    state.query.shortcutId = urlParams.get("filter") ?? "";
+    state.query.shortcutId = urlParams.get("shortcutId") ?? "";
     const from = parseInt(urlParams.get("from") ?? "0");
     const to = parseInt(urlParams.get("to") ?? "0");
     if (to > from && to !== 0) {

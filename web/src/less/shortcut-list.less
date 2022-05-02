@@ -6,28 +6,26 @@
   .hide-scroll-bar();
 
   > .title-text {
-    .flex(row, space-between, center);
+    .flex(row, flex-start, center);
     @apply w-full px-4;
 
     > .normal-text {
-      @apply text-xs leading-6 font-bold text-black opacity-50;
+      @apply text-xs leading-6 font-mono text-gray-400;
     }
 
     > .btn {
-      @apply hidden px-1 text-lg leading-6;
-    }
+      .flex(column, center, center);
+      @apply w-5 h-5 bg-gray-200 rounded ml-2 hover:opacity-80;
 
-    &:hover,
-    &:active {
-      > .btn {
-        @apply block;
+      > img {
+        @apply w-4 h-4 opacity-80;
       }
     }
   }
 
   > .create-shortcut-btn-container {
-    .flex(row, center, center);
-    @apply w-full mt-4 mb-2;
+    .flex(row, flex-start, center);
+    @apply w-full mt-4 mb-2 ml-4;
 
     > .btn {
       @apply flex p-2 px-4 rounded-lg text-sm border border-dashed border-blue-600;
