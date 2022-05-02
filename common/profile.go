@@ -9,7 +9,7 @@ import (
 )
 
 type Profile struct {
-	// Mode can be "release" or "dev"
+	// Mode can be "prod" or "dev"
 	Mode string `json:"mode"`
 	// Port is the binding port for server.
 	Port int `json:"port"`
@@ -41,7 +41,7 @@ func checkDSN(dataDir string) (string, error) {
 // GetDevProfile will return a profile for dev.
 func GetProfile() Profile {
 	mode := os.Getenv("mode")
-	if mode != "dev" && mode != "release" {
+	if mode != "dev" && mode != "prod" {
 		mode = "dev"
 	}
 
@@ -51,7 +51,7 @@ func GetProfile() Profile {
 	}
 
 	data := ""
-	if mode == "release" {
+	if mode == "prod" {
 		data = "/var/opt/memos"
 	}
 

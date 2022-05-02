@@ -23,7 +23,7 @@ type DB struct {
 	Db *sql.DB
 	// datasource name
 	DSN string
-	// mode should be release or dev
+	// mode should be prod or dev
 	mode string
 }
 
