@@ -102,7 +102,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`memo-wrapper ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
+    <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.rowStatus}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
         <span className="time-text" onClick={handleShowMemoStoryDialog}>
           {memo.createdAtStr}

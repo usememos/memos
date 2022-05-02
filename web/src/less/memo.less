@@ -3,10 +3,14 @@
 
 .memo-wrapper {
   .flex(column, flex-start, flex-start);
-  @apply w-full max-w-full p-4 pb-3 mt-2 bg-white rounded-lg border border-transparent hover:border-gray-200;
+  @apply w-full max-w-full p-3 px-4 mt-2 bg-white rounded-lg border border-transparent hover:border-gray-200;
 
   &.deleted-memo {
     @apply border-gray-200;
+  }
+
+  &.ARCHIVED {
+    @apply border-gray-200 border-2;
   }
 
   > .memo-top-wrapper {
