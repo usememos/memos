@@ -2,17 +2,16 @@
 
 .tags-wrapper {
   .flex(column, flex-start, flex-start);
-  @apply px-2 w-full h-auto flex-nowrap pb-4 grow;
+  @apply px-2 w-full h-auto flex-nowrap pb-4 mt-2 grow;
   .hide-scroll-bar();
 
   > .title-text {
-    @apply w-full py-1 px-4 text-xs opacity-50;
-    color: @text-black;
+    @apply w-full py-1 px-4 text-xs font-mono text-gray-400;
   }
 
   > .tags-container {
     .flex(column, flex-start, flex-start);
-    @apply relative w-full h-auto flex-nowrap mb-2;
+    @apply relative w-full h-auto flex-nowrap mb-2 mt-1;
 
     .subtags-container {
       .flex(column, flex-start, flex-start);
@@ -80,7 +79,7 @@
       @apply w-full mt-2 pl-4 text-xs text-gray-400;
 
       > .code-text {
-        @apply p-1 mx-1 text-blue-400 whitespace-pre-line bg-blue-100 rounded;
+        @apply p-1 mx-1 text-blue-400 font-mono whitespace-pre-line bg-blue-100 rounded;
       }
     }
   }

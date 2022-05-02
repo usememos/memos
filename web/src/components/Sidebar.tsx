@@ -5,8 +5,9 @@ import showDailyMemoDiaryDialog from "./DailyMemoDiaryDialog";
 import showSettingDialog from "./SettingDialog";
 import showMemoTrashDialog from "./MemoTrashDialog";
 import UserBanner from "./UserBanner";
-import ShortcutList from "./ShortcutList";
 import UsageHeatMap from "./UsageHeatMap";
+import ShortcutList from "./ShortcutList";
+import TagList from "./TagList";
 import "../less/siderbar.less";
 
 interface Props {}
@@ -53,6 +54,7 @@ const Sidebar: React.FC<Props> = () => {
         </button>
       </div>
       <ShortcutList />
+      <TagList />
     </aside>
   );
 };
