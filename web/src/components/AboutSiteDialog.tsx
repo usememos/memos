@@ -40,10 +40,9 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <p>Built with `Golang` and `React`.</p>
         <br />
         <p>
-          🏗 <a href="https://github.com/justmemos/memos">This project</a> is working in progress, <br /> and very pleasure to welcome your{" "}
+          🏗 <a href="https://github.com/justmemos/memos">This project</a> is working in progress, and very pleasure to your{" "}
           <a href="https://github.com/justmemos/memos/issues">issues</a>.
         </p>
-        <br />
         <p className="updated-time-text">
           Last updated on <span className="pre-text">{lastUpdatedAt}</span> 🎉
         </p>

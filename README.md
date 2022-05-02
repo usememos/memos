@@ -31,10 +31,10 @@ Making sure that you are in charge of your data and more customizations.
 ## ⚓️ Deploy with Docker
 
 ```docker
-docker run --name memos --publish 8080:8080 --volume ~/path/to/your/data/:/var/opt/memos -e mode=release neosmemo/memos:dev
+docker run --name memos --publish 8080:8080 --volume ~/path/to/your/data/:/var/opt/memos -e mode=prod neosmemo/memos:dev
 ```
 
-The default user account is `guest` with password `secret`.
+If the `/path/to/your/data` doesn't have a `.db` file, then memos will auto-generate it and the default username is `guest` with password `secret`.
 
 ## 🌟 Star history
 
