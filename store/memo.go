@@ -73,7 +73,7 @@ func createMemo(db *DB, create *api.MemoCreate) (*api.Memo, error) {
 		VALUES (?, ?)
 		RETURNING id, creator_id, created_ts, updated_ts, content, row_status
 	`,
-		create.CreatorId,
+		create.CreatorID,
 		create.Content,
 	)
 	if err != nil {
@@ -87,8 +87,8 @@ func createMemo(db *DB, create *api.MemoCreate) (*api.Memo, error) {
 
 	var memo api.Memo
 	if err := row.Scan(
-		&memo.Id,
-		&memo.CreatorId,
+		&memo.ID,
+		&memo.CreatorID,
 		&memo.CreatedTs,
 		&memo.UpdatedTs,
 		&memo.Content,
@@ -113,7 +113,7 @@ func patchMemo(db *DB, patch *api.MemoPatch) (*api.Memo, error) {
 		set, args = append(set, "created_ts = ?"), append(args, *v)
 	}
 
-	args = append(args, patch.Id)
+	args = append(args, patch.ID)
 
 	row, err := db.Db.Query(`
 		UPDATE memo
@@ -132,7 +132,7 @@ func patchMemo(db *DB, patch *api.MemoPatch) (*api.Memo, error) {
 
 	var memo api.Memo
 	if err := row.Scan(
-		&memo.Id,
+		&memo.ID,
 		&memo.CreatedTs,
 		&memo.UpdatedTs,
 		&memo.Content,
@@ -147,10 +147,10 @@ func patchMemo(db *DB, patch *api.MemoPatch) (*api.Memo, error) {
 func findMemoList(db *DB, find *api.MemoFind) ([]*api.Memo, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
-	if v := find.Id; v != nil {
+	if v := find.ID; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)
 	}
-	if v := find.CreatorId; v != nil {
+	if v := find.CreatorID; v != nil {
 		where, args = append(where, "creator_id = ?"), append(args, *v)
 	}
 	if v := find.RowStatus; v != nil {
@@ -178,8 +178,8 @@ func findMemoList(db *DB, find *api.MemoFind) ([]*api.Memo, error) {
 	for rows.Next() {
 		var memo api.Memo
 		if err := rows.Scan(
-			&memo.Id,
-			&memo.CreatorId,
+			&memo.ID,
+			&memo.CreatorID,
 			&memo.CreatedTs,
 			&memo.UpdatedTs,
 			&memo.Content,
@@ -199,14 +199,14 @@ func findMemoList(db *DB, find *api.MemoFind) ([]*api.Memo, error) {
 }
 
 func deleteMemo(db *DB, delete *api.MemoDelete) error {
-	result, err := db.Db.Exec(`DELETE FROM memo WHERE id = ?`, delete.Id)
+	result, err := db.Db.Exec(`DELETE FROM memo WHERE id = ?`, delete.ID)
 	if err != nil {
 		return FormatError(err)
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo ID not found: %d", delete.Id)}
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo ID not found: %d", delete.ID)}
 	}
 
 	return nil

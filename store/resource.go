@@ -71,7 +71,7 @@ func createResource(db *DB, create *api.ResourceCreate) (*api.Resource, error) {
 		create.Blob,
 		create.Type,
 		create.Size,
-		create.CreatorId,
+		create.CreatorID,
 	)
 	if err != nil {
 		return nil, FormatError(err)
@@ -84,7 +84,7 @@ func createResource(db *DB, create *api.ResourceCreate) (*api.Resource, error) {
 
 	var resource api.Resource
 	if err := row.Scan(
-		&resource.Id,
+		&resource.ID,
 		&resource.Filename,
 		&resource.Blob,
 		&resource.Type,
@@ -101,10 +101,10 @@ func createResource(db *DB, create *api.ResourceCreate) (*api.Resource, error) {
 func findResourceList(db *DB, find *api.ResourceFind) ([]*api.Resource, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
-	if v := find.Id; v != nil {
+	if v := find.ID; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)
 	}
-	if v := find.CreatorId; v != nil {
+	if v := find.CreatorID; v != nil {
 		where, args = append(where, "creator_id = ?"), append(args, *v)
 	}
 	if v := find.Filename; v != nil {
@@ -133,7 +133,7 @@ func findResourceList(db *DB, find *api.ResourceFind) ([]*api.Resource, error) {
 	for rows.Next() {
 		var resource api.Resource
 		if err := rows.Scan(
-			&resource.Id,
+			&resource.ID,
 			&resource.Filename,
 			&resource.Blob,
 			&resource.Type,
@@ -155,14 +155,14 @@ func findResourceList(db *DB, find *api.ResourceFind) ([]*api.Resource, error) {
 }
 
 func deleteResource(db *DB, delete *api.ResourceDelete) error {
-	result, err := db.Db.Exec(`DELETE FROM resource WHERE id = ?`, delete.Id)
+	result, err := db.Db.Exec(`DELETE FROM resource WHERE id = ?`, delete.ID)
 	if err != nil {
 		return FormatError(err)
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("resource ID not found: %d", delete.Id)}
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("resource ID not found: %d", delete.ID)}
 	}
 
 	return nil

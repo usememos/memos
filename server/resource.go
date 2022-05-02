@@ -13,7 +13,7 @@ import (
 
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
-		userId := c.Get(getUserIdContextKey()).(int)
+		userID := c.Get(getUserIDContextKey()).(int)
 
 		err := c.Request().ParseMultipartForm(5 << 20)
 		if err != nil {
@@ -44,7 +44,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			Type:      filetype,
 			Size:      size,
 			Blob:      fileBytes,
-			CreatorId: userId,
+			CreatorID: userID,
 		}
 
 		resource, err := s.ResourceService.CreateResource(resourceCreate)
@@ -54,16 +54,16 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
 		}
 
 		return nil
 	})
 
 	g.GET("/resource", func(c echo.Context) error {
-		userId := c.Get(getUserIdContextKey()).(int)
+		userID := c.Get(getUserIDContextKey()).(int)
 		resourceFind := &api.ResourceFind{
-			CreatorId: &userId,
+			CreatorID: &userID,
 		}
 		list, err := s.ResourceService.FindResourceList(resourceFind)
 		if err != nil {
@@ -79,13 +79,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 	})
 
 	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
-		resourceId, err := strconv.Atoi(c.Param("resourceId"))
+		resourceID, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
 		resourceDelete := &api.ResourceDelete{
-			Id: resourceId,
+			ID: resourceID,
 		}
 		if err := s.ResourceService.DeleteResource(resourceDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)

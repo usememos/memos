@@ -60,7 +60,7 @@ func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
 	`,
 		create.Name,
 		create.PasswordHash,
-		create.OpenId,
+		create.OpenID,
 	)
 	if err != nil {
 		return nil, FormatError(err)
@@ -70,10 +70,10 @@ func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
 	row.Next()
 	var user api.User
 	if err := row.Scan(
-		&user.Id,
+		&user.ID,
 		&user.Name,
 		&user.PasswordHash,
-		&user.OpenId,
+		&user.OpenID,
 		&user.CreatedTs,
 		&user.UpdatedTs,
 	); err != nil {
@@ -92,11 +92,11 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 	if v := patch.PasswordHash; v != nil {
 		set, args = append(set, "password_hash = ?"), append(args, v)
 	}
-	if v := patch.OpenId; v != nil {
+	if v := patch.OpenID; v != nil {
 		set, args = append(set, "open_id = ?"), append(args, v)
 	}
 
-	args = append(args, patch.Id)
+	args = append(args, patch.ID)
 
 	row, err := db.Db.Query(`
 		UPDATE user
@@ -112,10 +112,10 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 	if row.Next() {
 		var user api.User
 		if err := row.Scan(
-			&user.Id,
+			&user.ID,
 			&user.Name,
 			&user.PasswordHash,
-			&user.OpenId,
+			&user.OpenID,
 			&user.CreatedTs,
 			&user.UpdatedTs,
 		); err != nil {
@@ -125,19 +125,19 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 		return &user, nil
 	}
 
-	return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("user ID not found: %d", patch.Id)}
+	return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("user ID not found: %d", patch.ID)}
 }
 
 func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
-	if v := find.Id; v != nil {
+	if v := find.ID; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)
 	}
 	if v := find.Name; v != nil {
 		where, args = append(where, "name = ?"), append(args, *v)
 	}
-	if v := find.OpenId; v != nil {
+	if v := find.OpenID; v != nil {
 		where, args = append(where, "open_id = ?"), append(args, *v)
 	}
 
@@ -162,10 +162,10 @@ func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 	for rows.Next() {
 		var user api.User
 		if err := rows.Scan(
-			&user.Id,
+			&user.ID,
 			&user.Name,
 			&user.PasswordHash,
-			&user.OpenId,
+			&user.OpenID,
 			&user.CreatedTs,
 			&user.UpdatedTs,
 		); err != nil {

@@ -1,19 +1,19 @@
 package api
 
 type Shortcut struct {
-	Id        int   `json:"id"`
+	ID        int   `json:"id"`
 	CreatedTs int64 `json:"createdTs"`
 	UpdatedTs int64 `json:"updatedTs"`
 
 	Title     string `json:"title"`
 	Payload   string `json:"payload"`
 	RowStatus string `json:"rowStatus"`
-	CreatorId int
+	CreatorID int
 }
 
 type ShortcutCreate struct {
 	// Standard fields
-	CreatorId int
+	CreatorID int
 
 	// Domain specific fields
 	Title   string `json:"title"`
@@ -21,7 +21,7 @@ type ShortcutCreate struct {
 }
 
 type ShortcutPatch struct {
-	Id int
+	ID int
 
 	Title     *string `json:"title"`
 	Payload   *string `json:"payload"`
@@ -29,17 +29,17 @@ type ShortcutPatch struct {
 }
 
 type ShortcutFind struct {
-	Id *int
+	ID *int
 
 	// Standard fields
-	CreatorId *int
+	CreatorID *int
 
 	// Domain specific fields
 	Title *string `json:"title"`
 }
 
 type ShortcutDelete struct {
-	Id int
+	ID int
 }
 
 type ShortcutService interface {

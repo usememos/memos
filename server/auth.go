@@ -91,7 +91,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		userCreate := &api.UserCreate{
 			Name:         signup.Name,
 			PasswordHash: string(passwordHash),
-			OpenId:       common.GenUUID(),
+			OpenID:       common.GenUUID(),
 		}
 		user, err = s.UserService.CreateUser(userCreate)
 		if err != nil {

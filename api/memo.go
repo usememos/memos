@@ -1,23 +1,23 @@
 package api
 
 type Memo struct {
-	Id        int    `json:"id"`
+	ID        int    `json:"id"`
 	CreatedTs int64  `json:"createdTs"`
 	UpdatedTs int64  `json:"updatedTs"`
 	RowStatus string `json:"rowStatus"`
 
 	Content   string `json:"content"`
-	CreatorId int    `json:"creatorId"`
+	CreatorID int    `json:"creatorId"`
 }
 
 type MemoCreate struct {
-	CreatorId int
+	CreatorID int
 
 	Content string `json:"content"`
 }
 
 type MemoPatch struct {
-	Id int
+	ID int
 
 	Content   *string `json:"content"`
 	RowStatus *string `json:"rowStatus"`
@@ -25,13 +25,13 @@ type MemoPatch struct {
 }
 
 type MemoFind struct {
-	Id        *int    `json:"id"`
-	CreatorId *int    `json:"creatorId"`
+	ID        *int    `json:"id"`
+	CreatorID *int    `json:"creatorId"`
 	RowStatus *string `json:"rowStatus"`
 }
 
 type MemoDelete struct {
-	Id *int `json:"id"`
+	ID *int `json:"id"`
 }
 
 type MemoService interface {

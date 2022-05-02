@@ -13,11 +13,11 @@ import (
 )
 
 var (
-	userIdContextKey = "user-id"
+	userIDContextKey = "user-id"
 )
 
-func getUserIdContextKey() string {
-	return userIdContextKey
+func getUserIDContextKey() string {
+	return userIDContextKey
 }
 
 func setUserSession(c echo.Context, user *api.User) error {
@@ -27,7 +27,7 @@ func setUserSession(c echo.Context, user *api.User) error {
 		MaxAge:   1000 * 3600 * 24 * 30,
 		HttpOnly: true,
 	}
-	sess.Values[userIdContextKey] = user.Id
+	sess.Values[userIDContextKey] = user.ID
 	err := sess.Save(c.Request(), c.Response())
 	if err != nil {
 		return fmt.Errorf("failed to set session, err: %w", err)
@@ -43,7 +43,7 @@ func removeUserSession(c echo.Context) error {
 		MaxAge:   0,
 		HttpOnly: true,
 	}
-	sess.Values[userIdContextKey] = nil
+	sess.Values[userIDContextKey] = nil
 	err := sess.Save(c.Request(), c.Response())
 	if err != nil {
 		return fmt.Errorf("failed to set session, err: %w", err)
@@ -65,30 +65,30 @@ func BasicAuthMiddleware(us api.UserService, next echo.HandlerFunc) echo.Handler
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing session").SetInternal(err)
 		}
 
-		userIdValue := sess.Values[userIdContextKey]
-		if userIdValue == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing userId in session")
+		userIDValue := sess.Values[userIDContextKey]
+		if userIDValue == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing userID in session")
 		}
 
-		userId, err := strconv.Atoi(fmt.Sprintf("%v", userIdValue))
+		userID, err := strconv.Atoi(fmt.Sprintf("%v", userIDValue))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to malformatted user id in the session.").SetInternal(err)
 		}
 
 		// Even if there is no error, we still need to make sure the user still exists.
 		userFind := &api.UserFind{
-			Id: &userId,
+			ID: &userID,
 		}
 		user, err := us.FindUser(userFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userId)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userID)).SetInternal(err)
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Not found user ID: %d", userId))
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Not found user ID: %d", userID))
 		}
 
-		// Stores userId into context.
-		c.Set(getUserIdContextKey(), userId)
+		// Stores userID into context.
+		c.Set(getUserIDContextKey(), userID)
 
 		return next(c)
 	}

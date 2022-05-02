@@ -12,9 +12,9 @@ import (
 
 func (s *Server) registerShortcutRoutes(g *echo.Group) {
 	g.POST("/shortcut", func(c echo.Context) error {
-		userId := c.Get(getUserIdContextKey()).(int)
+		userID := c.Get(getUserIDContextKey()).(int)
 		shortcutCreate := &api.ShortcutCreate{
-			CreatorId: userId,
+			CreatorID: userID,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(shortcutCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post shortcut request").SetInternal(err)
@@ -34,13 +34,13 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 	})
 
 	g.PATCH("/shortcut/:shortcutId", func(c echo.Context) error {
-		shortcutId, err := strconv.Atoi(c.Param("shortcutId"))
+		shortcutID, err := strconv.Atoi(c.Param("shortcutId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("shortcutId"))).SetInternal(err)
 		}
 
 		shortcutPatch := &api.ShortcutPatch{
-			Id: shortcutId,
+			ID: shortcutID,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(shortcutPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch shortcut request").SetInternal(err)
@@ -60,9 +60,9 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 	})
 
 	g.GET("/shortcut", func(c echo.Context) error {
-		userId := c.Get(getUserIdContextKey()).(int)
+		userID := c.Get(getUserIDContextKey()).(int)
 		shortcutFind := &api.ShortcutFind{
-			CreatorId: &userId,
+			CreatorID: &userID,
 		}
 		list, err := s.ShortcutService.FindShortcutList(shortcutFind)
 		if err != nil {
@@ -78,17 +78,17 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 	})
 
 	g.GET("/shortcut/:shortcutId", func(c echo.Context) error {
-		shortcutId, err := strconv.Atoi(c.Param("shortcutId"))
+		shortcutID, err := strconv.Atoi(c.Param("shortcutId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("shortcutId"))).SetInternal(err)
 		}
 
 		shortcutFind := &api.ShortcutFind{
-			Id: &shortcutId,
+			ID: &shortcutID,
 		}
 		shortcut, err := s.ShortcutService.FindShortcut(shortcutFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch shortcut").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch shortcut by ID %d", *shortcutFind.ID)).SetInternal(err)
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
@@ -100,13 +100,13 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 	})
 
 	g.DELETE("/shortcut/:shortcutId", func(c echo.Context) error {
-		shortcutId, err := strconv.Atoi(c.Param("shortcutId"))
+		shortcutID, err := strconv.Atoi(c.Param("shortcutId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("shortcutId"))).SetInternal(err)
 		}
 
 		shortcutDelete := &api.ShortcutDelete{
-			Id: shortcutId,
+			ID: shortcutID,
 		}
 		if err := s.ShortcutService.DeleteShortcut(shortcutDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete shortcut").SetInternal(err)

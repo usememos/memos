@@ -1,37 +1,37 @@
 package api
 
 type User struct {
-	Id        int   `json:"id"`
+	ID        int   `json:"id"`
 	CreatedTs int64 `json:"createdTs"`
 	UpdatedTs int64 `json:"updatedTs"`
 
-	OpenId       string `json:"openId"`
+	OpenID       string `json:"openId"`
 	Name         string `json:"name"`
 	PasswordHash string `json:"-"`
 }
 
 type UserCreate struct {
-	OpenId       string
+	OpenID       string
 	Name         string
 	PasswordHash string
 }
 
 type UserPatch struct {
-	Id int
+	ID int
 
-	OpenId       *string
+	OpenID       *string
 	PasswordHash *string
 
 	Name        *string `json:"name"`
 	Password    *string `json:"password"`
-	ResetOpenId *bool   `json:"resetOpenId"`
+	ResetOpenID *bool   `json:"resetOpenId"`
 }
 
 type UserFind struct {
-	Id *int `json:"id"`
+	ID *int `json:"id"`
 
 	Name   *string `json:"name"`
-	OpenId *string
+	OpenID *string
 }
 
 type UserRenameCheck struct {

@@ -1,7 +1,7 @@
 package api
 
 type Resource struct {
-	Id        int   `json:"id"`
+	ID        int   `json:"id"`
 	CreatedTs int64 `json:"createdTs"`
 	UpdatedTs int64 `json:"updatedTs"`
 
@@ -10,7 +10,7 @@ type Resource struct {
 	Type     string `json:"type"`
 	Size     int64  `json:"size"`
 
-	CreatorId int `json:"creatorId"`
+	CreatorID int `json:"creatorId"`
 }
 
 type ResourceCreate struct {
@@ -19,17 +19,17 @@ type ResourceCreate struct {
 	Type     string `json:"type"`
 	Size     int64  `json:"size"`
 
-	CreatorId int
+	CreatorID int
 }
 
 type ResourceFind struct {
-	Id        *int    `json:"id"`
-	CreatorId *int    `json:"creatorId"`
+	ID        *int    `json:"id"`
+	CreatorID *int    `json:"creatorId"`
 	Filename  *string `json:"filename"`
 }
 
 type ResourceDelete struct {
-	Id int
+	ID int
 }
 
 type ResourceService interface {

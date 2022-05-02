@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"memos/api"
 	"memos/common"
 	"net/http"
@@ -13,14 +14,14 @@ import (
 func (s *Server) registerUserRoutes(g *echo.Group) {
 	// GET /api/user/me is used to check if the user is logged in.
 	g.GET("/user/me", func(c echo.Context) error {
-		userSessionId := c.Get(getUserIdContextKey())
-		if userSessionId == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing session")
+		userSessionID := c.Get(getUserIDContextKey())
+		if userSessionID == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 		}
 
-		userId := userSessionId.(int)
+		userID := userSessionID.(int)
 		userFind := &api.UserFind{
-			Id: &userId,
+			ID: &userID,
 		}
 		user, err := s.UserService.FindUser(userFind)
 		if err != nil {
@@ -42,7 +43,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 
 		if userRenameCheck.Name == "" {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user rename check request")
+			return echo.NewHTTPError(http.StatusBadRequest, "New name needed")
 		}
 
 		userFind := &api.UserFind{
@@ -50,7 +51,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 		user, err := s.UserService.FindUser(userFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by name %s", *userFind.Name)).SetInternal(err)
 		}
 
 		isUsable := true
@@ -67,22 +68,22 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 	})
 
 	g.POST("/user/password_check", func(c echo.Context) error {
-		userId := c.Get(getUserIdContextKey()).(int)
+		userID := c.Get(getUserIDContextKey()).(int)
 		userPasswordCheck := &api.UserPasswordCheck{}
 		if err := json.NewDecoder(c.Request().Body).Decode(userPasswordCheck); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user password check request").SetInternal(err)
 		}
 
 		if userPasswordCheck.Password == "" {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user password check request")
+			return echo.NewHTTPError(http.StatusBadRequest, "Password needed")
 		}
 
 		userFind := &api.UserFind{
-			Id: &userId,
+			ID: &userID,
 		}
 		user, err := s.UserService.FindUser(userFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by password").SetInternal(err)
 		}
 
 		isValid := false
@@ -100,17 +101,17 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 	})
 
 	g.PATCH("/user/me", func(c echo.Context) error {
-		userId := c.Get(getUserIdContextKey()).(int)
+		userID := c.Get(getUserIDContextKey()).(int)
 		userPatch := &api.UserPatch{
-			Id: userId,
+			ID: userID,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(userPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
 		}
 
-		if userPatch.ResetOpenId != nil && *userPatch.ResetOpenId {
-			openId := common.GenUUID()
-			userPatch.OpenId = &openId
+		if userPatch.ResetOpenID != nil && *userPatch.ResetOpenID {
+			openID := common.GenUUID()
+			userPatch.OpenID = &openID
 		}
 
 		if userPatch.Password != nil && *userPatch.Password != "" {
