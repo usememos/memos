@@ -9,32 +9,25 @@
   .flex(row, flex-start, center);
   @apply w-full h-32 flex-wrap pr-6 pb-3;
 
-  &:hover {
-    > .day-tip-text-container {
-      @apply visible;
-    }
-  }
-
   > .day-tip-text-container {
-    .flex(column, space-between, center);
-    @apply w-6 h-full flex-wrap invisible;
+    @apply w-6 h-full grid grid-rows-7;
 
     > .tip-text {
-      @apply pr-1 w-full text-right font-mono text-gray-400;
+      @apply pr-1 w-full h-full text-right font-mono text-gray-400;
       font-size: 10px;
     }
   }
 
   > .usage-heat-map {
-    @apply w-48 h-full grid;
-    grid-template-rows: repeat(7, 1fr);
+    @apply h-full grid grid-rows-7;
+    width: 200px;
     grid-template-columns: repeat(12, 1fr);
     grid-auto-flow: column;
 
     > .stat-container {
       @apply block rounded-sm;
-      width: 13px;
-      height: 13px;
+      width: 14px;
+      height: 14px;
       background-color: @bg-lightgray;
       margin-bottom: 2px;
 
@@ -77,7 +70,7 @@
       content: "";
       position: absolute;
       bottom: -4px;
-      left: calc(50% - 6px);
+      left: calc(50% - 5px);
       border-left: 4px solid transparent;
       border-right: 4px solid transparent;
       border-top: 4px solid rgba(0, 0, 0, 0.8);

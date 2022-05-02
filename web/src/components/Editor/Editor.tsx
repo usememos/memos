@@ -44,6 +44,13 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
     }
   }, []);
 
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.style.height = "auto";
+      editorRef.current.style.height = (editorRef.current.scrollHeight ?? 0) + "px";
+    }
+  }, [editorRef.current?.value]);
+
   useImperativeHandle(
     ref,
     () => ({
@@ -60,11 +67,13 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
         editorRef.current.value =
           prevValue.slice(0, editorRef.current.selectionStart) + rawText + prevValue.slice(editorRef.current.selectionStart);
         handleContentChangeCallback(editorRef.current.value);
+        refresh();
       },
       setContent: (text: string) => {
         if (editorRef.current) {
           editorRef.current.value = text;
           handleContentChangeCallback(editorRef.current.value);
+          refresh();
         }
       },
       getContent: (): string => {

@@ -2,10 +2,12 @@
 
 .common-editor-wrapper {
   .flex(column, flex-start, flex-start);
-  @apply relative w-full h-full bg-white grow;
+  @apply relative w-full h-auto bg-white;
 
   > .common-editor-inputer {
-    @apply w-full h-full mt-1 mb-4 grow;
+    @apply w-full h-full mt-1 mb-1;
+    min-height: 40px;
+    max-height: 300px;
     .pretty-scroll-bar(2px, 0);
     font-size: 15px;
     line-height: 24px;

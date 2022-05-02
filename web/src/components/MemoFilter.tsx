@@ -25,7 +25,7 @@ const MemoFilter: React.FC<FilterProps> = () => {
           locationService.setMemoShortcut("");
         }}
       >
-        <span className="icon-text">🔖</span> {queryFilter?.title}
+        <span className="icon-text">🎯</span> {queryFilter?.title}
       </div>
       <div
         className={"filter-item-container " + (tagQuery ? "" : "hidden")}

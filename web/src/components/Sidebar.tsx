@@ -6,6 +6,7 @@ import showSettingDialog from "./SettingDialog";
 import showMemoTrashDialog from "./MemoTrashDialog";
 import UserBanner from "./UserBanner";
 import ShortcutList from "./ShortcutList";
+import UsageHeatMap from "./UsageHeatMap";
 import "../less/siderbar.less";
 
 interface Props {}
@@ -28,15 +29,6 @@ const Sidebar: React.FC<Props> = () => {
   return (
     <aside className="sidebar-wrapper">
       <UserBanner />
-      <div className="action-btns-container">
-        <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
-          <span className="icon">👤</span> Setting
-        </button>
-        <button className="btn action-btn" onClick={handleMemosTrashBtnClick}>
-          <span className="icon">🗑️</span> Recycle Bin
-        </button>
-      </div>
-      <ShortcutList />
       <div className="status-text-container">
         <div className="status-text memos-text">
           <span className="amount-text">{memos.length}</span>
@@ -51,6 +43,16 @@ const Sidebar: React.FC<Props> = () => {
           <span className="type-text">DAY</span>
         </div>
       </div>
+      <UsageHeatMap />
+      <div className="action-btns-container">
+        <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
+          <span className="icon">👤</span> Setting
+        </button>
+        <button className="btn action-btn" onClick={handleMemosTrashBtnClick}>
+          <span className="icon">🗑️</span> Recycle Bin
+        </button>
+      </div>
+      <ShortcutList />
     </aside>
   );
 };

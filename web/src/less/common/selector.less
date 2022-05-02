@@ -7,15 +7,7 @@
 
   > .current-value-container {
     .flex(row, space-between, center);
-    width: 100%;
-    height: 100%;
-    border: 1px solid @bg-gray;
-    border-radius: 4px;
-    padding: 0 8px;
-    padding-right: 4px;
-    background-color: white;
-    cursor: pointer;
-    user-select: none;
+    @apply w-full h-full rounded px-2 pr-1 bg-white border cursor-pointer select-none;
 
     &:hover,
     &.active {
@@ -55,7 +47,7 @@
     min-width: calc(100% + 16px);
     max-height: 256px;
     padding: 4px;
-    overflow: auto;
+    overflow-y: auto;
     margin-top: 2px;
     margin-left: -8px;
     z-index: 1;
@@ -66,18 +58,7 @@
 
     > .item-container {
       .flex(column, flex-start, flex-start);
-      width: 100%;
-      padding-left: 12px;
-      line-height: 30px;
-      white-space: nowrap;
-      font-size: 13px;
-      cursor: pointer;
-      border-radius: 4px;
-      user-select: none;
-
-      &:hover {
-        background-color: @bg-whitegray;
-      }
+      @apply w-full px-3 text-sm select-none leading-8 cursor-pointer rounded whitespace-nowrap hover:bg-gray-100;
 
       &.selected {
         color: @text-green;

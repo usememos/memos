@@ -111,7 +111,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
         await shortcutService.pinShortcut(shortcut.id);
         shortcutService.editShortcut({
           ...shortcut,
-          rowStatus: "NORMAL",
+          rowStatus: "ARCHIVED",
         });
       }
     } catch (error) {
@@ -127,7 +127,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
     <>
       <div className={`shortcut-container ${isActive ? "active" : ""}`} onClick={handleShortcutClick}>
         <div className="shortcut-text-container">
-          <span className="icon-text">#</span>
+          {/* <span className="icon-text">#</span> */}
           <span className="shortcut-text">{shortcut.title}</span>
         </div>
         <div className="btns-container">

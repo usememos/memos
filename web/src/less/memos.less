@@ -2,16 +2,5 @@
 @import "./memos-header.less";
 
 .memos-wrapper {
-  @apply w-full h-full overflow-x-hidden grid;
-  grid-template-columns: 384px 1fr;
-
-  > .memo-editor-wrapper {
-    @apply w-full h-full py-16 px-8 bg-white;
-  }
-
-  > .memo-list-wrapper {
-    @apply w-full h-full overflow-y-auto px-16 grid;
-    grid-auto-rows: min-content;
-    grid-auto-flow: dense;
-  }
+  @apply w-full h-full overflow-x-hidden flex flex-col justify-start items-start px-4 pr-10;
 }

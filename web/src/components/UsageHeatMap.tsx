@@ -30,7 +30,7 @@ interface Props {}
 
 const UsageHeatMap: React.FC<Props> = () => {
   const todayTimeStamp = utils.getDateStampByDate(Date.now());
-  const todayDay = new Date(todayTimeStamp).getDay() || 7;
+  const todayDay = new Date(todayTimeStamp).getDay() + 1;
   const nullCell = new Array(7 - todayDay).fill(0);
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
   const beginDayTimestemp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
@@ -62,9 +62,8 @@ const UsageHeatMap: React.FC<Props> = () => {
     }
 
     const targetEl = event.target as HTMLElement;
-    popupRef.current.style.left = targetEl.offsetLeft - (containerElRef.current?.offsetLeft ?? 0) + "px";
-    const topValue = targetEl.offsetTop;
-    popupRef.current.style.top = topValue + "px";
+    popupRef.current.style.left = targetEl.offsetLeft + "px";
+    popupRef.current.style.top = targetEl.offsetTop - 4 + "px";
   }, []);
 
   const handleUsageStatItemMouseLeave = useCallback(() => {
@@ -87,16 +86,15 @@ const UsageHeatMap: React.FC<Props> = () => {
   return (
     <div className="usage-heat-map-wrapper" ref={containerElRef}>
       <div className="day-tip-text-container">
-        <span className="tip-text">Mon</span>
-        <span className="tip-text"></span>
-        <span className="tip-text">Wed</span>
-        <span className="tip-text"></span>
-        <span className="tip-text">Fri</span>
-        <span className="tip-text"></span>
         <span className="tip-text">Sun</span>
+        <span className="tip-text"></span>
+        <span className="tip-text">Tue</span>
+        <span className="tip-text"></span>
+        <span className="tip-text">Thu</span>
+        <span className="tip-text"></span>
+        <span className="tip-text">Sat</span>
       </div>
 
-      {/* popup */}
       <div ref={popupRef} className={"usage-detail-container pop-up " + (popupStat ? "" : "hidden")}>
         {popupStat?.count} memos on <span className="date-text">{new Date(popupStat?.timestamp as number).toDateString()}</span>
       </div>

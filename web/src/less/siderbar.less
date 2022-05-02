@@ -2,7 +2,7 @@
 
 .sidebar-wrapper {
   .flex(column, flex-start, flex-start);
-  @apply w-64 h-full py-4 px-2 overflow-x-hidden overflow-y-auto shrink-0;
+  @apply w-64 h-full py-4 pl-2 overflow-x-hidden overflow-y-auto;
   .hide-scroll-bar();
 
   > .action-btns-container {
@@ -19,7 +19,7 @@
 
   > .status-text-container {
     .flex(row, space-between, flex-start);
-    @apply w-full px-10 select-none shrink-0;
+    @apply w-full px-6 select-none shrink-0 pb-4;
 
     > .status-text {
       .flex(column, flex-start, flex-start);
