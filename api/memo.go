@@ -1,31 +1,41 @@
 package api
 
 type Memo struct {
-	ID        int    `json:"id"`
+	ID int `json:"id"`
+
+	// Standard fields
 	CreatedTs int64  `json:"createdTs"`
 	UpdatedTs int64  `json:"updatedTs"`
 	RowStatus string `json:"rowStatus"`
 
+	// Domain specific fields
 	Content   string `json:"content"`
 	CreatorID int    `json:"creatorId"`
 }
 
 type MemoCreate struct {
+	// Standard fields
 	CreatorID int
 
+	// Domain specific fields
 	Content string `json:"content"`
 }
 
 type MemoPatch struct {
 	ID int
 
-	Content   *string `json:"content"`
-	RowStatus *string `json:"rowStatus"`
+	// Standard fields
 	CreatedTs *int64  `json:"createdTs"`
+	RowStatus *string `json:"rowStatus"`
+
+	// Domain specific fields
+	Content *string `json:"content"`
 }
 
 type MemoFind struct {
-	ID        *int    `json:"id"`
+	ID *int `json:"id"`
+
+	// Standard fields
 	CreatorID *int    `json:"creatorId"`
 	RowStatus *string `json:"rowStatus"`
 }

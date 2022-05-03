@@ -1,31 +1,39 @@
 package api
 
 type Resource struct {
-	ID        int   `json:"id"`
+	ID int `json:"id"`
+
+	// Standard fields
+	CreatorID int   `json:"creatorId"`
 	CreatedTs int64 `json:"createdTs"`
 	UpdatedTs int64 `json:"updatedTs"`
 
+	// Domain specific fields
 	Filename string `json:"filename"`
 	Blob     []byte `json:"blob"`
 	Type     string `json:"type"`
 	Size     int64  `json:"size"`
-
-	CreatorID int `json:"creatorId"`
 }
 
 type ResourceCreate struct {
+	// Standard fields
+	CreatorID int
+
+	// Domain specific fields
 	Filename string `json:"filename"`
 	Blob     []byte `json:"blob"`
 	Type     string `json:"type"`
 	Size     int64  `json:"size"`
-
-	CreatorID int
 }
 
 type ResourceFind struct {
-	ID        *int    `json:"id"`
-	CreatorID *int    `json:"creatorId"`
-	Filename  *string `json:"filename"`
+	ID *int `json:"id"`
+
+	// Standard fields
+	CreatorID *int `json:"creatorId"`
+
+	// Domain specific fields
+	Filename *string `json:"filename"`
 }
 
 type ResourceDelete struct {

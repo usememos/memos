@@ -62,7 +62,7 @@ CREATE TABLE shortcut (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
 
   title TEXT NOT NULL DEFAULT '',
-  payload TEXT NOT NULL DEFAULT '',
+  payload TEXT NOT NULL DEFAULT '{}',
   creator_id INTEGER NOT NULL,
   -- allowed row status are 'NORMAL', 'ARCHIVED'.
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
