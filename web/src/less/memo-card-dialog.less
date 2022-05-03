@@ -2,23 +2,15 @@
 
 .dialog-wrapper.memo-card-dialog {
   > .dialog-container {
-    padding: 0;
-    background-color: transparent;
+    @apply p-0 bg-transparent;
 
     > * {
-      flex-shrink: 0;
+      @apply shrink-0;
     }
 
     > .memo-card-container {
-      position: relative;
       .flex(column, flex-start, flex-start);
-      width: 512px;
-      min-height: 64px;
-      max-width: 100%;
-      padding: 12px 24px;
-      margin-bottom: 12px;
-      border-radius: 8px;
-      background-color: @bg-paper-yellow;
+      @apply relative w-128 max-w-full py-3 px-6 mb-3 rounded-lg bg-yellow-200;
 
       > * {
         z-index: 1;
@@ -26,16 +18,10 @@
 
       > .header-container {
         .flex(row, space-between, center);
-        width: 100%;
-        height: auto;
-        padding-bottom: 0;
-        margin-bottom: 0;
-        margin-top: 0;
+        @apply w-full h-auto pb-0 my-0;
 
         > .time-text {
-          font-size: 14px;
-          color: gray;
-          @apply font-mono;
+          @apply text-sm text-gray-500 font-mono;
         }
 
         > .btns-container {
@@ -43,18 +29,10 @@
 
           > .btn {
             .flex(row, center, center);
-            width: 24px;
-            height: 24px;
-            margin-left: 4px;
-            border-radius: 4px;
-
-            &:hover {
-              background-color: white;
-            }
+            @apply w-6 h-6 ml-1 rounded hover:bg-white;
 
             > .icon-img {
-              width: 20px;
-              height: 20px;
+              @apply w-5 h-5;
             }
           }
         }
@@ -62,65 +40,36 @@
 
       > .memo-container {
         .flex(column, flex-start, flex-start);
-        width: 100%;
-        padding-top: 8px;
+        @apply w-full pt-2;
 
         > .memo-content-text {
-          width: 100%;
-          font-size: 16px;
-          line-height: 1.6;
-          word-wrap: break-word;
-          word-break: break-all;
+          @apply w-full text-base leading-6;
 
           .tag-span {
-            margin: 0;
-            padding: 0;
-            font-size: 14px;
-            color: @text-blue;
-            background-color: unset;
-            cursor: unset;
+            @apply p-0 text-blue-600 text-base bg-transparent cursor-auto;
           }
         }
 
         > .images-wrapper {
           .flex(row, flex-start, flex-start);
-          margin-top: 8px;
-          width: 100%;
-          overflow-x: auto;
-          overflow-y: hidden;
+          @apply w-full mt-2 overflow-x-auto overflow-y-hidden;
           padding-bottom: 2px;
           .pretty-scroll-bar(0, 2px);
 
           > .memo-img {
-            margin-right: 8px;
-            width: auto;
-            height: 128px;
-            flex-shrink: 0;
-            flex-grow: 0;
-            overflow-y: hidden;
+            @apply mr-2 w-auto h-32 shrink-0 grow-0 overflow-y-hidden hover:border-gray-400 last:mr-0;
             .hide-scroll-bar();
 
-            &:hover {
-              border-color: lightgray;
-            }
-
-            &:last-child {
-              margin-right: 0;
-            }
-
             > img {
-              width: auto;
+              @apply w-auto rounded-lg;
               max-height: 128px;
-              border-radius: 8px;
             }
           }
         }
       }
 
       > .normal-text {
-        margin-top: 8px;
-        font-size: 13px;
-        color: gray;
+        @apply mt-2 text-sm text-gray-500;
       }
 
       > .layer-container,
@@ -150,38 +99,17 @@
 
     > .linked-memos-wrapper {
       .flex(column, flex-start, flex-start);
-      width: 512px;
-      max-width: 100%;
-      margin-top: 8px;
-      padding: 12px 24px;
-      border-radius: 8px;
-      background-color: white;
-
-      &:last-child {
-        margin-bottom: 36px;
-      }
+      @apply w-128 max-w-full mt-2 py-3 px-6 rounded-lg bg-white last:mb-8;
 
       > .normal-text {
-        font-size: 13px;
+        @apply text-sm;
       }
 
       > .linked-memo-container {
-        font-size: 13px;
-        line-height: 24px;
-        margin-top: 8px;
-        cursor: pointer;
-        max-width: 100%;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-
-        &:hover {
-          opacity: 0.8;
-        }
+        @apply text-sm leading-6 mt-2 cursor-pointer max-w-full truncate hover:opacity-80;
 
         > .time-text {
-          color: gray;
-          @apply font-mono;
+          @apply font-mono text-gray-500;
         }
       }
     }

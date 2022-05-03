@@ -4,7 +4,6 @@ import appContext from "../stores/appContext";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
 import utils from "../helpers/utils";
-import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
 import "../less/shortcut-list.less";
@@ -46,13 +45,6 @@ const ShortcutList: React.FC<Props> = () => {
           <img src="/icons/add.svg" alt="add shortcut" />
         </span>
       </p>
-      <Only when={loadingState.isSucceed && sortedShortcuts.length === 0}>
-        <div className="create-shortcut-btn-container">
-          <span className="btn" onClick={() => showCreateShortcutDialog()}>
-            New shortcut
-          </span>
-        </div>
-      </Only>
       <div className="shortcuts-container">
         {sortedShortcuts.map((s) => {
           return <ShortcutContainer key={s.id} shortcut={s} isActive={s.id === shortcutId} />;

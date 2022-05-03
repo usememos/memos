@@ -9,6 +9,7 @@ import { showDialog } from "./Dialog";
 import Only from "./common/OnlyWhen";
 import Image from "./Image";
 import "../less/memo-card-dialog.less";
+import "../less/memo-content.less";
 
 interface LinkedMemo extends FormattedMemo {
   dateStr: string;

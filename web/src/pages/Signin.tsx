@@ -132,13 +132,13 @@ const Signin: React.FC<Props> = () => {
                 className={`btn guest-signin ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                 onClick={handleAutoSigninAsGuestBtnClick}
               >
-                👉 Login as Guest quickly
+                👉 Quick login as a guest
               </div>
               <div
                 className={`btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                 onClick={handleSwitchAccountSigninBtnClick}
               >
-                I have an account
+                Sign in/up with account
               </div>
             </div>
           </>
@@ -165,7 +165,7 @@ const Signin: React.FC<Props> = () => {
                 </button>
                 <span className="split-text">/</span>
                 <button
-                  className={`btn signin-btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
+                  className={`btn signup-btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                   onClick={() => handleSigninBtnsClick("signup")}
                 >
                   Sign up
@@ -176,7 +176,7 @@ const Signin: React.FC<Props> = () => {
                   className={`btn signin-btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
                   onClick={() => handleSigninBtnsClick("signin")}
                 >
-                  Login
+                  Sign in
                 </button>
               </div>
             </div>

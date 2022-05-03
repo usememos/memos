@@ -29,11 +29,6 @@ const MyAccountSection: React.FC<Props> = () => {
   };
 
   const handleConfirmEditUsernameBtnClick = async () => {
-    if (user.name === "guest") {
-      toastHelper.info("Do not change my username");
-      return;
-    }
-
     if (username === user.name) {
       return;
     }
@@ -61,11 +56,6 @@ const MyAccountSection: React.FC<Props> = () => {
   };
 
   const handleChangePasswordBtnClick = () => {
-    if (user.name === "guest") {
-      toastHelper.info("Do not change my password");
-      return;
-    }
-
     showChangePasswordDialog();
   };
 
