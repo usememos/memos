@@ -11,7 +11,7 @@
   <img alt="GitHub Watchers" src="https://img.shields.io/github/watchers/justmemos/memos" />
 </p>
 
-![demo](https://raw.githubusercontent.com/justmemos/memos/main/resources/demo.webp)
+![demo](https://raw.githubusercontent.com/justmemos/memos/main/resources/demo.png)
 
 Memos is an open source, self-hosted alternative to [flomo](https://flomoapp.com/). Built with `Go` and `React`.
 
@@ -36,7 +36,7 @@ Making sure that you are in charge of your data and more customizations.
 docker run --name memos --publish 8080:8080 --volume ~/path/to/your/data/:/var/opt/memos -e mode=prod neosmemo/memos:dev
 ```
 
-If the `/path/to/your/data` doesn't have a `.db` file, then memos will auto-generate it and the default username is `guest` with password `secret`.
+If the `/path/to/your/data` doesn't have a `memos_prod.db` file, then `memos` will auto-generate it and the default username is `dear_musk` with password `secret`.
 
 ## 🌟 Star history
 
