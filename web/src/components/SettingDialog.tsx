@@ -1,5 +1,4 @@
-import { useEffect } from "react";
-import { memoService } from "../services";
+import { useState } from "react";
 import { showDialog } from "./Dialog";
 import MyAccountSection from "./MyAccountSection";
 import PreferencesSection from "./PreferencesSection";
@@ -7,29 +6,51 @@ import "../less/setting-dialog.less";
 
 interface Props extends DialogProps {}
 
+type SettingSection = "my-account" | "preferences";
+
+interface State {
+  selectedSection: SettingSection;
+}
+
 const SettingDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
+  const [state, setState] = useState<State>({
+    selectedSection: "my-account",
+  });
 
-  useEffect(() => {
-    memoService.fetchAllMemos();
-  }, []);
+  const handleSectionSelectorItemClick = (settingSection: SettingSection) => {
+    setState({
+      selectedSection: settingSection,
+    });
+  };
 
   return (
-    <>
-      <div className="dialog-header-container">
-        <p className="title-text">
-          <span className="icon-text">👤</span>
-          Setting
-        </p>
-        <button className="btn close-btn" onClick={destroy}>
-          <img className="icon-img" src="/icons/close.svg" />
-        </button>
+    <div className="dialog-content-container">
+      <button className="btn close-btn" onClick={destroy}>
+        <img className="icon-img" src="/icons/close.svg" />
+      </button>
+      <div className="section-selector-container">
+        <span
+          onClick={() => handleSectionSelectorItemClick("my-account")}
+          className={`section-item ${state.selectedSection === "my-account" ? "selected" : ""}`}
+        >
+          My account
+        </span>
+        <span
+          onClick={() => handleSectionSelectorItemClick("preferences")}
+          className={`section-item ${state.selectedSection === "preferences" ? "selected" : ""}`}
+        >
+          Preferences
+        </span>
       </div>
-      <div className="dialog-content-container">
-        <MyAccountSection />
-        <PreferencesSection />
+      <div className="section-content-container">
+        {state.selectedSection === "my-account" ? (
+          <MyAccountSection />
+        ) : state.selectedSection === "preferences" ? (
+          <PreferencesSection />
+        ) : null}
       </div>
-    </>
+    </div>
   );
 };
 
