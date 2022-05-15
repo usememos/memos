@@ -7,7 +7,7 @@ const (
 	// Owner is the OWNER role.
 	Owner Role = "OWNER"
 	// NormalUser is the USER role.
-	NormalUser Role = "User"
+	NormalUser Role = "USER"
 )
 
 type User struct {
