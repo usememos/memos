@@ -7,15 +7,7 @@ import (
 	"strings"
 )
 
-type MemoService struct {
-	db *DB
-}
-
-func NewMemoService(db *DB) *MemoService {
-	return &MemoService{db: db}
-}
-
-func (s *MemoService) CreateMemo(create *api.MemoCreate) (*api.Memo, error) {
+func (s *Store) CreateMemo(create *api.MemoCreate) (*api.Memo, error) {
 	memo, err := createMemo(s.db, create)
 	if err != nil {
 		return nil, err
@@ -24,7 +16,7 @@ func (s *MemoService) CreateMemo(create *api.MemoCreate) (*api.Memo, error) {
 	return memo, nil
 }
 
-func (s *MemoService) PatchMemo(patch *api.MemoPatch) (*api.Memo, error) {
+func (s *Store) PatchMemo(patch *api.MemoPatch) (*api.Memo, error) {
 	memo, err := patchMemo(s.db, patch)
 	if err != nil {
 		return nil, err
@@ -33,7 +25,7 @@ func (s *MemoService) PatchMemo(patch *api.MemoPatch) (*api.Memo, error) {
 	return memo, nil
 }
 
-func (s *MemoService) FindMemoList(find *api.MemoFind) ([]*api.Memo, error) {
+func (s *Store) FindMemoList(find *api.MemoFind) ([]*api.Memo, error) {
 	list, err := findMemoList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -42,7 +34,7 @@ func (s *MemoService) FindMemoList(find *api.MemoFind) ([]*api.Memo, error) {
 	return list, nil
 }
 
-func (s *MemoService) FindMemo(find *api.MemoFind) (*api.Memo, error) {
+func (s *Store) FindMemo(find *api.MemoFind) (*api.Memo, error) {
 	list, err := findMemoList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -55,7 +47,7 @@ func (s *MemoService) FindMemo(find *api.MemoFind) (*api.Memo, error) {
 	return list[0], nil
 }
 
-func (s *MemoService) DeleteMemo(delete *api.MemoDelete) error {
+func (s *Store) DeleteMemo(delete *api.MemoDelete) error {
 	err := deleteMemo(s.db, delete)
 	if err != nil {
 		return FormatError(err)

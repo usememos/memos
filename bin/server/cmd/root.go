@@ -27,11 +27,8 @@ func (m *Main) Run() error {
 
 	s := server.NewServer(m.profile)
 
-	s.ShortcutService = store.NewShortcutService(db)
-	s.MemoService = store.NewMemoService(db)
-	s.UserService = store.NewUserService(db)
-	s.ShortcutService = store.NewShortcutService(db)
-	s.ResourceService = store.NewResourceService(db)
+	storeInstance := store.New(db)
+	s.Store = storeInstance
 
 	m.server = s
 

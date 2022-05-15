@@ -47,11 +47,3 @@ type ShortcutFind struct {
 type ShortcutDelete struct {
 	ID int
 }
-
-type ShortcutService interface {
-	CreateShortcut(create *ShortcutCreate) (*Shortcut, error)
-	PatchShortcut(patch *ShortcutPatch) (*Shortcut, error)
-	FindShortcutList(find *ShortcutFind) ([]*Shortcut, error)
-	FindShortcut(find *ShortcutFind) (*Shortcut, error)
-	DeleteShortcut(delete *ShortcutDelete) error
-}

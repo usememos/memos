@@ -7,15 +7,7 @@ import (
 	"strings"
 )
 
-type ShortcutService struct {
-	db *DB
-}
-
-func NewShortcutService(db *DB) *ShortcutService {
-	return &ShortcutService{db: db}
-}
-
-func (s *ShortcutService) CreateShortcut(create *api.ShortcutCreate) (*api.Shortcut, error) {
+func (s *Store) CreateShortcut(create *api.ShortcutCreate) (*api.Shortcut, error) {
 	shortcut, err := createShortcut(s.db, create)
 	if err != nil {
 		return nil, err
@@ -24,7 +16,7 @@ func (s *ShortcutService) CreateShortcut(create *api.ShortcutCreate) (*api.Short
 	return shortcut, nil
 }
 
-func (s *ShortcutService) PatchShortcut(patch *api.ShortcutPatch) (*api.Shortcut, error) {
+func (s *Store) PatchShortcut(patch *api.ShortcutPatch) (*api.Shortcut, error) {
 	shortcut, err := patchShortcut(s.db, patch)
 	if err != nil {
 		return nil, err
@@ -33,7 +25,7 @@ func (s *ShortcutService) PatchShortcut(patch *api.ShortcutPatch) (*api.Shortcut
 	return shortcut, nil
 }
 
-func (s *ShortcutService) FindShortcutList(find *api.ShortcutFind) ([]*api.Shortcut, error) {
+func (s *Store) FindShortcutList(find *api.ShortcutFind) ([]*api.Shortcut, error) {
 	list, err := findShortcutList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -42,7 +34,7 @@ func (s *ShortcutService) FindShortcutList(find *api.ShortcutFind) ([]*api.Short
 	return list, nil
 }
 
-func (s *ShortcutService) FindShortcut(find *api.ShortcutFind) (*api.Shortcut, error) {
+func (s *Store) FindShortcut(find *api.ShortcutFind) (*api.Shortcut, error) {
 	list, err := findShortcutList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -55,7 +47,7 @@ func (s *ShortcutService) FindShortcut(find *api.ShortcutFind) (*api.Shortcut, e
 	return list[0], nil
 }
 
-func (s *ShortcutService) DeleteShortcut(delete *api.ShortcutDelete) error {
+func (s *Store) DeleteShortcut(delete *api.ShortcutDelete) error {
 	err := deleteShortcut(s.db, delete)
 	if err != nil {
 		return FormatError(err)

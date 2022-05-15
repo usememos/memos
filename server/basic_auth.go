@@ -53,7 +53,7 @@ func removeUserSession(c echo.Context) error {
 }
 
 // Use session to store user.id.
-func BasicAuthMiddleware(us api.UserService, next echo.HandlerFunc) echo.HandlerFunc {
+func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Skips auth
 		if common.HasPrefixes(c.Path(), "/api/auth", "/api/ping", "/api/status") {
@@ -79,7 +79,7 @@ func BasicAuthMiddleware(us api.UserService, next echo.HandlerFunc) echo.Handler
 		userFind := &api.UserFind{
 			ID: &userID,
 		}
-		user, err := us.FindUser(userFind)
+		user, err := s.Store.FindUser(userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userID)).SetInternal(err)
 		}

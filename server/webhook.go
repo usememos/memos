@@ -22,7 +22,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		userFind := &api.UserFind{
 			OpenID: &openID,
 		}
-		user, err := s.UserService.FindUser(userFind)
+		user, err := s.Store.FindUser(userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
 		}
@@ -37,7 +37,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request by open api").SetInternal(err)
 		}
 
-		memo, err := s.MemoService.CreateMemo(memoCreate)
+		memo, err := s.Store.CreateMemo(memoCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 		}
@@ -56,7 +56,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		userFind := &api.UserFind{
 			OpenID: &openID,
 		}
-		user, err := s.UserService.FindUser(userFind)
+		user, err := s.Store.FindUser(userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
 		}
@@ -72,7 +72,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 			memoFind.RowStatus = &rowStatus
 		}
 
-		list, err := s.MemoService.FindMemoList(memoFind)
+		list, err := s.Store.FindMemoList(memoFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
@@ -91,7 +91,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		userFind := &api.UserFind{
 			OpenID: &openID,
 		}
-		user, err := s.UserService.FindUser(userFind)
+		user, err := s.Store.FindUser(userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
 		}
@@ -130,7 +130,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 			CreatorID: user.ID,
 		}
 
-		resource, err := s.ResourceService.CreateResource(resourceCreate)
+		resource, err := s.Store.CreateResource(resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
@@ -156,7 +156,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 			Filename: &filename,
 		}
 
-		resource, err := s.ResourceService.FindResource(resourceFind)
+		resource, err := s.Store.FindResource(resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch resource ID: %v", resourceID)).SetInternal(err)
 		}

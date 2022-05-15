@@ -20,7 +20,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post shortcut request").SetInternal(err)
 		}
 
-		shortcut, err := s.ShortcutService.CreateShortcut(shortcutCreate)
+		shortcut, err := s.Store.CreateShortcut(shortcutCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create shortcut").SetInternal(err)
 		}
@@ -46,7 +46,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch shortcut request").SetInternal(err)
 		}
 
-		shortcut, err := s.ShortcutService.PatchShortcut(shortcutPatch)
+		shortcut, err := s.Store.PatchShortcut(shortcutPatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch shortcut").SetInternal(err)
 		}
@@ -64,7 +64,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		shortcutFind := &api.ShortcutFind{
 			CreatorID: &userID,
 		}
-		list, err := s.ShortcutService.FindShortcutList(shortcutFind)
+		list, err := s.Store.FindShortcutList(shortcutFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch shortcut list").SetInternal(err)
 		}
@@ -86,7 +86,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		shortcutFind := &api.ShortcutFind{
 			ID: &shortcutID,
 		}
-		shortcut, err := s.ShortcutService.FindShortcut(shortcutFind)
+		shortcut, err := s.Store.FindShortcut(shortcutFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch shortcut by ID %d", *shortcutFind.ID)).SetInternal(err)
 		}
@@ -108,7 +108,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		shortcutDelete := &api.ShortcutDelete{
 			ID: shortcutID,
 		}
-		if err := s.ShortcutService.DeleteShortcut(shortcutDelete); err != nil {
+		if err := s.Store.DeleteShortcut(shortcutDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete shortcut").SetInternal(err)
 		}
 

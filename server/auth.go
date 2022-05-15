@@ -21,7 +21,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		userFind := &api.UserFind{
 			Email: &login.Email,
 		}
-		user, err := s.UserService.FindUser(userFind)
+		user, err := s.Store.FindUser(userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", login.Email)).SetInternal(err)
 		}
@@ -63,7 +63,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		ownerUserFind := api.UserFind{
 			Role: &ownerUserType,
 		}
-		ownerUser, err := s.UserService.FindUser(&ownerUserFind)
+		ownerUser, err := s.Store.FindUser(&ownerUserFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
 		}
@@ -91,7 +91,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		userFind := &api.UserFind{
 			Email: &signup.Email,
 		}
-		user, err := s.UserService.FindUser(userFind)
+		user, err := s.Store.FindUser(userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", signup.Email)).SetInternal(err)
 		}
@@ -111,7 +111,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			PasswordHash: string(passwordHash),
 			OpenID:       common.GenUUID(),
 		}
-		user, err = s.UserService.CreateUser(userCreate)
+		user, err = s.Store.CreateUser(userCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}

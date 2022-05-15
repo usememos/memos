@@ -23,7 +23,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		ownerUserFind := api.UserFind{
 			Role: &ownerUserType,
 		}
-		ownerUser, err := s.UserService.FindUser(&ownerUserFind)
+		ownerUser, err := s.Store.FindUser(&ownerUserFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
 		}

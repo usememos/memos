@@ -47,7 +47,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			CreatorID: userID,
 		}
 
-		resource, err := s.ResourceService.CreateResource(resourceCreate)
+		resource, err := s.Store.CreateResource(resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
@@ -65,7 +65,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			CreatorID: &userID,
 		}
-		list, err := s.ResourceService.FindResourceList(resourceFind)
+		list, err := s.Store.FindResourceList(resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
 		}
@@ -87,7 +87,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		resourceDelete := &api.ResourceDelete{
 			ID: resourceID,
 		}
-		if err := s.ResourceService.DeleteResource(resourceDelete); err != nil {
+		if err := s.Store.DeleteResource(resourceDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 		}
 

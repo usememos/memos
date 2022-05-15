@@ -39,10 +39,3 @@ type ResourceFind struct {
 type ResourceDelete struct {
 	ID int
 }
-
-type ResourceService interface {
-	CreateResource(create *ResourceCreate) (*Resource, error)
-	FindResourceList(find *ResourceFind) ([]*Resource, error)
-	FindResource(find *ResourceFind) (*Resource, error)
-	DeleteResource(delete *ResourceDelete) error
-}

@@ -2,8 +2,8 @@ package server
 
 import (
 	"fmt"
-	"memos/api"
 	"memos/common"
+	"memos/store"
 	"time"
 
 	"github.com/gorilla/securecookie"
@@ -18,10 +18,7 @@ type Server struct {
 
 	Profile *common.Profile
 
-	UserService     api.UserService
-	MemoService     api.MemoService
-	ShortcutService api.ShortcutService
-	ResourceService api.ResourceService
+	Store *store.Store
 }
 
 func NewServer(profile *common.Profile) *Server {
@@ -65,7 +62,7 @@ func NewServer(profile *common.Profile) *Server {
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return BasicAuthMiddleware(s.UserService, next)
+		return BasicAuthMiddleware(s, next)
 	})
 	s.registerSystemRoutes(apiGroup)
 	s.registerAuthRoutes(apiGroup)

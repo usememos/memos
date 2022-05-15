@@ -55,9 +55,3 @@ type UserFind struct {
 	Name   *string `json:"name"`
 	OpenID *string
 }
-
-type UserService interface {
-	CreateUser(create *UserCreate) (*User, error)
-	PatchUser(patch *UserPatch) (*User, error)
-	FindUser(find *UserFind) (*User, error)
-}

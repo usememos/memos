@@ -23,7 +23,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		userFind := &api.UserFind{
 			ID: &userID,
 		}
-		user, err := s.UserService.FindUser(userFind)
+		user, err := s.Store.FindUser(userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user").SetInternal(err)
 		}
@@ -49,7 +49,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			userFind := api.UserFind{
 				Email: userPatch.Email,
 			}
-			user, err := s.UserService.FindUser(&userFind)
+			user, err := s.Store.FindUser(&userFind)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", *userPatch.Email)).SetInternal(err)
 			}
@@ -73,7 +73,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			userPatch.OpenID = &openID
 		}
 
-		user, err := s.UserService.PatchUser(userPatch)
+		user, err := s.Store.PatchUser(userPatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch user").SetInternal(err)
 		}

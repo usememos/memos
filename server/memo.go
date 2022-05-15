@@ -21,7 +21,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
 		}
 
-		memo, err := s.MemoService.CreateMemo(memoCreate)
+		memo, err := s.Store.CreateMemo(memoCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 		}
@@ -47,7 +47,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch memo request").SetInternal(err)
 		}
 
-		memo, err := s.MemoService.PatchMemo(memoPatch)
+		memo, err := s.Store.PatchMemo(memoPatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch memo").SetInternal(err)
 		}
@@ -70,7 +70,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			memoFind.RowStatus = &rowStatus
 		}
 
-		list, err := s.MemoService.FindMemoList(memoFind)
+		list, err := s.Store.FindMemoList(memoFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
@@ -92,7 +92,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memoFind := &api.MemoFind{
 			ID: &memoID,
 		}
-		memo, err := s.MemoService.FindMemo(memoFind)
+		memo, err := s.Store.FindMemo(memoFind)
 		if err != nil {
 			if common.ErrorCode(err) == common.NotFound {
 				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)
@@ -119,7 +119,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			ID: &memoID,
 		}
 
-		err = s.MemoService.DeleteMemo(memoDelete)
+		err = s.Store.DeleteMemo(memoDelete)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoID)).SetInternal(err)
 		}

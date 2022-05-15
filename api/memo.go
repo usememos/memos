@@ -45,11 +45,3 @@ type MemoFind struct {
 type MemoDelete struct {
 	ID *int `json:"id"`
 }
-
-type MemoService interface {
-	CreateMemo(create *MemoCreate) (*Memo, error)
-	PatchMemo(patch *MemoPatch) (*Memo, error)
-	FindMemoList(find *MemoFind) ([]*Memo, error)
-	FindMemo(find *MemoFind) (*Memo, error)
-	DeleteMemo(delete *MemoDelete) error
-}

@@ -7,15 +7,7 @@ import (
 	"strings"
 )
 
-type ResourceService struct {
-	db *DB
-}
-
-func NewResourceService(db *DB) *ResourceService {
-	return &ResourceService{db: db}
-}
-
-func (s *ResourceService) CreateResource(create *api.ResourceCreate) (*api.Resource, error) {
+func (s *Store) CreateResource(create *api.ResourceCreate) (*api.Resource, error) {
 	resource, err := createResource(s.db, create)
 	if err != nil {
 		return nil, err
@@ -24,7 +16,7 @@ func (s *ResourceService) CreateResource(create *api.ResourceCreate) (*api.Resou
 	return resource, nil
 }
 
-func (s *ResourceService) FindResourceList(find *api.ResourceFind) ([]*api.Resource, error) {
+func (s *Store) FindResourceList(find *api.ResourceFind) ([]*api.Resource, error) {
 	list, err := findResourceList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -33,7 +25,7 @@ func (s *ResourceService) FindResourceList(find *api.ResourceFind) ([]*api.Resou
 	return list, nil
 }
 
-func (s *ResourceService) FindResource(find *api.ResourceFind) (*api.Resource, error) {
+func (s *Store) FindResource(find *api.ResourceFind) (*api.Resource, error) {
 	list, err := findResourceList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -46,7 +38,7 @@ func (s *ResourceService) FindResource(find *api.ResourceFind) (*api.Resource, e
 	return list[0], nil
 }
 
-func (s *ResourceService) DeleteResource(delete *api.ResourceDelete) error {
+func (s *Store) DeleteResource(delete *api.ResourceDelete) error {
 	err := deleteResource(s.db, delete)
 	if err != nil {
 		return err

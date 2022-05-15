@@ -7,15 +7,7 @@ import (
 	"strings"
 )
 
-type UserService struct {
-	db *DB
-}
-
-func NewUserService(db *DB) *UserService {
-	return &UserService{db: db}
-}
-
-func (s *UserService) CreateUser(create *api.UserCreate) (*api.User, error) {
+func (s *Store) CreateUser(create *api.UserCreate) (*api.User, error) {
 	user, err := createUser(s.db, create)
 	if err != nil {
 		return nil, err
@@ -24,7 +16,7 @@ func (s *UserService) CreateUser(create *api.UserCreate) (*api.User, error) {
 	return user, nil
 }
 
-func (s *UserService) PatchUser(patch *api.UserPatch) (*api.User, error) {
+func (s *Store) PatchUser(patch *api.UserPatch) (*api.User, error) {
 	user, err := patchUser(s.db, patch)
 	if err != nil {
 		return nil, err
@@ -33,7 +25,7 @@ func (s *UserService) PatchUser(patch *api.UserPatch) (*api.User, error) {
 	return user, nil
 }
 
-func (s *UserService) FindUser(find *api.UserFind) (*api.User, error) {
+func (s *Store) FindUser(find *api.UserFind) (*api.User, error) {
 	list, err := findUserList(s.db, find)
 	if err != nil {
 		return nil, err
