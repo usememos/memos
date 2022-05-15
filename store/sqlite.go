@@ -49,7 +49,6 @@ func (db *DB) Open() (err error) {
 	}
 
 	db.Db = sqlDB
-
 	// If db file not exists, we should migrate and seed the database.
 	if _, err := os.Stat(db.DSN); errors.Is(err, os.ErrNotExist) {
 		if err := db.migrate(); err != nil {

@@ -19,14 +19,14 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 
 		userFind := &api.UserFind{
-			Name: &login.Name,
+			Email: &login.Email,
 		}
 		user, err := s.UserService.FindUser(userFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by name %s", login.Name)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", login.Email)).SetInternal(err)
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found with name %s", login.Name))
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found with email %s", login.Email))
 		}
 
 		// Compare the stored hashed password, with the hashed version of the password that was received.
@@ -58,6 +58,19 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 	})
 
 	g.POST("/auth/signup", func(c echo.Context) error {
+		// Don't allow to signup by this api if site owner existed.
+		ownerUserType := api.Owner
+		ownerUserFind := api.UserFind{
+			Role: &ownerUserType,
+		}
+		ownerUser, err := s.UserService.FindUser(&ownerUserFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
+		}
+		if ownerUser != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Site Owner existed, please contact the site owner to signin account firstly.").SetInternal(err)
+		}
+
 		signup := &api.Signup{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
@@ -65,6 +78,9 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 
 		// Validate signup form.
 		// We can do stricter checks later.
+		if len(signup.Email) < 6 {
+			return echo.NewHTTPError(http.StatusBadRequest, "Email is too short, minimum length is 6.")
+		}
 		if len(signup.Name) < 6 {
 			return echo.NewHTTPError(http.StatusBadRequest, "Username is too short, minimum length is 6.")
 		}
@@ -73,14 +89,14 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 
 		userFind := &api.UserFind{
-			Name: &signup.Name,
+			Email: &signup.Email,
 		}
 		user, err := s.UserService.FindUser(userFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by name %s", signup.Name)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", signup.Email)).SetInternal(err)
 		}
 		if user != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Existed user found: %s", signup.Name))
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Existed user found: %s", signup.Email))
 		}
 
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(signup.Password), bcrypt.DefaultCost)
@@ -89,6 +105,8 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 
 		userCreate := &api.UserCreate{
+			Email:        signup.Email,
+			Role:         api.Role(signup.Role),
 			Name:         signup.Name,
 			PasswordHash: string(passwordHash),
 			OpenID:       common.GenUUID(),

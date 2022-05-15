@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
@@ -16,31 +16,22 @@ const validateConfig: ValidatorConfig = {
 };
 
 const Signin: React.FC<Props> = () => {
-  const [username, setUsername] = useState("");
+  const pageLoadingState = useLoading(true);
+  const [siteOwner, setSiteOwner] = useState<Model.User>();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [showAutoSigninAsGuest, setShowAutoSigninAsGuest] = useState(true);
-  const signinBtnsClickLoadingState = useLoading(false);
-  const autoSigninAsGuestBtn = useRef<HTMLDivElement>(null);
-  const signinBtn = useRef<HTMLButtonElement>(null);
+  const actionBtnLoadingState = useLoading(false);
 
   useEffect(() => {
-    const handleKeyPress = (e: KeyboardEvent) => {
-      if (e.key === "Enter") {
-        autoSigninAsGuestBtn.current?.click();
-        signinBtn.current?.click();
-      }
-    };
-
-    document.body.addEventListener("keypress", handleKeyPress);
-
-    return () => {
-      document.body.removeEventListener("keypress", handleKeyPress);
-    };
+    api.getSystemStatus().then((status) => {
+      setSiteOwner(status.owner);
+      pageLoadingState.setFinish();
+    });
   }, []);
 
-  const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleEmailInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
-    setUsername(text);
+    setEmail(text);
   };
 
   const handlePasswordInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -48,14 +39,14 @@ const Signin: React.FC<Props> = () => {
     setPassword(text);
   };
 
-  const handleSigninBtnsClick = async (action: "signin" | "signup" = "signin") => {
-    if (signinBtnsClickLoadingState.isLoading) {
+  const handleSigninBtnsClick = async () => {
+    if (actionBtnLoadingState.isLoading) {
       return;
     }
 
-    const usernameValidResult = validate(username, validateConfig);
-    if (!usernameValidResult.result) {
-      toastHelper.error("Username: " + usernameValidResult.reason);
+    const emailValidResult = validate(email, validateConfig);
+    if (!emailValidResult.result) {
+      toastHelper.error("Email: " + emailValidResult.reason);
       return;
     }
 
@@ -66,13 +57,8 @@ const Signin: React.FC<Props> = () => {
     }
 
     try {
-      signinBtnsClickLoadingState.setLoading();
-      let actionFunc = api.login;
-      if (action === "signup") {
-        actionFunc = api.signup;
-      }
-      await actionFunc(username, password);
-
+      actionBtnLoadingState.setLoading();
+      await api.login(email, password);
       const user = await userService.doSignIn();
       if (user) {
         locationService.replaceHistory("/");
@@ -83,25 +69,52 @@ const Signin: React.FC<Props> = () => {
       console.error(error);
       toastHelper.error("😟 " + error.message);
     }
-    signinBtnsClickLoadingState.setFinish();
+    actionBtnLoadingState.setFinish();
   };
 
-  const handleSwitchAccountSigninBtnClick = () => {
-    if (signinBtnsClickLoadingState.isLoading) {
+  const handleSignUpAsOwnerBtnsClick = async () => {
+    if (actionBtnLoadingState.isLoading) {
       return;
     }
 
-    setShowAutoSigninAsGuest(false);
+    const emailValidResult = validate(email, validateConfig);
+    if (!emailValidResult.result) {
+      toastHelper.error("Email: " + emailValidResult.reason);
+      return;
+    }
+
+    const passwordValidResult = validate(password, validateConfig);
+    if (!passwordValidResult.result) {
+      toastHelper.error("Password: " + passwordValidResult.reason);
+      return;
+    }
+
+    const name = email.split("@")[0];
+
+    try {
+      actionBtnLoadingState.setLoading();
+      await api.signup(email, "OWNER", name, password);
+      const user = await userService.doSignIn();
+      if (user) {
+        locationService.replaceHistory("/");
+      } else {
+        toastHelper.error("😟 Signup failed");
+      }
+    } catch (error: any) {
+      console.error(error);
+      toastHelper.error("😟 " + error.message);
+    }
+    actionBtnLoadingState.setFinish();
   };
 
   const handleAutoSigninAsGuestBtnClick = async () => {
-    if (signinBtnsClickLoadingState.isLoading) {
+    if (actionBtnLoadingState.isLoading) {
       return;
     }
 
     try {
-      signinBtnsClickLoadingState.setLoading();
-      await api.login("guest", "secret");
+      actionBtnLoadingState.setLoading();
+      await api.login("guest@example.com", "secret");
 
       const user = await userService.doSignIn();
       if (user) {
@@ -113,7 +126,7 @@ const Signin: React.FC<Props> = () => {
       console.error(error);
       toastHelper.error("😟 " + error.message);
     }
-    signinBtnsClickLoadingState.setFinish();
+    actionBtnLoadingState.setFinish();
   };
 
   return (
@@ -124,64 +137,42 @@ const Signin: React.FC<Props> = () => {
             <span className="icon-text">✍️</span> Memos
           </p>
         </div>
-        {showAutoSigninAsGuest ? (
-          <>
-            <div className="quickly-btns-container">
-              <div
-                ref={autoSigninAsGuestBtn}
-                className={`btn guest-signin ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
-                onClick={handleAutoSigninAsGuestBtnClick}
-              >
-                👉 Quick login as a guest
-              </div>
-              <div
-                className={`btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
-                onClick={handleSwitchAccountSigninBtnClick}
-              >
-                Sign in/up with account
-              </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="page-content-container">
-              <div className="form-item-container input-form-container">
-                <span className={"normal-text " + (username === "" ? "" : "not-null")}>Username</span>
-                <input type="text" autoComplete="off" value={username} onChange={handleUsernameInputChanged} />
-              </div>
-              <div className="form-item-container input-form-container">
-                <span className={"normal-text " + (password === "" ? "" : "not-null")}>Password</span>
-                <input type="password" autoComplete="off" value={password} onChange={handlePasswordInputChanged} />
-              </div>
-            </div>
-            <div className="page-footer-container">
-              <div className="btns-container">{/* nth */}</div>
-              <div className="btns-container">
-                <button
-                  className={`btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
-                  onClick={handleAutoSigninAsGuestBtnClick}
-                >
-                  Login as Guest
-                </button>
-                <span className="split-text">/</span>
-                <button
-                  className={`btn signup-btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
-                  onClick={() => handleSigninBtnsClick("signup")}
-                >
-                  Sign up
-                </button>
-                <span className="split-text">/</span>
-                <button
-                  ref={signinBtn}
-                  className={`btn signin-btn ${signinBtnsClickLoadingState.isLoading ? "requesting" : ""}`}
-                  onClick={() => handleSigninBtnsClick("signin")}
-                >
-                  Sign in
-                </button>
-              </div>
-            </div>
-          </>
-        )}
+        <div className="page-content-container">
+          <div className="form-item-container input-form-container">
+            <span className={"normal-text " + (email === "" ? "" : "not-null")}>Email</span>
+            <input type="email" value={email} onChange={handleEmailInputChanged} />
+          </div>
+          <div className="form-item-container input-form-container">
+            <span className={"normal-text " + (password === "" ? "" : "not-null")}>Password</span>
+            <input type="password" value={password} onChange={handlePasswordInputChanged} />
+          </div>
+        </div>
+        <div className="action-btns-container">
+          <button className={`btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleAutoSigninAsGuestBtnClick}>
+            Login as Guest
+          </button>
+          <span className="split-text">/</span>
+          {siteOwner || pageLoadingState.isLoading ? (
+            <button
+              className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+              onClick={() => handleSigninBtnsClick()}
+            >
+              Sign in
+            </button>
+          ) : (
+            <button
+              className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+              onClick={() => handleSignUpAsOwnerBtnsClick()}
+            >
+              Sign up as Owner
+            </button>
+          )}
+        </div>
+        <p className="tip-text">
+          {siteOwner || pageLoadingState.isLoading
+            ? "If you don't have an account, please contact the site owner or login as guest."
+            : "You are registering as the site owner."}
+        </p>
       </div>
     </div>
   );

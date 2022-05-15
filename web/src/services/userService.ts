@@ -32,20 +32,10 @@ class UserService {
     });
   }
 
-  public async checkUsernameUsable(username: string): Promise<boolean> {
-    const isUsable = await api.checkUsernameUsable(username);
-    return isUsable;
-  }
-
   public async updateUsername(name: string): Promise<void> {
     await api.updateUserinfo({
       name,
     });
-  }
-
-  public async checkPasswordValid(password: string): Promise<boolean> {
-    const isValid = await api.checkPasswordValid(password);
-    return isValid;
   }
 
   public async updatePassword(password: string): Promise<void> {

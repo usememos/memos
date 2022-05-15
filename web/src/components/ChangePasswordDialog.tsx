@@ -15,7 +15,6 @@ const validateConfig: ValidatorConfig = {
 interface Props extends DialogProps {}
 
 const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
-  const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 
@@ -25,11 +24,6 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   const handleCloseBtnClick = () => {
     destroy();
-  };
-
-  const handleOldPasswordChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value as string;
-    setOldPassword(text);
   };
 
   const handleNewPasswordChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,7 +37,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   };
 
   const handleSaveBtnClick = async () => {
-    if (oldPassword === "" || newPassword === "" || newPasswordAgain === "") {
+    if (newPassword === "" || newPasswordAgain === "") {
       toastHelper.error("Please fill in all fields.");
       return;
     }
@@ -61,14 +55,6 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
     }
 
     try {
-      const isValid = await userService.checkPasswordValid(oldPassword);
-
-      if (!isValid) {
-        toastHelper.error("Old password is invalid.");
-        setOldPassword("");
-        return;
-      }
-
       await userService.updatePassword(newPassword);
       toastHelper.info("Password changed.");
       handleCloseBtnClick();
@@ -87,15 +73,11 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <label className="form-label input-form-label">
-          <span className={"normal-text " + (oldPassword === "" ? "" : "not-null")}>Old password</span>
-          <input type="password" value={oldPassword} onChange={handleOldPasswordChanged} />
-        </label>
-        <label className="form-label input-form-label">
           <span className={"normal-text " + (newPassword === "" ? "" : "not-null")}>New passworld</span>
           <input type="password" value={newPassword} onChange={handleNewPasswordChanged} />
         </label>
         <label className="form-label input-form-label">
-          <span className={"normal-text " + (newPasswordAgain === "" ? "" : "not-null")}>New password again</span>
+          <span className={"normal-text " + (newPasswordAgain === "" ? "" : "not-null")}>Repeat the new password</span>
           <input type="password" value={newPasswordAgain} onChange={handleNewPasswordAgainChanged} />
         </label>
         <div className="btns-container">
