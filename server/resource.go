@@ -15,7 +15,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
 		userID := c.Get(getUserIDContextKey()).(int)
 
-		err := c.Request().ParseMultipartForm(5 << 20)
+		err := c.Request().ParseMultipartForm(64 << 20)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Upload file overload max size").SetInternal(err)
 		}

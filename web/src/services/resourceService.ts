@@ -9,14 +9,12 @@ class ResourceService {
   public async upload(file: File) {
     const { name: filename, size } = file;
 
-    if (size > 5 << 20) {
-      return Promise.reject("overload max size: 5Mb");
+    if (size > 64 << 20) {
+      return Promise.reject("overload max size: 8MB");
     }
 
     const formData = new FormData();
-
     formData.append("file", file, filename);
-
     const data = await api.uploadFile(formData);
 
     return data;
