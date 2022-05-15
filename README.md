@@ -70,7 +70,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 3. start frontend dev server
 
    ```bash
-   cd frontend && yarn && yarn dev
+   cd web && yarn && yarn dev
    ```
 
 Memos should now be running at https://localhost:3000 and change either frontend or backend code would trigger live reload.
