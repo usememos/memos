@@ -40,13 +40,6 @@ const MyAccountSection: React.FC<Props> = () => {
     }
 
     try {
-      const isUsable = await userService.checkUsernameUsable(username);
-
-      if (!isUsable) {
-        toastHelper.error("Username is not available");
-        return;
-      }
-
       await userService.updateUsername(username);
       await userService.doSignIn();
       toastHelper.info("Username changed");
@@ -79,6 +72,10 @@ const MyAccountSection: React.FC<Props> = () => {
         <label className="form-label">
           <span className="normal-text">Created at:</span>
           <span className="normal-text">{utils.getDateString(user.createdAt)}</span>
+        </label>
+        <label className="form-label">
+          <span className="normal-text">Email:</span>
+          <span className="normal-text">{user.email}</span>
         </label>
         <label className="form-label input-form-label username-label">
           <span className="normal-text">Username:</span>

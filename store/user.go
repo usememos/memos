@@ -51,13 +51,17 @@ func (s *UserService) FindUser(find *api.UserFind) (*api.User, error) {
 func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
 	row, err := db.Db.Query(`
 		INSERT INTO user (
+			email,
+			role,
 			name,
 			password_hash,
 			open_id
 		)
-		VALUES (?, ?, ?)
-		RETURNING id, name, password_hash, open_id, created_ts, updated_ts
+		VALUES (?, ?, ?, ?, ?)
+		RETURNING id, email, role, name, password_hash, open_id, created_ts, updated_ts
 	`,
+		create.Email,
+		create.Role,
 		create.Name,
 		create.PasswordHash,
 		create.OpenID,
@@ -71,6 +75,8 @@ func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
 	var user api.User
 	if err := row.Scan(
 		&user.ID,
+		&user.Email,
+		&user.Role,
 		&user.Name,
 		&user.PasswordHash,
 		&user.OpenID,
@@ -86,6 +92,9 @@ func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
 func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 	set, args := []string{}, []interface{}{}
 
+	if v := patch.Email; v != nil {
+		set, args = append(set, "email = ?"), append(args, v)
+	}
 	if v := patch.Name; v != nil {
 		set, args = append(set, "name = ?"), append(args, v)
 	}
@@ -102,7 +111,7 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 		UPDATE user
 		SET `+strings.Join(set, ", ")+`
 		WHERE id = ?
-		RETURNING id, name, password_hash, open_id, created_ts, updated_ts
+		RETURNING id, email, role, name, password_hash, open_id, created_ts, updated_ts
 	`, args...)
 	if err != nil {
 		return nil, FormatError(err)
@@ -113,6 +122,8 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 		var user api.User
 		if err := row.Scan(
 			&user.ID,
+			&user.Email,
+			&user.Role,
 			&user.Name,
 			&user.PasswordHash,
 			&user.OpenID,
@@ -134,6 +145,12 @@ func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 	if v := find.ID; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)
 	}
+	if v := find.Role; v != nil {
+		where, args = append(where, "role = ?"), append(args, *v)
+	}
+	if v := find.Email; v != nil {
+		where, args = append(where, "email = ?"), append(args, *v)
+	}
 	if v := find.Name; v != nil {
 		where, args = append(where, "name = ?"), append(args, *v)
 	}
@@ -144,6 +161,8 @@ func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 	rows, err := db.Db.Query(`
 		SELECT 
 			id,
+			email,
+			role,
 			name,
 			password_hash,
 			open_id,
@@ -163,6 +182,8 @@ func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 		var user api.User
 		if err := rows.Scan(
 			&user.ID,
+			&user.Email,
+			&user.Role,
 			&user.Name,
 			&user.PasswordHash,
 			&user.OpenID,

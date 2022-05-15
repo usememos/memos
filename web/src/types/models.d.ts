@@ -1,3 +1,5 @@
+type UserRole = "OWNER" | "USER";
+
 declare namespace Model {
   interface BaseModel {
     id: string;
@@ -9,6 +11,8 @@ declare namespace Model {
   }
 
   interface User extends BaseModel {
+    role: UserRole;
+    email: string;
     name: string;
     openId: string;
   }

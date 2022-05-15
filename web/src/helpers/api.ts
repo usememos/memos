@@ -39,6 +39,13 @@ async function request<T>(config: RequestConfig): Promise<T> {
 }
 
 namespace api {
+  export function getSystemStatus() {
+    return request<API.SystemStatus>({
+      method: "GET",
+      url: "/api/status",
+    });
+  }
+
   export function getUserInfo() {
     return request<Model.User>({
       method: "GET",
@@ -46,22 +53,24 @@ namespace api {
     });
   }
 
-  export function login(name: string, password: string) {
+  export function login(email: string, password: string) {
     return request<Model.User>({
       method: "POST",
       url: "/api/auth/login",
       data: {
-        name,
+        email,
         password,
       },
     });
   }
 
-  export function signup(name: string, password: string) {
+  export function signup(email: string, role: UserRole, name: string, password: string) {
     return request<Model.User>({
       method: "POST",
       url: "/api/auth/signup",
       data: {
+        email,
+        role,
         name,
         password,
       },
