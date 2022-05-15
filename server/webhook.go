@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"memos/api"
 	"net/http"
 	"strconv"
@@ -79,6 +80,64 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo list response").SetInternal(err)
+		}
+
+		return nil
+	})
+
+	g.POST("/:openId/resource", func(c echo.Context) error {
+		openID := c.Param("openId")
+
+		userFind := &api.UserFind{
+			OpenID: &openID,
+		}
+		user, err := s.UserService.FindUser(userFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("User openId not found: %s", openID))
+		}
+
+		if err := c.Request().ParseMultipartForm(64 << 20); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Upload file overload max size").SetInternal(err)
+		}
+
+		file, err := c.FormFile("file")
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Upload file not found").SetInternal(err)
+		}
+
+		filename := file.Filename
+		filetype := file.Header.Get("Content-Type")
+		size := file.Size
+		src, err := file.Open()
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open file").SetInternal(err)
+		}
+		defer src.Close()
+
+		fileBytes, err := ioutil.ReadAll(src)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
+		}
+
+		resourceCreate := &api.ResourceCreate{
+			Filename:  filename,
+			Type:      filetype,
+			Size:      size,
+			Blob:      fileBytes,
+			CreatorID: user.ID,
+		}
+
+		resource, err := s.ResourceService.CreateResource(resourceCreate)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
 		}
 
 		return nil
