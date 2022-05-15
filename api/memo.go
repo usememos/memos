@@ -16,6 +16,8 @@ type Memo struct {
 type MemoCreate struct {
 	// Standard fields
 	CreatorID int
+	// Used to import memos with clearly created ts.
+	CreatedTs *int64 `json:"createdTs"`
 
 	// Domain specific fields
 	Content string `json:"content"`

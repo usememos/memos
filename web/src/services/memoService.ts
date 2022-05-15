@@ -123,13 +123,13 @@ class MemoService {
     return memos.filter((m) => m.content.includes(memoId));
   }
 
-  public async createMemo(text: string): Promise<Model.Memo> {
-    const memo = await api.createMemo(text);
+  public async createMemo(content: string): Promise<Model.Memo> {
+    const memo = await api.createMemo(content);
     return this.convertResponseModelMemo(memo);
   }
 
-  public async updateMemo(memoId: string, text: string): Promise<Model.Memo> {
-    const memo = await api.updateMemo(memoId, text);
+  public async updateMemo(memoId: string, content: string): Promise<Model.Memo> {
+    const memo = await api.updateMemo(memoId, content);
     return this.convertResponseModelMemo(memo);
   }
 
@@ -139,6 +139,10 @@ class MemoService {
 
   public async unpinMemo(memoId: string) {
     await api.unpinMemo(memoId);
+  }
+
+  public async importMemo(content: string, createdAt: string) {
+    await api.createMemo(content, createdAt);
   }
 
   private convertResponseModelMemo(memo: Model.Memo): Model.Memo {

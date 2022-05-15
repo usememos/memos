@@ -55,12 +55,7 @@
 
     &.password-label {
       > .btn {
-        color: @text-blue;
-        cursor: pointer;
-
-        &:hover {
-          opacity: 0.8;
-        }
+        @apply text-blue-600 ml-1 cursor-pointer hover:opacity-80;
       }
     }
   }
@@ -78,20 +73,7 @@
   }
 
   > .reset-btn {
-    margin-top: 4px;
-    padding: 4px 8px;
-    background-color: @bg-red;
-    border: 1px solid red;
-    color: red;
-    border-radius: 4px;
-    line-height: 1.6;
-    cursor: pointer;
-    user-select: none;
-    font-size: 12px;
-
-    &:hover {
-      opacity: 0.8;
-    }
+    @apply mt-2 py-1 px-2 bg-red-50 border border-red-500 text-red-600 rounded leading-4 cursor-pointer text-xs select-none hover:opacity-80;
   }
 
   > .usage-guide-container {
@@ -99,7 +81,7 @@
     @apply mt-2 w-full;
 
     > .title-text {
-      line-height: 2;
+      @apply my-2 text-sm;
     }
 
     > pre {

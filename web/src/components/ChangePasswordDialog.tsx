@@ -73,12 +73,10 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <label className="form-label input-form-label">
-          <span className={"normal-text " + (newPassword === "" ? "" : "not-null")}>New passworld</span>
-          <input type="password" value={newPassword} onChange={handleNewPasswordChanged} />
+          <input type="password" placeholder="New passworld" value={newPassword} onChange={handleNewPasswordChanged} />
         </label>
         <label className="form-label input-form-label">
-          <span className={"normal-text " + (newPasswordAgain === "" ? "" : "not-null")}>Repeat the new password</span>
-          <input type="password" value={newPasswordAgain} onChange={handleNewPasswordAgainChanged} />
+          <input type="password" placeholder="Repeat the new password" value={newPasswordAgain} onChange={handleNewPasswordAgainChanged} />
         </label>
         <div className="btns-container">
           <span className="btn cancel-btn" onClick={handleCloseBtnClick}>

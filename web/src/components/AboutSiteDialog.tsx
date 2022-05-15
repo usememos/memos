@@ -35,13 +35,12 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <p>
-          Memos is an open source, self-hosted alternative to <a href="https://flomoapp.com">flomo</a>.
+          Memos is an open source, quickly self-hosted alternative <a href="https://flomoapp.com">flomo</a>.
         </p>
-        <p>Built with `Golang` and `React`.</p>
         <br />
         <p>
           🏗 <a href="https://github.com/justmemos/memos">This project</a> is working in progress, and very pleasure to your{" "}
-          <a href="https://github.com/justmemos/memos/issues">issues</a>.
+          <a href="https://github.com/justmemos/memos/issues">PRs</a>.
         </p>
         <p className="updated-time-text">
           Last updated on <span className="pre-text">{lastUpdatedAt}</span> 🎉
