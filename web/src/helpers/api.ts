@@ -1,3 +1,5 @@
+import utils from "./utils";
+
 type ResponseObject<T> = {
   data: T;
   error?: string;
@@ -133,13 +135,20 @@ namespace api {
     });
   }
 
-  export function createMemo(content: string) {
+  export function createMemo(content: string, createdAt?: string) {
+    const data: any = {
+      content,
+    };
+
+    if (createdAt) {
+      const createdTms = utils.getTimeStampByDate(createdAt);
+      data.createdTs = Math.floor(createdTms / 1000);
+    }
+
     return request<Model.Memo>({
       method: "POST",
       url: "/api/memo",
-      data: {
-        content,
-      },
+      data: data,
     });
   }
 

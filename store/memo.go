@@ -65,16 +65,22 @@ func (s *MemoService) DeleteMemo(delete *api.MemoDelete) error {
 }
 
 func createMemo(db *DB, create *api.MemoCreate) (*api.Memo, error) {
+	set := []string{"creator_id", "content"}
+	placeholder := []string{"?", "?"}
+	args := []interface{}{create.CreatorID, create.Content}
+
+	if v := create.CreatedTs; v != nil {
+		set, placeholder, args = append(set, "created_ts"), append(placeholder, "?"), append(args, *v)
+	}
+
 	row, err := db.Db.Query(`
 		INSERT INTO memo (
-			creator_id,
-			content
+			`+strings.Join(set, ", ")+`
 		)
-		VALUES (?, ?)
+		VALUES (`+strings.Join(placeholder, ",")+`)
 		RETURNING id, creator_id, created_ts, updated_ts, content, row_status
 	`,
-		create.CreatorID,
-		create.Content,
+		args...,
 	)
 	if err != nil {
 		return nil, FormatError(err)

@@ -66,16 +66,12 @@ const MyAccountSection: React.FC<Props> = () => {
       <div className="section-container account-section-container">
         <p className="title-text">Account Information</p>
         <label className="form-label">
-          <span className="normal-text">ID:</span>
-          <span className="normal-text">{user.id}</span>
+          <span className="normal-text">Email:</span>
+          <span className="normal-text">{user.email}</span>
         </label>
         <label className="form-label">
           <span className="normal-text">Created at:</span>
           <span className="normal-text">{utils.getDateString(user.createdAt)}</span>
-        </label>
-        <label className="form-label">
-          <span className="normal-text">Email:</span>
-          <span className="normal-text">{user.email}</span>
         </label>
         <label className="form-label input-form-label username-label">
           <span className="normal-text">Username:</span>
@@ -97,12 +93,12 @@ const MyAccountSection: React.FC<Props> = () => {
         <label className="form-label password-label">
           <span className="normal-text">Password:</span>
           <span className="btn" onClick={handleChangePasswordBtnClick}>
-            Change It
+            Change it
           </span>
         </label>
       </div>
       <div className="section-container openapi-section-container">
-        <p className="title-text">Open API (Experimental feature)</p>
+        <p className="title-text">Open API</p>
         <p className="value-text">{openAPIRoute}</p>
         <span className="reset-btn" onClick={handleResetOpenIdBtnClick}>
           Reset API
