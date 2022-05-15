@@ -4,8 +4,16 @@
   .flex(row, space-between, center);
   @apply w-full h-auto px-6 flex-nowrap mb-1;
 
-  > .username-text {
-    @apply font-bold text-lg pr-2 text-slate-800 cursor-pointer shrink truncate;
+  > .username-container {
+    @apply shrink flex flex-row justify-start items-center flex-nowrap truncate;
+
+    > .username-text {
+      @apply font-bold text-lg pr-1 text-slate-800 cursor-pointer shrink truncate;
+    }
+
+    > .tag {
+      @apply text-xs px-1 bg-blue-500 rounded text-white;
+    }
   }
 
   > .action-btn {

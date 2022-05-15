@@ -28,9 +28,10 @@ const UserBanner: React.FC<Props> = () => {
 
   return (
     <div className="user-banner-container">
-      <p className="username-text" onClick={handleUsernameClick}>
-        {username}
-      </p>
+      <div className="username-container" onClick={handleUsernameClick}>
+        <span className="username-text">{username}</span>
+        {user?.role === "OWNER" ? <span className="tag">MOD</span> : null}
+      </div>
       <span className="action-btn menu-popup-btn" onClick={handlePopupBtnClick}>
         <img src="/icons/more.svg" className="icon-img" />
       </span>

@@ -77,7 +77,7 @@ const TagList: React.FC<Props> = () => {
         ))}
         <Only when={tags.length < 5 && memoService.initialized}>
           <p className="tag-tip-container">
-            Enter <span className="code-text"># Tag </span> to create a tag
+            Enter <span className="code-text">#Tag </span> to create a tag
           </p>
         </Only>
       </div>
