@@ -15,8 +15,6 @@
 
 ![demo](https://raw.githubusercontent.com/justmemos/memos/main/resources/demo.png)
 
-Built with `Go`, `SQLite` and `React`.
-
 ## 🎯 Intentions
 
 - ✍️ Write down the light-card memos very easily;
@@ -47,7 +45,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 
 ### Tech Stack
 
-![tech-stack](https://raw.githubusercontent.com/justmemos/memos/main/resources/tech-stack.png)
+<img alt="tech stack" src="https://raw.githubusercontent.com/justmemos/memos/main/resources/tech-stack.png" width="320" />
 
 ### Prerequisites
 
