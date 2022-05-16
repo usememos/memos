@@ -1,14 +1,13 @@
 -- user
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  email TEXT NOT NULL,
+  email TEXT NOT NULL UNIQUE,
   role TEXT NOT NULL CHECK (role IN ('OWNER', 'USER')) DEFAULT 'USER',
   name TEXT NOT NULL,
   password_hash TEXT NOT NULL,
-  open_id TEXT NOT NULL,
+  open_id TEXT NOT NULL UNIQUE,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  UNIQUE(`email`, `open_id`)
+  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
 );
 
 INSERT INTO

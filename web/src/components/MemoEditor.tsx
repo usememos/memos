@@ -246,7 +246,7 @@ const MemoEditor: React.FC<Props> = () => {
       const file = inputEl.files[0];
       const url = await handleUploadFile(file);
       if (url) {
-        editorRef.current?.insertText(url);
+        editorRef.current?.insertText(url + " ");
       }
     };
     inputEl.click();
@@ -259,7 +259,7 @@ const MemoEditor: React.FC<Props> = () => {
     }
   }, []);
 
-  const showEditStatus = Boolean(globalState.editMemoId);
+  const isEditing = Boolean(globalState.editMemoId);
 
   const editorConfig = useMemo(
     () => ({
@@ -267,17 +267,17 @@ const MemoEditor: React.FC<Props> = () => {
       initialContent: getEditorContentCache(),
       placeholder: "Any thoughts...",
       showConfirmBtn: true,
-      showCancelBtn: showEditStatus,
+      showCancelBtn: isEditing,
       onConfirmBtnClick: handleSaveBtnClick,
       onCancelBtnClick: handleCancelBtnClick,
       onContentChange: handleContentChange,
     }),
-    [showEditStatus]
+    [isEditing]
   );
 
   return (
-    <div className={"memo-editor-container " + (showEditStatus ? "edit-ing" : "")}>
-      <p className={"tip-text " + (showEditStatus ? "" : "hidden")}>Editting...</p>
+    <div className={"memo-editor-container " + (isEditing ? "edit-ing" : "")}>
+      <p className={"tip-text " + (isEditing ? "" : "hidden")}>Editting...</p>
       <Editor
         ref={editorRef}
         {...editorConfig}

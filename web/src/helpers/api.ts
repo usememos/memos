@@ -48,10 +48,18 @@ namespace api {
     });
   }
 
-  export function getUserInfo() {
-    return request<Model.User>({
+  export function getUserList() {
+    return request<Model.User[]>({
       method: "GET",
-      url: "/api/user/me",
+      url: "/api/user",
+    });
+  }
+
+  export function createUser(userCreate: API.UserCreate) {
+    return request<Model.User[]>({
+      method: "POST",
+      url: "/api/user",
+      data: userCreate,
     });
   }
 
@@ -66,15 +74,15 @@ namespace api {
     });
   }
 
-  export function signup(email: string, role: UserRole, name: string, password: string) {
+  export function signup(email: string, password: string, role: UserRole) {
     return request<Model.User>({
       method: "POST",
       url: "/api/auth/signup",
       data: {
         email,
-        role,
-        name,
         password,
+        role,
+        name: email,
       },
     });
   }
@@ -86,23 +94,10 @@ namespace api {
     });
   }
 
-  export function checkUsernameUsable(name: string) {
-    return request<boolean>({
-      method: "POST",
-      url: "/api/user/rename_check",
-      data: {
-        name,
-      },
-    });
-  }
-
-  export function checkPasswordValid(password: string) {
-    return request<boolean>({
-      method: "POST",
-      url: "/api/user/password_check",
-      data: {
-        password,
-      },
+  export function getUserInfo() {
+    return request<Model.User>({
+      method: "GET",
+      url: "/api/user/me",
     });
   }
 

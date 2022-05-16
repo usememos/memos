@@ -16,6 +16,7 @@ module.exports = {
       spacing: {
         128: "32rem",
         168: "42rem",
+        176: "44rem",
         200: "50rem",
       },
       zIndex: {

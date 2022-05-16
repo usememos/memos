@@ -1,12 +1,12 @@
 import { useContext, useState } from "react";
-import appContext from "../stores/appContext";
-import { userService } from "../services";
-import utils from "../helpers/utils";
-import { validate, ValidatorConfig } from "../helpers/validator";
-import toastHelper from "./Toast";
-import showChangePasswordDialog from "./ChangePasswordDialog";
-import showConfirmResetOpenIdDialog from "./ConfirmResetOpenIdDialog";
-import "../less/my-account-section.less";
+import appContext from "../../stores/appContext";
+import { userService } from "../../services";
+import utils from "../../helpers/utils";
+import { validate, ValidatorConfig } from "../../helpers/validator";
+import toastHelper from "../Toast";
+import showChangePasswordDialog from "../ChangePasswordDialog";
+import showConfirmResetOpenIdDialog from "../ConfirmResetOpenIdDialog";
+import "../../less/settings/my-account-section.less";
 
 const validateConfig: ValidatorConfig = {
   minLength: 4,

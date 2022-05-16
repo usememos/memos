@@ -81,22 +81,8 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		if len(signup.Email) < 6 {
 			return echo.NewHTTPError(http.StatusBadRequest, "Email is too short, minimum length is 6.")
 		}
-		if len(signup.Name) < 6 {
-			return echo.NewHTTPError(http.StatusBadRequest, "Username is too short, minimum length is 6.")
-		}
 		if len(signup.Password) < 6 {
 			return echo.NewHTTPError(http.StatusBadRequest, "Password is too short, minimum length is 6.")
-		}
-
-		userFind := &api.UserFind{
-			Email: &signup.Email,
-		}
-		user, err := s.Store.FindUser(userFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", signup.Email)).SetInternal(err)
-		}
-		if user != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Existed user found: %s", signup.Email))
 		}
 
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(signup.Password), bcrypt.DefaultCost)
@@ -111,7 +97,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			PasswordHash: string(passwordHash),
 			OpenID:       common.GenUUID(),
 		}
-		user, err = s.Store.CreateUser(userCreate)
+		user, err := s.Store.CreateUser(userCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}

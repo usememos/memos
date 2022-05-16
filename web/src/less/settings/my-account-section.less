@@ -1,0 +1,63 @@
+@import "../mixin.less";
+
+.account-section-container {
+  > .form-label {
+    min-height: 28px;
+
+    > .normal-text {
+      @apply first:mr-2 text-base;
+    }
+
+    &.username-label {
+      > input {
+        @apply grow-0 shadow-inner w-auto px-2 py-1 text-base border rounded leading-6 bg-transparent focus:border-black;
+      }
+
+      > .btns-container {
+        .flex(row, flex-start, center);
+        @apply ml-2 shrink-0;
+
+        > .btn {
+          @apply text-sm shadow px-4 py-1 leading-6 rounded border hover:opacity-80 bg-gray-50;
+
+          &.cancel-btn {
+            @apply shadow-none bg-transparent;
+          }
+
+          &.confirm-btn {
+            @apply bg-green-600 text-white;
+          }
+        }
+      }
+    }
+
+    &.password-label {
+      > .btn {
+        @apply text-blue-600 ml-1 cursor-pointer hover:opacity-80;
+      }
+    }
+  }
+}
+
+.openapi-section-container {
+  > .value-text {
+    @apply w-full font-mono text-sm shadow-inner border py-2 px-3 rounded leading-6 break-all whitespace-pre-wrap;
+  }
+
+  > .reset-btn {
+    @apply mt-2 py-1 px-2 text-sm shadow bg-red-50 border border-red-500 text-red-600 rounded cursor-pointer select-none hover:opacity-80;
+  }
+
+  > .usage-guide-container {
+    .flex(column, flex-start, flex-start);
+    @apply mt-2 w-full;
+
+    > .title-text {
+      @apply my-2 text-sm;
+    }
+
+    > pre {
+      @apply w-full bg-gray-100 shadow-inner py-2 px-3 text-sm rounded font-mono break-all whitespace-pre-wrap;
+    }
+  }
+}

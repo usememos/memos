@@ -1,0 +1,39 @@
+@import "../mixin.less";
+
+.member-section-container {
+  > .create-member-container {
+    @apply w-full flex flex-col justify-start items-start;
+
+    > .input-form-container {
+      @apply w-full mb-2 flex flex-row justify-start items-center;
+
+      > .field-text {
+        @apply text-sm text-gray-600 w-20 text-right pr-2;
+      }
+
+      > input {
+        @apply border rounded text-sm leading-6 shadow-inner py-1 px-2;
+      }
+    }
+
+    > .btns-container {
+      @apply w-full mb-6 pl-20 flex flex-row justify-start items-center;
+
+      > button {
+        @apply border text-sm py-1 px-3 rounded leading-6 shadow hover:opacity-80;
+      }
+    }
+  }
+
+  > .user-container {
+    @apply w-full mb-4 grid grid-cols-5;
+
+    > .field-text {
+      @apply text-base mr-4 w-16;
+
+      &.id-text {
+        @apply font-mono;
+      }
+    }
+  }
+}

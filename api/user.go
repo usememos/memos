@@ -27,9 +27,10 @@ type User struct {
 
 type UserCreate struct {
 	// Domain specific fields
-	Email        string
-	Role         Role
-	Name         string
+	Email        string `json:"email"`
+	Role         Role   `json:"role"`
+	Name         string `json:"name"`
+	Password     string `json:"password"`
 	PasswordHash string
 	OpenID       string
 }

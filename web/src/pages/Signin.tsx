@@ -89,11 +89,9 @@ const Signin: React.FC<Props> = () => {
       return;
     }
 
-    const name = email.split("@")[0];
-
     try {
       actionBtnLoadingState.setLoading();
-      await api.signup(email, "OWNER", name, password);
+      await api.signup(email, password, "OWNER");
       const user = await userService.doSignIn();
       if (user) {
         locationService.replaceHistory("/");

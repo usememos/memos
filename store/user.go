@@ -25,6 +25,15 @@ func (s *Store) PatchUser(patch *api.UserPatch) (*api.User, error) {
 	return user, nil
 }
 
+func (s *Store) FindUserList(find *api.UserFind) ([]*api.User, error) {
+	list, err := findUserList(s.db, find)
+	if err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
 func (s *Store) FindUser(find *api.UserFind) (*api.User, error) {
 	list, err := findUserList(s.db, find)
 	if err != nil {
