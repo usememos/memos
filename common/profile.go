@@ -40,20 +40,6 @@ func checkDSN(dataDir string) (string, error) {
 	return dataDir, nil
 }
 
-func getSystemVersion() string {
-	absPath, err := filepath.Abs("./VERSION")
-	if err != nil {
-		return "0.0.0"
-	}
-
-	data, err := os.ReadFile(absPath)
-	if err != nil {
-		return "0.0.0"
-	}
-
-	return string(data)
-}
-
 // GetDevProfile will return a profile for dev.
 func GetProfile() *Profile {
 	mode := os.Getenv("mode")
@@ -79,12 +65,10 @@ func GetProfile() *Profile {
 
 	dsn := fmt.Sprintf("%s/memos_%s.db", dataDir, mode)
 
-	version := getSystemVersion()
-
 	return &Profile{
 		Mode:    mode,
 		Port:    port,
 		DSN:     dsn,
-		Version: version,
+		Version: Version,
 	}
 }
