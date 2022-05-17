@@ -30,10 +30,10 @@
 ## ⚓️ Deploy with Docker
 
 ```docker
-docker run --name memos --publish 8080:8080 --volume /path/to/your/data/:/var/opt/memos -e mode=prod neosmemo/memos:dev
+docker run --name memos --publish 8080:8080 --volume ~/.memos/:/var/opt/memos -e mode=prod neosmemo/memos:0.0.1
 ```
 
-If the `/path/to/your/data` does not have a `memos_prod.db` file, then `memos` will auto generate it.
+If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
 
 ## 🏗 Development
 
