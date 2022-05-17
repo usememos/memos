@@ -17,7 +17,7 @@
         }
 
         > .title-input {
-          @apply w-full px-2 text-base leading-8 rounded border resize-none;
+          @apply w-full py-1 px-2 h-9 text-sm rounded border shadow-inner;
         }
 
         > .filters-wrapper {
@@ -25,7 +25,7 @@
           @apply w-full;
 
           > .create-filter-btn {
-            @apply text-sm leading-8 cursor-pointer text-green-500 hover:text-green-600;
+            @apply text-sm py-1 px-2 rounded shadow flex flex-row justify-start items-center border cursor-pointer text-blue-500 hover:opacity-80;
           }
         }
       }
@@ -39,32 +39,17 @@
         .flex(row, flex-start, center);
 
         > .tip-text {
-          font-size: 13px;
-          color: gray;
-          margin-right: 8px;
+          @apply text-sm text-gray-400 mr-2;
         }
 
         > .btn {
-          padding: 6px 16px;
-          font-size: 13px;
-          border-radius: 4px;
-
-          &:hover {
-            opacity: 0.8;
-          }
-
-          &.disabled {
-            color: lightgray;
-            cursor: not-allowed;
-          }
+          @apply text-base px-4 py-1 leading-7 rounded shadow hover:opacity-80;
 
           &.save-btn {
-            background-color: @text-green;
-            color: white;
+            @apply bg-green-600 text-white;
 
             &.requesting {
-              cursor: wait;
-              opacity: 0.8;
+              @apply cursor-wait opacity-80;
             }
           }
         }
@@ -75,19 +60,10 @@
 
 .memo-filter-input-wrapper {
   .flex(row, flex-start, center);
-  width: 100%;
-  margin-top: 8px;
-  flex-shrink: 0;
-
-  &:first-of-type {
-    margin-top: 0;
-  }
+  @apply w-full mb-3 shrink-0;
 
   > .selector-wrapper {
-    margin-right: 4px;
-    height: 34px;
-    flex-grow: 0;
-    flex-shrink: 0;
+    @apply mr-1 h-9 grow-0 shrink-0;
 
     &.relation-selector {
       @apply w-16;
@@ -109,28 +85,10 @@
 
   > input.value-inputer {
     max-width: calc(100% - 152px);
-    height: 34px;
-    padding: 0 8px;
-    flex-shrink: 0;
-    flex-grow: 1;
-    margin-right: 4px;
-    border-radius: 4px;
-    border: 1px solid @bg-gray;
-    background-color: transparent;
-
-    &:hover {
-      background-color: @bg-whitegray;
-    }
+    @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50;
   }
 
   > .remove-btn {
-    width: 16px;
-    height: auto;
-    cursor: pointer;
-    opacity: 0.8;
-
-    &:hover {
-      opacity: 0.6;
-    }
+    @apply w-4 h-auto cursor-pointer opacity-80 hover:opacity-60;
   }
 }

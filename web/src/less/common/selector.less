@@ -2,8 +2,7 @@
 
 .selector-wrapper {
   .flex(column, flex-start, flex-start);
-  position: relative;
-  height: 28px;
+  @apply relative h-7;
 
   > .current-value-container {
     .flex(row, space-between, center);
@@ -11,48 +10,29 @@
 
     &:hover,
     &.active {
-      background-color: @bg-whitegray;
+      @apply bg-gray-100;
     }
 
     > .value-text {
-      margin-right: 0px;
-      font-size: 13px;
-      line-height: 32px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      @apply text-sm mr-0 truncate;
       width: calc(100% - 20px);
     }
 
     > .arrow-text {
       .flex(row, center, center);
-      width: 16px;
-      flex-shrink: 0;
+      @apply w-4 shrink-0;
 
       > .icon-img {
-        width: 16px;
-        height: auto;
-        opacity: 0.6;
-        transform: rotate(90deg);
+        @apply w-4 h-auto opacity-80 rotate-90;
       }
     }
   }
 
   > .items-wrapper {
     .flex(column, flex-start, flex-start);
-    position: absolute;
-    top: 100%;
-    left: 0;
-    width: auto;
+    @apply absolute top-full left-0 w-auto p-1 mt-1 -ml-2 bg-white rounded-md overflow-y-auto;
     min-width: calc(100% + 16px);
     max-height: 256px;
-    padding: 4px;
-    overflow-y: auto;
-    margin-top: 2px;
-    margin-left: -8px;
-    z-index: 1;
-    background-color: white;
-    border-radius: 8px;
     box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
     .hide-scroll-bar();
 

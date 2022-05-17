@@ -89,7 +89,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">
-          <span className="icon-text">🎯</span>
+          <span className="icon-text">🚀</span>
           {shortcutId ? "Edit Shortcut" : "Create Shortcut"}
         </p>
         <button className="btn close-btn" onClick={destroy}>
@@ -99,7 +99,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container">
         <div className="form-item-container input-form-container">
           <span className="normal-text">Title</span>
-          <input className="title-input" type="text" value={title} onChange={handleTitleInputChange} />
+          <input className="title-input" type="text" placeholder="shortcut title" value={title} onChange={handleTitleInputChange} />
         </div>
         <div className="form-item-container filter-form-container">
           <span className="normal-text">Filters</span>

@@ -5,18 +5,11 @@
   @apply relative w-full h-auto bg-white;
 
   > .common-editor-inputer {
-    @apply w-full h-full mt-1 mb-1;
+    @apply w-full h-full mt-1 mb-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent whitespace-pre-wrap;
     min-height: 40px;
     max-height: 300px;
     .pretty-scroll-bar(2px, 0);
-    font-size: 15px;
-    line-height: 24px;
-    resize: none;
-    overflow-x: hidden;
-    overflow-y: scroll;
-    background-color: transparent;
     z-index: 1;
-    white-space: pre-wrap;
 
     &::placeholder {
       padding-left: 2px;
@@ -30,64 +23,32 @@
   }
 
   > .common-tools-wrapper {
-    .flex(row, space-between, center);
-    width: 100%;
+    @apply w-full flex flex-row justify-between items-center;
 
     > .common-tools-container {
-      .flex(row, flex-start, center);
+      @apply flex flex-row justify-start items-center;
 
       > .action-btn {
-        width: 18px;
-        height: auto;
-        margin-right: 8px;
-        user-select: none;
-        cursor: pointer;
-        opacity: 0.5;
-
-        &:hover {
-          opacity: 0.8;
-        }
+        @apply p-1 w-7 h-auto mr-1 select-none rounded cursor-pointer opacity-60 hover:opacity-80 hover:bg-gray-300 hover:shadow;
       }
     }
 
     > .btns-container {
-      .flex(row, flex-end, center);
-      flex-grow: 0;
-      flex-shrink: 0;
+      @apply grow-0 shrink-0 flex flex-row justify-end items-center;
 
       > .action-btn {
-        border: none;
-        user-select: none;
-        cursor: pointer;
-        padding: 6px 12px;
-        border-radius: 6px;
-        font-size: 13px;
-        line-height: 32px;
-
-        &:hover {
-          opacity: 0.8;
-        }
+        @apply border-none select-none cursor-pointer py-1 px-3 rounded text-sm hover:opacity-80;
       }
 
       > .cancel-btn {
-        color: gray;
-        background-color: transparent;
-        margin-right: 8px;
+        @apply text-gray-500 bg-transparent mr-2;
       }
 
       > .confirm-btn {
-        cursor: pointer;
-        padding: 0 12px;
-        background-color: @text-green;
-        color: white;
-
-        &:disabled {
-          cursor: not-allowed;
-          opacity: 0.6;
-        }
+        @apply shadow cursor-pointer px-3 py-0 leading-8 bg-green-600 text-white text-sm hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60;
 
         > .icon-text {
-          margin-left: 4px;
+          @apply text-base ml-1;
         }
       }
     }

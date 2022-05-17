@@ -14,14 +14,13 @@
       }
 
       > .btns-container {
-        .flex(row, flex-start, center);
-        @apply ml-2 shrink-0;
+        @apply ml-2 shrink-0 flex flex-row justify-start items-center;
 
         > .btn {
           @apply text-sm shadow px-4 py-1 leading-6 rounded border hover:opacity-80 bg-gray-50;
 
           &.cancel-btn {
-            @apply shadow-none bg-transparent;
+            @apply shadow-none border-none bg-transparent;
           }
 
           &.confirm-btn {

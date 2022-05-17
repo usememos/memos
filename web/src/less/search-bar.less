@@ -5,21 +5,14 @@
 
   > .search-bar-inputer {
     .flex(row, flex-start, center);
-    background-color: @bg-lightgray;
-    width: 100%;
-    padding: 8px 16px;
-    border-radius: 8px;
+    @apply w-full py-2 px-4 rounded-lg flex flex-row justify-start items-center bg-gray-200;
 
     > .icon-img {
-      margin-right: 8px;
-      width: 14px;
-      height: auto;
-      opacity: 0.6;
+      @apply mr-2 w-4 h-auto opacity-80;
     }
 
     > .text-input {
-      width: 100%;
-      font-size: 15px;
+      @apply grow text-sm;
     }
 
     &:hover {
