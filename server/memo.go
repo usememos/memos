@@ -116,7 +116,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		memoDelete := &api.MemoDelete{
-			ID: &memoID,
+			ID: memoID,
 		}
 
 		err = s.Store.DeleteMemo(memoDelete)

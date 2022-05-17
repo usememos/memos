@@ -11,10 +11,6 @@ import (
 
 type Main struct {
 	profile *common.Profile
-
-	server *server.Server
-
-	db *store.DB
 }
 
 func (m *Main) Run() error {
@@ -23,14 +19,10 @@ func (m *Main) Run() error {
 		return fmt.Errorf("cannot open db: %w", err)
 	}
 
-	m.db = db
-
 	s := server.NewServer(m.profile)
 
 	storeInstance := store.New(db)
 	s.Store = storeInstance
-
-	m.server = s
 
 	if err := s.Run(); err != nil {
 		return err
@@ -42,7 +34,7 @@ func (m *Main) Run() error {
 func Execute() {
 	profile := common.GetProfile()
 	m := Main{
-		profile: &profile,
+		profile: profile,
 	}
 
 	err := m.Run()

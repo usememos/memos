@@ -29,7 +29,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		}
 
 		systemStatus := api.SystemStatus{
-			Owner: ownerUser,
+			Owner:   ownerUser,
+			Profile: s.Profile,
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)

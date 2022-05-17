@@ -1,13 +1,13 @@
 -- user
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   email TEXT NOT NULL UNIQUE,
   role TEXT NOT NULL CHECK (role IN ('OWNER', 'USER')) DEFAULT 'USER',
   name TEXT NOT NULL,
   password_hash TEXT NOT NULL,
-  open_id TEXT NOT NULL UNIQUE,
-  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
+  open_id TEXT NOT NULL UNIQUE
 );
 
 INSERT INTO
@@ -30,12 +30,12 @@ END;
 -- memo
 CREATE TABLE memo (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   -- allowed row status are 'NORMAL', 'ARCHIVED', 'HIDDEN'.
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   content TEXT NOT NULL DEFAULT '',
-  creator_id INTEGER NOT NULL,
   FOREIGN KEY(creator_id) REFERENCES users(id)
 );
 
@@ -59,12 +59,11 @@ END;
 -- shortcut
 CREATE TABLE shortcut (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-
   title TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '{}',
-  creator_id INTEGER NOT NULL,
   -- allowed row status are 'NORMAL', 'ARCHIVED'.
   row_status TEXT NOT NULL DEFAULT 'NORMAL',
   FOREIGN KEY(creator_id) REFERENCES users(id)
@@ -90,13 +89,13 @@ END;
 -- resource
 CREATE TABLE resource (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
+  creator_id INTEGER NOT NULL,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   filename TEXT NOT NULL DEFAULT '',
   blob BLOB NOT NULL,
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
-  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  creator_id INTEGER NOT NULL,
   FOREIGN KEY(creator_id) REFERENCES users(id)
 );
 

@@ -1,21 +1,24 @@
 import { useEffect, useState } from "react";
-import utils from "../helpers/utils";
+import api from "../helpers/api";
+import Only from "./common/OnlyWhen";
 import { showDialog } from "./Dialog";
 import "../less/about-site-dialog.less";
 
 interface Props extends DialogProps {}
 
 const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
-  const [lastUpdatedAt, setLastUpdatedAt] = useState("");
+  const [profile, setProfile] = useState<Profile>();
 
   useEffect(() => {
     try {
-      fetch("https://api.github.com/repos/justmemos/memos/commits/main").then(async (res) => {
-        const data = (await res.json()) as any;
-        setLastUpdatedAt(utils.getDateTimeString(new Date(data.commit.committer.date)));
+      api.getSystemStatus().then(({ profile }) => {
+        setProfile(profile);
       });
     } catch (error) {
-      setLastUpdatedAt("2017/12/31");
+      setProfile({
+        mode: "dev",
+        version: "0.0.0",
+      });
     }
   }, []);
 
@@ -35,16 +38,17 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <p>
-          Memos is an open source, quickly self-hosted alternative <a href="https://flomoapp.com">flomo</a>.
+          Memos is an open source, quickly self-hosted alternative to <a href="https://flomoapp.com">flomo</a>.
         </p>
         <br />
         <p>
-          🏗 <a href="https://github.com/justmemos/memos">This project</a> is working in progress, and very pleasure to your{" "}
-          <a href="https://github.com/justmemos/memos/issues">PRs</a>.
+          <a href="https://github.com/justmemos/memos">🏗 Source code</a>, and built by <a href="https://github.com/boojack">Steven 🐯</a>.
         </p>
-        <p className="updated-time-text">
-          Last updated on <span className="pre-text">{lastUpdatedAt}</span> 🎉
-        </p>
+        <Only when={profile !== undefined}>
+          <p className="updated-time-text">
+            version: <span className="pre-text">{profile?.version}</span> 🎉
+          </p>
+        </Only>
       </div>
     </>
   );

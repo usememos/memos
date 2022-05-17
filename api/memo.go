@@ -16,7 +16,7 @@ type Memo struct {
 type MemoCreate struct {
 	// Standard fields
 	CreatorID int
-	// Used to import memos with clearly created ts.
+	// Used to import memos with a clearly created ts.
 	CreatedTs *int64 `json:"createdTs"`
 
 	// Domain specific fields
@@ -27,7 +27,6 @@ type MemoPatch struct {
 	ID int
 
 	// Standard fields
-	CreatedTs *int64  `json:"createdTs"`
 	RowStatus *string `json:"rowStatus"`
 
 	// Domain specific fields
@@ -43,5 +42,5 @@ type MemoFind struct {
 }
 
 type MemoDelete struct {
-	ID *int `json:"id"`
+	ID int `json:"id"`
 }

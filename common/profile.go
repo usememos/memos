@@ -11,10 +11,12 @@ import (
 type Profile struct {
 	// Mode can be "prod" or "dev"
 	Mode string `json:"mode"`
-	// Port is the binding port for server.
+	// Port is the binding port for server
 	Port int `json:"port"`
 	// DSN points to where Memos stores its own data
 	DSN string `json:"dsn"`
+	// Version is the current version of server
+	Version string `json:"version"`
 }
 
 func checkDSN(dataDir string) (string, error) {
@@ -38,8 +40,22 @@ func checkDSN(dataDir string) (string, error) {
 	return dataDir, nil
 }
 
+func getSystemVersion() string {
+	absPath, err := filepath.Abs("./VERSION")
+	if err != nil {
+		return "0.0.0"
+	}
+
+	data, err := os.ReadFile(absPath)
+	if err != nil {
+		return "0.0.0"
+	}
+
+	return string(data)
+}
+
 // GetDevProfile will return a profile for dev.
-func GetProfile() Profile {
+func GetProfile() *Profile {
 	mode := os.Getenv("mode")
 	if mode != "dev" && mode != "prod" {
 		mode = "dev"
@@ -63,9 +79,12 @@ func GetProfile() Profile {
 
 	dsn := fmt.Sprintf("%s/memos_%s.db", dataDir, mode)
 
-	return Profile{
-		Mode: mode,
-		Port: port,
-		DSN:  dsn,
+	version := getSystemVersion()
+
+	return &Profile{
+		Mode:    mode,
+		Port:    port,
+		DSN:     dsn,
+		Version: version,
 	}
 }
