@@ -33,7 +33,7 @@
 docker run --name memos --publish 8080:8080 --volume /path/to/your/data/:/var/opt/memos -e mode=prod neosmemo/memos:dev
 ```
 
-If the `/path/to/your/data` doesn't have a `memos_prod.db` file, then `memos` will auto-generate it and the default username is `dear_musk` with password `secret`.
+If the `/path/to/your/data` does not have a `memos_prod.db` file, then `memos` will auto generate it.
 
 ## 🏗 Development
 
