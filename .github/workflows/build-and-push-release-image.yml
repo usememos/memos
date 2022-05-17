@@ -7,7 +7,7 @@ on:
       - "release/v*.*.*"
 
 jobs:
-  docker:
+  build-and-push-release-image:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

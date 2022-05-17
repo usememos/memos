@@ -30,7 +30,7 @@
 ## ⚓️ Deploy with Docker
 
 ```docker
-docker run --name memos --publish 8080:8080 --volume ~/.memos/:/var/opt/memos -e mode=prod neosmemo/memos:0.0.1
+docker run --name memos --publish 5230:8080 --volume ~/.memos/:/var/opt/memos -e mode=prod neosmemo/memos:0.0.1
 ```
 
 If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
@@ -45,7 +45,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 
 ### Tech Stack
 
-<img alt="tech stack" src="https://raw.githubusercontent.com/justmemos/memos/main/resources/tech-stack.png" width="320" />
+<img alt="tech stack" src="https://raw.githubusercontent.com/justmemos/memos/main/resources/tech-stack.png" width="360" />
 
 ### Prerequisites
 
