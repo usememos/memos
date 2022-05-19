@@ -17,7 +17,7 @@ const Sidebar: React.FC<Props> = () => {
     memoState: { memos, tags },
     userState: { user },
   } = useContext(appContext);
-  const createdDays = user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdAt)) / 1000 / 3600 / 24) : 0;
+  const createdDays = user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24) : 0;
 
   const handleMyAccountBtnClick = () => {
     showSettingDialog();

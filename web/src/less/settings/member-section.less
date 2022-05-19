@@ -25,15 +25,29 @@
     }
   }
 
-  > .user-container {
-    @apply w-full mb-4 grid grid-cols-5;
+  > .field-container {
+    > .field-text {
+      @apply text-gray-400 text-sm;
+    }
+  }
+
+  > .member-container {
+    @apply w-full grid grid-cols-5 border-b py-2;
 
     > .field-text {
-      @apply text-base mr-4 w-16;
+      @apply text-base pl-2 mr-4 w-16;
 
       &.id-text {
-        @apply font-mono;
+        @apply font-mono text-gray-600;
       }
+
+      &.email-text {
+        @apply col-span-3;
+      }
+    }
+
+    > .buttons-container {
+      @apply col-span-1;
     }
   }
 }

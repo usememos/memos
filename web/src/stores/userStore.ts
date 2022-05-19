@@ -1,5 +1,5 @@
 export interface State {
-  user: Model.User | null;
+  user: User | null;
 }
 
 interface SignInAction {

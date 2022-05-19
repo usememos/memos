@@ -53,7 +53,7 @@ const MemoList: React.FC<Props> = () => {
           if (
             duration &&
             duration.from < duration.to &&
-            (utils.getTimeStampByDate(memo.createdAt) < duration.from || utils.getTimeStampByDate(memo.createdAt) > duration.to)
+            (utils.getTimeStampByDate(memo.createdTs) < duration.from || utils.getTimeStampByDate(memo.createdTs) > duration.to)
           ) {
             shouldShow = false;
           }
@@ -76,8 +76,8 @@ const MemoList: React.FC<Props> = () => {
         })
       : memos;
 
-  const pinnedMemos = shownMemos.filter((m) => m.rowStatus === "ARCHIVED");
-  const unpinnedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL");
+  const pinnedMemos = shownMemos.filter((m) => m.pinned);
+  const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
   const sortedMemos = pinnedMemos.concat(unpinnedMemos);
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const MemoList: React.FC<Props> = () => {
   return (
     <div className={`memo-list-container ${isFetching ? "" : "completed"}`} onClick={handleMemoListClick} ref={wrapperElement}>
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.updatedAt}`} memo={memo} />
+        <Memo key={`${memo.id}-${memo.updatedTs}`} memo={memo} />
       ))}
       <div className="status-text-container">
         <p className="status-text">

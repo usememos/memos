@@ -83,8 +83,8 @@ namespace utils {
     return Array.from(new Set(data));
   }
 
-  export function dedupeObjectWithId<T extends { id: string }>(data: T[]): T[] {
-    const idSet = new Set<string>();
+  export function dedupeObjectWithId<T extends { id: string | number }>(data: T[]): T[] {
+    const idSet = new Set<string | number>();
     const result = [];
 
     for (const d of data) {

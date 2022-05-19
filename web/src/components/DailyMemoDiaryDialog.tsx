@@ -20,7 +20,7 @@ const weekdayChineseStrArray = ["周日", "周一", "周二", "周三", "周四"
 
 const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
   const loadingState = useLoading();
-  const [memos, setMemos] = useState<Model.Memo[]>([]);
+  const [memos, setMemos] = useState<Memo[]>([]);
   const [currentDateStamp, setCurrentDateStamp] = useState(utils.getDateStampByDate(utils.getDateString(props.currentDateStamp)));
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const memosElRef = useRef<HTMLDivElement>(null);
@@ -32,10 +32,10 @@ const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
         .getState()
         .memos.filter(
           (a) =>
-            utils.getTimeStampByDate(a.createdAt) >= currentDateStamp &&
-            utils.getTimeStampByDate(a.createdAt) < currentDateStamp + DAILY_TIMESTAMP
+            utils.getTimeStampByDate(a.createdTs) >= currentDateStamp &&
+            utils.getTimeStampByDate(a.createdTs) < currentDateStamp + DAILY_TIMESTAMP
         )
-        .sort((a, b) => utils.getTimeStampByDate(a.createdAt) - utils.getTimeStampByDate(b.createdAt));
+        .sort((a, b) => utils.getTimeStampByDate(a.createdTs) - utils.getTimeStampByDate(b.createdTs));
       setMemos(dailyMemos);
       loadingState.setFinish();
     };
@@ -115,7 +115,7 @@ const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
         ) : (
           <div className="dailymemos-wrapper">
             {memos.map((memo) => (
-              <DailyMemo key={`${memo.id}-${memo.updatedAt}`} memo={memo} />
+              <DailyMemo key={`${memo.id}-${memo.updatedTs}`} memo={memo} />
             ))}
           </div>
         )}

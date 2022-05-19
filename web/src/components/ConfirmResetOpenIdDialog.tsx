@@ -44,7 +44,7 @@ const ConfirmResetOpenIdDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <p className="warn-text">
-          ⚠️ The existing API will be invalidated and a new one will be generated, are you sure you want to reset?
+          ❗️The existing API will be invalidated and a new one will be generated, are you sure you want to reset?
         </p>
         <div className="btns-container">
           <span className="btn cancel-btn" onClick={handleCloseBtnClick}>

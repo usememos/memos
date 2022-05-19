@@ -1,3 +1,5 @@
+import { UNKNOWN_ID } from "../helpers/consts";
+
 export interface AppSetting {
   shouldSplitMemoWord: boolean;
   shouldHideImageUrl: boolean;
@@ -5,21 +7,21 @@ export interface AppSetting {
 }
 
 export interface State extends AppSetting {
-  markMemoId: string;
-  editMemoId: string;
+  markMemoId: MemoId;
+  editMemoId: MemoId;
 }
 
 interface SetMarkMemoIdAction {
   type: "SET_MARK_MEMO_ID";
   payload: {
-    markMemoId: string;
+    markMemoId: MemoId;
   };
 }
 
 interface SetEditMemoIdAction {
   type: "SET_EDIT_MEMO_ID";
   payload: {
-    editMemoId: string;
+    editMemoId: MemoId;
   };
 }
 
@@ -65,8 +67,8 @@ export function reducer(state: State, action: Actions) {
 }
 
 export const defaultState: State = {
-  markMemoId: "",
-  editMemoId: "",
+  markMemoId: UNKNOWN_ID,
+  editMemoId: UNKNOWN_ID,
   shouldSplitMemoWord: true,
   shouldHideImageUrl: true,
   shouldUseMarkdownParser: true,

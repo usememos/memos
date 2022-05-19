@@ -1,7 +1,6 @@
 import { useContext, useState } from "react";
 import appContext from "../../stores/appContext";
 import { userService } from "../../services";
-import utils from "../../helpers/utils";
 import { validate, ValidatorConfig } from "../../helpers/validator";
 import toastHelper from "../Toast";
 import showChangePasswordDialog from "../ChangePasswordDialog";
@@ -19,7 +18,7 @@ interface Props {}
 
 const MyAccountSection: React.FC<Props> = () => {
   const { userState } = useContext(appContext);
-  const user = userState.user as Model.User;
+  const user = userState.user as User;
   const [username, setUsername] = useState<string>(user.name);
   const openAPIRoute = `${window.location.origin}/h/${user.openId}/memo`;
 
@@ -68,10 +67,6 @@ const MyAccountSection: React.FC<Props> = () => {
         <label className="form-label">
           <span className="normal-text">Email:</span>
           <span className="normal-text">{user.email}</span>
-        </label>
-        <label className="form-label">
-          <span className="normal-text">Created at:</span>
-          <span className="normal-text">{utils.getDateString(user.createdAt)}</span>
         </label>
         <label className="form-label input-form-label username-label">
           <span className="normal-text">Username:</span>

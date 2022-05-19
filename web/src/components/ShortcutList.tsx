@@ -20,10 +20,10 @@ const ShortcutList: React.FC<Props> = () => {
   const loadingState = useLoading();
   const pinnedShortcuts = shortcuts
     .filter((s) => s.rowStatus === "ARCHIVED")
-    .sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt));
+    .sort((a, b) => utils.getTimeStampByDate(b.createdTs) - utils.getTimeStampByDate(a.createdTs));
   const unpinnedShortcuts = shortcuts
     .filter((s) => s.rowStatus === "NORMAL")
-    .sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt));
+    .sort((a, b) => utils.getTimeStampByDate(b.createdTs) - utils.getTimeStampByDate(a.createdTs));
   const sortedShortcuts = pinnedShortcuts.concat(unpinnedShortcuts);
 
   useEffect(() => {
@@ -55,7 +55,7 @@ const ShortcutList: React.FC<Props> = () => {
 };
 
 interface ShortcutContainerProps {
-  shortcut: Model.Shortcut;
+  shortcut: Shortcut;
   isActive: boolean;
 }
 

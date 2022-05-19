@@ -1,7 +1,6 @@
 import userService from "./userService";
 import api from "../helpers/api";
 import appStore from "../stores/appStore";
-import utils from "../helpers/utils";
 
 class ShortcutService {
   public getState() {
@@ -33,7 +32,7 @@ class ShortcutService {
     return null;
   }
 
-  public pushShortcut(shortcut: Model.Shortcut) {
+  public pushShortcut(shortcut: Shortcut) {
     appStore.dispatch({
       type: "INSERT_SHORTCUT",
       payload: {
@@ -44,7 +43,7 @@ class ShortcutService {
     });
   }
 
-  public editShortcut(shortcut: Model.Shortcut) {
+  public editShortcut(shortcut: Shortcut) {
     appStore.dispatch({
       type: "UPDATE_SHORTCUT",
       payload: shortcut,
@@ -79,12 +78,11 @@ class ShortcutService {
     await api.unpinShortcut(shortcutId);
   }
 
-  public convertResponseModelShortcut(shortcut: Model.Shortcut): Model.Shortcut {
+  public convertResponseModelShortcut(shortcut: Shortcut): Shortcut {
     return {
       ...shortcut,
-      id: String(shortcut.id),
-      createdAt: utils.getDataStringWithTs(shortcut.createdTs),
-      updatedAt: utils.getDataStringWithTs(shortcut.updatedTs),
+      createdTs: shortcut.createdTs * 1000,
+      updatedTs: shortcut.updatedTs * 1000,
     };
   }
 }

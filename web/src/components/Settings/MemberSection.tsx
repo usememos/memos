@@ -16,7 +16,7 @@ const PreferencesSection: React.FC<Props> = () => {
     createUserEmail: "",
     createUserPassword: "",
   });
-  const [userList, setUserList] = useState<Model.User[]>([]);
+  const [userList, setUserList] = useState<User[]>([]);
 
   useEffect(() => {
     fetchUserList();
@@ -47,7 +47,7 @@ const PreferencesSection: React.FC<Props> = () => {
       return;
     }
 
-    const userCreate: API.UserCreate = {
+    const userCreate: UserCreate = {
       email: state.createUserEmail,
       password: state.createUserPassword,
       role: "USER",
@@ -83,10 +83,18 @@ const PreferencesSection: React.FC<Props> = () => {
         </div>
       </div>
       <p className="title-text">Member list</p>
+      <div className="member-container field-container">
+        <span className="field-text">ID</span>
+        <span className="field-text">EMAIL</span>
+      </div>
       {userList.map((user) => (
-        <div key={user.id} className="user-container">
+        <div key={user.id} className="member-container">
           <span className="field-text id-text">{user.id}</span>
-          <span className="field-text">{user.email}</span>
+          <span className="field-text email-text">{user.email}</span>
+          {/* TODO */}
+          {/* <div className="buttons-container">
+            <span>delete</span>
+          </div> */}
         </div>
       ))}
     </div>

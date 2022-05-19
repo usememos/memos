@@ -1,5 +1,3 @@
-import utils from "./utils";
-
 type ResponseObject<T> = {
   data: T;
   error?: string;
@@ -42,29 +40,14 @@ async function request<T>(config: RequestConfig): Promise<T> {
 
 namespace api {
   export function getSystemStatus() {
-    return request<API.SystemStatus>({
+    return request<SystemStatus>({
       method: "GET",
       url: "/api/status",
     });
   }
 
-  export function getUserList() {
-    return request<Model.User[]>({
-      method: "GET",
-      url: "/api/user",
-    });
-  }
-
-  export function createUser(userCreate: API.UserCreate) {
-    return request<Model.User[]>({
-      method: "POST",
-      url: "/api/user",
-      data: userCreate,
-    });
-  }
-
   export function login(email: string, password: string) {
-    return request<Model.User>({
+    return request<User>({
       method: "POST",
       url: "/api/auth/login",
       data: {
@@ -75,7 +58,7 @@ namespace api {
   }
 
   export function signup(email: string, password: string, role: UserRole) {
-    return request<Model.User>({
+    return request<User>({
       method: "POST",
       url: "/api/auth/signup",
       data: {
@@ -94,70 +77,89 @@ namespace api {
     });
   }
 
-  export function getUserInfo() {
-    return request<Model.User>({
+  export function createUser(userCreate: UserCreate) {
+    return request<User[]>({
+      method: "POST",
+      url: "/api/user",
+      data: userCreate,
+    });
+  }
+
+  export function getUser() {
+    return request<User>({
       method: "GET",
       url: "/api/user/me",
     });
   }
 
-  export function updateUserinfo(userinfo: Partial<{ name: string; password: string; resetOpenId: boolean }>) {
-    return request<Model.User>({
-      method: "PATCH",
-      url: "/api/user/me",
-      data: userinfo,
+  export function getUserList() {
+    return request<User[]>({
+      method: "GET",
+      url: "/api/user",
     });
   }
 
-  export function resetOpenId() {
-    return request<string>({
-      method: "POST",
-      url: "/api/user/open_id/new",
+  export function patchUser(userPatch: UserPatch) {
+    return request<User>({
+      method: "PATCH",
+      url: "/api/user/me",
+      data: userPatch,
     });
   }
 
   export function getMyMemos() {
-    return request<Model.Memo[]>({
+    return request<Memo[]>({
       method: "GET",
       url: "/api/memo",
     });
   }
 
-  export function getMyDeletedMemos() {
-    return request<Model.Memo[]>({
+  export function getMyArchivedMemos() {
+    return request<Memo[]>({
       method: "GET",
-      url: "/api/memo?rowStatus=HIDDEN",
+      url: "/api/memo?rowStatus=ARCHIVED",
     });
   }
 
-  export function createMemo(content: string, createdAt?: string) {
-    const data: any = {
-      content,
-    };
-
-    if (createdAt) {
-      const createdTms = utils.getTimeStampByDate(createdAt);
-      data.createdTs = Math.floor(createdTms / 1000);
-    }
-
-    return request<Model.Memo>({
+  export function createMemo(memoCreate: MemoCreate) {
+    return request<Memo>({
       method: "POST",
       url: "/api/memo",
-      data: data,
+      data: memoCreate,
     });
   }
 
-  export function updateMemo(memoId: string, content: string) {
-    return request<Model.Memo>({
+  export function patchMemo(memoPatch: MemoPatch) {
+    return request<Memo>({
       method: "PATCH",
-      url: `/api/memo/${memoId}`,
+      url: `/api/memo/${memoPatch.id}`,
       data: {
-        content,
+        memoPatch,
       },
     });
   }
 
-  export function pinMemo(memoId: string) {
+  export function pinMemo(memoId: MemoId) {
+    return request({
+      method: "POST",
+      url: `/api/memo/${memoId}/organizer`,
+      data: {
+        pinned: true,
+      },
+    });
+  }
+
+  export function unpinMemo(memoId: MemoId) {
+    return request({
+      method: "POST",
+      url: `/api/memo/${memoId}/organizer`,
+      data: {
+        pinned: false,
+      },
+    });
+  }
+
+  export function archiveMemo(memoId: MemoId) {
     return request({
       method: "PATCH",
       url: `/api/memo/${memoId}`,
@@ -167,27 +169,7 @@ namespace api {
     });
   }
 
-  export function unpinMemo(shortcutId: string) {
-    return request({
-      method: "PATCH",
-      url: `/api/memo/${shortcutId}`,
-      data: {
-        rowStatus: "NORMAL",
-      },
-    });
-  }
-
-  export function hideMemo(memoId: string) {
-    return request({
-      method: "PATCH",
-      url: `/api/memo/${memoId}`,
-      data: {
-        rowStatus: "HIDDEN",
-      },
-    });
-  }
-
-  export function restoreMemo(memoId: string) {
+  export function restoreMemo(memoId: MemoId) {
     return request({
       method: "PATCH",
       url: `/api/memo/${memoId}`,
@@ -197,7 +179,7 @@ namespace api {
     });
   }
 
-  export function deleteMemo(memoId: string) {
+  export function deleteMemo(memoId: MemoId) {
     return request({
       method: "DELETE",
       url: `/api/memo/${memoId}`,
@@ -205,14 +187,14 @@ namespace api {
   }
 
   export function getMyShortcuts() {
-    return request<Model.Shortcut[]>({
+    return request<Shortcut[]>({
       method: "GET",
       url: "/api/shortcut",
     });
   }
 
   export function createShortcut(title: string, payload: string) {
-    return request<Model.Shortcut>({
+    return request<Shortcut>({
       method: "POST",
       url: "/api/shortcut",
       data: {
@@ -223,7 +205,7 @@ namespace api {
   }
 
   export function updateShortcut(shortcutId: string, title: string, payload: string) {
-    return request<Model.Shortcut>({
+    return request<Shortcut>({
       method: "PATCH",
       url: `/api/shortcut/${shortcutId}`,
       data: {
@@ -261,7 +243,7 @@ namespace api {
   }
 
   export function uploadFile(formData: FormData) {
-    return request<Model.Resource>({
+    return request<Resource>({
       method: "POST",
       url: "/api/resource",
       data: formData,

@@ -1,5 +1,4 @@
 import api from "../helpers/api";
-import utils from "../helpers/utils";
 import appStore from "../stores/appStore";
 
 class UserService {
@@ -8,7 +7,7 @@ class UserService {
   }
 
   public async doSignIn() {
-    const user = await api.getUserInfo();
+    const user = await api.getUser();
     if (user) {
       appStore.dispatch({
         type: "LOGIN",
@@ -33,19 +32,19 @@ class UserService {
   }
 
   public async updateUsername(name: string): Promise<void> {
-    await api.updateUserinfo({
+    await api.patchUser({
       name,
     });
   }
 
   public async updatePassword(password: string): Promise<void> {
-    await api.updateUserinfo({
+    await api.patchUser({
       password,
     });
   }
 
   public async resetOpenId(): Promise<string> {
-    const user = await api.updateUserinfo({
+    const user = await api.patchUser({
       resetOpenId: true,
     });
     appStore.dispatch({
@@ -55,11 +54,11 @@ class UserService {
     return user.openId;
   }
 
-  private convertResponseModelUser(user: Model.User): Model.User {
+  private convertResponseModelUser(user: User): User {
     return {
       ...user,
-      createdAt: utils.getDataStringWithTs(user.createdTs),
-      updatedAt: utils.getDataStringWithTs(user.updatedTs),
+      createdTs: user.createdTs * 1000,
+      updatedTs: user.updatedTs * 1000,
     };
   }
 }

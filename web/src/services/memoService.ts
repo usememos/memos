@@ -17,7 +17,7 @@ class MemoService {
     }
 
     const data = await api.getMyMemos();
-    const memos: Model.Memo[] = data.filter((m) => m.rowStatus !== "HIDDEN").map((m) => this.convertResponseModelMemo(m));
+    const memos: Memo[] = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => this.convertResponseModelMemo(m));
     appStore.dispatch({
       type: "SET_MEMOS",
       payload: {
@@ -37,14 +37,14 @@ class MemoService {
       return false;
     }
 
-    const data = await api.getMyDeletedMemos();
-    const deletedMemos: Model.Memo[] = data.map((m) => {
+    const data = await api.getMyArchivedMemos();
+    const deletedMemos: Memo[] = data.map((m) => {
       return this.convertResponseModelMemo(m);
     });
     return deletedMemos;
   }
 
-  public pushMemo(memo: Model.Memo) {
+  public pushMemo(memo: Memo) {
     appStore.dispatch({
       type: "INSERT_MEMO",
       payload: {
@@ -55,7 +55,7 @@ class MemoService {
     });
   }
 
-  public getMemoById(id: string) {
+  public getMemoById(id: MemoId) {
     for (const m of this.getState().memos) {
       if (m.id === id) {
         return m;
@@ -65,8 +65,8 @@ class MemoService {
     return null;
   }
 
-  public async hideMemoById(id: string) {
-    await api.hideMemo(id);
+  public async hideMemoById(id: MemoId) {
+    await api.archiveMemo(id);
     appStore.dispatch({
       type: "DELETE_MEMO_BY_ID",
       payload: {
@@ -75,17 +75,17 @@ class MemoService {
     });
   }
 
-  public async restoreMemoById(id: string) {
+  public async restoreMemoById(id: MemoId) {
     await api.restoreMemo(id);
     memoService.clearMemos();
     memoService.fetchAllMemos();
   }
 
-  public async deleteMemoById(id: string) {
+  public async deleteMemoById(id: MemoId) {
     await api.deleteMemo(id);
   }
 
-  public editMemo(memo: Model.Memo) {
+  public editMemo(memo: Memo) {
     appStore.dispatch({
       type: "EDIT_MEMO",
       payload: memo,
@@ -118,39 +118,48 @@ class MemoService {
     });
   }
 
-  public async getLinkedMemos(memoId: string): Promise<Model.Memo[]> {
+  public async getLinkedMemos(memoId: MemoId): Promise<Memo[]> {
     const { memos } = this.getState();
-    return memos.filter((m) => m.content.includes(memoId));
+    return memos.filter((m) => m.content.includes(`${memoId}`));
   }
 
-  public async createMemo(content: string): Promise<Model.Memo> {
-    const memo = await api.createMemo(content);
+  public async createMemo(content: string): Promise<Memo> {
+    const memo = await api.createMemo({
+      content,
+    });
     return this.convertResponseModelMemo(memo);
   }
 
-  public async updateMemo(memoId: string, content: string): Promise<Model.Memo> {
-    const memo = await api.updateMemo(memoId, content);
+  public async updateMemo(memoId: MemoId, content: string): Promise<Memo> {
+    const memo = await api.patchMemo({
+      id: memoId,
+      content,
+    });
     return this.convertResponseModelMemo(memo);
   }
 
-  public async pinMemo(memoId: string) {
+  public async pinMemo(memoId: MemoId) {
     await api.pinMemo(memoId);
   }
 
-  public async unpinMemo(memoId: string) {
+  public async unpinMemo(memoId: MemoId) {
     await api.unpinMemo(memoId);
   }
 
   public async importMemo(content: string, createdAt: string) {
-    await api.createMemo(content, createdAt);
+    const createdTs = Math.floor(utils.getTimeStampByDate(createdAt) / 1000);
+
+    await api.createMemo({
+      content,
+      createdTs,
+    });
   }
 
-  private convertResponseModelMemo(memo: Model.Memo): Model.Memo {
+  private convertResponseModelMemo(memo: Memo): Memo {
     return {
       ...memo,
-      id: String(memo.id),
-      createdAt: utils.getDataStringWithTs(memo.createdTs),
-      updatedAt: utils.getDataStringWithTs(memo.updatedTs),
+      createdTs: memo.createdTs * 1000,
+      updatedTs: memo.updatedTs * 1000,
     };
   }
 }

@@ -1,7 +1,7 @@
 import React, { useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import appContext from "../stores/appContext";
 import { globalStateService, locationService, memoService, resourceService } from "../services";
-import utils from "../helpers/utils";
+import { UNKNOWN_ID } from "../helpers/consts";
 import { storage } from "../helpers/storage";
 import useToggle from "../hooks/useToggle";
 import toastHelper from "./Toast";
@@ -53,14 +53,14 @@ const MemoEditor: React.FC<Props> = () => {
   const tagSeletorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (globalState.markMemoId) {
+    if (globalState.markMemoId !== UNKNOWN_ID) {
       const editorCurrentValue = editorRef.current?.getContent();
       const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: [@MEMO](${globalState.markMemoId})`;
       editorRef.current?.insertText(memoLinkText);
-      globalStateService.setMarkMemoId("");
+      globalStateService.setMarkMemoId(UNKNOWN_ID);
     }
 
-    if (globalState.editMemoId && globalState.editMemoId !== prevGlobalStateRef.current.editMemoId) {
+    if (globalState.editMemoId !== UNKNOWN_ID && globalState.editMemoId !== prevGlobalStateRef.current.editMemoId) {
       const editMemo = memoService.getMemoById(globalState.editMemoId);
       if (editMemo) {
         editorRef.current?.setContent(editMemo.content ?? "");
@@ -147,15 +147,15 @@ const MemoEditor: React.FC<Props> = () => {
     const { editMemoId } = globalStateService.getState();
 
     try {
-      if (editMemoId) {
+      if (editMemoId !== UNKNOWN_ID) {
         const prevMemo = memoService.getMemoById(editMemoId);
 
         if (prevMemo && prevMemo.content !== content) {
           const editedMemo = await memoService.updateMemo(prevMemo.id, content);
-          editedMemo.updatedAt = utils.getDateTimeString(Date.now());
+          editedMemo.createdTs = Date.now();
           memoService.editMemo(editedMemo);
         }
-        globalStateService.setEditMemoId("");
+        globalStateService.setEditMemoId(UNKNOWN_ID);
       } else {
         const newMemo = await memoService.createMemo(content);
         memoService.pushMemo(newMemo);
@@ -169,7 +169,7 @@ const MemoEditor: React.FC<Props> = () => {
   }, []);
 
   const handleCancelBtnClick = useCallback(() => {
-    globalStateService.setEditMemoId("");
+    globalStateService.setEditMemoId(UNKNOWN_ID);
     editorRef.current?.setContent("");
     setEditorContentCache("");
   }, []);
@@ -259,7 +259,7 @@ const MemoEditor: React.FC<Props> = () => {
     }
   }, []);
 
-  const isEditing = Boolean(globalState.editMemoId);
+  const isEditing = globalState.editMemoId !== UNKNOWN_ID;
 
   const editorConfig = useMemo(
     () => ({

@@ -38,7 +38,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <p>
-          Memos is an open source, quickly self-hosted alternative to <a href="https://flomoapp.com">flomo</a>.
+          Memos is an <i>open source</i>, <i>self-hosted</i> knowledge base that works with local SQLite.
         </p>
         <br />
         <p>

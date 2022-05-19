@@ -1,14 +1,14 @@
 import utils from "../helpers/utils";
 
 export interface State {
-  memos: Model.Memo[];
+  memos: Memo[];
   tags: string[];
 }
 
 interface SetMemosAction {
   type: "SET_MEMOS";
   payload: {
-    memos: Model.Memo[];
+    memos: Memo[];
   };
 }
 
@@ -22,20 +22,20 @@ interface SetTagsAction {
 interface InsertMemoAction {
   type: "INSERT_MEMO";
   payload: {
-    memo: Model.Memo;
+    memo: Memo;
   };
 }
 
 interface DeleteMemoByIdAction {
   type: "DELETE_MEMO_BY_ID";
   payload: {
-    id: string;
+    id: MemoId;
   };
 }
 
 interface EditMemoByIdAction {
   type: "EDIT_MEMO";
-  payload: Model.Memo;
+  payload: Memo;
 }
 
 export type Actions = SetMemosAction | SetTagsAction | InsertMemoAction | DeleteMemoByIdAction | EditMemoByIdAction;
@@ -43,9 +43,7 @@ export type Actions = SetMemosAction | SetTagsAction | InsertMemoAction | Delete
 export function reducer(state: State, action: Actions): State {
   switch (action.type) {
     case "SET_MEMOS": {
-      const memos = utils.dedupeObjectWithId(
-        action.payload.memos.sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt))
-      );
+      const memos = utils.dedupeObjectWithId(action.payload.memos.sort((a, b) => b.createdTs - a.createdTs));
 
       return {
         ...state,
@@ -59,10 +57,7 @@ export function reducer(state: State, action: Actions): State {
       };
     }
     case "INSERT_MEMO": {
-      const memos = utils.dedupeObjectWithId(
-        [action.payload.memo, ...state.memos].sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt))
-      );
-
+      const memos = utils.dedupeObjectWithId([action.payload.memo, ...state.memos].sort((a, b) => b.createdTs - a.createdTs));
       return {
         ...state,
         memos,

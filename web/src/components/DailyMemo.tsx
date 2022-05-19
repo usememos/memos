@@ -4,20 +4,21 @@ import { formatMemoContent } from "./Memo";
 import Only from "./common/OnlyWhen";
 import "../less/daily-memo.less";
 
-interface DailyMemo extends FormattedMemo {
+interface DailyMemo extends Memo {
+  createdAtStr: string;
   timeStr: string;
 }
 
 interface Props {
-  memo: Model.Memo;
+  memo: Memo;
 }
 
 const DailyMemo: React.FC<Props> = (props: Props) => {
   const { memo: propsMemo } = props;
   const memo: DailyMemo = {
     ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.createdAt),
-    timeStr: utils.getTimeString(propsMemo.createdAt),
+    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
+    timeStr: utils.getTimeString(propsMemo.createdTs),
   };
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []);
 

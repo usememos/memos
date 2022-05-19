@@ -10,7 +10,7 @@ const PreferencesSection: React.FC<Props> = () => {
     const formatedMemos = memoService.getState().memos.map((m) => {
       return {
         content: m.content,
-        createdAt: m.createdAt,
+        createdTs: m.createdTs,
       };
     });
 
@@ -33,7 +33,7 @@ const PreferencesSection: React.FC<Props> = () => {
         const reader = new FileReader();
         reader.readAsText(fileInputEl.files[0]);
         reader.onload = async (event) => {
-          const memoList = JSON.parse(event.target?.result as string) as Model.Memo[];
+          const memoList = JSON.parse(event.target?.result as string) as Memo[];
           if (!Array.isArray(memoList)) {
             toastHelper.error("Unexpected data type.");
           }
@@ -42,7 +42,7 @@ const PreferencesSection: React.FC<Props> = () => {
 
           for (const memo of memoList) {
             const content = memo.content || "";
-            const createdAt = memo.createdAt || utils.getDateTimeString(Date.now());
+            const createdAt = utils.getDateTimeString(memo.createdTs || Date.now());
 
             try {
               await memoService.importMemo(content, createdAt);

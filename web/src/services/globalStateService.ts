@@ -18,7 +18,7 @@ class GlobalStateService {
     return appStore.getState().globalState;
   };
 
-  public setEditMemoId = (editMemoId: string) => {
+  public setEditMemoId = (editMemoId: MemoId) => {
     appStore.dispatch({
       type: "SET_EDIT_MEMO_ID",
       payload: {
@@ -27,7 +27,7 @@ class GlobalStateService {
     });
   };
 
-  public setMarkMemoId = (markMemoId: string) => {
+  public setMarkMemoId = (markMemoId: MemoId) => {
     appStore.dispatch({
       type: "SET_MARK_MEMO_ID",
       payload: {

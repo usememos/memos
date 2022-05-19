@@ -11,7 +11,7 @@ interface Props extends DialogProps {}
 const MemoTrashDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const loadingState = useLoading();
-  const [deletedMemos, setDeletedMemos] = useState<Model.Memo[]>([]);
+  const [deletedMemos, setDeletedMemos] = useState<Memo[]>([]);
 
   useEffect(() => {
     memoService.fetchAllMemos();
@@ -31,7 +31,7 @@ const MemoTrashDialog: React.FC<Props> = (props: Props) => {
     locationService.clearQuery();
   }, []);
 
-  const handleDeletedMemoAction = useCallback((memoId: string) => {
+  const handleDeletedMemoAction = useCallback((memoId: MemoId) => {
     setDeletedMemos((deletedMemos) => deletedMemos.filter((memo) => memo.id !== memoId));
   }, []);
 
@@ -58,7 +58,7 @@ const MemoTrashDialog: React.FC<Props> = (props: Props) => {
         ) : (
           <div className="deleted-memos-container">
             {deletedMemos.map((memo) => (
-              <DeletedMemo key={`${memo.id}-${memo.updatedAt}`} memo={memo} handleDeletedMemoAction={handleDeletedMemoAction} />
+              <DeletedMemo key={`${memo.id}-${memo.updatedTs}`} memo={memo} handleDeletedMemoAction={handleDeletedMemoAction} />
             ))}
           </div>
         )}

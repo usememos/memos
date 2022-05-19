@@ -1,6 +1,6 @@
 import { memo } from "react";
 import { escape } from "lodash-es";
-import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
+import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
 import { parseMarkedToHtml, parseRawTextToHtml } from "../helpers/marked";
 import utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
@@ -13,14 +13,14 @@ import toastHelper from "./Toast";
 import "../less/memo.less";
 
 interface Props {
-  memo: Model.Memo;
+  memo: Memo;
 }
 
 const Memo: React.FC<Props> = (props: Props) => {
   const { memo: propsMemo } = props;
-  const memo: FormattedMemo = {
+  const memo = {
     ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.createdAt),
+    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
   };
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []);
@@ -31,17 +31,17 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   const handleTogglePinMemoBtnClick = async () => {
     try {
-      if (memo.rowStatus === "ARCHIVED") {
+      if (memo.pinned) {
         await memoService.unpinMemo(memo.id);
         memoService.editMemo({
           ...memo,
-          rowStatus: "NORMAL",
+          pinned: false,
         });
       } else {
         await memoService.pinMemo(memo.id);
         memoService.editMemo({
           ...memo,
-          rowStatus: "ARCHIVED",
+          pinned: true,
         });
       }
     } catch (error) {
@@ -66,7 +66,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       }
 
       if (globalStateService.getState().editMemoId === memo.id) {
-        globalStateService.setEditMemoId("");
+        globalStateService.setEditMemoId(UNKNOWN_ID);
       }
     } else {
       toggleConfirmDeleteBtn();
@@ -88,7 +88,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 
     if (targetEl.className === "memo-link-text") {
       const memoId = targetEl.dataset?.value;
-      const memoTemp = memoService.getMemoById(memoId ?? "");
+      const memoTemp = memoService.getMemoById(Number(memoId) ?? UNKNOWN_ID);
 
       if (memoTemp) {
         showMemoCardDialog(memoTemp);
@@ -102,11 +102,11 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.rowStatus}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
+    <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
         <span className="time-text" onClick={handleShowMemoStoryDialog}>
           {memo.createdAtStr}
-          <Only when={memo.rowStatus === "ARCHIVED"}>
+          <Only when={memo.pinned}>
             <span className="ml-2">PINNED</span>
           </Only>
         </span>
@@ -120,7 +120,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                 View Story
               </span>
               <span className="btn" onClick={handleTogglePinMemoBtnClick}>
-                {memo.rowStatus === "NORMAL" ? "Pin" : "Unpin"}
+                {memo.pinned ? "Unpin" : "Pin"}
               </span>
               <span className="btn" onClick={handleMarkMemoClick}>
                 Mark

@@ -1,20 +1,20 @@
 import utils from "../helpers/utils";
 
 export interface State {
-  shortcuts: Model.Shortcut[];
+  shortcuts: Shortcut[];
 }
 
 interface SetShortcutsAction {
   type: "SET_SHORTCUTS";
   payload: {
-    shortcuts: Model.Shortcut[];
+    shortcuts: Shortcut[];
   };
 }
 
 interface InsertShortcutAction {
   type: "INSERT_SHORTCUT";
   payload: {
-    shortcut: Model.Shortcut;
+    shortcut: Shortcut;
   };
 }
 
@@ -27,7 +27,7 @@ interface DeleteShortcutByIdAction {
 
 interface UpdateShortcutAction {
   type: "UPDATE_SHORTCUT";
-  payload: Model.Shortcut;
+  payload: Shortcut;
 }
 
 export type Actions = SetShortcutsAction | InsertShortcutAction | DeleteShortcutByIdAction | UpdateShortcutAction;
@@ -37,8 +37,8 @@ export function reducer(state: State, action: Actions): State {
     case "SET_SHORTCUTS": {
       const shortcuts = utils.dedupeObjectWithId(
         action.payload.shortcuts
-          .sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt))
-          .sort((a, b) => utils.getTimeStampByDate(b.updatedAt) - utils.getTimeStampByDate(a.updatedAt))
+          .sort((a, b) => utils.getTimeStampByDate(b.createdTs) - utils.getTimeStampByDate(a.createdTs))
+          .sort((a, b) => utils.getTimeStampByDate(b.updatedTs) - utils.getTimeStampByDate(a.updatedTs))
       );
 
       return {
@@ -49,7 +49,7 @@ export function reducer(state: State, action: Actions): State {
     case "INSERT_SHORTCUT": {
       const shortcuts = utils.dedupeObjectWithId(
         [action.payload.shortcut, ...state.shortcuts].sort(
-          (a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt)
+          (a, b) => utils.getTimeStampByDate(b.createdTs) - utils.getTimeStampByDate(a.createdTs)
         )
       );
 

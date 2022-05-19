@@ -90,7 +90,7 @@ export const getDefaultFilter = (): BaseFilter => {
   };
 };
 
-export const checkShouldShowMemoWithFilters = (memo: Model.Memo, filters: Filter[]) => {
+export const checkShouldShowMemoWithFilters = (memo: Memo, filters: Filter[]) => {
   let shouldShow = true;
 
   for (const f of filters) {
@@ -106,7 +106,7 @@ export const checkShouldShowMemoWithFilters = (memo: Model.Memo, filters: Filter
   return shouldShow;
 };
 
-export const checkShouldShowMemo = (memo: Model.Memo, filter: Filter) => {
+export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
   const {
     type,
     value: { operator, value },

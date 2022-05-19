@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { IMAGE_URL_REG, MEMO_LINK_REG } from "../helpers/consts";
+import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID } from "../helpers/consts";
 import utils from "../helpers/utils";
 import { globalStateService, memoService } from "../services";
 import { parseHtmlToRawText } from "../helpers/marked";
@@ -11,18 +11,18 @@ import Image from "./Image";
 import "../less/memo-card-dialog.less";
 import "../less/memo-content.less";
 
-interface LinkedMemo extends FormattedMemo {
+interface LinkedMemo extends Memo {
+  createdAtStr: string;
   dateStr: string;
 }
 
 interface Props extends DialogProps {
-  memo: Model.Memo;
+  memo: Memo;
 }
 
 const MemoCardDialog: React.FC<Props> = (props: Props) => {
-  const [memo, setMemo] = useState<FormattedMemo>({
+  const [memo, setMemo] = useState<Memo>({
     ...props.memo,
-    createdAtStr: utils.getDateTimeString(props.memo.createdAt),
   });
   const [linkMemos, setLinkMemos] = useState<LinkedMemo[]>([]);
   const [linkedMemos, setLinkedMemos] = useState<LinkedMemo[]>([]);
@@ -36,12 +36,12 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
         for (const matchRes of matchedArr) {
           if (matchRes && matchRes.length === 3) {
             const id = matchRes[2];
-            const memoTemp = memoService.getMemoById(id);
+            const memoTemp = memoService.getMemoById(Number(id));
             if (memoTemp) {
               linkMemos.push({
                 ...memoTemp,
-                createdAtStr: utils.getDateTimeString(memoTemp.createdAt),
-                dateStr: utils.getDateString(memoTemp.createdAt),
+                createdAtStr: utils.getDateTimeString(memoTemp.createdTs),
+                dateStr: utils.getDateString(memoTemp.createdTs),
               });
             }
           }
@@ -51,11 +51,11 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
         const linkedMemos = await memoService.getLinkedMemos(memo.id);
         setLinkedMemos(
           linkedMemos
-            .sort((a, b) => utils.getTimeStampByDate(b.createdAt) - utils.getTimeStampByDate(a.createdAt))
+            .sort((a, b) => utils.getTimeStampByDate(b.createdTs) - utils.getTimeStampByDate(a.createdTs))
             .map((m) => ({
               ...m,
-              createdAtStr: utils.getDateTimeString(m.createdAt),
-              dateStr: utils.getDateString(m.createdAt),
+              createdAtStr: utils.getDateTimeString(m.createdTs),
+              dateStr: utils.getDateString(m.createdTs),
             }))
         );
       } catch (error) {
@@ -71,12 +71,12 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
 
     if (targetEl.className === "memo-link-text") {
       const nextMemoId = targetEl.dataset?.value;
-      const memoTemp = memoService.getMemoById(nextMemoId ?? "");
+      const memoTemp = memoService.getMemoById(Number(nextMemoId) ?? UNKNOWN_ID);
 
       if (memoTemp) {
         const nextMemo = {
           ...memoTemp,
-          createdAtStr: utils.getDateTimeString(memoTemp.createdAt),
+          createdAtStr: utils.getDateTimeString(memoTemp.createdTs),
         };
         setLinkMemos([]);
         setLinkedMemos([]);
@@ -88,7 +88,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     }
   }, []);
 
-  const handleLinkedMemoClick = useCallback((memo: FormattedMemo) => {
+  const handleLinkedMemoClick = useCallback((memo: Memo) => {
     setLinkMemos([]);
     setLinkedMemos([]);
     setMemo(memo);
@@ -103,7 +103,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="memo-card-container">
         <div className="header-container">
-          <p className="time-text">{memo.createdAtStr}</p>
+          <p className="time-text">{utils.getDateTimeString(memo.createdTs)}</p>
           <div className="btns-container">
             <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
               <img className="icon-img" src="/icons/edit.svg" />
@@ -179,7 +179,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default function showMemoCardDialog(memo: Model.Memo): void {
+export default function showMemoCardDialog(memo: Memo): void {
   showDialog(
     {
       className: "memo-card-dialog",

@@ -10,15 +10,15 @@ import toastHelper from "./Toast";
 import "../less/share-memo-image-dialog.less";
 
 interface Props extends DialogProps {
-  memo: Model.Memo;
+  memo: Memo;
 }
 
 const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
   const { memo: propsMemo, destroy } = props;
   const { user: userinfo } = userService.getState();
-  const memo: FormattedMemo = {
+  const memo = {
     ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.createdAt),
+    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
   };
   const memoImgUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []);
 
@@ -106,7 +106,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default function showShareMemoImageDialog(memo: Model.Memo): void {
+export default function showShareMemoImageDialog(memo: Memo): void {
   showDialog(
     {
       className: "share-memo-image-dialog",

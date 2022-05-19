@@ -17,7 +17,7 @@ const validateConfig: ValidatorConfig = {
 
 const Signin: React.FC<Props> = () => {
   const pageLoadingState = useLoading(true);
-  const [siteOwner, setSiteOwner] = useState<Model.User>();
+  const [siteOwner, setSiteOwner] = useState<User>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const actionBtnLoadingState = useLoading(false);
@@ -128,11 +128,14 @@ const Signin: React.FC<Props> = () => {
   };
 
   return (
-    <div className="page-wrapper signin">
+    <div className={`page-wrapper signin ${pageLoadingState.isLoading ? "hidden" : ""}`}>
       <div className="page-container">
         <div className="page-header-container">
           <p className="title-text">
             <span className="icon-text">✍️</span> Memos
+          </p>
+          <p className="slogan-text">
+            An <i>open source</i>, <i>self-hosted</i> knowledge base that works with local SQLite.
           </p>
         </div>
         <div className="page-content-container">
@@ -150,7 +153,7 @@ const Signin: React.FC<Props> = () => {
             Login as Guest
           </button>
           <span className="split-text">/</span>
-          {siteOwner || pageLoadingState.isLoading ? (
+          {siteOwner ? (
             <button
               className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
               onClick={() => handleSigninBtnsClick()}
@@ -167,7 +170,7 @@ const Signin: React.FC<Props> = () => {
           )}
         </div>
         <p className="tip-text">
-          {siteOwner || pageLoadingState.isLoading
+          {siteOwner
             ? "If you don't have an account, please contact the site owner or login as guest."
             : "You are registering as the site owner."}
         </p>

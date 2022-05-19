@@ -9,16 +9,16 @@ import { formatMemoContent } from "./Memo";
 import "../less/memo.less";
 
 interface Props {
-  memo: Model.Memo;
-  handleDeletedMemoAction: (memoId: string) => void;
+  memo: Memo;
+  handleDeletedMemoAction: (memoId: MemoId) => void;
 }
 
 const DeletedMemo: React.FC<Props> = (props: Props) => {
   const { memo: propsMemo, handleDeletedMemoAction } = props;
-  const memo: FormattedMemo = {
+  const memo = {
     ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.createdAt),
-    deletedAtStr: utils.getDateTimeString(propsMemo.updatedAt ?? Date.now()),
+    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
+    deletedAtStr: utils.getDateTimeString(propsMemo.updatedTs ?? Date.now()),
   };
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []);
