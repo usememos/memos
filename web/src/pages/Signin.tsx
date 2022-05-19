@@ -25,6 +25,10 @@ const Signin: React.FC<Props> = () => {
   useEffect(() => {
     api.getSystemStatus().then((status) => {
       setSiteOwner(status.owner);
+      if (status.profile.mode === "dev") {
+        setEmail("steven@memos.com");
+        setPassword("secret");
+      }
       pageLoadingState.setFinish();
     });
   }, []);
@@ -105,28 +109,6 @@ const Signin: React.FC<Props> = () => {
     actionBtnLoadingState.setFinish();
   };
 
-  const handleAutoSigninAsGuestBtnClick = async () => {
-    if (actionBtnLoadingState.isLoading) {
-      return;
-    }
-
-    try {
-      actionBtnLoadingState.setLoading();
-      await api.login("guest@example.com", "secret");
-
-      const user = await userService.doSignIn();
-      if (user) {
-        locationService.replaceHistory("/");
-      } else {
-        toastHelper.error("😟 Login failed");
-      }
-    } catch (error: any) {
-      console.error(error);
-      toastHelper.error("😟 " + error.message);
-    }
-    actionBtnLoadingState.setFinish();
-  };
-
   return (
     <div className={`page-wrapper signin ${pageLoadingState.isLoading ? "hidden" : ""}`}>
       <div className="page-container">
@@ -149,10 +131,6 @@ const Signin: React.FC<Props> = () => {
           </div>
         </div>
         <div className="action-btns-container">
-          <button className={`btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleAutoSigninAsGuestBtnClick}>
-            Login as Guest
-          </button>
-          <span className="split-text">/</span>
           {siteOwner ? (
             <button
               className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
