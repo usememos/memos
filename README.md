@@ -1,6 +1,6 @@
 <h1 align="center">✍️ Memos</h1>
 
-<p align="center">An open source, quickly self-hosted alternative to flomo</p>
+<p align="center">An open source, self-hosted knowledge base that works with a SQLite db file.</p>
 
 <p align="center">
   <img alt="GitHub stars" src="https://img.shields.io/github/stars/justmemos/memos" />
@@ -33,7 +33,7 @@
 docker run --name memos --publish 5230:8080 --volume ~/.memos/:/var/opt/memos -e mode=prod neosmemo/memos:0.0.1
 ```
 
-If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
+Memos should now be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
 
 ## 🏗 Development
 
@@ -73,7 +73,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
    cd web && yarn && yarn dev
    ```
 
-Memos should now be running at https://localhost:3000 and change either frontend or backend code would trigger live reload.
+Memos should now be running at [http://localhost:3000](http://localhost:3000) and change either frontend or backend code would trigger live reload.
 
 ## 🌟 Star history
 
