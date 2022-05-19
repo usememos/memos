@@ -4,13 +4,14 @@ type Memo struct {
 	ID int `json:"id"`
 
 	// Standard fields
-	CreatedTs int64  `json:"createdTs"`
-	UpdatedTs int64  `json:"updatedTs"`
-	RowStatus string `json:"rowStatus"`
+	RowStatus RowStatus `json:"rowStatus"`
+	CreatorID int       `json:"creatorId"`
+	CreatedTs int64     `json:"createdTs"`
+	UpdatedTs int64     `json:"updatedTs"`
 
 	// Domain specific fields
-	Content   string `json:"content"`
-	CreatorID int    `json:"creatorId"`
+	Content string `json:"content"`
+	Pinned  bool   `json:"pinned"`
 }
 
 type MemoCreate struct {
@@ -27,7 +28,7 @@ type MemoPatch struct {
 	ID int
 
 	// Standard fields
-	RowStatus *string `json:"rowStatus"`
+	RowStatus *RowStatus `json:"rowStatus"`
 
 	// Domain specific fields
 	Content *string `json:"content"`
@@ -37,8 +38,11 @@ type MemoFind struct {
 	ID *int `json:"id"`
 
 	// Standard fields
-	CreatorID *int    `json:"creatorId"`
-	RowStatus *string `json:"rowStatus"`
+	RowStatus *RowStatus `json:"rowStatus"`
+	CreatorID *int       `json:"creatorId"`
+
+	// Domain specific fields
+	Pinned      *bool
 }
 
 type MemoDelete struct {

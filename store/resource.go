@@ -7,22 +7,63 @@ import (
 	"strings"
 )
 
+// resourceRaw is the store model for an Resource.
+// Fields have exactly the same meanings as Resource.
+type resourceRaw struct {
+	ID int
+
+	// Standard fields
+	CreatorID int
+	CreatedTs int64
+	UpdatedTs int64
+
+	// Domain specific fields
+	Filename string
+	Blob     []byte
+	Type     string
+	Size     int64
+}
+
+func (raw *resourceRaw) toResource() *api.Resource {
+	return &api.Resource{
+		ID: raw.ID,
+
+		// Standard fields
+		CreatorID: raw.CreatorID,
+		CreatedTs: raw.CreatedTs,
+		UpdatedTs: raw.UpdatedTs,
+
+		// Domain specific fields
+		Filename: raw.Filename,
+		Blob:     raw.Blob,
+		Type:     raw.Type,
+		Size:     raw.Size,
+	}
+}
+
 func (s *Store) CreateResource(create *api.ResourceCreate) (*api.Resource, error) {
-	resource, err := createResource(s.db, create)
+	resourceRaw, err := createResource(s.db, create)
 	if err != nil {
 		return nil, err
 	}
+
+	resource := resourceRaw.toResource()
 
 	return resource, nil
 }
 
 func (s *Store) FindResourceList(find *api.ResourceFind) ([]*api.Resource, error) {
-	list, err := findResourceList(s.db, find)
+	resourceRawList, err := findResourceList(s.db, find)
 	if err != nil {
 		return nil, err
 	}
 
-	return list, nil
+	resourceList := []*api.Resource{}
+	for _, raw := range resourceRawList {
+		resourceList = append(resourceList, raw.toResource())
+	}
+
+	return resourceList, nil
 }
 
 func (s *Store) FindResource(find *api.ResourceFind) (*api.Resource, error) {
@@ -35,7 +76,9 @@ func (s *Store) FindResource(find *api.ResourceFind) (*api.Resource, error) {
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	return list[0], nil
+	resource := list[0].toResource()
+
+	return resource, nil
 }
 
 func (s *Store) DeleteResource(delete *api.ResourceDelete) error {
@@ -47,7 +90,7 @@ func (s *Store) DeleteResource(delete *api.ResourceDelete) error {
 	return nil
 }
 
-func createResource(db *DB, create *api.ResourceCreate) (*api.Resource, error) {
+func createResource(db *DB, create *api.ResourceCreate) (*resourceRaw, error) {
 	row, err := db.Db.Query(`
 		INSERT INTO resource (
 			filename,
@@ -70,27 +113,24 @@ func createResource(db *DB, create *api.ResourceCreate) (*api.Resource, error) {
 	}
 	defer row.Close()
 
-	if !row.Next() {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
-	}
-
-	var resource api.Resource
+	row.Next()
+	var resourceRaw resourceRaw
 	if err := row.Scan(
-		&resource.ID,
-		&resource.Filename,
-		&resource.Blob,
-		&resource.Type,
-		&resource.Size,
-		&resource.CreatedTs,
-		&resource.UpdatedTs,
+		&resourceRaw.ID,
+		&resourceRaw.Filename,
+		&resourceRaw.Blob,
+		&resourceRaw.Type,
+		&resourceRaw.Size,
+		&resourceRaw.CreatedTs,
+		&resourceRaw.UpdatedTs,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return &resource, nil
+	return &resourceRaw, nil
 }
 
-func findResourceList(db *DB, find *api.ResourceFind) ([]*api.Resource, error) {
+func findResourceList(db *DB, find *api.ResourceFind) ([]*resourceRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -121,29 +161,29 @@ func findResourceList(db *DB, find *api.ResourceFind) ([]*api.Resource, error) {
 	}
 	defer rows.Close()
 
-	list := make([]*api.Resource, 0)
+	resourceRawList := make([]*resourceRaw, 0)
 	for rows.Next() {
-		var resource api.Resource
+		var resourceRaw resourceRaw
 		if err := rows.Scan(
-			&resource.ID,
-			&resource.Filename,
-			&resource.Blob,
-			&resource.Type,
-			&resource.Size,
-			&resource.CreatedTs,
-			&resource.UpdatedTs,
+			&resourceRaw.ID,
+			&resourceRaw.Filename,
+			&resourceRaw.Blob,
+			&resourceRaw.Type,
+			&resourceRaw.Size,
+			&resourceRaw.CreatedTs,
+			&resourceRaw.UpdatedTs,
 		); err != nil {
 			return nil, FormatError(err)
 		}
 
-		list = append(list, &resource)
+		resourceRawList = append(resourceRawList, &resourceRaw)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return list, nil
+	return resourceRawList, nil
 }
 
 func deleteResource(db *DB, delete *api.ResourceDelete) error {

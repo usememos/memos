@@ -12,6 +12,6 @@ VALUES
     'guest', 
     'guest@example.com',
     'guest_open_id',
-    -- "secret"
+    -- raw password: secret
     '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
   );

@@ -65,9 +65,15 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memoFind := &api.MemoFind{
 			CreatorID: &userID,
 		}
-		rowStatus := c.QueryParam("rowStatus")
+
+		rowStatus := api.RowStatus(c.QueryParam("rowStatus"))
 		if rowStatus != "" {
 			memoFind.RowStatus = &rowStatus
+		}
+		pinnedStr := c.QueryParam("pinned")
+		if pinnedStr != "" {
+			pinned := pinnedStr == "true"
+			memoFind.Pinned = &pinned
 		}
 
 		list, err := s.Store.FindMemoList(memoFind)
@@ -78,6 +84,45 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo list response").SetInternal(err)
+		}
+
+		return nil
+	})
+
+	g.POST("/memo/:memoId/organizer", func(c echo.Context) error {
+		memoID, err := strconv.Atoi(c.Param("memoId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		userID := c.Get(getUserIDContextKey()).(int)
+		memoOrganizerUpsert := &api.MemoOrganizerUpsert{
+			MemoID: memoID,
+			UserID: userID,
+		}
+		if err := json.NewDecoder(c.Request().Body).Decode(memoOrganizerUpsert); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo organizer request").SetInternal(err)
+		}
+
+		err = s.Store.UpsertMemoOrganizer(memoOrganizerUpsert)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo organizer").SetInternal(err)
+		}
+
+		memo, err := s.Store.FindMemo(&api.MemoFind{
+			ID: &memoID,
+		})
+		if err != nil {
+			if common.ErrorCode(err) == common.NotFound {
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)
+			}
+
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", memoID)).SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
 
 		return nil

@@ -85,6 +85,8 @@ func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		if user == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Not found user ID: %d", userID))
+		} else if user.RowStatus == api.Archived {
+			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with email %s", user.Email))
 		}
 
 		// Stores userID into context.

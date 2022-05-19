@@ -7,28 +7,67 @@ import (
 	"strings"
 )
 
+// shortcutRaw is the store model for an Shortcut.
+// Fields have exactly the same meanings as Shortcut.
+type shortcutRaw struct {
+	ID int
+
+	// Standard fields
+	RowStatus api.RowStatus
+	CreatorID int
+	CreatedTs int64
+	UpdatedTs int64
+
+	// Domain specific fields
+	Title   string
+	Payload string
+}
+
+func (raw *shortcutRaw) toShortcut() *api.Shortcut {
+	return &api.Shortcut{
+		ID: raw.ID,
+
+		RowStatus: raw.RowStatus,
+		CreatorID: raw.CreatorID,
+		CreatedTs: raw.CreatedTs,
+		UpdatedTs: raw.UpdatedTs,
+
+		Title:   raw.Title,
+		Payload: raw.Payload,
+	}
+}
+
 func (s *Store) CreateShortcut(create *api.ShortcutCreate) (*api.Shortcut, error) {
-	shortcut, err := createShortcut(s.db, create)
+	shortcutRaw, err := createShortcut(s.db, create)
 	if err != nil {
 		return nil, err
 	}
+
+	shortcut := shortcutRaw.toShortcut()
 
 	return shortcut, nil
 }
 
 func (s *Store) PatchShortcut(patch *api.ShortcutPatch) (*api.Shortcut, error) {
-	shortcut, err := patchShortcut(s.db, patch)
+	shortcutRaw, err := patchShortcut(s.db, patch)
 	if err != nil {
 		return nil, err
 	}
+
+	shortcut := shortcutRaw.toShortcut()
 
 	return shortcut, nil
 }
 
 func (s *Store) FindShortcutList(find *api.ShortcutFind) ([]*api.Shortcut, error) {
-	list, err := findShortcutList(s.db, find)
+	shortcutRawList, err := findShortcutList(s.db, find)
 	if err != nil {
 		return nil, err
+	}
+
+	list := []*api.Shortcut{}
+	for _, raw := range shortcutRawList {
+		list = append(list, raw.toShortcut())
 	}
 
 	return list, nil
@@ -44,7 +83,9 @@ func (s *Store) FindShortcut(find *api.ShortcutFind) (*api.Shortcut, error) {
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	return list[0], nil
+	shortcut := list[0].toShortcut()
+
+	return shortcut, nil
 }
 
 func (s *Store) DeleteShortcut(delete *api.ShortcutDelete) error {
@@ -56,7 +97,7 @@ func (s *Store) DeleteShortcut(delete *api.ShortcutDelete) error {
 	return nil
 }
 
-func createShortcut(db *DB, create *api.ShortcutCreate) (*api.Shortcut, error) {
+func createShortcut(db *DB, create *api.ShortcutCreate) (*shortcutRaw, error) {
 	row, err := db.Db.Query(`
 		INSERT INTO shortcut (
 			title, 
@@ -70,30 +111,29 @@ func createShortcut(db *DB, create *api.ShortcutCreate) (*api.Shortcut, error) {
 		create.Payload,
 		create.CreatorID,
 	)
-
 	if err != nil {
 		return nil, FormatError(err)
 	}
 	defer row.Close()
 
 	row.Next()
-	var shortcut api.Shortcut
+	var shortcutRaw shortcutRaw
 	if err := row.Scan(
-		&shortcut.ID,
-		&shortcut.Title,
-		&shortcut.Payload,
-		&shortcut.CreatorID,
-		&shortcut.CreatedTs,
-		&shortcut.UpdatedTs,
-		&shortcut.RowStatus,
+		&shortcutRaw.ID,
+		&shortcutRaw.Title,
+		&shortcutRaw.Payload,
+		&shortcutRaw.CreatorID,
+		&shortcutRaw.CreatedTs,
+		&shortcutRaw.UpdatedTs,
+		&shortcutRaw.RowStatus,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return &shortcut, nil
+	return &shortcutRaw, nil
 }
 
-func patchShortcut(db *DB, patch *api.ShortcutPatch) (*api.Shortcut, error) {
+func patchShortcut(db *DB, patch *api.ShortcutPatch) (*shortcutRaw, error) {
 	set, args := []string{}, []interface{}{}
 
 	if v := patch.Title; v != nil {
@@ -123,22 +163,22 @@ func patchShortcut(db *DB, patch *api.ShortcutPatch) (*api.Shortcut, error) {
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	var shortcut api.Shortcut
+	var shortcutRaw shortcutRaw
 	if err := row.Scan(
-		&shortcut.ID,
-		&shortcut.Title,
-		&shortcut.Payload,
-		&shortcut.CreatedTs,
-		&shortcut.UpdatedTs,
-		&shortcut.RowStatus,
+		&shortcutRaw.ID,
+		&shortcutRaw.Title,
+		&shortcutRaw.Payload,
+		&shortcutRaw.CreatedTs,
+		&shortcutRaw.UpdatedTs,
+		&shortcutRaw.RowStatus,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return &shortcut, nil
+	return &shortcutRaw, nil
 }
 
-func findShortcutList(db *DB, find *api.ShortcutFind) ([]*api.Shortcut, error) {
+func findShortcutList(db *DB, find *api.ShortcutFind) ([]*shortcutRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -169,29 +209,29 @@ func findShortcutList(db *DB, find *api.ShortcutFind) ([]*api.Shortcut, error) {
 	}
 	defer rows.Close()
 
-	list := make([]*api.Shortcut, 0)
+	shortcutRawList := make([]*shortcutRaw, 0)
 	for rows.Next() {
-		var shortcut api.Shortcut
+		var shortcutRaw shortcutRaw
 		if err := rows.Scan(
-			&shortcut.ID,
-			&shortcut.Title,
-			&shortcut.Payload,
-			&shortcut.CreatorID,
-			&shortcut.CreatedTs,
-			&shortcut.UpdatedTs,
-			&shortcut.RowStatus,
+			&shortcutRaw.ID,
+			&shortcutRaw.Title,
+			&shortcutRaw.Payload,
+			&shortcutRaw.CreatorID,
+			&shortcutRaw.CreatedTs,
+			&shortcutRaw.UpdatedTs,
+			&shortcutRaw.RowStatus,
 		); err != nil {
 			return nil, FormatError(err)
 		}
 
-		list = append(list, &shortcut)
+		shortcutRawList = append(shortcutRawList, &shortcutRaw)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return list, nil
+	return shortcutRawList, nil
 }
 
 func deleteShortcut(db *DB, delete *api.ShortcutDelete) error {

@@ -27,6 +27,8 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 		if user == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found with email %s", login.Email))
+		} else if user.RowStatus == api.Archived {
+			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with email %s", login.Email))
 		}
 
 		// Compare the stored hashed password, with the hashed version of the password that was received.

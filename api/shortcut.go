@@ -4,10 +4,10 @@ type Shortcut struct {
 	ID int `json:"id"`
 
 	// Standard fields
-	CreatorID int
-	CreatedTs int64  `json:"createdTs"`
-	UpdatedTs int64  `json:"updatedTs"`
-	RowStatus string `json:"rowStatus"`
+	RowStatus RowStatus `json:"rowStatus"`
+	CreatorID int       `json:"creatorId"`
+	CreatedTs int64     `json:"createdTs"`
+	UpdatedTs int64     `json:"updatedTs"`
 
 	// Domain specific fields
 	Title   string `json:"title"`
@@ -27,7 +27,7 @@ type ShortcutPatch struct {
 	ID int
 
 	// Standard fields
-	RowStatus *string `json:"rowStatus"`
+	RowStatus *RowStatus `json:"rowStatus"`
 
 	// Domain specific fields
 	Title   *string `json:"title"`

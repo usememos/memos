@@ -10,12 +10,23 @@ const (
 	NormalUser Role = "USER"
 )
 
+func (e Role) String() string {
+	switch e {
+	case Owner:
+		return "OWNER"
+	case NormalUser:
+		return "USER"
+	}
+	return "USER"
+}
+
 type User struct {
 	ID int `json:"id"`
 
 	// Standard fields
-	CreatedTs int64 `json:"createdTs"`
-	UpdatedTs int64 `json:"updatedTs"`
+	RowStatus RowStatus `json:"rowStatus"`
+	CreatedTs int64     `json:"createdTs"`
+	UpdatedTs int64     `json:"updatedTs"`
 
 	// Domain specific fields
 	Email        string `json:"email"`
@@ -38,6 +49,9 @@ type UserCreate struct {
 type UserPatch struct {
 	ID int
 
+	// Standard fields
+	RowStatus *RowStatus `json:"rowStatus"`
+
 	// Domain specific fields
 	Email        *string `json:"email"`
 	Name         *string `json:"name"`
@@ -49,6 +63,9 @@ type UserPatch struct {
 
 type UserFind struct {
 	ID *int `json:"id"`
+
+	// Standard fields
+	RowStatus *RowStatus `json:"rowStatus"`
 
 	// Domain specific fields
 	Email  *string `json:"email"`

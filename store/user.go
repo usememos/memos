@@ -7,28 +7,71 @@ import (
 	"strings"
 )
 
+// userRaw is the store model for an User.
+// Fields have exactly the same meanings as User.
+type userRaw struct {
+	ID int
+
+	// Standard fields
+	RowStatus api.RowStatus
+	CreatedTs int64
+	UpdatedTs int64
+
+	// Domain specific fields
+	Email        string
+	Role         api.Role
+	Name         string
+	PasswordHash string
+	OpenID       string
+}
+
+func (raw *userRaw) toUser() *api.User {
+	return &api.User{
+		ID: raw.ID,
+
+		RowStatus: raw.RowStatus,
+		CreatedTs: raw.CreatedTs,
+		UpdatedTs: raw.UpdatedTs,
+
+		Email:        raw.Email,
+		Role:         raw.Role,
+		Name:         raw.Name,
+		PasswordHash: raw.PasswordHash,
+		OpenID:       raw.OpenID,
+	}
+}
+
 func (s *Store) CreateUser(create *api.UserCreate) (*api.User, error) {
-	user, err := createUser(s.db, create)
+	userRaw, err := createUser(s.db, create)
 	if err != nil {
 		return nil, err
 	}
+
+	user := userRaw.toUser()
 
 	return user, nil
 }
 
 func (s *Store) PatchUser(patch *api.UserPatch) (*api.User, error) {
-	user, err := patchUser(s.db, patch)
+	userRaw, err := patchUser(s.db, patch)
 	if err != nil {
 		return nil, err
 	}
+
+	user := userRaw.toUser()
 
 	return user, nil
 }
 
 func (s *Store) FindUserList(find *api.UserFind) ([]*api.User, error) {
-	list, err := findUserList(s.db, find)
+	userRawList, err := findUserList(s.db, find)
 	if err != nil {
 		return nil, err
+	}
+
+	list := []*api.User{}
+	for _, raw := range userRawList {
+		list = append(list, raw.toUser())
 	}
 
 	return list, nil
@@ -46,10 +89,12 @@ func (s *Store) FindUser(find *api.UserFind) (*api.User, error) {
 		return nil, &common.Error{Code: common.Conflict, Err: fmt.Errorf("found %d users with filter %+v, expect 1. ", len(list), find)}
 	}
 
-	return list[0], nil
+	user := list[0].toUser()
+
+	return user, nil
 }
 
-func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
+func createUser(db *DB, create *api.UserCreate) (*userRaw, error) {
 	row, err := db.Db.Query(`
 		INSERT INTO user (
 			email,
@@ -73,37 +118,40 @@ func createUser(db *DB, create *api.UserCreate) (*api.User, error) {
 	defer row.Close()
 
 	row.Next()
-	var user api.User
+	var userRaw userRaw
 	if err := row.Scan(
-		&user.ID,
-		&user.Email,
-		&user.Role,
-		&user.Name,
-		&user.PasswordHash,
-		&user.OpenID,
-		&user.CreatedTs,
-		&user.UpdatedTs,
+		&userRaw.ID,
+		&userRaw.Email,
+		&userRaw.Role,
+		&userRaw.Name,
+		&userRaw.PasswordHash,
+		&userRaw.OpenID,
+		&userRaw.CreatedTs,
+		&userRaw.UpdatedTs,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return &user, nil
+	return &userRaw, nil
 }
 
-func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
+func patchUser(db *DB, patch *api.UserPatch) (*userRaw, error) {
 	set, args := []string{}, []interface{}{}
 
+	if v := patch.RowStatus; v != nil {
+		set, args = append(set, "row_status = ?"), append(args, *v)
+	}
 	if v := patch.Email; v != nil {
-		set, args = append(set, "email = ?"), append(args, v)
+		set, args = append(set, "email = ?"), append(args, *v)
 	}
 	if v := patch.Name; v != nil {
-		set, args = append(set, "name = ?"), append(args, v)
+		set, args = append(set, "name = ?"), append(args, *v)
 	}
 	if v := patch.PasswordHash; v != nil {
-		set, args = append(set, "password_hash = ?"), append(args, v)
+		set, args = append(set, "password_hash = ?"), append(args, *v)
 	}
 	if v := patch.OpenID; v != nil {
-		set, args = append(set, "open_id = ?"), append(args, v)
+		set, args = append(set, "open_id = ?"), append(args, *v)
 	}
 
 	args = append(args, patch.ID)
@@ -120,27 +168,27 @@ func patchUser(db *DB, patch *api.UserPatch) (*api.User, error) {
 	defer row.Close()
 
 	if row.Next() {
-		var user api.User
+		var userRaw userRaw
 		if err := row.Scan(
-			&user.ID,
-			&user.Email,
-			&user.Role,
-			&user.Name,
-			&user.PasswordHash,
-			&user.OpenID,
-			&user.CreatedTs,
-			&user.UpdatedTs,
+			&userRaw.ID,
+			&userRaw.Email,
+			&userRaw.Role,
+			&userRaw.Name,
+			&userRaw.PasswordHash,
+			&userRaw.OpenID,
+			&userRaw.CreatedTs,
+			&userRaw.UpdatedTs,
 		); err != nil {
 			return nil, FormatError(err)
 		}
 
-		return &user, nil
+		return &userRaw, nil
 	}
 
 	return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("user ID not found: %d", patch.ID)}
 }
 
-func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
+func findUserList(db *DB, find *api.UserFind) ([]*userRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -178,29 +226,29 @@ func findUserList(db *DB, find *api.UserFind) ([]*api.User, error) {
 	}
 	defer rows.Close()
 
-	list := make([]*api.User, 0)
+	userRawList := make([]*userRaw, 0)
 	for rows.Next() {
-		var user api.User
+		var userRaw userRaw
 		if err := rows.Scan(
-			&user.ID,
-			&user.Email,
-			&user.Role,
-			&user.Name,
-			&user.PasswordHash,
-			&user.OpenID,
-			&user.CreatedTs,
-			&user.UpdatedTs,
+			&userRaw.ID,
+			&userRaw.Email,
+			&userRaw.Role,
+			&userRaw.Name,
+			&userRaw.PasswordHash,
+			&userRaw.OpenID,
+			&userRaw.CreatedTs,
+			&userRaw.UpdatedTs,
 		); err != nil {
 			fmt.Println(err)
 			return nil, FormatError(err)
 		}
 
-		list = append(list, &user)
+		userRawList = append(userRawList, &userRaw)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return list, nil
+	return userRawList, nil
 }

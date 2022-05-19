@@ -67,7 +67,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		memoFind := &api.MemoFind{
 			CreatorID: &user.ID,
 		}
-		rowStatus := c.QueryParam("rowStatus")
+		rowStatus := api.RowStatus(c.QueryParam("rowStatus"))
 		if rowStatus != "" {
 			memoFind.RowStatus = &rowStatus
 		}

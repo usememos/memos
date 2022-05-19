@@ -3,6 +3,8 @@ CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  -- allowed row status are 'NORMAL', 'ARCHIVED'.
+  row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   email TEXT NOT NULL UNIQUE,
   role TEXT NOT NULL CHECK (role IN ('OWNER', 'USER')) DEFAULT 'USER',
   name TEXT NOT NULL,
@@ -33,10 +35,9 @@ CREATE TABLE memo (
   creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  -- allowed row status are 'NORMAL', 'ARCHIVED', 'HIDDEN'.
-  row_status TEXT NOT NULL DEFAULT 'NORMAL',
+  row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   content TEXT NOT NULL DEFAULT '',
-  FOREIGN KEY(creator_id) REFERENCES users(id)
+  FOREIGN KEY(creator_id) REFERENCES user(id)
 );
 
 INSERT INTO
@@ -56,17 +57,32 @@ WHERE
   rowid = old.rowid;
 END;
 
+-- memo_organizer
+CREATE TABLE memo_organizer (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  memo_id INTEGER NOT NULL,
+  user_id INTEGER NOT NULL,
+  pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,
+  FOREIGN KEY(memo_id) REFERENCES memo(id),
+  FOREIGN KEY(user_id) REFERENCES user(id),
+  UNIQUE(memo_id, user_id)
+);
+
+INSERT INTO
+  sqlite_sequence (name, seq)
+VALUES
+  ('memo_organizer', 100);
+
 -- shortcut
 CREATE TABLE shortcut (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   title TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '{}',
-  -- allowed row status are 'NORMAL', 'ARCHIVED'.
-  row_status TEXT NOT NULL DEFAULT 'NORMAL',
-  FOREIGN KEY(creator_id) REFERENCES users(id)
+  FOREIGN KEY(creator_id) REFERENCES user(id)
 );
 
 INSERT INTO
@@ -96,7 +112,7 @@ CREATE TABLE resource (
   blob BLOB NOT NULL,
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
-  FOREIGN KEY(creator_id) REFERENCES users(id)
+  FOREIGN KEY(creator_id) REFERENCES user(id)
 );
 
 INSERT INTO

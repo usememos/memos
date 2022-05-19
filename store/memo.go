@@ -7,8 +7,45 @@ import (
 	"strings"
 )
 
+// memoRaw is the store model for an Memo.
+// Fields have exactly the same meanings as Memo.
+type memoRaw struct {
+	ID int
+
+	// Standard fields
+	RowStatus api.RowStatus
+	CreatorID int
+	CreatedTs int64
+	UpdatedTs int64
+
+	// Domain specific fields
+	Content string
+}
+
+// toMemo creates an instance of Memo based on the memoRaw.
+// This is intended to be called when we need to compose an Memo relationship.
+func (raw *memoRaw) toMemo() *api.Memo {
+	return &api.Memo{
+		ID: raw.ID,
+
+		// Standard fields
+		RowStatus: raw.RowStatus,
+		CreatorID: raw.CreatorID,
+		CreatedTs: raw.CreatedTs,
+		UpdatedTs: raw.UpdatedTs,
+
+		// Domain specific fields
+		Content: raw.Content,
+	}
+}
+
 func (s *Store) CreateMemo(create *api.MemoCreate) (*api.Memo, error) {
-	memo, err := createMemo(s.db, create)
+	memoRaw, err := createMemoRaw(s.db, create)
+	if err != nil {
+		return nil, err
+	}
+
+	memo, err := s.composeMemo(memoRaw)
 	if err != nil {
 		return nil, err
 	}
@@ -17,7 +54,12 @@ func (s *Store) CreateMemo(create *api.MemoCreate) (*api.Memo, error) {
 }
 
 func (s *Store) PatchMemo(patch *api.MemoPatch) (*api.Memo, error) {
-	memo, err := patchMemo(s.db, patch)
+	memoRaw, err := patchMemoRaw(s.db, patch)
+	if err != nil {
+		return nil, err
+	}
+
+	memo, err := s.composeMemo(memoRaw)
 	if err != nil {
 		return nil, err
 	}
@@ -26,16 +68,26 @@ func (s *Store) PatchMemo(patch *api.MemoPatch) (*api.Memo, error) {
 }
 
 func (s *Store) FindMemoList(find *api.MemoFind) ([]*api.Memo, error) {
-	list, err := findMemoList(s.db, find)
+	memoRawList, err := findMemoRawList(s.db, find)
 	if err != nil {
 		return nil, err
+	}
+
+	list := []*api.Memo{}
+	for _, raw := range memoRawList {
+		memo, err := s.composeMemo(raw)
+		if err != nil {
+			return nil, err
+		}
+
+		list = append(list, memo)
 	}
 
 	return list, nil
 }
 
 func (s *Store) FindMemo(find *api.MemoFind) (*api.Memo, error) {
-	list, err := findMemoList(s.db, find)
+	list, err := findMemoRawList(s.db, find)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +96,12 @@ func (s *Store) FindMemo(find *api.MemoFind) (*api.Memo, error) {
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	return list[0], nil
+	memo, err := s.composeMemo(list[0])
+	if err != nil {
+		return nil, err
+	}
+
+	return memo, nil
 }
 
 func (s *Store) DeleteMemo(delete *api.MemoDelete) error {
@@ -56,7 +113,7 @@ func (s *Store) DeleteMemo(delete *api.MemoDelete) error {
 	return nil
 }
 
-func createMemo(db *DB, create *api.MemoCreate) (*api.Memo, error) {
+func createMemoRaw(db *DB, create *api.MemoCreate) (*memoRaw, error) {
 	set := []string{"creator_id", "content"}
 	placeholder := []string{"?", "?"}
 	args := []interface{}{create.CreatorID, create.Content}
@@ -79,26 +136,23 @@ func createMemo(db *DB, create *api.MemoCreate) (*api.Memo, error) {
 	}
 	defer row.Close()
 
-	if !row.Next() {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
-	}
-
-	var memo api.Memo
+	row.Next()
+	var memoRaw memoRaw
 	if err := row.Scan(
-		&memo.ID,
-		&memo.CreatorID,
-		&memo.CreatedTs,
-		&memo.UpdatedTs,
-		&memo.Content,
-		&memo.RowStatus,
+		&memoRaw.ID,
+		&memoRaw.CreatorID,
+		&memoRaw.CreatedTs,
+		&memoRaw.UpdatedTs,
+		&memoRaw.Content,
+		&memoRaw.RowStatus,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return &memo, nil
+	return &memoRaw, nil
 }
 
-func patchMemo(db *DB, patch *api.MemoPatch) (*api.Memo, error) {
+func patchMemoRaw(db *DB, patch *api.MemoPatch) (*memoRaw, error) {
 	set, args := []string{}, []interface{}{}
 
 	if v := patch.Content; v != nil {
@@ -125,21 +179,21 @@ func patchMemo(db *DB, patch *api.MemoPatch) (*api.Memo, error) {
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	var memo api.Memo
+	var memoRaw memoRaw
 	if err := row.Scan(
-		&memo.ID,
-		&memo.CreatedTs,
-		&memo.UpdatedTs,
-		&memo.Content,
-		&memo.RowStatus,
+		&memoRaw.ID,
+		&memoRaw.CreatedTs,
+		&memoRaw.UpdatedTs,
+		&memoRaw.Content,
+		&memoRaw.RowStatus,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return &memo, nil
+	return &memoRaw, nil
 }
 
-func findMemoList(db *DB, find *api.MemoFind) ([]*api.Memo, error) {
+func findMemoRawList(db *DB, find *api.MemoFind) ([]*memoRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -150,6 +204,9 @@ func findMemoList(db *DB, find *api.MemoFind) ([]*api.Memo, error) {
 	}
 	if v := find.RowStatus; v != nil {
 		where, args = append(where, "row_status = ?"), append(args, *v)
+	}
+	if v := find.Pinned; v != nil {
+		where = append(where, "id in (SELECT memo_id FROM memo_organizer WHERE pinned = 1 AND user_id = memo.creator_id )")
 	}
 
 	rows, err := db.Db.Query(`
@@ -169,28 +226,28 @@ func findMemoList(db *DB, find *api.MemoFind) ([]*api.Memo, error) {
 	}
 	defer rows.Close()
 
-	list := make([]*api.Memo, 0)
+	memoRawList := make([]*memoRaw, 0)
 	for rows.Next() {
-		var memo api.Memo
+		var memoRaw memoRaw
 		if err := rows.Scan(
-			&memo.ID,
-			&memo.CreatorID,
-			&memo.CreatedTs,
-			&memo.UpdatedTs,
-			&memo.Content,
-			&memo.RowStatus,
+			&memoRaw.ID,
+			&memoRaw.CreatorID,
+			&memoRaw.CreatedTs,
+			&memoRaw.UpdatedTs,
+			&memoRaw.Content,
+			&memoRaw.RowStatus,
 		); err != nil {
 			return nil, FormatError(err)
 		}
 
-		list = append(list, &memo)
+		memoRawList = append(memoRawList, &memoRaw)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return list, nil
+	return memoRawList, nil
 }
 
 func deleteMemo(db *DB, delete *api.MemoDelete) error {
@@ -205,4 +262,20 @@ func deleteMemo(db *DB, delete *api.MemoDelete) error {
 	}
 
 	return nil
+}
+
+func (s *Store) composeMemo(raw *memoRaw) (*api.Memo, error) {
+	memo := raw.toMemo()
+
+	memoOrganizer, err := s.FindMemoOrganizer(&api.MemoOrganizerFind{
+		MemoID: memo.ID,
+		UserID: memo.CreatorID,
+	})
+	if err != nil && common.ErrorCode(err) != common.NotFound {
+		return nil, err
+	} else if memoOrganizer != nil {
+		memo.Pinned = memoOrganizer.Pinned
+	}
+
+	return memo, nil
 }
