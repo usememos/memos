@@ -38,7 +38,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <p>
-          Memos is an <i>open source</i>, <i>self-hosted</i> knowledge base that works with local SQLite.
+          Memos is an <i>open source</i>, <i>self-hosted</i> knowledge base that works with a SQLite db file.
         </p>
         <br />
         <p>

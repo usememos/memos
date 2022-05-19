@@ -26,7 +26,7 @@ const Signin: React.FC<Props> = () => {
     api.getSystemStatus().then((status) => {
       setSiteOwner(status.owner);
       if (status.profile.mode === "dev") {
-        setEmail("steven@memos.com");
+        setEmail("demo@usememos.com");
         setPassword("secret");
       }
       pageLoadingState.setFinish();
@@ -110,28 +110,28 @@ const Signin: React.FC<Props> = () => {
   };
 
   return (
-    <div className={`page-wrapper signin ${pageLoadingState.isLoading ? "hidden" : ""}`}>
+    <div className="page-wrapper signin">
       <div className="page-container">
         <div className="page-header-container">
           <p className="title-text">
             <span className="icon-text">✍️</span> Memos
           </p>
           <p className="slogan-text">
-            An <i>open source</i>, <i>self-hosted</i> knowledge base that works with local SQLite.
+            An <i>open source</i>, <i>self-hosted</i> knowledge base that works with a SQLite db file.
           </p>
         </div>
-        <div className="page-content-container">
+        <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
           <div className="form-item-container input-form-container">
-            <span className={"normal-text " + (email === "" ? "" : "not-null")}>Email</span>
+            <span className={`normal-tex ${email ? "not-null" : ""}`}>Email</span>
             <input type="email" value={email} onChange={handleEmailInputChanged} />
           </div>
           <div className="form-item-container input-form-container">
-            <span className={"normal-text " + (password === "" ? "" : "not-null")}>Password</span>
+            <span className={`normal-text ${password ? "not-null" : ""}`}>Password</span>
             <input type="password" value={password} onChange={handlePasswordInputChanged} />
           </div>
         </div>
         <div className="action-btns-container">
-          {siteOwner ? (
+          {siteOwner || pageLoadingState.isLoading ? (
             <button
               className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
               onClick={() => handleSigninBtnsClick()}
@@ -148,8 +148,8 @@ const Signin: React.FC<Props> = () => {
           )}
         </div>
         <p className="tip-text">
-          {siteOwner
-            ? "If you don't have an account, please contact the site owner or login as guest."
+          {siteOwner || pageLoadingState.isLoading
+            ? "If you don't have an account, please\ncontact the site owner."
             : "You are registering as the site owner."}
         </p>
       </div>

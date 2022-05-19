@@ -10,10 +10,10 @@ INSERT INTO
 VALUES
   (
     101, 
-    'steven@memos.com',
+    'demo@usememos.com',
     'OWNER',
-    'Steven',
-    'steven_open_id',
+    'Demo Owner',
+    'demo_open_id',
     -- raw password: secret
     '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
   );
