@@ -54,8 +54,11 @@ func (db *DB) Open() (err error) {
 		if err := db.migrate(); err != nil {
 			return fmt.Errorf("failed to migrate: %w", err)
 		}
-		if err := db.seed(); err != nil {
-			return fmt.Errorf("failed to seed: %w", err)
+		// If mode is dev, then seed the database.
+		if db.mode == "dev" {
+			if err := db.seed(); err != nil {
+				return fmt.Errorf("failed to seed: %w", err)
+			}
 		}
 	} else {
 		// If db file exists and mode is dev, we should migrate and seed the database.
