@@ -122,7 +122,7 @@ const Signin: React.FC<Props> = () => {
         </div>
         <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
           <div className="form-item-container input-form-container">
-            <span className={`normal-tex ${email ? "not-null" : ""}`}>Email</span>
+            <span className={`normal-text ${email ? "not-null" : ""}`}>Email</span>
             <input type="email" value={email} onChange={handleEmailInputChanged} />
           </div>
           <div className="form-item-container input-form-container">
