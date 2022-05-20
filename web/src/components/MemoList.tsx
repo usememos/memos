@@ -19,16 +19,16 @@ const MemoList: React.FC<Props> = () => {
   const wrapperElement = useRef<HTMLDivElement>(null);
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
-  const queryFilter = shortcutService.getShortcutById(shortcutId);
-  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || queryFilter);
+  const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
+  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut);
 
   const shownMemos =
-    showMemoFilter || queryFilter
+    showMemoFilter || shortcut
       ? memos.filter((memo) => {
           let shouldShow = true;
 
-          if (queryFilter) {
-            const filters = JSON.parse(queryFilter.payload) as Filter[];
+          if (shortcut) {
+            const filters = JSON.parse(shortcut.payload) as Filter[];
             if (Array.isArray(filters)) {
               shouldShow = checkShouldShowMemoWithFilters(memo, filters);
             }

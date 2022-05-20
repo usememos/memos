@@ -13,19 +13,19 @@ const MemoFilter: React.FC<FilterProps> = () => {
   } = useContext(appContext);
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
-  const queryFilter = shortcutService.getShortcutById(shortcutId);
-  const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || queryFilter);
+  const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
+  const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut);
 
   return (
     <div className={`filter-query-container ${showFilter ? "" : "hidden"}`}>
       <span className="tip-text">Filter:</span>
       <div
-        className={"filter-item-container " + (queryFilter ? "" : "hidden")}
+        className={"filter-item-container " + (shortcut ? "" : "hidden")}
         onClick={() => {
-          locationService.setMemoShortcut("");
+          locationService.setMemoShortcut(undefined);
         }}
       >
-        <span className="icon-text">🎯</span> {queryFilter?.title}
+        <span className="icon-text">🎯</span> {shortcut?.title}
       </div>
       <div
         className={"filter-item-container " + (tagQuery ? "" : "hidden")}

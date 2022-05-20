@@ -19,11 +19,14 @@ const MemosHeader: React.FC<Props> = () => {
   const [titleText, setTitleText] = useState("MEMOS");
 
   useEffect(() => {
-    const query = shortcutService.getShortcutById(shortcutId);
-    if (query) {
-      setTitleText(query.title);
-    } else {
+    if (!shortcutId) {
       setTitleText("MEMOS");
+      return;
+    }
+
+    const shortcut = shortcutService.getShortcutById(shortcutId);
+    if (shortcut) {
+      setTitleText(shortcut.title);
     }
   }, [shortcutId, shortcuts]);
 
