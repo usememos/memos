@@ -1,6 +1,7 @@
 import userService from "./userService";
 import api from "../helpers/api";
 import appStore from "../stores/appStore";
+import { UNKNOWN_ID } from "../helpers/consts";
 
 class ShortcutService {
   public getState() {
@@ -22,10 +23,14 @@ class ShortcutService {
     return data;
   }
 
-  public getShortcutById(id: string) {
-    for (const q of this.getState().shortcuts) {
-      if (q.id === id) {
-        return q;
+  public getShortcutById(id: ShortcutId) {
+    if (id === UNKNOWN_ID) {
+      return null;
+    }
+
+    for (const s of this.getState().shortcuts) {
+      if (s.id === id) {
+        return s;
       }
     }
 
@@ -50,7 +55,7 @@ class ShortcutService {
     });
   }
 
-  public async deleteShortcut(shortcutId: string) {
+  public async deleteShortcut(shortcutId: ShortcutId) {
     await api.deleteShortcutById(shortcutId);
     appStore.dispatch({
       type: "DELETE_SHORTCUT_BY_ID",
@@ -60,21 +65,21 @@ class ShortcutService {
     });
   }
 
-  public async createShortcut(title: string, shortcutstring: string) {
-    const data = await api.createShortcut(title, shortcutstring);
+  public async createShortcut(title: string, payload: string) {
+    const data = await api.createShortcut(title, payload);
     return data;
   }
 
-  public async updateShortcut(shortcutId: string, title: string, shortcutstring: string) {
-    const data = await api.updateShortcut(shortcutId, title, shortcutstring);
+  public async updateShortcut(shortcutId: ShortcutId, title: string, payload: string) {
+    const data = await api.updateShortcut(shortcutId, title, payload);
     return data;
   }
 
-  public async pinShortcut(shortcutId: string) {
+  public async pinShortcut(shortcutId: ShortcutId) {
     await api.pinShortcut(shortcutId);
   }
 
-  public async unpinShortcut(shortcutId: string) {
+  public async unpinShortcut(shortcutId: ShortcutId) {
     await api.unpinShortcut(shortcutId);
   }
 

@@ -36,13 +36,12 @@ class LocationService {
         duration: null,
         text: "",
         type: "",
-        shortcutId: "",
       },
     };
     state.query.tag = urlParams.get("tag") ?? "";
     state.query.type = (urlParams.get("type") ?? "") as MemoSpecType;
     state.query.text = urlParams.get("text") ?? "";
-    state.query.shortcutId = urlParams.get("shortcutId") ?? "";
+    state.query.shortcutId = Number(urlParams.get("shortcutId")) ?? undefined;
     const from = parseInt(urlParams.get("from") ?? "0");
     const to = parseInt(urlParams.get("to") ?? "0");
     if (to > from && to !== 0) {
@@ -71,7 +70,6 @@ class LocationService {
         duration: null,
         text: "",
         type: "",
-        shortcutId: "",
       },
     });
 
@@ -142,7 +140,7 @@ class LocationService {
     updateLocationUrl();
   };
 
-  public setMemoShortcut = (shortcutId: string) => {
+  public setMemoShortcut = (shortcutId?: ShortcutId) => {
     appStore.dispatch({
       type: "SET_SHORTCUT_ID",
       payload: shortcutId,

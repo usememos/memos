@@ -8,7 +8,7 @@ import Selector from "./common/Selector";
 import "../less/create-shortcut-dialog.less";
 
 interface Props extends DialogProps {
-  shortcutId?: string;
+  shortcutId?: ShortcutId;
 }
 
 const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
@@ -23,12 +23,14 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   }).length;
 
   useEffect(() => {
-    const shortcutTemp = shortcutService.getShortcutById(shortcutId ?? "");
-    if (shortcutTemp) {
-      setTitle(shortcutTemp.title);
-      const temp = JSON.parse(shortcutTemp.payload);
-      if (Array.isArray(temp)) {
-        setFilters(temp);
+    if (shortcutId) {
+      const shortcutTemp = shortcutService.getShortcutById(shortcutId);
+      if (shortcutTemp) {
+        setTitle(shortcutTemp.title);
+        const temp = JSON.parse(shortcutTemp.payload);
+        if (Array.isArray(temp)) {
+          setFilters(temp);
+        }
       }
     }
   }, [shortcutId]);
@@ -298,7 +300,7 @@ const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInpute
 
 const MemoFilterInputer: React.FC<MemoFilterInputerProps> = memo(FilterInputer);
 
-export default function showCreateShortcutDialog(shortcutId?: string): void {
+export default function showCreateShortcutDialog(shortcutId?: ShortcutId): void {
   showDialog(
     {
       className: "create-shortcut-dialog",

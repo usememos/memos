@@ -204,7 +204,7 @@ namespace api {
     });
   }
 
-  export function updateShortcut(shortcutId: string, title: string, payload: string) {
+  export function updateShortcut(shortcutId: ShortcutId, title: string, payload: string) {
     return request<Shortcut>({
       method: "PATCH",
       url: `/api/shortcut/${shortcutId}`,
@@ -215,14 +215,14 @@ namespace api {
     });
   }
 
-  export function deleteShortcutById(shortcutId: string) {
+  export function deleteShortcutById(shortcutId: ShortcutId) {
     return request({
       method: "DELETE",
       url: `/api/shortcut/${shortcutId}`,
     });
   }
 
-  export function pinShortcut(shortcutId: string) {
+  export function pinShortcut(shortcutId: ShortcutId) {
     return request({
       method: "PATCH",
       url: `/api/shortcut/${shortcutId}`,
@@ -232,7 +232,7 @@ namespace api {
     });
   }
 
-  export function unpinShortcut(shortcutId: string) {
+  export function unpinShortcut(shortcutId: ShortcutId) {
     return request({
       method: "PATCH",
       url: `/api/shortcut/${shortcutId}`,

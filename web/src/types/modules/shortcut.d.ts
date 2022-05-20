@@ -1,7 +1,7 @@
 type ShortcutId = number;
 
 interface Shortcut {
-  id: string;
+  id: ShortcutId;
 
   rowStatus: RowStatus;
   createdTs: TimeStamp;

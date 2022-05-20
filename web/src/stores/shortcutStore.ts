@@ -21,7 +21,7 @@ interface InsertShortcutAction {
 interface DeleteShortcutByIdAction {
   type: "DELETE_SHORTCUT_BY_ID";
   payload: {
-    id: string;
+    id: ShortcutId;
   };
 }
 

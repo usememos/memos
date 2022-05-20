@@ -1,9 +1,10 @@
 import { useContext, useEffect } from "react";
 import { locationService, shortcutService } from "../services";
 import appContext from "../stores/appContext";
+import { UNKNOWN_ID } from "../helpers/consts";
+import utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
-import utils from "../helpers/utils";
 import toastHelper from "./Toast";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
 import "../less/shortcut-list.less";
@@ -47,7 +48,7 @@ const ShortcutList: React.FC<Props> = () => {
       </p>
       <div className="shortcuts-container">
         {sortedShortcuts.map((s) => {
-          return <ShortcutContainer key={s.id} shortcut={s} isActive={s.id === shortcutId} />;
+          return <ShortcutContainer key={s.id} shortcut={s} isActive={s.id === Number(shortcutId)} />;
         })}
       </div>
     </div>
@@ -65,7 +66,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
 
   const handleShortcutClick = () => {
     if (isActive) {
-      locationService.setMemoShortcut("");
+      locationService.setMemoShortcut(UNKNOWN_ID);
     } else {
       if (!["/"].includes(locationService.getState().pathname)) {
         locationService.setPathname("/");

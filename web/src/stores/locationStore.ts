@@ -19,7 +19,7 @@ interface SetQueryAction {
 
 interface SetShortcutIdAction {
   type: "SET_SHORTCUT_ID";
-  payload: string;
+  payload: ShortcutId | undefined;
 }
 
 interface SetTagQueryAction {
@@ -183,6 +183,5 @@ export const defaultState: State = {
     duration: null,
     type: "",
     text: "",
-    shortcutId: "",
   },
 };
