@@ -9,6 +9,17 @@ import (
 	"memos/store"
 )
 
+const (
+	greetingBanner = `
+███╗   ███╗███████╗███╗   ███╗ ██████╗ ███████╗
+████╗ ████║██╔════╝████╗ ████║██╔═══██╗██╔════╝
+██╔████╔██║█████╗  ██╔████╔██║██║   ██║███████╗
+██║╚██╔╝██║██╔══╝  ██║╚██╔╝██║██║   ██║╚════██║
+██║ ╚═╝ ██║███████╗██║ ╚═╝ ██║╚██████╔╝███████║
+╚═╝     ╚═╝╚══════╝╚═╝     ╚═╝ ╚═════╝ ╚══════╝
+`
+)
+
 type Main struct {
 	profile *common.Profile
 }
@@ -37,9 +48,11 @@ func Execute() {
 		profile: profile,
 	}
 
-	err := m.Run()
-	if err != nil {
-		fmt.Printf("%+v\n", err)
+	println(greetingBanner)
+	fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)
+
+	if err := m.Run(); err != nil {
+		fmt.Printf("error: %+v\n", err)
 		os.Exit(1)
 	}
 }

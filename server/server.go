@@ -25,7 +25,7 @@ func NewServer(profile *common.Profile) *Server {
 	e := echo.New()
 	e.Debug = true
 	e.HideBanner = true
-	e.HidePort = false
+	e.HidePort = true
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: "${method} ${uri} ${status}\n",
