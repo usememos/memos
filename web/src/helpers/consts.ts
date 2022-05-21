@@ -11,7 +11,7 @@ export const TOAST_ANIMATION_DURATION = 400;
 export const DAILY_TIMESTAMP = 3600 * 24 * 1000;
 
 // tag regex
-export const TAG_REG = /#\s?(.+?)\s/g;
+export const TAG_REG = /#(.+?)\s/g;
 
 // URL regex
 export const LINK_REG = /(https?:\/\/[^\s<\\*>']+)/g;
