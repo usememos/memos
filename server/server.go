@@ -45,7 +45,7 @@ func NewServer(profile *common.Profile) *Server {
 	}))
 
 	// In dev mode, set the const secret key to make login session persistence.
-	secret := []byte("justmemos")
+	secret := []byte("usememos")
 	if profile.Mode == "prod" {
 		secret = securecookie.GenerateRandomKey(16)
 	}

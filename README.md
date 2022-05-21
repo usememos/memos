@@ -3,17 +3,17 @@
 <p align="center">An open source, self-hosted knowledge base that works with a SQLite db file.</p>
 
 <p align="center">
-  <img alt="GitHub stars" src="https://img.shields.io/github/stars/justmemos/memos" />
+  <img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos" />
   <img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg" />
-  <img alt="Go report" src="https://goreportcard.com/badge/github.com/justmemos/memos" />
+  <img alt="Go report" src="https://goreportcard.com/badge/github.com/usememos/memos" />
 </p>
 
 <p align="center">
   <a href="https://memos.onrender.com/">Live Demo</a> •
-  <a href="https://github.com/justmemos/memos/discussions">Discussions</a>
+  <a href="https://github.com/usememos/memos/discussions">Discussions</a>
 </p>
 
-![demo](https://raw.githubusercontent.com/justmemos/memos/main/resources/demo.png)
+![demo](https://raw.githubusercontent.com/usememos/memos/main/resources/demo.png)
 
 ## 🎯 Intentions
 
@@ -45,7 +45,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 
 ### Tech Stack
 
-<img alt="tech stack" src="https://raw.githubusercontent.com/justmemos/memos/main/resources/tech-stack.png" width="360" />
+<img alt="tech stack" src="https://raw.githubusercontent.com/usememos/memos/main/resources/tech-stack.png" width="360" />
 
 ### Prerequisites
 
@@ -58,7 +58,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 1. pull source code
 
    ```bash
-   git clone https://github.com/justmemos/memos
+   git clone https://github.com/usememos/memos
    ```
 
 2. start backend using air(with live reload)
@@ -77,7 +77,7 @@ Memos should now be running at [http://localhost:3000](http://localhost:3000) an
 
 ## 🌟 Star history
 
-[![Star History Chart](https://api.star-history.com/svg?repos=justmemos/memos&type=Date)](https://star-history.com/#justmemos/memos&Date)
+[![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
 
 ---
 

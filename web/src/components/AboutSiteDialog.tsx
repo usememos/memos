@@ -42,7 +42,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         </p>
         <br />
         <p>
-          <a href="https://github.com/justmemos/memos">🏗 Source code</a>, and built by <a href="https://github.com/boojack">Steven 🐯</a>.
+          <a href="https://github.com/usememos/memos">🏗 Source code</a>, and built by <a href="https://github.com/boojack">Steven 🐯</a>.
         </p>
         <Only when={profile !== undefined}>
           <p className="updated-time-text">

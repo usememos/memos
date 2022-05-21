@@ -9,12 +9,10 @@ export default defineConfig({
     proxy: {
       "/api": {
         target: "http://localhost:8080/",
-        // target: "https://memos.justsven.top/",
         changeOrigin: true,
       },
       "/h/": {
         target: "http://localhost:8080/",
-        // target: "https://memos.justsven.top/",
         changeOrigin: true,
       },
     },
