@@ -1,6 +1,7 @@
 package store
 
 import (
+	"database/sql"
 	"fmt"
 	"memos/api"
 	"memos/common"
@@ -90,8 +91,8 @@ func (s *Store) DeleteResource(delete *api.ResourceDelete) error {
 	return nil
 }
 
-func createResource(db *DB, create *api.ResourceCreate) (*resourceRaw, error) {
-	row, err := db.Db.Query(`
+func createResource(db *sql.DB, create *api.ResourceCreate) (*resourceRaw, error) {
+	row, err := db.Query(`
 		INSERT INTO resource (
 			filename,
 			blob,
@@ -130,7 +131,7 @@ func createResource(db *DB, create *api.ResourceCreate) (*resourceRaw, error) {
 	return &resourceRaw, nil
 }
 
-func findResourceList(db *DB, find *api.ResourceFind) ([]*resourceRaw, error) {
+func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -143,7 +144,7 @@ func findResourceList(db *DB, find *api.ResourceFind) ([]*resourceRaw, error) {
 		where, args = append(where, "filename = ?"), append(args, *v)
 	}
 
-	rows, err := db.Db.Query(`
+	rows, err := db.Query(`
 		SELECT
 			id,
 			filename,
@@ -186,8 +187,8 @@ func findResourceList(db *DB, find *api.ResourceFind) ([]*resourceRaw, error) {
 	return resourceRawList, nil
 }
 
-func deleteResource(db *DB, delete *api.ResourceDelete) error {
-	result, err := db.Db.Exec(`DELETE FROM resource WHERE id = ?`, delete.ID)
+func deleteResource(db *sql.DB, delete *api.ResourceDelete) error {
+	result, err := db.Exec(`DELETE FROM resource WHERE id = ?`, delete.ID)
 	if err != nil {
 		return FormatError(err)
 	}

@@ -1,6 +1,7 @@
 package store
 
 import (
+	"database/sql"
 	"fmt"
 	"memos/api"
 	"memos/common"
@@ -94,8 +95,8 @@ func (s *Store) FindUser(find *api.UserFind) (*api.User, error) {
 	return user, nil
 }
 
-func createUser(db *DB, create *api.UserCreate) (*userRaw, error) {
-	row, err := db.Db.Query(`
+func createUser(db *sql.DB, create *api.UserCreate) (*userRaw, error) {
+	row, err := db.Query(`
 		INSERT INTO user (
 			email,
 			role,
@@ -135,7 +136,7 @@ func createUser(db *DB, create *api.UserCreate) (*userRaw, error) {
 	return &userRaw, nil
 }
 
-func patchUser(db *DB, patch *api.UserPatch) (*userRaw, error) {
+func patchUser(db *sql.DB, patch *api.UserPatch) (*userRaw, error) {
 	set, args := []string{}, []interface{}{}
 
 	if v := patch.RowStatus; v != nil {
@@ -156,7 +157,7 @@ func patchUser(db *DB, patch *api.UserPatch) (*userRaw, error) {
 
 	args = append(args, patch.ID)
 
-	row, err := db.Db.Query(`
+	row, err := db.Query(`
 		UPDATE user
 		SET `+strings.Join(set, ", ")+`
 		WHERE id = ?
@@ -188,7 +189,7 @@ func patchUser(db *DB, patch *api.UserPatch) (*userRaw, error) {
 	return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("user ID not found: %d", patch.ID)}
 }
 
-func findUserList(db *DB, find *api.UserFind) ([]*userRaw, error) {
+func findUserList(db *sql.DB, find *api.UserFind) ([]*userRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -207,7 +208,7 @@ func findUserList(db *DB, find *api.UserFind) ([]*userRaw, error) {
 		where, args = append(where, "open_id = ?"), append(args, *v)
 	}
 
-	rows, err := db.Db.Query(`
+	rows, err := db.Query(`
 		SELECT 
 			id,
 			email,

@@ -1,6 +1,7 @@
 package store
 
 import (
+	"database/sql"
 	"fmt"
 	"memos/api"
 	"memos/common"
@@ -47,8 +48,8 @@ func (s *Store) UpsertMemoOrganizer(upsert *api.MemoOrganizerUpsert) error {
 	return nil
 }
 
-func findMemoOrganizer(db *DB, find *api.MemoOrganizerFind) (*memoOrganizerRaw, error) {
-	row, err := db.Db.Query(`
+func findMemoOrganizer(db *sql.DB, find *api.MemoOrganizerFind) (*memoOrganizerRaw, error) {
+	row, err := db.Query(`
 		SELECT
 			id,
 			memo_id,
@@ -79,8 +80,8 @@ func findMemoOrganizer(db *DB, find *api.MemoOrganizerFind) (*memoOrganizerRaw, 
 	return &memoOrganizerRaw, nil
 }
 
-func upsertMemoOrganizer(db *DB, upsert *api.MemoOrganizerUpsert) error {
-	row, err := db.Db.Query(`
+func upsertMemoOrganizer(db *sql.DB, upsert *api.MemoOrganizerUpsert) error {
+	row, err := db.Query(`
 		INSERT INTO memo_organizer (
 			memo_id,
 			user_id,

@@ -1,6 +1,7 @@
 package store
 
 import (
+	"database/sql"
 	"fmt"
 	"memos/api"
 	"memos/common"
@@ -97,8 +98,8 @@ func (s *Store) DeleteShortcut(delete *api.ShortcutDelete) error {
 	return nil
 }
 
-func createShortcut(db *DB, create *api.ShortcutCreate) (*shortcutRaw, error) {
-	row, err := db.Db.Query(`
+func createShortcut(db *sql.DB, create *api.ShortcutCreate) (*shortcutRaw, error) {
+	row, err := db.Query(`
 		INSERT INTO shortcut (
 			title, 
 			payload, 
@@ -133,7 +134,7 @@ func createShortcut(db *DB, create *api.ShortcutCreate) (*shortcutRaw, error) {
 	return &shortcutRaw, nil
 }
 
-func patchShortcut(db *DB, patch *api.ShortcutPatch) (*shortcutRaw, error) {
+func patchShortcut(db *sql.DB, patch *api.ShortcutPatch) (*shortcutRaw, error) {
 	set, args := []string{}, []interface{}{}
 
 	if v := patch.Title; v != nil {
@@ -148,7 +149,7 @@ func patchShortcut(db *DB, patch *api.ShortcutPatch) (*shortcutRaw, error) {
 
 	args = append(args, patch.ID)
 
-	row, err := db.Db.Query(`
+	row, err := db.Query(`
 		UPDATE shortcut
 		SET `+strings.Join(set, ", ")+`
 		WHERE id = ?
@@ -178,7 +179,7 @@ func patchShortcut(db *DB, patch *api.ShortcutPatch) (*shortcutRaw, error) {
 	return &shortcutRaw, nil
 }
 
-func findShortcutList(db *DB, find *api.ShortcutFind) ([]*shortcutRaw, error) {
+func findShortcutList(db *sql.DB, find *api.ShortcutFind) ([]*shortcutRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -191,7 +192,7 @@ func findShortcutList(db *DB, find *api.ShortcutFind) ([]*shortcutRaw, error) {
 		where, args = append(where, "title = ?"), append(args, *v)
 	}
 
-	rows, err := db.Db.Query(`
+	rows, err := db.Query(`
 		SELECT
 			id,
 			title,
@@ -234,8 +235,8 @@ func findShortcutList(db *DB, find *api.ShortcutFind) ([]*shortcutRaw, error) {
 	return shortcutRawList, nil
 }
 
-func deleteShortcut(db *DB, delete *api.ShortcutDelete) error {
-	result, err := db.Db.Exec(`DELETE FROM shortcut WHERE id = ?`, delete.ID)
+func deleteShortcut(db *sql.DB, delete *api.ShortcutDelete) error {
+	result, err := db.Exec(`DELETE FROM shortcut WHERE id = ?`, delete.ID)
 	if err != nil {
 		return FormatError(err)
 	}

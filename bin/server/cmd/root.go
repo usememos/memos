@@ -7,6 +7,7 @@ import (
 	"memos/common"
 	"memos/server"
 	"memos/store"
+	DB "memos/store/db"
 )
 
 const (
@@ -25,14 +26,14 @@ type Main struct {
 }
 
 func (m *Main) Run() error {
-	db := store.NewDB(m.profile)
+	db := DB.NewDB(m.profile)
 	if err := db.Open(); err != nil {
 		return fmt.Errorf("cannot open db: %w", err)
 	}
 
 	s := server.NewServer(m.profile)
 
-	storeInstance := store.New(db)
+	storeInstance := store.New(db.Db, m.profile)
 	s.Store = storeInstance
 
 	if err := s.Run(); err != nil {

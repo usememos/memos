@@ -1,4 +1,4 @@
-package store
+package db
 
 import (
 	"database/sql"
@@ -76,6 +76,33 @@ func (db *DB) Open() (err error) {
 }
 
 func (db *DB) migrate() error {
+	table, err := findTable(db, "migration_history")
+	if err != nil {
+		return err
+	}
+	if table == nil {
+		createTable(db, `
+		CREATE TABLE migration_history (
+			version TEXT NOT NULL PRIMARY KEY,
+			created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
+		);
+		`)
+	}
+
+	migrationHistoryList, err := findMigrationHistoyList(db)
+	if err != nil {
+		return err
+	}
+
+	if len(migrationHistoryList) == 0 {
+		createMigrationHistoy(db, common.Version)
+	} else {
+		migrationHistory := migrationHistoryList[0]
+		if migrationHistory.Version != common.Version {
+			createMigrationHistoy(db, common.Version)
+		}
+	}
+
 	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("%s/*.sql", "migration"))
 	if err != nil {
 		return err

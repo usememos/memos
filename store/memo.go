@@ -1,6 +1,7 @@
 package store
 
 import (
+	"database/sql"
 	"fmt"
 	"memos/api"
 	"memos/common"
@@ -113,7 +114,7 @@ func (s *Store) DeleteMemo(delete *api.MemoDelete) error {
 	return nil
 }
 
-func createMemoRaw(db *DB, create *api.MemoCreate) (*memoRaw, error) {
+func createMemoRaw(db *sql.DB, create *api.MemoCreate) (*memoRaw, error) {
 	set := []string{"creator_id", "content"}
 	placeholder := []string{"?", "?"}
 	args := []interface{}{create.CreatorID, create.Content}
@@ -122,7 +123,7 @@ func createMemoRaw(db *DB, create *api.MemoCreate) (*memoRaw, error) {
 		set, placeholder, args = append(set, "created_ts"), append(placeholder, "?"), append(args, *v)
 	}
 
-	row, err := db.Db.Query(`
+	row, err := db.Query(`
 		INSERT INTO memo (
 			`+strings.Join(set, ", ")+`
 		)
@@ -152,7 +153,7 @@ func createMemoRaw(db *DB, create *api.MemoCreate) (*memoRaw, error) {
 	return &memoRaw, nil
 }
 
-func patchMemoRaw(db *DB, patch *api.MemoPatch) (*memoRaw, error) {
+func patchMemoRaw(db *sql.DB, patch *api.MemoPatch) (*memoRaw, error) {
 	set, args := []string{}, []interface{}{}
 
 	if v := patch.Content; v != nil {
@@ -164,7 +165,7 @@ func patchMemoRaw(db *DB, patch *api.MemoPatch) (*memoRaw, error) {
 
 	args = append(args, patch.ID)
 
-	row, err := db.Db.Query(`
+	row, err := db.Query(`
 		UPDATE memo
 		SET `+strings.Join(set, ", ")+`
 		WHERE id = ?
@@ -193,7 +194,7 @@ func patchMemoRaw(db *DB, patch *api.MemoPatch) (*memoRaw, error) {
 	return &memoRaw, nil
 }
 
-func findMemoRawList(db *DB, find *api.MemoFind) ([]*memoRaw, error) {
+func findMemoRawList(db *sql.DB, find *api.MemoFind) ([]*memoRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -209,7 +210,7 @@ func findMemoRawList(db *DB, find *api.MemoFind) ([]*memoRaw, error) {
 		where = append(where, "id in (SELECT memo_id FROM memo_organizer WHERE pinned = 1 AND user_id = memo.creator_id )")
 	}
 
-	rows, err := db.Db.Query(`
+	rows, err := db.Query(`
 		SELECT
 			id,
 			creator_id,
@@ -250,8 +251,8 @@ func findMemoRawList(db *DB, find *api.MemoFind) ([]*memoRaw, error) {
 	return memoRawList, nil
 }
 
-func deleteMemo(db *DB, delete *api.MemoDelete) error {
-	result, err := db.Db.Exec(`DELETE FROM memo WHERE id = ?`, delete.ID)
+func deleteMemo(db *sql.DB, delete *api.MemoDelete) error {
+	result, err := db.Exec(`DELETE FROM memo WHERE id = ?`, delete.ID)
 	if err != nil {
 		return FormatError(err)
 	}
