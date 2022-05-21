@@ -129,12 +129,10 @@ const memoService = {
     await api.unpinMemo(memoId);
   },
 
-  importMemo: async (content: string, createdAt: string) => {
-    const createdTs = Math.floor(utils.getTimeStampByDate(createdAt) / 1000);
-
+  importMemo: async (content: string, createdTs: TimeStamp) => {
     await api.createMemo({
       content,
-      createdTs,
+      createdTs: Math.floor(utils.getTimeStampByDate(createdTs) / 1000),
     });
   },
 };

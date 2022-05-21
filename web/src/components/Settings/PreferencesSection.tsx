@@ -42,10 +42,10 @@ const PreferencesSection: React.FC<Props> = () => {
 
           for (const memo of memoList) {
             const content = memo.content || "";
-            const createdAt = utils.getDateTimeString(memo.createdTs || Date.now());
+            const createdTs = (memo as any).createdAt || memo.createdTs || Date.now();
 
             try {
-              await memoService.importMemo(content, createdAt);
+              await memoService.importMemo(content, createdTs);
               succeedAmount++;
             } catch (error) {
               // do nth
