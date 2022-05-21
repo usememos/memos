@@ -1,5 +1,5 @@
-import { useCallback, useContext, useState } from "react";
-import appContext from "../stores/appContext";
+import { useCallback, useState } from "react";
+import { useAppSelector } from "../store";
 import { locationService } from "../services";
 import MenuBtnsPopup from "./MenuBtnsPopup";
 import "../less/user-banner.less";
@@ -8,8 +8,8 @@ interface Props {}
 
 const UserBanner: React.FC<Props> = () => {
   const {
-    userState: { user },
-  } = useContext(appContext);
+    user: { user },
+  } = useAppSelector((state) => state);
   const username = user ? user.name : "Memos";
 
   const [shouldShowPopupBtns, setShouldShowPopupBtns] = useState(false);

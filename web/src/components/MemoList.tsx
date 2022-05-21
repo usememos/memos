@@ -1,6 +1,6 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import appContext from "../stores/appContext";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { locationService, memoService, shortcutService } from "../services";
+import { useAppSelector } from "../store";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
 import utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
@@ -12,13 +12,13 @@ interface Props {}
 
 const MemoList: React.FC<Props> = () => {
   const {
-    locationState: { query },
-    memoState: { memos },
-  } = useContext(appContext);
+    location: { query },
+    memo: { memos },
+  } = useAppSelector((state) => state);
   const [isFetching, setFetchStatus] = useState(true);
   const wrapperElement = useRef<HTMLDivElement>(null);
 
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query ?? {};
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut);
 
@@ -78,7 +78,7 @@ const MemoList: React.FC<Props> = () => {
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
-  const sortedMemos = pinnedMemos.concat(unpinnedMemos);
+  const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   useEffect(() => {
     memoService
@@ -100,7 +100,7 @@ const MemoList: React.FC<Props> = () => {
     const targetEl = event.target as HTMLElement;
     if (targetEl.tagName === "SPAN" && targetEl.className === "tag-span") {
       const tagName = targetEl.innerText.slice(1);
-      const currTagQuery = locationService.getState().query.tag;
+      const currTagQuery = locationService.getState().query?.tag;
       if (currTagQuery === tagName) {
         locationService.setTagQuery("");
       } else {

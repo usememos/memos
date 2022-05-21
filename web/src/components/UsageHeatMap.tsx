@@ -1,5 +1,5 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
-import appContext from "../stores/appContext";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useAppSelector } from "../store";
 import { locationService } from "../services";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import utils from "../helpers/utils";
@@ -36,8 +36,8 @@ const UsageHeatMap: React.FC<Props> = () => {
   const beginDayTimestemp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
 
   const {
-    memoState: { memos },
-  } = useContext(appContext);
+    memo: { memos },
+  } = useAppSelector((state) => state);
   const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestemp));
   const [popupStat, setPopupStat] = useState<DailyUsageStat | null>(null);
   const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
@@ -71,7 +71,7 @@ const UsageHeatMap: React.FC<Props> = () => {
   }, []);
 
   const handleUsageStatItemClick = useCallback((item: DailyUsageStat) => {
-    if (locationService.getState().query.duration?.from === item.timestamp) {
+    if (locationService.getState().query?.duration?.from === item.timestamp) {
       locationService.setFromAndToQuery(0, 0);
       setCurrentStat(null);
     } else if (item.count > 0) {

@@ -1,68 +1,55 @@
 import api from "../helpers/api";
-import appStore from "../stores/appStore";
+import { signin, signout } from "../store/modules/user";
+import store from "../store";
 
-class UserService {
-  public getState() {
-    return appStore.getState().userState;
-  }
+const convertResponseModelUser = (user: User): User => {
+  return {
+    ...user,
+    createdTs: user.createdTs * 1000,
+    updatedTs: user.updatedTs * 1000,
+  };
+};
 
-  public async doSignIn() {
+const userService = {
+  getState: () => {
+    return store.getState().user;
+  },
+
+  doSignIn: async () => {
     const user = await api.getUser();
     if (user) {
-      appStore.dispatch({
-        type: "LOGIN",
-        payload: {
-          user: this.convertResponseModelUser(user),
-        },
-      });
+      store.dispatch(signin(convertResponseModelUser(user)));
     } else {
       userService.doSignOut();
     }
     return user;
-  }
+  },
 
-  public async doSignOut() {
-    appStore.dispatch({
-      type: "SIGN_OUT",
-      payload: null,
-    });
+  doSignOut: async () => {
+    store.dispatch(signout);
     api.signout().catch(() => {
       // do nth
     });
-  }
+  },
 
-  public async updateUsername(name: string): Promise<void> {
+  updateUsername: async (name: string): Promise<void> => {
     await api.patchUser({
       name,
     });
-  }
+  },
 
-  public async updatePassword(password: string): Promise<void> {
+  updatePassword: async (password: string): Promise<void> => {
     await api.patchUser({
       password,
     });
-  }
+  },
 
-  public async resetOpenId(): Promise<string> {
+  resetOpenId: async (): Promise<string> => {
     const user = await api.patchUser({
       resetOpenId: true,
     });
-    appStore.dispatch({
-      type: "RESET_OPENID",
-      payload: user.openId,
-    });
     return user.openId;
-  }
-
-  private convertResponseModelUser(user: User): User {
-    return {
-      ...user,
-      createdTs: user.createdTs * 1000,
-      updatedTs: user.updatedTs * 1000,
-    };
-  }
-}
-
-const userService = new UserService();
+  },
+};
 
 export default userService;

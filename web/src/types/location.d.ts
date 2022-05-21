@@ -4,10 +4,10 @@ interface Duration {
 }
 
 interface Query {
-  tag: string;
-  duration: Duration | null;
-  type: MemoSpecType | "";
-  text: string;
+  tag?: string;
+  duration?: Duration;
+  type?: MemoSpecType;
+  text?: string;
   shortcutId?: ShortcutId;
 }
 

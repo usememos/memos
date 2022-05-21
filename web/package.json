@@ -8,9 +8,11 @@
     "lint": "eslint --ext .js,.ts,.tsx, src"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^1.8.1",
     "lodash-es": "^4.17.21",
     "react": "^18.1.0",
-    "react-dom": "^18.1.0"
+    "react-dom": "^18.1.0",
+    "react-redux": "^8.0.1"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.5",

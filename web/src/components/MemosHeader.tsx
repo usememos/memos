@@ -1,5 +1,5 @@
-import { useCallback, useContext, useEffect, useState } from "react";
-import appContext from "../stores/appContext";
+import { useCallback, useEffect, useState } from "react";
+import { useAppSelector } from "../store";
 import SearchBar from "./SearchBar";
 import { memoService, shortcutService } from "../services";
 import "../less/memos-header.less";
@@ -10,25 +10,23 @@ interface Props {}
 
 const MemosHeader: React.FC<Props> = () => {
   const {
-    locationState: {
-      query: { shortcutId },
-    },
-    shortcutState: { shortcuts },
-  } = useContext(appContext);
+    location: { query },
+    shortcut: { shortcuts },
+  } = useAppSelector((state) => state);
 
   const [titleText, setTitleText] = useState("MEMOS");
 
   useEffect(() => {
-    if (!shortcutId) {
+    if (!query?.shortcutId) {
       setTitleText("MEMOS");
       return;
     }
 
-    const shortcut = shortcutService.getShortcutById(shortcutId);
+    const shortcut = shortcutService.getShortcutById(query?.shortcutId);
     if (shortcut) {
       setTitleText(shortcut.title);
     }
-  }, [shortcutId, shortcuts]);
+  }, [query, shortcuts]);
 
   const handleMemoTextClick = useCallback(() => {
     const now = Date.now();

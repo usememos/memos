@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import appContext from "../../stores/appContext";
+import { useState } from "react";
+import { useAppSelector } from "../../store";
 import { userService } from "../../services";
 import { validate, ValidatorConfig } from "../../helpers/validator";
 import toastHelper from "../Toast";
@@ -17,7 +17,7 @@ const validateConfig: ValidatorConfig = {
 interface Props {}
 
 const MyAccountSection: React.FC<Props> = () => {
-  const { userState } = useContext(appContext);
+  const { user: userState } = useAppSelector((state) => state);
   const user = userState.user as User;
   const [username, setUsername] = useState<string>(user.name);
   const openAPIRoute = `${window.location.origin}/h/${user.openId}/memo`;

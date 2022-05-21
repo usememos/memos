@@ -1,12 +1,12 @@
 import api from "../helpers/api";
 
-class ResourceService {
+const resourceService = {
   /**
    * Upload resource file to server,
    * @param file file
    * @returns resource: id, filename
    */
-  public async upload(file: File) {
+  async upload(file: File) {
     const { name: filename, size } = file;
 
     if (size > 64 << 20) {
@@ -18,9 +18,7 @@ class ResourceService {
     const data = await api.uploadFile(formData);
 
     return data;
-  }
-}
-
-const resourceService = new ResourceService();
+  },
+};
 
 export default resourceService;

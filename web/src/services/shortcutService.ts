@@ -1,97 +1,77 @@
 import userService from "./userService";
 import api from "../helpers/api";
-import appStore from "../stores/appStore";
 import { UNKNOWN_ID } from "../helpers/consts";
+import store from "../store/";
+import { deleteShortcut, patchShortcut, setShortcuts } from "../store/modules/shortcut";
 
-class ShortcutService {
-  public getState() {
-    return appStore.getState().shortcutState;
-  }
+const convertResponseModelShortcut = (shortcut: Shortcut): Shortcut => {
+  return {
+    ...shortcut,
+    createdTs: shortcut.createdTs * 1000,
+    updatedTs: shortcut.updatedTs * 1000,
+  };
+};
 
-  public async getMyAllShortcuts() {
+const shortcutService = {
+  getState: () => {
+    return store.getState().shortcut;
+  },
+
+  getMyAllShortcuts: async () => {
     if (!userService.getState().user) {
       return false;
     }
 
     const data = await api.getMyShortcuts();
-    appStore.dispatch({
-      type: "SET_SHORTCUTS",
-      payload: {
-        shortcuts: data.map((s) => this.convertResponseModelShortcut(s)),
-      },
-    });
-    return data;
-  }
+    const shortcuts = data.map((s) => convertResponseModelShortcut(s));
+    store.dispatch(setShortcuts(shortcuts));
+    return shortcuts;
+  },
 
-  public getShortcutById(id: ShortcutId) {
+  getShortcutById: (id: ShortcutId) => {
     if (id === UNKNOWN_ID) {
       return null;
     }
 
-    for (const s of this.getState().shortcuts) {
+    for (const s of shortcutService.getState().shortcuts) {
       if (s.id === id) {
         return s;
       }
     }
 
     return null;
-  }
+  },
 
-  public pushShortcut(shortcut: Shortcut) {
-    appStore.dispatch({
-      type: "INSERT_SHORTCUT",
-      payload: {
-        shortcut: {
-          ...shortcut,
-        },
-      },
-    });
-  }
+  pushShortcut: (shortcut: Shortcut) => {
+    store.dispatch(setShortcuts(shortcutService.getState().shortcuts.concat(shortcut)));
+  },
 
-  public editShortcut(shortcut: Shortcut) {
-    appStore.dispatch({
-      type: "UPDATE_SHORTCUT",
-      payload: shortcut,
-    });
-  }
+  editShortcut: (shortcut: Shortcut) => {
+    store.dispatch(patchShortcut(shortcut));
+  },
 
-  public async deleteShortcut(shortcutId: ShortcutId) {
+  deleteShortcutById: async (shortcutId: ShortcutId) => {
     await api.deleteShortcutById(shortcutId);
-    appStore.dispatch({
-      type: "DELETE_SHORTCUT_BY_ID",
-      payload: {
-        id: shortcutId,
-      },
-    });
-  }
+    store.dispatch(deleteShortcut(shortcutId));
+  },
 
-  public async createShortcut(title: string, payload: string) {
+  createShortcut: async (title: string, payload: string) => {
     const data = await api.createShortcut(title, payload);
-    return data;
-  }
+    shortcutService.pushShortcut(convertResponseModelShortcut(data));
+  },
 
-  public async updateShortcut(shortcutId: ShortcutId, title: string, payload: string) {
+  updateShortcut: async (shortcutId: ShortcutId, title: string, payload: string) => {
     const data = await api.updateShortcut(shortcutId, title, payload);
-    return data;
-  }
+    store.dispatch(patchShortcut(convertResponseModelShortcut(data)));
+  },
 
-  public async pinShortcut(shortcutId: ShortcutId) {
+  pinShortcut: async (shortcutId: ShortcutId) => {
     await api.pinShortcut(shortcutId);
-  }
+  },
 
-  public async unpinShortcut(shortcutId: ShortcutId) {
+  unpinShortcut: async (shortcutId: ShortcutId) => {
     await api.unpinShortcut(shortcutId);
-  }
-
-  public convertResponseModelShortcut(shortcut: Shortcut): Shortcut {
-    return {
-      ...shortcut,
-      createdTs: shortcut.createdTs * 1000,
-      updatedTs: shortcut.updatedTs * 1000,
-    };
-  }
-}
-
-const shortcutService = new ShortcutService();
+  },
+};
 
 export default shortcutService;

@@ -4,7 +4,7 @@ import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../
 import { parseMarkedToHtml, parseRawTextToHtml } from "../helpers/marked";
 import utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
-import { globalStateService, memoService } from "../services";
+import { editorStateService, memoService } from "../services";
 import Only from "./common/OnlyWhen";
 import Image from "./Image";
 import showMemoCardDialog from "./MemoCardDialog";
@@ -50,23 +50,23 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMarkMemoClick = () => {
-    globalStateService.setMarkMemoId(memo.id);
+    editorStateService.setMarkMemo(memo.id);
   };
 
   const handleEditMemoClick = () => {
-    globalStateService.setEditMemoId(memo.id);
+    editorStateService.setEditMemo(memo.id);
   };
 
   const handleDeleteMemoClick = async () => {
     if (showConfirmDeleteBtn) {
       try {
-        await memoService.hideMemoById(memo.id);
+        await memoService.archiveMemoById(memo.id);
       } catch (error: any) {
         toastHelper.error(error.message);
       }
 
-      if (globalStateService.getState().editMemoId === memo.id) {
-        globalStateService.setEditMemoId(UNKNOWN_ID);
+      if (editorStateService.getState().editMemoId === memo.id) {
+        editorStateService.setEditMemo(UNKNOWN_ID);
       }
     } else {
       toggleConfirmDeleteBtn();
@@ -163,15 +163,9 @@ export function formatMemoContent(content: string) {
     })
     .join("");
 
-  const { shouldUseMarkdownParser, shouldSplitMemoWord, shouldHideImageUrl } = globalStateService.getState();
+  content = parseMarkedToHtml(content);
 
-  if (shouldUseMarkdownParser) {
-    content = parseMarkedToHtml(content);
-  }
-
-  if (shouldHideImageUrl) {
-    content = content.replace(IMAGE_URL_REG, "");
-  }
+  content = content.replace(IMAGE_URL_REG, "");
 
   content = content
     .replace(TAG_REG, "<span class='tag-span'>#$1</span>")
@@ -179,11 +173,7 @@ export function formatMemoContent(content: string) {
     .replace(MEMO_LINK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>");
 
   // Add space in english and chinese
-  if (shouldSplitMemoWord) {
-    content = content
-      .replace(/([\u4e00-\u9fa5])([A-Za-z0-9?.,;[\]]+)/g, "$1 $2")
-      .replace(/([A-Za-z0-9?.,;[\]]+)([\u4e00-\u9fa5])/g, "$1 $2");
-  }
+  content = content.replace(/([\u4e00-\u9fa5])([A-Za-z0-9?.,;[\]]+)/g, "$1 $2").replace(/([A-Za-z0-9?.,;[\]]+)([\u4e00-\u9fa5])/g, "$1 $2");
 
   const tempDivContainer = document.createElement("div");
   tempDivContainer.innerHTML = content;

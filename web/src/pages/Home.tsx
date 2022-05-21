@@ -1,15 +1,15 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { locationService, userService } from "../services";
 import { homeRouterSwitch } from "../routers";
-import appContext from "../stores/appContext";
+import { useAppSelector } from "../store";
 import Sidebar from "../components/Sidebar";
 import useLoading from "../hooks/useLoading";
 import "../less/home.less";
 
 function Home() {
   const {
-    locationState: { pathname },
-  } = useContext(appContext);
+    location: { pathname },
+  } = useAppSelector((state) => state);
   const loadingState = useLoading();
 
   useEffect(() => {

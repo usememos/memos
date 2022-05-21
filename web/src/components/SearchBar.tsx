@@ -1,22 +1,17 @@
-import { useContext } from "react";
-import appContext from "../stores/appContext";
 import { locationService } from "../services";
+import { useAppSelector } from "../store";
 import { memoSpecialTypes } from "../helpers/filter";
 import "../less/search-bar.less";
 
 interface Props {}
 
 const SearchBar: React.FC<Props> = () => {
-  const {
-    locationState: {
-      query: { type: memoType },
-    },
-  } = useContext(appContext);
+  const memoType = useAppSelector((state) => state.location.query?.type);
 
-  const handleMemoTypeItemClick = (type: MemoSpecType | "") => {
-    const { type: prevType } = locationService.getState().query;
+  const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
+    const { type: prevType } = locationService.getState().query ?? {};
     if (type === prevType) {
-      type = "";
+      type = undefined;
     }
     locationService.setMemoTypeQuery(type);
   };

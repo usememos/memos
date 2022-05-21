@@ -48,11 +48,9 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
 
     try {
       if (shortcutId) {
-        const editedShortcut = await shortcutService.updateShortcut(shortcutId, title, JSON.stringify(filters));
-        shortcutService.editShortcut(shortcutService.convertResponseModelShortcut(editedShortcut));
+        await shortcutService.updateShortcut(shortcutId, title, JSON.stringify(filters));
       } else {
-        const shortcut = await shortcutService.createShortcut(title, JSON.stringify(filters));
-        shortcutService.pushShortcut(shortcutService.convertResponseModelShortcut(shortcut));
+        await shortcutService.createShortcut(title, JSON.stringify(filters));
       }
     } catch (error: any) {
       toastHelper.error(error.message);

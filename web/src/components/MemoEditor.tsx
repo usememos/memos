@@ -1,6 +1,6 @@
-import React, { useCallback, useContext, useEffect, useMemo, useRef } from "react";
-import appContext from "../stores/appContext";
-import { globalStateService, locationService, memoService, resourceService } from "../services";
+import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import { editorStateService, locationService, memoService, resourceService } from "../services";
+import { useAppSelector } from "../store";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { storage } from "../helpers/storage";
 import useToggle from "../hooks/useToggle";
@@ -44,32 +44,36 @@ interface Props {}
 
 const MemoEditor: React.FC<Props> = () => {
   const {
-    globalState,
-    memoState: { tags },
-  } = useContext(appContext);
+    editor: editorState,
+    memo: { tags },
+  } = useAppSelector((state) => state);
   const [isTagSeletorShown, toggleTagSeletor] = useToggle(false);
   const editorRef = useRef<EditorRefActions>(null);
-  const prevGlobalStateRef = useRef(globalState);
+  const prevGlobalStateRef = useRef(editorState);
   const tagSeletorRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (globalState.markMemoId !== UNKNOWN_ID) {
+    if (editorState.markMemoId && editorState.markMemoId !== UNKNOWN_ID) {
       const editorCurrentValue = editorRef.current?.getContent();
-      const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: [@MEMO](${globalState.markMemoId})`;
+      const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: [@MEMO](${editorState.markMemoId})`;
       editorRef.current?.insertText(memoLinkText);
-      globalStateService.setMarkMemoId(UNKNOWN_ID);
+      editorStateService.setMarkMemo(UNKNOWN_ID);
     }
 
-    if (globalState.editMemoId !== UNKNOWN_ID && globalState.editMemoId !== prevGlobalStateRef.current.editMemoId) {
-      const editMemo = memoService.getMemoById(globalState.editMemoId);
+    if (
+      editorState.editMemoId &&
+      editorState.editMemoId !== UNKNOWN_ID &&
+      editorState.editMemoId !== prevGlobalStateRef.current.editMemoId
+    ) {
+      const editMemo = memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID);
       if (editMemo) {
         editorRef.current?.setContent(editMemo.content ?? "");
         editorRef.current?.focus();
       }
     }
 
-    prevGlobalStateRef.current = globalState;
-  }, [globalState.markMemoId, globalState.editMemoId]);
+    prevGlobalStateRef.current = editorState;
+  }, [editorState.markMemoId, editorState.editMemoId]);
 
   useEffect(() => {
     if (!editorRef.current) {
@@ -144,18 +148,18 @@ const MemoEditor: React.FC<Props> = () => {
       return;
     }
 
-    const { editMemoId } = globalStateService.getState();
+    const { editMemoId } = editorStateService.getState();
 
     try {
-      if (editMemoId !== UNKNOWN_ID) {
-        const prevMemo = memoService.getMemoById(editMemoId);
+      if (editMemoId && editMemoId !== UNKNOWN_ID) {
+        const prevMemo = memoService.getMemoById(editMemoId ?? UNKNOWN_ID);
 
         if (prevMemo && prevMemo.content !== content) {
           const editedMemo = await memoService.updateMemo(prevMemo.id, content);
           editedMemo.createdTs = Date.now();
           memoService.editMemo(editedMemo);
         }
-        globalStateService.setEditMemoId(UNKNOWN_ID);
+        editorStateService.setEditMemo(UNKNOWN_ID);
       } else {
         const newMemo = await memoService.createMemo(content);
         memoService.pushMemo(newMemo);
@@ -169,7 +173,7 @@ const MemoEditor: React.FC<Props> = () => {
   }, []);
 
   const handleCancelBtnClick = useCallback(() => {
-    globalStateService.setEditMemoId(UNKNOWN_ID);
+    editorStateService.setEditMemo(UNKNOWN_ID);
     editorRef.current?.setContent("");
     setEditorContentCache("");
   }, []);
@@ -259,7 +263,7 @@ const MemoEditor: React.FC<Props> = () => {
     }
   }, []);
 
-  const isEditing = globalState.editMemoId !== UNKNOWN_ID;
+  const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);
 
   const editorConfig = useMemo(
     () => ({

@@ -1,6 +1,6 @@
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { locationService, shortcutService } from "../services";
-import appContext from "../stores/appContext";
+import { useAppSelector } from "../store";
 import { UNKNOWN_ID } from "../helpers/consts";
 import utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
@@ -13,11 +13,9 @@ interface Props {}
 
 const ShortcutList: React.FC<Props> = () => {
   const {
-    shortcutState: { shortcuts },
-    locationState: {
-      query: { shortcutId },
-    },
-  } = useContext(appContext);
+    location: { query },
+    shortcut: { shortcuts },
+  } = useAppSelector((state) => state);
   const loadingState = useLoading();
   const pinnedShortcuts = shortcuts
     .filter((s) => s.rowStatus === "ARCHIVED")
@@ -48,7 +46,7 @@ const ShortcutList: React.FC<Props> = () => {
       </p>
       <div className="shortcuts-container">
         {sortedShortcuts.map((s) => {
-          return <ShortcutContainer key={s.id} shortcut={s} isActive={s.id === Number(shortcutId)} />;
+          return <ShortcutContainer key={s.id} shortcut={s} isActive={s.id === Number(query?.shortcutId)} />;
         })}
       </div>
     </div>
@@ -80,7 +78,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
 
     if (showConfirmDeleteBtn) {
       try {
-        await shortcutService.deleteShortcut(shortcut.id);
+        await shortcutService.deleteShortcutById(shortcut.id);
       } catch (error: any) {
         toastHelper.error(error.message);
       }

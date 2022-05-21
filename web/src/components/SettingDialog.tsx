@@ -1,5 +1,5 @@
-import { useContext, useState } from "react";
-import appContext from "../stores/appContext";
+import { useState } from "react";
+import { useAppSelector } from "../store";
 import { showDialog } from "./Dialog";
 import MyAccountSection from "./Settings/MyAccountSection";
 import PreferencesSection from "./Settings/PreferencesSection";
@@ -16,8 +16,8 @@ interface State {
 
 const SettingDialog: React.FC<Props> = (props: Props) => {
   const {
-    userState: { user },
-  } = useContext(appContext);
+    user: { user },
+  } = useAppSelector((state) => state);
   const { destroy } = props;
   const [state, setState] = useState<State>({
     selectedSection: "my-account",

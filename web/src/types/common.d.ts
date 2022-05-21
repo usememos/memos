@@ -9,3 +9,5 @@ type FunctionType = (...args: unknown[]) => unknown;
 interface KVObject<T = any> {
   [key: string]: T;
 }
+
+type Option<T> = T | undefined;

@@ -1,5 +1,4 @@
-import { useContext } from "react";
-import appContext from "../stores/appContext";
+import { useAppSelector } from "../store";
 import utils from "../helpers/utils";
 import showDailyMemoDiaryDialog from "./DailyMemoDiaryDialog";
 import showSettingDialog from "./SettingDialog";
@@ -14,9 +13,9 @@ interface Props {}
 
 const Sidebar: React.FC<Props> = () => {
   const {
-    memoState: { memos, tags },
-    userState: { user },
-  } = useContext(appContext);
+    memo: { memos, tags },
+    user: { user },
+  } = useAppSelector((state) => state);
   const createdDays = user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24) : 0;
 
   const handleMyAccountBtnClick = () => {

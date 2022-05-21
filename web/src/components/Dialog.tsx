@@ -1,7 +1,6 @@
 import { createRoot } from "react-dom/client";
-import appContext from "../stores/appContext";
-import Provider from "../labs/Provider";
-import appStore from "../stores/appStore";
+import { Provider } from "react-redux";
+import store from "../store";
 import { ANIMATION_DURATION } from "../helpers/consts";
 import "../less/dialog.less";
 
@@ -69,11 +68,7 @@ export function showDialog<T extends DialogProps>(
   );
 
   if (config.useAppContext) {
-    Fragment = (
-      <Provider store={appStore} context={appContext}>
-        {Fragment}
-      </Provider>
-    );
+    Fragment = <Provider store={store}>{Fragment}</Provider>;
   }
 
   dialog.render(Fragment);

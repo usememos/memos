@@ -1,5 +1,4 @@
-import { useContext } from "react";
-import appContext from "../stores/appContext";
+import { useAppSelector } from "../store";
 import { locationService, shortcutService } from "../services";
 import utils from "../helpers/utils";
 import { getTextWithMemoType } from "../helpers/filter";
@@ -9,10 +8,9 @@ interface FilterProps {}
 
 const MemoFilter: React.FC<FilterProps> = () => {
   const {
-    locationState: { query },
-  } = useContext(appContext);
-
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
+    location: { query },
+  } = useAppSelector((state) => state);
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query ?? {};
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
   const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut);
 
@@ -38,7 +36,7 @@ const MemoFilter: React.FC<FilterProps> = () => {
       <div
         className={"filter-item-container " + (memoType ? "" : "hidden")}
         onClick={() => {
-          locationService.setMemoTypeQuery("");
+          locationService.setMemoTypeQuery(undefined);
         }}
       >
         <span className="icon-text">📦</span> {getTextWithMemoType(memoType as MemoSpecType)}

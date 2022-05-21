@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID } from "../helpers/consts";
 import utils from "../helpers/utils";
-import { globalStateService, memoService } from "../services";
+import { editorStateService, memoService } from "../services";
 import { parseHtmlToRawText } from "../helpers/marked";
 import { formatMemoContent } from "./Memo";
 import toastHelper from "./Toast";
@@ -96,7 +96,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
 
   const handleEditMemoBtnClick = useCallback(() => {
     props.destroy();
-    globalStateService.setEditMemoId(memo.id);
+    editorStateService.setEditMemo(memo.id);
   }, [memo.id]);
 
   return (

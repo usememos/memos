@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import appContext from "../stores/appContext";
+import { useEffect, useState } from "react";
+import { useAppSelector } from "../store";
 import { locationService, memoService } from "../services";
 import useToggle from "../hooks/useToggle";
 import Only from "./common/OnlyWhen";
@@ -16,11 +16,9 @@ interface Props {}
 
 const TagList: React.FC<Props> = () => {
   const {
-    locationState: {
-      query: { tag: tagQuery },
-    },
-    memoState: { tags: tagsText, memos },
-  } = useContext(appContext);
+    location: { query },
+    memo: { memos, tags: tagsText },
+  } = useAppSelector((state) => state);
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
@@ -73,9 +71,9 @@ const TagList: React.FC<Props> = () => {
       <p className="title-text">Tags</p>
       <div className="tags-container">
         {tags.map((t, idx) => (
-          <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={tagQuery} />
+          <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        <Only when={tags.length < 5 && memoService.initialized}>
+        <Only when={tags.length < 5}>
           <p className="tag-tip-container">
             Enter <span className="code-text">#tag </span> to create a tag
           </p>
@@ -87,7 +85,7 @@ const TagList: React.FC<Props> = () => {
 
 interface TagItemContainerProps {
   tag: Tag;
-  tagQuery: string;
+  tagQuery?: string;
 }
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
