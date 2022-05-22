@@ -18,7 +18,6 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 
 	g.POST("/:openId/memo", func(c echo.Context) error {
 		openID := c.Param("openId")
-
 		userFind := &api.UserFind{
 			OpenID: &openID,
 		}
@@ -50,9 +49,8 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		return nil
 	})
 
-	g.GET("/:openId/memo", func(c echo.Context) error {
+	g.PATCH("/:openId/memo/:memoId", func(c echo.Context) error {
 		openID := c.Param("openId")
-
 		userFind := &api.UserFind{
 			OpenID: &openID,
 		}
@@ -61,7 +59,45 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Unauthorized: %s", openID))
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("User openId not found: %s", openID))
+		}
+
+		memoID, err := strconv.Atoi(c.Param("memoId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("memoId is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		memoPatch := &api.MemoPatch{
+			ID: memoID,
+		}
+		if err := json.NewDecoder(c.Request().Body).Decode(memoPatch); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch memo request by open api").SetInternal(err)
+		}
+
+		memo, err := s.Store.PatchMemo(memoPatch)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch memo").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
+		}
+
+		return nil
+	})
+
+	g.GET("/:openId/memo", func(c echo.Context) error {
+		openID := c.Param("openId")
+		userFind := &api.UserFind{
+			OpenID: &openID,
+		}
+		user, err := s.Store.FindUser(userFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Not found user with openid: %s", openID))
 		}
 
 		memoFind := &api.MemoFind{
@@ -87,7 +123,6 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 
 	g.POST("/:openId/resource", func(c echo.Context) error {
 		openID := c.Param("openId")
-
 		userFind := &api.UserFind{
 			OpenID: &openID,
 		}
