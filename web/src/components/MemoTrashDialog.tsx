@@ -18,9 +18,7 @@ const MemoTrashDialog: React.FC<Props> = (props: Props) => {
     memoService
       .fetchDeletedMemos()
       .then((result) => {
-        if (result !== false) {
-          setDeletedMemos(result);
-        }
+        setDeletedMemos(result);
       })
       .catch((error) => {
         toastHelper.error("Failed to fetch deleted memos: ", error);

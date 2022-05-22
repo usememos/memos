@@ -96,19 +96,11 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
     event.stopPropagation();
 
     try {
-      if (shortcut.rowStatus === "ARCHIVED") {
-        await shortcutService.unpinShortcut(shortcut.id);
-        shortcutService.editShortcut({
-          ...shortcut,
-          rowStatus: "NORMAL",
-        });
-      } else {
-        await shortcutService.pinShortcut(shortcut.id);
-        shortcutService.editShortcut({
-          ...shortcut,
-          rowStatus: "ARCHIVED",
-        });
-      }
+      const shortcutPatch: ShortcutPatch = {
+        id: shortcut.id,
+        rowStatus: shortcut.rowStatus === "ARCHIVED" ? "NORMAL" : "ARCHIVED",
+      };
+      await shortcutService.patchShortcut(shortcutPatch);
     } catch (error) {
       // do nth
     }

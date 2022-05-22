@@ -72,7 +72,7 @@ const UsageHeatMap: React.FC<Props> = () => {
 
   const handleUsageStatItemClick = useCallback((item: DailyUsageStat) => {
     if (locationService.getState().query?.duration?.from === item.timestamp) {
-      locationService.setFromAndToQuery(0, 0);
+      locationService.setFromAndToQuery();
       setCurrentStat(null);
     } else if (item.count > 0) {
       if (!["/"].includes(locationService.getState().pathname)) {

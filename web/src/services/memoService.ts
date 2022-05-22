@@ -1,9 +1,7 @@
 import api from "../helpers/api";
 import { TAG_REG } from "../helpers/consts";
-import utils from "../helpers/utils";
-import { patchMemo, setMemos, setTags } from "../store/modules/memo";
+import { createMemo, patchMemo, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
-import userService from "./userService";
 
 const convertResponseModelMemo = (memo: Memo): Memo => {
   return {
@@ -19,70 +17,29 @@ const memoService = {
   },
 
   fetchAllMemos: async () => {
-    if (!userService.getState().user) {
-      return false;
-    }
-
     const data = await api.getMyMemos();
-    const memos: Memo[] = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
+    const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
     store.dispatch(setMemos(memos));
 
     return memos;
   },
 
   fetchDeletedMemos: async () => {
-    if (!userService.getState().user) {
-      return false;
-    }
-
     const data = await api.getMyArchivedMemos();
-    const deletedMemos: Memo[] = data.map((m) => {
+    const deletedMemos = data.map((m) => {
       return convertResponseModelMemo(m);
     });
     return deletedMemos;
   },
 
-  pushMemo: (memo: Memo) => {
-    store.dispatch(setMemos(memoService.getState().memos.concat(memo)));
-  },
-
-  getMemoById: (id: MemoId) => {
+  getMemoById: (memoId: MemoId) => {
     for (const m of memoService.getState().memos) {
-      if (m.id === id) {
+      if (m.id === memoId) {
         return m;
       }
     }
 
     return null;
-  },
-
-  archiveMemoById: async (id: MemoId) => {
-    const memo = memoService.getMemoById(id);
-    if (!memo) {
-      return;
-    }
-
-    await api.archiveMemo(id);
-    store.dispatch(
-      patchMemo({
-        ...memo,
-        rowStatus: "ARCHIVED",
-      })
-    );
-  },
-
-  restoreMemoById: async (id: MemoId) => {
-    await api.restoreMemo(id);
-    memoService.clearMemos();
-    memoService.fetchAllMemos();
-  },
-
-  deleteMemoById: async (id: MemoId) => {
-    await api.deleteMemo(id);
-  },
-
-  editMemo: (memo: Memo) => {
-    store.dispatch(patchMemo(memo));
   },
 
   updateTagsState: () => {
@@ -97,43 +54,46 @@ const memoService = {
     store.dispatch(setTags(Array.from(tagsSet).filter((t) => Boolean(t))));
   },
 
-  clearMemos: () => {
-    store.dispatch(setMemos([]));
-  },
-
   getLinkedMemos: async (memoId: MemoId): Promise<Memo[]> => {
     const { memos } = memoService.getState();
     return memos.filter((m) => m.content.includes(`${memoId}`));
   },
 
-  createMemo: async (content: string): Promise<Memo> => {
-    const memo = await api.createMemo({
-      content,
-    });
-    return convertResponseModelMemo(memo);
+  createMemo: async (memoCreate: MemoCreate) => {
+    const data = await api.createMemo(memoCreate);
+    const memo = convertResponseModelMemo(data);
+    store.dispatch(createMemo(memo));
   },
 
-  updateMemo: async (memoId: MemoId, content: string): Promise<Memo> => {
-    const memo = await api.patchMemo({
-      id: memoId,
-      content,
-    });
-    return convertResponseModelMemo(memo);
+  patchMemo: async (memoPatch: MemoPatch): Promise<Memo> => {
+    const data = await api.patchMemo(memoPatch);
+    const memo = convertResponseModelMemo(data);
+    store.dispatch(patchMemo(memo));
+    return memo;
   },
 
   pinMemo: async (memoId: MemoId) => {
     await api.pinMemo(memoId);
+    store.dispatch(
+      patchMemo({
+        id: memoId,
+        pinned: true,
+      })
+    );
   },
 
   unpinMemo: async (memoId: MemoId) => {
     await api.unpinMemo(memoId);
+    store.dispatch(
+      patchMemo({
+        id: memoId,
+        pinned: false,
+      })
+    );
   },
 
-  importMemo: async (content: string, createdTs: TimeStamp) => {
-    await api.createMemo({
-      content,
-      createdTs: Math.floor(utils.getTimeStampByDate(createdTs) / 1000),
-    });
+  deleteMemoById: async (memoId: MemoId) => {
+    await api.deleteMemo(memoId);
   },
 };
 

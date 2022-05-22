@@ -96,7 +96,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
 
   const handleEditMemoBtnClick = useCallback(() => {
     props.destroy();
-    editorStateService.setEditMemo(memo.id);
+    editorStateService.setEditMemoWithId(memo.id);
   }, [memo.id]);
 
   return (

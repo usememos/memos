@@ -10,10 +10,16 @@ const editorSlice = createSlice({
   initialState: {} as State,
   reducers: {
     setMarkMemoId: (state, action: PayloadAction<Option<MemoId>>) => {
-      state.markMemoId = action.payload;
+      return {
+        ...state,
+        markMemoId: action.payload,
+      };
     },
     setEditMemoId: (state, action: PayloadAction<Option<MemoId>>) => {
-      state.editMemoId = action.payload;
+      return {
+        ...state,
+        editMemoId: action.payload,
+      };
     },
   },
 });

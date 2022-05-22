@@ -1,6 +1,6 @@
 import api from "../helpers/api";
-import { signin, signout } from "../store/modules/user";
 import store from "../store";
+import { setUser, patchUser } from "../store/modules/user";
 
 const convertResponseModelUser = (user: User): User => {
   return {
@@ -18,7 +18,7 @@ const userService = {
   doSignIn: async () => {
     const user = await api.getUser();
     if (user) {
-      store.dispatch(signin(convertResponseModelUser(user)));
+      store.dispatch(setUser(convertResponseModelUser(user)));
     } else {
       userService.doSignOut();
     }
@@ -26,29 +26,14 @@ const userService = {
   },
 
   doSignOut: async () => {
-    store.dispatch(signout);
-    api.signout().catch(() => {
-      // do nth
-    });
+    store.dispatch(setUser());
+    await api.signout();
   },
 
-  updateUsername: async (name: string): Promise<void> => {
-    await api.patchUser({
-      name,
-    });
-  },
-
-  updatePassword: async (password: string): Promise<void> => {
-    await api.patchUser({
-      password,
-    });
-  },
-
-  resetOpenId: async (): Promise<string> => {
-    const user = await api.patchUser({
-      resetOpenId: true,
-    });
-    return user.openId;
+  patchUser: async (userPatch: UserPatch): Promise<void> => {
+    const data = await api.patchUser(userPatch);
+    const user = convertResponseModelUser(data);
+    store.dispatch(patchUser(user));
   },
 };
 

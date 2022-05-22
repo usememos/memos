@@ -45,7 +45,11 @@ const PreferencesSection: React.FC<Props> = () => {
             const createdTs = (memo as any).createdAt || memo.createdTs || Date.now();
 
             try {
-              await memoService.importMemo(content, createdTs);
+              const memoCreate = {
+                content,
+                createdTs: Math.floor(utils.getTimeStampByDate(createdTs) / 1000),
+              };
+              await memoService.createMemo(memoCreate);
               succeedAmount++;
             } catch (error) {
               // do nth

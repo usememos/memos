@@ -38,7 +38,10 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
 
   const handleRestoreMemoClick = async () => {
     try {
-      await memoService.restoreMemoById(memo.id);
+      await memoService.patchMemo({
+        id: memo.id,
+        rowStatus: "NORMAL",
+      });
       handleDeletedMemoAction(memo.id);
       toastHelper.info("Restored successfully");
     } catch (error: any) {

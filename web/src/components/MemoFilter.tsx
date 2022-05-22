@@ -28,7 +28,7 @@ const MemoFilter: React.FC<FilterProps> = () => {
       <div
         className={"filter-item-container " + (tagQuery ? "" : "hidden")}
         onClick={() => {
-          locationService.setTagQuery("");
+          locationService.setTagQuery(undefined);
         }}
       >
         <span className="icon-text">🏷️</span> {tagQuery}
@@ -45,7 +45,7 @@ const MemoFilter: React.FC<FilterProps> = () => {
         <div
           className="filter-item-container"
           onClick={() => {
-            locationService.setFromAndToQuery(0, 0);
+            locationService.setFromAndToQuery();
           }}
         >
           <span className="icon-text">🗓️</span> {utils.getDateString(duration.from)} to {utils.getDateString(duration.to)}

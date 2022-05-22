@@ -6,12 +6,20 @@ const editorStateService = {
     return store.getState().editor;
   },
 
-  setEditMemo: (editMemoId: MemoId) => {
+  setEditMemoWithId: (editMemoId: MemoId) => {
     store.dispatch(setEditMemoId(editMemoId));
   },
 
-  setMarkMemo: (markMemoId: MemoId) => {
+  clearEditMemo: () => {
+    store.dispatch(setEditMemoId());
+  },
+
+  setMarkMemoWithId: (markMemoId: MemoId) => {
     store.dispatch(setMarkMemoId(markMemoId));
+  },
+
+  clearMarkMemo: () => {
+    store.dispatch(setMarkMemoId());
   },
 };
 

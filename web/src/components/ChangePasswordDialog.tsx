@@ -55,7 +55,9 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
     }
 
     try {
-      await userService.updatePassword(newPassword);
+      await userService.patchUser({
+        password: newPassword,
+      });
       toastHelper.info("Password changed.");
       handleCloseBtnClick();
     } catch (error: any) {

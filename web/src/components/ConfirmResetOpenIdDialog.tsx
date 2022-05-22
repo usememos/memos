@@ -25,7 +25,9 @@ const ConfirmResetOpenIdDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     resetBtnClickLoadingState.setLoading();
     try {
-      await userService.resetOpenId();
+      await userService.patchUser({
+        resetOpenId: true,
+      });
     } catch (error) {
       toastHelper.error("Request reset open API failed.");
       return;

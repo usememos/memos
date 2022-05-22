@@ -33,12 +33,9 @@ const memoSlice = createSlice({
         }
       });
     },
-    deleteMemo: (state, action: PayloadAction<MemoId>) => {
-      state.memos = [...state.memos].filter((memo) => memo.id !== action.payload);
-    },
   },
 });
 
-export const { setMemos, setTags, createMemo, patchMemo, deleteMemo } = memoSlice.actions;
+export const { setMemos, setTags, createMemo, patchMemo } = memoSlice.actions;
 
 export default memoSlice.reducer;

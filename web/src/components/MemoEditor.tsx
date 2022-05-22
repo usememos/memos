@@ -57,7 +57,7 @@ const MemoEditor: React.FC<Props> = () => {
       const editorCurrentValue = editorRef.current?.getContent();
       const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: [@MEMO](${editorState.markMemoId})`;
       editorRef.current?.insertText(memoLinkText);
-      editorStateService.setMarkMemo(UNKNOWN_ID);
+      editorStateService.clearMarkMemo();
     }
 
     if (
@@ -155,14 +155,16 @@ const MemoEditor: React.FC<Props> = () => {
         const prevMemo = memoService.getMemoById(editMemoId ?? UNKNOWN_ID);
 
         if (prevMemo && prevMemo.content !== content) {
-          const editedMemo = await memoService.updateMemo(prevMemo.id, content);
-          editedMemo.createdTs = Date.now();
-          memoService.editMemo(editedMemo);
+          await memoService.patchMemo({
+            id: prevMemo.id,
+            content,
+          });
         }
-        editorStateService.setEditMemo(UNKNOWN_ID);
+        editorStateService.clearEditMemo();
       } else {
-        const newMemo = await memoService.createMemo(content);
-        memoService.pushMemo(newMemo);
+        await memoService.createMemo({
+          content,
+        });
         locationService.clearQuery();
       }
     } catch (error: any) {
@@ -173,7 +175,7 @@ const MemoEditor: React.FC<Props> = () => {
   }, []);
 
   const handleCancelBtnClick = useCallback(() => {
-    editorStateService.setEditMemo(UNKNOWN_ID);
+    editorStateService.clearEditMemo();
     editorRef.current?.setContent("");
     setEditorContentCache("");
   }, []);

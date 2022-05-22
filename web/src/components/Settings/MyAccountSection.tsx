@@ -39,8 +39,9 @@ const MyAccountSection: React.FC<Props> = () => {
     }
 
     try {
-      await userService.updateUsername(username);
-      await userService.doSignIn();
+      await userService.patchUser({
+        name: username,
+      });
       toastHelper.info("Username changed");
     } catch (error: any) {
       toastHelper.error(error.message);

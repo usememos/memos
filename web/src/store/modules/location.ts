@@ -1,14 +1,27 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface State {
-  pathname: AppRouter;
-  hash: string;
-  query?: Query;
+interface Duration {
+  from: number;
+  to: number;
 }
 
-const getValidPathname = (pathname: string): AppRouter => {
+export interface Query {
+  tag?: string;
+  duration?: Duration;
+  type?: MemoSpecType;
+  text?: string;
+  shortcutId?: ShortcutId;
+}
+
+interface State {
+  pathname: string;
+  hash: string;
+  query: Query;
+}
+
+const getValidPathname = (pathname: string): string => {
   if (["/", "/signin"].includes(pathname)) {
-    return pathname as AppRouter;
+    return pathname;
   } else {
     return "/";
   }
@@ -20,6 +33,7 @@ const getStateFromLocation = () => {
   const state: State = {
     pathname: getValidPathname(pathname),
     hash: hash,
+    query: {},
   };
 
   if (search !== "") {
@@ -48,11 +62,20 @@ const locationSlice = createSlice({
     updateStateWithLocation: () => {
       return getStateFromLocation();
     },
-    setPathname: (state, action: PayloadAction<AppRouter>) => {
-      state.pathname = action.payload;
+    setPathname: (state, action: PayloadAction<string>) => {
+      return {
+        ...state,
+        pathname: action.payload,
+      };
     },
     setQuery: (state, action: PayloadAction<Partial<Query>>) => {
-      state.query = action.payload;
+      return {
+        ...state,
+        query: {
+          ...state.query,
+          ...action.payload,
+        },
+      };
     },
   },
 });

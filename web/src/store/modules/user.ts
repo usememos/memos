@@ -8,16 +8,10 @@ const userSlice = createSlice({
   name: "user",
   initialState: {} as State,
   reducers: {
-    signin: (state, action: PayloadAction<User>) => {
+    setUser: (state, action: PayloadAction<User | undefined>) => {
       return {
         ...state,
         user: action.payload,
-      };
-    },
-    signout: (state) => {
-      return {
-        ...state,
-        user: undefined,
       };
     },
     patchUser: (state, action: PayloadAction<Partial<User>>) => {
@@ -29,6 +23,6 @@ const userSlice = createSlice({
   },
 });
 
-export const { signin, signout, patchUser } = userSlice.actions;
+export const { setUser, patchUser } = userSlice.actions;
 
 export default userSlice.reducer;

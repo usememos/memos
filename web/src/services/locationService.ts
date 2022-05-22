@@ -1,6 +1,6 @@
 import utils from "../helpers/utils";
 import store from "../store";
-import { setQuery, setPathname } from "../store/modules/location";
+import { setQuery, setPathname, Query } from "../store/modules/location";
 
 const updateLocationUrl = (method: "replace" | "push" = "replace") => {
   const { query, pathname, hash } = store.getState().location;
@@ -23,9 +23,19 @@ const locationService = {
     return store.getState().location;
   },
 
-  clearQuery: () => {
-    store.dispatch(setQuery({}));
+  setPathname: (pathname: string) => {
+    store.dispatch(setPathname(pathname));
     updateLocationUrl();
+  },
+
+  pushHistory: (pathname: string) => {
+    store.dispatch(setPathname(pathname));
+    updateLocationUrl("push");
+  },
+
+  replaceHistory: (pathname: string) => {
+    store.dispatch(setPathname(pathname));
+    updateLocationUrl("replace");
   },
 
   setQuery: (query: Query) => {
@@ -33,26 +43,14 @@ const locationService = {
     updateLocationUrl();
   },
 
-  setPathname: (pathname: AppRouter) => {
-    store.dispatch(setPathname(pathname));
+  clearQuery: () => {
+    store.dispatch(setQuery({}));
     updateLocationUrl();
   },
 
-  pushHistory: (pathname: AppRouter) => {
-    store.dispatch(setPathname(pathname));
-    updateLocationUrl("push");
-  },
-
-  replaceHistory: (pathname: AppRouter) => {
-    store.dispatch(setPathname(pathname));
-    updateLocationUrl("replace");
-  },
-
   setMemoTypeQuery: (type?: MemoSpecType) => {
-    const { query } = store.getState().location;
     store.dispatch(
       setQuery({
-        ...query,
         type: type,
       })
     );
@@ -60,10 +58,8 @@ const locationService = {
   },
 
   setMemoShortcut: (shortcutId?: ShortcutId) => {
-    const { query } = store.getState().location;
     store.dispatch(
       setQuery({
-        ...query,
         shortcutId: shortcutId,
       })
     );
@@ -71,10 +67,8 @@ const locationService = {
   },
 
   setTextQuery: (text?: string) => {
-    const { query } = store.getState().location;
     store.dispatch(
       setQuery({
-        ...query,
         text: text,
       })
     );
@@ -82,33 +76,29 @@ const locationService = {
   },
 
   setTagQuery: (tag?: string) => {
-    const { query } = store.getState().location;
     store.dispatch(
       setQuery({
-        ...query,
         tag: tag,
       })
     );
     updateLocationUrl();
   },
 
-  setFromAndToQuery: (from: number, to: number) => {
-    const { query } = store.getState().location;
+  setFromAndToQuery: (from?: number, to?: number) => {
+    let duration = undefined;
+    if (from && to && from < to) {
+      duration = {
+        from,
+        to,
+      };
+    }
+
     store.dispatch(
       setQuery({
-        ...query,
-        duration: { from, to },
+        duration,
       })
     );
     updateLocationUrl();
-  },
-
-  getValidPathname: (pathname: string): AppRouter => {
-    if (["/", "/signin"].includes(pathname)) {
-      return pathname as AppRouter;
-    } else {
-      return "/";
-    }
   },
 };
 

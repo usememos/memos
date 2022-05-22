@@ -159,26 +159,6 @@ namespace api {
     });
   }
 
-  export function archiveMemo(memoId: MemoId) {
-    return request({
-      method: "PATCH",
-      url: `/api/memo/${memoId}`,
-      data: {
-        rowStatus: "ARCHIVED",
-      },
-    });
-  }
-
-  export function restoreMemo(memoId: MemoId) {
-    return request({
-      method: "PATCH",
-      url: `/api/memo/${memoId}`,
-      data: {
-        rowStatus: "NORMAL",
-      },
-    });
-  }
-
   export function deleteMemo(memoId: MemoId) {
     return request({
       method: "DELETE",
@@ -193,25 +173,19 @@ namespace api {
     });
   }
 
-  export function createShortcut(title: string, payload: string) {
+  export function createShortcut(shortcutCreate: ShortcutCreate) {
     return request<Shortcut>({
       method: "POST",
       url: "/api/shortcut",
-      data: {
-        title,
-        payload,
-      },
+      data: shortcutCreate,
     });
   }
 
-  export function updateShortcut(shortcutId: ShortcutId, title: string, payload: string) {
+  export function patchShortcut(shortcutPatch: ShortcutPatch) {
     return request<Shortcut>({
       method: "PATCH",
-      url: `/api/shortcut/${shortcutId}`,
-      data: {
-        title,
-        payload,
-      },
+      url: `/api/shortcut/${shortcutPatch.id}`,
+      data: shortcutPatch,
     });
   }
 
@@ -219,26 +193,6 @@ namespace api {
     return request({
       method: "DELETE",
       url: `/api/shortcut/${shortcutId}`,
-    });
-  }
-
-  export function pinShortcut(shortcutId: ShortcutId) {
-    return request({
-      method: "PATCH",
-      url: `/api/shortcut/${shortcutId}`,
-      data: {
-        rowStatus: "ARCHIVED",
-      },
-    });
-  }
-
-  export function unpinShortcut(shortcutId: ShortcutId) {
-    return request({
-      method: "PATCH",
-      url: `/api/shortcut/${shortcutId}`,
-      data: {
-        rowStatus: "NORMAL",
-      },
     });
   }
 

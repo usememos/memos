@@ -33,16 +33,8 @@ const Memo: React.FC<Props> = (props: Props) => {
     try {
       if (memo.pinned) {
         await memoService.unpinMemo(memo.id);
-        memoService.editMemo({
-          ...memo,
-          pinned: false,
-        });
       } else {
         await memoService.pinMemo(memo.id);
-        memoService.editMemo({
-          ...memo,
-          pinned: true,
-        });
       }
     } catch (error) {
       // do nth
@@ -50,23 +42,26 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMarkMemoClick = () => {
-    editorStateService.setMarkMemo(memo.id);
+    editorStateService.setMarkMemoWithId(memo.id);
   };
 
   const handleEditMemoClick = () => {
-    editorStateService.setEditMemo(memo.id);
+    editorStateService.setEditMemoWithId(memo.id);
   };
 
   const handleDeleteMemoClick = async () => {
     if (showConfirmDeleteBtn) {
       try {
-        await memoService.archiveMemoById(memo.id);
+        await memoService.patchMemo({
+          id: memo.id,
+          rowStatus: "ARCHIVED",
+        });
       } catch (error: any) {
         toastHelper.error(error.message);
       }
 
       if (editorStateService.getState().editMemoId === memo.id) {
-        editorStateService.setEditMemo(UNKNOWN_ID);
+        editorStateService.clearEditMemo();
       }
     } else {
       toggleConfirmDeleteBtn();
