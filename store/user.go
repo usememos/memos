@@ -219,7 +219,8 @@ func findUserList(db *sql.DB, find *api.UserFind) ([]*userRaw, error) {
 			created_ts,
 			updated_ts
 		FROM user
-		WHERE `+strings.Join(where, " AND "),
+		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY created_ts DESC`,
 		args...,
 	)
 	if err != nil {

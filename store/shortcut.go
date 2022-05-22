@@ -202,7 +202,8 @@ func findShortcutList(db *sql.DB, find *api.ShortcutFind) ([]*shortcutRaw, error
 			updated_ts,
 			row_status
 		FROM shortcut
-		WHERE `+strings.Join(where, " AND "),
+		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY created_ts DESC`,
 		args...,
 	)
 	if err != nil {

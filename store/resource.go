@@ -154,7 +154,8 @@ func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error
 			created_ts,
 			updated_ts
 		FROM resource
-		WHERE `+strings.Join(where, " AND "),
+		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY created_ts DESC`,
 		args...,
 	)
 	if err != nil {

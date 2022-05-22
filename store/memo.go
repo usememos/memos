@@ -219,7 +219,8 @@ func findMemoRawList(db *sql.DB, find *api.MemoFind) ([]*memoRaw, error) {
 			content,
 			row_status
 		FROM memo
-		WHERE `+strings.Join(where, " AND "),
+		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY created_ts DESC`,
 		args...,
 	)
 	if err != nil {
