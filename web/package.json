@@ -1,6 +1,6 @@
 {
   "name": "memos",
-  "version": "2.0.6",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.1",
+    "axios": "^0.27.2",
     "lodash-es": "^4.17.21",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",

@@ -1,4 +1,4 @@
-import api from "../helpers/api";
+import * as api from "../helpers/api";
 import { TAG_REG } from "../helpers/consts";
 import { createMemo, patchMemo, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
@@ -17,7 +17,7 @@ const memoService = {
   },
 
   fetchAllMemos: async () => {
-    const data = await api.getMyMemos();
+    const { data } = (await api.getMyMemos()).data;
     const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
     store.dispatch(setMemos(memos));
 
@@ -25,7 +25,7 @@ const memoService = {
   },
 
   fetchDeletedMemos: async () => {
-    const data = await api.getMyArchivedMemos();
+    const { data } = (await api.getMyArchivedMemos()).data;
     const deletedMemos = data.map((m) => {
       return convertResponseModelMemo(m);
     });
@@ -60,13 +60,13 @@ const memoService = {
   },
 
   createMemo: async (memoCreate: MemoCreate) => {
-    const data = await api.createMemo(memoCreate);
+    const { data } = (await api.createMemo(memoCreate)).data;
     const memo = convertResponseModelMemo(data);
     store.dispatch(createMemo(memo));
   },
 
   patchMemo: async (memoPatch: MemoPatch): Promise<Memo> => {
-    const data = await api.patchMemo(memoPatch);
+    const { data } = (await api.patchMemo(memoPatch)).data;
     const memo = convertResponseModelMemo(data);
     store.dispatch(patchMemo(memo));
     return memo;

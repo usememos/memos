@@ -1,5 +1,5 @@
 import { memoService } from "../../services";
-import utils from "../../helpers/utils";
+import * as utils from "../../helpers/utils";
 import toastHelper from "../Toast";
 import "../../less/settings/preferences-section.less";
 

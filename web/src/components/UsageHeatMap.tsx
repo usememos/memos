@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppSelector } from "../store";
 import { locationService } from "../services";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import "../less/usage-heat-map.less";
 
 const tableConfig = {

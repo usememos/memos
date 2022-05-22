@@ -1,5 +1,5 @@
 import { IMAGE_URL_REG } from "../helpers/consts";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import { formatMemoContent } from "./Memo";
 import Only from "./common/OnlyWhen";
 import "../less/daily-memo.less";

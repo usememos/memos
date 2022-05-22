@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useRef } from "react";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import { useAppSelector } from "../store";
 import { UNKNOWN_ID } from "../helpers/consts";
-import { storage } from "../helpers/storage";
+import * as storage from "../helpers/storage";
 import useToggle from "../hooks/useToggle";
 import toastHelper from "./Toast";
 import Editor, { EditorRefActions } from "./Editor/Editor";

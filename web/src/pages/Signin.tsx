@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../helpers/api";
+import * as api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
 import { locationService, userService } from "../services";
@@ -23,7 +23,8 @@ const Signin: React.FC<Props> = () => {
   const actionBtnLoadingState = useLoading(false);
 
   useEffect(() => {
-    api.getSystemStatus().then((status) => {
+    api.getSystemStatus().then(({ data }) => {
+      const { data: status } = data;
       setSiteOwner(status.owner);
       if (status.profile.mode === "dev") {
         setEmail("demo@usememos.com");

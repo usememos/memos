@@ -1,4 +1,4 @@
-import api from "../helpers/api";
+import * as api from "../helpers/api";
 
 const resourceService = {
   /**
@@ -6,7 +6,7 @@ const resourceService = {
    * @param file file
    * @returns resource: id, filename
    */
-  async upload(file: File) {
+  async upload(file: File): Promise<Resource> {
     const { name: filename, size } = file;
 
     if (size > 64 << 20) {
@@ -15,7 +15,7 @@ const resourceService = {
 
     const formData = new FormData();
     formData.append("file", file, filename);
-    const data = await api.uploadFile(formData);
+    const { data } = (await api.uploadFile(formData)).data;
 
     return data;
   },

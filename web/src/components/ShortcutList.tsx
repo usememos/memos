@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { locationService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
 import { UNKNOWN_ID } from "../helpers/consts";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
 import toastHelper from "./Toast";

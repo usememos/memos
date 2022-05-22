@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { isEmpty } from "lodash-es";
-import api from "../../helpers/api";
+import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
 import "../../less/settings/member-section.less";
 
@@ -23,7 +23,7 @@ const PreferencesSection: React.FC<Props> = () => {
   }, []);
 
   const fetchUserList = async () => {
-    const data = await api.getUserList();
+    const { data } = (await api.getUserList()).data;
     setUserList(data);
   };
 

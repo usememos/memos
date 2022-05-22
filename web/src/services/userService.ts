@@ -1,4 +1,4 @@
-import api from "../helpers/api";
+import * as api from "../helpers/api";
 import store from "../store";
 import { setUser, patchUser } from "../store/modules/user";
 
@@ -16,7 +16,7 @@ const userService = {
   },
 
   doSignIn: async () => {
-    const user = await api.getUser();
+    const { data: user } = (await api.getUser()).data;
     if (user) {
       store.dispatch(setUser(convertResponseModelUser(user)));
     } else {
@@ -31,7 +31,7 @@ const userService = {
   },
 
   patchUser: async (userPatch: UserPatch): Promise<void> => {
-    const data = await api.patchUser(userPatch);
+    const { data } = (await api.patchUser(userPatch)).data;
     const user = convertResponseModelUser(data);
     store.dispatch(patchUser(user));
   },

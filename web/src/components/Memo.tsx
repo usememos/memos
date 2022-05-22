@@ -2,7 +2,7 @@ import { memo } from "react";
 import { escape } from "lodash-es";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
 import { parseMarkedToHtml, parseRawTextToHtml } from "../helpers/marked";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import { editorStateService, memoService } from "../services";
 import Only from "./common/OnlyWhen";

@@ -3,7 +3,7 @@ import { useAppSelector } from "../store";
 import { locationService, memoService } from "../services";
 import useToggle from "../hooks/useToggle";
 import Only from "./common/OnlyWhen";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import "../less/tag-list.less";
 
 interface Tag {

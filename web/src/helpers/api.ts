@@ -1,209 +1,99 @@
+import axios from "axios";
+
 type ResponseObject<T> = {
   data: T;
   error?: string;
   message?: string;
 };
 
-type RequestConfig = {
-  method: string;
-  url: string;
-  data?: any;
-  dataType?: "json" | "file";
-};
-
-async function request<T>(config: RequestConfig): Promise<T> {
-  const { method, url, data, dataType } = config;
-  const requestConfig: RequestInit = {
-    method,
-  };
-
-  if (data !== undefined) {
-    if (dataType === "file") {
-      requestConfig.body = data;
-    } else {
-      requestConfig.headers = {
-        "Content-Type": "application/json",
-      };
-      requestConfig.body = JSON.stringify(data);
-    }
-  }
-
-  const response = await fetch(url, requestConfig);
-  const responseData = (await response.json()) as ResponseObject<T>;
-
-  if (responseData.error || responseData.message) {
-    throw new Error(responseData.error || responseData.message);
-  }
-
-  return responseData.data;
+export function getSystemStatus() {
+  return axios.get<ResponseObject<SystemStatus>>("/api/status");
 }
 
-namespace api {
-  export function getSystemStatus() {
-    return request<SystemStatus>({
-      method: "GET",
-      url: "/api/status",
-    });
-  }
-
-  export function login(email: string, password: string) {
-    return request<User>({
-      method: "POST",
-      url: "/api/auth/login",
-      data: {
-        email,
-        password,
-      },
-    });
-  }
-
-  export function signup(email: string, password: string, role: UserRole) {
-    return request<User>({
-      method: "POST",
-      url: "/api/auth/signup",
-      data: {
-        email,
-        password,
-        role,
-        name: email,
-      },
-    });
-  }
-
-  export function signout() {
-    return request({
-      method: "POST",
-      url: "/api/auth/logout",
-    });
-  }
-
-  export function createUser(userCreate: UserCreate) {
-    return request<User[]>({
-      method: "POST",
-      url: "/api/user",
-      data: userCreate,
-    });
-  }
-
-  export function getUser() {
-    return request<User>({
-      method: "GET",
-      url: "/api/user/me",
-    });
-  }
-
-  export function getUserList() {
-    return request<User[]>({
-      method: "GET",
-      url: "/api/user",
-    });
-  }
-
-  export function patchUser(userPatch: UserPatch) {
-    return request<User>({
-      method: "PATCH",
-      url: "/api/user/me",
-      data: userPatch,
-    });
-  }
-
-  export function getMyMemos() {
-    return request<Memo[]>({
-      method: "GET",
-      url: "/api/memo",
-    });
-  }
-
-  export function getMyArchivedMemos() {
-    return request<Memo[]>({
-      method: "GET",
-      url: "/api/memo?rowStatus=ARCHIVED",
-    });
-  }
-
-  export function createMemo(memoCreate: MemoCreate) {
-    return request<Memo>({
-      method: "POST",
-      url: "/api/memo",
-      data: memoCreate,
-    });
-  }
-
-  export function patchMemo(memoPatch: MemoPatch) {
-    return request<Memo>({
-      method: "PATCH",
-      url: `/api/memo/${memoPatch.id}`,
-      data: {
-        memoPatch,
-      },
-    });
-  }
-
-  export function pinMemo(memoId: MemoId) {
-    return request({
-      method: "POST",
-      url: `/api/memo/${memoId}/organizer`,
-      data: {
-        pinned: true,
-      },
-    });
-  }
-
-  export function unpinMemo(memoId: MemoId) {
-    return request({
-      method: "POST",
-      url: `/api/memo/${memoId}/organizer`,
-      data: {
-        pinned: false,
-      },
-    });
-  }
-
-  export function deleteMemo(memoId: MemoId) {
-    return request({
-      method: "DELETE",
-      url: `/api/memo/${memoId}`,
-    });
-  }
-
-  export function getMyShortcuts() {
-    return request<Shortcut[]>({
-      method: "GET",
-      url: "/api/shortcut",
-    });
-  }
-
-  export function createShortcut(shortcutCreate: ShortcutCreate) {
-    return request<Shortcut>({
-      method: "POST",
-      url: "/api/shortcut",
-      data: shortcutCreate,
-    });
-  }
-
-  export function patchShortcut(shortcutPatch: ShortcutPatch) {
-    return request<Shortcut>({
-      method: "PATCH",
-      url: `/api/shortcut/${shortcutPatch.id}`,
-      data: shortcutPatch,
-    });
-  }
-
-  export function deleteShortcutById(shortcutId: ShortcutId) {
-    return request({
-      method: "DELETE",
-      url: `/api/shortcut/${shortcutId}`,
-    });
-  }
-
-  export function uploadFile(formData: FormData) {
-    return request<Resource>({
-      method: "POST",
-      url: "/api/resource",
-      data: formData,
-      dataType: "file",
-    });
-  }
+export function login(email: string, password: string) {
+  return axios.post<ResponseObject<User>>("/api/auth/login", {
+    email,
+    password,
+  });
 }
 
-export default api;
+export function signup(email: string, password: string, role: UserRole) {
+  return axios.post<ResponseObject<User>>("/api/auth/signup", {
+    email,
+    password,
+    role,
+    name: email,
+  });
+}
+
+export function signout() {
+  return axios.post("/api/auth/logout");
+}
+
+export function createUser(userCreate: UserCreate) {
+  return axios.post<ResponseObject<User>>("/api/user", userCreate);
+}
+
+export function getUser() {
+  return axios.get<ResponseObject<User>>("/api/user/me");
+}
+
+export function getUserList() {
+  return axios.get<ResponseObject<User[]>>("/api/user");
+}
+
+export function patchUser(userPatch: UserPatch) {
+  return axios.patch<ResponseObject<User>>("/api/user/me", userPatch);
+}
+
+export function getMyMemos() {
+  return axios.get<ResponseObject<Memo[]>>("/api/memo");
+}
+
+export function getMyArchivedMemos() {
+  return axios.get<ResponseObject<Memo[]>>("/api/memo?rowStatus=ARCHIVED");
+}
+
+export function createMemo(memoCreate: MemoCreate) {
+  return axios.post<ResponseObject<Memo>>("/api/memo", memoCreate);
+}
+
+export function patchMemo(memoPatch: MemoPatch) {
+  return axios.patch<ResponseObject<Memo>>(`/api/memo/${memoPatch.id}`, memoPatch);
+}
+
+export function pinMemo(memoId: MemoId) {
+  return axios.post(`/api/memo/${memoId}/organizer`, {
+    pinned: true,
+  });
+}
+
+export function unpinMemo(memoId: MemoId) {
+  return axios.post(`/api/memo/${memoId}/organizer`, {
+    pinned: false,
+  });
+}
+
+export function deleteMemo(memoId: MemoId) {
+  return axios.delete(`/api/memo/${memoId}`);
+}
+
+export function getMyShortcuts() {
+  return axios.get<ResponseObject<Shortcut[]>>("/api/shortcut");
+}
+
+export function createShortcut(shortcutCreate: ShortcutCreate) {
+  return axios.post<ResponseObject<Shortcut>>("/api/shortcut", shortcutCreate);
+}
+
+export function patchShortcut(shortcutPatch: ShortcutPatch) {
+  return axios.patch<ResponseObject<Shortcut>>(`/api/shortcut/${shortcutPatch.id}`, shortcutPatch);
+}
+
+export function deleteShortcutById(shortcutId: ShortcutId) {
+  return axios.delete(`/api/shortcut/${shortcutId}`);
+}
+
+export function uploadFile(formData: FormData) {
+  return axios.post<ResponseObject<Resource>>("/api/resource", formData);
+}

@@ -1,4 +1,4 @@
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import store from "../store";
 import { setQuery, setPathname, Query } from "../store/modules/location";
 

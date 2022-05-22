@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { userService } from "../services";
 import toImage from "../labs/html2image";
 import { ANIMATION_DURATION, IMAGE_URL_REG } from "../helpers/consts";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import { showDialog } from "./Dialog";
 import { formatMemoContent } from "./Memo";
 import Only from "./common/OnlyWhen";

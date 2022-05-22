@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID } from "../helpers/consts";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import { editorStateService, memoService } from "../services";
 import { parseHtmlToRawText } from "../helpers/marked";
 import { formatMemoContent } from "./Memo";

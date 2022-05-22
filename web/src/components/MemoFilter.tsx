@@ -1,6 +1,6 @@
 import { useAppSelector } from "../store";
 import { locationService, shortcutService } from "../services";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import { getTextWithMemoType } from "../helpers/filter";
 import "../less/memo-filter.less";
 

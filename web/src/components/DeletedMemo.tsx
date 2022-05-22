@@ -1,5 +1,5 @@
 import { IMAGE_URL_REG } from "../helpers/consts";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import { memoService } from "../services";
 import Only from "./common/OnlyWhen";

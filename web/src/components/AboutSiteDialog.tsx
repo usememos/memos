@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import api from "../helpers/api";
+import * as api from "../helpers/api";
 import Only from "./common/OnlyWhen";
 import { showDialog } from "./Dialog";
 import "../less/about-site-dialog.less";
@@ -11,7 +11,10 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   useEffect(() => {
     try {
-      api.getSystemStatus().then(({ profile }) => {
+      api.getSystemStatus().then(({ data }) => {
+        const {
+          data: { profile },
+        } = data;
         setProfile(profile);
       });
     } catch (error) {

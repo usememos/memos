@@ -1,5 +1,5 @@
 import { useAppSelector } from "../store";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import showDailyMemoDiaryDialog from "./DailyMemoDiaryDialog";
 import showSettingDialog from "./SettingDialog";
 import showMemoTrashDialog from "./MemoTrashDialog";

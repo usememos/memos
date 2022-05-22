@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { locationService, memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
-import utils from "../helpers/utils";
+import * as utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import Memo from "./Memo";
 import toastHelper from "./Toast";
@@ -79,6 +79,7 @@ const MemoList: React.FC<Props> = () => {
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
+  console.log(memos.length, sortedMemos.length);
 
   useEffect(() => {
     memoService

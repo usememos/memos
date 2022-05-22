@@ -1,4 +1,4 @@
-import api from "../helpers/api";
+import * as api from "../helpers/api";
 import store from "../store/";
 import { createShortcut, deleteShortcut, patchShortcut, setShortcuts } from "../store/modules/shortcut";
 
@@ -16,8 +16,8 @@ const shortcutService = {
   },
 
   getMyAllShortcuts: async () => {
-    const rawData = await api.getMyShortcuts();
-    const shortcuts = rawData.map((s) => convertResponseModelShortcut(s));
+    const { data } = (await api.getMyShortcuts()).data;
+    const shortcuts = data.map((s) => convertResponseModelShortcut(s));
     store.dispatch(setShortcuts(shortcuts));
   },
 
@@ -32,13 +32,13 @@ const shortcutService = {
   },
 
   createShortcut: async (shortcutCreate: ShortcutCreate) => {
-    const data = await api.createShortcut(shortcutCreate);
+    const { data } = (await api.createShortcut(shortcutCreate)).data;
     const shortcut = convertResponseModelShortcut(data);
     store.dispatch(createShortcut(shortcut));
   },
 
   patchShortcut: async (shortcutPatch: ShortcutPatch) => {
-    const data = await api.patchShortcut(shortcutPatch);
+    const { data } = (await api.patchShortcut(shortcutPatch)).data;
     const shortcut = convertResponseModelShortcut(data);
     store.dispatch(patchShortcut(shortcut));
   },

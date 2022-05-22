@@ -14,7 +14,6 @@ const MemoTrashDialog: React.FC<Props> = (props: Props) => {
   const [deletedMemos, setDeletedMemos] = useState<Memo[]>([]);
 
   useEffect(() => {
-    memoService.fetchAllMemos();
     memoService
       .fetchDeletedMemos()
       .then((result) => {
