@@ -30,7 +30,7 @@
 ## ⚓️ Deploy with Docker
 
 ```docker
-docker run --name memos --publish 5230:8080 --volume ~/.memos/:/var/opt/memos -e mode=prod neosmemo/memos:0.0.1
+docker run --name memos --publish 5230:8080 --volume ~/.memos/:/var/opt/memos -e mode=prod neosmemo/memos:0.1.0
 ```
 
 Memos should now be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
