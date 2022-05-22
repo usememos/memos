@@ -1,13 +1,15 @@
-package common
+package profile
 
 import (
 	"fmt"
+	"memos/common"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
 )
 
+// Profile is the configuration to start main server.
 type Profile struct {
 	// Mode can be "prod" or "dev"
 	Mode string `json:"mode"`
@@ -69,6 +71,6 @@ func GetProfile() *Profile {
 		Mode:    mode,
 		Port:    port,
 		DSN:     dsn,
-		Version: Version,
+		Version: common.Version,
 	}
 }

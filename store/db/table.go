@@ -25,7 +25,7 @@ func findTable(db *DB, tableName string) (*Table, error) {
 		args...,
 	)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -36,14 +36,14 @@ func findTable(db *DB, tableName string) (*Table, error) {
 			&table.Name,
 			&table.SQL,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 
 		tableList = append(tableList, &table)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	if len(tableList) == 0 {

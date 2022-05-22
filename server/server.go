@@ -2,7 +2,7 @@ package server
 
 import (
 	"fmt"
-	"memos/common"
+	"memos/server/profile"
 	"memos/store"
 	"time"
 
@@ -16,12 +16,12 @@ import (
 type Server struct {
 	e *echo.Echo
 
-	Profile *common.Profile
+	Profile *profile.Profile
 
 	Store *store.Store
 }
 
-func NewServer(profile *common.Profile) *Server {
+func NewServer(profile *profile.Profile) *Server {
 	e := echo.New()
 	e.Debug = true
 	e.HideBanner = true

@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"memos/common"
 	"memos/server"
+	"memos/server/profile"
 	"memos/store"
 	DB "memos/store/db"
 )
@@ -22,7 +22,7 @@ const (
 )
 
 type Main struct {
-	profile *common.Profile
+	profile *profile.Profile
 }
 
 func (m *Main) Run() error {
@@ -44,7 +44,7 @@ func (m *Main) Run() error {
 }
 
 func Execute() {
-	profile := common.GetProfile()
+	profile := profile.GetProfile()
 	m := Main{
 		profile: profile,
 	}

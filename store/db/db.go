@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/fs"
 	"memos/common"
+	"memos/server/profile"
 	"os"
 	"sort"
 
@@ -20,6 +21,7 @@ var migrationFS embed.FS
 var seedFS embed.FS
 
 type DB struct {
+	// sqlite db connection instance
 	Db *sql.DB
 	// datasource name
 	DSN string
@@ -28,7 +30,7 @@ type DB struct {
 }
 
 // NewDB returns a new instance of DB associated with the given datasource name.
-func NewDB(profile *common.Profile) *DB {
+func NewDB(profile *profile.Profile) *DB {
 	db := &DB{
 		DSN:  profile.DSN,
 		mode: profile.Mode,
@@ -76,31 +78,9 @@ func (db *DB) Open() (err error) {
 }
 
 func (db *DB) migrate() error {
-	table, err := findTable(db, "migration_history")
+	err := db.compareMigrationHistory()
 	if err != nil {
-		return err
-	}
-	if table == nil {
-		createTable(db, `
-		CREATE TABLE migration_history (
-			version TEXT NOT NULL PRIMARY KEY,
-			created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
-		);
-		`)
-	}
-
-	migrationHistoryList, err := findMigrationHistoyList(db)
-	if err != nil {
-		return err
-	}
-
-	if len(migrationHistoryList) == 0 {
-		createMigrationHistoy(db, common.Version)
-	} else {
-		migrationHistory := migrationHistoryList[0]
-		if migrationHistory.Version != common.Version {
-			createMigrationHistoy(db, common.Version)
-		}
+		return fmt.Errorf("failed to compare migration history, err=%w", err)
 	}
 
 	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("%s/*.sql", "migration"))
@@ -154,15 +134,34 @@ func (db *DB) executeFile(FS embed.FS, name string) error {
 	return tx.Commit()
 }
 
-func FormatError(err error) error {
-	if err == nil {
-		return nil
-	}
-
-	switch err {
-	case sql.ErrNoRows:
-		return errors.New("data not found")
-	default:
+// compareMigrationHistory compares migration history data
+func (db *DB) compareMigrationHistory() error {
+	table, err := findTable(db, "migration_history")
+	if err != nil {
 		return err
 	}
+	if table == nil {
+		createTable(db, `
+		CREATE TABLE migration_history (
+			version TEXT NOT NULL PRIMARY KEY,
+			created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
+		);
+		`)
+	}
+
+	migrationHistoryList, err := findMigrationHistoryList(db)
+	if err != nil {
+		return err
+	}
+
+	if len(migrationHistoryList) == 0 {
+		createMigrationHistory(db, common.Version)
+	} else {
+		migrationHistory := migrationHistoryList[0]
+		if migrationHistory.Version != common.Version {
+			createMigrationHistory(db, common.Version)
+		}
+	}
+
+	return nil
 }

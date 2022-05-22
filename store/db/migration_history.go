@@ -2,7 +2,6 @@ package db
 
 import (
 	"fmt"
-	"time"
 )
 
 type MigrationHistory struct {
@@ -10,7 +9,7 @@ type MigrationHistory struct {
 	Version   string
 }
 
-func findMigrationHistoyList(db *DB) ([]*MigrationHistory, error) {
+func findMigrationHistoryList(db *DB) ([]*MigrationHistory, error) {
 	rows, err := db.Db.Query(`
 		SELECT 
 			version,
@@ -40,16 +39,14 @@ func findMigrationHistoyList(db *DB) ([]*MigrationHistory, error) {
 	return migrationHistoryList, nil
 }
 
-func createMigrationHistoy(db *DB, version string) error {
+func createMigrationHistory(db *DB, version string) error {
 	result, err := db.Db.Exec(`
 		INSERT INTO migration_history (
-			version,
-			created_ts
+			version
 		)
-		VALUES (?, ?)
+		VALUES (?)
 	`,
 		version,
-		time.Now().Unix(),
 	)
 	if err != nil {
 		return err
