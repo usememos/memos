@@ -7,9 +7,7 @@ import "../less/memo-filter.less";
 interface FilterProps {}
 
 const MemoFilter: React.FC<FilterProps> = () => {
-  const {
-    location: { query },
-  } = useAppSelector((state) => state);
+  const query = useAppSelector((state) => state.location.query);
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query ?? {};
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
   const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut);

@@ -12,10 +12,9 @@ import "../less/siderbar.less";
 interface Props {}
 
 const Sidebar: React.FC<Props> = () => {
-  const {
-    memo: { memos, tags },
-    user: { user },
-  } = useAppSelector((state) => state);
+  const { memos, tags } = useAppSelector((state) => state.memo);
+  const user = useAppSelector((state) => state.user.user);
+
   const createdDays = user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24) : 0;
 
   const handleMyAccountBtnClick = () => {

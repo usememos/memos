@@ -11,10 +11,8 @@ import "../less/memo-list.less";
 interface Props {}
 
 const MemoList: React.FC<Props> = () => {
-  const {
-    location: { query },
-    memo: { memos },
-  } = useAppSelector((state) => state);
+  const query = useAppSelector((state) => state.location.query);
+  const memos = useAppSelector((state) => state.memo.memos);
   const [isFetching, setFetchStatus] = useState(true);
   const wrapperElement = useRef<HTMLDivElement>(null);
 
@@ -79,7 +77,6 @@ const MemoList: React.FC<Props> = () => {
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
-  console.log(memos.length, sortedMemos.length);
 
   useEffect(() => {
     memoService

@@ -7,12 +7,10 @@ import "../less/user-banner.less";
 interface Props {}
 
 const UserBanner: React.FC<Props> = () => {
-  const {
-    user: { user },
-  } = useAppSelector((state) => state);
-  const username = user ? user.name : "Memos";
-
+  const user = useAppSelector((state) => state.user.user);
   const [shouldShowPopupBtns, setShouldShowPopupBtns] = useState(false);
+
+  const username = user ? user.name : "Memos";
 
   const handleUsernameClick = useCallback(() => {
     locationService.pushHistory("/");

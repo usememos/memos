@@ -7,9 +7,7 @@ import useLoading from "../hooks/useLoading";
 import "../less/home.less";
 
 function Home() {
-  const {
-    location: { pathname },
-  } = useAppSelector((state) => state);
+  const pathname = useAppSelector((state) => state.location.pathname);
   const loadingState = useLoading();
 
   useEffect(() => {

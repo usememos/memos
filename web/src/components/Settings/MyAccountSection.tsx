@@ -17,8 +17,7 @@ const validateConfig: ValidatorConfig = {
 interface Props {}
 
 const MyAccountSection: React.FC<Props> = () => {
-  const { user: userState } = useAppSelector((state) => state);
-  const user = userState.user as User;
+  const user = useAppSelector((state) => state.user.user as User);
   const [username, setUsername] = useState<string>(user.name);
   const openAPIRoute = `${window.location.origin}/h/${user.openId}/memo`;
 

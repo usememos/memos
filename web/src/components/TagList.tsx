@@ -15,10 +15,8 @@ interface Tag {
 interface Props {}
 
 const TagList: React.FC<Props> = () => {
-  const {
-    location: { query },
-    memo: { memos, tags: tagsText },
-  } = useAppSelector((state) => state);
+  const { memos, tags: tagsText } = useAppSelector((state) => state.memo);
+  const query = useAppSelector((state) => state.location.query);
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {

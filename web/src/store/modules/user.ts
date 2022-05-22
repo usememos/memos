@@ -15,10 +15,13 @@ const userSlice = createSlice({
       };
     },
     patchUser: (state, action: PayloadAction<Partial<User>>) => {
-      state.user = {
-        ...state.user,
-        ...action.payload,
-      } as User;
+      return {
+        ...state,
+        user: {
+          ...state.user,
+          ...action.payload,
+        } as User,
+      };
     },
   },
 });

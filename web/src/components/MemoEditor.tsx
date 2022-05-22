@@ -43,10 +43,8 @@ const getCursorPostion = (input: HTMLTextAreaElement) => {
 interface Props {}
 
 const MemoEditor: React.FC<Props> = () => {
-  const {
-    editor: editorState,
-    memo: { tags },
-  } = useAppSelector((state) => state);
+  const editorState = useAppSelector((state) => state.editor);
+  const tags = useAppSelector((state) => state.memo.tags);
   const [isTagSeletorShown, toggleTagSeletor] = useToggle(false);
   const editorRef = useRef<EditorRefActions>(null);
   const prevGlobalStateRef = useRef(editorState);

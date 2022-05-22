@@ -9,11 +9,8 @@ let prevRequestTimestamp = Date.now();
 interface Props {}
 
 const MemosHeader: React.FC<Props> = () => {
-  const {
-    location: { query },
-    shortcut: { shortcuts },
-  } = useAppSelector((state) => state);
-
+  const query = useAppSelector((state) => state.location.query);
+  const shortcuts = useAppSelector((state) => state.shortcut.shortcuts);
   const [titleText, setTitleText] = useState("MEMOS");
 
   useEffect(() => {

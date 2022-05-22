@@ -12,11 +12,10 @@ import "../less/shortcut-list.less";
 interface Props {}
 
 const ShortcutList: React.FC<Props> = () => {
-  const {
-    location: { query },
-    shortcut: { shortcuts },
-  } = useAppSelector((state) => state);
+  const query = useAppSelector((state) => state.location.query);
+  const shortcuts = useAppSelector((state) => state.shortcut.shortcuts);
   const loadingState = useLoading();
+
   const pinnedShortcuts = shortcuts
     .filter((s) => s.rowStatus === "ARCHIVED")
     .sort((a, b) => utils.getTimeStampByDate(b.createdTs) - utils.getTimeStampByDate(a.createdTs));

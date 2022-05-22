@@ -15,10 +15,8 @@ interface State {
 }
 
 const SettingDialog: React.FC<Props> = (props: Props) => {
-  const {
-    user: { user },
-  } = useAppSelector((state) => state);
   const { destroy } = props;
+  const user = useAppSelector((state) => state.user.user);
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });

@@ -35,9 +35,7 @@ const UsageHeatMap: React.FC<Props> = () => {
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
   const beginDayTimestemp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
 
-  const {
-    memo: { memos },
-  } = useAppSelector((state) => state);
+  const { memos } = useAppSelector((state) => state.memo);
   const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestemp));
   const [popupStat, setPopupStat] = useState<DailyUsageStat | null>(null);
   const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
