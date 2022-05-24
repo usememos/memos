@@ -152,6 +152,7 @@ interface MemoFilterInputerProps {
 
 const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInputerProps) => {
   const { index, filter, handleFilterChange, handleFilterRemove } = props;
+  const tags = Array.from(memoService.getState().tags);
   const { type } = filter;
   const [inputElements, setInputElements] = useState<JSX.Element>(<></>);
 
@@ -185,12 +186,9 @@ const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInpute
         valueElement = (
           <Selector
             className="value-selector"
-            dataSource={memoService
-              .getState()
-              .tags.sort()
-              .map((t) => {
-                return { text: t, value: t };
-              })}
+            dataSource={tags.sort().map((t) => {
+              return { text: t, value: t };
+            })}
             value={filter.value.value}
             handleValueChanged={handleValueChange}
           />
