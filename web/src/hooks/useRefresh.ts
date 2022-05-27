@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 
-function useRefresh() {
+export default function useRefresh() {
   const [, setBoolean] = useState<boolean>(false);
 
   const refresh = useCallback(() => {
@@ -11,5 +11,3 @@ function useRefresh() {
 
   return refresh;
 }
-
-export default useRefresh;

@@ -1,13 +1,14 @@
 import { useEffect } from "react";
 import { locationService, userService } from "../services";
-import { homeRouterSwitch } from "../routers";
-import { useAppSelector } from "../store";
 import Sidebar from "../components/Sidebar";
 import useLoading from "../hooks/useLoading";
+import MemosHeader from "../components/MemosHeader";
+import MemoEditor from "../components/MemoEditor";
+import MemoFilter from "../components/MemoFilter";
+import MemoList from "../components/MemoList";
 import "../less/home.less";
 
 function Home() {
-  const pathname = useAppSelector((state) => state.location.pathname);
   const loadingState = useLoading();
 
   useEffect(() => {
@@ -35,7 +36,12 @@ function Home() {
       {loadingState.isLoading ? null : (
         <section id="page-wrapper">
           <Sidebar />
-          {homeRouterSwitch(pathname)}
+          <main className="memos-wrapper">
+            <MemosHeader />
+            <MemoEditor />
+            <MemoFilter />
+            <MemoList />
+          </main>
         </section>
       )}
     </>

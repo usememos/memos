@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-function useLoading(initialState = true) {
+export default function useLoading(initialState = true) {
   const [state, setState] = useState({ isLoading: initialState, isFailed: false, isSucceed: false });
 
   return {
@@ -31,5 +31,3 @@ function useLoading(initialState = true) {
     },
   };
 }
-
-export default useLoading;

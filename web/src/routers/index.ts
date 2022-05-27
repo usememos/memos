@@ -1,5 +1,4 @@
 import appRouter from "./appRouter";
-import homeRouter from "./homeRouter";
 
 // just like React-Router
 interface Router {
@@ -19,4 +18,3 @@ const routerSwitch = (router: Router) => {
 };
 
 export const appRouterSwitch = routerSwitch(appRouter);
-export const homeRouterSwitch = routerSwitch(homeRouter);

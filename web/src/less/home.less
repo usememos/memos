@@ -1,4 +1,5 @@
 @import "./mixin.less";
+@import "./memos-header.less";
 
 #root {
   background-color: #f6f5f4;
@@ -7,4 +8,8 @@
 #page-wrapper {
   @apply w-full h-full m-auto grid max-w-4xl mx-auto;
   grid-template-columns: min-content 1fr;
+
+  .memos-wrapper {
+    @apply w-full h-full overflow-x-hidden flex flex-col justify-start items-start px-4 pr-10;
+  }
 }
