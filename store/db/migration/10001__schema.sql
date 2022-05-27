@@ -37,7 +37,7 @@ CREATE TABLE memo (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   content TEXT NOT NULL DEFAULT '',
-  FOREIGN KEY(creator_id) REFERENCES user(id)
+  FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 INSERT INTO
@@ -63,8 +63,8 @@ CREATE TABLE memo_organizer (
   memo_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,
-  FOREIGN KEY(memo_id) REFERENCES memo(id),
-  FOREIGN KEY(user_id) REFERENCES user(id),
+  FOREIGN KEY(memo_id) REFERENCES memo(id) ON DELETE CASCADE,
+  FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE,
   UNIQUE(memo_id, user_id)
 );
 
@@ -82,7 +82,7 @@ CREATE TABLE shortcut (
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   title TEXT NOT NULL DEFAULT '',
   payload TEXT NOT NULL DEFAULT '{}',
-  FOREIGN KEY(creator_id) REFERENCES user(id)
+  FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 INSERT INTO
@@ -112,7 +112,7 @@ CREATE TABLE resource (
   blob BLOB NOT NULL,
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
-  FOREIGN KEY(creator_id) REFERENCES user(id)
+  FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 INSERT INTO
