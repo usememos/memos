@@ -24,13 +24,14 @@
 ## ✨ Features
 
 - 🦄 Fully open source;
+- 👍 Write in the plain textarea without any burden;
 - 🤠 Great UI and never miss any detail;
 - 🚀 Super quick self-hosted with `Docker` and `SQLite`;
 
 ## ⚓️ Deploy with Docker
 
 ```docker
-docker run --name memos --publish 5230:8080 --volume ~/.memos/:/var/opt/memos -e mode=prod neosmemo/memos:0.1.0
+docker run --name memos --publish 5230:5230 --volume ~/.memos/:/var/opt/memos -e mode=prod -e port=5230 neosmemo/memos:0.1.0
 ```
 
 Memos should now be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
