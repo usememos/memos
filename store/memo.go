@@ -209,6 +209,9 @@ func findMemoRawList(db *sql.DB, find *api.MemoFind) ([]*memoRaw, error) {
 	if v := find.Pinned; v != nil {
 		where = append(where, "id in (SELECT memo_id FROM memo_organizer WHERE pinned = 1 AND user_id = memo.creator_id )")
 	}
+	if v := find.Tag; v != nil {
+		where, args = append(where, "content LIKE ?"), append(args, "%#"+*v+"%")
+	}
 
 	rows, err := db.Query(`
 		SELECT
