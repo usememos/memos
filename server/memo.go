@@ -75,6 +75,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			pinned := pinnedStr == "true"
 			memoFind.Pinned = &pinned
 		}
+		tag := c.QueryParam("tag")
+		if tag != "" {
+			memoFind.Tag = &tag
+		}
 
 		list, err := s.Store.FindMemoList(memoFind)
 		if err != nil {
