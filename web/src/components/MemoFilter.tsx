@@ -14,7 +14,7 @@ const MemoFilter: React.FC<FilterProps> = () => {
   const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut);
 
   return (
-    <div className={`filter-query-container ${showFilter ? "" : "hidden"}`}>
+    <div className={`filter-query-container ${showFilter ? "" : "!hidden"}`}>
       <span className="tip-text">Filter:</span>
       <div
         className={"filter-item-container " + (shortcut ? "" : "hidden")}

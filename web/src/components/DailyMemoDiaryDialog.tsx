@@ -100,7 +100,7 @@ const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
           </div>
         </div>
         <DatePicker
-          className={`date-picker ${showDatePicker ? "" : "hidden"}`}
+          className={`date-picker ${showDatePicker ? "" : "!hidden"}`}
           datestamp={currentDateStamp}
           handleDateStampChange={handleDataPickerChange}
         />

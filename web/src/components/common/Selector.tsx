@@ -68,7 +68,7 @@ const Selector: React.FC<Props> = (props: Props) => {
         </span>
       </div>
 
-      <div className={`items-wrapper ${showSelector ? "" : "hidden"}`}>
+      <div className={`items-wrapper ${showSelector ? "" : "!hidden"}`}>
         {dataSource.map((d) => {
           return (
             <div
