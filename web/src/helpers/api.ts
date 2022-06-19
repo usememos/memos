@@ -1,5 +1,7 @@
 import axios from "axios";
 
+axios.defaults.withCredentials = true;
+
 type ResponseObject<T> = {
   data: T;
   error?: string;

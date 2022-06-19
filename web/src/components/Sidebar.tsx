@@ -27,6 +27,11 @@ const Sidebar: React.FC<Props> = () => {
 
   return (
     <aside className="sidebar-wrapper">
+      <div className="close-container">
+        <span className="action-btn" onClick={toggleSiderbar}>
+          <img src="/icons/close.svg" className="icon-img" alt="" />
+        </span>
+      </div>
       <UserBanner />
       <div className="status-text-container">
         <div className="status-text memos-text">
@@ -55,6 +60,16 @@ const Sidebar: React.FC<Props> = () => {
       <TagList />
     </aside>
   );
+};
+
+export const toggleSiderbar = () => {
+  const sidebarEl = document.body.querySelector(".sidebar-wrapper") as HTMLDivElement;
+  const display = window.getComputedStyle(sidebarEl).display;
+  if (display === "none") {
+    sidebarEl.style.display = "flex";
+  } else {
+    sidebarEl.style.display = "none";
+  }
 };
 
 export default Sidebar;

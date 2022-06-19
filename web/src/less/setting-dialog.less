@@ -1,13 +1,14 @@
 @import "./mixin.less";
-@import "./memos-header.less";
 
 .setting-dialog {
+  @apply px-4;
+
   > .dialog-container {
     @apply w-176 max-w-full mb-8 p-0;
 
     > .dialog-content-container {
       .flex(column, flex-start, flex-start);
-      @apply relative w-full overflow-y-scroll p-0 flex flex-row justify-start items-start;
+      @apply relative w-full overflow-y-scroll p-0 flex flex-col sm:flex-row justify-start items-start;
       .hide-scroll-bar();
 
       > .close-btn {
@@ -20,23 +21,28 @@
       }
 
       > .section-selector-container {
-        @apply w-40 h-full shrink-0 rounded-l-lg p-4 border-r bg-gray-100 flex flex-col justify-start items-start;
+        @apply w-full sm:w-40 h-auto sm:h-full shrink-0 rounded-t-lg sm:rounded-l-lg p-4 border-r bg-gray-100 flex flex-col justify-start items-start;
 
         > .section-title {
           @apply text-sm mt-4 first:mt-3 mb-1 font-mono text-gray-400;
         }
 
-        > .section-item {
-          @apply text-base left-6 mt-2 text-gray-700 cursor-pointer hover:opacity-80;
+        >.section-items-container{
+          @apply w-full h-auto flex flex-row sm:flex-col justify-start items-start;
 
-          &.selected {
-            @apply font-bold hover:opacity-100;
+          > .section-item {
+            @apply text-base mr-2 sm:mr-0 mt-2 text-gray-700 cursor-pointer hover:opacity-80;
+  
+            &.selected {
+              @apply font-bold hover:opacity-100;
+            }
           }
         }
+
       }
 
       > .section-content-container {
-        @apply w-auto p-4 px-6 grow flex flex-col justify-start items-start h-128 overflow-y-scroll;
+        @apply w-full sm:w-auto p-4 px-6 grow flex flex-col justify-start items-start h-128 overflow-y-scroll;
 
         > .section-container {
           .flex(column, flex-start, flex-start);
@@ -47,8 +53,7 @@
           }
 
           > .form-label {
-            .flex(row, flex-start, center);
-            @apply w-full mb-2;
+            @apply flex flex-row justify-start items-center w-full mb-2;
 
             > .normal-text {
               @apply shrink-0 select-text;

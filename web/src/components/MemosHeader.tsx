@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
+import { memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
 import SearchBar from "./SearchBar";
-import { memoService, shortcutService } from "../services";
+import { toggleSiderbar } from "./Sidebar";
 import "../less/memos-header.less";
 
 let prevRequestTimestamp = Date.now();
@@ -25,7 +26,7 @@ const MemosHeader: React.FC<Props> = () => {
     }
   }, [query, shortcuts]);
 
-  const handleMemoTextClick = useCallback(() => {
+  const handleTitleTextClick = useCallback(() => {
     const now = Date.now();
     if (now - prevRequestTimestamp > 10 * 1000) {
       prevRequestTimestamp = now;
@@ -37,8 +38,13 @@ const MemosHeader: React.FC<Props> = () => {
 
   return (
     <div className="section-header-container memos-header-container">
-      <div className="title-text" onClick={handleMemoTextClick}>
-        <span className="normal-text">{titleText}</span>
+      <div className="title-container">
+        <div className="action-btn" onClick={toggleSiderbar}>
+          <img src="/icons/menu.svg" className="icon-img" alt="" />
+        </div>
+        <span className="title-text" onClick={handleTitleTextClick}>
+          {titleText}
+        </span>
       </div>
       <SearchBar />
     </div>

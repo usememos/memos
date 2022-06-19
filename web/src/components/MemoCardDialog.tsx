@@ -150,11 +150,11 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
       {linkMemos.length > 0 ? (
         <div className="linked-memos-wrapper">
           <p className="normal-text">{linkMemos.length} related MEMO</p>
-          {linkMemos.map((m) => {
-            const rawtext = parseHtmlToRawText(formatMemoContent(m.content)).replaceAll("\n", " ");
+          {linkMemos.map((memo, index) => {
+            const rawtext = parseHtmlToRawText(formatMemoContent(memo.content)).replaceAll("\n", " ");
             return (
-              <div className="linked-memo-container" key={m.id} onClick={() => handleLinkedMemoClick(m)}>
-                <span className="time-text">{m.dateStr} </span>
+              <div className="linked-memo-container" key={`${index}-${memo.id}`} onClick={() => handleLinkedMemoClick(memo)}>
+                <span className="time-text">{memo.dateStr} </span>
                 {rawtext}
               </div>
             );
@@ -164,11 +164,11 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
       {linkedMemos.length > 0 ? (
         <div className="linked-memos-wrapper">
           <p className="normal-text">{linkedMemos.length} linked MEMO</p>
-          {linkedMemos.map((m) => {
-            const rawtext = parseHtmlToRawText(formatMemoContent(m.content)).replaceAll("\n", " ");
+          {linkedMemos.map((memo, index) => {
+            const rawtext = parseHtmlToRawText(formatMemoContent(memo.content)).replaceAll("\n", " ");
             return (
-              <div className="linked-memo-container" key={m.id} onClick={() => handleLinkedMemoClick(m)}>
-                <span className="time-text">{m.dateStr} </span>
+              <div className="linked-memo-container" key={`${index}-${memo.id}`} onClick={() => handleLinkedMemoClick(memo)}>
+                <span className="time-text">{memo.dateStr} </span>
                 {rawtext}
               </div>
             );

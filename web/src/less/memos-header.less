@@ -5,19 +5,21 @@
   .flex(row, space-between, center);
   @apply w-full h-10 flex-nowrap mt-4 mb-2 shrink-0;
 
-  > .title-text {
-    .flex(row, flex-start, center);
-    @apply font-bold text-lg leading-10 mr-2 text-ellipsis shrink-0 cursor-pointer overflow-hidden;
-    color: @text-black;
+  > .title-container {
+    @apply flex flex-row justify-start items-center mr-2 shrink-0 overflow-hidden;
 
     > .action-btn {
-      .flex(row, center, center);
-      @apply w-6 h-6 mr-1 shrink-0;
+      @apply flex sm:hidden flex-row justify-center items-center w-6 h-6 mr-1 shrink-0;
       background-color: unset;
 
       > .icon-img {
-        @apply w-4 h-auto;
+        @apply w-5 h-auto;
       }
+    }
+
+    > .title-text {
+      @apply font-bold text-lg leading-10 mr-2 text-ellipsis shrink-0 cursor-pointer overflow-hidden;
+      color: @text-black;
     }
   }
 

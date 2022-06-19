@@ -32,9 +32,9 @@ function Home() {
   }, []);
 
   return (
-    <>
+    <section className="page-wrapper home">
       {loadingState.isLoading ? null : (
-        <section id="page-wrapper">
+        <div className="page-container">
           <Sidebar />
           <main className="memos-wrapper">
             <MemosHeader />
@@ -42,9 +42,9 @@ function Home() {
             <MemoFilter />
             <MemoList />
           </main>
-        </section>
+        </div>
       )}
-    </>
+    </section>
   );
 }
 
