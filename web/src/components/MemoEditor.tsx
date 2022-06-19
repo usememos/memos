@@ -294,7 +294,7 @@ const MemoEditor: React.FC<Props> = () => {
       />
       <div
         ref={tagSeletorRef}
-        className={`tag-list ${isTagSeletorShown && tags.length > 0 ? "" : "hidden"}`}
+        className={`tag-list ${isTagSeletorShown && tags.length > 0 ? "" : "!hidden"}`}
         onClick={handleTagSeletorClick}
       >
         {tags.map((t) => {

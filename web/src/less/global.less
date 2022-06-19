@@ -1,29 +1,11 @@
 @import "./mixin.less";
 
-* {
-  @apply m-0 p-0 box-border;
-  color: @text-black;
-  -webkit-tap-highlight-color: transparent;
-}
-
 body,
 html {
-  @apply w-screen h-screen overflow-hidden text-base;
+  @apply text-base;
   font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Noto Sans", "Noto Sans CJK SC", "Microsoft YaHei UI", "Microsoft YaHei",
     "WenQuanYi Micro Hei", sans-serif, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
     "Noto Color Emoji";
-}
-
-code {
-  @apply bg-pink-600 p-1 rounded font-mono;
-}
-
-pre {
-  @apply font-mono;
-
-  * {
-    @apply font-mono;
-  }
 }
 
 label,
@@ -57,17 +39,10 @@ li {
 }
 
 a {
-  @apply cursor-pointer text-blue-600 underline underline-offset-2;
-
-  &:hover {
-    @apply opacity-80;
-  }
+  @apply cursor-pointer text-blue-600 underline underline-offset-2 hover:opacity-80;
 }
 
 .btn {
   @apply select-none cursor-pointer text-center;
 }
 
-.hidden {
-  display: none !important;
-}

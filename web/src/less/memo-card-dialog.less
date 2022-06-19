@@ -1,12 +1,10 @@
 @import "./mixin.less";
 
 .dialog-wrapper.memo-card-dialog {
-  > .dialog-container {
-    @apply p-0 bg-transparent;
+  @apply px-4;
 
-    > * {
-      @apply shrink-0;
-    }
+  > .dialog-container {
+    @apply w-full p-0 bg-transparent flex flex-col justify-start items-center;
 
     > .memo-card-container {
       .flex(column, flex-start, flex-start);
