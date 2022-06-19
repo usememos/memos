@@ -3,7 +3,7 @@
 
 .memo-wrapper {
   .flex(column, flex-start, flex-start);
-  @apply w-full max-w-full p-3 px-4 mt-2 bg-white rounded-lg border border-transparent hover:border-gray-200;
+  @apply w-full max-w-full p-3 px-4 mt-2 bg-white rounded-lg border border-white hover:border-gray-200;
 
   &.deleted-memo {
     @apply border-gray-200;
@@ -27,7 +27,7 @@
 
       > .more-action-btns-wrapper {
         .flex(column, flex-start, center);
-        @apply absolute flex-nowrap;
+        @apply absolute flex-nowrap hover:flex;
         top: calc(100% - 8px);
         right: -16px;
         width: auto;
@@ -35,10 +35,6 @@
         padding: 12px;
         z-index: 1;
         display: none;
-
-        &:hover {
-          display: flex;
-        }
 
         > .more-action-btns-container {
           width: 112px;
@@ -92,7 +88,7 @@
   }
 
   > .memo-content-text {
-    @apply w-full;
+    @apply w-full h-auto;
   }
 
   > .images-wrapper {
