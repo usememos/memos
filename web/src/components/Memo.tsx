@@ -1,5 +1,5 @@
 import { memo } from "react";
-import { escape, replace } from "lodash-es";
+import { escape } from "lodash-es";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
 import { parseMarkedToHtml, parseRawTextToHtml } from "../helpers/marked";
 import * as utils from "../helpers/utils";
