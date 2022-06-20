@@ -1,129 +1,76 @@
 @import "./mixin.less";
 
 .daily-memo-diary-dialog {
+  @apply p-0 sm:py-16;
+
   > .dialog-container {
-    width: 440px;
-    max-width: 100%;
-    padding: 0;
+    @apply w-112 max-w-full p-0 rounded-none sm:rounded-lg;
 
     > .dialog-header-container {
-      .flex(column, center, center);
-      position: relative;
-      width: 100%;
-      padding: 24px;
-      margin-bottom: 0;
-      padding-bottom: 0;
+      @apply flex flex-row justify-between items-center w-full p-6 pb-0 mb-0;
 
-      > .header-wrapper {
-        .flex(row, space-between, center);
-        width: 100%;
+      > .btns-container {
+        @apply flex flex-row justify-start items-center;
 
-        > .btns-container {
-          .flex(row, flex-start, center);
+        > .btn-text {
+          @apply w-6 h-6 mr-2 rounded cursor-pointer select-none last:mr-0 hover:bg-gray-200;
 
-          > .btn-text {
-            width: 24px;
-            height: 24px;
-            margin-right: 8px;
-            border-radius: 4px;
-            cursor: pointer;
-            user-select: none;
+          > .icon-img {
+            @apply w-full h-auto;
+          }
 
-            &:last-child {
-              margin-right: 0;
-            }
-
-            > .icon-img {
-              width: 100%;
-              height: auto;
-            }
-
-            &:hover {
-              background-color: lightgray;
-            }
-
-            &.share-btn {
-              padding: 2px;
-            }
+          &.share-btn {
+            @apply w-5 h-auto;
           }
         }
       }
     }
 
     > .dialog-content-container {
-      .flex(column, flex-start, flex-start);
-      width: 440px;
-      max-width: 100%;
-      height: auto;
-      padding: 24px 24px;
+      @apply w-full h-auto flex flex-col justify-start items-start p-6 pb-0;
 
       > .date-card-container {
-        .flex(column, center, center);
-        margin: auto;
-        padding-bottom: 24px;
+        @apply flex flex-col justify-center items-center m-auto pb-6 select-none;
         z-index: 1;
-        user-select: none;
 
         > .year-text {
-          margin: auto;
-          font-weight: bold;
-          color: gray;
-          text-align: center;
-          line-height: 24px;
-          margin-bottom: 12px;
+          @apply m-auto font-bold text-gray-600 text-center leading-6 mb-2;
         }
 
         > .date-container {
-          .flex(column, center, center);
-          margin: auto;
-          width: 96px;
-          height: 96px;
+          @apply flex flex-col justify-center items-center m-auto w-24 h-24;
           border-radius: 32px;
           box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
-          border: 1px solid rgb(0 0 0 / 10%);
-          text-align: center;
-          z-index: 1;
 
           > .month-text,
           > .day-text {
-            .flex(column, center, center);
-            width: 100%;
-            height: 24px;
-            font-size: 14px;
+            @apply flex flex-col justify-center items-center w-full h-6 text-sm;
           }
 
           > .month-text {
-            background-color: @bg-blue;
-            color: white;
+            @apply bg-blue-700 text-white;
             border-top-left-radius: 32px;
             border-top-right-radius: 32px;
           }
 
           > .date-text {
-            .flex(column, center, center);
-            width: 100%;
-            padding-top: 4px;
-            height: 48px;
-            font-size: 44px;
+            @apply flex flex-col justify-center items-center w-full pt-1 h-12;
+            font-size: 40px;
             font-weight: bold;
           }
 
           > .day-text {
-            font-size: 12px;
+            @apply text-xs;
           }
         }
       }
 
       > .date-picker {
-        margin: 0 auto;
-        border: 1px solid lightgray;
-        border-radius: 8px;
-        margin-bottom: 24px;
+        @apply mx-auto border border-gray-200 rounded-lg mb-6;
       }
 
       > .tip-container {
-        margin: auto;
-        padding: 16px 0;
+        @apply m-auto py-4 px-0;
 
         > .tip-text {
           font-style: italic;
@@ -131,9 +78,7 @@
       }
 
       > .dailymemos-wrapper {
-        .flex(column, flex-start, flex-start);
-        margin-top: 8px;
-        width: 100%;
+        @apply flex flex-col justify-start items-start w-full mt-2;
       }
     }
   }

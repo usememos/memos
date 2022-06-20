@@ -2,70 +2,36 @@
 
 .daily-memo-wrapper {
   .flex(row, flex-start, flex-start);
-  position: relative;
-  width: calc(100% - 24px);
-  margin-left: 24px;
-  padding: 0;
-  padding-bottom: 24px;
-  border: none;
-  border-left: 2px solid @bg-whitegray;
+  @apply flex flex-row justify-start items-start relative w-full flex-nowrap pb-6;
 
   &:last-child {
-    border-left: none;
-    padding-bottom: 0;
-  }
-
-  > .time-wrapper {
-    .flex(column, center, center);
-    position: relative;
-    left: -24px;
-    margin-top: -2px;
-    flex-shrink: 0;
-    width: 48px;
-    height: 28px;
-    border-radius: 6px;
-    background-color: @bg-lightgray;
-    color: @text-gray;
-    border: 2px solid white;
-
-    > .normal-text {
-      margin: 0 auto;
-      font-size: 11px;
-      line-height: 24px;
+    > .split-line {
+      @apply hidden;
     }
   }
 
+  > .split-line {
+    @apply h-full px-px bg-gray-100 absolute top-1 left-6 z-0 -ml-px;
+  }
+
+  > .time-wrapper {
+    @apply mt-px mr-4 w-12 h-7 shrink-0 text-xs leading-6 text-center font-mono rounded-lg bg-gray-100 border-2 border-white text-gray-600 z-10;
+  }
+
   > .memo-content-container {
-    .flex(column, flex-start, flex-start);
-    width: 100%;
-    margin-left: -12px;
-    padding: 0;
-    font-size: 16px;
+    @apply flex flex-col justify-start items-start w-full p-0 text-base;
 
     > .memo-content-text {
       .tag-span {
         cursor: unset;
-
-        &:hover {
-          color: @text-blue;
-          background-color: @bg-light-blue;
-        }
       }
     }
 
     > .images-container {
-      .flex(column, flex-start, flex-start);
-      width: 100%;
+      @apply flex flex-col justify-start items-start w-full;
 
       > img {
-        width: 100%;
-        height: auto;
-        border-radius: 4px;
-        margin-bottom: 8px;
-
-        &:last-child {
-          margin-bottom: 0;
-        }
+        @apply w-full h-auto rounded mb-2 last:mb-0;
       }
     }
   }

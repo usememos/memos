@@ -1,12 +1,10 @@
 @import "./mixin.less";
 
 .menu-btns-popup {
-  .flex(column, flex-start, flex-start);
-  @apply absolute right-0 top-0 mt-1 p-1 w-36 rounded-lg z-10 shadow bg-white;
+  @apply absolute right-2 top-8 flex flex-col justify-start items-start mt-4 p-1 w-36 rounded-lg z-10 shadow bg-white;
 
   > .btn {
-    .flex(row, flex-start, center);
-    @apply w-full py-2 px-3 text-base rounded text-left hover:bg-gray-100;
+    @apply flex flex-row justify-start items-center w-full py-2 px-3 text-base rounded text-left hover:bg-gray-100;
 
     > .icon {
       @apply block w-6 text-center mr-2 text-base;

@@ -37,6 +37,7 @@ const DailyMemo: React.FC<Props> = (props: Props) => {
           </div>
         </Only>
       </div>
+      <div className="split-line"></div>
     </div>
   );
 };

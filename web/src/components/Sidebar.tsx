@@ -42,15 +42,18 @@ const Sidebar: React.FC<Props> = () => {
           <span className="amount-text">{tags.length}</span>
           <span className="type-text">TAG</span>
         </div>
-        <div className="status-text duration-text" onClick={() => showDailyMemoDiaryDialog()}>
+        <div className="status-text duration-text">
           <span className="amount-text">{createdDays}</span>
           <span className="type-text">DAY</span>
         </div>
       </div>
       <UsageHeatMap />
       <div className="action-btns-container">
+        <button className="btn action-btn" onClick={() => showDailyMemoDiaryDialog()}>
+          <span className="icon">📅</span> Daily View
+        </button>
         <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
-          <span className="icon">👤</span> Setting
+          <span className="icon">⚙️</span> Setting
         </button>
         <button className="btn action-btn" onClick={handleMemosTrashBtnClick}>
           <span className="icon">🗑️</span> Recycle Bin

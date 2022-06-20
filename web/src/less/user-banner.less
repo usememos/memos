@@ -1,8 +1,7 @@
 @import "./mixin.less";
 
 .user-banner-container {
-  .flex(row, space-between, center);
-  @apply w-full h-auto px-6 flex-nowrap mb-1;
+  @apply flex flex-row justify-between items-center relative w-full h-auto px-6 flex-nowrap mb-1;
 
   > .username-container {
     @apply shrink flex flex-row justify-start items-center flex-nowrap truncate;
@@ -20,8 +19,7 @@
     @apply shrink-0 select-none border-none;
 
     &.menu-popup-btn {
-      .flex(column, center, center);
-      @apply w-9 h-10 -mr-2 cursor-pointer;
+      @apply flex flex-col justify-center items-center w-9 h-10 -mr-2 cursor-pointer;
 
       > .icon-img {
         @apply w-5 h-auto;
