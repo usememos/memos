@@ -37,7 +37,7 @@ const MemoTrashDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">
           <span className="icon-text">🗑️</span>
-          Trash Bin
+          Recycle Bin
         </p>
         <button className="btn close-btn" onClick={destroy}>
           <img className="icon-img" src="/icons/close.svg" />

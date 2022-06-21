@@ -1,8 +1,10 @@
 @import "./mixin.less";
 
 .about-site-dialog {
+  @apply px-4;
+
   > .dialog-container {
-    @apply w-112;
+    @apply w-112 max-w-full;
 
     > .dialog-content-container {
       @apply leading-relaxed;
@@ -11,8 +13,7 @@
         @apply my-1;
 
         &.updated-time-text {
-          .flex(row, flex-start, center);
-          @apply w-full text-sm mt-3 pt-2 border-t-2 border-t-gray-200 text-gray-600 whitespace-pre-wrap font-mono;
+          @apply flex flex-row justify-start items-center w-full text-sm mt-3 pt-2 border-t-2 border-t-gray-200 text-gray-600 whitespace-pre-wrap font-mono;
         }
       }
 

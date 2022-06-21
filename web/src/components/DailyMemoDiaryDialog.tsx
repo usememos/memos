@@ -15,8 +15,8 @@ interface Props extends DialogProps {
   currentDateStamp: DateStamp;
 }
 
-const monthChineseStrArray = ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月", "十二月"];
-const weekdayChineseStrArray = ["周日", "周一", "周二", "周三", "周四", "周五", "周六"];
+const monthChineseStrArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dev"];
+const weekdayChineseStrArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
   const loadingState = useLoading();
@@ -72,22 +72,22 @@ const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <div className="header-wrapper">
-          <p className="title-text">Daily Memos</p>
-          <div className="btns-container">
-            <span className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}>
-              <img className="icon-img" src="/icons/arrow-left.svg" />
-            </span>
-            <span className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp + DAILY_TIMESTAMP)}>
-              <img className="icon-img" src="/icons/arrow-right.svg" />
-            </span>
-            <span className="btn-text share-btn" onClick={handleShareBtnClick}>
-              <img className="icon-img" src="/icons/share.svg" />
-            </span>
-            <span className="btn-text" onClick={() => props.destroy()}>
-              <img className="icon-img" src="/icons/close.svg" />
-            </span>
-          </div>
+        <p className="title-text">
+          <span className="icon-text">📅</span> Daily Memos
+        </p>
+        <div className="btns-container">
+          <span className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}>
+            <img className="icon-img" src="/icons/arrow-left.svg" />
+          </span>
+          <span className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp + DAILY_TIMESTAMP)}>
+            <img className="icon-img" src="/icons/arrow-right.svg" />
+          </span>
+          <span className="btn-text share-btn" onClick={handleShareBtnClick}>
+            <img className="icon-img" src="/icons/share.svg" />
+          </span>
+          <span className="btn-text" onClick={() => props.destroy()}>
+            <img className="icon-img" src="/icons/close.svg" />
+          </span>
         </div>
       </div>
       <div className="dialog-content-container" ref={memosElRef}>

@@ -18,9 +18,6 @@ const UserBanner: React.FC<Props> = () => {
   }, []);
 
   const handlePopupBtnClick = () => {
-    const sidebarEl = document.querySelector(".sidebar-wrapper") as HTMLElement;
-    const popupEl = document.querySelector(".menu-btns-popup") as HTMLElement;
-    popupEl.style.top = 54 - sidebarEl.scrollTop + "px";
     setShouldShowPopupBtns(true);
   };
 
