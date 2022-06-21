@@ -70,6 +70,7 @@ func NewServer(profile *profile.Profile) *Server {
 	s.registerMemoRoutes(apiGroup)
 	s.registerShortcutRoutes(apiGroup)
 	s.registerResourceRoutes(apiGroup)
+	s.registerTagRoutes(apiGroup)
 
 	return s
 }
