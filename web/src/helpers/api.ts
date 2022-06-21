@@ -48,11 +48,11 @@ export function patchUser(userPatch: UserPatch) {
   return axios.patch<ResponseObject<User>>("/api/user/me", userPatch);
 }
 
-export function getMyMemos() {
+export function getMemoList() {
   return axios.get<ResponseObject<Memo[]>>("/api/memo");
 }
 
-export function getMyArchivedMemos() {
+export function getArchivedMemoList() {
   return axios.get<ResponseObject<Memo[]>>("/api/memo?rowStatus=ARCHIVED");
 }
 
@@ -80,7 +80,7 @@ export function deleteMemo(memoId: MemoId) {
   return axios.delete(`/api/memo/${memoId}`);
 }
 
-export function getMyShortcuts() {
+export function getShortcutList() {
   return axios.get<ResponseObject<Shortcut[]>>("/api/shortcut");
 }
 
@@ -98,4 +98,8 @@ export function deleteShortcutById(shortcutId: ShortcutId) {
 
 export function uploadFile(formData: FormData) {
   return axios.post<ResponseObject<Resource>>("/api/resource", formData);
+}
+
+export function getTagList() {
+  return axios.get<ResponseObject<string[]>>("/api/tag");
 }

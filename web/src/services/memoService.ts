@@ -1,5 +1,4 @@
 import * as api from "../helpers/api";
-import { TAG_REG } from "../helpers/consts";
 import { createMemo, patchMemo, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
 
@@ -17,7 +16,7 @@ const memoService = {
   },
 
   fetchAllMemos: async () => {
-    const { data } = (await api.getMyMemos()).data;
+    const { data } = (await api.getMemoList()).data;
     const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
     store.dispatch(setMemos(memos));
 
@@ -25,7 +24,7 @@ const memoService = {
   },
 
   fetchDeletedMemos: async () => {
-    const { data } = (await api.getMyArchivedMemos()).data;
+    const { data } = (await api.getArchivedMemoList()).data;
     const deletedMemos = data.map((m) => {
       return convertResponseModelMemo(m);
     });
@@ -42,16 +41,9 @@ const memoService = {
     return null;
   },
 
-  updateTagsState: () => {
-    const { memos } = memoService.getState();
-    const tagsSet = new Set<string>();
-    for (const m of memos) {
-      for (const t of Array.from(m.content.match(TAG_REG) ?? [])) {
-        tagsSet.add(t.replace(TAG_REG, "$1").trim());
-      }
-    }
-
-    store.dispatch(setTags(Array.from(tagsSet).filter((t) => Boolean(t))));
+  updateTagsState: async () => {
+    const { data } = (await api.getTagList()).data;
+    store.dispatch(setTags(data));
   },
 
   getLinkedMemos: async (memoId: MemoId): Promise<Memo[]> => {
