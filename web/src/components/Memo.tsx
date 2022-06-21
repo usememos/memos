@@ -23,7 +23,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
   };
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
-  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []);
+  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
 
   const handleShowMemoStoryDialog = () => {
     showMemoCardDialog(memo);

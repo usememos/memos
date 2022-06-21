@@ -21,7 +21,7 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
     deletedAtStr: utils.getDateTimeString(propsMemo.updatedTs ?? Date.now()),
   };
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
-  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []);
+  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
 
   const handleDeleteMemoClick = async () => {
     if (showConfirmDeleteBtn) {
