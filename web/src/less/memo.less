@@ -2,8 +2,7 @@
 @import "./memo-content.less";
 
 .memo-wrapper {
-  .flex(column, flex-start, flex-start);
-  @apply w-full max-w-full p-3 px-4 mt-2 bg-white rounded-lg border border-white hover:border-gray-200;
+  @apply flex flex-col justify-start items-start w-full max-w-full p-3 px-4 mt-2 bg-white rounded-lg border border-white hover:border-gray-200;
 
   &.deleted-memo {
     @apply border-gray-200;
@@ -14,49 +13,50 @@
   }
 
   > .memo-top-wrapper {
-    .flex(row, space-between, center);
-    @apply w-full h-6 mb-2;
+    @apply flex flex-row justify-between items-center w-full h-6 mb-2;
 
     > .time-text {
       @apply text-xs text-gray-400 cursor-pointer;
     }
 
     > .btns-container {
-      .flex(row, flex-end, center);
-      @apply relative flex-shrink-0;
+      @apply flex flex-row justify-end items-center relative flex-shrink-0;
 
       > .more-action-btns-wrapper {
-        .flex(column, flex-start, center);
-        @apply absolute flex-nowrap hover:flex;
-        top: calc(100% - 8px);
-        right: -16px;
-        width: auto;
-        height: auto;
-        padding: 12px;
-        z-index: 1;
-        display: none;
+        @apply hidden flex-col justify-start items-center absolute top-2 -right-4 z-10 flex-nowrap hover:flex p-3;
 
         > .more-action-btns-container {
-          width: 112px;
-          height: auto;
-          padding: 4px;
-          white-space: nowrap;
-          border-radius: 8px;
-          background-color: white;
+          @apply w-28 h-auto p-1 whitespace-nowrap rounded-lg bg-white;
           box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
-          z-index: 1;
+
+          > .btns-container {
+            @apply w-full flex flex-row justify-between items-center border-b border-gray-100 p-1 mb-1;
+
+            > .btn {
+              @apply relative w-7 h-7 p-1;
+
+              &:hover > .tip-text {
+                @apply block;
+              }
+
+              > .icon-img {
+                @apply w-5 h-auto;
+              }
+
+              > .tip-text {
+                @apply hidden absolute top-0 p-1 px-2 rounded text-xs leading-6 -mt-9 bg-black text-white shadow opacity-70;
+              }
+            }
+          }
 
           > .btn {
-            @apply w-full py-2 px-3 rounded;
-            height: unset;
-            line-height: unset;
-            justify-content: flex-start;
+            @apply w-full py-2 px-3 rounded justify-start;
 
             &.delete-btn {
-              color: @text-red;
+              @apply text-red-600;
 
               &.final-confirm {
-                font-weight: bold;
+                @apply font-bold;
               }
             }
           }
@@ -64,12 +64,10 @@
       }
 
       .btn {
-        .flex(row, center, center);
-        @apply px-2 leading-6 text-sm rounded hover:bg-gray-100;
+        @apply flex flex-row justify-center items-center px-2 leading-6 text-sm rounded hover:bg-gray-100;
 
         &.more-action-btn {
-          @apply w-8 -mr-2 opacity-60;
-          cursor: unset;
+          @apply w-8 -mr-2 opacity-60 cursor-default;
 
           > .icon-img {
             @apply w-4 h-auto;
@@ -92,35 +90,15 @@
   }
 
   > .images-wrapper {
-    .flex(row, flex-start, flex-start);
-    margin-top: 8px;
-    width: 100%;
-    overflow-x: auto;
-    overflow-y: hidden;
-    padding-bottom: 4px;
+    @apply flex flex-row justify-start items-start mt-2 w-full overflow-x-auto overflow-y-hidden pb-1;
     .pretty-scroll-bar(0, 2px);
 
     > .memo-img {
-      margin-right: 8px;
-      width: auto;
-      height: 128px;
-      flex-shrink: 0;
-      flex-grow: 0;
-      overflow-y: hidden;
+      @apply mr-2 last:mr-0 w-auto h-32 shrink-0 grow-0 overflow-y-hidden;
       .hide-scroll-bar();
 
-      &:hover {
-        border-color: lightgray;
-      }
-
-      &:last-child {
-        margin-right: 0;
-      }
-
       > img {
-        width: auto;
-        max-height: 128px;
-        border-radius: 8px;
+        @apply w-auto max-h-32 rounded-lg;
       }
     }
   }

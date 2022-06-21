@@ -111,20 +111,25 @@ const Memo: React.FC<Props> = (props: Props) => {
           </span>
           <div className="more-action-btns-wrapper">
             <div className="more-action-btns-container">
+              <div className="btns-container">
+                <div className="btn" onClick={handleGenMemoImageBtnClick}>
+                  <img className="icon-img" src="/icons/share.svg" alt="" />
+                  <span className="tip-text">Share</span>
+                </div>
+                <div className="btn" onClick={handleEditMemoClick}>
+                  <img className="icon-img" src="/icons/edit.svg" alt="" />
+                  <span className="tip-text">Edit</span>
+                </div>
+                <div className="btn" onClick={handleTogglePinMemoBtnClick}>
+                  <img className="icon-img" src="/icons/pin.svg" alt="" />
+                  <span className="tip-text">{memo.pinned ? "Unpin" : "Pin"}</span>
+                </div>
+              </div>
               <span className="btn" onClick={handleShowMemoStoryDialog}>
                 View Story
               </span>
-              <span className="btn" onClick={handleTogglePinMemoBtnClick}>
-                {memo.pinned ? "Unpin" : "Pin"}
-              </span>
               <span className="btn" onClick={handleMarkMemoClick}>
                 Mark
-              </span>
-              <span className="btn" onClick={handleGenMemoImageBtnClick}>
-                Share
-              </span>
-              <span className="btn" onClick={handleEditMemoClick}>
-                Edit
               </span>
               <span className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
                 {showConfirmDeleteBtn ? "Delete!" : "Delete"}
