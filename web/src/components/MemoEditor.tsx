@@ -80,7 +80,7 @@ const MemoEditor: React.FC<Props> = () => {
         const file = event.clipboardData.files[0];
         const url = await handleUploadFile(file);
         if (url) {
-          editorRef.current?.insertText(url + " ");
+          editorRef.current?.insertText(`![](${url})`);
         }
       }
     };
@@ -91,7 +91,7 @@ const MemoEditor: React.FC<Props> = () => {
         const file = event.dataTransfer.files[0];
         const url = await handleUploadFile(file);
         if (url) {
-          editorRef.current?.insertText(url);
+          editorRef.current?.insertText(`![](${url})`);
         }
       }
     };
@@ -246,7 +246,7 @@ const MemoEditor: React.FC<Props> = () => {
       const file = inputEl.files[0];
       const url = await handleUploadFile(file);
       if (url) {
-        editorRef.current?.insertText(url);
+        editorRef.current?.insertText(`![](${url})`);
       }
     };
     inputEl.click();

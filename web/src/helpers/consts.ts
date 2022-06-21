@@ -17,7 +17,7 @@ export const TAG_REG = /#(.+?) /g;
 export const LINK_REG = /(https?:\/\/[^\s<\\*>']+)/g;
 
 // image regex
-export const IMAGE_URL_REG = /([^\s<\\*>']+\.(jpeg|jpg|gif|png|svg|webp))/g;
+export const IMAGE_URL_REG = /!\[.*?\]\((.+?)\)/g;
 
 // linked memo regex
 export const MEMO_LINK_REG = /\[@(.+?)\]\((.+?)\)/g;

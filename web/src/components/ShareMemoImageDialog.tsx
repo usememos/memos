@@ -20,10 +20,10 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
     ...propsMemo,
     createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
   };
-  const memoImgUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []);
+  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
 
   const [shortcutImgUrl, setShortcutImgUrl] = useState("");
-  const [imgAmount, setImgAmount] = useState(memoImgUrls.length);
+  const [imgAmount, setImgAmount] = useState(imageUrls.length);
   const memoElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -81,9 +81,9 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
           </Only>
           <span className="time-text">{memo.createdAtStr}</span>
           <div className="memo-content-text" dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}></div>
-          <Only when={memoImgUrls.length > 0}>
+          <Only when={imageUrls.length > 0}>
             <div className="images-container">
-              {memoImgUrls.map((imgUrl, idx) => (
+              {imageUrls.map((imgUrl, idx) => (
                 <img
                   crossOrigin="anonymous"
                   decoding="async"
