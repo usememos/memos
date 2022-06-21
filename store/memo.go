@@ -221,8 +221,6 @@ func findMemoRawList(db *sql.DB, find *api.MemoFind) ([]*memoRaw, error) {
 		}
 	}
 
-	println(pagination)
-
 	rows, err := db.Query(`
 		SELECT
 			id,
