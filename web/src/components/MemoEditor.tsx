@@ -74,17 +74,13 @@ const MemoEditor: React.FC<Props> = () => {
   }, [editorState.markMemoId, editorState.editMemoId]);
 
   useEffect(() => {
-    if (!editorRef.current) {
-      return;
-    }
-
     const handlePasteEvent = async (event: ClipboardEvent) => {
       if (event.clipboardData && event.clipboardData.files.length > 0) {
         event.preventDefault();
         const file = event.clipboardData.files[0];
         const url = await handleUploadFile(file);
         if (url) {
-          editorRef.current?.insertText(url);
+          editorRef.current?.insertText(url + " ");
         }
       }
     };
@@ -110,10 +106,10 @@ const MemoEditor: React.FC<Props> = () => {
       });
     };
 
-    editorRef.current.element.addEventListener("paste", handlePasteEvent);
-    editorRef.current.element.addEventListener("drop", handleDropEvent);
-    editorRef.current.element.addEventListener("click", handleClickEvent);
-    editorRef.current.element.addEventListener("keydown", handleKeyDownEvent);
+    editorRef.current?.element.addEventListener("paste", handlePasteEvent);
+    editorRef.current?.element.addEventListener("drop", handleDropEvent);
+    editorRef.current?.element.addEventListener("click", handleClickEvent);
+    editorRef.current?.element.addEventListener("keydown", handleKeyDownEvent);
 
     return () => {
       editorRef.current?.element.removeEventListener("paste", handlePasteEvent);
