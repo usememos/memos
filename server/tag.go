@@ -13,9 +13,11 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 	g.GET("/tag", func(c echo.Context) error {
 		userID := c.Get(getUserIDContextKey()).(int)
 		contentSearch := "#"
+		normalRowStatus := api.Normal
 		memoFind := api.MemoFind{
 			CreatorID:     &userID,
 			ContentSearch: &contentSearch,
+			RowStatus:     &normalRowStatus,
 		}
 
 		memoList, err := s.Store.FindMemoList(&memoFind)
