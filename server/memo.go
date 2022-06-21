@@ -77,7 +77,14 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 		tag := c.QueryParam("tag")
 		if tag != "" {
-			memoFind.Tag = &tag
+			contentSearch := "#" + tag + " "
+			memoFind.ContentSearch = &contentSearch
+		}
+		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
+			memoFind.Limit = limit
+		}
+		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
+			memoFind.Offset = offset
 		}
 
 		list, err := s.Store.FindMemoList(memoFind)
@@ -174,6 +181,27 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		c.JSON(http.StatusOK, true)
+
+		return nil
+	})
+
+	g.GET("/memo/amount", func(c echo.Context) error {
+		userID := c.Get(getUserIDContextKey()).(int)
+		normalRowStatus := api.Normal
+		memoFind := &api.MemoFind{
+			CreatorID: &userID,
+			RowStatus: &normalRowStatus,
+		}
+
+		memoList, err := s.Store.FindMemoList(memoFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(len(memoList)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo amount").SetInternal(err)
+		}
 
 		return nil
 	})

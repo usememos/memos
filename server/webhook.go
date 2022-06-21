@@ -114,7 +114,14 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		}
 		tag := c.QueryParam("tag")
 		if tag != "" {
-			memoFind.Tag = &tag
+			contentSearch := tag + " "
+			memoFind.ContentSearch = &contentSearch
+		}
+		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
+			memoFind.Limit = limit
+		}
+		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
+			memoFind.Offset = offset
 		}
 
 		list, err := s.Store.FindMemoList(memoFind)

@@ -42,8 +42,12 @@ type MemoFind struct {
 	CreatorID *int       `json:"creatorId"`
 
 	// Domain specific fields
-	Pinned *bool
-	Tag    *string
+	Pinned        *bool
+	ContentSearch *string
+
+	// Pagination
+	Limit  int
+	Offset int
 }
 
 type MemoDelete struct {
