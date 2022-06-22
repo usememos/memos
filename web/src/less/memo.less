@@ -89,6 +89,22 @@
     @apply w-full h-auto;
   }
 
+  > .show-all-btn-container {
+    @apply w-full relative flex flex-row justify-start items-center;
+
+    > .btn {
+      @apply px-2 py-1 my-1 text-xs rounded-lg border border-blue-600 shadow-inner hover:opacity-80;
+
+      &.show-all-btn {
+        @apply bg-blue-500 text-white mt-2;
+      }
+
+      &.hide-btn {
+        @apply text-blue-600 bg-white;
+      }
+    }
+  }
+
   > .images-wrapper {
     @apply flex flex-row justify-start items-start mt-2 w-full overflow-x-auto overflow-y-hidden pb-1;
     .pretty-scroll-bar(0, 2px);
