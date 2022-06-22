@@ -28,8 +28,9 @@ const MemoTrashDialog: React.FC<Props> = (props: Props) => {
     locationService.clearQuery();
   }, []);
 
-  const handleDeletedMemoAction = useCallback((memoId: MemoId) => {
+  const handleDeletedMemoAction = useCallback(async (memoId: MemoId) => {
     setDeletedMemos((deletedMemos) => deletedMemos.filter((memo) => memo.id !== memoId));
+    await memoService.fetchAllMemos();
   }, []);
 
   return (

@@ -179,7 +179,8 @@ const Memo: React.FC<Props> = (props: Props) => {
       {state.showAllButtonStatus !== -1 && (
         <div className="show-all-btn-container">
           <span className={`btn ${state.showAllButtonStatus === 0 ? "show-all-btn" : "hide-btn"}`} onClick={handleShowMoreBtnClick}>
-            {state.showAllButtonStatus === 0 ? "Show all" : "Hide"}
+            {state.showAllButtonStatus === 0 ? "Expand" : "Fold"}
+            <img className="icon-img" src="/icons/arrow-right.svg" alt="" />
           </span>
         </div>
       )}

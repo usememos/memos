@@ -93,14 +93,24 @@
     @apply w-full relative flex flex-row justify-start items-center;
 
     > .btn {
-      @apply px-2 py-1 my-1 text-xs rounded-lg border border-blue-600 shadow-inner hover:opacity-80;
+      @apply flex flex-row justify-start items-center px-2 py-1 my-1 text-xs rounded-lg border bg-gray-100 border-gray-200 opacity-80 shadow hover:opacity-60;
 
       &.show-all-btn {
-        @apply bg-blue-500 text-white mt-2;
+        @apply mt-2;
+
+        > .icon-img {
+          @apply rotate-90;
+        }
       }
 
       &.hide-btn {
-        @apply text-blue-600 bg-white;
+        > .icon-img {
+          @apply -rotate-90;
+        }
+      }
+
+      > .icon-img {
+        @apply w-4 h-auto transition-all;
       }
     }
   }
