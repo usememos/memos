@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import { escape } from "lodash-es";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
 import { parseMarkedToHtml, parseRawTextToHtml } from "../helpers/marked";
@@ -12,8 +12,16 @@ import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import toastHelper from "./Toast";
 import "../less/memo.less";
 
+const MAX_MEMO_CONTAINER_HEIGHT = 384;
+
 interface Props {
   memo: Memo;
+}
+
+type ExpandButtonStatus = -1 | 0 | 1;
+
+interface State {
+  expandButtonStatus: ExpandButtonStatus;
 }
 
 const Memo: React.FC<Props> = (props: Props) => {
@@ -22,8 +30,25 @@ const Memo: React.FC<Props> = (props: Props) => {
     ...propsMemo,
     createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
   };
+  const [state, setState] = useState<State>({
+    expandButtonStatus: -1,
+  });
+  const memoContainerRef = useRef<HTMLDivElement>(null);
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
+
+  useEffect(() => {
+    if (!memoContainerRef) {
+      return;
+    }
+
+    if (Number(memoContainerRef.current?.clientHeight) > MAX_MEMO_CONTAINER_HEIGHT) {
+      setState({
+        ...state,
+        expandButtonStatus: 0,
+      });
+    }
+  }, []);
 
   const handleShowMemoStoryDialog = () => {
     showMemoCardDialog(memo);
@@ -96,6 +121,13 @@ const Memo: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const handleShowMoreBtnClick = () => {
+    setState({
+      ...state,
+      expandButtonStatus: Number(Boolean(!state.expandButtonStatus)) as ExpandButtonStatus,
+    });
+  };
+
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
@@ -139,10 +171,19 @@ const Memo: React.FC<Props> = (props: Props) => {
         </div>
       </div>
       <div
-        className="memo-content-text"
+        ref={memoContainerRef}
+        className={`memo-content-text ${state.expandButtonStatus === 0 ? "!max-h-96 overflow-y-hidden truncate" : ""}`}
         onClick={handleMemoContentClick}
         dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}
       ></div>
+      {state.expandButtonStatus !== -1 && (
+        <div className="expand-btn-container">
+          <span className={`btn ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleShowMoreBtnClick}>
+            {state.expandButtonStatus === 0 ? "Expand" : "Fold"}
+            <img className="icon-img" src="/icons/arrow-right.svg" alt="" />
+          </span>
+        </div>
+      )}
       <Only when={imageUrls.length > 0}>
         <div className="images-wrapper">
           {imageUrls.map((imgUrl, idx) => (
