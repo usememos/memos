@@ -71,7 +71,7 @@ const MyAccountSection: React.FC<Props> = () => {
         <label className="form-label input-form-label username-label">
           <span className="normal-text">Username:</span>
           <input type="text" value={username} onChange={handleUsernameChanged} />
-          <div className={`btns-container ${username === user.name ? "hidden" : ""}`} onClick={handlePreventDefault}>
+          <div className={`btns-container ${username === user.name ? "!hidden" : ""}`} onClick={handlePreventDefault}>
             <span className="btn confirm-btn" onClick={handleConfirmEditUsernameBtnClick}>
               Save
             </span>

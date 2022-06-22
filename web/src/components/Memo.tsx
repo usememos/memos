@@ -144,17 +144,17 @@ const Memo: React.FC<Props> = (props: Props) => {
           <div className="more-action-btns-wrapper">
             <div className="more-action-btns-container">
               <div className="btns-container">
-                <div className="btn" onClick={handleGenMemoImageBtnClick}>
-                  <img className="icon-img" src="/icons/share.svg" alt="" />
-                  <span className="tip-text">Share</span>
+                <div className="btn" onClick={handleTogglePinMemoBtnClick}>
+                  <img className="icon-img" src="/icons/pin.svg" alt="" />
+                  <span className="tip-text">{memo.pinned ? "Unpin" : "Pin"}</span>
                 </div>
                 <div className="btn" onClick={handleEditMemoClick}>
                   <img className="icon-img" src="/icons/edit.svg" alt="" />
                   <span className="tip-text">Edit</span>
                 </div>
-                <div className="btn" onClick={handleTogglePinMemoBtnClick}>
-                  <img className="icon-img" src="/icons/pin.svg" alt="" />
-                  <span className="tip-text">{memo.pinned ? "Unpin" : "Pin"}</span>
+                <div className="btn" onClick={handleGenMemoImageBtnClick}>
+                  <img className="icon-img" src="/icons/share.svg" alt="" />
+                  <span className="tip-text">Share</span>
                 </div>
               </div>
               <span className="btn" onClick={handleShowMemoStoryDialog}>

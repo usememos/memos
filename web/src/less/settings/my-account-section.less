@@ -5,28 +5,28 @@
     min-height: 28px;
 
     > .normal-text {
-      @apply first:mr-2 text-base;
+      @apply first:mr-2 text-sm;
     }
 
     &.username-label {
       @apply w-full flex-wrap;
 
       > input {
-        @apply grow-0 shadow-inner w-auto px-2 py-1 mr-2 text-base border rounded leading-6 bg-transparent focus:border-black;
+        @apply grow-0 w-32 shadow-inner px-2 mr-2 text-sm border rounded leading-7 bg-transparent focus:border-black;
       }
 
       > .btns-container {
-        @apply mr-2 shrink-0 flex flex-row justify-start items-center;
+        @apply shrink-0 grow flex flex-row justify-start items-center;
 
         > .btn {
-          @apply text-sm shadow px-4 py-1 leading-6 rounded border hover:opacity-80 bg-gray-50;
+          @apply text-sm shadow px-2 leading-7 rounded border hover:opacity-80 bg-gray-50;
 
           &.cancel-btn {
             @apply shadow-none border-none bg-transparent;
           }
 
           &.confirm-btn {
-            @apply bg-green-600 text-white;
+            @apply bg-green-600 border-green-600 text-white;
           }
         }
       }
@@ -34,7 +34,7 @@
 
     &.password-label {
       > .btn {
-        @apply text-blue-600 ml-1 cursor-pointer hover:opacity-80;
+        @apply text-blue-600 text-sm ml-1 cursor-pointer hover:opacity-80;
       }
     }
   }
