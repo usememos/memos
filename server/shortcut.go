@@ -29,7 +29,6 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -55,7 +54,6 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -73,7 +71,6 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut list response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -95,7 +92,6 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -113,7 +109,6 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		}
 
 		c.JSON(http.StatusOK, true)
-
 		return nil
 	})
 }

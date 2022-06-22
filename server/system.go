@@ -10,11 +10,12 @@ import (
 
 func (s *Server) registerSystemRoutes(g *echo.Group) {
 	g.GET("/ping", func(c echo.Context) error {
+		data := s.Profile
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(s.Profile)); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(data)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose system profile").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -28,6 +29,9 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
 		}
 
+		// data desensitize
+		ownerUser.OpenID = ""
+
 		systemStatus := api.SystemStatus{
 			Owner:   ownerUser,
 			Profile: s.Profile,
@@ -37,7 +41,6 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(systemStatus)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode system status response").SetInternal(err)
 		}
-
 		return nil
 	})
 }

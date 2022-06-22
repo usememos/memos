@@ -45,7 +45,6 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -83,7 +82,6 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -133,7 +131,6 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo list response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -190,7 +187,6 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -201,12 +197,10 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		}
 
 		filename := c.Param("filename")
-
 		resourceFind := &api.ResourceFind{
 			ID:       &resourceID,
 			Filename: &filename,
 		}
-
 		resource, err := s.Store.FindResource(resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch resource ID: %v", resourceID)).SetInternal(err)

@@ -45,7 +45,6 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -113,7 +112,6 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode created user response").SetInternal(err)
 		}
-
 		return nil
 	})
 }

@@ -32,7 +32,6 @@ func setUserSession(c echo.Context, user *api.User) error {
 	if err != nil {
 		return fmt.Errorf("failed to set session, err: %w", err)
 	}
-
 	return nil
 }
 
@@ -48,7 +47,6 @@ func removeUserSession(c echo.Context) error {
 	if err != nil {
 		return fmt.Errorf("failed to set session, err: %w", err)
 	}
-
 	return nil
 }
 

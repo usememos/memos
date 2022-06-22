@@ -47,7 +47,6 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tagList)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode tags response").SetInternal(err)
 		}
-
 		return nil
 	})
 }

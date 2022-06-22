@@ -30,7 +30,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -56,7 +55,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -96,7 +94,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo list response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -135,7 +132,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -161,7 +157,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -181,7 +176,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		c.JSON(http.StatusOK, true)
-
 		return nil
 	})
 
@@ -202,7 +196,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(len(memoList))); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo amount").SetInternal(err)
 		}
-
 		return nil
 	})
 }

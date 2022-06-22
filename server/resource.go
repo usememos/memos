@@ -56,7 +56,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
 		}
-
 		return nil
 	})
 
@@ -74,7 +73,51 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource list response").SetInternal(err)
 		}
+		return nil
+	})
 
+	g.GET("/resource/:resourceId", func(c echo.Context) error {
+		resourceID, err := strconv.Atoi(c.Param("resourceId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
+		}
+
+		userID := c.Get(getUserIDContextKey()).(int)
+		resourceFind := &api.ResourceFind{
+			ID:        &resourceID,
+			CreatorID: &userID,
+		}
+		resource, err := s.Store.FindResource(resourceFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
+		}
+		return nil
+	})
+
+	g.GET("/resource/:resourceId/blob", func(c echo.Context) error {
+		resourceID, err := strconv.Atoi(c.Param("resourceId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
+		}
+
+		userID := c.Get(getUserIDContextKey()).(int)
+		resourceFind := &api.ResourceFind{
+			ID:        &resourceID,
+			CreatorID: &userID,
+		}
+		resource, err := s.Store.FindResource(resourceFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
+		}
+
+		c.Response().Writer.WriteHeader(http.StatusOK)
+		c.Response().Writer.Header().Set("Content-Type", resource.Type)
+		c.Response().Writer.Write(resource.Blob)
 		return nil
 	})
 
@@ -92,7 +135,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		c.JSON(http.StatusOK, true)
-
 		return nil
 	})
 }
