@@ -18,10 +18,10 @@ interface Props {
   memo: Memo;
 }
 
-type ShowAllButtonStatus = -1 | 0 | 1;
+type ExpandButtonStatus = -1 | 0 | 1;
 
 interface State {
-  showAllButtonStatus: ShowAllButtonStatus;
+  expandButtonStatus: ExpandButtonStatus;
 }
 
 const Memo: React.FC<Props> = (props: Props) => {
@@ -31,7 +31,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
   };
   const [state, setState] = useState<State>({
-    showAllButtonStatus: -1,
+    expandButtonStatus: -1,
   });
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
@@ -45,7 +45,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     if (Number(memoContainerRef.current?.clientHeight) > MAX_MEMO_CONTAINER_HEIGHT) {
       setState({
         ...state,
-        showAllButtonStatus: 0,
+        expandButtonStatus: 0,
       });
     }
   }, []);
@@ -124,7 +124,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const handleShowMoreBtnClick = () => {
     setState({
       ...state,
-      showAllButtonStatus: Number(Boolean(!state.showAllButtonStatus)) as ShowAllButtonStatus,
+      expandButtonStatus: Number(Boolean(!state.expandButtonStatus)) as ExpandButtonStatus,
     });
   };
 
@@ -172,14 +172,14 @@ const Memo: React.FC<Props> = (props: Props) => {
       </div>
       <div
         ref={memoContainerRef}
-        className={`memo-content-text ${state.showAllButtonStatus === 0 ? "!max-h-96 overflow-y-hidden truncate" : ""}`}
+        className={`memo-content-text ${state.expandButtonStatus === 0 ? "!max-h-96 overflow-y-hidden truncate" : ""}`}
         onClick={handleMemoContentClick}
         dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}
       ></div>
-      {state.showAllButtonStatus !== -1 && (
-        <div className="show-all-btn-container">
-          <span className={`btn ${state.showAllButtonStatus === 0 ? "show-all-btn" : "hide-btn"}`} onClick={handleShowMoreBtnClick}>
-            {state.showAllButtonStatus === 0 ? "Expand" : "Fold"}
+      {state.expandButtonStatus !== -1 && (
+        <div className="expand-btn-container">
+          <span className={`btn ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleShowMoreBtnClick}>
+            {state.expandButtonStatus === 0 ? "Expand" : "Fold"}
             <img className="icon-img" src="/icons/arrow-right.svg" alt="" />
           </span>
         </div>

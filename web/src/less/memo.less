@@ -86,16 +86,16 @@
   }
 
   > .memo-content-text {
-    @apply w-full h-auto;
+    @apply w-full h-auto transition-all;
   }
 
-  > .show-all-btn-container {
+  > .expand-btn-container {
     @apply w-full relative flex flex-row justify-start items-center;
 
     > .btn {
       @apply flex flex-row justify-start items-center px-2 py-1 my-1 text-xs rounded-lg border bg-gray-100 border-gray-200 opacity-80 shadow hover:opacity-60;
 
-      &.show-all-btn {
+      &.expand-btn {
         @apply mt-2;
 
         > .icon-img {
@@ -103,7 +103,7 @@
         }
       }
 
-      &.hide-btn {
+      &.fold-btn {
         > .icon-img {
           @apply -rotate-90;
         }
