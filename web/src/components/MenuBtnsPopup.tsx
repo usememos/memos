@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
+import * as api from "../helpers/api";
 import { locationService, userService } from "../services";
 import showAboutSiteDialog from "./AboutSiteDialog";
+import toastHelper from "./Toast";
 import "../less/menu-btns-popup.less";
 
 interface Props {
@@ -27,6 +29,20 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
     }
   }, [shownStatus]);
 
+  const handlePingBtnClick = () => {
+    api
+      .getSystemStatus()
+      .then(({ data }) => {
+        const {
+          data: { profile },
+        } = data;
+        toastHelper.info(JSON.stringify(profile, null, 4));
+      })
+      .catch((error) => {
+        toastHelper.error("Failed to ping\n" + JSON.stringify(error, null, 4));
+      });
+  };
+
   const handleAboutBtnClick = () => {
     showAboutSiteDialog();
   };
@@ -41,6 +57,9 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`menu-btns-popup ${shownStatus ? "" : "hidden"}`} ref={popupElRef}>
+      <button className="btn action-btn" onClick={handlePingBtnClick}>
+        <span className="icon">🎯</span> Ping
+      </button>
       <button className="btn action-btn" onClick={handleAboutBtnClick}>
         <span className="icon">🤠</span> About
       </button>

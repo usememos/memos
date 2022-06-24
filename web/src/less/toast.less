@@ -1,12 +1,10 @@
 @import "./mixin.less";
 
 .toast-list-container {
-  .flex(column, flex-start, flex-end);
-  @apply fixed top-2 right-4 z-1000 max-h-full;
+  @apply flex flex-col justify-start items-end fixed top-2 right-4 z-1000 max-h-full;
 
   > .toast-wrapper {
-    .flex(column, flex-start, flex-start);
-    @apply relative left-full invisible text-base cursor-pointer shadow rounded bg-white mt-6 py-2 px-4;
+    @apply flex flex-col justify-start items-start relative left-full invisible text-base cursor-pointer shadow rounded bg-white mt-6 py-2 px-4;
     min-width: 6em;
     transition: all 0.4s ease;
 
@@ -21,8 +19,7 @@
 
     > .toast-container {
       > .content-text {
-        @apply text-sm whitespace-pre-wrap leading-6;
-        max-width: 240px;
+        @apply text-sm whitespace-pre-wrap break-all leading-6 max-w-xs;
       }
     }
   }
