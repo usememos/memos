@@ -29,7 +29,15 @@
       @apply flex flex-row justify-start items-center;
 
       > .action-btn {
-        @apply p-1 w-7 h-auto mr-1 select-none rounded cursor-pointer opacity-60 hover:opacity-80 hover:bg-gray-300 hover:shadow;
+        @apply flex flex-row justify-start items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer opacity-60 hover:opacity-80 hover:bg-gray-300 hover:shadow;
+
+        > .icon-img {
+          @apply w-5 h-auto;
+        }
+
+        > .tip-text {
+          @apply hidden ml-1 text-xs leading-5 text-gray-700 border border-gray-300 rounded-xl px-2;
+        }
       }
     }
 

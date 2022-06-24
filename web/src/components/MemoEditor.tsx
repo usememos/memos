@@ -46,6 +46,7 @@ const MemoEditor: React.FC<Props> = () => {
   const editorState = useAppSelector((state) => state.editor);
   const tags = useAppSelector((state) => state.memo.tags);
   const [isTagSeletorShown, toggleTagSeletor] = useToggle(false);
+  const [isUploadingResource, setIsUploadingResource] = useToggle(false);
   const editorRef = useRef<EditorRefActions>(null);
   const prevGlobalStateRef = useRef(editorState);
   const tagSeletorRef = useRef<HTMLDivElement>(null);
@@ -119,22 +120,32 @@ const MemoEditor: React.FC<Props> = () => {
     };
   }, []);
 
-  const handleUploadFile = useCallback(async (file: File) => {
-    const { type } = file;
+  const handleUploadFile = useCallback(
+    async (file: File) => {
+      if (isUploadingResource) {
+        return;
+      }
 
-    if (!type.startsWith("image")) {
-      return;
-    }
+      setIsUploadingResource(true);
+      const { type } = file;
 
-    try {
-      const image = await resourceService.upload(file);
-      const url = `/h/r/${image.id}/${image.filename}`;
+      if (!type.startsWith("image")) {
+        return;
+      }
 
-      return url;
-    } catch (error: any) {
-      toastHelper.error(error);
-    }
-  }, []);
+      try {
+        const image = await resourceService.upload(file);
+        const url = `/h/r/${image.id}/${image.filename}`;
+
+        return url;
+      } catch (error: any) {
+        toastHelper.error(error);
+      } finally {
+        setIsUploadingResource(false);
+      }
+    },
+    [isUploadingResource]
+  );
 
   const handleSaveBtnClick = useCallback(async (content: string) => {
     if (content === "") {
@@ -283,8 +294,13 @@ const MemoEditor: React.FC<Props> = () => {
         {...editorConfig}
         tools={
           <>
-            <img className="action-btn file-upload" src="/icons/tag.svg" onClick={handleTagTextBtnClick} />
-            <img className="action-btn file-upload" src="/icons/image.svg" onClick={handleUploadFileBtnClick} />
+            <div className="action-btn">
+              <img className="icon-img" src="/icons/tag.svg" onClick={handleTagTextBtnClick} />
+            </div>
+            <div className="action-btn">
+              <img className="icon-img" src="/icons/image.svg" onClick={handleUploadFileBtnClick} />
+              <span className={`tip-text ${isUploadingResource ? "!block" : ""}`}>Uploading</span>
+            </div>
           </>
         }
       />
