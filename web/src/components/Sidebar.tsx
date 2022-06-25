@@ -1,6 +1,6 @@
 import { useAppSelector } from "../store";
 import * as utils from "../helpers/utils";
-import showDailyMemoDiaryDialog from "./DailyMemoDiaryDialog";
+import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
 import showMemoTrashDialog from "./MemoTrashDialog";
 import UserBanner from "./UserBanner";
@@ -49,8 +49,8 @@ const Sidebar: React.FC<Props> = () => {
       </div>
       <UsageHeatMap />
       <div className="action-btns-container">
-        <button className="btn action-btn" onClick={() => showDailyMemoDiaryDialog()}>
-          <span className="icon">📅</span> Daily View
+        <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
+          <span className="icon">📅</span> Daily Review
         </button>
         <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
           <span className="icon">⚙️</span> Setting

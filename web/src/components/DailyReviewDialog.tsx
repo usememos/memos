@@ -1,15 +1,14 @@
-import { useEffect, useRef, useState } from "react";
-import { memoService } from "../services";
+import { useRef, useState } from "react";
+import { useAppSelector } from "../store";
 import toImage from "../labs/html2image";
 import useToggle from "../hooks/useToggle";
-import useLoading from "../hooks/useLoading";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { showDialog } from "./Dialog";
+import DatePicker from "./common/DatePicker";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import DailyMemo from "./DailyMemo";
-import DatePicker from "./common/DatePicker";
-import "../less/daily-memo-diary-dialog.less";
+import "../less/daily-review-dialog.less";
 
 interface Props extends DialogProps {
   currentDateStamp: DateStamp;
@@ -18,50 +17,38 @@ interface Props extends DialogProps {
 const monthChineseStrArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dev"];
 const weekdayChineseStrArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
-  const loadingState = useLoading();
-  const [memos, setMemos] = useState<Memo[]>([]);
+const DailyReviewDialog: React.FC<Props> = (props: Props) => {
+  const memos = useAppSelector((state) => state.memo.memos);
   const [currentDateStamp, setCurrentDateStamp] = useState(utils.getDateStampByDate(utils.getDateString(props.currentDateStamp)));
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const memosElRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date(currentDateStamp);
-
-  useEffect(() => {
-    const setDailyMemos = () => {
-      const dailyMemos = memoService
-        .getState()
-        .memos.filter(
-          (a) =>
-            utils.getTimeStampByDate(a.createdTs) >= currentDateStamp &&
-            utils.getTimeStampByDate(a.createdTs) < currentDateStamp + DAILY_TIMESTAMP
-        )
-        .sort((a, b) => utils.getTimeStampByDate(a.createdTs) - utils.getTimeStampByDate(b.createdTs));
-      setMemos(dailyMemos);
-      loadingState.setFinish();
-    };
-
-    setDailyMemos();
-  }, [currentDateStamp]);
+  const dailyMemos = memos
+    .filter(
+      (m) =>
+        m.rowStatus === "NORMAL" &&
+        utils.getTimeStampByDate(m.createdTs) >= currentDateStamp &&
+        utils.getTimeStampByDate(m.createdTs) < currentDateStamp + DAILY_TIMESTAMP
+    )
+    .sort((a, b) => utils.getTimeStampByDate(a.createdTs) - utils.getTimeStampByDate(b.createdTs));
 
   const handleShareBtnClick = () => {
+    if (!memosElRef.current) {
+      return;
+    }
+
     toggleShowDatePicker(false);
 
-    setTimeout(() => {
-      if (!memosElRef.current) {
-        return;
-      }
-
-      toImage(memosElRef.current, {
-        backgroundColor: "#ffffff",
-        pixelRatio: window.devicePixelRatio * 2,
+    toImage(memosElRef.current, {
+      backgroundColor: "#ffffff",
+      pixelRatio: window.devicePixelRatio * 2,
+    })
+      .then((url) => {
+        showPreviewImageDialog(url);
       })
-        .then((url) => {
-          showPreviewImageDialog(url);
-        })
-        .catch(() => {
-          // do nth
-        });
-    }, 0);
+      .catch(() => {
+        // do nth
+      });
   };
 
   const handleDataPickerChange = (datestamp: DateStamp): void => {
@@ -72,8 +59,8 @@ const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">
-          <span className="icon-text">📅</span> Daily Memos
+        <p className="title-text" onClick={() => toggleShowDatePicker()}>
+          <span className="icon-text">📅</span> Daily Review
         </p>
         <div className="btns-container">
           <span className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}>
@@ -89,9 +76,14 @@ const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
             <img className="icon-img" src="/icons/close.svg" />
           </span>
         </div>
+        <DatePicker
+          className={`date-picker ${showDatePicker ? "" : "!hidden"}`}
+          datestamp={currentDateStamp}
+          handleDateStampChange={handleDataPickerChange}
+        />
       </div>
       <div className="dialog-content-container" ref={memosElRef}>
-        <div className="date-card-container" onClick={() => toggleShowDatePicker()}>
+        <div className="date-card-container">
           <div className="year-text">{currentDate.getFullYear()}</div>
           <div className="date-container">
             <div className="month-text">{monthChineseStrArray[currentDate.getMonth()]}</div>
@@ -99,22 +91,13 @@ const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
             <div className="day-text">{weekdayChineseStrArray[currentDate.getDay()]}</div>
           </div>
         </div>
-        <DatePicker
-          className={`date-picker ${showDatePicker ? "" : "!hidden"}`}
-          datestamp={currentDateStamp}
-          handleDateStampChange={handleDataPickerChange}
-        />
-        {loadingState.isLoading ? (
-          <div className="tip-container">
-            <p className="tip-text">Loading...</p>
-          </div>
-        ) : memos.length === 0 ? (
+        {dailyMemos.length === 0 ? (
           <div className="tip-container">
             <p className="tip-text">Oops, there is nothing.</p>
           </div>
         ) : (
           <div className="dailymemos-wrapper">
-            {memos.map((memo) => (
+            {dailyMemos.map((memo) => (
               <DailyMemo key={`${memo.id}-${memo.updatedTs}`} memo={memo} />
             ))}
           </div>
@@ -124,12 +107,13 @@ const DailyMemoDiaryDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default function showDailyMemoDiaryDialog(datestamp: DateStamp = Date.now()): void {
+export default function showDailyReviewDialog(datestamp: DateStamp = Date.now()): void {
   showDialog(
     {
-      className: "daily-memo-diary-dialog",
+      className: "daily-review-dialog",
+      useAppContext: true,
     },
-    DailyMemoDiaryDialog,
+    DailyReviewDialog,
     { currentDateStamp: datestamp }
   );
 }
