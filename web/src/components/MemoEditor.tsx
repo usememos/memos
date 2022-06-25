@@ -265,7 +265,7 @@ const MemoEditor: React.FC<Props> = () => {
 
   const handleTagSeletorClick = useCallback((event: React.MouseEvent) => {
     if (tagSeletorRef.current !== event.target && tagSeletorRef.current?.contains(event.target as Node)) {
-      editorRef.current?.insertText((event.target as HTMLElement).textContent + " " ?? "");
+      editorRef.current?.insertText((event.target as HTMLElement).textContent ?? "");
       toggleTagSeletor(false);
     }
   }, []);
