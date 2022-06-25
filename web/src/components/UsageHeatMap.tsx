@@ -59,9 +59,9 @@ const UsageHeatMap: React.FC<Props> = () => {
       return;
     }
 
-    const targetEl = event.target as HTMLElement;
-    popupRef.current.style.left = targetEl.offsetLeft + "px";
-    popupRef.current.style.top = targetEl.offsetTop - 4 + "px";
+    const bounding = utils.getElementBounding(event.target as HTMLElement);
+    popupRef.current.style.left = bounding.left + "px";
+    popupRef.current.style.top = bounding.top - 4 + "px";
   }, []);
 
   const handleUsageStatItemMouseLeave = useCallback(() => {
