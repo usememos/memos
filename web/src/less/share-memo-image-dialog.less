@@ -2,37 +2,21 @@
 
 .share-memo-image-dialog {
   > .dialog-container {
-    width: 380px;
-    padding: 0;
-    background-color: @bg-lightgray;
+    @apply w-96 p-0 bg-gray-200;
 
     > .dialog-header-container {
-      padding: 8px 16px;
-      padding-left: 24px;
-      margin-bottom: 0;
-      background-color: white;
-      border-top-left-radius: 8px;
-      border-top-right-radius: 8px;
+      @apply py-2 pt-4 px-4 pl-6 mb-0 bg-white rounded-t-lg;
     }
 
     > .dialog-content-container {
-      .flex(column, flex-start, flex-start);
-      position: relative;
-      width: 100%;
+      @apply w-full flex flex-col justify-start items-start relative;
       min-height: 128px;
 
       > .tip-words-container {
-        .flex(column, center, flex-start);
-        width: 100%;
-        border-bottom: 1px solid lightgray;
-        background-color: white;
-        padding: 0 24px;
-        padding-bottom: 8px;
+        @apply w-full flex flex-col justify-center items-start border-b bg-white px-6 py-0 pb-2;
 
         > .tip-text {
-          color: gray;
-          font-size: 13px;
-          line-height: 24px;
+          @apply text-sm text-gray-500;
         }
 
         &.loading {
@@ -53,80 +37,41 @@
       }
 
       > .memo-container {
-        .flex(column, flex-start, flex-start);
-        width: 380px;
-        max-width: 100%;
-        height: auto;
-        user-select: none;
-        position: relative;
+        @apply w-96 max-w-full h-auto select-none relative flex flex-col justify-start items-start;
 
         > .memo-shortcut-img {
-          position: absolute;
-          top: 0;
-          left: 0;
+          @apply absolute top-0 left-0 w-full h-auto rounded-b-lg;
           z-index: 1;
-          width: 100%;
-          height: auto;
-          border-bottom-left-radius: 8px;
-          border-bottom-right-radius: 8px;
         }
 
         > .time-text {
-          width: 100%;
-          padding: 0 24px;
-          padding-top: 20px;
-          font-size: 12px;
-          color: gray;
-          background-color: white;
+          @apply w-full px-6 pt-5 text-xs text-gray-500 bg-white;
         }
 
         > .memo-content-text {
-          padding: 12px 24px;
-          width: 100%;
-          font-size: 15px;
-          background-color: white;
+          @apply w-full pt-2 pb-4 px-6 text-base bg-white;
         }
 
         > .images-container {
-          .flex(column, flex-start, flex-start);
-          width: 100%;
-          height: auto;
-          padding: 0 24px;
-          padding-bottom: 8px;
-          background-color: white;
-          .hide-scroll-bar();
+          @apply w-full h-auto flex flex-col justify-start items-start px-6 pb-2 bg-white;
 
           > img {
-            width: 100%;
-            height: auto;
-            margin-bottom: 8px;
-            border-radius: 4px;
+            @apply w-full h-auto mb-2 rounded;
           }
         }
 
         > .watermark-container {
-          .flex(row, flex-start, center);
-          flex-wrap: nowrap;
-          width: 100%;
-          padding: 16px 26px;
+          @apply flex flex-row justify-start items-center w-full py-3 px-6;
 
           > .normal-text {
-            .flex(row, flex-start, center);
-            width: 100%;
-            font-size: 12px;
-            line-height: 20px;
-            color: gray;
+            @apply w-full flex flex-row justify-start items-center text-sm text-gray-500;
 
             > .name-text {
-              font-size: 13px;
-              color: @text-black;
-              margin-left: 4px;
-              line-height: 20px;
+              @apply text-black ml-2;
             }
 
             > .icon-text {
-              font-size: 15px;
-              margin-right: 6px;
+              @apply text-lg ml-1 mr-2;
             }
           }
         }
