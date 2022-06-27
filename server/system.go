@@ -29,8 +29,10 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
 		}
 
-		// data desensitize
-		ownerUser.OpenID = ""
+		if ownerUser != nil {
+			// data desensitize
+			ownerUser.OpenID = ""
+		}
 
 		systemStatus := api.SystemStatus{
 			Owner:   ownerUser,
