@@ -3,8 +3,9 @@ package store
 import (
 	"database/sql"
 	"fmt"
-	"memos/api"
-	"memos/common"
+
+	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/common"
 )
 
 // memoOrganizerRaw is the store model for an MemoOrganizer.

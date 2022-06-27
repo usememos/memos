@@ -2,7 +2,8 @@ package store
 
 import (
 	"database/sql"
-	"memos/server/profile"
+
+	"github.com/usememos/memos/server/profile"
 )
 
 // Store provides database access to all raw objects

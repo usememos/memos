@@ -3,10 +3,11 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"memos/api"
-	"memos/common"
 	"net/http"
 	"strconv"
+
+	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/common"
 
 	"github.com/labstack/echo/v4"
 )

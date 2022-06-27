@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"os"
 
-	"memos/server"
-	"memos/server/profile"
-	"memos/store"
-	DB "memos/store/db"
+	"github.com/usememos/memos/server"
+	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/store"
+	DB "github.com/usememos/memos/store/db"
 )
 
 const (

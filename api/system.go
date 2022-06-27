@@ -1,6 +1,6 @@
 package api
 
-import "memos/server/profile"
+import "github.com/usememos/memos/server/profile"
 
 type SystemStatus struct {
 	Owner   *User            `json:"owner"`

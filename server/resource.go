@@ -4,9 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"memos/api"
 	"net/http"
 	"strconv"
+
+	"github.com/usememos/memos/api"
 
 	"github.com/labstack/echo/v4"
 )

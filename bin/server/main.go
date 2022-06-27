@@ -1,6 +1,6 @@
 package main
 
-import "memos/bin/server/cmd"
+import "github.com/usememos/memos/bin/server/cmd"
 
 func main() {
 	cmd.Execute()

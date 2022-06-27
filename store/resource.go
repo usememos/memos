@@ -3,9 +3,10 @@ package store
 import (
 	"database/sql"
 	"fmt"
-	"memos/api"
-	"memos/common"
 	"strings"
+
+	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/common"
 )
 
 // resourceRaw is the store model for an Resource.

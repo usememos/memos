@@ -2,11 +2,12 @@ package profile
 
 import (
 	"fmt"
-	"memos/common"
 	"os"
 	"path/filepath"
 	"strconv"
 	"strings"
+
+	"github.com/usememos/memos/common"
 )
 
 // Profile is the configuration to start main server.

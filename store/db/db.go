@@ -6,10 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"memos/common"
-	"memos/server/profile"
 	"os"
 	"sort"
+
+	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/server/profile"
 
 	_ "github.com/mattn/go-sqlite3"
 )

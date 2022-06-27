@@ -2,9 +2,10 @@ package server
 
 import (
 	"encoding/json"
-	"memos/api"
 	"net/http"
 	"regexp"
+
+	"github.com/usememos/memos/api"
 
 	"github.com/labstack/echo/v4"
 )
