@@ -61,6 +61,13 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
     setImgAmount(imgAmount - 1);
   };
 
+  const handleDownloadBtnClick = () => {
+    const a = document.createElement("a");
+    a.href = shortcutImgUrl;
+    a.download = `memos-${utils.getDateTimeString(Date.now())}.png`;
+    a.click();
+  };
+
   return (
     <>
       <div className="dialog-header-container">
@@ -73,11 +80,11 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container">
         <div className={`tip-words-container ${shortcutImgUrl ? "finish" : "loading"}`}>
-          <p className="tip-text">{shortcutImgUrl ? "Right click or long press to save image 👇" : "Generating the screenshot..."}</p>
+          <p className="tip-text">{shortcutImgUrl ? "Click or press to save the image 👇" : "Generating the screenshot..."}</p>
         </div>
         <div className="memo-container" ref={memoElRef}>
           <Only when={shortcutImgUrl !== ""}>
-            <img className="memo-shortcut-img" src={shortcutImgUrl} />
+            <img className="memo-shortcut-img" onClick={handleDownloadBtnClick} src={shortcutImgUrl} />
           </Only>
           <span className="time-text">{memo.createdAtStr}</span>
           <div className="memo-content-text" dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}></div>
