@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
 
 	"github.com/usememos/memos/api"
@@ -187,6 +188,57 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
+		}
+		return nil
+	})
+
+	g.GET("/:openId/tag", func(c echo.Context) error {
+		openID := c.Param("openId")
+		userFind := &api.UserFind{
+			OpenID: &openID,
+		}
+		user, err := s.Store.FindUser(userFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("User openId not found: %s", openID))
+		}
+
+		contentSearch := "#"
+		normalRowStatus := api.Normal
+		memoFind := api.MemoFind{
+			CreatorID:     &user.ID,
+			ContentSearch: &contentSearch,
+			RowStatus:     &normalRowStatus,
+		}
+
+		memoList, err := s.Store.FindMemoList(&memoFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
+		}
+
+		tagMapSet := make(map[string]bool)
+
+		r, err := regexp.Compile("#(.+?) ")
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compile regexp").SetInternal(err)
+		}
+		for _, memo := range memoList {
+			for _, rawTag := range r.FindAllString(memo.Content, -1) {
+				tag := r.ReplaceAllString(rawTag, "$1")
+				tagMapSet[tag] = true
+			}
+		}
+
+		tagList := []string{}
+		for tag := range tagMapSet {
+			tagList = append(tagList, tag)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tagList)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode tags response").SetInternal(err)
 		}
 		return nil
 	})
