@@ -7,7 +7,8 @@ INSERT INTO
 VALUES
   (
     101,
-    '#memos 👋 Welcome to memos', 
+    '#memos 
+👋 Welcome to memos', 
     101
   );
 

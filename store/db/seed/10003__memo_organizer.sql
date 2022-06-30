@@ -6,7 +6,7 @@ INSERT INTO
   )
 VALUES
   (
-    102,
+    101,
     101,
     1 
   );
