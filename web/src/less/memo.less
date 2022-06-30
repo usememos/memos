@@ -88,6 +88,13 @@
   > .memo-content-text {
     @apply w-full h-auto transition-all;
 
+    &.expanded {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 8;
+      overflow: hidden;
+    }
+
     .tag-span {
       @apply cursor-pointer hover:opacity-80;
     }

@@ -165,11 +165,11 @@ const Memo: React.FC<Props> = (props: Props) => {
                   <span className="tip-text">Share</span>
                 </div>
               </div>
-              <span className="btn" onClick={handleShowMemoStoryDialog}>
-                View Story
-              </span>
               <span className="btn" onClick={handleMarkMemoClick}>
                 Mark
+              </span>
+              <span className="btn" onClick={handleShowMemoStoryDialog}>
+                View Story
               </span>
               <span className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
                 {showConfirmDeleteBtn ? "Delete!" : "Delete"}
@@ -180,7 +180,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       </div>
       <div
         ref={memoContainerRef}
-        className={`memo-content-text ${state.expandButtonStatus === 0 ? "!max-h-96 overflow-y-hidden truncate" : ""}`}
+        className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
         onClick={handleMemoContentClick}
         dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}
       ></div>
