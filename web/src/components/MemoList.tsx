@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from "react";
-import { locationService, memoService, shortcutService } from "../services";
+import { useEffect, useRef, useState } from "react";
+import { memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
@@ -94,21 +94,8 @@ const MemoList: React.FC<Props> = () => {
     wrapperElement.current?.scrollTo({ top: 0 });
   }, [query]);
 
-  const handleMemoListClick = useCallback((event: React.MouseEvent) => {
-    const targetEl = event.target as HTMLElement;
-    if (targetEl.tagName === "SPAN" && targetEl.className === "tag-span") {
-      const tagName = targetEl.innerText.slice(1);
-      const currTagQuery = locationService.getState().query?.tag;
-      if (currTagQuery === tagName) {
-        locationService.setTagQuery("");
-      } else {
-        locationService.setTagQuery(tagName);
-      }
-    }
-  }, []);
-
   return (
-    <div className={`memo-list-container ${isFetching ? "" : "completed"}`} onClick={handleMemoListClick} ref={wrapperElement}>
+    <div className={`memo-list-container ${isFetching ? "" : "completed"}`} ref={wrapperElement}>
       {sortedMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.updatedTs}`} memo={memo} />
       ))}

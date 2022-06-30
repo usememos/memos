@@ -1,10 +1,10 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { escape } from "lodash-es";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
-import { parseMarkedToHtml, parseRawTextToHtml } from "../helpers/marked";
+import { parseMarkedToHtml } from "../helpers/marked";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
-import { editorStateService, memoService } from "../services";
+import { editorStateService, locationService, memoService } from "../services";
 import Only from "./common/OnlyWhen";
 import Image from "./Image";
 import showMemoCardDialog from "./MemoCardDialog";
@@ -116,8 +116,16 @@ const Memo: React.FC<Props> = (props: Props) => {
         toastHelper.error("MEMO Not Found");
         targetEl.classList.remove("memo-link-text");
       }
+    } else if (targetEl.tagName === "SPAN" && targetEl.className === "tag-span") {
+      const tagName = targetEl.innerText.slice(1);
+      const currTagQuery = locationService.getState().query?.tag;
+      if (currTagQuery === tagName) {
+        locationService.setTagQuery("");
+      } else {
+        locationService.setTagQuery(tagName);
+      }
     } else if (targetEl.className === "todo-block") {
-      // do nth
+      // ...do nth
     }
   };
 
@@ -196,32 +204,10 @@ const Memo: React.FC<Props> = (props: Props) => {
 };
 
 export function formatMemoContent(content: string) {
-  content = escape(content);
-  content = parseRawTextToHtml(content)
-    .split("<br>")
-    .map((t) => {
-      return `<p>${t !== "" ? t : "<br>"}</p>`;
-    })
-    .join("");
+  const tempElement = document.createElement("div");
+  tempElement.innerHTML = parseMarkedToHtml(escape(content));
 
-  content = parseMarkedToHtml(content);
-
-  // Add space in english and chinese
-  content = content.replace(/([\u4e00-\u9fa5])([A-Za-z0-9?.,;[\]]+)/g, "$1 $2").replace(/([A-Za-z0-9?.,;[\]]+)([\u4e00-\u9fa5])/g, "$1 $2");
-
-  const tempDivContainer = document.createElement("div");
-  tempDivContainer.innerHTML = content;
-  for (let i = 0; i < tempDivContainer.children.length; i++) {
-    const c = tempDivContainer.children[i];
-
-    if (c.tagName === "P" && c.textContent === "" && c.firstElementChild?.tagName !== "BR") {
-      c.remove();
-      i--;
-      continue;
-    }
-  }
-
-  return tempDivContainer.innerHTML
+  return tempElement.innerHTML
     .replace(IMAGE_URL_REG, "")
     .replace(TAG_REG, "<span class='tag-span'>#$1</span> ")
     .replace(LINK_REG, "<a class='link' target='_blank' rel='noreferrer' href='$1'>$1</a>")
