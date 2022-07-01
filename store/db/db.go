@@ -153,12 +153,20 @@ func (db *DB) compareMigrationHistory() error {
 	}
 
 	currentVersion := common.Version
-	migrationHistory, err := upsertMigrationHistory(db.Db, currentVersion)
+	migrationHistoryFind := MigrationHistoryFind{
+		Version: currentVersion,
+	}
+	migrationHistory, err := findMigrationHistory(db.Db, &migrationHistoryFind)
 	if err != nil {
 		return err
 	}
 	if migrationHistory == nil {
-		return fmt.Errorf("failed to upsert migration history")
+		// ...do schema migration,
+		// then upsert the newest version to migration_history
+		_, err := upsertMigrationHistory(db.Db, currentVersion)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
