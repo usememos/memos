@@ -75,15 +75,15 @@ func (db *DB) Open() (err error) {
 		}
 	}
 
-	return err
-}
-
-func (db *DB) migrate() error {
-	err := db.compareMigrationHistory()
+	err = db.compareMigrationHistory()
 	if err != nil {
 		return fmt.Errorf("failed to compare migration history, err=%w", err)
 	}
 
+	return err
+}
+
+func (db *DB) migrate() error {
 	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("%s/*.sql", "migration"))
 	if err != nil {
 		return err
