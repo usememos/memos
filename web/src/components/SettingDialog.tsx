@@ -39,13 +39,13 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
             onClick={() => handleSectionSelectorItemClick("my-account")}
             className={`section-item ${state.selectedSection === "my-account" ? "selected" : ""}`}
           >
-            My account
+            <span className="icon-text">🤠</span> My account
           </span>
           <span
             onClick={() => handleSectionSelectorItemClick("preferences")}
             className={`section-item ${state.selectedSection === "preferences" ? "selected" : ""}`}
           >
-            Preferences
+            <span className="icon-text">🏟</span> Preferences
           </span>
         </div>
         {user?.role === "OWNER" ? (
@@ -56,7 +56,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
                 onClick={() => handleSectionSelectorItemClick("member")}
                 className={`section-item ${state.selectedSection === "member" ? "selected" : ""}`}
               >
-                Member
+                <span className="icon-text">👤</span> Member
               </span>
             </div>
           </>

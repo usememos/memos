@@ -24,17 +24,21 @@
         @apply w-full sm:w-40 h-auto sm:h-full shrink-0 rounded-t-lg sm:rounded-l-lg p-4 border-r bg-gray-100 flex flex-col justify-start items-start;
 
         > .section-title {
-          @apply text-sm mt-4 first:mt-3 mb-1 font-mono text-gray-400;
+          @apply text-sm mt-2 sm:mt-4 first:mt-3 mb-1 font-mono text-gray-400;
         }
 
         > .section-items-container {
           @apply w-full h-auto flex flex-row sm:flex-col justify-start items-start;
 
           > .section-item {
-            @apply text-base mr-2 sm:mr-0 mt-2 text-gray-700 cursor-pointer hover:opacity-80;
+            @apply flex flex-row justify-start items-center text-base select-none mr-3 sm:mr-0 mt-0 sm:mt-2 text-gray-700 cursor-pointer hover:opacity-80;
 
             &.selected {
               @apply font-bold hover:opacity-100;
+            }
+
+            > .icon-text {
+              @apply text-base mr-1;
             }
           }
         }
