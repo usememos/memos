@@ -137,12 +137,12 @@ func (db *DB) executeFile(FS embed.FS, name string) error {
 
 // compareMigrationHistory compares migration history data
 func (db *DB) compareMigrationHistory() error {
-	table, err := findTable(db, "migration_history")
+	table, err := findTable(db.Db, "migration_history")
 	if err != nil {
 		return err
 	}
 	if table == nil {
-		if err := createTable(db, `
+		if err := createTable(db.Db, `
 		CREATE TABLE migration_history (
 			version TEXT NOT NULL PRIMARY KEY,
 			created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
