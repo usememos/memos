@@ -57,11 +57,11 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`menu-btns-popup ${shownStatus ? "" : "hidden"}`} ref={popupElRef}>
-      <button className="btn action-btn" onClick={handlePingBtnClick}>
-        <span className="icon">🎯</span> Ping
-      </button>
       <button className="btn action-btn" onClick={handleAboutBtnClick}>
         <span className="icon">🤠</span> About
+      </button>
+      <button className="btn action-btn" onClick={handlePingBtnClick}>
+        <span className="icon">🎯</span> Ping
       </button>
       <button className="btn action-btn" onClick={handleSignOutBtnClick}>
         <span className="icon">👋</span> Sign out

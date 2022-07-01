@@ -1,7 +1,7 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { escape } from "lodash-es";
+import { escape, indexOf } from "lodash-es";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
-import { parseMarkedToHtml } from "../helpers/marked";
+import { DONE_BLOCK_REG, parseMarkedToHtml, TODO_BLOCK_REG } from "../helpers/marked";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import { editorStateService, locationService, memoService } from "../services";
@@ -116,7 +116,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         toastHelper.error("MEMO Not Found");
         targetEl.classList.remove("memo-link-text");
       }
-    } else if (targetEl.tagName === "SPAN" && targetEl.className === "tag-span") {
+    } else if (targetEl.className === "tag-span") {
       const tagName = targetEl.innerText.slice(1);
       const currTagQuery = locationService.getState().query?.tag;
       if (currTagQuery === tagName) {
@@ -125,7 +125,32 @@ const Memo: React.FC<Props> = (props: Props) => {
         locationService.setTagQuery(tagName);
       }
     } else if (targetEl.className === "todo-block") {
-      // ...do nth
+      const status = targetEl.dataset?.value;
+      const todoElementList = [...(memoContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
+      for (const element of todoElementList) {
+        if (element === targetEl) {
+          const index = indexOf(todoElementList, element);
+          const tempList = memo.content.split(status === "DONE" ? DONE_BLOCK_REG : TODO_BLOCK_REG);
+          let finalContent = "";
+
+          for (let i = 0; i < tempList.length; i++) {
+            if (i === 0) {
+              finalContent += `${tempList[i]}`;
+            } else {
+              if (i === index + 1) {
+                finalContent += status === "DONE" ? "- [ ] " : "- [x] ";
+              } else {
+                finalContent += status === "DONE" ? "- [x] " : "- [ ] ";
+              }
+              finalContent += `${tempList[i]}`;
+            }
+          }
+          await memoService.patchMemo({
+            id: memo.id,
+            content: finalContent,
+          });
+        }
+      }
     }
   };
 
