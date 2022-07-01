@@ -75,15 +75,15 @@ func (db *DB) Open() (err error) {
 		}
 	}
 
-	return err
-}
-
-func (db *DB) migrate() error {
-	err := db.compareMigrationHistory()
+	err = db.compareMigrationHistory()
 	if err != nil {
 		return fmt.Errorf("failed to compare migration history, err=%w", err)
 	}
 
+	return err
+}
+
+func (db *DB) migrate() error {
 	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("%s/*.sql", "migration"))
 	if err != nil {
 		return err
@@ -137,12 +137,12 @@ func (db *DB) executeFile(FS embed.FS, name string) error {
 
 // compareMigrationHistory compares migration history data
 func (db *DB) compareMigrationHistory() error {
-	table, err := findTable(db, "migration_history")
+	table, err := findTable(db.Db, "migration_history")
 	if err != nil {
 		return err
 	}
 	if table == nil {
-		if err := createTable(db, `
+		if err := createTable(db.Db, `
 		CREATE TABLE migration_history (
 			version TEXT NOT NULL PRIMARY KEY,
 			created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))

@@ -1,7 +1,7 @@
 package db
 
 import (
-	"fmt"
+	"database/sql"
 	"strings"
 )
 
@@ -10,13 +10,13 @@ type Table struct {
 	SQL  string
 }
 
-func findTable(db *DB, tableName string) (*Table, error) {
+func findTable(db *sql.DB, tableName string) (*Table, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	where, args = append(where, "type = ?"), append(args, "table")
 	where, args = append(where, "name = ?"), append(args, tableName)
 
-	rows, err := db.Db.Query(`
+	rows, err := db.Query(`
 		SELECT
 			tbl_name,
 			sql
@@ -53,13 +53,13 @@ func findTable(db *DB, tableName string) (*Table, error) {
 	}
 }
 
-func createTable(db *DB, sql string) error {
-	result, err := db.Db.Exec(sql)
-
-	rows, _ := result.RowsAffected()
-	if rows == 0 {
-		return fmt.Errorf("failed to create table with %s", sql)
+func createTable(db *sql.DB, sql string) error {
+	result, err := db.Exec(sql)
+	if err != nil {
+		return err
 	}
+
+	_, err = result.RowsAffected()
 
 	return err
 }
