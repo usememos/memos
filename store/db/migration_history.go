@@ -1,7 +1,7 @@
 package db
 
 import (
-	"fmt"
+	"database/sql"
 )
 
 type MigrationHistory struct {
@@ -9,53 +9,32 @@ type MigrationHistory struct {
 	Version   string
 }
 
-func findMigrationHistoryList(db *DB) ([]*MigrationHistory, error) {
-	rows, err := db.Db.Query(`
-		SELECT 
-			version,
-			created_ts
-		FROM
-			migration_history
-		ORDER BY created_ts DESC
-	`)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	migrationHistoryList := make([]*MigrationHistory, 0)
-	for rows.Next() {
-		var migrationHistory MigrationHistory
-		if err := rows.Scan(
-			&migrationHistory.Version,
-			&migrationHistory.CreatedTs,
-		); err != nil {
-			return nil, err
-		}
-
-		migrationHistoryList = append(migrationHistoryList, &migrationHistory)
-	}
-
-	return migrationHistoryList, nil
-}
-
-func createMigrationHistory(db *DB, version string) error {
-	result, err := db.Db.Exec(`
+func upsertMigrationHistory(db *sql.DB, version string) (*MigrationHistory, error) {
+	row, err := db.Query(`
 		INSERT INTO migration_history (
 			version
 		)
 		VALUES (?)
+		ON CONFLICT(version) DO UPDATE
+		SET
+			version=EXCLUDED.version
+		RETURNING version, created_ts
 	`,
 		version,
 	)
 	if err != nil {
-		return err
+		return nil, err
+	}
+	defer row.Close()
+
+	row.Next()
+	migrationHistory := MigrationHistory{}
+	if err := row.Scan(
+		&migrationHistory.Version,
+		&migrationHistory.CreatedTs,
+	); err != nil {
+		return nil, err
 	}
 
-	rows, _ := result.RowsAffected()
-	if rows == 0 {
-		return fmt.Errorf("failed to create migration history with %s", version)
-	}
-
-	return nil
+	return &migrationHistory, nil
 }

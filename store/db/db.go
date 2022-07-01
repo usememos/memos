@@ -142,26 +142,23 @@ func (db *DB) compareMigrationHistory() error {
 		return err
 	}
 	if table == nil {
-		createTable(db, `
+		if err := createTable(db, `
 		CREATE TABLE migration_history (
 			version TEXT NOT NULL PRIMARY KEY,
 			created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
 		);
-		`)
+		`); err != nil {
+			return err
+		}
 	}
 
-	migrationHistoryList, err := findMigrationHistoryList(db)
+	currentVersion := common.Version
+	migrationHistory, err := upsertMigrationHistory(db.Db, currentVersion)
 	if err != nil {
 		return err
 	}
-
-	if len(migrationHistoryList) == 0 {
-		createMigrationHistory(db, common.Version)
-	} else {
-		migrationHistory := migrationHistoryList[0]
-		if migrationHistory.Version != common.Version {
-			createMigrationHistory(db, common.Version)
-		}
+	if migrationHistory == nil {
+		return fmt.Errorf("failed to upsert migration history")
 	}
 
 	return nil
