@@ -148,10 +148,10 @@ const Signin: React.FC<Props> = () => {
             </button>
           )}
         </div>
-        <p className="tip-text">
+        <p className={`tip-text ${siteOwner || pageLoadingState.isLoading ? "" : "owner-tip"}`}>
           {siteOwner || pageLoadingState.isLoading
             ? "If you don't have an account, please\ncontact the site owner."
-            : "You are registering as the site owner."}
+            : "You are registering as the Site Owner."}
         </p>
       </div>
     </div>
