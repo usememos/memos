@@ -72,6 +72,6 @@ func GetProfile() *Profile {
 		Mode:    mode,
 		Port:    port,
 		DSN:     dsn,
-		Version: common.Version,
+		Version: common.GetCurrentVersion(mode),
 	}
 }

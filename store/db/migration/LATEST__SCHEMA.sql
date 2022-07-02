@@ -1,3 +1,10 @@
+-- drop all tables
+DROP TABLE IF EXISTS `memo_organizer`;
+DROP TABLE IF EXISTS `memo`;
+DROP TABLE IF EXISTS `shortcut`;
+DROP TABLE IF EXISTS `resource`;
+DROP TABLE IF EXISTS `user`;
+
 -- user
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

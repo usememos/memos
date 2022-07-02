@@ -6,18 +6,26 @@ import (
 )
 
 type MigrationHistory struct {
-	CreatedTs int64
 	Version   string
+	Statement string
+	CreatedTs int64
+}
+
+type MigrationHistoryCreate struct {
+	Version   string
+	Statement string
 }
 
 type MigrationHistoryFind struct {
-	Version string
+	Version *string
 }
 
 func findMigrationHistoryList(db *sql.DB, find *MigrationHistoryFind) ([]*MigrationHistory, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
-	where, args = append(where, "version = ?"), append(args, find.Version)
+	if v := find.Version; v != nil {
+		where, args = append(where, "version = ?"), append(args, *v)
+	}
 
 	rows, err := db.Query(`
 		SELECT 
@@ -63,18 +71,21 @@ func findMigrationHistory(db *sql.DB, find *MigrationHistoryFind) (*MigrationHis
 	}
 }
 
-func upsertMigrationHistory(db *sql.DB, version string) (*MigrationHistory, error) {
+func upsertMigrationHistory(db *sql.DB, create *MigrationHistoryCreate) (*MigrationHistory, error) {
 	row, err := db.Query(`
 		INSERT INTO migration_history (
-			version
+			version, 
+			statement
 		)
-		VALUES (?)
+		VALUES (?, ?)
 		ON CONFLICT(version) DO UPDATE
 		SET
-			version=EXCLUDED.version
-		RETURNING version, created_ts
+			version=EXCLUDED.version,
+			statement=EXCLUDED.statement
+		RETURNING version, statement, created_ts
 	`,
-		version,
+		create.Version,
+		create.Statement,
 	)
 	if err != nil {
 		return nil, err
@@ -82,9 +93,10 @@ func upsertMigrationHistory(db *sql.DB, version string) (*MigrationHistory, erro
 	defer row.Close()
 
 	row.Next()
-	migrationHistory := MigrationHistory{}
+	var migrationHistory MigrationHistory
 	if err := row.Scan(
 		&migrationHistory.Version,
+		&migrationHistory.Statement,
 		&migrationHistory.CreatedTs,
 	); err != nil {
 		return nil, err
