@@ -261,7 +261,10 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 
 		c.Response().Writer.WriteHeader(http.StatusOK)
 		c.Response().Writer.Header().Set("Content-Type", resource.Type)
-		c.Response().Writer.Write(resource.Blob)
+		if _, err := c.Response().Writer.Write(resource.Blob); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write response").SetInternal(err)
+		}
+
 		return nil
 	})
 }

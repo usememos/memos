@@ -201,7 +201,7 @@ var minorDirRegexp = regexp.MustCompile(`^migration/[0-9]+\.[0-9]+$`)
 func getMinorVersionList() []string {
 	minorVersionList := []string{}
 
-	fs.WalkDir(migrationFS, "migration", func(path string, file fs.DirEntry, err error) error {
+	if err := fs.WalkDir(migrationFS, "migration", func(path string, file fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
@@ -210,7 +210,9 @@ func getMinorVersionList() []string {
 		}
 
 		return nil
-	})
+	}); err != nil {
+		panic(err)
+	}
 
 	sort.Strings(minorVersionList)
 

@@ -176,8 +176,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoID)).SetInternal(err)
 		}
 
-		c.JSON(http.StatusOK, true)
-		return nil
+		return c.JSON(http.StatusOK, true)
 	})
 
 	g.GET("/memo/amount", func(c echo.Context) error {
