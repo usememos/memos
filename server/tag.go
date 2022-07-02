@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"regexp"
+	"sort"
 
 	"github.com/usememos/memos/api"
 
@@ -43,6 +44,8 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		for tag := range tagMapSet {
 			tagList = append(tagList, tag)
 		}
+
+		sort.Strings(tagList)
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tagList)); err != nil {
