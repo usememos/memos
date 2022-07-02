@@ -4,7 +4,7 @@
 .memo-wrapper {
   @apply flex flex-col justify-start items-start w-full max-w-full p-4 pt-3 mt-2 bg-white rounded-lg border border-white hover:border-gray-200;
 
-  &.deleted-memo {
+  &.archived-memo {
     @apply border-gray-200;
   }
 
@@ -50,14 +50,10 @@
           }
 
           > .btn {
-            @apply w-full py-2 px-3 rounded justify-start;
+            @apply w-full text-sm leading-6 py-1 px-3 rounded justify-start;
 
-            &.delete-btn {
-              @apply text-red-600;
-
-              &.final-confirm {
-                @apply font-bold;
-              }
+            &.archive-btn {
+              @apply text-orange-600;
             }
           }
         }

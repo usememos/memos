@@ -10,15 +10,14 @@ import "../less/memo.less";
 
 interface Props {
   memo: Memo;
-  handleDeletedMemoAction: (memoId: MemoId) => void;
 }
 
-const DeletedMemo: React.FC<Props> = (props: Props) => {
-  const { memo: propsMemo, handleDeletedMemoAction } = props;
+const ArchivedMemo: React.FC<Props> = (props: Props) => {
+  const { memo: propsMemo } = props;
   const memo = {
     ...propsMemo,
     createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
-    deletedAtStr: utils.getDateTimeString(propsMemo.updatedTs ?? Date.now()),
+    archivedAtStr: utils.getDateTimeString(propsMemo.updatedTs ?? Date.now()),
   };
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
@@ -27,7 +26,7 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
     if (showConfirmDeleteBtn) {
       try {
         await memoService.deleteMemoById(memo.id);
-        handleDeletedMemoAction(memo.id);
+        await memoService.fetchAllMemos();
       } catch (error: any) {
         toastHelper.error(error.message);
       }
@@ -42,7 +41,7 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
         id: memo.id,
         rowStatus: "NORMAL",
       });
-      handleDeletedMemoAction(memo.id);
+      await memoService.fetchAllMemos();
       toastHelper.info("Restored successfully");
     } catch (error: any) {
       toastHelper.error(error.message);
@@ -56,9 +55,9 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`memo-wrapper deleted-memo ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
+    <div className={`memo-wrapper archived-memo ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
-        <span className="time-text">Deleted at {memo.deletedAtStr}</span>
+        <span className="time-text">Archived at {memo.archivedAtStr}</span>
         <div className="btns-container">
           <span className="btn restore-btn" onClick={handleRestoreMemoClick}>
             Restore
@@ -80,4 +79,4 @@ const DeletedMemo: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default DeletedMemo;
+export default ArchivedMemo;

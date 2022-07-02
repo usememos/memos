@@ -3,7 +3,6 @@ import { escape, indexOf } from "lodash-es";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
 import { DONE_BLOCK_REG, parseMarkedToHtml, TODO_BLOCK_REG } from "../helpers/marked";
 import * as utils from "../helpers/utils";
-import useToggle from "../hooks/useToggle";
 import { editorStateService, locationService, memoService } from "../services";
 import Only from "./common/OnlyWhen";
 import Image from "./Image";
@@ -34,7 +33,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     expandButtonStatus: -1,
   });
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
 
   useEffect(() => {
@@ -74,28 +72,18 @@ const Memo: React.FC<Props> = (props: Props) => {
     editorStateService.setEditMemoWithId(memo.id);
   };
 
-  const handleDeleteMemoClick = async () => {
-    if (showConfirmDeleteBtn) {
-      try {
-        await memoService.patchMemo({
-          id: memo.id,
-          rowStatus: "ARCHIVED",
-        });
-      } catch (error: any) {
-        toastHelper.error(error.message);
-      }
-
-      if (editorStateService.getState().editMemoId === memo.id) {
-        editorStateService.clearEditMemo();
-      }
-    } else {
-      toggleConfirmDeleteBtn();
+  const handleArchiveMemoClick = async () => {
+    try {
+      await memoService.patchMemo({
+        id: memo.id,
+        rowStatus: "ARCHIVED",
+      });
+    } catch (error: any) {
+      toastHelper.error(error.message);
     }
-  };
 
-  const handleMouseLeaveMemoWrapper = () => {
-    if (showConfirmDeleteBtn) {
-      toggleConfirmDeleteBtn(false);
+    if (editorStateService.getState().editMemoId === memo.id) {
+      editorStateService.clearEditMemo();
     }
   };
 
@@ -162,7 +150,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
+    <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`}>
       <div className="memo-top-wrapper">
         <span className="time-text" onClick={handleShowMemoStoryDialog}>
           {memo.createdAtStr}
@@ -196,8 +184,8 @@ const Memo: React.FC<Props> = (props: Props) => {
               <span className="btn" onClick={handleShowMemoStoryDialog}>
                 View Story
               </span>
-              <span className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
-                {showConfirmDeleteBtn ? "Delete!" : "Delete"}
+              <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
+                Archive
               </span>
             </div>
           </div>

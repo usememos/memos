@@ -126,7 +126,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       </div>
 
       {hasSubTags ? (
-        <div className={`subtags-container ${showSubTags ? "" : "hidden"}`}>
+        <div className={`subtags-container ${showSubTags ? "" : "!hidden"}`}>
           {tag.subTags.map((st, idx) => (
             <TagItemContainer key={st.text + "-" + idx} tag={st} tagQuery={tagQuery} />
           ))}

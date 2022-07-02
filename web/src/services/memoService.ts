@@ -23,12 +23,12 @@ const memoService = {
     return memos;
   },
 
-  fetchDeletedMemos: async () => {
+  fetchArchivedMemos: async () => {
     const { data } = (await api.getArchivedMemoList()).data;
-    const deletedMemos = data.map((m) => {
+    const archivedMemos = data.map((m) => {
       return convertResponseModelMemo(m);
     });
-    return deletedMemos;
+    return archivedMemos;
   },
 
   getMemoById: (memoId: MemoId) => {

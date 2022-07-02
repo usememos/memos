@@ -1,21 +1,18 @@
 @import "./mixin.less";
 
 .shortcuts-wrapper {
-  .flex(column, flex-start, flex-start);
-  @apply w-full py-0 px-2 mt-2 h-auto shrink-0 flex-nowrap;
+  @apply flex flex-col justify-start items-start w-full py-0 px-2 mt-2 h-auto shrink-0 flex-nowrap;
   .hide-scroll-bar();
 
   > .title-text {
-    .flex(row, flex-start, center);
-    @apply w-full px-4;
+    @apply flex flex-row justify-start items-center w-full px-4;
 
     > .normal-text {
-      @apply text-xs leading-6 font-mono text-gray-400;
+      @apply text-sm leading-6 font-mono text-gray-400;
     }
 
     > .btn {
-      .flex(column, center, center);
-      @apply w-5 h-5 bg-gray-200 rounded ml-2 shadow hover:opacity-80;
+      @apply flex flex-col justify-center items-center w-5 h-5 bg-gray-200 rounded ml-2 shadow hover:opacity-80;
 
       > img {
         @apply w-4 h-4 opacity-80;
@@ -24,8 +21,7 @@
   }
 
   > .create-shortcut-btn-container {
-    .flex(row, flex-start, center);
-    @apply w-full mt-4 mb-2 ml-4;
+    @apply flex flex-row justify-start items-center w-full mt-4 mb-2 ml-4;
 
     > .btn {
       @apply flex p-2 px-4 rounded-lg text-sm border border-dashed border-blue-600;
@@ -37,23 +33,19 @@
   }
 
   > .shortcuts-container {
-    .flex(column, flex-start, flex-start);
-    @apply relative w-full h-auto flex-nowrap mb-2;
+    @apply flex flex-col justify-start items-start relative w-full h-auto flex-nowrap mb-2;
 
     > .shortcut-container {
-      .flex(row, space-between, center);
-      @apply w-full h-10 py-0 px-4 mt-px first:mt-2 rounded-lg text-base cursor-pointer select-none shrink-0;
+      @apply flex flex-row justify-between items-center w-full h-10 py-0 px-4 mt-px first:mt-2 rounded-lg text-base cursor-pointer select-none shrink-0 hover:bg-gray-200;
 
       &:hover {
-        background-color: @bg-gray;
-
         > .btns-container {
           @apply flex;
         }
       }
 
       &.active {
-        background-color: @text-green !important;
+        @apply bg-green-600;
 
         > .shortcut-text-container {
           > * {
@@ -63,8 +55,7 @@
       }
 
       > .shortcut-text-container {
-        .flex(row, flex-start, center);
-        @apply truncate shrink leading-5 mr-1;
+        @apply flex flex-row justify-start items-center truncate shrink leading-5 mr-1;
         color: @text-black;
 
         > .icon-text {
@@ -77,8 +68,7 @@
       }
 
       > .btns-container {
-        .flex(row, flex-end, center);
-        @apply hidden shrink-0;
+        @apply flex-row justify-end items-center hidden shrink-0;
 
         > .action-btn {
           .flex(row, center, center);
@@ -91,35 +81,33 @@
           &.toggle-btn {
             &:hover {
               & + .action-btns-wrapper {
-                display: flex;
+                @apply flex;
               }
             }
           }
         }
 
         > .action-btns-wrapper {
-          .flex(column, flex-start, flex-start);
-          @apply absolute right-0 w-auto h-auto px-4 pt-3 translate-y-16 hidden z-10;
+          @apply flex-col justify-start items-start absolute top-6 right-0 w-auto h-auto px-4 pt-3 hidden z-10;
 
           > .action-btns-container {
-            .flex(column, flex-start, flex-start);
-            @apply w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white shadow;
+            @apply flex flex-col justify-start items-start w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white shadow;
 
             > .btn {
-              @apply w-full py-2 px-3 rounded text-sm text-left hover:bg-gray-100;
+              @apply w-full text-sm leading-6 py-1 px-3 rounded text-left hover:bg-gray-100;
 
               &.delete-btn {
-                color: @text-red;
+                @apply text-orange-600;
 
                 &.final-confirm {
-                  font-weight: bold;
+                  @apply font-black;
                 }
               }
             }
           }
 
           &:hover {
-            display: flex;
+            @apply flex;
           }
         }
       }

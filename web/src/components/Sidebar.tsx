@@ -2,7 +2,7 @@ import { useAppSelector } from "../store";
 import * as utils from "../helpers/utils";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
-import showMemoTrashDialog from "./MemoTrashDialog";
+import showArchivedMemoDialog from "./ArchivedMemoDialog";
 import UserBanner from "./UserBanner";
 import UsageHeatMap from "./UsageHeatMap";
 import ShortcutList from "./ShortcutList";
@@ -21,8 +21,8 @@ const Sidebar: React.FC<Props> = () => {
     showSettingDialog();
   };
 
-  const handleMemosTrashBtnClick = () => {
-    showMemoTrashDialog();
+  const handleArchivedBtnClick = () => {
+    showArchivedMemoDialog();
   };
 
   return (
@@ -55,8 +55,8 @@ const Sidebar: React.FC<Props> = () => {
         <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
           <span className="icon">⚙️</span> Setting
         </button>
-        <button className="btn action-btn" onClick={handleMemosTrashBtnClick}>
-          <span className="icon">🗑️</span> Recycle Bin
+        <button className="btn action-btn" onClick={handleArchivedBtnClick}>
+          <span className="icon">🗂</span> Archived
         </button>
       </div>
       <ShortcutList />
