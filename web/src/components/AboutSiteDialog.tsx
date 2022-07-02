@@ -45,13 +45,19 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         </p>
         <br />
         <p>
-          <a href="https://github.com/usememos/memos">🏗 Source code</a>, and built by <a href="https://github.com/boojack">Steven 🐯</a>.
+          <a className="mr-2" href="https://github.com/usememos/memos">
+            🏗 Source code
+          </a>
+          <Only when={profile !== undefined}>
+            <>
+              version:
+              <span className="pre-text">
+                {profile?.version}-{profile?.mode}
+              </span>
+              🎉
+            </>
+          </Only>
         </p>
-        <Only when={profile !== undefined}>
-          <p className="updated-time-text">
-            version: <span className="pre-text">{profile?.version}</span> 🎉
-          </p>
-        </Only>
       </div>
     </>
   );

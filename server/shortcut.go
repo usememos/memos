@@ -109,7 +109,6 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete shortcut").SetInternal(err)
 		}
 
-		c.JSON(http.StatusOK, true)
-		return nil
+		return c.JSON(http.StatusOK, true)
 	})
 }

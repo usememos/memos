@@ -118,7 +118,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		c.Response().Writer.WriteHeader(http.StatusOK)
 		c.Response().Writer.Header().Set("Content-Type", resource.Type)
-		c.Response().Writer.Write(resource.Blob)
+		if _, err := c.Response().Writer.Write(resource.Blob); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write resource blob").SetInternal(err)
+		}
+
 		return nil
 	})
 
@@ -135,7 +138,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 		}
 
-		c.JSON(http.StatusOK, true)
-		return nil
+		return c.JSON(http.StatusOK, true)
 	})
 }
