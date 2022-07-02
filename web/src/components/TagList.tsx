@@ -94,7 +94,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
 
   const handleTagClick = () => {
     if (isActive) {
-      locationService.setTagQuery("");
+      locationService.setTagQuery(undefined);
     } else {
       utils.copyTextToClipboard(`#${tag.text} `);
       if (!["/"].includes(locationService.getState().pathname)) {

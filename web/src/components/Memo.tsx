@@ -108,7 +108,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       const tagName = targetEl.innerText.slice(1);
       const currTagQuery = locationService.getState().query?.tag;
       if (currTagQuery === tagName) {
-        locationService.setTagQuery("");
+        locationService.setTagQuery(undefined);
       } else {
         locationService.setTagQuery(tagName);
       }

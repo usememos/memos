@@ -63,7 +63,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
 
   const handleShortcutClick = () => {
     if (isActive) {
-      locationService.setMemoShortcut(UNKNOWN_ID);
+      locationService.setMemoShortcut(undefined);
     } else {
       if (!["/"].includes(locationService.getState().pathname)) {
         locationService.setPathname("/");
