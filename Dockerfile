@@ -1,5 +1,5 @@
 # Build frontend dist.
-FROM node:16.15.1-bullseye AS frontend
+FROM node:16.15.0-alpine AS frontend
 WORKDIR /frontend-build
 
 COPY ./web/ .
