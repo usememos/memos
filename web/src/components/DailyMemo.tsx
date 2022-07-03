@@ -32,7 +32,7 @@ const DailyMemo: React.FC<Props> = (props: Props) => {
         <Only when={imageUrls.length > 0}>
           <div className="images-container">
             {imageUrls.map((imgUrl, idx) => (
-              <img key={idx} crossOrigin="anonymous" src={imgUrl} decoding="async" />
+              <img key={idx} src={imgUrl} decoding="async" />
             ))}
           </div>
         </Only>

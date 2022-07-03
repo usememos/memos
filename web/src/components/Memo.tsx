@@ -112,7 +112,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       } else {
         locationService.setTagQuery(tagName);
       }
-    } else if (targetEl.className === "todo-block") {
+    } else if (targetEl.classList.contains("todo-block")) {
       const status = targetEl.dataset?.value;
       const todoElementList = [...(memoContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
       for (const element of todoElementList) {

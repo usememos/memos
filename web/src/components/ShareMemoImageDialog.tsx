@@ -91,14 +91,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
           <Only when={imageUrls.length > 0}>
             <div className="images-container">
               {imageUrls.map((imgUrl, idx) => (
-                <img
-                  crossOrigin="anonymous"
-                  decoding="async"
-                  key={idx}
-                  src={imgUrl}
-                  onLoad={handleImageOnLoad}
-                  onError={handleImageOnLoad}
-                />
+                <img decoding="async" key={idx} src={imgUrl} onLoad={handleImageOnLoad} onError={handleImageOnLoad} />
               ))}
             </div>
           </Only>

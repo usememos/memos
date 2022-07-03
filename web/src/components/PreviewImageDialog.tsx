@@ -29,7 +29,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrl }: Props) => {
         </button>
       </div>
       <div className="img-container">
-        <img src={imgUrl} crossOrigin="anonymous" />
+        <img src={imgUrl} />
       </div>
     </>
   );
