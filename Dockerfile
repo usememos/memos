@@ -8,7 +8,7 @@ RUN yarn
 RUN yarn build
 
 # Build backend exec file.
-FROM golang:1.18.3-bullseye AS backend
+FROM golang:1.18.3-alpine3.16 AS backend
 WORKDIR /backend-build
 
 COPY . .
