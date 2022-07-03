@@ -11,6 +11,9 @@ RUN yarn build
 FROM golang:1.18.3-alpine3.16 AS backend
 WORKDIR /backend-build
 
+RUN apk update
+RUN apk --no-cache add gcc musl-dev
+
 COPY . .
 
 RUN go build \
