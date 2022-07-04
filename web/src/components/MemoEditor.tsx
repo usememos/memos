@@ -8,44 +8,11 @@ import toastHelper from "./Toast";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import "../less/memo-editor.less";
 
-const getCursorPostion = (input: HTMLTextAreaElement) => {
-  const { offsetLeft: inputX, offsetTop: inputY, selectionEnd: selectionPoint } = input;
-  const div = document.createElement("div");
-
-  const copyStyle = window.getComputedStyle(input);
-  for (const item of copyStyle) {
-    div.style.setProperty(item, copyStyle.getPropertyValue(item));
-  }
-  div.style.position = "fixed";
-  div.style.visibility = "hidden";
-  div.style.whiteSpace = "pre-wrap";
-
-  const swap = ".";
-  const inputValue = input.tagName === "INPUT" ? input.value.replace(/ /g, swap) : input.value;
-  const textContent = inputValue.substring(0, selectionPoint || 0);
-  div.textContent = textContent;
-  if (input.tagName === "TEXTAREA") {
-    div.style.height = "auto";
-  }
-
-  const span = document.createElement("span");
-  span.textContent = inputValue.substring(selectionPoint || 0) || ".";
-  div.appendChild(span);
-  document.body.appendChild(div);
-  const { offsetLeft: spanX, offsetTop: spanY } = span;
-  document.body.removeChild(div);
-  return {
-    x: inputX + spanX,
-    y: inputY + spanY,
-  };
-};
-
 interface Props {}
 
 const MemoEditor: React.FC<Props> = () => {
   const editorState = useAppSelector((state) => state.editor);
   const tags = useAppSelector((state) => state.memo.tags);
-  const [isTagSeletorShown, toggleTagSeletor] = useToggle(false);
   const [isUploadingResource, setIsUploadingResource] = useToggle(false);
   const editorRef = useRef<EditorRefActions>(null);
   const prevGlobalStateRef = useRef(editorState);
@@ -187,61 +154,6 @@ const MemoEditor: React.FC<Props> = () => {
 
   const handleContentChange = useCallback((content: string) => {
     setEditorContentCache(content);
-
-    if (editorRef.current) {
-      const selectionStart = editorRef.current.element.selectionStart;
-      const prevString = content.slice(0, selectionStart);
-      const nextString = content.slice(selectionStart);
-
-      if (prevString.endsWith("#") && (nextString.startsWith(" ") || nextString === "")) {
-        toggleTagSeletor(true);
-        updateTagSelectorPopupPosition();
-      } else {
-        toggleTagSeletor(false);
-      }
-
-      editorRef.current?.focus();
-    }
-  }, []);
-
-  const handleTagTextBtnClick = useCallback(() => {
-    if (!editorRef.current) {
-      return;
-    }
-
-    const currentValue = editorRef.current.getContent();
-    const selectionStart = editorRef.current.element.selectionStart;
-    const prevString = currentValue.slice(0, selectionStart);
-    const nextString = currentValue.slice(selectionStart);
-
-    let nextValue = prevString + "#" + nextString;
-    let cursorIndex = prevString.length + 1;
-
-    if (prevString.endsWith("#") && nextString.startsWith(" ")) {
-      nextValue = prevString.slice(0, prevString.length - 1) + nextString.slice(1);
-      cursorIndex = prevString.length - 1;
-    }
-
-    editorRef.current.element.value = nextValue;
-    editorRef.current.element.setSelectionRange(cursorIndex, cursorIndex);
-    editorRef.current.focus();
-    handleContentChange(editorRef.current.element.value);
-  }, []);
-
-  const updateTagSelectorPopupPosition = useCallback(() => {
-    if (!editorRef.current || !tagSeletorRef.current) {
-      return;
-    }
-
-    const seletorPopupWidth = 128;
-    const editorWidth = editorRef.current.element.clientWidth;
-    const { x, y } = getCursorPostion(editorRef.current.element);
-    const left = x + seletorPopupWidth + 16 > editorWidth ? editorWidth + 20 - seletorPopupWidth : x + 2;
-    const top = y + 32 + 6;
-
-    tagSeletorRef.current.scroll(0, 0);
-    tagSeletorRef.current.style.left = `${left}px`;
-    tagSeletorRef.current.style.top = `${top}px`;
   }, []);
 
   const handleUploadFileBtnClick = useCallback(() => {
@@ -265,8 +177,8 @@ const MemoEditor: React.FC<Props> = () => {
 
   const handleTagSeletorClick = useCallback((event: React.MouseEvent) => {
     if (tagSeletorRef.current !== event.target && tagSeletorRef.current?.contains(event.target as Node)) {
-      editorRef.current?.insertText((event.target as HTMLElement).textContent + " " ?? "");
-      toggleTagSeletor(false);
+      editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
+      editorRef.current?.focus();
     }
   }, []);
 
@@ -294,8 +206,13 @@ const MemoEditor: React.FC<Props> = () => {
         {...editorConfig}
         tools={
           <>
-            <div className="action-btn">
-              <img className="icon-img" src="/icons/tag.svg" onClick={handleTagTextBtnClick} />
+            <div className="action-btn tag-action">
+              <img className="icon-img" src="/icons/tag.svg" />
+              <div ref={tagSeletorRef} className="tag-list" onClick={handleTagSeletorClick}>
+                {tags.map((t) => {
+                  return <span key={t}>{t}</span>;
+                })}
+              </div>
             </div>
             <div className="action-btn">
               <img className="icon-img" src="/icons/image.svg" onClick={handleUploadFileBtnClick} />
@@ -304,15 +221,6 @@ const MemoEditor: React.FC<Props> = () => {
           </>
         }
       />
-      <div
-        ref={tagSeletorRef}
-        className={`tag-list ${isTagSeletorShown && tags.length > 0 ? "" : "!hidden"}`}
-        onClick={handleTagSeletorClick}
-      >
-        {tags.map((t) => {
-          return <span key={t}>{t}</span>;
-        })}
-      </div>
     </div>
   );
 };
