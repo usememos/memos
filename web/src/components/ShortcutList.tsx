@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { locationService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
-import { UNKNOWN_ID } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
@@ -113,12 +112,11 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
     <>
       <div className={`shortcut-container ${isActive ? "active" : ""}`} onClick={handleShortcutClick}>
         <div className="shortcut-text-container">
-          {/* <span className="icon-text">#</span> */}
           <span className="shortcut-text">{shortcut.title}</span>
         </div>
         <div className="btns-container">
           <span className="action-btn toggle-btn">
-            <img className="icon-img" src={`/icons/more${isActive ? "-white" : ""}.svg`} />
+            <img className="icon-img" src="/icons/more.svg" />
           </span>
           <div className="action-btns-wrapper">
             <div className="action-btns-container">

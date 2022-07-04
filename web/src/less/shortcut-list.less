@@ -36,7 +36,7 @@
     @apply flex flex-col justify-start items-start relative w-full h-auto flex-nowrap mb-2;
 
     > .shortcut-container {
-      @apply flex flex-row justify-between items-center w-full h-10 py-0 px-4 mt-px first:mt-2 rounded-lg text-base cursor-pointer select-none shrink-0 hover:bg-gray-200;
+      @apply flex flex-row justify-between items-center w-full h-10 py-0 px-4 mt-px first:mt-2 rounded-lg text-base cursor-pointer select-none shrink-0 hover:bg-white;
 
       &:hover {
         > .btns-container {
@@ -45,18 +45,13 @@
       }
 
       &.active {
-        @apply bg-green-600;
-
         > .shortcut-text-container {
-          > * {
-            @apply text-white;
-          }
+          @apply text-green-600;
         }
       }
 
       > .shortcut-text-container {
-        @apply flex flex-row justify-start items-center truncate shrink leading-5 mr-1;
-        color: @text-black;
+        @apply flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-black;
 
         > .icon-text {
           @apply block w-4 shrink-0;
