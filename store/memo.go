@@ -170,7 +170,7 @@ func patchMemoRaw(db *sql.DB, patch *api.MemoPatch) (*memoRaw, error) {
 		UPDATE memo
 		SET `+strings.Join(set, ", ")+`
 		WHERE id = ?
-		RETURNING id, created_ts, updated_ts, content, row_status
+		RETURNING id, creator_id, created_ts, updated_ts, content, row_status
 	`, args...)
 	if err != nil {
 		return nil, FormatError(err)
@@ -184,6 +184,7 @@ func patchMemoRaw(db *sql.DB, patch *api.MemoPatch) (*memoRaw, error) {
 	var memoRaw memoRaw
 	if err := row.Scan(
 		&memoRaw.ID,
+		&memoRaw.CreatorID,
 		&memoRaw.CreatedTs,
 		&memoRaw.UpdatedTs,
 		&memoRaw.Content,
