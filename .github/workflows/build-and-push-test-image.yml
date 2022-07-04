@@ -3,7 +3,7 @@ name: build-and-push-test-image
 on:
   push:
     branches:
-      - "*"
+      - "test/*"
 
 jobs:
   build-and-push-dev-image:
