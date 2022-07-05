@@ -19,7 +19,7 @@ interface Props {}
 const MyAccountSection: React.FC<Props> = () => {
   const user = useAppSelector((state) => state.user.user as User);
   const [username, setUsername] = useState<string>(user.name);
-  const openAPIRoute = `${window.location.origin}/h/${user.openId}/memo`;
+  const openAPIRoute = `${window.location.origin}/api/memo?openId=${user.openId}`;
 
   const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nextUsername = e.target.value as string;
@@ -100,7 +100,7 @@ const MyAccountSection: React.FC<Props> = () => {
         </span>
         <div className="usage-guide-container">
           <p className="title-text">Usage guide:</p>
-          <pre>{`POST ${openAPIRoute}\nContent-type: application/json\n{\n  "content": "Hello, #memos ${window.location.origin}"\n}`}</pre>
+          <pre>{`POST ${openAPIRoute}\nContent-type: application/json\n{\n  "content": "Hello #memos from ${window.location.origin}"\n}`}</pre>
         </div>
       </div>
     </>

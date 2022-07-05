@@ -16,18 +16,12 @@ module.exports = {
       spacing: {
         112: "28rem",
         128: "32rem",
-        168: "42rem",
-        176: "44rem",
-        200: "50rem",
+        180: "45rem",
       },
       zIndex: {
         100: "100",
         1000: "1000",
       },
-      gridTemplateRows: {
-        7: "repeat(7, minmax(0, 1fr))",
-      },
     },
   },
-  plugins: [],
 };

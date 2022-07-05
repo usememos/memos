@@ -15,13 +15,7 @@ const memoSlice = createSlice({
     setMemos: (state, action: PayloadAction<Memo[]>) => {
       return {
         ...state,
-        memos: action.payload,
-      };
-    },
-    setTags: (state, action: PayloadAction<string[]>) => {
-      return {
-        ...state,
-        tags: action.payload,
+        memos: action.payload.filter((m) => m.rowStatus === "NORMAL").sort((a, b) => b.createdTs - a.createdTs),
       };
     },
     createMemo: (state, action: PayloadAction<Memo>) => {
@@ -33,16 +27,24 @@ const memoSlice = createSlice({
     patchMemo: (state, action: PayloadAction<Partial<Memo>>) => {
       return {
         ...state,
-        memos: state.memos.map((m) => {
-          if (m.id === action.payload.id) {
-            return {
-              ...m,
-              ...action.payload,
-            };
-          } else {
-            return m;
-          }
-        }),
+        memos: state.memos
+          .map((memo) => {
+            if (memo.id === action.payload.id) {
+              return {
+                ...memo,
+                ...action.payload,
+              };
+            } else {
+              return memo;
+            }
+          })
+          .filter((memo) => memo.rowStatus === "NORMAL"),
+      };
+    },
+    setTags: (state, action: PayloadAction<string[]>) => {
+      return {
+        ...state,
+        tags: action.payload,
       };
     },
   },
