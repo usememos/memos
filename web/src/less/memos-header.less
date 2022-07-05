@@ -2,15 +2,13 @@
 
 .section-header-container,
 .memos-header-container {
-  .flex(row, space-between, center);
-  @apply w-full h-10 flex-nowrap mt-4 mb-2 shrink-0;
+  @apply sticky top-4 flex flex-row justify-between items-center w-full h-10 flex-nowrap mt-4 mb-2 shrink-0 z-1;
 
   > .title-container {
     @apply flex flex-row justify-start items-center mr-2 shrink-0 overflow-hidden;
 
     > .action-btn {
-      @apply flex sm:hidden flex-row justify-center items-center w-6 h-6 mr-1 shrink-0;
-      background-color: unset;
+      @apply flex sm:hidden flex-row justify-center items-center w-6 h-6 mr-1 shrink-0 bg-transparent;
 
       > .icon-img {
         @apply w-5 h-auto;
@@ -18,12 +16,11 @@
     }
 
     > .title-text {
-      @apply font-bold text-lg leading-10 mr-2 text-ellipsis shrink-0 cursor-pointer overflow-hidden;
-      color: @text-black;
+      @apply font-bold text-lg leading-10 mr-2 text-ellipsis shrink-0 cursor-pointer overflow-hidden text-gray-700;
     }
   }
 
   > .btns-container {
-    .flex(row, flex-end, center);
+    @apply flex flex-row justify-end items-center;
   }
 }

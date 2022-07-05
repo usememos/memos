@@ -1,19 +1,23 @@
 @import "./mixin.less";
 
 .page-wrapper.home {
-  @apply relative top-0 w-full h-screen overflow-y-auto;
+  @apply relative top-0 w-full h-screen overflow-y-auto overflow-x-hidden;
   background-color: #f6f5f4;
 
   > .page-container {
-    @apply relative w-full min-h-screen mx-auto flex flex-row justify-center items-start;
+    @apply relative w-full min-h-screen mx-auto flex flex-row justify-start sm:justify-center items-start;
 
-    >.sidebar-wrapper{
+    > .sidebar-wrapper {
       @apply flex-shrink-0;
     }
 
     > .memos-wrapper {
-      @apply relative w-full max-w-2xl min-h-full overflow-x-hidden flex flex-col justify-start items-start px-4 sm:pr-6;
+      @apply relative w-full max-w-2xl min-h-full flex flex-col justify-start items-start px-4 sm:pr-6;
 
+      > .memos-editor-wrapper {
+        @apply sticky top-0 w-full h-full flex flex-col justify-start items-start z-1;
+        background-color: #f6f5f4;
+      }
     }
   }
 }

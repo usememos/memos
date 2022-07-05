@@ -9,7 +9,6 @@
     min-height: 40px;
     max-height: 300px;
     .pretty-scroll-bar(2px, 0);
-    z-index: 1;
 
     &::placeholder {
       padding-left: 2px;
@@ -49,7 +48,7 @@
           }
 
           > .tag-list {
-            @apply hidden flex-col justify-start items-start absolute top-6 left-0 mt-1 p-1 z-10 rounded w-32 max-h-52 overflow-auto bg-black;
+            @apply hidden flex-col justify-start items-start absolute top-6 left-0 mt-1 p-1 z-1 rounded w-32 max-h-52 overflow-auto bg-black;
 
             > span {
               @apply w-full text-white cursor-pointer rounded text-sm leading-6 px-2 hover:bg-gray-700;

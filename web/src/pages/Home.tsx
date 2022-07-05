@@ -37,9 +37,11 @@ function Home() {
         <div className="page-container">
           <Sidebar />
           <main className="memos-wrapper">
-            <MemosHeader />
-            <MemoEditor />
-            <MemoFilter />
+            <div className="memos-editor-wrapper">
+              <MemosHeader />
+              <MemoEditor />
+              <MemoFilter />
+            </div>
             <MemoList />
           </main>
         </div>

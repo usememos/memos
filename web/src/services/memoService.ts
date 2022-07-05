@@ -48,7 +48,8 @@ const memoService = {
 
   getLinkedMemos: async (memoId: MemoId): Promise<Memo[]> => {
     const { memos } = memoService.getState();
-    return memos.filter((m) => m.content.includes(`${memoId}`));
+    const regex = new RegExp(`[@(.+?)](${memoId})`);
+    return memos.filter((m) => m.content.match(regex));
   },
 
   createMemo: async (memoCreate: MemoCreate) => {
