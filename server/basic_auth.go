@@ -54,9 +54,26 @@ func removeUserSession(c echo.Context) error {
 // Use session to store user.id.
 func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		// Skips auth
+		// Skip auth for some paths.
 		if common.HasPrefixes(c.Path(), "/api/auth", "/api/ping", "/api/status") {
 			return next(c)
+		}
+
+		// If there is openId in query string and related user is found, then skip auth.
+		openID := c.QueryParam("openId")
+		if openID != "" {
+			userFind := &api.UserFind{
+				OpenID: &openID,
+			}
+			user, err := s.Store.FindUser(userFind)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
+			}
+			if user != nil {
+				// Stores userID into context.
+				c.Set(getUserIDContextKey(), user.ID)
+				return next(c)
+			}
 		}
 
 		sess, err := session.Get("session", c)
