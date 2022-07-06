@@ -59,7 +59,18 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 	})
 
 	g.GET("/shortcut", func(c echo.Context) error {
-		userID := c.Get(getUserIDContextKey()).(int)
+		tempUserID := c.Get(getUserIDContextKey())
+		if tempUserID == nil {
+			ownerUserType := api.Owner
+			ownerUser, err := s.Store.FindUser(&api.UserFind{
+				Role: &ownerUserType,
+			})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
+			}
+			tempUserID = ownerUser.ID
+		}
+		userID := tempUserID.(int)
 		shortcutFind := &api.ShortcutFind{
 			CreatorID: &userID,
 		}

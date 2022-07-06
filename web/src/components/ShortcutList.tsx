@@ -13,6 +13,7 @@ interface Props {}
 const ShortcutList: React.FC<Props> = () => {
   const query = useAppSelector((state) => state.location.query);
   const shortcuts = useAppSelector((state) => state.shortcut.shortcuts);
+  const user = useAppSelector((state) => state.user.user);
   const loadingState = useLoading();
 
   const pinnedShortcuts = shortcuts
@@ -38,9 +39,11 @@ const ShortcutList: React.FC<Props> = () => {
     <div className="shortcuts-wrapper">
       <p className="title-text">
         <span className="normal-text">Shortcuts</span>
-        <span className="btn" onClick={() => showCreateShortcutDialog()}>
-          <img src="/icons/add.svg" alt="add shortcut" />
-        </span>
+        {user && (
+          <span className="btn" onClick={() => showCreateShortcutDialog()}>
+            <img src="/icons/add.svg" alt="add shortcut" />
+          </span>
+        )}
       </p>
       <div className="shortcuts-container">
         {sortedShortcuts.map((s) => {
@@ -57,6 +60,7 @@ interface ShortcutContainerProps {
 }
 
 const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
+  const user = useAppSelector((state) => state.user.user);
   const { shortcut, isActive } = props;
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
@@ -114,28 +118,30 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
         <div className="shortcut-text-container">
           <span className="shortcut-text">{shortcut.title}</span>
         </div>
-        <div className="btns-container">
-          <span className="action-btn toggle-btn">
-            <img className="icon-img" src="/icons/more.svg" />
-          </span>
-          <div className="action-btns-wrapper">
-            <div className="action-btns-container">
-              <span className="btn" onClick={handlePinShortcutBtnClick}>
-                {shortcut.rowStatus === "ARCHIVED" ? "Unpin" : "Pin"}
-              </span>
-              <span className="btn" onClick={handleEditShortcutBtnClick}>
-                Edit
-              </span>
-              <span
-                className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`}
-                onClick={handleDeleteMemoClick}
-                onMouseLeave={handleDeleteBtnMouseLeave}
-              >
-                {showConfirmDeleteBtn ? "Delete!" : "Delete"}
-              </span>
+        {user && (
+          <div className="btns-container">
+            <span className="action-btn toggle-btn">
+              <img className="icon-img" src="/icons/more.svg" />
+            </span>
+            <div className="action-btns-wrapper">
+              <div className="action-btns-container">
+                <span className="btn" onClick={handlePinShortcutBtnClick}>
+                  {shortcut.rowStatus === "ARCHIVED" ? "Unpin" : "Pin"}
+                </span>
+                <span className="btn" onClick={handleEditShortcutBtnClick}>
+                  Edit
+                </span>
+                <span
+                  className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`}
+                  onClick={handleDeleteMemoClick}
+                  onMouseLeave={handleDeleteBtnMouseLeave}
+                >
+                  {showConfirmDeleteBtn ? "Delete!" : "Delete"}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );

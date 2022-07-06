@@ -17,6 +17,7 @@ interface Props {}
 const TagList: React.FC<Props> = () => {
   const { memos, tags: tagsText } = useAppSelector((state) => state.memo);
   const query = useAppSelector((state) => state.location.query);
+  const user = useAppSelector((state) => state.user.user);
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
@@ -71,7 +72,7 @@ const TagList: React.FC<Props> = () => {
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        <Only when={tags.length < 5}>
+        <Only when={user !== undefined && tags.length < 5}>
           <p className="tag-tip-container">
             Enter <span className="code-text">#tag </span> to create a tag
           </p>

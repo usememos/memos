@@ -48,17 +48,21 @@ const Sidebar: React.FC<Props> = () => {
         </div>
       </div>
       <UsageHeatMap />
-      <div className="action-btns-container">
-        <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
-          <span className="icon">📅</span> Daily Review
-        </button>
-        <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
-          <span className="icon">⚙️</span> Setting
-        </button>
-        <button className="btn action-btn" onClick={handleArchivedBtnClick}>
-          <span className="icon">🗂</span> Archived
-        </button>
-      </div>
+      {user && (
+        <>
+          <div className="action-btns-container">
+            <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
+              <span className="icon">📅</span> Daily Review
+            </button>
+            <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
+              <span className="icon">⚙️</span> Setting
+            </button>
+            <button className="btn action-btn" onClick={handleArchivedBtnClick}>
+              <span className="icon">🗂</span> Archived
+            </button>
+          </div>
+        </>
+      )}
       <ShortcutList />
       <TagList />
     </aside>

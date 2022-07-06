@@ -1,8 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAppSelector } from "../store";
 import { locationService } from "../services";
 import MenuBtnsPopup from "./MenuBtnsPopup";
 import "../less/user-banner.less";
+import * as api from "../helpers/api";
 
 interface Props {}
 
@@ -10,7 +11,7 @@ const UserBanner: React.FC<Props> = () => {
   const user = useAppSelector((state) => state.user.user);
   const [shouldShowPopupBtns, setShouldShowPopupBtns] = useState(false);
 
-  const username = user ? user.name : "Memos";
+  const [username, setUsername] = useState(user ? user.name : "Memos");
 
   const handleUsernameClick = useCallback(() => {
     locationService.pushHistory("/");
@@ -20,6 +21,15 @@ const UserBanner: React.FC<Props> = () => {
   const handlePopupBtnClick = () => {
     setShouldShowPopupBtns(true);
   };
+
+  useEffect(() => {
+    if (username === "Memos") {
+      api.getSystemStatus().then(({ data }) => {
+        const { data: status } = data;
+        setUsername(status.owner.name);
+      });
+    }
+  }, []);
 
   return (
     <div className="user-banner-container">

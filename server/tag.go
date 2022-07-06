@@ -13,7 +13,18 @@ import (
 
 func (s *Server) registerTagRoutes(g *echo.Group) {
 	g.GET("/tag", func(c echo.Context) error {
-		userID := c.Get(getUserIDContextKey()).(int)
+		tempUserID := c.Get(getUserIDContextKey())
+		if tempUserID == nil {
+			ownerUserType := api.Owner
+			ownerUser, err := s.Store.FindUser(&api.UserFind{
+				Role: &ownerUserType,
+			})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
+			}
+			tempUserID = ownerUser.ID
+		}
+		userID := tempUserID.(int)
 		contentSearch := "#"
 		normalRowStatus := api.Normal
 		memoFind := api.MemoFind{

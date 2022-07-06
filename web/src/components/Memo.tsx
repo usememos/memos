@@ -10,6 +10,7 @@ import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import toastHelper from "./Toast";
 import "../less/memo.less";
+import { useAppSelector } from "../store";
 
 const MAX_MEMO_CONTAINER_HEIGHT = 384;
 
@@ -24,6 +25,7 @@ interface State {
 }
 
 const Memo: React.FC<Props> = (props: Props) => {
+  const user = useAppSelector((state) => state.user.user);
   const { memo: propsMemo } = props;
   const memo = {
     ...propsMemo,
@@ -112,7 +114,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       } else {
         locationService.setTagQuery(tagName);
       }
-    } else if (targetEl.classList.contains("todo-block")) {
+    } else if (targetEl.classList.contains("todo-block") && user) {
       const status = targetEl.dataset?.value;
       const todoElementList = [...(memoContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
       for (const element of todoElementList) {
@@ -158,38 +160,40 @@ const Memo: React.FC<Props> = (props: Props) => {
             <span className="ml-2">PINNED</span>
           </Only>
         </span>
-        <div className="btns-container">
-          <span className="btn more-action-btn">
-            <img className="icon-img" src="/icons/more.svg" />
-          </span>
-          <div className="more-action-btns-wrapper">
-            <div className="more-action-btns-container">
-              <div className="btns-container">
-                <div className="btn" onClick={handleTogglePinMemoBtnClick}>
-                  <img className="icon-img" src="/icons/pin.svg" alt="" />
-                  <span className="tip-text">{memo.pinned ? "Unpin" : "Pin"}</span>
+        {user && (
+          <div className="btns-container">
+            <span className="btn more-action-btn">
+              <img className="icon-img" src="/icons/more.svg" />
+            </span>
+            <div className="more-action-btns-wrapper">
+              <div className="more-action-btns-container">
+                <div className="btns-container">
+                  <div className="btn" onClick={handleTogglePinMemoBtnClick}>
+                    <img className="icon-img" src="/icons/pin.svg" alt="" />
+                    <span className="tip-text">{memo.pinned ? "Unpin" : "Pin"}</span>
+                  </div>
+                  <div className="btn" onClick={handleEditMemoClick}>
+                    <img className="icon-img" src="/icons/edit.svg" alt="" />
+                    <span className="tip-text">Edit</span>
+                  </div>
+                  <div className="btn" onClick={handleGenMemoImageBtnClick}>
+                    <img className="icon-img" src="/icons/share.svg" alt="" />
+                    <span className="tip-text">Share</span>
+                  </div>
                 </div>
-                <div className="btn" onClick={handleEditMemoClick}>
-                  <img className="icon-img" src="/icons/edit.svg" alt="" />
-                  <span className="tip-text">Edit</span>
-                </div>
-                <div className="btn" onClick={handleGenMemoImageBtnClick}>
-                  <img className="icon-img" src="/icons/share.svg" alt="" />
-                  <span className="tip-text">Share</span>
-                </div>
+                <span className="btn" onClick={handleMarkMemoClick}>
+                  Mark
+                </span>
+                <span className="btn" onClick={handleShowMemoStoryDialog}>
+                  View Story
+                </span>
+                <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
+                  Archive
+                </span>
               </div>
-              <span className="btn" onClick={handleMarkMemoClick}>
-                Mark
-              </span>
-              <span className="btn" onClick={handleShowMemoStoryDialog}>
-                View Story
-              </span>
-              <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
-                Archive
-              </span>
             </div>
           </div>
-        </div>
+        )}
       </div>
       <div
         ref={memoContainerRef}

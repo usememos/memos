@@ -4,6 +4,7 @@ import { locationService, userService } from "../services";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import toastHelper from "./Toast";
 import "../less/menu-btns-popup.less";
+import { useAppSelector } from "../store";
 
 interface Props {
   shownStatus: boolean;
@@ -11,6 +12,7 @@ interface Props {
 }
 
 const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
+  const user = useAppSelector((state) => state.user.user);
   const { shownStatus, setShownStatus } = props;
   const popupElRef = useRef<HTMLDivElement>(null);
 
@@ -55,6 +57,10 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
     window.location.reload();
   };
 
+  const handleSignInBtnClick = async () => {
+    locationService.replaceHistory("/signin");
+  };
+
   return (
     <div className={`menu-btns-popup ${shownStatus ? "" : "hidden"}`} ref={popupElRef}>
       <button className="btn action-btn" onClick={handleAboutBtnClick}>
@@ -63,8 +69,8 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
       <button className="btn action-btn" onClick={handlePingBtnClick}>
         <span className="icon">🎯</span> Ping
       </button>
-      <button className="btn action-btn" onClick={handleSignOutBtnClick}>
-        <span className="icon">👋</span> Sign out
+      <button className="btn action-btn" onClick={user ? handleSignOutBtnClick : handleSignInBtnClick}>
+        <span className="icon">👋</span> {user ? "Sign out" : "Sign in"}
       </button>
     </div>
   );
