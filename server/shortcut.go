@@ -62,7 +62,11 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			if c.QueryParam("userID") != "" {
-				userID, _ = strconv.Atoi(c.QueryParam("userID"))
+				var err error
+				userID, err = strconv.Atoi(c.QueryParam("userID"))
+				if err != nil {
+					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.QueryParam("userID")))
+				}
 			} else {
 				ownerUserType := api.Owner
 				ownerUser, err := s.Store.FindUser(&api.UserFind{
