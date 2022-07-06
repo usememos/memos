@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { userService } from "../services";
+import { locationService, userService } from "../services";
 import Sidebar from "../components/Sidebar";
 import useLoading from "../hooks/useLoading";
 import MemosHeader from "../components/MemosHeader";
@@ -20,6 +20,9 @@ function Home() {
           // do nth
         })
         .finally(() => {
+          if (userService.getState().user && locationService.getState().pathname !== "/") {
+            locationService.replaceHistory("/");
+          }
           loadingState.setFinish();
         });
     } else {
