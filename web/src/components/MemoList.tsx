@@ -79,7 +79,7 @@ const MemoList: React.FC<Props> = () => {
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   useEffect(() => {
-    const path = window.location.pathname.slice(1);
+    const path = locationService.getState().pathname.slice(1);
     const userId = !isNaN(Number(path)) ? Number(path) : undefined;
     memoService
       .fetchAllMemos(userId)

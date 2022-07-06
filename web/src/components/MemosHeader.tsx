@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { memoService, shortcutService } from "../services";
+import { locationService, memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
 import SearchBar from "./SearchBar";
 import { toggleSiderbar } from "./Sidebar";
@@ -30,7 +30,7 @@ const MemosHeader: React.FC<Props> = () => {
     const now = Date.now();
     if (now - prevRequestTimestamp > 10 * 1000) {
       prevRequestTimestamp = now;
-      const path = window.location.pathname.slice(1);
+      const path = locationService.getState().pathname.slice(1);
       const userId = !isNaN(Number(path)) ? Number(path) : undefined;
       memoService.fetchAllMemos(userId).catch(() => {
         // do nth
