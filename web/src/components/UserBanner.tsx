@@ -23,10 +23,17 @@ const UserBanner: React.FC<Props> = () => {
 
   useEffect(() => {
     if (username === "Memos") {
-      api.getUserNameById(Number(locationService.getState().pathname.slice(1))).then(({ data }) => {
-        const { data: username } = data;
-        setUsername(username);
-      });
+      if (locationService.getState().pathname === "/") {
+        api.getSystemStatus().then(({ data }) => {
+          const { data: status } = data;
+          setUsername(status.owner.name);
+        });
+      } else {
+        api.getUserNameById(Number(locationService.getState().pathname.slice(1))).then(({ data }) => {
+          const { data: username } = data;
+          setUsername(username);
+        });
+      }
     }
   }, []);
 
