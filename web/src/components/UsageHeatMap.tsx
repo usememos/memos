@@ -73,9 +73,6 @@ const UsageHeatMap: React.FC<Props> = () => {
       locationService.setFromAndToQuery();
       setCurrentStat(null);
     } else if (item.count > 0) {
-      if (!["/"].includes(locationService.getState().pathname)) {
-        locationService.setPathname("/");
-      }
       locationService.setFromAndToQuery(item.timestamp, item.timestamp + DAILY_TIMESTAMP);
       setCurrentStat(item);
     }
