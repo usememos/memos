@@ -48,6 +48,7 @@ const locationService = {
       setQuery({
         tag: undefined,
         type: undefined,
+        duration: undefined,
         text: undefined,
         shortcutId: undefined,
       })
