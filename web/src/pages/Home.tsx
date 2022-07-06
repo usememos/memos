@@ -13,6 +13,9 @@ function Home() {
   const loadingState = useLoading();
 
   useEffect(() => {
+    if (window.location.pathname !== locationService.getState().pathname) {
+      locationService.replaceHistory("/");
+    }
     if (!user) {
       userService
         .doSignIn()
