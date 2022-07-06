@@ -8,6 +8,7 @@ import UsageHeatMap from "./UsageHeatMap";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
 import "../less/siderbar.less";
+import { userService } from "../services";
 
 interface Props {}
 
@@ -48,7 +49,7 @@ const Sidebar: React.FC<Props> = () => {
         </div>
       </div>
       <UsageHeatMap />
-      {user && (
+      {userService.isNotVisitor() && (
         <>
           <div className="action-btns-container">
             <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>

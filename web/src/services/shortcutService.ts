@@ -1,3 +1,4 @@
+import { locationService } from ".";
 import * as api from "../helpers/api";
 import store from "../store/";
 import { createShortcut, deleteShortcut, patchShortcut, setShortcuts } from "../store/modules/shortcut";
@@ -10,13 +11,18 @@ const convertResponseModelShortcut = (shortcut: Shortcut): Shortcut => {
   };
 };
 
+const getUserIdFromPath = () => {
+  const path = locationService.getState().pathname.slice(1);
+  return !isNaN(Number(path)) ? Number(path) : undefined;
+};
+
 const shortcutService = {
   getState: () => {
     return store.getState().shortcut;
   },
 
-  getMyAllShortcuts: async (userID?: number) => {
-    const { data } = (await api.getShortcutList(userID)).data;
+  getMyAllShortcuts: async () => {
+    const { data } = (await api.getShortcutList(getUserIdFromPath())).data;
     const shortcuts = data.map((s) => convertResponseModelShortcut(s));
     store.dispatch(setShortcuts(shortcuts));
   },

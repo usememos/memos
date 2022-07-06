@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { locationService, shortcutService } from "../services";
+import { locationService, shortcutService, userService } from "../services";
 import { useAppSelector } from "../store";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
@@ -13,7 +13,6 @@ interface Props {}
 const ShortcutList: React.FC<Props> = () => {
   const query = useAppSelector((state) => state.location.query);
   const shortcuts = useAppSelector((state) => state.shortcut.shortcuts);
-  const user = useAppSelector((state) => state.user.user);
   const loadingState = useLoading();
 
   const pinnedShortcuts = shortcuts
@@ -25,10 +24,8 @@ const ShortcutList: React.FC<Props> = () => {
   const sortedShortcuts = pinnedShortcuts.concat(unpinnedShortcuts);
 
   useEffect(() => {
-    const path = locationService.getState().pathname.slice(1);
-    const userId = !isNaN(Number(path)) ? Number(path) : undefined;
     shortcutService
-      .getMyAllShortcuts(userId)
+      .getMyAllShortcuts()
       .catch(() => {
         // do nth
       })
@@ -41,7 +38,7 @@ const ShortcutList: React.FC<Props> = () => {
     <div className="shortcuts-wrapper">
       <p className="title-text">
         <span className="normal-text">Shortcuts</span>
-        {user && (
+        {userService.isNotVisitor() && (
           <span className="btn" onClick={() => showCreateShortcutDialog()}>
             <img src="/icons/add.svg" alt="add shortcut" />
           </span>
@@ -62,7 +59,6 @@ interface ShortcutContainerProps {
 }
 
 const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
-  const user = useAppSelector((state) => state.user.user);
   const { shortcut, isActive } = props;
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
@@ -120,7 +116,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
         <div className="shortcut-text-container">
           <span className="shortcut-text">{shortcut.title}</span>
         </div>
-        {user && (
+        {userService.isNotVisitor() && (
           <div className="btns-container">
             <span className="action-btn toggle-btn">
               <img className="icon-img" src="/icons/more.svg" />

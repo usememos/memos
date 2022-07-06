@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppSelector } from "../store";
-import { locationService, memoService } from "../services";
+import { locationService, memoService, userService } from "../services";
 import useToggle from "../hooks/useToggle";
 import Only from "./common/OnlyWhen";
 import * as utils from "../helpers/utils";
@@ -17,13 +17,10 @@ interface Props {}
 const TagList: React.FC<Props> = () => {
   const { memos, tags: tagsText } = useAppSelector((state) => state.memo);
   const query = useAppSelector((state) => state.location.query);
-  const user = useAppSelector((state) => state.user.user);
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
-    const path = locationService.getState().pathname.slice(1);
-    const userId = !isNaN(Number(path)) ? Number(path) : undefined;
-    memoService.updateTagsState(userId);
+    memoService.updateTagsState();
   }, [memos]);
 
   useEffect(() => {
@@ -74,7 +71,7 @@ const TagList: React.FC<Props> = () => {
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        <Only when={user !== undefined && tags.length < 5}>
+        <Only when={userService.isNotVisitor() && tags.length < 5}>
           <p className="tag-tip-container">
             Enter <span className="code-text">#tag </span> to create a tag
           </p>

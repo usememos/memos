@@ -15,6 +15,10 @@ const userService = {
     return store.getState().user;
   },
 
+  isNotVisitor: () => {
+    return store.getState().user.user !== undefined;
+  },
+
   doSignIn: async () => {
     const { data: user } = (await api.getUser()).data;
     if (user) {

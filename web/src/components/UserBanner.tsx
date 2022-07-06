@@ -4,6 +4,7 @@ import { locationService } from "../services";
 import MenuBtnsPopup from "./MenuBtnsPopup";
 import "../less/user-banner.less";
 import * as api from "../helpers/api";
+import toastHelper from "./Toast";
 
 interface Props {}
 
@@ -29,10 +30,15 @@ const UserBanner: React.FC<Props> = () => {
           setUsername(status.owner.name);
         });
       } else {
-        api.getUserNameById(Number(locationService.getState().pathname.slice(1))).then(({ data }) => {
-          const { data: username } = data;
-          setUsername(username);
-        });
+        api
+          .getUserNameById(Number(locationService.getState().pathname.slice(1)))
+          .then(({ data }) => {
+            const { data: username } = data;
+            setUsername(username);
+          })
+          .catch(() => {
+            toastHelper.error("User not found");
+          });
       }
     }
   }, []);

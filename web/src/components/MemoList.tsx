@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { locationService, memoService, shortcutService } from "../services";
+import { memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
@@ -79,26 +79,11 @@ const MemoList: React.FC<Props> = () => {
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   useEffect(() => {
-    const path = locationService.getState().pathname.slice(1);
-    const userId = !isNaN(Number(path)) ? Number(path) : undefined;
     memoService
-      .fetchAllMemos(userId)
-      .then((data) => {
-        if (data.length === 0) {
-          locationService.replaceHistory("/");
-          memoService
-            .fetchAllMemos()
-            .then(() => {
-              setFetchStatus(false);
-              memoService.updateTagsState();
-            })
-            .catch(() => {
-              toastHelper.error("😭 Fetching failed, please try again later.");
-            });
-        } else {
-          setFetchStatus(false);
-          memoService.updateTagsState(userId);
-        }
+      .fetchAllMemos()
+      .then(() => {
+        setFetchStatus(false);
+        memoService.updateTagsState();
       })
       .catch(() => {
         toastHelper.error("😭 Fetching failed, please try again later.");

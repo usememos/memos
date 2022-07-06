@@ -3,14 +3,13 @@ import { escape, indexOf } from "lodash-es";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
 import { DONE_BLOCK_REG, parseMarkedToHtml, TODO_BLOCK_REG } from "../helpers/marked";
 import * as utils from "../helpers/utils";
-import { editorStateService, locationService, memoService } from "../services";
+import { editorStateService, locationService, memoService, userService } from "../services";
 import Only from "./common/OnlyWhen";
 import Image from "./Image";
 import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import toastHelper from "./Toast";
 import "../less/memo.less";
-import { useAppSelector } from "../store";
 
 const MAX_MEMO_CONTAINER_HEIGHT = 384;
 
@@ -25,7 +24,6 @@ interface State {
 }
 
 const Memo: React.FC<Props> = (props: Props) => {
-  const user = useAppSelector((state) => state.user.user);
   const { memo: propsMemo } = props;
   const memo = {
     ...propsMemo,
@@ -114,7 +112,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       } else {
         locationService.setTagQuery(tagName);
       }
-    } else if (targetEl.classList.contains("todo-block") && user) {
+    } else if (targetEl.classList.contains("todo-block") && userService.isNotVisitor()) {
       const status = targetEl.dataset?.value;
       const todoElementList = [...(memoContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
       for (const element of todoElementList) {
@@ -160,7 +158,7 @@ const Memo: React.FC<Props> = (props: Props) => {
             <span className="ml-2">PINNED</span>
           </Only>
         </span>
-        {user && (
+        {userService.isNotVisitor() && (
           <div className="btns-container">
             <span className="btn more-action-btn">
               <img className="icon-img" src="/icons/more.svg" />

@@ -51,7 +51,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		return nil
 	})
 
-	g.GET("/username/:id", func(c echo.Context) error {
+	g.GET("/user/:id/name", func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted user id").SetInternal(err)
@@ -60,7 +60,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		user, err := s.Store.FindUser(&api.UserFind{
 			ID: &id,
 		})
-		if err != nil {
+		if err != nil || user == nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user").SetInternal(err)
 		}
 

@@ -9,13 +9,13 @@ import MemoList from "../components/MemoList";
 import "../less/home.less";
 
 function Home() {
-  const { user } = userService.getState();
   const loadingState = useLoading();
 
   useEffect(() => {
     if (window.location.pathname !== locationService.getState().pathname) {
       locationService.replaceHistory("/");
     }
+    const { user } = userService.getState();
     if (!user) {
       userService
         .doSignIn()
@@ -41,7 +41,7 @@ function Home() {
           <main className="memos-wrapper">
             <div className="memos-editor-wrapper">
               <MemosHeader />
-              {user && <MemoEditor />}
+              {userService.isNotVisitor() && <MemoEditor />}
               <MemoFilter />
             </div>
             <MemoList />

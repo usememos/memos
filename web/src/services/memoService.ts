@@ -1,6 +1,7 @@
 import * as api from "../helpers/api";
 import { createMemo, patchMemo, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
+import { locationService } from ".";
 
 const convertResponseModelMemo = (memo: Memo): Memo => {
   return {
@@ -10,21 +11,26 @@ const convertResponseModelMemo = (memo: Memo): Memo => {
   };
 };
 
+const getUserIdFromPath = () => {
+  const path = locationService.getState().pathname.slice(1);
+  return !isNaN(Number(path)) ? Number(path) : undefined;
+};
+
 const memoService = {
   getState: () => {
     return store.getState().memo;
   },
 
-  fetchAllMemos: async (userID?: number) => {
-    const { data } = (await api.getMemoList(userID)).data;
+  fetchAllMemos: async () => {
+    const { data } = (await api.getMemoList(getUserIdFromPath())).data;
     const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
     store.dispatch(setMemos(memos));
 
     return memos;
   },
 
-  fetchArchivedMemos: async (userID?: number) => {
-    const { data } = (await api.getArchivedMemoList(userID)).data;
+  fetchArchivedMemos: async () => {
+    const { data } = (await api.getArchivedMemoList(getUserIdFromPath())).data;
     const archivedMemos = data.map((m) => {
       return convertResponseModelMemo(m);
     });
@@ -41,8 +47,8 @@ const memoService = {
     return null;
   },
 
-  updateTagsState: async (userID?: number) => {
-    const { data } = (await api.getTagList(userID)).data;
+  updateTagsState: async () => {
+    const { data } = (await api.getTagList(getUserIdFromPath())).data;
     store.dispatch(setTags(data));
   },
 

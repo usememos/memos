@@ -30,10 +30,10 @@ INSERT INTO
 VALUES
   (
     102, 
-    'demo2@usememos.com',
+    'jack@usememos.com',
     'USER',
-    'Demo User',
-    'demo_open_id2',
+    'Jack',
+    'jack_open_id',
     -- raw password: secret
     '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
   );
