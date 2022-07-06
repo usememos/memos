@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { locationService, memoService, shortcutService } from "../services";
+import { memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
 import SearchBar from "./SearchBar";
 import { toggleSiderbar } from "./Sidebar";
