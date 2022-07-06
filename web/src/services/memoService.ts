@@ -15,16 +15,16 @@ const memoService = {
     return store.getState().memo;
   },
 
-  fetchAllMemos: async () => {
-    const { data } = (await api.getMemoList()).data;
+  fetchAllMemos: async (userID?: number) => {
+    const { data } = (await api.getMemoList(userID)).data;
     const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
     store.dispatch(setMemos(memos));
 
     return memos;
   },
 
-  fetchArchivedMemos: async () => {
-    const { data } = (await api.getArchivedMemoList()).data;
+  fetchArchivedMemos: async (userID?: number) => {
+    const { data } = (await api.getArchivedMemoList(userID)).data;
     const archivedMemos = data.map((m) => {
       return convertResponseModelMemo(m);
     });
@@ -41,8 +41,8 @@ const memoService = {
     return null;
   },
 
-  updateTagsState: async () => {
-    const { data } = (await api.getTagList()).data;
+  updateTagsState: async (userID?: number) => {
+    const { data } = (await api.getTagList(userID)).data;
     store.dispatch(setTags(data));
   },
 

@@ -15,8 +15,8 @@ const shortcutService = {
     return store.getState().shortcut;
   },
 
-  getMyAllShortcuts: async () => {
-    const { data } = (await api.getShortcutList()).data;
+  getMyAllShortcuts: async (userID?: number) => {
+    const { data } = (await api.getShortcutList(userID)).data;
     const shortcuts = data.map((s) => convertResponseModelShortcut(s));
     store.dispatch(setShortcuts(shortcuts));
   },

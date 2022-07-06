@@ -30,7 +30,9 @@ const MemosHeader: React.FC<Props> = () => {
     const now = Date.now();
     if (now - prevRequestTimestamp > 10 * 1000) {
       prevRequestTimestamp = now;
-      memoService.fetchAllMemos().catch(() => {
+      const path = window.location.pathname.slice(1);
+      const userId = !isNaN(Number(path)) ? Number(path) : undefined;
+      memoService.fetchAllMemos(userId).catch(() => {
         // do nth
       });
     }

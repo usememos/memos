@@ -21,7 +21,9 @@ const TagList: React.FC<Props> = () => {
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
-    memoService.updateTagsState();
+    const path = window.location.pathname.slice(1);
+    const userId = !isNaN(Number(path)) ? Number(path) : undefined;
+    memoService.updateTagsState(userId);
   }, [memos]);
 
   useEffect(() => {

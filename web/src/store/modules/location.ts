@@ -20,7 +20,7 @@ interface State {
 }
 
 const getValidPathname = (pathname: string): string => {
-  if (["/", "/signin"].includes(pathname)) {
+  if (["/", "/signin"].includes(pathname) || !pathname.slice(1).includes("/")) {
     return pathname;
   } else {
     return "/";

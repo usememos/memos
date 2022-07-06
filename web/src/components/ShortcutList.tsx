@@ -25,8 +25,10 @@ const ShortcutList: React.FC<Props> = () => {
   const sortedShortcuts = pinnedShortcuts.concat(unpinnedShortcuts);
 
   useEffect(() => {
+    const path = window.location.pathname.slice(1);
+    const userId = !isNaN(Number(path)) ? Number(path) : undefined;
     shortcutService
-      .getMyAllShortcuts()
+      .getMyAllShortcuts(userId)
       .catch(() => {
         // do nth
       })

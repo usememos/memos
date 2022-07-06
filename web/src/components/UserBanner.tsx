@@ -14,7 +14,6 @@ const UserBanner: React.FC<Props> = () => {
   const [username, setUsername] = useState(user ? user.name : "Memos");
 
   const handleUsernameClick = useCallback(() => {
-    locationService.pushHistory("/");
     locationService.clearQuery();
   }, []);
 
@@ -24,9 +23,9 @@ const UserBanner: React.FC<Props> = () => {
 
   useEffect(() => {
     if (username === "Memos") {
-      api.getSystemStatus().then(({ data }) => {
-        const { data: status } = data;
-        setUsername(status.owner.name);
+      api.getUserNameById(Number(locationService.getState().pathname.slice(1))).then(({ data }) => {
+        const { data: username } = data;
+        setUsername(username);
       });
     }
   }, []);
