@@ -44,7 +44,15 @@ const locationService = {
   },
 
   clearQuery: () => {
-    store.dispatch(setQuery({}));
+    store.dispatch(
+      setQuery({
+        tag: undefined,
+        type: undefined,
+        duration: undefined,
+        text: undefined,
+        shortcutId: undefined,
+      })
+    );
     updateLocationUrl();
   },
 
