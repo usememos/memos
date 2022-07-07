@@ -3,7 +3,6 @@ package server
 import (
 	"fmt"
 	"net/http"
-	"regexp"
 	"strconv"
 
 	"github.com/usememos/memos/api"
@@ -60,12 +59,7 @@ func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		if common.HasPrefixes(c.Path(), "/api/memo", "/api/tag", "/api/shortcut") && c.Request().Method == http.MethodGet {
-			return next(c)
-		}
-
-		matched, _ := regexp.Match(`^\/api\/u\/(\d+)`, []byte(c.Request().URL.Path))
-		if matched && c.Request().Method == http.MethodGet {
+		if common.HasPrefixes(c.Path(), "/api/memo", "/api/tag", "/api/shortcut", "/api/user/:id/name") && c.Request().Method == http.MethodGet {
 			return next(c)
 		}
 

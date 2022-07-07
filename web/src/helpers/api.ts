@@ -45,7 +45,7 @@ export function getUserList() {
 }
 
 export function getUserNameById(id: number) {
-  return axios.get<ResponseObject<string>>(`/api/u/${id}`);
+  return axios.get<ResponseObject<string>>(`/api/user/${id}/name`);
 }
 
 export function patchUser(userPatch: UserPatch) {

@@ -12,7 +12,7 @@ const convertResponseModelUser = (user: User): User => {
 };
 
 export const getUserIdFromPath = () => {
-  const path = locationService.getState().pathname.slice(1);
+  const path = locationService.getState().pathname.slice(3);
   return !isNaN(Number(path)) ? Number(path) : undefined;
 };
 

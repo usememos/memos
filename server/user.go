@@ -51,7 +51,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		return nil
 	})
 
-	g.GET("/u/:id", func(c echo.Context) error {
+	g.GET("/user/:id/name", func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted user id").SetInternal(err)

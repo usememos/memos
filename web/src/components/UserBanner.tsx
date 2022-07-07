@@ -31,7 +31,7 @@ const UserBanner: React.FC<Props> = () => {
         });
       } else {
         api
-          .getUserNameById(Number(locationService.getState().pathname.slice(1)))
+          .getUserNameById(Number(locationService.getState().pathname.slice(3)))
           .then(({ data }) => {
             const { data: username } = data;
             setUsername(username);

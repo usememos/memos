@@ -20,7 +20,7 @@ interface State {
 }
 
 const getValidPathname = (pathname: string): string => {
-  if (["/", "/signin"].includes(pathname) || (!pathname.slice(1).includes("/") && !isNaN(Number(pathname.slice(1))))) {
+  if (["/", "/signin"].includes(pathname) || pathname.match(/^\/u\/(\d+)/)) {
     return pathname;
   } else {
     return "/";
