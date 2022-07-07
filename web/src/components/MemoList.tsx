@@ -4,8 +4,8 @@ import { useAppSelector } from "../store";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
-import Memo from "./Memo";
 import toastHelper from "./Toast";
+import Memo from "./Memo";
 import "../less/memo-list.less";
 
 interface Props {}

@@ -3,8 +3,8 @@ import { Provider } from "react-redux";
 import store from "./store";
 import { updateStateWithLocation } from "./store/modules/location";
 import App from "./App";
-import "./helpers/polyfill";
 import "./less/global.less";
+import "./helpers/polyfill";
 import "./css/index.css";
 
 const container = document.getElementById("root");

@@ -1,14 +1,14 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { escape, indexOf } from "lodash-es";
 import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
-import { DONE_BLOCK_REG, parseMarkedToHtml, TODO_BLOCK_REG } from "../helpers/marked";
 import * as utils from "../helpers/utils";
+import { DONE_BLOCK_REG, parseMarkedToHtml, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Only from "./common/OnlyWhen";
+import toastHelper from "./Toast";
 import Image from "./Image";
 import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
-import toastHelper from "./Toast";
 import "../less/memo.less";
 
 const MAX_MEMO_CONTAINER_HEIGHT = 384;

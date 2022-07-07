@@ -1,7 +1,7 @@
 import { IMAGE_URL_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { formatMemoContent } from "./Memo";
 import Only from "./common/OnlyWhen";
+import { formatMemoContent } from "./Memo";
 import "../less/daily-memo.less";
 
 interface DailyMemo extends Memo {

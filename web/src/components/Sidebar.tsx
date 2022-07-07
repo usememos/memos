@@ -1,5 +1,6 @@
 import { useAppSelector } from "../store";
 import * as utils from "../helpers/utils";
+import { userService } from "../services";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
@@ -7,7 +8,6 @@ import UserBanner from "./UserBanner";
 import UsageHeatMap from "./UsageHeatMap";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
-import { userService } from "../services";
 import "../less/siderbar.less";
 
 interface Props {}

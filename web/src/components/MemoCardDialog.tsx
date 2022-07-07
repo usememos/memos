@@ -3,11 +3,11 @@ import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { editorStateService, memoService } from "../services";
 import { parseHtmlToRawText } from "../helpers/marked";
-import { formatMemoContent } from "./Memo";
+import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import { showDialog } from "./Dialog";
-import Only from "./common/OnlyWhen";
 import Image from "./Image";
+import { formatMemoContent } from "./Memo";
 import "../less/memo-card-dialog.less";
 import "../less/memo-content.less";
 

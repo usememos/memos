@@ -1,8 +1,8 @@
 import { useEffect } from "react";
-import { showDialog } from "./Dialog";
-import useLoading from "../hooks/useLoading";
-import toastHelper from "./Toast";
 import { userService } from "../services";
+import useLoading from "../hooks/useLoading";
+import { showDialog } from "./Dialog";
+import toastHelper from "./Toast";
 import "../less/confirm-reset-openid-dialog.less";
 
 interface Props extends DialogProps {}
