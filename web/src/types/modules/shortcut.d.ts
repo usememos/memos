@@ -3,6 +3,7 @@ type ShortcutId = number;
 interface Shortcut {
   id: ShortcutId;
 
+  creatorId: UserId;
   rowStatus: RowStatus;
   createdTs: TimeStamp;
   updatedTs: TimeStamp;
@@ -21,4 +22,8 @@ interface ShortcutPatch {
   title?: string;
   payload?: string;
   rowStatus?: RowStatus;
+}
+
+interface ShortcutFind {
+  creatorId?: UserId;
 }

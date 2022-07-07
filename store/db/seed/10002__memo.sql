@@ -52,6 +52,24 @@ INSERT INTO
 VALUES
   (
     104,
-    '好好学习，天天向上。🤜🤛', 
+    '#TODO 
+- [x] Take more photos about **🌄 sunset**;
+- [ ] Clean the classroom;
+- [ ] Watch *👦 The Boys*;
+(👆 click to toggle status)
+', 
+    102
+  );
+
+INSERT INTO 
+  memo (
+    `id`,
+    `content`, 
+    `creator_id`
+  )
+VALUES
+  (
+    105,
+    '三人行，必有我师焉！👨‍🏫', 
     102
   );

@@ -59,32 +59,19 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 	})
 
 	g.GET("/shortcut", func(c echo.Context) error {
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			if c.QueryParam("userID") != "" {
-				var err error
-				userID, err = strconv.Atoi(c.QueryParam("userID"))
-				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.QueryParam("userID")))
-				}
-			} else {
-				ownerUserType := api.Owner
-				ownerUser, err := s.Store.FindUser(&api.UserFind{
-					Role: &ownerUserType,
-				})
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
-				}
-				if ownerUser == nil {
-					return echo.NewHTTPError(http.StatusNotFound, "Owner user do not exist")
-				}
-				userID = ownerUser.ID
+		shortcutFind := &api.ShortcutFind{}
+
+		if userID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
+			shortcutFind.CreatorID = &userID
+		} else {
+			userID, ok := c.Get(getUserIDContextKey()).(int)
+			if !ok {
+				return echo.NewHTTPError(http.StatusBadRequest, "Missing creatorId to find shortcut")
 			}
+
+			shortcutFind.CreatorID = &userID
 		}
 
-		shortcutFind := &api.ShortcutFind{
-			CreatorID: &userID,
-		}
 		list, err := s.Store.FindShortcutList(shortcutFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch shortcut list").SetInternal(err)

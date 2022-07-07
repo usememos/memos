@@ -1,3 +1,4 @@
+import { isUndefined } from "lodash-es";
 import { locationService } from ".";
 import * as api from "../helpers/api";
 import store from "../store";
@@ -11,18 +12,26 @@ const convertResponseModelUser = (user: User): User => {
   };
 };
 
-export const getUserIdFromPath = () => {
-  const path = locationService.getState().pathname.slice(3);
-  return !isNaN(Number(path)) ? Number(path) : undefined;
-};
-
 const userService = {
   getState: () => {
     return store.getState().user;
   },
 
-  isNotVisitor: () => {
-    return store.getState().user.user !== undefined;
+  isVisitorMode: () => {
+    return !isUndefined(userService.getUserIdFromPath());
+  },
+
+  getCurrentUserId: () => {
+    return userService.getUserIdFromPath() ?? store.getState().user.user?.id;
+  },
+
+  getUserIdFromPath: () => {
+    const userIdRegex = /^\/u\/(\d+).*/;
+    const result = locationService.getState().pathname.match(userIdRegex);
+    if (result && result.length === 2) {
+      return Number(result[1]);
+    }
+    return undefined;
   },
 
   doSignIn: async () => {

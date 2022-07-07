@@ -12,8 +12,8 @@ export function getSystemStatus() {
   return axios.get<ResponseObject<SystemStatus>>("/api/status");
 }
 
-export function login(email: string, password: string) {
-  return axios.post<ResponseObject<User>>("/api/auth/login", {
+export function signin(email: string, password: string) {
+  return axios.post<ResponseObject<User>>("/api/auth/signin", {
     email,
     password,
   });
@@ -52,12 +52,15 @@ export function patchUser(userPatch: UserPatch) {
   return axios.patch<ResponseObject<User>>("/api/user/me", userPatch);
 }
 
-export function getMemoList(userId?: number) {
-  return axios.get<ResponseObject<Memo[]>>(`/api/memo${userId ? "?userID=" + userId : ""}`);
-}
-
-export function getArchivedMemoList(userId?: number) {
-  return axios.get<ResponseObject<Memo[]>>(`/api/memo?rowStatus=ARCHIVED${userId ? "&userID=" + userId : ""}`);
+export function getMemoList(memoFind?: MemoFind) {
+  const queryList = [];
+  if (memoFind?.creatorId) {
+    queryList.push(`creatorId=${memoFind.creatorId}`);
+  }
+  if (memoFind?.rowStatus) {
+    queryList.push(`rowStatus=${memoFind.rowStatus}`);
+  }
+  return axios.get<ResponseObject<Memo[]>>(`/api/memo?${queryList.join("&")}`);
 }
 
 export function createMemo(memoCreate: MemoCreate) {
@@ -84,8 +87,12 @@ export function deleteMemo(memoId: MemoId) {
   return axios.delete(`/api/memo/${memoId}`);
 }
 
-export function getShortcutList(userId?: number) {
-  return axios.get<ResponseObject<Shortcut[]>>(`/api/shortcut${userId ? "?userID=" + userId : ""}`);
+export function getShortcutList(shortcutFind: ShortcutFind) {
+  const queryList = [];
+  if (shortcutFind?.creatorId) {
+    queryList.push(`creatorId=${shortcutFind.creatorId}`);
+  }
+  return axios.get<ResponseObject<Shortcut[]>>(`/api/shortcut?${queryList.join("&")}`);
 }
 
 export function createShortcut(shortcutCreate: ShortcutCreate) {
@@ -104,6 +111,10 @@ export function uploadFile(formData: FormData) {
   return axios.post<ResponseObject<Resource>>("/api/resource", formData);
 }
 
-export function getTagList(userId?: number) {
-  return axios.get<ResponseObject<string[]>>(`/api/tag${userId ? "?userID=" + userId : ""}`);
+export function getTagList(tagFind?: TagFind) {
+  const queryList = [];
+  if (tagFind?.creatorId) {
+    queryList.push(`creatorId=${tagFind.creatorId}`);
+  }
+  return axios.get<ResponseObject<string[]>>(`/api/tag?${queryList.join("&")}`);
 }

@@ -67,8 +67,8 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
       <button className="btn action-btn" onClick={handlePingBtnClick}>
         <span className="icon">🎯</span> Ping
       </button>
-      <button className="btn action-btn" onClick={userService.isNotVisitor() ? handleSignOutBtnClick : handleSignInBtnClick}>
-        <span className="icon">👋</span> {userService.isNotVisitor() ? "Sign out" : "Sign in"}
+      <button className="btn action-btn" onClick={!userService.isVisitorMode() ? handleSignOutBtnClick : handleSignInBtnClick}>
+        <span className="icon">👋</span> {!userService.isVisitorMode() ? "Sign out" : "Sign in"}
       </button>
     </div>
   );

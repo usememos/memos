@@ -1,7 +1,7 @@
 import * as api from "../helpers/api";
 import { createMemo, patchMemo, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
-import { getUserIdFromPath } from "./userService";
+import userService from "./userService";
 
 const convertResponseModelMemo = (memo: Memo): Memo => {
   return {
@@ -17,7 +17,10 @@ const memoService = {
   },
 
   fetchAllMemos: async () => {
-    const { data } = (await api.getMemoList(getUserIdFromPath())).data;
+    const memoFind: MemoFind = {
+      creatorId: userService.getCurrentUserId(),
+    };
+    const { data } = (await api.getMemoList(memoFind)).data;
     const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
     store.dispatch(setMemos(memos));
 
@@ -25,7 +28,11 @@ const memoService = {
   },
 
   fetchArchivedMemos: async () => {
-    const { data } = (await api.getArchivedMemoList(getUserIdFromPath())).data;
+    const memoFind: MemoFind = {
+      creatorId: userService.getCurrentUserId(),
+      rowStatus: "ARCHIVED",
+    };
+    const { data } = (await api.getMemoList(memoFind)).data;
     const archivedMemos = data.map((m) => {
       return convertResponseModelMemo(m);
     });
@@ -43,7 +50,10 @@ const memoService = {
   },
 
   updateTagsState: async () => {
-    const { data } = (await api.getTagList(getUserIdFromPath())).data;
+    const tagFind: TagFind = {
+      creatorId: userService.getCurrentUserId(),
+    };
+    const { data } = (await api.getTagList(tagFind)).data;
     store.dispatch(setTags(data));
   },
 
