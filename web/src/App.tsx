@@ -1,6 +1,5 @@
 import { appRouterSwitch } from "./routers";
 import { useAppSelector } from "./store";
-import "./less/app.less";
 
 function App() {
   const pathname = useAppSelector((state) => state.location.pathname);
