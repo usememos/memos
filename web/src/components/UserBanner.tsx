@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
-import { useAppSelector } from "../store";
-import { locationService } from "../services";
-import MenuBtnsPopup from "./MenuBtnsPopup";
-import "../less/user-banner.less";
 import * as api from "../helpers/api";
+import { useCallback, useEffect, useState } from "react";
+import MenuBtnsPopup from "./MenuBtnsPopup";
+import { locationService } from "../services";
 import toastHelper from "./Toast";
+import { useAppSelector } from "../store";
+import "../less/user-banner.less";
 
 interface Props {}
 
