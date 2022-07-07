@@ -1,3 +1,4 @@
+import { locationService } from ".";
 import * as api from "../helpers/api";
 import store from "../store";
 import { setUser, patchUser } from "../store/modules/user";
@@ -8,6 +9,11 @@ const convertResponseModelUser = (user: User): User => {
     createdTs: user.createdTs * 1000,
     updatedTs: user.updatedTs * 1000,
   };
+};
+
+export const getUserIdFromPath = () => {
+  const path = locationService.getState().pathname.slice(1);
+  return !isNaN(Number(path)) ? Number(path) : undefined;
 };
 
 const userService = {

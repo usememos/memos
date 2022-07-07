@@ -1,7 +1,7 @@
-import { locationService } from ".";
 import * as api from "../helpers/api";
 import store from "../store/";
 import { createShortcut, deleteShortcut, patchShortcut, setShortcuts } from "../store/modules/shortcut";
+import { getUserIdFromPath } from "./userService";
 
 const convertResponseModelShortcut = (shortcut: Shortcut): Shortcut => {
   return {
@@ -9,11 +9,6 @@ const convertResponseModelShortcut = (shortcut: Shortcut): Shortcut => {
     createdTs: shortcut.createdTs * 1000,
     updatedTs: shortcut.updatedTs * 1000,
   };
-};
-
-const getUserIdFromPath = () => {
-  const path = locationService.getState().pathname.slice(1);
-  return !isNaN(Number(path)) ? Number(path) : undefined;
 };
 
 const shortcutService = {

@@ -7,8 +7,8 @@ import UserBanner from "./UserBanner";
 import UsageHeatMap from "./UsageHeatMap";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
-import "../less/siderbar.less";
 import { userService } from "../services";
+import "../less/siderbar.less";
 
 interface Props {}
 

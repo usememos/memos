@@ -1,7 +1,7 @@
 import * as api from "../helpers/api";
 import { createMemo, patchMemo, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
-import { locationService } from ".";
+import { getUserIdFromPath } from "./userService";
 
 const convertResponseModelMemo = (memo: Memo): Memo => {
   return {
@@ -9,11 +9,6 @@ const convertResponseModelMemo = (memo: Memo): Memo => {
     createdTs: memo.createdTs * 1000,
     updatedTs: memo.updatedTs * 1000,
   };
-};
-
-const getUserIdFromPath = () => {
-  const path = locationService.getState().pathname.slice(1);
-  return !isNaN(Number(path)) ? Number(path) : undefined;
 };
 
 const memoService = {

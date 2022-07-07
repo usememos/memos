@@ -45,7 +45,7 @@ export function getUserList() {
 }
 
 export function getUserNameById(id: number) {
-  return axios.get<ResponseObject<string>>(`/api/user/${id}/name`);
+  return axios.get<ResponseObject<string>>(`/api/u/${id}`);
 }
 
 export function patchUser(userPatch: UserPatch) {
@@ -57,7 +57,7 @@ export function getMemoList(userId?: number) {
 }
 
 export function getArchivedMemoList(userId?: number) {
-  return axios.get<ResponseObject<Memo[]>>(`/api/memo?rowStatus=ARCHIVED${userId ? "?userID=" + userId : ""}`);
+  return axios.get<ResponseObject<Memo[]>>(`/api/memo?rowStatus=ARCHIVED${userId ? "&userID=" + userId : ""}`);
 }
 
 export function createMemo(memoCreate: MemoCreate) {
@@ -85,7 +85,7 @@ export function deleteMemo(memoId: MemoId) {
 }
 
 export function getShortcutList(userId?: number) {
-  return axios.get<ResponseObject<Shortcut[]>>(`/api/shortcut?${userId ? "?userID=" + userId : ""}`);
+  return axios.get<ResponseObject<Shortcut[]>>(`/api/shortcut${userId ? "?userID=" + userId : ""}`);
 }
 
 export function createShortcut(shortcutCreate: ShortcutCreate) {
@@ -105,5 +105,5 @@ export function uploadFile(formData: FormData) {
 }
 
 export function getTagList(userId?: number) {
-  return axios.get<ResponseObject<string[]>>(`/api/tag?${userId ? "?userID=" + userId : ""}`);
+  return axios.get<ResponseObject<string[]>>(`/api/tag${userId ? "?userID=" + userId : ""}`);
 }

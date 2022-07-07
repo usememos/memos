@@ -75,6 +75,9 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
 				}
+				if ownerUser == nil {
+					return echo.NewHTTPError(http.StatusNotFound, "Owner user do not exist")
+				}
 				userID = ownerUser.ID
 			}
 		}
