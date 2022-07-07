@@ -1,6 +1,7 @@
 import * as api from "../helpers/api";
 import { createMemo, patchMemo, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
+import { getUserIdFromPath } from "./userService";
 
 const convertResponseModelMemo = (memo: Memo): Memo => {
   return {
@@ -16,7 +17,7 @@ const memoService = {
   },
 
   fetchAllMemos: async () => {
-    const { data } = (await api.getMemoList()).data;
+    const { data } = (await api.getMemoList(getUserIdFromPath())).data;
     const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
     store.dispatch(setMemos(memos));
 
@@ -24,7 +25,7 @@ const memoService = {
   },
 
   fetchArchivedMemos: async () => {
-    const { data } = (await api.getArchivedMemoList()).data;
+    const { data } = (await api.getArchivedMemoList(getUserIdFromPath())).data;
     const archivedMemos = data.map((m) => {
       return convertResponseModelMemo(m);
     });
@@ -42,7 +43,7 @@ const memoService = {
   },
 
   updateTagsState: async () => {
-    const { data } = (await api.getTagList()).data;
+    const { data } = (await api.getTagList(getUserIdFromPath())).data;
     store.dispatch(setTags(data));
   },
 

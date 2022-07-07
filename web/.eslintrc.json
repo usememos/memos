@@ -23,6 +23,12 @@
     ],
     "@typescript-eslint/no-empty-interface": ["off"],
     "@typescript-eslint/no-explicit-any": ["off"],
-    "react/react-in-jsx-scope": "off"
+    "react/react-in-jsx-scope": "off",
+    "sort-imports": [
+      "error",
+      {
+        "memberSyntaxSortOrder": ["all", "multiple", "single", "none"]
+      }
+    ]
   }
 }

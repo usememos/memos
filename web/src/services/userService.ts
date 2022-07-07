@@ -1,3 +1,4 @@
+import { locationService } from ".";
 import * as api from "../helpers/api";
 import store from "../store";
 import { setUser, patchUser } from "../store/modules/user";
@@ -10,9 +11,18 @@ const convertResponseModelUser = (user: User): User => {
   };
 };
 
+export const getUserIdFromPath = () => {
+  const path = locationService.getState().pathname.slice(3);
+  return !isNaN(Number(path)) ? Number(path) : undefined;
+};
+
 const userService = {
   getState: () => {
     return store.getState().user;
+  },
+
+  isNotVisitor: () => {
+    return store.getState().user.user !== undefined;
   },
 
   doSignIn: async () => {

@@ -12,6 +12,9 @@ function Home() {
   const loadingState = useLoading();
 
   useEffect(() => {
+    if (window.location.pathname !== locationService.getState().pathname) {
+      locationService.replaceHistory("/");
+    }
     const { user } = userService.getState();
     if (!user) {
       userService
@@ -20,11 +23,10 @@ function Home() {
           // do nth
         })
         .finally(() => {
-          if (userService.getState().user) {
-            loadingState.setFinish();
-          } else {
-            locationService.replaceHistory("/signin");
+          if (userService.getState().user && locationService.getState().pathname !== "/") {
+            locationService.replaceHistory("/");
           }
+          loadingState.setFinish();
         });
     } else {
       loadingState.setFinish();
@@ -39,7 +41,7 @@ function Home() {
           <main className="memos-wrapper">
             <div className="memos-editor-wrapper">
               <MemosHeader />
-              <MemoEditor />
+              {userService.isNotVisitor() && <MemoEditor />}
               <MemoFilter />
             </div>
             <MemoList />

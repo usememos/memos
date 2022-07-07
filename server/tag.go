@@ -2,9 +2,11 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"regexp"
 	"sort"
+	"strconv"
 
 	"github.com/usememos/memos/api"
 
@@ -13,7 +15,29 @@ import (
 
 func (s *Server) registerTagRoutes(g *echo.Group) {
 	g.GET("/tag", func(c echo.Context) error {
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			if c.QueryParam("userID") != "" {
+				var err error
+				userID, err = strconv.Atoi(c.QueryParam("userID"))
+				if err != nil {
+					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.QueryParam("userID")))
+				}
+			} else {
+				ownerUserType := api.Owner
+				ownerUser, err := s.Store.FindUser(&api.UserFind{
+					Role: &ownerUserType,
+				})
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
+				}
+				if ownerUser == nil {
+					return echo.NewHTTPError(http.StatusNotFound, "Owner user do not exist")
+				}
+				userID = ownerUser.ID
+			}
+		}
+
 		contentSearch := "#"
 		normalRowStatus := api.Normal
 		memoFind := api.MemoFind{

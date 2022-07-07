@@ -42,3 +42,16 @@ VALUES
     '好好学习，天天向上。🤜🤛', 
     101
   );
+
+INSERT INTO 
+  memo (
+    `id`,
+    `content`, 
+    `creator_id`
+  )
+VALUES
+  (
+    104,
+    '好好学习，天天向上。🤜🤛', 
+    102
+  );

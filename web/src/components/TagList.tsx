@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppSelector } from "../store";
-import { locationService, memoService } from "../services";
+import { locationService, memoService, userService } from "../services";
 import useToggle from "../hooks/useToggle";
 import Only from "./common/OnlyWhen";
 import * as utils from "../helpers/utils";
@@ -71,7 +71,7 @@ const TagList: React.FC<Props> = () => {
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        <Only when={tags.length < 5}>
+        <Only when={userService.isNotVisitor() && tags.length < 5}>
           <p className="tag-tip-container">
             Enter <span className="code-text">#tag </span> to create a tag
           </p>

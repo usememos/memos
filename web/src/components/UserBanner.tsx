@@ -1,7 +1,10 @@
-import { useCallback, useState } from "react";
-import { useAppSelector } from "../store";
-import { locationService } from "../services";
+import * as api from "../helpers/api";
+import { useCallback, useEffect, useState } from "react";
 import MenuBtnsPopup from "./MenuBtnsPopup";
+import { getUserIdFromPath } from "../services/userService";
+import { locationService } from "../services";
+import toastHelper from "./Toast";
+import { useAppSelector } from "../store";
 import "../less/user-banner.less";
 
 interface Props {}
@@ -10,16 +13,36 @@ const UserBanner: React.FC<Props> = () => {
   const user = useAppSelector((state) => state.user.user);
   const [shouldShowPopupBtns, setShouldShowPopupBtns] = useState(false);
 
-  const username = user ? user.name : "Memos";
+  const [username, setUsername] = useState(user ? user.name : "Memos");
 
   const handleUsernameClick = useCallback(() => {
-    locationService.pushHistory("/");
     locationService.clearQuery();
   }, []);
 
   const handlePopupBtnClick = () => {
     setShouldShowPopupBtns(true);
   };
+
+  useEffect(() => {
+    if (username === "Memos") {
+      if (locationService.getState().pathname === "/") {
+        api.getSystemStatus().then(({ data }) => {
+          const { data: status } = data;
+          setUsername(status.owner.name);
+        });
+      } else {
+        api
+          .getUserNameById(Number(getUserIdFromPath()))
+          .then(({ data }) => {
+            const { data: username } = data;
+            setUsername(username);
+          })
+          .catch(() => {
+            toastHelper.error("User not found");
+          });
+      }
+    }
+  }, []);
 
   return (
     <div className="user-banner-container">

@@ -60,7 +60,29 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 
 	g.GET("/memo", func(c echo.Context) error {
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			if c.QueryParam("userID") != "" {
+				var err error
+				userID, err = strconv.Atoi(c.QueryParam("userID"))
+				if err != nil {
+					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.QueryParam("userID")))
+				}
+			} else {
+				ownerUserType := api.Owner
+				ownerUser, err := s.Store.FindUser(&api.UserFind{
+					Role: &ownerUserType,
+				})
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
+				}
+				if ownerUser == nil {
+					return echo.NewHTTPError(http.StatusNotFound, "Owner user do not exist")
+				}
+				userID = ownerUser.ID
+			}
+		}
+
 		memoFind := &api.MemoFind{
 			CreatorID: &userID,
 		}

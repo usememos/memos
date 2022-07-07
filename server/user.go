@@ -51,6 +51,29 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		return nil
 	})
 
+	g.GET("/user/:id/name", func(c echo.Context) error {
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted user id").SetInternal(err)
+		}
+
+		user, err := s.Store.FindUser(&api.UserFind{
+			ID: &id,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusNotFound, "User not found")
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user.Name)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
+		}
+		return nil
+	})
+
 	// GET /api/user/me is used to check if the user is logged in.
 	g.GET("/user/me", func(c echo.Context) error {
 		userSessionID := c.Get(getUserIDContextKey())

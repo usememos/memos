@@ -7,6 +7,7 @@ import UserBanner from "./UserBanner";
 import UsageHeatMap from "./UsageHeatMap";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
+import { userService } from "../services";
 import "../less/siderbar.less";
 
 interface Props {}
@@ -48,17 +49,21 @@ const Sidebar: React.FC<Props> = () => {
         </div>
       </div>
       <UsageHeatMap />
-      <div className="action-btns-container">
-        <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
-          <span className="icon">📅</span> Daily Review
-        </button>
-        <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
-          <span className="icon">⚙️</span> Setting
-        </button>
-        <button className="btn action-btn" onClick={handleArchivedBtnClick}>
-          <span className="icon">🗂</span> Archived
-        </button>
-      </div>
+      {userService.isNotVisitor() && (
+        <>
+          <div className="action-btns-container">
+            <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
+              <span className="icon">📅</span> Daily Review
+            </button>
+            <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
+              <span className="icon">⚙️</span> Setting
+            </button>
+            <button className="btn action-btn" onClick={handleArchivedBtnClick}>
+              <span className="icon">🗂</span> Archived
+            </button>
+          </div>
+        </>
+      )}
       <ShortcutList />
       <TagList />
     </aside>

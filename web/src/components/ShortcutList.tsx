@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { locationService, shortcutService } from "../services";
+import { locationService, shortcutService, userService } from "../services";
 import { useAppSelector } from "../store";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
@@ -38,9 +38,11 @@ const ShortcutList: React.FC<Props> = () => {
     <div className="shortcuts-wrapper">
       <p className="title-text">
         <span className="normal-text">Shortcuts</span>
-        <span className="btn" onClick={() => showCreateShortcutDialog()}>
-          <img src="/icons/add.svg" alt="add shortcut" />
-        </span>
+        {userService.isNotVisitor() && (
+          <span className="btn" onClick={() => showCreateShortcutDialog()}>
+            <img src="/icons/add.svg" alt="add shortcut" />
+          </span>
+        )}
       </p>
       <div className="shortcuts-container">
         {sortedShortcuts.map((s) => {
@@ -114,28 +116,30 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
         <div className="shortcut-text-container">
           <span className="shortcut-text">{shortcut.title}</span>
         </div>
-        <div className="btns-container">
-          <span className="action-btn toggle-btn">
-            <img className="icon-img" src="/icons/more.svg" />
-          </span>
-          <div className="action-btns-wrapper">
-            <div className="action-btns-container">
-              <span className="btn" onClick={handlePinShortcutBtnClick}>
-                {shortcut.rowStatus === "ARCHIVED" ? "Unpin" : "Pin"}
-              </span>
-              <span className="btn" onClick={handleEditShortcutBtnClick}>
-                Edit
-              </span>
-              <span
-                className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`}
-                onClick={handleDeleteMemoClick}
-                onMouseLeave={handleDeleteBtnMouseLeave}
-              >
-                {showConfirmDeleteBtn ? "Delete!" : "Delete"}
-              </span>
+        {userService.isNotVisitor() && (
+          <div className="btns-container">
+            <span className="action-btn toggle-btn">
+              <img className="icon-img" src="/icons/more.svg" />
+            </span>
+            <div className="action-btns-wrapper">
+              <div className="action-btns-container">
+                <span className="btn" onClick={handlePinShortcutBtnClick}>
+                  {shortcut.rowStatus === "ARCHIVED" ? "Unpin" : "Pin"}
+                </span>
+                <span className="btn" onClick={handleEditShortcutBtnClick}>
+                  Edit
+                </span>
+                <span
+                  className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`}
+                  onClick={handleDeleteMemoClick}
+                  onMouseLeave={handleDeleteBtnMouseLeave}
+                >
+                  {showConfirmDeleteBtn ? "Delete!" : "Delete"}
+                </span>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   );

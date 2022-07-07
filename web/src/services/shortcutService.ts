@@ -1,6 +1,7 @@
 import * as api from "../helpers/api";
 import store from "../store/";
 import { createShortcut, deleteShortcut, patchShortcut, setShortcuts } from "../store/modules/shortcut";
+import { getUserIdFromPath } from "./userService";
 
 const convertResponseModelShortcut = (shortcut: Shortcut): Shortcut => {
   return {
@@ -16,7 +17,7 @@ const shortcutService = {
   },
 
   getMyAllShortcuts: async () => {
-    const { data } = (await api.getShortcutList()).data;
+    const { data } = (await api.getShortcutList(getUserIdFromPath())).data;
     const shortcuts = data.map((s) => convertResponseModelShortcut(s));
     store.dispatch(setShortcuts(shortcuts));
   },
