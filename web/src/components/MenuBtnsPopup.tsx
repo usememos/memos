@@ -1,8 +1,8 @@
 import { useEffect, useRef } from "react";
 import * as api from "../helpers/api";
 import { locationService, userService } from "../services";
-import showAboutSiteDialog from "./AboutSiteDialog";
 import toastHelper from "./Toast";
+import showAboutSiteDialog from "./AboutSiteDialog";
 import "../less/menu-btns-popup.less";
 
 interface Props {

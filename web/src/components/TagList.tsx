@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import * as utils from "../helpers/utils";
 import { useAppSelector } from "../store";
 import { locationService, memoService, userService } from "../services";
 import useToggle from "../hooks/useToggle";
 import Only from "./common/OnlyWhen";
-import * as utils from "../helpers/utils";
 import "../less/tag-list.less";
 
 interface Tag {

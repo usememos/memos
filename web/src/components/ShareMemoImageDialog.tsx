@@ -4,9 +4,9 @@ import toImage from "../labs/html2image";
 import { ANIMATION_DURATION, IMAGE_URL_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { showDialog } from "./Dialog";
-import { formatMemoContent } from "./Memo";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
+import { formatMemoContent } from "./Memo";
 import "../less/share-memo-image-dialog.less";
 
 interface Props extends DialogProps {

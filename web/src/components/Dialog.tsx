@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
+import { ANIMATION_DURATION } from "../helpers/consts";
 import { Provider } from "react-redux";
 import store from "../store";
-import { ANIMATION_DURATION } from "../helpers/consts";
 import "../less/dialog.less";
 
 interface DialogConfig {
