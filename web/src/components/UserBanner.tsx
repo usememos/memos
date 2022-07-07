@@ -1,6 +1,7 @@
 import * as api from "../helpers/api";
 import { useCallback, useEffect, useState } from "react";
 import MenuBtnsPopup from "./MenuBtnsPopup";
+import { getUserIdFromPath } from "../services/userService";
 import { locationService } from "../services";
 import toastHelper from "./Toast";
 import { useAppSelector } from "../store";
@@ -31,7 +32,7 @@ const UserBanner: React.FC<Props> = () => {
         });
       } else {
         api
-          .getUserNameById(Number(locationService.getState().pathname.slice(3)))
+          .getUserNameById(Number(getUserIdFromPath()))
           .then(({ data }) => {
             const { data: username } = data;
             setUsername(username);
