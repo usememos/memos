@@ -13,33 +13,33 @@ import (
 )
 
 func (s *Server) registerAuthRoutes(g *echo.Group) {
-	g.POST("/auth/login", func(c echo.Context) error {
-		login := &api.Login{}
-		if err := json.NewDecoder(c.Request().Body).Decode(login); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted login request").SetInternal(err)
+	g.POST("/auth/signin", func(c echo.Context) error {
+		signin := &api.Signin{}
+		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
 		}
 
 		userFind := &api.UserFind{
-			Email: &login.Email,
+			Email: &signin.Email,
 		}
 		user, err := s.Store.FindUser(userFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", login.Email)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", signin.Email)).SetInternal(err)
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found with email %s", login.Email))
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found with email %s", signin.Email))
 		} else if user.RowStatus == api.Archived {
-			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with email %s", login.Email))
+			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with email %s", signin.Email))
 		}
 
 		// Compare the stored hashed password, with the hashed version of the password that was received.
-		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(login.Password)); err != nil {
+		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(signin.Password)); err != nil {
 			// If the two passwords don't match, return a 401 status.
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect password").SetInternal(err)
 		}
 
 		if err = setUserSession(c, user); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set login session").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set signin session").SetInternal(err)
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
