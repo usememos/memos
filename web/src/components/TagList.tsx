@@ -71,7 +71,7 @@ const TagList: React.FC<Props> = () => {
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        <Only when={userService.isNotVisitor() && tags.length < 5}>
+        <Only when={!userService.isVisitorMode() && tags.length < 5}>
           <p className="tag-tip-container">
             Enter <span className="code-text">#tag </span> to create a tag
           </p>
@@ -97,9 +97,6 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       locationService.setTagQuery(undefined);
     } else {
       utils.copyTextToClipboard(`#${tag.text} `);
-      if (!["/"].includes(locationService.getState().pathname)) {
-        locationService.setPathname("/");
-      }
       locationService.setTagQuery(tag.text);
     }
   };

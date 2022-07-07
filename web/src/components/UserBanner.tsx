@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import * as api from "../helpers/api";
-import { getUserIdFromPath } from "../services/userService";
+import userService from "../services/userService";
 import { locationService } from "../services";
 import { useAppSelector } from "../store";
 import toastHelper from "./Toast";
@@ -31,15 +31,18 @@ const UserBanner: React.FC<Props> = () => {
           setUsername(status.owner.name);
         });
       } else {
-        api
-          .getUserNameById(Number(getUserIdFromPath()))
-          .then(({ data }) => {
-            const { data: username } = data;
-            setUsername(username);
-          })
-          .catch(() => {
-            toastHelper.error("User not found");
-          });
+        const currentUserId = userService.getCurrentUserId();
+        if (currentUserId) {
+          api
+            .getUserNameById(currentUserId)
+            .then(({ data }) => {
+              const { data: username } = data;
+              setUsername(username);
+            })
+            .catch(() => {
+              toastHelper.error("User not found");
+            });
+        }
       }
     }
   }, []);

@@ -1,10 +1,10 @@
-import * as utils from "../helpers/utils";
+import { stringify } from "qs";
 import store from "../store";
 import { setQuery, setPathname, Query } from "../store/modules/location";
 
 const updateLocationUrl = (method: "replace" | "push" = "replace") => {
   const { query, pathname, hash } = store.getState().location;
-  let queryString = utils.transformObjectToParamsString(query ?? {});
+  let queryString = stringify(query);
   if (queryString) {
     queryString = "?" + queryString;
   } else {

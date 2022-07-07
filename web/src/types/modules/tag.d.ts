@@ -1,0 +1,3 @@
+interface TagFind {
+  creatorId?: UserId;
+}

@@ -63,7 +63,7 @@ const Signin: React.FC<Props> = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.login(email, password);
+      await api.signin(email, password);
       const user = await userService.doSignIn();
       if (user) {
         locationService.replaceHistory("/");

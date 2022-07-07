@@ -1,6 +1,7 @@
 import { useAppSelector } from "../store";
 import * as utils from "../helpers/utils";
 import { userService } from "../services";
+import Only from "./common/OnlyWhen";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
@@ -49,21 +50,19 @@ const Sidebar: React.FC<Props> = () => {
         </div>
       </div>
       <UsageHeatMap />
-      {userService.isNotVisitor() && (
-        <>
-          <div className="action-btns-container">
-            <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
-              <span className="icon">📅</span> Daily Review
-            </button>
-            <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
-              <span className="icon">⚙️</span> Setting
-            </button>
-            <button className="btn action-btn" onClick={handleArchivedBtnClick}>
-              <span className="icon">🗂</span> Archived
-            </button>
-          </div>
-        </>
-      )}
+      <Only when={!userService.isVisitorMode()}>
+        <div className="action-btns-container">
+          <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
+            <span className="icon">📅</span> Daily Review
+          </button>
+          <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
+            <span className="icon">⚙️</span> Setting
+          </button>
+          <button className="btn action-btn" onClick={handleArchivedBtnClick}>
+            <span className="icon">🗂</span> Archived
+          </button>
+        </div>
+      </Only>
       <ShortcutList />
       <TagList />
     </aside>

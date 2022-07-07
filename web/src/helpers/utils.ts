@@ -126,38 +126,6 @@ export function throttle(fn: FunctionType, delay: number) {
   };
 }
 
-export function transformObjectToParamsString(object: KVObject): string {
-  const params = [];
-  const keys = Object.keys(object).sort();
-
-  for (const key of keys) {
-    const val = object[key];
-    if (val) {
-      if (typeof val === "object") {
-        params.push(...transformObjectToParamsString(val).split("&"));
-      } else {
-        params.push(`${key}=${val}`);
-      }
-    }
-  }
-
-  return params.join("&");
-}
-
-export function transformParamsStringToObject(paramsString: string): KVObject {
-  const object: KVObject = {};
-  const params = paramsString.split("&");
-
-  for (const p of params) {
-    const [key, val] = p.split("=");
-    if (key && val) {
-      object[key] = val;
-    }
-  }
-
-  return object;
-}
-
 export function filterObjectNullKeys(object: KVObject): KVObject {
   if (!object) {
     return {};

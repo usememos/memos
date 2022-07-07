@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { locationService, userService } from "../services";
-import Sidebar from "../components/Sidebar";
+import { userService } from "../services";
 import useLoading from "../hooks/useLoading";
+import Only from "../components/common/OnlyWhen";
+import Sidebar from "../components/Sidebar";
 import MemosHeader from "../components/MemosHeader";
 import MemoEditor from "../components/MemoEditor";
 import MemoFilter from "../components/MemoFilter";
@@ -12,25 +13,14 @@ function Home() {
   const loadingState = useLoading();
 
   useEffect(() => {
-    if (window.location.pathname !== locationService.getState().pathname) {
-      locationService.replaceHistory("/");
-    }
-    const { user } = userService.getState();
-    if (!user) {
-      userService
-        .doSignIn()
-        .catch(() => {
-          // do nth
-        })
-        .finally(() => {
-          if (userService.getState().user && locationService.getState().pathname !== "/") {
-            locationService.replaceHistory("/");
-          }
-          loadingState.setFinish();
-        });
-    } else {
-      loadingState.setFinish();
-    }
+    userService
+      .doSignIn()
+      .catch(() => {
+        // do nth
+      })
+      .finally(() => {
+        loadingState.setFinish();
+      });
   }, []);
 
   return (
@@ -41,7 +31,9 @@ function Home() {
           <main className="memos-wrapper">
             <div className="memos-editor-wrapper">
               <MemosHeader />
-              {userService.isNotVisitor() && <MemoEditor />}
+              <Only when={!userService.isVisitorMode()}>
+                <MemoEditor />
+              </Only>
               <MemoFilter />
             </div>
             <MemoList />

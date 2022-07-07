@@ -22,3 +22,8 @@ interface MemoPatch {
   content?: string;
   rowStatus?: RowStatus;
 }
+
+interface MemoFind {
+  creatorId?: UserId;
+  rowStatus?: RowStatus;
+}
