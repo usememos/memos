@@ -28,7 +28,7 @@ const UserBanner: React.FC<Props> = () => {
       if (locationService.getState().pathname === "/") {
         api.getSystemStatus().then(({ data }) => {
           const { data: status } = data;
-          setUsername(status.owner.name);
+          setUsername(status.host.name);
         });
       } else {
         const currentUserId = userService.getCurrentUserId();
@@ -51,7 +51,7 @@ const UserBanner: React.FC<Props> = () => {
     <div className="user-banner-container">
       <div className="username-container" onClick={handleUsernameClick}>
         <span className="username-text">{username}</span>
-        {user?.role === "OWNER" ? <span className="tag">MOD</span> : null}
+        {user?.role === "HOST" ? <span className="tag">MOD</span> : null}
       </div>
       <span className="action-btn menu-popup-btn" onClick={handlePopupBtnClick}>
         <img src="/icons/more.svg" className="icon-img" />
