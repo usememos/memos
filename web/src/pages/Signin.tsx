@@ -17,7 +17,7 @@ const validateConfig: ValidatorConfig = {
 
 const Signin: React.FC<Props> = () => {
   const pageLoadingState = useLoading(true);
-  const [siteOwner, setSiteOwner] = useState<User>();
+  const [siteHost, setSiteHost] = useState<User>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const actionBtnLoadingState = useLoading(false);
@@ -25,7 +25,7 @@ const Signin: React.FC<Props> = () => {
   useEffect(() => {
     api.getSystemStatus().then(({ data }) => {
       const { data: status } = data;
-      setSiteOwner(status.owner);
+      setSiteHost(status.host);
       if (status.profile.mode === "dev") {
         setEmail("demo@usememos.com");
         setPassword("secret");
@@ -77,7 +77,7 @@ const Signin: React.FC<Props> = () => {
     actionBtnLoadingState.setFinish();
   };
 
-  const handleSignUpAsOwnerBtnsClick = async () => {
+  const handleSignUpAsHostBtnsClick = async () => {
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -96,7 +96,7 @@ const Signin: React.FC<Props> = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.signup(email, password, "OWNER");
+      await api.signup(email, password, "HOST");
       const user = await userService.doSignIn();
       if (user) {
         locationService.replaceHistory("/");
@@ -132,7 +132,7 @@ const Signin: React.FC<Props> = () => {
           </div>
         </div>
         <div className="action-btns-container">
-          {siteOwner || pageLoadingState.isLoading ? (
+          {siteHost || pageLoadingState.isLoading ? (
             <button
               className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
               onClick={() => handleSigninBtnsClick()}
@@ -142,16 +142,16 @@ const Signin: React.FC<Props> = () => {
           ) : (
             <button
               className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-              onClick={() => handleSignUpAsOwnerBtnsClick()}
+              onClick={() => handleSignUpAsHostBtnsClick()}
             >
-              Sign up as Owner
+              Sign up as Host
             </button>
           )}
         </div>
-        <p className={`tip-text ${siteOwner || pageLoadingState.isLoading ? "" : "owner-tip"}`}>
-          {siteOwner || pageLoadingState.isLoading
-            ? "If you don't have an account, please\ncontact the site owner."
-            : "You are registering as the Site Owner."}
+        <p className={`tip-text ${siteHost || pageLoadingState.isLoading ? "" : "host-tip"}`}>
+          {siteHost || pageLoadingState.isLoading
+            ? "If you don't have an account, please\ncontact the site host."
+            : "You are registering as the Site Host."}
         </p>
       </div>
     </div>

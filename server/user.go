@@ -143,7 +143,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 		if currentUser == nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Current session user not found with ID: %d", currentUserID)).SetInternal(err)
-		} else if currentUser.Role != api.Owner {
+		} else if currentUser.Role != api.Host {
 			return echo.NewHTTPError(http.StatusForbidden, "Access forbidden for current session user").SetInternal(err)
 		}
 

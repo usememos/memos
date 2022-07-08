@@ -60,17 +60,17 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 	})
 
 	g.POST("/auth/signup", func(c echo.Context) error {
-		// Don't allow to signup by this api if site owner existed.
-		ownerUserType := api.Owner
-		ownerUserFind := api.UserFind{
-			Role: &ownerUserType,
+		// Don't allow to signup by this api if site host existed.
+		hostUserType := api.Host
+		hostUserFind := api.UserFind{
+			Role: &hostUserType,
 		}
-		ownerUser, err := s.Store.FindUser(&ownerUserFind)
+		hostUser, err := s.Store.FindUser(&hostUserFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
-		if ownerUser != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Site Owner existed, please contact the site owner to signin account firstly.").SetInternal(err)
+		if hostUser != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Site Host existed, please contact the site host to signin account firstly.").SetInternal(err)
 		}
 
 		signup := &api.Signup{}

@@ -1,5 +1,5 @@
 type UserId = number;
-type UserRole = "OWNER" | "USER";
+type UserRole = "HOST" | "USER";
 
 interface User {
   id: UserId;

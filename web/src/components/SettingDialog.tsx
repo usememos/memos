@@ -48,7 +48,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
             <span className="icon-text">🏟</span> Preferences
           </span>
         </div>
-        {user?.role === "OWNER" ? (
+        {user?.role === "HOST" ? (
           <>
             <span className="section-title">Admin</span>
             <div className="section-items-container">

@@ -11,8 +11,8 @@ VALUES
   (
     101, 
     'demo@usememos.com',
-    'OWNER',
-    'Demo Owner',
+    'HOST',
+    'Demo Host',
     'demo_open_id',
     -- raw password: secret
     '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'

@@ -4,6 +4,6 @@ interface Profile {
 }
 
 interface SystemStatus {
-  owner: User;
+  host: User;
   profile: Profile;
 }

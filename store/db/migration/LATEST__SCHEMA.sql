@@ -13,7 +13,7 @@ CREATE TABLE user (
   -- allowed row status are 'NORMAL', 'ARCHIVED'.
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   email TEXT NOT NULL UNIQUE,
-  role TEXT NOT NULL CHECK (role IN ('OWNER', 'USER')) DEFAULT 'USER',
+  role TEXT NOT NULL CHECK (role IN ('HOST', 'USER')) DEFAULT 'USER',
   name TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   open_id TEXT NOT NULL UNIQUE

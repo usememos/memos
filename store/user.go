@@ -106,7 +106,7 @@ func createUser(db *sql.DB, create *api.UserCreate) (*userRaw, error) {
 			open_id
 		)
 		VALUES (?, ?, ?, ?, ?)
-		RETURNING id, email, role, name, password_hash, open_id, created_ts, updated_ts
+		RETURNING id, email, role, name, password_hash, open_id, created_ts, updated_ts, row_status
 	`,
 		create.Email,
 		create.Role,
@@ -130,6 +130,7 @@ func createUser(db *sql.DB, create *api.UserCreate) (*userRaw, error) {
 		&userRaw.OpenID,
 		&userRaw.CreatedTs,
 		&userRaw.UpdatedTs,
+		&userRaw.RowStatus,
 	); err != nil {
 		return nil, FormatError(err)
 	}
@@ -162,7 +163,7 @@ func patchUser(db *sql.DB, patch *api.UserPatch) (*userRaw, error) {
 		UPDATE user
 		SET `+strings.Join(set, ", ")+`
 		WHERE id = ?
-		RETURNING id, email, role, name, password_hash, open_id, created_ts, updated_ts
+		RETURNING id, email, role, name, password_hash, open_id, created_ts, updated_ts, row_status
 	`, args...)
 	if err != nil {
 		return nil, FormatError(err)
@@ -180,6 +181,7 @@ func patchUser(db *sql.DB, patch *api.UserPatch) (*userRaw, error) {
 			&userRaw.OpenID,
 			&userRaw.CreatedTs,
 			&userRaw.UpdatedTs,
+			&userRaw.RowStatus,
 		); err != nil {
 			return nil, FormatError(err)
 		}
@@ -218,7 +220,8 @@ func findUserList(db *sql.DB, find *api.UserFind) ([]*userRaw, error) {
 			password_hash,
 			open_id,
 			created_ts,
-			updated_ts
+			updated_ts,
+			row_status
 		FROM user
 		WHERE `+strings.Join(where, " AND ")+`
 		ORDER BY created_ts DESC`,
@@ -241,6 +244,7 @@ func findUserList(db *sql.DB, find *api.UserFind) ([]*userRaw, error) {
 			&userRaw.OpenID,
 			&userRaw.CreatedTs,
 			&userRaw.UpdatedTs,
+			&userRaw.RowStatus,
 		); err != nil {
 			fmt.Println(err)
 			return nil, FormatError(err)

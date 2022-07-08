@@ -21,22 +21,22 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 	})
 
 	g.GET("/status", func(c echo.Context) error {
-		ownerUserType := api.Owner
-		ownerUserFind := api.UserFind{
-			Role: &ownerUserType,
+		hostUserType := api.Host
+		hostUserFind := api.UserFind{
+			Role: &hostUserType,
 		}
-		ownerUser, err := s.Store.FindUser(&ownerUserFind)
+		hostUser, err := s.Store.FindUser(&hostUserFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find owner user").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
 
-		if ownerUser != nil {
+		if hostUser != nil {
 			// data desensitize
-			ownerUser.OpenID = ""
+			hostUser.OpenID = ""
 		}
 
 		systemStatus := api.SystemStatus{
-			Owner:   ownerUser,
+			Host:   hostUser,
 			Profile: s.Profile,
 		}
 
