@@ -4,16 +4,16 @@ package api
 type Role string
 
 const (
-	// Owner is the OWNER role.
-	Owner Role = "OWNER"
+	// Host is the HOST role.
+	Host Role = "HOST"
 	// NormalUser is the USER role.
 	NormalUser Role = "USER"
 )
 
 func (e Role) String() string {
 	switch e {
-	case Owner:
-		return "OWNER"
+	case Host:
+		return "HOST"
 	case NormalUser:
 		return "USER"
 	}
