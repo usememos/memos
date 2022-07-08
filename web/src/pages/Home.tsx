@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { userService } from "../services";
+import { locationService, userService } from "../services";
 import useLoading from "../hooks/useLoading";
 import Only from "../components/common/OnlyWhen";
 import Sidebar from "../components/Sidebar";
@@ -15,10 +15,12 @@ function Home() {
   useEffect(() => {
     userService
       .doSignIn()
-      .catch(() => {
-        // do nth
-      })
+      .catch()
       .finally(() => {
+        if (!userService.isVisitorMode() && !userService.getState().user) {
+          locationService.replaceHistory("/signin");
+          return;
+        }
         loadingState.setFinish();
       });
   }, []);

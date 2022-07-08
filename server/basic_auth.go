@@ -59,10 +59,6 @@ func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		if common.HasPrefixes(c.Path(), "/api/memo", "/api/tag", "/api/shortcut", "/api/user/:id/name") && c.Request().Method == http.MethodGet {
-			return next(c)
-		}
-
 		// If there is openId in query string and related user is found, then skip auth.
 		openID := c.QueryParam("openId")
 		if openID != "" {
@@ -78,6 +74,10 @@ func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 				c.Set(getUserIDContextKey(), user.ID)
 				return next(c)
 			}
+		}
+
+		if common.HasPrefixes(c.Path(), "/api/memo", "/api/tag", "/api/shortcut", "/api/user/:id/name") && c.Request().Method == http.MethodGet {
+			return next(c)
 		}
 
 		sess, err := session.Get("session", c)
