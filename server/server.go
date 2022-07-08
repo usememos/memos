@@ -41,7 +41,7 @@ func NewServer(profile *profile.Profile) *Server {
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Skipper: middleware.DefaultSkipper,
 		Root:    "web/dist",
-		Browse:  false,
+		Browse:  true,
 		HTML5:   true,
 	}))
 

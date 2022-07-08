@@ -76,6 +76,13 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			memoFind.CreatorID = &userID
 		}
 
+		// Only can get PUBLIC memos in visitor mode
+		_, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			publicVisibility := api.Public
+			memoFind.Visibility = &publicVisibility
+		}
+
 		rowStatus := api.RowStatus(c.QueryParam("rowStatus"))
 		if rowStatus != "" {
 			memoFind.RowStatus = &rowStatus

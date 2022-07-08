@@ -161,6 +161,9 @@ const Memo: React.FC<Props> = (props: Props) => {
           <Only when={memo.pinned}>
             <span className="ml-2">PINNED</span>
           </Only>
+          <Only when={memo.visibility === "PUBLIC"}>
+            <span className="ml-2">PUBLIC</span>
+          </Only>
         </span>
         <div className={`btns-container ${userService.isVisitorMode() ? "!hidden" : ""}`}>
           <span className="btn more-action-btn">

@@ -1,5 +1,7 @@
 type MemoId = number;
 
+type Visibility = "PUBLIC" | "PRIVATE";
+
 interface Memo {
   id: MemoId;
 
@@ -9,6 +11,7 @@ interface Memo {
   rowStatus: RowStatus;
 
   content: string;
+  visibility: Visibility;
   pinned: boolean;
 }
 
@@ -21,9 +24,11 @@ interface MemoPatch {
   id: MemoId;
   content?: string;
   rowStatus?: RowStatus;
+  visibility?: Visibility;
 }
 
 interface MemoFind {
   creatorId?: UserId;
   rowStatus?: RowStatus;
+  visibility?: Visibility;
 }

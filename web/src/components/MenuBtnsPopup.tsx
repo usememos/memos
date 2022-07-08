@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as api from "../helpers/api";
 import { locationService, userService } from "../services";
+import { useAppSelector } from "../store";
 import toastHelper from "./Toast";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import "../less/menu-btns-popup.less";
@@ -12,6 +13,7 @@ interface Props {
 
 const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   const { shownStatus, setShownStatus } = props;
+  const user = useAppSelector((state) => state.user.user);
   const popupElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -55,10 +57,6 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
     window.location.reload();
   };
 
-  const handleSignInBtnClick = async () => {
-    locationService.replaceHistory("/signin");
-  };
-
   return (
     <div className={`menu-btns-popup ${shownStatus ? "" : "hidden"}`} ref={popupElRef}>
       <button className="btn action-btn" onClick={handleAboutBtnClick}>
@@ -67,9 +65,19 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
       <button className="btn action-btn" onClick={handlePingBtnClick}>
         <span className="icon">🎯</span> Ping
       </button>
-      <button className="btn action-btn" onClick={!userService.isVisitorMode() ? handleSignOutBtnClick : handleSignInBtnClick}>
-        <span className="icon">👋</span> {!userService.isVisitorMode() ? "Sign out" : "Sign in"}
-      </button>
+      {!userService.isVisitorMode() ? (
+        <button className="btn action-btn" onClick={handleSignOutBtnClick}>
+          <span className="icon">👋</span> Sign out
+        </button>
+      ) : user ? (
+        <button className="btn action-btn" onClick={() => (window.location.href = "/")}>
+          <span className="icon">🏠</span> Go Back
+        </button>
+      ) : (
+        <button className="btn action-btn" onClick={() => (window.location.href = "/signin")}>
+          <span className="icon">👉</span> Sign in
+        </button>
+      )}
     </div>
   );
 };

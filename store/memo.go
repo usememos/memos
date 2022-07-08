@@ -183,9 +183,7 @@ func patchMemoRaw(db *sql.DB, patch *api.MemoPatch) (*memoRaw, error) {
 	}
 	defer row.Close()
 
-	if !row.Next() {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
-	}
+	row.Next()
 
 	var memoRaw memoRaw
 	if err := row.Scan(

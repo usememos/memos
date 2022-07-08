@@ -104,12 +104,27 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     editorStateService.setEditMemoWithId(memo.id);
   }, [memo.id]);
 
+  const handleVisibilityClick = async () => {
+    const visibility = memo.visibility === "PRIVATE" ? "PUBLIC" : "PRIVATE";
+    await memoService.patchMemo({
+      id: memo.id,
+      visibility: visibility,
+    });
+    setMemo({
+      ...memo,
+      visibility: visibility,
+    });
+  };
+
   return (
     <>
       <div className="memo-card-container">
         <div className="header-container">
           <p className="time-text">{utils.getDateTimeString(memo.createdTs)}</p>
           <div className="btns-container">
+            <button className="btn edit-btn" onClick={handleVisibilityClick}>
+              <img className={`icon-img ${memo.visibility === "PRIVATE" ? "opacity-30" : ""}`} src="/icons/visibility.svg" />
+            </button>
             <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
               <img className="icon-img" src="/icons/edit.svg" />
             </button>

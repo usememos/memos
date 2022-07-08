@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { locationService, userService } from "../services";
+import * as api from "../helpers/api";
 import useLoading from "../hooks/useLoading";
 import Only from "../components/common/OnlyWhen";
 import Sidebar from "../components/Sidebar";
@@ -7,6 +8,7 @@ import MemosHeader from "../components/MemosHeader";
 import MemoEditor from "../components/MemoEditor";
 import MemoFilter from "../components/MemoFilter";
 import MemoList from "../components/MemoList";
+import toastHelper from "../components/Toast";
 import "../less/home.less";
 
 function Home() {
@@ -16,10 +18,20 @@ function Home() {
     userService
       .doSignIn()
       .catch()
-      .finally(() => {
-        if (!userService.isVisitorMode() && !userService.getState().user) {
-          locationService.replaceHistory("/signin");
-          return;
+      .finally(async () => {
+        if (!userService.getState().user) {
+          if (userService.isVisitorMode()) {
+            const currentUserId = userService.getUserIdFromPath() as number;
+            const {
+              data: { data: username },
+            } = await api.getUserNameById(currentUserId);
+            if (!username) {
+              toastHelper.error("User not found");
+            }
+          } else {
+            locationService.replaceHistory("/signin");
+            return;
+          }
         }
         loadingState.setFinish();
       });

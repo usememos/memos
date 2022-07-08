@@ -63,12 +63,14 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user").SetInternal(err)
 		}
-		if user == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "User not found")
+
+		username := ""
+		if user != nil {
+			username = user.Name
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user.Name)); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(username)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
 		}
 		return nil

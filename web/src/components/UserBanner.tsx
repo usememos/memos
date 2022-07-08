@@ -22,7 +22,9 @@ const UserBanner: React.FC<Props> = () => {
         .getUserNameById(currentUserId)
         .then(({ data }) => {
           const { data: username } = data;
-          setUsername(username);
+          if (username) {
+            setUsername(username);
+          }
         })
         .catch(() => {
           toastHelper.error("User not found");
