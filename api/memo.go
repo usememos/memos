@@ -1,6 +1,6 @@
 package api
 
-// Visibility is the type of a role.
+// Visibility is the type of a visibility.
 type Visibility string
 
 const (
