@@ -21,7 +21,8 @@ type memoRaw struct {
 	UpdatedTs int64
 
 	// Domain specific fields
-	Content string
+	Content    string
+	Visibility api.Visibility
 }
 
 // toMemo creates an instance of Memo based on the memoRaw.
@@ -37,7 +38,8 @@ func (raw *memoRaw) toMemo() *api.Memo {
 		UpdatedTs: raw.UpdatedTs,
 
 		// Domain specific fields
-		Content: raw.Content,
+		Content:    raw.Content,
+		Visibility: raw.Visibility,
 	}
 }
 
@@ -116,21 +118,21 @@ func (s *Store) DeleteMemo(delete *api.MemoDelete) error {
 }
 
 func createMemoRaw(db *sql.DB, create *api.MemoCreate) (*memoRaw, error) {
-	set := []string{"creator_id", "content"}
-	placeholder := []string{"?", "?"}
-	args := []interface{}{create.CreatorID, create.Content}
+	set := []string{"creator_id", "content", "visibility"}
+	placeholder := []string{"?", "?", "?"}
+	args := []interface{}{create.CreatorID, create.Content, create.Visibility}
 
 	if v := create.CreatedTs; v != nil {
 		set, placeholder, args = append(set, "created_ts"), append(placeholder, "?"), append(args, *v)
 	}
 
-	row, err := db.Query(`
-		INSERT INTO memo (
-			`+strings.Join(set, ", ")+`
-		)
-		VALUES (`+strings.Join(placeholder, ",")+`)
-		RETURNING id, creator_id, created_ts, updated_ts, content, row_status
-	`,
+	query := `
+	INSERT INTO memo (
+		` + strings.Join(set, ", ") + `
+	)
+	VALUES (` + strings.Join(placeholder, ",") + `)
+	RETURNING id, creator_id, created_ts, updated_ts, row_status, content, visibility`
+	row, err := db.Query(query,
 		args...,
 	)
 	if err != nil {
@@ -145,8 +147,9 @@ func createMemoRaw(db *sql.DB, create *api.MemoCreate) (*memoRaw, error) {
 		&memoRaw.CreatorID,
 		&memoRaw.CreatedTs,
 		&memoRaw.UpdatedTs,
-		&memoRaw.Content,
 		&memoRaw.RowStatus,
+		&memoRaw.Content,
+		&memoRaw.Visibility,
 	); err != nil {
 		return nil, FormatError(err)
 	}
@@ -163,6 +166,9 @@ func patchMemoRaw(db *sql.DB, patch *api.MemoPatch) (*memoRaw, error) {
 	if v := patch.RowStatus; v != nil {
 		set, args = append(set, "row_status = ?"), append(args, *v)
 	}
+	if v := patch.Visibility; v != nil {
+		set, args = append(set, "visibility = ?"), append(args, *v)
+	}
 
 	args = append(args, patch.ID)
 
@@ -170,7 +176,7 @@ func patchMemoRaw(db *sql.DB, patch *api.MemoPatch) (*memoRaw, error) {
 		UPDATE memo
 		SET `+strings.Join(set, ", ")+`
 		WHERE id = ?
-		RETURNING id, creator_id, created_ts, updated_ts, content, row_status
+		RETURNING id, creator_id, created_ts, updated_ts, row_status, content, visibility
 	`, args...)
 	if err != nil {
 		return nil, FormatError(err)
@@ -187,8 +193,9 @@ func patchMemoRaw(db *sql.DB, patch *api.MemoPatch) (*memoRaw, error) {
 		&memoRaw.CreatorID,
 		&memoRaw.CreatedTs,
 		&memoRaw.UpdatedTs,
-		&memoRaw.Content,
 		&memoRaw.RowStatus,
+		&memoRaw.Content,
+		&memoRaw.Visibility,
 	); err != nil {
 		return nil, FormatError(err)
 	}
@@ -214,6 +221,9 @@ func findMemoRawList(db *sql.DB, find *api.MemoFind) ([]*memoRaw, error) {
 	if v := find.ContentSearch; v != nil {
 		where, args = append(where, "content LIKE ?"), append(args, "%"+*v+"%")
 	}
+	if v := find.Visibility; v != nil {
+		where, args = append(where, "visibility = ?"), append(args, *v)
+	}
 
 	pagination := ""
 	if find.Limit > 0 {
@@ -229,8 +239,9 @@ func findMemoRawList(db *sql.DB, find *api.MemoFind) ([]*memoRaw, error) {
 			creator_id,
 			created_ts,
 			updated_ts,
+			row_status,
 			content,
-			row_status
+			visibility
 		FROM memo
 		WHERE `+strings.Join(where, " AND ")+`
 		ORDER BY created_ts DESC`+pagination,
@@ -249,8 +260,9 @@ func findMemoRawList(db *sql.DB, find *api.MemoFind) ([]*memoRaw, error) {
 			&memoRaw.CreatorID,
 			&memoRaw.CreatedTs,
 			&memoRaw.UpdatedTs,
-			&memoRaw.Content,
 			&memoRaw.RowStatus,
+			&memoRaw.Content,
+			&memoRaw.Visibility,
 		); err != nil {
 			return nil, FormatError(err)
 		}

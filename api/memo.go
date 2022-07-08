@@ -1,5 +1,25 @@
 package api
 
+// Visibility is the type of a visibility.
+type Visibility string
+
+const (
+	// Public is the PUBLIC visibility.
+	Public Visibility = "PUBLIC"
+	// Privite is the PRIVATE visibility.
+	Privite Visibility = "PRIVATE"
+)
+
+func (e Visibility) String() string {
+	switch e {
+	case Public:
+		return "PUBLIC"
+	case Privite:
+		return "PRIVATE"
+	}
+	return "PRIVATE"
+}
+
 type Memo struct {
 	ID int `json:"id"`
 
@@ -10,8 +30,9 @@ type Memo struct {
 	UpdatedTs int64     `json:"updatedTs"`
 
 	// Domain specific fields
-	Content string `json:"content"`
-	Pinned  bool   `json:"pinned"`
+	Content    string     `json:"content"`
+	Visibility Visibility `json:"visibility"`
+	Pinned     bool       `json:"pinned"`
 }
 
 type MemoCreate struct {
@@ -21,7 +42,8 @@ type MemoCreate struct {
 	CreatedTs *int64 `json:"createdTs"`
 
 	// Domain specific fields
-	Content string `json:"content"`
+	Content    string     `json:"content"`
+	Visibility Visibility `json:"visibility"`
 }
 
 type MemoPatch struct {
@@ -31,7 +53,8 @@ type MemoPatch struct {
 	RowStatus *RowStatus `json:"rowStatus"`
 
 	// Domain specific fields
-	Content *string `json:"content"`
+	Content    *string     `json:"content"`
+	Visibility *Visibility `json:"visibility"`
 }
 
 type MemoFind struct {
@@ -44,6 +67,7 @@ type MemoFind struct {
 	// Domain specific fields
 	Pinned        *bool
 	ContentSearch *string
+	Visibility    *Visibility
 
 	// Pagination
 	Limit  int

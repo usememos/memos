@@ -34,13 +34,15 @@ INSERT INTO
   memo (
     `id`,
     `content`, 
-    `creator_id`
+    `creator_id`,
+    `visibility`
   )
 VALUES
   (
     103,
-    '好好学习，天天向上。🤜🤛', 
-    101
+    '好好学习，天天向上。🤜🤛',
+    101,
+    'PUBLIC'
   );
 
 INSERT INTO 

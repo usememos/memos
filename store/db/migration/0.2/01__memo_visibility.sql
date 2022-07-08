@@ -1,0 +1,1 @@
+ALTER TABLE memo ADD visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PRIVATE')) DEFAULT 'PRIVATE';
