@@ -1,2 +1,3 @@
+-- TODO: SQLite doesn't support ALTER COLUMN
 ALTER TABLE user ALTER COLUMN role TEXT NOT NULL CHECK (role IN ('HOST', 'USER')) DEFAULT 'USER';
 UPDATE user SET role='HOST' WHERE role='OWNER';
