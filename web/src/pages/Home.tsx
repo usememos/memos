@@ -22,10 +22,8 @@ function Home() {
         if (!userService.getState().user) {
           if (userService.isVisitorMode()) {
             const currentUserId = userService.getUserIdFromPath() as number;
-            const {
-              data: { data: username },
-            } = await api.getUserNameById(currentUserId);
-            if (!username) {
+            const user = await userService.getUserById(currentUserId);
+            if (!user) {
               toastHelper.error("User not found");
             }
           } else {

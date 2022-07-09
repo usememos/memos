@@ -1,10 +1,9 @@
 import { useEffect } from "react";
-import { locationService, shortcutService, userService } from "../services";
+import { locationService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
-import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
 import "../less/shortcut-list.less";
@@ -39,11 +38,9 @@ const ShortcutList: React.FC<Props> = () => {
     <div className="shortcuts-wrapper">
       <p className="title-text">
         <span className="normal-text">Shortcuts</span>
-        <Only when={!userService.isVisitorMode()}>
-          <span className="btn" onClick={() => showCreateShortcutDialog()}>
-            <img src="/icons/add.svg" alt="add shortcut" />
-          </span>
-        </Only>
+        <span className="btn" onClick={() => showCreateShortcutDialog()}>
+          <img src="/icons/add.svg" alt="add shortcut" />
+        </span>
       </p>
       <div className="shortcuts-container">
         {sortedShortcuts.map((s) => {
@@ -114,7 +111,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
         <div className="shortcut-text-container">
           <span className="shortcut-text">{shortcut.title}</span>
         </div>
-        <div className={`btns-container ${userService.isVisitorMode() ? "!hidden" : ""}`}>
+        <div className="btns-container">
           <span className="action-btn toggle-btn">
             <img className="icon-img" src="/icons/more.svg" />
           </span>

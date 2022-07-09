@@ -1,5 +1,3 @@
-import { useAppSelector } from "../store";
-import * as utils from "../helpers/utils";
 import { userService } from "../services";
 import Only from "./common/OnlyWhen";
 import showDailyReviewDialog from "./DailyReviewDialog";
@@ -14,11 +12,6 @@ import "../less/siderbar.less";
 interface Props {}
 
 const Sidebar: React.FC<Props> = () => {
-  const { memos, tags } = useAppSelector((state) => state.memo);
-  const user = useAppSelector((state) => state.user.user);
-
-  const createdDays = user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24) : 0;
-
   const handleMyAccountBtnClick = () => {
     showSettingDialog();
   };
@@ -35,20 +28,6 @@ const Sidebar: React.FC<Props> = () => {
         </span>
       </div>
       <UserBanner />
-      <div className="status-text-container">
-        <div className="status-text memos-text">
-          <span className="amount-text">{memos.length}</span>
-          <span className="type-text">MEMO</span>
-        </div>
-        <div className="status-text tags-text">
-          <span className="amount-text">{tags.length}</span>
-          <span className="type-text">TAG</span>
-        </div>
-        <div className="status-text duration-text">
-          <span className="amount-text">{createdDays}</span>
-          <span className="type-text">DAY</span>
-        </div>
-      </div>
       <UsageHeatMap />
       <Only when={!userService.isVisitorMode()}>
         <div className="action-btns-container">
@@ -62,8 +41,8 @@ const Sidebar: React.FC<Props> = () => {
             <span className="icon">🗂</span> Archived
           </button>
         </div>
+        <ShortcutList />
       </Only>
-      <ShortcutList />
       <TagList />
     </aside>
   );

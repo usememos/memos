@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { editorStateService, memoService } from "../services";
+import { editorStateService, memoService, userService } from "../services";
 import { parseHtmlToRawText } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
@@ -122,12 +122,16 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
         <div className="header-container">
           <p className="time-text">{utils.getDateTimeString(memo.createdTs)}</p>
           <div className="btns-container">
-            <button className="btn edit-btn" onClick={handleVisibilityClick}>
-              <img className={`icon-img ${memo.visibility === "PRIVATE" ? "opacity-30" : ""}`} src="/icons/visibility.svg" />
-            </button>
-            <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
-              <img className="icon-img" src="/icons/edit.svg" />
-            </button>
+            <Only when={!userService.isVisitorMode()}>
+              <>
+                <button className="btn edit-btn" onClick={handleVisibilityClick}>
+                  <img className={`icon-img ${memo.visibility === "PRIVATE" ? "opacity-30" : ""}`} src="/icons/visibility.svg" />
+                </button>
+                <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
+                  <img className="icon-img" src="/icons/edit.svg" />
+                </button>
+              </>
+            </Only>
             <button className="btn close-btn" onClick={props.destroy}>
               <img className="icon-img" src="/icons/close.svg" />
             </button>

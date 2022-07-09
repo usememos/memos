@@ -18,7 +18,7 @@ const memoService = {
 
   fetchAllMemos: async () => {
     const memoFind: MemoFind = {
-      creatorId: userService.getCurrentUserId(),
+      creatorId: userService.getUserIdFromPath(),
     };
     const { data } = (await api.getMemoList(memoFind)).data;
     const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
@@ -29,7 +29,7 @@ const memoService = {
 
   fetchArchivedMemos: async () => {
     const memoFind: MemoFind = {
-      creatorId: userService.getCurrentUserId(),
+      creatorId: userService.getUserIdFromPath(),
       rowStatus: "ARCHIVED",
     };
     const { data } = (await api.getMemoList(memoFind)).data;
@@ -51,7 +51,7 @@ const memoService = {
 
   updateTagsState: async () => {
     const tagFind: TagFind = {
-      creatorId: userService.getCurrentUserId(),
+      creatorId: userService.getUserIdFromPath(),
     };
     const { data } = (await api.getTagList(tagFind)).data;
     store.dispatch(setTags(data));

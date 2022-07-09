@@ -49,6 +49,15 @@ const userService = {
     await api.signout();
   },
 
+  getUserById: async (userId: UserId) => {
+    const { data: user } = (await api.getUserById(userId)).data;
+    if (user) {
+      return convertResponseModelUser(user);
+    } else {
+      return undefined;
+    }
+  },
+
   patchUser: async (userPatch: UserPatch): Promise<void> => {
     const { data } = (await api.patchUser(userPatch)).data;
     const user = convertResponseModelUser(data);

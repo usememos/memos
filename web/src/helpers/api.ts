@@ -44,8 +44,8 @@ export function getUserList() {
   return axios.get<ResponseObject<User[]>>("/api/user");
 }
 
-export function getUserNameById(id: number) {
-  return axios.get<ResponseObject<string>>(`/api/user/${id}/name`);
+export function getUserById(id: number) {
+  return axios.get<ResponseObject<User>>(`/api/user/${id}`);
 }
 
 export function patchUser(userPatch: UserPatch) {
@@ -87,7 +87,7 @@ export function deleteMemo(memoId: MemoId) {
   return axios.delete(`/api/memo/${memoId}`);
 }
 
-export function getShortcutList(shortcutFind: ShortcutFind) {
+export function getShortcutList(shortcutFind?: ShortcutFind) {
   const queryList = [];
   if (shortcutFind?.creatorId) {
     queryList.push(`creatorId=${shortcutFind.creatorId}`);

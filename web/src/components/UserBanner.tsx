@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import * as api from "../helpers/api";
+import * as utils from "../helpers/utils";
 import userService from "../services/userService";
 import { locationService } from "../services";
 import { useAppSelector } from "../store";
@@ -11,26 +11,31 @@ interface Props {}
 
 const UserBanner: React.FC<Props> = () => {
   const user = useAppSelector((state) => state.user.user);
+  const { memos, tags } = useAppSelector((state) => state.memo);
   const [shouldShowPopupBtns, setShouldShowPopupBtns] = useState(false);
   const [username, setUsername] = useState("Memos");
+  const [createdDays, setCreatedDays] = useState(0);
   const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
     const currentUserId = userService.getUserIdFromPath();
     if (isVisitorMode && currentUserId) {
-      api
-        .getUserNameById(currentUserId)
-        .then(({ data }) => {
-          const { data: username } = data;
-          if (username) {
-            setUsername(username);
+      userService
+        .getUserById(currentUserId)
+        .then((user) => {
+          if (user) {
+            setUsername(user.name);
+            setCreatedDays(user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24) : 0);
+          } else {
+            toastHelper.error("User not found");
           }
         })
         .catch(() => {
-          toastHelper.error("User not found");
+          // do nth
         });
     } else if (user) {
       setUsername(user.name);
+      setCreatedDays(user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24) : 0);
     }
   }, []);
 
@@ -43,16 +48,32 @@ const UserBanner: React.FC<Props> = () => {
   };
 
   return (
-    <div className="user-banner-container">
-      <div className="username-container" onClick={handleUsernameClick}>
-        <span className="username-text">{username}</span>
-        {!isVisitorMode && user?.role === "HOST" ? <span className="tag">MOD</span> : null}
+    <>
+      <div className="user-banner-container">
+        <div className="username-container" onClick={handleUsernameClick}>
+          <span className="username-text">{username}</span>
+          {!isVisitorMode && user?.role === "HOST" ? <span className="tag">MOD</span> : null}
+        </div>
+        <span className="action-btn menu-popup-btn" onClick={handlePopupBtnClick}>
+          <img src="/icons/more.svg" className="icon-img" />
+        </span>
+        <MenuBtnsPopup shownStatus={shouldShowPopupBtns} setShownStatus={setShouldShowPopupBtns} />
       </div>
-      <span className="action-btn menu-popup-btn" onClick={handlePopupBtnClick}>
-        <img src="/icons/more.svg" className="icon-img" />
-      </span>
-      <MenuBtnsPopup shownStatus={shouldShowPopupBtns} setShownStatus={setShouldShowPopupBtns} />
-    </div>
+      <div className="status-text-container">
+        <div className="status-text memos-text">
+          <span className="amount-text">{memos.length}</span>
+          <span className="type-text">MEMO</span>
+        </div>
+        <div className="status-text tags-text">
+          <span className="amount-text">{tags.length}</span>
+          <span className="type-text">TAG</span>
+        </div>
+        <div className="status-text duration-text">
+          <span className="amount-text">{createdDays}</span>
+          <span className="type-text">DAY</span>
+        </div>
+      </div>
+    </>
   );
 };
 

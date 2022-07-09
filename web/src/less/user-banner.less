@@ -27,3 +27,20 @@
     }
   }
 }
+
+.status-text-container {
+  @apply flex flex-row justify-between items-start w-full px-6 select-none shrink-0 pb-4;
+
+  > .status-text {
+    .flex(column, flex-start, flex-start);
+
+    > .amount-text {
+      @apply font-bold text-2xl opacity-80 leading-10;
+      color: @text-black;
+    }
+
+    > .type-text {
+      @apply text-gray-400 text-xs font-mono;
+    }
+  }
+}
