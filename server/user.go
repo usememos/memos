@@ -51,7 +51,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		return nil
 	})
 
-	g.GET("/user/:id/name", func(c echo.Context) error {
+	g.GET("/user/:id", func(c echo.Context) error {
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted user id").SetInternal(err)
@@ -64,13 +64,8 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user").SetInternal(err)
 		}
 
-		username := ""
-		if user != nil {
-			username = user.Name
-		}
-
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(username)); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
 		}
 		return nil

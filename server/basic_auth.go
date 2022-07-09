@@ -55,7 +55,7 @@ func removeUserSession(c echo.Context) error {
 func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Skip auth for some paths.
-		if common.HasPrefixes(c.Path(), "/api/auth", "/api/ping", "/api/status") {
+		if common.HasPrefixes(c.Path(), "/api/auth", "/api/ping", "/api/status", "/api/user/:id/") {
 			return next(c)
 		}
 
@@ -76,8 +76,10 @@ func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 			}
 		}
 
-		if common.HasPrefixes(c.Path(), "/api/memo", "/api/tag", "/api/shortcut", "/api/user/:id/name") && c.Request().Method == http.MethodGet {
-			return next(c)
+		if common.HasPrefixes(c.Path(), "/api/memo", "/api/tag", "/api/shortcut") && c.Request().Method == http.MethodGet {
+			if _, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
+				return next(c)
+			}
 		}
 
 		sess, err := session.Get("session", c)
