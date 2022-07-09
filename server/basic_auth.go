@@ -55,7 +55,7 @@ func removeUserSession(c echo.Context) error {
 func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		// Skip auth for some paths.
-		if common.HasPrefixes(c.Path(), "/api/auth", "/api/ping", "/api/status", "/api/user/:id/") {
+		if common.HasPrefixes(c.Path(), "/api/auth", "/api/ping", "/api/status", "/api/user/:userId") {
 			return next(c)
 		}
 

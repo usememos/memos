@@ -1,4 +1,5 @@
 import { userService } from "../services";
+import { useAppSelector } from "../store";
 import Only from "./common/OnlyWhen";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
@@ -12,6 +13,8 @@ import "../less/siderbar.less";
 interface Props {}
 
 const Sidebar: React.FC<Props> = () => {
+  const user = useAppSelector((state) => state.user.user);
+
   const handleMyAccountBtnClick = () => {
     showSettingDialog();
   };
@@ -29,18 +32,31 @@ const Sidebar: React.FC<Props> = () => {
       </div>
       <UserBanner />
       <UsageHeatMap />
-      <Only when={!userService.isVisitorMode()}>
-        <div className="action-btns-container">
-          <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
-            <span className="icon">📅</span> Daily Review
-          </button>
+      <div className="action-btns-container">
+        <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
+          <span className="icon">📅</span> Daily Review
+        </button>
+        <Only when={!userService.isVisitorMode()}>
           <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
             <span className="icon">⚙️</span> Setting
           </button>
-          <button className="btn action-btn" onClick={handleArchivedBtnClick}>
-            <span className="icon">🗂</span> Archived
-          </button>
-        </div>
+        </Only>
+        <button className="btn action-btn" onClick={handleArchivedBtnClick}>
+          <span className="icon">🗂</span> Archived
+        </button>
+        <Only when={userService.isVisitorMode()}>
+          {user ? (
+            <button className="btn action-btn" onClick={() => (window.location.href = "/")}>
+              <span className="icon">🏠</span> Back to Home
+            </button>
+          ) : (
+            <button className="btn action-btn" onClick={() => (window.location.href = "/signin")}>
+              <span className="icon">👉</span> Sign in
+            </button>
+          )}
+        </Only>
+      </div>
+      <Only when={!userService.isVisitorMode()}>
         <ShortcutList />
       </Only>
       <TagList />

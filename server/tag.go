@@ -26,10 +26,17 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		} else {
 			userID, ok := c.Get(getUserIDContextKey()).(int)
 			if !ok {
-				return echo.NewHTTPError(http.StatusBadRequest, "Missing creatorId to find shortcut")
+				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
 			}
 
 			memoFind.CreatorID = &userID
+		}
+
+		// Only can get PUBLIC memos in visitor mode
+		_, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			publicVisibility := api.Public
+			memoFind.Visibility = &publicVisibility
 		}
 
 		memoList, err := s.Store.FindMemoList(&memoFind)

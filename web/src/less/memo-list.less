@@ -1,33 +1,22 @@
 @import "./mixin.less";
 
 .memo-list-container {
-  .flex(column, flex-start, flex-start);
-  width: 100%;
-  max-width: 100%;
-  overflow-y: scroll;
+  @apply flex flex-col justify-start items-start w-full max-w-full overflow-y-scroll;
   .hide-scroll-bar();
 
   > .status-text-container {
-    .flex(column, flex-start, center);
-    width: 100%;
-    margin-top: 16px;
-    margin-bottom: 16px;
+    @apply flex flex-col justify-start items-center w-full my-6;
 
     &.completed {
-      margin-bottom: 64px;
-    }
-
-    &.invisible {
-      visibility: hidden;
+      @apply mb-16;
     }
 
     > .status-text {
-      font-size: 13px;
-      color: gray;
+      @apply text-sm text-gray-400 italic;
     }
   }
 
   &.completed {
-    @apply pb-40;
+    @apply pb-16;
   }
 }

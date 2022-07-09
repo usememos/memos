@@ -70,7 +70,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		} else {
 			userID, ok := c.Get(getUserIDContextKey()).(int)
 			if !ok {
-				return echo.NewHTTPError(http.StatusBadRequest, "Missing creatorId to find memo")
+				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
 			}
 
 			memoFind.CreatorID = &userID

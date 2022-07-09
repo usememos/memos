@@ -7,8 +7,7 @@ INSERT INTO
 VALUES
   (
     101,
-    '#Hello 👋 Welcome to memos
-![](https://api.star-history.com/svg?repos=usememos/memos&type=Date&size=mobile)', 
+    '#Hello 👋 Welcome to memos', 
     101
   );
 
@@ -25,8 +24,7 @@ VALUES
 - [ ] Take more photos about **🌄 sunset**;
 - [x] Clean the room;
 - [x] Read *📖 The Little Prince*;
-(👆 click to toggle status)
-', 
+(👆 click to toggle status)', 
     101
   );
 

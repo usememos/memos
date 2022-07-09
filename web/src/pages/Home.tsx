@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { locationService, userService } from "../services";
-import * as api from "../helpers/api";
 import useLoading from "../hooks/useLoading";
 import Only from "../components/common/OnlyWhen";
 import Sidebar from "../components/Sidebar";
