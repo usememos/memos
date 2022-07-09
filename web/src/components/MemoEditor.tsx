@@ -1,19 +1,26 @@
-import React, { useCallback, useEffect, useMemo, useRef } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import { useAppSelector } from "../store";
 import * as storage from "../helpers/storage";
-import useToggle from "../hooks/useToggle";
 import toastHelper from "./Toast";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import "../less/memo-editor.less";
 
 interface Props {}
 
+interface State {
+  isUploadingResource: boolean;
+  fullscreen: boolean;
+}
+
 const MemoEditor: React.FC<Props> = () => {
   const editorState = useAppSelector((state) => state.editor);
   const tags = useAppSelector((state) => state.memo.tags);
-  const [isUploadingResource, setIsUploadingResource] = useToggle(false);
+  const [state, setState] = useState<State>({
+    isUploadingResource: false,
+    fullscreen: false,
+  });
   const editorRef = useRef<EditorRefActions>(null);
   const prevGlobalStateRef = useRef(editorState);
   const tagSeletorRef = useRef<HTMLDivElement>(null);
@@ -89,11 +96,14 @@ const MemoEditor: React.FC<Props> = () => {
 
   const handleUploadFile = useCallback(
     async (file: File) => {
-      if (isUploadingResource) {
+      if (state.isUploadingResource) {
         return;
       }
 
-      setIsUploadingResource(true);
+      setState({
+        ...state,
+        isUploadingResource: true,
+      });
       const { type } = file;
 
       if (!type.startsWith("image")) {
@@ -108,10 +118,13 @@ const MemoEditor: React.FC<Props> = () => {
       } catch (error: any) {
         toastHelper.error(error);
       } finally {
-        setIsUploadingResource(false);
+        setState({
+          ...state,
+          isUploadingResource: false,
+        });
       }
     },
-    [isUploadingResource]
+    [state]
   );
 
   const handleSaveBtnClick = useCallback(async (content: string) => {
@@ -175,6 +188,13 @@ const MemoEditor: React.FC<Props> = () => {
     inputEl.click();
   }, []);
 
+  const handleFullscreenBtnClick = () => {
+    setState({
+      ...state,
+      fullscreen: !state.fullscreen,
+    });
+  };
+
   const handleTagSeletorClick = useCallback((event: React.MouseEvent) => {
     if (tagSeletorRef.current !== event.target && tagSeletorRef.current?.contains(event.target as Node)) {
       editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
@@ -189,17 +209,18 @@ const MemoEditor: React.FC<Props> = () => {
       className: "memo-editor",
       initialContent: getEditorContentCache(),
       placeholder: "Any thoughts...",
+      fullscreen: state.fullscreen,
       showConfirmBtn: true,
       showCancelBtn: isEditing,
       onConfirmBtnClick: handleSaveBtnClick,
       onCancelBtnClick: handleCancelBtnClick,
       onContentChange: handleContentChange,
     }),
-    [isEditing]
+    [isEditing, state.fullscreen]
   );
 
   return (
-    <div className={"memo-editor-container " + (isEditing ? "edit-ing" : "")}>
+    <div className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}>
       <p className={"tip-text " + (isEditing ? "" : "hidden")}>Editting...</p>
       <Editor
         ref={editorRef}
@@ -216,8 +237,11 @@ const MemoEditor: React.FC<Props> = () => {
             </div>
             <div className="action-btn">
               <img className="icon-img" src="/icons/image.svg" onClick={handleUploadFileBtnClick} />
-              <span className={`tip-text ${isUploadingResource ? "!block" : ""}`}>Uploading</span>
+              <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
             </div>
+            <button className="action-btn" onClick={handleFullscreenBtnClick}>
+              <img className="icon-img" src={`/icons/${state.fullscreen ? "close" : "open"}-fullscreen.svg`} alt="" />
+            </button>
           </>
         }
       />

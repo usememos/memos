@@ -1,7 +1,20 @@
 @import "./mixin.less";
 
 .memo-editor-container {
-  @apply relative w-full max-h-full flex flex-col justify-start items-start bg-white p-4 rounded-lg border-2 border-gray-200;
+  @apply transition-all relative w-full max-h-full flex flex-col justify-start items-start bg-white p-4 rounded-lg border-2 border-gray-200;
+
+  &.fullscreen {
+    @apply fixed w-full h-full top-0 left-0 z-1000 border-none rounded-none sm:p-8;
+    background-color: #f6f5f4;
+
+    > .memo-editor {
+      @apply p-4 rounded-lg border shadow-lg flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white;
+
+      > .common-editor-inputer {
+        @apply flex-grow w-full !h-full max-h-full;
+      }
+    }
+  }
 
   &.edit-ing {
     border-color: @text-blue;

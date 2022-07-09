@@ -15,6 +15,7 @@ interface EditorProps {
   className: string;
   initialContent: string;
   placeholder: string;
+  fullscreen: boolean;
   showConfirmBtn: boolean;
   showCancelBtn: boolean;
   tools?: ReactNode;
@@ -29,6 +30,7 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
     className,
     initialContent,
     placeholder,
+    fullscreen,
     showConfirmBtn,
     showCancelBtn,
     onConfirmBtnClick: handleConfirmBtnClickCallback,
@@ -45,11 +47,11 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
   }, []);
 
   useEffect(() => {
-    if (editorRef.current) {
+    if (editorRef.current && !fullscreen) {
       editorRef.current.style.height = "auto";
       editorRef.current.style.height = (editorRef.current.scrollHeight ?? 0) + "px";
     }
-  }, [editorRef.current?.value]);
+  }, [editorRef.current?.value, fullscreen]);
 
   useImperativeHandle(
     ref,
