@@ -13,7 +13,7 @@
   <a href="https://github.com/usememos/memos/discussions">Discussions</a>
 </p>
 
-![demo](https://raw.githubusercontent.com/usememos/memos/main/resources/demo.png)
+![demo](https://raw.githubusercontent.com/usememos/memos/main/resources/demo.webp)
 
 ## 🎯 Intentions
 
