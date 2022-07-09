@@ -24,5 +24,6 @@ data
 
 # build folder
 build
+memos-build
 
 .DS_Store

@@ -1,10 +1,10 @@
 package profile
 
 import (
+	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 
 	"github.com/usememos/memos/common"
@@ -16,6 +16,8 @@ type Profile struct {
 	Mode string `json:"mode"`
 	// Port is the binding port for server
 	Port int `json:"port"`
+	// Data is the data directory
+	Data string `json:"data"`
 	// DSN points to where Memos stores its own data
 	DSN string `json:"dsn"`
 	// Version is the current version of server
@@ -43,35 +45,30 @@ func checkDSN(dataDir string) (string, error) {
 	return dataDir, nil
 }
 
-// GetDevProfile will return a profile for dev.
+// GetDevProfile will return a profile for dev or prod.
 func GetProfile() *Profile {
-	mode := os.Getenv("mode")
-	if mode != "dev" && mode != "prod" {
-		mode = "dev"
+	profile := Profile{}
+	flag.StringVar(&profile.Mode, "mode", "dev", "mode of server")
+	flag.IntVar(&profile.Port, "port", 8080, "port of server")
+	flag.StringVar(&profile.Data, "data", "", "data directory")
+	flag.Parse()
+
+	if profile.Mode != "dev" && profile.Mode != "prod" {
+		profile.Mode = "dev"
 	}
 
-	port, err := strconv.Atoi(os.Getenv("port"))
-	if err != nil {
-		port = 8080
+	if profile.Mode == "prod" && profile.Data == "" {
+		profile.Data = "/var/opt/memos"
 	}
 
-	data := ""
-	if mode == "prod" {
-		data = "/var/opt/memos"
-	}
-
-	dataDir, err := checkDSN(data)
+	dataDir, err := checkDSN(profile.Data)
 	if err != nil {
 		fmt.Printf("Failed to check dsn: %s, err: %+v\n", dataDir, err)
 		os.Exit(1)
 	}
 
-	dsn := fmt.Sprintf("%s/memos_%s.db", dataDir, mode)
+	profile.DSN = fmt.Sprintf("%s/memos_%s.db", dataDir, profile.Mode)
+	profile.Version = common.GetCurrentVersion(profile.Mode)
 
-	return &Profile{
-		Mode:    mode,
-		Port:    port,
-		DSN:     dsn,
-		Version: common.GetCurrentVersion(mode),
-	}
+	return &profile
 }

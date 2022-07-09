@@ -49,6 +49,13 @@ func Execute() {
 		profile: profile,
 	}
 
+	println("---")
+	println("profile")
+	println("mode:", profile.Mode)
+	println("port:", profile.Port)
+	println("dsn:", profile.DSN)
+	println("version:", profile.Version)
+	println("---")
 	println(greetingBanner)
 	fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)
 
