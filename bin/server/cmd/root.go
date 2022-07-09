@@ -36,11 +36,10 @@ func (m *Main) Run() error {
 	storeInstance := store.New(db.Db, m.profile)
 	s.Store = storeInstance
 
-	if err := s.Run(); err != nil {
-		return err
-	}
+	println(greetingBanner)
+	fmt.Printf("Version %s has started at :%d\n", m.profile.Version, m.profile.Port)
 
-	return nil
+	return s.Run()
 }
 
 func Execute() {
@@ -56,8 +55,6 @@ func Execute() {
 	println("dsn:", profile.DSN)
 	println("version:", profile.Version)
 	println("---")
-	println(greetingBanner)
-	fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)
 
 	if err := m.Run(); err != nil {
 		fmt.Printf("error: %+v\n", err)

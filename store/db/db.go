@@ -80,9 +80,8 @@ func (db *DB) Open() (err error) {
 				return err
 			}
 			if migrationHistory == nil {
-				migrationHistory, err = upsertMigrationHistory(db.Db, &MigrationHistoryCreate{
-					Version:   currentVersion,
-					Statement: "",
+				migrationHistory, err = upsertMigrationHistory(db.Db, &MigrationHistoryUpsert{
+					Version: currentVersion,
 				})
 				if err != nil {
 					return err
@@ -91,16 +90,18 @@ func (db *DB) Open() (err error) {
 
 			if common.IsVersionGreaterThan(currentVersion, migrationHistory.Version) {
 				minorVersionList := getMinorVersionList()
-
+				println("start migrate")
 				for _, minorVersion := range minorVersionList {
 					normalizedVersion := minorVersion + ".0"
 					if common.IsVersionGreaterThan(normalizedVersion, migrationHistory.Version) && common.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
+						println("applying migration for", normalizedVersion)
 						err := db.applyMigrationForMinorVersion(minorVersion)
 						if err != nil {
 							return fmt.Errorf("failed to apply minor version migration: %w", err)
 						}
 					}
 				}
+				println("end migrate")
 			}
 		}
 	}
@@ -148,9 +149,8 @@ func (db *DB) applyMigrationForMinorVersion(minorVersion string) error {
 	}
 
 	// upsert the newest version to migration_history
-	if _, err = upsertMigrationHistory(db.Db, &MigrationHistoryCreate{
-		Version:   minorVersion + ".0",
-		Statement: migrationStmt,
+	if _, err = upsertMigrationHistory(db.Db, &MigrationHistoryUpsert{
+		Version: minorVersion + ".0",
 	}); err != nil {
 		return err
 	}
@@ -221,29 +221,12 @@ func getMinorVersionList() []string {
 
 // createMigrationHistoryTable creates the migration_history table if it doesn't exist.
 func (db *DB) createMigrationHistoryTable() error {
-	table, err := findTable(db.Db, "migration_history")
-	if err != nil {
-		return err
-	}
-
-	// TODO(steven): Drop the migration_history table if it exists temporarily.
-	if table != nil {
-		err = db.execute(`
-		DROP TABLE IF EXISTS migration_history;
-		`)
-		if err != nil {
-			return err
-		}
-	}
-
-	err = createTable(db.Db, `
-	CREATE TABLE migration_history (
+	if err := createTable(db.Db, `
+	CREATE TABLE IF NOT EXISTS migration_history (
 		version TEXT NOT NULL PRIMARY KEY,
-		statement TEXT NOT NULL DEFAULT '',
 		created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
 	);
-	`)
-	if err != nil {
+	`); err != nil {
 		return err
 	}
 

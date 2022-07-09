@@ -7,13 +7,11 @@ import (
 
 type MigrationHistory struct {
 	Version   string
-	Statement string
 	CreatedTs int64
 }
 
-type MigrationHistoryCreate struct {
-	Version   string
-	Statement string
+type MigrationHistoryUpsert struct {
+	Version string
 }
 
 type MigrationHistoryFind struct {
@@ -71,21 +69,18 @@ func findMigrationHistory(db *sql.DB, find *MigrationHistoryFind) (*MigrationHis
 	}
 }
 
-func upsertMigrationHistory(db *sql.DB, create *MigrationHistoryCreate) (*MigrationHistory, error) {
+func upsertMigrationHistory(db *sql.DB, upsert *MigrationHistoryUpsert) (*MigrationHistory, error) {
 	row, err := db.Query(`
 		INSERT INTO migration_history (
-			version, 
-			statement
+			version
 		)
-		VALUES (?, ?)
+		VALUES (?)
 		ON CONFLICT(version) DO UPDATE
 		SET
-			version=EXCLUDED.version,
-			statement=EXCLUDED.statement
-		RETURNING version, statement, created_ts
+			version=EXCLUDED.version
+		RETURNING version, created_ts
 	`,
-		create.Version,
-		create.Statement,
+		upsert.Version,
 	)
 	if err != nil {
 		return nil, err
@@ -96,7 +91,6 @@ func upsertMigrationHistory(db *sql.DB, create *MigrationHistoryCreate) (*Migrat
 	var migrationHistory MigrationHistory
 	if err := row.Scan(
 		&migrationHistory.Version,
-		&migrationHistory.Statement,
 		&migrationHistory.CreatedTs,
 	); err != nil {
 		return nil, err

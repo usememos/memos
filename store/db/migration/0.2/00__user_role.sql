@@ -1,7 +1,6 @@
 -- change user role field from "OWNER"/"USER" to "HOST"/"USER".
 
 PRAGMA foreign_keys = off;
-BEGIN TRANSACTION;
 
 DROP TABLE IF EXISTS _user_old;
 
@@ -52,5 +51,4 @@ WHERE
 
 DROP TABLE IF EXISTS _user_old;
 
-COMMIT;
 PRAGMA foreign_keys = on;

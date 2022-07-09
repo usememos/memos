@@ -10,6 +10,7 @@ type Table struct {
 	SQL  string
 }
 
+//lint:ignore U1000 Ignore unused function temporarily for debugging
 func findTable(db *sql.DB, tableName string) (*Table, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
