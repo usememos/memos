@@ -4,7 +4,7 @@
 
 <p align="center">
   <img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos" />
-  <img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg" />
+  <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg" /></a>
   <img alt="Go report" src="https://goreportcard.com/badge/github.com/usememos/memos" />
 </p>
 
@@ -31,10 +31,18 @@
 ## ⚓️ Deploy with Docker
 
 ```docker
-docker run --name memos --publish 5230:5230 --volume ~/.memos/:/var/opt/memos -e mode=prod -e port=5230 neosmemo/memos:0.1.3
+docker run \
+  --name memos \
+  --publish 5230:5230 \
+  --volume ~/.memos/:/var/opt/memos \
+  neosmemo/memos:latest \
+  --mode prod \
+  --port 5230
 ```
 
 Memos should now be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
+
+⚠️ Please DO NOT use `dev` of docker image if you have no experience.
 
 ## 🏗 Development
 
