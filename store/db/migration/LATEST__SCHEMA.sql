@@ -51,7 +51,7 @@ CREATE TABLE memo (
 INSERT INTO
   sqlite_sequence (name, seq)
 VALUES
-  ('memo', 100);
+  ('memo', 1000);
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_memo_modification_time`
 AFTER
@@ -79,7 +79,7 @@ CREATE TABLE memo_organizer (
 INSERT INTO
   sqlite_sequence (name, seq)
 VALUES
-  ('memo_organizer', 100);
+  ('memo_organizer', 1000);
 
 -- shortcut
 CREATE TABLE shortcut (
@@ -96,7 +96,7 @@ CREATE TABLE shortcut (
 INSERT INTO
   sqlite_sequence (name, seq)
 VALUES
-  ('shortcut', 100);
+  ('shortcut', 10000);
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_shortcut_modification_time`
 AFTER
@@ -126,7 +126,7 @@ CREATE TABLE resource (
 INSERT INTO
   sqlite_sequence (name, seq)
 VALUES
-  ('resource', 100);
+  ('resource', 10000);
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_resource_modification_time`
 AFTER

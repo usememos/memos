@@ -6,8 +6,9 @@ INSERT INTO
   )
 VALUES
   (
-    101,
-    '#Hello 👋 Welcome to memos', 
+    1001,
+    "#Hello 👋 Welcome to memos.
+And here is old Jack's Page: [/u/102](/u/102)", 
     101
   );
 
@@ -19,7 +20,7 @@ INSERT INTO
   )
 VALUES
   (
-    102,
+    1002,
     '#TODO 
 - [ ] Take more photos about **🌄 sunset**;
 - [x] Clean the room;
@@ -37,7 +38,7 @@ INSERT INTO
   )
 VALUES
   (
-    103,
+    1003,
     '好好学习，天天向上。🤜🤛',
     101,
     'PUBLIC'
@@ -51,7 +52,7 @@ INSERT INTO
   )
 VALUES
   (
-    104,
+    1004,
     '#TODO 
 - [x] Take more photos about **🌄 sunset**;
 - [ ] Clean the classroom;
@@ -65,11 +66,13 @@ INSERT INTO
   memo (
     `id`,
     `content`, 
-    `creator_id`
+    `creator_id`,
+    `visibility`
   )
 VALUES
   (
-    105,
+    1005,
     '三人行，必有我师焉！👨‍🏫', 
-    102
+    102,
+    'PUBLIC'
   );
