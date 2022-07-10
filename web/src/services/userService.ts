@@ -2,7 +2,7 @@ import { isUndefined } from "lodash-es";
 import { locationService } from ".";
 import * as api from "../helpers/api";
 import store from "../store";
-import { setUser, patchUser } from "../store/modules/user";
+import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
 
 const convertResponseModelUser = (user: User): User => {
   return {
@@ -17,12 +17,30 @@ const userService = {
     return store.getState().user;
   },
 
-  isVisitorMode: () => {
-    return !isUndefined(userService.getUserIdFromPath());
+  initialState: async () => {
+    const {
+      data: { host },
+    } = (await api.getSystemStatus()).data;
+    if (host) {
+      store.dispatch(setHost(convertResponseModelUser(host)));
+    }
+
+    const ownerUserId = userService.getUserIdFromPath();
+    if (ownerUserId) {
+      const { data: owner } = (await api.getUserById(ownerUserId)).data;
+      if (owner) {
+        store.dispatch(setOwner(convertResponseModelUser(owner)));
+      }
+    }
+
+    const { data: user } = (await api.getUser()).data;
+    if (user) {
+      store.dispatch(setUser(convertResponseModelUser(user)));
+    }
   },
 
-  getCurrentUserId: () => {
-    return userService.getUserIdFromPath() ?? store.getState().user.user?.id;
+  isVisitorMode: () => {
+    return !isUndefined(userService.getUserIdFromPath());
   },
 
   getUserIdFromPath: () => {

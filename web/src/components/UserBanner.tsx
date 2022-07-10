@@ -3,14 +3,13 @@ import * as utils from "../helpers/utils";
 import userService from "../services/userService";
 import { locationService } from "../services";
 import { useAppSelector } from "../store";
-import toastHelper from "./Toast";
 import MenuBtnsPopup from "./MenuBtnsPopup";
 import "../less/user-banner.less";
 
 interface Props {}
 
 const UserBanner: React.FC<Props> = () => {
-  const user = useAppSelector((state) => state.user.user);
+  const { user, owner } = useAppSelector((state) => state.user);
   const { memos, tags } = useAppSelector((state) => state.memo);
   const [shouldShowPopupBtns, setShouldShowPopupBtns] = useState(false);
   const [username, setUsername] = useState("Memos");
@@ -18,24 +17,15 @@ const UserBanner: React.FC<Props> = () => {
   const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
-    const currentUserId = userService.getUserIdFromPath();
-    if (isVisitorMode && currentUserId) {
-      userService
-        .getUserById(currentUserId)
-        .then((user) => {
-          if (user) {
-            setUsername(user.name);
-            setCreatedDays(user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24) : 0);
-          } else {
-            toastHelper.error("User not found");
-          }
-        })
-        .catch(() => {
-          // do nth
-        });
+    if (isVisitorMode) {
+      if (!owner) {
+        return;
+      }
+      setUsername(owner.name);
+      setCreatedDays(Math.ceil((Date.now() - utils.getTimeStampByDate(owner.createdTs)) / 1000 / 3600 / 24));
     } else if (user) {
       setUsername(user.name);
-      setCreatedDays(user ? Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24) : 0);
+      setCreatedDays(Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24));
     }
   }, []);
 

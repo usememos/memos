@@ -13,11 +13,11 @@ export const DAILY_TIMESTAMP = 3600 * 24 * 1000;
 // tag regex
 export const TAG_REG = /#(.+?) /g;
 
-// URL regex
-export const LINK_REG = /(https?:\/\/[^\s<\\*>']+)/g;
-
-// image regex
+// markdown image regex
 export const IMAGE_URL_REG = /!\[.*?\]\((.+?)\)/g;
 
+// markdown link regex
+export const LINK_URL_REG = /\[(.*?)\]\((.+?)\)/g;
+
 // linked memo regex
-export const MEMO_LINK_REG = /\[@(.+?)\]\((.+?)\)/g;
+export const MEMO_LINK_REG = /@\[(.+?)\]\((.+?)\)/g;

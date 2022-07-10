@@ -1,4 +1,4 @@
-import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "./consts";
+import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "./consts";
 
 export const relationConsts = [
   { text: "And", value: "AND" },
@@ -142,7 +142,7 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
     let matched = false;
     if (value === "NOT_TAGGED" && memo.content.match(TAG_REG) === null) {
       matched = true;
-    } else if (value === "LINKED" && memo.content.match(LINK_REG) !== null) {
+    } else if (value === "LINKED" && memo.content.match(LINK_URL_REG) !== null) {
       matched = true;
     } else if (value === "IMAGED" && memo.content.match(IMAGE_URL_REG) !== null) {
       matched = true;

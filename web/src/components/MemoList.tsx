@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
-import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
+import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";
@@ -58,7 +58,7 @@ const MemoList: React.FC<Props> = () => {
           if (memoType) {
             if (memoType === "NOT_TAGGED" && memo.content.match(TAG_REG) !== null) {
               shouldShow = false;
-            } else if (memoType === "LINKED" && memo.content.match(LINK_REG) === null) {
+            } else if (memoType === "LINKED" && memo.content.match(LINK_URL_REG) === null) {
               shouldShow = false;
             } else if (memoType === "IMAGED" && memo.content.match(IMAGE_URL_REG) === null) {
               shouldShow = false;

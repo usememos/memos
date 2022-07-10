@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { escape, indexOf } from "lodash-es";
-import { IMAGE_URL_REG, LINK_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
+import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { DONE_BLOCK_REG, parseMarkedToHtml, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
@@ -229,9 +229,9 @@ export function formatMemoContent(content: string) {
 
   return tempElement.innerHTML
     .replace(IMAGE_URL_REG, "")
-    .replace(TAG_REG, "<span class='tag-span'>#$1</span> ")
-    .replace(LINK_REG, "<a class='link' target='_blank' rel='noreferrer' href='$1'>$1</a>")
-    .replace(MEMO_LINK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>");
+    .replace(MEMO_LINK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>")
+    .replace(LINK_URL_REG, "<a class='link' target='_blank' rel='noreferrer' href='$2'>$1</a>")
+    .replace(TAG_REG, "<span class='tag-span'>#$1</span> ");
 }
 
 export default memo(Memo);

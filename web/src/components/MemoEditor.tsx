@@ -28,7 +28,7 @@ const MemoEditor: React.FC<Props> = () => {
   useEffect(() => {
     if (editorState.markMemoId && editorState.markMemoId !== UNKNOWN_ID) {
       const editorCurrentValue = editorRef.current?.getContent();
-      const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: [@MEMO](${editorState.markMemoId})`;
+      const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: @[MEMO](${editorState.markMemoId})`;
       editorRef.current?.insertText(memoLinkText);
       editorStateService.clearMarkMemo();
     }

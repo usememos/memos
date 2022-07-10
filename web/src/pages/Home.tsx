@@ -15,19 +15,22 @@ function Home() {
 
   useEffect(() => {
     userService
-      .doSignIn()
+      .initialState()
       .catch()
       .finally(async () => {
-        if (!userService.getState().user) {
-          if (userService.isVisitorMode()) {
-            const currentUserId = userService.getUserIdFromPath() as number;
-            const user = await userService.getUserById(currentUserId);
-            if (!user) {
-              toastHelper.error("User not found");
-            }
-          } else {
-            locationService.replaceHistory("/signin");
-            return;
+        const { host, owner, user } = userService.getState();
+        if (!host) {
+          locationService.replaceHistory("/signin");
+          return;
+        }
+
+        if (userService.isVisitorMode()) {
+          if (!owner) {
+            toastHelper.error("User not found");
+          }
+        } else {
+          if (!user) {
+            locationService.replaceHistory(`/u/${host.id}`);
           }
         }
         loadingState.setFinish();
