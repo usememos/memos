@@ -9,7 +9,6 @@ import { showDialog } from "./Dialog";
 import Image from "./Image";
 import { formatMemoContent } from "./Memo";
 import "../less/memo-card-dialog.less";
-import "../less/memo-content.less";
 
 interface LinkedMemo extends Memo {
   createdAtStr: string;

@@ -63,18 +63,18 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
           <span className="icon-text">📅</span> Daily Review
         </p>
         <div className="btns-container">
-          <span className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}>
+          <button className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}>
             <img className="icon-img" src="/icons/arrow-left.svg" />
-          </span>
-          <span className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp + DAILY_TIMESTAMP)}>
+          </button>
+          <button className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp + DAILY_TIMESTAMP)}>
             <img className="icon-img" src="/icons/arrow-right.svg" />
-          </span>
-          <span className="btn-text share-btn" onClick={handleShareBtnClick}>
+          </button>
+          <button className="btn-text share-btn" onClick={handleShareBtnClick}>
             <img className="icon-img" src="/icons/share.svg" />
-          </span>
-          <span className="btn-text" onClick={() => props.destroy()}>
+          </button>
+          <button className="btn-text" onClick={() => props.destroy()}>
             <img className="icon-img" src="/icons/close.svg" />
-          </span>
+          </button>
         </div>
         <DatePicker
           className={`date-picker ${showDatePicker ? "" : "!hidden"}`}

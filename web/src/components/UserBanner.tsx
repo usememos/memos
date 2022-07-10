@@ -44,9 +44,9 @@ const UserBanner: React.FC<Props> = () => {
           <span className="username-text">{username}</span>
           {!isVisitorMode && user?.role === "HOST" ? <span className="tag">MOD</span> : null}
         </div>
-        <span className="action-btn menu-popup-btn" onClick={handlePopupBtnClick}>
+        <button className="action-btn menu-popup-btn" onClick={handlePopupBtnClick}>
           <img src="/icons/more.svg" className="icon-img" />
-        </span>
+        </button>
         <MenuBtnsPopup shownStatus={shouldShowPopupBtns} setShownStatus={setShouldShowPopupBtns} />
       </div>
       <div className="status-text-container">

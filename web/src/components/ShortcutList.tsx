@@ -38,9 +38,9 @@ const ShortcutList: React.FC<Props> = () => {
     <div className="shortcuts-wrapper">
       <p className="title-text">
         <span className="normal-text">Shortcuts</span>
-        <span className="btn" onClick={() => showCreateShortcutDialog()}>
+        <button className="btn" onClick={() => showCreateShortcutDialog()}>
           <img src="/icons/add.svg" alt="add shortcut" />
-        </span>
+        </button>
       </p>
       <div className="shortcuts-container">
         {sortedShortcuts.map((s) => {

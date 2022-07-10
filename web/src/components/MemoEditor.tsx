@@ -127,15 +127,14 @@ const MemoEditor: React.FC<Props> = () => {
     [state]
   );
 
-  const handleSaveBtnClick = useCallback(async (content: string) => {
+  const handleSaveBtnClick = async (content: string) => {
     if (content === "") {
       toastHelper.error("Content can't be empty");
       return;
     }
 
-    const { editMemoId } = editorStateService.getState();
-
     try {
+      const { editMemoId } = editorStateService.getState();
       if (editMemoId && editMemoId !== UNKNOWN_ID) {
         const prevMemo = memoService.getMemoById(editMemoId ?? UNKNOWN_ID);
 
@@ -156,8 +155,12 @@ const MemoEditor: React.FC<Props> = () => {
       toastHelper.error(error.message);
     }
 
+    setState({
+      ...state,
+      fullscreen: false,
+    });
     setEditorContentCache("");
-  }, []);
+  };
 
   const handleCancelBtnClick = useCallback(() => {
     editorStateService.clearEditMemo();
@@ -235,10 +238,10 @@ const MemoEditor: React.FC<Props> = () => {
                 })}
               </div>
             </div>
-            <div className="action-btn">
+            <button className="action-btn">
               <img className="icon-img" src="/icons/image.svg" onClick={handleUploadFileBtnClick} />
               <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
-            </div>
+            </button>
             <button className="action-btn" onClick={handleFullscreenBtnClick}>
               <img className="icon-img" src={`/icons/${state.fullscreen ? "close" : "open"}-fullscreen.svg`} alt="" />
             </button>

@@ -12,7 +12,7 @@
     @apply flex flex-col justify-start items-start relative w-full h-auto flex-nowrap mb-2 mt-1;
 
     .subtags-container {
-      @apply flex flex-col justify-start items-start h-auto mt-1 ml-4 pl-1;
+      @apply flex flex-col justify-start items-start h-auto mt-1 ml-5 pl-1;
       width: calc(100% - 18px);
       min-width: 80px;
       border-left: 2px solid @bg-gray;
@@ -32,7 +32,7 @@
       }
 
       > .tag-text-container {
-        @apply flex flex-row justify-start items-center overflow-hidden text-ellipsis shrink-0 leading-5 text-black;
+        @apply flex flex-row justify-start items-center overflow-hidden shrink-0 leading-5 text-black;
         max-width: calc(100% - 24px);
 
         > .icon-text {
@@ -40,7 +40,7 @@
         }
 
         > .tag-text {
-          @apply shrink-0;
+          @apply truncate;
         }
       }
 
