@@ -15,6 +15,7 @@ RUN apk update
 RUN apk --no-cache add gcc musl-dev
 
 COPY . .
+COPY --from=frontend /frontend-build/dist ./server/dist
 
 RUN go build \
     -o memos \
@@ -25,7 +26,6 @@ FROM alpine:3.16.0 AS monolithic
 WORKDIR /usr/local/memos
 
 COPY --from=backend /backend-build/memos /usr/local/memos/
-COPY --from=frontend /frontend-build/dist /usr/local/memos/web/dist
 
 # Directory to store the data, which can be referenced as the mounting point.
 RUN mkdir -p /var/opt/memos

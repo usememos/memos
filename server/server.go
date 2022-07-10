@@ -38,12 +38,7 @@ func NewServer(profile *profile.Profile) *Server {
 		Timeout:      30 * time.Second,
 	}))
 
-	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Skipper: middleware.DefaultSkipper,
-		Root:    "web/dist",
-		Browse:  true,
-		HTML5:   true,
-	}))
+	embedFrontend(e)
 
 	// In dev mode, set the const secret key to make signin session persistence.
 	secret := []byte("usememos")

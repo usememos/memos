@@ -17,7 +17,7 @@ tmp
 .air
 
 # Frontend asset
-dist
+web/dist
 
 # Dev database
 data
