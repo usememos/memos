@@ -55,23 +55,23 @@
       }
     }
   }
+}
 
-  > .usage-detail-container {
-    @apply fixed left-0 top-0 ml-2 -mt-9 p-2 z-100 -translate-x-1/2 select-none text-white text-xs rounded whitespace-nowrap;
-    background-color: rgba(0, 0, 0, 0.8);
+.usage-detail-container {
+  @apply fixed left-0 top-0 ml-2 -mt-9 p-2 z-100 -translate-x-1/2 select-none text-white text-xs rounded whitespace-nowrap;
+  background-color: rgba(0, 0, 0, 0.8);
 
-    > .date-text {
-      @apply text-gray-300;
-    }
+  > .date-text {
+    @apply text-gray-300;
+  }
 
-    &::before {
-      content: "";
-      position: absolute;
-      bottom: -4px;
-      left: calc(50% - 5px);
-      border-left: 4px solid transparent;
-      border-right: 4px solid transparent;
-      border-top: 4px solid rgba(0, 0, 0, 0.8);
-    }
+  &::before {
+    content: "";
+    position: absolute;
+    bottom: -4px;
+    left: calc(50% - 5px);
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top: 4px solid rgba(0, 0, 0, 0.8);
   }
 }

@@ -37,10 +37,8 @@ const UsageHeatMap: React.FC<Props> = () => {
 
   const { memos } = useAppSelector((state) => state.memo);
   const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestemp));
-  const [popupStat, setPopupStat] = useState<DailyUsageStat | null>(null);
   const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
   const containerElRef = useRef<HTMLDivElement>(null);
-  const popupRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestemp);
@@ -54,18 +52,17 @@ const UsageHeatMap: React.FC<Props> = () => {
   }, [memos]);
 
   const handleUsageStatItemMouseEnter = useCallback((event: React.MouseEvent, item: DailyUsageStat) => {
-    setPopupStat(item);
-    if (!popupRef.current) {
-      return;
-    }
-
+    const tempDiv = document.createElement("div");
+    tempDiv.className = "usage-detail-container pop-up";
     const bounding = utils.getElementBounding(event.target as HTMLElement);
-    popupRef.current.style.left = bounding.left + "px";
-    popupRef.current.style.top = bounding.top - 4 + "px";
+    tempDiv.style.left = bounding.left + "px";
+    tempDiv.style.top = bounding.top - 2 + "px";
+    tempDiv.innerHTML = `${item.count} memos on <span className="date-text">${new Date(item.timestamp as number).toDateString()}</span>`;
+    document.body.appendChild(tempDiv);
   }, []);
 
   const handleUsageStatItemMouseLeave = useCallback(() => {
-    setPopupStat(null);
+    document.body.querySelectorAll("div.usage-detail-container.pop-up").forEach((node) => node.remove());
   }, []);
 
   const handleUsageStatItemClick = useCallback((item: DailyUsageStat) => {
@@ -89,11 +86,6 @@ const UsageHeatMap: React.FC<Props> = () => {
         <span className="tip-text"></span>
         <span className="tip-text">Sat</span>
       </div>
-
-      <div ref={popupRef} className={"usage-detail-container pop-up " + (popupStat ? "" : "hidden")}>
-        {popupStat?.count} memos on <span className="date-text">{new Date(popupStat?.timestamp as number).toDateString()}</span>
-      </div>
-
       <div className="usage-heat-map">
         {allStat.map((v, i) => {
           const count = v.count;
