@@ -118,10 +118,13 @@ func (s *Store) DeleteMemo(delete *api.MemoDelete) error {
 }
 
 func createMemoRaw(db *sql.DB, create *api.MemoCreate) (*memoRaw, error) {
-	set := []string{"creator_id", "content", "visibility"}
-	placeholder := []string{"?", "?", "?"}
-	args := []interface{}{create.CreatorID, create.Content, create.Visibility}
+	set := []string{"creator_id", "content"}
+	placeholder := []string{"?", "?"}
+	args := []interface{}{create.CreatorID, create.Content}
 
+	if v := create.Visibility; v != nil {
+		set, placeholder, args = append(set, "visibility"), append(placeholder, "?"), append(args, *v)
+	}
 	if v := create.CreatedTs; v != nil {
 		set, placeholder, args = append(set, "created_ts"), append(placeholder, "?"), append(args, *v)
 	}

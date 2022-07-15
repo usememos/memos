@@ -22,8 +22,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
 		}
 
-		// TODO(steven): remove this line after frontend is ready
-		memoCreate.Visibility = api.Privite
+		if memoCreate.Visibility == nil || *memoCreate.Visibility == "" {
+			private := api.Privite
+			memoCreate.Visibility = &private
+		}
 
 		memo, err := s.Store.CreateMemo(memoCreate)
 		if err != nil {
