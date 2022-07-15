@@ -1,7 +1,5 @@
 import axios from "axios";
 
-axios.defaults.withCredentials = true;
-
 type ResponseObject<T> = {
   data: T;
   error?: string;
@@ -120,12 +118,11 @@ export function getTagList(tagFind?: TagFind) {
 }
 
 export async function getRepoStarCount() {
-  const data = (
-    await axios.get("https://api.github.com/repos/usememos/memos", {
-      headers: {
-        accept: "application/vnd.github+json",
-      },
-    })
-  ).data;
+  const { data } = await axios.get(`https://api.github.com/repos/usememos/memos`, {
+    headers: {
+      Accept: "application/vnd.github.v3.star+json",
+      Authorization: "",
+    },
+  });
   return data.stargazers_count as number;
 }
