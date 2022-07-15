@@ -1,29 +1,10 @@
-# Binaries for programs and plugins
-*.exe
-*.exe~
-*.dll
-*.so
-*.dylib
-
-# Test binary, built with `go test -c`
-*.test
-
-# Temp output
-*.out
-*.log
-tmp
-
 # Air (hot reload) generated
 .air
 
 # Frontend asset
 web/dist
 
-# Dev database
-data
-
 # build folder
-build
 memos-build
 
 .DS_Store
