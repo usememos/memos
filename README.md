@@ -10,7 +10,8 @@
 
 <p align="center">
   <a href="https://memos.onrender.com/">Live Demo</a> •
-  <a href="https://github.com/usememos/memos/discussions">Discussions</a>
+  <a href="https://t.me/+-_tNF1k70UU4ZTc9">Discuss in Telegram</a>
+
 </p>
 
 ![demo](https://raw.githubusercontent.com/usememos/memos/main/resources/demo.webp)
