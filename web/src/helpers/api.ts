@@ -118,3 +118,14 @@ export function getTagList(tagFind?: TagFind) {
   }
   return axios.get<ResponseObject<string[]>>(`/api/tag?${queryList.join("&")}`);
 }
+
+export async function getRepoStarCount() {
+  const data = (
+    await axios.get("https://api.github.com/repos/usememos/memos", {
+      headers: {
+        accept: "application/vnd.github+json",
+      },
+    })
+  ).data;
+  return data.stargazers_count as number;
+}

@@ -4,6 +4,7 @@ import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
 import { locationService, userService } from "../services";
 import toastHelper from "../components/Toast";
+import GitHubBadge from "../components/GitHubBadge";
 import "../less/signin.less";
 
 interface Props {}
@@ -114,9 +115,12 @@ const Signin: React.FC<Props> = () => {
     <div className="page-wrapper signin">
       <div className="page-container">
         <div className="page-header-container">
-          <p className="title-text">
-            <span className="icon-text">✍️</span> Memos
-          </p>
+          <div className="title-container">
+            <p className="title-text">
+              <span className="icon-text">✍️</span> Memos
+            </p>
+            <GitHubBadge />
+          </div>
           <p className="slogan-text">
             An <i>open source</i>, <i>self-hosted</i> knowledge base that works with a SQLite db file.
           </p>

@@ -1,0 +1,38 @@
+.github-badge-container {
+  @apply h-7 flex flex-row justify-start items-center border rounded cursor-pointer hover:opacity-80;
+
+  > .github-icon {
+    @apply w-auto h-full px-2 border-r rounded-l flex flex-row justify-center items-center text-xs font-bold text-gray-800 bg-gray-100;
+
+    > .icon-img {
+      @apply w-4 h-auto mr-1;
+    }
+  }
+
+  > .count-text {
+    @apply px-3 text-xs font-bold text-gray-800;
+
+    &.pulse {
+      @apply text-sm;
+      animation: 1s linear 0s infinite pulse;
+    }
+
+    @keyframes pulse {
+      0% {
+        margin-bottom: 0px;
+      }
+      30% {
+        margin-bottom: 2px;
+      }
+      60% {
+        margin-bottom: 6px;
+      }
+      70% {
+        margin-bottom: 3px;
+      }
+      100% {
+        margin-bottom: 0px;
+      }
+    }
+  }
+}

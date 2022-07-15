@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import * as api from "../helpers/api";
 import Only from "./common/OnlyWhen";
 import { showDialog } from "./Dialog";
+import GitHubBadge from "./GitHubBadge";
 import "../less/about-site-dialog.less";
 
 interface Props extends DialogProps {}
@@ -44,10 +45,8 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
           Memos is an <i>open source</i>, <i>self-hosted</i> knowledge base that works with a SQLite db file.
         </p>
         <br />
-        <p>
-          <a className="mr-2" href="https://github.com/usememos/memos">
-            🏗 Source code
-          </a>
+        <div className="addtion-info-container">
+          <GitHubBadge />
           <Only when={profile !== undefined}>
             <>
               version:
@@ -57,7 +56,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
               🎉
             </>
           </Only>
-        </p>
+        </div>
       </div>
     </>
   );

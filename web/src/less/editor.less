@@ -37,24 +37,6 @@
         > .tip-text {
           @apply hidden ml-1 text-xs leading-5 text-gray-700 border border-gray-300 rounded-xl px-2;
         }
-
-        &.tag-action {
-          @apply relative;
-
-          &:hover {
-            > .tag-list {
-              @apply flex;
-            }
-          }
-
-          > .tag-list {
-            @apply hidden flex-col justify-start items-start absolute top-6 left-0 mt-1 p-1 z-1 rounded w-32 max-h-52 overflow-auto bg-black;
-
-            > span {
-              @apply w-full text-white cursor-pointer rounded text-sm leading-6 px-2 hover:bg-gray-700;
-            }
-          }
-        }
       }
     }
 

@@ -9,16 +9,20 @@
     > .page-header-container {
       @apply flex flex-col justify-start items-start w-full mb-4;
 
-      > .title-text {
-        @apply text-2xl;
+      > .title-container {
+        @apply w-full flex flex-row justify-between items-center;
 
-        > .icon-text {
-          @apply text-4xl;
+        > .title-text {
+          @apply text-2xl mb-2;
+
+          > .icon-text {
+            @apply text-4xl;
+          }
         }
       }
 
       > .slogan-text {
-        @apply mt-2 text-sm text-gray-700;
+        @apply text-sm text-gray-700;
       }
     }
 
