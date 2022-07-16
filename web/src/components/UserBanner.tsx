@@ -49,7 +49,7 @@ const UserBanner: React.FC<Props> = () => {
         </button>
         <MenuBtnsPopup shownStatus={shouldShowPopupBtns} setShownStatus={setShouldShowPopupBtns} />
       </div>
-      <div className="status-text-container">
+      <div className="amount-text-container">
         <div className="status-text memos-text">
           <span className="amount-text">{memos.length}</span>
           <span className="type-text">MEMO</span>

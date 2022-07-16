@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
+import { editorStateService, memoService, userService } from "../services";
 import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { editorStateService, memoService, userService } from "../services";
 import { parseHtmlToRawText } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
@@ -103,6 +103,18 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     editorStateService.setEditMemoWithId(memo.id);
   }, [memo.id]);
 
+  const handlePinClick = async () => {
+    if (memo.pinned) {
+      await memoService.unpinMemo(memo.id);
+    } else {
+      await memoService.pinMemo(memo.id);
+    }
+    setMemo({
+      ...memo,
+      pinned: !memo.pinned,
+    });
+  };
+
   const handleVisibilityClick = async () => {
     const visibility = memo.visibility === "PRIVATE" ? "PUBLIC" : "PRIVATE";
     await memoService.patchMemo({
@@ -123,8 +135,11 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
           <div className="btns-container">
             <Only when={!userService.isVisitorMode()}>
               <>
+                <button className="btn edit-btn" onClick={handlePinClick}>
+                  <img className="icon-img" src={`/icons/${memo.pinned ? "pinned" : "pin"}.svg`} />
+                </button>
                 <button className="btn edit-btn" onClick={handleVisibilityClick}>
-                  <img className={`icon-img ${memo.visibility === "PRIVATE" ? "opacity-30" : ""}`} src="/icons/visibility.svg" />
+                  <img className="icon-img" src={`/icons/${memo.visibility === "PRIVATE" ? "invisibility" : "visibility"}.svg`} />
                 </button>
                 <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
                   <img className="icon-img" src="/icons/edit.svg" />

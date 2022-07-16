@@ -1,7 +1,8 @@
 import { memo, useEffect, useRef, useState } from "react";
 import { escape, indexOf } from "lodash-es";
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
 import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
-import * as utils from "../helpers/utils";
 import { DONE_BLOCK_REG, parseMarkedToHtml, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Only from "./common/OnlyWhen";
@@ -11,25 +12,33 @@ import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import "../less/memo.less";
 
+dayjs.extend(relativeTime);
+
 const MAX_MEMO_CONTAINER_HEIGHT = 384;
+
+type ExpandButtonStatus = -1 | 0 | 1;
 
 interface Props {
   memo: Memo;
 }
 
-type ExpandButtonStatus = -1 | 0 | 1;
-
 interface State {
+  createdAtStr: string;
   expandButtonStatus: ExpandButtonStatus;
 }
 
+export const getFormatedMemoCreatedAtStr = (createdTs: number): string => {
+  if (Date.now() - createdTs < 1000 * 60 * 60 * 24) {
+    return dayjs(createdTs).fromNow();
+  } else {
+    return dayjs(createdTs).format("YYYY/MM/DD HH:mm:ss");
+  }
+};
+
 const Memo: React.FC<Props> = (props: Props) => {
-  const { memo: propsMemo } = props;
-  const memo = {
-    ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
-  };
+  const memo = props.memo;
   const [state, setState] = useState<State>({
+    createdAtStr: getFormatedMemoCreatedAtStr(memo.createdTs),
     expandButtonStatus: -1,
   });
   const memoContainerRef = useRef<HTMLDivElement>(null);
@@ -45,6 +54,15 @@ const Memo: React.FC<Props> = (props: Props) => {
         ...state,
         expandButtonStatus: 0,
       });
+    }
+
+    if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
+      setInterval(() => {
+        setState({
+          ...state,
+          createdAtStr: dayjs(memo.createdTs).fromNow(),
+        });
+      }, 1000 * 1);
     }
   }, []);
 
@@ -146,7 +164,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleShowMoreBtnClick = () => {
+  const handleExpandBtnClick = () => {
     setState({
       ...state,
       expandButtonStatus: Number(Boolean(!state.expandButtonStatus)) as ExpandButtonStatus,
@@ -156,15 +174,15 @@ const Memo: React.FC<Props> = (props: Props) => {
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`}>
       <div className="memo-top-wrapper">
-        <span className="time-text" onClick={handleShowMemoStoryDialog}>
-          {memo.createdAtStr}
+        <div className="status-text-container" onClick={handleShowMemoStoryDialog}>
+          <span className="time-text">{state.createdAtStr}</span>
           <Only when={memo.pinned}>
-            <span className="ml-2">PINNED</span>
+            <span className="status-text">PINNED</span>
           </Only>
           <Only when={memo.visibility === "PUBLIC"}>
-            <span className="ml-2">PUBLIC</span>
+            <span className="status-text">PUBLIC</span>
           </Only>
-        </span>
+        </div>
         <div className={`btns-container ${userService.isVisitorMode() ? "!hidden" : ""}`}>
           <span className="btn more-action-btn">
             <img className="icon-img" src="/icons/more.svg" />
@@ -173,7 +191,7 @@ const Memo: React.FC<Props> = (props: Props) => {
             <div className="more-action-btns-container">
               <div className="btns-container">
                 <div className="btn" onClick={handleTogglePinMemoBtnClick}>
-                  <img className="icon-img" src="/icons/pin.svg" alt="" />
+                  <img className="icon-img" src={`/icons/${memo.pinned ? "pinned" : "pin"}.svg`} />
                   <span className="tip-text">{memo.pinned ? "Unpin" : "Pin"}</span>
                 </div>
                 <div className="btn" onClick={handleEditMemoClick}>
@@ -206,7 +224,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       ></div>
       {state.expandButtonStatus !== -1 && (
         <div className="expand-btn-container">
-          <span className={`btn ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleShowMoreBtnClick}>
+          <span className={`btn ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleExpandBtnClick}>
             {state.expandButtonStatus === 0 ? "Expand" : "Fold"}
             <img className="icon-img" src="/icons/arrow-right.svg" alt="" />
           </span>

@@ -15,6 +15,19 @@
   > .memo-top-wrapper {
     @apply flex flex-row justify-between items-center w-full h-6 mb-1;
 
+    > .status-text-container {
+      @apply flex flex-row justify-start items-center;
+
+      > .time-text {
+        @apply text-xs text-gray-400 cursor-pointer;
+        font-size: 13px;
+      }
+
+      > .status-text {
+        @apply text-xs cursor-pointer ml-2 rounded border border-green-600 px-1 text-green-600;
+      }
+    }
+
     > .time-text {
       @apply text-xs text-gray-400 cursor-pointer;
     }
