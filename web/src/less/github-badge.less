@@ -10,29 +10,25 @@
   }
 
   > .count-text {
-    @apply px-3 text-xs font-bold text-gray-800;
+    @apply w-auto h-full flex flex-row justify-center items-center px-3 text-xs font-bold text-gray-800;
 
-    &.pulse {
-      @apply text-sm;
-      animation: 1s linear 0s infinite pulse;
+    > .icon-text {
+      @apply text-sm ml-1;
+      animation: 1.6s linear 0s infinite pulse;
     }
+  }
+}
 
-    @keyframes pulse {
-      0% {
-        margin-bottom: 0px;
-      }
-      30% {
-        margin-bottom: 2px;
-      }
-      60% {
-        margin-bottom: 6px;
-      }
-      70% {
-        margin-bottom: 3px;
-      }
-      100% {
-        margin-bottom: 0px;
-      }
-    }
+@keyframes pulse {
+  0% {
+    transform: scale(0.95);
+  }
+
+  70% {
+    transform: scale(1.2);
+  }
+
+  100% {
+    transform: scale(0.95);
   }
 }
