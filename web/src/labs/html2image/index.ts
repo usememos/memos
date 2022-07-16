@@ -6,6 +6,7 @@
  * 2. <foreignObject>: https://developer.mozilla.org/en-US/docs/Web/SVG/Element/foreignObject
  */
 import getCloneStyledElement from "./getCloneStyledElement";
+import waitImageLoaded from "./waitImageLoaded";
 
 type Options = Partial<{
   backgroundColor: string;
@@ -51,7 +52,6 @@ const generateSVGElement = (width: number, height: number, element: HTMLElement)
 
 export const toSVG = async (element: HTMLElement, options?: Options) => {
   const { width, height } = getElementSize(element);
-
   const clonedElement = await getCloneStyledElement(element);
 
   if (options?.backgroundColor) {
@@ -65,11 +65,6 @@ export const toSVG = async (element: HTMLElement, options?: Options) => {
 };
 
 export const toCanvas = async (element: HTMLElement, options?: Options): Promise<HTMLCanvasElement> => {
-  const url = await toSVG(element, options);
-
-  const imageEl = new Image();
-  imageEl.src = url;
-
   const ratio = options?.pixelRatio || 1;
   const { width, height } = getElementSize(element);
 
@@ -91,18 +86,20 @@ export const toCanvas = async (element: HTMLElement, options?: Options): Promise
     context.fillRect(0, 0, canvas.width, canvas.height);
   }
 
-  return new Promise((resolve) => {
-    imageEl.onload = () => {
-      context.drawImage(imageEl, 0, 0, canvas.width, canvas.height);
-
-      resolve(canvas);
-    };
-  });
+  const url = await toSVG(element, options);
+  const imageEl = new Image();
+  imageEl.style.zIndex = "-1";
+  imageEl.style.position = "absolute";
+  imageEl.style.top = "0";
+  document.body.append(imageEl);
+  await waitImageLoaded(imageEl, url);
+  context.drawImage(imageEl, 0, 0, canvas.width, canvas.height);
+  imageEl.remove();
+  return canvas;
 };
 
 const toImage = async (element: HTMLElement, options?: Options) => {
   const canvas = await toCanvas(element, options);
-
   return canvas.toDataURL();
 };
 
