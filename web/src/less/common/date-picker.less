@@ -1,33 +1,17 @@
 @import "../mixin.less";
 
 .date-picker-wrapper {
-  .flex(column, flex-start, flex-start);
-  padding: 16px;
+  @apply flex flex-col justify-start items-start p-4;
 
   > .date-picker-header {
-    .flex(row, center, center);
-    width: 100%;
+    @apply flex flex-row justify-center items-center w-full mb-2;
 
     > .btn-text {
-      width: 24px;
-      height: 24px;
-      border-radius: 4px;
-      cursor: pointer;
-      user-select: none;
-
-      > .icon-img {
-        width: 100%;
-        height: auto;
-      }
-
-      &:hover {
-        background-color: @bg-whitegray;
-      }
+      @apply w-6 h-6 rounded cursor-pointer select-none flex flex-col justify-center items-center opacity-40 hover:bg-gray-200;
     }
 
     > .normal-text {
-      margin: 0 4px;
-      line-height: 24px;
+      @apply mx-1 leading-6 font-mono;
     }
   }
 

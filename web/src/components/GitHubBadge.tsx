@@ -16,7 +16,7 @@ const GitHubBadge: React.FC<Props> = () => {
   return (
     <a className="github-badge-container" href="https://github.com/usememos/memos">
       <div className="github-icon">
-        <img className="icon-img" src="/github.webp" alt="" />
+        <i className="fa-brands fa-github fa-lg icon-img"></i>
         Star
       </div>
       <div className="count-text">

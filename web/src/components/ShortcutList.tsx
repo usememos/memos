@@ -39,7 +39,7 @@ const ShortcutList: React.FC<Props> = () => {
       <p className="title-text">
         <span className="normal-text">Shortcuts</span>
         <button className="btn" onClick={() => showCreateShortcutDialog()}>
-          <img src="/icons/add.svg" alt="add shortcut" />
+          <i className="fa-solid fa-plus icon-img fa-xs"></i>
         </button>
       </p>
       <div className="shortcuts-container">
@@ -113,7 +113,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
         </div>
         <div className="btns-container">
           <span className="action-btn toggle-btn">
-            <img className="icon-img" src="/icons/more.svg" />
+            <i className="fa-solid fa-ellipsis fa-sm icon-img"></i>
           </span>
           <div className="action-btns-wrapper">
             <div className="action-btns-container">

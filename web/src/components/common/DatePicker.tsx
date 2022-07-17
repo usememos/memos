@@ -55,13 +55,13 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
     <div className={`date-picker-wrapper ${className}`}>
       <div className="date-picker-header">
         <span className="btn-text" onClick={() => handleChangeMonthBtnClick(-1)}>
-          <img className="icon-img" src="/icons/arrow-left.svg" />
+          <i className="fa-solid fa-chevron-left icon-img"></i>
         </span>
         <span className="normal-text">
           {firstDate.getFullYear()}/{firstDate.getMonth() + 1}
         </span>
         <span className="btn-text" onClick={() => handleChangeMonthBtnClick(1)}>
-          <img className="icon-img" src="/icons/arrow-right.svg" />
+          <i className="fa-solid fa-chevron-right icon-img"></i>
         </span>
       </div>
       <div className="date-picker-day-container">

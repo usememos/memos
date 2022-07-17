@@ -40,7 +40,7 @@ const MemosHeader: React.FC<Props> = () => {
     <div className="section-header-container memos-header-container">
       <div className="title-container">
         <div className="action-btn" onClick={toggleSiderbar}>
-          <img src="/icons/menu.svg" className="icon-img" alt="" />
+          <i className="fa-solid fa-bars icon-img"></i>
         </div>
         <span className="title-text" onClick={handleTitleTextClick}>
           {titleText}

@@ -135,19 +135,19 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
           <div className="btns-container">
             <Only when={!userService.isVisitorMode()}>
               <>
-                <button className="btn edit-btn" onClick={handlePinClick}>
-                  <img className="icon-img" src={`/icons/${memo.pinned ? "pinned" : "pin"}.svg`} />
+                <button className="btn" onClick={handlePinClick}>
+                  <i className={`fa-solid fa-thumbtack icon-img ${memo.pinned ? "" : "opacity-20"}`}></i>
                 </button>
-                <button className="btn edit-btn" onClick={handleVisibilityClick}>
-                  <img className="icon-img" src={`/icons/${memo.visibility === "PRIVATE" ? "invisibility" : "visibility"}.svg`} />
+                <button className="btn" onClick={handleVisibilityClick}>
+                  <i className={`fa-solid fa-eye icon-img ${memo.pinned ? "" : "opacity-20"}`}></i>
                 </button>
                 <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
-                  <img className="icon-img" src="/icons/edit.svg" />
+                  <i className="fa-solid fa-pen-to-square icon-img"></i>
                 </button>
               </>
             </Only>
             <button className="btn close-btn" onClick={props.destroy}>
-              <img className="icon-img" src="/icons/close.svg" />
+              <i className="fa-solid fa-xmark icon-img"></i>
             </button>
           </div>
         </div>

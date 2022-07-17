@@ -12,10 +12,10 @@
     }
 
     > .btn {
-      @apply flex flex-col justify-center items-center w-5 h-5 bg-gray-200 rounded ml-2 shadow hover:opacity-80;
+      @apply flex flex-col justify-center items-center w-5 p-1 h-5 bg-gray-200 rounded ml-2 shadow hover:opacity-80;
 
-      > img {
-        @apply w-4 h-4 opacity-80;
+      > .icon-img {
+        @apply opacity-60;
       }
     }
   }
@@ -66,14 +66,11 @@
         @apply flex-row justify-end items-center hidden shrink-0;
 
         > .action-btn {
-          .flex(row, center, center);
-          @apply w-6 h-6 shrink-0;
-
-          > .icon-img {
-            @apply w-4 h-auto;
-          }
+          @apply flex flex-row justify-center items-center w-6 h-6 shrink-0;
 
           &.toggle-btn {
+            @apply opacity-60;
+
             &:hover {
               & + .action-btns-wrapper {
                 @apply flex;

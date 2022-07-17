@@ -64,16 +64,16 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
         </p>
         <div className="btns-container">
           <button className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}>
-            <img className="icon-img" src="/icons/arrow-left.svg" />
+            <i className="fa-solid fa-chevron-left icon-img"></i>
           </button>
           <button className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp + DAILY_TIMESTAMP)}>
-            <img className="icon-img" src="/icons/arrow-right.svg" />
+            <i className="fa-solid fa-chevron-right icon-img"></i>
           </button>
-          <button className="btn-text share-btn" onClick={handleShareBtnClick}>
-            <img className="icon-img" src="/icons/share.svg" />
+          <button className="btn-text" onClick={handleShareBtnClick}>
+            <i className="fa-solid fa-share-nodes icon-img"></i>
           </button>
           <button className="btn-text" onClick={() => props.destroy()}>
-            <img className="icon-img" src="/icons/close.svg" />
+            <i className="fa-solid fa-xmark icon-img"></i>
           </button>
         </div>
         <DatePicker

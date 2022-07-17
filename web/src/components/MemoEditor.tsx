@@ -231,7 +231,7 @@ const MemoEditor: React.FC<Props> = () => {
         tools={
           <>
             <div className="action-btn tag-action">
-              <img className="icon-img" src="/icons/tag.svg" />
+              <i className="fa-solid fa-hashtag icon-img"></i>
               <div ref={tagSeletorRef} className="tag-list" onClick={handleTagSeletorClick}>
                 {tags.map((t) => {
                   return <span key={t}>{t}</span>;
@@ -239,11 +239,11 @@ const MemoEditor: React.FC<Props> = () => {
               </div>
             </div>
             <button className="action-btn">
-              <img className="icon-img" src="/icons/image.svg" onClick={handleUploadFileBtnClick} />
+              <i className="fa-solid fa-image icon-img" onClick={handleUploadFileBtnClick}></i>
               <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
             </button>
             <button className="action-btn" onClick={handleFullscreenBtnClick}>
-              <img className="icon-img" src={`/icons/${state.fullscreen ? "close" : "open"}-fullscreen.svg`} alt="" />
+              <i className={`fa-solid fa-${state.fullscreen ? "compress" : "expand"} icon-img`}></i>
             </button>
           </>
         }

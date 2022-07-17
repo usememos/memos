@@ -37,7 +37,7 @@ const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
           Archived Memos
         </p>
         <button className="btn close-btn" onClick={destroy}>
-          <img className="icon-img" src="/icons/close.svg" />
+          <i className="fa-solid fa-xmark icon-img"></i>
         </button>
       </div>
       <div className="dialog-content-container">

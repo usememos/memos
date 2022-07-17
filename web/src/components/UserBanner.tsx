@@ -45,7 +45,7 @@ const UserBanner: React.FC<Props> = () => {
           {!isVisitorMode && user?.role === "HOST" ? <span className="tag">MOD</span> : null}
         </div>
         <button className="action-btn menu-popup-btn" onClick={handlePopupBtnClick}>
-          <img src="/icons/more.svg" className="icon-img" />
+          <i className="fa-solid fa-ellipsis icon-img"></i>
         </button>
         <MenuBtnsPopup shownStatus={shouldShowPopupBtns} setShownStatus={setShouldShowPopupBtns} />
       </div>

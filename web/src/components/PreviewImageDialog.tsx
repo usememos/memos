@@ -22,10 +22,10 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrl }: Props) => {
     <>
       <div className="btns-container">
         <button className="btn" onClick={handleCloseBtnClick}>
-          <img className="icon-img" src="/icons/close.svg" />
+          <i className="fa-solid fa-xmark icon-img"></i>
         </button>
         <button className="btn" onClick={handleDownloadBtnClick}>
-          <img className="icon-img" src="/icons/download.svg" />
+          <i className="fa-solid fa-download icon-img"></i>
         </button>
       </div>
       <div className="img-container">

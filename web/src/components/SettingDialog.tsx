@@ -30,7 +30,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
   return (
     <div className="dialog-content-container">
       <button className="btn close-btn" onClick={destroy}>
-        <img className="icon-img" src="/icons/close.svg" />
+        <i className="fa-solid fa-xmark icon-img"></i>
       </button>
       <div className="section-selector-container">
         <span className="section-title">Basic</span>

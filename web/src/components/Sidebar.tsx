@@ -27,7 +27,7 @@ const Sidebar: React.FC<Props> = () => {
     <aside className="sidebar-wrapper">
       <div className="close-container">
         <span className="action-btn" onClick={toggleSiderbar}>
-          <img src="/icons/close.svg" className="icon-img" alt="" />
+          <i className="fa-solid fa-xmark icon-img"></i>
         </span>
       </div>
       <UserBanner />

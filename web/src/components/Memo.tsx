@@ -23,7 +23,6 @@ interface Props {
 }
 
 interface State {
-  createdAtStr: string;
   expandButtonStatus: ExpandButtonStatus;
 }
 
@@ -38,9 +37,9 @@ export const getFormatedMemoCreatedAtStr = (createdTs: number): string => {
 const Memo: React.FC<Props> = (props: Props) => {
   const memo = props.memo;
   const [state, setState] = useState<State>({
-    createdAtStr: getFormatedMemoCreatedAtStr(memo.createdTs),
     expandButtonStatus: -1,
   });
+  const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
 
@@ -58,10 +57,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 
     if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
       setInterval(() => {
-        setState({
-          ...state,
-          createdAtStr: dayjs(memo.createdTs).fromNow(),
-        });
+        setCreatedAtStr(dayjs(memo.createdTs).fromNow());
       }, 1000 * 1);
     }
   }, []);
@@ -166,7 +162,6 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   const handleExpandBtnClick = () => {
     setState({
-      ...state,
       expandButtonStatus: Number(Boolean(!state.expandButtonStatus)) as ExpandButtonStatus,
     });
   };
@@ -175,7 +170,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`}>
       <div className="memo-top-wrapper">
         <div className="status-text-container" onClick={handleShowMemoStoryDialog}>
-          <span className="time-text">{state.createdAtStr}</span>
+          <span className="time-text">{createdAtStr}</span>
           <Only when={memo.pinned}>
             <span className="status-text">PINNED</span>
           </Only>
@@ -185,21 +180,21 @@ const Memo: React.FC<Props> = (props: Props) => {
         </div>
         <div className={`btns-container ${userService.isVisitorMode() ? "!hidden" : ""}`}>
           <span className="btn more-action-btn">
-            <img className="icon-img" src="/icons/more.svg" />
+            <i className="fa-solid fa-ellipsis icon-img"></i>
           </span>
           <div className="more-action-btns-wrapper">
             <div className="more-action-btns-container">
               <div className="btns-container">
                 <div className="btn" onClick={handleTogglePinMemoBtnClick}>
-                  <img className="icon-img" src={`/icons/${memo.pinned ? "pinned" : "pin"}.svg`} />
+                  <i className={`fa-solid fa-thumbtack icon-img ${memo.pinned ? "" : "opacity-20"}`}></i>
                   <span className="tip-text">{memo.pinned ? "Unpin" : "Pin"}</span>
                 </div>
                 <div className="btn" onClick={handleEditMemoClick}>
-                  <img className="icon-img" src="/icons/edit.svg" alt="" />
+                  <i className="fa-solid fa-pen-to-square icon-img"></i>
                   <span className="tip-text">Edit</span>
                 </div>
                 <div className="btn" onClick={handleGenMemoImageBtnClick}>
-                  <img className="icon-img" src="/icons/share.svg" alt="" />
+                  <i className="fa-solid fa-share-nodes icon-img"></i>
                   <span className="tip-text">Share</span>
                 </div>
               </div>
@@ -226,7 +221,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         <div className="expand-btn-container">
           <span className={`btn ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleExpandBtnClick}>
             {state.expandButtonStatus === 0 ? "Expand" : "Fold"}
-            <img className="icon-img" src="/icons/arrow-right.svg" alt="" />
+            <i className="fa-solid fa-chevron-right icon-img"></i>
           </span>
         </div>
       )}

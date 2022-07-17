@@ -73,18 +73,16 @@
       }
 
       .btn {
-        @apply flex flex-row justify-center items-center px-2 leading-6 text-sm rounded hover:bg-gray-100;
+        @apply flex flex-row justify-center items-center px-2 leading-6 text-sm rounded hover:bg-gray-200;
 
         &.more-action-btn {
-          @apply w-8 -mr-2 opacity-60 cursor-default;
+          @apply w-8 -mr-2 opacity-60 cursor-default hover:bg-transparent;
 
           > .icon-img {
             @apply w-4 h-auto;
           }
 
           &:hover {
-            background-color: unset;
-
             & + .more-action-btns-wrapper {
               display: flex;
             }
@@ -130,7 +128,7 @@
       }
 
       > .icon-img {
-        @apply w-4 h-auto transition-all;
+        @apply w-4 h-auto ml-1 transition-all;
       }
     }
   }

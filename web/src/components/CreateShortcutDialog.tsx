@@ -100,7 +100,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
           {shortcutId ? "Edit Shortcut" : "Create Shortcut"}
         </p>
         <button className="btn close-btn" onClick={destroy}>
-          <img className="icon-img" src="/icons/close.svg" />
+          <i className="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div className="dialog-content-container">
@@ -296,7 +296,7 @@ const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInpute
       />
 
       {inputElements}
-      <img className="remove-btn" src="/icons/close.svg" onClick={handleRemoveBtnClick} />
+      <i className="fa-solid fa-xmark remove-btn" onClick={handleRemoveBtnClick}></i>
     </div>
   );
 };

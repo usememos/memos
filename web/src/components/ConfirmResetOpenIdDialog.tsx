@@ -41,7 +41,7 @@ const ConfirmResetOpenIdDialog: React.FC<Props> = ({ destroy }: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">Reset Open API</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <img className="icon-img" src="/icons/close.svg" />
+          <i className="fa-solid fa-xmark"></i>
         </button>
       </div>
       <div className="dialog-content-container">
