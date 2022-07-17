@@ -7,17 +7,11 @@
     @apply w-180 max-w-full mb-8 p-0;
 
     > .dialog-content-container {
-      .flex(column, flex-start, flex-start);
-      @apply relative w-full overflow-y-scroll p-0 flex flex-col sm:flex-row justify-start items-start;
+      @apply flex flex-col sm:flex-row justify-start items-start relative w-full overflow-y-scroll p-0;
       .hide-scroll-bar();
 
       > .close-btn {
-        .flex(column, center, center);
-        @apply absolute top-4 right-4 w-6 h-6 rounded hover:bg-gray-200 hover:shadow;
-
-        > .icon-img {
-          @apply w-5 h-5;
-        }
+        @apply flex flex-col justify-center items-center absolute top-4 right-4 w-6 h-6 rounded hover:bg-gray-200 hover:shadow;
       }
 
       > .section-selector-container {
@@ -49,8 +43,7 @@
         .hide-scroll-bar();
 
         > .section-container {
-          .flex(column, flex-start, flex-start);
-          @apply w-full my-2;
+          @apply flex flex-col justify-start items-start w-full my-2;
 
           > .title-text {
             @apply text-sm mb-3 font-mono text-gray-500;

@@ -64,7 +64,7 @@ const Selector: React.FC<Props> = (props: Props) => {
       <div className={`current-value-container ${showSelector ? "active" : ""}`} onClick={handleCurrentValueClick}>
         <span className="value-text">{currentItem.text}</span>
         <span className="arrow-text">
-          <i className="fa-solid fa-chevron-right icon-img"></i>
+          <i className="fa-solid fa-chevron-down fa-sm icon-img"></i>
         </span>
       </div>
 

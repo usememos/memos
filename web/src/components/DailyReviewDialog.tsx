@@ -73,7 +73,7 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
             <i className="fa-solid fa-share-nodes icon-img"></i>
           </button>
           <button className="btn-text" onClick={() => props.destroy()}>
-            <i className="fa-solid fa-xmark icon-img"></i>
+            <i className="fa-solid fa-xmark fa-lg icon-img"></i>
           </button>
         </div>
         <DatePicker

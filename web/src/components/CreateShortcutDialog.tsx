@@ -100,7 +100,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
           {shortcutId ? "Edit Shortcut" : "Create Shortcut"}
         </p>
         <button className="btn close-btn" onClick={destroy}>
-          <i className="fa-solid fa-xmark"></i>
+          <i className="fa-solid fa-xmark fa-lg"></i>
         </button>
       </div>
       <div className="dialog-content-container">

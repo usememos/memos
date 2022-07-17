@@ -75,7 +75,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
           <span className="icon-text">🌄</span>Share Memo
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <i className="fa-solid fa-xmark icon-img"></i>
+          <i className="fa-solid fa-xmark fa-lg icon-img"></i>
         </button>
       </div>
       <div className="dialog-content-container">

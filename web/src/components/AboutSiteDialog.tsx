@@ -37,7 +37,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
           <span className="icon-text">🤠</span>About <b>Memos</b>
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <i className="fa-solid fa-xmark"></i>
+          <i className="fa-solid fa-xmark fa-lg"></i>
         </button>
       </div>
       <div className="dialog-content-container">

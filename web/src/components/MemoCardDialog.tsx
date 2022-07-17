@@ -139,7 +139,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
                   <i className={`fa-solid fa-thumbtack icon-img ${memo.pinned ? "" : "opacity-20"}`}></i>
                 </button>
                 <button className="btn" onClick={handleVisibilityClick}>
-                  <i className={`fa-solid fa-eye icon-img ${memo.pinned ? "" : "opacity-20"}`}></i>
+                  <i className={`fa-solid fa-eye icon-img ${memo.visibility === "PUBLIC" ? "" : "opacity-20"}`}></i>
                 </button>
                 <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
                   <i className="fa-solid fa-pen-to-square icon-img"></i>
@@ -147,7 +147,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
               </>
             </Only>
             <button className="btn close-btn" onClick={props.destroy}>
-              <i className="fa-solid fa-xmark icon-img"></i>
+              <i className="fa-solid fa-xmark fa-lg icon-img"></i>
             </button>
           </div>
         </div>
