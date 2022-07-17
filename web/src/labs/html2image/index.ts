@@ -89,7 +89,7 @@ export const toCanvas = async (element: HTMLElement, options?: Options): Promise
   const url = await toSVG(element, options);
   const imageEl = new Image();
   imageEl.style.zIndex = "-1";
-  imageEl.style.position = "absolute";
+  imageEl.style.position = "fixed";
   imageEl.style.top = "0";
   document.body.append(imageEl);
   await waitImageLoaded(imageEl, url);

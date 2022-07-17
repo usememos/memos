@@ -24,7 +24,7 @@ const SearchBar: React.FC<Props> = () => {
   return (
     <div className="search-bar-container">
       <div className="search-bar-inputer">
-        <i className="fa-solid fa-magnifying-glass icon-img"></i>
+        <i className="fa-solid fa-magnifying-glass fa-sm icon-img"></i>
         <input className="text-input" type="text" placeholder="" onChange={handleTextQueryInput} />
       </div>
       <div className="quickly-action-wrapper">

@@ -80,7 +80,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container">
         <div className={`tip-words-container ${shortcutImgUrl ? "finish" : "loading"}`}>
-          <p className="tip-text">{shortcutImgUrl ? "Click or press to save the image 👇" : "Generating the screenshot..."}</p>
+          <p className="tip-text">{shortcutImgUrl ? "Click to save the image 👇" : "Generating the screenshot..."}</p>
         </div>
         <div className="memo-container" ref={memoElRef}>
           <Only when={shortcutImgUrl !== ""}>
