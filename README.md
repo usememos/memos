@@ -10,24 +10,19 @@
 
 <p align="center">
   <a href="https://memos.onrender.com/">Live Demo</a> •
-  <a href="https://t.me/+-_tNF1k70UU4ZTc9">Discuss in Telegram</a>
-
+  <a href="https://t.me/+-_tNF1k70UU4ZTc9">Discuss in Telegram 👾</a>
 </p>
 
 ![demo](https://raw.githubusercontent.com/usememos/memos/main/resources/demo.webp)
 
-## 🎯 Intentions
-
-- ✍️ Write down the light-card memos very easily;
-- 🏗️ Build the fragmented knowledge management tool for yourself;
-- 📒 For noting your 📅 daily/weekly plans, 💡 fantastic ideas, 📕 reading thoughts...
-
 ## ✨ Features
 
 - 🦄 Fully open source;
-- 👍 Write in the plain textarea without any burden;
-- 🤠 Great UI and never miss any detail;
-- 🚀 Super quick self-hosted with `Docker` and `SQLite`;
+- 📜 Writing in plain textarea without any burden,
+  - and support some useful markdown syntax 💪.
+- 🌄 Share the memo in a pretty image or personal page like Twitter;
+- 🚀 Fast self-hosting with `Docker`;
+- 🤠 Pleasant UI and UX;
 
 ## ⚓️ Deploy with Docker
 
@@ -43,7 +38,7 @@ docker run \
 
 Memos should now be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
 
-⚠️ Please DO NOT use `dev` of docker image if you have no experience.
+⚠️ Please DO NOT use `dev` tag of docker image if you have no experience.
 
 ## 🏗 Development
 
