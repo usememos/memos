@@ -19,7 +19,7 @@
 
 - 🦄 Fully open source;
 - 📜 Writing in plain textarea without any burden,
-  - and support some useful markdown syntax.
+  - and support some useful markdown syntax 💪.
 - 🌄 Share the memo in a pretty image or personal page like Twitter;
 - 🚀 Fast self-hosting with `Docker`;
 - 🤠 Pleasant UI and UX;
