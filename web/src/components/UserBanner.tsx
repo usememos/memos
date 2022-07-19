@@ -27,7 +27,7 @@ const UserBanner: React.FC<Props> = () => {
       setUsername(user.name);
       setCreatedDays(Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24));
     }
-  }, []);
+  }, [isVisitorMode, user, owner]);
 
   const handleUsernameClick = useCallback(() => {
     locationService.clearQuery();

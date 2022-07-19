@@ -42,6 +42,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
+  const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
     if (!memoContainerRef) {
@@ -174,7 +175,7 @@ const Memo: React.FC<Props> = (props: Props) => {
           <Only when={memo.pinned}>
             <span className="status-text">PINNED</span>
           </Only>
-          <Only when={memo.visibility === "PUBLIC"}>
+          <Only when={memo.visibility === "PUBLIC" && !isVisitorMode}>
             <span className="status-text">PUBLIC</span>
           </Only>
         </div>

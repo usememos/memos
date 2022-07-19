@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { locationService, userService } from "../services";
+import { useAppSelector } from "../store";
 import useLoading from "../hooks/useLoading";
 import Only from "../components/common/OnlyWhen";
 import Sidebar from "../components/Sidebar";
@@ -11,6 +12,7 @@ import toastHelper from "../components/Toast";
 import "../less/home.less";
 
 function Home() {
+  const location = useAppSelector((state) => state.location);
   const loadingState = useLoading();
 
   useEffect(() => {
@@ -35,7 +37,7 @@ function Home() {
         }
         loadingState.setFinish();
       });
-  }, []);
+  }, [location]);
 
   return (
     <section className="page-wrapper home">

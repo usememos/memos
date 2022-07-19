@@ -1,12 +1,10 @@
 @import "../mixin.less";
 
 .selector-wrapper {
-  .flex(column, flex-start, flex-start);
-  @apply relative h-7;
+  @apply flex flex-col justify-start items-start relative h-7;
 
   > .current-value-container {
-    .flex(row, space-between, center);
-    @apply w-full h-full rounded px-2 pr-1 bg-white border cursor-pointer select-none;
+    @apply flex flex-row justify-between items-center w-full h-full rounded px-2 pr-1 bg-white border cursor-pointer select-none;
 
     &:hover,
     &.active {
@@ -19,8 +17,7 @@
     }
 
     > .arrow-text {
-      .flex(row, center, center);
-      @apply w-4 shrink-0;
+      @apply flex flex-row justify-center items-center w-4 shrink-0;
 
       > .icon-img {
         @apply w-4 h-auto opacity-40;
@@ -29,16 +26,14 @@
   }
 
   > .items-wrapper {
-    .flex(column, flex-start, flex-start);
-    @apply absolute top-full left-0 w-auto p-1 mt-1 -ml-2 bg-white rounded-md overflow-y-auto;
+    @apply flex flex-col justify-start items-start absolute top-full left-0 w-auto p-1 mt-1 -ml-2 bg-white rounded-md overflow-y-auto z-1;
     min-width: calc(100% + 16px);
     max-height: 256px;
     box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
     .hide-scroll-bar();
 
     > .item-container {
-      .flex(column, flex-start, flex-start);
-      @apply w-full px-3 text-sm select-none leading-8 cursor-pointer rounded whitespace-nowrap hover:bg-gray-100;
+      @apply flex flex-col justify-start items-start w-full px-3 text-sm select-none leading-8 cursor-pointer rounded whitespace-nowrap hover:bg-gray-100;
 
       &.selected {
         color: @text-green;
