@@ -6,9 +6,11 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"sort"
+	"time"
 
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/server/profile"
@@ -24,37 +26,33 @@ var seedFS embed.FS
 
 type DB struct {
 	// sqlite db connection instance
-	Db *sql.DB
-	// datasource name
-	DSN string
-	// mode should be prod or dev
-	mode string
+	Db      *sql.DB
+	profile *profile.Profile
 }
 
 // NewDB returns a new instance of DB associated with the given datasource name.
 func NewDB(profile *profile.Profile) *DB {
 	db := &DB{
-		DSN:  profile.DSN,
-		mode: profile.Mode,
+		profile: profile,
 	}
 	return db
 }
 
 func (db *DB) Open() (err error) {
 	// Ensure a DSN is set before attempting to open the database.
-	if db.DSN == "" {
+	if db.profile.DSN == "" {
 		return fmt.Errorf("dsn required")
 	}
 
 	// Connect to the database.
-	sqlDB, err := sql.Open("sqlite3", db.DSN)
+	sqlDB, err := sql.Open("sqlite3", db.profile.DSN)
 	if err != nil {
-		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.DSN, err)
+		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.profile.DSN, err)
 	}
 
 	db.Db = sqlDB
 	// If mode is dev, we should migrate and seed the database.
-	if db.mode == "dev" {
+	if db.profile.Mode == "dev" {
 		if err := db.applyLatestSchema(); err != nil {
 			return fmt.Errorf("failed to apply latest schema: %w", err)
 		}
@@ -63,7 +61,7 @@ func (db *DB) Open() (err error) {
 		}
 	} else {
 		// If db file not exists, we should migrate the database.
-		if _, err := os.Stat(db.DSN); errors.Is(err, os.ErrNotExist) {
+		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
 			err := db.applyLatestSchema()
 			if err != nil {
 				return fmt.Errorf("failed to apply latest schema: %w", err)
@@ -74,7 +72,7 @@ func (db *DB) Open() (err error) {
 				return fmt.Errorf("failed to create migration_history table: %w", err)
 			}
 
-			currentVersion := common.GetCurrentVersion(db.mode)
+			currentVersion := common.GetCurrentVersion(db.profile.Mode)
 			migrationHistory, err := findMigrationHistory(db.Db, &MigrationHistoryFind{})
 			if err != nil {
 				return err
@@ -90,18 +88,34 @@ func (db *DB) Open() (err error) {
 
 			if common.IsVersionGreaterThan(currentVersion, migrationHistory.Version) {
 				minorVersionList := getMinorVersionList()
+
+				// backup the raw database file before migration
+				rawBytes, err := ioutil.ReadFile(db.profile.DSN)
+				if err != nil {
+					return fmt.Errorf("failed to read raw database file, err: %w", err)
+				}
+				backupDBFilePath := fmt.Sprintf("%s/memos_%s_%d_backup.db", db.profile.Data, db.profile.Version, time.Now().Unix())
+				if err := ioutil.WriteFile(backupDBFilePath, rawBytes, 0644); err != nil {
+					return fmt.Errorf("failed to write raw database file, err: %w", err)
+				}
+
+				println("succeed to copy a backup database file")
 				println("start migrate")
 				for _, minorVersion := range minorVersionList {
 					normalizedVersion := minorVersion + ".0"
 					if common.IsVersionGreaterThan(normalizedVersion, migrationHistory.Version) && common.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
 						println("applying migration for", normalizedVersion)
-						err := db.applyMigrationForMinorVersion(minorVersion)
-						if err != nil {
+						if err := db.applyMigrationForMinorVersion(minorVersion); err != nil {
 							return fmt.Errorf("failed to apply minor version migration: %w", err)
 						}
 					}
 				}
+
 				println("end migrate")
+				// remove the created backup db file after migrate succeed
+				if err := os.Remove(backupDBFilePath); err != nil {
+					println(fmt.Sprintf("Failed to remove temp database file, err %v", err))
+				}
 			}
 		}
 	}

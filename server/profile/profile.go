@@ -38,8 +38,7 @@ func checkDSN(dataDir string) (string, error) {
 	dataDir = strings.TrimRight(dataDir, "/")
 
 	if _, err := os.Stat(dataDir); err != nil {
-		error := fmt.Errorf("unable to access -data %s, err %w", dataDir, err)
-		return "", error
+		return "", fmt.Errorf("unable to access data folder %s, err %w", dataDir, err)
 	}
 
 	return dataDir, nil
@@ -67,6 +66,7 @@ func GetProfile() *Profile {
 		os.Exit(1)
 	}
 
+	profile.Data = dataDir
 	profile.DSN = fmt.Sprintf("%s/memos_%s.db", dataDir, profile.Mode)
 	profile.Version = common.GetCurrentVersion(profile.Mode)
 
