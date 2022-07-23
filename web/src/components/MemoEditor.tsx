@@ -107,16 +107,16 @@ const MemoEditor: React.FC<Props> = () => {
       const { type } = file;
 
       if (!type.startsWith("image")) {
+        toastHelper.error("Only image file supported.");
         return;
       }
 
       try {
         const image = await resourceService.upload(file);
         const url = `/h/r/${image.id}/${image.filename}`;
-
         return url;
       } catch (error: any) {
-        toastHelper.error(error);
+        toastHelper.error("Failed to upload image\n" + JSON.stringify(error, null, 4));
       } finally {
         setState({
           ...state,
