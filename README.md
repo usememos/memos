@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <a href="https://memos.onrender.com/">Live Demo</a> •
+  <a href="https://demo.usememos.com/">Live Demo</a> •
   <a href="https://t.me/+-_tNF1k70UU4ZTc9">Discuss in Telegram 👾</a>
 </p>
 
