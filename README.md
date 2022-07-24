@@ -54,8 +54,9 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 
 ### Prerequisites
 
-- [Go](https://golang.org/doc/install) (1.16 or later)
+- [Go](https://golang.org/doc/install)
 - [Air](https://github.com/cosmtrek/air#installation) for backend live reload
+- [Node.js](https://nodejs.org/)
 - [yarn](https://yarnpkg.com/getting-started/install)
 
 ### Steps
@@ -80,10 +81,10 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 
 Memos should now be running at [http://localhost:3000](http://localhost:3000) and change either frontend or backend code would trigger live reload.
 
+### Contributing
+
+Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
+
 ## 🌟 Star history
 
 [![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
-
----
-
-Just enjoy it.
