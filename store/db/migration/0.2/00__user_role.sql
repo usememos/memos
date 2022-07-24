@@ -4,8 +4,7 @@ PRAGMA foreign_keys = off;
 
 DROP TABLE IF EXISTS _user_old;
 
-ALTER TABLE 
-  user RENAME TO _user_old;
+ALTER TABLE user RENAME TO _user_old;
 
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT, 

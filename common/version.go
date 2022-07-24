@@ -10,7 +10,7 @@ import (
 var Version = "0.2.2"
 
 // DevVersion is the service current development version.
-var DevVersion = "0.2.2"
+var DevVersion = "0.3.0"
 
 func GetCurrentVersion(mode string) string {
 	if mode == "dev" {
