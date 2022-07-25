@@ -64,12 +64,20 @@ const locationSlice = createSlice({
       return getStateFromLocation();
     },
     setPathname: (state, action: PayloadAction<string>) => {
+      if (state.pathname === action.payload) {
+        return state;
+      }
+
       return {
         ...state,
         pathname: action.payload,
       };
     },
     setQuery: (state, action: PayloadAction<Partial<Query>>) => {
+      if (JSON.stringify(action.payload) === state.query) {
+        return state;
+      }
+
       return {
         ...state,
         query: {

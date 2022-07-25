@@ -1,6 +1,6 @@
 import { stringify } from "qs";
 import store from "../store";
-import { setQuery, setPathname, Query } from "../store/modules/location";
+import { setQuery, setPathname, Query, updateStateWithLocation } from "../store/modules/location";
 
 const updateLocationUrl = (method: "replace" | "push" = "replace") => {
   const { query, pathname, hash } = store.getState().location;
@@ -21,6 +21,10 @@ const updateLocationUrl = (method: "replace" | "push" = "replace") => {
 const locationService = {
   getState: () => {
     return store.getState().location;
+  },
+
+  updateStateWithLocation: () => {
+    store.dispatch(updateStateWithLocation());
   },
 
   setPathname: (pathname: string) => {

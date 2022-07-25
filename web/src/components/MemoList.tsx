@@ -83,7 +83,6 @@ const MemoList: React.FC<Props> = () => {
       .fetchAllMemos()
       .then(() => {
         setFetchStatus(false);
-        memoService.updateTagsState();
       })
       .catch(() => {
         toastHelper.error("😭 Fetching failed, please try again later.");

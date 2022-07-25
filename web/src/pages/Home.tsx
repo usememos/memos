@@ -12,6 +12,7 @@ import toastHelper from "../components/Toast";
 import "../less/home.less";
 
 function Home() {
+  const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);
   const loadingState = useLoading();
 
@@ -53,6 +54,19 @@ function Home() {
               <MemoFilter />
             </div>
             <MemoList />
+            <Only when={userService.isVisitorMode()}>
+              <div className="addtion-btn-container">
+                {user ? (
+                  <button className="btn" onClick={() => (window.location.href = "/")}>
+                    <span className="icon">🏠</span> Back to Home
+                  </button>
+                ) : (
+                  <button className="btn" onClick={() => (window.location.href = "/signin")}>
+                    <span className="icon">👉</span> Sign in
+                  </button>
+                )}
+              </div>
+            </Only>
           </main>
         </div>
       )}

@@ -18,6 +18,18 @@
         @apply sticky top-0 w-full h-full flex flex-col justify-start items-start z-10;
         background-color: #f6f5f4;
       }
+
+      > .addtion-btn-container {
+        @apply fixed bottom-12 left-1/2 -translate-x-1/2;
+
+        > .btn {
+          @apply bg-blue-600 text-white px-4 py-2 rounded-3xl shadow-2xl hover:opacity-80;
+
+          > .icon {
+            @apply text-lg mr-1;
+          }
+        }
+      }
     }
   }
 }

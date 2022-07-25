@@ -20,7 +20,9 @@ const TagList: React.FC<Props> = () => {
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
-    memoService.updateTagsState();
+    if (memos.length > 0) {
+      memoService.updateTagsState();
+    }
   }, [memos]);
 
   useEffect(() => {
