@@ -128,7 +128,7 @@ const (
 )
 
 func (db *DB) applyLatestSchema() error {
-	latestSchemaPath := fmt.Sprintf("%s/%s", "migration", latestSchemaFileName)
+	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", db.profile.Mode, latestSchemaFileName)
 	buf, err := migrationFS.ReadFile(latestSchemaPath)
 	if err != nil {
 		return fmt.Errorf("failed to read latest schema %q, error %w", latestSchemaPath, err)
@@ -141,7 +141,7 @@ func (db *DB) applyLatestSchema() error {
 }
 
 func (db *DB) applyMigrationForMinorVersion(minorVersion string) error {
-	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("%s/%s/*.sql", "migration", minorVersion))
+	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("%s/%s/*.sql", "migration/prod", minorVersion))
 	if err != nil {
 		return err
 	}
@@ -210,7 +210,7 @@ func (db *DB) execute(stmt string) error {
 }
 
 // minorDirRegexp is a regular expression for minor version directory.
-var minorDirRegexp = regexp.MustCompile(`^migration/[0-9]+\.[0-9]+$`)
+var minorDirRegexp = regexp.MustCompile(`^migration/prod/[0-9]+\.[0-9]+$`)
 
 func getMinorVersionList() []string {
 	minorVersionList := []string{}
