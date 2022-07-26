@@ -190,7 +190,10 @@ func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error
 }
 
 func deleteResource(db *sql.DB, delete *api.ResourceDelete) error {
-	result, err := db.Exec(`DELETE FROM resource WHERE id = ?`, delete.ID)
+	result, err := db.Exec(`
+		PRAGMA foreign_keys = ON;
+		DELETE FROM resource WHERE id = ?
+	`, delete.ID)
 	if err != nil {
 		return FormatError(err)
 	}

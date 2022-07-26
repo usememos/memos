@@ -284,7 +284,10 @@ func findMemoRawList(db *sql.DB, find *api.MemoFind) ([]*memoRaw, error) {
 }
 
 func deleteMemo(db *sql.DB, delete *api.MemoDelete) error {
-	result, err := db.Exec(`DELETE FROM memo WHERE id = ?`, delete.ID)
+	result, err := db.Exec(`
+		PRAGMA foreign_keys = ON;
+		DELETE FROM resource WHERE id = ?
+	`, delete.ID)
 	if err != nil {
 		return FormatError(err)
 	}

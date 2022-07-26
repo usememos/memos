@@ -270,7 +270,10 @@ func findUserList(db *sql.DB, find *api.UserFind) ([]*userRaw, error) {
 }
 
 func deleteUser(db *sql.DB, delete *api.UserDelete) error {
-	result, err := db.Exec(`DELETE FROM user WHERE id = ?`, delete.ID)
+	result, err := db.Exec(`
+		PRAGMA foreign_keys = ON;
+		DELETE FROM user WHERE id = ?
+	`, delete.ID)
 	if err != nil {
 		return FormatError(err)
 	}

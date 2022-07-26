@@ -238,7 +238,10 @@ func findShortcutList(db *sql.DB, find *api.ShortcutFind) ([]*shortcutRaw, error
 }
 
 func deleteShortcut(db *sql.DB, delete *api.ShortcutDelete) error {
-	result, err := db.Exec(`DELETE FROM shortcut WHERE id = ?`, delete.ID)
+	result, err := db.Exec(`
+		PRAGMA foreign_keys = ON;
+		DELETE FROM shortcut WHERE id = ?
+	`, delete.ID)
 	if err != nil {
 		return FormatError(err)
 	}
