@@ -9,6 +9,7 @@ import { showDialog } from "./Dialog";
 import Image from "./Image";
 import { formatMemoContent } from "./Memo";
 import "../less/memo-card-dialog.less";
+import Selector from "./common/Selector";
 
 interface LinkedMemo extends Memo {
   createdAtStr: string;
@@ -26,6 +27,11 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   const [linkMemos, setLinkMemos] = useState<LinkedMemo[]>([]);
   const [linkedMemos, setLinkedMemos] = useState<LinkedMemo[]>([]);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
+  const visibilityList = [
+    { text: "PUBLIC", value: "PUBLIC" },
+    { text: "PROTECTED", value: "PROTECTED" },
+    { text: "PRIVATE", value: "PRIVATE" },
+  ];
 
   useEffect(() => {
     const fetchLinkedMemos = async () => {
@@ -98,25 +104,16 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     setMemo(memo);
   }, []);
 
-  const handleEditMemoBtnClick = useCallback(() => {
+  const handleEditMemoBtnClick = () => {
     props.destroy();
     editorStateService.setEditMemoWithId(memo.id);
-  }, [memo.id]);
-
-  const handlePinClick = async () => {
-    if (memo.pinned) {
-      await memoService.unpinMemo(memo.id);
-    } else {
-      await memoService.pinMemo(memo.id);
-    }
-    setMemo({
-      ...memo,
-      pinned: !memo.pinned,
-    });
   };
 
-  const handleVisibilityClick = async () => {
-    const visibility = memo.visibility === "PRIVATE" ? "PUBLIC" : "PRIVATE";
+  const handleVisibilitySelectorChange = async (visibility: Visibility) => {
+    if (memo.visibility === visibility) {
+      return;
+    }
+
     await memoService.patchMemo({
       id: memo.id,
       visibility: visibility,
@@ -135,12 +132,12 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
           <div className="btns-container">
             <Only when={!userService.isVisitorMode()}>
               <>
-                <button className="btn" onClick={handlePinClick}>
-                  <i className={`fa-solid fa-thumbtack icon-img ${memo.pinned ? "" : "opacity-20"}`}></i>
-                </button>
-                <button className="btn" onClick={handleVisibilityClick}>
-                  <i className={`fa-solid fa-eye icon-img ${memo.visibility === "PUBLIC" ? "" : "opacity-20"}`}></i>
-                </button>
+                <Selector
+                  className="w-24"
+                  dataSource={visibilityList}
+                  value={memo.visibility}
+                  handleValueChanged={(value) => handleVisibilitySelectorChange(value as Visibility)}
+                />
                 <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
                   <i className="fa-solid fa-pen-to-square icon-img"></i>
                 </button>

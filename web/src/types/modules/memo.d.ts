@@ -1,6 +1,6 @@
 type MemoId = number;
 
-type Visibility = "PUBLIC" | "PRIVATE";
+type Visibility = "PUBLIC" | "PROTECTED" | "PRIVATE";
 
 interface Memo {
   id: MemoId;
