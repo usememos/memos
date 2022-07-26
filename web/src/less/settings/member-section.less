@@ -32,7 +32,7 @@
   }
 
   > .member-container {
-    @apply w-full grid grid-cols-5 border-b py-2;
+    @apply w-full grid grid-cols-6 border-b py-2;
 
     > .field-text {
       @apply text-base pl-2 mr-4 w-16;
@@ -47,7 +47,31 @@
     }
 
     > .buttons-container {
-      @apply col-span-1;
+      @apply col-span-2;
+
+      > .btn {
+        @apply px-2 py-1 border rounded shadow hover:opacity-80;
+
+        &.archive {
+          @apply bg-yellow-100 text-yellow-600;
+        }
+
+        &.restore {
+          @apply bg-green-100 text-green-600;
+        }
+
+        &.delete {
+          @apply bg-red-100 text-red-600;
+        }
+      }
+
+      > .tip-text {
+        @apply text-gray-400;
+      }
+
+      > .split-line {
+        @apply font-mono text-gray-300 mx-1;
+      }
     }
   }
 }

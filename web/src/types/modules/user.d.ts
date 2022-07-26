@@ -22,7 +22,15 @@ interface UserCreate {
 }
 
 interface UserPatch {
+  id: UserId;
+
+  rowStatus?: RowStatus;
+
   name?: string;
   password?: string;
   resetOpenId?: boolean;
+}
+
+interface UserDelete {
+  id: UserId;
 }

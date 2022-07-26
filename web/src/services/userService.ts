@@ -33,7 +33,7 @@ const userService = {
       }
     }
 
-    const { data: user } = (await api.getUser()).data;
+    const { data: user } = (await api.getMyselfUser()).data;
     if (user) {
       store.dispatch(setUser(convertResponseModelUser(user)));
     }
@@ -53,7 +53,7 @@ const userService = {
   },
 
   doSignIn: async () => {
-    const { data: user } = (await api.getUser()).data;
+    const { data: user } = (await api.getMyselfUser()).data;
     if (user) {
       store.dispatch(setUser(convertResponseModelUser(user)));
     } else {
@@ -78,8 +78,14 @@ const userService = {
 
   patchUser: async (userPatch: UserPatch): Promise<void> => {
     const { data } = (await api.patchUser(userPatch)).data;
-    const user = convertResponseModelUser(data);
-    store.dispatch(patchUser(user));
+    if (userPatch.id === store.getState().user.user?.id) {
+      const user = convertResponseModelUser(data);
+      store.dispatch(patchUser(user));
+    }
+  },
+
+  deleteUser: async (userDelete: UserDelete) => {
+    await api.deleteUser(userDelete);
   },
 };
 

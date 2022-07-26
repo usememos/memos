@@ -39,6 +39,7 @@ const MyAccountSection: React.FC<Props> = () => {
 
     try {
       await userService.patchUser({
+        id: user.id,
         name: username,
       });
       toastHelper.info("Username changed");

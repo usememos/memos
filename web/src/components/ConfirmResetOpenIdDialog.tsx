@@ -25,7 +25,9 @@ const ConfirmResetOpenIdDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     resetBtnClickLoadingState.setLoading();
     try {
+      const user = userService.getState().user as User;
       await userService.patchUser({
+        id: user.id,
         resetOpenId: true,
       });
     } catch (error) {

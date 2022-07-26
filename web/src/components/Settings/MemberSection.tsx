@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { isEmpty } from "lodash-es";
+import { userService } from "../../services";
+import { useAppSelector } from "../../store";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
 import "../../less/settings/member-section.less";
@@ -12,6 +14,7 @@ interface State {
 }
 
 const PreferencesSection: React.FC<Props> = () => {
+  const currentUser = useAppSelector((state) => state.user.user);
   const [state, setState] = useState<State>({
     createUserEmail: "",
     createUserPassword: "",
@@ -66,6 +69,30 @@ const PreferencesSection: React.FC<Props> = () => {
     });
   };
 
+  const handleArchiveUserClick = async (user: User) => {
+    await userService.patchUser({
+      id: user.id,
+      rowStatus: "ARCHIVED",
+    });
+    fetchUserList();
+  };
+
+  const handleRestoreUserClick = async (user: User) => {
+    await userService.patchUser({
+      id: user.id,
+      rowStatus: "NORMAL",
+    });
+    fetchUserList();
+  };
+
+  // TODO: show a dialog to confirm delete user.
+  const handleDeleteUserClick = async (user: User) => {
+    await userService.deleteUser({
+      id: user.id,
+    });
+    fetchUserList();
+  };
+
   return (
     <div className="section-container member-section-container">
       <p className="title-text">Create a member</p>
@@ -86,15 +113,31 @@ const PreferencesSection: React.FC<Props> = () => {
       <div className="member-container field-container">
         <span className="field-text">ID</span>
         <span className="field-text">EMAIL</span>
+        <span></span>
       </div>
       {userList.map((user) => (
-        <div key={user.id} className="member-container">
+        <div key={user.id} className={`member-container ${user.rowStatus === "ARCHIVED" ? "archived" : ""}`}>
           <span className="field-text id-text">{user.id}</span>
           <span className="field-text email-text">{user.email}</span>
-          {/* TODO */}
-          {/* <div className="buttons-container">
-            <span>delete</span>
-          </div> */}
+          <div className="buttons-container">
+            {currentUser?.id === user.id ? (
+              <span className="tip-text">Yourself</span>
+            ) : user.rowStatus === "NORMAL" ? (
+              <span className="btn archive" onClick={() => handleArchiveUserClick(user)}>
+                archive
+              </span>
+            ) : (
+              <>
+                <span className="btn restore" onClick={() => handleRestoreUserClick(user)}>
+                  restore
+                </span>
+                <span className="split-line">/</span>
+                <span className="btn delete" onClick={() => handleDeleteUserClick(user)}>
+                  delete
+                </span>
+              </>
+            )}
+          </div>
         </div>
       ))}
     </div>

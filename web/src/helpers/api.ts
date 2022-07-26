@@ -34,7 +34,7 @@ export function createUser(userCreate: UserCreate) {
   return axios.post<ResponseObject<User>>("/api/user", userCreate);
 }
 
-export function getUser() {
+export function getMyselfUser() {
   return axios.get<ResponseObject<User>>("/api/user/me");
 }
 
@@ -47,7 +47,11 @@ export function getUserById(id: number) {
 }
 
 export function patchUser(userPatch: UserPatch) {
-  return axios.patch<ResponseObject<User>>("/api/user/me", userPatch);
+  return axios.patch<ResponseObject<User>>(`/api/user/${userPatch.id}`, userPatch);
+}
+
+export function deleteUser(userDelete: UserDelete) {
+  return axios.delete(`/api/user/${userDelete.id}`);
 }
 
 export function getMemoList(memoFind?: MemoFind) {
