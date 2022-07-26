@@ -37,3 +37,25 @@ VALUES
     -- raw password: secret
     '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
   );
+
+INSERT INTO 
+  user (
+    `id`, 
+    `row_status`, 
+    `email`,
+    `role`,
+    `name`, 
+    `open_id`,
+    `password_hash`
+  )
+VALUES
+  (
+    103, 
+    'ARCHIVED', 
+    'bob@usememos.com',
+    'USER',
+    'Bob',
+    'bob_open_id',
+    -- raw password: secret
+    '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
+  );

@@ -44,6 +44,11 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user list").SetInternal(err)
 		}
 
+		for _, user := range userList {
+			// data desensitize
+			user.OpenID = ""
+		}
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(userList)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user list response").SetInternal(err)

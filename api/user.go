@@ -73,3 +73,7 @@ type UserFind struct {
 	Name   *string `json:"name"`
 	OpenID *string
 }
+
+type UserDelete struct {
+	ID int
+}

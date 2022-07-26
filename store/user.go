@@ -96,6 +96,15 @@ func (s *Store) FindUser(find *api.UserFind) (*api.User, error) {
 	return user, nil
 }
 
+func (s *Store) DeleteUser(delete *api.UserDelete) error {
+	err := deleteUser(s.db, delete)
+	if err != nil {
+		return FormatError(err)
+	}
+
+	return nil
+}
+
 func createUser(db *sql.DB, create *api.UserCreate) (*userRaw, error) {
 	row, err := db.Query(`
 		INSERT INTO user (
@@ -224,7 +233,7 @@ func findUserList(db *sql.DB, find *api.UserFind) ([]*userRaw, error) {
 			row_status
 		FROM user
 		WHERE `+strings.Join(where, " AND ")+`
-		ORDER BY created_ts DESC`,
+		ORDER BY created_ts DESC, row_status DESC`,
 		args...,
 	)
 	if err != nil {
@@ -258,4 +267,18 @@ func findUserList(db *sql.DB, find *api.UserFind) ([]*userRaw, error) {
 	}
 
 	return userRawList, nil
+}
+
+func deleteUser(db *sql.DB, delete *api.UserDelete) error {
+	result, err := db.Exec(`DELETE FROM user WHERE id = ?`, delete.ID)
+	if err != nil {
+		return FormatError(err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("user ID not found: %d", delete.ID)}
+	}
+
+	return nil
 }
