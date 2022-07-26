@@ -6,6 +6,8 @@ type Visibility string
 const (
 	// Public is the PUBLIC visibility.
 	Public Visibility = "PUBLIC"
+	// Protected is the PROTECTED visibility.
+	Protected Visibility = "PROTECTED"
 	// Privite is the PRIVATE visibility.
 	Privite Visibility = "PRIVATE"
 )
@@ -14,6 +16,8 @@ func (e Visibility) String() string {
 	switch e {
 	case Public:
 		return "PUBLIC"
+	case Protected:
+		return "PROTECTED"
 	case Privite:
 		return "PRIVATE"
 	}
@@ -65,9 +69,9 @@ type MemoFind struct {
 	CreatorID *int       `json:"creatorId"`
 
 	// Domain specific fields
-	Pinned        *bool
-	ContentSearch *string
-	Visibility    *Visibility
+	Pinned         *bool
+	ContentSearch  *string
+	VisibilityList []Visibility
 
 	// Pagination
 	Limit  int

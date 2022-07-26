@@ -16,7 +16,8 @@ INSERT INTO
   memo (
     `id`,
     `content`, 
-    `creator_id`
+    `creator_id`,
+    `visibility`
   )
 VALUES
   (
@@ -26,7 +27,8 @@ VALUES
 - [x] Clean the room;
 - [x] Read *📖 The Little Prince*;
 (👆 click to toggle status)', 
-    101
+    101,
+    'PROTECTED'
   );
 
 INSERT INTO 
@@ -48,7 +50,8 @@ INSERT INTO
   memo (
     `id`,
     `content`, 
-    `creator_id`
+    `creator_id`,
+    `visibility`
   )
 VALUES
   (
@@ -59,7 +62,8 @@ VALUES
 - [ ] Watch *👦 The Boys*;
 (👆 click to toggle status)
 ', 
-    102
+    102,
+    'PROTECTED'
   );
 
 INSERT INTO 

@@ -222,8 +222,13 @@ func findMemoRawList(db *sql.DB, find *api.MemoFind) ([]*memoRaw, error) {
 	if v := find.ContentSearch; v != nil {
 		where, args = append(where, "content LIKE ?"), append(args, "%"+*v+"%")
 	}
-	if v := find.Visibility; v != nil {
-		where, args = append(where, "visibility = ?"), append(args, *v)
+	if v := find.VisibilityList; len(v) != 0 {
+		list := []string{}
+		for _, visibility := range v {
+			list = append(list, fmt.Sprintf("$%d", len(args)+1))
+			args = append(args, visibility)
+		}
+		where = append(where, fmt.Sprintf("visibility in (%s)", strings.Join(list, ",")))
 	}
 
 	pagination := ""

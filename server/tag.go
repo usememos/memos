@@ -23,20 +23,20 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 
 		if userID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
 			memoFind.CreatorID = &userID
-		} else {
-			userID, ok := c.Get(getUserIDContextKey()).(int)
-			if !ok {
-				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
-			}
-
-			memoFind.CreatorID = &userID
 		}
 
-		// Only can get PUBLIC memos in visitor mode
-		_, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			publicVisibility := api.Public
-			memoFind.Visibility = &publicVisibility
+		currentUserID := c.Get(getUserIDContextKey()).(int)
+		if currentUserID == api.UNKNOWN_ID {
+			if memoFind.CreatorID == nil {
+				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
+			}
+			memoFind.VisibilityList = []api.Visibility{api.Public}
+		} else {
+			if memoFind.CreatorID == nil {
+				memoFind.CreatorID = &currentUserID
+			} else {
+				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
+			}
 		}
 
 		memoList, err := s.Store.FindMemoList(&memoFind)

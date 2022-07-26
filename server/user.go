@@ -182,4 +182,34 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 		return nil
 	})
+
+	g.DELETE("/user/:userId", func(c echo.Context) error {
+		currentUserID := c.Get(getUserIDContextKey()).(int)
+		currentUser, err := s.Store.FindUser(&api.UserFind{
+			ID: &currentUserID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if currentUser == nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Current session user not found with ID: %d", currentUserID)).SetInternal(err)
+		} else if currentUser.Role != api.Host {
+			return echo.NewHTTPError(http.StatusForbidden, "Access forbidden for current session user").SetInternal(err)
+		}
+
+		userID, err := strconv.Atoi(c.Param("userId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("userId"))).SetInternal(err)
+		}
+
+		userDelete := &api.UserDelete{
+			ID: userID,
+		}
+		if err := s.Store.DeleteUser(userDelete); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete user").SetInternal(err)
+		}
+
+		return c.JSON(http.StatusOK, true)
+	})
+
 }

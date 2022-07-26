@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
@@ -69,20 +70,20 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		if userID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
 			memoFind.CreatorID = &userID
-		} else {
-			userID, ok := c.Get(getUserIDContextKey()).(int)
-			if !ok {
-				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
-			}
-
-			memoFind.CreatorID = &userID
 		}
 
-		// Only can get PUBLIC memos in visitor mode
-		_, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			publicVisibility := api.Public
-			memoFind.Visibility = &publicVisibility
+		currentUserID := c.Get(getUserIDContextKey()).(int)
+		if currentUserID == api.UNKNOWN_ID {
+			if memoFind.CreatorID == nil {
+				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
+			}
+			memoFind.VisibilityList = []api.Visibility{api.Public}
+		} else {
+			if memoFind.CreatorID == nil {
+				memoFind.CreatorID = &currentUserID
+			} else {
+				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
+			}
 		}
 
 		rowStatus := api.RowStatus(c.QueryParam("rowStatus"))
@@ -98,6 +99,14 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if tag != "" {
 			contentSearch := "#" + tag + " "
 			memoFind.ContentSearch = &contentSearch
+		}
+		visibilitListStr := c.QueryParam("visibility")
+		if visibilitListStr != "" {
+			visibilityList := []api.Visibility{}
+			for _, visibility := range strings.Split(visibilitListStr, ",") {
+				visibilityList = append(visibilityList, api.Visibility(visibility))
+			}
+			memoFind.VisibilityList = visibilityList
 		}
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
 			memoFind.Limit = limit
@@ -190,9 +199,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memoDelete := &api.MemoDelete{
 			ID: memoID,
 		}
-
-		err = s.Store.DeleteMemo(memoDelete)
-		if err != nil {
+		if err := s.Store.DeleteMemo(memoDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoID)).SetInternal(err)
 		}
 
