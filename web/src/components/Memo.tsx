@@ -172,11 +172,8 @@ const Memo: React.FC<Props> = (props: Props) => {
       <div className="memo-top-wrapper">
         <div className="status-text-container" onClick={handleShowMemoStoryDialog}>
           <span className="time-text">{createdAtStr}</span>
-          <Only when={memo.pinned}>
-            <span className="status-text">PINNED</span>
-          </Only>
           <Only when={memo.visibility !== "PRIVATE" && !isVisitorMode}>
-            <span className="status-text">{memo.visibility}</span>
+            <span className={`status-text ${memo.visibility.toLocaleLowerCase()}`}>{memo.visibility}</span>
           </Only>
         </div>
         <div className={`btns-container ${userService.isVisitorMode() ? "!hidden" : ""}`}>

@@ -126,21 +126,27 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <>
+      <Only when={!userService.isVisitorMode()}>
+        <div className="visibility-selector-container">
+          <i className="fa-solid fa-eye text-white mr-2"></i>
+          <Selector
+            className="w-32"
+            dataSource={visibilityList}
+            value={memo.visibility}
+            handleValueChanged={(value) => handleVisibilitySelectorChange(value as Visibility)}
+          />
+        </div>
+      </Only>
       <div className="memo-card-container">
         <div className="header-container">
           <p className="time-text">{utils.getDateTimeString(memo.createdTs)}</p>
           <div className="btns-container">
             <Only when={!userService.isVisitorMode()}>
               <>
-                <Selector
-                  className="w-24"
-                  dataSource={visibilityList}
-                  value={memo.visibility}
-                  handleValueChanged={(value) => handleVisibilitySelectorChange(value as Visibility)}
-                />
                 <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
                   <i className="fa-solid fa-pen-to-square icon-img"></i>
                 </button>
+                <span className="split-line">/</span>
               </>
             </Only>
             <button className="btn close-btn" onClick={props.destroy}>

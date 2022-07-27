@@ -6,16 +6,19 @@
   > .dialog-container {
     @apply w-full p-0 bg-transparent flex flex-col justify-start items-center;
 
+    > .visibility-selector-container {
+      @apply z-10 w-128 mb-2 flex flex-row justify-start items-center;
+    }
+
     > .memo-card-container {
-      .flex(column, flex-start, flex-start);
-      @apply relative w-128 max-w-full py-3 px-6 mb-3 rounded-lg bg-yellow-200;
+      @apply flex flex-col justify-start items-start relative w-128 max-w-full py-3 px-6 mb-3 rounded-lg bg-yellow-200;
 
       > * {
         z-index: 1;
       }
 
       > .header-container {
-        @apply flex flex-row justify-between items-center w-full h-auto z-10 pb-0 my-0;
+        @apply flex flex-row justify-between items-center w-full h-auto pb-0 my-0;
 
         > .time-text {
           @apply text-sm text-gray-500 font-mono;
@@ -27,6 +30,10 @@
           > .btn {
             .flex(row, center, center);
             @apply w-6 h-6 ml-2 rounded text-gray-600 hover:bg-white;
+          }
+
+          > .split-line {
+            @apply font-mono text-gray-300 ml-2;
           }
         }
       }
