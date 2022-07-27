@@ -25,8 +25,8 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			memoFind.CreatorID = &userID
 		}
 
-		currentUserID := c.Get(getUserIDContextKey()).(int)
-		if currentUserID == api.UNKNOWN_ID {
+		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
 			if memoFind.CreatorID == nil {
 				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
 			}

@@ -51,11 +51,10 @@ func removeUserSession(ctx echo.Context) error {
 	return nil
 }
 
-// Use session to store user.id.
-func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
+func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		// Skip auth for some paths.
-		if common.HasPrefixes(ctx.Path(), "/api/auth", "/api/ping", "/api/status", "/api/user/:userId") {
+		if common.HasPrefixes(ctx.Path(), "/api/auth", "/api/ping", "/api/status", "/api/user/:id") {
 			return next(ctx)
 		}
 
@@ -76,42 +75,36 @@ func BasicAuthMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 			}
 		}
 
-		needAuth := true
-		if common.HasPrefixes(ctx.Path(), "/api/memo", "/api/tag", "/api/shortcut") && ctx.Request().Method == http.MethodGet {
-			if _, err := strconv.Atoi(ctx.QueryParam("creatorId")); err == nil {
-				needAuth = false
-			}
-		}
-
 		{
 			sess, _ := session.Get("session", ctx)
 			userIDValue := sess.Values[userIDContextKey]
-			if userIDValue == nil && needAuth {
-				return echo.NewHTTPError(http.StatusUnauthorized, "Missing userID in session")
-			}
-
-			userID, err := strconv.Atoi(fmt.Sprintf("%v", userIDValue))
-			if err != nil && needAuth {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to malformatted user id in the session.").SetInternal(err)
-			}
-
-			userFind := &api.UserFind{
-				ID: &userID,
-			}
-			user, err := s.Store.FindUser(userFind)
-			if err != nil && needAuth {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userID)).SetInternal(err)
-			}
-			if needAuth {
-				if user == nil {
-					return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Not found user ID: %d", userID))
-				} else if user.RowStatus == api.Archived {
-					return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with email %s", user.Email))
+			if userIDValue != nil {
+				userID, _ := strconv.Atoi(fmt.Sprintf("%v", userIDValue))
+				userFind := &api.UserFind{
+					ID: &userID,
+				}
+				user, err := s.Store.FindUser(userFind)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userID)).SetInternal(err)
+				}
+				if user != nil {
+					if user.RowStatus == api.Archived {
+						return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with email %s", user.Email))
+					}
+					ctx.Set(getUserIDContextKey(), userID)
 				}
 			}
+		}
 
-			// Save userID into context.
-			ctx.Set(getUserIDContextKey(), userID)
+		if common.HasPrefixes(ctx.Path(), "/api/memo", "/api/tag", "/api/shortcut") && ctx.Request().Method == http.MethodGet {
+			if _, err := strconv.Atoi(ctx.QueryParam("creatorId")); err == nil {
+				return next(ctx)
+			}
+		}
+
+		userID := ctx.Get(getUserIDContextKey())
+		if userID == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing userID in session")
 		}
 
 		return next(ctx)

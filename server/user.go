@@ -83,12 +83,11 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 	// GET /api/user/me is used to check if the user is logged in.
 	g.GET("/user/me", func(c echo.Context) error {
-		userSessionID := c.Get(getUserIDContextKey())
-		if userSessionID == nil {
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 		}
 
-		userID := userSessionID.(int)
 		userFind := &api.UserFind{
 			ID: &userID,
 		}

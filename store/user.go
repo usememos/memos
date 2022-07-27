@@ -255,7 +255,6 @@ func findUserList(db *sql.DB, find *api.UserFind) ([]*userRaw, error) {
 			&userRaw.UpdatedTs,
 			&userRaw.RowStatus,
 		); err != nil {
-			fmt.Println(err)
 			return nil, FormatError(err)
 		}
 

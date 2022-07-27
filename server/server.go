@@ -58,7 +58,7 @@ func NewServer(profile *profile.Profile) *Server {
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return BasicAuthMiddleware(s, next)
+		return aclMiddleware(s, next)
 	})
 	s.registerSystemRoutes(apiGroup)
 	s.registerAuthRoutes(apiGroup)
