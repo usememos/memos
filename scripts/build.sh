@@ -1,4 +1,7 @@
-# Usage: sh ./scripts/build.sh
+#!/bin/bash
+
+# Usage: ./scripts/build.sh
+
 set -e
 
 cd "$(dirname "$0")/../"
