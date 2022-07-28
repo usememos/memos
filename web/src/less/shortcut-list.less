@@ -24,7 +24,7 @@
     @apply flex flex-col justify-start items-start relative w-full h-auto flex-nowrap mb-2;
 
     > .shortcut-container {
-      @apply flex flex-row justify-between items-center w-full h-10 py-0 px-4 mt-px first:mt-2 rounded-lg text-base cursor-pointer select-none shrink-0 hover:bg-white;
+      @apply relative flex flex-row justify-between items-center w-full h-10 py-0 px-4 mt-px first:mt-2 rounded-lg text-base cursor-pointer select-none shrink-0 hover:bg-white;
 
       &:hover {
         > .btns-container {
@@ -68,7 +68,7 @@
         }
 
         > .action-btns-wrapper {
-          @apply flex-col justify-start items-start absolute top-6 right-0 w-auto h-auto px-4 pt-3 hidden z-1;
+          @apply absolute top-6 right-0 flex-col justify-start items-start w-auto h-auto px-4 pt-3 hidden z-1;
 
           > .action-btns-container {
             @apply flex flex-col justify-start items-start w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white;
