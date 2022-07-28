@@ -3,8 +3,8 @@ import { useAppSelector } from "../../store";
 import { userService } from "../../services";
 import { validate, ValidatorConfig } from "../../helpers/validator";
 import toastHelper from "../Toast";
+import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangePasswordDialog from "../ChangePasswordDialog";
-import showConfirmResetOpenIdDialog from "../ConfirmResetOpenIdDialog";
 import "../../less/settings/my-account-section.less";
 
 const validateConfig: ValidatorConfig = {
@@ -53,7 +53,11 @@ const MyAccountSection: React.FC<Props> = () => {
   };
 
   const handleResetOpenIdBtnClick = async () => {
-    showConfirmResetOpenIdDialog();
+    showCommonDialog({
+      title: "Reset Open API",
+      content: "❗️The existing API will be invalidated and a new one will be generated, are you sure you want to reset?",
+      style: "warning",
+    });
   };
 
   const handlePreventDefault = (e: React.MouseEvent) => {

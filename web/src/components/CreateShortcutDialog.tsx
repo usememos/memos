@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 import { memoService, shortcutService } from "../services";
 import { checkShouldShowMemoWithFilters, filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
 import useLoading from "../hooks/useLoading";
-import { showDialog } from "./Dialog";
+import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import Selector from "./common/Selector";
 import "../less/create-shortcut-dialog.less";
@@ -304,7 +304,7 @@ const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInpute
 const MemoFilterInputer: React.FC<MemoFilterInputerProps> = memo(FilterInputer);
 
 export default function showCreateShortcutDialog(shortcutId?: ShortcutId): void {
-  showDialog(
+  generateDialog(
     {
       className: "create-shortcut-dialog",
     },

@@ -3,7 +3,7 @@ import { userService } from "../services";
 import toImage from "../labs/html2image";
 import { ANIMATION_DURATION, IMAGE_URL_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { showDialog } from "./Dialog";
+import { generateDialog } from "./Dialog";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import { formatMemoContent } from "./Memo";
@@ -107,7 +107,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
 };
 
 export default function showShareMemoImageDialog(memo: Memo): void {
-  showDialog(
+  generateDialog(
     {
       className: "share-memo-image-dialog",
     },

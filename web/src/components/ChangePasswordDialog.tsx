@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import { userService } from "../services";
-import { showDialog } from "./Dialog";
+import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import "../less/change-password-dialog.less";
 
@@ -96,7 +96,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
 };
 
 function showChangePasswordDialog() {
-  showDialog(
+  generateDialog(
     {
       className: "change-password-dialog",
     },

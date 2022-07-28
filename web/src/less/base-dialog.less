@@ -1,0 +1,40 @@
+@import "./mixin.less";
+
+.dialog-wrapper {
+  @apply fixed top-0 left-0 flex flex-col justify-start items-center w-full h-full pt-16 z-100 overflow-x-hidden overflow-y-scroll bg-transparent transition-all;
+  .hide-scroll-bar();
+
+  &.showup {
+    background-color: rgba(0, 0, 0, 0.6);
+  }
+
+  &.showoff {
+    display: none;
+  }
+
+  > .dialog-container {
+    @apply flex flex-col justify-start items-start bg-white p-4 rounded-lg;
+
+    > .dialog-header-container {
+      @apply flex flex-row justify-between items-center w-full mb-4;
+
+      > .title-text {
+        > .icon-text {
+          @apply mr-2 text-base;
+        }
+      }
+
+      .btn {
+        @apply flex flex-col justify-center items-center w-6 h-6 rounded hover:bg-gray-100 hover:shadow;
+      }
+    }
+
+    > .dialog-content-container {
+      @apply flex flex-col justify-start items-start w-full;
+    }
+
+    > .dialog-footer-container {
+      @apply flex flex-row justify-end items-center w-full mt-4;
+    }
+  }
+}

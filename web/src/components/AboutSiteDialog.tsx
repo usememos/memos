@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import * as api from "../helpers/api";
 import Only from "./common/OnlyWhen";
-import { showDialog } from "./Dialog";
+import { generateDialog } from "./Dialog";
 import GitHubBadge from "./GitHubBadge";
 import "../less/about-site-dialog.less";
 
@@ -63,7 +63,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
 };
 
 export default function showAboutSiteDialog(): void {
-  showDialog(
+  generateDialog(
     {
       className: "about-site-dialog",
     },

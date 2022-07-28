@@ -5,6 +5,7 @@ import { useAppSelector } from "../../store";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
 import "../../less/settings/member-section.less";
+import { showCommonDialog } from "../Dialog/CommonDialog";
 
 interface Props {}
 
@@ -85,12 +86,18 @@ const PreferencesSection: React.FC<Props> = () => {
     fetchUserList();
   };
 
-  // TODO: show a dialog to confirm delete user.
-  const handleDeleteUserClick = async (user: User) => {
-    await userService.deleteUser({
-      id: user.id,
+  const handleDeleteUserClick = (user: User) => {
+    showCommonDialog({
+      title: `Delete ${user.name}`,
+      content: "❗️Are you sure you want to delete?",
+      style: "warning",
+      onConfirm: async () => {
+        await userService.deleteUser({
+          id: user.id,
+        });
+        fetchUserList();
+      },
     });
-    fetchUserList();
   };
 
   return (

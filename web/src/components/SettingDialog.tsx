@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppSelector } from "../store";
-import { showDialog } from "./Dialog";
+import { generateDialog } from "./Dialog";
 import MyAccountSection from "./Settings/MyAccountSection";
 import PreferencesSection from "./Settings/PreferencesSection";
 import MemberSection from "./Settings/MemberSection";
@@ -76,7 +76,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
 };
 
 export default function showSettingDialog(): void {
-  showDialog(
+  generateDialog(
     {
       className: "setting-dialog",
       useAppContext: true,

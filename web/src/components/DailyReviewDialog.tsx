@@ -4,7 +4,7 @@ import toImage from "../labs/html2image";
 import useToggle from "../hooks/useToggle";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { showDialog } from "./Dialog";
+import { generateDialog } from "./Dialog";
 import DatePicker from "./common/DatePicker";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import DailyMemo from "./DailyMemo";
@@ -108,7 +108,7 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
 };
 
 export default function showDailyReviewDialog(datestamp: DateStamp = Date.now()): void {
-  showDialog(
+  generateDialog(
     {
       className: "daily-review-dialog",
       useAppContext: true,

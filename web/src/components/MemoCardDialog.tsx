@@ -5,7 +5,7 @@ import * as utils from "../helpers/utils";
 import { parseHtmlToRawText } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
-import { showDialog } from "./Dialog";
+import { generateDialog } from "./Dialog";
 import Image from "./Image";
 import { formatMemoContent } from "./Memo";
 import "../less/memo-card-dialog.less";
@@ -127,14 +127,16 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <Only when={!userService.isVisitorMode()}>
-        <div className="visibility-selector-container">
-          <i className="fa-solid fa-eye text-white mr-2"></i>
-          <Selector
-            className="w-32"
-            dataSource={visibilityList}
-            value={memo.visibility}
-            handleValueChanged={(value) => handleVisibilitySelectorChange(value as Visibility)}
-          />
+        <div className="card-header-container">
+          <div className="visibility-selector-container">
+            <i className="fa-solid fa-eye mr-2"></i>
+            <Selector
+              className="visibility-selector"
+              dataSource={visibilityList}
+              value={memo.visibility}
+              handleValueChanged={(value) => handleVisibilitySelectorChange(value as Visibility)}
+            />
+          </div>
         </div>
       </Only>
       <div className="memo-card-container">
@@ -221,7 +223,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
 };
 
 export default function showMemoCardDialog(memo: Memo): void {
-  showDialog(
+  generateDialog(
     {
       className: "memo-card-dialog",
     },

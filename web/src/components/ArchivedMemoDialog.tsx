@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import useLoading from "../hooks/useLoading";
 import { memoService } from "../services";
 import { useAppSelector } from "../store";
-import { showDialog } from "./Dialog";
+import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import ArchivedMemo from "./ArchivedMemo";
 import "../less/archived-memo-dialog.less";
@@ -62,7 +62,7 @@ const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
 };
 
 export default function showArchivedMemo(): void {
-  showDialog(
+  generateDialog(
     {
       className: "archived-memo-dialog",
       useAppContext: true,

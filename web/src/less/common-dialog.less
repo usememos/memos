@@ -1,0 +1,31 @@
+@import "./mixin.less";
+
+.common-dialog {
+  > .dialog-container {
+    @apply w-80;
+
+    > .dialog-content-container {
+      @apply flex flex-col justify-start items-start;
+
+      > .content-text {
+        @apply pt-2;
+      }
+
+      > .btns-container {
+        @apply flex flex-row justify-end items-center w-full mt-3;
+
+        > .btn {
+          @apply text-sm py-1 px-3 mr-2 rounded-md hover:opacity-80;
+
+          &.confirm-btn {
+            @apply bg-red-100 border border-solid border-blue-600 text-blue-600;
+
+            &.warning {
+              @apply border-red-600 text-red-600;
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,4 +1,4 @@
-import { showDialog } from "./Dialog";
+import { generateDialog } from "./Dialog";
 import * as utils from "../helpers/utils";
 import "../less/preview-image-dialog.less";
 
@@ -36,7 +36,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrl }: Props) => {
 };
 
 export default function showPreviewImageDialog(imgUrl: string): void {
-  showDialog(
+  generateDialog(
     {
       className: "preview-image-dialog",
     },

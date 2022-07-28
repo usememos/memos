@@ -1,8 +1,8 @@
 import { createRoot } from "react-dom/client";
-import { ANIMATION_DURATION } from "../helpers/consts";
 import { Provider } from "react-redux";
-import store from "../store";
-import "../less/dialog.less";
+import { ANIMATION_DURATION } from "../../helpers/consts";
+import store from "../../store";
+import "../../less/base-dialog.less";
 
 interface DialogConfig {
   className: string;
@@ -32,7 +32,7 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-export function showDialog<T extends DialogProps>(
+export function generateDialog<T extends DialogProps>(
   config: DialogConfig,
   DialogComponent: React.FC<T>,
   props?: Omit<T, "destroy">
