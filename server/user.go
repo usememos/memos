@@ -108,7 +108,10 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("id"))).SetInternal(err)
 		}
-		currentUserID := c.Get(getUserIDContextKey()).(int)
+		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 		currentUser, err := s.Store.FindUser(&api.UserFind{
 			ID: &currentUserID,
 		})
@@ -156,7 +159,10 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 	})
 
 	g.DELETE("/user/:id", func(c echo.Context) error {
-		currentUserID := c.Get(getUserIDContextKey()).(int)
+		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 		currentUser, err := s.Store.FindUser(&api.UserFind{
 			ID: &currentUserID,
 		})

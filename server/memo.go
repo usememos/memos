@@ -15,7 +15,10 @@ import (
 
 func (s *Server) registerMemoRoutes(g *echo.Group) {
 	g.POST("/memo", func(c echo.Context) error {
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 		memoCreate := &api.MemoCreate{
 			CreatorID: userID,
 		}
@@ -133,7 +136,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 		memoOrganizerUpsert := &api.MemoOrganizerUpsert{
 			MemoID: memoID,
 			UserID: userID,
@@ -207,7 +213,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 
 	g.GET("/memo/amount", func(c echo.Context) error {
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 		normalRowStatus := api.Normal
 		memoFind := &api.MemoFind{
 			CreatorID: &userID,

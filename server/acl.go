@@ -53,8 +53,12 @@ func removeUserSession(ctx echo.Context) error {
 
 func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		// Skip auth for some paths.
-		if common.HasPrefixes(ctx.Path(), "/api/auth", "/api/ping", "/api/status", "/api/user/:id") {
+		// Skip auth.
+		if common.HasPrefixes(ctx.Path(), "/api/auth") {
+			return next(ctx)
+		}
+
+		if common.HasPrefixes(ctx.Path(), "/api/ping", "/api/status", "/api/user/:id") && ctx.Request().Method == http.MethodGet {
 			return next(ctx)
 		}
 
@@ -104,7 +108,7 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 
 		userID := ctx.Get(getUserIDContextKey())
 		if userID == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing userID in session")
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
 		return next(ctx)

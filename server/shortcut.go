@@ -13,7 +13,10 @@ import (
 
 func (s *Server) registerShortcutRoutes(g *echo.Group) {
 	g.POST("/shortcut", func(c echo.Context) error {
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 		shortcutCreate := &api.ShortcutCreate{
 			CreatorID: userID,
 		}

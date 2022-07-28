@@ -14,7 +14,10 @@ import (
 
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 
 		err := c.Request().ParseMultipartForm(64 << 20)
 		if err != nil {
@@ -61,7 +64,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 	})
 
 	g.GET("/resource", func(c echo.Context) error {
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 		resourceFind := &api.ResourceFind{
 			CreatorID: &userID,
 		}
@@ -83,7 +89,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 		resourceFind := &api.ResourceFind{
 			ID:        &resourceID,
 			CreatorID: &userID,
@@ -106,7 +115,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		userID := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
 		resourceFind := &api.ResourceFind{
 			ID:        &resourceID,
 			CreatorID: &userID,
