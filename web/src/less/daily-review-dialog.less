@@ -10,7 +10,7 @@
       @apply relative flex flex-row justify-between items-center w-full p-6 pb-0 mb-0;
 
       > .title-text {
-        @apply cursor-pointer select-none rounded hover:bg-gray-100;
+        @apply px-2 py-1 -ml-2 cursor-pointer select-none rounded hover:bg-gray-100;
       }
 
       > .btns-container {
@@ -26,6 +26,10 @@
           &.share-btn {
             @apply ~"p-0.5";
           }
+        }
+
+        > .split-line {
+          @apply font-mono text-gray-300 mr-2;
         }
       }
 

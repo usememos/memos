@@ -72,6 +72,7 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
           <button className="btn-text" onClick={handleShareBtnClick}>
             <i className="fa-solid fa-share-nodes icon-img"></i>
           </button>
+          <span className="split-line">/</span>
           <button className="btn-text" onClick={() => props.destroy()}>
             <i className="fa-solid fa-xmark fa-lg icon-img"></i>
           </button>
