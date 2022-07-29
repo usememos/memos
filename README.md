@@ -36,7 +36,7 @@ docker run \
   --port 5230
 ```
 
-`memos` should be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
+Memos should be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then memos will auto generate it.
 
 ## 🏗 Development
 
