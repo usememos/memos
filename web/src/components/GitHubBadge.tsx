@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import * as api from "../helpers/api";
+import Icon from "./Icon";
 import "../less/github-badge.less";
 
 interface Props {}
@@ -16,7 +17,7 @@ const GitHubBadge: React.FC<Props> = () => {
   return (
     <a className="github-badge-container" href="https://github.com/usememos/memos">
       <div className="github-icon">
-        <i className="fa-brands fa-github fa-lg icon-img"></i>
+        <Icon.GitHub className="icon-img" />
         Star
       </div>
       <div className="count-text">

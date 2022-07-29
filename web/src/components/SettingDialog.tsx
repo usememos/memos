@@ -5,6 +5,7 @@ import MyAccountSection from "./Settings/MyAccountSection";
 import PreferencesSection from "./Settings/PreferencesSection";
 import MemberSection from "./Settings/MemberSection";
 import "../less/setting-dialog.less";
+import Icon from "./Icon";
 
 interface Props extends DialogProps {}
 
@@ -30,7 +31,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
   return (
     <div className="dialog-content-container">
       <button className="btn close-btn" onClick={destroy}>
-        <i className="fa-solid fa-xmark fa-lg icon-img"></i>
+        <Icon.X className="icon-img" />
       </button>
       <div className="section-selector-container">
         <span className="section-title">Basic</span>

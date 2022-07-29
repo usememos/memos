@@ -3,6 +3,7 @@ import * as utils from "../helpers/utils";
 import { useAppSelector } from "../store";
 import { locationService, memoService, userService } from "../services";
 import useToggle from "../hooks/useToggle";
+import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
 import "../less/tag-list.less";
 
@@ -118,7 +119,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
         <div className="btns-container">
           {hasSubTags ? (
             <span className={`action-btn toggle-btn ${showSubTags ? "shown" : ""}`} onClick={handleToggleBtnClick}>
-              <i className="fa-solid fa-chevron-right icon-img"></i>
+              <Icon.ChevronRight className="icon-img" />
             </span>
           ) : null}
         </div>

@@ -3,6 +3,7 @@ import * as utils from "../helpers/utils";
 import userService from "../services/userService";
 import { locationService } from "../services";
 import { useAppSelector } from "../store";
+import Icon from "./Icon";
 import MenuBtnsPopup from "./MenuBtnsPopup";
 import "../less/user-banner.less";
 
@@ -45,7 +46,7 @@ const UserBanner: React.FC<Props> = () => {
           {!isVisitorMode && user?.role === "HOST" ? <span className="tag">MOD</span> : null}
         </div>
         <button className="action-btn menu-popup-btn" onClick={handlePopupBtnClick}>
-          <i className="fa-solid fa-ellipsis icon-img"></i>
+          <Icon.MoreHorizontal className="icon-img" />
         </button>
         <MenuBtnsPopup shownStatus={shouldShowPopupBtns} setShownStatus={setShouldShowPopupBtns} />
       </div>

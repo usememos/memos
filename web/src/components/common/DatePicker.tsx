@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { DAILY_TIMESTAMP } from "../../helpers/consts";
 import "../../less/common/date-picker.less";
+import Icon from "../Icon";
 
 interface DatePickerProps {
   className?: string;
@@ -55,13 +56,13 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
     <div className={`date-picker-wrapper ${className}`}>
       <div className="date-picker-header">
         <span className="btn-text" onClick={() => handleChangeMonthBtnClick(-1)}>
-          <i className="fa-solid fa-chevron-left icon-img"></i>
+          <Icon.ChevronLeft className="icon-img" />
         </span>
         <span className="normal-text">
           {firstDate.getFullYear()}/{firstDate.getMonth() + 1}
         </span>
         <span className="btn-text" onClick={() => handleChangeMonthBtnClick(1)}>
-          <i className="fa-solid fa-chevron-right icon-img"></i>
+          <Icon.ChevronRight className="icon-img" />
         </span>
       </div>
       <div className="date-picker-day-container">

@@ -1,3 +1,4 @@
+import Icon from "../Icon";
 import { generateDialog } from "./BaseDialog";
 import "../../less/common-dialog.less";
 
@@ -44,7 +45,7 @@ const CommonDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">{title}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <i className="fa-solid fa-xmark fa-lg"></i>
+          <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container">

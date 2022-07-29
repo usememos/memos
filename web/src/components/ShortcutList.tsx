@@ -4,6 +4,7 @@ import { useAppSelector } from "../store";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
+import Icon from "./Icon";
 import toastHelper from "./Toast";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
 import "../less/shortcut-list.less";
@@ -39,7 +40,7 @@ const ShortcutList: React.FC<Props> = () => {
       <p className="title-text">
         <span className="normal-text">Shortcuts</span>
         <button className="btn" onClick={() => showCreateShortcutDialog()}>
-          <i className="fa-solid fa-plus icon-img fa-xs"></i>
+          <Icon.Plus className="icon-img" />
         </button>
       </p>
       <div className="shortcuts-container">
@@ -113,7 +114,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
         </div>
         <div className="btns-container">
           <span className="action-btn toggle-btn">
-            <i className="fa-solid fa-ellipsis fa-sm icon-img"></i>
+            <Icon.MoreHorizontal className="icon-img" />
           </span>
           <div className="action-btns-wrapper">
             <div className="action-btns-container">

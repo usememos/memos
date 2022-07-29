@@ -3,6 +3,7 @@ import { UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import { useAppSelector } from "../store";
 import * as storage from "../helpers/storage";
+import Icon from "./Icon";
 import toastHelper from "./Toast";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import "../less/memo-editor.less";
@@ -231,7 +232,7 @@ const MemoEditor: React.FC<Props> = () => {
         tools={
           <>
             <div className="action-btn tag-action">
-              <i className="fa-solid fa-hashtag icon-img"></i>
+              <Icon.Hash className="icon-img" />
               <div ref={tagSeletorRef} className="tag-list" onClick={handleTagSeletorClick}>
                 {tags.map((t) => {
                   return <span key={t}>{t}</span>;
@@ -239,11 +240,11 @@ const MemoEditor: React.FC<Props> = () => {
               </div>
             </div>
             <button className="action-btn">
-              <i className="fa-solid fa-image icon-img" onClick={handleUploadFileBtnClick}></i>
+              <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
               <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
             </button>
             <button className="action-btn" onClick={handleFullscreenBtnClick}>
-              <i className={`fa-solid fa-${state.fullscreen ? "compress" : "expand"} icon-img`}></i>
+              {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
             </button>
           </>
         }

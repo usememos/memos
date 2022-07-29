@@ -1,5 +1,6 @@
-import { generateDialog } from "./Dialog";
 import * as utils from "../helpers/utils";
+import Icon from "./Icon";
+import { generateDialog } from "./Dialog";
 import "../less/preview-image-dialog.less";
 
 interface Props extends DialogProps {
@@ -22,10 +23,10 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrl }: Props) => {
     <>
       <div className="btns-container">
         <button className="btn" onClick={handleCloseBtnClick}>
-          <i className="fa-solid fa-xmark fa-lg icon-img"></i>
+          <Icon.X className="icon-img" />
         </button>
         <button className="btn" onClick={handleDownloadBtnClick}>
-          <i className="fa-solid fa-download icon-img"></i>
+          <Icon.Download className="icon-img" />
         </button>
       </div>
       <div className="img-container">

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import useLoading from "../hooks/useLoading";
 import { memoService } from "../services";
 import { useAppSelector } from "../store";
+import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import ArchivedMemo from "./ArchivedMemo";
@@ -37,7 +38,7 @@ const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
           Archived Memos
         </p>
         <button className="btn close-btn" onClick={destroy}>
-          <i className="fa-solid fa-xmark fa-lg icon-img"></i>
+          <Icon.X className="icon-img" />
         </button>
       </div>
       <div className="dialog-content-container">

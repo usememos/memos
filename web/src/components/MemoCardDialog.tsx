@@ -9,6 +9,7 @@ import { generateDialog } from "./Dialog";
 import Image from "./Image";
 import "../less/memo-card-dialog.less";
 import Selector from "./common/Selector";
+import Icon from "./Icon";
 
 interface LinkedMemo extends Memo {
   createdAtStr: string;
@@ -128,7 +129,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
       <Only when={!userService.isVisitorMode()}>
         <div className="card-header-container">
           <div className="visibility-selector-container">
-            <i className="fa-solid fa-eye mr-2"></i>
+            <Icon.Eye className="mr-2" />
             <Selector
               className="visibility-selector"
               dataSource={visibilityList}
@@ -145,13 +146,13 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
             <Only when={!userService.isVisitorMode()}>
               <>
                 <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
-                  <i className="fa-solid fa-pen-to-square icon-img"></i>
+                  <Icon.Edit className="icon-img" />
                 </button>
                 <span className="split-line">/</span>
               </>
             </Only>
             <button className="btn close-btn" onClick={props.destroy}>
-              <i className="fa-solid fa-xmark fa-lg icon-img"></i>
+              <Icon.X className="icon-img" />
             </button>
           </div>
         </div>

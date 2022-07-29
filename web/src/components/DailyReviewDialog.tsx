@@ -4,6 +4,7 @@ import toImage from "../labs/html2image";
 import useToggle from "../hooks/useToggle";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
+import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import DatePicker from "./common/DatePicker";
 import showPreviewImageDialog from "./PreviewImageDialog";
@@ -64,17 +65,17 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
         </p>
         <div className="btns-container">
           <button className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}>
-            <i className="fa-solid fa-chevron-left icon-img"></i>
+            <Icon.ChevronLeft className="icon-img" />
           </button>
           <button className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp + DAILY_TIMESTAMP)}>
-            <i className="fa-solid fa-chevron-right icon-img"></i>
+            <Icon.ChevronRight className="icon-img" />
           </button>
-          <button className="btn-text" onClick={handleShareBtnClick}>
-            <i className="fa-solid fa-share-nodes icon-img"></i>
+          <button className="btn-text share" onClick={handleShareBtnClick}>
+            <Icon.Share className="icon-img" />
           </button>
           <span className="split-line">/</span>
           <button className="btn-text" onClick={() => props.destroy()}>
-            <i className="fa-solid fa-xmark fa-lg icon-img"></i>
+            <Icon.X className="icon-img" />
           </button>
         </div>
         <DatePicker

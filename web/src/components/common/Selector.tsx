@@ -1,5 +1,6 @@
 import { memo, useEffect, useRef } from "react";
 import useToggle from "../../hooks/useToggle";
+import Icon from "../Icon";
 import "../../less/common/selector.less";
 
 interface TVObject {
@@ -64,7 +65,7 @@ const Selector: React.FC<Props> = (props: Props) => {
       <div className={`current-value-container ${showSelector ? "active" : ""}`} onClick={handleCurrentValueClick}>
         <span className="value-text">{currentItem.text}</span>
         <span className="arrow-text">
-          <i className="fa-solid fa-chevron-down fa-sm icon-img"></i>
+          <Icon.ChevronDown className="icon-img" />
         </span>
       </div>
 

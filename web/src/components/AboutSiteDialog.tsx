@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import * as api from "../helpers/api";
 import Only from "./common/OnlyWhen";
+import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import GitHubBadge from "./GitHubBadge";
 import "../less/about-site-dialog.less";
@@ -37,7 +38,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
           <span className="icon-text">🤠</span>About <b>Memos</b>
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <i className="fa-solid fa-xmark fa-lg"></i>
+          <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container">

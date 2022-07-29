@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
+import Icon from "./Icon";
 import SearchBar from "./SearchBar";
 import { toggleSiderbar } from "./Sidebar";
 import "../less/memos-header.less";
@@ -40,7 +41,7 @@ const MemosHeader: React.FC<Props> = () => {
     <div className="section-header-container memos-header-container">
       <div className="title-container">
         <div className="action-btn" onClick={toggleSiderbar}>
-          <i className="fa-solid fa-bars icon-img"></i>
+          <Icon.Menu className="icon-img" />
         </div>
         <span className="title-text" onClick={handleTitleTextClick}>
           {titleText}

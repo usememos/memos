@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useState } from "react";
 import { memoService, shortcutService } from "../services";
 import { checkShouldShowMemoWithFilters, filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
 import useLoading from "../hooks/useLoading";
+import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import Selector from "./common/Selector";
@@ -100,7 +101,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
           {shortcutId ? "Edit Shortcut" : "Create Shortcut"}
         </p>
         <button className="btn close-btn" onClick={destroy}>
-          <i className="fa-solid fa-xmark fa-lg"></i>
+          <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container">
@@ -296,7 +297,7 @@ const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInpute
       />
 
       {inputElements}
-      <i className="fa-solid fa-xmark remove-btn" onClick={handleRemoveBtnClick}></i>
+      <Icon.X className="remove-btn" onClick={handleRemoveBtnClick} />
     </div>
   );
 };

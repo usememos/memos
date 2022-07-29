@@ -2,6 +2,7 @@ import { locationService } from "../services";
 import { useAppSelector } from "../store";
 import { memoSpecialTypes } from "../helpers/filter";
 import "../less/search-bar.less";
+import Icon from "./Icon";
 
 interface Props {}
 
@@ -24,7 +25,7 @@ const SearchBar: React.FC<Props> = () => {
   return (
     <div className="search-bar-container">
       <div className="search-bar-inputer">
-        <i className="fa-solid fa-magnifying-glass fa-sm icon-img"></i>
+        <Icon.Search className="icon-img" />
         <input className="text-input" type="text" placeholder="" onChange={handleTextQueryInput} />
       </div>
       <div className="quickly-action-wrapper">

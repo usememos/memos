@@ -1,4 +1,5 @@
 import { userService } from "../services";
+import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
@@ -24,7 +25,7 @@ const Sidebar: React.FC<Props> = () => {
     <aside className="sidebar-wrapper">
       <div className="close-container">
         <span className="action-btn" onClick={toggleSiderbar}>
-          <i className="fa-solid fa-xmark fa-lg icon-img"></i>
+          <Icon.X className="icon-img" />
         </span>
       </div>
       <UserBanner />

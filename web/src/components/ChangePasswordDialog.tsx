@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import { userService } from "../services";
+import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import "../less/change-password-dialog.less";
@@ -72,7 +73,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">Change Password</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <i className="fa-solid fa-xmark fa-lg"></i>
+          <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container">

@@ -4,6 +4,7 @@ import toImage from "../labs/html2image";
 import { ANIMATION_DURATION, IMAGE_URL_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { formatMemoContent } from "../helpers/marked";
+import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
@@ -75,7 +76,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
           <span className="icon-text">🌄</span>Share Memo
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <i className="fa-solid fa-xmark fa-lg icon-img"></i>
+          <Icon.X className="icon-img" />
         </button>
       </div>
       <div className="dialog-content-container">
