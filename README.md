@@ -3,7 +3,7 @@
 <p align="center">An open source, self-hosted knowledge base that works with a SQLite db file.</p>
 
 <p align="center">
-  <img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos" />
+  <a href="https://github.com/usememos/memos/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos" /></a>
   <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg" /></a>
   <img alt="Go report" src="https://goreportcard.com/badge/github.com/usememos/memos" />
 </p>
@@ -36,9 +36,7 @@ docker run \
   --port 5230
 ```
 
-Memos should now be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
-
-⚠️ Please DO NOT use `dev` tag of docker image if you have no experience.
+`memos` should be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then `memos` will auto generate it.
 
 ## 🏗 Development
 
