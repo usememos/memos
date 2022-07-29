@@ -2,12 +2,11 @@ import { useState, useEffect, useCallback } from "react";
 import { editorStateService, memoService, userService } from "../services";
 import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { parseHtmlToRawText } from "../helpers/marked";
+import { formatMemoContent, parseHtmlToRawText } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
 import Image from "./Image";
-import { formatMemoContent } from "./Memo";
 import "../less/memo-card-dialog.less";
 import Selector from "./common/Selector";
 

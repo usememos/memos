@@ -1,9 +1,9 @@
 import { memo, useEffect, useRef, useState } from "react";
-import { escape, indexOf } from "lodash-es";
+import { indexOf } from "lodash-es";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG, UNKNOWN_ID } from "../helpers/consts";
-import { DONE_BLOCK_REG, parseMarkedToHtml, TODO_BLOCK_REG } from "../helpers/marked";
+import { IMAGE_URL_REG, UNKNOWN_ID } from "../helpers/consts";
+import { DONE_BLOCK_REG, formatMemoContent, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
@@ -233,16 +233,5 @@ const Memo: React.FC<Props> = (props: Props) => {
     </div>
   );
 };
-
-export function formatMemoContent(content: string) {
-  const tempElement = document.createElement("div");
-  tempElement.innerHTML = parseMarkedToHtml(escape(content));
-
-  return tempElement.innerHTML
-    .replace(IMAGE_URL_REG, "")
-    .replace(MEMO_LINK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>")
-    .replace(LINK_URL_REG, "<a class='link' target='_blank' rel='noreferrer' href='$2'>$1</a>")
-    .replace(TAG_REG, "<span class='tag-span'>#$1</span> ");
-}
 
 export default memo(Memo);

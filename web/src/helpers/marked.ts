@@ -1,3 +1,6 @@
+import { escape } from "lodash-es";
+import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "./consts";
+
 const CODE_BLOCK_REG = /```([\s\S]*?)```/g;
 const BOLD_TEXT_REG = /\*\*(.+?)\*\*/g;
 const EM_TEXT_REG = /\*(.+?)\*/g;
@@ -28,4 +31,32 @@ const parseHtmlToRawText = (htmlStr: string): string => {
   return text;
 };
 
-export { parseMarkedToHtml, parseHtmlToRawText };
+interface FormatterConfig {
+  inlineImage: boolean;
+}
+const defaultFormatterConfig: FormatterConfig = {
+  inlineImage: false,
+};
+
+const formatMemoContent = (content: string, addtionConfig?: Partial<FormatterConfig>) => {
+  const config = {
+    ...defaultFormatterConfig,
+    ...addtionConfig,
+  };
+  const tempElement = document.createElement("div");
+  tempElement.innerHTML = parseMarkedToHtml(escape(content));
+
+  let outputString = tempElement.innerHTML;
+  if (config.inlineImage) {
+    outputString = outputString.replace(IMAGE_URL_REG, "<img class='img' src='$1' />");
+  } else {
+    outputString = outputString.replace(IMAGE_URL_REG, "");
+  }
+
+  return outputString
+    .replace(MEMO_LINK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>")
+    .replace(LINK_URL_REG, "<a class='link' target='_blank' rel='noreferrer' href='$2'>$1</a>")
+    .replace(TAG_REG, "<span class='tag-span'>#$1</span> ");
+};
+
+export { formatMemoContent, parseHtmlToRawText };
