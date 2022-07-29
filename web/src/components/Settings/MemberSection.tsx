@@ -4,8 +4,8 @@ import { userService } from "../../services";
 import { useAppSelector } from "../../store";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
-import "../../less/settings/member-section.less";
 import { showCommonDialog } from "../Dialog/CommonDialog";
+import "../../less/settings/member-section.less";
 
 interface Props {}
 
@@ -70,12 +70,19 @@ const PreferencesSection: React.FC<Props> = () => {
     });
   };
 
-  const handleArchiveUserClick = async (user: User) => {
-    await userService.patchUser({
-      id: user.id,
-      rowStatus: "ARCHIVED",
+  const handleArchiveUserClick = (user: User) => {
+    showCommonDialog({
+      title: `Archive Member`,
+      content: `❗️Are you sure to archive ${user.name}?`,
+      style: "warning",
+      onConfirm: async () => {
+        await userService.patchUser({
+          id: user.id,
+          rowStatus: "ARCHIVED",
+        });
+        fetchUserList();
+      },
     });
-    fetchUserList();
   };
 
   const handleRestoreUserClick = async (user: User) => {
@@ -88,8 +95,8 @@ const PreferencesSection: React.FC<Props> = () => {
 
   const handleDeleteUserClick = (user: User) => {
     showCommonDialog({
-      title: `Delete ${user.name}`,
-      content: "❗️Are you sure you want to delete?",
+      title: `Delete Member`,
+      content: `Are you sure to delete ${user.name}? THIS ACTION IS IRREVERSIABLE.❗️`,
       style: "warning",
       onConfirm: async () => {
         await userService.deleteUser({

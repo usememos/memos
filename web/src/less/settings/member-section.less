@@ -35,22 +35,22 @@
     @apply w-full grid grid-cols-6 border-b py-2;
 
     > .field-text {
-      @apply text-base pl-2 mr-4 w-16;
+      @apply text-base pl-2 mr-4 w-16 truncate;
 
       &.id-text {
         @apply font-mono text-gray-600;
       }
 
       &.email-text {
-        @apply col-span-3;
+        @apply w-auto col-span-3;
       }
     }
 
     > .buttons-container {
-      @apply col-span-2;
+      @apply col-span-2 flex flex-row justify-start items-center flex-wrap;
 
       > .btn {
-        @apply px-2 py-1 border rounded shadow hover:opacity-80;
+        @apply px-2 leading-7 border rounded shadow hover:opacity-80;
 
         &.archive {
           @apply bg-yellow-100 text-yellow-600;

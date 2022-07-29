@@ -1,21 +1,25 @@
 @import "./mixin.less";
 
 .search-bar-container {
-  @apply relative w-40;
+  @apply relative w-auto;
 
   > .search-bar-inputer {
-    .flex(row, flex-start, center);
-    @apply w-full py-2 px-4 rounded-lg flex flex-row justify-start items-center bg-zinc-200;
+    @apply h-9 flex flex-row justify-start items-center w-full py-2 px-3 sm:px-4 rounded-full sm:rounded-lg bg-zinc-200;
 
     > .icon-img {
-      @apply mr-2 h-auto opacity-30;
+      @apply h-auto opacity-30;
     }
 
     > .text-input {
-      @apply grow text-sm;
+      @apply hidden sm:flex ml-2 w-24 grow text-sm;
     }
 
-    &:hover {
+    &:hover,
+    &:active {
+      > .text-input {
+        @apply flex;
+      }
+
       + .quickly-action-wrapper {
         display: flex;
       }
