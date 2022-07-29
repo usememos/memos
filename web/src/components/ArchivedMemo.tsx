@@ -2,10 +2,10 @@ import { IMAGE_URL_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import { memoService } from "../services";
+import { formatMemoContent } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
 import Image from "./Image";
 import toastHelper from "./Toast";
-import { formatMemoContent } from "./Memo";
 import "../less/memo.less";
 
 interface Props {
