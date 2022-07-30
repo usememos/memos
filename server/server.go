@@ -32,6 +32,8 @@ func NewServer(profile *profile.Profile) *Server {
 		Format: "${method} ${uri} ${status}\n",
 	}))
 
+	e.Use(middleware.CORS())
+
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Skipper:      middleware.DefaultSkipper,
 		ErrorMessage: "Request timeout",
