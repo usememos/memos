@@ -189,7 +189,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                   <span className="tip-text">{memo.pinned ? "Unpin" : "Pin"}</span>
                 </div>
                 <div className="btn" onClick={handleEditMemoClick}>
-                  <Icon.Edit className="icon-img" />
+                  <Icon.Edit3 className="icon-img" />
                   <span className="tip-text">Edit</span>
                 </div>
                 <div className="btn" onClick={handleGenMemoImageBtnClick}>

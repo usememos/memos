@@ -129,7 +129,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
       <Only when={!userService.isVisitorMode()}>
         <div className="card-header-container">
           <div className="visibility-selector-container">
-            <Icon.Eye className="mr-2" />
+            <Icon.Eye className="icon-img" />
             <Selector
               className="visibility-selector"
               dataSource={visibilityList}
@@ -146,7 +146,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
             <Only when={!userService.isVisitorMode()}>
               <>
                 <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
-                  <Icon.Edit className="icon-img" />
+                  <Icon.Edit3 className="icon-img" />
                 </button>
                 <span className="split-line">/</span>
               </>
