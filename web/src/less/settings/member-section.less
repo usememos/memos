@@ -32,7 +32,7 @@
   }
 
   > .member-container {
-    @apply w-full grid grid-cols-6 border-b py-2;
+    @apply w-full grid grid-cols-4 border-b py-2;
 
     > .field-text {
       @apply text-base pl-2 mr-4 w-16 truncate;
@@ -42,35 +42,21 @@
       }
 
       &.email-text {
-        @apply w-auto col-span-3;
+        @apply w-auto col-span-2;
       }
     }
 
     > .buttons-container {
-      @apply col-span-2 flex flex-row justify-start items-center flex-wrap;
-
-      > .btn {
-        @apply px-2 leading-7 border rounded shadow hover:opacity-80;
-
-        &.archive {
-          @apply bg-yellow-100 text-yellow-600;
-        }
-
-        &.restore {
-          @apply bg-green-100 text-green-600;
-        }
-
-        &.delete {
-          @apply bg-red-100 text-red-600;
-        }
-      }
+      @apply col-span-1 flex flex-row justify-end items-center;
 
       > .tip-text {
         @apply text-gray-400;
       }
 
-      > .split-line {
-        @apply font-mono text-gray-300 mx-1;
+      > .actions-dropdown {
+        .delete {
+          @apply text-red-600;
+        }
       }
     }
   }

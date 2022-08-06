@@ -4,6 +4,7 @@ import { userService } from "../../services";
 import { useAppSelector } from "../../store";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
+import Dropdown from "../common/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import "../../less/settings/member-section.less";
 
@@ -136,20 +137,19 @@ const PreferencesSection: React.FC<Props> = () => {
           <div className="buttons-container">
             {currentUser?.id === user.id ? (
               <span className="tip-text">Yourself</span>
-            ) : user.rowStatus === "NORMAL" ? (
-              <span className="btn archive" onClick={() => handleArchiveUserClick(user)}>
-                archive
-              </span>
             ) : (
-              <>
-                <span className="btn restore" onClick={() => handleRestoreUserClick(user)}>
-                  restore
-                </span>
-                <span className="split-line">/</span>
-                <span className="btn delete" onClick={() => handleDeleteUserClick(user)}>
-                  delete
-                </span>
-              </>
+              <Dropdown className="actions-dropdown">
+                {user.rowStatus === "NORMAL" ? (
+                  <button onClick={() => handleArchiveUserClick(user)}>Archive</button>
+                ) : (
+                  <>
+                    <button onClick={() => handleRestoreUserClick(user)}>Restore</button>
+                    <button className="delete" onClick={() => handleDeleteUserClick(user)}>
+                      Delete
+                    </button>
+                  </>
+                )}
+              </Dropdown>
             )}
           </div>
         </div>
