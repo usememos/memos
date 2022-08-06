@@ -13,6 +13,18 @@
         @apply w-full flex flex-row justify-start items-start border border-yellow-600 rounded px-2 py-1 mb-2 text-yellow-600 bg-yellow-50 text-sm;
       }
 
+      > .upload-resource-container {
+        @apply mt-2 mb-4 w-full rounded flex flex-row justify-start items-center;
+
+        > .upload-resource-btn {
+          @apply px-3 py-1 rounded cursor-pointer flex flex-row justify-center items-center border border-dashed border-blue-600 text-blue-600 bg-blue-50 hover:opacity-80;
+
+          > .icon-img {
+            @apply w-4 h-auto mr-1;
+          }
+        }
+      }
+
       > .loading-text-container {
         @apply flex flex-col justify-center items-center w-full h-32;
       }
@@ -26,6 +38,10 @@
           > .field-text {
             @apply font-mono text-gray-400;
           }
+        }
+
+        > .tip-text {
+          @apply w-full text-center text-base my-6 mt-8;
         }
 
         > .resource-container {
