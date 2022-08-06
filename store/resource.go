@@ -102,7 +102,7 @@ func createResource(db *sql.DB, create *api.ResourceCreate) (*resourceRaw, error
 			creator_id
 		)
 		VALUES (?, ?, ?, ?, ?)
-		RETURNING id, filename, blob, type, size, created_ts, updated_ts
+		RETURNING id, filename, blob, type, size, creator_id, created_ts, updated_ts
 	`,
 		create.Filename,
 		create.Blob,
@@ -123,6 +123,7 @@ func createResource(db *sql.DB, create *api.ResourceCreate) (*resourceRaw, error
 		&resourceRaw.Blob,
 		&resourceRaw.Type,
 		&resourceRaw.Size,
+		&resourceRaw.CreatorID,
 		&resourceRaw.CreatedTs,
 		&resourceRaw.UpdatedTs,
 	); err != nil {
@@ -152,6 +153,7 @@ func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error
 			blob,
 			type,
 			size,
+			creator_id,
 			created_ts,
 			updated_ts
 		FROM resource
@@ -173,6 +175,7 @@ func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error
 			&resourceRaw.Blob,
 			&resourceRaw.Type,
 			&resourceRaw.Size,
+			&resourceRaw.CreatorID,
 			&resourceRaw.CreatedTs,
 			&resourceRaw.UpdatedTs,
 		); err != nil {
@@ -192,8 +195,8 @@ func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error
 func deleteResource(db *sql.DB, delete *api.ResourceDelete) error {
 	result, err := db.Exec(`
 		PRAGMA foreign_keys = ON;
-		DELETE FROM resource WHERE id = ?
-	`, delete.ID)
+		DELETE FROM resource WHERE id = ? AND creator_id = ?
+	`, delete.ID, delete.CreatorID)
 	if err != nil {
 		return FormatError(err)
 	}

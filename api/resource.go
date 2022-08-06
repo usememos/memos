@@ -38,4 +38,7 @@ type ResourceFind struct {
 
 type ResourceDelete struct {
 	ID int
+
+	// Standard fields
+	CreatorID int
 }

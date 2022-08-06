@@ -138,13 +138,19 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 	})
 
 	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
 		resourceID, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
 		resourceDelete := &api.ResourceDelete{
-			ID: resourceID,
+			ID:        resourceID,
+			CreatorID: userID,
 		}
 		if err := s.Store.DeleteResource(resourceDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)

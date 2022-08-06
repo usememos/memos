@@ -1,6 +1,19 @@
 import * as api from "../helpers/api";
 
+const convertResponseModelResource = (resource: Resource): Resource => {
+  return {
+    ...resource,
+    createdTs: resource.createdTs * 1000,
+    updatedTs: resource.updatedTs * 1000,
+  };
+};
+
 const resourceService = {
+  async getResourceList(): Promise<Resource[]> {
+    const { data } = (await api.getResourceList()).data;
+    const resourceList = data.map((m) => convertResponseModelResource(m));
+    return resourceList;
+  },
   /**
    * Upload resource file to server,
    * @param file file
@@ -18,6 +31,9 @@ const resourceService = {
     const { data } = (await api.uploadFile(formData)).data;
 
     return data;
+  },
+  async deleteResourceById(id: ResourceId) {
+    return api.deleteResourceById(id);
   },
 };
 

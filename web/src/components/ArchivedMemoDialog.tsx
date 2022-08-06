@@ -62,7 +62,7 @@ const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default function showArchivedMemo(): void {
+export default function showArchivedMemoDialog(): void {
   generateDialog(
     {
       className: "archived-memo-dialog",

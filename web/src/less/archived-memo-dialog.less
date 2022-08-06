@@ -7,17 +7,14 @@
     @apply w-128 max-w-full mb-8;
 
     > .dialog-content-container {
-      .flex(column, flex-start, flex-start);
-      @apply w-full overflow-y-auto;
+      @apply w-full flex flex-col justify-start items-start;
 
       > .tip-text-container {
-        @apply w-full h-32;
-        .flex(column, center, center);
+        @apply w-full h-32 flex flex-col justify-center items-center;
       }
 
       > .archived-memos-container {
-        .flex(column, flex-start, flex-start);
-        @apply w-full;
+        @apply w-full flex flex-col justify-start items-start;
       }
     }
   }

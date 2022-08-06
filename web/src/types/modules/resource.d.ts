@@ -1,7 +1,7 @@
 type ResourceId = number;
 
 interface Resource {
-  id: string;
+  id: ResourceId;
 
   createdTs: TimeStamp;
   updatedTs: TimeStamp;

@@ -109,8 +109,16 @@ export function deleteShortcutById(shortcutId: ShortcutId) {
   return axios.delete(`/api/shortcut/${shortcutId}`);
 }
 
+export function getResourceList() {
+  return axios.get<ResponseObject<Resource[]>>("/api/resource");
+}
+
 export function uploadFile(formData: FormData) {
   return axios.post<ResponseObject<Resource>>("/api/resource", formData);
+}
+
+export function deleteResourceById(id: ResourceId) {
+  return axios.delete(`/api/resource/${id}`);
 }
 
 export function getTagList(tagFind?: TagFind) {
