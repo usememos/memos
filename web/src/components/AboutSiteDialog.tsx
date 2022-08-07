@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import * as api from "../helpers/api";
+import useI18n from "../hooks/useI18n";
 import Only from "./common/OnlyWhen";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
@@ -10,6 +11,7 @@ interface Props extends DialogProps {}
 
 const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
   const [profile, setProfile] = useState<Profile>();
+  const { t, setLocale } = useI18n();
 
   useEffect(() => {
     try {
@@ -25,6 +27,10 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         version: "0.0.0",
       });
     }
+
+    setTimeout(() => {
+      setLocale("zh");
+    }, 2333);
   }, []);
 
   const handleCloseBtnClick = () => {
@@ -35,7 +41,8 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">
-          <span className="icon-text">🤠</span>About <b>Memos</b>
+          <span className="icon-text">🤠</span>
+          {t("about")} <b>Memos</b>
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />

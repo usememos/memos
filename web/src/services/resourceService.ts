@@ -14,11 +14,6 @@ const resourceService = {
     const resourceList = data.map((m) => convertResponseModelResource(m));
     return resourceList;
   },
-  /**
-   * Upload resource file to server,
-   * @param file file
-   * @returns resource: id, filename
-   */
   async upload(file: File): Promise<Resource> {
     const { name: filename, size } = file;
 
