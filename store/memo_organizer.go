@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 
@@ -29,8 +30,14 @@ func (raw *memoOrganizerRaw) toMemoOrganizer() *api.MemoOrganizer {
 	}
 }
 
-func (s *Store) FindMemoOrganizer(find *api.MemoOrganizerFind) (*api.MemoOrganizer, error) {
-	memoOrganizerRaw, err := findMemoOrganizer(s.db, find)
+func (s *Store) FindMemoOrganizer(ctx context.Context, find *api.MemoOrganizerFind) (*api.MemoOrganizer, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	memoOrganizerRaw, err := findMemoOrganizer(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -40,17 +47,26 @@ func (s *Store) FindMemoOrganizer(find *api.MemoOrganizerFind) (*api.MemoOrganiz
 	return memoOrganizer, nil
 }
 
-func (s *Store) UpsertMemoOrganizer(upsert *api.MemoOrganizerUpsert) error {
-	err := upsertMemoOrganizer(s.db, upsert)
+func (s *Store) UpsertMemoOrganizer(ctx context.Context, upsert *api.MemoOrganizerUpsert) error {
+	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
+		return FormatError(err)
+	}
+	defer tx.Rollback()
+
+	if err := upsertMemoOrganizer(ctx, tx, upsert); err != nil {
 		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return FormatError(err)
 	}
 
 	return nil
 }
 
-func findMemoOrganizer(db *sql.DB, find *api.MemoOrganizerFind) (*memoOrganizerRaw, error) {
-	row, err := db.Query(`
+func findMemoOrganizer(ctx context.Context, tx *sql.Tx, find *api.MemoOrganizerFind) (*memoOrganizerRaw, error) {
+	query := `
 		SELECT
 			id,
 			memo_id,
@@ -58,7 +74,8 @@ func findMemoOrganizer(db *sql.DB, find *api.MemoOrganizerFind) (*memoOrganizerR
 			pinned
 		FROM memo_organizer
 		WHERE memo_id = ? AND user_id = ?
-	`, find.MemoID, find.UserID)
+	`
+	row, err := tx.QueryContext(ctx, query, find.MemoID, find.UserID)
 	if err != nil {
 		return nil, FormatError(err)
 	}
@@ -81,8 +98,8 @@ func findMemoOrganizer(db *sql.DB, find *api.MemoOrganizerFind) (*memoOrganizerR
 	return &memoOrganizerRaw, nil
 }
 
-func upsertMemoOrganizer(db *sql.DB, upsert *api.MemoOrganizerUpsert) error {
-	row, err := db.Query(`
+func upsertMemoOrganizer(ctx context.Context, tx *sql.Tx, upsert *api.MemoOrganizerUpsert) error {
+	query := `
 		INSERT INTO memo_organizer (
 			memo_id,
 			user_id,
@@ -93,20 +110,9 @@ func upsertMemoOrganizer(db *sql.DB, upsert *api.MemoOrganizerUpsert) error {
 		SET
 			pinned = EXCLUDED.pinned
 		RETURNING id, memo_id, user_id, pinned
-	`,
-		upsert.MemoID,
-		upsert.UserID,
-		upsert.Pinned,
-	)
-	if err != nil {
-		return FormatError(err)
-	}
-
-	defer row.Close()
-
-	row.Next()
+	`
 	var memoOrganizer api.MemoOrganizer
-	if err := row.Scan(
+	if err := tx.QueryRowContext(ctx, query, upsert.MemoID, upsert.UserID, upsert.Pinned).Scan(
 		&memoOrganizer.ID,
 		&memoOrganizer.MemoID,
 		&memoOrganizer.UserID,

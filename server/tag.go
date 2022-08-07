@@ -14,6 +14,7 @@ import (
 
 func (s *Server) registerTagRoutes(g *echo.Group) {
 	g.GET("/tag", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		contentSearch := "#"
 		normalRowStatus := api.Normal
 		memoFind := api.MemoFind{
@@ -39,7 +40,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			}
 		}
 
-		memoList, err := s.Store.FindMemoList(&memoFind)
+		memoList, err := s.Store.FindMemoList(ctx, &memoFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}

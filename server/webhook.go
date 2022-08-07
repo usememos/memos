@@ -16,6 +16,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 	})
 
 	g.GET("/r/:resourceId/:filename", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		resourceID, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
@@ -26,7 +27,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 			ID:       &resourceID,
 			Filename: &filename,
 		}
-		resource, err := s.Store.FindResource(resourceFind)
+		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch resource ID: %v", resourceID)).SetInternal(err)
 		}

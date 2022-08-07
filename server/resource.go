@@ -14,6 +14,7 @@ import (
 
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
@@ -51,7 +52,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			CreatorID: userID,
 		}
 
-		resource, err := s.Store.CreateResource(resourceCreate)
+		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
@@ -64,6 +65,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 	})
 
 	g.GET("/resource", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
@@ -71,7 +73,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			CreatorID: &userID,
 		}
-		list, err := s.Store.FindResourceList(resourceFind)
+		list, err := s.Store.FindResourceList(ctx, resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
 		}
@@ -84,6 +86,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 	})
 
 	g.GET("/resource/:resourceId", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		resourceID, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
@@ -97,7 +100,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			ID:        &resourceID,
 			CreatorID: &userID,
 		}
-		resource, err := s.Store.FindResource(resourceFind)
+		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
@@ -110,6 +113,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 	})
 
 	g.GET("/resource/:resourceId/blob", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		resourceID, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
@@ -123,7 +127,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			ID:        &resourceID,
 			CreatorID: &userID,
 		}
-		resource, err := s.Store.FindResource(resourceFind)
+		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
@@ -138,6 +142,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 	})
 
 	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
@@ -152,7 +157,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			ID:        resourceID,
 			CreatorID: userID,
 		}
-		if err := s.Store.DeleteResource(resourceDelete); err != nil {
+		if err := s.Store.DeleteResource(ctx, resourceDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 		}
 

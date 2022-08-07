@@ -15,6 +15,7 @@ import (
 
 func (s *Server) registerMemoRoutes(g *echo.Group) {
 	g.POST("/memo", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
@@ -31,7 +32,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			memoCreate.Visibility = &private
 		}
 
-		memo, err := s.Store.CreateMemo(memoCreate)
+		memo, err := s.Store.CreateMemo(ctx, memoCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 		}
@@ -44,6 +45,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 
 	g.PATCH("/memo/:memoId", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
@@ -56,7 +58,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch memo request").SetInternal(err)
 		}
 
-		memo, err := s.Store.PatchMemo(memoPatch)
+		memo, err := s.Store.PatchMemo(ctx, memoPatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch memo").SetInternal(err)
 		}
@@ -69,6 +71,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 
 	g.GET("/memo", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		memoFind := &api.MemoFind{}
 
 		if userID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
@@ -118,7 +121,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			memoFind.Offset = offset
 		}
 
-		list, err := s.Store.FindMemoList(memoFind)
+		list, err := s.Store.FindMemoList(ctx, memoFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
@@ -131,6 +134,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 
 	g.POST("/memo/:memoId/organizer", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
@@ -148,12 +152,12 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo organizer request").SetInternal(err)
 		}
 
-		err = s.Store.UpsertMemoOrganizer(memoOrganizerUpsert)
+		err = s.Store.UpsertMemoOrganizer(ctx, memoOrganizerUpsert)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo organizer").SetInternal(err)
 		}
 
-		memo, err := s.Store.FindMemo(&api.MemoFind{
+		memo, err := s.Store.FindMemo(ctx, &api.MemoFind{
 			ID: &memoID,
 		})
 		if err != nil {
@@ -172,6 +176,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 
 	g.GET("/memo/:memoId", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
@@ -180,7 +185,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memoFind := &api.MemoFind{
 			ID: &memoID,
 		}
-		memo, err := s.Store.FindMemo(memoFind)
+		memo, err := s.Store.FindMemo(ctx, memoFind)
 		if err != nil {
 			if common.ErrorCode(err) == common.NotFound {
 				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)
@@ -197,6 +202,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 
 	g.DELETE("/memo/:memoId", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
@@ -205,7 +211,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memoDelete := &api.MemoDelete{
 			ID: memoID,
 		}
-		if err := s.Store.DeleteMemo(memoDelete); err != nil {
+		if err := s.Store.DeleteMemo(ctx, memoDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoID)).SetInternal(err)
 		}
 
@@ -213,6 +219,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 
 	g.GET("/memo/amount", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
@@ -223,7 +230,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			RowStatus: &normalRowStatus,
 		}
 
-		memoList, err := s.Store.FindMemoList(memoFind)
+		memoList, err := s.Store.FindMemoList(ctx, memoFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}

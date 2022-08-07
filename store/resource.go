@@ -1,6 +1,7 @@
 package store
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"strings"
@@ -43,10 +44,20 @@ func (raw *resourceRaw) toResource() *api.Resource {
 	}
 }
 
-func (s *Store) CreateResource(create *api.ResourceCreate) (*api.Resource, error) {
-	resourceRaw, err := createResource(s.db, create)
+func (s *Store) CreateResource(ctx context.Context, create *api.ResourceCreate) (*api.Resource, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	resourceRaw, err := createResource(ctx, tx, create)
 	if err != nil {
 		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, FormatError(err)
 	}
 
 	resource := resourceRaw.toResource()
@@ -58,8 +69,14 @@ func (s *Store) CreateResource(create *api.ResourceCreate) (*api.Resource, error
 	return resource, nil
 }
 
-func (s *Store) FindResourceList(find *api.ResourceFind) ([]*api.Resource, error) {
-	resourceRawList, err := findResourceList(s.db, find)
+func (s *Store) FindResourceList(ctx context.Context, find *api.ResourceFind) ([]*api.Resource, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	resourceRawList, err := findResourceList(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +89,7 @@ func (s *Store) FindResourceList(find *api.ResourceFind) ([]*api.Resource, error
 	return resourceList, nil
 }
 
-func (s *Store) FindResource(find *api.ResourceFind) (*api.Resource, error) {
+func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.Resource, error) {
 	if find.ID != nil {
 		resource := &api.Resource{}
 		has, err := s.cache.FindCache(api.ResourceCache, *find.ID, resource)
@@ -84,7 +101,13 @@ func (s *Store) FindResource(find *api.ResourceFind) (*api.Resource, error) {
 		}
 	}
 
-	list, err := findResourceList(s.db, find)
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	list, err := findResourceList(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -102,10 +125,20 @@ func (s *Store) FindResource(find *api.ResourceFind) (*api.Resource, error) {
 	return resource, nil
 }
 
-func (s *Store) DeleteResource(delete *api.ResourceDelete) error {
-	err := deleteResource(s.db, delete)
+func (s *Store) DeleteResource(ctx context.Context, delete *api.ResourceDelete) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return FormatError(err)
+	}
+	defer tx.Rollback()
+
+	err = deleteResource(ctx, tx, delete)
 	if err != nil {
 		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return FormatError(err)
 	}
 
 	s.cache.DeleteCache(api.ResourceCache, delete.ID)
@@ -113,8 +146,8 @@ func (s *Store) DeleteResource(delete *api.ResourceDelete) error {
 	return nil
 }
 
-func createResource(db *sql.DB, create *api.ResourceCreate) (*resourceRaw, error) {
-	row, err := db.Query(`
+func createResource(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate) (*resourceRaw, error) {
+	query := `
 		INSERT INTO resource (
 			filename,
 			blob,
@@ -124,21 +157,9 @@ func createResource(db *sql.DB, create *api.ResourceCreate) (*resourceRaw, error
 		)
 		VALUES (?, ?, ?, ?, ?)
 		RETURNING id, filename, blob, type, size, creator_id, created_ts, updated_ts
-	`,
-		create.Filename,
-		create.Blob,
-		create.Type,
-		create.Size,
-		create.CreatorID,
-	)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer row.Close()
-
-	row.Next()
+	`
 	var resourceRaw resourceRaw
-	if err := row.Scan(
+	if err := tx.QueryRowContext(ctx, query, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID).Scan(
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
 		&resourceRaw.Blob,
@@ -154,7 +175,7 @@ func createResource(db *sql.DB, create *api.ResourceCreate) (*resourceRaw, error
 	return &resourceRaw, nil
 }
 
-func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error) {
+func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) ([]*resourceRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -167,7 +188,7 @@ func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error
 		where, args = append(where, "filename = ?"), append(args, *v)
 	}
 
-	rows, err := db.Query(`
+	query := `
 		SELECT
 			id,
 			filename,
@@ -178,10 +199,10 @@ func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error
 			created_ts,
 			updated_ts
 		FROM resource
-		WHERE `+strings.Join(where, " AND ")+`
-		ORDER BY created_ts DESC`,
-		args...,
-	)
+		WHERE ` + strings.Join(where, " AND ") + `
+		ORDER BY created_ts DESC
+	`
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, FormatError(err)
 	}
@@ -213,18 +234,13 @@ func findResourceList(db *sql.DB, find *api.ResourceFind) ([]*resourceRaw, error
 	return resourceRawList, nil
 }
 
-func deleteResource(db *sql.DB, delete *api.ResourceDelete) error {
-	result, err := db.Exec(`
+func deleteResource(ctx context.Context, tx *sql.Tx, delete *api.ResourceDelete) error {
+	_, err := tx.ExecContext(ctx, `
 		PRAGMA foreign_keys = ON;
 		DELETE FROM resource WHERE id = ? AND creator_id = ?
 	`, delete.ID, delete.CreatorID)
 	if err != nil {
 		return FormatError(err)
-	}
-
-	rows, _ := result.RowsAffected()
-	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("resource ID not found: %d", delete.ID)}
 	}
 
 	return nil
