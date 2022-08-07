@@ -54,6 +54,10 @@ func (s *Store) CreateMemo(create *api.MemoCreate) (*api.Memo, error) {
 		return nil, err
 	}
 
+	if err := s.cache.UpsertCache(api.MemoCache, memo.ID, memo); err != nil {
+		return nil, err
+	}
+
 	return memo, nil
 }
 
@@ -65,6 +69,10 @@ func (s *Store) PatchMemo(patch *api.MemoPatch) (*api.Memo, error) {
 
 	memo, err := s.composeMemo(memoRaw)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := s.cache.UpsertCache(api.MemoCache, memo.ID, memo); err != nil {
 		return nil, err
 	}
 
@@ -91,6 +99,17 @@ func (s *Store) FindMemoList(find *api.MemoFind) ([]*api.Memo, error) {
 }
 
 func (s *Store) FindMemo(find *api.MemoFind) (*api.Memo, error) {
+	if find.ID != nil {
+		memo := &api.Memo{}
+		has, err := s.cache.FindCache(api.MemoCache, *find.ID, memo)
+		if err != nil {
+			return nil, err
+		}
+		if has {
+			return memo, nil
+		}
+	}
+
 	list, err := findMemoRawList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -105,6 +124,10 @@ func (s *Store) FindMemo(find *api.MemoFind) (*api.Memo, error) {
 		return nil, err
 	}
 
+	if err := s.cache.UpsertCache(api.MemoCache, memo.ID, memo); err != nil {
+		return nil, err
+	}
+
 	return memo, nil
 }
 
@@ -113,6 +136,8 @@ func (s *Store) DeleteMemo(delete *api.MemoDelete) error {
 	if err != nil {
 		return FormatError(err)
 	}
+
+	s.cache.DeleteCache(api.MemoCache, delete.ID)
 
 	return nil
 }

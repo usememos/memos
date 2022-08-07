@@ -51,6 +51,10 @@ func (s *Store) CreateUser(create *api.UserCreate) (*api.User, error) {
 
 	user := userRaw.toUser()
 
+	if err := s.cache.UpsertCache(api.UserCache, user.ID, user); err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 
@@ -61,6 +65,10 @@ func (s *Store) PatchUser(patch *api.UserPatch) (*api.User, error) {
 	}
 
 	user := userRaw.toUser()
+
+	if err := s.cache.UpsertCache(api.UserCache, user.ID, user); err != nil {
+		return nil, err
+	}
 
 	return user, nil
 }
@@ -80,6 +88,17 @@ func (s *Store) FindUserList(find *api.UserFind) ([]*api.User, error) {
 }
 
 func (s *Store) FindUser(find *api.UserFind) (*api.User, error) {
+	if find.ID != nil {
+		user := &api.User{}
+		has, err := s.cache.FindCache(api.UserCache, *find.ID, user)
+		if err != nil {
+			return nil, err
+		}
+		if has {
+			return user, nil
+		}
+	}
+
 	list, err := findUserList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -93,6 +112,10 @@ func (s *Store) FindUser(find *api.UserFind) (*api.User, error) {
 
 	user := list[0].toUser()
 
+	if err := s.cache.UpsertCache(api.UserCache, user.ID, user); err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 
@@ -101,6 +124,8 @@ func (s *Store) DeleteUser(delete *api.UserDelete) error {
 	if err != nil {
 		return FormatError(err)
 	}
+
+	s.cache.DeleteCache(api.UserCache, delete.ID)
 
 	return nil
 }

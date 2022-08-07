@@ -47,6 +47,10 @@ func (s *Store) CreateShortcut(create *api.ShortcutCreate) (*api.Shortcut, error
 
 	shortcut := shortcutRaw.toShortcut()
 
+	if err := s.cache.UpsertCache(api.ShortcutCache, shortcut.ID, shortcut); err != nil {
+		return nil, err
+	}
+
 	return shortcut, nil
 }
 
@@ -57,6 +61,10 @@ func (s *Store) PatchShortcut(patch *api.ShortcutPatch) (*api.Shortcut, error) {
 	}
 
 	shortcut := shortcutRaw.toShortcut()
+
+	if err := s.cache.UpsertCache(api.ShortcutCache, shortcut.ID, shortcut); err != nil {
+		return nil, err
+	}
 
 	return shortcut, nil
 }
@@ -76,6 +84,17 @@ func (s *Store) FindShortcutList(find *api.ShortcutFind) ([]*api.Shortcut, error
 }
 
 func (s *Store) FindShortcut(find *api.ShortcutFind) (*api.Shortcut, error) {
+	if find.ID != nil {
+		shortcut := &api.Shortcut{}
+		has, err := s.cache.FindCache(api.ShortcutCache, *find.ID, shortcut)
+		if err != nil {
+			return nil, err
+		}
+		if has {
+			return shortcut, nil
+		}
+	}
+
 	list, err := findShortcutList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -87,6 +106,10 @@ func (s *Store) FindShortcut(find *api.ShortcutFind) (*api.Shortcut, error) {
 
 	shortcut := list[0].toShortcut()
 
+	if err := s.cache.UpsertCache(api.ShortcutCache, shortcut.ID, shortcut); err != nil {
+		return nil, err
+	}
+
 	return shortcut, nil
 }
 
@@ -95,6 +118,8 @@ func (s *Store) DeleteShortcut(delete *api.ShortcutDelete) error {
 	if err != nil {
 		return FormatError(err)
 	}
+
+	s.cache.DeleteCache(api.ShortcutCache, delete.ID)
 
 	return nil
 }

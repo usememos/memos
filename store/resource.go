@@ -51,6 +51,10 @@ func (s *Store) CreateResource(create *api.ResourceCreate) (*api.Resource, error
 
 	resource := resourceRaw.toResource()
 
+	if err := s.cache.UpsertCache(api.ResourceCache, resource.ID, resource); err != nil {
+		return nil, err
+	}
+
 	return resource, nil
 }
 
@@ -69,6 +73,17 @@ func (s *Store) FindResourceList(find *api.ResourceFind) ([]*api.Resource, error
 }
 
 func (s *Store) FindResource(find *api.ResourceFind) (*api.Resource, error) {
+	if find.ID != nil {
+		resource := &api.Resource{}
+		has, err := s.cache.FindCache(api.ResourceCache, *find.ID, resource)
+		if err != nil {
+			return nil, err
+		}
+		if has {
+			return resource, nil
+		}
+	}
+
 	list, err := findResourceList(s.db, find)
 	if err != nil {
 		return nil, err
@@ -80,6 +95,10 @@ func (s *Store) FindResource(find *api.ResourceFind) (*api.Resource, error) {
 
 	resource := list[0].toResource()
 
+	if err := s.cache.UpsertCache(api.ResourceCache, resource.ID, resource); err != nil {
+		return nil, err
+	}
+
 	return resource, nil
 }
 
@@ -88,6 +107,8 @@ func (s *Store) DeleteResource(delete *api.ResourceDelete) error {
 	if err != nil {
 		return err
 	}
+
+	s.cache.DeleteCache(api.ResourceCache, delete.ID)
 
 	return nil
 }
