@@ -14,6 +14,7 @@ import (
 
 func (s *Server) registerAuthRoutes(g *echo.Group) {
 	g.POST("/auth/signin", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		signin := &api.Signin{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
@@ -22,7 +23,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		userFind := &api.UserFind{
 			Email: &signin.Email,
 		}
-		user, err := s.Store.FindUser(userFind)
+		user, err := s.Store.FindUser(ctx, userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", signin.Email)).SetInternal(err)
 		}
@@ -60,12 +61,13 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 	})
 
 	g.POST("/auth/signup", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		// Don't allow to signup by this api if site host existed.
 		hostUserType := api.Host
 		hostUserFind := api.UserFind{
 			Role: &hostUserType,
 		}
-		hostUser, err := s.Store.FindUser(&hostUserFind)
+		hostUser, err := s.Store.FindUser(ctx, &hostUserFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
@@ -99,7 +101,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			PasswordHash: string(passwordHash),
 			OpenID:       common.GenUUID(),
 		}
-		user, err := s.Store.CreateUser(userCreate)
+		user, err := s.Store.CreateUser(ctx, userCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}

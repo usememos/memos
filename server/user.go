@@ -15,6 +15,7 @@ import (
 
 func (s *Server) registerUserRoutes(g *echo.Group) {
 	g.POST("/user", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		userCreate := &api.UserCreate{}
 		if err := json.NewDecoder(c.Request().Body).Decode(userCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user request").SetInternal(err)
@@ -26,7 +27,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 
 		userCreate.PasswordHash = string(passwordHash)
-		user, err := s.Store.CreateUser(userCreate)
+		user, err := s.Store.CreateUser(ctx, userCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
@@ -39,7 +40,8 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 	})
 
 	g.GET("/user", func(c echo.Context) error {
-		userList, err := s.Store.FindUserList(&api.UserFind{})
+		ctx := c.Request().Context()
+		userList, err := s.Store.FindUserList(ctx, &api.UserFind{})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user list").SetInternal(err)
 		}
@@ -57,12 +59,13 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 	})
 
 	g.GET("/user/:id", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted user id").SetInternal(err)
 		}
 
-		user, err := s.Store.FindUser(&api.UserFind{
+		user, err := s.Store.FindUser(ctx, &api.UserFind{
 			ID: &id,
 		})
 		if err != nil {
@@ -83,6 +86,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 	// GET /api/user/me is used to check if the user is logged in.
 	g.GET("/user/me", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
@@ -91,7 +95,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		userFind := &api.UserFind{
 			ID: &userID,
 		}
-		user, err := s.Store.FindUser(userFind)
+		user, err := s.Store.FindUser(ctx, userFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user").SetInternal(err)
 		}
@@ -104,6 +108,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 	})
 
 	g.PATCH("/user/:id", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		userID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("id"))).SetInternal(err)
@@ -112,7 +117,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
-		currentUser, err := s.Store.FindUser(&api.UserFind{
+		currentUser, err := s.Store.FindUser(ctx, &api.UserFind{
 			ID: &currentUserID,
 		})
 		if err != nil {
@@ -146,7 +151,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			userPatch.OpenID = &openID
 		}
 
-		user, err := s.Store.PatchUser(userPatch)
+		user, err := s.Store.PatchUser(ctx, userPatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch user").SetInternal(err)
 		}
@@ -159,11 +164,12 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 	})
 
 	g.DELETE("/user/:id", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
-		currentUser, err := s.Store.FindUser(&api.UserFind{
+		currentUser, err := s.Store.FindUser(ctx, &api.UserFind{
 			ID: &currentUserID,
 		})
 		if err != nil {
@@ -183,7 +189,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		userDelete := &api.UserDelete{
 			ID: userID,
 		}
-		if err := s.Store.DeleteUser(userDelete); err != nil {
+		if err := s.Store.DeleteUser(ctx, userDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete user").SetInternal(err)
 		}
 

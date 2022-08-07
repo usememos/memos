@@ -52,42 +52,44 @@ func removeUserSession(ctx echo.Context) error {
 }
 
 func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
-	return func(ctx echo.Context) error {
+	return func(c echo.Context) error {
+		ctx := c.Request().Context()
+		path := c.Path()
 		// Skip auth.
-		if common.HasPrefixes(ctx.Path(), "/api/auth") {
-			return next(ctx)
+		if common.HasPrefixes(path, "/api/auth") {
+			return next(c)
 		}
 
-		if common.HasPrefixes(ctx.Path(), "/api/ping", "/api/status", "/api/user/:id") && ctx.Request().Method == http.MethodGet {
-			return next(ctx)
+		if common.HasPrefixes(path, "/api/ping", "/api/status", "/api/user/:id") && c.Request().Method == http.MethodGet {
+			return next(c)
 		}
 
 		// If there is openId in query string and related user is found, then skip auth.
-		openID := ctx.QueryParam("openId")
+		openID := c.QueryParam("openId")
 		if openID != "" {
 			userFind := &api.UserFind{
 				OpenID: &openID,
 			}
-			user, err := s.Store.FindUser(userFind)
+			user, err := s.Store.FindUser(ctx, userFind)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
 			}
 			if user != nil {
 				// Stores userID into context.
-				ctx.Set(getUserIDContextKey(), user.ID)
-				return next(ctx)
+				c.Set(getUserIDContextKey(), user.ID)
+				return next(c)
 			}
 		}
 
 		{
-			sess, _ := session.Get("session", ctx)
+			sess, _ := session.Get("session", c)
 			userIDValue := sess.Values[userIDContextKey]
 			if userIDValue != nil {
 				userID, _ := strconv.Atoi(fmt.Sprintf("%v", userIDValue))
 				userFind := &api.UserFind{
 					ID: &userID,
 				}
-				user, err := s.Store.FindUser(userFind)
+				user, err := s.Store.FindUser(ctx, userFind)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userID)).SetInternal(err)
 				}
@@ -95,22 +97,22 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 					if user.RowStatus == api.Archived {
 						return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with email %s", user.Email))
 					}
-					ctx.Set(getUserIDContextKey(), userID)
+					c.Set(getUserIDContextKey(), userID)
 				}
 			}
 		}
 
-		if common.HasPrefixes(ctx.Path(), "/api/memo", "/api/tag", "/api/shortcut") && ctx.Request().Method == http.MethodGet {
-			if _, err := strconv.Atoi(ctx.QueryParam("creatorId")); err == nil {
-				return next(ctx)
+		if common.HasPrefixes(path, "/api/memo", "/api/tag", "/api/shortcut") && c.Request().Method == http.MethodGet {
+			if _, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
+				return next(c)
 			}
 		}
 
-		userID := ctx.Get(getUserIDContextKey())
+		userID := c.Get(getUserIDContextKey())
 		if userID == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		return next(ctx)
+		return next(c)
 	}
 }

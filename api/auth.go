@@ -1,9 +1,5 @@
 package api
 
-var (
-	UNKNOWN_ID = 0
-)
-
 type Signin struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`

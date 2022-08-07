@@ -21,11 +21,12 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 	})
 
 	g.GET("/status", func(c echo.Context) error {
+		ctx := c.Request().Context()
 		hostUserType := api.Host
 		hostUserFind := api.UserFind{
 			Role: &hostUserType,
 		}
-		hostUser, err := s.Store.FindUser(&hostUserFind)
+		hostUser, err := s.Store.FindUser(ctx, &hostUserFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
@@ -36,7 +37,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		}
 
 		systemStatus := api.SystemStatus{
-			Host:   hostUser,
+			Host:    hostUser,
 			Profile: s.Profile,
 		}
 
