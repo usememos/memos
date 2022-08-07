@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"strings"
 )
@@ -11,20 +12,19 @@ type Table struct {
 }
 
 //lint:ignore U1000 Ignore unused function temporarily for debugging
-func findTable(db *sql.DB, tableName string) (*Table, error) {
+func findTable(ctx context.Context, tx *sql.Tx, tableName string) (*Table, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	where, args = append(where, "type = ?"), append(args, "table")
 	where, args = append(where, "name = ?"), append(args, tableName)
 
-	rows, err := db.Query(`
+	query := `
 		SELECT
 			tbl_name,
 			sql
 		FROM sqlite_schema
-		WHERE `+strings.Join(where, " AND "),
-		args...,
-	)
+		WHERE ` + strings.Join(where, " AND ")
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -54,13 +54,11 @@ func findTable(db *sql.DB, tableName string) (*Table, error) {
 	}
 }
 
-func createTable(db *sql.DB, sql string) error {
-	result, err := db.Exec(sql)
+func createTable(ctx context.Context, tx *sql.Tx, stmt string) error {
+	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
 		return err
 	}
 
-	_, err = result.RowsAffected()
-
-	return err
+	return nil
 }

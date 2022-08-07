@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -26,8 +27,10 @@ type Main struct {
 }
 
 func (m *Main) Run() error {
+	ctx := context.Background()
+
 	db := DB.NewDB(m.profile)
-	if err := db.Open(); err != nil {
+	if err := db.Open(ctx); err != nil {
 		return fmt.Errorf("cannot open db: %w", err)
 	}
 

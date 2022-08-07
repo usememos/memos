@@ -1,6 +1,7 @@
 package db
 
 import (
+	"context"
 	"database/sql"
 	"embed"
 	"errors"
@@ -38,7 +39,7 @@ func NewDB(profile *profile.Profile) *DB {
 	return db
 }
 
-func (db *DB) Open() (err error) {
+func (db *DB) Open(ctx context.Context) (err error) {
 	// Ensure a DSN is set before attempting to open the database.
 	if db.profile.DSN == "" {
 		return fmt.Errorf("dsn required")
@@ -53,32 +54,32 @@ func (db *DB) Open() (err error) {
 	db.Db = sqlDB
 	// If mode is dev, we should migrate and seed the database.
 	if db.profile.Mode == "dev" {
-		if err := db.applyLatestSchema(); err != nil {
+		if err := db.applyLatestSchema(ctx); err != nil {
 			return fmt.Errorf("failed to apply latest schema: %w", err)
 		}
-		if err := db.seed(); err != nil {
+		if err := db.seed(ctx); err != nil {
 			return fmt.Errorf("failed to seed: %w", err)
 		}
 	} else {
 		// If db file not exists, we should migrate the database.
 		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
-			err := db.applyLatestSchema()
+			err := db.applyLatestSchema(ctx)
 			if err != nil {
 				return fmt.Errorf("failed to apply latest schema: %w", err)
 			}
 		} else {
-			err := db.createMigrationHistoryTable()
+			err := db.createMigrationHistoryTable(ctx)
 			if err != nil {
 				return fmt.Errorf("failed to create migration_history table: %w", err)
 			}
 
 			currentVersion := common.GetCurrentVersion(db.profile.Mode)
-			migrationHistory, err := findMigrationHistory(db.Db, &MigrationHistoryFind{})
+			migrationHistory, err := db.FindMigrationHistory(ctx, &MigrationHistoryFind{})
 			if err != nil {
 				return err
 			}
 			if migrationHistory == nil {
-				migrationHistory, err = upsertMigrationHistory(db.Db, &MigrationHistoryUpsert{
+				migrationHistory, err = db.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
 					Version: currentVersion,
 				})
 				if err != nil {
@@ -105,7 +106,7 @@ func (db *DB) Open() (err error) {
 					normalizedVersion := minorVersion + ".0"
 					if common.IsVersionGreaterThan(normalizedVersion, migrationHistory.Version) && common.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
 						println("applying migration for", normalizedVersion)
-						if err := db.applyMigrationForMinorVersion(minorVersion); err != nil {
+						if err := db.applyMigrationForMinorVersion(ctx, minorVersion); err != nil {
 							return fmt.Errorf("failed to apply minor version migration: %w", err)
 						}
 					}
@@ -127,20 +128,20 @@ const (
 	latestSchemaFileName = "LATEST__SCHEMA.sql"
 )
 
-func (db *DB) applyLatestSchema() error {
+func (db *DB) applyLatestSchema(ctx context.Context) error {
 	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", db.profile.Mode, latestSchemaFileName)
 	buf, err := migrationFS.ReadFile(latestSchemaPath)
 	if err != nil {
 		return fmt.Errorf("failed to read latest schema %q, error %w", latestSchemaPath, err)
 	}
 	stmt := string(buf)
-	if err := db.execute(stmt); err != nil {
+	if err := db.execute(ctx, stmt); err != nil {
 		return fmt.Errorf("migrate error: statement:%s err=%w", stmt, err)
 	}
 	return nil
 }
 
-func (db *DB) applyMigrationForMinorVersion(minorVersion string) error {
+func (db *DB) applyMigrationForMinorVersion(ctx context.Context, minorVersion string) error {
 	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("%s/%s/*.sql", "migration/prod", minorVersion))
 	if err != nil {
 		return err
@@ -157,22 +158,32 @@ func (db *DB) applyMigrationForMinorVersion(minorVersion string) error {
 		}
 		stmt := string(buf)
 		migrationStmt += stmt
-		if err := db.execute(stmt); err != nil {
+		if err := db.execute(ctx, stmt); err != nil {
 			return fmt.Errorf("migrate error: statement:%s err=%w", stmt, err)
 		}
 	}
 
+	tx, err := db.Db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
 	// upsert the newest version to migration_history
-	if _, err = upsertMigrationHistory(db.Db, &MigrationHistoryUpsert{
+	if _, err = upsertMigrationHistory(ctx, tx, &MigrationHistoryUpsert{
 		Version: minorVersion + ".0",
 	}); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (db *DB) seed() error {
+func (db *DB) seed(ctx context.Context) error {
 	filenames, err := fs.Glob(seedFS, fmt.Sprintf("%s/*.sql", "seed"))
 	if err != nil {
 		return err
@@ -187,7 +198,7 @@ func (db *DB) seed() error {
 			return fmt.Errorf("failed to read seed file, filename=%s err=%w", filename, err)
 		}
 		stmt := string(buf)
-		if err := db.execute(stmt); err != nil {
+		if err := db.execute(ctx, stmt); err != nil {
 			return fmt.Errorf("seed error: statement:%s err=%w", stmt, err)
 		}
 	}
@@ -195,18 +206,22 @@ func (db *DB) seed() error {
 }
 
 // excecute runs a single SQL statement within a transaction.
-func (db *DB) execute(stmt string) error {
+func (db *DB) execute(ctx context.Context, stmt string) error {
 	tx, err := db.Db.Begin()
 	if err != nil {
 		return err
 	}
 	defer tx.Rollback()
 
-	if _, err := tx.Exec(stmt); err != nil {
+	if _, err := tx.ExecContext(ctx, stmt); err != nil {
 		return err
 	}
 
-	return tx.Commit()
+	if err := tx.Commit(); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // minorDirRegexp is a regular expression for minor version directory.
@@ -234,13 +249,23 @@ func getMinorVersionList() []string {
 }
 
 // createMigrationHistoryTable creates the migration_history table if it doesn't exist.
-func (db *DB) createMigrationHistoryTable() error {
-	if err := createTable(db.Db, `
+func (db *DB) createMigrationHistoryTable(ctx context.Context) error {
+	tx, err := db.Db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	if err := createTable(ctx, tx, `
 	CREATE TABLE IF NOT EXISTS migration_history (
 		version TEXT NOT NULL PRIMARY KEY,
 		created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
 	);
 	`); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
 		return err
 	}
 
