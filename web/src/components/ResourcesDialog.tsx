@@ -155,7 +155,6 @@ export default function showResourcesDialog() {
   generateDialog(
     {
       className: "resources-dialog",
-      useAppContext: true,
     },
     ResourcesDialog,
     {}

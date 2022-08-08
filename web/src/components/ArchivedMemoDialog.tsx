@@ -66,7 +66,6 @@ export default function showArchivedMemoDialog(): void {
   generateDialog(
     {
       className: "archived-memo-dialog",
-      useAppContext: true,
     },
     ArchivedMemoDialog,
     {}

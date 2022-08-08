@@ -113,7 +113,6 @@ export default function showDailyReviewDialog(datestamp: DateStamp = Date.now())
   generateDialog(
     {
       className: "daily-review-dialog",
-      useAppContext: true,
     },
     DailyReviewDialog,
     { currentDateStamp: datestamp }

@@ -6,7 +6,6 @@ import "../../less/base-dialog.less";
 
 interface DialogConfig {
   className: string;
-  useAppContext?: boolean;
   clickSpaceDestroy?: boolean;
 }
 
@@ -61,15 +60,13 @@ export function generateDialog<T extends DialogProps>(
     destroy: cbs.destroy,
   } as T;
 
-  let Fragment = (
-    <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
-      <DialogComponent {...dialogProps} />
-    </BaseDialog>
+  const Fragment = (
+    <Provider store={store}>
+      <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
+        <DialogComponent {...dialogProps} />
+      </BaseDialog>
+    </Provider>
   );
-
-  if (config.useAppContext) {
-    Fragment = <Provider store={store}>{Fragment}</Provider>;
-  }
 
   dialog.render(Fragment);
 

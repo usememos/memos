@@ -80,7 +80,6 @@ export default function showSettingDialog(): void {
   generateDialog(
     {
       className: "setting-dialog",
-      useAppContext: true,
     },
     SettingDialog,
     {}
