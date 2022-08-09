@@ -25,7 +25,8 @@ const useI18n = () => {
 
   const translate = (key: string) => {
     try {
-      return resources[locale][key] as string;
+      const value = resources[locale][key] as string;
+      return value;
     } catch (error) {
       return key;
     }
