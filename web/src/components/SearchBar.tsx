@@ -1,8 +1,8 @@
 import { locationService } from "../services";
 import { useAppSelector } from "../store";
 import { memoSpecialTypes } from "../helpers/filter";
-import "../less/search-bar.less";
 import Icon from "./Icon";
+import "../less/search-bar.less";
 
 interface Props {}
 

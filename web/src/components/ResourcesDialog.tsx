@@ -5,8 +5,8 @@ import { resourceService } from "../services";
 import Dropdown from "./common/Dropdown";
 import { generateDialog } from "./Dialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
-import toastHelper from "./Toast";
 import Icon from "./Icon";
+import toastHelper from "./Toast";
 import "../less/resources-dialog.less";
 
 interface Props extends DialogProps {}
