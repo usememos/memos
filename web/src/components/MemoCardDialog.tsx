@@ -7,9 +7,9 @@ import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
 import Image from "./Image";
-import "../less/memo-card-dialog.less";
-import Selector from "./common/Selector";
 import Icon from "./Icon";
+import Selector from "./common/Selector";
+import "../less/memo-card-dialog.less";
 
 interface LinkedMemo extends Memo {
   createdAtStr: string;
