@@ -1,0 +1,10 @@
+version: "3.2"
+services:
+  portainer:
+    image: neosmemo/memos:latest
+    container_name: memos
+    ports:
+      - "5230:5230"
+    volumes:
+      - ~/.memos/:/var/opt/memos
+    command: --mode=prod --port=5230
