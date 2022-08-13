@@ -1,8 +1,8 @@
 import store from "../store";
 import * as api from "../helpers/api";
-import { setLocale } from "../store/modules/global";
-import { setHost, setOwner, setUser } from "../store/modules/user";
-import userService, { convertResponseModelUser } from "./userService";
+import * as storage from "../helpers/storage";
+import { setGlobalState, setLocale } from "../store/modules/global";
+import { convertResponseModelUser } from "./userService";
 
 const globalService = {
   getState: () => {
@@ -10,25 +10,27 @@ const globalService = {
   },
 
   initialState: async () => {
-    const {
-      data: { host },
-    } = (await api.getSystemStatus()).data;
-    if (host) {
-      store.dispatch(setHost(convertResponseModelUser(host)));
-    }
+    const defaultGlobalState = {
+      locale: "en" as Locale,
+    };
 
-    const ownerUserId = userService.getUserIdFromPath();
-    if (ownerUserId) {
-      const { data: owner } = (await api.getUserById(ownerUserId)).data;
-      if (owner) {
-        store.dispatch(setOwner(convertResponseModelUser(owner)));
+    const { locale: storageLocale } = storage.get(["locale"]);
+    if (storageLocale) {
+      defaultGlobalState.locale = storageLocale;
+    }
+    try {
+      const { data } = (await api.getMyselfUser()).data;
+      if (data) {
+        const user = convertResponseModelUser(data);
+        if (user.setting.locale) {
+          defaultGlobalState.locale = user.setting.locale;
+        }
       }
+    } catch (error) {
+      // do nth
     }
 
-    const { data: user } = (await api.getMyselfUser()).data;
-    if (user) {
-      store.dispatch(setUser(convertResponseModelUser(user)));
-    }
+    store.dispatch(setGlobalState(defaultGlobalState));
   },
 
   setLocale: (locale: Locale) => {

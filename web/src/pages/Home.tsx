@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { locationService, userService } from "../services";
 import { useAppSelector } from "../store";
-import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
 import Only from "../components/common/OnlyWhen";
 import Sidebar from "../components/Sidebar";
@@ -13,7 +12,6 @@ import toastHelper from "../components/Toast";
 import "../less/home.less";
 
 function Home() {
-  const { setLocale } = useI18n();
   const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);
   const loadingState = useLoading();
@@ -41,12 +39,6 @@ function Home() {
         loadingState.setFinish();
       });
   }, [location]);
-
-  useEffect(() => {
-    if (user?.setting) {
-      setLocale(user.setting.locale);
-    }
-  }, [user?.setting]);
 
   return (
     <section className="page-wrapper home">

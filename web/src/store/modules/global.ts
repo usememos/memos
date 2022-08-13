@@ -8,6 +8,9 @@ const globalSlice = createSlice({
   name: "global",
   initialState: {} as State,
   reducers: {
+    setGlobalState: (_, action: PayloadAction<State>) => {
+      return action.payload;
+    },
     setLocale: (state, action: PayloadAction<Locale>) => {
       return {
         ...state,
@@ -17,6 +20,6 @@ const globalSlice = createSlice({
   },
 });
 
-export const { setLocale } = globalSlice.actions;
+export const { setGlobalState, setLocale } = globalSlice.actions;
 
 export default globalSlice.reducer;

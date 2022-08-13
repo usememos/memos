@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
-import { memoService, userService } from "../../services";
+import { globalService, memoService, userService } from "../../services";
 import * as utils from "../../helpers/utils";
 import { useAppSelector } from "../../store";
 import Only from "../common/OnlyWhen";
 import toastHelper from "../Toast";
-import "../../less/settings/preferences-section.less";
 import Selector from "../common/Selector";
+import "../../less/settings/preferences-section.less";
 
 interface Props {}
 
@@ -82,6 +81,7 @@ const PreferencesSection: React.FC<Props> = () => {
   };
 
   const handleLocaleChanged = async (value: string) => {
+    globalService.setLocale(value as Locale);
     await userService.upsertUserSetting("locale", value);
   };
 

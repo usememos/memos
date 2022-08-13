@@ -4,9 +4,8 @@
 interface StorageData {
   // Editor content cache
   editorContentCache: string;
-  shouldSplitMemoWord: boolean;
-  shouldHideImageUrl: boolean;
-  shouldUseMarkdownParser: boolean;
+  // locale
+  locale: Locale;
 }
 
 type StorageKey = keyof StorageData;
