@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useSelector } from "react-redux";
+import globalReducer from "./modules/global";
 import userReducer from "./modules/user";
 import memoReducer from "./modules/memo";
 import editorReducer from "./modules/editor";
@@ -8,6 +9,7 @@ import locationReducer from "./modules/location";
 
 const store = configureStore({
   reducer: {
+    global: globalReducer,
     user: userReducer,
     memo: memoReducer,
     editor: editorReducer,

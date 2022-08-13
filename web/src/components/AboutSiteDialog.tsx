@@ -10,8 +10,8 @@ import "../less/about-site-dialog.less";
 interface Props extends DialogProps {}
 
 const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
+  const { t } = useI18n();
   const [profile, setProfile] = useState<Profile>();
-  const { t, setLocale } = useI18n();
 
   useEffect(() => {
     try {
@@ -27,10 +27,6 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         version: "0.0.0",
       });
     }
-
-    setTimeout(() => {
-      setLocale("zh");
-    }, 2333);
   }, []);
 
   const handleCloseBtnClick = () => {
