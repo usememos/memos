@@ -38,7 +38,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">
           <span className="icon-text">🤠</span>
-          {t("about")} <b>Memos</b>
+          {t("common.about")} <b>Memos</b>
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
