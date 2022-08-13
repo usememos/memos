@@ -1,3 +1,8 @@
 {
-  "about": "关于"
+  "common": {
+    "about": "关于",
+    "email": "邮箱",
+    "password": "密码",
+    "sign-in": "登录"
+  }
 }

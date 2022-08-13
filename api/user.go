@@ -29,11 +29,12 @@ type User struct {
 	UpdatedTs int64     `json:"updatedTs"`
 
 	// Domain specific fields
-	Email        string `json:"email"`
-	Role         Role   `json:"role"`
-	Name         string `json:"name"`
-	PasswordHash string `json:"-"`
-	OpenID       string `json:"openId"`
+	Email           string         `json:"email"`
+	Role            Role           `json:"role"`
+	Name            string         `json:"name"`
+	PasswordHash    string         `json:"-"`
+	OpenID          string         `json:"openId"`
+	UserSettingList []*UserSetting `json:"userSettingList"`
 }
 
 type UserCreate struct {

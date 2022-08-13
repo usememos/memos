@@ -58,6 +58,66 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		return nil
 	})
 
+	// GET /api/user/me is used to check if the user is logged in.
+	g.GET("/user/me", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
+		}
+
+		userFind := &api.UserFind{
+			ID: &userID,
+		}
+		user, err := s.Store.FindUser(ctx, userFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+
+		userSettingList, err := s.Store.FindUserSettingList(ctx, &api.UserSettingFind{
+			UserID: userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
+		}
+		user.UserSettingList = userSettingList
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
+		}
+		return nil
+	})
+
+	g.POST("/user/setting", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
+		}
+
+		userSettingUpsert := &api.UserSettingUpsert{}
+		if err := json.NewDecoder(c.Request().Body).Decode(userSettingUpsert); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user setting upsert request").SetInternal(err)
+		}
+
+		if userSettingUpsert.Key.String() == "" {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user setting key")
+		}
+
+		userSettingUpsert.UserID = userID
+		userSetting, err := s.Store.UpsertUserSetting(ctx, userSettingUpsert)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert user setting").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(userSetting)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user setting response").SetInternal(err)
+		}
+		return nil
+	})
+
 	g.GET("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		id, err := strconv.Atoi(c.Param("id"))
@@ -75,29 +135,6 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if user != nil {
 			// data desensitize
 			user.OpenID = ""
-		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
-		}
-		return nil
-	})
-
-	// GET /api/user/me is used to check if the user is logged in.
-	g.GET("/user/me", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
-		}
-
-		userFind := &api.UserFind{
-			ID: &userID,
-		}
-		user, err := s.Store.FindUser(ctx, userFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user").SetInternal(err)
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)

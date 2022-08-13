@@ -4,9 +4,24 @@ import * as api from "../helpers/api";
 import store from "../store";
 import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
 
-const convertResponseModelUser = (user: User): User => {
+const defauleSetting: Setting = {
+  locale: "en",
+};
+
+export const convertResponseModelUser = (user: User): User => {
+  const setting: Setting = {
+    ...defauleSetting,
+  };
+
+  if (user.userSettingList) {
+    for (const userSetting of user.userSettingList) {
+      setting[userSetting.key] = JSON.parse(userSetting.value);
+    }
+  }
+
   return {
     ...user,
+    setting,
     createdTs: user.createdTs * 1000,
     updatedTs: user.updatedTs * 1000,
   };
@@ -74,6 +89,14 @@ const userService = {
     } else {
       return undefined;
     }
+  },
+
+  upsertUserSetting: async (key: string, value: any) => {
+    await api.upsertUserSetting({
+      key: key as any,
+      value: JSON.stringify(value),
+    });
+    await userService.doSignIn();
   },
 
   patchUser: async (userPatch: UserPatch): Promise<void> => {

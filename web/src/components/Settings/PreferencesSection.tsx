@@ -1,11 +1,27 @@
-import { memoService } from "../../services";
+import { globalService, memoService, userService } from "../../services";
 import * as utils from "../../helpers/utils";
+import { useAppSelector } from "../../store";
+import Only from "../common/OnlyWhen";
 import toastHelper from "../Toast";
+import Selector from "../common/Selector";
 import "../../less/settings/preferences-section.less";
 
 interface Props {}
 
+const localeSelectorItems = [
+  {
+    text: "English",
+    value: "en",
+  },
+  {
+    text: "中文",
+    value: "zh",
+  },
+];
+
 const PreferencesSection: React.FC<Props> = () => {
+  const { setting } = useAppSelector((state) => state.user.user as User);
+
   const handleExportBtnClick = async () => {
     const formatedMemos = memoService.getState().memos.map((m) => {
       return {
@@ -64,17 +80,29 @@ const PreferencesSection: React.FC<Props> = () => {
     fileInputEl.click();
   };
 
+  const handleLocaleChanged = async (value: string) => {
+    globalService.setLocale(value as Locale);
+    await userService.upsertUserSetting("locale", value);
+  };
+
   return (
     <div className="section-container preferences-section-container">
-      <p className="title-text">Others</p>
-      <div className="btns-container">
-        <button className="btn" onClick={handleExportBtnClick}>
-          Export data as JSON
-        </button>
-        <button className="btn" onClick={handleImportBtnClick}>
-          Import from JSON
-        </button>
-      </div>
+      {/* Hide export/import buttons */}
+      <label className="form-label">
+        <span className="normal-text">Language:</span>
+        <Selector className="ml-2 w-28" value={setting.locale} dataSource={localeSelectorItems} handleValueChanged={handleLocaleChanged} />
+      </label>
+      <Only when={false}>
+        <p className="title-text">Others</p>
+        <div className="btns-container">
+          <button className="btn" onClick={handleExportBtnClick}>
+            Export data as JSON
+          </button>
+          <button className="btn" onClick={handleImportBtnClick}>
+            Import from JSON
+          </button>
+        </div>
+      </Only>
     </div>
   );
 };

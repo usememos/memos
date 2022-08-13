@@ -12,6 +12,9 @@ interface User {
   email: string;
   name: string;
   openId: string;
+  userSettingList: UserSetting[];
+
+  setting: Setting;
 }
 
 interface UserCreate {

@@ -1,3 +1,8 @@
 {
-  "about": "About"
+  "common": {
+    "about": "About",
+    "email": "Email",
+    "password": "Password",
+    "sign-in": "Sign in"
+  }
 }

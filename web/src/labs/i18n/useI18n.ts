@@ -24,10 +24,19 @@ const useI18n = () => {
   }, []);
 
   const translate = (key: string) => {
-    try {
-      const value = resources[locale][key] as string;
+    const keys = key.split(".");
+    let value = resources[locale];
+    for (const k of keys) {
+      if (value) {
+        value = value[k];
+      } else {
+        return key;
+      }
+    }
+
+    if (value) {
       return value;
-    } catch (error) {
+    } else {
       return key;
     }
   };

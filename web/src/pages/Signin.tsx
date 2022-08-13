@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import * as api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
+import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
 import { locationService, userService } from "../services";
 import toastHelper from "../components/Toast";
@@ -17,6 +18,7 @@ const validateConfig: ValidatorConfig = {
 };
 
 const Signin: React.FC<Props> = () => {
+  const { t } = useI18n();
   const pageLoadingState = useLoading(true);
   const [siteHost, setSiteHost] = useState<User>();
   const [email, setEmail] = useState("");
@@ -127,11 +129,11 @@ const Signin: React.FC<Props> = () => {
         </div>
         <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
           <div className="form-item-container input-form-container">
-            <span className={`normal-text ${email ? "not-null" : ""}`}>Email</span>
+            <span className={`normal-text ${email ? "not-null" : ""}`}>{t("common.email")}</span>
             <input type="email" value={email} onChange={handleEmailInputChanged} />
           </div>
           <div className="form-item-container input-form-container">
-            <span className={`normal-text ${password ? "not-null" : ""}`}>Password</span>
+            <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
             <input type="password" value={password} onChange={handlePasswordInputChanged} />
           </div>
         </div>
@@ -141,7 +143,7 @@ const Signin: React.FC<Props> = () => {
               className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
               onClick={() => handleSigninBtnsClick()}
             >
-              Sign in
+              {t("common.sign-in")}
             </button>
           ) : (
             <button

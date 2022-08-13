@@ -3,7 +3,7 @@ import useToggle from "../../hooks/useToggle";
 import Icon from "../Icon";
 import "../../less/common/selector.less";
 
-interface TVObject {
+interface SelectorItem {
   text: string;
   value: string;
 }
@@ -11,7 +11,7 @@ interface TVObject {
 interface Props {
   className?: string;
   value: string;
-  dataSource: TVObject[];
+  dataSource: SelectorItem[];
   handleValueChanged?: (value: string) => void;
 }
 
@@ -48,7 +48,7 @@ const Selector: React.FC<Props> = (props: Props) => {
     }
   }, [showSelector]);
 
-  const handleItemClick = (item: TVObject) => {
+  const handleItemClick = (item: SelectorItem) => {
     if (handleValueChanged) {
       handleValueChanged(item.value);
     }
