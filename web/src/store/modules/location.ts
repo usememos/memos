@@ -21,7 +21,7 @@ interface State {
 
 const getValidPathname = (pathname: string): string => {
   const userPageUrlRegex = /^\/u\/\d+.*/;
-  if (["/", "/signin"].includes(pathname) || userPageUrlRegex.test(pathname)) {
+  if (["/", "/auth"].includes(pathname) || userPageUrlRegex.test(pathname)) {
     return pathname;
   } else {
     return "/";

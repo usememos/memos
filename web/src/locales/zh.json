@@ -4,5 +4,11 @@
     "email": "邮箱",
     "password": "密码",
     "sign-in": "登录"
+  },
+  "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
+  "auth": {
+    "signup-as-host": "注册为 Host",
+    "host-tip": "你正在注册为 Host 用户账号。",
+    "not-host-tip": "如果你没有账号，请联系站点 Host"
   }
 }

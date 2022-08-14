@@ -49,11 +49,15 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   };
 
   const handleSignOutBtnClick = async () => {
-    userService.doSignOut().catch(() => {
-      // do nth
-    });
-    locationService.replaceHistory("/signin");
-    window.location.reload();
+    userService
+      .doSignOut()
+      .then(() => {
+        locationService.replaceHistory("/auth");
+        window.location.reload();
+      })
+      .catch(() => {
+        // do nth
+      });
   };
 
   return (

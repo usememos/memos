@@ -3,10 +3,10 @@ import * as api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
-import { locationService, userService } from "../services";
+import { globalService, locationService, userService } from "../services";
 import toastHelper from "../components/Toast";
 import GitHubBadge from "../components/GitHubBadge";
-import "../less/signin.less";
+import "../less/auth.less";
 
 interface Props {}
 
@@ -17,8 +17,8 @@ const validateConfig: ValidatorConfig = {
   noChinese: true,
 };
 
-const Signin: React.FC<Props> = () => {
-  const { t } = useI18n();
+const Auth: React.FC<Props> = () => {
+  const { t, locale } = useI18n();
   const pageLoadingState = useLoading(true);
   const [siteHost, setSiteHost] = useState<User>();
   const [email, setEmail] = useState("");
@@ -113,55 +113,68 @@ const Signin: React.FC<Props> = () => {
     actionBtnLoadingState.setFinish();
   };
 
+  const handleLocaleItemClick = (locale: Locale) => {
+    globalService.setLocale(locale);
+  };
+
   return (
-    <div className="page-wrapper signin">
+    <div className="page-wrapper auth">
       <div className="page-container">
-        <div className="page-header-container">
-          <div className="title-container">
-            <p className="title-text">
-              <span className="icon-text">✍️</span> Memos
-            </p>
-            <GitHubBadge />
+        <div className="auth-form-wrapper">
+          <div className="page-header-container">
+            <div className="title-container">
+              <p className="title-text">
+                <span className="icon-text">✍️</span> Memos
+              </p>
+              <GitHubBadge />
+            </div>
+            <p className="slogan-text">{t("slogan")}</p>
           </div>
-          <p className="slogan-text">
-            An <i>open source</i>, <i>self-hosted</i> knowledge base that works with a SQLite db file.
+          <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
+            <div className="form-item-container input-form-container">
+              <span className={`normal-text ${email ? "not-null" : ""}`}>{t("common.email")}</span>
+              <input type="email" value={email} onChange={handleEmailInputChanged} />
+            </div>
+            <div className="form-item-container input-form-container">
+              <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
+              <input type="password" value={password} onChange={handlePasswordInputChanged} />
+            </div>
+          </div>
+          <div className="action-btns-container">
+            {siteHost || pageLoadingState.isLoading ? (
+              <button
+                className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                onClick={() => handleSigninBtnsClick()}
+              >
+                {t("common.sign-in")}
+              </button>
+            ) : (
+              <button
+                className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                onClick={() => handleSignUpAsHostBtnsClick()}
+              >
+                {t("auth.signup-as-host")}
+              </button>
+            )}
+          </div>
+          <p className={`tip-text ${siteHost || pageLoadingState.isLoading ? "" : "host-tip"}`}>
+            {siteHost || pageLoadingState.isLoading ? t("auth.not-host-tip") : t("auth.host-tip")}
           </p>
         </div>
-        <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
-          <div className="form-item-container input-form-container">
-            <span className={`normal-text ${email ? "not-null" : ""}`}>{t("common.email")}</span>
-            <input type="email" value={email} onChange={handleEmailInputChanged} />
-          </div>
-          <div className="form-item-container input-form-container">
-            <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
-            <input type="password" value={password} onChange={handlePasswordInputChanged} />
+        <div className="footer-container">
+          <div className="language-container">
+            <span className={`locale-item ${locale === "en" ? "active" : ""}`} onClick={() => handleLocaleItemClick("en")}>
+              English
+            </span>
+            <span className="split-line">/</span>
+            <span className={`locale-item ${locale === "zh" ? "active" : ""}`} onClick={() => handleLocaleItemClick("zh")}>
+              中文
+            </span>
           </div>
         </div>
-        <div className="action-btns-container">
-          {siteHost || pageLoadingState.isLoading ? (
-            <button
-              className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-              onClick={() => handleSigninBtnsClick()}
-            >
-              {t("common.sign-in")}
-            </button>
-          ) : (
-            <button
-              className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-              onClick={() => handleSignUpAsHostBtnsClick()}
-            >
-              Sign up as Host
-            </button>
-          )}
-        </div>
-        <p className={`tip-text ${siteHost || pageLoadingState.isLoading ? "" : "host-tip"}`}>
-          {siteHost || pageLoadingState.isLoading
-            ? "If you don't have an account, please\ncontact the site host."
-            : "You are registering as the Site Host."}
-        </p>
       </div>
     </div>
   );
 };
 
-export default Signin;
+export default Auth;

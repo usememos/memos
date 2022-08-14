@@ -20,10 +20,7 @@ const GitHubBadge: React.FC<Props> = () => {
         <Icon.GitHub className="icon-img" />
         Star
       </div>
-      <div className="count-text">
-        {starCount || ""}
-        <span className="icon-text">🌟</span>
-      </div>
+      <div className="count-text">{starCount || ""}</div>
     </a>
   );
 };

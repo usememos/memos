@@ -23,7 +23,7 @@ function Home() {
       .finally(async () => {
         const { host, owner, user } = userService.getState();
         if (!host) {
-          locationService.replaceHistory("/signin");
+          locationService.replaceHistory("/auth");
           return;
         }
 
@@ -61,7 +61,7 @@ function Home() {
                     <span className="icon">🏠</span> Back to Home
                   </button>
                 ) : (
-                  <button className="btn" onClick={() => (window.location.href = "/signin")}>
+                  <button className="btn" onClick={() => (window.location.href = "/auth")}>
                     <span className="icon">👉</span> Sign in
                   </button>
                 )}

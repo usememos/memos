@@ -4,5 +4,11 @@
     "email": "Email",
     "password": "Password",
     "sign-in": "Sign in"
+  },
+  "slogan": "An open source, self-hosted knowledge base that works with a SQLite db file.",
+  "auth": {
+    "signup-as-host": "Sign up as Host",
+    "host-tip": "You are registering as the Site Host.",
+    "not-host-tip": "If you don't have an account, please contact the site host."
   }
 }

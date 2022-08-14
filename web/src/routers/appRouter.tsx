@@ -1,8 +1,8 @@
 import Home from "../pages/Home";
-import Signin from "../pages/Signin";
+import Auth from "../pages/Auth";
 
 const appRouter = {
-  "/signin": <Signin />,
+  "/auth": <Auth />,
   "*": <Home />,
 };
 
