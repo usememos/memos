@@ -14,14 +14,14 @@ const createI18nStore = (preloadedState: I18nState) => {
 
   const setState = (state: Partial<I18nState>) => {
     const nextState = {
-    ...currentState,
-    ...state,
+      ...currentState,
+      ...state,
     };
     const prevState = currentState;
     currentState = nextState;
 
     for (const cb of listeners) {
-    cb(currentState, prevState);
+      cb(currentState, prevState);
     }
   };
 
@@ -30,13 +30,13 @@ const createI18nStore = (preloadedState: I18nState) => {
     listeners.push(listener);
 
     const unsubscribe = () => {
-    if (!isSubscribed) {
+      if (!isSubscribed) {
         return;
-    }
+      }
 
-    const index = listeners.indexOf(listener);
-    listeners.splice(index, 1);
-    isSubscribed = false;
+      const index = listeners.indexOf(listener);
+      listeners.splice(index, 1);
+      isSubscribed = false;
     };
 
     return unsubscribe;
