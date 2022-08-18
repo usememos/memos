@@ -22,34 +22,27 @@ const (
 `
 )
 
-type Main struct {
-	profile *profile.Profile
-}
-
-func (m *Main) Run() error {
+func Run(profile *profile.Profile) error {
 	ctx := context.Background()
 
-	db := DB.NewDB(m.profile)
+	db := DB.NewDB(profile)
 	if err := db.Open(ctx); err != nil {
 		return fmt.Errorf("cannot open db: %w", err)
 	}
 
-	s := server.NewServer(m.profile)
+	s := server.NewServer(profile)
 
-	storeInstance := store.New(db.Db, m.profile)
+	storeInstance := store.New(db.Db, profile)
 	s.Store = storeInstance
 
 	println(greetingBanner)
-	fmt.Printf("Version %s has started at :%d\n", m.profile.Version, m.profile.Port)
+	fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)
 
 	return s.Run()
 }
 
 func Execute() {
 	profile := profile.GetProfile()
-	m := Main{
-		profile: profile,
-	}
 
 	println("---")
 	println("profile")
@@ -59,7 +52,7 @@ func Execute() {
 	println("version:", profile.Version)
 	println("---")
 
-	if err := m.Run(); err != nil {
+	if err := Run(profile); err != nil {
 		fmt.Printf("error: %+v\n", err)
 		os.Exit(1)
 	}
