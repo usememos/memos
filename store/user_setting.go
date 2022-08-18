@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"strings"
 
 	"github.com/usememos/memos/api"
 )
@@ -62,6 +63,27 @@ func (s *Store) FindUserSettingList(ctx context.Context, find *api.UserSettingFi
 	return list, nil
 }
 
+func (s *Store) FindUserSetting(ctx context.Context, find *api.UserSettingFind) (*api.UserSetting, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	list, err := findUserSettingList(ctx, tx, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(list) == 0 {
+		return nil, nil
+	}
+
+	userSetting := list[0].toUserSetting()
+
+	return userSetting, nil
+}
+
 func upsertUserSetting(ctx context.Context, tx *sql.Tx, upsert *api.UserSettingUpsert) (*userSettingRaw, error) {
 	query := `
 		INSERT INTO user_setting (
@@ -86,15 +108,22 @@ func upsertUserSetting(ctx context.Context, tx *sql.Tx, upsert *api.UserSettingU
 }
 
 func findUserSettingList(ctx context.Context, tx *sql.Tx, find *api.UserSettingFind) ([]*userSettingRaw, error) {
+	where, args := []string{"1 = 1"}, []interface{}{}
+
+	if v := find.Key; v != nil {
+		where, args = append(where, "key = ?"), append(args, (*v).String())
+	}
+
+	where, args = append(where, "user_id = ?"), append(args, find.UserID)
+
 	query := `
 		SELECT
 			user_id,
 		  key,
 			value
 		FROM user_setting
-		WHERE user_id = ?
-	`
-	rows, err := tx.QueryContext(ctx, query, find.UserID)
+		WHERE ` + strings.Join(where, " AND ")
+	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, FormatError(err)
 	}

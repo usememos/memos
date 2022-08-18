@@ -27,6 +27,18 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
 		}
 
+		userSettingMemoVisibilityKey := api.UserSettingMemoVisibilityKey
+		userMemoVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
+			UserID: userID,
+			Key:    &userSettingMemoVisibilityKey,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user setting").SetInternal(err)
+		}
+		if userMemoVisibilitySetting != nil {
+			memoCreate.Visibility = (*api.Visibility)(&userMemoVisibilitySetting.Value)
+		}
+
 		if memoCreate.Visibility == nil || *memoCreate.Visibility == "" {
 			private := api.Privite
 			memoCreate.Visibility = &private
