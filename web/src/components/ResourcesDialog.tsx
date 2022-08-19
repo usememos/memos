@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import * as utils from "../helpers/utils";
+import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
 import { resourceService } from "../services";
 import Dropdown from "./common/Dropdown";
@@ -18,6 +19,7 @@ interface State {
 
 const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
+  const { t } = useI18n();
   const loadingState = useLoading();
   const [state, setState] = useState<State>({
     resources: [],
@@ -99,7 +101,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">
           <span className="icon-text">🌄</span>
-          Resources
+          {t("sidebar.resources")}
         </p>
         <button className="btn close-btn" onClick={destroy}>
           <Icon.X className="icon-img" />

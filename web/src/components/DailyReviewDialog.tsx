@@ -1,6 +1,7 @@
 import { useRef, useState } from "react";
 import { useAppSelector } from "../store";
 import toImage from "../labs/html2image";
+import useI18n from "../hooks/useI18n";
 import useToggle from "../hooks/useToggle";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
@@ -19,6 +20,7 @@ const monthChineseStrArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "
 const weekdayChineseStrArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 const DailyReviewDialog: React.FC<Props> = (props: Props) => {
+  const { t } = useI18n();
   const memos = useAppSelector((state) => state.memo.memos);
   const [currentDateStamp, setCurrentDateStamp] = useState(utils.getDateStampByDate(utils.getDateString(props.currentDateStamp)));
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
@@ -61,7 +63,7 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text" onClick={() => toggleShowDatePicker()}>
-          <span className="icon-text">📅</span> Daily Review
+          <span className="icon-text">📅</span> {t("sidebar.daily-review")}
         </p>
         <div className="btns-container">
           <button className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}>
