@@ -36,7 +36,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user setting").SetInternal(err)
 		}
 		if userMemoVisibilitySetting != nil {
-			memoCreate.Visibility = (*api.Visibility)(&userMemoVisibilitySetting.Value)
+			memoVisibility := api.Privite
+			json.Unmarshal([]byte(userMemoVisibilitySetting.Value), &memoVisibility)
+			memoCreate.Visibility = &memoVisibility
 		}
 
 		if memoCreate.Visibility == nil || *memoCreate.Visibility == "" {

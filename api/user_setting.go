@@ -6,7 +6,7 @@ const (
 	// UserSettingLocaleKey is the key type for user locale.
 	UserSettingLocaleKey UserSettingKey = "locale"
 	// UserSettingMemoVisibilityKey is the key type for user perference memo default visibility.
-	UserSettingMemoVisibilityKey UserSettingKey = "memo-visibility"
+	UserSettingMemoVisibilityKey UserSettingKey = "memoVisibility"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -15,7 +15,7 @@ func (key UserSettingKey) String() string {
 	case UserSettingLocaleKey:
 		return "locale"
 	case UserSettingMemoVisibilityKey:
-		return "memo-visibility"
+		return "memoVisibility"
 	}
 	return ""
 }
