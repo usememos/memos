@@ -1,12 +1,11 @@
 @import "../mixin.less";
 
 .preferences-section-container {
-  > .btns-container {
-    .flex(row, flex-start, center);
-    @apply w-full;
+  > .form-label {
+    @apply mb-2;
 
-    > .btn {
-      @apply border text-sm py-1 px-3 mr-2 rounded leading-6 shadow hover:opacity-80;
+    > .normal-text {
+      @apply mr-2 text-sm;
     }
   }
 }
