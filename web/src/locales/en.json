@@ -51,6 +51,9 @@
     "account-section": {
       "title": "Account Information"
     },
+    "preference-section": {
+      "default-memo-visibility": "Default memo visibility"
+    },
     "member-section": {
       "create-a-member": "Create a member"
     }

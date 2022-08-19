@@ -1,10 +1,16 @@
 interface Setting {
-  locale: "en" | "zh";
+  locale: Locale;
+  memoVisibility: Visibility;
 }
 
 interface UserLocaleSetting {
   key: "locale";
-  value: "en" | "zh";
+  value: Locale;
+}
+
+interface UserMemoVisibilitySetting {
+  key: "memoVisibility";
+  value: Visibility;
 }
 
 type UserSetting = UserLocaleSetting;

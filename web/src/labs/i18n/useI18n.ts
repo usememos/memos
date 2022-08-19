@@ -3,8 +3,6 @@ import i18nStore from "./i18nStore";
 import enLocale from "../../locales/en.json";
 import zhLocale from "../../locales/zh.json";
 
-type Locale = "en" | "zh";
-
 const resources: Record<string, any> = {
   en: enLocale,
   zh: zhLocale,

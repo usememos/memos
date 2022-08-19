@@ -21,3 +21,9 @@ export const LINK_URL_REG = /\[(.*?)\]\((.+?)\)/g;
 
 // linked memo regex
 export const MEMO_LINK_REG = /@\[(.+?)\]\((.+?)\)/g;
+
+export const VISIBILITY_SELECTOR_ITEMS = [
+  { text: "PUBLIC", value: "PUBLIC" },
+  { text: "PROTECTED", value: "PROTECTED" },
+  { text: "PRIVATE", value: "PRIVATE" },
+];

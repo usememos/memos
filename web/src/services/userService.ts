@@ -6,6 +6,7 @@ import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
 
 const defauleSetting: Setting = {
   locale: "en",
+  memoVisibility: "PRIVATE",
 };
 
 export const convertResponseModelUser = (user: User): User => {

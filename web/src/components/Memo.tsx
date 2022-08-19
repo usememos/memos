@@ -60,11 +60,16 @@ const Memo: React.FC<Props> = (props: Props) => {
       });
     }
 
+    let intervalFlag = -1;
     if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
-      setInterval(() => {
+      intervalFlag = setInterval(() => {
         setCreatedAtStr(getFormatedMemoCreatedAtStr(memo.createdTs, locale));
       }, 1000 * 1);
     }
+
+    return () => {
+      clearInterval(intervalFlag);
+    };
   }, [locale]);
 
   const handleShowMemoStoryDialog = () => {

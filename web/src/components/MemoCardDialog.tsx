@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { editorStateService, memoService, userService } from "../services";
-import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID } from "../helpers/consts";
+import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { formatMemoContent, parseHtmlToRawText } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
@@ -27,11 +27,6 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   const [linkMemos, setLinkMemos] = useState<LinkedMemo[]>([]);
   const [linkedMemos, setLinkedMemos] = useState<LinkedMemo[]>([]);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
-  const visibilityList = [
-    { text: "PUBLIC", value: "PUBLIC" },
-    { text: "PROTECTED", value: "PROTECTED" },
-    { text: "PRIVATE", value: "PRIVATE" },
-  ];
 
   useEffect(() => {
     const fetchLinkedMemos = async () => {
@@ -132,7 +127,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
             <Icon.Eye className="icon-img" />
             <Selector
               className="visibility-selector"
-              dataSource={visibilityList}
+              dataSource={VISIBILITY_SELECTOR_ITEMS}
               value={memo.visibility}
               handleValueChanged={(value) => handleVisibilitySelectorChange(value as Visibility)}
             />
