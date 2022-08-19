@@ -1,4 +1,5 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
+import useI18n from "../../hooks/useI18n";
 import useRefresh from "../../hooks/useRefresh";
 import Only from "../common/OnlyWhen";
 import "../../less/editor.less";
@@ -37,6 +38,7 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
     onCancelBtnClick: handleCancelBtnClickCallback,
     onContentChange: handleContentChangeCallback,
   } = props;
+  const { t } = useI18n();
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const refresh = useRefresh();
 
@@ -130,12 +132,12 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
         <div className="btns-container">
           <Only when={showCancelBtn}>
             <button className="action-btn cancel-btn" onClick={handleCommonCancelBtnClick}>
-              Cancel editting
+              {t("editor.cancel-edit")}
             </button>
           </Only>
           <Only when={showConfirmBtn}>
             <button className="action-btn confirm-btn" disabled={editorRef.current?.value === ""} onClick={handleCommonConfirmBtnClick}>
-              Save <span className="icon-text">✍️</span>
+              {t("editor.save")} <span className="icon-text">✍️</span>
             </button>
           </Only>
         </div>

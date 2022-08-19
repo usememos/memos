@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import * as api from "../helpers/api";
 import { locationService, userService } from "../services";
+import useI18n from "../hooks/useI18n";
 import toastHelper from "./Toast";
 import Only from "./common/OnlyWhen";
 import showAboutSiteDialog from "./AboutSiteDialog";
@@ -13,6 +14,7 @@ interface Props {
 
 const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   const { shownStatus, setShownStatus } = props;
+  const { t } = useI18n();
   const popupElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -63,14 +65,14 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   return (
     <div className={`menu-btns-popup ${shownStatus ? "" : "hidden"}`} ref={popupElRef}>
       <button className="btn action-btn" onClick={handleAboutBtnClick}>
-        <span className="icon">🤠</span> About
+        <span className="icon">🤠</span> {t("common.about")}
       </button>
       <button className="btn action-btn" onClick={handlePingBtnClick}>
         <span className="icon">🎯</span> Ping
       </button>
       <Only when={!userService.isVisitorMode()}>
         <button className="btn action-btn" onClick={handleSignOutBtnClick}>
-          <span className="icon">👋</span> Sign out
+          <span className="icon">👋</span> {t("common.sign-out")}
         </button>
       </Only>
     </div>

@@ -11,7 +11,7 @@ import "../less/auth.less";
 interface Props {}
 
 const validateConfig: ValidatorConfig = {
-  minLength: 4,
+  minLength: 6,
   maxLength: 24,
   noSpace: true,
   noChinese: true,

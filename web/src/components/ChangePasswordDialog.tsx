@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { validate, ValidatorConfig } from "../helpers/validator";
+import useI18n from "../hooks/useI18n";
 import { userService } from "../services";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
@@ -16,6 +17,7 @@ const validateConfig: ValidatorConfig = {
 interface Props extends DialogProps {}
 
 const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
+  const { t } = useI18n();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 
@@ -85,10 +87,10 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
         </label>
         <div className="btns-container">
           <span className="btn cancel-btn" onClick={handleCloseBtnClick}>
-            Cancel
+            {t("common.cancel")}
           </span>
           <span className="btn confirm-btn" onClick={handleSaveBtnClick}>
-            Save
+            {t("common.save")}
           </span>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import { useState } from "react";
+import useI18n from "../../hooks/useI18n";
 import { useAppSelector } from "../../store";
 import { userService } from "../../services";
 import { validate, ValidatorConfig } from "../../helpers/validator";
@@ -17,6 +18,7 @@ const validateConfig: ValidatorConfig = {
 interface Props {}
 
 const MyAccountSection: React.FC<Props> = () => {
+  const { t } = useI18n();
   const user = useAppSelector((state) => state.user.user as User);
   const [username, setUsername] = useState<string>(user.name);
   const openAPIRoute = `${window.location.origin}/api/memo?openId=${user.openId}`;
@@ -68,17 +70,17 @@ const MyAccountSection: React.FC<Props> = () => {
   return (
     <>
       <div className="section-container account-section-container">
-        <p className="title-text">Account Information</p>
+        <p className="title-text">{t("setting.account-section.title")}</p>
         <label className="form-label">
-          <span className="normal-text">Email:</span>
+          <span className="normal-text">{t("common.email")}:</span>
           <span className="normal-text">{user.email}</span>
         </label>
         <label className="form-label input-form-label username-label">
-          <span className="normal-text">Username:</span>
+          <span className="normal-text">{t("common.username")}:</span>
           <input type="text" value={username} onChange={handleUsernameChanged} />
           <div className={`btns-container ${username === user.name ? "!hidden" : ""}`} onClick={handlePreventDefault}>
             <span className="btn confirm-btn" onClick={handleConfirmEditUsernameBtnClick}>
-              Save
+              {t("common.save")}
             </span>
             <span
               className="btn cancel-btn"
@@ -86,14 +88,14 @@ const MyAccountSection: React.FC<Props> = () => {
                 setUsername(user.name);
               }}
             >
-              Cancel
+              {t("common.cancel")}
             </span>
           </div>
         </label>
         <label className="form-label password-label">
-          <span className="normal-text">Password:</span>
+          <span className="normal-text">{t("common.password")}:</span>
           <span className="btn" onClick={handleChangePasswordBtnClick}>
-            Change it
+            {t("common.change")}
           </span>
         </label>
       </div>
@@ -101,10 +103,9 @@ const MyAccountSection: React.FC<Props> = () => {
         <p className="title-text">Open API</p>
         <p className="value-text">{openAPIRoute}</p>
         <span className="reset-btn" onClick={handleResetOpenIdBtnClick}>
-          Reset API
+          {t("common.reset")} API
         </span>
         <div className="usage-guide-container">
-          <p className="title-text">Usage guide:</p>
           <pre>{`POST ${openAPIRoute}\nContent-type: application/json\n{\n  "content": "Hello #memos from ${window.location.origin}"\n}`}</pre>
         </div>
       </div>

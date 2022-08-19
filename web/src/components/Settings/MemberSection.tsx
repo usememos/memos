@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { isEmpty } from "lodash-es";
+import useI18n from "../../hooks/useI18n";
 import { userService } from "../../services";
 import { useAppSelector } from "../../store";
 import * as api from "../../helpers/api";
@@ -16,6 +17,7 @@ interface State {
 }
 
 const PreferencesSection: React.FC<Props> = () => {
+  const { t } = useI18n();
   const currentUser = useAppSelector((state) => state.user.user);
   const [state, setState] = useState<State>({
     createUserEmail: "",
@@ -110,18 +112,18 @@ const PreferencesSection: React.FC<Props> = () => {
 
   return (
     <div className="section-container member-section-container">
-      <p className="title-text">Create a member</p>
+      <p className="title-text">{t("setting.member-section.create-a-member")}</p>
       <div className="create-member-container">
         <div className="input-form-container">
-          <span className="field-text">Email</span>
-          <input type="email" placeholder="Email" value={state.createUserEmail} onChange={handleEmailInputChange} />
+          <span className="field-text">{t("common.email")}</span>
+          <input type="email" placeholder={t("common.email")} value={state.createUserEmail} onChange={handleEmailInputChange} />
         </div>
         <div className="input-form-container">
-          <span className="field-text">Password</span>
-          <input type="text" placeholder="Password" value={state.createUserPassword} onChange={handlePasswordInputChange} />
+          <span className="field-text">{t("common.password")}</span>
+          <input type="text" placeholder={t("common.password")} value={state.createUserPassword} onChange={handlePasswordInputChange} />
         </div>
         <div className="btns-container">
-          <button onClick={handleCreateUserBtnClick}>Create</button>
+          <button onClick={handleCreateUserBtnClick}>{t("common.create")}</button>
         </div>
       </div>
       <p className="title-text">Member list</p>
@@ -140,12 +142,12 @@ const PreferencesSection: React.FC<Props> = () => {
             ) : (
               <Dropdown className="actions-dropdown">
                 {user.rowStatus === "NORMAL" ? (
-                  <button onClick={() => handleArchiveUserClick(user)}>Archive</button>
+                  <button onClick={() => handleArchiveUserClick(user)}>{t("common.archive")}</button>
                 ) : (
                   <>
-                    <button onClick={() => handleRestoreUserClick(user)}>Restore</button>
+                    <button onClick={() => handleRestoreUserClick(user)}>{t("common.restore")}</button>
                     <button className="delete" onClick={() => handleDeleteUserClick(user)}>
-                      Delete
+                      {t("common.delete")}
                     </button>
                   </>
                 )}

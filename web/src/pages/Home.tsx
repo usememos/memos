@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { locationService, userService } from "../services";
 import { useAppSelector } from "../store";
+import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
 import Only from "../components/common/OnlyWhen";
 import Sidebar from "../components/Sidebar";
@@ -12,6 +13,7 @@ import toastHelper from "../components/Toast";
 import "../less/home.less";
 
 function Home() {
+  const { t } = useI18n();
   const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);
   const loadingState = useLoading();
@@ -58,11 +60,11 @@ function Home() {
               <div className="addtion-btn-container">
                 {user ? (
                   <button className="btn" onClick={() => (window.location.href = "/")}>
-                    <span className="icon">🏠</span> Back to Home
+                    <span className="icon">🏠</span> {t("common.back-to-home")}
                   </button>
                 ) : (
                   <button className="btn" onClick={() => (window.location.href = "/auth")}>
-                    <span className="icon">👉</span> Sign in
+                    <span className="icon">👉</span> {t("common.sign-in")}
                   </button>
                 )}
               </div>

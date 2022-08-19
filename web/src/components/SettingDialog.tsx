@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useAppSelector } from "../store";
+import useI18n from "../hooks/useI18n";
+import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MyAccountSection from "./Settings/MyAccountSection";
 import PreferencesSection from "./Settings/PreferencesSection";
 import MemberSection from "./Settings/MemberSection";
 import "../less/setting-dialog.less";
-import Icon from "./Icon";
 
 interface Props extends DialogProps {}
 
@@ -17,6 +18,7 @@ interface State {
 
 const SettingDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
+  const { t } = useI18n();
   const user = useAppSelector((state) => state.user.user);
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
@@ -34,30 +36,30 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
         <Icon.X className="icon-img" />
       </button>
       <div className="section-selector-container">
-        <span className="section-title">Basic</span>
+        <span className="section-title">{t("common.basic")}</span>
         <div className="section-items-container">
           <span
             onClick={() => handleSectionSelectorItemClick("my-account")}
             className={`section-item ${state.selectedSection === "my-account" ? "selected" : ""}`}
           >
-            <span className="icon-text">🤠</span> My account
+            <span className="icon-text">🤠</span> {t("setting.my-account")}
           </span>
           <span
             onClick={() => handleSectionSelectorItemClick("preferences")}
             className={`section-item ${state.selectedSection === "preferences" ? "selected" : ""}`}
           >
-            <span className="icon-text">🏟</span> Preferences
+            <span className="icon-text">🏟</span> {t("setting.preference")}
           </span>
         </div>
         {user?.role === "HOST" ? (
           <>
-            <span className="section-title">Admin</span>
+            <span className="section-title">{t("common.admin")}</span>
             <div className="section-items-container">
               <span
                 onClick={() => handleSectionSelectorItemClick("member")}
                 className={`section-item ${state.selectedSection === "member" ? "selected" : ""}`}
               >
-                <span className="icon-text">👤</span> Member
+                <span className="icon-text">👤</span> {t("setting.member")}
               </span>
             </div>
           </>

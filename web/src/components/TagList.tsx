@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import * as utils from "../helpers/utils";
 import { useAppSelector } from "../store";
 import { locationService, memoService, userService } from "../services";
+import useI18n from "../hooks/useI18n";
 import useToggle from "../hooks/useToggle";
 import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
@@ -16,6 +17,7 @@ interface Tag {
 interface Props {}
 
 const TagList: React.FC<Props> = () => {
+  const { t } = useI18n();
   const { memos, tags: tagsText } = useAppSelector((state) => state.memo);
   const query = useAppSelector((state) => state.location.query);
   const [tags, setTags] = useState<Tag[]>([]);
@@ -75,9 +77,7 @@ const TagList: React.FC<Props> = () => {
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
         <Only when={!userService.isVisitorMode() && tags.length < 5}>
-          <p className="tag-tip-container">
-            Enter <span className="code-text">#tag </span> to create a tag
-          </p>
+          <p className="tip-text">{t("tag-list.tip-text")}</p>
         </Only>
       </div>
     </div>

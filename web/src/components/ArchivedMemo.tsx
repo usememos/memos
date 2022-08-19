@@ -1,5 +1,6 @@
 import { IMAGE_URL_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
+import useI18n from "../hooks/useI18n";
 import useToggle from "../hooks/useToggle";
 import { memoService } from "../services";
 import { formatMemoContent } from "../helpers/marked";
@@ -19,6 +20,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
     createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
     archivedAtStr: utils.getDateTimeString(propsMemo.updatedTs ?? Date.now()),
   };
+  const { t } = useI18n();
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
 
@@ -60,10 +62,11 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
         <span className="time-text">Archived at {memo.archivedAtStr}</span>
         <div className="btns-container">
           <span className="btn restore-btn" onClick={handleRestoreMemoClick}>
-            Restore
+            {t("common.restore")}
           </span>
           <span className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
-            {showConfirmDeleteBtn ? "Delete!" : "Delete"}
+            {t("common.delete")}
+            {showConfirmDeleteBtn ? "!" : ""}
           </span>
         </div>
       </div>

@@ -3,12 +3,57 @@
     "about": "关于",
     "email": "邮箱",
     "password": "密码",
-    "sign-in": "登录"
+    "username": "用户名",
+    "save": "保存",
+    "cancel": "退出",
+    "create": "创建",
+    "change": "修改",
+    "reset": "重置",
+    "restore": "恢复",
+    "language": "语言",
+    "version": "版本",
+    "pin": "置顶",
+    "unpin": "取消置顶",
+    "edit": "编辑",
+    "delete": "删除",
+    "share": "分享",
+    "mark": "Mark",
+    "archive": "归档",
+    "basic": "基础",
+    "admin": "管理员",
+    "sign-in": "登录",
+    "sign-out": "退出登录",
+    "back-to-home": "回到主页"
   },
   "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
   "auth": {
     "signup-as-host": "注册为 Host",
     "host-tip": "你正在注册为 Host 用户账号。",
     "not-host-tip": "如果你没有账号，请联系站点 Host"
+  },
+  "sidebar": {
+    "daily-review": "每日回顾",
+    "resources": "资源",
+    "setting": "设置",
+    "archived": "已归档"
+  },
+  "editor": {
+    "save": "记下",
+    "cancel-edit": "退出编辑",
+    "placeholder": "现在的想法是..."
+  },
+  "tag-list": {
+    "tip-text": "输入`#tag `来创建标签"
+  },
+  "setting": {
+    "my-account": "我的账号",
+    "preference": "偏好设置",
+    "member": "成员",
+    "account-section": {
+      "title": "账号信息"
+    },
+    "member-section": {
+      "create-a-member": "创建成员"
+    }
   }
 }

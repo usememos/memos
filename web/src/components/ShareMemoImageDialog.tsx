@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { userService } from "../services";
 import toImage from "../labs/html2image";
 import { ANIMATION_DURATION, IMAGE_URL_REG } from "../helpers/consts";
+import useI18n from "../hooks/useI18n";
 import * as utils from "../helpers/utils";
 import { formatMemoContent } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
@@ -16,6 +17,7 @@ interface Props extends DialogProps {
 
 const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
   const { memo: propsMemo, destroy } = props;
+  const { t } = useI18n();
   const { user: userinfo } = userService.getState();
   const memo = {
     ...propsMemo,
@@ -73,7 +75,8 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">
-          <span className="icon-text">🌄</span>Share Memo
+          <span className="icon-text">🌄</span>
+          {t("common.share")} Memo
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X className="icon-img" />

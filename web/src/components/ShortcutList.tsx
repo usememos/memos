@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { locationService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
+import useI18n from "../hooks/useI18n";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
@@ -59,6 +60,7 @@ interface ShortcutContainerProps {
 
 const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
   const { shortcut, isActive } = props;
+  const { t } = useI18n();
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
   const handleShortcutClick = () => {
@@ -119,17 +121,18 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
           <div className="action-btns-wrapper">
             <div className="action-btns-container">
               <span className="btn" onClick={handlePinShortcutBtnClick}>
-                {shortcut.rowStatus === "ARCHIVED" ? "Unpin" : "Pin"}
+                {shortcut.rowStatus === "ARCHIVED" ? t("common.unpin") : t("common.pin")}
               </span>
               <span className="btn" onClick={handleEditShortcutBtnClick}>
-                Edit
+                {t("common.edit")}
               </span>
               <span
                 className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`}
                 onClick={handleDeleteMemoClick}
                 onMouseLeave={handleDeleteBtnMouseLeave}
               >
-                {showConfirmDeleteBtn ? "Delete!" : "Delete"}
+                {t("common.delete")}
+                {showConfirmDeleteBtn ? "!" : ""}
               </span>
             </div>
           </div>

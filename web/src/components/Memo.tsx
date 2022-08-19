@@ -2,6 +2,8 @@ import { memo, useEffect, useRef, useState } from "react";
 import { indexOf } from "lodash-es";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import "dayjs/locale/zh";
+import useI18n from "../hooks/useI18n";
 import { IMAGE_URL_REG, UNKNOWN_ID } from "../helpers/consts";
 import { DONE_BLOCK_REG, formatMemoContent, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
@@ -27,20 +29,21 @@ interface State {
   expandButtonStatus: ExpandButtonStatus;
 }
 
-export const getFormatedMemoCreatedAtStr = (createdTs: number): string => {
+export const getFormatedMemoCreatedAtStr = (createdTs: number, locale = "en"): string => {
   if (Date.now() - createdTs < 1000 * 60 * 60 * 24) {
-    return dayjs(createdTs).fromNow();
+    return dayjs(createdTs).locale(locale).fromNow();
   } else {
-    return dayjs(createdTs).format("YYYY/MM/DD HH:mm:ss");
+    return dayjs(createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss");
   }
 };
 
 const Memo: React.FC<Props> = (props: Props) => {
   const memo = props.memo;
+  const { t, locale } = useI18n();
   const [state, setState] = useState<State>({
     expandButtonStatus: -1,
   });
-  const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs));
+  const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, locale));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
   const isVisitorMode = userService.isVisitorMode();
@@ -59,10 +62,10 @@ const Memo: React.FC<Props> = (props: Props) => {
 
     if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
       setInterval(() => {
-        setCreatedAtStr(dayjs(memo.createdTs).fromNow());
+        setCreatedAtStr(getFormatedMemoCreatedAtStr(memo.createdTs, locale));
       }, 1000 * 1);
     }
-  }, []);
+  }, [locale]);
 
   const handleShowMemoStoryDialog = () => {
     showMemoCardDialog(memo);
@@ -186,25 +189,25 @@ const Memo: React.FC<Props> = (props: Props) => {
               <div className="btns-container">
                 <div className="btn" onClick={handleTogglePinMemoBtnClick}>
                   <Icon.MapPin className={`icon-img ${memo.pinned ? "" : "opacity-20"}`} />
-                  <span className="tip-text">{memo.pinned ? "Unpin" : "Pin"}</span>
+                  <span className="tip-text">{memo.pinned ? t("common.unpin") : t("common.pin")}</span>
                 </div>
                 <div className="btn" onClick={handleEditMemoClick}>
                   <Icon.Edit3 className="icon-img" />
-                  <span className="tip-text">Edit</span>
+                  <span className="tip-text">{t("common.edit")}</span>
                 </div>
                 <div className="btn" onClick={handleGenMemoImageBtnClick}>
                   <Icon.Share className="icon-img" />
-                  <span className="tip-text">Share</span>
+                  <span className="tip-text">{t("common.share")}</span>
                 </div>
               </div>
               <span className="btn" onClick={handleMarkMemoClick}>
-                Mark
+                {t("common.mark")}
               </span>
               <span className="btn" onClick={handleShowMemoStoryDialog}>
                 View Story
               </span>
               <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
-                Archive
+                {t("common.archive")}
               </span>
             </div>
           </div>

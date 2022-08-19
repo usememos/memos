@@ -45,15 +45,13 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <p>
-          Memos is an <i>open source</i>, <i>self-hosted</i> knowledge base that works with a SQLite db file.
-        </p>
+        <p>{t("slogan")}</p>
         <br />
         <div className="addtion-info-container">
           <GitHubBadge />
           <Only when={profile !== undefined}>
             <>
-              version:
+              {t("common.version")}:
               <span className="pre-text">
                 {profile?.version}-{profile?.mode}
               </span>

@@ -3,12 +3,56 @@
     "about": "About",
     "email": "Email",
     "password": "Password",
-    "sign-in": "Sign in"
+    "username": "Username",
+    "save": "Save",
+    "cancel": "Cancel",
+    "create": "Create",
+    "change": "Change",
+    "reset": "Reset",
+    "language": "Language",
+    "version": "Version",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "edit": "Edit",
+    "delete": "Delete",
+    "share": "Share",
+    "mark": "Mark",
+    "archive": "Archive",
+    "basic": "Basic",
+    "admin": "Admin",
+    "sign-in": "Sign in",
+    "sign-out": "Sign out",
+    "back-to-home": "Back to Home"
   },
   "slogan": "An open source, self-hosted knowledge base that works with a SQLite db file.",
   "auth": {
     "signup-as-host": "Sign up as Host",
     "host-tip": "You are registering as the Site Host.",
     "not-host-tip": "If you don't have an account, please contact the site host."
+  },
+  "sidebar": {
+    "daily-review": "Daily Review",
+    "resources": "Resources",
+    "setting": "Setting",
+    "archived": "Archived"
+  },
+  "editor": {
+    "save": "Save",
+    "cancel-edit": "Cancel edit",
+    "placeholder": "Any thoughts..."
+  },
+  "tag-list": {
+    "tip-text": "Enter `#tag ` to create a tag"
+  },
+  "setting": {
+    "my-account": "My Account",
+    "preference": "Preference",
+    "member": "Member",
+    "account-section": {
+      "title": "Account Information"
+    },
+    "member-section": {
+      "create-a-member": "Create a member"
+    }
   }
 }
