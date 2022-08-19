@@ -66,7 +66,8 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       toastHelper.info("Password changed.");
       handleCloseBtnClick();
     } catch (error: any) {
-      toastHelper.error(error);
+      console.error(error);
+      toastHelper.error(error.response.data.message);
     }
   };
 

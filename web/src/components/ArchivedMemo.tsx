@@ -30,7 +30,8 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
         await memoService.deleteMemoById(memo.id);
         await memoService.fetchAllMemos();
       } catch (error: any) {
-        toastHelper.error(error.message);
+        console.error(error);
+        toastHelper.error(error.response.data.message);
       }
     } else {
       toggleConfirmDeleteBtn();
@@ -46,7 +47,8 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
       await memoService.fetchAllMemos();
       toastHelper.info("Restored successfully");
     } catch (error: any) {
-      toastHelper.error(error.message);
+      console.error(error);
+      toastHelper.error(error.response.data.message);
     }
   };
 

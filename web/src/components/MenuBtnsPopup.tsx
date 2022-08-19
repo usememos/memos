@@ -42,7 +42,8 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
         toastHelper.info(JSON.stringify(profile, null, 4));
       })
       .catch((error) => {
-        toastHelper.error("Failed to ping\n" + JSON.stringify(error, null, 4));
+        console.error(error);
+        toastHelper.error(error.response.data.message);
       });
   };
 

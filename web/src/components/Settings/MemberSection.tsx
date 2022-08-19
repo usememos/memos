@@ -64,7 +64,8 @@ const PreferencesSection: React.FC<Props> = () => {
     try {
       await api.createUser(userCreate);
     } catch (error: any) {
-      toastHelper.error(error.message);
+      console.error(error);
+      toastHelper.error(error.response.data.message);
     }
     await fetchUserList();
     setState({

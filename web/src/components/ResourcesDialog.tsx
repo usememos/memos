@@ -29,7 +29,8 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     fetchResources()
       .catch((error) => {
-        toastHelper.error("Failed to fetch archived memos: ", error);
+        console.error(error);
+        toastHelper.error(error.response.data.message);
       })
       .finally(() => {
         loadingState.setFinish();
@@ -67,7 +68,8 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       try {
         await resourceService.upload(file);
       } catch (error: any) {
-        toastHelper.error("Failed to upload resource\n" + JSON.stringify(error, null, 4));
+        console.error(error);
+        toastHelper.error(error.response.data.message);
       } finally {
         setState({
           ...state,

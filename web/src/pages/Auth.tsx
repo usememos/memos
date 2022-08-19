@@ -11,7 +11,7 @@ import "../less/auth.less";
 interface Props {}
 
 const validateConfig: ValidatorConfig = {
-  minLength: 6,
+  minLength: 4,
   maxLength: 24,
   noSpace: true,
   noChinese: true,
@@ -71,11 +71,11 @@ const Auth: React.FC<Props> = () => {
       if (user) {
         locationService.replaceHistory("/");
       } else {
-        toastHelper.error("😟 Login failed");
+        toastHelper.error("Login failed");
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error("😟 " + error.message);
+      toastHelper.error(error.response.data.message);
     }
     actionBtnLoadingState.setFinish();
   };
@@ -104,11 +104,11 @@ const Auth: React.FC<Props> = () => {
       if (user) {
         locationService.replaceHistory("/");
       } else {
-        toastHelper.error("😟 Signup failed");
+        toastHelper.error("Signup failed");
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error("😟 " + error.message);
+      toastHelper.error(error.response.data.message);
     }
     actionBtnLoadingState.setFinish();
   };

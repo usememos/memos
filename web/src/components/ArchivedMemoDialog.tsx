@@ -23,7 +23,8 @@ const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
         setArchivedMemos(result);
       })
       .catch((error) => {
-        toastHelper.error("Failed to fetch archived memos: ", error);
+        console.error(error);
+        toastHelper.error(error.response.data.message);
       })
       .finally(() => {
         loadingState.setFinish();

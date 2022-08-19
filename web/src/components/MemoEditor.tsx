@@ -119,7 +119,8 @@ const MemoEditor: React.FC<Props> = () => {
         const url = `/h/r/${image.id}/${image.filename}`;
         return url;
       } catch (error: any) {
-        toastHelper.error("Failed to upload image\n" + JSON.stringify(error, null, 4));
+        console.error(error);
+        toastHelper.error(error.response.data.message);
       } finally {
         setState({
           ...state,
@@ -155,7 +156,8 @@ const MemoEditor: React.FC<Props> = () => {
         locationService.clearQuery();
       }
     } catch (error: any) {
-      toastHelper.error(error.message);
+      console.error(error);
+      toastHelper.error(error.response.data.message);
     }
 
     setState({

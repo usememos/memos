@@ -84,8 +84,9 @@ const MemoList: React.FC<Props> = () => {
       .then(() => {
         setFetchStatus(false);
       })
-      .catch(() => {
-        toastHelper.error("😭 Fetching failed, please try again later.");
+      .catch((error) => {
+        console.error(error);
+        toastHelper.error(error.response.data.message);
       });
   }, []);
 

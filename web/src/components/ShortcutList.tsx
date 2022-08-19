@@ -78,7 +78,8 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
       try {
         await shortcutService.deleteShortcutById(shortcut.id);
       } catch (error: any) {
-        toastHelper.error(error.message);
+        console.error(error);
+        toastHelper.error(error.response.data.message);
       }
     } else {
       toggleConfirmDeleteBtn();

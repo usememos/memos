@@ -103,7 +103,8 @@ const Memo: React.FC<Props> = (props: Props) => {
         rowStatus: "ARCHIVED",
       });
     } catch (error: any) {
-      toastHelper.error(error.message);
+      console.error(error);
+      toastHelper.error(error.response.data.message);
     }
 
     if (editorStateService.getState().editMemoId === memo.id) {
@@ -125,7 +126,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       if (memoTemp) {
         showMemoCardDialog(memoTemp);
       } else {
-        toastHelper.error("MEMO Not Found");
+        toastHelper.error("Memo Not Found");
         targetEl.classList.remove("memo-link-text");
       }
     } else if (targetEl.className === "tag-span") {

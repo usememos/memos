@@ -46,7 +46,8 @@ const MyAccountSection: React.FC<Props> = () => {
       });
       toastHelper.info("Username changed");
     } catch (error: any) {
-      toastHelper.error(error.message);
+      console.error(error);
+      toastHelper.error(error.response.data.message);
     }
   };
 
