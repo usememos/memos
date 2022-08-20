@@ -3,7 +3,7 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -39,7 +39,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		defer src.Close()
 
-		fileBytes, err := ioutil.ReadAll(src)
+		fileBytes, err := io.ReadAll(src)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
 		}
