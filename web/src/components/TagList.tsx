@@ -76,7 +76,7 @@ const TagList: React.FC<Props> = () => {
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        <Only when={!userService.isVisitorMode() && tags.length < 5}>
+        <Only when={!userService.isVisitorMode() && tags.length === 0}>
           <p className="tip-text">{t("tag-list.tip-text")}</p>
         </Only>
       </div>
