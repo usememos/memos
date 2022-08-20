@@ -1,5 +1,11 @@
 package api
 
+import (
+	"fmt"
+
+	"github.com/usememos/memos/common"
+)
+
 // Role is the type of a role.
 type Role string
 
@@ -45,6 +51,20 @@ type UserCreate struct {
 	Password     string `json:"password"`
 	PasswordHash string
 	OpenID       string
+}
+
+func (create UserCreate) Validate() error {
+	if !common.ValidateEmail(create.Email) {
+		return fmt.Errorf("invalid email format")
+	}
+	if len(create.Email) < 6 {
+		return fmt.Errorf("email is too short, minimum length is 6")
+	}
+	if len(create.Password) < 6 {
+		return fmt.Errorf("password is too short, minimum length is 6")
+	}
+
+	return nil
 }
 
 type UserPatch struct {

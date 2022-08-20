@@ -16,9 +16,27 @@ import (
 func (s *Server) registerUserRoutes(g *echo.Group) {
 	g.POST("/user", func(c echo.Context) error {
 		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
+		}
+		currentUser, err := s.Store.FindUser(ctx, &api.UserFind{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by id").SetInternal(err)
+		}
+		if currentUser.Role != api.Host {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Only Host user can create member.")
+		}
+
 		userCreate := &api.UserCreate{}
 		if err := json.NewDecoder(c.Request().Body).Decode(userCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user request").SetInternal(err)
+		}
+
+		if err := userCreate.Validate(); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format.").SetInternal(err)
 		}
 
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(userCreate.Password), bcrypt.DefaultCost)
