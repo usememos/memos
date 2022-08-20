@@ -22,9 +22,15 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 		memoCreate := &api.MemoCreate{
 			CreatorID: userID,
+			// Private is the default memo visibility.
+			Visibility: api.Privite,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(memoCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
+		}
+
+		if memoCreate.Content == "" {
+			return echo.NewHTTPError(http.StatusBadRequest, "Memo content shouldn't be empty")
 		}
 
 		userSettingMemoVisibilityKey := api.UserSettingMemoVisibilityKey
@@ -38,12 +44,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if userMemoVisibilitySetting != nil {
 			memoVisibility := api.Privite
 			json.Unmarshal([]byte(userMemoVisibilitySetting.Value), &memoVisibility)
-			memoCreate.Visibility = &memoVisibility
-		}
-
-		if memoCreate.Visibility == nil || *memoCreate.Visibility == "" {
-			private := api.Privite
-			memoCreate.Visibility = &private
+			memoCreate.Visibility = memoVisibility
 		}
 
 		memo, err := s.Store.CreateMemo(ctx, memoCreate)

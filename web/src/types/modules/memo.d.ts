@@ -17,7 +17,6 @@ interface Memo {
 
 interface MemoCreate {
   content: string;
-  visibility?: Visibility;
   createdTs?: TimeStamp;
 }
 

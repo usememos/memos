@@ -46,8 +46,8 @@ type MemoCreate struct {
 	CreatedTs *int64 `json:"createdTs"`
 
 	// Domain specific fields
-	Content    string      `json:"content"`
-	Visibility *Visibility `json:"visibility"`
+	Visibility Visibility
+	Content    string `json:"content"`
 }
 
 type MemoPatch struct {

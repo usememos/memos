@@ -201,13 +201,10 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *api.MemoDelete) error {
 }
 
 func createMemoRaw(ctx context.Context, tx *sql.Tx, create *api.MemoCreate) (*memoRaw, error) {
-	set := []string{"creator_id", "content"}
-	placeholder := []string{"?", "?"}
-	args := []interface{}{create.CreatorID, create.Content}
+	set := []string{"creator_id", "content", "visibility"}
+	placeholder := []string{"?", "?", "?"}
+	args := []interface{}{create.CreatorID, create.Content, create.Visibility}
 
-	if v := create.Visibility; v != nil {
-		set, placeholder, args = append(set, "visibility"), append(placeholder, "?"), append(args, *v)
-	}
 	if v := create.CreatedTs; v != nil {
 		set, placeholder, args = append(set, "created_ts"), append(placeholder, "?"), append(args, *v)
 	}
