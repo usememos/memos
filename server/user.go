@@ -118,9 +118,8 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if err := json.NewDecoder(c.Request().Body).Decode(userSettingUpsert); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user setting upsert request").SetInternal(err)
 		}
-
-		if userSettingUpsert.Key.String() == "" {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user setting key")
+		if err := userSettingUpsert.Validate(); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user setting format").SetInternal(err)
 		}
 
 		userSettingUpsert.UserID = userID
@@ -189,6 +188,10 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(userPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
+		}
+
+		if userPatch.Email != nil && !common.ValidateEmail(*userPatch.Email) {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid email format")
 		}
 
 		if userPatch.Password != nil && *userPatch.Password != "" {

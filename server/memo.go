@@ -43,7 +43,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 		if userMemoVisibilitySetting != nil {
 			memoVisibility := api.Privite
-			json.Unmarshal([]byte(userMemoVisibilitySetting.Value), &memoVisibility)
+			err := json.Unmarshal([]byte(userMemoVisibilitySetting.Value), &memoVisibility)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal user setting value").SetInternal(err)
+			}
 			memoCreate.Visibility = memoVisibility
 		}
 
