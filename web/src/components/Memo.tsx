@@ -210,7 +210,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                 {t("common.mark")}
               </span>
               <span className="btn" onClick={handleShowMemoStoryDialog}>
-                View Story
+                {t("memo.view-story")}
               </span>
               <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
                 {t("common.archive")}

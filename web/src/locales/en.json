@@ -41,8 +41,11 @@
     "cancel-edit": "Cancel edit",
     "placeholder": "Any thoughts..."
   },
+  "memo": {
+    "view-story": "View Story"
+  },
   "tag-list": {
-    "tip-text": "Enter `#tag ` to create a tag"
+    "tip-text": "Enter `#tag ` to create"
   },
   "setting": {
     "my-account": "My Account",

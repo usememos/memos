@@ -17,7 +17,7 @@
     "edit": "编辑",
     "delete": "删除",
     "share": "分享",
-    "mark": "Mark",
+    "mark": "标注",
     "archive": "归档",
     "basic": "基础",
     "admin": "管理员",
@@ -41,6 +41,9 @@
     "save": "记下",
     "cancel-edit": "退出编辑",
     "placeholder": "现在的想法是..."
+  },
+  "memo": {
+    "view-story": "查看详情"
   },
   "tag-list": {
     "tip-text": "输入`#tag `来创建标签"
