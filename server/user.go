@@ -30,7 +30,9 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Only Host user can create member.")
 		}
 
-		userCreate := &api.UserCreate{}
+		userCreate := &api.UserCreate{
+			OpenID: common.GenUUID(),
+		}
 		if err := json.NewDecoder(c.Request().Body).Decode(userCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user request").SetInternal(err)
 		}
