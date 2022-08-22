@@ -229,7 +229,7 @@ const MemoEditor: React.FC<Props> = () => {
 
   return (
     <div className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}>
-      <p className={"tip-text " + (isEditing ? "" : "hidden")}>Editting...</p>
+      <p className={"tip-text " + (isEditing ? "" : "hidden")}>Editing...</p>
       <Editor
         ref={editorRef}
         {...editorConfig}
