@@ -2,6 +2,7 @@ package server
 
 import (
 	"fmt"
+	"html"
 	"net/http"
 	"strconv"
 
@@ -22,7 +23,7 @@ func (s *Server) registerWebhookRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		filename := c.Param("filename")
+		filename := html.UnescapeString(c.Param("filename"))
 		resourceFind := &api.ResourceFind{
 			ID:       &resourceID,
 			Filename: &filename,
