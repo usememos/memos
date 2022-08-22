@@ -15,7 +15,7 @@
 
 ![demo](https://raw.githubusercontent.com/usememos/memos/main/resources/demo.webp)
 
-## ✨ Features
+## Features
 
 - 🦄 Fully open source;
 - 📜 Writing in plain textarea without any burden,
@@ -24,21 +24,15 @@
 - 🚀 Fast self-hosting with `Docker`;
 - 🤠 Pleasant UI and UX;
 
-## ⚓️ Deploy with Docker
+## Deploy with Docker
 
 ```docker
-docker run \
-  --name memos \
-  --publish 5230:5230 \
-  --volume ~/.memos/:/var/opt/memos \
-  neosmemo/memos:latest \
-  --mode prod \
-  --port 5230
+docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:latest
 ```
 
 Memos should be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then memos will auto generate it.
 
-## 🏗 Development
+## Development
 
 Memos is built with a curated tech stack. It is optimized for developer experience and is very easy to start working on the code:
 
@@ -83,6 +77,6 @@ Memos should now be running at [http://localhost:3000](http://localhost:3000) an
 
 Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
 
-## 🌟 Star history
+## Star history
 
 [![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
