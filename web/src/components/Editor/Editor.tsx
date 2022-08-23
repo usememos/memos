@@ -18,10 +18,8 @@ interface EditorProps {
   placeholder: string;
   fullscreen: boolean;
   showConfirmBtn: boolean;
-  showCancelBtn: boolean;
   tools?: ReactNode;
   onConfirmBtnClick: (content: string) => void;
-  onCancelBtnClick: () => void;
   onContentChange: (content: string) => void;
 }
 
@@ -33,9 +31,7 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
     placeholder,
     fullscreen,
     showConfirmBtn,
-    showCancelBtn,
     onConfirmBtnClick: handleConfirmBtnClickCallback,
-    onCancelBtnClick: handleCancelBtnClickCallback,
     onContentChange: handleContentChangeCallback,
   } = props;
   const { t } = useI18n();
@@ -111,10 +107,6 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
     editorRef.current.value = "";
   }, []);
 
-  const handleCommonCancelBtnClick = useCallback(() => {
-    handleCancelBtnClickCallback();
-  }, []);
-
   return (
     <div className={"common-editor-wrapper " + className}>
       <textarea
@@ -130,11 +122,6 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
           <Only when={props.tools !== undefined}>{props.tools}</Only>
         </div>
         <div className="btns-container">
-          <Only when={showCancelBtn}>
-            <button className="action-btn cancel-btn" onClick={handleCommonCancelBtnClick}>
-              {t("editor.cancel-edit")}
-            </button>
-          </Only>
           <Only when={showConfirmBtn}>
             <button className="action-btn confirm-btn" disabled={editorRef.current?.value === ""} onClick={handleCommonConfirmBtnClick}>
               {t("editor.save")} <span className="icon-text">✍️</span>

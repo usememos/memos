@@ -167,7 +167,7 @@ const MemoEditor: React.FC<Props> = () => {
     setEditorContentCache("");
   };
 
-  const handleCancelBtnClick = useCallback(() => {
+  const handleCancelEditingBtnClick = useCallback(() => {
     editorStateService.clearEditMemo();
     editorRef.current?.setContent("");
     setEditorContentCache("");
@@ -219,9 +219,7 @@ const MemoEditor: React.FC<Props> = () => {
       placeholder: t("editor.placeholder"),
       fullscreen: state.fullscreen,
       showConfirmBtn: true,
-      showCancelBtn: isEditing,
       onConfirmBtnClick: handleSaveBtnClick,
-      onCancelBtnClick: handleCancelBtnClick,
       onContentChange: handleContentChange,
     }),
     [isEditing, state.fullscreen, locale]
@@ -229,7 +227,12 @@ const MemoEditor: React.FC<Props> = () => {
 
   return (
     <div className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}>
-      <p className={"tip-text " + (isEditing ? "" : "hidden")}>Editing...</p>
+      <div className={`tip-container ${isEditing ? "" : "!hidden"}`}>
+        <span className="tip-text">{t("editor.editing")}</span>
+        <button className="cancel-btn" onClick={handleCancelEditingBtnClick}>
+          {t("common.cancel")}
+        </button>
+      </div>
       <Editor
         ref={editorRef}
         {...editorConfig}

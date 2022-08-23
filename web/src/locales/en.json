@@ -37,8 +37,8 @@
     "archived": "Archived"
   },
   "editor": {
+    "editing": "Editing...",
     "save": "Save",
-    "cancel-edit": "Cancel edit",
     "placeholder": "Any thoughts..."
   },
   "memo": {

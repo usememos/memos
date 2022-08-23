@@ -38,8 +38,8 @@
     "archived": "已归档"
   },
   "editor": {
+    "editing": "编辑中...",
     "save": "记下",
-    "cancel-edit": "退出编辑",
     "placeholder": "现在的想法是..."
   },
   "memo": {
