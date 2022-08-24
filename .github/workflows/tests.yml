@@ -1,0 +1,29 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - main
+      - "release/v*.*.*"
+  pull_request:
+    branches: [main]
+
+jobs:
+  go-static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: 1.18
+          check-latest: true
+          cache: true
+      - name: Verify go.mod is tidy
+        run: |
+          go mod tidy
+          git diff --exit-code
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v3
+        with:
+          args: -v
+          skip-cache: true
