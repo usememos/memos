@@ -14,8 +14,6 @@ import (
 
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/server/profile"
-
-	_ "github.com/mattn/go-sqlite3"
 )
 
 //go:embed migration
@@ -175,11 +173,7 @@ func (db *DB) applyMigrationForMinorVersion(ctx context.Context, minorVersion st
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-
-	return nil
+	return tx.Commit()
 }
 
 func (db *DB) seed(ctx context.Context) error {
@@ -204,7 +198,7 @@ func (db *DB) seed(ctx context.Context) error {
 	return nil
 }
 
-// excecute runs a single SQL statement within a transaction.
+// execute runs a single SQL statement within a transaction.
 func (db *DB) execute(ctx context.Context, stmt string) error {
 	tx, err := db.Db.Begin()
 	if err != nil {
@@ -216,11 +210,7 @@ func (db *DB) execute(ctx context.Context, stmt string) error {
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-
-	return nil
+	return tx.Commit()
 }
 
 // minorDirRegexp is a regular expression for minor version directory.
@@ -264,9 +254,5 @@ func (db *DB) createMigrationHistoryTable(ctx context.Context) error {
 		return err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-
-	return nil
+	return tx.Commit()
 }

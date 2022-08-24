@@ -1,0 +1,62 @@
+linters:
+  enable:
+    - goimports
+    - revive
+    - govet
+    - staticcheck
+    - misspell
+    - gocritic
+    - sqlclosecheck
+    - rowserrcheck
+    - nilerr
+    - godot
+
+issues:
+  exclude:
+    - Rollback
+
+linters-settings:
+  revive:
+    enable-all-rules: true
+    rules:
+      - name: file-header
+        disabled: true
+      - name: line-length-limit
+        disabled: true
+      - name: function-length
+        disabled: true
+      - name: max-public-structs
+        disabled: true
+      - name: function-result-limit
+        disabled: true
+      - name: banned-characters
+        disabled: true
+      - name: argument-limit
+        disabled: true
+      - name: cognitive-complexity
+        disabled: true
+      - name: cyclomatic
+        disabled: true
+      - name: confusing-results
+        disabled: true
+      - name: add-constant
+        disabled: true
+      - name: flag-parameter
+        disabled: true
+      - name: nested-structs
+        disabled: true
+      - name: import-shadowing
+        disabled: true
+      - name: early-return
+        disabled: true
+  gocritic:
+    disabled-checks:
+      - ifElseChain
+  govet:
+    settings:
+      printf:
+        funcs:
+          - common.Errorf
+  forbidigo:
+    forbid:
+      - 'fmt\.Errorf(# Please use errors\.Wrap\|Wrapf\|Errorf instead)?'

@@ -45,7 +45,7 @@ func checkDSN(dataDir string) (string, error) {
 }
 
 // GetDevProfile will return a profile for dev or prod.
-func GetProfile() *Profile {
+func GetProfile() (*Profile, error) {
 	profile := Profile{}
 	flag.StringVar(&profile.Mode, "mode", "dev", "mode of server")
 	flag.IntVar(&profile.Port, "port", 8080, "port of server")
@@ -63,12 +63,12 @@ func GetProfile() *Profile {
 	dataDir, err := checkDSN(profile.Data)
 	if err != nil {
 		fmt.Printf("Failed to check dsn: %s, err: %+v\n", dataDir, err)
-		os.Exit(1)
+		return nil, err
 	}
 
 	profile.Data = dataDir
 	profile.DSN = fmt.Sprintf("%s/memos_%s.db", dataDir, profile.Mode)
 	profile.Version = common.GetCurrentVersion(profile.Mode)
 
-	return &profile
+	return &profile, nil
 }

@@ -33,9 +33,10 @@ func (db *DB) FindMigrationHistory(ctx context.Context, find *MigrationHistoryFi
 
 	if len(list) == 0 {
 		return nil, nil
-	} else {
-		return list[0], nil
 	}
+
+	migrationHistory := list[0]
+	return migrationHistory, nil
 }
 
 func (db *DB) UpsertMigrationHistory(ctx context.Context, upsert *MigrationHistoryUpsert) (*MigrationHistory, error) {
@@ -92,6 +93,10 @@ func findMigrationHistoryList(ctx context.Context, tx *sql.Tx, find *MigrationHi
 		migrationHistoryList = append(migrationHistoryList, &migrationHistory)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return migrationHistoryList, nil
 }
 
@@ -118,6 +123,10 @@ func upsertMigrationHistory(ctx context.Context, tx *sql.Tx, upsert *MigrationHi
 		&migrationHistory.Version,
 		&migrationHistory.CreatedTs,
 	); err != nil {
+		return nil, err
+	}
+
+	if err := row.Err(); err != nil {
 		return nil, err
 	}
 

@@ -111,7 +111,7 @@ func findUserSettingList(ctx context.Context, tx *sql.Tx, find *api.UserSettingF
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.Key; v != nil {
-		where, args = append(where, "key = ?"), append(args, (*v).String())
+		where, args = append(where, "key = ?"), append(args, v.String())
 	}
 
 	where, args = append(where, "user_id = ?"), append(args, find.UserID)

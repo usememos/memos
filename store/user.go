@@ -258,6 +258,10 @@ func patchUser(ctx context.Context, tx *sql.Tx, patch *api.UserPatch) (*userRaw,
 			return nil, FormatError(err)
 		}
 
+		if err := row.Err(); err != nil {
+			return nil, err
+		}
+
 		return &userRaw, nil
 	}
 

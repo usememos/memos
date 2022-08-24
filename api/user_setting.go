@@ -10,7 +10,7 @@ type UserSettingKey string
 const (
 	// UserSettingLocaleKey is the key type for user locale.
 	UserSettingLocaleKey UserSettingKey = "locale"
-	// UserSettingMemoVisibilityKey is the key type for user perference memo default visibility.
+	// UserSettingMemoVisibilityKey is the key type for user preference memo default visibility.
 	UserSettingMemoVisibilityKey UserSettingKey = "memoVisibility"
 )
 

@@ -9,7 +9,7 @@ type Code int
 
 // Application error codes.
 const (
-	// 0 ~ 99 general error
+	// 0 ~ 99 general error.
 	Ok             Code = 0
 	Internal       Code = 1
 	NotAuthorized  Code = 2

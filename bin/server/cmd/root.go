@@ -3,7 +3,6 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"os"
 
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
@@ -41,8 +40,11 @@ func Run(profile *profile.Profile) error {
 	return s.Run()
 }
 
-func Execute() {
-	profile := profile.GetProfile()
+func Execute() error {
+	profile, err := profile.GetProfile()
+	if err != nil {
+		return err
+	}
 
 	println("---")
 	println("profile")
@@ -54,6 +56,8 @@ func Execute() {
 
 	if err := Run(profile); err != nil {
 		fmt.Printf("error: %+v\n", err)
-		os.Exit(1)
+		return err
 	}
+
+	return nil
 }

@@ -95,6 +95,10 @@ func findMemoOrganizer(ctx context.Context, tx *sql.Tx, find *api.MemoOrganizerF
 		return nil, FormatError(err)
 	}
 
+	if err := row.Err(); err != nil {
+		return nil, err
+	}
+
 	return &memoOrganizerRaw, nil
 }
 

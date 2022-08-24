@@ -1,7 +1,15 @@
 package main
 
-import "github.com/usememos/memos/bin/server/cmd"
+import (
+	"os"
+
+	_ "github.com/mattn/go-sqlite3"
+
+	"github.com/usememos/memos/bin/server/cmd"
+)
 
 func main() {
-	cmd.Execute()
+	if err := cmd.Execute(); err != nil {
+		os.Exit(1)
+	}
 }
