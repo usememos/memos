@@ -12,6 +12,7 @@ type Table struct {
 }
 
 //lint:ignore U1000 Ignore unused function temporarily for debugging
+//nolint:all
 func findTable(ctx context.Context, tx *sql.Tx, tableName string) (*Table, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 

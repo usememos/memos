@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"regexp"
 	"sort"
@@ -91,12 +90,12 @@ func (db *DB) Open(ctx context.Context) (err error) {
 				minorVersionList := getMinorVersionList()
 
 				// backup the raw database file before migration
-				rawBytes, err := ioutil.ReadFile(db.profile.DSN)
+				rawBytes, err := os.ReadFile(db.profile.DSN)
 				if err != nil {
 					return fmt.Errorf("failed to read raw database file, err: %w", err)
 				}
 				backupDBFilePath := fmt.Sprintf("%s/memos_%s_%d_backup.db", db.profile.Data, db.profile.Version, time.Now().Unix())
-				if err := ioutil.WriteFile(backupDBFilePath, rawBytes, 0644); err != nil {
+				if err := os.WriteFile(backupDBFilePath, rawBytes, 0644); err != nil {
 					return fmt.Errorf("failed to write raw database file, err: %w", err)
 				}
 
