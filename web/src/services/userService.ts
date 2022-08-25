@@ -7,6 +7,7 @@ import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
 const defauleSetting: Setting = {
   locale: "en",
   memoVisibility: "PRIVATE",
+  editorFontStyle: "normal",
 };
 
 export const convertResponseModelUser = (user: User): User => {
@@ -16,7 +17,7 @@ export const convertResponseModelUser = (user: User): User => {
 
   if (user.userSettingList) {
     for (const userSetting of user.userSettingList) {
-      setting[userSetting.key] = JSON.parse(userSetting.value);
+      (setting as any)[userSetting.key] = JSON.parse(userSetting.value);
     }
   }
 
@@ -92,7 +93,7 @@ const userService = {
     }
   },
 
-  upsertUserSetting: async (key: string, value: any) => {
+  upsertUserSetting: async (key: keyof Setting, value: any) => {
     await api.upsertUserSetting({
       key: key as any,
       value: JSON.stringify(value),

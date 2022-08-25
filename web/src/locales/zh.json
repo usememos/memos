@@ -56,7 +56,8 @@
       "title": "账号信息"
     },
     "preference-section": {
-      "default-memo-visibility": "默认 Memo 可见性"
+      "default-memo-visibility": "默认 Memo 可见性",
+      "editor-font-style": "编辑器字体样式"
     },
     "member-section": {
       "create-a-member": "创建成员"

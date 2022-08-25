@@ -18,6 +18,7 @@ interface State {
 
 const MemoEditor: React.FC<Props> = () => {
   const { t, locale } = useI18n();
+  const user = useAppSelector((state) => state.user.user);
   const editorState = useAppSelector((state) => state.editor);
   const tags = useAppSelector((state) => state.memo.tags);
   const [state, setState] = useState<State>({
@@ -27,6 +28,7 @@ const MemoEditor: React.FC<Props> = () => {
   const editorRef = useRef<EditorRefActions>(null);
   const prevGlobalStateRef = useRef(editorState);
   const tagSeletorRef = useRef<HTMLDivElement>(null);
+  const editorFontStyle = user?.setting.editorFontStyle || "normal";
 
   useEffect(() => {
     if (editorState.markMemoId && editorState.markMemoId !== UNKNOWN_ID) {
@@ -214,7 +216,7 @@ const MemoEditor: React.FC<Props> = () => {
 
   const editorConfig = useMemo(
     () => ({
-      className: "memo-editor",
+      className: `memo-editor ${editorFontStyle}`,
       initialContent: getEditorContentCache(),
       placeholder: t("editor.placeholder"),
       fullscreen: state.fullscreen,
@@ -222,7 +224,7 @@ const MemoEditor: React.FC<Props> = () => {
       onConfirmBtnClick: handleSaveBtnClick,
       onContentChange: handleContentChange,
     }),
-    [isEditing, state.fullscreen, locale]
+    [isEditing, state.fullscreen, locale, editorFontStyle]
   );
 
   return (

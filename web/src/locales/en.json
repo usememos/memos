@@ -56,7 +56,8 @@
       "title": "Account Information"
     },
     "preference-section": {
-      "default-memo-visibility": "Default memo visibility"
+      "default-memo-visibility": "Default memo visibility",
+      "editor-font-style": "Editor font style"
     },
     "member-section": {
       "create-a-member": "Create a member"
