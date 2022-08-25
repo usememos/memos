@@ -97,7 +97,7 @@ const MemoList: React.FC<Props> = () => {
   return (
     <div className={`memo-list-container ${isFetching ? "" : "completed"}`} ref={wrapperElement}>
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.updatedTs}`} memo={memo} />
+        <Memo key={`${memo.id}-${memo.createdTs}-${memo.updatedTs}`} memo={memo} />
       ))}
       <div className="status-text-container">
         <p className="status-text">

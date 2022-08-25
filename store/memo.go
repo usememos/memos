@@ -202,12 +202,8 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *api.MemoDelete) error {
 
 func createMemoRaw(ctx context.Context, tx *sql.Tx, create *api.MemoCreate) (*memoRaw, error) {
 	set := []string{"creator_id", "content", "visibility"}
-	placeholder := []string{"?", "?", "?"}
 	args := []interface{}{create.CreatorID, create.Content, create.Visibility}
-
-	if v := create.CreatedTs; v != nil {
-		set, placeholder, args = append(set, "created_ts"), append(placeholder, "?"), append(args, *v)
-	}
+	placeholder := []string{"?", "?", "?"}
 
 	query := `
 		INSERT INTO memo (
@@ -235,11 +231,14 @@ func createMemoRaw(ctx context.Context, tx *sql.Tx, create *api.MemoCreate) (*me
 func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoRaw, error) {
 	set, args := []string{}, []interface{}{}
 
-	if v := patch.Content; v != nil {
-		set, args = append(set, "content = ?"), append(args, *v)
+	if v := patch.CreatedTs; v != nil {
+		set, args = append(set, "created_ts = ?"), append(args, *v)
 	}
 	if v := patch.RowStatus; v != nil {
 		set, args = append(set, "row_status = ?"), append(args, *v)
+	}
+	if v := patch.Content; v != nil {
+		set, args = append(set, "content = ?"), append(args, *v)
 	}
 	if v := patch.Visibility; v != nil {
 		set, args = append(set, "visibility = ?"), append(args, *v)

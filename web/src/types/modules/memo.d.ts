@@ -17,13 +17,14 @@ interface Memo {
 
 interface MemoCreate {
   content: string;
-  createdTs?: TimeStamp;
+  visibility?: Visibility;
 }
 
 interface MemoPatch {
   id: MemoId;
-  content?: string;
+  createdTs?: TimeStamp;
   rowStatus?: RowStatus;
+  content?: string;
   visibility?: Visibility;
 }
 
