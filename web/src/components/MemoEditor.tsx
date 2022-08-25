@@ -243,9 +243,19 @@ const MemoEditor: React.FC<Props> = () => {
             <div className="action-btn tag-action">
               <Icon.Hash className="icon-img" />
               <div ref={tagSeletorRef} className="tag-list" onClick={handleTagSeletorClick}>
-                {tags.map((t) => {
-                  return <span key={t}>{t}</span>;
-                })}
+                {tags.length > 0 ? (
+                  tags.map((tag) => {
+                    return (
+                      <span className="item-container" key={tag}>
+                        {tag}
+                      </span>
+                    );
+                  })
+                ) : (
+                  <p className="tip-text" onClick={(e) => e.stopPropagation()}>
+                    {t("common.null")}
+                  </p>
+                )}
               </div>
             </div>
             <button className="action-btn">

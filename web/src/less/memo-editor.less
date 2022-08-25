@@ -52,8 +52,12 @@
       > .tag-list {
         @apply hidden flex-col justify-start items-start absolute top-6 left-0 mt-1 p-1 z-1 rounded w-32 max-h-52 overflow-auto bg-black;
 
-        > span {
+        > .item-container {
           @apply w-full text-white cursor-pointer rounded text-sm leading-6 px-2 hover:bg-gray-700;
+        }
+
+        > .tip-text {
+          @apply w-full text-sm text-gray-200 leading-6 px-2 cursor-default;
         }
       }
     }

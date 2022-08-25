@@ -1,4 +1,5 @@
 import { memo, useEffect, useRef } from "react";
+import useI18n from "../../hooks/useI18n";
 import useToggle from "../../hooks/useToggle";
 import Icon from "../Icon";
 import "../../less/common/selector.less";
@@ -22,6 +23,7 @@ const nullItem = {
 
 const Selector: React.FC<Props> = (props: Props) => {
   const { className, dataSource, handleValueChanged, value } = props;
+  const { t } = useI18n();
   const [showSelector, toggleSelectorStatus] = useToggle(false);
 
   const seletorElRef = useRef<HTMLDivElement>(null);
@@ -70,19 +72,23 @@ const Selector: React.FC<Props> = (props: Props) => {
       </div>
 
       <div className={`items-wrapper ${showSelector ? "" : "!hidden"}`}>
-        {dataSource.map((d) => {
-          return (
-            <div
-              className={`item-container ${d.value === value ? "selected" : ""}`}
-              key={d.value}
-              onClick={() => {
-                handleItemClick(d);
-              }}
-            >
-              {d.text}
-            </div>
-          );
-        })}
+        {dataSource.length > 0 ? (
+          dataSource.map((d) => {
+            return (
+              <div
+                className={`item-container ${d.value === value ? "selected" : ""}`}
+                key={d.value}
+                onClick={() => {
+                  handleItemClick(d);
+                }}
+              >
+                {d.text}
+              </div>
+            );
+          })
+        ) : (
+          <p className="tip-text">{t("common.null")}</p>
+        )}
       </div>
     </div>
   );
