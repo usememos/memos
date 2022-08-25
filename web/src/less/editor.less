@@ -1,8 +1,13 @@
 @import "./mixin.less";
 
 .common-editor-wrapper {
-  .flex(column, flex-start, flex-start);
-  @apply relative w-full h-auto bg-white;
+  @apply flex flex-col justify-start items-start relative w-full h-auto bg-white;
+
+  &.mono {
+    > .common-editor-inputer {
+      @apply font-mono;
+    }
+  }
 
   > .common-editor-inputer {
     @apply w-full h-full mt-1 mb-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent whitespace-pre-wrap;

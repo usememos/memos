@@ -19,6 +19,17 @@ const localeSelectorItems = [
   },
 ];
 
+const editorFontStyleSelectorItems = [
+  {
+    text: "Normal",
+    value: "normal",
+  },
+  {
+    text: "Mono",
+    value: "mono",
+  },
+];
+
 const PreferencesSection: React.FC<Props> = () => {
   const { t } = useI18n();
   const { setting } = useAppSelector((state) => state.user.user as User);
@@ -32,20 +43,36 @@ const PreferencesSection: React.FC<Props> = () => {
     await userService.upsertUserSetting("memoVisibility", value);
   };
 
+  const handleEditorFontStyleChanged = async (value: string) => {
+    await userService.upsertUserSetting("editorFontStyle", value);
+  };
+
   return (
     <div className="section-container preferences-section-container">
-      <label className="form-label">
-        <span className="normal-text">{t("common.language")}:</span>
+      <p className="title-text">{t("common.language")}</p>
+      <label className="form-label selector">
+        <span className="normal-text">
+          {t("common.language")}: <BetaBadge className="ml-2" />
+        </span>
         <Selector className="ml-2 w-28" value={setting.locale} dataSource={localeSelectorItems} handleValueChanged={handleLocaleChanged} />
-        <BetaBadge className="ml-2" />
       </label>
-      <label className="form-label">
+      <p className="title-text">{t("setting.preference")}</p>
+      <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.default-memo-visibility")}:</span>
         <Selector
           className="ml-2 w-32"
           value={setting.memoVisibility}
           dataSource={VISIBILITY_SELECTOR_ITEMS}
           handleValueChanged={handleDefaultMemoVisibilityChanged}
+        />
+      </label>
+      <label className="form-label selector">
+        <span className="normal-text">{t("setting.preference-section.editor-font-style")}:</span>
+        <Selector
+          className="ml-2 w-32"
+          value={setting.editorFontStyle}
+          dataSource={editorFontStyleSelectorItems}
+          handleValueChanged={handleEditorFontStyleChanged}
         />
       </label>
     </div>

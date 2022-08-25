@@ -1,6 +1,7 @@
 interface Setting {
   locale: Locale;
   memoVisibility: Visibility;
+  editorFontStyle: "normal" | "mono";
 }
 
 interface UserLocaleSetting {
@@ -13,7 +14,12 @@ interface UserMemoVisibilitySetting {
   value: Visibility;
 }
 
-type UserSetting = UserLocaleSetting;
+interface UserEditorFontStyleSetting {
+  key: "editorFontStyle";
+  value: "normal" | "mono";
+}
+
+type UserSetting = UserLocaleSetting | UserMemoVisibilitySetting | UserEditorFontStyleSetting;
 
 interface UserSettingUpsert {
   key: keyof Setting;
