@@ -7,5 +7,6 @@ services:
       # Change it to "127.0.0.1:5230:5230" to make the server port not accessible publicly
       # Since Docker will directly operate the iptables and bypass your UFW or Firewalld rules.
     volumes:
-      - "./memos/:/var/opt/memos"
+      # Container Data Directory
+      - "./data:/var/opt/memos"
     image: 'neosmemo/memos:latest'

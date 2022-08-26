@@ -32,6 +32,23 @@ docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/mem
 
 Memos should be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then memos will auto generate it.
 
+## Deploy with Docker Compose
+
+The advantages of using Docker Compose to deploy are that you don't have to remember the start up command or the relationship of the containers, and it's simple to migrate all of your containers' data. 
+
+```bash
+# Make and enter the directory for the container
+mkdir -p ~/docker/memos && cd ~/docker/memos
+
+# Get the Docker compose file and you can modify it to suit your needs. 
+wget https://raw.githubusercontent.com/usememos/memos/main/docker-compose.yaml
+
+# Run the container
+docker-compose up -d
+```
+
+It should be also running at [http://localhost:5230](http://localhost:5230). If there is no `memos_prod.db` file in `~/docker/memos/data`, then memos will auto generate it.
+
 ## Development
 
 Memos is built with a curated tech stack. It is optimized for developer experience and is very easy to start working on the code:
