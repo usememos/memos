@@ -41,7 +41,7 @@ The advantages of using Docker Compose to deploy are that you don't have to reme
 mkdir -p ~/docker/memos && cd ~/docker/memos
 
 # Get the Docker compose file and you can modify it to suit your needs. 
-wget https://raw.githubusercontent.com/usememos/memos/main/docker-compose.yaml
+wget https://raw.githubusercontent.com/usememos/memos/main/quickstart/docker-compose.yaml
 
 # Run the container
 docker-compose up -d
