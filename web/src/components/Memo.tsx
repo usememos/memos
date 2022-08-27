@@ -45,15 +45,16 @@ const Memo: React.FC<Props> = (props: Props) => {
   });
   const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, locale));
   const memoContainerRef = useRef<HTMLDivElement>(null);
+  const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
   const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
-    if (!memoContainerRef) {
+    if (!memoContentContainerRef) {
       return;
     }
 
-    if (Number(memoContainerRef.current?.clientHeight) > MAX_MEMO_CONTAINER_HEIGHT) {
+    if (Number(memoContentContainerRef.current?.clientHeight) > MAX_MEMO_CONTAINER_HEIGHT) {
       setState({
         ...state,
         expandButtonStatus: 0,
@@ -143,7 +144,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       }
 
       const status = targetEl.dataset?.value;
-      const todoElementList = [...(memoContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
+      const todoElementList = [...(memoContentContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
       for (const element of todoElementList) {
         if (element === targetEl) {
           const index = indexOf(todoElementList, element);
@@ -172,13 +173,18 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleExpandBtnClick = () => {
+    const expandButtonStatus = Boolean(!state.expandButtonStatus);
+    if (!expandButtonStatus) {
+      memoContainerRef.current?.scrollIntoView();
+    }
+
     setState({
-      expandButtonStatus: Number(Boolean(!state.expandButtonStatus)) as ExpandButtonStatus,
+      expandButtonStatus: Number(expandButtonStatus) as ExpandButtonStatus,
     });
   };
 
   return (
-    <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`}>
+    <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
       <div className="memo-top-wrapper">
         <div className="status-text-container" onClick={handleShowMemoStoryDialog}>
           <span className="time-text">{createdAtStr}</span>
@@ -220,7 +226,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         </div>
       </div>
       <div
-        ref={memoContainerRef}
+        ref={memoContentContainerRef}
         className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
         onClick={handleMemoContentClick}
         dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}

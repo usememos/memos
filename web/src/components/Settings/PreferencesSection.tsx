@@ -35,8 +35,8 @@ const PreferencesSection: React.FC<Props> = () => {
   const { setting } = useAppSelector((state) => state.user.user as User);
 
   const handleLocaleChanged = async (value: string) => {
-    globalService.setLocale(value as Locale);
     await userService.upsertUserSetting("locale", value);
+    globalService.setLocale(value as Locale);
   };
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {
@@ -49,16 +49,17 @@ const PreferencesSection: React.FC<Props> = () => {
 
   return (
     <div className="section-container preferences-section-container">
-      <p className="title-text">{t("common.language")}</p>
+      <p className="title-text">{t("common.basic")}</p>
       <label className="form-label selector">
         <span className="normal-text">
-          {t("common.language")}: <BetaBadge className="ml-2" />
+          {t("common.language")}
+          <BetaBadge className="ml-2" />
         </span>
-        <Selector className="ml-2 w-28" value={setting.locale} dataSource={localeSelectorItems} handleValueChanged={handleLocaleChanged} />
+        <Selector className="ml-2 w-32" value={setting.locale} dataSource={localeSelectorItems} handleValueChanged={handleLocaleChanged} />
       </label>
       <p className="title-text">{t("setting.preference")}</p>
       <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.default-memo-visibility")}:</span>
+        <span className="normal-text">{t("setting.preference-section.default-memo-visibility")}</span>
         <Selector
           className="ml-2 w-32"
           value={setting.memoVisibility}
@@ -67,7 +68,7 @@ const PreferencesSection: React.FC<Props> = () => {
         />
       </label>
       <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.editor-font-style")}:</span>
+        <span className="normal-text">{t("setting.preference-section.editor-font-style")}</span>
         <Selector
           className="ml-2 w-32"
           value={setting.editorFontStyle}

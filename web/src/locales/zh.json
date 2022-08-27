@@ -46,6 +46,9 @@
   "memo": {
     "view-story": "查看详情"
   },
+  "memo-list": {
+    "fetching-data": "请求数据中..."
+  },
   "tag-list": {
     "tip-text": "输入`#tag `来创建标签"
   },

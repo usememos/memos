@@ -1,19 +1,21 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { memoService, shortcutService } from "../services";
+import useI18n from "../hooks/useI18n";
 import { useAppSelector } from "../store";
 import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";
+import Only from "./common/OnlyWhen";
 import Memo from "./Memo";
 import "../less/memo-list.less";
 
 interface Props {}
 
 const MemoList: React.FC<Props> = () => {
+  const { t } = useI18n();
   const query = useAppSelector((state) => state.location.query);
-  const memos = useAppSelector((state) => state.memo.memos);
-  const [isFetching, setFetchStatus] = useState(true);
+  const { memos, isFetching } = useAppSelector((state) => state.memo);
   const wrapperElement = useRef<HTMLDivElement>(null);
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query ?? {};
@@ -82,7 +84,7 @@ const MemoList: React.FC<Props> = () => {
     memoService
       .fetchAllMemos()
       .then(() => {
-        setFetchStatus(false);
+        // do nth
       })
       .catch((error) => {
         console.error(error);
@@ -91,19 +93,26 @@ const MemoList: React.FC<Props> = () => {
   }, []);
 
   useEffect(() => {
-    wrapperElement.current?.scrollTo({ top: 0 });
+    wrapperElement.current?.scrollTo({
+      top: 0,
+    });
   }, [query]);
 
   return (
     <div className={`memo-list-container ${isFetching ? "" : "completed"}`} ref={wrapperElement}>
+      <Only when={isFetching}>
+        <div className="status-text-container fetching-tip">
+          <p className="status-text">{t("memo-list.fetching-data")}</p>
+        </div>
+      </Only>
       {sortedMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.createdTs}-${memo.updatedTs}`} memo={memo} />
       ))}
-      <div className="status-text-container">
-        <p className="status-text">
-          {isFetching ? "Fetching data..." : sortedMemos.length === 0 ? "No memos 🌃" : showMemoFilter ? "" : "All memos are ready 🎉"}
-        </p>
-      </div>
+      <Only when={!isFetching}>
+        <div className="status-text-container">
+          <p className="status-text">{sortedMemos.length === 0 ? "no memos 🌃" : showMemoFilter ? "" : "all memos are ready 🎉"}</p>
+        </div>
+      </Only>
     </div>
   );
 };

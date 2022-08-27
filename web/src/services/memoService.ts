@@ -1,5 +1,5 @@
 import * as api from "../helpers/api";
-import { createMemo, patchMemo, setMemos, setTags } from "../store/modules/memo";
+import { createMemo, patchMemo, setIsFetching, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
 import userService from "./userService";
 
@@ -17,6 +17,9 @@ const memoService = {
   },
 
   fetchAllMemos: async () => {
+    const timeoutIndex = setTimeout(() => {
+      store.dispatch(setIsFetching(true));
+    }, 1000);
     const memoFind: MemoFind = {};
     if (userService.isVisitorMode()) {
       memoFind.creatorId = userService.getUserIdFromPath();
@@ -24,6 +27,8 @@ const memoService = {
     const { data } = (await api.getMemoList(memoFind)).data;
     const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
     store.dispatch(setMemos(memos));
+    clearTimeout(timeoutIndex);
+    store.dispatch(setIsFetching(false));
 
     return memos;
   },

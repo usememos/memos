@@ -29,7 +29,7 @@ const MemosHeader: React.FC<Props> = () => {
 
   const handleTitleTextClick = useCallback(() => {
     const now = Date.now();
-    if (now - prevRequestTimestamp > 10 * 1000) {
+    if (now - prevRequestTimestamp > 1 * 1000) {
       prevRequestTimestamp = now;
       memoService.fetchAllMemos().catch(() => {
         // do nth

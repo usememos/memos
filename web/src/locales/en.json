@@ -46,6 +46,9 @@
   "memo": {
     "view-story": "View Story"
   },
+  "memo-list": {
+    "fetching-data": "fetching data..."
+  },
   "tag-list": {
     "tip-text": "Enter `#tag ` to create"
   },
