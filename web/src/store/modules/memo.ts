@@ -11,7 +11,8 @@ const memoSlice = createSlice({
   initialState: {
     memos: [],
     tags: [],
-    isFetching: false,
+    // isFetching flag should starts with true.
+    isFetching: true,
   } as State,
   reducers: {
     setMemos: (state, action: PayloadAction<Memo[]>) => {
