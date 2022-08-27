@@ -7,10 +7,10 @@ import (
 
 // Version is the service current released version.
 // Semantic versioning: https://semver.org/
-var Version = "0.4.0"
+var Version = "0.4.1"
 
 // DevVersion is the service current development version.
-var DevVersion = "0.4.0"
+var DevVersion = "0.4.1"
 
 func GetCurrentVersion(mode string) string {
 	if mode == "dev" {
