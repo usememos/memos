@@ -1,0 +1,10 @@
+version: "2.1"
+services:
+  nginx:
+    image: neosmemo/memos:latest
+    container_name: memos
+    volumes:
+      - /path/to/data:/var/opt/memos #Path where your notes are saved
+    ports:
+      - 5230:5230
+    restart: unless-stopped
