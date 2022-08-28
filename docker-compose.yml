@@ -1,6 +1,6 @@
 version: "2.1"
 services:
-  nginx:
+  memos:
     image: neosmemo/memos:latest
     container_name: memos
     volumes:
