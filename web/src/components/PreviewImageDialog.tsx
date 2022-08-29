@@ -19,6 +19,10 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrl }: Props) => {
     a.click();
   };
 
+  const handleImgContainerClick = () => {
+    destroy();
+  };
+
   return (
     <>
       <div className="btns-container">
@@ -29,8 +33,8 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrl }: Props) => {
           <Icon.Download className="icon-img" />
         </button>
       </div>
-      <div className="img-container">
-        <img src={imgUrl} />
+      <div className="img-container" onClick={handleImgContainerClick}>
+        <img onClick={(e) => e.stopPropagation()} src={imgUrl} />
       </div>
     </>
   );

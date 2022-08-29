@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { ANIMATION_DURATION } from "../../helpers/consts";
@@ -15,6 +16,20 @@ interface Props extends DialogConfig, DialogProps {
 
 const BaseDialog: React.FC<Props> = (props: Props) => {
   const { children, className, clickSpaceDestroy, destroy } = props;
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code === "Escape") {
+        destroy();
+      }
+    };
+
+    document.body.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   const handleSpaceClicked = () => {
     if (clickSpaceDestroy) {
