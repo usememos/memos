@@ -33,6 +33,7 @@ docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/mem
 ```
 
 #### Docker Compose
+
 ```
 version: "3.0"
 services:
