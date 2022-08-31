@@ -1,4 +1,4 @@
-<p align="center"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.png" alt="✍️ memos" /></p>
+<p align="center"><a href="https://usememos.com"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.webp" alt="✍️ memos" /></a></p>
 
 <p align="center">An open source, self-hosted knowledge base that works with a SQLite db file.</p>
 

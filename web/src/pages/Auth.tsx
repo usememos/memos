@@ -124,7 +124,7 @@ const Auth: React.FC<Props> = () => {
         <div className="auth-form-wrapper">
           <div className="page-header-container">
             <div className="title-container">
-              <img className="logo-img" src="/logo-full.png" alt="" />
+              <img className="logo-img" src="/logo-full.webp" alt="" />
             </div>
             <p className="slogan-text">{t("slogan")}</p>
           </div>

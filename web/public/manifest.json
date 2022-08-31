@@ -1,18 +1,17 @@
 {
-    "short_name": "Memos",
-    "name": "Memos",
-    "icons": [
-      {
-        "src": "/logo.png",
-        "type": "image/png",
-        "sizes": "200x200"
-      }
-    ],
-    "start_url": "/",
-    "background_color": "#f6f5f4",
-    "display": "standalone",
-    "scope": "/",
-    "theme_color": "#f6f5f4",
-    "description": "usememos/memos"
-  }
-  
+  "short_name": "Memos",
+  "name": "Memos",
+  "icons": [
+    {
+      "src": "/logo.webp",
+      "type": "image/*",
+      "sizes": "200x200"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#f6f5f4",
+  "display": "standalone",
+  "scope": "/",
+  "theme_color": "#f6f5f4",
+  "description": "usememos/memos"
+}
