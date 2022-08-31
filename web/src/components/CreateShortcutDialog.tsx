@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { memoService, shortcutService } from "../services";
 import { checkShouldShowMemoWithFilters, filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
 import useLoading from "../hooks/useLoading";
@@ -152,129 +152,66 @@ interface MemoFilterInputerProps {
   handleFilterRemove: (index: number) => void;
 }
 
-const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInputerProps) => {
+const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInputerProps) => {
   const { index, filter, handleFilterChange, handleFilterRemove } = props;
+  const [value, setValue] = useState<string>(filter.value.value);
+
   const tags = Array.from(memoService.getState().tags);
   const { type } = filter;
-  const [inputElements, setInputElements] = useState<JSX.Element>(<></>);
+  const dataSource =
+    type === "TYPE"
+      ? filterConsts["TYPE"].values
+      : tags.sort().map((t) => {
+          return { text: t, value: t };
+        });
 
   useEffect(() => {
-    let operatorElement = <></>;
-    if (Object.keys(filterConsts).includes(type)) {
-      operatorElement = (
-        <Selector
-          className="operator-selector"
-          dataSource={Object.values(filterConsts[type as FilterType].operators)}
-          value={filter.value.operator}
-          handleValueChanged={handleOperatorChange}
-        />
-      );
-    }
+    setValue(filter.value.value);
+  }, [type]);
 
-    let valueElement = <></>;
-    switch (type) {
-      case "TYPE": {
-        valueElement = (
-          <Selector
-            className="value-selector"
-            dataSource={filterConsts["TYPE"].values}
-            value={filter.value.value}
-            handleValueChanged={handleValueChange}
-          />
-        );
-        break;
-      }
-      case "TAG": {
-        valueElement = (
-          <Selector
-            className="value-selector"
-            dataSource={tags.sort().map((t) => {
-              return { text: t, value: t };
-            })}
-            value={filter.value.value}
-            handleValueChanged={handleValueChange}
-          />
-        );
-        break;
-      }
-      case "TEXT": {
-        valueElement = (
-          <input
-            type="text"
-            className="value-inputer"
-            value={filter.value.value}
-            onChange={(event) => {
-              handleValueChange(event.target.value);
-              event.target.focus();
-            }}
-          />
-        );
-        break;
-      }
-    }
-
-    setInputElements(
-      <>
-        {operatorElement}
-        {valueElement}
-      </>
-    );
-  }, [type, filter]);
-
-  const handleRelationChange = useCallback(
-    (value: string) => {
-      if (["AND", "OR"].includes(value)) {
-        handleFilterChange(index, {
-          ...filter,
-          relation: value as MemoFilterRalation,
-        });
-      }
-    },
-    [filter]
-  );
-
-  const handleTypeChange = useCallback(
-    (value: string) => {
-      if (filter.type !== value) {
-        const ops = Object.values(filterConsts[value as FilterType].operators);
-        handleFilterChange(index, {
-          ...filter,
-          type: value as FilterType,
-          value: {
-            operator: ops[0].value,
-            value: "",
-          },
-        });
-      }
-    },
-    [filter]
-  );
-
-  const handleOperatorChange = useCallback(
-    (value: string) => {
+  const handleRelationChange = (value: string) => {
+    if (["AND", "OR"].includes(value)) {
       handleFilterChange(index, {
         ...filter,
-        value: {
-          ...filter.value,
-          operator: value,
-        },
+        relation: value as MemoFilterRalation,
       });
-    },
-    [filter]
-  );
+    }
+  };
 
-  const handleValueChange = useCallback(
-    (value: string) => {
+  const handleTypeChange = (value: string) => {
+    if (filter.type !== value) {
+      const ops = Object.values(filterConsts[value as FilterType].operators);
       handleFilterChange(index, {
         ...filter,
+        type: value as FilterType,
         value: {
-          ...filter.value,
-          value,
+          operator: ops[0].value,
+          value: "",
         },
       });
-    },
-    [filter]
-  );
+    }
+  };
+
+  const handleOperatorChange = (value: string) => {
+    handleFilterChange(index, {
+      ...filter,
+      value: {
+        ...filter.value,
+        operator: value,
+      },
+    });
+  };
+
+  const handleValueChange = (value: string) => {
+    setValue(value);
+    handleFilterChange(index, {
+      ...filter,
+      value: {
+        ...filter.value,
+        value,
+      },
+    });
+  };
 
   const handleRemoveBtnClick = () => {
     handleFilterRemove(index);
@@ -296,14 +233,28 @@ const FilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInpute
         value={filter.type}
         handleValueChanged={handleTypeChange}
       />
-
-      {inputElements}
+      <Selector
+        className="operator-selector"
+        dataSource={Object.values(filterConsts[type as FilterType].operators)}
+        value={filter.value.operator}
+        handleValueChanged={handleOperatorChange}
+      />
+      {type === "TEXT" ? (
+        <input
+          type="text"
+          className="value-inputer"
+          value={value}
+          onChange={(event) => {
+            handleValueChange(event.target.value);
+          }}
+        />
+      ) : (
+        <Selector className="value-selector" dataSource={dataSource} value={value} handleValueChanged={handleValueChange} />
+      )}
       <Icon.X className="remove-btn" onClick={handleRemoveBtnClick} />
     </div>
   );
 };
-
-const MemoFilterInputer: React.FC<MemoFilterInputerProps> = memo(FilterInputer);
 
 export default function showCreateShortcutDialog(shortcutId?: ShortcutId): void {
   generateDialog(

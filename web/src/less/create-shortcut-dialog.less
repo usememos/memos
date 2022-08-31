@@ -1,8 +1,10 @@
 @import "./mixin.less";
 
 .create-shortcut-dialog {
+  @apply px-4;
+
   > .dialog-container {
-    @apply w-128;
+    @apply w-128 max-w-full;
 
     > .dialog-content-container {
       .flex(column, flex-start, flex-start);
