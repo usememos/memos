@@ -4,8 +4,9 @@ import { validate, ValidatorConfig } from "../helpers/validator";
 import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
 import { globalService, locationService, userService } from "../services";
+import Icon from "../components/Icon";
+import Only from "../components/common/OnlyWhen";
 import toastHelper from "../components/Toast";
-import GitHubBadge from "../components/GitHubBadge";
 import "../less/auth.less";
 
 interface Props {}
@@ -123,10 +124,7 @@ const Auth: React.FC<Props> = () => {
         <div className="auth-form-wrapper">
           <div className="page-header-container">
             <div className="title-container">
-              <p className="title-text">
-                <span className="icon-text">✍️</span> Memos
-              </p>
-              <GitHubBadge />
+              <img className="logo-img" src="/logo-full.png" alt="" />
             </div>
             <p className="slogan-text">{t("slogan")}</p>
           </div>
@@ -141,21 +139,17 @@ const Auth: React.FC<Props> = () => {
             </div>
           </div>
           <div className="action-btns-container">
-            {siteHost || pageLoadingState.isLoading ? (
+            <Only when={!pageLoadingState.isLoading}>
               <button
                 className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                onClick={() => handleSigninBtnsClick()}
+                onClick={() => (siteHost ? handleSigninBtnsClick() : handleSigninBtnsClick())}
               >
-                {t("common.sign-in")}
+                <Only when={actionBtnLoadingState.isLoading}>
+                  <Icon.Loader className="img-icon" />
+                </Only>
+                {siteHost ? t("common.sign-in") : t("auth.signup-as-host")}
               </button>
-            ) : (
-              <button
-                className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                onClick={() => handleSignUpAsHostBtnsClick()}
-              >
-                {t("auth.signup-as-host")}
-              </button>
-            )}
+            </Only>
           </div>
           <p className={`tip-text ${siteHost || pageLoadingState.isLoading ? "" : "host-tip"}`}>
             {siteHost || pageLoadingState.isLoading ? t("auth.not-host-tip") : t("auth.host-tip")}
