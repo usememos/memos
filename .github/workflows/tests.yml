@@ -28,6 +28,21 @@ jobs:
           args: -v
           skip-cache: true
 
+  eslint-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          cache: yarn
+          cache-dependency-path: "web/yarn.lock"
+      - run: yarn
+        working-directory: web
+      - name: Run eslint check
+        run: yarn lint
+        working-directory: web
+
   go-tests:
     runs-on: ubuntu-latest
     steps:
