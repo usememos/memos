@@ -1,4 +1,4 @@
-<h1 align="center">✍️ Memos</h1>
+<p align="center"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.png" alt="✍️ memos" /></p>
 
 <p align="center">An open source, self-hosted knowledge base that works with a SQLite db file.</p>
 
@@ -44,7 +44,6 @@ services:
       - ~/.memos/:/var/opt/memos
     ports:
       - 5230:5230
-    restart: unless-stopped
 ```
 
 Memos should be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then memos will auto generate it.
