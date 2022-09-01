@@ -142,7 +142,7 @@ const Auth: React.FC<Props> = () => {
             <Only when={!pageLoadingState.isLoading}>
               <button
                 className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                onClick={() => (siteHost ? handleSigninBtnsClick() : handleSigninBtnsClick())}
+                onClick={() => (siteHost ? handleSigninBtnsClick() : handleSignUpAsHostBtnsClick())}
               >
                 <Only when={actionBtnLoadingState.isLoading}>
                   <Icon.Loader className="img-icon" />

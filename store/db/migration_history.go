@@ -72,7 +72,7 @@ func findMigrationHistoryList(ctx context.Context, tx *sql.Tx, find *MigrationHi
 		FROM
 			migration_history
 		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY created_ts DESC
+		ORDER BY version DESC
 	`
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
