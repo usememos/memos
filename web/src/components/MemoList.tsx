@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { memoService, shortcutService } from "../services";
 import useI18n from "../hooks/useI18n";
 import { useAppSelector } from "../store";
-import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/consts";
+import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/marked";
 import * as utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";

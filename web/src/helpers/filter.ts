@@ -1,4 +1,4 @@
-import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "./consts";
+import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "./marked";
 
 export const relationConsts = [
   { text: "And", value: "AND" },

@@ -10,6 +10,7 @@ export interface EditorRefActions {
   insertText: (text: string) => void;
   setContent: (text: string) => void;
   getContent: () => string;
+  getCursorPosition: () => number;
 }
 
 interface EditorProps {
@@ -64,20 +65,26 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
         }
 
         const prevValue = editorRef.current.value;
-        editorRef.current.value =
-          prevValue.slice(0, editorRef.current.selectionStart) + rawText + prevValue.slice(editorRef.current.selectionStart);
+        const cursorPosition = editorRef.current.selectionStart;
+        editorRef.current.value = prevValue.slice(0, cursorPosition) + rawText + prevValue.slice(cursorPosition);
+        editorRef.current.focus();
+        editorRef.current.selectionEnd = cursorPosition + rawText.length;
         handleContentChangeCallback(editorRef.current.value);
         refresh();
       },
       setContent: (text: string) => {
         if (editorRef.current) {
           editorRef.current.value = text;
+          editorRef.current.focus();
           handleContentChangeCallback(editorRef.current.value);
           refresh();
         }
       },
       getContent: (): string => {
         return editorRef.current?.value ?? "";
+      },
+      getCursorPosition: (): number => {
+        return editorRef.current?.selectionStart ?? 0;
       },
     }),
     []

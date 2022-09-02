@@ -179,6 +179,34 @@ const MemoEditor: React.FC<Props> = () => {
     setEditorContentCache(content);
   }, []);
 
+  const handleCheckBoxBtnClick = () => {
+    if (!editorRef.current) {
+      return;
+    }
+
+    const cursorPosition = editorRef.current.getCursorPosition();
+    const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
+    if (prevValue === "" || prevValue.endsWith("\n")) {
+      editorRef.current?.insertText("- [ ] ");
+    } else {
+      editorRef.current?.insertText("\n- [ ] ");
+    }
+  };
+
+  const handleCodeBlockBtnClick = () => {
+    if (!editorRef.current) {
+      return;
+    }
+
+    const cursorPosition = editorRef.current.getCursorPosition();
+    const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
+    if (prevValue === "" || prevValue.endsWith("\n")) {
+      editorRef.current?.insertText("```\n\n```");
+    } else {
+      editorRef.current?.insertText("\n```\n\n```");
+    }
+  };
+
   const handleUploadFileBtnClick = useCallback(() => {
     const inputEl = document.createElement("input");
     inputEl.type = "file";
@@ -258,6 +286,12 @@ const MemoEditor: React.FC<Props> = () => {
                 )}
               </div>
             </div>
+            <button className="action-btn">
+              <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
+            </button>
+            <button className="action-btn">
+              <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
+            </button>
             <button className="action-btn">
               <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
               <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>

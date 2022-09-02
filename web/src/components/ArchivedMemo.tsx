@@ -1,4 +1,4 @@
-import { IMAGE_URL_REG } from "../helpers/consts";
+import { IMAGE_URL_REG } from "../helpers/marked";
 import * as utils from "../helpers/utils";
 import useI18n from "../hooks/useI18n";
 import useToggle from "../hooks/useToggle";

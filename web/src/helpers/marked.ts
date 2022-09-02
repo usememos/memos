@@ -1,13 +1,20 @@
 import { escape } from "lodash-es";
-import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "./consts";
 
-const CODE_BLOCK_REG = /```([\s\S]*?)```/g;
+const CODE_BLOCK_REG = /```([\s\S]*?)```\n?/g;
 const BOLD_TEXT_REG = /\*\*(.+?)\*\*/g;
 const EM_TEXT_REG = /\*(.+?)\*/g;
-export const TODO_BLOCK_REG = /- \[ \] /g;
-export const DONE_BLOCK_REG = /- \[x\] /g;
 const DOT_LI_REG = /[*-] /g;
 const NUM_LI_REG = /(\d+)\. /g;
+export const TODO_BLOCK_REG = /- \[ \] /g;
+export const DONE_BLOCK_REG = /- \[x\] /g;
+// tag regex
+export const TAG_REG = /#([^\s#]+?) /g;
+// markdown image regex
+export const IMAGE_URL_REG = /!\[.*?\]\((.+?)\)\n?/g;
+// markdown link regex
+export const LINK_URL_REG = /\[(.*?)\]\((.+?)\)/g;
+// linked memo regex
+export const MEMO_LINK_REG = /@\[(.+?)\]\((.+?)\)/g;
 
 const parseMarkedToHtml = (markedStr: string): string => {
   const htmlText = markedStr

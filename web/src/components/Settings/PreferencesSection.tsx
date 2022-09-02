@@ -2,8 +2,8 @@ import { globalService, userService } from "../../services";
 import { useAppSelector } from "../../store";
 import { VISIBILITY_SELECTOR_ITEMS } from "../../helpers/consts";
 import useI18n from "../../hooks/useI18n";
-import BetaBadge from "../BetaBadge";
 import Selector from "../common/Selector";
+import BetaBadge from "../BetaBadge";
 import "../../less/settings/preferences-section.less";
 
 interface Props {}

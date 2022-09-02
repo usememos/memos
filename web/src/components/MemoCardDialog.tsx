@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
 import { editorStateService, memoService, userService } from "../services";
 import { useAppSelector } from "../store";
-import { IMAGE_URL_REG, MEMO_LINK_REG, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
+import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { formatMemoContent, parseHtmlToRawText } from "../helpers/marked";
+import { formatMemoContent, IMAGE_URL_REG, MEMO_LINK_REG, parseHtmlToRawText } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
