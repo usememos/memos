@@ -227,9 +227,9 @@ const MemoEditor: React.FC<Props> = () => {
           editorRef.current?.insertText(`![](${url})`);
         }
       }
+      document.body.removeChild(inputEl);
     };
     inputEl.click();
-    document.body.removeChild(inputEl);
   }, []);
 
   const handleFullscreenBtnClick = () => {

@@ -84,10 +84,10 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         }
       }
 
+      document.body.removeChild(inputEl);
       await fetchResources();
     };
     inputEl.click();
-    document.body.removeChild(inputEl);
   };
 
   const handlPreviewBtnClick = (resource: Resource) => {
