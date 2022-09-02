@@ -6,6 +6,7 @@ import { resourceService } from "../services";
 import Dropdown from "./common/Dropdown";
 import { generateDialog } from "./Dialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
+import showPreviewImageDialog from "./PreviewImageDialog";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import "../less/resources-dialog.less";
@@ -51,9 +52,13 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     }
 
     const inputEl = document.createElement("input");
+    inputEl.style.position = "fixed";
+    inputEl.style.top = "-100vh";
+    inputEl.style.left = "-100vw";
+    document.body.appendChild(inputEl);
     inputEl.type = "file";
-    inputEl.multiple = false;
-    inputEl.accept = "image/png, image/gif, image/jpeg";
+    inputEl.multiple = true;
+    inputEl.accept = "image/*";
     inputEl.onchange = async () => {
       if (!inputEl.files || inputEl.files.length === 0) {
         return;
@@ -64,21 +69,29 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         isUploadingResource: true,
       });
 
-      const file = inputEl.files[0];
-      try {
+      for (const file of inputEl.files) {
         await resourceService.upload(file);
-      } catch (error: any) {
-        console.error(error);
-        toastHelper.error(error.response.data.message);
-      } finally {
-        setState({
-          ...state,
-          isUploadingResource: false,
-        });
-        await fetchResources();
+        try {
+          await resourceService.upload(file);
+        } catch (error: any) {
+          console.error(error);
+          toastHelper.error(error.response.data.message);
+        } finally {
+          setState({
+            ...state,
+            isUploadingResource: false,
+          });
+        }
       }
+
+      await fetchResources();
     };
     inputEl.click();
+    document.body.removeChild(inputEl);
+  };
+
+  const handlPreviewBtnClick = (resource: Resource) => {
+    showPreviewImageDialog(`${window.location.origin}/h/r/${resource.id}/${resource.filename}`);
   };
 
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
@@ -139,6 +152,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                   <span className="field-text">{resource.type}</span>
                   <div className="buttons-container">
                     <Dropdown className="actions-dropdown">
+                      <button onClick={() => handlPreviewBtnClick(resource)}>Preview</button>
                       <button onClick={() => handleCopyResourceLinkBtnClick(resource)}>Copy Link</button>
                       <button className="delete-btn" onClick={() => handleDeleteResourceBtnClick(resource)}>
                         Delete

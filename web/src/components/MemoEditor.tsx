@@ -209,21 +209,27 @@ const MemoEditor: React.FC<Props> = () => {
 
   const handleUploadFileBtnClick = useCallback(() => {
     const inputEl = document.createElement("input");
+    inputEl.style.position = "fixed";
+    inputEl.style.top = "-100vh";
+    inputEl.style.left = "-100vw";
+    document.body.appendChild(inputEl);
     inputEl.type = "file";
-    inputEl.multiple = false;
-    inputEl.accept = "image/png, image/gif, image/jpeg";
+    inputEl.multiple = true;
+    inputEl.accept = "image/*";
     inputEl.onchange = async () => {
       if (!inputEl.files || inputEl.files.length === 0) {
         return;
       }
 
-      const file = inputEl.files[0];
-      const url = await handleUploadFile(file);
-      if (url) {
-        editorRef.current?.insertText(`![](${url})`);
+      for (const file of inputEl.files) {
+        const url = await handleUploadFile(file);
+        if (url) {
+          editorRef.current?.insertText(`![](${url})`);
+        }
       }
     };
     inputEl.click();
+    document.body.removeChild(inputEl);
   }, []);
 
   const handleFullscreenBtnClick = () => {
