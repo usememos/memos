@@ -26,27 +26,17 @@
 
 ## Deploy with Docker
 
-#### Docker Run
+### Docker Run
 
 ```docker
 docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:latest
 ```
 
-#### Docker Compose
-
-```
-version: "3.0"
-services:
-  memos:
-    image: neosmemo/memos:latest
-    container_name: memos
-    volumes:
-      - ~/.memos/:/var/opt/memos
-    ports:
-      - 5230:5230
-```
-
 Memos should be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then memos will auto generate it.
+
+### Docker Compose
+
+See [the example `docker-compose.yaml`](./docker-compose.yaml) file.
 
 ## Development
 

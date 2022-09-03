@@ -7,4 +7,3 @@ services:
       - ~/.memos/:/var/opt/memos
     ports:
       - 5230:5230
-    restart: unless-stopped
