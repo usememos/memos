@@ -10,9 +10,7 @@ import Only from "./common/OnlyWhen";
 import Memo from "./Memo";
 import "../less/memo-list.less";
 
-interface Props {}
-
-const MemoList: React.FC<Props> = () => {
+const MemoList = () => {
   const { t } = useI18n();
   const query = useAppSelector((state) => state.location.query);
   const { memos, isFetching } = useAppSelector((state) => state.memo);

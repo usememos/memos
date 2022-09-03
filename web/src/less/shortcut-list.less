@@ -54,10 +54,14 @@
         @apply flex-row justify-end items-center hidden shrink-0;
 
         > .action-btn {
-          @apply flex flex-row justify-center items-center w-6 h-6 shrink-0;
+          @apply flex flex-row justify-center items-center;
 
           &.toggle-btn {
-            @apply w-4 h-auto text-gray-600;
+            @apply text-gray-600;
+
+            > .icon-img {
+              @apply w-4 h-auto;
+            }
 
             &:hover {
               & + .action-btns-wrapper {

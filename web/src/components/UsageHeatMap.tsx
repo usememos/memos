@@ -26,9 +26,7 @@ interface DailyUsageStat {
   count: number;
 }
 
-interface Props {}
-
-const UsageHeatMap: React.FC<Props> = () => {
+const UsageHeatMap = () => {
   const todayTimeStamp = utils.getDateStampByDate(Date.now());
   const todayDay = new Date(todayTimeStamp).getDay() + 1;
   const nullCell = new Array(7 - todayDay).fill(0);

@@ -4,9 +4,7 @@ import { memoSpecialTypes } from "../helpers/filter";
 import Icon from "./Icon";
 import "../less/search-bar.less";
 
-interface Props {}
-
-const SearchBar: React.FC<Props> = () => {
+const SearchBar = () => {
   const memoType = useAppSelector((state) => state.location.query?.type);
 
   const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {

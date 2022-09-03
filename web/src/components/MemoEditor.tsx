@@ -9,14 +9,12 @@ import toastHelper from "./Toast";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import "../less/memo-editor.less";
 
-interface Props {}
-
 interface State {
   isUploadingResource: boolean;
   fullscreen: boolean;
 }
 
-const MemoEditor: React.FC<Props> = () => {
+const MemoEditor = () => {
   const { t, locale } = useI18n();
   const user = useAppSelector((state) => state.user.user);
   const editorState = useAppSelector((state) => state.editor);

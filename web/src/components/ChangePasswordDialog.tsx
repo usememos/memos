@@ -14,7 +14,7 @@ const validateConfig: ValidatorConfig = {
   noChinese: true,
 };
 
-interface Props extends DialogProps {}
+type Props = DialogProps;
 
 const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   const { t } = useI18n();

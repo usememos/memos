@@ -6,8 +6,6 @@ import Selector from "../common/Selector";
 import BetaBadge from "../BetaBadge";
 import "../../less/settings/preferences-section.less";
 
-interface Props {}
-
 const localeSelectorItems = [
   {
     text: "English",
@@ -30,7 +28,7 @@ const editorFontStyleSelectorItems = [
   },
 ];
 
-const PreferencesSection: React.FC<Props> = () => {
+const PreferencesSection = () => {
   const { t } = useI18n();
   const { setting } = useAppSelector((state) => state.user.user as User);
 

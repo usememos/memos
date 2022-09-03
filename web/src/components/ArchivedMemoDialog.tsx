@@ -8,7 +8,7 @@ import toastHelper from "./Toast";
 import ArchivedMemo from "./ArchivedMemo";
 import "../less/archived-memo-dialog.less";
 
-interface Props extends DialogProps {}
+type Props = DialogProps;
 
 const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;

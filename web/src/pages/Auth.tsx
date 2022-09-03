@@ -9,8 +9,6 @@ import Only from "../components/common/OnlyWhen";
 import toastHelper from "../components/Toast";
 import "../less/auth.less";
 
-interface Props {}
-
 const validateConfig: ValidatorConfig = {
   minLength: 4,
   maxLength: 24,
@@ -18,7 +16,7 @@ const validateConfig: ValidatorConfig = {
   noChinese: true,
 };
 
-const Auth: React.FC<Props> = () => {
+const Auth = () => {
   const { t, locale } = useI18n();
   const pageLoadingState = useLoading(true);
   const [siteHost, setSiteHost] = useState<User>();

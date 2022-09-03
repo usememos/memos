@@ -7,9 +7,7 @@ import Icon from "./Icon";
 import MenuBtnsPopup from "./MenuBtnsPopup";
 import "../less/user-banner.less";
 
-interface Props {}
-
-const UserBanner: React.FC<Props> = () => {
+const UserBanner = () => {
   const { user, owner } = useAppSelector((state) => state.user);
   const { memos, tags } = useAppSelector((state) => state.memo);
   const [shouldShowPopupBtns, setShouldShowPopupBtns] = useState(false);

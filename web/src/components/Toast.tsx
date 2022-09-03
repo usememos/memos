@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { createRoot, Root } from "react-dom/client";
-import { TOAST_ANIMATION_DURATION } from "../helpers/consts";
 import "../less/toast.less";
 
 type ToastType = "normal" | "success" | "info" | "error";
@@ -36,42 +35,26 @@ const Toast: React.FC<ToastItemProps> = (props: ToastItemProps) => {
   );
 };
 
-class ToastHelper {
-  private shownToastAmount = 0;
-  private toastWrapper: HTMLDivElement;
-  private shownToastContainers: [Root, HTMLDivElement][] = [];
+// toast animation duration.
+const TOAST_ANIMATION_DURATION = 400;
 
-  constructor() {
-    const wrapperClassName = "toast-list-container";
-    const tempDiv = document.createElement("div");
-    tempDiv.className = wrapperClassName;
-    document.body.appendChild(tempDiv);
-    this.toastWrapper = tempDiv;
-  }
+const initialToastHelper = () => {
+  const shownToastContainers: [Root, HTMLDivElement][] = [];
+  let shownToastAmount = 0;
 
-  public info = (content: string, duration = 3000) => {
-    return this.showToast({ type: "normal", content, duration });
-  };
+  const wrapperClassName = "toast-list-container";
+  const tempDiv = document.createElement("div");
+  tempDiv.className = wrapperClassName;
+  document.body.appendChild(tempDiv);
+  const toastWrapper = tempDiv;
 
-  public success = (content: string, duration = 3000) => {
-    return this.showToast({ type: "success", content, duration });
-  };
-
-  public error = (content: string, duration = 3000) => {
-    return this.showToast({ type: "error", content, duration });
-  };
-
-  private showToast = (config: ToastConfig) => {
+  const showToast = (config: ToastConfig) => {
     const tempDiv = document.createElement("div");
     const toast = createRoot(tempDiv);
     tempDiv.className = `toast-wrapper ${config.type}`;
-    this.toastWrapper.appendChild(tempDiv);
-    this.shownToastAmount++;
-    this.shownToastContainers.push([toast, tempDiv]);
-
-    setTimeout(() => {
-      tempDiv.classList.add("showup");
-    }, 0);
+    toastWrapper.appendChild(tempDiv);
+    shownToastAmount++;
+    shownToastContainers.push([toast, tempDiv]);
 
     const cbs = {
       destory: () => {
@@ -82,13 +65,13 @@ class ToastHelper {
             return;
           }
 
-          this.shownToastAmount--;
-          if (this.shownToastAmount === 0) {
-            for (const [root, tempDiv] of this.shownToastContainers) {
+          shownToastAmount--;
+          if (shownToastAmount === 0) {
+            for (const [root, tempDiv] of shownToastContainers) {
               root.unmount();
               tempDiv.remove();
             }
-            this.shownToastContainers.splice(0, this.shownToastContainers.length);
+            shownToastContainers.splice(0, shownToastContainers.length);
           }
         }, TOAST_ANIMATION_DURATION);
       },
@@ -96,10 +79,32 @@ class ToastHelper {
 
     toast.render(<Toast {...config} destory={cbs.destory} />);
 
+    setTimeout(() => {
+      tempDiv.classList.add("showup");
+    }, 10);
+
     return cbs;
   };
-}
 
-const toastHelper = new ToastHelper();
+  const info = (content: string, duration = 3000) => {
+    return showToast({ type: "normal", content, duration });
+  };
+
+  const success = (content: string, duration = 3000) => {
+    return showToast({ type: "success", content, duration });
+  };
+
+  const error = (content: string, duration = 3000) => {
+    return showToast({ type: "error", content, duration });
+  };
+
+  return {
+    info,
+    success,
+    error,
+  };
+};
+
+const toastHelper = initialToastHelper();
 
 export default toastHelper;

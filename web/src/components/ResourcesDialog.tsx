@@ -11,7 +11,7 @@ import Icon from "./Icon";
 import toastHelper from "./Toast";
 import "../less/resources-dialog.less";
 
-interface Props extends DialogProps {}
+type Props = DialogProps;
 
 interface State {
   resources: Resource[];

@@ -21,7 +21,6 @@
         "endOfLine": "auto"
       }
     ],
-    "@typescript-eslint/no-empty-interface": ["off"],
     "@typescript-eslint/no-explicit-any": ["off"],
     "react/react-in-jsx-scope": "off"
   },

@@ -3,9 +3,7 @@ import * as api from "../helpers/api";
 import Icon from "./Icon";
 import "../less/github-badge.less";
 
-interface Props {}
-
-const GitHubBadge: React.FC<Props> = () => {
+const GitHubBadge = () => {
   const [starCount, setStarCount] = useState(0);
 
   useEffect(() => {

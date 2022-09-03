@@ -10,9 +10,7 @@ import toastHelper from "./Toast";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
 import "../less/shortcut-list.less";
 
-interface Props {}
-
-const ShortcutList: React.FC<Props> = () => {
+const ShortcutList = () => {
   const query = useAppSelector((state) => state.location.query);
   const shortcuts = useAppSelector((state) => state.shortcut.shortcuts);
   const loadingState = useLoading();

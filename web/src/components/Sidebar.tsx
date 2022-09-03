@@ -12,9 +12,7 @@ import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
 import "../less/siderbar.less";
 
-interface Props {}
-
-const Sidebar: React.FC<Props> = () => {
+const Sidebar = () => {
   const { t } = useI18n();
 
   const handleMyAccountBtnClick = () => {

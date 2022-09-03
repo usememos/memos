@@ -15,9 +15,7 @@ const validateConfig: ValidatorConfig = {
   noChinese: true,
 };
 
-interface Props {}
-
-const MyAccountSection: React.FC<Props> = () => {
+const MyAccountSection = () => {
   const { t } = useI18n();
   const user = useAppSelector((state) => state.user.user as User);
   const [username, setUsername] = useState<string>(user.name);

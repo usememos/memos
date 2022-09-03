@@ -14,9 +14,7 @@ interface Tag {
   subTags: Tag[];
 }
 
-interface Props {}
-
-const TagList: React.FC<Props> = () => {
+const TagList = () => {
   const { t } = useI18n();
   const { memos, tags: tagsText } = useAppSelector((state) => state.memo);
   const query = useAppSelector((state) => state.location.query);

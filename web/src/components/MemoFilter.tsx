@@ -4,9 +4,7 @@ import * as utils from "../helpers/utils";
 import { getTextWithMemoType } from "../helpers/filter";
 import "../less/memo-filter.less";
 
-interface FilterProps {}
-
-const MemoFilter: React.FC<FilterProps> = () => {
+const MemoFilter = () => {
   const query = useAppSelector((state) => state.location.query);
   useAppSelector((state) => state.shortcut.shortcuts);
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
