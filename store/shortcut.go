@@ -287,12 +287,17 @@ func findShortcutList(ctx context.Context, tx *sql.Tx, find *api.ShortcutFind) (
 }
 
 func deleteShortcut(ctx context.Context, tx *sql.Tx, delete *api.ShortcutDelete) error {
-	_, err := tx.ExecContext(ctx, `
+	result, err := tx.ExecContext(ctx, `
 		PRAGMA foreign_keys = ON;
 		DELETE FROM shortcut WHERE id = ?
 	`, delete.ID)
 	if err != nil {
 		return FormatError(err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("shortcut ID not found: %d", delete.ID)}
 	}
 
 	return nil

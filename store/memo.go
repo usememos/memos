@@ -348,12 +348,17 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 }
 
 func deleteMemo(ctx context.Context, tx *sql.Tx, delete *api.MemoDelete) error {
-	_, err := tx.ExecContext(ctx, `
+	result, err := tx.ExecContext(ctx, `
 		PRAGMA foreign_keys = ON;
 		DELETE FROM memo WHERE id = ?
 	`, delete.ID)
 	if err != nil {
 		return FormatError(err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo ID not found: %d", delete.ID)}
 	}
 
 	return nil

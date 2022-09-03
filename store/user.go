@@ -336,11 +336,17 @@ func findUserList(ctx context.Context, tx *sql.Tx, find *api.UserFind) ([]*userR
 }
 
 func deleteUser(ctx context.Context, tx *sql.Tx, delete *api.UserDelete) error {
-	if _, err := tx.ExecContext(ctx, `
+	result, err := tx.ExecContext(ctx, `
 		PRAGMA foreign_keys = ON;
 		DELETE FROM user WHERE id = ?
-	`, delete.ID); err != nil {
+	`, delete.ID)
+	if err != nil {
 		return FormatError(err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("user ID not found: %d", delete.ID)}
 	}
 
 	return nil

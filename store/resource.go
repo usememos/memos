@@ -235,12 +235,17 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 }
 
 func deleteResource(ctx context.Context, tx *sql.Tx, delete *api.ResourceDelete) error {
-	_, err := tx.ExecContext(ctx, `
+	result, err := tx.ExecContext(ctx, `
 		PRAGMA foreign_keys = ON;
 		DELETE FROM resource WHERE id = ? AND creator_id = ?
 	`, delete.ID, delete.CreatorID)
 	if err != nil {
 		return FormatError(err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("resource ID not found: %d", delete.ID)}
 	}
 
 	return nil

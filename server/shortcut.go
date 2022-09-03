@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/common"
 
 	"github.com/labstack/echo/v4"
 )
@@ -123,6 +124,9 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 			ID: shortcutID,
 		}
 		if err := s.Store.DeleteShortcut(ctx, shortcutDelete); err != nil {
+			if common.ErrorCode(err) == common.NotFound {
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Shortcut ID not found: %d", shortcutID))
+			}
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete shortcut").SetInternal(err)
 		}
 

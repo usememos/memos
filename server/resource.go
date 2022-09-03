@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/common"
 
 	"github.com/labstack/echo/v4"
 )
@@ -158,6 +159,9 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			CreatorID: userID,
 		}
 		if err := s.Store.DeleteResource(ctx, resourceDelete); err != nil {
+			if common.ErrorCode(err) == common.NotFound {
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource ID not found: %d", resourceID))
+			}
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 		}
 

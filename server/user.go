@@ -250,6 +250,9 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			ID: userID,
 		}
 		if err := s.Store.DeleteUser(ctx, userDelete); err != nil {
+			if common.ErrorCode(err) == common.NotFound {
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("User ID not found: %d", userID))
+			}
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete user").SetInternal(err)
 		}
 
