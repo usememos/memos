@@ -99,19 +99,25 @@ const UsageHeatMap = () => {
               : "stat-day-L4-bg";
 
           return (
-            <span
-              className={`stat-container ${colorLevel} ${currentStat === v ? "current" : ""} ${
-                todayTimeStamp === v.timestamp ? "today" : ""
-              }`}
+            <div
+              className="stat-wrapper"
               key={i}
               onMouseEnter={(e) => handleUsageStatItemMouseEnter(e, v)}
               onMouseLeave={handleUsageStatItemMouseLeave}
               onClick={() => handleUsageStatItemClick(v)}
-            ></span>
+            >
+              <span
+                className={`stat-container ${colorLevel} ${currentStat === v ? "current" : ""} ${
+                  todayTimeStamp === v.timestamp ? "today" : ""
+                }`}
+              ></span>
+            </div>
           );
         })}
         {nullCell.map((_, i) => (
-          <span className="stat-container null" key={i}></span>
+          <div className="stat-wrapper" key={i}>
+            <span className="stat-container null"></span>
+          </div>
         ))}
       </div>
     </div>
