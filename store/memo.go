@@ -57,6 +57,11 @@ func (s *Store) composeMemo(ctx context.Context, raw *memoRaw) (*api.Memo, error
 		memo.Pinned = memoOrganizer.Pinned
 	}
 
+	err = s.ComposeMemoCreator(ctx, memo)
+	if err != nil {
+		return nil, err
+	}
+
 	return memo, nil
 }
 

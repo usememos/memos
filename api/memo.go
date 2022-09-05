@@ -37,6 +37,9 @@ type Memo struct {
 	Content    string     `json:"content"`
 	Visibility Visibility `json:"visibility"`
 	Pinned     bool       `json:"pinned"`
+
+	// Related fields
+	Creator *User `json:"creator"`
 }
 
 type MemoCreate struct {

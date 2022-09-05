@@ -44,6 +44,20 @@ func (raw *userRaw) toUser() *api.User {
 	}
 }
 
+func (s *Store) ComposeMemoCreator(ctx context.Context, memo *api.Memo) error {
+	user, err := s.FindUser(ctx, &api.UserFind{
+		ID: &memo.CreatorID,
+	})
+	if err != nil {
+		return err
+	}
+	user.OpenID = ""
+	user.UserSettingList = nil
+	memo.Creator = user
+
+	return nil
+}
+
 func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.User, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -138,9 +152,9 @@ func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, er
 	}
 
 	if len(list) == 0 {
-		return nil, nil
+		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found user with filter %+v", find)}
 	} else if len(list) > 1 {
-		return nil, &common.Error{Code: common.Conflict, Err: fmt.Errorf("found %d users with filter %+v, expect 1. ", len(list), find)}
+		return nil, &common.Error{Code: common.Conflict, Err: fmt.Errorf("found %d users with filter %+v, expect 1", len(list), find)}
 	}
 
 	user := list[0].toUser()
