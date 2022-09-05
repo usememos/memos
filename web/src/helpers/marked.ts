@@ -18,8 +18,6 @@ export const MEMO_LINK_REG = /@\[(.+?)\]\((.+?)\)/g;
 
 const parseMarkedToHtml = (markedStr: string): string => {
   const htmlText = markedStr
-    .replace(/([\u4e00-\u9fa5])([A-Za-z0-9?.,;[\]]+)/g, "$1 $2")
-    .replace(/([A-Za-z0-9?.,;[\]]+)([\u4e00-\u9fa5])/g, "$1 $2")
     .replace(CODE_BLOCK_REG, "<pre lang=''>$1</pre>")
     .replace(TODO_BLOCK_REG, "<span class='todo-block todo' data-value='TODO'></span>")
     .replace(DONE_BLOCK_REG, "<span class='todo-block done' data-value='DONE'>✓</span>")
