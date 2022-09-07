@@ -123,16 +123,16 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <div className="tip-text-container">(👨‍💻WIP) View your static resources in memos. e.g. images</div>
+        <div className="tip-text-container">(👨‍💻WIP) {t("resources.description")}</div>
         <div className="upload-resource-container" onClick={() => handleUploadFileBtnClick()}>
           <div className="upload-resource-btn">
             <Icon.File className="icon-img" />
-            <span>Upload</span>
+            <span>{t("resources.upload")}</span>
           </div>
         </div>
         {loadingState.isLoading ? (
           <div className="loading-text-container">
-            <p className="tip-text">fetching data...</p>
+            <p className="tip-text">{t("resources.fetching-data")}</p>
           </div>
         ) : (
           <div className="resource-table-container">
@@ -143,7 +143,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
               <span></span>
             </div>
             {state.resources.length === 0 ? (
-              <p className="tip-text">No resource.</p>
+              <p className="tip-text">{t("resources.no-resources")}</p>
             ) : (
               state.resources.map((resource) => (
                 <div key={resource.id} className="resource-container">
@@ -152,10 +152,10 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                   <span className="field-text">{resource.type}</span>
                   <div className="buttons-container">
                     <Dropdown className="actions-dropdown">
-                      <button onClick={() => handlPreviewBtnClick(resource)}>Preview</button>
-                      <button onClick={() => handleCopyResourceLinkBtnClick(resource)}>Copy Link</button>
+                      <button onClick={() => handlPreviewBtnClick(resource)}>{t("resources.preview")}</button>
+                      <button onClick={() => handleCopyResourceLinkBtnClick(resource)}>{t("resources.copy-link")}</button>
                       <button className="delete-btn" onClick={() => handleDeleteResourceBtnClick(resource)}>
-                        Delete
+                        {t("resources.delete")}
                       </button>
                     </Dropdown>
                   </div>

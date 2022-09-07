@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import useLoading from "../hooks/useLoading";
+import useI18n from "../hooks/useI18n";
 import { memoService } from "../services";
 import { useAppSelector } from "../store";
 import Icon from "./Icon";
@@ -11,6 +12,7 @@ import "../less/archived-memo-dialog.less";
 type Props = DialogProps;
 
 const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
+  const { t } = useI18n();
   const { destroy } = props;
   const memos = useAppSelector((state) => state.memo.memos);
   const loadingState = useLoading();
@@ -36,7 +38,7 @@ const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">
           <span className="icon-text">🗂</span>
-          Archived Memos
+          {t("archived.archived-memos")}
         </p>
         <button className="btn close-btn" onClick={destroy}>
           <Icon.X className="icon-img" />
@@ -45,11 +47,11 @@ const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container">
         {loadingState.isLoading ? (
           <div className="tip-text-container">
-            <p className="tip-text">fetching data...</p>
+            <p className="tip-text">{t("archived.fetching-data")}</p>
           </div>
         ) : archivedMemos.length === 0 ? (
           <div className="tip-text-container">
-            <p className="tip-text">No archived memos.</p>
+            <p className="tip-text">{t("archived.no-archived-memos")}</p>
           </div>
         ) : (
           <div className="archived-memos-container">
