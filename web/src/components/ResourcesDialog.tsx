@@ -70,7 +70,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       });
 
       for (const file of inputEl.files) {
-        await resourceService.upload(file);
         try {
           await resourceService.upload(file);
         } catch (error: any) {
