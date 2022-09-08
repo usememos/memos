@@ -29,7 +29,7 @@ const MemosHeader = () => {
     const now = Date.now();
     if (now - prevRequestTimestamp > 1 * 1000) {
       prevRequestTimestamp = now;
-      memoService.fetchAllMemos().catch(() => {
+      memoService.fetchMemos().catch(() => {
         // do nth
       });
     }

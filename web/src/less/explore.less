@@ -1,0 +1,58 @@
+@import "./mixin.less";
+
+.page-wrapper.explore {
+  @apply relative top-0 w-full h-screen overflow-y-auto overflow-x-hidden;
+  background-color: #f6f5f4;
+
+  > .page-container {
+    @apply relative w-full min-h-screen mx-auto flex flex-col justify-start items-center;
+
+    > .page-header {
+      @apply relative max-w-2xl w-full min-h-full flex flex-row justify-start items-center px-4 sm:pr-6;
+
+      > .logo-img {
+        @apply h-14 w-auto mt-6 mb-2;
+      }
+    }
+
+    > .memos-wrapper {
+      @apply relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 sm:pr-6;
+
+      > .memo-container {
+        @apply flex flex-col justify-start items-start w-full p-4 mt-2 bg-white rounded-lg border border-white hover:border-gray-200;
+
+        > .memo-header {
+          @apply mb-2 w-full flex flex-row justify-start items-center text-sm font-mono text-gray-400;
+
+          > .split-text {
+            @apply mx-2;
+          }
+
+          > .name-text {
+            @apply hover:text-green-600 hover:underline;
+          }
+        }
+
+        > .memo-content {
+          @apply cursor-default;
+
+          > * {
+            @apply cursor-default;
+          }
+        }
+      }
+    }
+
+    > .addtion-btn-container {
+      @apply fixed bottom-12 left-1/2 -translate-x-1/2;
+
+      > .btn {
+        @apply bg-blue-600 text-white px-4 py-2 rounded-3xl shadow-2xl hover:opacity-80;
+
+        > .icon {
+          @apply text-lg mr-1;
+        }
+      }
+    }
+  }
+}

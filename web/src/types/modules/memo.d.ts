@@ -6,6 +6,7 @@ interface Memo {
   id: MemoId;
 
   creatorId: UserId;
+  creator: User;
   createdTs: TimeStamp;
   updatedTs: TimeStamp;
   rowStatus: RowStatus;

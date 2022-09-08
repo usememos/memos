@@ -35,7 +35,7 @@ function Home() {
           }
         } else {
           if (!user) {
-            locationService.replaceHistory(`/u/${host.id}`);
+            locationService.replaceHistory(`/explore`);
           }
         }
         loadingState.setFinish();

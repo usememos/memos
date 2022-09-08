@@ -80,7 +80,7 @@ const MemoList = () => {
 
   useEffect(() => {
     memoService
-      .fetchAllMemos()
+      .fetchMemos()
       .then(() => {
         // do nth
       })

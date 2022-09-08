@@ -58,6 +58,10 @@ export function deleteUser(userDelete: UserDelete) {
   return axios.delete(`/api/user/${userDelete.id}`);
 }
 
+export function getAllMemos() {
+  return axios.get<ResponseObject<Memo[]>>("/api/memo/all");
+}
+
 export function getMemoList(memoFind?: MemoFind) {
   const queryList = [];
   if (memoFind?.creatorId) {
