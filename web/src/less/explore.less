@@ -5,10 +5,11 @@
   background-color: #f6f5f4;
 
   > .page-container {
-    @apply relative w-full min-h-screen mx-auto flex flex-col justify-start items-center;
+    @apply relative w-full min-h-screen mx-auto flex flex-col justify-start items-center pb-8;
 
     > .page-header {
-      @apply relative max-w-2xl w-full min-h-full flex flex-row justify-between items-center px-4 sm:pr-6 mt-6 mb-2;
+      @apply sticky top-0 z-10 max-w-2xl w-full min-h-full flex flex-row justify-between items-center px-4 sm:pr-6 pt-6 mb-2;
+      background-color: #f6f5f4;
 
       > .logo-img {
         @apply h-14 w-auto;
@@ -16,10 +17,10 @@
 
       > .action-button-container {
         > .btn {
-          @apply text-blue-600 py-1 hover:opacity-80;
+          @apply text-gray-600 font-mono text-base py-1 border px-3 rounded-xl hover:opacity-80 hover:underline;
 
           > .icon {
-            @apply text-lg mr-1;
+            @apply text-lg;
           }
         }
       }
