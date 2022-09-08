@@ -8,10 +8,20 @@
     @apply relative w-full min-h-screen mx-auto flex flex-col justify-start items-center;
 
     > .page-header {
-      @apply relative max-w-2xl w-full min-h-full flex flex-row justify-start items-center px-4 sm:pr-6;
+      @apply relative max-w-2xl w-full min-h-full flex flex-row justify-between items-center px-4 sm:pr-6 mt-6 mb-2;
 
       > .logo-img {
-        @apply h-14 w-auto mt-6 mb-2;
+        @apply h-14 w-auto;
+      }
+
+      > .action-button-container {
+        > .btn {
+          @apply text-blue-600 py-1 hover:opacity-80;
+
+          > .icon {
+            @apply text-lg mr-1;
+          }
+        }
       }
     }
 
@@ -39,18 +49,6 @@
           > * {
             @apply cursor-default;
           }
-        }
-      }
-    }
-
-    > .addtion-btn-container {
-      @apply fixed bottom-12 left-1/2 -translate-x-1/2;
-
-      > .btn {
-        @apply bg-blue-600 text-white px-4 py-2 rounded-3xl shadow-2xl hover:opacity-80;
-
-        > .icon {
-          @apply text-lg mr-1;
         }
       }
     }

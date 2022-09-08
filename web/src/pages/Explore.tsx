@@ -47,6 +47,17 @@ const Explore = () => {
         <div className="page-container">
           <div className="page-header">
             <img className="logo-img" src="/logo-full.webp" alt="" />
+            <div className="action-button-container">
+              {user ? (
+                <button className="btn" onClick={() => (window.location.href = "/")}>
+                  <span className="icon">🏠</span> {t("common.back-to-home")}
+                </button>
+              ) : (
+                <button className="btn" onClick={() => (window.location.href = "/auth")}>
+                  <span className="icon">👉</span> {t("common.sign-in")}
+                </button>
+              )}
+            </div>
           </div>
           <main className="memos-wrapper">
             {state.memos.map((memo) => {
@@ -65,18 +76,6 @@ const Explore = () => {
               );
             })}
           </main>
-
-          <div className="addtion-btn-container">
-            {user ? (
-              <button className="btn" onClick={() => (window.location.href = "/")}>
-                <span className="icon">🏠</span> {t("common.back-to-home")}
-              </button>
-            ) : (
-              <button className="btn" onClick={() => (window.location.href = "/auth")}>
-                <span className="icon">👉</span> {t("common.sign-in")}
-              </button>
-            )}
-          </div>
         </div>
       )}
     </section>
