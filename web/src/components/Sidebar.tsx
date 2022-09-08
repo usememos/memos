@@ -1,11 +1,9 @@
-import { userService } from "../services";
+import { locationService, userService } from "../services";
 import useI18n from "../hooks/useI18n";
 import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
-import showArchivedMemoDialog from "./ArchivedMemoDialog";
-import showResourcesDialog from "./ResourcesDialog";
 import UserBanner from "./UserBanner";
 import UsageHeatMap from "./UsageHeatMap";
 import ShortcutList from "./ShortcutList";
@@ -15,14 +13,12 @@ import "../less/siderbar.less";
 const Sidebar = () => {
   const { t } = useI18n();
 
-  const handleMyAccountBtnClick = () => {
+  const handleSettingBtnClick = () => {
     showSettingDialog();
   };
-  const handleResourcesBtnClick = () => {
-    showResourcesDialog();
-  };
-  const handleArchivedBtnClick = () => {
-    showArchivedMemoDialog();
+
+  const handleExploreBtnClick = () => {
+    locationService.pushHistory("/explore");
   };
 
   return (
@@ -39,14 +35,11 @@ const Sidebar = () => {
           <span className="icon">📅</span> {t("sidebar.daily-review")}
         </button>
         <Only when={!userService.isVisitorMode()}>
-          <button className="btn action-btn" onClick={handleResourcesBtnClick}>
-            <span className="icon">🌄</span> {t("sidebar.resources")}
-          </button>
-          <button className="btn action-btn" onClick={handleMyAccountBtnClick}>
+          <button className="btn action-btn" onClick={handleSettingBtnClick}>
             <span className="icon">⚙️</span> {t("sidebar.setting")}
           </button>
-          <button className="btn action-btn" onClick={handleArchivedBtnClick}>
-            <span className="icon">🗂</span> {t("sidebar.archived")}
+          <button className="btn action-btn" onClick={() => handleExploreBtnClick()}>
+            <span className="icon">🏂</span> {t("common.explore")}
           </button>
         </Only>
       </div>

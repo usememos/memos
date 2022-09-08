@@ -1,10 +1,10 @@
 import { useEffect, useRef } from "react";
-import * as api from "../helpers/api";
 import { locationService, userService } from "../services";
 import useI18n from "../hooks/useI18n";
-import toastHelper from "./Toast";
 import Only from "./common/OnlyWhen";
 import showAboutSiteDialog from "./AboutSiteDialog";
+import showArchivedMemoDialog from "./ArchivedMemoDialog";
+import showResourcesDialog from "./ResourcesDialog";
 import "../less/menu-btns-popup.less";
 
 interface Props {
@@ -32,27 +32,16 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
     }
   }, [shownStatus]);
 
-  const handlePingBtnClick = () => {
-    api
-      .getSystemStatus()
-      .then(({ data }) => {
-        const {
-          data: { profile },
-        } = data;
-        toastHelper.info(JSON.stringify(profile, null, 4));
-      })
-      .catch((error) => {
-        console.error(error);
-        toastHelper.error(error.response.data.message);
-      });
+  const handleResourcesBtnClick = () => {
+    showResourcesDialog();
+  };
+
+  const handleArchivedBtnClick = () => {
+    showArchivedMemoDialog();
   };
 
   const handleAboutBtnClick = () => {
     showAboutSiteDialog();
-  };
-
-  const handleExploreBtnClick = () => {
-    locationService.pushHistory("/explore");
   };
 
   const handleSignOutBtnClick = async () => {
@@ -69,12 +58,14 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`menu-btns-popup ${shownStatus ? "" : "hidden"}`} ref={popupElRef}>
-      <button className="btn action-btn" onClick={handleExploreBtnClick}>
-        <span className="icon">👾</span> Explore
-      </button>
-      <button className="btn action-btn" onClick={handlePingBtnClick}>
-        <span className="icon">🎯</span> Ping
-      </button>
+      <Only when={!userService.isVisitorMode()}>
+        <button className="btn action-btn" onClick={handleResourcesBtnClick}>
+          <span className="icon">🌄</span> {t("sidebar.resources")}
+        </button>
+        <button className="btn action-btn" onClick={handleArchivedBtnClick}>
+          <span className="icon">🗂</span> {t("sidebar.archived")}
+        </button>
+      </Only>
       <button className="btn action-btn" onClick={handleAboutBtnClick}>
         <span className="icon">🤠</span> {t("common.about")}
       </button>
