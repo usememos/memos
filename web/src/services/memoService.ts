@@ -17,6 +17,16 @@ const memoService = {
   },
 
   fetchAllMemos: async () => {
+    const memoFind: MemoFind = {};
+    if (userService.isVisitorMode()) {
+      memoFind.creatorId = userService.getUserIdFromPath();
+    }
+    const { data } = (await api.getAllMemos()).data;
+    const memos = data.map((m) => convertResponseModelMemo(m));
+    return memos;
+  },
+
+  fetchMemos: async () => {
     const timeoutIndex = setTimeout(() => {
       store.dispatch(setIsFetching(true));
     }, 1000);

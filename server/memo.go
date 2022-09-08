@@ -162,10 +162,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
 		}
 
-		rowStatus := api.RowStatus(c.QueryParam("rowStatus"))
-		if rowStatus != "" {
-			memoFind.RowStatus = &rowStatus
-		}
 		pinnedStr := c.QueryParam("pinned")
 		if pinnedStr != "" {
 			pinned := pinnedStr == "true"
@@ -190,6 +186,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
 			memoFind.Offset = offset
 		}
+
+		// Only fetch normal status memos.
+		normalStatus := api.Normal
+		memoFind.RowStatus = &normalStatus
 
 		list, err := s.Store.FindMemoList(ctx, memoFind)
 		if err != nil {

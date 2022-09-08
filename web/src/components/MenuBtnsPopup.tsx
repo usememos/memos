@@ -51,6 +51,10 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
     showAboutSiteDialog();
   };
 
+  const handleExploreBtnClick = () => {
+    locationService.pushHistory("/explore");
+  };
+
   const handleSignOutBtnClick = async () => {
     userService
       .doSignOut()
@@ -65,11 +69,14 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`menu-btns-popup ${shownStatus ? "" : "hidden"}`} ref={popupElRef}>
-      <button className="btn action-btn" onClick={handleAboutBtnClick}>
-        <span className="icon">🤠</span> {t("common.about")}
+      <button className="btn action-btn" onClick={handleExploreBtnClick}>
+        <span className="icon">👾</span> Explore
       </button>
       <button className="btn action-btn" onClick={handlePingBtnClick}>
         <span className="icon">🎯</span> Ping
+      </button>
+      <button className="btn action-btn" onClick={handleAboutBtnClick}>
+        <span className="icon">🤠</span> {t("common.about")}
       </button>
       <Only when={!userService.isVisitorMode()}>
         <button className="btn action-btn" onClick={handleSignOutBtnClick}>
