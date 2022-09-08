@@ -5,6 +5,7 @@ import { useAppSelector } from "../store";
 import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
 import MemoContent from "../components/MemoContent";
+import MemoResources from "../components/MemoResources";
 import "../less/explore.less";
 
 interface State {
@@ -72,6 +73,7 @@ const Explore = () => {
                     </a>
                   </div>
                   <MemoContent className="memo-content" content={memo.content} onMemoContentClick={() => undefined} />
+                  <MemoResources memo={memo} />
                 </div>
               );
             })}

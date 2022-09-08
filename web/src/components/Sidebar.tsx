@@ -35,11 +35,11 @@ const Sidebar = () => {
           <span className="icon">📅</span> {t("sidebar.daily-review")}
         </button>
         <Only when={!userService.isVisitorMode()}>
-          <button className="btn action-btn" onClick={handleSettingBtnClick}>
-            <span className="icon">⚙️</span> {t("sidebar.setting")}
-          </button>
           <button className="btn action-btn" onClick={() => handleExploreBtnClick()}>
             <span className="icon">🏂</span> {t("common.explore")}
+          </button>
+          <button className="btn action-btn" onClick={handleSettingBtnClick}>
+            <span className="icon">⚙️</span> {t("sidebar.setting")}
           </button>
         </Only>
       </div>

@@ -1,16 +1,16 @@
-import { memo, useEffect, useRef, useState } from "react";
-import { indexOf } from "lodash-es";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { indexOf } from "lodash-es";
+import { memo, useEffect, useRef, useState } from "react";
 import "dayjs/locale/zh";
 import useI18n from "../hooks/useI18n";
 import { UNKNOWN_ID } from "../helpers/consts";
-import { DONE_BLOCK_REG, formatMemoContent, IMAGE_URL_REG, TODO_BLOCK_REG } from "../helpers/marked";
+import { DONE_BLOCK_REG, formatMemoContent, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
-import Image from "./Image";
+import MemoResources from "./MemoResources";
 import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import "../less/memo.less";
@@ -46,7 +46,6 @@ const Memo: React.FC<Props> = (props: Props) => {
   const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, locale));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
-  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
   const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
@@ -239,13 +238,7 @@ const Memo: React.FC<Props> = (props: Props) => {
           </span>
         </div>
       )}
-      <Only when={imageUrls.length > 0}>
-        <div className="images-wrapper">
-          {imageUrls.map((imgUrl, idx) => (
-            <Image className="memo-img" key={idx} imgUrl={imgUrl} />
-          ))}
-        </div>
-      </Only>
+      <MemoResources memo={memo} />
     </div>
   );
 };

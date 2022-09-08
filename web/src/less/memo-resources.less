@@ -1,0 +1,19 @@
+@import "./mixin.less";
+
+.resource-wrapper {
+  @apply w-full flex flex-col justify-start items-start;
+
+  > .images-wrapper {
+    @apply flex flex-row justify-start items-start mt-2 w-full overflow-x-auto overflow-y-hidden pb-1;
+    .pretty-scroll-bar(0, 2px);
+
+    > .memo-img {
+      @apply mr-2 last:mr-0 w-auto h-auto shrink-0 grow-0 overflow-y-hidden;
+      .hide-scroll-bar();
+
+      > img {
+        @apply w-auto max-h-40 rounded-lg;
+      }
+    }
+  }
+}

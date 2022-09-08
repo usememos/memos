@@ -61,23 +61,6 @@
         > .memo-content-text {
           @apply w-full text-base;
         }
-
-        > .images-wrapper {
-          .flex(row, flex-start, flex-start);
-          @apply w-full mt-2 overflow-x-auto overflow-y-hidden;
-          padding-bottom: 2px;
-          .pretty-scroll-bar(0, 2px);
-
-          > .memo-img {
-            @apply mr-2 w-auto h-32 shrink-0 grow-0 overflow-y-hidden hover:border-gray-400 last:mr-0;
-            .hide-scroll-bar();
-
-            > img {
-              @apply w-auto rounded-lg;
-              max-height: 128px;
-            }
-          }
-        }
       }
 
       > .normal-text {

@@ -3,13 +3,13 @@ import { editorStateService, memoService, userService } from "../services";
 import { useAppSelector } from "../store";
 import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { formatMemoContent, IMAGE_URL_REG, MEMO_LINK_REG, parseHtmlToRawText } from "../helpers/marked";
+import { formatMemoContent, MEMO_LINK_REG, parseHtmlToRawText } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
-import Image from "./Image";
 import Icon from "./Icon";
 import Selector from "./common/Selector";
+import MemoResources from "./MemoResources";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "../less/memo-card-dialog.less";
 
@@ -29,7 +29,6 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   });
   const [linkMemos, setLinkMemos] = useState<LinkedMemo[]>([]);
   const [linkedMemos, setLinkedMemos] = useState<LinkedMemo[]>([]);
-  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
 
   useEffect(() => {
     const fetchLinkedMemos = async () => {
@@ -167,13 +166,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
             onClick={handleMemoContentClick}
             dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}
           ></div>
-          <Only when={imageUrls.length > 0}>
-            <div className="images-wrapper">
-              {imageUrls.map((imgUrl, idx) => (
-                <Image className="memo-img" key={idx} imgUrl={imgUrl} />
-              ))}
-            </div>
-          </Only>
+          <MemoResources memo={memo} />
         </div>
         <div className="layer-container"></div>
         {linkMemos.map((_, idx) => {
