@@ -56,9 +56,8 @@ func NewServer(profile *profile.Profile) *Server {
 		Profile: profile,
 	}
 
-	// Webhooks api skips auth checker.
-	webhookGroup := e.Group("/h")
-	s.registerWebhookRoutes(webhookGroup)
+	publicRouteGroup := e.Group("/h")
+	s.registerResourcePublicRoutes(publicRouteGroup)
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
