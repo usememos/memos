@@ -90,11 +90,11 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handlPreviewBtnClick = (resource: Resource) => {
-    showPreviewImageDialog(`${window.location.origin}/h/r/${resource.id}/${resource.filename}`);
+    showPreviewImageDialog(`${window.location.origin}/o/r/${resource.id}/${resource.filename}`);
   };
 
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
-    utils.copyTextToClipboard(`${window.location.origin}/h/r/${resource.id}/${resource.filename}`);
+    utils.copyTextToClipboard(`${window.location.origin}/o/r/${resource.id}/${resource.filename}`);
     toastHelper.success("Succeed to copy resource link to clipboard");
   };
 

@@ -116,7 +116,7 @@ const MemoEditor = () => {
 
       try {
         const image = await resourceService.upload(file);
-        const url = `/h/r/${image.id}/${image.filename}`;
+        const url = `/o/r/${image.id}/${image.filename}`;
         return url;
       } catch (error: any) {
         console.error(error);

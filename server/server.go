@@ -56,8 +56,11 @@ func NewServer(profile *profile.Profile) *Server {
 		Profile: profile,
 	}
 
-	publicRouteGroup := e.Group("/h")
-	s.registerResourcePublicRoutes(publicRouteGroup)
+	webhookGroup := e.Group("/h")
+	s.registerResourcePublicRoutes(webhookGroup)
+
+	publicGroup := e.Group("/o")
+	s.registerResourcePublicRoutes(publicGroup)
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
