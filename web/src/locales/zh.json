@@ -47,8 +47,7 @@
     "fetching-data": "请求数据中...",
     "upload": "上传",
     "preview": "预览",
-    "copy-link": "拷贝链接",
-    "delete": "删除"
+    "copy-link": "拷贝链接"
   },
   "archived": {
     "archived-memos": "已归档的 Memo",

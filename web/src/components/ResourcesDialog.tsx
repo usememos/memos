@@ -155,7 +155,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                       <button onClick={() => handlPreviewBtnClick(resource)}>{t("resources.preview")}</button>
                       <button onClick={() => handleCopyResourceLinkBtnClick(resource)}>{t("resources.copy-link")}</button>
                       <button className="delete-btn" onClick={() => handleDeleteResourceBtnClick(resource)}>
-                        {t("resources.delete")}
+                        {t("common.delete")}
                       </button>
                     </Dropdown>
                   </div>

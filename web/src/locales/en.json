@@ -47,8 +47,7 @@
     "fetching-data": "fetching data...",
     "upload": "Upload",
     "preview": "Preview",
-    "copy-link": "Copy Link",
-    "delete": "Delete"
+    "copy-link": "Copy Link"
   },
   "archived": {
     "archived-memos": "Archived Memos",
