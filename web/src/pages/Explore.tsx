@@ -44,22 +44,22 @@ const Explore = () => {
 
   return (
     <section className="page-wrapper explore">
-      {loadingState.isLoading ? null : (
-        <div className="page-container">
-          <div className="page-header">
-            <img className="logo-img" src="/logo-full.webp" alt="" />
-            <div className="action-button-container">
-              {user ? (
-                <button className="btn" onClick={() => (window.location.href = "/")}>
-                  <span className="icon">🏠</span> {t("common.back-to-home")}
-                </button>
-              ) : (
-                <button className="btn" onClick={() => (window.location.href = "/auth")}>
-                  <span className="icon">👉</span> {t("common.sign-in")}
-                </button>
-              )}
-            </div>
+      <div className="page-container">
+        <div className="page-header">
+          <img className="logo-img" src="/logo-full.webp" alt="" />
+          <div className="action-button-container">
+            {user ? (
+              <button className="btn" onClick={() => (window.location.href = "/")}>
+                <span className="icon">🏠</span> {t("common.back-to-home")}
+              </button>
+            ) : (
+              <button className="btn" onClick={() => (window.location.href = "/auth")}>
+                <span className="icon">👉</span> {t("common.sign-in")}
+              </button>
+            )}
           </div>
+        </div>
+        {loadingState.isLoading ? null : (
           <main className="memos-wrapper">
             {state.memos.map((memo) => {
               const createdAtStr = dayjs(memo.createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss");
@@ -78,8 +78,8 @@ const Explore = () => {
               );
             })}
           </main>
-        </div>
-      )}
+        )}
+      </div>
     </section>
   );
 };
