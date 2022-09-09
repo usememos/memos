@@ -24,7 +24,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			Email: &signin.Email,
 		}
 		user, err := s.Store.FindUser(ctx, userFind)
-		if err != nil {
+		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", signin.Email)).SetInternal(err)
 		}
 		if user == nil {
@@ -68,7 +68,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			Role: &hostUserType,
 		}
 		hostUser, err := s.Store.FindUser(ctx, &hostUserFind)
-		if err != nil {
+		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
 		if hostUser != nil {

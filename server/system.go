@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/common"
 
 	"github.com/labstack/echo/v4"
 )
@@ -27,7 +28,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			Role: &hostUserType,
 		}
 		hostUser, err := s.Store.FindUser(ctx, &hostUserFind)
-		if err != nil {
+		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
 

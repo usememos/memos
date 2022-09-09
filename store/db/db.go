@@ -84,7 +84,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 				}
 			}
 
-			if common.IsVersionGreaterThan(currentVersion, migrationHistory.Version) {
+			if common.IsVersionGreaterThan(common.GetSchemaVersion(currentVersion), migrationHistory.Version) {
 				minorVersionList := getMinorVersionList()
 
 				// backup the raw database file before migration

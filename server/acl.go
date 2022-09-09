@@ -71,7 +71,7 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 				OpenID: &openID,
 			}
 			user, err := s.Store.FindUser(ctx, userFind)
-			if err != nil {
+			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
 			}
 			if user != nil {
@@ -90,7 +90,7 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 					ID: &userID,
 				}
 				user, err := s.Store.FindUser(ctx, userFind)
-				if err != nil {
+				if err != nil && common.ErrorCode(err) != common.NotFound {
 					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userID)).SetInternal(err)
 				}
 				if user != nil {
