@@ -4,6 +4,7 @@ import { locationService, memoService, userService } from "../services";
 import { useAppSelector } from "../store";
 import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
+import Only from "../components/common/OnlyWhen";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
 import "../less/explore.less";
@@ -48,18 +49,20 @@ const Explore = () => {
         <div className="page-header">
           <img className="logo-img" src="/logo-full.webp" alt="" />
           <div className="action-button-container">
-            {user ? (
-              <button className="btn" onClick={() => (window.location.href = "/")}>
-                <span className="icon">🏠</span> {t("common.back-to-home")}
-              </button>
-            ) : (
-              <button className="btn" onClick={() => (window.location.href = "/auth")}>
-                <span className="icon">👉</span> {t("common.sign-in")}
-              </button>
-            )}
+            <Only when={!loadingState.isLoading}>
+              {user ? (
+                <button className="btn" onClick={() => (window.location.href = "/")}>
+                  <span className="icon">🏠</span> {t("common.back-to-home")}
+                </button>
+              ) : (
+                <button className="btn" onClick={() => (window.location.href = "/auth")}>
+                  <span className="icon">👉</span> {t("common.sign-in")}
+                </button>
+              )}
+            </Only>
           </div>
         </div>
-        {loadingState.isLoading ? null : (
+        <Only when={!loadingState.isLoading}>
           <main className="memos-wrapper">
             {state.memos.map((memo) => {
               const createdAtStr = dayjs(memo.createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss");
@@ -78,7 +81,7 @@ const Explore = () => {
               );
             })}
           </main>
-        )}
+        </Only>
       </div>
     </section>
   );
