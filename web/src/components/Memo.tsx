@@ -171,6 +171,20 @@ const Memo: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
+    const targetEl = e.target as HTMLElement;
+
+    if (targetEl.className === "memo-link-text") {
+      return;
+    } else if (targetEl.className === "tag-span") {
+      return;
+    } else if (targetEl.classList.contains("todo-block")) {
+      return;
+    }
+
+    editorStateService.setEditMemoWithId(memo.id);
+  };
+
   const handleExpandBtnClick = () => {
     const expandButtonStatus = Boolean(!state.expandButtonStatus);
     if (!expandButtonStatus) {
@@ -228,6 +242,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         ref={memoContentContainerRef}
         className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
         onClick={handleMemoContentClick}
+        onDoubleClick={handleMemoContentDoubleClick}
         dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}
       ></div>
       {state.expandButtonStatus !== -1 && (
