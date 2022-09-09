@@ -9,10 +9,10 @@ import showChangePasswordDialog from "../ChangePasswordDialog";
 import "../../less/settings/my-account-section.less";
 
 const validateConfig: ValidatorConfig = {
-  minLength: 4,
+  minLength: 1,
   maxLength: 24,
   noSpace: true,
-  noChinese: true,
+  noChinese: false,
 };
 
 const MyAccountSection = () => {
