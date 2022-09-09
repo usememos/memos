@@ -58,7 +58,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     document.body.appendChild(inputEl);
     inputEl.type = "file";
     inputEl.multiple = true;
-    inputEl.accept = "image/*";
+    inputEl.accept = "*";
     inputEl.onchange = async () => {
       if (!inputEl.files || inputEl.files.length === 0) {
         return;
@@ -90,7 +90,12 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handlPreviewBtnClick = (resource: Resource) => {
-    showPreviewImageDialog(`${window.location.origin}/o/r/${resource.id}/${resource.filename}`);
+    const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
+    if (resource.type.startsWith("image")) {
+      showPreviewImageDialog(resourceUrl);
+    } else {
+      window.open(resourceUrl);
+    }
   };
 
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
