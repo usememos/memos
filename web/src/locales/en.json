@@ -39,6 +39,22 @@
     "setting": "Setting",
     "archived": "Archived"
   },
+  "daily-review": {
+    "oops-nothing": "Oops, there is nothing."
+  },
+  "resources": {
+    "description": "View your static resources in memos. e.g. images",
+    "no-resources": "No resources.",
+    "fetching-data": "fetching data...",
+    "upload": "Upload",
+    "preview": "Preview",
+    "copy-link": "Copy Link"
+  },
+  "archived": {
+    "archived-memos": "Archived Memos",
+    "no-archived-memos": "No archived memos.",
+    "fetching-data": "fetching data..."
+  },
   "editor": {
     "editing": "Editing...",
     "save": "Save",

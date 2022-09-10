@@ -97,7 +97,7 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
         </div>
         {dailyMemos.length === 0 ? (
           <div className="tip-container">
-            <p className="tip-text">Oops, there is nothing.</p>
+            <p className="tip-text">{t("daily-review.oops-nothing")}</p>
           </div>
         ) : (
           <div className="dailymemos-wrapper">
