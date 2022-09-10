@@ -47,7 +47,10 @@ const Explore = () => {
     <section className="page-wrapper explore">
       <div className="page-container">
         <div className="page-header">
-          <img className="logo-img" src="/logo-full.webp" alt="" />
+          <div className="title-container">
+            <img className="logo-img" src="/logo.webp" alt="" />
+            <span className="title-text">Explore</span>
+          </div>
           <div className="action-button-container">
             <Only when={!loadingState.isLoading}>
               {user ? (

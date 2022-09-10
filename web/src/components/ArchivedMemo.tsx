@@ -3,10 +3,9 @@ import * as utils from "../helpers/utils";
 import useI18n from "../hooks/useI18n";
 import useToggle from "../hooks/useToggle";
 import { memoService } from "../services";
-import { formatMemoContent } from "../helpers/marked";
-import Only from "./common/OnlyWhen";
-import Image from "./Image";
 import toastHelper from "./Toast";
+import MemoContent from "./MemoContent";
+import MemoResources from "./MemoResources";
 import "../less/memo.less";
 
 interface Props {
@@ -72,14 +71,8 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
           </span>
         </div>
       </div>
-      <div className="memo-content-text" dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}></div>
-      <Only when={imageUrls.length > 0}>
-        <div className="images-wrapper">
-          {imageUrls.map((imgUrl, idx) => (
-            <Image className="memo-img" key={idx} imgUrl={imgUrl} />
-          ))}
-        </div>
-      </Only>
+      <MemoContent className="memo-content-wrapper" content={memo.content} />
+      <MemoResources memo={memo} />
     </div>
   );
 };

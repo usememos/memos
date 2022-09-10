@@ -4,11 +4,12 @@ import toImage from "../labs/html2image";
 import { ANIMATION_DURATION } from "../helpers/consts";
 import useI18n from "../hooks/useI18n";
 import * as utils from "../helpers/utils";
-import { formatMemoContent, IMAGE_URL_REG } from "../helpers/marked";
+import { IMAGE_URL_REG } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
+import MemoContent from "./MemoContent";
 import "../less/share-memo-image-dialog.less";
 
 interface Props extends DialogProps {
@@ -91,7 +92,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
             <img className="memo-shortcut-img" onClick={handleDownloadBtnClick} src={shortcutImgUrl} />
           </Only>
           <span className="time-text">{memo.createdAtStr}</span>
-          <div className="memo-content-text" dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}></div>
+          <MemoContent className="memo-content-wrapper" content={memo.content} displayConfig={{ enableExpand: false }} />
           <Only when={imageUrls.length > 0}>
             <div className="images-container">
               {imageUrls.map((imgUrl, idx) => (

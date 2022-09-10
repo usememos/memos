@@ -11,8 +11,16 @@
       @apply sticky top-0 z-10 max-w-2xl w-full min-h-full flex flex-row justify-between items-center px-4 sm:pr-6 pt-6 mb-2;
       background-color: #f6f5f4;
 
-      > .logo-img {
-        @apply h-14 w-auto;
+      > .title-container {
+        @apply flex flex-row justify-start items-center;
+
+        > .logo-img {
+          @apply h-12 sm:h-14 w-auto mr-1;
+        }
+
+        > .title-text {
+          @apply text-xl sm:text-3xl font-mono text-gray-700;
+        }
       }
 
       > .action-button-container {

@@ -9,6 +9,7 @@ import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import Selector from "./common/Selector";
+import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "../less/memo-card-dialog.less";
@@ -161,11 +162,12 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
           </div>
         </div>
         <div className="memo-container">
-          <div
-            className="memo-content-text"
-            onClick={handleMemoContentClick}
-            dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}
-          ></div>
+          <MemoContent
+            className=""
+            displayConfig={{ enableExpand: false }}
+            content={memo.content}
+            onMemoContentClick={handleMemoContentClick}
+          />
           <MemoResources memo={memo} />
         </div>
         <div className="layer-container"></div>

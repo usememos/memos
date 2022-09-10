@@ -1,5 +1,5 @@
 import * as utils from "../helpers/utils";
-import { formatMemoContent } from "../helpers/marked";
+import MemoContent, { DisplayConfig } from "./MemoContent";
 import "../less/daily-memo.less";
 
 interface DailyMemo extends Memo {
@@ -18,22 +18,17 @@ const DailyMemo: React.FC<Props> = (props: Props) => {
     createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
     timeStr: utils.getTimeString(propsMemo.createdTs),
   };
+  const displayConfig: DisplayConfig = {
+    enableExpand: false,
+    showInlineImage: true,
+  };
 
   return (
     <div className="daily-memo-wrapper">
       <div className="time-wrapper">
         <span className="normal-text">{memo.timeStr}</span>
       </div>
-      <div className="memo-content-container">
-        <div
-          className="memo-content-text"
-          dangerouslySetInnerHTML={{
-            __html: formatMemoContent(memo.content, {
-              inlineImage: true,
-            }),
-          }}
-        ></div>
-      </div>
+      <MemoContent className="memo-content-container" content={memo.content} displayConfig={displayConfig} />
       <div className="split-line"></div>
     </div>
   );

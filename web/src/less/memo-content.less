@@ -1,41 +1,78 @@
 @import "./mixin.less";
 
-.memo-content-text {
-  @apply w-full whitespace-pre-wrap break-words text-base leading-7;
+.memo-content-wrapper {
+  @apply w-full flex flex-col justify-start items-start;
 
-  > p {
-    @apply inline-block w-full h-auto mb-1 last:mb-0 text-base leading-7 whitespace-pre-wrap break-words;
+  > .memo-content-text {
+    @apply w-full whitespace-pre-wrap break-words text-base leading-7;
+
+    &.expanded {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 8;
+      overflow: hidden;
+    }
+
+    > p {
+      @apply inline-block w-full h-auto mb-1 last:mb-0 text-base leading-7 whitespace-pre-wrap break-words;
+    }
+
+    .img {
+      @apply float-left max-w-full w-full;
+    }
+
+    .tag-span {
+      @apply inline-block w-auto font-mono text-blue-600;
+    }
+
+    .memo-link-text {
+      @apply inline-block text-blue-600 cursor-pointer font-bold border-none no-underline hover:opacity-80;
+    }
+
+    .link {
+      @apply inline-block text-blue-600 cursor-pointer underline break-all hover:opacity-80;
+    }
+
+    .counter-block,
+    .todo-block {
+      @apply float-left inline-block box-border text-center w-7 font-mono select-none;
+    }
+
+    .todo-block {
+      @apply w-4 h-4 leading-4 border rounded box-border text-lg cursor-pointer shadow-inner hover:opacity-80;
+      margin-top: 6px;
+      margin-left: 6px;
+      margin-right: 6px;
+    }
+
+    pre {
+      @apply w-full mt-1 py-2 px-3 rounded text-sm bg-gray-100 whitespace-pre-wrap;
+    }
   }
 
-  .img {
-    @apply float-left max-w-full w-full;
-  }
+  > .expand-btn-container {
+    @apply w-full relative flex flex-row justify-start items-center;
 
-  .tag-span {
-    @apply inline-block w-auto font-mono text-blue-600;
-  }
+    > .btn {
+      @apply flex flex-row justify-start items-center pl-2 pr-1 py-1 my-1 text-xs rounded-lg border bg-gray-100 border-gray-200 opacity-80 shadow hover:opacity-60;
 
-  .memo-link-text {
-    @apply inline-block text-blue-600 cursor-pointer font-bold border-none no-underline hover:opacity-80;
-  }
+      &.expand-btn {
+        @apply mt-2;
 
-  .link {
-    @apply inline-block text-blue-600 cursor-pointer underline break-all hover:opacity-80;
-  }
+        > .icon-img {
+          @apply rotate-90;
+        }
+      }
 
-  .counter-block,
-  .todo-block {
-    @apply float-left inline-block box-border text-center w-7 font-mono select-none;
-  }
+      &.fold-btn {
+        > .icon-img {
+          @apply -rotate-90;
+        }
+      }
 
-  .todo-block {
-    @apply w-4 h-4 leading-4 border rounded box-border text-lg cursor-pointer shadow-inner hover:opacity-80;
-    margin-top: 6px;
-    margin-left: 6px;
-    margin-right: 6px;
-  }
-
-  pre {
-    @apply w-full mt-1 py-2 px-3 rounded text-sm bg-gray-100 whitespace-pre-wrap;
+      > .icon-img {
+        @apply w-4 h-auto ml-1 transition-all;
+      }
+    }
   }
 }

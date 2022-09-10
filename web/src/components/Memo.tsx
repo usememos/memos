@@ -5,11 +5,12 @@ import { memo, useEffect, useRef, useState } from "react";
 import "dayjs/locale/zh";
 import useI18n from "../hooks/useI18n";
 import { UNKNOWN_ID } from "../helpers/consts";
-import { DONE_BLOCK_REG, formatMemoContent, TODO_BLOCK_REG } from "../helpers/marked";
+import { DONE_BLOCK_REG, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
+import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
@@ -17,16 +18,8 @@ import "../less/memo.less";
 
 dayjs.extend(relativeTime);
 
-const MAX_MEMO_CONTAINER_HEIGHT = 384;
-
-type ExpandButtonStatus = -1 | 0 | 1;
-
 interface Props {
   memo: Memo;
-}
-
-interface State {
-  expandButtonStatus: ExpandButtonStatus;
 }
 
 export const getFormatedMemoCreatedAtStr = (createdTs: number, locale = "en"): string => {
@@ -40,26 +33,12 @@ export const getFormatedMemoCreatedAtStr = (createdTs: number, locale = "en"): s
 const Memo: React.FC<Props> = (props: Props) => {
   const memo = props.memo;
   const { t, locale } = useI18n();
-  const [state, setState] = useState<State>({
-    expandButtonStatus: -1,
-  });
   const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, locale));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
-    if (!memoContentContainerRef) {
-      return;
-    }
-
-    if (Number(memoContentContainerRef.current?.clientHeight) > MAX_MEMO_CONTAINER_HEIGHT) {
-      setState({
-        ...state,
-        expandButtonStatus: 0,
-      });
-    }
-
     let intervalFlag = -1;
     if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
       intervalFlag = setInterval(() => {
@@ -185,17 +164,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     editorStateService.setEditMemoWithId(memo.id);
   };
 
-  const handleExpandBtnClick = () => {
-    const expandButtonStatus = Boolean(!state.expandButtonStatus);
-    if (!expandButtonStatus) {
-      memoContainerRef.current?.scrollIntoView();
-    }
-
-    setState({
-      expandButtonStatus: Number(expandButtonStatus) as ExpandButtonStatus,
-    });
-  };
-
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
       <div className="memo-top-wrapper">
@@ -238,21 +206,12 @@ const Memo: React.FC<Props> = (props: Props) => {
           </div>
         </div>
       </div>
-      <div
-        ref={memoContentContainerRef}
-        className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
-        onClick={handleMemoContentClick}
-        onDoubleClick={handleMemoContentDoubleClick}
-        dangerouslySetInnerHTML={{ __html: formatMemoContent(memo.content) }}
-      ></div>
-      {state.expandButtonStatus !== -1 && (
-        <div className="expand-btn-container">
-          <span className={`btn ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleExpandBtnClick}>
-            {state.expandButtonStatus === 0 ? "Expand" : "Fold"}
-            <Icon.ChevronRight className="icon-img" />
-          </span>
-        </div>
-      )}
+      <MemoContent
+        className=""
+        content={memo.content}
+        onMemoContentClick={handleMemoContentClick}
+        onMemoContentDoubleClick={handleMemoContentDoubleClick}
+      />
       <MemoResources memo={memo} />
     </div>
   );

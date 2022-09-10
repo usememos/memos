@@ -43,10 +43,10 @@ const defaultFormatterConfig: FormatterConfig = {
   inlineImage: false,
 };
 
-const formatMemoContent = (content: string, addtionConfig?: Partial<FormatterConfig>) => {
+const formatMemoContent = (content: string, additionConfig?: Partial<FormatterConfig>) => {
   const config = {
     ...defaultFormatterConfig,
-    ...addtionConfig,
+    ...additionConfig,
   };
   const tempElement = document.createElement("div");
   tempElement.innerHTML = parseMarkedToHtml(escape(content));
