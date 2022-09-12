@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/server/version"
 )
 
 // Profile is the configuration to start main server.
@@ -68,7 +68,7 @@ func GetProfile() (*Profile, error) {
 
 	profile.Data = dataDir
 	profile.DSN = fmt.Sprintf("%s/memos_%s.db", dataDir, profile.Mode)
-	profile.Version = common.GetCurrentVersion(profile.Mode)
+	profile.Version = version.GetCurrentVersion(profile.Mode)
 
 	return &profile, nil
 }

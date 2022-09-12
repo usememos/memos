@@ -12,8 +12,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/server/version"
 )
 
 //go:embed migration
@@ -70,7 +70,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 				return fmt.Errorf("failed to create migration_history table: %w", err)
 			}
 
-			currentVersion := common.GetCurrentVersion(db.profile.Mode)
+			currentVersion := version.GetCurrentVersion(db.profile.Mode)
 			migrationHistory, err := db.FindMigrationHistory(ctx, &MigrationHistoryFind{})
 			if err != nil {
 				return err
@@ -84,7 +84,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 				}
 			}
 
-			if common.IsVersionGreaterThan(common.GetSchemaVersion(currentVersion), migrationHistory.Version) {
+			if version.IsVersionGreaterThan(version.GetSchemaVersion(currentVersion), migrationHistory.Version) {
 				minorVersionList := getMinorVersionList()
 
 				// backup the raw database file before migration
@@ -101,7 +101,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 				println("start migrate")
 				for _, minorVersion := range minorVersionList {
 					normalizedVersion := minorVersion + ".0"
-					if common.IsVersionGreaterThan(normalizedVersion, migrationHistory.Version) && common.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
+					if version.IsVersionGreaterThan(normalizedVersion, migrationHistory.Version) && version.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
 						println("applying migration for", normalizedVersion)
 						if err := db.applyMigrationForMinorVersion(ctx, minorVersion); err != nil {
 							return fmt.Errorf("failed to apply minor version migration: %w", err)
