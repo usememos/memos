@@ -48,7 +48,7 @@ const PreferencesSection = () => {
 
   const handleCreateUserBtnClick = async () => {
     if (isEmpty(state.createUserEmail) || isEmpty(state.createUserPassword)) {
-      toastHelper.error("Please fill out this form");
+      toastHelper.error(t("common.fill-form"));
       return;
     }
 
@@ -125,10 +125,10 @@ const PreferencesSection = () => {
           <button onClick={handleCreateUserBtnClick}>{t("common.create")}</button>
         </div>
       </div>
-      <p className="title-text">Member list</p>
+      <p className="title-text">{t("setting.member-list")}</p>
       <div className="member-container field-container">
         <span className="field-text">ID</span>
-        <span className="field-text">EMAIL</span>
+        <span className="field-text">{t("common.email")}</span>
         <span></span>
       </div>
       {userList.map((user) => (
@@ -137,7 +137,7 @@ const PreferencesSection = () => {
           <span className="field-text email-text">{user.email}</span>
           <div className="buttons-container">
             {currentUser?.id === user.id ? (
-              <span className="tip-text">Yourself</span>
+              <span className="tip-text">{t("common.yourself")}</span>
             ) : (
               <Dropdown className="actions-dropdown">
                 {user.rowStatus === "NORMAL" ? (

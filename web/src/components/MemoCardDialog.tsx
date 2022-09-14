@@ -12,6 +12,7 @@ import Selector from "./common/Selector";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
+import useI18n from "../hooks/useI18n";
 import "../less/memo-card-dialog.less";
 
 interface LinkedMemo extends Memo {
@@ -30,6 +31,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   });
   const [linkMemos, setLinkMemos] = useState<LinkedMemo[]>([]);
   const [linkedMemos, setLinkedMemos] = useState<LinkedMemo[]>([]);
+  const { t } = useI18n();
 
   useEffect(() => {
     const fetchLinkedMemos = async () => {
@@ -95,7 +97,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
         setLinkedMemos([]);
         setMemo(nextMemo);
       } else {
-        toastHelper.error("Memo Not Found");
+        toastHelper.error(t("common.memo-not-found"));
         targetEl.classList.remove("memo-link-text");
       }
     }

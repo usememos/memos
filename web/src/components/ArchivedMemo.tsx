@@ -20,6 +20,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
     archivedAtStr: utils.getDateTimeString(propsMemo.updatedTs ?? Date.now()),
   };
   const { t } = useI18n();
+
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
   const handleDeleteMemoClick = async () => {
@@ -43,7 +44,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
         rowStatus: "NORMAL",
       });
       await memoService.fetchMemos();
-      toastHelper.info("Restored successfully");
+      toastHelper.info(t("common.restored-successfully"));
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
@@ -59,7 +60,9 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
   return (
     <div className={`memo-wrapper archived-memo ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
-        <span className="time-text">Archived at {memo.archivedAtStr}</span>
+        <span className="time-text">
+          {t("common.archived-at")} {memo.archivedAtStr}
+        </span>
         <div className="btns-container">
           <span className="btn restore-btn" onClick={handleRestoreMemoClick}>
             {t("common.restore")}

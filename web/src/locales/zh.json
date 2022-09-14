@@ -3,6 +3,8 @@
     "about": "关于",
     "email": "邮箱",
     "password": "密码",
+    "new-password": "新密码",
+    "repeat-new-password": "重复新密码",
     "username": "用户名",
     "save": "保存",
     "cancel": "退出",
@@ -28,9 +30,27 @@
     "back-to-home": "回到主页",
     "type": "类型",
     "shortcuts": "捷径",
+    "shortcut-title": "捷径标题",
     "title": "标题",
     "filter": "过滤器",
-    "tags": "全部标签"
+    "tags": "全部标签",
+    "no-memos": "没有 memo 了 🌃",
+    "memos-ready": "所有 memo 已就绪 🎉",
+    "yourself": "你自己",
+    "archived-at": "归档于",
+    "restored-successfully": "恢复成功",
+    "memo-updated-datetime": "Memo创建日期时间已更改。",
+    "invalid-created-datetime": "创建的日期时间无效。",
+    "change-memo-created-time": "更改Memo创建时间",
+    "memo-not-found": "找不到Memo。",
+    "fill-all": "请填写所有字段。",
+    "new-password-not-match": "新密码不匹配。",
+    "changed": "已更改",
+    "image-load-failed": "图片加载失败",
+    "fill-form": "请填写此表单",
+    "login-failed": "登录失败",
+    "signup-failed": "注册失败",
+    "user-not-found": "未找到用户"
   },
   "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
   "auth": {
@@ -63,7 +83,9 @@
   "editor": {
     "editing": "编辑中...",
     "save": "记下",
-    "placeholder": "现在的想法是..."
+    "placeholder": "现在的想法是...",
+    "only-image-supported": "仅支持图片文件。",
+    "cant-empty": "Content can't be empty"
   },
   "memo": {
     "view-story": "查看详情"
@@ -75,7 +97,9 @@
     "create-shortcut": "创建捷径",
     "edit-shortcut": "编辑捷径",
     "new-filter": "新建过滤器",
-    "eligible-memo": "符合条件的 memo"
+    "eligible-memo": "符合条件的 memo",
+    "fill-previous": "请填写之前的过滤值",
+    "title-required": "标题是必填项。"
   },
   "tag-list": {
     "tip-text": "输入`#tag `来创建标签"
@@ -87,6 +111,7 @@
     "my-account": "我的账号",
     "preference": "偏好设置",
     "member": "成员",
+    "member-list": "成员列表",
     "account-section": {
       "title": "账号信息"
     },

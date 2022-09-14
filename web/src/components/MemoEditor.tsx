@@ -110,7 +110,7 @@ const MemoEditor = () => {
       const { type } = file;
 
       if (!type.startsWith("image")) {
-        toastHelper.error("Only image file supported.");
+        toastHelper.error(t("editor.only-image-supported"));
         return;
       }
 
@@ -133,7 +133,7 @@ const MemoEditor = () => {
 
   const handleSaveBtnClick = async (content: string) => {
     if (content === "") {
-      toastHelper.error("Content can't be empty");
+      toastHelper.error(t("editor.cant-empty"));
       return;
     }
 
