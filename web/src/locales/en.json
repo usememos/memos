@@ -25,7 +25,18 @@
     "explore": "Explore",
     "sign-in": "Sign in",
     "sign-out": "Sign out",
-    "back-to-home": "Back to Home"
+    "back-to-home": "Back to Home",
+    "shortcuts": "Shortcuts",
+    "create-shortcut" : "Create Shortcut",
+    "edit-shortcut": "Edit Shortcut",
+    "title": "Title",
+    "filter": "Filter",
+    "filters": "Filters",
+    "new-filter": "New Filter",
+    "eligible-memo": "eligible memo",
+    "tags": "Tags",
+    "quickly-filter": "QUICKLY FILTER",
+    "types": "TYPE"
   },
   "slogan": "An open source, self-hosted knowledge base that works with a SQLite db file.",
   "auth": {

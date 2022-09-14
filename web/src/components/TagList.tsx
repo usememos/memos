@@ -69,7 +69,7 @@ const TagList = () => {
 
   return (
     <div className="tags-wrapper">
-      <p className="title-text">Tags</p>
+      <p className="title-text">{t("common.tags")}</p>
       <div className="tags-container">
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
