@@ -25,7 +25,14 @@
     "explore": "探索",
     "sign-in": "登录",
     "sign-out": "退出登录",
-    "back-to-home": "回到主页"
+    "back-to-home": "回到主页",
+    "shortcuts": "快捷方式",
+    "create-shortcut" : "创建快捷方式",
+    "edit-shortcut": "编辑快捷方式",
+    "title": "标题",
+    "filters": "过滤",
+    "new-filter": "新建过滤",
+    "eligible-memo": "符合条件的memo"
   },
   "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
   "auth": {

@@ -14,6 +14,7 @@ const ShortcutList = () => {
   const query = useAppSelector((state) => state.location.query);
   const shortcuts = useAppSelector((state) => state.shortcut.shortcuts);
   const loadingState = useLoading();
+  const { t } = useI18n();
 
   const pinnedShortcuts = shortcuts
     .filter((s) => s.rowStatus === "ARCHIVED")
@@ -37,7 +38,7 @@ const ShortcutList = () => {
   return (
     <div className="shortcuts-wrapper">
       <p className="title-text">
-        <span className="normal-text">Shortcuts</span>
+        <span className="normal-text">{t("common.shortcuts")}</span>
         <button className="btn" onClick={() => showCreateShortcutDialog()}>
           <Icon.Plus className="icon-img" />
         </button>

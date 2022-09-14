@@ -6,6 +6,7 @@ import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import Selector from "./common/Selector";
+import useI18n from "../hooks/useI18n";
 import "../less/create-shortcut-dialog.less";
 
 interface Props extends DialogProps {
@@ -18,6 +19,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   const [title, setTitle] = useState<string>("");
   const [filters, setFilters] = useState<Filter[]>([]);
   const requestState = useLoading(false);
+  const { t } = useI18n();
 
   const shownMemoLength = memoService.getState().memos.filter((memo) => {
     return checkShouldShowMemoWithFilters(memo, filters);
@@ -99,7 +101,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">
           <span className="icon-text">🚀</span>
-          {shortcutId ? "Edit Shortcut" : "Create Shortcut"}
+          {shortcutId ? t("common.edit-shortcut") : t("common.create-shortcut")}
         </p>
         <button className="btn close-btn" onClick={destroy}>
           <Icon.X />
@@ -107,11 +109,11 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container">
         <div className="form-item-container input-form-container">
-          <span className="normal-text">Title</span>
+          <span className="normal-text">{t("common.title")}</span>
           <input className="title-input" type="text" placeholder="shortcut title" value={title} onChange={handleTitleInputChange} />
         </div>
         <div className="form-item-container filter-form-container">
-          <span className="normal-text">Filters</span>
+          <span className="normal-text">{t("common.filters")}</span>
           <div className="filters-wrapper">
             {filters.map((f, index) => {
               return (
@@ -125,7 +127,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
               );
             })}
             <div className="create-filter-btn" onClick={handleAddFilterBenClick}>
-              New Filter
+              {t("common.new-filter")}
             </div>
           </div>
         </div>
@@ -134,10 +136,10 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
         <div></div>
         <div className="btns-container">
           <span className={`tip-text ${filters.length === 0 && "hidden"}`}>
-            <strong>{shownMemoLength}</strong> eligible memo
+            <strong>{shownMemoLength}</strong> {t("common.eligible-memo")}
           </span>
           <button className={`btn save-btn ${requestState.isLoading ? "requesting" : ""}`} onClick={handleSaveBtnClick}>
-            Save
+            {t("common.save")}
           </button>
         </div>
       </div>
