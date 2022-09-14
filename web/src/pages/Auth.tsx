@@ -53,13 +53,13 @@ const Auth = () => {
 
     const emailValidResult = validate(email, validateConfig);
     if (!emailValidResult.result) {
-      toastHelper.error("Email: " + emailValidResult.reason);
+      toastHelper.error(t("common.email") + ": " + emailValidResult.reason);
       return;
     }
 
     const passwordValidResult = validate(password, validateConfig);
     if (!passwordValidResult.result) {
-      toastHelper.error("Password: " + passwordValidResult.reason);
+      toastHelper.error(t("common.password") + ": " + passwordValidResult.reason);
       return;
     }
 
@@ -70,7 +70,7 @@ const Auth = () => {
       if (user) {
         locationService.replaceHistory("/");
       } else {
-        toastHelper.error("Login failed");
+        toastHelper.error(t("common.login-failed"));
       }
     } catch (error: any) {
       console.error(error);
@@ -86,13 +86,13 @@ const Auth = () => {
 
     const emailValidResult = validate(email, validateConfig);
     if (!emailValidResult.result) {
-      toastHelper.error("Email: " + emailValidResult.reason);
+      toastHelper.error(t("common.email") + ": " + emailValidResult.reason);
       return;
     }
 
     const passwordValidResult = validate(password, validateConfig);
     if (!passwordValidResult.result) {
-      toastHelper.error("Password: " + passwordValidResult.reason);
+      toastHelper.error(t("common.password") + ": " + passwordValidResult.reason);
       return;
     }
 
@@ -103,7 +103,7 @@ const Auth = () => {
       if (user) {
         locationService.replaceHistory("/");
       } else {
-        toastHelper.error("Signup failed");
+        toastHelper.error(t("common.singup-failed"));
       }
     } catch (error: any) {
       console.error(error);

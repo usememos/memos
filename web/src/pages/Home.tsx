@@ -31,7 +31,7 @@ function Home() {
 
         if (userService.isVisitorMode()) {
           if (!owner) {
-            toastHelper.error("User not found");
+            toastHelper.error(t("common.user-not-found"));
           }
         } else {
           if (!user) {

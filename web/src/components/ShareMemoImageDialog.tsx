@@ -59,7 +59,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
 
   const handleImageOnLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
     if (event.type === "error") {
-      toastHelper.error("Image load failed");
+      toastHelper.error(t("common.image-load-failed"));
       (event.target as HTMLImageElement).remove();
     }
     setImgAmount(imgAmount - 1);

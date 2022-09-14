@@ -23,7 +23,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
       const datetime = dayjs(memo.createdTs).format("YYYY-MM-DDTHH:mm");
       setCreatedAt(datetime);
     } else {
-      toastHelper.error("Memo not found.");
+      toastHelper.error(t("common.memo-not-found"));
       destroy();
     }
   }, []);
@@ -42,7 +42,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
     const createdTs = dayjs(createdAt).unix();
 
     if (createdTs > nowTs) {
-      toastHelper.error("Invalid created datetime.");
+      toastHelper.error(t("common.invalid-created-datetime"));
       return;
     }
 
@@ -51,7 +51,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
         id: memoId,
         createdTs,
       });
-      toastHelper.info("Memo created datetime changed.");
+      toastHelper.info(t("common.memo-updated-datetime"));
       handleCloseBtnClick();
     } catch (error: any) {
       console.error(error);
@@ -62,7 +62,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">Change memo created time</p>
+        <p className="title-text">{t("common.change-memo-created-time")}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>

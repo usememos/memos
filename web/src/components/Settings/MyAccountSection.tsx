@@ -16,7 +16,7 @@ const validateConfig: ValidatorConfig = {
 };
 
 const MyAccountSection = () => {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const user = useAppSelector((state) => state.user.user as User);
   const [username, setUsername] = useState<string>(user.name);
   const openAPIRoute = `${window.location.origin}/api/memo?openId=${user.openId}`;
@@ -33,7 +33,7 @@ const MyAccountSection = () => {
 
     const usernameValidResult = validate(username, validateConfig);
     if (!usernameValidResult.result) {
-      toastHelper.error("Username " + usernameValidResult.reason);
+      toastHelper.error(t("common.username") + locale === "zh" ? "" : " " + usernameValidResult.reason);
       return;
     }
 
@@ -42,7 +42,7 @@ const MyAccountSection = () => {
         id: user.id,
         name: username,
       });
-      toastHelper.info("Username changed");
+      toastHelper.info(t("common.username") + locale === "zh" ? "" : " " + t("common.changed"));
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);

@@ -45,7 +45,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
 
   const handleSaveBtnClick = async () => {
     if (!title) {
-      toastHelper.error("Title is required");
+      toastHelper.error(t("shortcut-list.title-required"));
       return;
     }
 
@@ -73,7 +73,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
     if (filters.length > 0) {
       const lastFilter = filters[filters.length - 1];
       if (lastFilter.value.value === "") {
-        toastHelper.info("Please fill in previous filter value");
+        toastHelper.info(t("shortcut-list.fill-previous"));
         return;
       }
     }
@@ -110,7 +110,13 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container">
         <div className="form-item-container input-form-container">
           <span className="normal-text">{t("common.title")}</span>
-          <input className="title-input" type="text" placeholder="shortcut title" value={title} onChange={handleTitleInputChange} />
+          <input
+            className="title-input"
+            type="text"
+            placeholder={t("common.shortcut-title")}
+            value={title}
+            onChange={handleTitleInputChange}
+          />
         </div>
         <div className="form-item-container filter-form-container">
           <span className="normal-text">{t("common.filter")}</span>
