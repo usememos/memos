@@ -30,10 +30,13 @@
     "create-shortcut" : "创建快捷方式",
     "edit-shortcut": "编辑快捷方式",
     "title": "标题",
-    "filters": "过滤",
+    "filter": "过滤",
+    "filters": "全部过滤",
     "new-filter": "新建过滤",
     "eligible-memo": "符合条件的memo",
-    "tags": "全部标签"
+    "tags": "全部标签",
+    "quickly-filter": "快速过滤",
+    "types": "类型"
   },
   "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
   "auth": {
