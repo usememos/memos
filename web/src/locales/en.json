@@ -32,7 +32,8 @@
     "title": "Title",
     "filters": "Filters",
     "new-filter": "New Filter",
-    "eligible-memo": "eligible memo"
+    "eligible-memo": "eligible memo",
+    "tags": "Tags"
   },
   "slogan": "An open source, self-hosted knowledge base that works with a SQLite db file.",
   "auth": {

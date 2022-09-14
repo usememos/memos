@@ -32,7 +32,8 @@
     "title": "标题",
     "filters": "过滤",
     "new-filter": "新建过滤",
-    "eligible-memo": "符合条件的memo"
+    "eligible-memo": "符合条件的memo",
+    "tags": "全部标签"
   },
   "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
   "auth": {
