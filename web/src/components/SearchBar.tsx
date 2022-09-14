@@ -30,9 +30,9 @@ const SearchBar = () => {
       </div>
       <div className="quickly-action-wrapper">
         <div className="quickly-action-container">
-          <p className="title-text">{t("common.quickly-filter")}</p>
+          <p className="title-text">{t("search.quickly-filter").toUpperCase()}</p>
           <div className="section-container types-container">
-            <span className="section-text">{t("common.types")}:</span>
+            <span className="section-text">{t("common.type").toUpperCase()}:</span>
             <div className="values-container">
               {memoSpecialTypes.map((t, idx) => {
                 return (

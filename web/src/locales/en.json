@@ -26,17 +26,11 @@
     "sign-in": "Sign in",
     "sign-out": "Sign out",
     "back-to-home": "Back to Home",
+    "type": "Type",
     "shortcuts": "Shortcuts",
-    "create-shortcut" : "Create Shortcut",
-    "edit-shortcut": "Edit Shortcut",
     "title": "Title",
     "filter": "Filter",
-    "filters": "Filters",
-    "new-filter": "New Filter",
-    "eligible-memo": "eligible memo",
-    "tags": "Tags",
-    "quickly-filter": "QUICKLY FILTER",
-    "types": "TYPE"
+    "tags": "Tags"
   },
   "slogan": "An open source, self-hosted knowledge base that works with a SQLite db file.",
   "auth": {
@@ -77,8 +71,17 @@
   "memo-list": {
     "fetching-data": "fetching data..."
   },
+  "shortcut-list": {
+    "create-shortcut": "Create Shortcut",
+    "edit-shortcut": "Edit Shortcut",
+    "new-filter": "New Filter",
+    "eligible-memo": "eligible memo"
+  },
   "tag-list": {
     "tip-text": "Enter `#tag ` to create"
+  },
+  "search": {
+    "quickly-filter": "Quickly filter"
   },
   "setting": {
     "my-account": "My Account",

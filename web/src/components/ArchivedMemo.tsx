@@ -21,7 +21,6 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
   };
   const { t } = useI18n();
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
-  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
 
   const handleDeleteMemoClick = async () => {
     if (showConfirmDeleteBtn) {

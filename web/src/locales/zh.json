@@ -26,17 +26,11 @@
     "sign-in": "登录",
     "sign-out": "退出登录",
     "back-to-home": "回到主页",
-    "shortcuts": "快捷方式",
-    "create-shortcut" : "创建快捷方式",
-    "edit-shortcut": "编辑快捷方式",
+    "type": "类型",
+    "shortcuts": "捷径",
     "title": "标题",
-    "filter": "过滤",
-    "filters": "全部过滤",
-    "new-filter": "新建过滤",
-    "eligible-memo": "符合条件的memo",
-    "tags": "全部标签",
-    "quickly-filter": "快速过滤",
-    "types": "类型"
+    "filter": "过滤器",
+    "tags": "全部标签"
   },
   "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
   "auth": {
@@ -77,8 +71,17 @@
   "memo-list": {
     "fetching-data": "请求数据中..."
   },
+  "shortcut-list": {
+    "create-shortcut": "创建捷径",
+    "edit-shortcut": "编辑捷径",
+    "new-filter": "新建过滤器",
+    "eligible-memo": "符合条件的 memo"
+  },
   "tag-list": {
     "tip-text": "输入`#tag `来创建标签"
+  },
+  "search": {
+    "quickly-filter": "快速过滤"
   },
   "setting": {
     "my-account": "我的账号",

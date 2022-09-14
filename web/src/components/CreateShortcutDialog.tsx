@@ -101,7 +101,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">
           <span className="icon-text">🚀</span>
-          {shortcutId ? t("common.edit-shortcut") : t("common.create-shortcut")}
+          {shortcutId ? t("shortcut-list.edit-shortcut") : t("shortcut-list.create-shortcut")}
         </p>
         <button className="btn close-btn" onClick={destroy}>
           <Icon.X />
@@ -113,7 +113,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
           <input className="title-input" type="text" placeholder="shortcut title" value={title} onChange={handleTitleInputChange} />
         </div>
         <div className="form-item-container filter-form-container">
-          <span className="normal-text">{t("common.filters")}</span>
+          <span className="normal-text">{t("common.filter")}</span>
           <div className="filters-wrapper">
             {filters.map((f, index) => {
               return (
@@ -127,7 +127,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
               );
             })}
             <div className="create-filter-btn" onClick={handleAddFilterBenClick}>
-              {t("common.new-filter")}
+              {t("shortcut-list.new-filter")}
             </div>
           </div>
         </div>
@@ -136,7 +136,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
         <div></div>
         <div className="btns-container">
           <span className={`tip-text ${filters.length === 0 && "hidden"}`}>
-            <strong>{shownMemoLength}</strong> {t("common.eligible-memo")}
+            <strong>{shownMemoLength}</strong> {t("shortcut-list.eligible-memo")}
           </span>
           <button className={`btn save-btn ${requestState.isLoading ? "requesting" : ""}`} onClick={handleSaveBtnClick}>
             {t("common.save")}
