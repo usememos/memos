@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import * as utils from "../helpers/utils";
 import { useAppSelector } from "../store";
 import { locationService, memoService, userService } from "../services";
 import useI18n from "../hooks/useI18n";
@@ -97,7 +96,6 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
     if (isActive) {
       locationService.setTagQuery(undefined);
     } else {
-      utils.copyTextToClipboard(`#${tag.text} `);
       locationService.setTagQuery(tag.text);
     }
   };

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import * as utils from "../helpers/utils";
+import copy from "copy-to-clipboard";
 import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
 import { resourceService } from "../services";
@@ -99,7 +99,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
-    utils.copyTextToClipboard(`${window.location.origin}/o/r/${resource.id}/${resource.filename}`);
+    copy(`${window.location.origin}/o/r/${resource.id}/${resource.filename}`);
     toastHelper.success("Succeed to copy resource link to clipboard");
   };
 
