@@ -1,5 +1,5 @@
 import { forwardRef, useEffect } from "react";
-import Picker, { IEmojiData, IEmojiPickerProps } from "emoji-picker-react";
+import Picker, { IEmojiPickerProps } from "emoji-picker-react";
 
 export type EmojiPickerElement = HTMLDivElement;
 

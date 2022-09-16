@@ -259,7 +259,7 @@ const MemoEditor = () => {
       return;
     }
     editorRef.current?.insertText(`${emojiObject.emoji}`);
-    handleChangeIsShowEmojiPicker(false)
+    handleChangeIsShowEmojiPicker(false);
   };
 
   const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);
