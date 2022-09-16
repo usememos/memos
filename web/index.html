@@ -12,6 +12,7 @@
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
+      var global = global || window;
       window.addEventListener("load", () => {
         if ("serviceWorker" in navigator) {
           navigator.serviceWorker.register("/sw.js");
