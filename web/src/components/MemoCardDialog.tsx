@@ -1,3 +1,4 @@
+import copy from "copy-to-clipboard";
 import { useState, useEffect, useCallback } from "react";
 import { editorStateService, memoService, userService } from "../services";
 import { useAppSelector } from "../store";
@@ -109,6 +110,16 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     setMemo(memo);
   }, []);
 
+  const handleCopyMemoLinkBtnClick = () => {
+    if (memo.visibility === "PRIVATE") {
+      toastHelper.error("This memo is private only.");
+      return;
+    }
+
+    copy(`${window.location.origin}/explore?memoId=${memo.id}`);
+    toastHelper.success("Copied");
+  };
+
   const handleEditMemoBtnClick = () => {
     props.destroy();
     editorStateService.setEditMemoWithId(memo.id);
@@ -152,6 +163,9 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
           <div className="btns-container">
             <Only when={!userService.isVisitorMode()}>
               <>
+                <button className="btn edit-btn" onClick={handleCopyMemoLinkBtnClick}>
+                  <Icon.Link className="icon-img" />
+                </button>
                 <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
                   <Icon.Edit3 className="icon-img" />
                 </button>
