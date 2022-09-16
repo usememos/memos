@@ -109,6 +109,11 @@
       "create-a-member": "Create a member"
     }
   },
+  "amount-text": {
+    "memo": "MEMO",
+    "tag": "TAG",
+    "day": "DAY"
+  },
   "message": {
     "no-memos": "no memos 🌃",
     "memos-ready": "all memos are ready 🎉",

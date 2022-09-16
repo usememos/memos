@@ -109,6 +109,11 @@
       "create-a-member": "创建成员"
     }
   },
+  "amount-text": {
+    "memo": "MEMO",
+    "tag": "TAG",
+    "day": "DAY"
+  },
   "message": {
     "no-memos": "没有 memo 了 🌃",
     "memos-ready": "所有 memo 已就绪 🎉",

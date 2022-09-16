@@ -47,7 +47,7 @@
     "daily-review": "Đánh giá hàng ngày",
     "resources": "Tài nguyên",
     "setting": "Cài đặt",
-    "archived": "Lưu"
+    "archived": "Lưu trữ"
   },
   "daily-review": {
     "oops-nothing": "Oops, chẳng có gì ở đây cả."
@@ -108,6 +108,11 @@
     "member-section": {
       "create-a-member": "Tạo một thành viên"
     }
+  },
+  "amount-text": {
+    "memo": "MEMO",
+    "tag": "THẺ",
+    "day": "NGÀY"
   },
   "message": {
     "no-memos": "Không có memo nào 🌃",
