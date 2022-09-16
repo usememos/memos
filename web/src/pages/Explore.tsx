@@ -78,22 +78,26 @@ const Explore = () => {
         </div>
         <Only when={!loadingState.isLoading}>
           <main className="memos-wrapper">
-            {state.memos.map((memo) => {
-              const createdAtStr = dayjs(memo.createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss");
-              return (
-                <div className="memo-container" key={memo.id}>
-                  <div className="memo-header">
-                    <span className="time-text">{createdAtStr}</span>
-                    <span className="split-text">by</span>
-                    <a className="name-text" href={`/u/${memo.creator.id}`}>
-                      {memo.creator.name}
-                    </a>
+            {state.memos.length > 0 ? (
+              state.memos.map((memo) => {
+                const createdAtStr = dayjs(memo.createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss");
+                return (
+                  <div className="memo-container" key={memo.id}>
+                    <div className="memo-header">
+                      <span className="time-text">{createdAtStr}</span>
+                      <span className="split-text">by</span>
+                      <a className="name-text" href={`/u/${memo.creator.id}`}>
+                        {memo.creator.name}
+                      </a>
+                    </div>
+                    <MemoContent className="memo-content" content={memo.content} onMemoContentClick={() => undefined} />
+                    <MemoResources memo={memo} />
                   </div>
-                  <MemoContent className="memo-content" content={memo.content} onMemoContentClick={() => undefined} />
-                  <MemoResources memo={memo} />
-                </div>
-              );
-            })}
+                );
+              })
+            ) : (
+              <p className="w-full text-center mt-12 text-gray-600">{t("message.no-memos")}</p>
+            )}
           </main>
         </Only>
       </div>
