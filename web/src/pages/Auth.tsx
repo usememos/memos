@@ -162,6 +162,10 @@ const Auth = () => {
             <span className={`locale-item ${locale === "zh" ? "active" : ""}`} onClick={() => handleLocaleItemClick("zh")}>
               中文
             </span>
+            <span className="split-line">/</span>
+            <span className={`locale-item ${locale === "vi" ? "active" : ""}`} onClick={() => handleLocaleItemClick("vi")}>
+              Tiếng Việt
+            </span>
           </div>
         </div>
       </div>
