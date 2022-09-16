@@ -1,17 +1,17 @@
 {
   "short_name": "Memos",
   "name": "Memos",
+  "description": "usememos/memos",
   "icons": [
     {
       "src": "/logo.webp",
-      "type": "image/*",
-      "sizes": "200x200"
+      "type": "image/webp",
+      "sizes": "520x520"
     }
   ],
   "start_url": "/",
-  "background_color": "#f6f5f4",
-  "display": "standalone",
   "scope": "/",
+  "display": "standalone",
   "theme_color": "#f6f5f4",
-  "description": "usememos/memos"
+  "background_color": "#f6f5f4"
 }
