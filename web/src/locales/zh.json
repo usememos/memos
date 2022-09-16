@@ -111,8 +111,8 @@
   },
   "amount-text": {
     "memo": "MEMO",
-    "tag": "标签",
-    "day": "天"
+    "tag": "TAG",
+    "day": "DAY"
   },
   "message": {
     "no-memos": "没有 memo 了 🌃",
