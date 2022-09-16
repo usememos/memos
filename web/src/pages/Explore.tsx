@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { locationService, memoService, userService } from "../services";
 import { useAppSelector } from "../store";
 import useI18n from "../hooks/useI18n";
+import useQuery from "../hooks/useQuery";
 import useLoading from "../hooks/useLoading";
 import Only from "../components/common/OnlyWhen";
 import MemoContent from "../components/MemoContent";
@@ -15,6 +16,7 @@ interface State {
 
 const Explore = () => {
   const { t, locale } = useI18n();
+  const query = useQuery();
   const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);
   const [state, setState] = useState<State>({
@@ -34,9 +36,18 @@ const Explore = () => {
         }
 
         memoService.fetchAllMemos().then((memos) => {
+          let filteredMemos = memos;
+
+          const memoId = Number(query.get("memoId"));
+          if (memoId && !isNaN(memoId)) {
+            filteredMemos = filteredMemos.filter((memo) => {
+              return memo.id === memoId;
+            });
+          }
+
           setState({
             ...state,
-            memos,
+            memos: filteredMemos,
           });
         });
         loadingState.setFinish();
