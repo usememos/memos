@@ -30,27 +30,12 @@
     "back-to-home": "回到主页",
     "type": "类型",
     "shortcuts": "捷径",
-    "shortcut-title": "捷径标题",
     "title": "标题",
     "filter": "过滤器",
     "tags": "全部标签",
-    "no-memos": "没有 memo 了 🌃",
-    "memos-ready": "所有 memo 已就绪 🎉",
     "yourself": "你自己",
     "archived-at": "归档于",
-    "restored-successfully": "恢复成功",
-    "memo-updated-datetime": "Memo创建日期时间已更改。",
-    "invalid-created-datetime": "创建的日期时间无效。",
-    "change-memo-created-time": "更改Memo创建时间",
-    "memo-not-found": "找不到Memo。",
-    "fill-all": "请填写所有字段。",
-    "new-password-not-match": "新密码不匹配。",
-    "changed": "已更改",
-    "image-load-failed": "图片加载失败",
-    "fill-form": "请填写此表单",
-    "login-failed": "登录失败",
-    "signup-failed": "注册失败",
-    "user-not-found": "未找到用户"
+    "changed": "已更改"
   },
   "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
   "auth": {
@@ -94,6 +79,7 @@
     "fetching-data": "请求数据中..."
   },
   "shortcut-list": {
+    "shortcut-title": "捷径标题",
     "create-shortcut": "创建捷径",
     "edit-shortcut": "编辑捷径",
     "new-filter": "新建过滤器",
@@ -122,5 +108,21 @@
     "member-section": {
       "create-a-member": "创建成员"
     }
+  },
+  "message": {
+    "no-memos": "没有 memo 了 🌃",
+    "memos-ready": "所有 memo 已就绪 🎉",
+    "restored-successfully": "恢复成功",
+    "memo-updated-datetime": "Memo创建日期时间已更改。",
+    "invalid-created-datetime": "创建的日期时间无效。",
+    "change-memo-created-time": "更改Memo创建时间",
+    "memo-not-found": "找不到Memo。",
+    "fill-all": "请填写所有字段。",
+    "new-password-not-match": "新密码不匹配。",
+    "image-load-failed": "图片加载失败",
+    "fill-form": "请填写此表单",
+    "login-failed": "登录失败",
+    "signup-failed": "注册失败",
+    "user-not-found": "未找到用户"
   }
 }

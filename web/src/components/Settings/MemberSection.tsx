@@ -48,7 +48,7 @@ const PreferencesSection = () => {
 
   const handleCreateUserBtnClick = async () => {
     if (isEmpty(state.createUserEmail) || isEmpty(state.createUserPassword)) {
-      toastHelper.error(t("common.fill-form"));
+      toastHelper.error(t("message.fill-form"));
       return;
     }
 

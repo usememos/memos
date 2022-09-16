@@ -1,4 +1,3 @@
-import { IMAGE_URL_REG } from "../helpers/marked";
 import * as utils from "../helpers/utils";
 import useI18n from "../hooks/useI18n";
 import useToggle from "../hooks/useToggle";
@@ -44,7 +43,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
         rowStatus: "NORMAL",
       });
       await memoService.fetchMemos();
-      toastHelper.info(t("common.restored-successfully"));
+      toastHelper.info(t("message.restored-successfully"));
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);

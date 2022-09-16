@@ -41,12 +41,12 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   const handleSaveBtnClick = async () => {
     if (newPassword === "" || newPasswordAgain === "") {
-      toastHelper.error(t("common.fill-all"));
+      toastHelper.error(t("message.fill-all"));
       return;
     }
 
     if (newPassword !== newPasswordAgain) {
-      toastHelper.error(t("common.new-password-not-match"));
+      toastHelper.error(t("message.new-password-not-match"));
       setNewPasswordAgain("");
       return;
     }

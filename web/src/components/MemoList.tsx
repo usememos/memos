@@ -108,7 +108,7 @@ const MemoList = () => {
       ))}
       <Only when={!isFetching}>
         <div className="status-text-container">
-          <p className="status-text">{sortedMemos.length === 0 ? t("common.no-memos") : showMemoFilter ? "" : t("common.memos-ready")}</p>
+          <p className="status-text">{sortedMemos.length === 0 ? t("message.no-memos") : showMemoFilter ? "" : t("message.memos-ready")}</p>
         </div>
       </Only>
     </div>

@@ -105,7 +105,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       if (memoTemp) {
         showMemoCardDialog(memoTemp);
       } else {
-        toastHelper.error(t("common.memo-not-found"));
+        toastHelper.error(t("message.memo-not-found"));
         targetEl.classList.remove("memo-link-text");
       }
     } else if (targetEl.className === "tag-span") {

@@ -30,27 +30,12 @@
     "back-to-home": "Quay về trang chủ",
     "type": "Kiểu",
     "shortcuts": "Lối tắt",
-    "shortcut-title": "Tên lối tắt",
     "title": "Tên",
     "filter": "Bộ lọc",
     "tags": "Thẻ",
-    "no-memos": "Không có memo nào 🌃",
-    "memos-ready": "Tất cả memo ở đây rồi 🎉",
     "yourself": "Của bạn",
     "archived-at": "Lưu trữ lúc",
-    "restored-successfully": "Đã khôi phục thành công",
-    "memo-updated-datetime":"Memo đã thay đổi ngày giờ tạo.",
-    "invalid-created-datetime": "Ngày giờ tạo không hợp lệ.",
-    "change-memo-created-time": "Thay đổi thời gian tạo memo",
-    "memo-not-found": "Không tìm thấy memo.",
-    "fill-all": "Vui lòng nhập tất cả các mục.",
-    "new-password-not-match": "Mật khẩu mới không giống nhau.",
-    "changed": "đã thay đổi",
-    "image-load-failed": "Tải ảnh bị lỗi",
-    "fill-form": "Please fill out this form",
-    "login-failed": "Đăng nhập thất bại",
-    "signup-failed": "Đăng ký thất bại",
-    "user-not-found": "Không tìm thấy người dùng này"
+    "changed": "đã thay đổi"
   },
   "slogan": "Một mã nguồn mở, tự lưu lại mọi thứ bạn biết dựa trên SQLite db.",
   "auth": {
@@ -94,6 +79,7 @@
     "fetching-data": "đang tải dữ liệu..."
   },
   "shortcut-list": {
+    "shortcut-title": "Tên lối tắt",
     "create-shortcut": "Tạo lối tắt",
     "edit-shortcut": "Chỉnh sửa lối tắt",
     "new-filter": "Bộ lọc mới",
@@ -122,5 +108,21 @@
     "member-section": {
       "create-a-member": "Tạo một thành viên"
     }
+  },
+  "message": {
+    "no-memos": "Không có memo nào 🌃",
+    "memos-ready": "Tất cả memo ở đây rồi 🎉",
+    "restored-successfully": "Đã khôi phục thành công",
+    "memo-updated-datetime": "Memo đã thay đổi ngày giờ tạo.",
+    "invalid-created-datetime": "Ngày giờ tạo không hợp lệ.",
+    "change-memo-created-time": "Thay đổi thời gian tạo memo",
+    "memo-not-found": "Không tìm thấy memo.",
+    "fill-all": "Vui lòng nhập tất cả các mục.",
+    "new-password-not-match": "Mật khẩu mới không giống nhau.",
+    "image-load-failed": "Tải ảnh bị lỗi",
+    "fill-form": "Please fill out this form",
+    "login-failed": "Đăng nhập thất bại",
+    "signup-failed": "Đăng ký thất bại",
+    "user-not-found": "Không tìm thấy người dùng này"
   }
 }
