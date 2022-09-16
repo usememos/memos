@@ -17,9 +17,9 @@ jobs:
 
       - name: Extract build args
         # Extract version from branch name
-        # Example: branch name `release/v1.0.0` sets up env.VERSION=1.0.0
+        # Example: branch name `release/1.0.0` sets up env.VERSION=1.0.0
         run: |
-          echo "VERSION=${GITHUB_REF_NAME#release/v}" >> $GITHUB_ENV
+          echo "VERSION=${GITHUB_REF_NAME#release/}" >> $GITHUB_ENV
 
       - name: Login to Docker Hub
         uses: docker/login-action@v2
@@ -41,4 +41,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: neosmemo/memos:latest, neosmemo/memos:${{ env.VERSION }}
+          tags: neosmemo/memos:latest, neosmemo/memos:v${{ env.VERSION }}
