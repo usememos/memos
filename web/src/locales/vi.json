@@ -1,0 +1,126 @@
+{
+  "common": {
+    "about": "Thông Tin",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "new-password": "Mật khẩu mới",
+    "repeat-new-password": "Nhập lại mật khẩu mới",
+    "username": "Tên đăng nhập",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "create": "Tạo mới",
+    "change": "Thay đổi",
+    "reset": "Khôi phục",
+    "language": "Ngôn Ngữ",
+    "version": "Phiên bản",
+    "pin": "Gắn lên trên cùng",
+    "unpin": "Gỡ khỏi vị trị trên cùng",
+    "edit": "Chỉnh sửa",
+    "restore": "Khôi phục",
+    "delete": "Xóa",
+    "null": "Null",
+    "share": "Chia sẻ",
+    "mark": "Đánh dấu",
+    "archive": "Lưu trữ",
+    "basic": "Cơ bản",
+    "admin": "Admin",
+    "explore": "Khám phá",
+    "sign-in": "Đăng nhập",
+    "sign-out": "Đăng xuất",
+    "back-to-home": "Quay về trang chủ",
+    "type": "Kiểu",
+    "shortcuts": "Lối tắt",
+    "shortcut-title": "Tên lối tắt",
+    "title": "Tên",
+    "filter": "Bộ lọc",
+    "tags": "Thẻ",
+    "no-memos": "Không có memo nào 🌃",
+    "memos-ready": "Tất cả memo ở đây rồi 🎉",
+    "yourself": "Của bạn",
+    "archived-at": "Lưu trữ lúc",
+    "restored-successfully": "Đã khôi phục thành công",
+    "memo-updated-datetime":"Memo đã thay đổi ngày giờ tạo.",
+    "invalid-created-datetime": "Ngày giờ tạo không hợp lệ.",
+    "change-memo-created-time": "Thay đổi thời gian tạo memo",
+    "memo-not-found": "Không tìm thấy memo.",
+    "fill-all": "Vui lòng nhập tất cả các mục.",
+    "new-password-not-match": "Mật khẩu mới không giống nhau.",
+    "changed": "đã thay đổi",
+    "image-load-failed": "Tải ảnh bị lỗi",
+    "fill-form": "Please fill out this form",
+    "login-failed": "Đăng nhập thất bại",
+    "signup-failed": "Đăng ký thất bại",
+    "user-not-found": "Không tìm thấy người dùng này"
+  },
+  "slogan": "Một mã nguồn mở, tự lưu lại mọi thứ bạn biết dựa trên SQLite db.",
+  "auth": {
+    "signup-as-host": "Đăng ký như chủ nhân",
+    "host-tip": "Bạn đang đăng ký với tư cách chủ nhân của trang web này.",
+    "not-host-tip": "Nếu chưa có tài khoản, bạn cần phải liên hệ chủ nhân của trang web."
+  },
+  "sidebar": {
+    "daily-review": "Đánh giá hàng ngày",
+    "resources": "Tài nguyên",
+    "setting": "Cài đặt",
+    "archived": "Lưu"
+  },
+  "daily-review": {
+    "oops-nothing": "Oops, chẳng có gì ở đây cả."
+  },
+  "resources": {
+    "description": "Xem toàn bộ tài nguyên của trang web. ví dụ hình ảnh",
+    "no-resources": "Không có tài nguyên.",
+    "fetching-data": "đang tải dữ liệu...",
+    "upload": "Tải lên",
+    "preview": "Xem trước",
+    "copy-link": "Sao chép"
+  },
+  "archived": {
+    "archived-memos": "Memo đã lưu trữ",
+    "no-archived-memos": "Không có memo nào cả.",
+    "fetching-data": "đang tải dữ liệu..."
+  },
+  "editor": {
+    "editing": "Đang chỉnh sửa...",
+    "save": "Lưu",
+    "placeholder": "Bất cứ gì bạn đang nghĩ...",
+    "only-image-supported": "Chỉ hỗ trợ hình ảnh.",
+    "cant-empty": "Nội dung không thể trống"
+  },
+  "memo": {
+    "view-story": "Xem nội dung"
+  },
+  "memo-list": {
+    "fetching-data": "đang tải dữ liệu..."
+  },
+  "shortcut-list": {
+    "create-shortcut": "Tạo lối tắt",
+    "edit-shortcut": "Chỉnh sửa lối tắt",
+    "new-filter": "Bộ lọc mới",
+    "eligible-memo": "memo đạt chuẩn",
+    "fill-previous": "Vui lòng nhập vào giá trị của bộ lọc trước đó",
+    "title-required": "Tiêu đề là bắt buộc"
+  },
+  "tag-list": {
+    "tip-text": "Nhập `#tag` để tạo mới"
+  },
+  "search": {
+    "quickly-filter": "Lọc nhanh"
+  },
+  "setting": {
+    "my-account": "Tài khoản",
+    "preference": "Sở thích",
+    "member": "Thành viên",
+    "member-list": "Danh sách thành viên",
+    "account-section": {
+      "title": "Thông tin tài khoản"
+    },
+    "preference-section": {
+      "default-memo-visibility": "Chế độ memo mặc định",
+      "editor-font-style": "Thay đổi font cho trình soạn thảo"
+    },
+    "member-section": {
+      "create-a-member": "Tạo một thành viên"
+    }
+  }
+}

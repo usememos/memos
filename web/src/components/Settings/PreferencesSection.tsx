@@ -15,6 +15,10 @@ const localeSelectorItems = [
     text: "中文",
     value: "zh",
   },
+  {
+    text: "Tiếng Việt",
+    value: "vi",
+  },
 ];
 
 const editorFontStyleSelectorItems = [

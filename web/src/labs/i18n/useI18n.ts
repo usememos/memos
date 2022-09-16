@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import i18nStore from "./i18nStore";
 import enLocale from "../../locales/en.json";
 import zhLocale from "../../locales/zh.json";
+import viLocale from "../../locales/vi.json";
 
 const resources: Record<string, any> = {
   en: enLocale,
   zh: zhLocale,
+  vi: viLocale,
 };
 
 const useI18n = () => {
