@@ -127,7 +127,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <div className="tip-text-container">(👨‍💻WIP) {t("resources.description")}</div>
         <div className="upload-resource-container" onClick={() => handleUploadFileBtnClick()}>
           <div className="upload-resource-btn">
             <Icon.File className="icon-img" />

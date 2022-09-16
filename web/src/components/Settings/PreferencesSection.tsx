@@ -3,7 +3,6 @@ import { useAppSelector } from "../../store";
 import { VISIBILITY_SELECTOR_ITEMS } from "../../helpers/consts";
 import useI18n from "../../hooks/useI18n";
 import Selector from "../common/Selector";
-import BetaBadge from "../BetaBadge";
 import "../../less/settings/preferences-section.less";
 
 const localeSelectorItems = [
@@ -53,10 +52,7 @@ const PreferencesSection = () => {
     <div className="section-container preferences-section-container">
       <p className="title-text">{t("common.basic")}</p>
       <label className="form-label selector">
-        <span className="normal-text">
-          {t("common.language")}
-          <BetaBadge className="ml-2" />
-        </span>
+        <span className="normal-text">{t("common.language")}</span>
         <Selector className="ml-2 w-32" value={setting.locale} dataSource={localeSelectorItems} handleValueChanged={handleLocaleChanged} />
       </label>
       <p className="title-text">{t("setting.preference")}</p>
