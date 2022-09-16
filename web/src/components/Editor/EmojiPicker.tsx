@@ -27,7 +27,7 @@ export const EmojiPicker = forwardRef<EmojiPickerElement, Props>((props: Props, 
         document.removeEventListener("mousedown", handleClickOutside);
       };
     }
-  });
+  }, [isShowEmojiPicker]);
 
   return (
     <div className="emoji-picker" ref={ref}>

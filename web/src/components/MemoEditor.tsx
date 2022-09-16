@@ -315,11 +315,11 @@ const MemoEditor = () => {
               <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
             </button>
             <button className="action-btn">
-              <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
-              <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
+              <Icon.Smile className="icon-img" onClick={() => handleChangeIsShowEmojiPicker(!state.isShowEmojiPicker)} />
             </button>
             <button className="action-btn">
-              <Icon.Smile className="icon-img" onClick={() => handleChangeIsShowEmojiPicker(!state.isShowEmojiPicker)} />
+              <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
+              <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
             </button>
             <button className="action-btn" onClick={handleFullscreenBtnClick}>
               {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
