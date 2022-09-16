@@ -7,11 +7,13 @@ import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import Editor, { EditorRefActions } from "./Editor/Editor";
+import EmojiPicker from "./Editor/EmojiPicker";
 import "../less/memo-editor.less";
 
 interface State {
   isUploadingResource: boolean;
   fullscreen: boolean;
+  isShowEmojiPicker: boolean;
 }
 
 const MemoEditor = () => {
@@ -22,6 +24,7 @@ const MemoEditor = () => {
   const [state, setState] = useState<State>({
     isUploadingResource: false,
     fullscreen: false,
+    isShowEmojiPicker: false,
   });
   const editorRef = useRef<EditorRefActions>(null);
   const prevGlobalStateRef = useRef(editorState);
@@ -244,6 +247,21 @@ const MemoEditor = () => {
     }
   }, []);
 
+  const handleChangeIsShowEmojiPicker = (status: boolean) => {
+    setState({
+      ...state,
+      isShowEmojiPicker: status,
+    });
+  };
+
+  const handleEmojiClick = (event: any, emojiObject: any) => {
+    if (!editorRef.current) {
+      return;
+    }
+    editorRef.current?.insertText(`${emojiObject.emoji}`);
+    handleChangeIsShowEmojiPicker(false)
+  };
+
   const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);
 
   const editorConfig = useMemo(
@@ -300,12 +318,22 @@ const MemoEditor = () => {
               <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
               <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
             </button>
+            <button className="action-btn">
+              <Icon.Smile className="icon-img" onClick={() => handleChangeIsShowEmojiPicker(!state.isShowEmojiPicker)} />
+            </button>
             <button className="action-btn" onClick={handleFullscreenBtnClick}>
               {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
             </button>
           </>
         }
       />
+      {state.isShowEmojiPicker && (
+        <EmojiPicker
+          onEmojiClick={handleEmojiClick}
+          isShowEmojiPicker={state.isShowEmojiPicker}
+          handleChangeIsShowEmojiPicker={handleChangeIsShowEmojiPicker}
+        />
+      )}
     </div>
   );
 };
