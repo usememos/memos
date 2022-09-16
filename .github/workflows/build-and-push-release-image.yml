@@ -41,4 +41,4 @@ jobs:
           file: ./Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: neosmemo/memos:latest, neosmemo/memos:v${{ env.VERSION }}
+          tags: neosmemo/memos:latest, neosmemo/memos:${{ env.VERSION }}
