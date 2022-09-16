@@ -113,7 +113,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
           <input
             className="title-input"
             type="text"
-            placeholder={t("common.shortcut-title")}
+            placeholder={t("shortcut-list.shortcut-title")}
             value={title}
             onChange={handleTitleInputChange}
           />

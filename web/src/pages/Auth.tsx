@@ -70,7 +70,7 @@ const Auth = () => {
       if (user) {
         locationService.replaceHistory("/");
       } else {
-        toastHelper.error(t("common.login-failed"));
+        toastHelper.error(t("message.login-failed"));
       }
     } catch (error: any) {
       console.error(error);

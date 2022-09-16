@@ -30,27 +30,12 @@
     "back-to-home": "Back to Home",
     "type": "Type",
     "shortcuts": "Shortcuts",
-    "shortcut-title": "shortcut title",
     "title": "Title",
     "filter": "Filter",
     "tags": "Tags",
-    "no-memos": "no memos 🌃",
-    "memos-ready": "all memos are ready 🎉",
     "yourself": "Yourself",
     "archived-at": "Archived at",
-    "restored-successfully": "Restored successfully",
-    "memo-updated-datetime":"Memo created datetime changed.",
-    "invalid-created-datetime": "Invalid created datetime.",
-    "change-memo-created-time": "Change memo created time",
-    "memo-not-found": "Memo not found.",
-    "fill-all": "Please fill in all fields.",
-    "new-password-not-match": "New passwords do not match.",
-    "changed": "changed",
-    "image-load-failed": "Image load failed",
-    "fill-form": "Please fill out this form",
-    "login-failed": "Login failed",
-    "signup-failed": "Signup failed",
-    "user-not-found": "User not found"
+    "changed": "changed"
   },
   "slogan": "An open source, self-hosted knowledge base that works with a SQLite db file.",
   "auth": {
@@ -94,6 +79,7 @@
     "fetching-data": "fetching data..."
   },
   "shortcut-list": {
+    "shortcut-title": "shortcut title",
     "create-shortcut": "Create Shortcut",
     "edit-shortcut": "Edit Shortcut",
     "new-filter": "New Filter",
@@ -122,5 +108,21 @@
     "member-section": {
       "create-a-member": "Create a member"
     }
+  },
+  "message": {
+    "no-memos": "no memos 🌃",
+    "memos-ready": "all memos are ready 🎉",
+    "restored-successfully": "Restored successfully",
+    "memo-updated-datetime": "Memo created datetime changed.",
+    "invalid-created-datetime": "Invalid created datetime.",
+    "change-memo-created-time": "Change memo created time",
+    "memo-not-found": "Memo not found.",
+    "fill-all": "Please fill in all fields.",
+    "new-password-not-match": "New passwords do not match.",
+    "image-load-failed": "Image load failed",
+    "fill-form": "Please fill out this form",
+    "login-failed": "Login failed",
+    "signup-failed": "Signup failed",
+    "user-not-found": "User not found"
   }
 }
