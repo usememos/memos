@@ -99,7 +99,8 @@
     "member": "成员",
     "member-list": "成员列表",
     "account-section": {
-      "title": "账号信息"
+      "title": "账号信息",
+      "change-password": "修改密码"
     },
     "preference-section": {
       "default-memo-visibility": "默认 Memo 可见性",
@@ -128,6 +129,7 @@
     "fill-form": "请填写此表单",
     "login-failed": "登录失败",
     "signup-failed": "注册失败",
-    "user-not-found": "未找到用户"
+    "user-not-found": "未找到用户",
+    "password-changed": "密码已修改"
   }
 }

@@ -58,6 +58,12 @@ const MyAccountSection = () => {
       title: "Reset Open API",
       content: "❗️The existing API will be invalidated and a new one will be generated, are you sure you want to reset?",
       style: "warning",
+      onConfirm: async () => {
+        await userService.patchUser({
+          id: user.id,
+          resetOpenId: true,
+        });
+      },
     });
   };
 

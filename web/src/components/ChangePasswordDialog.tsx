@@ -17,7 +17,7 @@ const validateConfig: ValidatorConfig = {
 type Props = DialogProps;
 
 const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
-  const { t, locale } = useI18n();
+  const { t } = useI18n();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 
@@ -53,7 +53,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     const passwordValidResult = validate(newPassword, validateConfig);
     if (!passwordValidResult.result) {
-      toastHelper.error(t("common.password") + locale === "zh" ? "" : " " + passwordValidResult.reason);
+      toastHelper.error(`${t("common.password")} ${passwordValidResult.reason}`);
       return;
     }
 
@@ -63,7 +63,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
         id: user.id,
         password: newPassword,
       });
-      toastHelper.info(t("common.password") + t("common.changed"));
+      toastHelper.info(t("message.password-changed"));
       handleCloseBtnClick();
     } catch (error: any) {
       console.error(error);
@@ -74,7 +74,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">{t("common.password" + " " + t("common.change"))}</p>
+        <p className="title-text">{t("setting.account-section.change-password")}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>

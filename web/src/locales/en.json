@@ -99,7 +99,8 @@
     "member": "Member",
     "member-list": "Member list",
     "account-section": {
-      "title": "Account Information"
+      "title": "Account Information",
+      "change-password": "Change password"
     },
     "preference-section": {
       "default-memo-visibility": "Default memo visibility",
@@ -128,6 +129,7 @@
     "fill-form": "Please fill out this form",
     "login-failed": "Login failed",
     "signup-failed": "Signup failed",
-    "user-not-found": "User not found"
+    "user-not-found": "User not found",
+    "password-changed": "Password Changed"
   }
 }

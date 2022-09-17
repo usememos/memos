@@ -99,7 +99,8 @@
     "member": "Thành viên",
     "member-list": "Danh sách thành viên",
     "account-section": {
-      "title": "Thông tin tài khoản"
+      "title": "Thông tin tài khoản",
+      "change-password": "đổi mật khẩu"
     },
     "preference-section": {
       "default-memo-visibility": "Chế độ memo mặc định",
@@ -128,6 +129,7 @@
     "fill-form": "Please fill out this form",
     "login-failed": "Đăng nhập thất bại",
     "signup-failed": "Đăng ký thất bại",
-    "user-not-found": "Không tìm thấy người dùng này"
+    "user-not-found": "Không tìm thấy người dùng này",
+    "password-changed": "mật khẩu đã được thay đổi"
   }
 }
