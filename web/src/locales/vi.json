@@ -13,8 +13,8 @@
     "reset": "Khôi phục",
     "language": "Ngôn Ngữ",
     "version": "Phiên bản",
-    "pin": "Gắn lên trên cùng",
-    "unpin": "Gỡ khỏi vị trị trên cùng",
+    "pin": "Gắn lên",
+    "unpin": "Gỡ ra",
     "edit": "Chỉnh sửa",
     "restore": "Khôi phục",
     "delete": "Xóa",
@@ -33,11 +33,11 @@
     "title": "Tên",
     "filter": "Bộ lọc",
     "tags": "Thẻ",
-    "yourself": "Của bạn",
+    "yourself": "Chính bạn",
     "archived-at": "Lưu trữ lúc",
     "changed": "đã thay đổi"
   },
-  "slogan": "Một mã nguồn mở, tự lưu lại mọi thứ bạn biết dựa trên SQLite db.",
+  "slogan": "Một mã nguồn mở, tự bạn lưu lại mọi thứ bạn biết dựa trên SQLite db.",
   "auth": {
     "signup-as-host": "Đăng ký như chủ nhân",
     "host-tip": "Bạn đang đăng ký với tư cách chủ nhân của trang web này.",
@@ -100,14 +100,14 @@
     "member-list": "Danh sách thành viên",
     "account-section": {
       "title": "Thông tin tài khoản",
-      "change-password": "đổi mật khẩu"
+      "change-password": "Đổi mật khẩu"
     },
     "preference-section": {
       "default-memo-visibility": "Chế độ memo mặc định",
       "editor-font-style": "Thay đổi font cho trình soạn thảo"
     },
     "member-section": {
-      "create-a-member": "Tạo một thành viên"
+      "create-a-member": "Tạo thành viên"
     }
   },
   "amount-text": {
@@ -126,10 +126,12 @@
     "fill-all": "Vui lòng nhập tất cả các mục.",
     "new-password-not-match": "Mật khẩu mới không giống nhau.",
     "image-load-failed": "Tải ảnh bị lỗi",
-    "fill-form": "Please fill out this form",
+    "fill-form": "Hãy điền đầy đủ nội dung của form",
     "login-failed": "Đăng nhập thất bại",
     "signup-failed": "Đăng ký thất bại",
     "user-not-found": "Không tìm thấy người dùng này",
-    "password-changed": "mật khẩu đã được thay đổi"
+    "password-changed": "Mật khẩu đã được thay đổi",
+    "private-only": "Memo này có trạng thái riêng tư.",
+    "copied": "Đã sao chép"
   }
 }
