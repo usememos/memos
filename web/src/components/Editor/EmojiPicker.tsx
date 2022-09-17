@@ -1,7 +1,7 @@
 import { forwardRef, useEffect } from "react";
 import Picker, { IEmojiPickerProps } from "emoji-picker-react";
 
-export type EmojiPickerElement = HTMLDivElement;
+type EmojiPickerElement = HTMLDivElement;
 
 interface Props {
   isShowEmojiPicker: boolean;
@@ -31,7 +31,7 @@ export const EmojiPicker = forwardRef<EmojiPickerElement, Props>((props: Props, 
 
   return (
     <div className="emoji-picker" ref={ref}>
-      <Picker onEmojiClick={onEmojiClick} />
+      <Picker onEmojiClick={onEmojiClick} disableSearchBar />
     </div>
   );
 });
