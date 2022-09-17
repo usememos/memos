@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { IEmojiData } from "emoji-picker-react";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import useI18n from "../hooks/useI18n";
@@ -11,9 +12,9 @@ import EmojiPicker from "./Editor/EmojiPicker";
 import "../less/memo-editor.less";
 
 interface State {
-  isUploadingResource: boolean;
-  fullscreen: boolean;
   isShowEmojiPicker: boolean;
+  fullscreen: boolean;
+  isUploadingResource: boolean;
 }
 
 const MemoEditor = () => {
@@ -254,11 +255,12 @@ const MemoEditor = () => {
     });
   };
 
-  const handleEmojiClick = (event: any, emojiObject: any) => {
+  const handleEmojiClick = (_: any, emojiObject: IEmojiData) => {
     if (!editorRef.current) {
       return;
     }
-    editorRef.current?.insertText(`${emojiObject.emoji}`);
+
+    editorRef.current.insertText(`${emojiObject.emoji}`);
     handleChangeIsShowEmojiPicker(false);
   };
 
