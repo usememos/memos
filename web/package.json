@@ -14,6 +14,7 @@
     "dayjs": "^1.11.3",
     "emoji-picker-react": "^3.6.2",
     "lodash-es": "^4.17.21",
+    "marked": "^4.1.0",
     "qs": "^6.11.0",
     "react": "^18.1.0",
     "react-dom": "^18.1.0",
@@ -23,6 +24,7 @@
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.5",
+    "@types/marked": "^4.0.7",
     "@types/node": "^18.0.3",
     "@types/qs": "^6.9.7",
     "@types/react": "^18.0.9",

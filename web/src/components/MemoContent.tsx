@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { formatMemoContent } from "../helpers/marked";
 import Icon from "./Icon";
 import "../less/memo-content.less";
+import "../css/github-markdown-light.css";
 
 const defaultDisplayConfig: DisplayConfig = {
   enableExpand: true,
@@ -81,7 +82,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     <div className={`memo-content-wrapper ${className}`}>
       <div
         ref={memoContentContainerRef}
-        className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
+        className={`memo-content-text markdown-body ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
         dangerouslySetInnerHTML={{ __html: formatMemoContent(content, formatConfig) }}

@@ -1,11 +1,21 @@
 @import "./mixin.less";
 
+.markdown-body {
+  @apply bg-inherit;
+
+  ul, ol {
+    @apply pl-2;
+    
+    input {
+      appearance: auto !important;
+    }
+  }
+}
+
 .memo-content-wrapper {
   @apply w-full flex flex-col justify-start items-start;
 
   > .memo-content-text {
-    @apply w-full whitespace-pre-wrap break-words text-base leading-7;
-
     &.expanded {
       display: -webkit-box;
       -webkit-box-orient: vertical;
@@ -22,7 +32,7 @@
     }
 
     .tag-span {
-      @apply inline-block w-auto font-mono text-blue-600;
+      @apply inline-block w-auto font-mono text-blue-600 cursor-pointer;
     }
 
     .memo-link-text {
@@ -31,22 +41,6 @@
 
     .link {
       @apply inline-block text-blue-600 cursor-pointer underline break-all hover:opacity-80;
-    }
-
-    .counter-block,
-    .todo-block {
-      @apply float-left inline-block box-border text-center w-7 font-mono select-none;
-    }
-
-    .todo-block {
-      @apply w-4 h-4 leading-4 border rounded box-border text-lg cursor-pointer shadow-inner hover:opacity-80;
-      margin-top: 6px;
-      margin-left: 6px;
-      margin-right: 6px;
-    }
-
-    pre {
-      @apply w-full mt-1 py-2 px-3 rounded text-sm bg-gray-100 whitespace-pre-wrap;
     }
   }
 

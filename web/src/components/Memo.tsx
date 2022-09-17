@@ -1,11 +1,9 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { indexOf } from "lodash-es";
 import { memo, useEffect, useRef, useState } from "react";
 import "dayjs/locale/zh";
 import useI18n from "../hooks/useI18n";
 import { UNKNOWN_ID } from "../helpers/consts";
-import { DONE_BLOCK_REG, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
@@ -35,7 +33,6 @@ const Memo: React.FC<Props> = (props: Props) => {
   const { t, locale } = useI18n();
   const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, locale));
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
@@ -115,37 +112,6 @@ const Memo: React.FC<Props> = (props: Props) => {
         locationService.setTagQuery(undefined);
       } else {
         locationService.setTagQuery(tagName);
-      }
-    } else if (targetEl.classList.contains("todo-block")) {
-      if (userService.isVisitorMode()) {
-        return;
-      }
-
-      const status = targetEl.dataset?.value;
-      const todoElementList = [...(memoContentContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
-      for (const element of todoElementList) {
-        if (element === targetEl) {
-          const index = indexOf(todoElementList, element);
-          const tempList = memo.content.split(status === "DONE" ? DONE_BLOCK_REG : TODO_BLOCK_REG);
-          let finalContent = "";
-
-          for (let i = 0; i < tempList.length; i++) {
-            if (i === 0) {
-              finalContent += `${tempList[i]}`;
-            } else {
-              if (i === index + 1) {
-                finalContent += status === "DONE" ? "- [ ] " : "- [x] ";
-              } else {
-                finalContent += status === "DONE" ? "- [x] " : "- [ ] ";
-              }
-              finalContent += `${tempList[i]}`;
-            }
-          }
-          await memoService.patchMemo({
-            id: memo.id,
-            content: finalContent,
-          });
-        }
       }
     }
   };
