@@ -288,7 +288,6 @@ func findShortcutList(ctx context.Context, tx *sql.Tx, find *api.ShortcutFind) (
 
 func deleteShortcut(ctx context.Context, tx *sql.Tx, delete *api.ShortcutDelete) error {
 	result, err := tx.ExecContext(ctx, `
-		PRAGMA foreign_keys = ON;
 		DELETE FROM shortcut WHERE id = ?
 	`, delete.ID)
 	if err != nil {

@@ -354,7 +354,6 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 
 func deleteMemo(ctx context.Context, tx *sql.Tx, delete *api.MemoDelete) error {
 	result, err := tx.ExecContext(ctx, `
-		PRAGMA foreign_keys = ON;
 		DELETE FROM memo WHERE id = ?
 	`, delete.ID)
 	if err != nil {

@@ -43,7 +43,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 	}
 
 	// Connect to the database.
-	sqlDB, err := sql.Open("sqlite3", db.profile.DSN)
+	sqlDB, err := sql.Open("sqlite3", db.profile.DSN+"?_foreign_keys=1")
 	if err != nil {
 		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.profile.DSN, err)
 	}
