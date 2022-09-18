@@ -19,7 +19,8 @@
     "react-dom": "^18.1.0",
     "react-feather": "^2.0.10",
     "react-redux": "^8.0.1",
-    "react-router-dom": "^6.4.0"
+    "react-router-dom": "^6.4.0",
+    "vite-plugin-pwa": "^0.12.8"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.5",
