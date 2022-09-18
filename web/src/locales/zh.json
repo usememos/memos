@@ -130,6 +130,8 @@
     "login-failed": "登录失败",
     "signup-failed": "注册失败",
     "user-not-found": "未找到用户",
-    "password-changed": "密码已修改"
+    "password-changed": "密码已修改",
+    "private-only": "This memo is private only.",
+    "copied": "Copied"
   }
 }

@@ -130,6 +130,8 @@
     "login-failed": "Login failed",
     "signup-failed": "Signup failed",
     "user-not-found": "User not found",
-    "password-changed": "Password Changed"
+    "password-changed": "Password Changed",
+    "private-only": "This memo is private only.",
+    "copied": "Copied"
   }
 }

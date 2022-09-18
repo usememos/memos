@@ -112,12 +112,12 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
 
   const handleCopyMemoLinkBtnClick = () => {
     if (memo.visibility === "PRIVATE") {
-      toastHelper.error("This memo is private only.");
+      toastHelper.error(t("message.private-only"));
       return;
     }
 
     copy(`${window.location.origin}/explore?memoId=${memo.id}`);
-    toastHelper.success("Copied");
+    toastHelper.success(t("message.copied"));
   };
 
   const handleEditMemoBtnClick = () => {
