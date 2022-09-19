@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import useI18n from "../hooks/useI18n";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { memoService } from "../services";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
@@ -12,7 +12,7 @@ interface Props extends DialogProps {
 }
 
 const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const { destroy, memoId } = props;
   const [createdAt, setCreatedAt] = useState("");
   const maxDatetimeValue = dayjs().format("YYYY-MM-DDTHH:mm");

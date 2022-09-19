@@ -1,8 +1,8 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 import { globalService, userService } from "../services";
 import { useAppSelector } from "../store";
-import useI18n from "../hooks/useI18n";
 import { isNullorUndefined } from "../helpers/utils";
 import Only from "../components/common/OnlyWhen";
 import toastHelper from "../components/Toast";
@@ -14,7 +14,7 @@ import MemoList from "../components/MemoList";
 import "../less/home.less";
 
 function Home() {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAppSelector((state) => state.user.user);

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { locationService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
-import useI18n from "../hooks/useI18n";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
@@ -14,7 +14,7 @@ const ShortcutList = () => {
   const query = useAppSelector((state) => state.location.query);
   const shortcuts = useAppSelector((state) => state.shortcut.shortcuts);
   const loadingState = useLoading();
-  const { t } = useI18n();
+  const { t } = useTranslation();
 
   const pinnedShortcuts = shortcuts
     .filter((s) => s.rowStatus === "ARCHIVED")
@@ -59,7 +59,7 @@ interface ShortcutContainerProps {
 
 const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
   const { shortcut, isActive } = props;
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
   const handleShortcutClick = () => {

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { memoService, shortcutService } from "../services";
 import { checkShouldShowMemoWithFilters, filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
 import useLoading from "../hooks/useLoading";
@@ -6,7 +7,6 @@ import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import Selector from "./common/Selector";
-import useI18n from "../hooks/useI18n";
 import "../less/create-shortcut-dialog.less";
 
 interface Props extends DialogProps {
@@ -19,7 +19,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   const [title, setTitle] = useState<string>("");
   const [filters, setFilters] = useState<Filter[]>([]);
   const requestState = useLoading(false);
-  const { t } = useI18n();
+  const { t } = useTranslation();
 
   const shownMemoLength = memoService.getState().memos.filter((memo) => {
     return checkShouldShowMemoWithFilters(memo, filters);

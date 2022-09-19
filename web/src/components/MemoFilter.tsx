@@ -1,17 +1,16 @@
+import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../store";
 import { locationService, shortcutService } from "../services";
 import * as utils from "../helpers/utils";
 import { getTextWithMemoType } from "../helpers/filter";
-import useI18n from "../hooks/useI18n";
 import "../less/memo-filter.less";
 
 const MemoFilter = () => {
+  const { t } = useTranslation();
   const query = useAppSelector((state) => state.location.query);
-  useAppSelector((state) => state.shortcut.shortcuts);
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
   const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut);
-  const { t } = useI18n();
 
   return (
     <div className={`filter-query-container ${showFilter ? "" : "!hidden"}`}>

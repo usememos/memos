@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { validate, ValidatorConfig } from "../helpers/validator";
-import useI18n from "../hooks/useI18n";
 import { userService } from "../services";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
@@ -17,7 +17,7 @@ const validateConfig: ValidatorConfig = {
 type Props = DialogProps;
 
 const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 

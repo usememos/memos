@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { indexOf } from "lodash-es";
 import { memo, useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import "dayjs/locale/zh";
-import useI18n from "../hooks/useI18n";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { DONE_BLOCK_REG, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
@@ -32,8 +32,8 @@ export const getFormatedMemoCreatedAtStr = (createdTs: number, locale = "en"): s
 
 const Memo: React.FC<Props> = (props: Props) => {
   const memo = props.memo;
-  const { t, locale } = useI18n();
-  const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, locale));
+  const { t, i18n } = useTranslation();
+  const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
@@ -42,14 +42,14 @@ const Memo: React.FC<Props> = (props: Props) => {
     let intervalFlag = -1;
     if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
       intervalFlag = setInterval(() => {
-        setCreatedAtStr(getFormatedMemoCreatedAtStr(memo.createdTs, locale));
+        setCreatedAtStr(getFormatedMemoCreatedAtStr(memo.createdTs, i18n.language));
       }, 1000 * 1);
     }
 
     return () => {
       clearInterval(intervalFlag);
     };
-  }, [locale]);
+  }, [i18n.language]);
 
   const handleShowMemoStoryDialog = () => {
     showMemoCardDialog(memo);

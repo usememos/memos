@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import * as api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
-import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
 import { globalService, userService } from "../services";
 import Icon from "../components/Icon";
@@ -18,7 +18,7 @@ const validateConfig: ValidatorConfig = {
 };
 
 const Auth = () => {
-  const { t, locale } = useI18n();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const pageLoadingState = useLoading(true);
   const [siteHost, setSiteHost] = useState<User>();
@@ -157,15 +157,15 @@ const Auth = () => {
         </div>
         <div className="footer-container">
           <div className="language-container">
-            <span className={`locale-item ${locale === "en" ? "active" : ""}`} onClick={() => handleLocaleItemClick("en")}>
+            <span className={`locale-item ${i18n.language === "en" ? "active" : ""}`} onClick={() => handleLocaleItemClick("en")}>
               English
             </span>
             <span className="split-line">/</span>
-            <span className={`locale-item ${locale === "zh" ? "active" : ""}`} onClick={() => handleLocaleItemClick("zh")}>
+            <span className={`locale-item ${i18n.language === "zh" ? "active" : ""}`} onClick={() => handleLocaleItemClick("zh")}>
               中文
             </span>
             <span className="split-line">/</span>
-            <span className={`locale-item ${locale === "vi" ? "active" : ""}`} onClick={() => handleLocaleItemClick("vi")}>
+            <span className={`locale-item ${i18n.language === "vi" ? "active" : ""}`} onClick={() => handleLocaleItemClick("vi")}>
               Tiếng Việt
             </span>
           </div>

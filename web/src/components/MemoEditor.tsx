@@ -1,8 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { IEmojiData } from "emoji-picker-react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
-import useI18n from "../hooks/useI18n";
 import { useAppSelector } from "../store";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
@@ -18,7 +18,7 @@ interface State {
 }
 
 const MemoEditor = () => {
-  const { t, locale } = useI18n();
+  const { t, i18n } = useTranslation();
   const user = useAppSelector((state) => state.user.user);
   const editorState = useAppSelector((state) => state.editor);
   const tags = useAppSelector((state) => state.memo.tags);
@@ -276,7 +276,7 @@ const MemoEditor = () => {
       onConfirmBtnClick: handleSaveBtnClick,
       onContentChange: handleContentChange,
     }),
-    [isEditing, state.fullscreen, locale, editorFontStyle]
+    [isEditing, state.fullscreen, i18n.language, editorFontStyle]
   );
 
   return (

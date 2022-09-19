@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
-import useI18n from "../hooks/useI18n";
 import { memoService } from "../services";
 import { useAppSelector } from "../store";
 import Icon from "./Icon";
@@ -12,7 +12,7 @@ import "../less/archived-memo-dialog.less";
 type Props = DialogProps;
 
 const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const { destroy } = props;
   const memos = useAppSelector((state) => state.memo.memos);
   const loadingState = useLoading();

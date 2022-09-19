@@ -1,5 +1,6 @@
 import copy from "copy-to-clipboard";
 import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { editorStateService, memoService, userService } from "../services";
 import { useAppSelector } from "../store";
 import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
@@ -13,7 +14,6 @@ import Selector from "./common/Selector";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
-import useI18n from "../hooks/useI18n";
 import "../less/memo-card-dialog.less";
 
 interface LinkedMemo extends Memo {
@@ -26,13 +26,13 @@ interface Props extends DialogProps {
 }
 
 const MemoCardDialog: React.FC<Props> = (props: Props) => {
+  const { t } = useTranslation();
   const memos = useAppSelector((state) => state.memo.memos);
   const [memo, setMemo] = useState<Memo>({
     ...props.memo,
   });
   const [linkMemos, setLinkMemos] = useState<LinkedMemo[]>([]);
   const [linkedMemos, setLinkedMemos] = useState<LinkedMemo[]>([]);
-  const { t } = useI18n();
 
   useEffect(() => {
     const fetchLinkedMemos = async () => {

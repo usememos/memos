@@ -1,7 +1,7 @@
+import { useTranslation } from "react-i18next";
 import { globalService, userService } from "../../services";
 import { useAppSelector } from "../../store";
 import { VISIBILITY_SELECTOR_ITEMS } from "../../helpers/consts";
-import useI18n from "../../hooks/useI18n";
 import Selector from "../common/Selector";
 import "../../less/settings/preferences-section.less";
 
@@ -32,7 +32,7 @@ const editorFontStyleSelectorItems = [
 ];
 
 const PreferencesSection = () => {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const { setting } = useAppSelector((state) => state.user.user as User);
 
   const handleLocaleChanged = async (value: string) => {

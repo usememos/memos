@@ -1,10 +1,10 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { memoService, userService } from "../services";
 import { isNullorUndefined } from "../helpers/utils";
 import { useAppSelector } from "../store";
-import useI18n from "../hooks/useI18n";
 import useQuery from "../hooks/useQuery";
 import useLoading from "../hooks/useLoading";
 import Only from "../components/common/OnlyWhen";
@@ -17,7 +17,7 @@ interface State {
 }
 
 const Explore = () => {
-  const { t, locale } = useI18n();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const query = useQuery();
   const user = useAppSelector((state) => state.user.user);
@@ -78,7 +78,7 @@ const Explore = () => {
           <main className="memos-wrapper">
             {state.memos.length > 0 ? (
               state.memos.map((memo) => {
-                const createdAtStr = dayjs(memo.createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss");
+                const createdAtStr = dayjs(memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
                 return (
                   <div className="memo-container" key={memo.id}>
                     <div className="memo-header">

@@ -1,13 +1,13 @@
+import { useTranslation } from "react-i18next";
 import { locationService } from "../services";
 import { useAppSelector } from "../store";
 import { memoSpecialTypes } from "../helpers/filter";
 import Icon from "./Icon";
-import useI18n from "../hooks/useI18n";
 import "../less/search-bar.less";
 
 const SearchBar = () => {
+  const { t } = useTranslation();
   const memoType = useAppSelector((state) => state.location.query?.type);
-  const { t } = useI18n();
 
   const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
     const { type: prevType } = locationService.getState().query ?? {};

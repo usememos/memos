@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
 import copy from "copy-to-clipboard";
-import useI18n from "../hooks/useI18n";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
 import { resourceService } from "../services";
 import Dropdown from "./common/Dropdown";
@@ -20,7 +20,7 @@ interface State {
 
 const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const loadingState = useLoading();
   const [state, setState] = useState<State>({
     resources: [],

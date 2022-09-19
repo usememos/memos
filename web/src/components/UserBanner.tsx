@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import * as utils from "../helpers/utils";
 import userService from "../services/userService";
-import useI18n from "../hooks/useI18n";
 import { locationService } from "../services";
 import { useAppSelector } from "../store";
 import Icon from "./Icon";
@@ -9,7 +9,7 @@ import MenuBtnsPopup from "./MenuBtnsPopup";
 import "../less/user-banner.less";
 
 const UserBanner = () => {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const { user, owner } = useAppSelector((state) => state.user);
   const { memos, tags } = useAppSelector((state) => state.memo);
   const [shouldShowPopupBtns, setShouldShowPopupBtns] = useState(false);

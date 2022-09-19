@@ -1,13 +1,13 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
-import useI18n from "./hooks/useI18n";
 import { globalService, locationService } from "./services";
 import { useAppSelector } from "./store";
 import router from "./router";
 import * as storage from "./helpers/storage";
 
 function App() {
-  const { setLocale } = useI18n();
+  const { i18n } = useTranslation();
   const global = useAppSelector((state) => state.global);
 
   useEffect(() => {
@@ -20,7 +20,7 @@ function App() {
   }, []);
 
   useEffect(() => {
-    setLocale(global.locale);
+    i18n.changeLanguage(global.locale);
     storage.set({
       locale: global.locale,
     });

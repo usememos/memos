@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { userService } from "../services";
-import useI18n from "../hooks/useI18n";
 import Only from "./common/OnlyWhen";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
@@ -15,7 +15,7 @@ interface Props {
 
 const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   const { shownStatus, setShownStatus } = props;
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const popupElRef = useRef<HTMLDivElement>(null);
 

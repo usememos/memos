@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
 import { isEmpty } from "lodash-es";
-import useI18n from "../../hooks/useI18n";
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { userService } from "../../services";
 import { useAppSelector } from "../../store";
 import * as api from "../../helpers/api";
@@ -15,7 +15,7 @@ interface State {
 }
 
 const PreferencesSection = () => {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const currentUser = useAppSelector((state) => state.user.user);
   const [state, setState] = useState<State>({
     createUserEmail: "",

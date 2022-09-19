@@ -1,5 +1,5 @@
+import { useTranslation } from "react-i18next";
 import * as utils from "../helpers/utils";
-import useI18n from "../hooks/useI18n";
 import useToggle from "../hooks/useToggle";
 import { memoService } from "../services";
 import toastHelper from "./Toast";
@@ -18,7 +18,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
     createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
     archivedAtStr: utils.getDateTimeString(propsMemo.updatedTs ?? Date.now()),
   };
-  const { t } = useI18n();
+  const { t } = useTranslation();
 
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 

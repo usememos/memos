@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { userService } from "../services";
 import toImage from "../labs/html2image";
 import { ANIMATION_DURATION } from "../helpers/consts";
-import useI18n from "../hooks/useI18n";
 import * as utils from "../helpers/utils";
 import { IMAGE_URL_REG } from "../helpers/marked";
 import Only from "./common/OnlyWhen";
@@ -18,7 +18,7 @@ interface Props extends DialogProps {
 
 const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
   const { memo: propsMemo, destroy } = props;
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const { user: userinfo } = userService.getState();
   const memo = {
     ...propsMemo,

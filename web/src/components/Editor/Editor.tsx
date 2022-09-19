@@ -1,5 +1,5 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
-import useI18n from "../../hooks/useI18n";
+import { useTranslation } from "react-i18next";
 import useRefresh from "../../hooks/useRefresh";
 import Only from "../common/OnlyWhen";
 import "../../less/editor.less";
@@ -35,7 +35,7 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
     onConfirmBtnClick: handleConfirmBtnClickCallback,
     onContentChange: handleContentChangeCallback,
   } = props;
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const refresh = useRefresh();
 

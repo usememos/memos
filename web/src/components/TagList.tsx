@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../store";
 import { locationService, memoService, userService } from "../services";
-import useI18n from "../hooks/useI18n";
 import useToggle from "../hooks/useToggle";
 import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
@@ -14,7 +14,7 @@ interface Tag {
 }
 
 const TagList = () => {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const { memos, tags: tagsText } = useAppSelector((state) => state.memo);
   const query = useAppSelector((state) => state.location.query);
   const [tags, setTags] = useState<Tag[]>([]);

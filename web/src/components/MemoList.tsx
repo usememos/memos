@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { memoService, shortcutService } from "../services";
-import useI18n from "../hooks/useI18n";
 import { useAppSelector } from "../store";
 import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/marked";
 import * as utils from "../helpers/utils";
@@ -11,7 +11,7 @@ import Memo from "./Memo";
 import "../less/memo-list.less";
 
 const MemoList = () => {
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const query = useAppSelector((state) => state.location.query);
   const { memos, isFetching } = useAppSelector((state) => state.memo);
   const wrapperElement = useRef<HTMLDivElement>(null);

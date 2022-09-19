@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../store";
-import useI18n from "../hooks/useI18n";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MyAccountSection from "./Settings/MyAccountSection";
@@ -18,7 +18,7 @@ interface State {
 
 const SettingDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
-  const { t } = useI18n();
+  const { t } = useTranslation();
   const user = useAppSelector((state) => state.user.user);
   const [state, setState] = useState<State>({
     selectedSection: "my-account",

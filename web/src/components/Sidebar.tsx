@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { userService } from "../services";
-import useI18n from "../hooks/useI18n";
 import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
 import showDailyReviewDialog from "./DailyReviewDialog";
@@ -12,7 +12,7 @@ import TagList from "./TagList";
 import "../less/siderbar.less";
 
 const Sidebar = () => {
-  const { t } = useI18n();
+  const { t } = useTranslation();
 
   const handleSettingBtnClick = () => {
     showSettingDialog();
