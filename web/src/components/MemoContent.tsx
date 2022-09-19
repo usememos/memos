@@ -14,8 +14,8 @@ export interface DisplayConfig {
 }
 
 interface Props {
-  className: string;
   content: string;
+  className?: string;
   displayConfig?: Partial<DisplayConfig>;
   onMemoContentClick?: (e: React.MouseEvent) => void;
   onMemoContentDoubleClick?: (e: React.MouseEvent) => void;
@@ -78,7 +78,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`memo-content-wrapper ${className}`}>
+    <div className={`memo-content-wrapper ${className || ""}`}>
       <div
         ref={memoContentContainerRef}
         className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}

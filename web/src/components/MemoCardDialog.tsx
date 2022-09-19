@@ -178,12 +178,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
           </div>
         </div>
         <div className="memo-container">
-          <MemoContent
-            className=""
-            displayConfig={{ enableExpand: false }}
-            content={memo.content}
-            onMemoContentClick={handleMemoContentClick}
-          />
+          <MemoContent displayConfig={{ enableExpand: false }} content={memo.content} onMemoContentClick={handleMemoContentClick} />
           <MemoResources memo={memo} />
         </div>
         <div className="layer-container"></div>

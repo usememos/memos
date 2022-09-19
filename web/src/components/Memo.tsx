@@ -35,7 +35,6 @@ const Memo: React.FC<Props> = (props: Props) => {
   const { t, i18n } = useTranslation();
   const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
@@ -122,7 +121,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       }
 
       const status = targetEl.dataset?.value;
-      const todoElementList = [...(memoContentContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
+      const todoElementList = [...(memoContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
       for (const element of todoElementList) {
         if (element === targetEl) {
           const index = indexOf(todoElementList, element);
@@ -207,7 +206,6 @@ const Memo: React.FC<Props> = (props: Props) => {
         </div>
       </div>
       <MemoContent
-        className=""
         content={memo.content}
         onMemoContentClick={handleMemoContentClick}
         onMemoContentDoubleClick={handleMemoContentDoubleClick}
