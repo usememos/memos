@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import * as api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useI18n from "../hooks/useI18n";
 import useLoading from "../hooks/useLoading";
-import { globalService, locationService, userService } from "../services";
+import { globalService, userService } from "../services";
 import Icon from "../components/Icon";
 import Only from "../components/common/OnlyWhen";
 import toastHelper from "../components/Toast";
@@ -18,6 +19,7 @@ const validateConfig: ValidatorConfig = {
 
 const Auth = () => {
   const { t, locale } = useI18n();
+  const navigate = useNavigate();
   const pageLoadingState = useLoading(true);
   const [siteHost, setSiteHost] = useState<User>();
   const [email, setEmail] = useState("");
@@ -68,7 +70,7 @@ const Auth = () => {
       await api.signin(email, password);
       const user = await userService.doSignIn();
       if (user) {
-        locationService.replaceHistory("/");
+        navigate("/");
       } else {
         toastHelper.error(t("message.login-failed"));
       }
@@ -101,7 +103,7 @@ const Auth = () => {
       await api.signup(email, password, "HOST");
       const user = await userService.doSignIn();
       if (user) {
-        locationService.replaceHistory("/");
+        navigate("/");
       } else {
         toastHelper.error(t("common.singup-failed"));
       }

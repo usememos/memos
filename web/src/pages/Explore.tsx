@@ -1,6 +1,8 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { locationService, memoService, userService } from "../services";
+import { Link, useNavigate } from "react-router-dom";
+import { memoService, userService } from "../services";
+import { isNullorUndefined } from "../helpers/utils";
 import { useAppSelector } from "../store";
 import useI18n from "../hooks/useI18n";
 import useQuery from "../hooks/useQuery";
@@ -16,6 +18,7 @@ interface State {
 
 const Explore = () => {
   const { t, locale } = useI18n();
+  const navigate = useNavigate();
   const query = useQuery();
   const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);
@@ -25,33 +28,28 @@ const Explore = () => {
   const loadingState = useLoading();
 
   useEffect(() => {
-    userService
-      .initialState()
-      .catch()
-      .finally(async () => {
-        const { host } = userService.getState();
-        if (!host) {
-          locationService.replaceHistory("/auth");
-          return;
-        }
+    const { host } = userService.getState();
+    if (isNullorUndefined(host)) {
+      navigate("/auth");
+      return;
+    }
 
-        memoService.fetchAllMemos().then((memos) => {
-          let filteredMemos = memos;
+    memoService.fetchAllMemos().then((memos) => {
+      let filteredMemos = memos;
 
-          const memoId = Number(query.get("memoId"));
-          if (memoId && !isNaN(memoId)) {
-            filteredMemos = filteredMemos.filter((memo) => {
-              return memo.id === memoId;
-            });
-          }
-
-          setState({
-            ...state,
-            memos: filteredMemos,
-          });
+      const memoId = Number(query.get("memoId"));
+      if (memoId && !isNaN(memoId)) {
+        filteredMemos = filteredMemos.filter((memo) => {
+          return memo.id === memoId;
         });
-        loadingState.setFinish();
+      }
+
+      setState({
+        ...state,
+        memos: filteredMemos,
       });
+      loadingState.setFinish();
+    });
   }, [location]);
 
   return (
@@ -65,13 +63,13 @@ const Explore = () => {
           <div className="action-button-container">
             <Only when={!loadingState.isLoading}>
               {user ? (
-                <button className="btn" onClick={() => (window.location.href = "/")}>
+                <Link to="/" className="btn">
                   <span className="icon">🏠</span> {t("common.back-to-home")}
-                </button>
+                </Link>
               ) : (
-                <button className="btn" onClick={() => (window.location.href = "/auth")}>
+                <Link to="/auth" className="btn">
                   <span className="icon">👉</span> {t("common.sign-in")}
-                </button>
+                </Link>
               )}
             </Only>
           </div>

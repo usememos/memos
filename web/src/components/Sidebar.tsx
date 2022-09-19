@@ -1,4 +1,5 @@
-import { locationService, userService } from "../services";
+import { Link } from "react-router-dom";
+import { userService } from "../services";
 import useI18n from "../hooks/useI18n";
 import Icon from "./Icon";
 import Only from "./common/OnlyWhen";
@@ -17,10 +18,6 @@ const Sidebar = () => {
     showSettingDialog();
   };
 
-  const handleExploreBtnClick = () => {
-    locationService.pushHistory("/explore");
-  };
-
   return (
     <aside className="sidebar-wrapper">
       <div className="close-container">
@@ -35,9 +32,9 @@ const Sidebar = () => {
           <span className="icon">📅</span> {t("sidebar.daily-review")}
         </button>
         <Only when={!userService.isVisitorMode()}>
-          <button className="btn action-btn" onClick={() => handleExploreBtnClick()}>
+          <Link to="/explore" className="btn action-btn">
             <span className="icon">🏂</span> {t("common.explore")}
-          </button>
+          </Link>
           <button className="btn action-btn" onClick={handleSettingBtnClick}>
             <span className="icon">⚙️</span> {t("sidebar.setting")}
           </button>

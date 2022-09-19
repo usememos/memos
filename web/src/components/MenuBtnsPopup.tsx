@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
-import { locationService, userService } from "../services";
+import { useNavigate } from "react-router-dom";
+import { userService } from "../services";
 import useI18n from "../hooks/useI18n";
 import Only from "./common/OnlyWhen";
 import showAboutSiteDialog from "./AboutSiteDialog";
@@ -15,6 +16,7 @@ interface Props {
 const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
   const { shownStatus, setShownStatus } = props;
   const { t } = useI18n();
+  const navigate = useNavigate();
   const popupElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -48,8 +50,7 @@ const MenuBtnsPopup: React.FC<Props> = (props: Props) => {
     userService
       .doSignOut()
       .then(() => {
-        locationService.replaceHistory("/auth");
-        window.location.reload();
+        navigate("/auth");
       })
       .catch(() => {
         // do nth

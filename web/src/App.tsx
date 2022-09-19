@@ -1,32 +1,23 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import { RouterProvider } from "react-router-dom";
 import useI18n from "./hooks/useI18n";
-import { appRouterSwitch } from "./routers";
 import { globalService, locationService } from "./services";
 import { useAppSelector } from "./store";
+import router from "./router";
 import * as storage from "./helpers/storage";
 
 function App() {
   const { setLocale } = useI18n();
-  const user = useAppSelector((state) => state.user.user);
   const global = useAppSelector((state) => state.global);
-  const pathname = useAppSelector((state) => state.location.pathname);
-  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     locationService.updateStateWithLocation();
     window.onpopstate = () => {
       locationService.updateStateWithLocation();
     };
-    globalService.initialState().then(() => {
-      setLoading(false);
-    });
-  }, []);
 
-  useEffect(() => {
-    if (user?.setting.locale) {
-      globalService.setLocale(user.setting.locale);
-    }
-  }, [user?.setting.locale]);
+    globalService.initialState();
+  }, []);
 
   useEffect(() => {
     setLocale(global.locale);
@@ -35,7 +26,7 @@ function App() {
     });
   }, [global.locale]);
 
-  return <>{isLoading ? null : appRouterSwitch(pathname)}</>;
+  return <RouterProvider router={router} />;
 }
 
 export default App;
