@@ -34,10 +34,10 @@ func (key UserSettingKey) String() string {
 }
 
 var (
-	UserSettingLocaleValue          	= []string{"en", "zh", "vi"}
-	UserSettingMemoVisibilityValue  	= []Visibility{Privite, Protected, Public}
-	UserSettingEditorFontStyleValue 	= []string{"normal", "mono"}
-	UserSettingMobileEditorStyleValue   = []string{"normal", "float"}
+	UserSettingLocaleValue            = []string{"en", "zh", "vi"}
+	UserSettingMemoVisibilityValue    = []Visibility{Privite, Protected, Public}
+	UserSettingEditorFontStyleValue   = []string{"normal", "mono"}
+	UserSettingMobileEditorStyleValue = []string{"normal", "float"}
 )
 
 type UserSetting struct {
