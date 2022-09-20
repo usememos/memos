@@ -5,7 +5,6 @@ import toImage from "../labs/html2image";
 import { ANIMATION_DURATION } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { IMAGE_URL_REG } from "../helpers/marked";
-import Only from "./common/OnlyWhen";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
@@ -88,18 +87,16 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
           <p className="tip-text">{shortcutImgUrl ? "Click to save the image 👇" : "Generating the screenshot..."}</p>
         </div>
         <div className="memo-container" ref={memoElRef}>
-          <Only when={shortcutImgUrl !== ""}>
-            <img className="memo-shortcut-img" onClick={handleDownloadBtnClick} src={shortcutImgUrl} />
-          </Only>
+          {shortcutImgUrl !== "" && <img className="memo-shortcut-img" onClick={handleDownloadBtnClick} src={shortcutImgUrl} />}
           <span className="time-text">{memo.createdAtStr}</span>
           <MemoContent className="memo-content-wrapper" content={memo.content} displayConfig={{ enableExpand: false }} />
-          <Only when={imageUrls.length > 0}>
+          {imageUrls.length > 0 && (
             <div className="images-container">
               {imageUrls.map((imgUrl, idx) => (
                 <img decoding="async" key={idx} src={imgUrl} onLoad={handleImageOnLoad} onError={handleImageOnLoad} />
               ))}
             </div>
-          </Only>
+          )}
           <div className="watermark-container">
             <span className="normal-text">
               <span className="icon-text">✍️</span> by <span className="name-text">{userinfo?.name}</span>

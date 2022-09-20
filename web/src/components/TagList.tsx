@@ -4,7 +4,6 @@ import { useAppSelector } from "../store";
 import { locationService, memoService, userService } from "../services";
 import useToggle from "../hooks/useToggle";
 import Icon from "./Icon";
-import Only from "./common/OnlyWhen";
 import "../less/tag-list.less";
 
 interface Tag {
@@ -73,9 +72,7 @@ const TagList = () => {
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        <Only when={!userService.isVisitorMode() && tags.length === 0}>
-          <p className="tip-text">{t("tag-list.tip-text")}</p>
-        </Only>
+        {!userService.isVisitorMode() && tags.length === 0 && <p className="tip-text">{t("tag-list.tip-text")}</p>}
       </div>
     </div>
   );

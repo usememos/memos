@@ -1,5 +1,4 @@
 import { IMAGE_URL_REG } from "../helpers/marked";
-import Only from "./common/OnlyWhen";
 import Image from "./Image";
 import "../less/memo-resources.less";
 
@@ -14,13 +13,13 @@ const MemoResources: React.FC<Props> = (props: Props) => {
 
   return (
     <div className="resource-wrapper">
-      <Only when={imageUrls.length > 0}>
+      {imageUrls.length > 0 && (
         <div className={`images-wrapper ${className ?? ""}`}>
           {imageUrls.map((imgUrl, idx) => (
             <Image className="memo-img" key={idx} imgUrl={imgUrl} />
           ))}
         </div>
-      </Only>
+      )}
     </div>
   );
 };

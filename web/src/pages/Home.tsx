@@ -4,7 +4,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { globalService, userService } from "../services";
 import { useAppSelector } from "../store";
 import { isNullorUndefined } from "../helpers/utils";
-import Only from "../components/common/OnlyWhen";
 import toastHelper from "../components/Toast";
 import Sidebar from "../components/Sidebar";
 import MemosHeader from "../components/MemosHeader";
@@ -51,13 +50,11 @@ function Home() {
         <main className="memos-wrapper">
           <div className="memos-editor-wrapper">
             <MemosHeader />
-            <Only when={!userService.isVisitorMode()}>
-              <MemoEditor />
-            </Only>
+            {!userService.isVisitorMode() && <MemoEditor />}
             <MemoFilter />
           </div>
           <MemoList />
-          <Only when={userService.isVisitorMode()}>
+          {userService.isVisitorMode() && (
             <div className="addtion-btn-container">
               {user ? (
                 <button className="btn" onClick={() => (window.location.href = "/")}>
@@ -69,7 +66,7 @@ function Home() {
                 </button>
               )}
             </div>
-          </Only>
+          )}
         </main>
       </div>
     </section>

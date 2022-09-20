@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as api from "../helpers/api";
-import Only from "./common/OnlyWhen";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import GitHubBadge from "./GitHubBadge";
@@ -50,7 +49,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <br />
         <div className="addtion-info-container">
           <GitHubBadge />
-          <Only when={profile !== undefined}>
+          {profile !== undefined && (
             <>
               {t("common.version")}:
               <span className="pre-text">
@@ -58,7 +57,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
               </span>
               🎉
             </>
-          </Only>
+          )}
         </div>
       </div>
     </>

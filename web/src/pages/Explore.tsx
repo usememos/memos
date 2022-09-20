@@ -6,7 +6,6 @@ import { memoService, userService } from "../services";
 import { isNullorUndefined } from "../helpers/utils";
 import { useAppSelector } from "../store";
 import useLoading from "../hooks/useLoading";
-import Only from "../components/common/OnlyWhen";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
 import "../less/explore.less";
@@ -49,20 +48,18 @@ const Explore = () => {
             <span className="title-text">Explore</span>
           </div>
           <div className="action-button-container">
-            <Only when={!loadingState.isLoading}>
-              {user ? (
-                <Link to="/" className="btn">
-                  <span className="icon">🏠</span> {t("common.back-to-home")}
-                </Link>
-              ) : (
-                <Link to="/auth" className="btn">
-                  <span className="icon">👉</span> {t("common.sign-in")}
-                </Link>
-              )}
-            </Only>
+            {!loadingState.isLoading && user ? (
+              <Link to="/" className="btn">
+                <span className="icon">🏠</span> {t("common.back-to-home")}
+              </Link>
+            ) : (
+              <Link to="/auth" className="btn">
+                <span className="icon">👉</span> {t("common.sign-in")}
+              </Link>
+            )}
           </div>
         </div>
-        <Only when={!loadingState.isLoading}>
+        {!loadingState.isLoading && (
           <main className="memos-wrapper">
             {state.memos.length > 0 ? (
               state.memos.map((memo) => {
@@ -85,7 +82,7 @@ const Explore = () => {
               <p className="w-full text-center mt-12 text-gray-600">{t("message.no-memos")}</p>
             )}
           </main>
-        </Only>
+        )}
       </div>
     </section>
   );

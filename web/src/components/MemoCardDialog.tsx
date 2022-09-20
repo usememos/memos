@@ -5,7 +5,6 @@ import { useAppSelector } from "../store";
 import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { formatMemoContent, MEMO_LINK_REG, parseHtmlToRawText } from "../helpers/marked";
-import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -146,7 +145,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <Only when={!userService.isVisitorMode()}>
+      {!userService.isVisitorMode() && (
         <div className="card-header-container">
           <div className="visibility-selector-container">
             <Icon.Eye className="icon-img" />
@@ -158,14 +157,14 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
             />
           </div>
         </div>
-      </Only>
+      )}
       <div className="memo-card-container">
         <div className="header-container">
           <p className="time-text" onClick={handleMemoCreatedAtClick}>
             {utils.getDateTimeString(memo.createdTs)}
           </p>
           <div className="btns-container">
-            <Only when={!userService.isVisitorMode()}>
+            {!userService.isVisitorMode() && (
               <>
                 <button className="btn edit-btn" onClick={handleGotoMemoLinkBtnClick}>
                   <Icon.ExternalLink className="icon-img" />
@@ -175,7 +174,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
                 </button>
                 <span className="split-line">/</span>
               </>
-            </Only>
+            )}
             <button className="btn close-btn" onClick={props.destroy}>
               <Icon.X className="icon-img" />
             </button>

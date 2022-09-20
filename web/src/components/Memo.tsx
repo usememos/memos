@@ -8,7 +8,6 @@ import { UNKNOWN_ID } from "../helpers/consts";
 import { DONE_BLOCK_REG, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Icon from "./Icon";
-import Only from "./common/OnlyWhen";
 import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
@@ -168,9 +167,9 @@ const Memo: React.FC<Props> = (props: Props) => {
       <div className="memo-top-wrapper">
         <div className="status-text-container" onClick={handleShowMemoStoryDialog}>
           <span className="time-text">{createdAtStr}</span>
-          <Only when={memo.visibility !== "PRIVATE" && !isVisitorMode}>
+          {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span className={`status-text ${memo.visibility.toLocaleLowerCase()}`}>{memo.visibility}</span>
-          </Only>
+          )}
         </div>
         <div className={`btns-container ${userService.isVisitorMode() ? "!hidden" : ""}`}>
           <span className="btn more-action-btn">

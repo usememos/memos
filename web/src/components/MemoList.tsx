@@ -6,7 +6,6 @@ import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/
 import * as utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";
-import Only from "./common/OnlyWhen";
 import Memo from "./Memo";
 import "../less/memo-list.less";
 
@@ -98,19 +97,18 @@ const MemoList = () => {
 
   return (
     <div className={`memo-list-container ${isFetching ? "" : "completed"}`} ref={wrapperElement}>
-      <Only when={isFetching}>
-        <div className="status-text-container fetching-tip">
-          <p className="status-text">{t("memo-list.fetching-data")}</p>
-        </div>
-      </Only>
       {sortedMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.createdTs}-${memo.updatedTs}`} memo={memo} />
       ))}
-      <Only when={!isFetching}>
+      {isFetching ? (
+        <div className="status-text-container fetching-tip">
+          <p className="status-text">{t("memo-list.fetching-data")}</p>
+        </div>
+      ) : (
         <div className="status-text-container">
           <p className="status-text">{sortedMemos.length === 0 ? t("message.no-memos") : showMemoFilter ? "" : t("message.memos-ready")}</p>
         </div>
-      </Only>
+      )}
     </div>
   );
 };

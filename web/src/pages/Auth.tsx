@@ -6,7 +6,6 @@ import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
 import { globalService, userService } from "../services";
 import Icon from "../components/Icon";
-import Only from "../components/common/OnlyWhen";
 import toastHelper from "../components/Toast";
 import "../less/auth.less";
 
@@ -139,17 +138,15 @@ const Auth = () => {
             </div>
           </div>
           <div className="action-btns-container">
-            <Only when={!pageLoadingState.isLoading}>
+            {!pageLoadingState.isLoading && (
               <button
                 className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
                 onClick={() => (siteHost ? handleSigninBtnsClick() : handleSignUpAsHostBtnsClick())}
               >
-                <Only when={actionBtnLoadingState.isLoading}>
-                  <Icon.Loader className="img-icon" />
-                </Only>
+                {actionBtnLoadingState.isLoading && <Icon.Loader className="img-icon" />}
                 {siteHost ? t("common.sign-in") : t("auth.signup-as-host")}
               </button>
-            </Only>
+            )}
           </div>
           <p className={`tip-text ${siteHost || pageLoadingState.isLoading ? "" : "host-tip"}`}>
             {siteHost || pageLoadingState.isLoading ? t("auth.not-host-tip") : t("auth.host-tip")}

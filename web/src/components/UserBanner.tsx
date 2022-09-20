@@ -7,7 +7,6 @@ import { locationService } from "../services";
 import { useAppSelector } from "../store";
 import Icon from "./Icon";
 import Dropdown from "./common/Dropdown";
-import Only from "./common/OnlyWhen";
 import showResourcesDialog from "./ResourcesDialog";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
 import showAboutSiteDialog from "./AboutSiteDialog";
@@ -74,31 +73,33 @@ const UserBanner = () => {
           actionsClassName="!w-36"
           actions={
             <>
-              <Only when={!userService.isVisitorMode()}>
-                <button
-                  className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
-                  onClick={handleResourcesBtnClick}
-                >
-                  <span className="mr-1">🌄</span> {t("sidebar.resources")}
-                </button>
-                <button
-                  className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
-                  onClick={handleArchivedBtnClick}
-                >
-                  <span className="mr-1">🗂</span> {t("sidebar.archived")}
-                </button>
-              </Only>
+              {!userService.isVisitorMode() && (
+                <>
+                  <button
+                    className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                    onClick={handleResourcesBtnClick}
+                  >
+                    <span className="mr-1">🌄</span> {t("sidebar.resources")}
+                  </button>
+                  <button
+                    className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                    onClick={handleArchivedBtnClick}
+                  >
+                    <span className="mr-1">🗂</span> {t("sidebar.archived")}
+                  </button>
+                </>
+              )}
               <button className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100" onClick={handleAboutBtnClick}>
                 <span className="mr-1">🤠</span> {t("common.about")}
               </button>
-              <Only when={!userService.isVisitorMode()}>
+              {!userService.isVisitorMode() && (
                 <button
                   className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
                   onClick={handleSignOutBtnClick}
                 >
                   <span className="mr-1">👋</span> {t("common.sign-out")}
                 </button>
-              </Only>
+              )}
             </>
           }
         />

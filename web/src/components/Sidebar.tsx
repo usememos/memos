@@ -2,7 +2,6 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { userService } from "../services";
 import Icon from "./Icon";
-import Only from "./common/OnlyWhen";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
 import UserBanner from "./UserBanner";
@@ -31,18 +30,18 @@ const Sidebar = () => {
         <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
           <span className="icon">📅</span> {t("sidebar.daily-review")}
         </button>
-        <Only when={!userService.isVisitorMode()}>
-          <Link to="/explore" className="btn action-btn">
-            <span className="icon">🏂</span> {t("common.explore")}
-          </Link>
-          <button className="btn action-btn" onClick={handleSettingBtnClick}>
-            <span className="icon">⚙️</span> {t("sidebar.setting")}
-          </button>
-        </Only>
+        {!userService.isVisitorMode() && (
+          <>
+            <Link to="/explore" className="btn action-btn">
+              <span className="icon">🏂</span> {t("common.explore")}
+            </Link>
+            <button className="btn action-btn" onClick={handleSettingBtnClick}>
+              <span className="icon">⚙️</span> {t("sidebar.setting")}
+            </button>
+          </>
+        )}
       </div>
-      <Only when={!userService.isVisitorMode()}>
-        <ShortcutList />
-      </Only>
+      {!userService.isVisitorMode() && <ShortcutList />}
       <TagList />
     </aside>
   );

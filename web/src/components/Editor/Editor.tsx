@@ -1,7 +1,6 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import useRefresh from "../../hooks/useRefresh";
-import Only from "../common/OnlyWhen";
 import "../../less/editor.less";
 
 export interface EditorRefActions {
@@ -125,15 +124,13 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
         onKeyDown={handleEditorKeyDown}
       ></textarea>
       <div className="common-tools-wrapper">
-        <div className="common-tools-container">
-          <Only when={props.tools !== undefined}>{props.tools}</Only>
-        </div>
+        <div className="common-tools-container">{props.tools !== undefined && props.tools}</div>
         <div className="btns-container">
-          <Only when={showConfirmBtn}>
+          {showConfirmBtn && (
             <button className="action-btn confirm-btn" disabled={editorRef.current?.value === ""} onClick={handleCommonConfirmBtnClick}>
               {t("editor.save")} <span className="icon-text">✍️</span>
             </button>
-          </Only>
+          )}
         </div>
       </div>
     </div>
