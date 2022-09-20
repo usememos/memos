@@ -14,6 +14,8 @@ const (
 	UserSettingMemoVisibilityKey UserSettingKey = "memoVisibility"
 	// UserSettingEditorFontStyleKey is the key type for editor font style.
 	UserSettingEditorFontStyleKey UserSettingKey = "editorFontStyle"
+	// UserSettingEditorFontStyleKey is the key type for mobile editor style.
+	UserSettingMobileEditorStyleKey UserSettingKey = "mobileEditorStyle"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -25,6 +27,8 @@ func (key UserSettingKey) String() string {
 		return "memoVisibility"
 	case UserSettingEditorFontStyleKey:
 		return "editorFontFamily"
+	case UserSettingMobileEditorStyleKey:
+		return "mobileEditorStyle"
 	}
 	return ""
 }
@@ -33,6 +37,7 @@ var (
 	UserSettingLocaleValue          = []string{"en", "zh", "vi"}
 	UserSettingMemoVisibilityValue  = []Visibility{Privite, Protected, Public}
 	UserSettingEditorFontStyleValue = []string{"normal", "mono"}
+	UserSettingMobileEditorValue    = []string{"normal", "float"}
 )
 
 type UserSetting struct {
@@ -93,6 +98,23 @@ func (upsert UserSettingUpsert) Validate() error {
 		invalid := true
 		for _, value := range UserSettingEditorFontStyleValue {
 			if editorFontStyleValue == value {
+				invalid = false
+				break
+			}
+		}
+		if invalid {
+			return fmt.Errorf("invalid user setting editor font style value")
+		}
+	} else if upsert.Key == UserSettingMobileEditorStyleKey {
+		mobileEditorStyleValue := "normal"
+		err := json.Unmarshal([]byte(upsert.Value), &mobileEditorStyleValue)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal user setting editor font style")
+		}
+
+		invalid := true
+		for _, value := range UserSettingMobileEditorValue {
+			if mobileEditorStyleValue == value {
 				invalid = false
 				break
 			}

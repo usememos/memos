@@ -31,6 +31,17 @@ const editorFontStyleSelectorItems = [
   },
 ];
 
+const mobileEditorStyleSelectorItems = [
+  {
+    text: "Normal",
+    value: "normal",
+  },
+  {
+    text: "Float",
+    value: "float",
+  },
+];
+
 const PreferencesSection = () => {
   const { t } = useTranslation();
   const { setting } = useAppSelector((state) => state.user.user as User);
@@ -52,6 +63,10 @@ const PreferencesSection = () => {
 
   const handleEditorFontStyleChanged = async (value: string) => {
     await userService.upsertUserSetting("editorFontStyle", value);
+  };
+
+  const handleMobileEditorStyleChanged = async (value: string) => {
+    await userService.upsertUserSetting("mobileEditorStyle", value);
   };
 
   return (
@@ -78,6 +93,15 @@ const PreferencesSection = () => {
           value={setting.editorFontStyle}
           dataSource={editorFontStyleSelectorItems}
           handleValueChanged={handleEditorFontStyleChanged}
+        />
+      </label>
+      <label className="form-label selector">
+        <span className="normal-text">{t("setting.preference-section.mobile-editor-style")}</span>
+        <Selector
+          className="ml-2 w-32"
+          value={setting.mobileEditorStyle}
+          dataSource={mobileEditorStyleSelectorItems}
+          handleValueChanged={handleMobileEditorStyleChanged}
         />
       </label>
     </div>

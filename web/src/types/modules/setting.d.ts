@@ -2,6 +2,7 @@ interface Setting {
   locale: Locale;
   memoVisibility: Visibility;
   editorFontStyle: "normal" | "mono";
+  mobileEditorStyle: "normal" | "float";
 }
 
 interface UserLocaleSetting {

@@ -8,6 +8,7 @@ const defauleSetting: Setting = {
   locale: "en",
   memoVisibility: "PRIVATE",
   editorFontStyle: "normal",
+  mobileEditorStyle: "normal",
 };
 
 export const convertResponseModelUser = (user: User): User => {
