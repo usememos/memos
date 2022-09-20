@@ -34,6 +34,12 @@ const editorFontStyleSelectorItems = [
 const PreferencesSection = () => {
   const { t } = useTranslation();
   const { setting } = useAppSelector((state) => state.user.user as User);
+  const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
+    return {
+      value: item.value,
+      text: t(`memo.visibility.${item.text.toLowerCase()}`),
+    };
+  });
 
   const handleLocaleChanged = async (value: string) => {
     await userService.upsertUserSetting("locale", value);
@@ -61,7 +67,7 @@ const PreferencesSection = () => {
         <Selector
           className="ml-2 w-32"
           value={setting.memoVisibility}
-          dataSource={VISIBILITY_SELECTOR_ITEMS}
+          dataSource={visibilitySelectorItems}
           handleValueChanged={handleDefaultMemoVisibilityChanged}
         />
       </label>

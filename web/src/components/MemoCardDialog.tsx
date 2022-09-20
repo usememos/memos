@@ -33,6 +33,12 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   });
   const [linkMemos, setLinkMemos] = useState<LinkedMemo[]>([]);
   const [linkedMemos, setLinkedMemos] = useState<LinkedMemo[]>([]);
+  const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
+    return {
+      value: item.value,
+      text: t(`memo.visibility.${item.text.toLowerCase()}`),
+    };
+  });
 
   useEffect(() => {
     const fetchLinkedMemos = async () => {
@@ -148,7 +154,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
             <Icon.Eye className="icon-img" />
             <Selector
               className="visibility-selector"
-              dataSource={VISIBILITY_SELECTOR_ITEMS}
+              dataSource={visibilitySelectorItems}
               value={memo.visibility}
               handleValueChanged={(value) => handleVisibilitySelectorChange(value as Visibility)}
             />
