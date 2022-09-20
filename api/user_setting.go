@@ -34,10 +34,10 @@ func (key UserSettingKey) String() string {
 }
 
 var (
-	UserSettingLocaleValue          = []string{"en", "zh", "vi"}
-	UserSettingMemoVisibilityValue  = []Visibility{Privite, Protected, Public}
-	UserSettingEditorFontStyleValue = []string{"normal", "mono"}
-	UserSettingMobileEditorValue    = []string{"normal", "float"}
+	UserSettingLocaleValue          	= []string{"en", "zh", "vi"}
+	UserSettingMemoVisibilityValue  	= []Visibility{Privite, Protected, Public}
+	UserSettingEditorFontStyleValue 	= []string{"normal", "mono"}
+	UserSettingMobileEditorStyleValue   = []string{"normal", "float"}
 )
 
 type UserSetting struct {
@@ -109,18 +109,18 @@ func (upsert UserSettingUpsert) Validate() error {
 		mobileEditorStyleValue := "normal"
 		err := json.Unmarshal([]byte(upsert.Value), &mobileEditorStyleValue)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting editor font style")
+			return fmt.Errorf("failed to unmarshal user setting mobile editor style")
 		}
 
 		invalid := true
-		for _, value := range UserSettingMobileEditorValue {
+		for _, value := range UserSettingMobileEditorStyleValue {
 			if mobileEditorStyleValue == value {
 				invalid = false
 				break
 			}
 		}
 		if invalid {
-			return fmt.Errorf("invalid user setting editor font style value")
+			return fmt.Errorf("invalid user setting mobile editor style value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")
