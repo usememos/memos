@@ -25,6 +25,15 @@
     border-color: @text-blue;
   }
 
+  &.float {
+    width: calc(100% - 2rem);
+    @apply fixed bottom-4 sm:relative sm:bottom-0 sm:w-full;
+
+    & .emoji-picker-react {
+      @apply bottom-16 sm:bottom-auto;
+    }
+  }
+
   > .tip-container {
     @apply mb-1 w-full flex flex-row justify-start items-center text-xs leading-6;
 

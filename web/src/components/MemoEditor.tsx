@@ -31,6 +31,7 @@ const MemoEditor = () => {
   const prevGlobalStateRef = useRef(editorState);
   const tagSeletorRef = useRef<HTMLDivElement>(null);
   const editorFontStyle = user?.setting.editorFontStyle || "normal";
+  const mobileEditorStyle = user?.setting.mobileEditorStyle || "normal";
 
   useEffect(() => {
     if (editorState.markMemoId && editorState.markMemoId !== UNKNOWN_ID) {
@@ -280,7 +281,7 @@ const MemoEditor = () => {
   );
 
   return (
-    <div className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}>
+    <div className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}>
       <div className={`tip-container ${isEditing ? "" : "!hidden"}`}>
         <span className="tip-text">{t("editor.editing")}</span>
         <button className="cancel-btn" onClick={handleCancelEditingBtnClick}>

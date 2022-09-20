@@ -109,7 +109,8 @@
     },
     "preference-section": {
       "default-memo-visibility": "Default memo visibility",
-      "editor-font-style": "Editor font style"
+      "editor-font-style": "Editor font style",
+      "mobile-editor-style": "Mobile editor style"
     },
     "member-section": {
       "create-a-member": "Create a member"

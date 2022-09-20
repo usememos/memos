@@ -109,7 +109,8 @@
     },
     "preference-section": {
       "default-memo-visibility": "默认 Memo 可见性",
-      "editor-font-style": "编辑器字体样式"
+      "editor-font-style": "编辑器字体样式",
+      "mobile-editor-style": "Mobile editor style"
     },
     "member-section": {
       "create-a-member": "创建成员"

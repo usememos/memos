@@ -109,7 +109,8 @@
     },
     "preference-section": {
       "default-memo-visibility": "Chế độ memo mặc định",
-      "editor-font-style": "Thay đổi font cho trình soạn thảo"
+      "editor-font-style": "Thay đổi font cho trình soạn thảo",
+      "mobile-editor-style": "Vị trí editor trên mobile"
     },
     "member-section": {
       "create-a-member": "Tạo thành viên"
