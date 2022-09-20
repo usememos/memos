@@ -73,6 +73,10 @@ export function getMemoList(memoFind?: MemoFind) {
   return axios.get<ResponseObject<Memo[]>>(`/api/memo?${queryList.join("&")}`);
 }
 
+export function getMemoById(id: MemoId) {
+  return axios.get<ResponseObject<Memo>>(`/api/memo/${id}`);
+}
+
 export function createMemo(memoCreate: MemoCreate) {
   return axios.post<ResponseObject<Memo>>("/api/memo", memoCreate);
 }

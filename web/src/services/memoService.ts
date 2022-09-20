@@ -57,6 +57,13 @@ const memoService = {
     return archivedMemos;
   },
 
+  fetchMemoById: async (memoId: MemoId) => {
+    const { data } = (await api.getMemoById(memoId)).data;
+    const memo = convertResponseModelMemo(data);
+
+    return memo;
+  },
+
   getMemoById: (memoId: MemoId) => {
     for (const m of memoService.getState().memos) {
       if (m.id === memoId) {

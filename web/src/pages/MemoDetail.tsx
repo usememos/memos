@@ -1,8 +1,9 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { memoService, userService } from "../services";
+import { UNKNOWN_ID } from "../helpers/consts";
 import { isNullorUndefined } from "../helpers/utils";
 import { useAppSelector } from "../store";
 import useLoading from "../hooks/useLoading";
@@ -12,16 +13,19 @@ import MemoResources from "../components/MemoResources";
 import "../less/explore.less";
 
 interface State {
-  memos: Memo[];
+  memo: Memo;
 }
 
-const Explore = () => {
+const MemoDetail = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const params = useParams();
   const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);
   const [state, setState] = useState<State>({
-    memos: [],
+    memo: {
+      id: UNKNOWN_ID,
+    } as Memo,
   });
   const loadingState = useLoading();
 
@@ -32,12 +36,15 @@ const Explore = () => {
       return;
     }
 
-    memoService.fetchAllMemos().then((memos) => {
-      setState({
-        memos,
+    const memoId = Number(params.memoId);
+    if (memoId && !isNaN(memoId)) {
+      memoService.fetchMemoById(memoId).then((memo) => {
+        setState({
+          memo,
+        });
+        loadingState.setFinish();
       });
-      loadingState.setFinish();
-    });
+    }
   }, [location]);
 
   return (
@@ -45,8 +52,7 @@ const Explore = () => {
       <div className="page-container">
         <div className="page-header">
           <div className="title-container">
-            <img className="logo-img" src="/logo.webp" alt="" />
-            <span className="title-text">Explore</span>
+            <img className="logo-img" src="/logo-full.webp" alt="" />
           </div>
           <div className="action-button-container">
             <Only when={!loadingState.isLoading}>
@@ -62,33 +68,24 @@ const Explore = () => {
             </Only>
           </div>
         </div>
-        <Only when={!loadingState.isLoading}>
+        {!loadingState.isLoading && (
           <main className="memos-wrapper">
-            {state.memos.length > 0 ? (
-              state.memos.map((memo) => {
-                const createdAtStr = dayjs(memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
-                return (
-                  <div className="memo-container" key={memo.id}>
-                    <div className="memo-header">
-                      <span className="time-text">{createdAtStr}</span>
-                      <span className="split-text">by</span>
-                      <a className="name-text" href={`/u/${memo.creator.id}`}>
-                        {memo.creator.name}
-                      </a>
-                    </div>
-                    <MemoContent className="memo-content" content={memo.content} onMemoContentClick={() => undefined} />
-                    <MemoResources memo={memo} />
-                  </div>
-                );
-              })
-            ) : (
-              <p className="w-full text-center mt-12 text-gray-600">{t("message.no-memos")}</p>
-            )}
+            <div className="memo-container">
+              <div className="memo-header">
+                <span className="time-text">{dayjs(state.memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
+                <span className="split-text">by</span>
+                <a className="name-text" href={`/u/${state.memo.creator.id}`}>
+                  {state.memo.creator.name}
+                </a>
+              </div>
+              <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
+              <MemoResources memo={state.memo} />
+            </div>
           </main>
-        </Only>
+        )}
       </div>
     </section>
   );
 };
 
-export default Explore;
+export default MemoDetail;
