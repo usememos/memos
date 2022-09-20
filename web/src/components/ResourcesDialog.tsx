@@ -154,13 +154,31 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                   <span className="field-text name-text">{resource.filename}</span>
                   <span className="field-text">{resource.type}</span>
                   <div className="buttons-container">
-                    <Dropdown className="actions-dropdown">
-                      <button onClick={() => handlPreviewBtnClick(resource)}>{t("resources.preview")}</button>
-                      <button onClick={() => handleCopyResourceLinkBtnClick(resource)}>{t("resources.copy-link")}</button>
-                      <button className="delete-btn" onClick={() => handleDeleteResourceBtnClick(resource)}>
-                        {t("common.delete")}
-                      </button>
-                    </Dropdown>
+                    <Dropdown
+                      actionsClassName="!w-32"
+                      actions={
+                        <>
+                          <button
+                            className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                            onClick={() => handlPreviewBtnClick(resource)}
+                          >
+                            {t("resources.preview")}
+                          </button>
+                          <button
+                            className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                            onClick={() => handleCopyResourceLinkBtnClick(resource)}
+                          >
+                            {t("resources.copy-link")}
+                          </button>
+                          <button
+                            className="w-full px-3 text-left leading-10 cursor-pointer rounded text-red-600 hover:bg-gray-100"
+                            onClick={() => handleDeleteResourceBtnClick(resource)}
+                          >
+                            {t("common.delete")}
+                          </button>
+                        </>
+                      }
+                    />
                   </div>
                 </div>
               ))
