@@ -73,7 +73,12 @@
     "cant-empty": "Content can't be empty"
   },
   "memo": {
-    "view-story": "查看详情"
+    "view-story": "查看详情",
+    "visibility": {
+      "private": "仅自己可见",
+      "protected": "对所有用户公开",
+      "public": "对互联网公开"
+    }
   },
   "memo-list": {
     "fetching-data": "请求数据中..."
