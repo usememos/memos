@@ -47,7 +47,9 @@ const Auth = () => {
     setPassword(text);
   };
 
-  const handleSigninBtnsClick = async () => {
+  const handleSigninBtnsClick = async (e: React.FormEvent<EventTarget>) => {
+    e.preventDefault();
+
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -80,7 +82,9 @@ const Auth = () => {
     actionBtnLoadingState.setFinish();
   };
 
-  const handleSignUpAsHostBtnsClick = async () => {
+  const handleSignUpAsHostBtnsClick = async (e: React.FormEvent<EventTarget>) => {
+    e.preventDefault();
+
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -120,7 +124,7 @@ const Auth = () => {
   return (
     <div className="page-wrapper auth">
       <div className="page-container">
-        <div className="auth-form-wrapper">
+        <form className="auth-form-wrapper" onSubmit={(e) => (siteHost ? handleSigninBtnsClick(e) : handleSignUpAsHostBtnsClick(e))}>
           <div className="page-header-container">
             <div className="title-container">
               <img className="logo-img" src="/logo-full.webp" alt="" />
@@ -130,19 +134,16 @@ const Auth = () => {
           <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
             <div className="form-item-container input-form-container">
               <span className={`normal-text ${email ? "not-null" : ""}`}>{t("common.email")}</span>
-              <input type="email" value={email} onChange={handleEmailInputChanged} />
+              <input type="email" value={email} onChange={handleEmailInputChanged} required />
             </div>
             <div className="form-item-container input-form-container">
               <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
-              <input type="password" value={password} onChange={handlePasswordInputChanged} />
+              <input type="password" value={password} onChange={handlePasswordInputChanged} required />
             </div>
           </div>
           <div className="action-btns-container">
             {!pageLoadingState.isLoading && (
-              <button
-                className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                onClick={() => (siteHost ? handleSigninBtnsClick() : handleSignUpAsHostBtnsClick())}
-              >
+              <button className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} type="submit">
                 {actionBtnLoadingState.isLoading && <Icon.Loader className="img-icon" />}
                 {siteHost ? t("common.sign-in") : t("auth.signup-as-host")}
               </button>
@@ -151,7 +152,7 @@ const Auth = () => {
           <p className={`tip-text ${siteHost || pageLoadingState.isLoading ? "" : "host-tip"}`}>
             {siteHost || pageLoadingState.isLoading ? t("auth.not-host-tip") : t("auth.host-tip")}
           </p>
-        </div>
+        </form>
         <div className="footer-container">
           <div className="language-container">
             <span className={`locale-item ${i18n.language === "en" ? "active" : ""}`} onClick={() => handleLocaleItemClick("en")}>
