@@ -94,7 +94,7 @@ const initialToastHelper = () => {
     return showToast({ type: "success", content, duration });
   };
 
-  const error = (content: string, duration = 3000) => {
+  const error = (content: string, duration = -1) => {
     return showToast({ type: "error", content, duration });
   };
 

@@ -203,6 +203,41 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		return nil
 	})
 
+	g.GET("/memo/:memoId", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		memoID, err := strconv.Atoi(c.Param("memoId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		memoFind := &api.MemoFind{
+			ID: &memoID,
+		}
+		memo, err := s.Store.FindMemo(ctx, memoFind)
+		if err != nil {
+			if common.ErrorCode(err) == common.NotFound {
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)
+			}
+
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", memoID)).SetInternal(err)
+		}
+
+		if memo.Visibility == api.Privite {
+			return echo.NewHTTPError(http.StatusForbidden, "this memo is private only")
+		} else if memo.Visibility == api.Protected {
+			_, ok := c.Get(getUserIDContextKey()).(int)
+			if !ok {
+				return echo.NewHTTPError(http.StatusForbidden, "this memo is protected, missing user in session")
+			}
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
+		}
+		return nil
+	})
+
 	g.POST("/memo/:memoId/organizer", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))
@@ -230,32 +265,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memo, err := s.Store.FindMemo(ctx, &api.MemoFind{
 			ID: &memoID,
 		})
-		if err != nil {
-			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)
-			}
-
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", memoID)).SetInternal(err)
-		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
-		}
-		return nil
-	})
-
-	g.GET("/memo/:memoId", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		memoID, err := strconv.Atoi(c.Param("memoId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
-		}
-
-		memoFind := &api.MemoFind{
-			ID: &memoID,
-		}
-		memo, err := s.Store.FindMemo(ctx, memoFind)
 		if err != nil {
 			if common.ErrorCode(err) == common.NotFound {
 				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)

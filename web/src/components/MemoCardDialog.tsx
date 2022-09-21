@@ -115,11 +115,6 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   }, []);
 
   const handleGotoMemoLinkBtnClick = () => {
-    if (memo.visibility === "PRIVATE") {
-      toastHelper.error(t("message.private-only"));
-      return;
-    }
-
     window.open(`/m/${memo.id}`);
   };
 

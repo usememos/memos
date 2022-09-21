@@ -7,6 +7,7 @@ import { UNKNOWN_ID } from "../helpers/consts";
 import { isNullorUndefined } from "../helpers/utils";
 import { useAppSelector } from "../store";
 import useLoading from "../hooks/useLoading";
+import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
 import "../less/explore.less";
@@ -37,12 +38,18 @@ const MemoDetail = () => {
 
     const memoId = Number(params.memoId);
     if (memoId && !isNaN(memoId)) {
-      memoService.fetchMemoById(memoId).then((memo) => {
-        setState({
-          memo,
+      memoService
+        .fetchMemoById(memoId)
+        .then((memo) => {
+          setState({
+            memo,
+          });
+          loadingState.setFinish();
+        })
+        .catch((error) => {
+          console.error(error);
+          toastHelper.error(error.response.data.message);
         });
-        loadingState.setFinish();
-      });
     }
   }, [location]);
 
