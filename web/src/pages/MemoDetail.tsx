@@ -1,10 +1,9 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { memoService, userService } from "../services";
+import { Link, useParams } from "react-router-dom";
+import { memoService } from "../services";
 import { UNKNOWN_ID } from "../helpers/consts";
-import { isNullorUndefined } from "../helpers/utils";
 import { useAppSelector } from "../store";
 import useLoading from "../hooks/useLoading";
 import toastHelper from "../components/Toast";
@@ -18,7 +17,6 @@ interface State {
 
 const MemoDetail = () => {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const params = useParams();
   const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);
@@ -30,12 +28,6 @@ const MemoDetail = () => {
   const loadingState = useLoading();
 
   useEffect(() => {
-    const { host } = userService.getState();
-    if (isNullorUndefined(host)) {
-      navigate("/auth");
-      return;
-    }
-
     const memoId = Number(params.memoId);
     if (memoId && !isNaN(memoId)) {
       memoService

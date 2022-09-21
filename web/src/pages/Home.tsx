@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { globalService, userService } from "../services";
 import { useAppSelector } from "../store";
-import { isNullorUndefined } from "../helpers/utils";
 import toastHelper from "../components/Toast";
 import Sidebar from "../components/Sidebar";
 import MemosHeader from "../components/MemosHeader";
@@ -15,24 +14,14 @@ import "../less/home.less";
 function Home() {
   const { t } = useTranslation();
   const location = useLocation();
-  const navigate = useNavigate();
   const user = useAppSelector((state) => state.user.user);
 
   useEffect(() => {
-    const { host, owner, user } = userService.getState();
-
-    if (isNullorUndefined(host)) {
-      navigate("/auth");
-      return;
-    }
+    const { owner } = userService.getState();
 
     if (userService.isVisitorMode()) {
       if (!owner) {
         toastHelper.error(t("message.user-not-found"));
-      }
-    } else {
-      if (isNullorUndefined(user)) {
-        navigate("/explore");
       }
     }
   }, [location]);

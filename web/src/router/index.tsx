@@ -1,4 +1,5 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
+import { isNullorUndefined } from "../helpers/utils";
 import { userService } from "../services";
 import Auth from "../pages/Auth";
 import Explore from "../pages/Explore";
@@ -6,6 +7,10 @@ import Home from "../pages/Home";
 import MemoDetail from "../pages/MemoDetail";
 
 const router = createBrowserRouter([
+  {
+    path: "/auth",
+    element: <Auth />,
+  },
   {
     path: "/",
     element: <Home />,
@@ -15,11 +20,14 @@ const router = createBrowserRouter([
       } catch (error) {
         // do nth
       }
+
+      const { host, user } = userService.getState();
+      if (isNullorUndefined(host)) {
+        return redirect("/auth");
+      } else if (isNullorUndefined(user)) {
+        return redirect("/explore");
+      }
     },
-  },
-  {
-    path: "/auth",
-    element: <Auth />,
   },
   {
     path: "/u/:userId",
@@ -29,6 +37,11 @@ const router = createBrowserRouter([
         await userService.initialState();
       } catch (error) {
         // do nth
+      }
+
+      const { host } = userService.getState();
+      if (isNullorUndefined(host)) {
+        return redirect("/auth");
       }
     },
   },
@@ -41,6 +54,11 @@ const router = createBrowserRouter([
       } catch (error) {
         // do nth
       }
+
+      const { host } = userService.getState();
+      if (isNullorUndefined(host)) {
+        return redirect("/auth");
+      }
     },
   },
   {
@@ -51,6 +69,11 @@ const router = createBrowserRouter([
         await userService.initialState();
       } catch (error) {
         // do nth
+      }
+
+      const { host } = userService.getState();
+      if (isNullorUndefined(host)) {
+        return redirect("/auth");
       }
     },
   },

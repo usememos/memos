@@ -1,9 +1,8 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useNavigate } from "react-router-dom";
-import { memoService, userService } from "../services";
-import { isNullorUndefined } from "../helpers/utils";
+import { Link } from "react-router-dom";
+import { memoService } from "../services";
 import { useAppSelector } from "../store";
 import useLoading from "../hooks/useLoading";
 import MemoContent from "../components/MemoContent";
@@ -16,7 +15,6 @@ interface State {
 
 const Explore = () => {
   const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
   const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);
   const [state, setState] = useState<State>({
@@ -25,12 +23,6 @@ const Explore = () => {
   const loadingState = useLoading();
 
   useEffect(() => {
-    const { host } = userService.getState();
-    if (isNullorUndefined(host)) {
-      navigate("/auth");
-      return;
-    }
-
     memoService.fetchAllMemos().then((memos) => {
       setState({
         memos,
