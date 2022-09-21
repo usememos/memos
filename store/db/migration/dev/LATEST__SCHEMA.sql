@@ -1,4 +1,6 @@
 -- drop all tables
+DROP TABLE IF EXISTS `system_setting`;
+DROP TABLE IF EXISTS `memo_resource`;
 DROP TABLE IF EXISTS `memo_organizer`;
 DROP TABLE IF EXISTS `memo`;
 DROP TABLE IF EXISTS `shortcut`;
@@ -36,6 +38,12 @@ SET
 WHERE
   rowid = old.rowid;
 END;
+
+CREATE INDEX user_id_index ON user(id);
+
+CREATE UNIQUE INDEX user_email_index ON user(email);
+
+CREATE UNIQUE INDEX user_open_id_index ON user(open_id);
 
 -- memo
 CREATE TABLE memo (
@@ -150,3 +158,23 @@ CREATE TABLE user_setting (
 );
 
 CREATE UNIQUE INDEX user_setting_key_user_id_index ON user_setting(key, user_id);
+
+-- memo_resourece
+CREATE TABLE memo_resource (
+  memo_id INTEGER NOT NULL,
+  resource_id INTEGER NOT NULL,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(memo_id) REFERENCES memo(id) ON DELETE CASCADE,
+  FOREIGN KEY(resource_id) REFERENCES resource(id) ON DELETE CASCADE
+);
+
+CREATE UNIQUE INDEX memo_resource_memo_id_resource_id_index ON memo_resource(memo_id, resource_id);
+
+-- system_setting
+CREATE TABLE system_setting (
+  name TEXT NOT NULL,
+  value TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT ''
+);
+
+CREATE UNIQUE INDEX system_setting_name_index ON system_setting(name);
