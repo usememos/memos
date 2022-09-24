@@ -93,11 +93,7 @@ const MemoDetail = () => {
             <div className="memo-container">
               <div className="memo-header">
                 <span className="time-text">{dayjs(state.memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
-                <span className="split-text">by</span>
-                <a className="name-text" href={`/u/${state.memo.creator.id}`}>
-                  {state.memo.creator.name}
-                </a>
-                {user?.id === state.memo.creatorId && (
+                {user?.id === state.memo.creatorId ? (
                   <Dropdown
                     className="visibility-selector"
                     trigger={
@@ -120,6 +116,13 @@ const MemoDetail = () => {
                     }
                     actionsClassName="!w-28 !left-0 !p-1"
                   />
+                ) : (
+                  <>
+                    <span className="split-text">by</span>
+                    <a className="name-text" href={`/u/${state.memo.creator.id}`}>
+                      {state.memo.creator.name}
+                    </a>
+                  </>
                 )}
               </div>
               <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
