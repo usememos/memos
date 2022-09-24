@@ -73,7 +73,7 @@
     "cant-empty": "Nội dung không thể trống"
   },
   "memo": {
-    "view-story": "Xem nội dung",
+    "view-detail": "View Detail",
     "visibility": {
       "private": "Private",
       "protected": "Protected",

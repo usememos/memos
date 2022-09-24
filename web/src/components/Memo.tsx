@@ -3,6 +3,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import { indexOf } from "lodash-es";
 import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import "dayjs/locale/zh";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { DONE_BLOCK_REG, TODO_BLOCK_REG } from "../helpers/marked";
@@ -32,6 +33,7 @@ export const getFormatedMemoCreatedAtStr = (createdTs: number, locale = "en"): s
 const Memo: React.FC<Props> = (props: Props) => {
   const memo = props.memo;
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
@@ -50,7 +52,15 @@ const Memo: React.FC<Props> = (props: Props) => {
   }, [i18n.language]);
 
   const handleShowMemoStoryDialog = () => {
+    if (isVisitorMode) {
+      return;
+    }
+
     showMemoCardDialog(memo);
+  };
+
+  const handleViewMemoDetailPage = () => {
+    navigate(`/m/${memo.id}`);
   };
 
   const handleTogglePinMemoBtnClick = async () => {
@@ -165,44 +175,48 @@ const Memo: React.FC<Props> = (props: Props) => {
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
       <div className="memo-top-wrapper">
-        <div className="status-text-container" onClick={handleShowMemoStoryDialog}>
-          <span className="time-text">{createdAtStr}</span>
+        <div className="status-text-container">
+          <span className="time-text" onClick={handleShowMemoStoryDialog}>
+            {createdAtStr}
+          </span>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span className={`status-text ${memo.visibility.toLocaleLowerCase()}`}>{memo.visibility}</span>
           )}
         </div>
-        <div className={`btns-container ${userService.isVisitorMode() ? "!hidden" : ""}`}>
-          <span className="btn more-action-btn">
-            <Icon.MoreHorizontal className="icon-img" />
-          </span>
-          <div className="more-action-btns-wrapper">
-            <div className="more-action-btns-container">
-              <div className="btns-container">
-                <div className="btn" onClick={handleTogglePinMemoBtnClick}>
-                  <Icon.Flag className={`icon-img ${memo.pinned ? "" : "opacity-20"}`} />
-                  <span className="tip-text">{memo.pinned ? t("common.unpin") : t("common.pin")}</span>
+        {!isVisitorMode && (
+          <div className="btns-container">
+            <span className="btn more-action-btn">
+              <Icon.MoreHorizontal className="icon-img" />
+            </span>
+            <div className="more-action-btns-wrapper">
+              <div className="more-action-btns-container">
+                <div className="btns-container">
+                  <div className="btn" onClick={handleTogglePinMemoBtnClick}>
+                    <Icon.Flag className={`icon-img ${memo.pinned ? "" : "opacity-20"}`} />
+                    <span className="tip-text">{memo.pinned ? t("common.unpin") : t("common.pin")}</span>
+                  </div>
+                  <div className="btn" onClick={handleEditMemoClick}>
+                    <Icon.Edit3 className="icon-img" />
+                    <span className="tip-text">{t("common.edit")}</span>
+                  </div>
+                  <div className="btn" onClick={handleGenMemoImageBtnClick}>
+                    <Icon.Share className="icon-img" />
+                    <span className="tip-text">{t("common.share")}</span>
+                  </div>
                 </div>
-                <div className="btn" onClick={handleEditMemoClick}>
-                  <Icon.Edit3 className="icon-img" />
-                  <span className="tip-text">{t("common.edit")}</span>
-                </div>
-                <div className="btn" onClick={handleGenMemoImageBtnClick}>
-                  <Icon.Share className="icon-img" />
-                  <span className="tip-text">{t("common.share")}</span>
-                </div>
+                <span className="btn" onClick={handleMarkMemoClick}>
+                  {t("common.mark")}
+                </span>
+                <span className="btn" onClick={handleViewMemoDetailPage}>
+                  {t("memo.view-detail")}
+                </span>
+                <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
+                  {t("common.archive")}
+                </span>
               </div>
-              <span className="btn" onClick={handleMarkMemoClick}>
-                {t("common.mark")}
-              </span>
-              <span className="btn" onClick={handleShowMemoStoryDialog}>
-                {t("memo.view-story")}
-              </span>
-              <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
-                {t("common.archive")}
-              </span>
             </div>
           </div>
-        </div>
+        )}
       </div>
       <MemoContent
         content={memo.content}

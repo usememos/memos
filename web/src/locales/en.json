@@ -73,7 +73,7 @@
     "cant-empty": "Content can't be empty"
   },
   "memo": {
-    "view-story": "View Story",
+    "view-detail": "View Detail",
     "visibility": {
       "private": "Private",
       "protected": "Protected",

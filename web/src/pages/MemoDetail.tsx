@@ -6,10 +6,12 @@ import { memoService } from "../services";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { useAppSelector } from "../store";
 import useLoading from "../hooks/useLoading";
+import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
+import Dropdown from "../components/common/Dropdown";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
-import "../less/explore.less";
+import "../less/memo-detail.less";
 
 interface State {
   memo: Memo;
@@ -45,8 +47,26 @@ const MemoDetail = () => {
     }
   }, [location]);
 
+  const handleVisibilitySelectorChange = async (visibility: Visibility) => {
+    if (state.memo.visibility === visibility) {
+      return;
+    }
+
+    await memoService.patchMemo({
+      id: state.memo.id,
+      visibility: visibility,
+    });
+    setState({
+      ...state,
+      memo: {
+        ...state.memo,
+        visibility: visibility,
+      },
+    });
+  };
+
   return (
-    <section className="page-wrapper explore">
+    <section className="page-wrapper memo-detail">
       <div className="page-container">
         <div className="page-header">
           <div className="title-container">
@@ -77,6 +97,30 @@ const MemoDetail = () => {
                 <a className="name-text" href={`/u/${state.memo.creator.id}`}>
                   {state.memo.creator.name}
                 </a>
+                {user?.id === state.memo.creatorId && (
+                  <Dropdown
+                    className="visibility-selector"
+                    trigger={
+                      <span className={`status-text ${state.memo.visibility.toLowerCase()}`}>
+                        {state.memo.visibility} <Icon.ChevronDown className="w-4 h-auto ml-px" />
+                      </span>
+                    }
+                    actions={
+                      <>
+                        <span className="action-button" onClick={() => handleVisibilitySelectorChange("PRIVATE")}>
+                          Private
+                        </span>
+                        <span className="action-button" onClick={() => handleVisibilitySelectorChange("PROTECTED")}>
+                          Protected
+                        </span>
+                        <span className="action-button" onClick={() => handleVisibilitySelectorChange("PUBLIC")}>
+                          Public
+                        </span>
+                      </>
+                    }
+                    actionsClassName="!w-28 !left-0 !p-1"
+                  />
+                )}
               </div>
               <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
               <MemoResources memo={state.memo} />

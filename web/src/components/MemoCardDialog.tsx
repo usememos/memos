@@ -31,6 +31,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   });
   const [linkMemos, setLinkMemos] = useState<LinkedMemo[]>([]);
   const [linkedMemos, setLinkedMemos] = useState<LinkedMemo[]>([]);
+  const isVisitorMode = userService.isVisitorMode();
   const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
@@ -83,6 +84,10 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   }, [memos, memo.id]);
 
   const handleMemoCreatedAtClick = () => {
+    if (isVisitorMode) {
+      return;
+    }
+
     showChangeMemoCreatedTsDialog(memo.id);
   };
 
@@ -140,7 +145,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      {!userService.isVisitorMode() && (
+      {!isVisitorMode && (
         <div className="card-header-container">
           <div className="visibility-selector-container">
             <Icon.Eye className="icon-img" />
@@ -159,7 +164,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
             {utils.getDateTimeString(memo.createdTs)}
           </p>
           <div className="btns-container">
-            {!userService.isVisitorMode() && (
+            {!isVisitorMode && (
               <>
                 <button className="btn edit-btn" onClick={handleGotoMemoLinkBtnClick}>
                   <Icon.ExternalLink className="icon-img" />
