@@ -1,6 +1,5 @@
 {
   "name": "memos",
-  "version": "0.4.5",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -21,8 +20,7 @@
     "react-feather": "^2.0.10",
     "react-i18next": "^11.18.6",
     "react-redux": "^8.0.1",
-    "react-router-dom": "^6.4.0",
-    "vite-plugin-pwa": "^0.12.8"
+    "react-router-dom": "^6.4.0"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.5",
