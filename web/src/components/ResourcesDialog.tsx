@@ -155,23 +155,23 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                   <span className="field-text">{resource.type}</span>
                   <div className="buttons-container">
                     <Dropdown
-                      actionsClassName="!w-32"
+                      actionsClassName="!w-28"
                       actions={
                         <>
                           <button
-                            className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
                             onClick={() => handlPreviewBtnClick(resource)}
                           >
                             {t("resources.preview")}
                           </button>
                           <button
-                            className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
                             onClick={() => handleCopyResourceLinkBtnClick(resource)}
                           >
                             {t("resources.copy-link")}
                           </button>
                           <button
-                            className="w-full px-3 text-left leading-10 cursor-pointer rounded text-red-600 hover:bg-gray-100"
+                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100"
                             onClick={() => handleDeleteResourceBtnClick(resource)}
                           >
                             {t("common.delete")}

@@ -29,10 +29,12 @@ const TagList = () => {
     const root: KVObject<any> = {
       subTags: [],
     };
+
     for (const tag of sortedTags) {
       const subtags = tag.split("/");
       let tempObj = root;
       let tagText = "";
+
       for (let i = 0; i < subtags.length; i++) {
         const key = subtags[i];
         if (i === 0) {
@@ -62,6 +64,7 @@ const TagList = () => {
         tempObj = obj;
       }
     }
+
     setTags(root.subTags as Tag[]);
   }, [tagsText]);
 

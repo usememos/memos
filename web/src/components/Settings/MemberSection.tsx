@@ -145,7 +145,7 @@ const PreferencesSection = () => {
                   <>
                     {user.rowStatus === "NORMAL" ? (
                       <button
-                        className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                        className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
                         onClick={() => handleArchiveUserClick(user)}
                       >
                         {t("common.archive")}
@@ -153,13 +153,13 @@ const PreferencesSection = () => {
                     ) : (
                       <>
                         <button
-                          className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
                           onClick={() => handleRestoreUserClick(user)}
                         >
                           {t("common.restore")}
                         </button>
                         <button
-                          className="w-full px-3 text-left leading-10 cursor-pointer rounded text-red-600 hover:bg-gray-100"
+                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100"
                           onClick={() => handleDeleteUserClick(user)}
                         >
                           {t("common.delete")}

@@ -15,7 +15,6 @@ interface Props extends DialogProps {
 
 const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   const { destroy, shortcutId } = props;
-
   const [title, setTitle] = useState<string>("");
   const [filters, setFilters] = useState<Filter[]>([]);
   const requestState = useLoading(false);
