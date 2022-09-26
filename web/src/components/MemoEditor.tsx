@@ -11,13 +11,23 @@ import Editor, { EditorRefActions } from "./Editor/Editor";
 import EmojiPicker from "./Editor/EmojiPicker";
 import "../less/memo-editor.less";
 
+const getEditorContentCache = (): string => {
+  return storage.get(["editorContentCache"]).editorContentCache ?? "";
+};
+
+const setEditorContentCache = (content: string) => {
+  storage.set({
+    editorContentCache: content,
+  });
+};
+
 interface State {
-  isShowEmojiPicker: boolean;
   fullscreen: boolean;
   isUploadingResource: boolean;
+  shouldShowEmojiPicker: boolean;
 }
 
-const MemoEditor = () => {
+const MemoEditor: React.FC = () => {
   const { t, i18n } = useTranslation();
   const user = useAppSelector((state) => state.user.user);
   const editorState = useAppSelector((state) => state.editor);
@@ -25,7 +35,7 @@ const MemoEditor = () => {
   const [state, setState] = useState<State>({
     isUploadingResource: false,
     fullscreen: false,
-    isShowEmojiPicker: false,
+    shouldShowEmojiPicker: false,
   });
   const editorRef = useRef<EditorRefActions>(null);
   const prevGlobalStateRef = useRef(editorState);
@@ -182,6 +192,10 @@ const MemoEditor = () => {
     setEditorContentCache(content);
   }, []);
 
+  const handleEmojiPickerBtnClick = () => {
+    handleChangeShouldShowEmojiPicker(!state.shouldShowEmojiPicker);
+  };
+
   const handleCheckBoxBtnClick = () => {
     if (!editorRef.current) {
       return;
@@ -249,10 +263,10 @@ const MemoEditor = () => {
     }
   }, []);
 
-  const handleChangeIsShowEmojiPicker = (status: boolean) => {
+  const handleChangeShouldShowEmojiPicker = (status: boolean) => {
     setState({
       ...state,
-      isShowEmojiPicker: status,
+      shouldShowEmojiPicker: status,
     });
   };
 
@@ -262,7 +276,7 @@ const MemoEditor = () => {
     }
 
     editorRef.current.insertText(`${emojiObject.emoji}`);
-    handleChangeIsShowEmojiPicker(false);
+    handleChangeShouldShowEmojiPicker(false);
   };
 
   const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);
@@ -312,13 +326,13 @@ const MemoEditor = () => {
               </div>
             </div>
             <button className="action-btn">
+              <Icon.Smile className="icon-img" onClick={handleEmojiPickerBtnClick} />
+            </button>
+            <button className="action-btn">
               <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
             </button>
             <button className="action-btn">
               <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
-            </button>
-            <button className="action-btn">
-              <Icon.Smile className="icon-img" onClick={() => handleChangeIsShowEmojiPicker(!state.isShowEmojiPicker)} />
             </button>
             <button className="action-btn">
               <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
@@ -330,25 +344,13 @@ const MemoEditor = () => {
           </>
         }
       />
-      {state.isShowEmojiPicker && (
-        <EmojiPicker
-          onEmojiClick={handleEmojiClick}
-          isShowEmojiPicker={state.isShowEmojiPicker}
-          handleChangeIsShowEmojiPicker={handleChangeIsShowEmojiPicker}
-        />
-      )}
+      <EmojiPicker
+        shouldShow={state.shouldShowEmojiPicker}
+        onEmojiClick={handleEmojiClick}
+        onShouldShowEmojiPickerChange={handleChangeShouldShowEmojiPicker}
+      />
     </div>
   );
 };
-
-function getEditorContentCache(): string {
-  return storage.get(["editorContentCache"]).editorContentCache ?? "";
-}
-
-function setEditorContentCache(content: string) {
-  storage.set({
-    editorContentCache: content,
-  });
-}
 
 export default MemoEditor;
