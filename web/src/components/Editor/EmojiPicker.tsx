@@ -1,41 +1,38 @@
-import { forwardRef, useEffect } from "react";
 import Picker, { IEmojiPickerProps } from "emoji-picker-react";
-
-type EmojiPickerElement = HTMLDivElement;
+import { useEffect } from "react";
 
 interface Props {
-  isShowEmojiPicker: boolean;
+  shouldShow: boolean;
   onEmojiClick: IEmojiPickerProps["onEmojiClick"];
-  handleChangeIsShowEmojiPicker: (status: boolean) => void;
+  onShouldShowEmojiPickerChange: (status: boolean) => void;
 }
 
-export const EmojiPicker = forwardRef<EmojiPickerElement, Props>((props: Props, ref) => {
-  const { isShowEmojiPicker, onEmojiClick, handleChangeIsShowEmojiPicker } = props;
+export const EmojiPicker: React.FC<Props> = (props: Props) => {
+  const { shouldShow, onEmojiClick, onShouldShowEmojiPickerChange } = props;
 
   useEffect(() => {
-    if (isShowEmojiPicker) {
+    if (shouldShow) {
       const handleClickOutside = (event: MouseEvent) => {
+        event.stopPropagation();
         const emojiWrapper = document.querySelector(".emoji-picker-react");
         const isContains = emojiWrapper?.contains(event.target as Node);
         if (!isContains) {
-          handleChangeIsShowEmojiPicker(false);
+          onShouldShowEmojiPickerChange(false);
         }
       };
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => {
-        // Unbind the event listener on clean up
-        document.removeEventListener("mousedown", handleClickOutside);
-      };
+
+      window.addEventListener("click", handleClickOutside, {
+        capture: true,
+        once: true,
+      });
     }
-  }, [isShowEmojiPicker]);
+  }, [shouldShow]);
 
   return (
-    <div className="emoji-picker" ref={ref}>
+    <div className={`emoji-picker ${shouldShow ? "" : "hidden"}`}>
       <Picker onEmojiClick={onEmojiClick} disableSearchBar />
     </div>
   );
-});
-
-EmojiPicker.displayName = "EmojiPicker";
+};
 
 export default EmojiPicker;
