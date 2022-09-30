@@ -174,7 +174,7 @@ func deleteMemoResource(ctx context.Context, tx *sql.Tx, delete *api.MemoResourc
 	}
 
 	result, err := tx.ExecContext(ctx, `
-		DELETE FROM memo WHERE `+strings.Join(where, " AND "), args...)
+		DELETE FROM memo_resource WHERE `+strings.Join(where, " AND "), args...)
 	if err != nil {
 		return FormatError(err)
 	}

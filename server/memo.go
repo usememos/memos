@@ -303,13 +303,16 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		currentTs := time.Now().Unix()
-
 		memoResourceUpsert := &api.MemoResourceUpsert{
 			MemoID:    memoID,
 			UpdatedTs: &currentTs,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(memoResourceUpsert); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo resource request").SetInternal(err)
+		}
+
+		if _, err := s.Store.UpsertMemoResource(ctx, memoResourceUpsert); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
 		}
 
 		resourceFind := &api.ResourceFind{
