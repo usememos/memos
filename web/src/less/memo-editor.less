@@ -17,8 +17,8 @@
         }
       }
 
-      & .emoji-picker-react {
-        @apply bottom-16 sm:bottom-auto;
+      .emoji-picker-react {
+        @apply bottom-16;
       }
     }
   }
@@ -38,6 +38,10 @@
         @apply bottom-7;
         top: unset;
       }
+    }
+
+    .emoji-picker-react {
+      @apply bottom-20;
     }
   }
 
@@ -84,7 +88,7 @@
   }
 
   .emoji-picker-react {
-    @apply absolute;
+    @apply absolute shadow;
 
     li.emoji::before {
       @apply hidden;
