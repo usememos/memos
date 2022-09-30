@@ -1,6 +1,7 @@
 import { IEmojiData } from "emoji-picker-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { deleteMemoResource, getMemoResourceList, upsertMemoResource } from "../helpers/api";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import { useAppSelector } from "../store";
@@ -25,6 +26,7 @@ interface State {
   fullscreen: boolean;
   isUploadingResource: boolean;
   shouldShowEmojiPicker: boolean;
+  resourceList: Resource[];
 }
 
 const MemoEditor: React.FC = () => {
@@ -36,9 +38,11 @@ const MemoEditor: React.FC = () => {
     isUploadingResource: false,
     fullscreen: false,
     shouldShowEmojiPicker: false,
+    resourceList: [],
   });
-  const editorRef = useRef<EditorRefActions>(null);
+  const [allowSave, setAllowSave] = useState<boolean>(false);
   const prevGlobalStateRef = useRef(editorState);
+  const editorRef = useRef<EditorRefActions>(null);
   const tagSeletorRef = useRef<HTMLDivElement>(null);
   const editorFontStyle = user?.setting.editorFontStyle || "normal";
   const mobileEditorStyle = user?.setting.mobileEditorStyle || "normal";
@@ -50,104 +54,69 @@ const MemoEditor: React.FC = () => {
       editorRef.current?.insertText(memoLinkText);
       editorStateService.clearMarkMemo();
     }
+  }, [editorState.markMemoId]);
 
+  useEffect(() => {
     if (
       editorState.editMemoId &&
       editorState.editMemoId !== UNKNOWN_ID &&
       editorState.editMemoId !== prevGlobalStateRef.current.editMemoId
     ) {
-      const editMemo = memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID);
-      if (editMemo) {
-        editorRef.current?.setContent(editMemo.content ?? "");
+      const memo = memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID);
+      if (memo) {
+        getMemoResourceList(memo.id).then(({ data: { data } }) => {
+          setState({
+            ...state,
+            resourceList: data,
+          });
+        });
+        editorRef.current?.setContent(memo.content ?? "");
         editorRef.current?.focus();
       }
     }
 
     prevGlobalStateRef.current = editorState;
-  }, [editorState.markMemoId, editorState.editMemoId]);
+  }, [state, editorState.editMemoId]);
 
-  useEffect(() => {
-    const handlePasteEvent = async (event: ClipboardEvent) => {
-      if (event.clipboardData && event.clipboardData.files.length > 0) {
-        event.preventDefault();
-        const file = event.clipboardData.files[0];
-        const url = await handleUploadFile(file);
-        if (url) {
-          editorRef.current?.insertText(`![](${url})`);
-        }
-      }
-    };
-
-    const handleDropEvent = async (event: DragEvent) => {
-      if (event.dataTransfer && event.dataTransfer.files.length > 0) {
-        event.preventDefault();
-        const file = event.dataTransfer.files[0];
-        const url = await handleUploadFile(file);
-        if (url) {
-          editorRef.current?.insertText(`![](${url})`);
-        }
-      }
-    };
-
-    const handleClickEvent = () => {
-      handleContentChange(editorRef.current?.element.value ?? "");
-    };
-
-    const handleKeyDownEvent = () => {
-      setTimeout(() => {
-        handleContentChange(editorRef.current?.element.value ?? "");
-      });
-    };
-
-    editorRef.current?.element.addEventListener("paste", handlePasteEvent);
-    editorRef.current?.element.addEventListener("drop", handleDropEvent);
-    editorRef.current?.element.addEventListener("click", handleClickEvent);
-    editorRef.current?.element.addEventListener("keydown", handleKeyDownEvent);
-
-    return () => {
-      editorRef.current?.element.removeEventListener("paste", handlePasteEvent);
-      editorRef.current?.element.removeEventListener("drop", handleDropEvent);
-      editorRef.current?.element.removeEventListener("click", handleClickEvent);
-      editorRef.current?.element.removeEventListener("keydown", handleKeyDownEvent);
-    };
-  }, []);
-
-  const handleUploadFile = useCallback(
-    async (file: File) => {
-      if (state.isUploadingResource) {
-        return;
-      }
-
-      setState({
-        ...state,
-        isUploadingResource: true,
-      });
-      const { type } = file;
-
-      if (!type.startsWith("image")) {
-        toastHelper.error(t("editor.only-image-supported"));
-        return;
-      }
-
-      try {
-        const image = await resourceService.upload(file);
-        const url = `/o/r/${image.id}/${image.filename}`;
-        return url;
-      } catch (error: any) {
-        console.error(error);
-        toastHelper.error(error.response.data.message);
-      } finally {
+  const handlePasteEvent = async (event: React.ClipboardEvent) => {
+    if (event.clipboardData && event.clipboardData.files.length > 0) {
+      event.preventDefault();
+      const file = event.clipboardData.files[0];
+      const resource = await handleUploadResource(file);
+      if (resource) {
         setState({
           ...state,
-          isUploadingResource: false,
+          resourceList: [...state.resourceList, resource],
         });
       }
-    },
-    [state]
-  );
+    }
+  };
 
-  const handleSaveBtnClick = async (content: string) => {
-    if (content === "") {
+  const handleUploadResource = async (file: File) => {
+    setState({
+      ...state,
+      isUploadingResource: true,
+    });
+
+    let resource = undefined;
+
+    try {
+      resource = await resourceService.upload(file);
+    } catch (error: any) {
+      console.error(error);
+      toastHelper.error(error.response.data.message);
+    }
+
+    setState({
+      ...state,
+      isUploadingResource: false,
+    });
+    return resource;
+  };
+
+  const handleSaveBtnClick = async () => {
+    const content = editorRef.current?.getContent();
+    if (!content) {
       toastHelper.error(t("editor.cant-empty"));
       return;
     }
@@ -165,9 +134,12 @@ const MemoEditor: React.FC = () => {
         }
         editorStateService.clearEditMemo();
       } else {
-        await memoService.createMemo({
+        const memo = await memoService.createMemo({
           content,
         });
+        for (const resource of state.resourceList) {
+          await upsertMemoResource(memo.id, resource.id);
+        }
         locationService.clearQuery();
       }
     } catch (error: any) {
@@ -178,19 +150,26 @@ const MemoEditor: React.FC = () => {
     setState({
       ...state,
       fullscreen: false,
+      resourceList: [],
     });
     setEditorContentCache("");
+    editorRef.current?.setContent("");
   };
 
-  const handleCancelEditingBtnClick = useCallback(() => {
+  const handleCancelEditing = () => {
+    setState({
+      ...state,
+      resourceList: [],
+    });
     editorStateService.clearEditMemo();
     editorRef.current?.setContent("");
     setEditorContentCache("");
-  }, []);
+  };
 
-  const handleContentChange = useCallback((content: string) => {
+  const handleContentChange = (content: string) => {
+    setAllowSave(content !== "");
     setEditorContentCache(content);
-  }, []);
+  };
 
   const handleEmojiPickerBtnClick = () => {
     handleChangeShouldShowEmojiPicker(!state.shouldShowEmojiPicker);
@@ -224,7 +203,7 @@ const MemoEditor: React.FC = () => {
     }
   };
 
-  const handleUploadFileBtnClick = useCallback(() => {
+  const handleUploadFileBtnClick = () => {
     const inputEl = document.createElement("input");
     inputEl.style.position = "fixed";
     inputEl.style.top = "-100vh";
@@ -232,22 +211,30 @@ const MemoEditor: React.FC = () => {
     document.body.appendChild(inputEl);
     inputEl.type = "file";
     inputEl.multiple = true;
-    inputEl.accept = "image/*";
+    inputEl.accept = "*";
     inputEl.onchange = async () => {
       if (!inputEl.files || inputEl.files.length === 0) {
         return;
       }
 
+      const resourceList: Resource[] = [];
       for (const file of inputEl.files) {
-        const url = await handleUploadFile(file);
-        if (url) {
-          editorRef.current?.insertText(`![](${url})`);
+        const resource = await handleUploadResource(file);
+        if (resource) {
+          resourceList.push(resource);
+          if (editorState.editMemoId) {
+            await upsertMemoResource(editorState.editMemoId, resource.id);
+          }
         }
       }
+      setState({
+        ...state,
+        resourceList: [...state.resourceList, ...resourceList],
+      });
       document.body.removeChild(inputEl);
     };
     inputEl.click();
-  }, []);
+  };
 
   const handleFullscreenBtnClick = () => {
     setState({
@@ -279,6 +266,17 @@ const MemoEditor: React.FC = () => {
     handleChangeShouldShowEmojiPicker(false);
   };
 
+  const handleDeleteResource = async (resourceId: ResourceId) => {
+    setState({
+      ...state,
+      resourceList: state.resourceList.filter((resource) => resource.id !== resourceId),
+    });
+
+    if (editorState.editMemoId) {
+      await deleteMemoResource(editorState.editMemoId, resourceId);
+    }
+  };
+
   const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);
 
   const editorConfig = useMemo(
@@ -287,63 +285,80 @@ const MemoEditor: React.FC = () => {
       initialContent: getEditorContentCache(),
       placeholder: t("editor.placeholder"),
       fullscreen: state.fullscreen,
-      showConfirmBtn: true,
-      onConfirmBtnClick: handleSaveBtnClick,
       onContentChange: handleContentChange,
     }),
-    [isEditing, state.fullscreen, i18n.language, editorFontStyle]
+    [state.fullscreen, i18n.language, editorFontStyle]
   );
 
   return (
     <div className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}>
       <div className={`tip-container ${isEditing ? "" : "!hidden"}`}>
         <span className="tip-text">{t("editor.editing")}</span>
-        <button className="cancel-btn" onClick={handleCancelEditingBtnClick}>
+        <button className="cancel-btn" onClick={handleCancelEditing}>
           {t("common.cancel")}
         </button>
       </div>
-      <Editor
-        ref={editorRef}
-        {...editorConfig}
-        tools={
-          <>
-            <div className="action-btn tag-action">
-              <Icon.Hash className="icon-img" />
-              <div ref={tagSeletorRef} className="tag-list" onClick={handleTagSeletorClick}>
-                {tags.length > 0 ? (
-                  tags.map((tag) => {
-                    return (
-                      <span className="item-container" key={tag}>
-                        {tag}
-                      </span>
-                    );
-                  })
-                ) : (
-                  <p className="tip-text" onClick={(e) => e.stopPropagation()}>
-                    {t("common.null")}
-                  </p>
-                )}
-              </div>
+      <Editor ref={editorRef} {...editorConfig} onPaste={handlePasteEvent} />
+      <div className="common-tools-wrapper">
+        <div className="common-tools-container">
+          <div className="action-btn tag-action">
+            <Icon.Hash className="icon-img" />
+            <div ref={tagSeletorRef} className="tag-list" onClick={handleTagSeletorClick}>
+              {tags.length > 0 ? (
+                tags.map((tag) => {
+                  return (
+                    <span className="item-container" key={tag}>
+                      {tag}
+                    </span>
+                  );
+                })
+              ) : (
+                <p className="tip-text" onClick={(e) => e.stopPropagation()}>
+                  {t("common.null")}
+                </p>
+              )}
             </div>
-            <button className="action-btn">
-              <Icon.Smile className="icon-img" onClick={handleEmojiPickerBtnClick} />
-            </button>
-            <button className="action-btn">
-              <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
-            </button>
-            <button className="action-btn">
-              <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
-            </button>
-            <button className="action-btn">
-              <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
-              <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
-            </button>
-            <button className="action-btn" onClick={handleFullscreenBtnClick}>
-              {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
-            </button>
-          </>
-        }
-      />
+          </div>
+          <button className="action-btn">
+            <Icon.Smile className="icon-img" onClick={handleEmojiPickerBtnClick} />
+          </button>
+          <button className="action-btn">
+            <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
+          </button>
+          <button className="action-btn">
+            <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
+          </button>
+          <button className="action-btn">
+            <Icon.FileText className="icon-img" onClick={handleUploadFileBtnClick} />
+            <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
+          </button>
+          <button className="action-btn" onClick={handleFullscreenBtnClick}>
+            {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
+          </button>
+        </div>
+        <div className="btns-container">
+          <button className="action-btn confirm-btn" disabled={!allowSave} onClick={handleSaveBtnClick}>
+            {t("editor.save")} <span className="icon-text">✍️</span>
+          </button>
+        </div>
+      </div>
+      {state.resourceList.length > 0 && (
+        <div className="resource-list-wrapper">
+          {state.resourceList.map((resource) => {
+            return (
+              <div key={resource.id} className="resource-container">
+                {resource.type.includes("image") ? (
+                  <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
+                ) : (
+                  <Icon.FileText className="icon-img" onClick={handleUploadFileBtnClick} />
+                )}
+                <span className="name-text">{resource.filename}</span>
+                <Icon.X className="close-icon" onClick={() => handleDeleteResource(resource.id)} />
+              </div>
+            );
+          })}
+        </div>
+      )}
       <EmojiPicker
         shouldShow={state.shouldShowEmojiPicker}
         onEmojiClick={handleEmojiClick}

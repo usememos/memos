@@ -63,26 +63,86 @@
 
   > .memo-editor {
     @apply flex flex-col justify-start items-start relative w-full h-auto bg-white;
+  }
 
-    .tag-action {
-      @apply relative;
+  > .common-tools-wrapper {
+    @apply w-full flex flex-row justify-between items-center;
 
-      &:hover {
-        > .tag-list {
-          @apply flex;
+    > .common-tools-container {
+      @apply flex flex-row justify-start items-center;
+
+      > .action-btn {
+        @apply flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer opacity-60 hover:opacity-90 hover:bg-gray-300 hover:shadow;
+
+        &.tag-action {
+          @apply relative;
+
+          &:hover {
+            > .tag-list {
+              @apply flex;
+            }
+          }
+
+          > .tag-list {
+            @apply hidden flex-col justify-start items-start absolute top-6 left-0 mt-1 p-1 z-1 rounded w-32 max-h-52 overflow-auto font-mono bg-black;
+
+            > .item-container {
+              @apply w-full text-white cursor-pointer rounded text-sm leading-6 px-2 hover:bg-gray-700;
+            }
+
+            > .tip-text {
+              @apply w-full text-sm text-gray-200 leading-6 px-2 cursor-default;
+            }
+          }
         }
-      }
 
-      > .tag-list {
-        @apply hidden flex-col justify-start items-start absolute top-6 left-0 mt-1 p-1 z-1 rounded w-32 max-h-52 overflow-auto font-mono bg-black;
-
-        > .item-container {
-          @apply w-full text-white cursor-pointer rounded text-sm leading-6 px-2 hover:bg-gray-700;
+        > .icon-img {
+          @apply w-5 h-5 mx-auto flex flex-row justify-center items-center;
         }
 
         > .tip-text {
-          @apply w-full text-sm text-gray-200 leading-6 px-2 cursor-default;
+          @apply hidden ml-1 text-xs leading-5 text-gray-700 border border-gray-300 rounded-xl px-2;
         }
+      }
+    }
+
+    > .btns-container {
+      @apply grow-0 shrink-0 flex flex-row justify-end items-center;
+
+      > .action-btn {
+        @apply border-none select-none cursor-pointer py-1 px-3 rounded text-sm hover:opacity-80;
+      }
+
+      > .cancel-btn {
+        @apply text-gray-500 bg-transparent mr-2;
+      }
+
+      > .confirm-btn {
+        @apply shadow cursor-pointer px-3 py-0 leading-8 bg-green-600 text-white text-sm hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60;
+
+        > .icon-text {
+          @apply text-base ml-1;
+        }
+      }
+    }
+  }
+
+  > .resource-list-wrapper {
+    @apply w-full flex flex-row justify-start flex-wrap;
+
+    > .resource-container {
+      @apply mt-1 mr-1 flex flex-row justify-start items-center flex-nowrap bg-gray-50 px-2 py-1 rounded cursor-pointer hover:bg-gray-100;
+
+      > .icon-img {
+        @apply w-4 h-auto mr-1 text-gray-500;
+      }
+
+      > .name-text {
+        @apply text-gray-500 text-sm max-w-xs truncate font-mono;
+      }
+
+      > .close-icon {
+        @apply w-4 h-auto ml-1 text-gray-500 hover:text-gray-800;
       }
     }
   }

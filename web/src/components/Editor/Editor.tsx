@@ -1,10 +1,8 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import useRefresh from "../../hooks/useRefresh";
 import "../../less/editor.less";
 
 export interface EditorRefActions {
-  element: HTMLTextAreaElement;
   focus: FunctionType;
   insertText: (text: string) => void;
   setContent: (text: string) => void;
@@ -12,29 +10,19 @@ export interface EditorRefActions {
   getCursorPosition: () => number;
 }
 
-interface EditorProps {
+interface Props {
   className: string;
   initialContent: string;
   placeholder: string;
   fullscreen: boolean;
-  showConfirmBtn: boolean;
   tools?: ReactNode;
-  onConfirmBtnClick: (content: string) => void;
+  onPaste: (event: React.ClipboardEvent) => void;
   onContentChange: (content: string) => void;
 }
 
 // eslint-disable-next-line react/display-name
-const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRefActions>) => {
-  const {
-    className,
-    initialContent,
-    placeholder,
-    fullscreen,
-    showConfirmBtn,
-    onConfirmBtnClick: handleConfirmBtnClickCallback,
-    onContentChange: handleContentChangeCallback,
-  } = props;
-  const { t } = useTranslation();
+const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefActions>) => {
+  const { className, initialContent, placeholder, fullscreen, onPaste, onContentChange: handleContentChangeCallback } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const refresh = useRefresh();
 
@@ -54,7 +42,6 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
   useImperativeHandle(
     ref,
     () => ({
-      element: editorRef.current as HTMLTextAreaElement,
       focus: () => {
         editorRef.current?.focus();
       },
@@ -94,25 +81,6 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
     refresh();
   }, []);
 
-  const handleEditorKeyDown = useCallback((event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    event.stopPropagation();
-
-    if (event.code === "Enter") {
-      if (event.metaKey || event.ctrlKey) {
-        handleCommonConfirmBtnClick();
-      }
-    }
-  }, []);
-
-  const handleCommonConfirmBtnClick = useCallback(() => {
-    if (!editorRef.current) {
-      return;
-    }
-
-    handleConfirmBtnClickCallback(editorRef.current.value);
-    editorRef.current.value = "";
-  }, []);
-
   return (
     <div className={"common-editor-wrapper " + className}>
       <textarea
@@ -120,19 +88,9 @@ const Editor = forwardRef((props: EditorProps, ref: React.ForwardedRef<EditorRef
         rows={1}
         placeholder={placeholder}
         ref={editorRef}
+        onPaste={onPaste}
         onInput={handleEditorInput}
-        onKeyDown={handleEditorKeyDown}
       ></textarea>
-      <div className="common-tools-wrapper">
-        <div className="common-tools-container">{props.tools !== undefined && props.tools}</div>
-        <div className="btns-container">
-          {showConfirmBtn && (
-            <button className="action-btn confirm-btn" disabled={editorRef.current?.value === ""} onClick={handleCommonConfirmBtnClick}>
-              {t("editor.save")} <span className="icon-text">✍️</span>
-            </button>
-          )}
-        </div>
-      </div>
     </div>
   );
 });

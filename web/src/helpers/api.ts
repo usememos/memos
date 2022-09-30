@@ -133,6 +133,20 @@ export function deleteResourceById(id: ResourceId) {
   return axios.delete(`/api/resource/${id}`);
 }
 
+export function getMemoResourceList(memoId: MemoId) {
+  return axios.get<ResponseObject<Resource[]>>(`/api/memo/${memoId}/resource`);
+}
+
+export function upsertMemoResource(memoId: MemoId, resourceId: ResourceId) {
+  return axios.post<ResponseObject<Resource>>(`/api/memo/${memoId}/resource`, {
+    resourceId,
+  });
+}
+
+export function deleteMemoResource(memoId: MemoId, resourceId: ResourceId) {
+  return axios.delete(`/api/memo/${memoId}/resource/${resourceId}`);
+}
+
 export function getTagList(tagFind?: TagFind) {
   const queryList = [];
   if (tagFind?.creatorId) {

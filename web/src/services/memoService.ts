@@ -93,6 +93,7 @@ const memoService = {
     const { data } = (await api.createMemo(memoCreate)).data;
     const memo = convertResponseModelMemo(data);
     store.dispatch(createMemo(memo));
+    return memo;
   },
 
   patchMemo: async (memoPatch: MemoPatch): Promise<Memo> => {

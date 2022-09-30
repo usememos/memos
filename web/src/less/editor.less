@@ -25,44 +25,4 @@
       }
     }
   }
-
-  > .common-tools-wrapper {
-    @apply w-full flex flex-row justify-between items-center;
-
-    > .common-tools-container {
-      @apply flex flex-row justify-start items-center;
-
-      > .action-btn {
-        @apply flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer opacity-60 hover:opacity-90 hover:bg-gray-300 hover:shadow;
-
-        > .icon-img {
-          @apply w-5 h-5 mx-auto flex flex-row justify-center items-center;
-        }
-
-        > .tip-text {
-          @apply hidden ml-1 text-xs leading-5 text-gray-700 border border-gray-300 rounded-xl px-2;
-        }
-      }
-    }
-
-    > .btns-container {
-      @apply grow-0 shrink-0 flex flex-row justify-end items-center;
-
-      > .action-btn {
-        @apply border-none select-none cursor-pointer py-1 px-3 rounded text-sm hover:opacity-80;
-      }
-
-      > .cancel-btn {
-        @apply text-gray-500 bg-transparent mr-2;
-      }
-
-      > .confirm-btn {
-        @apply shadow cursor-pointer px-3 py-0 leading-8 bg-green-600 text-white text-sm hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60;
-
-        > .icon-text {
-          @apply text-base ml-1;
-        }
-      }
-    }
-  }
 }
