@@ -34,6 +34,7 @@ type ResourceFind struct {
 
 	// Domain specific fields
 	Filename *string `json:"filename"`
+	MemoID   *int
 }
 
 type ResourceDelete struct {

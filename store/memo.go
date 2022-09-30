@@ -286,7 +286,7 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 		where, args = append(where, "row_status = ?"), append(args, *v)
 	}
 	if v := find.Pinned; v != nil {
-		where = append(where, "id in (SELECT memo_id FROM memo_organizer WHERE pinned = 1 AND user_id = memo.creator_id )")
+		where = append(where, "id in (SELECT memo_id FROM memo_organizer WHERE pinned = 1 AND user_id = memo.creator_id)")
 	}
 	if v := find.ContentSearch; v != nil {
 		where, args = append(where, "content LIKE ?"), append(args, "%"+*v+"%")

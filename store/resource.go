@@ -192,6 +192,9 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 	if v := find.Filename; v != nil {
 		where, args = append(where, "filename = ?"), append(args, *v)
 	}
+	if v := find.MemoID; v != nil {
+		where, args = append(where, "id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
+	}
 
 	query := `
 		SELECT
