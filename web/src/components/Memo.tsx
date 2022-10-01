@@ -39,7 +39,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
-    let intervalFlag = -1;
+    let intervalFlag: any = -1;
     if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
       intervalFlag = setInterval(() => {
         setCreatedAtStr(getFormatedMemoCreatedAtStr(memo.createdTs, i18n.language));
