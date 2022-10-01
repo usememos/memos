@@ -39,7 +39,8 @@ type Memo struct {
 	Pinned     bool       `json:"pinned"`
 
 	// Related fields
-	Creator *User `json:"creator"`
+	Creator      *User       `json:"creator"`
+	ResourceList []*Resource `json:"resourceList"`
 }
 
 type MemoCreate struct {
