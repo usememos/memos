@@ -20,6 +20,7 @@ interface Memo {
 
 interface MemoCreate {
   content: string;
+  resourceIdList: ResourceId[];
   visibility?: Visibility;
 }
 

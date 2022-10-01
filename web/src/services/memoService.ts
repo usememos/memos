@@ -30,12 +30,14 @@ const memoService = {
     const timeoutIndex = setTimeout(() => {
       store.dispatch(setIsFetching(true));
     }, 1000);
-    const memoFind: MemoFind = {};
+    const memoFind: MemoFind = {
+      rowStatus: "NORMAL",
+    };
     if (userService.isVisitorMode()) {
       memoFind.creatorId = userService.getUserIdFromPath();
     }
     const { data } = (await api.getMemoList(memoFind)).data;
-    const memos = data.filter((m) => m.rowStatus !== "ARCHIVED").map((m) => convertResponseModelMemo(m));
+    const memos = data.map((m) => convertResponseModelMemo(m));
     store.dispatch(setMemos(memos));
     clearTimeout(timeoutIndex);
     store.dispatch(setIsFetching(false));
@@ -60,6 +62,7 @@ const memoService = {
   fetchMemoById: async (memoId: MemoId) => {
     const { data } = (await api.getMemoById(memoId)).data;
     const memo = convertResponseModelMemo(data);
+    store.dispatch(patchMemo(memo));
 
     return memo;
   },

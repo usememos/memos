@@ -134,12 +134,10 @@ const MemoEditor: React.FC = () => {
         }
         editorStateService.clearEditMemo();
       } else {
-        const memo = await memoService.createMemo({
+        await memoService.createMemo({
           content,
+          resourceIdList: state.resourceList.map((resource) => resource.id),
         });
-        for (const resource of state.resourceList) {
-          await upsertMemoResource(memo.id, resource.id);
-        }
         locationService.clearQuery();
       }
     } catch (error: any) {

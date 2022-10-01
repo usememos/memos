@@ -56,6 +56,20 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 		}
 
+		for _, resourceID := range memoCreate.ResourceIDList {
+			if _, err := s.Store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
+				MemoID:     memo.ID,
+				ResourceID: resourceID,
+			}); err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
+			}
+		}
+
+		memo, err = s.Store.ComposeMemo(ctx, memo)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
+		}
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
