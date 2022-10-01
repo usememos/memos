@@ -1,5 +1,6 @@
 import * as utils from "../helpers/utils";
 import MemoContent, { DisplayConfig } from "./MemoContent";
+import MemoResources from "./MemoResources";
 import "../less/daily-memo.less";
 
 interface DailyMemo extends Memo {
@@ -28,7 +29,10 @@ const DailyMemo: React.FC<Props> = (props: Props) => {
       <div className="time-wrapper">
         <span className="normal-text">{memo.timeStr}</span>
       </div>
-      <MemoContent content={memo.content} displayConfig={displayConfig} />
+      <div className="memo-container">
+        <MemoContent content={memo.content} displayConfig={displayConfig} />
+        <MemoResources memo={memo} />
+      </div>
       <div className="split-line"></div>
     </div>
   );

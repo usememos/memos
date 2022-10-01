@@ -17,7 +17,11 @@
     @apply mt-px mr-4 w-12 h-7 shrink-0 text-xs leading-6 text-center font-mono rounded-lg bg-gray-100 border-2 border-white text-gray-600 z-10;
   }
 
-  > .memo-content-container {
-    @apply flex flex-col justify-start items-start w-full overflow-x-hidden p-0 text-base;
+  > .memo-container {
+    @apply w-full overflow-x-hidden flex flex-col justify-start items-start;
+
+    > .memo-content-container {
+      @apply flex flex-col justify-start items-start w-full overflow-x-hidden p-0 text-base;
+    }
   }
 }

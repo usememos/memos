@@ -1,25 +1,40 @@
-import { IMAGE_URL_REG } from "../helpers/marked";
 import Image from "./Image";
+import Icon from "./Icon";
 import "../less/memo-resources.less";
 
 interface Props {
-  className?: string;
   memo: Memo;
 }
 
 const MemoResources: React.FC<Props> = (props: Props) => {
-  const { className, memo } = props;
-  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
+  const { memo } = props;
+  const imageList = memo.resourceList.filter((resource) => resource.type.includes("image"));
+  const otherResourceList = memo.resourceList.filter((resource) => !resource.type.includes("image"));
+
+  const handlPreviewBtnClick = (resource: Resource) => {
+    const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
+    window.open(resourceUrl);
+  };
 
   return (
     <div className="resource-wrapper">
-      {imageUrls.length > 0 && (
-        <div className={`images-wrapper ${className ?? ""}`}>
-          {imageUrls.map((imgUrl, idx) => (
-            <Image className="memo-img" key={idx} imgUrl={imgUrl} />
+      {imageList.length > 0 && (
+        <div className="images-wrapper">
+          {imageList.map((resource) => (
+            <Image className="memo-img" key={resource.id} imgUrl={`/o/r/${resource.id}/${resource.filename}`} />
           ))}
         </div>
       )}
+      <div className="other-resource-wrapper">
+        {otherResourceList.map((resource) => {
+          return (
+            <div className="other-resource-container" key={resource.id} onClick={() => handlPreviewBtnClick(resource)}>
+              <Icon.FileText className="icon-img" />
+              <span className="name-text">{resource.filename}</span>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 };

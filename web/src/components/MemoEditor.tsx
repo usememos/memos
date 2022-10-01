@@ -126,7 +126,7 @@ const MemoEditor: React.FC = () => {
       if (editMemoId && editMemoId !== UNKNOWN_ID) {
         const prevMemo = memoService.getMemoById(editMemoId ?? UNKNOWN_ID);
 
-        if (prevMemo && prevMemo.content !== content) {
+        if (prevMemo) {
           await memoService.patchMemo({
             id: prevMemo.id,
             content,
@@ -347,11 +347,7 @@ const MemoEditor: React.FC = () => {
           {state.resourceList.map((resource) => {
             return (
               <div key={resource.id} className="resource-container">
-                {resource.type.includes("image") ? (
-                  <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
-                ) : (
-                  <Icon.FileText className="icon-img" onClick={handleUploadFileBtnClick} />
-                )}
+                {resource.type.includes("image") ? <Icon.Image className="icon-img" /> : <Icon.FileText className="icon-img" />}
                 <span className="name-text">{resource.filename}</span>
                 <Icon.X className="close-icon" onClick={() => handleDeleteResource(resource.id)} />
               </div>
