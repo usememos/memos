@@ -43,6 +43,21 @@ jobs:
         run: yarn lint
         working-directory: web
 
+  jest-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16"
+          cache: yarn
+          cache-dependency-path: "web/yarn.lock"
+      - run: yarn
+        working-directory: web
+      - name: Run jest
+        run: yarn test
+        working-directory: web
+
   frontend-build:
     runs-on: ubuntu-latest
     steps:
