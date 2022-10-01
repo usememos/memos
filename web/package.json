@@ -4,7 +4,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "serve": "vite preview",
-    "lint": "eslint --ext .js,.ts,.tsx, src"
+    "lint": "eslint --ext .js,.ts,.tsx, src",
+    "test": "jest"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.1",
@@ -23,6 +24,7 @@
     "react-router-dom": "^6.4.0"
   },
   "devDependencies": {
+    "@jest/globals": "^29.1.2",
     "@types/lodash-es": "^4.17.5",
     "@types/node": "^18.0.3",
     "@types/qs": "^6.9.7",
@@ -36,10 +38,12 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-react": "^7.27.1",
+    "jest": "^29.1.2",
     "less": "^4.1.1",
     "postcss": "^8.4.5",
     "prettier": "2.5.1",
     "tailwindcss": "^3.0.18",
+    "ts-jest": "^29.0.3",
     "typescript": "^4.3.2",
     "vite": "^3.0.0"
   }
