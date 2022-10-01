@@ -44,6 +44,19 @@ func (raw *resourceRaw) toResource() *api.Resource {
 	}
 }
 
+func (s *Store) ComposeMemoResourceList(ctx context.Context, memo *api.Memo) error {
+	resourceList, err := s.FindResourceList(ctx, &api.ResourceFind{
+		MemoID: &memo.ID,
+	})
+	if err != nil {
+		return err
+	}
+
+	memo.ResourceList = resourceList
+
+	return nil
+}
+
 func (s *Store) CreateResource(ctx context.Context, create *api.ResourceCreate) (*api.Resource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -60,11 +73,11 @@ func (s *Store) CreateResource(ctx context.Context, create *api.ResourceCreate) 
 		return nil, FormatError(err)
 	}
 
-	resource := resourceRaw.toResource()
-
-	if err := s.cache.UpsertCache(api.ResourceCache, resource.ID, resource); err != nil {
+	if err := s.cache.UpsertCache(api.ResourceCache, resourceRaw.ID, resourceRaw); err != nil {
 		return nil, err
 	}
+
+	resource := resourceRaw.toResource()
 
 	return resource, nil
 }
@@ -91,13 +104,13 @@ func (s *Store) FindResourceList(ctx context.Context, find *api.ResourceFind) ([
 
 func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.Resource, error) {
 	if find.ID != nil {
-		resource := &api.Resource{}
-		has, err := s.cache.FindCache(api.ResourceCache, *find.ID, resource)
+		resourceRaw := &resourceRaw{}
+		has, err := s.cache.FindCache(api.ResourceCache, *find.ID, resourceRaw)
 		if err != nil {
 			return nil, err
 		}
 		if has {
-			return resource, nil
+			return resourceRaw.toResource(), nil
 		}
 	}
 
@@ -116,11 +129,13 @@ func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	resource := list[0].toResource()
+	resourceRaw := list[0]
 
-	if err := s.cache.UpsertCache(api.ResourceCache, resource.ID, resource); err != nil {
+	if err := s.cache.UpsertCache(api.ResourceCache, resourceRaw.ID, resourceRaw); err != nil {
 		return nil, err
 	}
+
+	resource := resourceRaw.toResource()
 
 	return resource, nil
 }

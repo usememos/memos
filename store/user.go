@@ -51,6 +51,7 @@ func (s *Store) ComposeMemoCreator(ctx context.Context, memo *api.Memo) error {
 	if err != nil {
 		return err
 	}
+
 	user.OpenID = ""
 	user.UserSettingList = nil
 	memo.Creator = user
@@ -74,11 +75,11 @@ func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.Us
 		return nil, FormatError(err)
 	}
 
-	user := userRaw.toUser()
-
-	if err := s.cache.UpsertCache(api.UserCache, user.ID, user); err != nil {
+	if err := s.cache.UpsertCache(api.UserCache, userRaw.ID, userRaw); err != nil {
 		return nil, err
 	}
+
+	user := userRaw.toUser()
 
 	return user, nil
 }
@@ -99,11 +100,11 @@ func (s *Store) PatchUser(ctx context.Context, patch *api.UserPatch) (*api.User,
 		return nil, FormatError(err)
 	}
 
-	user := userRaw.toUser()
-
-	if err := s.cache.UpsertCache(api.UserCache, user.ID, user); err != nil {
+	if err := s.cache.UpsertCache(api.UserCache, userRaw.ID, userRaw); err != nil {
 		return nil, err
 	}
+
+	user := userRaw.toUser()
 
 	return user, nil
 }
@@ -130,13 +131,13 @@ func (s *Store) FindUserList(ctx context.Context, find *api.UserFind) ([]*api.Us
 
 func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, error) {
 	if find.ID != nil {
-		user := &api.User{}
-		has, err := s.cache.FindCache(api.UserCache, *find.ID, user)
+		userRaw := &userRaw{}
+		has, err := s.cache.FindCache(api.UserCache, *find.ID, userRaw)
 		if err != nil {
 			return nil, err
 		}
 		if has {
-			return user, nil
+			return userRaw.toUser(), nil
 		}
 	}
 
@@ -157,11 +158,13 @@ func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, er
 		return nil, &common.Error{Code: common.Conflict, Err: fmt.Errorf("found %d users with filter %+v, expect 1", len(list), find)}
 	}
 
-	user := list[0].toUser()
+	userRaw := list[0]
 
-	if err := s.cache.UpsertCache(api.UserCache, user.ID, user); err != nil {
+	if err := s.cache.UpsertCache(api.UserCache, userRaw.ID, userRaw); err != nil {
 		return nil, err
 	}
+
+	user := userRaw.toUser()
 
 	return user, nil
 }

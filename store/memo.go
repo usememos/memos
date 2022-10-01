@@ -83,12 +83,12 @@ func (s *Store) CreateMemo(ctx context.Context, create *api.MemoCreate) (*api.Me
 		return nil, FormatError(err)
 	}
 
-	memo, err := s.composeMemo(ctx, memoRaw)
-	if err != nil {
+	if err := s.cache.UpsertCache(api.MemoCache, memoRaw.ID, memoRaw); err != nil {
 		return nil, err
 	}
 
-	if err := s.cache.UpsertCache(api.MemoCache, memo.ID, memo); err != nil {
+	memo, err := s.composeMemo(ctx, memoRaw)
+	if err != nil {
 		return nil, err
 	}
 
@@ -111,12 +111,12 @@ func (s *Store) PatchMemo(ctx context.Context, patch *api.MemoPatch) (*api.Memo,
 		return nil, FormatError(err)
 	}
 
-	memo, err := s.composeMemo(ctx, memoRaw)
-	if err != nil {
+	if err := s.cache.UpsertCache(api.MemoCache, memoRaw.ID, memoRaw); err != nil {
 		return nil, err
 	}
 
-	if err := s.cache.UpsertCache(api.MemoCache, memo.ID, memo); err != nil {
+	memo, err := s.composeMemo(ctx, memoRaw)
+	if err != nil {
 		return nil, err
 	}
 
@@ -150,12 +150,16 @@ func (s *Store) FindMemoList(ctx context.Context, find *api.MemoFind) ([]*api.Me
 
 func (s *Store) FindMemo(ctx context.Context, find *api.MemoFind) (*api.Memo, error) {
 	if find.ID != nil {
-		memo := &api.Memo{}
-		has, err := s.cache.FindCache(api.MemoCache, *find.ID, memo)
+		memoRaw := &memoRaw{}
+		has, err := s.cache.FindCache(api.MemoCache, *find.ID, memoRaw)
 		if err != nil {
 			return nil, err
 		}
 		if has {
+			memo, err := s.composeMemo(ctx, memoRaw)
+			if err != nil {
+				return nil, err
+			}
 			return memo, nil
 		}
 	}
@@ -175,12 +179,13 @@ func (s *Store) FindMemo(ctx context.Context, find *api.MemoFind) (*api.Memo, er
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	memo, err := s.composeMemo(ctx, list[0])
-	if err != nil {
+	memoRaw := list[0]
+	if err := s.cache.UpsertCache(api.MemoCache, memoRaw.ID, memoRaw); err != nil {
 		return nil, err
 	}
 
-	if err := s.cache.UpsertCache(api.MemoCache, memo.ID, memo); err != nil {
+	memo, err := s.composeMemo(ctx, memoRaw)
+	if err != nil {
 		return nil, err
 	}
 

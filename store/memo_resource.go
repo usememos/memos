@@ -28,31 +28,6 @@ func (raw *memoResourceRaw) toMemoResource() *api.MemoResource {
 	}
 }
 
-func (s *Store) ComposeMemoResourceList(ctx context.Context, memo *api.Memo) error {
-	memoResourceList, err := s.FindMemoResourceList(ctx, &api.MemoResourceFind{
-		MemoID: &memo.ID,
-	})
-	if err != nil {
-		return err
-	}
-
-	resourceList := []*api.Resource{}
-	for _, memoResource := range memoResourceList {
-		resource, err := s.FindResource(ctx, &api.ResourceFind{
-			ID: &memoResource.ResourceID,
-		})
-		if err != nil {
-			return err
-		}
-
-		resourceList = append(resourceList, resource)
-	}
-
-	memo.ResourceList = resourceList
-
-	return nil
-}
-
 func (s *Store) FindMemoResourceList(ctx context.Context, find *api.MemoResourceFind) ([]*api.MemoResource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {

@@ -56,11 +56,11 @@ func (s *Store) CreateShortcut(ctx context.Context, create *api.ShortcutCreate) 
 		return nil, FormatError(err)
 	}
 
-	shortcut := shortcutRaw.toShortcut()
-
-	if err := s.cache.UpsertCache(api.ShortcutCache, shortcut.ID, shortcut); err != nil {
+	if err := s.cache.UpsertCache(api.ShortcutCache, shortcutRaw.ID, shortcutRaw); err != nil {
 		return nil, err
 	}
+
+	shortcut := shortcutRaw.toShortcut()
 
 	return shortcut, nil
 }
@@ -81,11 +81,11 @@ func (s *Store) PatchShortcut(ctx context.Context, patch *api.ShortcutPatch) (*a
 		return nil, FormatError(err)
 	}
 
-	shortcut := shortcutRaw.toShortcut()
-
-	if err := s.cache.UpsertCache(api.ShortcutCache, shortcut.ID, shortcut); err != nil {
+	if err := s.cache.UpsertCache(api.ShortcutCache, shortcutRaw.ID, shortcutRaw); err != nil {
 		return nil, err
 	}
+
+	shortcut := shortcutRaw.toShortcut()
 
 	return shortcut, nil
 }
@@ -112,13 +112,13 @@ func (s *Store) FindShortcutList(ctx context.Context, find *api.ShortcutFind) ([
 
 func (s *Store) FindShortcut(ctx context.Context, find *api.ShortcutFind) (*api.Shortcut, error) {
 	if find.ID != nil {
-		shortcut := &api.Shortcut{}
-		has, err := s.cache.FindCache(api.ShortcutCache, *find.ID, shortcut)
+		shortcutRaw := &shortcutRaw{}
+		has, err := s.cache.FindCache(api.ShortcutCache, *find.ID, shortcutRaw)
 		if err != nil {
 			return nil, err
 		}
 		if has {
-			return shortcut, nil
+			return shortcutRaw.toShortcut(), nil
 		}
 	}
 
@@ -137,11 +137,13 @@ func (s *Store) FindShortcut(ctx context.Context, find *api.ShortcutFind) (*api.
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	shortcut := list[0].toShortcut()
+	shortcutRaw := list[0]
 
-	if err := s.cache.UpsertCache(api.ShortcutCache, shortcut.ID, shortcut); err != nil {
+	if err := s.cache.UpsertCache(api.ShortcutCache, shortcutRaw.ID, shortcutRaw); err != nil {
 		return nil, err
 	}
+
+	shortcut := shortcutRaw.toShortcut()
 
 	return shortcut, nil
 }
