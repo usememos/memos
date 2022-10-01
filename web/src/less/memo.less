@@ -1,5 +1,4 @@
 @import "./mixin.less";
-@import "./memo-content.less";
 
 .memo-wrapper {
   @apply flex flex-col justify-start items-start w-full p-4 pt-3 mt-2 bg-white rounded-lg border border-white hover:border-gray-200;
@@ -100,18 +99,15 @@
     }
   }
 
-  > .memo-content-text {
-    @apply w-full h-auto transition-all;
+  > .memo-content-wrapper {
+    > .memo-content-text {
+      .tag-span {
+        @apply cursor-pointer hover:opacity-80;
+      }
 
-    &.expanded {
-      display: -webkit-box;
-      -webkit-box-orient: vertical;
-      -webkit-line-clamp: 8;
-      overflow: hidden;
-    }
-
-    .tag-span {
-      @apply cursor-pointer hover:opacity-80;
+      .img {
+        @apply max-w-xs;
+      }
     }
   }
 

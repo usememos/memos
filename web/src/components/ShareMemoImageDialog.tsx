@@ -4,10 +4,8 @@ import { userService } from "../services";
 import toImage from "../labs/html2image";
 import { ANIMATION_DURATION } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { IMAGE_URL_REG } from "../helpers/marked";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import "../less/share-memo-image-dialog.less";
 
@@ -19,21 +17,14 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
   const { memo: propsMemo, destroy } = props;
   const { t } = useTranslation();
   const { user: userinfo } = userService.getState();
+  const [shortcutImgUrl, setShortcutImgUrl] = useState("");
   const memo = {
     ...propsMemo,
     createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
   };
-  const imageUrls = Array.from(memo.content.match(IMAGE_URL_REG) ?? []).map((s) => s.replace(IMAGE_URL_REG, "$1"));
-
-  const [shortcutImgUrl, setShortcutImgUrl] = useState("");
-  const [imgAmount, setImgAmount] = useState(imageUrls.length);
   const memoElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (imgAmount > 0) {
-      return;
-    }
-
     setTimeout(() => {
       if (!memoElRef.current) {
         return;
@@ -46,22 +37,14 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
         .then((url) => {
           setShortcutImgUrl(url);
         })
-        .catch(() => {
-          // do nth
+        .catch((err) => {
+          console.error(err);
         });
     }, ANIMATION_DURATION);
-  }, [imgAmount]);
+  }, []);
 
   const handleCloseBtnClick = () => {
     destroy();
-  };
-
-  const handleImageOnLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
-    if (event.type === "error") {
-      toastHelper.error(t("message.image-load-failed"));
-      (event.target as HTMLImageElement).remove();
-    }
-    setImgAmount(imgAmount - 1);
   };
 
   const handleDownloadBtnClick = () => {
@@ -90,13 +73,6 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
           {shortcutImgUrl !== "" && <img className="memo-shortcut-img" onClick={handleDownloadBtnClick} src={shortcutImgUrl} />}
           <span className="time-text">{memo.createdAtStr}</span>
           <MemoContent className="memo-content-wrapper" content={memo.content} displayConfig={{ enableExpand: false }} />
-          {imageUrls.length > 0 && (
-            <div className="images-container">
-              {imageUrls.map((imgUrl, idx) => (
-                <img decoding="async" key={idx} src={imgUrl} onLoad={handleImageOnLoad} onError={handleImageOnLoad} />
-              ))}
-            </div>
-          )}
           <div className="watermark-container">
             <span className="normal-text">
               <span className="icon-text">✍️</span> by <span className="name-text">{userinfo?.name}</span>

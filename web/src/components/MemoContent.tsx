@@ -3,14 +3,8 @@ import { formatMemoContent } from "../helpers/marked";
 import Icon from "./Icon";
 import "../less/memo-content.less";
 
-const defaultDisplayConfig: DisplayConfig = {
-  enableExpand: true,
-  showInlineImage: false,
-};
-
 export interface DisplayConfig {
   enableExpand: boolean;
-  showInlineImage: boolean;
 }
 
 interface Props {
@@ -27,6 +21,10 @@ interface State {
   expandButtonStatus: ExpandButtonStatus;
 }
 
+const defaultDisplayConfig: DisplayConfig = {
+  enableExpand: true,
+};
+
 const MAX_MEMO_CONTAINER_HEIGHT = 384;
 
 const MemoContent: React.FC<Props> = (props: Props) => {
@@ -38,9 +36,6 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const displayConfig = {
     ...defaultDisplayConfig,
     ...props.displayConfig,
-  };
-  const formatConfig = {
-    inlineImage: displayConfig.showInlineImage,
   };
 
   useEffect(() => {
@@ -84,7 +79,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
-        dangerouslySetInnerHTML={{ __html: formatMemoContent(content, formatConfig) }}
+        dangerouslySetInnerHTML={{ __html: formatMemoContent(content) }}
       ></div>
       {state.expandButtonStatus !== -1 && (
         <div className="expand-btn-container">

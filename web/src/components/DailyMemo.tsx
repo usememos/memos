@@ -21,7 +21,6 @@ const DailyMemo: React.FC<Props> = (props: Props) => {
   };
   const displayConfig: DisplayConfig = {
     enableExpand: false,
-    showInlineImage: true,
   };
 
   return (

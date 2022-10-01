@@ -36,29 +36,12 @@ const parseHtmlToRawText = (htmlStr: string): string => {
   return text;
 };
 
-interface FormatterConfig {
-  inlineImage: boolean;
-}
-const defaultFormatterConfig: FormatterConfig = {
-  inlineImage: false,
-};
-
-const formatMemoContent = (content: string, additionConfig?: Partial<FormatterConfig>) => {
-  const config = {
-    ...defaultFormatterConfig,
-    ...additionConfig,
-  };
+const formatMemoContent = (content: string) => {
   const tempElement = document.createElement("div");
   tempElement.innerHTML = parseMarkedToHtml(escape(content));
 
-  let outputString = tempElement.innerHTML;
-  if (config.inlineImage) {
-    outputString = outputString.replace(IMAGE_URL_REG, "<img class='img' src='$1' />");
-  } else {
-    outputString = outputString.replace(IMAGE_URL_REG, "");
-  }
-
-  return outputString
+  return tempElement.innerHTML
+    .replace(IMAGE_URL_REG, "<img class='img' src='$1' />")
     .replace(MEMO_LINK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>")
     .replace(LINK_URL_REG, "<a class='link' target='_blank' rel='noreferrer' href='$2'>$1</a>")
     .replace(TAG_REG, "<span class='tag-span'>#$1</span> ");
