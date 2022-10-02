@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import "dayjs/locale/zh";
 import { UNKNOWN_ID } from "../helpers/consts";
-import { DONE_BLOCK_REG, TODO_BLOCK_REG } from "../helpers/marked";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -134,7 +133,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       for (const element of todoElementList) {
         if (element === targetEl) {
           const index = indexOf(todoElementList, element);
-          const tempList = memo.content.split(status === "DONE" ? DONE_BLOCK_REG : TODO_BLOCK_REG);
+          const tempList = memo.content.split(status === "DONE" ? /- \[x\] / : /- \[ \] /);
           let finalContent = "";
 
           for (let i = 0; i < tempList.length; i++) {

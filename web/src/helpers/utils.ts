@@ -80,102 +80,6 @@ export function getDateTimeString(t: Date | number | string): string {
   return `${year}/${monthStr}/${dateStr} ${hoursStr}:${minsStr}:${secsStr}`;
 }
 
-export function dedupe<T>(data: T[]): T[] {
-  return Array.from(new Set(data));
-}
-
-export function dedupeObjectWithId<T extends { id: string | number }>(data: T[]): T[] {
-  const idSet = new Set<string | number>();
-  const result = [];
-
-  for (const d of data) {
-    if (!idSet.has(d.id)) {
-      idSet.add(d.id);
-      result.push(d);
-    }
-  }
-
-  return result;
-}
-
-export function debounce(fn: FunctionType, delay: number) {
-  let timer: number | null = null;
-
-  return () => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = setTimeout(fn, delay);
-    } else {
-      timer = setTimeout(fn, delay);
-    }
-  };
-}
-
-export function throttle(fn: FunctionType, delay: number) {
-  let valid = true;
-
-  return () => {
-    if (!valid) {
-      return false;
-    }
-    valid = false;
-    setTimeout(() => {
-      fn();
-      valid = true;
-    }, delay);
-  };
-}
-
-export function filterObjectNullKeys(object: KVObject): KVObject {
-  if (!object) {
-    return {};
-  }
-
-  const finalObject: KVObject = {};
-  const keys = Object.keys(object).sort();
-
-  for (const key of keys) {
-    const val = object[key];
-    if (typeof val === "object") {
-      const temp = filterObjectNullKeys(JSON.parse(JSON.stringify(val)));
-      if (temp && Object.keys(temp).length > 0) {
-        finalObject[key] = temp;
-      }
-    } else {
-      if (val) {
-        finalObject[key] = val;
-      }
-    }
-  }
-
-  return finalObject;
-}
-
-export function getImageSize(src: string): Promise<{ width: number; height: number }> {
-  return new Promise((resolve) => {
-    const imgEl = new Image();
-
-    imgEl.onload = () => {
-      const { width, height } = imgEl;
-
-      if (width > 0 && height > 0) {
-        resolve({ width, height });
-      } else {
-        resolve({ width: 0, height: 0 });
-      }
-    };
-
-    imgEl.onerror = () => {
-      resolve({ width: 0, height: 0 });
-    };
-
-    imgEl.className = "hidden";
-    imgEl.src = src;
-    document.body.appendChild(imgEl);
-    imgEl.remove();
-  });
-}
-
 export const getElementBounding = (element: HTMLElement, relativeEl?: HTMLElement) => {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft;
@@ -223,4 +127,12 @@ export const getElementBounding = (element: HTMLElement, relativeEl?: HTMLElemen
     top: elementRect.top + scrollTop,
     left: elementRect.left + scrollLeft,
   });
+};
+
+export const parseHTMLToRawText = (htmlStr: string): string => {
+  const tempEl = document.createElement("div");
+  tempEl.className = "memo-content-text";
+  tempEl.innerHTML = htmlStr;
+  const text = tempEl.innerText;
+  return text;
 };
