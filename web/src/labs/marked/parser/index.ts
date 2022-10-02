@@ -10,6 +10,7 @@ import Link from "./Link";
 import Mark from "./Mark";
 import Bold from "./Bold";
 import Emphasis from "./Emphasis";
+import PlainLink from "./PlainLink";
 
 export { CODE_BLOCK_REG } from "./CodeBlock";
 export { TODO_LIST_REG } from "./TodoList";
@@ -25,5 +26,5 @@ export { BOLD_REG } from "./Bold";
 export { EMPHASIS_REG } from "./Emphasis";
 
 export const blockElementParserList = [CodeBlock, TodoList, DoneList, OrderedList, UnorderedList, Paragraph];
-export const inlineElementParserList = [Image, Link, Mark, Bold, Emphasis, Tag];
+export const inlineElementParserList = [Image, Link, Mark, Bold, Emphasis, Tag, PlainLink];
 export const parserList = [...blockElementParserList, ...inlineElementParserList];

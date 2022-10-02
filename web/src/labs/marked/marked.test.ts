@@ -74,4 +74,16 @@ console.log("hello world!")
       expect(marked(t.markdown)).toBe(t.want);
     }
   });
+  test("parse plain link", () => {
+    const tests = [
+      {
+        markdown: `Link:https://baidu.com`,
+        want: `<p>Link:<a class='link' target='_blank' rel='noreferrer' href='https://baidu.com'>https://baidu.com</a></p>`,
+      },
+    ];
+
+    for (const t of tests) {
+      expect(marked(t.markdown)).toBe(t.want);
+    }
+  });
 });
