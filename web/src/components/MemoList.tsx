@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
-import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "../helpers/marked";
+import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";
@@ -57,11 +57,7 @@ const MemoList = () => {
           if (memoType) {
             if (memoType === "NOT_TAGGED" && memo.content.match(TAG_REG) !== null) {
               shouldShow = false;
-            } else if (memoType === "LINKED" && memo.content.match(LINK_URL_REG) === null) {
-              shouldShow = false;
-            } else if (memoType === "IMAGED" && memo.content.match(IMAGE_URL_REG) === null) {
-              shouldShow = false;
-            } else if (memoType === "CONNECTED" && memo.content.match(MEMO_LINK_REG) === null) {
+            } else if (memoType === "LINKED" && memo.content.match(LINK_REG) === null) {
               shouldShow = false;
             }
           }

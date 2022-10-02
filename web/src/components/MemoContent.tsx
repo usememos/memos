@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { formatMemoContent } from "../helpers/marked";
+import { marked } from "../labs/marked";
 import Icon from "./Icon";
 import "../less/memo-content.less";
 
@@ -79,7 +79,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
-        dangerouslySetInnerHTML={{ __html: formatMemoContent(content) }}
+        dangerouslySetInnerHTML={{ __html: marked(content) }}
       ></div>
       {state.expandButtonStatus !== -1 && (
         <div className="expand-btn-container">

@@ -4,7 +4,9 @@ import { editorStateService, memoService, userService } from "../services";
 import { useAppSelector } from "../store";
 import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
-import { formatMemoContent, MEMO_LINK_REG, parseHtmlToRawText } from "../helpers/marked";
+import { parseHTMLToRawText } from "../helpers/utils";
+import { marked } from "../labs/marked";
+import { MARK_REG } from "../labs/marked/parser";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -43,7 +45,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     const fetchLinkedMemos = async () => {
       try {
         const linkMemos: LinkedMemo[] = [];
-        const matchedArr = [...memo.content.matchAll(MEMO_LINK_REG)];
+        const matchedArr = [...memo.content.matchAll(MARK_REG)];
         for (const matchRes of matchedArr) {
           if (matchRes && matchRes.length === 3) {
             const id = Number(matchRes[2]);
@@ -208,7 +210,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
         <div className="linked-memos-wrapper">
           <p className="normal-text">{linkMemos.length} related MEMO</p>
           {linkMemos.map((memo, index) => {
-            const rawtext = parseHtmlToRawText(formatMemoContent(memo.content)).replaceAll("\n", " ");
+            const rawtext = parseHTMLToRawText(marked(memo.content)).replaceAll("\n", " ");
             return (
               <div className="linked-memo-container" key={`${index}-${memo.id}`} onClick={() => handleLinkedMemoClick(memo)}>
                 <span className="time-text">{memo.dateStr} </span>
@@ -222,7 +224,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
         <div className="linked-memos-wrapper">
           <p className="normal-text">{linkedMemos.length} linked MEMO</p>
           {linkedMemos.map((memo, index) => {
-            const rawtext = parseHtmlToRawText(formatMemoContent(memo.content)).replaceAll("\n", " ");
+            const rawtext = parseHTMLToRawText(marked(memo.content)).replaceAll("\n", " ");
             return (
               <div className="linked-memo-container" key={`${index}-${memo.id}`} onClick={() => handleLinkedMemoClick(memo)}>
                 <span className="time-text">{memo.dateStr} </span>

@@ -1,4 +1,4 @@
-import { IMAGE_URL_REG, LINK_URL_REG, MEMO_LINK_REG, TAG_REG } from "./marked";
+import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 
 export const relationConsts = [
   { text: "And", value: "AND" },
@@ -35,20 +35,12 @@ export const filterConsts = {
     ],
     values: [
       {
-        text: "Connected",
-        value: "CONNECTED",
-      },
-      {
         text: "No tags",
         value: "NOT_TAGGED",
       },
       {
         text: "Has links",
         value: "LINKED",
-      },
-      {
-        text: "Has images",
-        value: "IMAGED",
       },
     ],
   },
@@ -142,11 +134,7 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
     let matched = false;
     if (value === "NOT_TAGGED" && memo.content.match(TAG_REG) === null) {
       matched = true;
-    } else if (value === "LINKED" && memo.content.match(LINK_URL_REG) !== null) {
-      matched = true;
-    } else if (value === "IMAGED" && memo.content.match(IMAGE_URL_REG) !== null) {
-      matched = true;
-    } else if (value === "CONNECTED" && memo.content.match(MEMO_LINK_REG) !== null) {
+    } else if (value === "LINKED" && memo.content.match(LINK_REG) !== null) {
       matched = true;
     }
     if (operator === "IS_NOT") {
