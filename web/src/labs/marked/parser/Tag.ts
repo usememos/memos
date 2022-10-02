@@ -1,4 +1,4 @@
-export const TAG_REG = /#([^\s#]+?) /;
+export const TAG_REG = /[^\s]?#([^\s#]+?) /;
 
 const match = (rawStr: string): number => {
   const matchResult = rawStr.match(TAG_REG);
