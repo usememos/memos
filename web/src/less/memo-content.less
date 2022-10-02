@@ -4,7 +4,7 @@
   @apply w-full flex flex-col justify-start items-start;
 
   > .memo-content-text {
-    @apply w-full whitespace-pre-wrap break-words text-base leading-7;
+    @apply w-full break-words text-base leading-7;
 
     &.expanded {
       display: -webkit-box;
@@ -14,7 +14,8 @@
     }
 
     > p {
-      @apply inline-block w-full h-auto mb-1 last:mb-0 text-base leading-7 whitespace-pre-wrap break-words;
+      @apply w-full h-auto mb-1 last:mb-0 text-base leading-6 whitespace-pre-wrap break-words;
+      min-height: 24px;
     }
 
     .img {
@@ -30,7 +31,7 @@
     }
 
     .link {
-      @apply inline-block text-blue-600 cursor-pointer underline break-all hover:opacity-80;
+      @apply text-blue-600 cursor-pointer underline break-all hover:opacity-80;
     }
 
     .counter-block,
