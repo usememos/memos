@@ -5,11 +5,11 @@
 
   &.float {
     @media (max-width: 640px) {
-      @apply fixed w-full bottom-2 left-0 border-none rounded-none sm:relative sm:bottom-0 sm:w-full;
+      @apply fixed w-full bottom-0 left-0 border-none rounded-none;
       background-color: #f6f5f4;
 
       > .memo-editor {
-        @apply p-4 rounded-lg border-2 flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white;
+        @apply p-4 mb-2 rounded-lg border-2 flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white;
 
         .tag-action > .tag-list {
           @apply bottom-7;
@@ -18,7 +18,8 @@
       }
 
       .emoji-picker-react {
-        @apply bottom-16;
+        @apply !bottom-8;
+        top: unset !important;
       }
     }
   }
@@ -28,20 +29,21 @@
     background-color: #f6f5f4;
 
     > .memo-editor {
-      @apply p-4 rounded-lg border shadow-lg flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white;
+      @apply p-4 mb-4 rounded-lg border shadow-lg flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white;
 
       > .common-editor-inputer {
         @apply flex-grow w-full !h-full max-h-full;
       }
+    }
 
-      .tag-action > .tag-list {
-        @apply bottom-7;
-        top: unset;
-      }
+    .tag-action > .tag-list {
+      @apply bottom-7;
+      top: unset;
     }
 
     .emoji-picker-react {
-      @apply bottom-20;
+      @apply !bottom-8;
+      top: unset !important;
     }
   }
 
@@ -66,7 +68,7 @@
   }
 
   > .common-tools-wrapper {
-    @apply w-full flex flex-row justify-between items-center;
+    @apply relative w-full flex flex-row justify-between items-center;
 
     > .common-tools-container {
       @apply flex flex-row justify-start items-center;
@@ -102,6 +104,14 @@
 
         > .tip-text {
           @apply hidden ml-1 text-xs leading-5 text-gray-700 border border-gray-300 rounded-xl px-2;
+        }
+      }
+
+      .emoji-picker-react {
+        @apply absolute shadow left-6 top-8;
+
+        li.emoji::before {
+          @apply hidden;
         }
       }
     }
@@ -144,14 +154,6 @@
       > .close-icon {
         @apply w-4 h-auto ml-1 text-gray-500 hover:text-gray-800;
       }
-    }
-  }
-
-  .emoji-picker-react {
-    @apply absolute shadow;
-
-    li.emoji::before {
-      @apply hidden;
     }
   }
 }

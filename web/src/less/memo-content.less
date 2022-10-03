@@ -34,14 +34,15 @@
       @apply text-blue-600 cursor-pointer underline break-all hover:opacity-80;
     }
 
-    .counter-block,
+    .ol-block,
+    .ul-block,
     .todo-block {
-      @apply float-left inline-block box-border text-center w-7 font-mono select-none;
+      @apply inline-block box-border text-center w-7 font-mono select-none;
     }
 
     .todo-block {
       @apply w-4 h-4 leading-4 border rounded box-border text-lg cursor-pointer shadow-inner hover:opacity-80;
-      margin-top: 6px;
+      transform: translateY(2px);
       margin-left: 6px;
       margin-right: 6px;
     }

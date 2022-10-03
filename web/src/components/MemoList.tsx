@@ -92,7 +92,7 @@ const MemoList = () => {
   }, [query]);
 
   return (
-    <div className={`memo-list-container ${isFetching ? "" : "completed"}`} ref={wrapperElement}>
+    <div className="memo-list-container" ref={wrapperElement}>
       {sortedMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.createdTs}-${memo.updatedTs}`} memo={memo} />
       ))}

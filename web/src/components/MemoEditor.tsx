@@ -333,6 +333,11 @@ const MemoEditor: React.FC = () => {
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>
+          <EmojiPicker
+            shouldShow={state.shouldShowEmojiPicker}
+            onEmojiClick={handleEmojiClick}
+            onShouldShowEmojiPickerChange={handleChangeShouldShowEmojiPicker}
+          />
         </div>
         <div className="btns-container">
           <button className="action-btn confirm-btn" disabled={!allowSave} onClick={handleSaveBtnClick}>
@@ -353,11 +358,6 @@ const MemoEditor: React.FC = () => {
           })}
         </div>
       )}
-      <EmojiPicker
-        shouldShow={state.shouldShowEmojiPicker}
-        onEmojiClick={handleEmojiClick}
-        onShouldShowEmojiPickerChange={handleChangeShouldShowEmojiPicker}
-      />
     </div>
   );
 };
