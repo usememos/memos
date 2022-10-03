@@ -69,7 +69,7 @@ const UserBanner = () => {
           {!isVisitorMode && user?.role === "HOST" ? <span className="tag">MOD</span> : null}
         </div>
         <Dropdown
-          trigger={<Icon.MoreHorizontal className="w-5 h-auto cursor-pointer" />}
+          trigger={<Icon.MoreHorizontal className="ml-2 w-5 h-auto cursor-pointer" />}
           actionsClassName="!w-36"
           actions={
             <>
