@@ -86,4 +86,16 @@ console.log("hello world!")
       expect(marked(t.markdown)).toBe(t.want);
     }
   });
+  test("parse inline code", () => {
+    const tests = [
+      {
+        markdown: `Code: \`console.log("Hello world!")\``,
+        want: `<p>Code: <code>console.log("Hello world!")</code></p>`,
+      },
+    ];
+
+    for (const t of tests) {
+      expect(marked(t.markdown)).toBe(t.want);
+    }
+  });
 });
