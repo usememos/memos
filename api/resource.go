@@ -13,6 +13,9 @@ type Resource struct {
 	Blob     []byte `json:"-"`
 	Type     string `json:"type"`
 	Size     int64  `json:"size"`
+
+	// Related fields
+	LinkedMemoAmount int `json:"linkedMemoAmount"`
 }
 
 type ResourceCreate struct {

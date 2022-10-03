@@ -223,7 +223,7 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 			updated_ts
 		FROM resource
 		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY created_ts DESC
+		ORDER BY id DESC
 	`
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
