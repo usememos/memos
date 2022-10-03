@@ -1,12 +1,6 @@
--- drop all tables
-DROP TABLE IF EXISTS `system_setting`;
-DROP TABLE IF EXISTS `memo_resource`;
-DROP TABLE IF EXISTS `memo_organizer`;
-DROP TABLE IF EXISTS `memo`;
-DROP TABLE IF EXISTS `shortcut`;
-DROP TABLE IF EXISTS `resource`;
-DROP TABLE IF EXISTS `user_setting`;
-DROP TABLE IF EXISTS `user`;
+DROP TABLE IF EXISTS _user_old;
+
+ALTER TABLE user RENAME TO _user_old;
 
 -- user
 CREATE TABLE user (
@@ -21,10 +15,13 @@ CREATE TABLE user (
   open_id TEXT NOT NULL UNIQUE
 );
 
-INSERT INTO
-  sqlite_sequence (name, seq)
-VALUES
-  ('user', 100);
+INSERT INTO user (
+  id, created_ts, updated_ts, row_status, email, role, name, password_hash, open_id
+) 
+SELECT 
+  id, created_ts, updated_ts, row_status, email, role, name, password_hash, open_id 
+FROM 
+  _user_old;
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_user_modification_time`
 AFTER
@@ -38,6 +35,12 @@ WHERE
   rowid = old.rowid;
 END;
 
+DROP TABLE IF EXISTS _user_old;
+
+DROP TABLE IF EXISTS _memo_old;
+
+ALTER TABLE memo RENAME TO _memo_old;
+
 -- memo
 CREATE TABLE memo (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -50,10 +53,13 @@ CREATE TABLE memo (
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-INSERT INTO
-  sqlite_sequence (name, seq)
-VALUES
-  ('memo', 1000);
+INSERT INTO memo (
+  id, creator_id, created_ts, updated_ts, row_status, content, visibility
+) 
+SELECT 
+  id, creator_id, created_ts, updated_ts, row_status, content, visibility
+FROM 
+  _memo_old;
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_memo_modification_time`
 AFTER
@@ -67,6 +73,12 @@ WHERE
   rowid = old.rowid;
 END;
 
+DROP TABLE IF EXISTS _memo_old;
+
+DROP TABLE IF EXISTS _memo_organizer_old;
+
+ALTER TABLE memo_organizer RENAME TO _memo_organizer_old;
+
 -- memo_organizer
 CREATE TABLE memo_organizer (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -78,10 +90,19 @@ CREATE TABLE memo_organizer (
   UNIQUE(memo_id, user_id)
 );
 
-INSERT INTO
-  sqlite_sequence (name, seq)
-VALUES
-  ('memo_organizer', 1000);
+INSERT INTO memo_organizer (
+  id, memo_id, user_id, pinned
+) 
+SELECT 
+  id, memo_id, user_id, pinned
+FROM 
+  _memo_organizer_old;
+
+DROP TABLE IF EXISTS _memo_organizer_old;
+
+DROP TABLE IF EXISTS _shortcut_old;
+
+ALTER TABLE shortcut RENAME TO _shortcut_old;
 
 -- shortcut
 CREATE TABLE shortcut (
@@ -95,10 +116,13 @@ CREATE TABLE shortcut (
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-INSERT INTO
-  sqlite_sequence (name, seq)
-VALUES
-  ('shortcut', 10000);
+INSERT INTO shortcut (
+  id, creator_id, created_ts, updated_ts, row_status, title, payload
+) 
+SELECT 
+  id, creator_id, created_ts, updated_ts, row_status, title, payload
+FROM 
+  _shortcut_old;
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_shortcut_modification_time`
 AFTER
@@ -112,6 +136,12 @@ WHERE
   rowid = old.rowid;
 END;
 
+DROP TABLE IF EXISTS _shortcut_old;
+
+DROP TABLE IF EXISTS _resource_old;
+
+ALTER TABLE resource RENAME TO _resource_old;
+
 -- resource
 CREATE TABLE resource (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -120,16 +150,18 @@ CREATE TABLE resource (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   filename TEXT NOT NULL DEFAULT '',
   blob BLOB DEFAULT NULL,
-  external_link TEXT NOT NULL DEFAULT '',
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-INSERT INTO
-  sqlite_sequence (name, seq)
-VALUES
-  ('resource', 10000);
+INSERT INTO resource (
+  id, creator_id, created_ts, updated_ts, filename, blob, type, size
+) 
+SELECT 
+  id, creator_id, created_ts, updated_ts, filename, blob, type, size
+FROM 
+  _resource_old;
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_resource_modification_time`
 AFTER
@@ -143,6 +175,12 @@ WHERE
   rowid = old.rowid;
 END;
 
+DROP TABLE IF EXISTS _resource_old;
+
+DROP TABLE IF EXISTS _user_setting_old;
+
+ALTER TABLE user_setting RENAME TO _user_setting_old;
+
 -- user_setting
 CREATE TABLE user_setting (
   user_id INTEGER NOT NULL,
@@ -152,21 +190,12 @@ CREATE TABLE user_setting (
   UNIQUE(user_id, key)
 );
 
--- memo_resource
-CREATE TABLE memo_resource (
-  memo_id INTEGER NOT NULL,
-  resource_id INTEGER NOT NULL,
-  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  FOREIGN KEY(memo_id) REFERENCES memo(id) ON DELETE CASCADE,
-  FOREIGN KEY(resource_id) REFERENCES resource(id) ON DELETE CASCADE,
-  UNIQUE(memo_id, resource_id)
-);
+INSERT INTO user_setting (
+  user_id, key, value
+) 
+SELECT 
+  user_id, key, value
+FROM 
+  _user_setting_old;
 
--- system_setting
-CREATE TABLE system_setting (
-  name TEXT NOT NULL,
-  value TEXT NOT NULL,
-  description TEXT NOT NULL DEFAULT '',
-  UNIQUE(name)
-);
+DROP TABLE IF EXISTS _user_setting_old;

@@ -1,4 +1,6 @@
 -- drop all tables
+DROP TABLE IF EXISTS `system_setting`;
+DROP TABLE IF EXISTS `memo_resource`;
 DROP TABLE IF EXISTS `memo_organizer`;
 DROP TABLE IF EXISTS `memo`;
 DROP TABLE IF EXISTS `shortcut`;
@@ -11,7 +13,6 @@ CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  -- allowed row status are 'NORMAL', 'ARCHIVED'.
   row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
   email TEXT NOT NULL UNIQUE,
   role TEXT NOT NULL CHECK (role IN ('HOST', 'USER')) DEFAULT 'USER',
@@ -118,7 +119,8 @@ CREATE TABLE resource (
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   filename TEXT NOT NULL DEFAULT '',
-  blob BLOB NOT NULL,
+  blob BLOB DEFAULT NULL,
+  external_link TEXT NOT NULL DEFAULT '',
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
@@ -146,7 +148,25 @@ CREATE TABLE user_setting (
   user_id INTEGER NOT NULL,
   key TEXT NOT NULL,
   value TEXT NOT NULL,
-  FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE
+  FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE,
+  UNIQUE(user_id, key)
 );
 
-CREATE UNIQUE INDEX user_setting_key_user_id_index ON user_setting(key, user_id);
+-- memo_resource
+CREATE TABLE memo_resource (
+  memo_id INTEGER NOT NULL,
+  resource_id INTEGER NOT NULL,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  FOREIGN KEY(memo_id) REFERENCES memo(id) ON DELETE CASCADE,
+  FOREIGN KEY(resource_id) REFERENCES resource(id) ON DELETE CASCADE,
+  UNIQUE(memo_id, resource_id)
+);
+
+-- system_setting
+CREATE TABLE system_setting (
+  name TEXT NOT NULL,
+  value TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  UNIQUE(name)
+);
