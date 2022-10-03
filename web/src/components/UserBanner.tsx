@@ -76,25 +76,28 @@ const UserBanner = () => {
               {!userService.isVisitorMode() && (
                 <>
                   <button
-                    className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
                     onClick={handleResourcesBtnClick}
                   >
                     <span className="mr-1">🌄</span> {t("sidebar.resources")}
                   </button>
                   <button
-                    className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
                     onClick={handleArchivedBtnClick}
                   >
                     <span className="mr-1">🗂</span> {t("sidebar.archived")}
                   </button>
                 </>
               )}
-              <button className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100" onClick={handleAboutBtnClick}>
+              <button
+                className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                onClick={handleAboutBtnClick}
+              >
                 <span className="mr-1">🤠</span> {t("common.about")}
               </button>
               {!userService.isVisitorMode() && (
                 <button
-                  className="w-full px-3 text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                  className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
                   onClick={handleSignOutBtnClick}
                 >
                   <span className="mr-1">👋</span> {t("common.sign-out")}

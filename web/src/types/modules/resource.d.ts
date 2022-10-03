@@ -9,4 +9,6 @@ interface Resource {
   filename: string;
   type: string;
   size: string;
+
+  linkedMemoAmount: number;
 }

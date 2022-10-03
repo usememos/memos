@@ -1,7 +1,7 @@
 import { IEmojiData } from "emoji-picker-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { deleteMemoResource, getMemoResourceList, upsertMemoResource } from "../helpers/api";
+import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import { useAppSelector } from "../store";
@@ -64,11 +64,9 @@ const MemoEditor: React.FC = () => {
     ) {
       const memo = memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID);
       if (memo) {
-        getMemoResourceList(memo.id).then(({ data: { data } }) => {
-          setState({
-            ...state,
-            resourceList: data,
-          });
+        setState({
+          ...state,
+          resourceList: memo.resourceList,
         });
         editorRef.current?.setContent(memo.content ?? "");
         editorRef.current?.focus();
@@ -341,7 +339,8 @@ const MemoEditor: React.FC = () => {
         </div>
         <div className="btns-container">
           <button className="action-btn confirm-btn" disabled={!allowSave} onClick={handleSaveBtnClick}>
-            {t("editor.save")} <span className="icon-text">✍️</span>
+            {t("editor.save")}
+            <img className="icon-img" src="/logo.webp" />
           </button>
         </div>
       </div>
