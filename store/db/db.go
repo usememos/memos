@@ -51,22 +51,22 @@ func (db *DB) Open(ctx context.Context) (err error) {
 	db.Db = sqlDB
 	// If mode is dev, we should migrate and seed the database.
 	if db.profile.Mode == "dev" {
-		if err := db.applyLatestSchema(ctx); err != nil {
-			return fmt.Errorf("failed to apply latest schema: %w", err)
-		}
-		if err := db.seed(ctx); err != nil {
-			return fmt.Errorf("failed to seed: %w", err)
+		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
+			if err := db.applyLatestSchema(ctx); err != nil {
+				return fmt.Errorf("failed to apply latest schema: %w", err)
+			}
+			if err := db.seed(ctx); err != nil {
+				return fmt.Errorf("failed to seed: %w", err)
+			}
 		}
 	} else {
 		// If db file not exists, we should migrate the database.
 		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
-			err := db.applyLatestSchema(ctx)
-			if err != nil {
+			if err := db.applyLatestSchema(ctx); err != nil {
 				return fmt.Errorf("failed to apply latest schema: %w", err)
 			}
 		} else {
-			err := db.createMigrationHistoryTable(ctx)
-			if err != nil {
+			if err := db.createMigrationHistoryTable(ctx); err != nil {
 				return fmt.Errorf("failed to create migration_history table: %w", err)
 			}
 
