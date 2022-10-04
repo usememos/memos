@@ -3,16 +3,6 @@ import { marked } from "..";
 
 export const DONE_LIST_REG = /^- \[x\] ([\S ]+)(\n?)/;
 
-const match = (rawStr: string): number => {
-  const matchResult = rawStr.match(DONE_LIST_REG);
-  if (!matchResult) {
-    return 0;
-  }
-
-  const matchStr = matchResult[0];
-  return matchStr.length;
-};
-
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(DONE_LIST_REG);
   if (!matchResult) {
@@ -26,6 +16,5 @@ const renderer = (rawStr: string): string => {
 export default {
   name: "done list",
   regex: DONE_LIST_REG,
-  match,
   renderer,
 };

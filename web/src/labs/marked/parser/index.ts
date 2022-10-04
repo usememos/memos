@@ -28,5 +28,5 @@ export { EMPHASIS_REG } from "./Emphasis";
 
 // The order determines the order of execution.
 export const blockElementParserList = [CodeBlock, TodoList, DoneList, OrderedList, UnorderedList, Paragraph];
-export const inlineElementParserList = [Image, Mark, Link, Bold, Emphasis, InlineCode, PlainLink, Tag];
+export const inlineElementParserList = [Image, Mark, Bold, Emphasis, Link, InlineCode, PlainLink, Tag];
 export const parserList = [...blockElementParserList, ...inlineElementParserList];
