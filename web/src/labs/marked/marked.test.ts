@@ -98,4 +98,28 @@ console.log("hello world!")
       expect(marked(t.markdown)).toBe(t.want);
     }
   });
+  test("parse bold and em text", () => {
+    const tests = [
+      {
+        markdown: `Important: **Minecraft**`,
+        want: `<p>Important: <strong>Minecraft</strong></p>`,
+      },
+      {
+        markdown: `Em: *Minecraft*`,
+        want: `<p>Em: <em>Minecraft</em></p>`,
+      },
+      {
+        markdown: `Important: ***Minecraft/123***`,
+        want: `<p>Important: <strong><em>Minecraft/123</em></strong></p>`,
+      },
+      {
+        markdown: `Important: ***[baidu](https://baidu.com)***`,
+        want: `<p>Important: <strong><em><a class='link' target='_blank' rel='noreferrer' href='https://baidu.com'>baidu</a></em></strong></p>`,
+      },
+    ];
+
+    for (const t of tests) {
+      expect(marked(t.markdown)).toBe(t.want);
+    }
+  });
 });
