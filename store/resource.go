@@ -157,7 +157,7 @@ func (s *Store) DeleteResource(ctx context.Context, delete *api.ResourceDelete) 
 	}
 
 	// Vacuum sqlite database file size after deleting resource.
-	if _, err := s.db.Exec("VACUUM;"); err != nil {
+	if _, err := s.db.Exec("VACUUM"); err != nil {
 		return err
 	}
 

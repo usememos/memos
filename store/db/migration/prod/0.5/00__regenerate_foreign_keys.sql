@@ -199,3 +199,5 @@ FROM
   _user_setting_old;
 
 DROP TABLE IF EXISTS _user_setting_old;
+
+VACUUM;
