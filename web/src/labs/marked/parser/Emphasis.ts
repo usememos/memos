@@ -1,6 +1,6 @@
 import { marked } from "..";
+import Bold from "./Bold";
 import Link from "./Link";
-import PlainLink from "./PlainLink";
 
 export const EMPHASIS_REG = /\*([\S ]+)\*/;
 
@@ -10,7 +10,7 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
-  const parsedContent = marked(matchResult[1], [Link, PlainLink]);
+  const parsedContent = marked(matchResult[1], [], [Bold, Link]);
   return `<em>${parsedContent}</em>`;
 };
 

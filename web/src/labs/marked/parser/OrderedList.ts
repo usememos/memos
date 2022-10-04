@@ -9,7 +9,7 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
-  const parsedContent = marked(matchResult[2], inlineElementParserList);
+  const parsedContent = marked(matchResult[2], [], inlineElementParserList);
   return `<p><span class='ol-block'>${matchResult[1]}.</span>${parsedContent}</p>${matchResult[3]}`;
 };
 

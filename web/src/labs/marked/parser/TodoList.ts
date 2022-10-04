@@ -9,7 +9,7 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
-  const parsedContent = marked(matchResult[1], inlineElementParserList);
+  const parsedContent = marked(matchResult[1], [], inlineElementParserList);
   return `<p><span class='todo-block todo' data-value='TODO'></span>${parsedContent}</p>${matchResult[2]}`;
 };
 
