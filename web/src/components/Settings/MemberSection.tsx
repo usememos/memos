@@ -1,4 +1,3 @@
-import { isEmpty } from "lodash-es";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { userService } from "../../services";
@@ -47,7 +46,7 @@ const PreferencesSection = () => {
   };
 
   const handleCreateUserBtnClick = async () => {
-    if (isEmpty(state.createUserEmail) || isEmpty(state.createUserPassword)) {
+    if (state.createUserEmail === "" || state.createUserPassword === "") {
       toastHelper.error(t("message.fill-form"));
       return;
     }

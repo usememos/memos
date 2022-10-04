@@ -1,6 +1,5 @@
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
-import { indexOf } from "lodash-es";
 import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -132,7 +131,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       const todoElementList = [...(memoContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
       for (const element of todoElementList) {
         if (element === targetEl) {
-          const index = indexOf(todoElementList, element);
+          const index = todoElementList.indexOf(element);
           const tempList = memo.content.split(status === "DONE" ? /- \[x\] / : /- \[ \] /);
           let finalContent = "";
 

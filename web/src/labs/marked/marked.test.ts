@@ -1,4 +1,5 @@
 import { describe, expect, test } from "@jest/globals";
+import { unescape } from "lodash-es";
 import { marked } from ".";
 
 describe("test marked parser", () => {
@@ -27,7 +28,7 @@ console.log("hello world!")
     ];
 
     for (const t of tests) {
-      expect(marked(t.markdown)).toBe(t.want);
+      expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
   test("parse todo list block", () => {
@@ -43,7 +44,7 @@ console.log("hello world!")
     ];
 
     for (const t of tests) {
-      expect(marked(t.markdown)).toBe(t.want);
+      expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
   test("parse list block", () => {
@@ -59,7 +60,7 @@ console.log("hello world!")
     ];
 
     for (const t of tests) {
-      expect(marked(t.markdown)).toBe(t.want);
+      expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
   test("parse inline element", () => {
@@ -71,7 +72,7 @@ console.log("hello world!")
     ];
 
     for (const t of tests) {
-      expect(marked(t.markdown)).toBe(t.want);
+      expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
   test("parse plain link", () => {
@@ -83,7 +84,7 @@ console.log("hello world!")
     ];
 
     for (const t of tests) {
-      expect(marked(t.markdown)).toBe(t.want);
+      expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
   test("parse inline code", () => {
@@ -95,7 +96,7 @@ console.log("hello world!")
     ];
 
     for (const t of tests) {
-      expect(marked(t.markdown)).toBe(t.want);
+      expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
   test("parse bold and em text", () => {
@@ -119,7 +120,7 @@ console.log("hello world!")
     ];
 
     for (const t of tests) {
-      expect(marked(t.markdown)).toBe(t.want);
+      expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
 });
