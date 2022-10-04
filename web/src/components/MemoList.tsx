@@ -33,7 +33,7 @@ const MemoList = () => {
 
           if (tagQuery) {
             const tagsSet = new Set<string>();
-            for (const t of Array.from(memo.content.match(TAG_REG) ?? [])) {
+            for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
               const tag = t.replace(TAG_REG, "$1").trim();
               const items = tag.split("/");
               let temp = "";
