@@ -10,13 +10,12 @@
 
       > .memo-editor {
         @apply p-4 mb-2 rounded-lg border-2 flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white;
-
-        .tag-action > .tag-list {
-          @apply bottom-7;
-          top: unset;
-        }
       }
 
+      .tag-action > .tag-list {
+        @apply bottom-7;
+        top: unset !important;
+      }
       .emoji-picker-react {
         @apply !bottom-8;
         top: unset !important;
@@ -38,7 +37,7 @@
 
     .tag-action > .tag-list {
       @apply bottom-7;
-      top: unset;
+      top: unset !important;
     }
 
     .emoji-picker-react {
