@@ -1,8 +1,14 @@
+import { escape } from "lodash-es";
+
 export const MARK_REG = /@\[([\S ]+?)\]\((\S+?)\)/;
 
 const renderer = (rawStr: string): string => {
-  const parsedStr = rawStr.replace(MARK_REG, "<span class='memo-link-text' data-value='$2'>$1</span>");
-  return parsedStr;
+  const matchResult = rawStr.match(MARK_REG);
+  if (!matchResult) {
+    return rawStr;
+  }
+
+  return `<span class='memo-link-text' data-value='${escape(matchResult[2])}'>${escape(matchResult[1])}</span>`;
 };
 
 export default {

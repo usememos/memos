@@ -1,8 +1,14 @@
+import { escape } from "lodash-es";
+
 export const IMAGE_REG = /!\[.*?\]\((.+?)\)/;
 
 const renderer = (rawStr: string): string => {
-  const parsedStr = rawStr.replace(IMAGE_REG, "<img class='img' src='$1' />");
-  return parsedStr;
+  const matchResult = rawStr.match(IMAGE_REG);
+  if (!matchResult) {
+    return rawStr;
+  }
+
+  return `<img class='img' src='${escape(matchResult[1])}' />`;
 };
 
 export default {

@@ -12,6 +12,7 @@ import Bold from "./Bold";
 import Emphasis from "./Emphasis";
 import PlainLink from "./PlainLink";
 import InlineCode from "./InlineCode";
+import PlainText from "./PlainText";
 
 export { CODE_BLOCK_REG } from "./CodeBlock";
 export { TODO_LIST_REG } from "./TodoList";
@@ -23,5 +24,5 @@ export { MARK_REG } from "./Mark";
 
 // The order determines the order of execution.
 export const blockElementParserList = [CodeBlock, TodoList, DoneList, OrderedList, UnorderedList, Paragraph];
-export const inlineElementParserList = [Image, Mark, Bold, Emphasis, Link, InlineCode, PlainLink, Tag];
+export const inlineElementParserList = [Image, Mark, Bold, Emphasis, Link, InlineCode, PlainLink, Tag, PlainText];
 export const parserList = [...blockElementParserList, ...inlineElementParserList];
