@@ -1,3 +1,5 @@
+PRAGMA foreign_keys=off;
+
 DROP TABLE IF EXISTS _user_old;
 
 ALTER TABLE user RENAME TO _user_old;
@@ -15,13 +17,7 @@ CREATE TABLE user (
   open_id TEXT NOT NULL UNIQUE
 );
 
-INSERT INTO user (
-  id, created_ts, updated_ts, row_status, email, role, name, password_hash, open_id
-) 
-SELECT 
-  id, created_ts, updated_ts, row_status, email, role, name, password_hash, open_id 
-FROM 
-  _user_old;
+INSERT INTO user SELECT * FROM _user_old;
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_user_modification_time`
 AFTER
@@ -53,13 +49,7 @@ CREATE TABLE memo (
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-INSERT INTO memo (
-  id, creator_id, created_ts, updated_ts, row_status, content, visibility
-) 
-SELECT 
-  id, creator_id, created_ts, updated_ts, row_status, content, visibility
-FROM 
-  _memo_old;
+INSERT INTO memo SELECT * FROM _memo_old;
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_memo_modification_time`
 AFTER
@@ -90,13 +80,7 @@ CREATE TABLE memo_organizer (
   UNIQUE(memo_id, user_id)
 );
 
-INSERT INTO memo_organizer (
-  id, memo_id, user_id, pinned
-) 
-SELECT 
-  id, memo_id, user_id, pinned
-FROM 
-  _memo_organizer_old;
+INSERT INTO memo_organizer SELECT * FROM _memo_organizer_old;
 
 DROP TABLE IF EXISTS _memo_organizer_old;
 
@@ -116,13 +100,7 @@ CREATE TABLE shortcut (
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-INSERT INTO shortcut (
-  id, creator_id, created_ts, updated_ts, row_status, title, payload
-) 
-SELECT 
-  id, creator_id, created_ts, updated_ts, row_status, title, payload
-FROM 
-  _shortcut_old;
+INSERT INTO shortcut SELECT * FROM _shortcut_old;
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_shortcut_modification_time`
 AFTER
@@ -155,13 +133,7 @@ CREATE TABLE resource (
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-INSERT INTO resource (
-  id, creator_id, created_ts, updated_ts, filename, blob, type, size
-) 
-SELECT 
-  id, creator_id, created_ts, updated_ts, filename, blob, type, size
-FROM 
-  _resource_old;
+INSERT INTO resource SELECT * FROM _resource_old;
 
 CREATE TRIGGER IF NOT EXISTS `trigger_update_resource_modification_time`
 AFTER
@@ -190,14 +162,8 @@ CREATE TABLE user_setting (
   UNIQUE(user_id, key)
 );
 
-INSERT INTO user_setting (
-  user_id, key, value
-) 
-SELECT 
-  user_id, key, value
-FROM 
-  _user_setting_old;
+INSERT INTO user_setting SELECT * FROM _user_setting_old;
 
 DROP TABLE IF EXISTS _user_setting_old;
 
-VACUUM;
+PRAGMA foreign_keys=on;
