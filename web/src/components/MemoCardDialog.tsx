@@ -1,3 +1,4 @@
+import copy from "copy-to-clipboard";
 import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { editorStateService, memoService, userService } from "../services";
@@ -130,6 +131,11 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     editorStateService.setEditMemoWithId(memo.id);
   };
 
+  const handleCopyContent = () => {
+    copy(memo.content);
+    toastHelper.success(t("message.succeed-copy-content"));
+  };
+
   const handleVisibilitySelectorChange = async (visibility: Visibility) => {
     if (memo.visibility === visibility) {
       return;
@@ -170,6 +176,9 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
               <>
                 <button className="btn edit-btn" onClick={handleGotoMemoLinkBtnClick}>
                   <Icon.ExternalLink className="icon-img" />
+                </button>
+                <button className="btn copy-btn" onClick={handleCopyContent}>
+                  <Icon.Clipboard className="icon-img" />
                 </button>
                 <button className="btn edit-btn" onClick={handleEditMemoBtnClick}>
                   <Icon.Edit3 className="icon-img" />

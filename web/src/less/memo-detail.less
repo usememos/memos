@@ -41,31 +41,47 @@
         @apply flex flex-col justify-start items-start w-full p-4 mt-2 bg-white rounded-lg border border-white hover:border-gray-200;
 
         > .memo-header {
-          @apply mb-2 w-full flex flex-row justify-start items-center text-sm font-mono text-gray-400;
+          @apply mb-2 w-full flex flex-row justify-between items-center text-sm font-mono text-gray-400;
 
-          > .split-text {
-            @apply mx-2;
-          }
+          > .status-container {
+            @apply flex flex-row justify-start items-center;
 
-          > .name-text {
-            @apply hover:text-green-600 hover:underline;
-          }
-
-          > .visibility-selector {
-            > .status-text {
-              @apply flex flex-row justify-start items-center leading-5 text-xs cursor-pointer ml-2 rounded border px-1;
-
-              &.public {
-                @apply border-green-600 text-green-600;
+            > .split-text {
+              @apply mx-2;
+            }
+  
+            > .name-text {
+              @apply hover:text-green-600 hover:underline;
+            }
+  
+            > .visibility-selector {
+              > .status-text {
+                @apply flex flex-row justify-start items-center leading-5 text-xs cursor-pointer ml-2 rounded border px-1;
+  
+                &.public {
+                  @apply border-green-600 text-green-600;
+                }
+  
+                &.protected {
+                  @apply border-gray-400 text-gray-400;
+                }
               }
-
-              &.protected {
-                @apply border-gray-400 text-gray-400;
+  
+              .action-button {
+                @apply px-2 leading-7 w-full rounded text-gray-600 hover:bg-gray-100;
               }
             }
+          }
 
-            .action-button {
-              @apply px-2 leading-7 w-full rounded text-gray-600 hover:bg-gray-100;
+          .btns-container {
+            .flex(row, flex-start, center);
+
+            > .btn {
+              @apply rounded;
+            }
+
+            > .copy-btn {
+              @apply hover:bg-gray-100;
             }
           }
         }

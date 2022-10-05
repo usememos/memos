@@ -74,6 +74,7 @@
   },
   "memo": {
     "view-detail": "View Detail",
+    "copy": "Copy",
     "visibility": {
       "private": "Private",
       "protected": "Protected",
@@ -138,6 +139,7 @@
     "user-not-found": "User not found",
     "password-changed": "Password Changed",
     "private-only": "This memo is private only.",
-    "copied": "Copied"
+    "copied": "Copied",
+    "succeed-copy-content": "Succeed to copy content to clipboard."
   }
 }

@@ -74,6 +74,7 @@
   },
   "memo": {
     "view-detail": "Xem chi tiết",
+    "copy": "Sao chép",
     "visibility": {
       "private": "Private",
       "protected": "Protected",
@@ -138,6 +139,7 @@
     "user-not-found": "Không tìm thấy người dùng này",
     "password-changed": "Mật khẩu đã được thay đổi",
     "private-only": "Memo này có trạng thái riêng tư.",
-    "copied": "Đã sao chép"
+    "copied": "Đã sao chép",
+    "succeed-copy-content": "Đã sao chép nội dung memo thành công."
   }
 }
