@@ -1,4 +1,3 @@
-import { isUndefined } from "lodash-es";
 import { locationService } from ".";
 import * as api from "../helpers/api";
 import store from "../store";
@@ -58,7 +57,7 @@ const userService = {
   },
 
   isVisitorMode: () => {
-    return !isUndefined(userService.getUserIdFromPath());
+    return !(userService.getUserIdFromPath() === undefined);
   },
 
   getUserIdFromPath: () => {

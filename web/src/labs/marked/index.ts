@@ -27,6 +27,10 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
   let matchedIndex = -1;
 
   for (const parser of inlineElementParserList) {
+    if (parser.name === "plain text" && matchedInlineParser !== undefined) {
+      continue;
+    }
+
     const startIndex = markdownStr.search(parser.regex);
     const matchedLength = match(markdownStr, parser.regex);
 

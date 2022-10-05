@@ -1,8 +1,14 @@
+import { escape } from "lodash-es";
+
 export const TAG_REG = /[^\s]?#([^\s#]+?) /;
 
 const renderer = (rawStr: string): string => {
-  const parsedStr = rawStr.replace(TAG_REG, "<span class='tag-span'>#$1</span> ");
-  return parsedStr;
+  const matchResult = rawStr.match(TAG_REG);
+  if (!matchResult) {
+    return rawStr;
+  }
+
+  return `<span class='tag-span'>#${escape(matchResult[1])}</span> `;
 };
 
 export default {

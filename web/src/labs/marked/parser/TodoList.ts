@@ -1,3 +1,4 @@
+import { escape } from "lodash-es";
 import { inlineElementParserList } from ".";
 import { marked } from "..";
 
@@ -10,7 +11,7 @@ const renderer = (rawStr: string): string => {
   }
 
   const parsedContent = marked(matchResult[1], [], inlineElementParserList);
-  return `<p><span class='todo-block todo' data-value='TODO'></span>${parsedContent}</p>${matchResult[2]}`;
+  return `<p><span class='todo-block todo' data-value='TODO'></span>${parsedContent}</p>${escape(matchResult[2])}`;
 };
 
 export default {

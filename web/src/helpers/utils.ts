@@ -1,7 +1,5 @@
-import { assign, isNull, isUndefined } from "lodash-es";
-
 export const isNullorUndefined = (value: any) => {
-  return isNull(value) || isUndefined(value);
+  return value === null || value === undefined;
 };
 
 export function getNowTimeStamp(): number {
@@ -96,7 +94,7 @@ export const getElementBounding = (element: HTMLElement, relativeEl?: HTMLElemen
   };
 
   if ((relativeEl.tagName !== "BODY" && relativeElPosition === "relative") || relativeElPosition === "sticky") {
-    return assign(bounding, {
+    return Object.assign(bounding, {
       top: elementRect.top - relativeElRect.top,
       left: elementRect.left - relativeElRect.left,
     });
@@ -117,13 +115,13 @@ export const getElementBounding = (element: HTMLElement, relativeEl?: HTMLElemen
   };
 
   if (isElementFixed(element)) {
-    return assign(bounding, {
+    return Object.assign(bounding, {
       top: elementRect.top,
       left: elementRect.left,
     });
   }
 
-  return assign(bounding, {
+  return Object.assign(bounding, {
     top: elementRect.top + scrollTop,
     left: elementRect.left + scrollLeft,
   });

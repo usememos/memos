@@ -1,8 +1,14 @@
+import { escape } from "lodash-es";
+
 export const LINK_REG = /\[(.*?)\]\((.+?)\)/;
 
 const renderer = (rawStr: string): string => {
-  const parsedStr = rawStr.replace(LINK_REG, "<a class='link' target='_blank' rel='noreferrer' href='$2'>$1</a>");
-  return parsedStr;
+  const matchResult = rawStr.match(LINK_REG);
+  if (!matchResult) {
+    return rawStr;
+  }
+
+  return `<a class='link' target='_blank' rel='noreferrer' href='${escape(matchResult[2])}'>${escape(matchResult[1])}</a>`;
 };
 
 export default {
