@@ -1,3 +1,4 @@
+import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { indexOf } from "lodash-es";
@@ -60,6 +61,11 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   const handleViewMemoDetailPage = () => {
     navigate(`/m/${memo.id}`);
+  };
+
+  const handleCopyContent = () => {
+    copy(memo.content);
+    toastHelper.success(t("message.succeed-copy-content"));
   };
 
   const handleTogglePinMemoBtnClick = async () => {
@@ -205,6 +211,9 @@ const Memo: React.FC<Props> = (props: Props) => {
                 </div>
                 <span className="btn" onClick={handleMarkMemoClick}>
                   {t("common.mark")}
+                </span>
+                <span className="btn" onClick={handleCopyContent}>
+                  {t("memo.copy")}
                 </span>
                 <span className="btn" onClick={handleViewMemoDetailPage}>
                   {t("memo.view-detail")}

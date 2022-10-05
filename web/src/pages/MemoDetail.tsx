@@ -1,3 +1,4 @@
+import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -65,6 +66,11 @@ const MemoDetail = () => {
     });
   };
 
+  const handleCopyContent = () => {
+    copy(state.memo.content);
+    toastHelper.success(t("message.succeed-copy-content"));
+  };
+
   return (
     <section className="page-wrapper memo-detail">
       <div className="page-container">
@@ -92,38 +98,45 @@ const MemoDetail = () => {
           <main className="memos-wrapper">
             <div className="memo-container">
               <div className="memo-header">
-                <span className="time-text">{dayjs(state.memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
-                {user?.id === state.memo.creatorId ? (
-                  <Dropdown
-                    className="visibility-selector"
-                    trigger={
-                      <span className={`status-text ${state.memo.visibility.toLowerCase()}`}>
-                        {state.memo.visibility} <Icon.ChevronDown className="w-4 h-auto ml-px" />
-                      </span>
-                    }
-                    actions={
-                      <>
-                        <span className="action-button" onClick={() => handleVisibilitySelectorChange("PRIVATE")}>
-                          Private
+                <div className="status-container">
+                  <span className="time-text">{dayjs(state.memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
+                  {user?.id === state.memo.creatorId ? (
+                    <Dropdown
+                      className="visibility-selector"
+                      trigger={
+                        <span className={`status-text ${state.memo.visibility.toLowerCase()}`}>
+                          {state.memo.visibility} <Icon.ChevronDown className="w-4 h-auto ml-px" />
                         </span>
-                        <span className="action-button" onClick={() => handleVisibilitySelectorChange("PROTECTED")}>
-                          Protected
-                        </span>
-                        <span className="action-button" onClick={() => handleVisibilitySelectorChange("PUBLIC")}>
-                          Public
-                        </span>
-                      </>
-                    }
-                    actionsClassName="!w-28 !left-0 !p-1"
-                  />
-                ) : (
-                  <>
-                    <span className="split-text">by</span>
-                    <a className="name-text" href={`/u/${state.memo.creator.id}`}>
-                      {state.memo.creator.name}
-                    </a>
-                  </>
-                )}
+                      }
+                      actions={
+                        <>
+                          <span className="action-button" onClick={() => handleVisibilitySelectorChange("PRIVATE")}>
+                            Private
+                          </span>
+                          <span className="action-button" onClick={() => handleVisibilitySelectorChange("PROTECTED")}>
+                            Protected
+                          </span>
+                          <span className="action-button" onClick={() => handleVisibilitySelectorChange("PUBLIC")}>
+                            Public
+                          </span>
+                        </>
+                      }
+                      actionsClassName="!w-28 !left-0 !p-1"
+                    />
+                  ) : (
+                    <>
+                      <span className="split-text">by</span>
+                      <a className="name-text" href={`/u/${state.memo.creator.id}`}>
+                        {state.memo.creator.name}
+                      </a>
+                    </>
+                  )}
+                </div>
+                <div className="btns-container">
+                  <button className="btn copy-btn" onClick={handleCopyContent}>
+                    <Icon.Clipboard className="icon-img" />
+                  </button>
+                </div>
               </div>
               <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
               <MemoResources memo={state.memo} />
