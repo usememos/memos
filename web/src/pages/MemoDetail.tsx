@@ -132,11 +132,20 @@ const MemoDetail = () => {
                     </>
                   )}
                 </div>
-                <div className="btns-container">
-                  <button className="btn copy-btn" onClick={handleCopyContent}>
-                    <Icon.Clipboard className="icon-img" />
-                  </button>
-                </div>
+                <Dropdown
+                  trigger={<Icon.MoreHorizontal className="ml-2 w-4 h-auto cursor-pointer text-gray-500" />}
+                  actionsClassName="!w-32"
+                  actions={
+                    <>
+                      <button
+                        className="w-full flex flex-row justify-start items-center px-3 whitespace-nowrap text-sm text-left leading-8 cursor-pointer rounded hover:bg-gray-100"
+                        onClick={handleCopyContent}
+                      >
+                        <Icon.Clipboard className="w-4 h-auto mr-2" /> {t("memo.copy")}
+                      </button>
+                    </>
+                  }
+                />
               </div>
               <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
               <MemoResources memo={state.memo} />
