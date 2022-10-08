@@ -106,7 +106,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const handleDeleteResourceBtnClick = (resource: Resource) => {
     let warningText = t("resources.warning-text");
     if (resource.linkedMemoAmount > 0) {
-      warningText = warningText + `\nLinked memo amount: ${resource.linkedMemoAmount}`;
+      warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
     }
 
     showCommonDialog({
