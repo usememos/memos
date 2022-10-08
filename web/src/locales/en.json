@@ -7,9 +7,11 @@
     "repeat-new-password": "Repeat the new password",
     "username": "Username",
     "save": "Save",
+    "close": "Close",
     "cancel": "Cancel",
     "create": "Create",
     "change": "Change",
+    "confirm": "Confirm",
     "reset": "Reset",
     "language": "Language",
     "version": "Version",
@@ -58,7 +60,9 @@
     "fetching-data": "fetching data...",
     "upload": "Upload",
     "preview": "Preview",
-    "copy-link": "Copy Link"
+    "copy-link": "Copy Link",
+    "delete-resource": "Delete Resource",
+    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE❗️"
   },
   "archived": {
     "archived-memos": "Archived Memos",

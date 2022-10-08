@@ -7,9 +7,11 @@
     "repeat-new-password": "重复新密码",
     "username": "用户名",
     "save": "保存",
+    "close": "关闭",
     "cancel": "退出",
     "create": "创建",
     "change": "修改",
+    "confirm": "确定",
     "reset": "重置",
     "language": "语言",
     "version": "版本",
@@ -58,7 +60,9 @@
     "fetching-data": "请求数据中...",
     "upload": "上传",
     "preview": "预览",
-    "copy-link": "拷贝链接"
+    "copy-link": "拷贝链接",
+    "delete-resource": "删除资源",
+    "warning-text": "确定删除这个资源么？此操作不可逆❗️"
   },
   "archived": {
     "archived-memos": "已归档的 Memo",
