@@ -19,6 +19,8 @@ const defaultProps = {
   title: "",
   content: "",
   style: "info",
+  closeBtnText: "common.close",
+  confirmBtnText: "common.confirm",
   onClose: () => null,
   onConfirm: () => null,
 };
@@ -27,8 +29,8 @@ const CommonDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const { title, content, destroy, closeBtnText, confirmBtnText, onClose, onConfirm, style } = {
     ...defaultProps,
-    closeBtnText: t("common.close"),
-    confirmBtnText: t("common.confirm"),
+    closeBtnText: t(defaultProps.closeBtnText),
+    confirmBtnText: t(defaultProps.confirmBtnText),
     ...props,
   };
 
