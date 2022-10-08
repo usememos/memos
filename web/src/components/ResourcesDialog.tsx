@@ -104,13 +104,13 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleDeleteResourceBtnClick = (resource: Resource) => {
-    let warningText = "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE.❗️";
+    let warningText = t("resources.warning-text");
     if (resource.linkedMemoAmount > 0) {
-      warningText = warningText + `\nLinked memo amount: ${resource.linkedMemoAmount}`;
+      warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
     }
 
     showCommonDialog({
-      title: `Delete Resource`,
+      title: t("resources.delete-resource"),
       content: warningText,
       style: "warning",
       onConfirm: async () => {

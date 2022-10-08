@@ -11,11 +11,11 @@ export const filterConsts = {
     value: "TAG",
     operators: [
       {
-        text: "Contains",
+        text: "shortcut-list.operator.contains",
         value: "CONTAIN",
       },
       {
-        text: "Does not contain",
+        text: "shortcut-list.operator.not-contains",
         value: "NOT_CONTAIN",
       },
     ],
@@ -25,21 +25,21 @@ export const filterConsts = {
     value: "TYPE",
     operators: [
       {
-        text: "Is",
+        text: "shortcut-list.operator.is",
         value: "IS",
       },
       {
-        text: "Is not",
+        text: "shortcut-list.operator.is-not",
         value: "IS_NOT",
       },
     ],
     values: [
       {
-        text: "No tags",
+        text: "shortcut-list.value.not-tagged",
         value: "NOT_TAGGED",
       },
       {
-        text: "Has links",
+        text: "shortcut-list.value.linked",
         value: "LINKED",
       },
     ],
@@ -49,11 +49,11 @@ export const filterConsts = {
     value: "TEXT",
     operators: [
       {
-        text: "Contain",
+        text: "shortcut-list.operator.contains",
         value: "CONTAIN",
       },
       {
-        text: "Does not contain",
+        text: "shortcut-list.operator.not-contains",
         value: "NOT_CONTAIN",
       },
     ],

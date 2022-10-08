@@ -7,9 +7,11 @@
     "repeat-new-password": "重复新密码",
     "username": "用户名",
     "save": "保存",
+    "close": "关闭",
     "cancel": "退出",
     "create": "创建",
     "change": "修改",
+    "confirm": "确定",
     "reset": "重置",
     "language": "语言",
     "version": "版本",
@@ -58,7 +60,10 @@
     "fetching-data": "请求数据中...",
     "upload": "上传",
     "preview": "预览",
-    "copy-link": "拷贝链接"
+    "copy-link": "拷贝链接",
+    "delete-resource": "删除资源",
+    "warning-text": "确定删除这个资源么？此操作不可逆❗️",
+    "linked-amount": "链接的 Memo 数量"
   },
   "archived": {
     "archived-memos": "已归档的 Memo",
@@ -91,7 +96,17 @@
     "new-filter": "新建过滤器",
     "eligible-memo": "符合条件的 memo",
     "fill-previous": "请填写之前的过滤值",
-    "title-required": "标题是必填项。"
+    "title-required": "标题是必填项。",
+    "operator": {
+      "contains": "包含",
+      "not-contains": "不包含",
+      "is": "是",
+      "is-not": "不是"
+    },
+    "value": {
+      "not-tagged": "无标签",
+      "linked": "包含链接"
+    }
   },
   "tag-list": {
     "tip-text": "输入`#tag `来创建标签"
