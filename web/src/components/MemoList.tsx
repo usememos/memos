@@ -93,7 +93,7 @@ const MemoList = () => {
   }, [query]);
 
   return (
-    <div className="memo-list-container" ref={wrapperElement} onClick={() => closeSidebar()}>
+    <div className="memo-list-container" ref={wrapperElement} onClick={closeSidebar}>
       {sortedMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.createdTs}-${memo.updatedTs}`} memo={memo} />
       ))}

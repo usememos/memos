@@ -70,7 +70,7 @@ const TagList = () => {
   }, [tagsText]);
 
   return (
-    <div className="tags-wrapper" onClick={() => closeSidebar()}>
+    <div className="tags-wrapper" onClick={closeSidebar}>
       <p className="title-text">{t("common.tags")}</p>
       <div className="tags-container">
         {tags.map((t, idx) => (
