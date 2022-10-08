@@ -62,7 +62,8 @@
     "preview": "预览",
     "copy-link": "拷贝链接",
     "delete-resource": "删除资源",
-    "warning-text": "确定删除这个资源么？此操作不可逆❗️"
+    "warning-text": "确定删除这个资源么？此操作不可逆❗️",
+    "linked-amount": "链接的 Memo 数量"
   },
   "archived": {
     "archived-memos": "已归档的 Memo",
