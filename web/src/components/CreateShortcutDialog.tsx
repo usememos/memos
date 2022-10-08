@@ -161,13 +161,17 @@ interface MemoFilterInputerProps {
 
 const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInputerProps) => {
   const { index, filter, handleFilterChange, handleFilterRemove } = props;
+  const { t } = useTranslation();
   const [value, setValue] = useState<string>(filter.value.value);
 
   const tags = Array.from(memoService.getState().tags);
   const { type } = filter;
-  const dataSource =
+
+  const operatorDataSource = Object.values(filterConsts[type as FilterType].operators).map(({ text, value }) => ({ text: t(text), value }));
+
+  const valueDataSource =
     type === "TYPE"
-      ? filterConsts["TYPE"].values
+      ? filterConsts["TYPE"].values.map(({ text, value }) => ({ text: t(text), value }))
       : tags.sort().map((t) => {
           return { text: t, value: t };
         });
@@ -242,7 +246,7 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
       />
       <Selector
         className="operator-selector"
-        dataSource={Object.values(filterConsts[type as FilterType].operators)}
+        dataSource={operatorDataSource}
         value={filter.value.operator}
         handleValueChanged={handleOperatorChange}
       />
@@ -256,7 +260,7 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
           }}
         />
       ) : (
-        <Selector className="value-selector" dataSource={dataSource} value={value} handleValueChanged={handleValueChange} />
+        <Selector className="value-selector" dataSource={valueDataSource} value={value} handleValueChanged={handleValueChange} />
       )}
       <Icon.X className="remove-btn" onClick={handleRemoveBtnClick} />
     </div>

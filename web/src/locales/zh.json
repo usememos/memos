@@ -95,7 +95,17 @@
     "new-filter": "新建过滤器",
     "eligible-memo": "符合条件的 memo",
     "fill-previous": "请填写之前的过滤值",
-    "title-required": "标题是必填项。"
+    "title-required": "标题是必填项。",
+    "operator": {
+      "contains": "包含",
+      "not-contains": "不包含",
+      "is": "是",
+      "is-not": "不是"
+    },
+    "value": {
+      "not-tagged": "无标签",
+      "linked": "包含链接"
+    }
   },
   "tag-list": {
     "tip-text": "输入`#tag `来创建标签"

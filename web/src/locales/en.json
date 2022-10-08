@@ -95,7 +95,17 @@
     "new-filter": "New Filter",
     "eligible-memo": "eligible memo",
     "fill-previous": "Please fill in previous filter value",
-    "title-required": "Title is required"
+    "title-required": "Title is required",
+    "operator": {
+      "contains": "Contains",
+      "not-contains": "Does not contain",
+      "is": "Is",
+      "is-not": "Is Not"
+    },
+    "value": {
+      "not-tagged": "No tags",
+      "linked": "Has links"
+    }
   },
   "tag-list": {
     "tip-text": "Enter `#tag ` to create"
