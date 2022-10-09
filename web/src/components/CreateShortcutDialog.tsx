@@ -132,7 +132,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
               );
             })}
             <div className="create-filter-btn" onClick={handleAddFilterBenClick}>
-              {t("shortcut-list.new-filter")}
+              {t("filter.new-filter")}
             </div>
           </div>
         </div>

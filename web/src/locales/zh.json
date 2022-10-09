@@ -93,10 +93,12 @@
     "shortcut-title": "捷径标题",
     "create-shortcut": "创建捷径",
     "edit-shortcut": "编辑捷径",
-    "new-filter": "新建过滤器",
     "eligible-memo": "符合条件的 memo",
     "fill-previous": "请填写之前的过滤值",
-    "title-required": "标题是必填项。",
+    "title-required": "标题是必填项。"
+  },
+  "filter": {
+    "new-filter": "新建过滤器",
     "operator": {
       "contains": "包含",
       "not-contains": "不包含",

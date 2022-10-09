@@ -7,9 +7,11 @@
     "repeat-new-password": "Nhập lại mật khẩu mới",
     "username": "Tên đăng nhập",
     "save": "Lưu",
+    "close": "Close",
     "cancel": "Hủy",
     "create": "Tạo mới",
     "change": "Thay đổi",
+    "confirm": "Confirm",
     "reset": "Khôi phục",
     "language": "Ngôn Ngữ",
     "version": "Phiên bản",
@@ -58,7 +60,10 @@
     "fetching-data": "đang tải dữ liệu...",
     "upload": "Tải lên",
     "preview": "Xem trước",
-    "copy-link": "Sao chép"
+    "copy-link": "Sao chép",
+    "delete-resource": "Delete Resource",
+    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE❗️",
+    "linked-amount": "Linked memo amount"
   },
   "archived": {
     "archived-memos": "Memo đã lưu trữ",
@@ -88,10 +93,22 @@
     "shortcut-title": "Tên lối tắt",
     "create-shortcut": "Tạo lối tắt",
     "edit-shortcut": "Chỉnh sửa lối tắt",
-    "new-filter": "Bộ lọc mới",
     "eligible-memo": "memo đạt chuẩn",
     "fill-previous": "Vui lòng nhập vào giá trị của bộ lọc trước đó",
     "title-required": "Tiêu đề là bắt buộc"
+  },
+  "filter": {
+    "new-filter": "Bộ lọc mới",
+    "operator": {
+      "contains": "Contains",
+      "not-contains": "Does not contain",
+      "is": "Is",
+      "is-not": "Is Not"
+    },
+    "value": {
+      "not-tagged": "No tags",
+      "linked": "Has links"
+    }
   },
   "tag-list": {
     "tip-text": "Nhập `#tag` để tạo mới"

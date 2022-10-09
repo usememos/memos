@@ -93,10 +93,12 @@
     "shortcut-title": "shortcut title",
     "create-shortcut": "Create Shortcut",
     "edit-shortcut": "Edit Shortcut",
-    "new-filter": "New Filter",
     "eligible-memo": "eligible memo",
     "fill-previous": "Please fill in previous filter value",
-    "title-required": "Title is required",
+    "title-required": "Title is required"
+  },
+  "filter": {
+    "new-filter": "New Filter",
     "operator": {
       "contains": "Contains",
       "not-contains": "Does not contain",
