@@ -6,7 +6,7 @@ import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";
-import closeSidebar from "../hooks/closeSidebar";
+import {closeSidebar} from "../helpers/utils";
 import Memo from "./Memo";
 import "../less/memo-list.less";
 
