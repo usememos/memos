@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../store";
 import { locationService, memoService, userService } from "../services";
 import useToggle from "../hooks/useToggle";
-import {closeSidebar} from "../helpers/utils";
+import { closeSidebar } from "../helpers/utils";
 import Icon from "./Icon";
 import "../less/tag-list.less";
 
