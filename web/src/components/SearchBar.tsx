@@ -34,16 +34,16 @@ const SearchBar = () => {
           <div className="section-container types-container">
             <span className="section-text">{t("common.type").toUpperCase()}:</span>
             <div className="values-container">
-              {memoSpecialTypes.map((t, idx) => {
+              {memoSpecialTypes.map((type, idx) => {
                 return (
-                  <div key={t.value}>
+                  <div key={type.value}>
                     <span
-                      className={`type-item ${memoType === t.value ? "selected" : ""}`}
+                      className={`type-item ${memoType === type.value ? "selected" : ""}`}
                       onClick={() => {
-                        handleMemoTypeItemClick(t.value as MemoSpecType);
+                        handleMemoTypeItemClick(type.value as MemoSpecType);
                       }}
                     >
-                      {t.text}
+                      {t(type.text)}
                     </span>
                     {idx + 1 < memoSpecialTypes.length ? <span className="split-text">/</span> : null}
                   </div>

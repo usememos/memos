@@ -61,9 +61,9 @@
     "upload": "Tải lên",
     "preview": "Xem trước",
     "copy-link": "Sao chép",
-    "delete-resource": "Delete Resource",
-    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE❗️",
-    "linked-amount": "Linked memo amount"
+    "delete-resource": "Xóa tài nguyên",
+    "warning-text": "Bạn có chắc chắn xóa tài nguyên này không? HÀNH ĐỘNG KHÔNG THỂ KHÔI PHỤC❗️",
+    "linked-amount": "Số memo đã liên kết"
   },
   "archived": {
     "archived-memos": "Memo đã lưu trữ",
@@ -106,8 +106,8 @@
       "is-not": "Is Not"
     },
     "value": {
-      "not-tagged": "No tags",
-      "linked": "Has links"
+      "not-tagged": "Không có thẻ",
+      "linked": "Có links"
     }
   },
   "tag-list": {
