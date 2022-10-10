@@ -37,7 +37,7 @@ const MemoFilter = () => {
           locationService.setMemoTypeQuery(undefined);
         }}
       >
-        <span className="icon-text">📦</span> {getTextWithMemoType(memoType as MemoSpecType)}
+        <span className="icon-text">📦</span> {t(getTextWithMemoType(memoType as MemoSpecType))}
       </div>
       {duration && duration.from < duration.to ? (
         <div
