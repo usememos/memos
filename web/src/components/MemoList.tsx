@@ -6,6 +6,7 @@ import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";
+import { closeSidebar } from "../helpers/utils";
 import Memo from "./Memo";
 import "../less/memo-list.less";
 
@@ -92,7 +93,7 @@ const MemoList = () => {
   }, [query]);
 
   return (
-    <div className="memo-list-container" ref={wrapperElement}>
+    <div className="memo-list-container" ref={wrapperElement} onClick={closeSidebar}>
       {sortedMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.createdTs}-${memo.updatedTs}`} memo={memo} />
       ))}

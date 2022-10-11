@@ -5,6 +5,7 @@ import { useAppSelector } from "../store";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
+import { closeSidebar } from "../helpers/utils";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
@@ -63,6 +64,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
   const handleShortcutClick = () => {
+    closeSidebar();
     if (isActive) {
       locationService.setMemoShortcut(undefined);
     } else {

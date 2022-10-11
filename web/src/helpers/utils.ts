@@ -134,3 +134,8 @@ export const parseHTMLToRawText = (htmlStr: string): string => {
   const text = tempEl.innerText;
   return text;
 };
+
+export function closeSidebar() {
+  const sidebarEl = document.body.querySelector(".sidebar-wrapper") as HTMLDivElement;
+  sidebarEl.style.display = "none";
+}
