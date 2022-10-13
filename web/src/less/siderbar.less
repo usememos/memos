@@ -1,8 +1,9 @@
 @import "./mixin.less";
 
 .sidebar-wrapper {
-  @apply fixed sm:sticky top-0 left-0 z-20 sm:z-0 hidden sm:!flex flex-col justify-start items-start w-64 h-screen py-4 pl-2 bg-white sm:bg-transparent shadow-2xl sm:shadow-none overflow-x-hidden overflow-y-auto transition-all;
+  @apply fixed sm:sticky top-0 z-30 sm:z-0 sm:!flex flex-col justify-start items-start w-64 h-screen py-4 pl-2 bg-white sm:bg-transparent shadow-2xl sm:shadow-none overflow-x-hidden overflow-y-auto transition-transform duration-377;
   .hide-scroll-bar();
+  overscroll-behavior: contain;
 
   > .close-container {
     @apply w-full pr-6 my-2 flex sm:hidden flex-row justify-end items-center;
@@ -21,6 +22,53 @@
       > .icon {
         @apply mr-1;
       }
+    }
+  }
+}
+
+.open-sidebar{
+  @apply sm:transform translate-x-0;
+}
+
+.close-sidebar{
+  @apply sm:transform -translate-x-64 md:translate-x-0;
+}
+
+.mask{
+  @apply fixed top-0 right-0 w-screen h-screen;
+  z-index: -1;
+}
+
+.hide-mask{
+  animation: hide 0.23s ease-in;
+  @keyframes hide {
+    0%{
+      background-color: rgba(0, 0, 0, 0.6);
+      z-index: 20;
+    }
+    65%{
+      background-color: rgba(0, 0, 0, 0);
+    }
+    100% {
+      z-index: 0;
+    }
+  }
+  
+}
+
+.show-mask{
+  @apply translate-x-0 z-20;
+  background-color: rgba(0, 0, 0, 0.6);
+  animation: show 0.37s ease-in;
+  @keyframes show {
+    0%{
+      background-color: rgba(0, 0, 0, 0);
+    }
+    80%{
+      background-color: rgba(0, 0, 0, 0.56);
+    }
+    100% {
+      background-color: rgba(0, 0, 0, 0.6);
     }
   }
 }

@@ -134,3 +134,10 @@ export const parseHTMLToRawText = (htmlStr: string): string => {
   const text = tempEl.innerText;
   return text;
 };
+
+export function closeSidebar() {
+  const sidebarEl = document.body.querySelector(".sidebar-wrapper") as HTMLDivElement;
+  const maskEl = document.body.querySelector(".mask") as HTMLDivElement;
+  sidebarEl.classList.replace("open-sidebar", "close-sidebar");
+  maskEl.classList.replace("show-mask", "hide-mask");
+}
