@@ -138,6 +138,6 @@ export const parseHTMLToRawText = (htmlStr: string): string => {
 export function closeSidebar() {
   const sidebarEl = document.body.querySelector(".sidebar-wrapper") as HTMLDivElement;
   const maskEl = document.body.querySelector(".mask") as HTMLDivElement;
-  sidebarEl.classList.replace("open-sidebar", "close-sidebar")
-  maskEl.classList.replace("show-mask", "hide-mask")
+  sidebarEl.classList.replace("open-sidebar", "close-sidebar");
+  maskEl.classList.replace("show-mask", "hide-mask");
 }
