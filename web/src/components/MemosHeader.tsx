@@ -38,7 +38,7 @@ const MemosHeader = () => {
   return (
     <div className="section-header-container memos-header-container">
       <div className="title-container">
-        <div className="action-btn" onClick={toggleSiderbar}>
+        <div className="action-btn" onClick={() => toggleSiderbar(true)}>
           <Icon.Menu className="icon-img" />
         </div>
         <span className="title-text" onClick={handleTitleTextClick}>
