@@ -6,7 +6,7 @@ import showSettingDialog from "./SettingDialog";
 import UserBanner from "./UserBanner";
 import UsageHeatMap from "./UsageHeatMap";
 import ShortcutList from "./ShortcutList";
-import TagList from "./TagList"
+import TagList from "./TagList";
 import { closeSidebar } from "../helpers/utils";
 import "../less/siderbar.less";
 
@@ -53,7 +53,7 @@ export const toggleSiderbar = () => {
     sidebarEl.classList.replace("open-sidebar", "close-sidebar");
   } else {
     sidebarEl.classList.replace("close-sidebar", "open-sidebar");
-    maskEl.classList.contains("hide-mask")? maskEl.classList.replace("hide-mask", "show-mask") : maskEl.classList.add("show-mask");
+    maskEl.classList.contains("hide-mask") ? maskEl.classList.replace("hide-mask", "show-mask") : maskEl.classList.add("show-mask");
   }
 };
 
