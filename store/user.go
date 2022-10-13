@@ -52,6 +52,7 @@ func (s *Store) ComposeMemoCreator(ctx context.Context, memo *api.Memo) error {
 		return err
 	}
 
+	user.Email = ""
 	user.OpenID = ""
 	user.UserSettingList = nil
 	memo.Creator = user

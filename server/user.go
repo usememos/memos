@@ -68,6 +68,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		for _, user := range userList {
 			// data desensitize
+			user.Email = ""
 			user.OpenID = ""
 		}
 
@@ -153,6 +154,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		if user != nil {
 			// data desensitize
+			user.Email = ""
 			user.OpenID = ""
 		}
 
