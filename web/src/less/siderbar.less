@@ -1,16 +1,11 @@
 @import "./mixin.less";
 
 .sidebar-wrapper {
-  @apply fixed sm:sticky top-0 z-30 sm:z-0 sm:!flex flex-col justify-start items-start w-64 h-screen py-4 pl-2 bg-white sm:bg-transparent shadow-2xl sm:shadow-none overflow-x-hidden overflow-y-auto transition-transform duration-377;
+  @apply fixed sm:sticky top-0 z-30 sm:z-0 -translate-x-64 sm:translate-x-0 sm:flex flex-col justify-start items-start w-64 h-screen py-4 pl-2 bg-white sm:bg-transparent overflow-x-hidden overflow-y-auto transition-transform duration-300 overscroll-contain;
   .hide-scroll-bar();
-  overscroll-behavior: contain;
 
-  > .close-container {
-    @apply w-full pr-6 my-2 flex sm:hidden flex-row justify-end items-center;
-
-    > .action-btn {
-      @apply p-1 bg-gray-100 rounded shadow w-7 h-7 flex flex-row justify-center items-center;
-    }
+  &.show {
+    @apply translate-x-0 shadow-2xl sm:shadow-none;
   }
 
   > .action-btns-container {
@@ -26,49 +21,10 @@
   }
 }
 
-.open-sidebar{
-  @apply sm:transform translate-x-0;
-}
+.mask {
+  @apply fixed top-0 right-0 w-screen h-screen bg-transparent transition-all duration-300 z-0;
 
-.close-sidebar{
-  @apply sm:transform -translate-x-64 md:translate-x-0;
-}
-
-.mask{
-  @apply fixed top-0 right-0 w-screen h-screen;
-  z-index: -1;
-}
-
-.hide-mask{
-  animation: hide 0.23s ease-in;
-  @keyframes hide {
-    0%{
-      background-color: rgba(0, 0, 0, 0.6);
-      z-index: 20;
-    }
-    65%{
-      background-color: rgba(0, 0, 0, 0);
-    }
-    100% {
-      z-index: 0;
-    }
-  }
-  
-}
-
-.show-mask{
-  @apply translate-x-0 z-20;
-  background-color: rgba(0, 0, 0, 0.6);
-  animation: show 0.37s ease-in;
-  @keyframes show {
-    0%{
-      background-color: rgba(0, 0, 0, 0);
-    }
-    80%{
-      background-color: rgba(0, 0, 0, 0.56);
-    }
-    100% {
-      background-color: rgba(0, 0, 0, 0.6);
-    }
+  &.show {
+    @apply z-20 bg-black opacity-60;
   }
 }

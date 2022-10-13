@@ -1,25 +1,32 @@
+import { isUndefined } from "lodash-es";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { userService } from "../services";
+import { useAppSelector } from "../store";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
 import UserBanner from "./UserBanner";
 import UsageHeatMap from "./UsageHeatMap";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
-import { closeSidebar } from "../helpers/utils";
 import "../less/siderbar.less";
 
 const Sidebar = () => {
   const { t } = useTranslation();
+  const location = useAppSelector((state) => state.location);
+
+  useEffect(() => {
+    toggleSiderbar(false);
+  }, [location.query]);
 
   const handleSettingBtnClick = () => {
     showSettingDialog();
   };
 
   return (
-    <div>
-      <aside className="sidebar-wrapper close-sidebar">
+    <>
+      <aside className="sidebar-wrapper">
         <UserBanner />
         <UsageHeatMap />
         <div className="action-btns-container">
@@ -40,20 +47,25 @@ const Sidebar = () => {
         {!userService.isVisitorMode() && <ShortcutList />}
         <TagList />
       </aside>
-
-      <div className="mask" onClick={closeSidebar}></div>
-    </div>
+      <div className="mask" onClick={() => toggleSiderbar(false)}></div>
+    </>
   );
 };
 
-export const toggleSiderbar = () => {
+export const toggleSiderbar = (show?: boolean) => {
   const sidebarEl = document.body.querySelector(".sidebar-wrapper") as HTMLDivElement;
   const maskEl = document.body.querySelector(".mask") as HTMLDivElement;
-  if (!sidebarEl.classList.contains("close-sidebar")) {
-    sidebarEl.classList.replace("open-sidebar", "close-sidebar");
+
+  if (isUndefined(show)) {
+    show = !sidebarEl.classList.contains("show");
+  }
+
+  if (show) {
+    sidebarEl.classList.add("show");
+    maskEl.classList.add("show");
   } else {
-    sidebarEl.classList.replace("close-sidebar", "open-sidebar");
-    maskEl.classList.contains("hide-mask") ? maskEl.classList.replace("hide-mask", "show-mask") : maskEl.classList.add("show-mask");
+    sidebarEl.classList.remove("show");
+    maskEl.classList.remove("show");
   }
 };
 
