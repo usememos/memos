@@ -19,6 +19,10 @@ CREATE TABLE user (
 
 INSERT INTO user SELECT * FROM _user_old;
 
+DROP TABLE IF EXISTS _user_old;
+
+DROP TRIGGER IF EXISTS `trigger_update_user_modification_time`;
+
 CREATE TRIGGER IF NOT EXISTS `trigger_update_user_modification_time`
 AFTER
 UPDATE
@@ -30,8 +34,6 @@ SET
 WHERE
   rowid = old.rowid;
 END;
-
-DROP TABLE IF EXISTS _user_old;
 
 DROP TABLE IF EXISTS _memo_old;
 
@@ -51,6 +53,10 @@ CREATE TABLE memo (
 
 INSERT INTO memo SELECT * FROM _memo_old;
 
+DROP TABLE IF EXISTS _memo_old;
+
+DROP TRIGGER IF EXISTS `trigger_update_memo_modification_time`;
+
 CREATE TRIGGER IF NOT EXISTS `trigger_update_memo_modification_time`
 AFTER
 UPDATE
@@ -62,8 +68,6 @@ SET
 WHERE
   rowid = old.rowid;
 END;
-
-DROP TABLE IF EXISTS _memo_old;
 
 DROP TABLE IF EXISTS _memo_organizer_old;
 
@@ -102,6 +106,10 @@ CREATE TABLE shortcut (
 
 INSERT INTO shortcut SELECT * FROM _shortcut_old;
 
+DROP TABLE IF EXISTS _shortcut_old;
+
+DROP TRIGGER IF EXISTS `trigger_update_shortcut_modification_time`;
+
 CREATE TRIGGER IF NOT EXISTS `trigger_update_shortcut_modification_time`
 AFTER
 UPDATE
@@ -113,8 +121,6 @@ SET
 WHERE
   rowid = old.rowid;
 END;
-
-DROP TABLE IF EXISTS _shortcut_old;
 
 DROP TABLE IF EXISTS _resource_old;
 
@@ -135,6 +141,10 @@ CREATE TABLE resource (
 
 INSERT INTO resource SELECT * FROM _resource_old;
 
+DROP TABLE IF EXISTS _resource_old;
+
+DROP TRIGGER IF EXISTS `trigger_update_resource_modification_time`;
+
 CREATE TRIGGER IF NOT EXISTS `trigger_update_resource_modification_time`
 AFTER
 UPDATE
@@ -146,8 +156,6 @@ SET
 WHERE
   rowid = old.rowid;
 END;
-
-DROP TABLE IF EXISTS _resource_old;
 
 DROP TABLE IF EXISTS _user_setting_old;
 
