@@ -4,6 +4,7 @@ import store from "./store";
 import App from "./App";
 import "./i18n";
 import "./helpers/polyfill";
+import "highlight.js/styles/github.css";
 import "./less/global.less";
 import "./css/index.css";
 

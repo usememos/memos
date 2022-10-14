@@ -9,9 +9,8 @@ describe("test marked parser", () => {
         markdown: `\`\`\`
 hello world!
 \`\`\``,
-        want: `<pre lang=''>
-hello world!
-</pre>`,
+        want: `<pre><code class="language-plaintext">hello world!
+</code></pre>`,
       },
       {
         markdown: `test code block
@@ -21,9 +20,8 @@ console.log("hello world!")
 \`\`\``,
         want: `<p>test code block</p>
 <p></p>
-<pre lang='js'>
-console.log("hello world!")
-</pre>`,
+<pre><code class="language-js"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"hello world!"</span>)
+</code></pre>`,
       },
     ];
 
