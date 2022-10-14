@@ -13,6 +13,7 @@ import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
+import showPreviewImageDialog from "./PreviewImageDialog";
 import "../less/memo.less";
 
 dayjs.extend(relativeTime);
@@ -158,6 +159,11 @@ const Memo: React.FC<Props> = (props: Props) => {
             content: finalContent,
           });
         }
+      }
+    } else if (targetEl.tagName === "IMG") {
+      const imgUrl = targetEl.getAttribute("src");
+      if (imgUrl) {
+        showPreviewImageDialog(imgUrl);
       }
     }
   };

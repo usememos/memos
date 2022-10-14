@@ -76,6 +76,36 @@ const MemoEditor: React.FC = () => {
     prevGlobalStateRef.current = editorState;
   }, [state, editorState.editMemoId]);
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Escape") {
+      if (state.fullscreen) {
+        handleFullscreenBtnClick();
+      }
+    } else if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+      handleSaveBtnClick();
+    }
+  };
+
+  const handleDropEvent = async (event: React.DragEvent) => {
+    if (event.dataTransfer && event.dataTransfer.files.length > 0) {
+      event.preventDefault();
+      const resourceList: Resource[] = [];
+      for (const file of event.dataTransfer.files) {
+        const resource = await handleUploadResource(file);
+        if (resource) {
+          resourceList.push(resource);
+          if (editorState.editMemoId) {
+            await upsertMemoResource(editorState.editMemoId, resource.id);
+          }
+        }
+      }
+      setState({
+        ...state,
+        resourceList: [...state.resourceList, ...resourceList],
+      });
+    }
+  };
+
   const handlePasteEvent = async (event: React.ClipboardEvent) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
@@ -239,12 +269,6 @@ const MemoEditor: React.FC = () => {
     });
   };
 
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape") {
-      state.fullscreen && handleFullscreenBtnClick();
-    }
-  };
-
   const handleTagSeletorClick = useCallback((event: React.MouseEvent) => {
     if (tagSeletorRef.current !== event.target && tagSeletorRef.current?.contains(event.target as Node)) {
       editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
@@ -296,6 +320,7 @@ const MemoEditor: React.FC = () => {
     <div
       className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
       onKeyDown={handleKeyDown}
+      onDrop={handleDropEvent}
     >
       <div className={`tip-container ${isEditing ? "" : "!hidden"}`}>
         <span className="tip-text">{t("editor.editing")}</span>
