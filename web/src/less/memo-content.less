@@ -19,7 +19,7 @@
     }
 
     .img {
-      @apply float-left max-w-full;
+      @apply float-left max-w-full rounded cursor-pointer hover:shadow;
     }
 
     .tag-span {
@@ -48,7 +48,11 @@
     }
 
     pre {
-      @apply w-full my-1 py-2 px-3 rounded text-sm bg-gray-100 whitespace-pre-wrap;
+      @apply w-full my-1 p-3 rounded bg-gray-100 whitespace-pre-wrap;
+
+      code {
+        @apply block;
+      }
     }
 
     code {

@@ -1,4 +1,5 @@
 import { escape } from "lodash-es";
+import hljs from "highlight.js";
 
 export const CODE_BLOCK_REG = /^```(\S*?)\s([\s\S]*?)```(\n?)/;
 
@@ -8,7 +9,12 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
-  return `<pre lang='${escape(matchResult[1])}'>\n${escape(matchResult[2])}</pre>${matchResult[3]}`;
+  const language = escape(matchResult[1]) || "plaintext";
+  const highlightedCodes = hljs.highlight(matchResult[2], {
+    language,
+  }).value;
+
+  return `<pre><code class="language-${language}">${highlightedCodes}</code></pre>${matchResult[3]}`;
 };
 
 export default {
