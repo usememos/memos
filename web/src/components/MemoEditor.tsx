@@ -239,6 +239,12 @@ const MemoEditor: React.FC = () => {
     });
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Escape") {
+      state.fullscreen && handleFullscreenBtnClick();
+    }
+  };
+
   const handleTagSeletorClick = useCallback((event: React.MouseEvent) => {
     if (tagSeletorRef.current !== event.target && tagSeletorRef.current?.contains(event.target as Node)) {
       editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
@@ -287,7 +293,10 @@ const MemoEditor: React.FC = () => {
   );
 
   return (
-    <div className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}>
+    <div
+      className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
+      onKeyDown={handleKeyDown}
+    >
       <div className={`tip-container ${isEditing ? "" : "!hidden"}`}>
         <span className="tip-text">{t("editor.editing")}</span>
         <button className="cancel-btn" onClick={handleCancelEditing}>
