@@ -20,7 +20,7 @@ console.log("hello world!")
 \`\`\``,
         want: `<p>test code block</p>
 <p></p>
-<pre><code class="language-js">console.log("hello world!")
+<pre><code class="language-js"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"hello world!"</span>)
 </code></pre>`,
       },
     ];
