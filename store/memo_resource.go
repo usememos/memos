@@ -49,6 +49,27 @@ func (s *Store) FindMemoResourceList(ctx context.Context, find *api.MemoResource
 	return list, nil
 }
 
+func (s *Store) FindMemoResource(ctx context.Context, find *api.MemoResourceFind) (*api.MemoResource, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	list, err := findMemoResourceList(ctx, tx, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(list) == 0 {
+		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+	}
+
+	memoResourceRaw := list[0]
+
+	return memoResourceRaw.toMemoResource(), nil
+}
+
 func (s *Store) UpsertMemoResource(ctx context.Context, upsert *api.MemoResourceUpsert) (*api.MemoResource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
