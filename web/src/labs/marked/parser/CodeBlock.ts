@@ -10,11 +10,18 @@ const renderer = (rawStr: string): string => {
   }
 
   const language = escape(matchResult[1]) || "plaintext";
-  const highlightedCodes = hljs.highlight(matchResult[2], {
-    language,
-  }).value;
+  let highlightedCode = hljs.highlightAuto(matchResult[2]).value;
 
-  return `<pre><code class="language-${language}">${highlightedCodes}</code></pre>${matchResult[3]}`;
+  try {
+    const temp = hljs.highlight(matchResult[2], {
+      language,
+    }).value;
+    highlightedCode = temp;
+  } catch (error) {
+    // do nth
+  }
+
+  return `<pre><code class="language-${language}">${highlightedCode}</code></pre>${matchResult[3]}`;
 };
 
 export default {
