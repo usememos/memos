@@ -26,6 +26,7 @@ const Sidebar = () => {
 
   return (
     <>
+      <div className="mask" onClick={() => toggleSiderbar(false)}></div>
       <aside className="sidebar-wrapper">
         <UserBanner />
         <UsageHeatMap />
@@ -47,7 +48,6 @@ const Sidebar = () => {
         {!userService.isVisitorMode() && <ShortcutList />}
         <TagList />
       </aside>
-      <div className="mask" onClick={() => toggleSiderbar(false)}></div>
     </>
   );
 };
