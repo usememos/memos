@@ -6,11 +6,15 @@ describe("test marked parser", () => {
   test("test markdown table", () => {
     const tests = [
       {
-        markdown: `| a | b | c |
+        markdown: `aaa
+| a | b | c |
 |---|---|---|
 | 1 | 2 | 3 |
-| 4 | 5 | 6 |`,
-        want: `<table>
+| 4 | 5 | 6 |
+bbb
+`,
+        want: `<p>aaa</p>
+<table>
   <thead>
     <tr>
       <th>a</th><th>b</th><th>c</th>
@@ -19,7 +23,8 @@ describe("test marked parser", () => {
   <tbody>
     <tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr>
   </tbody>
-</table>`,
+</table><p>bbb</p>
+`,
       },
       {
         markdown: `| a | b | c |

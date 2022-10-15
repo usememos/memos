@@ -6,7 +6,7 @@
  * | 1 | 2 | 3 |
  * | 4 | 5 | 6 |
  */
-export const TABLE_REG = /^(\|.*\|)(?:(?:\n(?:\|-*)+\|))((?:\n\|.*\|)+)/;
+export const TABLE_REG = /^(\|.*\|)(?:(?:\n(?:\|-*)+\|))((?:\n\|.*\|)+)\n/m;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(TABLE_REG);
