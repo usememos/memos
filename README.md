@@ -38,7 +38,7 @@ Memos should be running at [http://localhost:5230](http://localhost:5230). If th
 
 See more in the example [`docker-compose.yaml`](./docker-compose.yaml) file.
 
-If you want to stop and update the image, try
+If you want to upgrade the version of memos, use the following command.
 
 ```sh
 docker-compose down && docker-compose build --no-cache && docker-compose up -d
