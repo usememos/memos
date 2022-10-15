@@ -3,6 +3,38 @@ import { unescape } from "lodash-es";
 import { marked } from ".";
 
 describe("test marked parser", () => {
+  test("test markdown table", () => {
+    const tests = [
+      {
+        markdown: `| a | b | c |
+|---|---|---|
+| 1 | 2 | 3 |
+| 4 | 5 | 6 |`,
+        want: `<table>
+  <thead>
+    <tr>
+      <th>a</th><th>b</th><th>c</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr>
+  </tbody>
+</table>`,
+      },
+      {
+        markdown: `| a | b | c |
+| 1 | 2 | 3 |
+| 4 | 5 | 6 |`,
+        want: `<p>| a | b | c |</p>
+<p>| 1 | 2 | 3 |</p>
+<p>| 4 | 5 | 6 |</p>`,
+      },
+    ];
+    for (const t of tests) {
+      expect(unescape(marked(t.markdown))).toBe(t.want);
+    }
+  });
+
   test("parse code block", () => {
     const tests = [
       {
