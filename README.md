@@ -41,7 +41,7 @@ See more in the example [`docker-compose.yaml`](./docker-compose.yaml) file.
 If you want to upgrade the version of memos, use the following command.
 
 ```sh
-docker-compose down && docker-compose build --no-cache && docker-compose up -d
+docker-compose down && docker image rm neosmemo/memos:latest && docker-compose up -d
 ```
 
 ## Contributing
