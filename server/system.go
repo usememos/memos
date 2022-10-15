@@ -34,7 +34,6 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 
 		if hostUser != nil {
 			// data desensitize
-			hostUser.Email = ""
 			hostUser.OpenID = ""
 		}
 
