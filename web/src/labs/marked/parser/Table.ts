@@ -35,7 +35,8 @@ const renderer = (rawStr: string): string => {
   <tbody>
     ${tableBody.map((row) => `<tr>${row.map((str) => `<td>${str}</td>`).join("")}</tr>`).join("")}
   </tbody>
-</table>`;
+</table>
+`;
 };
 
 export default {
