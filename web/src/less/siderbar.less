@@ -25,6 +25,29 @@
   @apply fixed top-0 right-0 w-screen h-screen bg-transparent transition-all duration-300 z-0 sm:hidden;
 
   &.show {
-    @apply z-20 bg-black opacity-60;
+    @apply z-20 bg-black opacity-70;
+    animation: show 0.37s linear;
+    @keyframes show {
+      0%{
+        opacity: 0;
+      }
+      100% {
+        opacity: 0.7;
+      }
+    }
+  }
+
+  &.hide {
+    animation: hide 0.37s ease;
+    @keyframes hide {
+      0%{
+        opacity: 0.7;
+        z-index: 20;
+      }
+      100% {
+        opacity: 0;
+        z-index: 0;
+      }
+    }
   }
 }

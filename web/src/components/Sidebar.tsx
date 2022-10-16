@@ -26,7 +26,7 @@ const Sidebar = () => {
 
   return (
     <>
-      <div className="mask" onClick={() => toggleSiderbar(false)}></div>
+      <div className="mask hide" onClick={() => toggleSiderbar(false)}></div>
       <aside className="sidebar-wrapper">
         <UserBanner />
         <UsageHeatMap />
@@ -62,10 +62,10 @@ export const toggleSiderbar = (show?: boolean) => {
 
   if (show) {
     sidebarEl.classList.add("show");
-    maskEl.classList.add("show");
+    maskEl.classList.replace("hide", "show");
   } else {
     sidebarEl.classList.remove("show");
-    maskEl.classList.remove("show");
+    maskEl.classList.replace("show", "hide");
   }
 };
 
