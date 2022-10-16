@@ -75,11 +75,11 @@
     "save": "记下",
     "placeholder": "现在的想法是...",
     "only-image-supported": "仅支持图片文件。",
-    "cant-empty": "Content can't be empty"
+    "cant-empty": "内容不能为空"
   },
   "memo": {
     "view-detail": "查看详情",
-    "copy": "Copy",
+    "copy": "复制",
     "visibility": {
       "private": "仅自己可见",
       "protected": "对所有用户公开",
@@ -155,8 +155,8 @@
     "signup-failed": "注册失败",
     "user-not-found": "未找到用户",
     "password-changed": "密码已修改",
-    "private-only": "This memo is private only.",
-    "copied": "Copied",
-    "succeed-copy-content": "Succeed to copy content to clipboard."
+    "private-only": "此 Memo 仅自己可见",
+    "copied": "已复制",
+    "succeed-copy-content": "复制内容到剪贴板成功。"
   }
 }
