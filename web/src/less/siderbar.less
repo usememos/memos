@@ -22,9 +22,9 @@
 }
 
 .mask {
-  @apply fixed top-0 right-0 w-screen h-screen bg-transparent transition-all duration-300 z-0 sm:hidden;
+  @apply fixed top-0 left-0 w-screen h-screen bg-black opacity-0 transition-opacity duration-300 pointer-events-none z-20 sm:hidden;
 
   &.show {
-    @apply z-20 bg-black opacity-60;
+    @apply opacity-60 pointer-events-auto;
   }
 }
