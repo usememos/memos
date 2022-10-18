@@ -16,6 +16,8 @@ const (
 	UserSettingEditorFontStyleKey UserSettingKey = "editorFontStyle"
 	// UserSettingEditorFontStyleKey is the key type for mobile editor style.
 	UserSettingMobileEditorStyleKey UserSettingKey = "mobileEditorStyle"
+	// UserSettingSortTimeOptionKey is the key type for sort time option.
+	UserSettingSortTimeOptionKey UserSettingKey = "sortTimeOption"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -29,6 +31,8 @@ func (key UserSettingKey) String() string {
 		return "editorFontFamily"
 	case UserSettingMobileEditorStyleKey:
 		return "mobileEditorStyle"
+	case UserSettingSortTimeOptionKey:
+		return "sortTimeOption"
 	}
 	return ""
 }
@@ -38,6 +42,7 @@ var (
 	UserSettingMemoVisibilityValue    = []Visibility{Privite, Protected, Public}
 	UserSettingEditorFontStyleValue   = []string{"normal", "mono"}
 	UserSettingMobileEditorStyleValue = []string{"normal", "float"}
+	UserSettingSortTimeOptionKeyValue = []string{"created_time", "updated_time"}
 )
 
 type UserSetting struct {
@@ -121,6 +126,24 @@ func (upsert UserSettingUpsert) Validate() error {
 		}
 		if invalid {
 			return fmt.Errorf("invalid user setting mobile editor style value")
+		}
+	} else if upsert.Key == UserSettingSortTimeOptionKey {
+		// TODO
+		sortTimeOption := "created_time"
+		err := json.Unmarshal([]byte(upsert.Value), &sortTimeOption)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal user setting sort time option")
+		}
+
+		invalid := true
+		for _, value := range UserSettingSortTimeOptionKeyValue {
+			if sortTimeOption == value {
+				invalid = false
+				break
+			}
+		}
+		if invalid {
+			return fmt.Errorf("invalid user setting sort time option value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")

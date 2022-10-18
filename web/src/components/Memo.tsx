@@ -15,6 +15,7 @@ import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import "../less/memo.less";
+import { useAppSelector } from "../store";
 
 dayjs.extend(relativeTime);
 
@@ -32,9 +33,11 @@ export const getFormatedMemoCreatedAtStr = (createdTs: number, locale = "en"): s
 
 const Memo: React.FC<Props> = (props: Props) => {
   const memo = props.memo;
+  const user = useAppSelector((state) => state.user.user);
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, i18n.language));
+  const [updatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.updatedTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
 
@@ -187,7 +190,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       <div className="memo-top-wrapper">
         <div className="status-text-container">
           <span className="time-text" onClick={handleShowMemoStoryDialog}>
-            {createdAtStr}
+            {user?.setting.sortTimeOption === "created_time" ? createdAtStr : `${t("common.update-on")} ${updatedAtStr}`}
           </span>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span className={`status-text ${memo.visibility.toLocaleLowerCase()}`}>{memo.visibility}</span>

@@ -12,6 +12,8 @@ import "../less/memo-list.less";
 const MemoList = () => {
   const { t } = useTranslation();
   const query = useAppSelector((state) => state.location.query);
+  const updatedTime = useAppSelector((state) => state.location.updatedTime);
+  const user = useAppSelector((state) => state.user.user);
   const { memos, isFetching } = useAppSelector((state) => state.memo);
   const wrapperElement = useRef<HTMLDivElement>(null);
 
@@ -71,6 +73,12 @@ const MemoList = () => {
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
+  pinnedMemos.sort((m1, m2) =>
+    user?.setting.sortTimeOption === "created_time" ? m2.createdTs - m1.createdTs : m2.updatedTs - m1.updatedTs
+  );
+  unpinnedMemos.sort((m1, m2) =>
+    user?.setting.sortTimeOption === "created_time" ? m2.createdTs - m1.createdTs : m2.updatedTs - m1.updatedTs
+  );
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   useEffect(() => {
@@ -83,13 +91,13 @@ const MemoList = () => {
         console.error(error);
         toastHelper.error(error.response.data.message);
       });
-  }, []);
+  }, [updatedTime]);
 
   useEffect(() => {
     wrapperElement.current?.scrollTo({
       top: 0,
     });
-  }, [query]);
+  }, [query, updatedTime]);
 
   return (
     <div className="memo-list-container" ref={wrapperElement}>

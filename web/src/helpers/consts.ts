@@ -12,3 +12,8 @@ export const VISIBILITY_SELECTOR_ITEMS = [
   { text: "PROTECTED", value: "PROTECTED" },
   { text: "PRIVATE", value: "PRIVATE" },
 ];
+
+export const SORT_TIME_OPTION_SELECTOR_ITEMS = [
+  { text: "created_time", value: "created_time" },
+  { text: "created_time", value: "updated_time" },
+];
