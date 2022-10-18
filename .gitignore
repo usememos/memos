@@ -11,3 +11,6 @@ web/dist
 build
 
 .DS_Store
+
+# Jetbrains
+.idea
