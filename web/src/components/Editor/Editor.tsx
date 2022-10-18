@@ -29,6 +29,7 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
   useEffect(() => {
     if (editorRef.current && initialContent) {
       editorRef.current.value = initialContent;
+      handleContentChangeCallback(initialContent);
     }
   }, []);
 
