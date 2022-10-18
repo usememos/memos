@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
@@ -13,7 +13,6 @@ const MemoList = () => {
   const { t } = useTranslation();
   const query = useAppSelector((state) => state.location.query);
   const { memos, isFetching } = useAppSelector((state) => state.memo);
-  const wrapperElement = useRef<HTMLDivElement>(null);
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query ?? {};
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
@@ -86,13 +85,14 @@ const MemoList = () => {
   }, []);
 
   useEffect(() => {
-    wrapperElement.current?.scrollTo({
-      top: 0,
-    });
+    const pageWrapper = document.body.querySelector(".page-wrapper");
+    if (pageWrapper) {
+      pageWrapper.scrollTo(0, 0);
+    }
   }, [query]);
 
   return (
-    <div className="memo-list-container" ref={wrapperElement}>
+    <div className="memo-list-container">
       {sortedMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.createdTs}-${memo.updatedTs}`} memo={memo} />
       ))}
