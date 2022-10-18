@@ -12,3 +12,5 @@ export const VISIBILITY_SELECTOR_ITEMS = [
   { text: "PROTECTED", value: "PROTECTED" },
   { text: "PRIVATE", value: "PRIVATE" },
 ];
+
+export const TAB_SPACE_WIDTH = 2;
