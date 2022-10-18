@@ -1,0 +1,50 @@
+name: Bug Report
+description: Create a report to help us improve
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        If you are reporting a new issue, make sure that we do not have any duplicates already open. You can ensure this by searching the issue list for this repository. If there is a duplicate, please close your issue and add a comment to the existing issue instead.
+  - type: textarea
+    attributes:
+      label: Describe the bug
+      description: |
+        Briefly describe the problem you are having in a few paragraphs.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Steps to reproduce
+      description: |
+        Provide the steps to reproduce the issue.
+      placeholder: |
+        1. Go to '...'
+        3. Click on '....'
+        4. See error
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Expected behavior
+      description: |
+        Describe what you expected to happen.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Screenshots
+      description: |
+        If applicable, add screenshots to help explain your problem.
+  - type: textarea
+    attributes:
+      label: Provide the Memos version you are using
+      description: |
+        You can find the version in the about dialog of the Memos UI.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional context
+      description: |
+        Add any other context about the problem here.
