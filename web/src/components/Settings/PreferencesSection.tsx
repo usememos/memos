@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { globalService, userService } from "../../services";
 import { useAppSelector } from "../../store";
-import { VISIBILITY_SELECTOR_ITEMS, SORT_TIME_OPTION_SELECTOR_ITEMS } from "../../helpers/consts";
+import { VISIBILITY_SELECTOR_ITEMS, MEMO_SORT_OPTION_SELECTOR_ITEMS } from "../../helpers/consts";
 import Selector from "../common/Selector";
 import "../../less/settings/preferences-section.less";
 
@@ -52,7 +52,7 @@ const PreferencesSection = () => {
     };
   });
 
-  const memoSortOptionSelectorItems = SORT_TIME_OPTION_SELECTOR_ITEMS.map((item) => {
+  const memoSortOptionSelectorItems = MEMO_SORT_OPTION_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
       text: t(`setting.preference-section.${item.value}`),
