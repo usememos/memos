@@ -33,18 +33,6 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: Screenshots
+      label: Screenshots or additional context
       description: |
-        If applicable, add screenshots to help explain your problem.
-  - type: textarea
-    attributes:
-      label: Provide the Memos version you are using
-      description: |
-        You can find the version in the about dialog of the Memos UI.
-    validations:
-      required: true
-  - type: textarea
-    attributes:
-      label: Additional context
-      description: |
-        Add any other context about the problem here.
+        Add screenshots or any other context about the problem here.
