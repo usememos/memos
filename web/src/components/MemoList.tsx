@@ -72,10 +72,11 @@ const MemoList = () => {
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
-  pinnedMemos.sort((m1, m2) => (user?.setting.memoSortOption === "created_ts" ? m2.createdTs - m1.createdTs : m2.updatedTs - m1.updatedTs));
-  unpinnedMemos.sort((m1, m2) =>
-    user?.setting.memoSortOption === "created_ts" ? m2.createdTs - m1.createdTs : m2.updatedTs - m1.updatedTs
-  );
+  const memoSorting = (m1: Memo, m2: Memo) => {
+    return user?.setting.memoSortOption === "created_ts" ? m2.createdTs - m1.createdTs : m2.updatedTs - m1.updatedTs;
+  };
+  pinnedMemos.sort(memoSorting);
+  unpinnedMemos.sort(memoSorting);
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   useEffect(() => {

@@ -23,11 +23,11 @@ interface Props {
   memo: Memo;
 }
 
-export const getFormatedMemoCreatedAtStr = (createdTs: number, locale = "en"): string => {
-  if (Date.now() - createdTs < 1000 * 60 * 60 * 24) {
-    return dayjs(createdTs).locale(locale).fromNow();
+export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
+  if (Date.now() - time < 1000 * 60 * 60 * 24) {
+    return dayjs(time).locale(locale).fromNow();
   } else {
-    return dayjs(createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss");
+    return dayjs(time).locale(locale).format("YYYY/MM/DD HH:mm:ss");
   }
 };
 
@@ -36,8 +36,8 @@ const Memo: React.FC<Props> = (props: Props) => {
   const user = useAppSelector((state) => state.user.user);
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.createdTs, i18n.language));
-  const [updatedAtStr] = useState<string>(getFormatedMemoCreatedAtStr(memo.updatedTs, i18n.language));
+  const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
+  const [updatedAtStr, setUpdatedAtStr] = useState<string>(getFormatedMemoTimeStr(memo.updatedTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
 
@@ -45,7 +45,8 @@ const Memo: React.FC<Props> = (props: Props) => {
     let intervalFlag: any = -1;
     if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
       intervalFlag = setInterval(() => {
-        setCreatedAtStr(getFormatedMemoCreatedAtStr(memo.createdTs, i18n.language));
+        setCreatedAtStr(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
+        setUpdatedAtStr(getFormatedMemoTimeStr(memo.updatedTs, i18n.language));
       }, 1000 * 1);
     }
 
@@ -185,12 +186,13 @@ const Memo: React.FC<Props> = (props: Props) => {
     editorStateService.setEditMemoWithId(memo.id);
   };
 
+  const timeStr = user?.setting.memoSortOption === "created_ts" ? createdAtStr : `${t("common.update-on")} ${updatedAtStr}`;
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
       <div className="memo-top-wrapper">
         <div className="status-text-container">
           <span className="time-text" onClick={handleShowMemoStoryDialog}>
-            {user?.setting.memoSortOption === "created_ts" ? createdAtStr : `${t("common.update-on")} ${updatedAtStr}`}
+            {timeStr}
           </span>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span className={`status-text ${memo.visibility.toLocaleLowerCase()}`}>{memo.visibility}</span>
