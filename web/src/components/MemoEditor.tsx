@@ -79,11 +79,9 @@ const MemoEditor: React.FC = () => {
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Escape" && state.fullscreen) {
       handleFullscreenBtnClick();
-    }
-    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    } else if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
       handleSaveBtnClick();
-    }
-    if (event.key === "Tab") {
+    } else if (event.key === "Tab") {
       event.preventDefault();
       editorRef.current?.insertText(" ".repeat(TAB_SPACE_WIDTH));
     }
