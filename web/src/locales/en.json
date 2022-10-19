@@ -37,7 +37,8 @@
     "tags": "Tags",
     "yourself": "Yourself",
     "archived-at": "Archived at",
-    "changed": "changed"
+    "changed": "changed",
+    "update-on": "Update on"
   },
   "slogan": "An open source, self-hosted knowledge base that works with a SQLite db file.",
   "auth": {
@@ -128,7 +129,10 @@
     "preference-section": {
       "default-memo-visibility": "Default memo visibility",
       "editor-font-style": "Editor font style",
-      "mobile-editor-style": "Mobile editor style"
+      "mobile-editor-style": "Mobile editor style",
+      "default-memo-sort-option": "Sort by created time/updated time",
+      "created_ts": "Created Time",
+      "updated_ts": "Updated Time"
     },
     "member-section": {
       "create-a-member": "Create a member"

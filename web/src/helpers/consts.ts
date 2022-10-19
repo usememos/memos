@@ -13,4 +13,9 @@ export const VISIBILITY_SELECTOR_ITEMS = [
   { text: "PRIVATE", value: "PRIVATE" },
 ];
 
+export const MEMO_SORT_OPTION_SELECTOR_ITEMS = [
+  { text: "created_ts", value: "created_ts" },
+  { text: "created_ts", value: "updated_ts" },
+];
+
 export const TAB_SPACE_WIDTH = 2;

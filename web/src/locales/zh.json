@@ -37,7 +37,8 @@
     "tags": "全部标签",
     "yourself": "你自己",
     "archived-at": "归档于",
-    "changed": "已更改"
+    "changed": "已更改",
+    "update-on": "更新于"
   },
   "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
   "auth": {
@@ -128,7 +129,10 @@
     "preference-section": {
       "default-memo-visibility": "默认 Memo 可见性",
       "editor-font-style": "编辑器字体样式",
-      "mobile-editor-style": "Mobile editor style"
+      "mobile-editor-style": "Mobile editor style",
+      "default-memo-sort-option": "按创建时间/更新时间排序",
+      "created_ts": "创建时间",
+      "updated_ts": "更新时间"
     },
     "member-section": {
       "create-a-member": "创建成员"

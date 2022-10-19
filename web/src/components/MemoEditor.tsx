@@ -174,6 +174,7 @@ const MemoEditor: React.FC = () => {
         });
         locationService.clearQuery();
       }
+      locationService.setUpdatedFlag();
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);

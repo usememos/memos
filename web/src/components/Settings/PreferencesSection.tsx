@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { globalService, userService } from "../../services";
 import { useAppSelector } from "../../store";
-import { VISIBILITY_SELECTOR_ITEMS } from "../../helpers/consts";
+import { VISIBILITY_SELECTOR_ITEMS, MEMO_SORT_OPTION_SELECTOR_ITEMS } from "../../helpers/consts";
 import Selector from "../common/Selector";
 import "../../less/settings/preferences-section.less";
 
@@ -52,6 +52,13 @@ const PreferencesSection = () => {
     };
   });
 
+  const memoSortOptionSelectorItems = MEMO_SORT_OPTION_SELECTOR_ITEMS.map((item) => {
+    return {
+      value: item.value,
+      text: t(`setting.preference-section.${item.value}`),
+    };
+  });
+
   const handleLocaleChanged = async (value: string) => {
     await userService.upsertUserSetting("locale", value);
     globalService.setLocale(value as Locale);
@@ -67,6 +74,10 @@ const PreferencesSection = () => {
 
   const handleMobileEditorStyleChanged = async (value: string) => {
     await userService.upsertUserSetting("mobileEditorStyle", value);
+  };
+
+  const handleMemoSortOptionChanged = async (value: string) => {
+    await userService.upsertUserSetting("memoSortOption", value);
   };
 
   return (
@@ -102,6 +113,15 @@ const PreferencesSection = () => {
           value={setting.mobileEditorStyle}
           dataSource={mobileEditorStyleSelectorItems}
           handleValueChanged={handleMobileEditorStyleChanged}
+        />
+      </label>
+      <label className="form-label selector">
+        <span className="normal-text">{t("setting.preference-section.default-memo-sort-option")}</span>
+        <Selector
+          className="ml-2 w-32"
+          value={setting.memoSortOption}
+          dataSource={memoSortOptionSelectorItems}
+          handleValueChanged={handleMemoSortOptionChanged}
         />
       </label>
     </div>

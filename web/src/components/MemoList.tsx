@@ -12,6 +12,8 @@ import "../less/memo-list.less";
 const MemoList = () => {
   const { t } = useTranslation();
   const query = useAppSelector((state) => state.location.query);
+  const updatedTime = useAppSelector((state) => state.location.updatedTime);
+  const user = useAppSelector((state) => state.user.user);
   const { memos, isFetching } = useAppSelector((state) => state.memo);
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query ?? {};
@@ -70,6 +72,11 @@ const MemoList = () => {
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
+  const memoSorting = (m1: Memo, m2: Memo) => {
+    return user?.setting.memoSortOption === "created_ts" ? m2.createdTs - m1.createdTs : m2.updatedTs - m1.updatedTs;
+  };
+  pinnedMemos.sort(memoSorting);
+  unpinnedMemos.sort(memoSorting);
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   useEffect(() => {
@@ -82,14 +89,14 @@ const MemoList = () => {
         console.error(error);
         toastHelper.error(error.response.data.message);
       });
-  }, []);
+  }, [updatedTime]);
 
   useEffect(() => {
     const pageWrapper = document.body.querySelector(".page-wrapper");
     if (pageWrapper) {
       pageWrapper.scrollTo(0, 0);
     }
-  }, [query]);
+  }, [query, updatedTime]);
 
   return (
     <div className="memo-list-container">

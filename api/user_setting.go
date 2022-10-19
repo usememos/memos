@@ -16,6 +16,8 @@ const (
 	UserSettingEditorFontStyleKey UserSettingKey = "editorFontStyle"
 	// UserSettingEditorFontStyleKey is the key type for mobile editor style.
 	UserSettingMobileEditorStyleKey UserSettingKey = "mobileEditorStyle"
+	// UserSettingMemoSortOptionKey is the key type for sort time option.
+	UserSettingMemoSortOptionKey UserSettingKey = "memoSortOption"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -29,6 +31,8 @@ func (key UserSettingKey) String() string {
 		return "editorFontFamily"
 	case UserSettingMobileEditorStyleKey:
 		return "mobileEditorStyle"
+	case UserSettingMemoSortOptionKey:
+		return "memoSortOption"
 	}
 	return ""
 }
@@ -38,6 +42,7 @@ var (
 	UserSettingMemoVisibilityValue    = []Visibility{Privite, Protected, Public}
 	UserSettingEditorFontStyleValue   = []string{"normal", "mono"}
 	UserSettingMobileEditorStyleValue = []string{"normal", "float"}
+	UserSettingSortTimeOptionKeyValue = []string{"created_ts", "updated_ts"}
 )
 
 type UserSetting struct {
@@ -121,6 +126,23 @@ func (upsert UserSettingUpsert) Validate() error {
 		}
 		if invalid {
 			return fmt.Errorf("invalid user setting mobile editor style value")
+		}
+	} else if upsert.Key == UserSettingMemoSortOptionKey {
+		memoSortOption := "created_ts"
+		err := json.Unmarshal([]byte(upsert.Value), &memoSortOption)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal user setting memo sort option")
+		}
+
+		invalid := true
+		for _, value := range UserSettingSortTimeOptionKeyValue {
+			if memoSortOption == value {
+				invalid = false
+				break
+			}
+		}
+		if invalid {
+			return fmt.Errorf("invalid user setting memo sort option value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")

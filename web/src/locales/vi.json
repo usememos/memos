@@ -37,7 +37,8 @@
     "tags": "Thẻ",
     "yourself": "Chính bạn",
     "archived-at": "Lưu trữ lúc",
-    "changed": "đã thay đổi"
+    "changed": "đã thay đổi",
+    "update-on": "Cập nhật"
   },
   "slogan": "Một mã nguồn mở, tự bạn lưu lại mọi thứ bạn biết dựa trên SQLite db.",
   "auth": {
@@ -128,7 +129,10 @@
     "preference-section": {
       "default-memo-visibility": "Chế độ memo mặc định",
       "editor-font-style": "Thay đổi font cho trình soạn thảo",
-      "mobile-editor-style": "Vị trí editor trên mobile"
+      "mobile-editor-style": "Vị trí editor trên mobile",
+      "default-memo-sort-option": "Sắp xếp theo thời gian đã tạo",
+      "created_ts": "tạo thời gian",
+      "updated_ts": "Thời gian cập nhật"
     },
     "member-section": {
       "create-a-member": "Tạo thành viên"
