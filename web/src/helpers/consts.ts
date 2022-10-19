@@ -14,6 +14,6 @@ export const VISIBILITY_SELECTOR_ITEMS = [
 ];
 
 export const SORT_TIME_OPTION_SELECTOR_ITEMS = [
-  { text: "created_time", value: "created_time" },
-  { text: "created_time", value: "updated_time" },
+  { text: "created_ts", value: "created_ts" },
+  { text: "created_ts", value: "updated_ts" },
 ];

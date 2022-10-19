@@ -8,7 +8,7 @@ const defauleSetting: Setting = {
   memoVisibility: "PRIVATE",
   editorFontStyle: "normal",
   mobileEditorStyle: "normal",
-  sortTimeOption: "created_time",
+  memoSortOption: "created_ts",
 };
 
 export const convertResponseModelUser = (user: User): User => {

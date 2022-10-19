@@ -52,7 +52,7 @@ const PreferencesSection = () => {
     };
   });
 
-  const sortTimeOptionSelectorItems = SORT_TIME_OPTION_SELECTOR_ITEMS.map((item) => {
+  const memoSortOptionSelectorItems = SORT_TIME_OPTION_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
       text: t(`setting.preference-section.${item.value}`),
@@ -76,8 +76,8 @@ const PreferencesSection = () => {
     await userService.upsertUserSetting("mobileEditorStyle", value);
   };
 
-  const handleSortTimeOptionChanged = async (value: string) => {
-    await userService.upsertUserSetting("sortTimeOption", value);
+  const handleMemoSortOptionChanged = async (value: string) => {
+    await userService.upsertUserSetting("memoSortOption", value);
   };
 
   return (
@@ -116,12 +116,12 @@ const PreferencesSection = () => {
         />
       </label>
       <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.default-memo-order-time")}</span>
+        <span className="normal-text">{t("setting.preference-section.default-memo-sort-option")}</span>
         <Selector
           className="ml-2 w-32"
-          value={setting.sortTimeOption}
-          dataSource={sortTimeOptionSelectorItems}
-          handleValueChanged={handleSortTimeOptionChanged}
+          value={setting.memoSortOption}
+          dataSource={memoSortOptionSelectorItems}
+          handleValueChanged={handleMemoSortOptionChanged}
         />
       </label>
     </div>

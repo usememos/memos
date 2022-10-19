@@ -16,8 +16,8 @@ const (
 	UserSettingEditorFontStyleKey UserSettingKey = "editorFontStyle"
 	// UserSettingEditorFontStyleKey is the key type for mobile editor style.
 	UserSettingMobileEditorStyleKey UserSettingKey = "mobileEditorStyle"
-	// UserSettingSortTimeOptionKey is the key type for sort time option.
-	UserSettingSortTimeOptionKey UserSettingKey = "sortTimeOption"
+	// UserSettingMemoSortOptionKey is the key type for sort time option.
+	UserSettingMemoSortOptionKey UserSettingKey = "memoSortOption"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -31,8 +31,8 @@ func (key UserSettingKey) String() string {
 		return "editorFontFamily"
 	case UserSettingMobileEditorStyleKey:
 		return "mobileEditorStyle"
-	case UserSettingSortTimeOptionKey:
-		return "sortTimeOption"
+	case UserSettingMemoSortOptionKey:
+		return "memoSortOption"
 	}
 	return ""
 }
@@ -42,7 +42,7 @@ var (
 	UserSettingMemoVisibilityValue    = []Visibility{Privite, Protected, Public}
 	UserSettingEditorFontStyleValue   = []string{"normal", "mono"}
 	UserSettingMobileEditorStyleValue = []string{"normal", "float"}
-	UserSettingSortTimeOptionKeyValue = []string{"created_time", "updated_time"}
+	UserSettingSortTimeOptionKeyValue = []string{"created_ts", "updated_ts"}
 )
 
 type UserSetting struct {
@@ -127,23 +127,22 @@ func (upsert UserSettingUpsert) Validate() error {
 		if invalid {
 			return fmt.Errorf("invalid user setting mobile editor style value")
 		}
-	} else if upsert.Key == UserSettingSortTimeOptionKey {
-		// TODO
-		sortTimeOption := "created_time"
-		err := json.Unmarshal([]byte(upsert.Value), &sortTimeOption)
+	} else if upsert.Key == UserSettingMemoSortOptionKey {
+		memoSortOption := "created_ts"
+		err := json.Unmarshal([]byte(upsert.Value), &memoSortOption)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting sort time option")
+			return fmt.Errorf("failed to unmarshal user setting memo sort option")
 		}
 
 		invalid := true
 		for _, value := range UserSettingSortTimeOptionKeyValue {
-			if sortTimeOption == value {
+			if memoSortOption == value {
 				invalid = false
 				break
 			}
 		}
 		if invalid {
-			return fmt.Errorf("invalid user setting sort time option value")
+			return fmt.Errorf("invalid user setting memo sort option value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")

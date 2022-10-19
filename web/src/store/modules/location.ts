@@ -89,8 +89,6 @@ const locationSlice = createSlice({
       };
     },
     setUpdatedTime: (state, action: PayloadAction<string>) => {
-      console.log("fff", state.updatedTime);
-      console.log("fff", action.payload);
       return {
         ...state,
         updatedTime: action.payload,

@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import "dayjs/locale/zh";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, userService } from "../services";
+import { useAppSelector } from "../store";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
@@ -15,7 +16,6 @@ import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import "../less/memo.less";
-import { useAppSelector } from "../store";
 
 dayjs.extend(relativeTime);
 
@@ -190,7 +190,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       <div className="memo-top-wrapper">
         <div className="status-text-container">
           <span className="time-text" onClick={handleShowMemoStoryDialog}>
-            {user?.setting.sortTimeOption === "created_time" ? createdAtStr : `${t("common.update-on")} ${updatedAtStr}`}
+            {user?.setting.memoSortOption === "created_ts" ? createdAtStr : `${t("common.update-on")} ${updatedAtStr}`}
           </span>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span className={`status-text ${memo.visibility.toLocaleLowerCase()}`}>{memo.visibility}</span>
