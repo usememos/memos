@@ -2,7 +2,7 @@ import { IEmojiData } from "emoji-picker-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
-import { UNKNOWN_ID } from "../helpers/consts";
+import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import { useAppSelector } from "../store";
 import * as storage from "../helpers/storage";
@@ -77,12 +77,18 @@ const MemoEditor: React.FC = () => {
   }, [state, editorState.editMemoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape") {
-      if (state.fullscreen) {
-        handleFullscreenBtnClick();
-      }
-    } else if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
+    if (event.key === "Escape" && state.fullscreen) {
+      handleFullscreenBtnClick();
+      return;
+    }
+    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
       handleSaveBtnClick();
+      return;
+    }
+    if (event.key === "Tab") {
+      event.preventDefault();
+      editorRef.current?.insertText(" ".repeat(TAB_SPACE_WIDTH));
+      return;
     }
   };
 
