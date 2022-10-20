@@ -4,9 +4,10 @@ import "../../less/editor.less";
 
 export interface EditorRefActions {
   focus: FunctionType;
-  insertText: (text: string) => void;
+  insertText: (text: string, mark?: boolean) => void;
   setContent: (text: string) => void;
   getContent: () => string;
+  getSelectedContent: () => string;
   getCursorPosition: () => number;
 }
 
@@ -46,16 +47,23 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
       focus: () => {
         editorRef.current?.focus();
       },
-      insertText: (rawText: string) => {
+      insertText: (rawText: string, mark = false) => {
         if (!editorRef.current) {
           return;
         }
+        const cursorPosition = editorRef.current.selectionStart;
+        const endPosition = editorRef.current.selectionEnd;
+        if (endPosition === cursorPosition && mark) return;
 
         const prevValue = editorRef.current.value;
-        const cursorPosition = editorRef.current.selectionStart;
-        editorRef.current.value = prevValue.slice(0, cursorPosition) + rawText + prevValue.slice(cursorPosition);
+
+        let value = prevValue.slice(0, cursorPosition) + rawText;
+        if (mark) {
+          value += prevValue.slice(cursorPosition, endPosition) + rawText + prevValue.slice(endPosition);
+        }
+        editorRef.current.value = value;
         editorRef.current.focus();
-        editorRef.current.selectionEnd = cursorPosition + rawText.length;
+        editorRef.current.selectionEnd = endPosition + rawText.length;
         handleContentChangeCallback(editorRef.current.value);
         refresh();
       },
@@ -72,6 +80,11 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
       },
       getCursorPosition: (): number => {
         return editorRef.current?.selectionStart ?? 0;
+      },
+      getSelectedContent: () => {
+        const start = editorRef.current?.selectionStart;
+        const end = editorRef.current?.selectionEnd;
+        return editorRef.current?.value.slice(start, end) ?? "";
       },
     }),
     []
