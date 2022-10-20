@@ -2,7 +2,7 @@ import { marked } from "..";
 import Emphasis from "./Emphasis";
 import Link from "./Link";
 
-export const BOLD_REG = /\*\*([\S ]+)\*\*/;
+export const BOLD_REG = /\*\*([\S *]+)\*\*/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(BOLD_REG);
