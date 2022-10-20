@@ -7,8 +7,7 @@ INSERT INTO
 VALUES
   (
     1001,
-    "#Hello 👋 Welcome to memos.
-And here is old Jack's Page: [/u/102](/u/102)", 
+    "#Hello 👋 Welcome to memos.", 
     101
   );
 
@@ -23,9 +22,9 @@ VALUES
   (
     1002,
     '#TODO 
-- [ ] Take more photos about **🌄 sunset**;
+- [x] Take more photos about **🌄 sunset**;
 - [x] Clean the room;
-- [x] Read *📖 The Little Prince*;
+- [ ] Read *📖 The Little Prince*;
 (👆 click to toggle status)', 
     101,
     'PROTECTED'
@@ -41,7 +40,9 @@ INSERT INTO
 VALUES
   (
     1003,
-    '好好学习，天天向上。🤜🤛',
+    "DevJoy is **the Developer's ChinaJoy**.
+![](https://www.devjoy.org/images/skateboard.webp)
+🌐 [devjoy.org](https://www.devjoy.org/)",
     101,
     'PUBLIC'
   );
