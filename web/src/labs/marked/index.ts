@@ -26,7 +26,7 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
   let matchedInlineParser = undefined;
   let matchedIndex = -1;
 
-  for (const parser of inlineElementParserList) {
+  for (const parser of inlineParsers) {
     if (parser.name === "plain text" && matchedInlineParser !== undefined) {
       continue;
     }

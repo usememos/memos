@@ -73,6 +73,18 @@ console.log("hello world!")
       expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
+  test("parse inline code within inline element", () => {
+    const tests = [
+      {
+        markdown: `Link: [\`baidu\`](https://baidu.com)`,
+        want: `<p>Link: <a class='link' target='_blank' rel='noreferrer' href='https://baidu.com'><code>baidu</code></a></p>`,
+      },
+    ];
+
+    for (const t of tests) {
+      expect(unescape(marked(t.markdown))).toBe(t.want);
+    }
+  });
   test("parse plain link", () => {
     const tests = [
       {
