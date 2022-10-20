@@ -94,7 +94,7 @@
     "shortcut-title": "捷径标题",
     "create-shortcut": "创建捷径",
     "edit-shortcut": "编辑捷径",
-    "eligible-memo": "符合条件的 memo",
+    "eligible-memo": "符合条件的 Memo",
     "fill-previous": "请填写之前的过滤值",
     "title-required": "标题是必填项。"
   },
@@ -129,7 +129,7 @@
     "preference-section": {
       "default-memo-visibility": "默认 Memo 可见性",
       "editor-font-style": "编辑器字体样式",
-      "mobile-editor-style": "Mobile editor style",
+      "mobile-editor-style": "移动端编辑器样式",
       "default-memo-sort-option": "按创建时间/更新时间排序",
       "created_ts": "创建时间",
       "updated_ts": "更新时间"
@@ -144,13 +144,13 @@
     "day": "DAY"
   },
   "message": {
-    "no-memos": "没有 memo 了 🌃",
-    "memos-ready": "所有 memo 已就绪 🎉",
+    "no-memos": "没有 Memo 了 🌃",
+    "memos-ready": "所有 Memo 已就绪 🎉",
     "restored-successfully": "恢复成功",
-    "memo-updated-datetime": "Memo创建日期时间已更改。",
+    "memo-updated-datetime": "Memo 创建日期时间已更改。",
     "invalid-created-datetime": "创建的日期时间无效。",
-    "change-memo-created-time": "更改Memo创建时间",
-    "memo-not-found": "找不到Memo。",
+    "change-memo-created-time": "更改 Memo 创建时间",
+    "memo-not-found": "找不到 Memo。",
     "fill-all": "请填写所有字段。",
     "new-password-not-match": "新密码不匹配。",
     "image-load-failed": "图片加载失败",
