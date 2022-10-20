@@ -124,6 +124,14 @@ console.log("hello world!")
         want: `<p>Important: <strong><em>Minecraft/123</em></strong></p>`,
       },
       {
+        markdown: `Important: **Minecraft*123***`,
+        want: `<p>Important: <strong>Minecraft<em>123</em></strong></p>`,
+      },
+      {
+        markdown: `Important: **Minecraft*123*456**`,
+        want: `<p>Important: <strong>Minecraft<em>123</em>456</strong></p>`,
+      },
+      {
         markdown: `Important: ***[baidu](https://baidu.com)***`,
         want: `<p>Important: <strong><em><a class='link' target='_blank' rel='noreferrer' href='https://baidu.com'>baidu</a></em></strong></p>`,
       },
