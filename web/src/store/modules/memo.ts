@@ -44,6 +44,14 @@ const memoSlice = createSlice({
           .filter((memo) => memo.rowStatus === "NORMAL"),
       };
     },
+    deleteMemo: (state, action: PayloadAction<MemoId>) => {
+      return {
+        ...state,
+        memos: state.memos.filter((memo) => {
+          return memo.id !== action.payload;
+        }),
+      };
+    },
     setTags: (state, action: PayloadAction<string[]>) => {
       return {
         ...state,
@@ -59,6 +67,6 @@ const memoSlice = createSlice({
   },
 });
 
-export const { setMemos, createMemo, patchMemo, setTags, setIsFetching } = memoSlice.actions;
+export const { setMemos, createMemo, patchMemo, deleteMemo, setTags, setIsFetching } = memoSlice.actions;
 
 export default memoSlice.reducer;

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { getMemoStats } from "../helpers/api";
 import * as utils from "../helpers/utils";
 import userService from "../services/userService";
 import { locationService } from "../services";
@@ -18,6 +19,7 @@ const UserBanner = () => {
   const { user, owner } = useAppSelector((state) => state.user);
   const { memos, tags } = useAppSelector((state) => state.memo);
   const [username, setUsername] = useState("Memos");
+  const [memoAmount, setMemoAmount] = useState(0);
   const [createdDays, setCreatedDays] = useState(0);
   const isVisitorMode = userService.isVisitorMode();
 
@@ -33,6 +35,16 @@ const UserBanner = () => {
       setCreatedDays(Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24));
     }
   }, [isVisitorMode, user, owner]);
+
+  useEffect(() => {
+    getMemoStats()
+      .then(({ data: { data } }) => {
+        setMemoAmount(data.length);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [memos]);
 
   const handleUsernameClick = useCallback(() => {
     locationService.clearQuery();
@@ -109,7 +121,7 @@ const UserBanner = () => {
       </div>
       <div className="amount-text-container">
         <div className="status-text memos-text">
-          <span className="amount-text">{memos.length}</span>
+          <span className="amount-text">{memoAmount}</span>
           <span className="type-text">{t("amount-text.memo")}</span>
         </div>
         <div className="status-text tags-text">

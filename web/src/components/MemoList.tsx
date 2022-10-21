@@ -1,6 +1,7 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { memoService, shortcutService } from "../services";
+import { DEFAULT_MEMO_LIMIT } from "../services/memoService";
 import { useAppSelector } from "../store";
 import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
@@ -14,6 +15,7 @@ const MemoList = () => {
   const query = useAppSelector((state) => state.location.query);
   const memoDisplayTsOption = useAppSelector((state) => state.user.user?.setting.memoDisplayTsOption);
   const { memos, isFetching } = useAppSelector((state) => state.memo);
+  const [isComplete, setIsComplete] = useState<boolean>(false);
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query ?? {};
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
@@ -81,8 +83,12 @@ const MemoList = () => {
   useEffect(() => {
     memoService
       .fetchMemos()
-      .then(() => {
-        // do nth
+      .then((fetchedMemos) => {
+        if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
+          setIsComplete(true);
+        } else {
+          setIsComplete(false);
+        }
       })
       .catch((error) => {
         console.error(error);
@@ -97,6 +103,20 @@ const MemoList = () => {
     }
   }, [query]);
 
+  const handleFetchMoreClick = async () => {
+    try {
+      const fetchedMemos = await memoService.fetchMemos(DEFAULT_MEMO_LIMIT, memos.length);
+      if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
+        setIsComplete(true);
+      } else {
+        setIsComplete(false);
+      }
+    } catch (error: any) {
+      console.error(error);
+      toastHelper.error(error.response.data.message);
+    }
+  };
+
   return (
     <div className="memo-list-container">
       {sortedMemos.map((memo) => (
@@ -108,7 +128,21 @@ const MemoList = () => {
         </div>
       ) : (
         <div className="status-text-container">
-          <p className="status-text">{sortedMemos.length === 0 ? t("message.no-memos") : showMemoFilter ? "" : t("message.memos-ready")}</p>
+          <p className="status-text">
+            {isComplete ? (
+              sortedMemos.length === 0 ? (
+                t("message.no-memos")
+              ) : (
+                t("message.memos-ready")
+              )
+            ) : (
+              <>
+                <span className="cursor-pointer hover:text-green-600" onClick={handleFetchMoreClick}>
+                  {t("memo-list.fetch-more")}
+                </span>
+              </>
+            )}
+          </p>
         </div>
       )}
     </div>

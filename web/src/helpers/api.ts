@@ -58,8 +58,16 @@ export function deleteUser(userDelete: UserDelete) {
   return axios.delete(`/api/user/${userDelete.id}`);
 }
 
-export function getAllMemos() {
-  return axios.get<ResponseObject<Memo[]>>("/api/memo/all");
+export function getAllMemos(memoFind?: MemoFind) {
+  const queryList = [];
+  if (memoFind?.offset) {
+    queryList.push(`offset=${memoFind.offset}`);
+  }
+  if (memoFind?.limit) {
+    queryList.push(`limit=${memoFind.limit}`);
+  }
+
+  return axios.get<ResponseObject<Memo[]>>(`/api/memo/all?${queryList.join("&")}`);
 }
 
 export function getMemoList(memoFind?: MemoFind) {
@@ -70,7 +78,17 @@ export function getMemoList(memoFind?: MemoFind) {
   if (memoFind?.rowStatus) {
     queryList.push(`rowStatus=${memoFind.rowStatus}`);
   }
+  if (memoFind?.offset) {
+    queryList.push(`offset=${memoFind.offset}`);
+  }
+  if (memoFind?.limit) {
+    queryList.push(`limit=${memoFind.limit}`);
+  }
   return axios.get<ResponseObject<Memo[]>>(`/api/memo?${queryList.join("&")}`);
+}
+
+export function getMemoStats() {
+  return axios.get<ResponseObject<number[]>>(`/api/memo/stats`);
 }
 
 export function getMemoById(id: MemoId) {
