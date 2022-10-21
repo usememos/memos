@@ -1,20 +1,20 @@
 import { marked } from "..";
 import Link from "./Link";
 
-export const BOLD_REG = /\*\*([\S ]+?)\*\*/;
+export const BOLD_EMPHASIS_REG = /\*\*\*([\S ]+?)\*\*\*/;
 
 const renderer = (rawStr: string): string => {
-  const matchResult = rawStr.match(BOLD_REG);
+  const matchResult = rawStr.match(BOLD_EMPHASIS_REG);
   if (!matchResult) {
     return rawStr;
   }
 
   const parsedContent = marked(matchResult[1], [], [Link]);
-  return `<strong>${parsedContent}</strong>`;
+  return `<strong><em>${parsedContent}</em></strong>`;
 };
 
 export default {
-  name: "bold",
-  regex: BOLD_REG,
+  name: "bold emphasis",
+  regex: BOLD_EMPHASIS_REG,
   renderer,
 };
