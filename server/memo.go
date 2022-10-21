@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -101,8 +102,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
 		}
 
+		currentTs := time.Now().Unix()
 		memoPatch := &api.MemoPatch{
-			ID: memoID,
+			ID:        memoID,
+			UpdatedTs: &currentTs,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(memoPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch memo request").SetInternal(err)
@@ -175,6 +178,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
 
+		sort.Slice(list, func(i, j int) bool {
+			return list[i].DisplayTs > list[j].DisplayTs
+		})
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo list response").SetInternal(err)
@@ -226,6 +233,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch all memo list").SetInternal(err)
 		}
+
+		sort.Slice(list, func(i, j int) bool {
+			return list[i].DisplayTs > list[j].DisplayTs
+		})
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {

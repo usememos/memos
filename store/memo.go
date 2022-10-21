@@ -3,6 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -41,6 +42,7 @@ func (raw *memoRaw) toMemo() *api.Memo {
 		// Domain specific fields
 		Content:    raw.Content,
 		Visibility: raw.Visibility,
+		DisplayTs:  raw.CreatedTs,
 	}
 }
 
@@ -60,6 +62,25 @@ func (s *Store) ComposeMemo(ctx context.Context, memo *api.Memo) (*api.Memo, err
 	}
 	if err = s.ComposeMemoResourceList(ctx, memo); err != nil {
 		return nil, err
+	}
+
+	memoSortOptionKey := api.UserSettingMemoSortOptionKey
+	memoSortOption, err := s.FindUserSetting(ctx, &api.UserSettingFind{
+		UserID: memo.CreatorID,
+		Key:    &memoSortOptionKey,
+	})
+	if err != nil {
+		return nil, err
+	}
+	memoSortOptionValue := "created_ts"
+	if memoSortOption != nil {
+		err = json.Unmarshal([]byte(memoSortOption.Value), &memoSortOptionValue)
+		if err != nil {
+			return nil, fmt.Errorf("failed to unmarshal user setting memo sort option value")
+		}
+	}
+	if memoSortOptionValue == "updated_ts" {
+		memo.DisplayTs = memo.UpdatedTs
 	}
 
 	return memo, nil
@@ -243,6 +264,9 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 
 	if v := patch.CreatedTs; v != nil {
 		set, args = append(set, "created_ts = ?"), append(args, *v)
+	}
+	if v := patch.UpdatedTs; v != nil {
+		set, args = append(set, "updated_ts = ?"), append(args, *v)
 	}
 	if v := patch.RowStatus; v != nil {
 		set, args = append(set, "row_status = ?"), append(args, *v)

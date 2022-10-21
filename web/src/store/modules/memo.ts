@@ -18,13 +18,13 @@ const memoSlice = createSlice({
     setMemos: (state, action: PayloadAction<Memo[]>) => {
       return {
         ...state,
-        memos: action.payload.filter((m) => m.rowStatus === "NORMAL").sort((a, b) => b.createdTs - a.createdTs),
+        memos: action.payload.filter((m) => m.rowStatus === "NORMAL"),
       };
     },
     createMemo: (state, action: PayloadAction<Memo>) => {
       return {
         ...state,
-        memos: state.memos.concat(action.payload).sort((a, b) => b.createdTs - a.createdTs),
+        memos: state.memos.concat(action.payload),
       };
     },
     patchMemo: (state, action: PayloadAction<Partial<Memo>>) => {

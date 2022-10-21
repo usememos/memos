@@ -7,7 +7,6 @@ import { useNavigate } from "react-router-dom";
 import "dayjs/locale/zh";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, userService } from "../services";
-import { useAppSelector } from "../store";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
@@ -33,20 +32,17 @@ export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
 
 const Memo: React.FC<Props> = (props: Props) => {
   const memo = props.memo;
-  const user = useAppSelector((state) => state.user.user);
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [createdAtStr, setCreatedAtStr] = useState<string>(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
-  const [updatedAtStr, setUpdatedAtStr] = useState<string>(getFormatedMemoTimeStr(memo.updatedTs, i18n.language));
+  const [displayTimeStr, setDisplayTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
 
   useEffect(() => {
     let intervalFlag: any = -1;
-    if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
+    if (Date.now() - memo.displayTs < 1000 * 60 * 60 * 24) {
       intervalFlag = setInterval(() => {
-        setCreatedAtStr(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
-        setUpdatedAtStr(getFormatedMemoTimeStr(memo.updatedTs, i18n.language));
+        setDisplayTimeStr(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
       }, 1000 * 1);
     }
 
@@ -186,13 +182,12 @@ const Memo: React.FC<Props> = (props: Props) => {
     editorStateService.setEditMemoWithId(memo.id);
   };
 
-  const timeStr = user?.setting.memoSortOption === "created_ts" ? createdAtStr : `${t("common.update-on")} ${updatedAtStr}`;
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
       <div className="memo-top-wrapper">
         <div className="status-text-container">
           <span className="time-text" onClick={handleShowMemoStoryDialog}>
-            {timeStr}
+            {displayTimeStr}
           </span>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span className={`status-text ${memo.visibility.toLocaleLowerCase()}`}>{memo.visibility}</span>

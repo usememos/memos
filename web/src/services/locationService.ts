@@ -1,7 +1,6 @@
 import { stringify } from "qs";
 import store from "../store";
-import { setQuery, setPathname, setUpdatedTime, Query, updateStateWithLocation } from "../store/modules/location";
-import { getTimeStampByDate } from "../helpers/utils";
+import { setQuery, setPathname, Query, updateStateWithLocation } from "../store/modules/location";
 
 const updateLocationUrl = (method: "replace" | "push" = "replace") => {
   const { query, pathname, hash } = store.getState().location;
@@ -112,10 +111,6 @@ const locationService = {
       })
     );
     updateLocationUrl();
-  },
-
-  setUpdatedFlag: () => {
-    store.dispatch(setUpdatedTime(getTimeStampByDate(new Date()).toString()));
   },
 };
 
