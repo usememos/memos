@@ -99,7 +99,7 @@ const MemoDetail = () => {
             <div className="memo-container">
               <div className="memo-header">
                 <div className="status-container">
-                  <span className="time-text">{dayjs(state.memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
+                  <span className="time-text">{dayjs(state.memo.displayTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
                   {user?.id === state.memo.creatorId ? (
                     <Dropdown
                       className="visibility-selector"

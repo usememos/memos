@@ -50,7 +50,7 @@ const MemoList = () => {
           if (
             duration &&
             duration.from < duration.to &&
-            (utils.getTimeStampByDate(memo.createdTs) < duration.from || utils.getTimeStampByDate(memo.createdTs) > duration.to)
+            (utils.getTimeStampByDate(memo.displayTs) < duration.from || utils.getTimeStampByDate(memo.displayTs) > duration.to)
           ) {
             shouldShow = false;
           }

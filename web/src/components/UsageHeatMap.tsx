@@ -41,7 +41,7 @@ const UsageHeatMap = () => {
   useEffect(() => {
     const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestemp);
     for (const m of memos) {
-      const index = (utils.getDateStampByDate(m.createdTs) - beginDayTimestemp) / (1000 * 3600 * 24) - 1;
+      const index = (utils.getDateStampByDate(m.displayTs) - beginDayTimestemp) / (1000 * 3600 * 24) - 1;
       if (index >= 0) {
         newStat[index].count += 1;
       }
