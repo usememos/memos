@@ -88,7 +88,8 @@
     }
   },
   "memo-list": {
-    "fetching-data": "đang tải dữ liệu..."
+    "fetching-data": "đang tải dữ liệu...",
+    "fetch-more": "Click here to fetch more"
   },
   "shortcut-list": {
     "shortcut-title": "Tên lối tắt",

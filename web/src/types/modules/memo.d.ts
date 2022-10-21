@@ -38,4 +38,6 @@ interface MemoFind {
   creatorId?: UserId;
   rowStatus?: RowStatus;
   visibility?: Visibility;
+  offset?: number;
+  limit?: number;
 }

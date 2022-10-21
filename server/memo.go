@@ -203,6 +203,56 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		return nil
 	})
 
+	g.GET("/memo/stats", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		normalStatus := api.Normal
+		memoFind := &api.MemoFind{
+			RowStatus: &normalStatus,
+		}
+		if userID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
+			memoFind.CreatorID = &userID
+		}
+
+		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			if memoFind.CreatorID == nil {
+				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
+			}
+			memoFind.VisibilityList = []api.Visibility{api.Public}
+		} else {
+			if memoFind.CreatorID == nil {
+				memoFind.CreatorID = &currentUserID
+			} else {
+				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
+			}
+		}
+
+		visibilitListStr := c.QueryParam("visibility")
+		if visibilitListStr != "" {
+			visibilityList := []api.Visibility{}
+			for _, visibility := range strings.Split(visibilitListStr, ",") {
+				visibilityList = append(visibilityList, api.Visibility(visibility))
+			}
+			memoFind.VisibilityList = visibilityList
+		}
+
+		list, err := s.Store.FindMemoList(ctx, memoFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
+		}
+
+		displayTsList := []int64{}
+		for _, memo := range list {
+			displayTsList = append(displayTsList, memo.DisplayTs)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(displayTsList)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo stats response").SetInternal(err)
+		}
+		return nil
+	})
+
 	g.GET("/memo/all", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		memoFind := &api.MemoFind{}

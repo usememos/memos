@@ -21,7 +21,6 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
     if (showConfirmDeleteBtn) {
       try {
         await memoService.deleteMemoById(memo.id);
-        await memoService.fetchMemos();
       } catch (error: any) {
         console.error(error);
         toastHelper.error(error.response.data.message);

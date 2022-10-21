@@ -40,7 +40,11 @@
     .ol-block,
     .ul-block,
     .todo-block {
-      @apply inline-block box-border text-center w-7 font-mono select-none;
+      @apply inline-block box-border text-right w-8 mr-px font-mono select-none whitespace-nowrap;
+    }
+
+    .ul-block {
+      @apply text-center;
     }
 
     .todo-block {

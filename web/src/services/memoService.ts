@@ -1,7 +1,9 @@
 import * as api from "../helpers/api";
-import { createMemo, patchMemo, setIsFetching, setMemos, setTags } from "../store/modules/memo";
+import { createMemo, deleteMemo, patchMemo, setIsFetching, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
 import userService from "./userService";
+
+export const DEFAULT_MEMO_LIMIT = 20;
 
 const convertResponseModelMemo = (memo: Memo): Memo => {
   return {
@@ -17,32 +19,37 @@ const memoService = {
     return store.getState().memo;
   },
 
-  fetchAllMemos: async () => {
-    const memoFind: MemoFind = {};
-    if (userService.isVisitorMode()) {
-      memoFind.creatorId = userService.getUserIdFromPath();
-    }
-    const { data } = (await api.getAllMemos()).data;
-    const memos = data.map((m) => convertResponseModelMemo(m));
-    return memos;
-  },
-
-  fetchMemos: async () => {
-    const timeoutIndex = setTimeout(() => {
-      store.dispatch(setIsFetching(true));
-    }, 1000);
+  fetchMemos: async (limit = DEFAULT_MEMO_LIMIT, offset = 0) => {
+    store.dispatch(setIsFetching(true));
     const memoFind: MemoFind = {
       rowStatus: "NORMAL",
+      limit,
+      offset,
     };
     if (userService.isVisitorMode()) {
       memoFind.creatorId = userService.getUserIdFromPath();
     }
     const { data } = (await api.getMemoList(memoFind)).data;
-    const memos = data.map((m) => convertResponseModelMemo(m));
-    store.dispatch(setMemos(memos));
-    clearTimeout(timeoutIndex);
+    const fetchedMemos = data.map((m) => convertResponseModelMemo(m));
+    if (offset === 0) {
+      store.dispatch(setMemos([]));
+    }
+    const memos = memoService.getState().memos;
+    store.dispatch(setMemos(memos.concat(fetchedMemos)));
     store.dispatch(setIsFetching(false));
 
+    return fetchedMemos;
+  },
+
+  fetchAllMemos: async (limit = DEFAULT_MEMO_LIMIT, offset?: number) => {
+    const memoFind: MemoFind = {
+      rowStatus: "NORMAL",
+      limit,
+      offset,
+    };
+
+    const { data } = (await api.getAllMemos(memoFind)).data;
+    const memos = data.map((m) => convertResponseModelMemo(m));
     return memos;
   },
 
@@ -129,6 +136,7 @@ const memoService = {
 
   deleteMemoById: async (memoId: MemoId) => {
     await api.deleteMemo(memoId);
+    store.dispatch(deleteMemo(memoId));
   },
 };
 

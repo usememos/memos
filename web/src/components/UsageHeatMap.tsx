@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppSelector } from "../store";
 import { locationService } from "../services";
+import { getMemoStats } from "../helpers/api";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import "../less/usage-heat-map.less";
@@ -39,15 +40,21 @@ const UsageHeatMap = () => {
   const containerElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestemp);
-    for (const m of memos) {
-      const index = (utils.getDateStampByDate(m.displayTs) - beginDayTimestemp) / (1000 * 3600 * 24) - 1;
-      if (index >= 0) {
-        newStat[index].count += 1;
-      }
-    }
-    setAllStat([...newStat]);
-  }, [memos]);
+    getMemoStats()
+      .then(({ data: { data } }) => {
+        const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestemp);
+        for (const record of data) {
+          const index = (utils.getDateStampByDate(record * 1000) - beginDayTimestemp) / (1000 * 3600 * 24) - 1;
+          if (index >= 0) {
+            newStat[index].count += 1;
+          }
+        }
+        setAllStat([...newStat]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+  }, [memos.length]);
 
   const handleUsageStatItemMouseEnter = useCallback((event: React.MouseEvent, item: DailyUsageStat) => {
     const tempDiv = document.createElement("div");
