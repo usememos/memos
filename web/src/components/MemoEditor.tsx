@@ -77,10 +77,7 @@ const MemoEditor: React.FC = () => {
   }, [state, editorState.editMemoId]);
 
   const handleInsertMark = (mark: string) => {
-    if (!editorRef.current || mark) {
-      return;
-    }
-    editorRef.current.insertText(mark, true);
+    editorRef.current?.insertText(mark, true);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {

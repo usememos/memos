@@ -59,8 +59,9 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
 
         let value = prevValue.slice(0, cursorPosition) + rawText;
         if (mark) {
-          value += prevValue.slice(cursorPosition, endPosition) + rawText + prevValue.slice(endPosition);
+          value += prevValue.slice(cursorPosition, endPosition) + rawText;
         }
+        value += prevValue.slice(endPosition);
         editorRef.current.value = value;
         editorRef.current.focus();
         editorRef.current.selectionEnd = endPosition + rawText.length;
