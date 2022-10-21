@@ -16,8 +16,8 @@ const (
 	UserSettingEditorFontStyleKey UserSettingKey = "editorFontStyle"
 	// UserSettingEditorFontStyleKey is the key type for mobile editor style.
 	UserSettingMobileEditorStyleKey UserSettingKey = "mobileEditorStyle"
-	// UserSettingMemoSortOptionKey is the key type for memo sort option.
-	UserSettingMemoSortOptionKey UserSettingKey = "memoSortOption"
+	// UserSettingMemoDisplayTsOptionKey is the key type for memo display ts option.
+	UserSettingMemoDisplayTsOptionKey UserSettingKey = "memoSortOption"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -31,18 +31,18 @@ func (key UserSettingKey) String() string {
 		return "editorFontFamily"
 	case UserSettingMobileEditorStyleKey:
 		return "mobileEditorStyle"
-	case UserSettingMemoSortOptionKey:
-		return "memoSortOption"
+	case UserSettingMemoDisplayTsOptionKey:
+		return "memoDisplayTsOption"
 	}
 	return ""
 }
 
 var (
-	UserSettingLocaleValue            = []string{"en", "zh", "vi"}
-	UserSettingMemoVisibilityValue    = []Visibility{Privite, Protected, Public}
-	UserSettingEditorFontStyleValue   = []string{"normal", "mono"}
-	UserSettingMobileEditorStyleValue = []string{"normal", "float"}
-	UserSettingMemoSortOptionKeyValue = []string{"created_ts", "updated_ts"}
+	UserSettingLocaleValue                 = []string{"en", "zh", "vi"}
+	UserSettingMemoVisibilityValue         = []Visibility{Privite, Protected, Public}
+	UserSettingEditorFontStyleValue        = []string{"normal", "mono"}
+	UserSettingMobileEditorStyleValue      = []string{"normal", "float"}
+	UserSettingMemoDisplayTsOptionKeyValue = []string{"created_ts", "updated_ts"}
 )
 
 type UserSetting struct {
@@ -127,22 +127,22 @@ func (upsert UserSettingUpsert) Validate() error {
 		if invalid {
 			return fmt.Errorf("invalid user setting mobile editor style value")
 		}
-	} else if upsert.Key == UserSettingMemoSortOptionKey {
-		memoSortOption := "created_ts"
-		err := json.Unmarshal([]byte(upsert.Value), &memoSortOption)
+	} else if upsert.Key == UserSettingMemoDisplayTsOptionKey {
+		memoDisplayTsOption := "created_ts"
+		err := json.Unmarshal([]byte(upsert.Value), &memoDisplayTsOption)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting memo sort option")
+			return fmt.Errorf("failed to unmarshal user setting memo display ts option")
 		}
 
 		invalid := true
-		for _, value := range UserSettingMemoSortOptionKeyValue {
-			if memoSortOption == value {
+		for _, value := range UserSettingMemoDisplayTsOptionKeyValue {
+			if memoDisplayTsOption == value {
 				invalid = false
 				break
 			}
 		}
 		if invalid {
-			return fmt.Errorf("invalid user setting memo sort option value")
+			return fmt.Errorf("invalid user setting memo display ts option value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")
