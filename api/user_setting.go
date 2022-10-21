@@ -16,7 +16,7 @@ const (
 	UserSettingEditorFontStyleKey UserSettingKey = "editorFontStyle"
 	// UserSettingEditorFontStyleKey is the key type for mobile editor style.
 	UserSettingMobileEditorStyleKey UserSettingKey = "mobileEditorStyle"
-	// UserSettingMemoSortOptionKey is the key type for sort time option.
+	// UserSettingMemoSortOptionKey is the key type for memo sort option.
 	UserSettingMemoSortOptionKey UserSettingKey = "memoSortOption"
 )
 
@@ -42,7 +42,7 @@ var (
 	UserSettingMemoVisibilityValue    = []Visibility{Privite, Protected, Public}
 	UserSettingEditorFontStyleValue   = []string{"normal", "mono"}
 	UserSettingMobileEditorStyleValue = []string{"normal", "float"}
-	UserSettingSortTimeOptionKeyValue = []string{"created_ts", "updated_ts"}
+	UserSettingMemoSortOptionKeyValue = []string{"created_ts", "updated_ts"}
 )
 
 type UserSetting struct {
@@ -135,7 +135,7 @@ func (upsert UserSettingUpsert) Validate() error {
 		}
 
 		invalid := true
-		for _, value := range UserSettingSortTimeOptionKeyValue {
+		for _, value := range UserSettingMemoSortOptionKeyValue {
 			if memoSortOption == value {
 				invalid = false
 				break

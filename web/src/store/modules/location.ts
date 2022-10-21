@@ -17,7 +17,6 @@ interface State {
   pathname: string;
   hash: string;
   query: Query;
-  updatedTime: string;
 }
 
 const getValidPathname = (pathname: string): string => {
@@ -36,7 +35,6 @@ const getStateFromLocation = () => {
     pathname: getValidPathname(pathname),
     hash: hash,
     query: {},
-    updatedTime: "",
   };
 
   if (search !== "") {
@@ -88,15 +86,9 @@ const locationSlice = createSlice({
         },
       };
     },
-    setUpdatedTime: (state, action: PayloadAction<string>) => {
-      return {
-        ...state,
-        updatedTime: action.payload,
-      };
-    },
   },
 });
 
-export const { setPathname, setQuery, setUpdatedTime, updateStateWithLocation } = locationSlice.actions;
+export const { setPathname, setQuery, updateStateWithLocation } = locationSlice.actions;
 
 export default locationSlice.reducer;

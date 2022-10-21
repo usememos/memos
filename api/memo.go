@@ -37,6 +37,7 @@ type Memo struct {
 	Content    string     `json:"content"`
 	Visibility Visibility `json:"visibility"`
 	Pinned     bool       `json:"pinned"`
+	DisplayTs  int64      `json:"displayTs"`
 
 	// Related fields
 	Creator      *User       `json:"creator"`
@@ -59,7 +60,8 @@ type MemoPatch struct {
 	ID int
 
 	// Standard fields
-	CreatedTs *int64     `json:"createdTs"`
+	CreatedTs *int64 `json:"createdTs"`
+	UpdatedTs *int64
 	RowStatus *RowStatus `json:"rowStatus"`
 
 	// Domain specific fields
