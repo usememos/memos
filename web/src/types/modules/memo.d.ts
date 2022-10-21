@@ -30,6 +30,7 @@ interface MemoPatch {
   createdTs?: TimeStamp;
   rowStatus?: RowStatus;
   content?: string;
+  resourceIdList?: ResourceId[];
   visibility?: Visibility;
 }
 

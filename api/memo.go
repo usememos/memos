@@ -67,6 +67,9 @@ type MemoPatch struct {
 	// Domain specific fields
 	Content    *string     `json:"content"`
 	Visibility *Visibility `json:"visibility"`
+
+	// Related fields
+	ResourceIDList []int `json:"resourceIdList"`
 }
 
 type MemoFind struct {

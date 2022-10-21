@@ -164,6 +164,7 @@ const MemoEditor: React.FC = () => {
           await memoService.patchMemo({
             id: prevMemo.id,
             content,
+            resourceIdList: state.resourceList.map((resource) => resource.id),
           });
         }
         editorStateService.clearEditMemo();
