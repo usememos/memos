@@ -17,7 +17,7 @@ const (
 	// UserSettingEditorFontStyleKey is the key type for mobile editor style.
 	UserSettingMobileEditorStyleKey UserSettingKey = "mobileEditorStyle"
 	// UserSettingMemoDisplayTsOptionKey is the key type for memo display ts option.
-	UserSettingMemoDisplayTsOptionKey UserSettingKey = "memoSortOption"
+	UserSettingMemoDisplayTsOptionKey UserSettingKey = "memoDisplayTsOption"
 )
 
 // String returns the string format of UserSettingKey type.

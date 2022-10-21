@@ -73,11 +73,11 @@ const MemoList = () => {
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
-  const memoSorting = (mi: Memo, mj: Memo) => {
+  const memoSort = (mi: Memo, mj: Memo) => {
     return mj.displayTs - mi.displayTs;
   };
-  pinnedMemos.sort(memoSorting);
-  unpinnedMemos.sort(memoSorting);
+  pinnedMemos.sort(memoSort);
+  unpinnedMemos.sort(memoSort);
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   useEffect(() => {
