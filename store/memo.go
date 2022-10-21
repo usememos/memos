@@ -64,22 +64,22 @@ func (s *Store) ComposeMemo(ctx context.Context, memo *api.Memo) (*api.Memo, err
 		return nil, err
 	}
 
-	memoSortOptionKey := api.UserSettingMemoSortOptionKey
-	memoSortOption, err := s.FindUserSetting(ctx, &api.UserSettingFind{
+	memoDisplayTsOptionKey := api.UserSettingMemoDisplayTsOptionKey
+	memoDisplayTsOptionSetting, err := s.FindUserSetting(ctx, &api.UserSettingFind{
 		UserID: memo.CreatorID,
-		Key:    &memoSortOptionKey,
+		Key:    &memoDisplayTsOptionKey,
 	})
 	if err != nil {
 		return nil, err
 	}
-	memoSortOptionValue := "created_ts"
-	if memoSortOption != nil {
-		err = json.Unmarshal([]byte(memoSortOption.Value), &memoSortOptionValue)
+	memoDisplayTsOptionValue := "created_ts"
+	if memoDisplayTsOptionSetting != nil {
+		err = json.Unmarshal([]byte(memoDisplayTsOptionSetting.Value), &memoDisplayTsOptionValue)
 		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal user setting memo sort option value")
+			return nil, fmt.Errorf("failed to unmarshal user setting memo display ts option value")
 		}
 	}
-	if memoSortOptionValue == "updated_ts" {
+	if memoDisplayTsOptionValue == "updated_ts" {
 		memo.DisplayTs = memo.UpdatedTs
 	}
 

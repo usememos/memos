@@ -58,8 +58,8 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
             if (memoTemp) {
               linkMemos.push({
                 ...memoTemp,
-                createdAtStr: utils.getDateTimeString(memoTemp.createdTs),
-                dateStr: utils.getDateString(memoTemp.createdTs),
+                createdAtStr: utils.getDateTimeString(memoTemp.displayTs),
+                dateStr: utils.getDateString(memoTemp.displayTs),
               });
             }
           }
@@ -70,11 +70,11 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
         setLinkedMemos(
           linkedMemos
             .filter((m) => m.rowStatus === "NORMAL" && m.id !== memo.id)
-            .sort((a, b) => utils.getTimeStampByDate(b.createdTs) - utils.getTimeStampByDate(a.createdTs))
+            .sort((a, b) => utils.getTimeStampByDate(b.displayTs) - utils.getTimeStampByDate(a.displayTs))
             .map((m) => ({
               ...m,
-              createdAtStr: utils.getDateTimeString(m.createdTs),
-              dateStr: utils.getDateString(m.createdTs),
+              createdAtStr: utils.getDateTimeString(m.displayTs),
+              dateStr: utils.getDateString(m.displayTs),
             }))
         );
       } catch (error) {
@@ -104,7 +104,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
       if (memoTemp) {
         const nextMemo = {
           ...memoTemp,
-          createdAtStr: utils.getDateTimeString(memoTemp.createdTs),
+          createdAtStr: utils.getDateTimeString(memoTemp.displayTs),
         };
         setLinkMemos([]);
         setLinkedMemos([]);
@@ -169,7 +169,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
       <div className="memo-card-container">
         <div className="header-container">
           <p className="time-text" onClick={handleMemoCreatedAtClick}>
-            {utils.getDateTimeString(memo.createdTs)}
+            {utils.getDateTimeString(memo.displayTs)}
           </p>
           <div className="btns-container">
             {!isVisitorMode && (

@@ -55,7 +55,7 @@ const Explore = () => {
           <main className="memos-wrapper">
             {state.memos.length > 0 ? (
               state.memos.map((memo) => {
-                const createdAtStr = dayjs(memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
+                const createdAtStr = dayjs(memo.displayTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
                 return (
                   <div className="memo-container" key={memo.id}>
                     <div className="memo-header">

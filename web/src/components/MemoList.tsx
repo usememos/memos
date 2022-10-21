@@ -12,7 +12,7 @@ import "../less/memo-list.less";
 const MemoList = () => {
   const { t } = useTranslation();
   const query = useAppSelector((state) => state.location.query);
-  const memoSortOption = useAppSelector((state) => state.user.user?.setting.memoSortOption);
+  const memoDisplayTsOption = useAppSelector((state) => state.user.user?.setting.memoDisplayTsOption);
   const { memos, isFetching } = useAppSelector((state) => state.memo);
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query ?? {};
@@ -50,7 +50,7 @@ const MemoList = () => {
           if (
             duration &&
             duration.from < duration.to &&
-            (utils.getTimeStampByDate(memo.createdTs) < duration.from || utils.getTimeStampByDate(memo.createdTs) > duration.to)
+            (utils.getTimeStampByDate(memo.displayTs) < duration.from || utils.getTimeStampByDate(memo.displayTs) > duration.to)
           ) {
             shouldShow = false;
           }
@@ -88,7 +88,7 @@ const MemoList = () => {
         console.error(error);
         toastHelper.error(error.response.data.message);
       });
-  }, [memoSortOption]);
+  }, [memoDisplayTsOption]);
 
   useEffect(() => {
     const pageWrapper = document.body.querySelector(".page-wrapper");

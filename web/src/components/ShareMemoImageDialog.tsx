@@ -20,7 +20,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
   const [shortcutImgUrl, setShortcutImgUrl] = useState("");
   const memo = {
     ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
+    createdAtStr: utils.getDateTimeString(propsMemo.displayTs),
   };
   const memoElRef = useRef<HTMLDivElement>(null);
 

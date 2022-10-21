@@ -3,7 +3,7 @@ interface Setting {
   memoVisibility: Visibility;
   editorFontStyle: "normal" | "mono";
   mobileEditorStyle: "normal" | "float";
-  memoSortOption: "created_ts" | "updated_ts";
+  memoDisplayTsOption: "created_ts" | "updated_ts";
 }
 
 interface UserLocaleSetting {

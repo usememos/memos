@@ -12,12 +12,7 @@ interface Props {
 }
 
 const ArchivedMemo: React.FC<Props> = (props: Props) => {
-  const { memo: propsMemo } = props;
-  const memo = {
-    ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
-    archivedAtStr: utils.getDateTimeString(propsMemo.updatedTs ?? Date.now()),
-  };
+  const { memo } = props;
   const { t } = useTranslation();
 
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
@@ -60,7 +55,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
     <div className={`memo-wrapper archived-memo ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
         <span className="time-text">
-          {t("common.archived-at")} {memo.archivedAtStr}
+          {t("common.archived-at")} {utils.getDateTimeString(memo.updatedTs)}
         </span>
         <div className="btns-container">
           <span className="btn restore-btn" onClick={handleRestoreMemoClick}>
