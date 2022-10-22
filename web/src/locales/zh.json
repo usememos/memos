@@ -89,7 +89,7 @@
   },
   "memo-list": {
     "fetching-data": "请求数据中...",
-    "fetch-more": "Click here to fetch more"
+    "fetch-more": "点击加载更多"
   },
   "shortcut-list": {
     "shortcut-title": "捷径标题",
