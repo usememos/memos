@@ -76,6 +76,10 @@ const MemoEditor: React.FC = () => {
     prevGlobalStateRef.current = editorState;
   }, [state, editorState.editMemoId]);
 
+  const handleInsertMark = (mark: string) => {
+    editorRef.current?.insertText("", mark);
+  };
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Escape" && state.fullscreen) {
       handleFullscreenBtnClick();
@@ -88,6 +92,21 @@ const MemoEditor: React.FC = () => {
     if (event.key === "Tab") {
       event.preventDefault();
       editorRef.current?.insertText(" ".repeat(TAB_SPACE_WIDTH));
+      return;
+    }
+    if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
+      switch (event.key) {
+        case "b":
+          handleInsertMark("**");
+          break;
+        case "i":
+          handleInsertMark("*");
+          break;
+        case "e":
+          handleInsertMark("`");
+          break;
+      }
       return;
     }
   };
