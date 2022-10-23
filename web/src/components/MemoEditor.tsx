@@ -76,17 +76,9 @@ const MemoEditor: React.FC = () => {
     prevGlobalStateRef.current = editorState;
   }, [state, editorState.editMemoId]);
 
-  const handleInsertMark = (mark: string) => {
-    editorRef.current?.insertText("", mark);
-  };
-
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Escape" && state.fullscreen) {
       handleFullscreenBtnClick();
-      return;
-    }
-    if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
-      handleSaveBtnClick();
       return;
     }
     if (event.key === "Tab") {
@@ -95,19 +87,25 @@ const MemoEditor: React.FC = () => {
       return;
     }
     if (event.ctrlKey || event.metaKey) {
-      event.preventDefault();
-      switch (event.key) {
-        case "b":
-          handleInsertMark("**");
-          break;
-        case "i":
-          handleInsertMark("*");
-          break;
-        case "e":
-          handleInsertMark("`");
-          break;
+      if (event.key === "Enter") {
+        handleSaveBtnClick();
+        return;
       }
-      return;
+      if (event.key === "b") {
+        event.preventDefault();
+        editorRef.current?.insertText("", "**", "**");
+        return;
+      }
+      if (event.key === "i") {
+        event.preventDefault();
+        editorRef.current?.insertText("", "*", "*");
+        return;
+      }
+      if (event.key === "e") {
+        event.preventDefault();
+        editorRef.current?.insertText("", "`", "`");
+        return;
+      }
     }
   };
 
@@ -235,9 +233,9 @@ const MemoEditor: React.FC = () => {
     const cursorPosition = editorRef.current.getCursorPosition();
     const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
     if (prevValue === "" || prevValue.endsWith("\n")) {
-      editorRef.current?.insertText("- [ ] ");
+      editorRef.current?.insertText("", "- [ ] ");
     } else {
-      editorRef.current?.insertText("\n- [ ] ");
+      editorRef.current?.insertText("", "\n- [ ] ");
     }
   };
 
@@ -249,9 +247,9 @@ const MemoEditor: React.FC = () => {
     const cursorPosition = editorRef.current.getCursorPosition();
     const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
     if (prevValue === "" || prevValue.endsWith("\n")) {
-      editorRef.current?.insertText("```\n\n```");
+      editorRef.current?.insertText("", "```\n", "\n```");
     } else {
-      editorRef.current?.insertText("\n```\n\n```");
+      editorRef.current?.insertText("", "\n```\n", "\n```");
     }
   };
 
@@ -375,7 +373,7 @@ const MemoEditor: React.FC = () => {
               )}
             </div>
           </div>
-          <button className="action-btn">
+          <button className="action-btn !hidden sm:!flex ">
             <Icon.Smile className="icon-img" onClick={handleEmojiPickerBtnClick} />
           </button>
           <button className="action-btn">
