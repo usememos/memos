@@ -47,19 +47,19 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
       focus: () => {
         editorRef.current?.focus();
       },
-      insertText: (content = "", prefix = "", suffix = prefix) => {
+      insertText: (content = "", prefix = "", suffix = "") => {
         if (!editorRef.current) {
           return;
         }
+
         const cursorPosition = editorRef.current.selectionStart;
         const endPosition = editorRef.current.selectionEnd;
         const prevValue = editorRef.current.value;
         const value =
           prevValue.slice(0, cursorPosition) +
           prefix +
-          prevValue.slice(cursorPosition, endPosition) +
+          (content || prevValue.slice(cursorPosition, endPosition)) +
           suffix +
-          content +
           prevValue.slice(endPosition);
 
         editorRef.current.value = value;
