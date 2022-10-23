@@ -4,7 +4,7 @@ import "../../less/editor.less";
 
 export interface EditorRefActions {
   focus: FunctionType;
-  insertText: (text: string, mark?: boolean) => void;
+  insertText: (text: string, prefix?: string, suffix?: string) => void;
   setContent: (text: string) => void;
   getContent: () => string;
   getSelectedContent: () => string;
@@ -47,24 +47,24 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
       focus: () => {
         editorRef.current?.focus();
       },
-      insertText: (rawText: string, mark = false) => {
+      insertText: (content = "", prefix = "", suffix = prefix) => {
         if (!editorRef.current) {
           return;
         }
         const cursorPosition = editorRef.current.selectionStart;
         const endPosition = editorRef.current.selectionEnd;
-        if (endPosition === cursorPosition && mark) return;
-
         const prevValue = editorRef.current.value;
+        const value =
+          prevValue.slice(0, cursorPosition) +
+          prefix +
+          prevValue.slice(cursorPosition, endPosition) +
+          suffix +
+          content +
+          prevValue.slice(endPosition);
 
-        let value = prevValue.slice(0, cursorPosition) + rawText;
-        if (mark) {
-          value += prevValue.slice(cursorPosition, endPosition) + rawText;
-        }
-        value += prevValue.slice(endPosition);
         editorRef.current.value = value;
         editorRef.current.focus();
-        editorRef.current.selectionEnd = endPosition + rawText.length;
+        editorRef.current.selectionEnd = endPosition + prefix.length + suffix.length + content.length;
         handleContentChangeCallback(editorRef.current.value);
         refresh();
       },

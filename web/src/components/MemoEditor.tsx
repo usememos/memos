@@ -77,7 +77,7 @@ const MemoEditor: React.FC = () => {
   }, [state, editorState.editMemoId]);
 
   const handleInsertMark = (mark: string) => {
-    editorRef.current?.insertText(mark, true);
+    editorRef.current?.insertText("", mark);
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -95,6 +95,7 @@ const MemoEditor: React.FC = () => {
       return;
     }
     if (event.ctrlKey || event.metaKey) {
+      event.preventDefault();
       switch (event.key) {
         case "b":
           handleInsertMark("**");
@@ -102,10 +103,11 @@ const MemoEditor: React.FC = () => {
         case "i":
           handleInsertMark("*");
           break;
-        case "~":
-          if (event.shiftKey) handleInsertMark("`");
+        case "e":
+          handleInsertMark("`");
           break;
       }
+      return;
     }
   };
 
