@@ -230,6 +230,9 @@ func createUser(ctx context.Context, tx *sql.Tx, create *api.UserCreate) (*userR
 func patchUser(ctx context.Context, tx *sql.Tx, patch *api.UserPatch) (*userRaw, error) {
 	set, args := []string{}, []interface{}{}
 
+	if v := patch.UpdatedTs; v != nil {
+		set, args = append(set, "updated_ts = ?"), append(args, *v)
+	}
 	if v := patch.RowStatus; v != nil {
 		set, args = append(set, "row_status = ?"), append(args, *v)
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
@@ -45,8 +46,10 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("shortcutId"))).SetInternal(err)
 		}
 
+		currentTs := time.Now().Unix()
 		shortcutPatch := &api.ShortcutPatch{
-			ID: shortcutID,
+			ID:        shortcutID,
+			UpdatedTs: &currentTs,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(shortcutPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch shortcut request").SetInternal(err)

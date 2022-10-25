@@ -42,13 +42,13 @@ func (db *DB) Open(ctx context.Context) (err error) {
 		return fmt.Errorf("dsn required")
 	}
 
-	// Connect to the database without foreign_keys config.
-	tempDB, err := sql.Open("sqlite3", db.profile.DSN)
+	// Connect to the database without foreign_key.
+	sqlDB, err := sql.Open("sqlite3", db.profile.DSN+"?_foreign_keys=0")
 	if err != nil {
 		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.profile.DSN, err)
 	}
+	db.Db = sqlDB
 
-	db.Db = tempDB
 	// If mode is dev, we should migrate and seed the database.
 	if db.profile.Mode == "dev" {
 		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
@@ -118,19 +118,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 		}
 	}
 
-	if err := tempDB.Close(); err != nil {
-		return fmt.Errorf("failed to close temp db without foreign_keys, err: %w", err)
-	}
-
-	// Connect to the database with foreign_keys config.
-	sqlDB, err := sql.Open("sqlite3", db.profile.DSN+"?_foreign_keys=1")
-	if err != nil {
-		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.profile.DSN, err)
-	}
-
-	db.Db = sqlDB
-
-	return err
+	return nil
 }
 
 const (
