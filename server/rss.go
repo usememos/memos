@@ -16,7 +16,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted user id").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "User id is not a number").SetInternal(err)
 		}
 
 		normalStatus := api.Normal
