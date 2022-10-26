@@ -35,4 +35,5 @@ require (
 require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
+	github.com/gorilla/feeds v1.1.1 // indirect
 )
