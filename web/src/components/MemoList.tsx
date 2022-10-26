@@ -103,6 +103,15 @@ const MemoList = () => {
     }
   }, [query]);
 
+  useEffect(() => {
+    if (isFetching || isComplete) {
+      return;
+    }
+    if (sortedMemos.length < DEFAULT_MEMO_LIMIT) {
+      handleFetchMoreClick();
+    }
+  }, [isFetching, isComplete, query, sortedMemos.length]);
+
   const handleFetchMoreClick = async () => {
     try {
       const fetchedMemos = await memoService.fetchMemos(DEFAULT_MEMO_LIMIT, memos.length);

@@ -42,7 +42,8 @@ const getStateFromLocation = () => {
     state.query.tag = urlParams.get("tag") ?? undefined;
     state.query.type = (urlParams.get("type") as MemoSpecType) ?? undefined;
     state.query.text = urlParams.get("text") ?? undefined;
-    state.query.shortcutId = Number(urlParams.get("shortcutId")) ?? undefined;
+    const shortcutIdStr = urlParams.get("shortcutId");
+    state.query.shortcutId = shortcutIdStr ? Number(shortcutIdStr) : undefined;
     const from = parseInt(urlParams.get("from") ?? "0");
     const to = parseInt(urlParams.get("to") ?? "0");
     if (to > from && to !== 0) {
