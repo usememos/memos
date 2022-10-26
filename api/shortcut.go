@@ -27,6 +27,7 @@ type ShortcutPatch struct {
 	ID int
 
 	// Standard fields
+	UpdatedTs *int64
 	RowStatus *RowStatus `json:"rowStatus"`
 
 	// Domain specific fields

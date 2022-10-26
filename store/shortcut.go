@@ -198,6 +198,9 @@ func createShortcut(ctx context.Context, tx *sql.Tx, create *api.ShortcutCreate)
 func patchShortcut(ctx context.Context, tx *sql.Tx, patch *api.ShortcutPatch) (*shortcutRaw, error) {
 	set, args := []string{}, []interface{}{}
 
+	if v := patch.UpdatedTs; v != nil {
+		set, args = append(set, "updated_ts = ?"), append(args, *v)
+	}
 	if v := patch.Title; v != nil {
 		set, args = append(set, "title = ?"), append(args, *v)
 	}

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
@@ -185,8 +186,10 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusForbidden, "Access forbidden for current session user").SetInternal(err)
 		}
 
+		currentTs := time.Now().Unix()
 		userPatch := &api.UserPatch{
-			ID: userID,
+			ID:        userID,
+			UpdatedTs: &currentTs,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(userPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
