@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Server) registerRSSRoutes(g *echo.Group) {
-	g.GET("/:id/rss.xml", func(c echo.Context) error {
+	g.GET("/u/:id/rss.xml", func(c echo.Context) error {
 		ctx := c.Request().Context()
 
 		id, err := strconv.Atoi(c.Param("id"))
