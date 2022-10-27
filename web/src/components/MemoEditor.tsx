@@ -396,7 +396,7 @@ const MemoEditor: React.FC = () => {
           />
         </div>
         <div className="btns-container">
-          <button className="action-btn confirm-btn" disabled={!allowSave} onClick={handleSaveBtnClick}>
+          <button className="action-btn confirm-btn" disabled={!allowSave || state.isUploadingResource} onClick={handleSaveBtnClick}>
             {t("editor.save")}
             <img className="icon-img" src="/logo.webp" />
           </button>

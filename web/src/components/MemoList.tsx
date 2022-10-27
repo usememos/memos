@@ -32,7 +32,6 @@ const MemoList = () => {
               shouldShow = checkShouldShowMemoWithFilters(memo, filters);
             }
           }
-
           if (tagQuery) {
             const tagsSet = new Set<string>();
             for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
@@ -63,7 +62,7 @@ const MemoList = () => {
               shouldShow = false;
             }
           }
-          if (textQuery && !memo.content.includes(textQuery)) {
+          if (textQuery && !memo.content.toLowerCase().includes(textQuery.toLowerCase())) {
             shouldShow = false;
           }
 
