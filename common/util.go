@@ -28,3 +28,10 @@ func ValidateEmail(email string) bool {
 func GenUUID() string {
 	return uuid.New().String()
 }
+
+func Min(x, y int) int {
+	if x < y {
+		return x
+	}
+	return y
+}

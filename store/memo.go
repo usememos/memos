@@ -329,14 +329,6 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 		where = append(where, fmt.Sprintf("visibility in (%s)", strings.Join(list, ",")))
 	}
 
-	pagination := ""
-	if find.Limit > 0 {
-		pagination = fmt.Sprintf("%s LIMIT %d", pagination, find.Limit)
-		if find.Offset > 0 {
-			pagination = fmt.Sprintf("%s OFFSET %d", pagination, find.Offset)
-		}
-	}
-
 	query := `
 		SELECT
 			id,
@@ -349,7 +341,7 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 		FROM memo
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY created_ts DESC
-	` + pagination
+	`
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, FormatError(err)
