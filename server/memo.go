@@ -193,8 +193,18 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		sort.Slice(list, func(i, j int) bool {
-			return list[i].DisplayTs > list[j].DisplayTs
+			return list[i].DisplayTs < list[j].DisplayTs
 		})
+		sort.Slice(list, func(i, j int) bool {
+			if !list[i].Pinned && list[j].Pinned {
+				return false
+			}
+			return true
+		})
+
+		if memoFind.Limit != 0 {
+			list = list[memoFind.Offset:common.Min(len(list), memoFind.Offset+memoFind.Limit)]
+		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {

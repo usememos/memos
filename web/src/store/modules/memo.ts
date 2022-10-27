@@ -18,7 +18,7 @@ const memoSlice = createSlice({
     setMemos: (state, action: PayloadAction<Memo[]>) => {
       return {
         ...state,
-        memos: action.payload.filter((m) => m.rowStatus === "NORMAL"),
+        memos: action.payload,
       };
     },
     createMemo: (state, action: PayloadAction<Memo>) => {

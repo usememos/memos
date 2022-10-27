@@ -78,6 +78,9 @@ export function getMemoList(memoFind?: MemoFind) {
   if (memoFind?.rowStatus) {
     queryList.push(`rowStatus=${memoFind.rowStatus}`);
   }
+  if (memoFind?.pinned) {
+    queryList.push(`pinned=${memoFind.pinned}`);
+  }
   if (memoFind?.offset) {
     queryList.push(`offset=${memoFind.offset}`);
   }

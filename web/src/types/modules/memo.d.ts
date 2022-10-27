@@ -37,6 +37,7 @@ interface MemoPatch {
 interface MemoFind {
   creatorId?: UserId;
   rowStatus?: RowStatus;
+  pinned?: boolean;
   visibility?: Visibility;
   offset?: number;
   limit?: number;

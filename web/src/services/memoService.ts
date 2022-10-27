@@ -1,3 +1,4 @@
+import { uniqBy } from "lodash";
 import * as api from "../helpers/api";
 import { createMemo, deleteMemo, patchMemo, setIsFetching, setMemos, setTags } from "../store/modules/memo";
 import store from "../store";
@@ -35,7 +36,7 @@ const memoService = {
       store.dispatch(setMemos([]));
     }
     const memos = memoService.getState().memos;
-    store.dispatch(setMemos(memos.concat(fetchedMemos)));
+    store.dispatch(setMemos(uniqBy(memos.concat(fetchedMemos), "id")));
     store.dispatch(setIsFetching(false));
 
     return fetchedMemos;
