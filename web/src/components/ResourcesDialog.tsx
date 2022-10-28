@@ -171,19 +171,21 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
               state.resources.map((resource) => (
                 <div key={resource.id} className="resource-container">
                   <span className="field-text id-text">{resource.id}</span>
-                  <span
-                    className="field-text name-text"
-                    onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.filename)}
-                    onMouseLeave={handleResourceNameOrTypeMouseLeave}
-                  >
-                    {resource.filename}
+                  <span className="field-text name-text">
+                    <span
+                      onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.filename)}
+                      onMouseLeave={handleResourceNameOrTypeMouseLeave}
+                    >
+                      {resource.filename}
+                    </span>
                   </span>
-                  <span
-                    className="field-text type-text"
-                    onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.type)}
-                    onMouseLeave={handleResourceNameOrTypeMouseLeave}
-                  >
-                    {resource.type}
+                  <span className="field-text type-text">
+                    <span
+                      onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.type)}
+                      onMouseLeave={handleResourceNameOrTypeMouseLeave}
+                    >
+                      {resource.type}
+                    </span>
                   </span>
                   <div className="buttons-container">
                     <Dropdown
