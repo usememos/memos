@@ -90,7 +90,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     inputEl.click();
   };
 
-  const handlPreviewBtnClick = (resource: Resource) => {
+  const handlePreviewBtnClick = (resource: Resource) => {
     const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
     if (resource.type.startsWith("image")) {
       showPreviewImageDialog(resourceUrl);
@@ -194,7 +194,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                         <>
                           <button
                             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
-                            onClick={() => handlPreviewBtnClick(resource)}
+                            onClick={() => handlePreviewBtnClick(resource)}
                           >
                             {t("resources.preview")}
                           </button>
