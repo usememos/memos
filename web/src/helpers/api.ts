@@ -154,6 +154,10 @@ export function deleteResourceById(id: ResourceId) {
   return axios.delete(`/api/resource/${id}`);
 }
 
+export function patchResource(resourcePatch: ResourcePatch) {
+  return axios.patch<ResponseObject<Resource>>(`/api/resource/${resourcePatch.id}`, resourcePatch);
+}
+
 export function getMemoResourceList(memoId: MemoId) {
   return axios.get<ResponseObject<Resource[]>>(`/api/memo/${memoId}/resource`);
 }

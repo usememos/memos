@@ -62,6 +62,34 @@
           &.type-text {
             @apply col-span-3;
           }
+
+          > .form-label {
+            min-height: 28px;
+
+            &.filename-label {
+            @apply w-full flex flex-row justify-between;
+
+              > input {
+              @apply grow-0 w-40 shadow-inner px-2 mr-2 border rounded leading-7 bg-transparent focus:border-black;
+              }
+
+              > .btns-container {
+              @apply shrink-0 grow flex flex-row justify-end items-center;
+
+                > .btn {
+                @apply text-sm shadow px-2 leading-7 rounded border hover:opacity-80 bg-gray-50;
+
+                  &.cancel-btn {
+                  @apply shadow-none border-none bg-transparent;
+                  }
+
+                  &.confirm-btn {
+                  @apply bg-green-600 border-green-600 text-white;
+                  }
+                }
+              }
+            }
+          }
         }
       }
     }

@@ -27,7 +27,9 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     resources: [],
     isUploadingResource: false,
   });
-
+  const [filename, setFilename] = useState<string>("");
+  const [editingResourceId, setEditingResourceIdState] = useState<ResourceId>(-1);
+  const [editState, setEditState] = useState<boolean>(false);
   useEffect(() => {
     fetchResources()
       .catch((error) => {
@@ -96,6 +98,48 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       showPreviewImageDialog(resourceUrl);
     } else {
       window.open(resourceUrl);
+    }
+  };
+
+  const handleRenameBtnClick = (resource: Resource) => {
+    setEditingResourceIdState(resource.id);
+    setFilename(resource.filename);
+    setEditState(true);
+  };
+
+  const handleFilenameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextUsername = e.target.value as string;
+    setFilename(nextUsername);
+  };
+
+  const handlePreventDefault = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+  };
+
+  const handleCancelEditResourceFilenameBtnClick = (resource: Resource) => {
+    setEditState(false);
+    setFilename(resource.filename);
+  };
+
+  const handleConfirmEditResourceFilenameBtnClick = async (resource: Resource) => {
+    if (filename === resource.filename) {
+      handleCancelEditResourceFilenameBtnClick(resource);
+      return;
+    }
+    // TODO Maybe some validation about filenames is needed here? I'm not sure
+    try {
+      await resourceService.patchResource({
+        id: resource.id,
+        filename: filename,
+      });
+      // TODO Different from the existing implementation, I directly update the `resource.filename` here, is is okay? I'm not good enough with redux for now.
+      resource.filename = filename;
+      toastHelper.info(t("common.changed"));
+      handleCancelEditResourceFilenameBtnClick(resource);
+    } catch (error: any) {
+      console.error(error);
+      toastHelper.error(error.response.data.message);
     }
   };
 
@@ -172,12 +216,26 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                 <div key={resource.id} className="resource-container">
                   <span className="field-text id-text">{resource.id}</span>
                   <span className="field-text name-text">
-                    <span
-                      onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.filename)}
-                      onMouseLeave={handleResourceNameOrTypeMouseLeave}
-                    >
-                      {resource.filename}
-                    </span>
+                    {editState && resource.id === editingResourceId ? (
+                      <label className="form-label input-form-label filename-label">
+                        <input type="text" value={filename} onChange={handleFilenameChanged} />
+                        <div className={`btns-container`} onClick={handlePreventDefault}>
+                          <span className="btn confirm-btn" onClick={() => handleConfirmEditResourceFilenameBtnClick(resource)}>
+                            {t("common.save")}
+                          </span>
+                          <span className="btn cancel-btn" onClick={() => handleCancelEditResourceFilenameBtnClick(resource)}>
+                            {t("common.cancel")}
+                          </span>
+                        </div>
+                      </label>
+                    ) : (
+                      <span
+                        onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.filename)}
+                        onMouseLeave={handleResourceNameOrTypeMouseLeave}
+                      >
+                        {resource.filename}
+                      </span>
+                    )}
                   </span>
                   <span className="field-text type-text">
                     <span
@@ -197,6 +255,12 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                             onClick={() => handlePreviewBtnClick(resource)}
                           >
                             {t("resources.preview")}
+                          </button>
+                          <button
+                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
+                            onClick={() => handleRenameBtnClick(resource)}
+                          >
+                            {t("resources.rename")}
                           </button>
                           <button
                             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"

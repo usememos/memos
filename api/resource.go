@@ -46,3 +46,12 @@ type ResourceDelete struct {
 	// Standard fields
 	CreatorID int
 }
+
+type ResourcePatch struct {
+	ID int
+
+	// Standard fields
+	UpdatedTs *int64
+
+	Filename *string `json:"filename"`
+}

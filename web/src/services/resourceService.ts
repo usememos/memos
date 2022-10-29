@@ -30,6 +30,12 @@ const resourceService = {
   async deleteResourceById(id: ResourceId) {
     return api.deleteResourceById(id);
   },
+
+  async patchResource(resourcePatch: ResourcePatch): Promise<Resource> {
+    const { data } = (await api.patchResource(resourcePatch)).data;
+    const resource = convertResponseModelResource(data);
+    return resource;
+  },
 };
 
 export default resourceService;

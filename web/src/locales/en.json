@@ -64,7 +64,8 @@
     "copy-link": "Copy Link",
     "delete-resource": "Delete Resource",
     "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE❗️",
-    "linked-amount": "Linked memo amount"
+    "linked-amount": "Linked memo amount",
+    "rename": "Rename"
   },
   "archived": {
     "archived-memos": "Archived Memos",

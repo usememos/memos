@@ -64,7 +64,8 @@
     "copy-link": "Sao chép",
     "delete-resource": "Xóa tài nguyên",
     "warning-text": "Bạn có chắc chắn xóa tài nguyên này không? HÀNH ĐỘNG KHÔNG THỂ KHÔI PHỤC❗️",
-    "linked-amount": "Số memo đã liên kết"
+    "linked-amount": "Số memo đã liên kết",
+    "rename": "đổi tên"
   },
   "archived": {
     "archived-memos": "Memo đã lưu trữ",
