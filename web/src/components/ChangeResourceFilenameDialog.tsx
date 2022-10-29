@@ -14,11 +14,7 @@ interface Props extends DialogProps {
 const ChangeResourceFilenameDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const { destroy, resourceId, resourceFilename } = props;
-  const [filename, setFilename] = useState<string>("");
-
-  useEffect(() => {
-    setFilename(resourceFilename);
-  }, []);
+  const [filename, setFilename] = useState<string>(resourceFilename);
 
   const handleFilenameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nextUsername = e.target.value as string;
@@ -40,7 +36,6 @@ const ChangeResourceFilenameDialog: React.FC<Props> = (props: Props) => {
         id: resourceId,
         filename: filename,
       });
-      // TODO
       toastHelper.info(t("message.resource-filename-updated"));
       handleCloseBtnClick();
     } catch (error: any) {
