@@ -1,4 +1,6 @@
 import * as api from "../helpers/api";
+import store from "../store";
+import { patchResource, setResources } from "../store/modules/resource";
 
 const convertResponseModelResource = (resource: Resource): Resource => {
   return {
@@ -12,6 +14,7 @@ const resourceService = {
   async getResourceList(): Promise<Resource[]> {
     const { data } = (await api.getResourceList()).data;
     const resourceList = data.map((m) => convertResponseModelResource(m));
+    store.dispatch(setResources(resourceList));
     return resourceList;
   },
   async upload(file: File): Promise<Resource> {
@@ -34,6 +37,7 @@ const resourceService = {
   async patchResource(resourcePatch: ResourcePatch): Promise<Resource> {
     const { data } = (await api.patchResource(resourcePatch)).data;
     const resource = convertResponseModelResource(data);
+    store.dispatch(patchResource(resource));
     return resource;
   },
 };

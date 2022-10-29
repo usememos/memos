@@ -163,6 +163,8 @@
     "password-changed": "Password Changed",
     "private-only": "This memo is private only.",
     "copied": "Copied",
-    "succeed-copy-content": "Succeed to copy content to clipboard."
+    "succeed-copy-content": "Succeed to copy content to clipboard.",
+    "change-resource-filename": "Change resource filename",
+    "resource-filename-updated": "Resource filename changed."
   }
 }

@@ -15,5 +15,5 @@ interface Resource {
 
 interface ResourcePatch {
   id: ResourceId;
-  filename: string;
+  filename?: string;
 }

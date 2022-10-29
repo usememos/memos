@@ -163,6 +163,8 @@
     "password-changed": "密码已修改",
     "private-only": "此 Memo 仅自己可见",
     "copied": "已复制",
-    "succeed-copy-content": "复制内容到剪贴板成功。"
+    "succeed-copy-content": "复制内容到剪贴板成功。",
+    "change-resource-filename": "更改资源文件名",
+    "resource-filename-updated": "资源文件名更改成功。"
   }
 }

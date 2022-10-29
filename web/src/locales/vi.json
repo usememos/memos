@@ -163,6 +163,8 @@
     "password-changed": "Mật khẩu đã được thay đổi",
     "private-only": "Memo này có trạng thái riêng tư.",
     "copied": "Đã sao chép",
-    "succeed-copy-content": "Đã sao chép nội dung memo thành công."
+    "succeed-copy-content": "Đã sao chép nội dung memo thành công.",
+    "change-resource-filename": "Thay đổi tên tệp tài nguyên",
+    "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi."
   }
 }
