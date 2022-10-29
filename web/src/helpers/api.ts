@@ -189,3 +189,13 @@ export async function getRepoStarCount() {
   });
   return data.stargazers_count as number;
 }
+
+export async function getRepoLatestTag() {
+  const { data } = await axios.get(`https://api.github.com/repos/usememos/memos/tags`, {
+    headers: {
+      Accept: "application/vnd.github.v3.star+json",
+      Authorization: "",
+    },
+  });
+  return data[0].name as string;
+}
