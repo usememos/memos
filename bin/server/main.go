@@ -8,6 +8,7 @@ import (
 	"context"
 	"fmt"
 
+	metric "github.com/usememos/memos/plugin/metrics"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -34,15 +35,20 @@ func run(profile *profile.Profile) error {
 		return fmt.Errorf("cannot open db: %w", err)
 	}
 
-	s := server.NewServer(profile)
-
+	serverInstance := server.NewServer(profile)
 	storeInstance := store.New(db.Db, profile)
-	s.Store = storeInstance
+	serverInstance.Store = storeInstance
+
+	metricCollector := server.NewMetricCollector(profile, storeInstance)
+	serverInstance.Collector = &metricCollector
 
 	println(greetingBanner)
 	fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)
+	metricCollector.Collect(ctx, &metric.Metric{
+		Name: "servive started",
+	})
 
-	return s.Run()
+	return serverInstance.Run()
 }
 
 func execute() error {

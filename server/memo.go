@@ -11,6 +11,7 @@ import (
 
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 )
@@ -60,6 +61,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 		}
+		s.Collector.Collect(ctx, &metric.Metric{
+			Name: "memo created",
+		})
 
 		for _, resourceID := range memoCreate.ResourceIDList {
 			if _, err := s.Store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{

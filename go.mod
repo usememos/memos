@@ -34,7 +34,14 @@ require (
 )
 
 require (
+	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
+	github.com/kr/pretty v0.3.1 // indirect
+	github.com/segmentio/backo-go v1.0.1 // indirect
+	github.com/xtgo/uuid v0.0.0-20140804021211-a0b114877d4c // indirect
+)
+
+require (
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
 	github.com/golang/snappy v0.0.4 // indirect
-	github.com/kr/pretty v0.3.1 // indirect
+	github.com/segmentio/analytics-go v3.1.0+incompatible
 )
