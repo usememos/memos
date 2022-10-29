@@ -196,22 +196,34 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
 
-		sort.Slice(list, func(i, j int) bool {
-			return list[i].DisplayTs < list[j].DisplayTs
-		})
-		sort.Slice(list, func(i, j int) bool {
-			if !list[i].Pinned && list[j].Pinned {
-				return false
+		var pinnedMemoList []*api.Memo
+		var unpinnedMemoList []*api.Memo
+
+		for _, memo := range list {
+			if memo.Pinned {
+				pinnedMemoList = append(pinnedMemoList, memo)
+			} else {
+				unpinnedMemoList = append(unpinnedMemoList, memo)
 			}
-			return true
+		}
+
+		sort.Slice(pinnedMemoList, func(i, j int) bool {
+			return pinnedMemoList[i].DisplayTs > pinnedMemoList[j].DisplayTs
+		})
+		sort.Slice(unpinnedMemoList, func(i, j int) bool {
+			return unpinnedMemoList[i].DisplayTs > unpinnedMemoList[j].DisplayTs
 		})
 
+		var memoList []*api.Memo
+		memoList = append(memoList, pinnedMemoList...)
+		memoList = append(memoList, unpinnedMemoList...)
+
 		if memoFind.Limit != 0 {
-			list = list[memoFind.Offset:common.Min(len(list), memoFind.Offset+memoFind.Limit)]
+			memoList = memoList[memoFind.Offset:common.Min(len(memoList), memoFind.Offset+memoFind.Limit)]
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memoList)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo list response").SetInternal(err)
 		}
 		return nil
