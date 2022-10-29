@@ -94,9 +94,9 @@ CREATE TABLE resource (
 );
 
 INSERT INTO resource (
-  id, creator_id, created_ts, 
-  updated_ts, filename, blob, 
-  type, size
+  id, creator_id, created_ts, updated_ts, 
+  filename, blob, external_link, type, 
+  size
 ) 
 SELECT 
   id, 
@@ -105,6 +105,7 @@ SELECT
   updated_ts, 
   filename, 
   blob, 
+  external_link, 
   type, 
   size 
 FROM 
