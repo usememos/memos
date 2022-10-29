@@ -165,6 +165,7 @@
     "copied": "Đã sao chép",
     "succeed-copy-content": "Đã sao chép nội dung memo thành công.",
     "change-resource-filename": "Thay đổi tên tệp tài nguyên",
-    "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi."
+    "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi.",
+    "invalid-resource-filename": "Tên tệp không hợp lệ."
   }
 }

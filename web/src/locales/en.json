@@ -165,6 +165,7 @@
     "copied": "Copied",
     "succeed-copy-content": "Succeed to copy content to clipboard.",
     "change-resource-filename": "Change resource filename",
-    "resource-filename-updated": "Resource filename changed."
+    "resource-filename-updated": "Resource filename changed.",
+    "invalid-resource-filename": "Invalid filename."
   }
 }

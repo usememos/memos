@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { resourceService } from "../services";
 import Icon from "./Icon";
@@ -10,6 +10,18 @@ interface Props extends DialogProps {
   resourceId: ResourceId;
   resourceFilename: string;
 }
+
+const validateFilename = (filename: string): boolean => {
+  if (filename.length === 0 || filename.length >= 128) {
+    return false;
+  }
+  const startReg = /^([+\-.]).*/;
+  const illegalReg = /[/@#$%^&*()[\]]/;
+  if (startReg.test(filename) || illegalReg.test(filename)) {
+    return false;
+  }
+  return true;
+};
 
 const ChangeResourceFilenameDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
@@ -30,7 +42,10 @@ const ChangeResourceFilenameDialog: React.FC<Props> = (props: Props) => {
       handleCloseBtnClick();
       return;
     }
-    // TODO Maybe some validation about filenames is needed here? I'm not sure
+    if (!validateFilename(filename)) {
+      toastHelper.error(t("message.invalid-resource-filename"));
+      return;
+    }
     try {
       await resourceService.patchResource({
         id: resourceId,
