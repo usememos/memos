@@ -12,3 +12,8 @@ interface Resource {
 
   linkedMemoAmount: number;
 }
+
+interface ResourcePatch {
+  id: ResourceId;
+  filename?: string;
+}

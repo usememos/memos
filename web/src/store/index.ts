@@ -6,6 +6,7 @@ import memoReducer from "./modules/memo";
 import editorReducer from "./modules/editor";
 import shortcutReducer from "./modules/shortcut";
 import locationReducer from "./modules/location";
+import resourceReducer from "./modules/resource";
 
 const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ const store = configureStore({
     editor: editorReducer,
     shortcut: shortcutReducer,
     location: locationReducer,
+    resource: resourceReducer,
   },
 });
 

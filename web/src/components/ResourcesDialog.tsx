@@ -11,11 +11,12 @@ import Icon from "./Icon";
 import toastHelper from "./Toast";
 import "../less/resources-dialog.less";
 import * as utils from "../helpers/utils";
+import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
+import { useAppSelector } from "../store";
 
 type Props = DialogProps;
 
 interface State {
-  resources: Resource[];
   isUploadingResource: boolean;
 }
 
@@ -23,11 +24,10 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const { t } = useTranslation();
   const loadingState = useLoading();
+  const { resources } = useAppSelector((state) => state.resource);
   const [state, setState] = useState<State>({
-    resources: [],
     isUploadingResource: false,
   });
-
   useEffect(() => {
     fetchResources()
       .catch((error) => {
@@ -41,10 +41,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
 
   const fetchResources = async () => {
     const data = await resourceService.getResourceList();
-    setState({
-      ...state,
-      resources: data,
-    });
   };
 
   const handleUploadFileBtnClick = async () => {
@@ -97,6 +93,10 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     } else {
       window.open(resourceUrl);
     }
+  };
+
+  const handleRenameBtnClick = (resource: Resource) => {
+    showChangeResourceFilenameDialog(resource.id, resource.filename);
   };
 
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
@@ -165,10 +165,10 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
               <span className="field-text type-text">TYPE</span>
               <span></span>
             </div>
-            {state.resources.length === 0 ? (
+            {resources.length === 0 ? (
               <p className="tip-text">{t("resources.no-resources")}</p>
             ) : (
-              state.resources.map((resource) => (
+              resources.map((resource) => (
                 <div key={resource.id} className="resource-container">
                   <span className="field-text id-text">{resource.id}</span>
                   <span className="field-text name-text">
@@ -197,6 +197,12 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                             onClick={() => handlePreviewBtnClick(resource)}
                           >
                             {t("resources.preview")}
+                          </button>
+                          <button
+                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
+                            onClick={() => handleRenameBtnClick(resource)}
+                          >
+                            {t("resources.rename")}
                           </button>
                           <button
                             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"

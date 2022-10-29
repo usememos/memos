@@ -64,7 +64,8 @@
     "copy-link": "Sao chép",
     "delete-resource": "Xóa tài nguyên",
     "warning-text": "Bạn có chắc chắn xóa tài nguyên này không? HÀNH ĐỘNG KHÔNG THỂ KHÔI PHỤC❗️",
-    "linked-amount": "Số memo đã liên kết"
+    "linked-amount": "Số memo đã liên kết",
+    "rename": "đổi tên"
   },
   "archived": {
     "archived-memos": "Memo đã lưu trữ",
@@ -162,6 +163,9 @@
     "password-changed": "Mật khẩu đã được thay đổi",
     "private-only": "Memo này có trạng thái riêng tư.",
     "copied": "Đã sao chép",
-    "succeed-copy-content": "Đã sao chép nội dung memo thành công."
+    "succeed-copy-content": "Đã sao chép nội dung memo thành công.",
+    "change-resource-filename": "Thay đổi tên tệp tài nguyên",
+    "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi.",
+    "invalid-resource-filename": "Tên tệp không hợp lệ."
   }
 }

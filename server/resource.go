@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
@@ -181,6 +182,47 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		return c.JSON(http.StatusOK, true)
+	})
+
+	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		resourceID, err := strconv.Atoi(c.Param("resourceId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
+		}
+
+		resourceFind := &api.ResourceFind{
+			ID:        &resourceID,
+			CreatorID: &userID,
+		}
+		if _, err := s.Store.FindResource(ctx, resourceFind); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
+		}
+
+		currentTs := time.Now().Unix()
+		resourcePatch := &api.ResourcePatch{
+			ID:        resourceID,
+			UpdatedTs: &currentTs,
+		}
+		if err := json.NewDecoder(c.Request().Body).Decode(resourcePatch); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch resource request").SetInternal(err)
+		}
+
+		resource, err := s.Store.PatchResource(ctx, resourcePatch)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
+		}
+		return nil
 	})
 }
 
