@@ -93,7 +93,22 @@ CREATE TABLE resource (
   size INTEGER NOT NULL DEFAULT 0
 );
 
-INSERT INTO resource SELECT * FROM _resource_old;
+INSERT INTO resource (
+  id, creator_id, created_ts, 
+  updated_ts, filename, blob, 
+  type, size
+) 
+SELECT 
+  id, 
+  creator_id, 
+  created_ts, 
+  updated_ts, 
+  filename, 
+  blob, 
+  type, 
+  size 
+FROM 
+  _resource_old;
 
 DROP TABLE IF EXISTS _resource_old;
 
