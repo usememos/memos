@@ -17,6 +17,8 @@ import (
 type Server struct {
 	e *echo.Echo
 
+	Collector *MetricCollector
+
 	Profile *profile.Profile
 
 	Store *store.Store
