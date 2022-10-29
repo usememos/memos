@@ -1,18 +1,18 @@
 import copy from "copy-to-clipboard";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import * as utils from "../helpers/utils";
 import useLoading from "../hooks/useLoading";
 import { resourceService } from "../services";
+import { useAppSelector } from "../store";
+import Icon from "./Icon";
+import toastHelper from "./Toast";
 import Dropdown from "./common/Dropdown";
 import { generateDialog } from "./Dialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
-import Icon from "./Icon";
-import toastHelper from "./Toast";
-import "../less/resources-dialog.less";
-import * as utils from "../helpers/utils";
 import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
-import { useAppSelector } from "../store";
+import "../less/resources-dialog.less";
 
 type Props = DialogProps;
 
@@ -28,8 +28,10 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const [state, setState] = useState<State>({
     isUploadingResource: false,
   });
+
   useEffect(() => {
-    fetchResources()
+    resourceService
+      .fetchResourceList()
       .catch((error) => {
         console.error(error);
         toastHelper.error(error.response.data.message);
@@ -38,10 +40,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         loadingState.setFinish();
       });
   }, []);
-
-  const fetchResources = async () => {
-    const data = await resourceService.getResourceList();
-  };
 
   const handleUploadFileBtnClick = async () => {
     if (state.isUploadingResource) {
@@ -81,7 +79,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       }
 
       document.body.removeChild(inputEl);
-      await fetchResources();
     };
     inputEl.click();
   };
@@ -116,7 +113,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       style: "warning",
       onConfirm: async () => {
         await resourceService.deleteResourceById(resource.id);
-        await fetchResources();
       },
     });
   };

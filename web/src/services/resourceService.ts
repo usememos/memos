@@ -1,6 +1,6 @@
 import * as api from "../helpers/api";
 import store from "../store";
-import { patchResource, setResources } from "../store/modules/resource";
+import { patchResource, setResources, deleteResource } from "../store/modules/resource";
 
 const convertResponseModelResource = (resource: Resource): Resource => {
   return {
@@ -11,12 +11,17 @@ const convertResponseModelResource = (resource: Resource): Resource => {
 };
 
 const resourceService = {
-  async getResourceList(): Promise<Resource[]> {
+  getState: () => {
+    return store.getState().resource;
+  },
+
+  async fetchResourceList(): Promise<Resource[]> {
     const { data } = (await api.getResourceList()).data;
     const resourceList = data.map((m) => convertResponseModelResource(m));
     store.dispatch(setResources(resourceList));
     return resourceList;
   },
+
   async upload(file: File): Promise<Resource> {
     const { name: filename, size } = file;
 
@@ -27,11 +32,15 @@ const resourceService = {
     const formData = new FormData();
     formData.append("file", file, filename);
     const { data } = (await api.uploadFile(formData)).data;
-
-    return data;
+    const resource = convertResponseModelResource(data);
+    const resourceList = resourceService.getState().resources;
+    store.dispatch(setResources(resourceList.concat(resource)));
+    return resource;
   },
+
   async deleteResourceById(id: ResourceId) {
-    return api.deleteResourceById(id);
+    await api.deleteResourceById(id);
+    store.dispatch(deleteResource(id));
   },
 
   async patchResource(resourcePatch: ResourcePatch): Promise<Resource> {
