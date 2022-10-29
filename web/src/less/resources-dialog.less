@@ -4,7 +4,7 @@
   @apply px-4;
 
   > .dialog-container {
-    @apply w-128 max-w-full mb-8;
+    @apply w-180 max-w-full mb-8;
 
     > .dialog-content-container {
       @apply flex flex-col justify-start items-start w-full;
@@ -29,7 +29,7 @@
         @apply flex flex-col justify-start items-start w-full;
 
         > .fields-container {
-          @apply px-2 py-2 w-full grid grid-cols-5 border-b;
+          @apply px-2 py-2 w-full grid grid-cols-10 border-b;
 
           > .field-text {
             @apply font-mono text-gray-400;
@@ -41,7 +41,7 @@
         }
 
         > .resource-container {
-          @apply px-2 py-2 w-full grid grid-cols-5;
+          @apply px-2 py-2 w-full grid grid-cols-10;
 
           > .buttons-container {
             @apply w-full flex flex-row justify-end items-center;
@@ -51,8 +51,16 @@
         .field-text {
           @apply w-full truncate text-base pr-2 last:pr-0;
 
-          &.name-text {
+          &.id-text {
             @apply col-span-2;
+          }
+
+          &.name-text {
+            @apply col-span-4;
+          }
+
+          &.type-text {
+            @apply col-span-3;
           }
         }
       }

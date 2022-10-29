@@ -1,5 +1,5 @@
 import copy from "copy-to-clipboard";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
 import { resourceService } from "../services";
@@ -10,6 +10,7 @@ import showPreviewImageDialog from "./PreviewImageDialog";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import "../less/resources-dialog.less";
+import * as utils from "../helpers/utils";
 
 type Props = DialogProps;
 
@@ -120,6 +121,20 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     });
   };
 
+  const handleResourceNameOrTypeMouseEnter = useCallback((event: React.MouseEvent, nameOrType: string) => {
+    const tempDiv = document.createElement("div");
+    tempDiv.className = "usage-detail-container pop-up";
+    const bounding = utils.getElementBounding(event.target as HTMLElement);
+    tempDiv.style.left = bounding.left + "px";
+    tempDiv.style.top = bounding.top - 2 + "px";
+    tempDiv.innerHTML = `<span>${nameOrType}</span>`;
+    document.body.appendChild(tempDiv);
+  }, []);
+
+  const handleResourceNameOrTypeMouseLeave = useCallback(() => {
+    document.body.querySelectorAll("div.usage-detail-container.pop-up").forEach((node) => node.remove());
+  }, []);
+
   return (
     <>
       <div className="dialog-header-container">
@@ -145,9 +160,9 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         ) : (
           <div className="resource-table-container">
             <div className="fields-container">
-              <span className="field-text">ID</span>
+              <span className="field-text id-text">ID</span>
               <span className="field-text name-text">NAME</span>
-              <span className="field-text">TYPE</span>
+              <span className="field-text type-text">TYPE</span>
               <span></span>
             </div>
             {state.resources.length === 0 ? (
@@ -155,9 +170,23 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
             ) : (
               state.resources.map((resource) => (
                 <div key={resource.id} className="resource-container">
-                  <span className="field-text">{resource.id}</span>
-                  <span className="field-text name-text">{resource.filename}</span>
-                  <span className="field-text">{resource.type}</span>
+                  <span className="field-text id-text">{resource.id}</span>
+                  <span className="field-text name-text">
+                    <span
+                      onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.filename)}
+                      onMouseLeave={handleResourceNameOrTypeMouseLeave}
+                    >
+                      {resource.filename}
+                    </span>
+                  </span>
+                  <span className="field-text type-text">
+                    <span
+                      onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.type)}
+                      onMouseLeave={handleResourceNameOrTypeMouseLeave}
+                    >
+                      {resource.type}
+                    </span>
+                  </span>
                   <div className="buttons-container">
                     <Dropdown
                       actionsClassName="!w-28"
