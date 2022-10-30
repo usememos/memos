@@ -134,3 +134,9 @@ export const parseHTMLToRawText = (htmlStr: string): string => {
   const text = tempEl.innerText;
   return text;
 };
+
+export const setCaretPosition = (pos: number) => {
+  const TextEl = document.querySelector('.common-editor-inputer') as HTMLTextAreaElement;
+  TextEl.focus();
+  TextEl.setSelectionRange(pos,pos);
+}

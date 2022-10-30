@@ -6,6 +6,7 @@ import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import { useAppSelector } from "../store";
 import * as storage from "../helpers/storage";
+import { setCaretPosition } from "../helpers/utils"
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import Editor, { EditorRefActions } from "./Editor/Editor";
@@ -251,6 +252,8 @@ const MemoEditor: React.FC = () => {
     } else {
       editorRef.current?.insertText("", "\n```\n", "\n```");
     }
+
+    setCaretPosition(editorRef.current.getCursorPosition() - 5);
   };
 
   const handleUploadFileBtnClick = () => {
@@ -316,6 +319,15 @@ const MemoEditor: React.FC = () => {
     handleChangeShouldShowEmojiPicker(false);
   };
 
+  const handleItalicBtnClick = () => {
+    if (!editorRef.current) {
+      return;
+    }
+
+    editorRef.current?.insertText("**");
+    setCaretPosition(editorRef.current.getCursorPosition() - 1);
+  }
+
   const handleDeleteResource = async (resourceId: ResourceId) => {
     setState({
       ...state,
@@ -375,6 +387,9 @@ const MemoEditor: React.FC = () => {
           </div>
           <button className="action-btn !hidden sm:!flex ">
             <Icon.Smile className="icon-img" onClick={handleEmojiPickerBtnClick} />
+          </button>
+          <button className="action-btn !flex sm:!hidden ">
+            <Icon.Italic className="icon-img" onClick={handleItalicBtnClick} />
           </button>
           <button className="action-btn">
             <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
