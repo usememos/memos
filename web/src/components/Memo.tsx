@@ -183,7 +183,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`memo-wrapper relative ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
+    <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
       {memo.pinned && (
         <div className="corner-container">
           <span className="tip-text" onClick={handleTogglePinMemoBtnClick}>
