@@ -136,7 +136,7 @@ export const parseHTMLToRawText = (htmlStr: string): string => {
 };
 
 export const setCaretPosition = (pos: number) => {
-  const TextEl = document.querySelector('.common-editor-inputer') as HTMLTextAreaElement;
+  const TextEl = document.querySelector(".common-editor-inputer") as HTMLTextAreaElement;
   TextEl.focus();
-  TextEl.setSelectionRange(pos,pos);
-}
+  TextEl.setSelectionRange(pos, pos);
+};

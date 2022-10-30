@@ -6,7 +6,7 @@ import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import { useAppSelector } from "../store";
 import * as storage from "../helpers/storage";
-import { setCaretPosition } from "../helpers/utils"
+import { setCaretPosition } from "../helpers/utils";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import Editor, { EditorRefActions } from "./Editor/Editor";
@@ -326,7 +326,7 @@ const MemoEditor: React.FC = () => {
 
     editorRef.current?.insertText("**");
     setCaretPosition(editorRef.current.getCursorPosition() - 1);
-  }
+  };
 
   const handleDeleteResource = async (resourceId: ResourceId) => {
     setState({
