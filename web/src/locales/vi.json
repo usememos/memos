@@ -63,9 +63,12 @@
     "preview": "Xem trước",
     "copy-link": "Sao chép",
     "delete-resource": "Xóa tài nguyên",
-    "warning-text": "Bạn có chắc chắn xóa tài nguyên này không? HÀNH ĐỘNG KHÔNG THỂ KHÔI PHỤC❗️",
+    "warning-text": "Bạn có chắc chắn xóa tài nguyên này không? HÀNH ĐỘNG KHÔNG THỂ KHÔI PHỤC❗",
     "linked-amount": "Số memo đã liên kết",
-    "rename": "đổi tên"
+    "rename": "đổi tên",
+    "clear-unused-resources": "Xóa tài nguyên không sử dụng",
+    "warning-text-unused": "Bạn có chắc chắn xóa những tài nguyên không sử dụng này không? HÀNH ĐỘNG KHÔNG THỂ KHÔI PHỤC❗",
+    "no-unused-resources": "Không có tài nguyên không sử dụng"
   },
   "archived": {
     "archived-memos": "Memo đã lưu trữ",

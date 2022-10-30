@@ -63,9 +63,12 @@
     "preview": "Preview",
     "copy-link": "Copy Link",
     "delete-resource": "Delete Resource",
-    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE❗️",
+    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE❗",
     "linked-amount": "Linked memo amount",
-    "rename": "Rename"
+    "rename": "Rename",
+    "clear-unused-resources": "Clear unused resources",
+    "warning-text-unused": "Are you sure to delete these unused resource? THIS ACTION IS IRREVERSIABLE❗",
+    "no-unused-resources": "No unused resources"
   },
   "archived": {
     "archived-memos": "Archived Memos",
