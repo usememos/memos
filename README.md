@@ -1,6 +1,6 @@
 <p align="center"><a href="https://usememos.com"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.webp" alt="✍️ memos" /></a></p>
 
-<p align="center">An open source, self-hosted knowledge base that works with a SQLite db file.</p>
+<p align="center">An open-source, self-hosted memo hub for knowledge management and collaboration.</p>
 
 <p align="center">
   <a href="https://github.com/usememos/memos/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos" /></a>
@@ -17,14 +17,13 @@
 
 ## Features
 
-- 🦄 Fully open source;
-- 📜 Writing in plain textarea without any burden,
-  - and support some useful markdown syntax 💪.
-- 🌄 Share the memo in a pretty image or personal page like Twitter;
-- 🚀 Fast self-hosting with `Docker`;
-- 🤠 Pleasant UI and UX;
+- 🦄 Open source and forever free;
+- 🚀 Support for self-hosting with `Docker` in seconds;
+- 📜 Plain textarea first and support some useful markdown syntax;
+- 👥 Collaborate and share with your teammates;
+- 🧑‍💻 RESTful API for self-service.
 
-## Deploy with Docker
+## Deploy with Docker in seconds
 
 ### Docker Run
 
@@ -44,11 +43,17 @@ If you want to upgrade the version of memos, use the following command.
 docker-compose down && docker image rm neosmemo/memos:latest && docker-compose up -d
 ```
 
-## Contributing
+## Contribute
 
 Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
 
-Gets more about [development guide](https://github.com/usememos/memos/tree/main/docs/development.md).
+Gets more information in [development guide](https://github.com/usememos/memos/tree/main/docs/development.md).
+
+## Community Products
+
+- [Moe Memos](https://memos.moe/) - Third party client for iOS and Android
+- [lmm214/memos-bber](https://github.com/lmm214/memos-bber) - Memos 的 Chrome 扩展
+- [Rabithua/memos_wmp](https://github.com/Rabithua/memos_wmp) - 微信小程序版
 
 ## Star history
 
