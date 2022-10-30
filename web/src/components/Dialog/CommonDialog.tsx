@@ -53,7 +53,16 @@ const CommonDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <p className="content-text">{content}</p>
+        <p className="content-text">
+          {content.split("\n").map((line, index) => {
+            return (
+              <span key={index}>
+                {line}
+                <br />
+              </span>
+            );
+          })}
+        </p>
         <div className="btns-container">
           <span className="btn cancel-btn" onClick={handleCloseBtnClick}>
             {closeBtnText}
