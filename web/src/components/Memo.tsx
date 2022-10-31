@@ -184,6 +184,13 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
+      {memo.pinned && (
+        <div className="corner-container">
+          <span className="tip-text" onClick={handleTogglePinMemoBtnClick}>
+            {t("common.unpin")}
+          </span>
+        </div>
+      )}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
           <span className="time-text" onClick={handleShowMemoStoryDialog}>
