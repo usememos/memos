@@ -4,6 +4,8 @@
 interface StorageData {
   // Editor content cache
   editorContentCache: string;
+  // Editing memo id cache
+  editingMemoIdCache: MemoId;
   // locale
   locale: Locale;
 }
