@@ -104,7 +104,7 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 			}
 		}
 
-		if common.HasPrefixes(path, "/api/memo/all", "/api/memo/:memoId") && c.Request().Method == http.MethodGet {
+		if common.HasPrefixes(path, "/api/memo/all", "/api/memo/:memoId", "/api/memo/amount", "/api/memo/stats") && c.Request().Method == http.MethodGet {
 			return next(c)
 		}
 

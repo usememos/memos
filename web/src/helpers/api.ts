@@ -90,8 +90,8 @@ export function getMemoList(memoFind?: MemoFind) {
   return axios.get<ResponseObject<Memo[]>>(`/api/memo?${queryList.join("&")}`);
 }
 
-export function getMemoStats() {
-  return axios.get<ResponseObject<number[]>>(`/api/memo/stats`);
+export function getMemoStats(userId: UserId) {
+  return axios.get<ResponseObject<number[]>>(`/api/memo/stats?userId=${userId}`);
 }
 
 export function getMemoById(id: MemoId) {

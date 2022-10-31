@@ -37,7 +37,7 @@ const UserBanner = () => {
   }, [isVisitorMode, user, owner]);
 
   useEffect(() => {
-    getMemoStats()
+    getMemoStats(userService.getCurrentUserId())
       .then(({ data: { data } }) => {
         setMemoAmount(data.length);
       })
