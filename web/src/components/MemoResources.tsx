@@ -16,12 +16,16 @@ const MemoResources: React.FC<Props> = (props: Props) => {
     window.open(resourceUrl);
   };
 
+  const imgUrls = imageList.map((resource) => {
+    return `/o/r/${resource.id}/${resource.filename}`;
+  });
+
   return (
     <div className="resource-wrapper">
       {imageList.length > 0 && (
         <div className="images-wrapper">
-          {imageList.map((resource) => (
-            <Image className="memo-img" key={resource.id} imgUrl={`/o/r/${resource.id}/${resource.filename}`} />
+          {imageList.map((resource, index) => (
+            <Image className="memo-img" key={resource.id} imgUrls={imgUrls} index={index} />
           ))}
         </div>
       )}
