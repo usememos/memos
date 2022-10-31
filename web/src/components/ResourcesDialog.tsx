@@ -131,7 +131,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     if (resource.linkedMemoAmount > 0) {
       warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
     }
-    console.log(warningText);
 
     showCommonDialog({
       title: t("resources.delete-resource"),
