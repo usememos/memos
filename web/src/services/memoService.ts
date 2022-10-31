@@ -31,7 +31,10 @@ const memoService = {
       memoFind.creatorId = userService.getUserIdFromPath();
     }
     const { data } = (await api.getMemoList(memoFind)).data;
-    const fetchedMemos = data.map((m) => convertResponseModelMemo(m));
+    let fetchedMemos: Memo[] = [];
+    if (data) {
+      fetchedMemos = data.map((m) => convertResponseModelMemo(m));
+    }
     if (offset === 0) {
       store.dispatch(setMemos([]));
     }
@@ -50,7 +53,10 @@ const memoService = {
     };
 
     const { data } = (await api.getAllMemos(memoFind)).data;
-    const memos = data.map((m) => convertResponseModelMemo(m));
+    let memos: Memo[] = [];
+    if (data) {
+      memos = data.map((m) => convertResponseModelMemo(m));
+    }
     return memos;
   },
 
@@ -62,9 +68,12 @@ const memoService = {
       memoFind.creatorId = userService.getUserIdFromPath();
     }
     const { data } = (await api.getMemoList(memoFind)).data;
-    const archivedMemos = data.map((m) => {
-      return convertResponseModelMemo(m);
-    });
+    let archivedMemos: Memo[] = [];
+    if (data) {
+      archivedMemos = data.map((m) => {
+        return convertResponseModelMemo(m);
+      });
+    }
     return archivedMemos;
   },
 
