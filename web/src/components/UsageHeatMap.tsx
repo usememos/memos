@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useAppSelector } from "../store";
-import { locationService } from "../services";
+import { locationService, userService } from "../services";
 import { getMemoStats } from "../helpers/api";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
@@ -28,19 +28,18 @@ interface DailyUsageStat {
 }
 
 const UsageHeatMap = () => {
+  const { memos } = useAppSelector((state) => state.memo);
+  const [allStat, setAllStat] = useState<DailyUsageStat[]>([]);
+  const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
+  const containerElRef = useRef<HTMLDivElement>(null);
   const todayTimeStamp = utils.getDateStampByDate(Date.now());
   const todayDay = new Date(todayTimeStamp).getDay() + 1;
   const nullCell = new Array(7 - todayDay).fill(0);
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
   const beginDayTimestemp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
 
-  const { memos } = useAppSelector((state) => state.memo);
-  const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestemp));
-  const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
-  const containerElRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    getMemoStats()
+    getMemoStats(userService.getCurrentUserId())
       .then(({ data: { data } }) => {
         const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestemp);
         for (const record of data) {

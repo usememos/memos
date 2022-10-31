@@ -1,5 +1,6 @@
 import { locationService } from ".";
 import * as api from "../helpers/api";
+import { UNKNOWN_ID } from "../helpers/consts";
 import store from "../store";
 import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
 
@@ -54,6 +55,14 @@ const userService = {
     const { data: user } = (await api.getMyselfUser()).data;
     if (user) {
       store.dispatch(setUser(convertResponseModelUser(user)));
+    }
+  },
+
+  getCurrentUserId: () => {
+    if (userService.isVisitorMode()) {
+      return userService.getUserIdFromPath() || UNKNOWN_ID;
+    } else {
+      return userService.getState().user?.id || UNKNOWN_ID;
     }
   },
 

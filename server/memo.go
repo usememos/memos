@@ -229,13 +229,35 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		return nil
 	})
 
+	g.GET("/memo/amount", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		normalRowStatus := api.Normal
+		memoFind := &api.MemoFind{
+			RowStatus: &normalRowStatus,
+		}
+		if userID, err := strconv.Atoi(c.QueryParam("userId")); err == nil {
+			memoFind.CreatorID = &userID
+		}
+
+		memoList, err := s.Store.FindMemoList(ctx, memoFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(len(memoList))); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo amount").SetInternal(err)
+		}
+		return nil
+	})
+
 	g.GET("/memo/stats", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		normalStatus := api.Normal
 		memoFind := &api.MemoFind{
 			RowStatus: &normalStatus,
 		}
-		if userID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
+		if userID, err := strconv.Atoi(c.QueryParam("userId")); err == nil {
 			memoFind.CreatorID = &userID
 		}
 
@@ -524,29 +546,5 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		return c.JSON(http.StatusOK, true)
-	})
-
-	g.GET("/memo/amount", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-		normalRowStatus := api.Normal
-		memoFind := &api.MemoFind{
-			CreatorID: &userID,
-			RowStatus: &normalRowStatus,
-		}
-
-		memoList, err := s.Store.FindMemoList(ctx, memoFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
-		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(len(memoList))); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo amount").SetInternal(err)
-		}
-		return nil
 	})
 }
