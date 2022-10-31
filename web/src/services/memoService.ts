@@ -71,19 +71,18 @@ const memoService = {
   fetchMemoById: async (memoId: MemoId) => {
     const { data } = (await api.getMemoById(memoId)).data;
     const memo = convertResponseModelMemo(data);
-    store.dispatch(patchMemo(memo));
 
     return memo;
   },
 
-  getMemoById: (memoId: MemoId) => {
+  getMemoById: async (memoId: MemoId) => {
     for (const m of memoService.getState().memos) {
       if (m.id === memoId) {
         return m;
       }
     }
 
-    return null;
+    return await memoService.fetchMemoById(memoId);
   },
 
   updateTagsState: async () => {

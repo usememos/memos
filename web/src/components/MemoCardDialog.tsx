@@ -54,7 +54,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
               continue;
             }
 
-            const memoTemp = memoService.getMemoById(id);
+            const memoTemp = await memoService.getMemoById(id);
             if (memoTemp) {
               linkMemos.push({
                 ...memoTemp,
@@ -83,7 +83,9 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     };
 
     fetchLinkedMemos();
-    setMemo(memoService.getMemoById(memo.id) as Memo);
+    memoService.getMemoById(memo.id).then((memo) => {
+      setMemo(memo);
+    });
   }, [memos, memo.id]);
 
   const handleMemoCreatedAtClick = () => {
@@ -99,7 +101,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
 
     if (targetEl.className === "memo-link-text") {
       const nextMemoId = targetEl.dataset?.value;
-      const memoTemp = memoService.getMemoById(Number(nextMemoId) ?? UNKNOWN_ID);
+      const memoTemp = await memoService.getMemoById(Number(nextMemoId) ?? UNKNOWN_ID);
 
       if (memoTemp) {
         const nextMemo = {

@@ -18,14 +18,15 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   const maxDatetimeValue = dayjs().format("YYYY-MM-DDTHH:mm");
 
   useEffect(() => {
-    const memo = memoService.getMemoById(memoId);
-    if (memo) {
-      const datetime = dayjs(memo.createdTs).format("YYYY-MM-DDTHH:mm");
-      setCreatedAt(datetime);
-    } else {
-      toastHelper.error(t("message.memo-not-found"));
-      destroy();
-    }
+    memoService.getMemoById(memoId).then((memo) => {
+      if (memo) {
+        const datetime = dayjs(memo.createdTs).format("YYYY-MM-DDTHH:mm");
+        setCreatedAt(datetime);
+      } else {
+        toastHelper.error(t("message.memo-not-found"));
+        destroy();
+      }
+    });
   }, []);
 
   const handleCloseBtnClick = () => {
