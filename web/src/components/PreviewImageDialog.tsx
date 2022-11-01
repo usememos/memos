@@ -52,12 +52,15 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   );
 };
 
-export default function showPreviewImageDialog(imgUrls: string[], initialIndex: number): void {
+export default function showPreviewImageDialog(imgUrls: string[] | string, initialIndex?: number): void {
   generateDialog(
     {
       className: "preview-image-dialog",
     },
     PreviewImageDialog,
-    { imgUrls, initialIndex }
+    {
+      imgUrls: Array.isArray(imgUrls) ? imgUrls : [imgUrls],
+      initialIndex: initialIndex || 0,
+    }
   );
 }
