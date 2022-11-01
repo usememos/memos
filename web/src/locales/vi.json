@@ -38,7 +38,9 @@
     "yourself": "Chính bạn",
     "archived-at": "Lưu trữ lúc",
     "changed": "đã thay đổi",
-    "update-on": "Cập nhật"
+    "update-on": "Cập nhật",
+    "fold": "Fold",
+    "expand": "Expand"
   },
   "slogan": "Một mã nguồn mở, tự bạn lưu lại mọi thứ bạn biết dựa trên SQLite db.",
   "auth": {
