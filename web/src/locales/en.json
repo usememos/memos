@@ -38,7 +38,9 @@
     "yourself": "Yourself",
     "archived-at": "Archived at",
     "changed": "changed",
-    "update-on": "Update on"
+    "update-on": "Update on",
+    "fold": "Fold",
+    "expand": "Expand"
   },
   "slogan": "An open source, self-hosted knowledge base that works with a SQLite db file.",
   "auth": {

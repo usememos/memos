@@ -38,7 +38,9 @@
     "yourself": "你自己",
     "archived-at": "归档于",
     "changed": "已更改",
-    "update-on": "更新于"
+    "update-on": "更新于",
+    "fold": "折叠",
+    "expand": "展开"
   },
   "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
   "auth": {
