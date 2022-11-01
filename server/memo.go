@@ -341,6 +341,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return list[i].DisplayTs > list[j].DisplayTs
 		})
 
+		if memoFind.Limit != 0 {
+			list = list[memoFind.Offset:common.Min(len(list), memoFind.Offset+memoFind.Limit)]
+		}
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode all memo list response").SetInternal(err)
