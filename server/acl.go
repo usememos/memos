@@ -25,7 +25,7 @@ func setUserSession(ctx echo.Context, user *api.User) error {
 	sess, _ := session.Get("session", ctx)
 	sess.Options = &sessions.Options{
 		Path:     "/",
-		MaxAge:   1000 * 3600 * 24 * 30,
+		MaxAge:   3600 * 24 * 30,
 		HttpOnly: true,
 	}
 	sess.Values[userIDContextKey] = user.ID
