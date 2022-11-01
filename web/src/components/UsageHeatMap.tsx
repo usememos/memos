@@ -28,15 +28,16 @@ interface DailyUsageStat {
 }
 
 const UsageHeatMap = () => {
-  const { memos } = useAppSelector((state) => state.memo);
-  const [allStat, setAllStat] = useState<DailyUsageStat[]>([]);
-  const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
-  const containerElRef = useRef<HTMLDivElement>(null);
   const todayTimeStamp = utils.getDateStampByDate(Date.now());
   const todayDay = new Date(todayTimeStamp).getDay() + 1;
   const nullCell = new Array(7 - todayDay).fill(0);
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
   const beginDayTimestemp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
+
+  const { memos } = useAppSelector((state) => state.memo);
+  const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestemp));
+  const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
+  const containerElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getMemoStats(userService.getCurrentUserId())
@@ -97,12 +98,12 @@ const UsageHeatMap = () => {
             count <= 0
               ? ""
               : count <= 1
-              ? "stat-day-L1-bg"
+              ? "stat-day-l1-bg"
               : count <= 2
-              ? "stat-day-L2-bg"
+              ? "stat-day-l2-bg"
               : count <= 4
-              ? "stat-day-L3-bg"
-              : "stat-day-L4-bg";
+              ? "stat-day-l3-bg"
+              : "stat-day-l4-bg";
 
           return (
             <div

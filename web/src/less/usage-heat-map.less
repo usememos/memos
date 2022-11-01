@@ -1,10 +1,5 @@
 @import "./mixin.less";
 
-@stat-day-L1-bg: #9be9a8;
-@stat-day-L2-bg: #40c463;
-@stat-day-L3-bg: #30a14e;
-@stat-day-L4-bg: #216e39;
-
 .usage-heat-map-wrapper {
   @apply flex flex-row justify-start items-center w-full h-32 flex-wrap pr-6 pb-3 shrink-0;
 
@@ -25,33 +20,32 @@
 
     > .stat-wrapper {
       > .stat-container {
-        @apply block rounded-sm;
+        @apply block rounded-sm bg-gray-200;
         width: 14px;
         height: 14px;
-        background-color: @bg-lightgray;
 
         &.null {
-          @apply bg-transparent;
+          @apply bg-gray-200;
         }
 
-        &.stat-day-L1-bg {
-          background-color: @stat-day-L1-bg !important;
+        &.stat-day-l1-bg {
+          @apply bg-green-400;
         }
 
-        &.stat-day-L2-bg {
-          background-color: @stat-day-L2-bg !important;
+        &.stat-day-l2-bg {
+          @apply bg-green-500;
         }
 
-        &.stat-day-L3-bg {
-          background-color: @stat-day-L3-bg !important;
+        &.stat-day-l3-bg {
+          @apply bg-green-600;
         }
 
-        &.stat-day-L4-bg {
-          background-color: @stat-day-L4-bg !important;
+        &.stat-day-l4-bg {
+          @apply bg-green-700;
         }
 
         &.today {
-          border: 1px solid black;
+          @apply border border-black;
         }
       }
     }
