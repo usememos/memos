@@ -113,7 +113,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 
     if (targetEl.className === "memo-link-text") {
       const memoId = targetEl.dataset?.value;
-      const memoTemp = memoService.getMemoById(Number(memoId) ?? UNKNOWN_ID);
+      const memoTemp = await memoService.getMemoById(Number(memoId) ?? UNKNOWN_ID);
 
       if (memoTemp) {
         showMemoCardDialog(memoTemp);
@@ -184,6 +184,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
+      {memo.pinned && <div className="corner-container"></div>}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
           <span className="time-text" onClick={handleShowMemoStoryDialog}>

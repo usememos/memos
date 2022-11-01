@@ -101,6 +101,31 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     toastHelper.success("Succeed to copy resource link to clipboard");
   };
 
+  const handleDeleteUnusedResourcesBtnClick = () => {
+    let warningText = t("resources.warning-text-unused");
+    const unusedResources = resources.filter((resource) => {
+      if (resource.linkedMemoAmount === 0) {
+        warningText = warningText + `\n- ${resource.filename}`;
+        return true;
+      }
+      return false;
+    });
+    if (unusedResources.length === 0) {
+      toastHelper.success(t("resources.no-unused-resources"));
+      return;
+    }
+    showCommonDialog({
+      title: t("resources.delete-resource"),
+      content: warningText,
+      style: "warning",
+      onConfirm: async () => {
+        for (const resource of unusedResources) {
+          await resourceService.deleteResourceById(resource.id);
+        }
+      },
+    });
+  };
+
   const handleDeleteResourceBtnClick = (resource: Resource) => {
     let warningText = t("resources.warning-text");
     if (resource.linkedMemoAmount > 0) {
@@ -148,6 +173,11 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
             <Icon.File className="icon-img" />
             <span>{t("resources.upload")}</span>
           </div>
+        </div>
+        <div className="delete-unused-resource-container">
+          <button className="delete-unused-resource-btn" onClick={handleDeleteUnusedResourcesBtnClick}>
+            {t("resources.clear-unused-resources")}
+          </button>
         </div>
         {loadingState.isLoading ? (
           <div className="loading-text-container">

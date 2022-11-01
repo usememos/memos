@@ -48,6 +48,13 @@ const MemoEditor: React.FC = () => {
   const mobileEditorStyle = user?.setting.mobileEditorStyle || "normal";
 
   useEffect(() => {
+    const { editingMemoIdCache } = storage.get(["editingMemoIdCache"]);
+    if (editingMemoIdCache) {
+      editorStateService.setEditMemoWithId(editingMemoIdCache);
+    }
+  }, []);
+
+  useEffect(() => {
     if (editorState.markMemoId && editorState.markMemoId !== UNKNOWN_ID) {
       const editorCurrentValue = editorRef.current?.getContent();
       const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: @[MEMO](${editorState.markMemoId})`;
@@ -62,18 +69,26 @@ const MemoEditor: React.FC = () => {
       editorState.editMemoId !== UNKNOWN_ID &&
       editorState.editMemoId !== prevGlobalStateRef.current.editMemoId
     ) {
-      const memo = memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID);
-      if (memo) {
-        setState({
-          ...state,
-          resourceList: memo.resourceList,
-        });
-        editorRef.current?.setContent(memo.content ?? "");
-        editorRef.current?.focus();
-      }
+      memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
+        if (memo) {
+          setState({
+            ...state,
+            resourceList: memo.resourceList,
+          });
+          editorRef.current?.setContent(memo.content ?? "");
+          editorRef.current?.focus();
+        }
+      });
     }
 
     prevGlobalStateRef.current = editorState;
+    if (editorState.editMemoId) {
+      storage.set({
+        editingMemoIdCache: editorState.editMemoId,
+      });
+    } else {
+      storage.remove(["editingMemoIdCache"]);
+    }
   }, [state, editorState.editMemoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
@@ -175,7 +190,7 @@ const MemoEditor: React.FC = () => {
     try {
       const { editMemoId } = editorStateService.getState();
       if (editMemoId && editMemoId !== UNKNOWN_ID) {
-        const prevMemo = memoService.getMemoById(editMemoId ?? UNKNOWN_ID);
+        const prevMemo = await memoService.getMemoById(editMemoId ?? UNKNOWN_ID);
 
         if (prevMemo) {
           await memoService.patchMemo({
@@ -206,7 +221,7 @@ const MemoEditor: React.FC = () => {
     editorRef.current?.setContent("");
   };
 
-  const handleCancelEditing = () => {
+  const handleCancelEdit = () => {
     setState({
       ...state,
       resourceList: [],
@@ -348,7 +363,7 @@ const MemoEditor: React.FC = () => {
     >
       <div className={`tip-container ${isEditing ? "" : "!hidden"}`}>
         <span className="tip-text">{t("editor.editing")}</span>
-        <button className="cancel-btn" onClick={handleCancelEditing}>
+        <button className="cancel-btn" onClick={handleCancelEdit}>
           {t("common.cancel")}
         </button>
       </div>
