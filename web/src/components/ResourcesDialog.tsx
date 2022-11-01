@@ -168,16 +168,18 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <div className="upload-resource-container" onClick={() => handleUploadFileBtnClick()}>
-          <div className="upload-resource-btn">
-            <Icon.File className="icon-img" />
-            <span>{t("resources.upload")}</span>
+        <div className="action-buttons-container">
+          <div className="buttons-wrapper">
+            <div className="upload-resource-btn" onClick={() => handleUploadFileBtnClick()}>
+              <Icon.File className="icon-img" />
+              <span>{t("resources.upload")}</span>
+            </div>
           </div>
-        </div>
-        <div className="delete-unused-resource-container">
-          <button className="delete-unused-resource-btn" onClick={handleDeleteUnusedResourcesBtnClick}>
-            {t("resources.clear-unused-resources")}
-          </button>
+          <div className="buttons-wrapper">
+            <button className="delete-unused-resource-btn" onClick={handleDeleteUnusedResourcesBtnClick}>
+              {t("resources.clear-unused-resources")}
+            </button>
+          </div>
         </div>
         {loadingState.isLoading ? (
           <div className="loading-text-container">
@@ -188,7 +190,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
             <div className="fields-container">
               <span className="field-text id-text">ID</span>
               <span className="field-text name-text">NAME</span>
-              <span className="field-text type-text">TYPE</span>
               <span></span>
             </div>
             {resources.length === 0 ? (
@@ -203,14 +204,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                       onMouseLeave={handleResourceNameOrTypeMouseLeave}
                     >
                       {resource.filename}
-                    </span>
-                  </span>
-                  <span className="field-text type-text">
-                    <span
-                      onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.type)}
-                      onMouseLeave={handleResourceNameOrTypeMouseLeave}
-                    >
-                      {resource.type}
                     </span>
                   </span>
                   <div className="buttons-container">
