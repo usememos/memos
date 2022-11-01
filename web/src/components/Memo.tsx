@@ -203,7 +203,7 @@ const Memo: React.FC<Props> = (props: Props) => {
               <div className="more-action-btns-container">
                 <div className="btns-container">
                   <div className="btn" onClick={handleTogglePinMemoBtnClick}>
-                    <Icon.Flag className={`icon-img ${memo.pinned ? "" : "opacity-20"}`} />
+                    <Icon.Flag className={`icon-img ${memo.pinned ? "text-green-600" : ""}`} />
                     <span className="tip-text">{memo.pinned ? t("common.unpin") : t("common.pin")}</span>
                   </div>
                   <div className="btn" onClick={handleEditMemoClick}>
