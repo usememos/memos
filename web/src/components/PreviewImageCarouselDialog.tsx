@@ -68,7 +68,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, index }: Props)
 export default function showPreviewImageCarouselDialog(imgUrls: string[], index: number): void {
   generateDialog(
     {
-      className: "preview-image-dialog",
+      className: "preview-image-carousel-dialog",
     },
     PreviewImageDialog,
     { imgUrls, index }
