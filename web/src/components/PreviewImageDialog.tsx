@@ -1,26 +1,38 @@
+import { useState } from "react";
 import * as utils from "../helpers/utils";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import "../less/preview-image-dialog.less";
 
 interface Props extends DialogProps {
-  imgUrl: string;
+  imgUrls: string[];
+  initialIndex: number;
 }
 
-const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrl }: Props) => {
+const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }: Props) => {
+  const [currentIndex, setCurrentIndex] = useState(initialIndex);
+
   const handleCloseBtnClick = () => {
     destroy();
   };
 
   const handleDownloadBtnClick = () => {
     const a = document.createElement("a");
-    a.href = imgUrl;
+    a.href = imgUrls[currentIndex];
     a.download = `memos-${utils.getDateTimeString(Date.now())}.png`;
     a.click();
   };
 
-  const handleImgContainerClick = () => {
-    destroy();
+  const handleImgContainerClick = (event: React.MouseEvent) => {
+    if (event.clientX < window.innerWidth / 2) {
+      if (currentIndex > 0) {
+        setCurrentIndex(currentIndex - 1);
+      }
+    } else {
+      if (currentIndex < imgUrls.length - 1) {
+        setCurrentIndex(currentIndex + 1);
+      }
+    }
   };
 
   return (
@@ -34,18 +46,18 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrl }: Props) => {
         </button>
       </div>
       <div className="img-container" onClick={handleImgContainerClick}>
-        <img onClick={(e) => e.stopPropagation()} src={imgUrl} />
+        <img onClick={(e) => e.stopPropagation()} src={imgUrls[currentIndex]} />
       </div>
     </>
   );
 };
 
-export default function showPreviewImageDialog(imgUrl: string): void {
+export default function showPreviewImageDialog(imgUrls: string[], initialIndex: number): void {
   generateDialog(
     {
       className: "preview-image-dialog",
     },
     PreviewImageDialog,
-    { imgUrl }
+    { imgUrls, initialIndex }
   );
 }
