@@ -214,7 +214,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return unpinnedMemoList[i].DisplayTs > unpinnedMemoList[j].DisplayTs
 		})
 
-		var memoList []*api.Memo
+		memoList := []*api.Memo{}
 		memoList = append(memoList, pinnedMemoList...)
 		memoList = append(memoList, unpinnedMemoList...)
 
