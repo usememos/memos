@@ -91,7 +91,7 @@ export function getMemoList(memoFind?: MemoFind) {
 }
 
 export function getMemoStats(userId: UserId) {
-  return axios.get<ResponseObject<number[]>>(`/api/memo/stats?userId=${userId}`);
+  return axios.get<ResponseObject<number[]>>(`/api/memo/stats?creatorId=${userId}`);
 }
 
 export function getMemoById(id: MemoId) {

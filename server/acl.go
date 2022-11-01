@@ -104,11 +104,11 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 			}
 		}
 
-		if common.HasPrefixes(path, "/api/memo/all", "/api/memo/:memoId", "/api/memo/amount", "/api/memo/stats") && c.Request().Method == http.MethodGet {
+		if common.HasPrefixes(path, "/api/memo/all", "/api/memo/:memoId", "/api/memo/amount") && c.Request().Method == http.MethodGet {
 			return next(c)
 		}
 
-		if common.HasPrefixes(path, "/api/memo", "/api/tag", "/api/shortcut") && c.Request().Method == http.MethodGet {
+		if common.HasPrefixes(path, "/api/memo", "/api/tag", "/api/shortcut", "/api/memo/stats") && c.Request().Method == http.MethodGet {
 			if _, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
 				return next(c)
 			}

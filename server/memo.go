@@ -257,31 +257,22 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memoFind := &api.MemoFind{
 			RowStatus: &normalStatus,
 		}
-		if userID, err := strconv.Atoi(c.QueryParam("userId")); err == nil {
-			memoFind.CreatorID = &userID
+		if creatorID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
+			memoFind.CreatorID = &creatorID
+		}
+		if memoFind.CreatorID == nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
 		}
 
 		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
-			if memoFind.CreatorID == nil {
-				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
-			}
 			memoFind.VisibilityList = []api.Visibility{api.Public}
 		} else {
-			if memoFind.CreatorID == nil {
-				memoFind.CreatorID = &currentUserID
-			} else {
+			if *memoFind.CreatorID != currentUserID {
 				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
+			} else {
+				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected, api.Privite}
 			}
-		}
-
-		visibilitListStr := c.QueryParam("visibility")
-		if visibilitListStr != "" {
-			visibilityList := []api.Visibility{}
-			for _, visibility := range strings.Split(visibilitListStr, ",") {
-				visibilityList = append(visibilityList, api.Visibility(visibility))
-			}
-			memoFind.VisibilityList = visibilityList
 		}
 
 		list, err := s.Store.FindMemoList(ctx, memoFind)
