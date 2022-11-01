@@ -1,21 +1,22 @@
-import showPreviewImageDialog from "./PreviewImageDialog";
+import showPreviewImageCarouselDialog from "./PreviewImageCarouselDialog";
 import "../less/image.less";
 
 interface Props {
-  imgUrl: string;
+  imgUrls: string[];
+  index: number;
   className?: string;
 }
 
 const Image: React.FC<Props> = (props: Props) => {
-  const { className, imgUrl } = props;
+  const { className, imgUrls, index } = props;
 
   const handleImageClick = () => {
-    showPreviewImageDialog(imgUrl);
+    showPreviewImageCarouselDialog(imgUrls, index);
   };
 
   return (
     <div className={"image-container " + className} onClick={handleImageClick}>
-      <img src={imgUrl} decoding="async" loading="lazy" />
+      <img src={imgUrls[index]} decoding="async" loading="lazy" />
     </div>
   );
 };

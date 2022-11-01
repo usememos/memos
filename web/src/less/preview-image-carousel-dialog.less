@@ -1,0 +1,34 @@
+@import "./mixin.less";
+
+.preview-image-carousel-dialog {
+  @apply p-0;
+  z-index: 101;
+  background-color: rgba(0, 0, 0, 0.6);
+
+  > .dialog-container {
+    @apply flex flex-col justify-center items-center relative w-full h-full p-0;
+    background-color: unset;
+
+    > .btns-container {
+      @apply fixed top-8 right-8 flex flex-col justify-start items-center;
+
+      > .btn {
+        @apply mb-3 last:mb-0 w-8 h-8 p-1 cursor-pointer rounded opacity-90 bg-gray-300 z-10 shadow-md hover:opacity-70;
+
+        > .icon-img {
+          @apply w-6 h-auto;
+        }
+      }
+    }
+
+    > .img-container {
+      @apply w-full h-full p-4 flex flex-col justify-center items-center;
+      background-color: unset;
+      .hide-scroll-bar();
+
+      > img {
+        @apply h-auto w-auto max-w-full max-h-full shadow;
+      }
+    }
+  }
+}
