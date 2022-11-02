@@ -4,28 +4,28 @@
   @apply px-4;
 
   > .dialog-container {
-    @apply w-180 max-w-full mb-8;
+    @apply w-112 max-w-full mb-8;
 
     > .dialog-content-container {
       @apply flex flex-col justify-start items-start w-full;
 
-      > .upload-resource-container {
-        @apply mt-2 mb-4 py-8 cursor-pointer w-full rounded flex flex-row justify-center items-center bg-blue-50 border border-blue-600 hover:opacity-80;
+      > .action-buttons-container {
+        @apply w-full flex flex-row justify-between items-center mb-2;
 
-        > .upload-resource-btn {
-          @apply px-3 py-1 rounded flex flex-row justify-center items-center border border-dashed border-blue-600 text-blue-600 bg-blue-50;
+        > .buttons-wrapper {
+          @apply flex flex-row justify-start items-center;
 
-          > .icon-img {
-            @apply w-4 h-auto mr-1;
+          > .upload-resource-btn {
+            @apply text-sm cursor-pointer px-3 py-1 rounded flex flex-row justify-center items-center border border-blue-600 text-blue-600 bg-blue-50 hover:opacity-80;
+
+            > .icon-img {
+              @apply w-4 h-auto mr-1;
+            }
           }
-        }
-      }
 
-      > .delete-unused-resource-container {
-        @apply flex w-full justify-end;
-
-        > .delete-unused-resource-btn {
-          @apply text-sm py-1 px-3 mr-2 rounded-md hover:opacity-80 bg-red-100 border border-solid border-red-600 text-red-600;
+          > .delete-unused-resource-btn {
+            @apply text-sm py-1 px-3 mr-2 rounded bg-red-100 border border-solid border-red-600 text-red-600 hover:opacity-80;
+          }
         }
       }
 
@@ -37,7 +37,7 @@
         @apply flex flex-col justify-start items-start w-full;
 
         > .fields-container {
-          @apply px-2 py-2 w-full grid grid-cols-10 border-b;
+          @apply px-2 py-2 w-full grid grid-cols-7 border-b;
 
           > .field-text {
             @apply font-mono text-gray-400;
@@ -49,7 +49,7 @@
         }
 
         > .resource-container {
-          @apply px-2 py-2 w-full grid grid-cols-10;
+          @apply px-2 py-2 w-full grid grid-cols-7;
 
           > .buttons-container {
             @apply w-full flex flex-row justify-end items-center;
@@ -65,38 +65,6 @@
 
           &.name-text {
             @apply col-span-4;
-          }
-
-          &.type-text {
-            @apply col-span-3;
-          }
-
-          > .form-label {
-            min-height: 28px;
-
-            &.filename-label {
-            @apply w-full flex flex-row justify-between;
-
-              > input {
-              @apply grow-0 w-40 shadow-inner px-2 mr-2 border rounded leading-7 bg-transparent focus:border-black;
-              }
-
-              > .btns-container {
-              @apply shrink-0 grow flex flex-row justify-end items-center;
-
-                > .btn {
-                @apply text-sm shadow px-2 leading-7 rounded border hover:opacity-80 bg-gray-50;
-
-                  &.cancel-btn {
-                  @apply shadow-none border-none bg-transparent;
-                  }
-
-                  &.confirm-btn {
-                  @apply bg-green-600 border-green-600 text-white;
-                  }
-                }
-              }
-            }
           }
         }
       }

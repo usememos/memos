@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { marked } from "../labs/marked";
 import Icon from "./Icon";
 import "../less/memo-content.less";
@@ -29,6 +30,7 @@ const MAX_MEMO_CONTAINER_HEIGHT = 384;
 
 const MemoContent: React.FC<Props> = (props: Props) => {
   const { className, content, onMemoContentClick, onMemoContentDoubleClick } = props;
+  const { t } = useTranslation();
   const [state, setState] = useState<State>({
     expandButtonStatus: -1,
   });
@@ -84,7 +86,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       {state.expandButtonStatus !== -1 && (
         <div className="expand-btn-container">
           <span className={`btn ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleExpandBtnClick}>
-            {state.expandButtonStatus === 0 ? "Expand" : "Fold"}
+            {state.expandButtonStatus === 0 ? t("common.expand") : t("common.fold")}
             <Icon.ChevronRight className="icon-img" />
           </span>
         </div>

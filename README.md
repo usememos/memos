@@ -17,7 +17,7 @@
 
 ## Features
 
-- 🦄 Open source and forever free;
+- 🦄 Open source and free forever;
 - 🚀 Support for self-hosting with `Docker` in seconds;
 - 📜 Plain textarea first and support some useful markdown syntax;
 - 👥 Collaborate and share with your teammates;
@@ -35,7 +35,7 @@ Memos should be running at [http://localhost:5230](http://localhost:5230). If th
 
 ### Docker Compose
 
-See more in the example [`docker-compose.yaml`](./docker-compose.yaml) file.
+Example Compose YAML file: [`docker-compose.yaml`](./docker-compose.yaml).
 
 If you want to upgrade the version of memos, use the following command.
 
@@ -47,13 +47,14 @@ docker-compose down && docker image rm neosmemo/memos:latest && docker-compose u
 
 Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
 
-Gets more information in [development guide](https://github.com/usememos/memos/tree/main/docs/development.md).
+See more in [development guide](https://github.com/usememos/memos/tree/main/docs/development.md).
 
 ## Community Products
 
 - [Moe Memos](https://memos.moe/) - Third party client for iOS and Android
-- [lmm214/memos-bber](https://github.com/lmm214/memos-bber) - Memos 的 Chrome 扩展
-- [Rabithua/memos_wmp](https://github.com/Rabithua/memos_wmp) - 微信小程序版
+- [lmm214/memos-bber](https://github.com/lmm214/memos-bber) - Chrome extension
+- [Rabithua/memos_wmp](https://github.com/Rabithua/memos_wmp) - Wechat miniprogram
+- [qazxcdswe123/telegramMemoBot](https://github.com/qazxcdswe123/telegramMemoBot) - Telegram bot
 
 ## Star history
 
