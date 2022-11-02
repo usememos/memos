@@ -83,10 +83,17 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     inputEl.click();
   };
 
+  const getResouceUrl = useCallback((resource: Resource) => {
+    return `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
+  }, []);
+
   const handlePreviewBtnClick = (resource: Resource) => {
-    const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
+    const resourceUrl = getResouceUrl(resource);
     if (resource.type.startsWith("image")) {
-      showPreviewImageDialog(resourceUrl);
+      showPreviewImageDialog(
+        resources.filter((r) => r.type.startsWith("image")).map((r) => getResouceUrl(r)),
+        resources.findIndex((r) => r.id === resource.id)
+      );
     } else {
       window.open(resourceUrl);
     }
