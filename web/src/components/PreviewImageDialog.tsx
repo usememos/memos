@@ -27,10 +27,14 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     if (event.clientX < window.innerWidth / 2) {
       if (currentIndex > 0) {
         setCurrentIndex(currentIndex - 1);
+      } else {
+        destroy();
       }
     } else {
       if (currentIndex < imgUrls.length - 1) {
         setCurrentIndex(currentIndex + 1);
+      } else {
+        destroy();
       }
     }
   };
