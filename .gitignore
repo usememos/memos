@@ -14,3 +14,5 @@ build
 
 # Jetbrains
 .idea
+
+bin/air
