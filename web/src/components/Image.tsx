@@ -1,4 +1,4 @@
-import showPreviewImageCarouselDialog from "./PreviewImageCarouselDialog";
+import showPreviewImageDialog from "./PreviewImageDialog";
 import "../less/image.less";
 
 interface Props {
@@ -11,7 +11,7 @@ const Image: React.FC<Props> = (props: Props) => {
   const { className, imgUrls, index } = props;
 
   const handleImageClick = () => {
-    showPreviewImageCarouselDialog(imgUrls, index);
+    showPreviewImageDialog(imgUrls, index);
   };
 
   return (
