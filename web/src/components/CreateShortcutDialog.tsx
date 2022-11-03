@@ -258,6 +258,7 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
           onChange={(event) => {
             handleValueChange(event.target.value);
           }}
+          placeholder={t("filter.text-placeholder")}
         />
       ) : (
         <Selector className="value-selector" dataSource={valueDataSource} value={value} handleValueChanged={handleValueChange} />

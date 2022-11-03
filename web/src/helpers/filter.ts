@@ -142,11 +142,16 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
     }
     shouldShow = matched;
   } else if (type === "TEXT") {
-    let contained = memo.content.toLowerCase().includes(value.toLowerCase());
-    if (operator === "NOT_CONTAIN") {
-      contained = !contained;
+    if (value.startsWith("^")) {
+      const reg = new RegExp(value.slice(1));
+      shouldShow = operator === "NOT_CONTAIN" ? !reg.test(memo.content) : reg.test(memo.content);
+    } else {
+      let contained = memo.content.toLowerCase().includes(value.toLowerCase());
+      if (operator === "NOT_CONTAIN") {
+        contained = !contained;
+      }
+      shouldShow = contained;
     }
-    shouldShow = contained;
   }
 
   return shouldShow;

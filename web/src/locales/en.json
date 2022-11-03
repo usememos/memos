@@ -116,7 +116,8 @@
     "value": {
       "not-tagged": "No tags",
       "linked": "Has links"
-    }
+    },
+    "text-placeholder": "Starts with ^ to use regex"
   },
   "tag-list": {
     "tip-text": "Enter `#tag ` to create"
