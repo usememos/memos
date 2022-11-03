@@ -5,7 +5,6 @@ import * as api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
 import { globalService, userService } from "../services";
-import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
 import "../less/auth.less";
 
@@ -20,7 +19,7 @@ const Auth = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const pageLoadingState = useLoading(true);
-  const [siteHost, setSiteHost] = useState<User>();
+  const [systemStatus, setSystemStatus] = useState<SystemStatus>();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const actionBtnLoadingState = useLoading(false);
@@ -28,7 +27,7 @@ const Auth = () => {
   useEffect(() => {
     api.getSystemStatus().then(({ data }) => {
       const { data: status } = data;
-      setSiteHost(status.host);
+      setSystemStatus(status);
       if (status.profile.mode === "dev") {
         setEmail("demo@usememos.com");
         setPassword("secret");
@@ -47,9 +46,7 @@ const Auth = () => {
     setPassword(text);
   };
 
-  const handleSigninBtnsClick = async (e: React.FormEvent<EventTarget>) => {
-    e.preventDefault();
-
+  const handleSigninBtnsClick = async () => {
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -77,14 +74,12 @@ const Auth = () => {
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toastHelper.error(error.response.data.error);
     }
     actionBtnLoadingState.setFinish();
   };
 
-  const handleSignUpAsHostBtnsClick = async (e: React.FormEvent<EventTarget>) => {
-    e.preventDefault();
-
+  const handleSignUpBtnsClick = async (role: UserRole) => {
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -103,7 +98,7 @@ const Auth = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.signup(email, password, "HOST");
+      await api.signup(email, password, role);
       const user = await userService.doSignIn();
       if (user) {
         navigate("/");
@@ -112,7 +107,7 @@ const Auth = () => {
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toastHelper.error(error.response.data.error);
     }
     actionBtnLoadingState.setFinish();
   };
@@ -124,7 +119,7 @@ const Auth = () => {
   return (
     <div className="page-wrapper auth">
       <div className="page-container">
-        <form className="auth-form-wrapper" onSubmit={(e) => (siteHost ? handleSigninBtnsClick(e) : handleSignUpAsHostBtnsClick(e))}>
+        <div className="auth-form-wrapper">
           <div className="page-header-container">
             <div className="title-container">
               <img className="logo-img" src="/logo-full.webp" alt="" />
@@ -143,16 +138,39 @@ const Auth = () => {
           </div>
           <div className="action-btns-container">
             {!pageLoadingState.isLoading && (
-              <button className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} type="submit">
-                {actionBtnLoadingState.isLoading && <Icon.Loader className="img-icon" />}
-                {siteHost ? t("common.sign-in") : t("auth.signup-as-host")}
-              </button>
+              <>
+                {systemStatus?.host ? (
+                  <>
+                    {systemStatus?.allowSignUp && (
+                      <button
+                        className={`btn signup-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                        onClick={() => handleSignUpBtnsClick("USER")}
+                      >
+                        {t("common.sign-up")}
+                      </button>
+                    )}
+                    <button
+                      className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                      onClick={handleSigninBtnsClick}
+                    >
+                      {t("common.sign-in")}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                      onClick={() => handleSignUpBtnsClick("HOST")}
+                    >
+                      {t("auth.signup-as-host")}
+                    </button>
+                  </>
+                )}
+              </>
             )}
           </div>
-          <p className={`tip-text ${siteHost || pageLoadingState.isLoading ? "" : "host-tip"}`}>
-            {siteHost || pageLoadingState.isLoading ? t("auth.not-host-tip") : t("auth.host-tip")}
-          </p>
-        </form>
+          {!systemStatus?.host && <p className="tip-text">{t("auth.host-tip")}</p>}
+        </div>
         <div className="footer-container">
           <div className="language-container">
             <span className={`locale-item ${i18n.language === "en" ? "active" : ""}`} onClick={() => handleLocaleItemClick("en")}>

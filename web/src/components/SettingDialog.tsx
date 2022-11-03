@@ -6,11 +6,12 @@ import { generateDialog } from "./Dialog";
 import MyAccountSection from "./Settings/MyAccountSection";
 import PreferencesSection from "./Settings/PreferencesSection";
 import MemberSection from "./Settings/MemberSection";
+import SystemSection from "./Settings/SystemSection";
 import "../less/setting-dialog.less";
 
 type Props = DialogProps;
 
-type SettingSection = "my-account" | "preferences" | "member";
+type SettingSection = "my-account" | "preferences" | "member" | "system";
 
 interface State {
   selectedSection: SettingSection;
@@ -61,6 +62,12 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
               >
                 <span className="icon-text">👤</span> {t("setting.member")}
               </span>
+              <span
+                onClick={() => handleSectionSelectorItemClick("system")}
+                className={`section-item ${state.selectedSection === "system" ? "selected" : ""}`}
+              >
+                <span className="icon-text">🧑‍🔧</span> System Setting
+              </span>
             </div>
           </>
         ) : null}
@@ -72,6 +79,8 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
           <PreferencesSection />
         ) : state.selectedSection === "member" ? (
           <MemberSection />
+        ) : state.selectedSection === "system" ? (
+          <SystemSection />
         ) : null}
       </div>
     </div>

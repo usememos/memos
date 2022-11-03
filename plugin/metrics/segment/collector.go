@@ -8,7 +8,9 @@ import (
 	metric "github.com/usememos/memos/plugin/metrics"
 )
 
-var _ metric.Collector = (*collector)(nil)
+var (
+	sessionUUID = uuid.NewString()
+)
 
 // collector is the metrics collector https://segment.com/.
 type collector struct {
@@ -33,7 +35,7 @@ func (c *collector) Collect(metric *metric.Metric) error {
 
 	return c.client.Enqueue(analytics.Track{
 		Event:       string(metric.Name),
-		AnonymousId: uuid.NewString(),
+		AnonymousId: sessionUUID,
 		Properties:  properties,
 		Timestamp:   time.Now().UTC(),
 	})

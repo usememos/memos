@@ -70,7 +70,11 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 
 	g.POST("/auth/signup", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		// Don't allow to signup by this api if site host existed.
+		signup := &api.Signup{}
+		if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
+		}
+
 		hostUserType := api.Host
 		hostUserFind := api.UserFind{
 			Role: &hostUserType,
@@ -79,13 +83,27 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
-		if hostUser != nil {
+		if signup.Role == api.Host && hostUser != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Site Host existed, please contact the site host to signin account firstly.").SetInternal(err)
 		}
 
-		signup := &api.Signup{}
-		if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
+		systemSettingAllowSignUpName := api.SystemSettingAllowSignUpName
+		allowSignUpSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+			Name: &systemSettingAllowSignUpName,
+		})
+		if err != nil && common.ErrorCode(err) != common.NotFound {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+		}
+
+		allowSignUpSettingValue := false
+		if allowSignUpSetting != nil {
+			err = json.Unmarshal([]byte(allowSignUpSetting.Value), &allowSignUpSettingValue)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting allow signup").SetInternal(err)
+			}
+		}
+		if !allowSignUpSettingValue && hostUser != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Site Host existed, please contact the site host to signin account firstly.").SetInternal(err)
 		}
 
 		userCreate := &api.UserCreate{
