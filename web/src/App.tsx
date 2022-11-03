@@ -1,3 +1,4 @@
+import { CssVarsProvider } from "@mui/joy/styles";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
@@ -26,7 +27,11 @@ function App() {
     });
   }, [global.locale]);
 
-  return <RouterProvider router={router} />;
+  return (
+    <CssVarsProvider>
+      <RouterProvider router={router} />
+    </CssVarsProvider>
+  );
 }
 
 export default App;

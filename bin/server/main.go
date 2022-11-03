@@ -45,7 +45,7 @@ func run(profile *profile.Profile) error {
 	println(greetingBanner)
 	fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)
 	metricCollector.Collect(ctx, &metric.Metric{
-		Name: "servive started",
+		Name: "service started",
 	})
 
 	return serverInstance.Run()

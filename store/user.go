@@ -155,8 +155,6 @@ func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, er
 
 	if len(list) == 0 {
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found user with filter %+v", find)}
-	} else if len(list) > 1 {
-		return nil, &common.Error{Code: common.Conflict, Err: fmt.Errorf("found %d users with filter %+v, expect 1", len(list), find)}
 	}
 
 	userRaw := list[0]
