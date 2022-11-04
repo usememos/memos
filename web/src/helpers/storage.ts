@@ -8,6 +8,8 @@ interface StorageData {
   editingMemoIdCache: MemoId;
   // locale
   locale: Locale;
+  // skipped version
+  skippedVersion: string;
 }
 
 type StorageKey = keyof StorageData;

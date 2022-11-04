@@ -1,7 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import * as api from "../helpers/api";
 import { globalService, userService } from "../services";
 import { useAppSelector } from "../store";
 import toastHelper from "../components/Toast";
@@ -13,42 +12,10 @@ import MemoList from "../components/MemoList";
 import UpdateVersionBanner from "../components/UpdateVersionBanner";
 import "../less/home.less";
 
-interface State {
-  shouldShowUpdateVersionBanner: boolean;
-}
-
 function Home() {
   const { t } = useTranslation();
   const location = useLocation();
   const user = useAppSelector((state) => state.user.user);
-  const [state, setState] = useState<State>({
-    shouldShowUpdateVersionBanner: false,
-  });
-
-  useEffect(() => {
-    Promise.all([api.getRepoLatestTag(), api.getSystemStatus()])
-      .then(
-        ([
-          latestTag,
-          {
-            data: {
-              data: { profile },
-            },
-          },
-        ]) => {
-          const latestVersion = latestTag.slice(1) || "0.0.0";
-          const currentVersion = profile.version;
-          if (latestVersion > currentVersion) {
-            setState({
-              shouldShowUpdateVersionBanner: true,
-            });
-          }
-        }
-      )
-      .catch(() => {
-        // do nth
-      });
-  }, []);
 
   useEffect(() => {
     const { owner } = userService.getState();
@@ -68,7 +35,9 @@ function Home() {
 
   return (
     <section className="page-wrapper home">
-      <div className="banner-wrapper">{state.shouldShowUpdateVersionBanner && <UpdateVersionBanner />}</div>
+      <div className="banner-wrapper">
+        <UpdateVersionBanner />
+      </div>
       <div className="page-container">
         <Sidebar />
         <main className="memos-wrapper">
