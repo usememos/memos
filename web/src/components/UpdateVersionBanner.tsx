@@ -62,7 +62,7 @@ const UpdateVersionBanner: React.FC = () => {
         <Icon.ArrowUpCircle className="w-5 h-auto mr-2" />
         New Update <span className="ml-1 font-bold">{state.latestVersion}</span>
       </a>
-      <button className="absolute opacity-50 right-4 btn" title="Skip this version" onClick={onSkip}>
+      <button className="absolute opacity-20 right-4 btn" title="Skip this version" onClick={onSkip}>
         <Icon.X />
       </button>
     </div>
