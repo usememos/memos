@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var tagRegexp = regexp.MustCompile(`[^\s]?#([^\s#]+?) `)
+var tagRegexpList = []*regexp.Regexp{regexp.MustCompile(`^#([^\s#]+?) `), regexp.MustCompile(`\s#([^\s#]+?) `)}
 
 func (s *Server) registerTagRoutes(g *echo.Group) {
 	g.GET("/tag", func(c echo.Context) error {
@@ -50,9 +50,11 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		tagMapSet := make(map[string]bool)
 
 		for _, memo := range memoList {
-			for _, rawTag := range tagRegexp.FindAllString(memo.Content, -1) {
-				tag := tagRegexp.ReplaceAllString(rawTag, "$1")
-				tagMapSet[tag] = true
+			for _, tagRegexp := range tagRegexpList {
+				for _, rawTag := range tagRegexp.FindAllString(memo.Content, -1) {
+					tag := tagRegexp.ReplaceAllString(rawTag, "$1")
+					tagMapSet[tag] = true
+				}
 			}
 		}
 
