@@ -41,15 +41,15 @@ const UpdateVersionBanner: React.FC = () => {
       });
   }, []);
 
-  if (!state.show) return null;
-
   const onSkip = () => {
     storage.set({ skippedVersion: state.latestVersion });
-    setState({
-      ...state,
+    setState((s) => ({
+      ...s,
       show: false,
-    });
+    }));
   };
+
+  if (!state.show) return null;
 
   return (
     <div className="flex flex-row items-center justify-center w-full py-2 text-white bg-green-600">
