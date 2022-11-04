@@ -66,7 +66,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
                 onClick={() => handleSectionSelectorItemClick("system")}
                 className={`section-item ${state.selectedSection === "system" ? "selected" : ""}`}
               >
-                <span className="icon-text">🧑‍🔧</span> System Setting
+                <span className="icon-text">🧑‍🔧</span> System
               </span>
             </div>
           </>
