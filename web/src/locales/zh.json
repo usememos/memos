@@ -43,7 +43,7 @@
     "fold": "折叠",
     "expand": "展开"
   },
-  "slogan": "一个开源的、支持私有化部署的碎片化知识卡片管理工具。",
+  "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
     "signup-as-host": "注册为 Host",
     "host-tip": "你正在注册为 Host 用户账号。",

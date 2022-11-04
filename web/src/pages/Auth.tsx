@@ -5,6 +5,7 @@ import * as api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
 import { globalService, userService } from "../services";
+import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
 import "../less/auth.less";
 
@@ -141,13 +142,17 @@ const Auth = () => {
               <>
                 {systemStatus?.host ? (
                   <>
+                    {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto animate-spin" />}
                     {systemStatus?.allowSignUp && (
-                      <button
-                        className={`btn signup-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                        onClick={() => handleSignUpBtnsClick("USER")}
-                      >
-                        {t("common.sign-up")}
-                      </button>
+                      <>
+                        <button
+                          className={`btn signup-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                          onClick={() => handleSignUpBtnsClick("USER")}
+                        >
+                          {t("common.sign-up")}
+                        </button>
+                        <span className="mr-2 font-mono text-gray-200">/</span>
+                      </>
                     )}
                     <button
                       className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}

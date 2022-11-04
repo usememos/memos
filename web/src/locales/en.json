@@ -43,7 +43,7 @@
     "fold": "Fold",
     "expand": "Expand"
   },
-  "slogan": "An open source, self-hosted knowledge base that works with a SQLite db file.",
+  "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
     "signup-as-host": "Sign up as Host",
     "host-tip": "You are registering as the Site Host.",

@@ -4,7 +4,7 @@ import { createMemo, deleteMemo, patchMemo, setIsFetching, setMemos, setTags } f
 import store from "../store";
 import userService from "./userService";
 
-export const DEFAULT_MEMO_LIMIT = 20;
+export const DEFAULT_MEMO_LIMIT = 30;
 
 const convertResponseModelMemo = (memo: Memo): Memo => {
   return {

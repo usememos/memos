@@ -43,7 +43,7 @@
     "fold": "Fold",
     "expand": "Expand"
   },
-  "slogan": "Một mã nguồn mở, tự bạn lưu lại mọi thứ bạn biết dựa trên SQLite db.",
+  "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
     "signup-as-host": "Đăng ký như chủ nhân",
     "host-tip": "Bạn đang đăng ký với tư cách chủ nhân của trang web này.",
