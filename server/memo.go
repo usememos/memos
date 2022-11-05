@@ -540,14 +540,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoID)).SetInternal(err)
 		}
 
-		memoResourceDelete := &api.MemoResourceDelete{
-			MemoID:     memoID,
-			ResourceID: nil,
-		}
-		if err := s.Store.DeleteMemoResource(ctx, memoResourceDelete); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
-		}
-
 		return c.JSON(http.StatusOK, true)
 	})
 }
