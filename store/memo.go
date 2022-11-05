@@ -222,6 +222,14 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *api.MemoDelete) error {
 		return FormatError(err)
 	}
 
+	resourceDelete := &api.MemoResourceDelete{
+		MemoID: delete.ID,
+	}
+
+	if err := deleteMemoResource(ctx, tx, resourceDelete); err != nil {
+		return FormatError(err)
+	}
+
 	if err := tx.Commit(); err != nil {
 		return FormatError(err)
 	}
