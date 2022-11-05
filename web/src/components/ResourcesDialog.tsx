@@ -183,9 +183,10 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
             </div>
           </div>
           <div className="buttons-wrapper">
-            <button className="delete-unused-resource-btn" onClick={handleDeleteUnusedResourcesBtnClick}>
-              {t("resources.clear-unused-resources")}
-            </button>
+            <div className="delete-unused-resource-btn" onClick={handleDeleteUnusedResourcesBtnClick}>
+              <Icon.Trash2 className="icon-img" />
+              <span>{t("resources.clear-unused-resources")}</span>
+            </div>
           </div>
         </div>
         {loadingState.isLoading ? (
