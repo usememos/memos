@@ -394,11 +394,23 @@ const MemoEditor: React.FC = () => {
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
     >
-      <div className={`tip-container ${isEditing ? "" : "!hidden"}`}>
-        <span className="tip-text">{t("editor.editing")}</span>
-        <button className="cancel-btn" onClick={handleCancelEdit}>
-          {t("common.cancel")}
-        </button>
+      <div className={`memo-editor-header ${isEditing ? "" : "!hidden"}`}>
+        <div className="tip-container">
+          <span className="tip-text">{t("editor.editing")}</span>
+          <button className="cancel-btn" onClick={handleCancelEdit}>
+            {t("common.cancel")}
+          </button>
+        </div>
+        <div className="memo-visibility-selector">
+          <label className="form-label selector">
+            <Selector
+              className="ml-2 w-36"
+              value={editorState.memoVisibility}
+              dataSource={memoVisibilityOptionSelectorItems}
+              handleValueChanged={handleMemoVisibilityOptionChanged}
+            />
+          </label>
+        </div>
       </div>
       <Editor ref={editorRef} {...editorConfig} onPaste={handlePasteEvent} />
       <div className="common-tools-wrapper">
@@ -437,14 +449,6 @@ const MemoEditor: React.FC = () => {
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>
-          <label className="form-label selector">
-            <Selector
-              className="ml-2 w-36"
-              value={editorState.memoVisibility}
-              dataSource={memoVisibilityOptionSelectorItems}
-              handleValueChanged={handleMemoVisibilityOptionChanged}
-            />
-          </label>
           <EmojiPicker
             shouldShow={state.shouldShowEmojiPicker}
             onEmojiClick={handleEmojiClick}
