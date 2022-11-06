@@ -19,3 +19,8 @@ type MemoOrganizerUpsert struct {
 	UserID int
 	Pinned bool `json:"pinned"`
 }
+
+type MemoOrganizerDelete struct {
+	MemoID *int
+	UserID *int
+}

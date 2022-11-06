@@ -188,14 +188,17 @@ func upsertMemoResource(ctx context.Context, tx *sql.Tx, upsert *api.MemoResourc
 }
 
 func deleteMemoResource(ctx context.Context, tx *sql.Tx, delete *api.MemoResourceDelete) error {
-	where, args := []string{"memo_id = ?"}, []interface{}{delete.MemoID}
+	where, args := []string{}, []interface{}{}
 
+	if v := delete.MemoID; v != nil {
+		where, args = append(where, "memo_id = ?"), append(args, *v)
+	}
 	if v := delete.ResourceID; v != nil {
 		where, args = append(where, "resource_id = ?"), append(args, *v)
 	}
 
-	result, err := tx.ExecContext(ctx, `
-		DELETE FROM memo_resource WHERE `+strings.Join(where, " AND "), args...)
+	stmt := `DELETE FROM memo_resource WHERE ` + strings.Join(where, " AND ")
+	result, err := tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return FormatError(err)
 	}
@@ -203,6 +206,31 @@ func deleteMemoResource(ctx context.Context, tx *sql.Tx, delete *api.MemoResourc
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
 		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo resource not found")}
+	}
+
+	return nil
+}
+
+func vacuumMemoResource(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM 
+		memo_resource 
+	WHERE 
+		memo_id NOT IN (
+			SELECT 
+				id 
+			FROM 
+				memo
+		) 
+		OR resource_id NOT IN (
+			SELECT 
+				id 
+			FROM 
+				resource
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
+		return FormatError(err)
 	}
 
 	return nil

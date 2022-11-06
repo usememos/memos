@@ -170,9 +170,19 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
+		resource, err := s.Store.FindResource(ctx, &api.ResourceFind{
+			ID:        &resourceID,
+			CreatorID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
+		}
+		if resource == nil {
+			return echo.NewHTTPError(http.StatusNotFound, "Not find resource").SetInternal(err)
+		}
+
 		resourceDelete := &api.ResourceDelete{
-			ID:        resourceID,
-			CreatorID: userID,
+			ID: resourceID,
 		}
 		if err := s.Store.DeleteResource(ctx, resourceDelete); err != nil {
 			if common.ErrorCode(err) == common.NotFound {
