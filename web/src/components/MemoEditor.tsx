@@ -2,14 +2,16 @@ import { IEmojiData } from "emoji-picker-react";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
-import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "../helpers/consts";
+import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import { editorStateService, locationService, memoService, resourceService } from "../services";
 import { useAppSelector } from "../store";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
+import Selector from "./common/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import EmojiPicker from "./Editor/EmojiPicker";
+import { toLower } from "lodash";
 import "../less/memo-editor.less";
 
 const getEditorContentCache = (): string => {
@@ -19,6 +21,12 @@ const getEditorContentCache = (): string => {
 const setEditorContentCache = (content: string) => {
   storage.set({
     editorContentCache: content,
+  });
+};
+
+const setEditingMemoVisibilityCache = (visibility: Visibility) => {
+  storage.set({
+    editingMemoVisibilityCache: visibility,
   });
 };
 
@@ -32,6 +40,7 @@ interface State {
 const MemoEditor: React.FC = () => {
   const { t, i18n } = useTranslation();
   const user = useAppSelector((state) => state.user.user);
+  const { setting } = useAppSelector((state) => state.user.user as User);
   const editorState = useAppSelector((state) => state.editor);
   const tags = useAppSelector((state) => state.memo.tags);
   const [state, setState] = useState<State>({
@@ -48,9 +57,14 @@ const MemoEditor: React.FC = () => {
   const mobileEditorStyle = user?.setting.mobileEditorStyle || "normal";
 
   useEffect(() => {
-    const { editingMemoIdCache } = storage.get(["editingMemoIdCache"]);
+    const { editingMemoIdCache, editingMemoVisibilityCache } = storage.get(["editingMemoIdCache", "editingMemoVisibilityCache"]);
     if (editingMemoIdCache) {
       editorStateService.setEditMemoWithId(editingMemoIdCache);
+    }
+    if (editingMemoVisibilityCache) {
+      editorStateService.setMemoVisibility(editingMemoVisibilityCache as "PUBLIC" | "PROTECTED" | "PRIVATE");
+    } else {
+      editorStateService.setMemoVisibility(setting.memoVisibility);
     }
   }, []);
 
@@ -75,6 +89,7 @@ const MemoEditor: React.FC = () => {
             ...state,
             resourceList: memo.resourceList,
           });
+          editorStateService.setMemoVisibility(memo.visibility);
           editorRef.current?.setContent(memo.content ?? "");
           editorRef.current?.focus();
         }
@@ -196,6 +211,7 @@ const MemoEditor: React.FC = () => {
           await memoService.patchMemo({
             id: prevMemo.id,
             content,
+            visibility: editorState.memoVisibility,
             resourceIdList: state.resourceList.map((resource) => resource.id),
           });
         }
@@ -203,6 +219,7 @@ const MemoEditor: React.FC = () => {
       } else {
         await memoService.createMemo({
           content,
+          visibility: editorState.memoVisibility,
           resourceIdList: state.resourceList.map((resource) => resource.id),
         });
         locationService.clearQuery();
@@ -217,7 +234,9 @@ const MemoEditor: React.FC = () => {
       fullscreen: false,
       resourceList: [],
     });
+    editorStateService.setMemoVisibility(setting.memoVisibility);
     setEditorContentCache("");
+    storage.remove(["editingMemoVisibilityCache"]);
     editorRef.current?.setContent("");
   };
 
@@ -229,6 +248,7 @@ const MemoEditor: React.FC = () => {
     editorStateService.clearEditMemo();
     editorRef.current?.setContent("");
     setEditorContentCache("");
+    storage.remove(["editingMemoVisibilityCache"]);
   };
 
   const handleContentChange = (content: string) => {
@@ -355,6 +375,19 @@ const MemoEditor: React.FC = () => {
     [state.fullscreen, i18n.language, editorFontStyle]
   );
 
+  const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
+    return {
+      value: item.value,
+      text: t(`memo.visibility.${toLower(item.value)}`),
+    };
+  });
+
+  const handleMemoVisibilityOptionChanged = async (value: string) => {
+    const visibilityValue = value as Visibility;
+    editorStateService.setMemoVisibility(visibilityValue);
+    setEditingMemoVisibilityCache(visibilityValue);
+  };
+
   return (
     <div
       className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
@@ -404,6 +437,14 @@ const MemoEditor: React.FC = () => {
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>
+          <label className="form-label selector">
+            <Selector
+              className="ml-2 w-36"
+              value={editorState.memoVisibility}
+              dataSource={memoVisibilityOptionSelectorItems}
+              handleValueChanged={handleMemoVisibilityOptionChanged}
+            />
+          </label>
           <EmojiPicker
             shouldShow={state.shouldShowEmojiPicker}
             onEmojiClick={handleEmojiClick}
