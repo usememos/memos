@@ -221,13 +221,8 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *api.MemoDelete) error {
 	if err := deleteMemo(ctx, tx, delete); err != nil {
 		return FormatError(err)
 	}
-
-	resourceDelete := &api.MemoResourceDelete{
-		MemoID: delete.ID,
-	}
-
-	if err := deleteMemoResource(ctx, tx, resourceDelete); err != nil {
-		return FormatError(err)
+	if err := vacuum(ctx, tx); err != nil {
+		return err
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -323,7 +318,7 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 		where, args = append(where, "row_status = ?"), append(args, *v)
 	}
 	if v := find.Pinned; v != nil {
-		where = append(where, "id in (SELECT memo_id FROM memo_organizer WHERE pinned = 1 AND user_id = memo.creator_id)")
+		where = append(where, "id IN (SELECT memo_id FROM memo_organizer WHERE pinned = 1 AND user_id = memo.creator_id)")
 	}
 	if v := find.ContentSearch; v != nil {
 		where, args = append(where, "content LIKE ?"), append(args, "%"+*v+"%")
@@ -382,16 +377,36 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 }
 
 func deleteMemo(ctx context.Context, tx *sql.Tx, delete *api.MemoDelete) error {
-	result, err := tx.ExecContext(ctx, `
-		DELETE FROM memo WHERE id = ?
-	`, delete.ID)
+	where, args := []string{"id = ?"}, []interface{}{delete.ID}
+
+	stmt := `DELETE FROM memo WHERE ` + strings.Join(where, " AND ")
+	result, err := tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return FormatError(err)
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo ID not found: %d", delete.ID)}
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo not found")}
+	}
+
+	return nil
+}
+
+func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM 
+		memo 
+	WHERE 
+		creator_id NOT IN (
+			SELECT 
+				id 
+			FROM 
+				user
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
+		return FormatError(err)
 	}
 
 	return nil

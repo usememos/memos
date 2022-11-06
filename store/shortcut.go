@@ -164,7 +164,7 @@ func (s *Store) DeleteShortcut(ctx context.Context, delete *api.ShortcutDelete) 
 		return FormatError(err)
 	}
 
-	s.cache.DeleteCache(api.ShortcutCache, delete.ID)
+	s.cache.DeleteCache(api.ShortcutCache, *delete.ID)
 
 	return nil
 }
@@ -292,16 +292,43 @@ func findShortcutList(ctx context.Context, tx *sql.Tx, find *api.ShortcutFind) (
 }
 
 func deleteShortcut(ctx context.Context, tx *sql.Tx, delete *api.ShortcutDelete) error {
-	result, err := tx.ExecContext(ctx, `
-		DELETE FROM shortcut WHERE id = ?
-	`, delete.ID)
+	where, args := []string{}, []interface{}{}
+
+	if v := delete.ID; v != nil {
+		where, args = append(where, "id = ?"), append(args, *v)
+	}
+	if v := delete.CreatorID; v != nil {
+		where, args = append(where, "creator_id = ?"), append(args, *v)
+	}
+
+	stmt := `DELETE FROM shortcut WHERE ` + strings.Join(where, " AND ")
+	result, err := tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return FormatError(err)
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("shortcut ID not found: %d", delete.ID)}
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("shortcut not found")}
+	}
+
+	return nil
+}
+
+func vacuumShortcut(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM 
+		shortcut 
+	WHERE 
+		creator_id NOT IN (
+			SELECT 
+				id 
+			FROM 
+				user
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
+		return FormatError(err)
 	}
 
 	return nil

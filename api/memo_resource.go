@@ -19,6 +19,6 @@ type MemoResourceFind struct {
 }
 
 type MemoResourceDelete struct {
-	MemoID     int
+	MemoID     *int
 	ResourceID *int
 }

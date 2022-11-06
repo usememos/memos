@@ -175,13 +175,15 @@ func (s *Store) DeleteUser(ctx context.Context, delete *api.UserDelete) error {
 	}
 	defer tx.Rollback()
 
-	err = deleteUser(ctx, tx, delete)
-	if err != nil {
-		return FormatError(err)
+	if err := deleteUser(ctx, tx, delete); err != nil {
+		return err
+	}
+	if err := vacuum(ctx, tx); err != nil {
+		return err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	s.cache.DeleteCache(api.UserCache, delete.ID)
@@ -364,7 +366,7 @@ func deleteUser(ctx context.Context, tx *sql.Tx, delete *api.UserDelete) error {
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("user ID not found: %d", delete.ID)}
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("user not found")}
 	}
 
 	return nil

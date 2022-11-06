@@ -500,7 +500,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		memoResourceDelete := &api.MemoResourceDelete{
-			MemoID:     memoID,
+			MemoID:     &memoID,
 			ResourceID: &resourceID,
 		}
 		if err := s.Store.DeleteMemoResource(ctx, memoResourceDelete); err != nil {

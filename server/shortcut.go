@@ -128,7 +128,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		}
 
 		shortcutDelete := &api.ShortcutDelete{
-			ID: shortcutID,
+			ID: &shortcutID,
 		}
 		if err := s.Store.DeleteShortcut(ctx, shortcutDelete); err != nil {
 			if common.ErrorCode(err) == common.NotFound {

@@ -90,5 +90,5 @@ type MemoFind struct {
 }
 
 type MemoDelete struct {
-	ID int `json:"id"`
+	ID int
 }
