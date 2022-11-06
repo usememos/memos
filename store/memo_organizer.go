@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strings"
 
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
@@ -55,6 +56,24 @@ func (s *Store) UpsertMemoOrganizer(ctx context.Context, upsert *api.MemoOrganiz
 	defer tx.Rollback()
 
 	if err := upsertMemoOrganizer(ctx, tx, upsert); err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return FormatError(err)
+	}
+
+	return nil
+}
+
+func (s *Store) DeleteMemoOrganizer(ctx context.Context, delete *api.MemoOrganizerDelete) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return FormatError(err)
+	}
+	defer tx.Rollback()
+
+	if err := deleteMemoOrganizer(ctx, tx, delete); err != nil {
 		return err
 	}
 
@@ -122,6 +141,55 @@ func upsertMemoOrganizer(ctx context.Context, tx *sql.Tx, upsert *api.MemoOrgani
 		&memoOrganizer.UserID,
 		&memoOrganizer.Pinned,
 	); err != nil {
+		return FormatError(err)
+	}
+
+	return nil
+}
+
+func deleteMemoOrganizer(ctx context.Context, tx *sql.Tx, delete *api.MemoOrganizerDelete) error {
+	where, args := []string{}, []interface{}{}
+
+	if v := delete.MemoID; v != nil {
+		where, args = append(where, "memo_id = ?"), append(args, *v)
+	}
+	if v := delete.UserID; v != nil {
+		where, args = append(where, "user_id = ?"), append(args, *v)
+	}
+
+	stmt := `DELETE FROM memo_organizer WHERE ` + strings.Join(where, " AND ")
+	result, err := tx.ExecContext(ctx, stmt, args...)
+	if err != nil {
+		return FormatError(err)
+	}
+
+	rows, _ := result.RowsAffected()
+	if rows == 0 {
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo organizer not found")}
+	}
+
+	return nil
+}
+
+func vacuumMemoOrganizer(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM 
+		memo_organizer 
+	WHERE 
+		memo_id NOT IN (
+			SELECT 
+				id 
+			FROM 
+				memo
+		)
+		OR user_id NOT IN (
+			SELECT 
+				id 
+			FROM 
+				user
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
 		return FormatError(err)
 	}
 

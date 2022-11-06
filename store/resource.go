@@ -169,18 +169,15 @@ func (s *Store) DeleteResource(ctx context.Context, delete *api.ResourceDelete) 
 	}
 	defer tx.Rollback()
 
-	err = deleteResource(ctx, tx, delete)
-	if err != nil {
+	if err := deleteResource(ctx, tx, delete); err != nil {
+		return err
+	}
+	if err := vacuum(ctx, tx); err != nil {
 		return err
 	}
 
 	if err := tx.Commit(); err != nil {
 		return FormatError(err)
-	}
-
-	// Vacuum sqlite database file size after deleting resource.
-	if _, err := s.db.Exec("VACUUM"); err != nil {
-		return err
 	}
 
 	s.cache.DeleteCache(api.ResourceCache, delete.ID)
@@ -340,16 +337,36 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 }
 
 func deleteResource(ctx context.Context, tx *sql.Tx, delete *api.ResourceDelete) error {
-	result, err := tx.ExecContext(ctx, `
-		DELETE FROM resource WHERE id = ? AND creator_id = ?
-	`, delete.ID, delete.CreatorID)
+	where, args := []string{"id = ?"}, []interface{}{delete.ID}
+
+	stmt := `DELETE FROM resource WHERE ` + strings.Join(where, " AND ")
+	result, err := tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return FormatError(err)
 	}
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("resource ID not found: %d", delete.ID)}
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("resource not found")}
+	}
+
+	return nil
+}
+
+func vacuumResource(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM 
+		resource 
+	WHERE 
+		creator_id NOT IN (
+			SELECT 
+				id 
+			FROM 
+				user
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
+		return FormatError(err)
 	}
 
 	return nil

@@ -90,8 +90,8 @@
     "copy": "复制",
     "visibility": {
       "private": "仅自己可见",
-      "protected": "对所有用户公开",
-      "public": "对互联网公开"
+      "protected": "登录用户可见",
+      "public": "所有人可见"
     }
   },
   "memo-list": {

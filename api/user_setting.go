@@ -156,3 +156,7 @@ type UserSettingFind struct {
 
 	Key *UserSettingKey `json:"key"`
 }
+
+type UserSettingDelete struct {
+	UserID int
+}

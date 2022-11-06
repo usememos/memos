@@ -40,18 +40,16 @@ type ResourceFind struct {
 	MemoID   *int
 }
 
-type ResourceDelete struct {
-	ID int
-
-	// Standard fields
-	CreatorID int
-}
-
 type ResourcePatch struct {
 	ID int
 
 	// Standard fields
 	UpdatedTs *int64
 
+	// Domain specific fields
 	Filename *string `json:"filename"`
+}
+
+type ResourceDelete struct {
+	ID int
 }
