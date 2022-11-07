@@ -1,7 +1,9 @@
 import { inlineElementParserList } from ".";
 import { marked } from "..";
 
-export const PARAGRAPH_REG = /^([\S ]*)(\n?)/;
+// \u3000: full-width space
+
+export const PARAGRAPH_REG = /^([\S \u3000]*)(\n?)/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(PARAGRAPH_REG);

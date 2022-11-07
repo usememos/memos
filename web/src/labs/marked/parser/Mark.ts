@@ -1,6 +1,6 @@
 import { escape } from "lodash-es";
 
-export const MARK_REG = /@\[([\S ]+?)\]\((\S+?)\)/;
+export const MARK_REG = /@\[([\S \u3000]+?)\]\((\S+?)\)/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(MARK_REG);

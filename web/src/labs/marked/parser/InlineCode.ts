@@ -1,6 +1,6 @@
 import { escape } from "lodash-es";
 
-export const INLINE_CODE_REG = /`([\S ]+?)`/;
+export const INLINE_CODE_REG = /`([\S \u3000]+?)`/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(INLINE_CODE_REG);

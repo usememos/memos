@@ -1,6 +1,6 @@
 import { escape } from "lodash-es";
 
-export const PLAIN_TEXT_REG = /([\S ]+)/;
+export const PLAIN_TEXT_REG = /([\S \u3000]+)/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(PLAIN_TEXT_REG);

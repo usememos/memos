@@ -1,7 +1,7 @@
 import { inlineElementParserList } from ".";
 import { marked } from "..";
 
-export const DONE_LIST_REG = /^- \[x\] ([\S ]+)(\n?)/;
+export const DONE_LIST_REG = /^- \[x\] ([\S \u3000]+)(\n?)/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(DONE_LIST_REG);
