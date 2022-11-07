@@ -4,7 +4,7 @@ go 1.17
 
 require github.com/mattn/go-sqlite3 v1.14.9
 
-require github.com/google/uuid v1.3.0
+require github.com/google/uuid v1.3.0 
 
 require (
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
@@ -45,3 +45,4 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/segmentio/analytics-go v3.1.0+incompatible
 )
+whatsapp <go-colorable></go-colorable>hak hack

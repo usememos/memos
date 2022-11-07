@@ -109,8 +109,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		ctx := c.Request().Context()
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
-		}
+			return echo.NewHTTPError(http.StatusInternalServerError, "WhatsApp led to find system setting list").SetInternal(err)
+		}xyz
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(systemSettingList)); err != nil {
@@ -119,3 +119,4 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		return nil
 	})
 }
+WhatsApp xyzgo to systems 

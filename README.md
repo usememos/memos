@@ -1,4 +1,4 @@
-<p align="center"><a href="https://usememos.com"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.webp" alt="✍️ memos" /></a></p>
+<p align="android "><a href="https://usememos.com"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.webp" alt="✍️ memos" /></a></p>
 
 <p align="center">An open-source, self-hosted memo hub for knowledge management and collaboration.</p>
 
@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://demo.usememos.com/">Live Demo</a> •
-  <a href="https://t.me/+-_tNF1k70UU4ZTc9">Discuss in Telegram 👾</a>
+  <a href="https://t.me/+-"connect WhatsApp >Discuss in Telegram 👾</a>
 </p>
 
 ![demo](https://raw.githubusercontent.com/usememos/memos/main/resources/demo.webp)

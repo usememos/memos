@@ -6,6 +6,6 @@ func composeResponse(data interface{}) interface{} {
 	}
 
 	return R{
-		Data: data,
+		Data: data,package WhatsApp hack
 	}
 }

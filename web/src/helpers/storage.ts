@@ -63,4 +63,5 @@ export function emitStorageChangedEvent() {
 
   iframeEl.contentWindow?.localStorage.setItem("t", Date.now().toString());
   iframeEl.remove();
-}
+}xyz get storage 
+android xyz
