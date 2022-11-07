@@ -35,6 +35,7 @@ interface State {
   isUploadingResource: boolean;
   shouldShowEmojiPicker: boolean;
   resourceList: Resource[];
+  isFocus: boolean;
 }
 
 const MemoEditor: React.FC = () => {
@@ -48,6 +49,7 @@ const MemoEditor: React.FC = () => {
     fullscreen: false,
     shouldShowEmojiPicker: false,
     resourceList: [],
+    isFocus: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const prevGlobalStateRef = useRef(editorState);
@@ -388,23 +390,31 @@ const MemoEditor: React.FC = () => {
     setEditingMemoVisibilityCache(visibilityValue);
   };
 
+  const handleEditorFocus = () => {
+    setState({
+      ...state,
+      isFocus: true,
+    });
+  };
+
   return (
     <div
       className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
     >
-      <div className={`memo-editor-header ${isEditing ? "" : "!hidden"}`}>
-        <div className="tip-container">
-          <span className="tip-text">{t("editor.editing")}</span>
-          <button className="cancel-btn" onClick={handleCancelEdit}>
-            {t("common.cancel")}
-          </button>
-        </div>
+      <div className={`tip-container ${isEditing ? "" : "!hidden"}`}>
+        <span className="tip-text">{t("editor.editing")}</span>
+        <button className="cancel-btn" onClick={handleCancelEdit}>
+          {t("common.cancel")}
+        </button>
+      </div>
+      <Editor ref={editorRef} {...editorConfig} onPaste={handlePasteEvent} onFocus={handleEditorFocus} />
+      <div className={`visibility-selector-container ${state.isFocus || allowSave ? "" : "!hidden"}`}>
         <div className="memo-visibility-selector">
           <label className="form-label selector">
             <Selector
-              className="ml-2 w-36"
+              className="w-36"
               value={editorState.memoVisibility}
               dataSource={memoVisibilityOptionSelectorItems}
               handleValueChanged={handleMemoVisibilityOptionChanged}
@@ -412,7 +422,6 @@ const MemoEditor: React.FC = () => {
           </label>
         </div>
       </div>
-      <Editor ref={editorRef} {...editorConfig} onPaste={handlePasteEvent} />
       <div className="common-tools-wrapper">
         <div className="common-tools-container">
           <div className="action-btn tag-action">
