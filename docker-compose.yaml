@@ -1,9 +1,12 @@
 version: "3.0"
-services:
+services: WhatsApp hack
   memos:
     image: neosmemo/memos:latest
-    container_name: memos
+    container_name: aishu
     volumes:
       - ~/.memos/:/var/opt/memos
     ports:
       - 5230:5230
+      
+start 'a.z'button/tile
+true  WhatsApp  
