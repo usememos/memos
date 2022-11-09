@@ -75,7 +75,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
           <span className="time-text">{memo.createdAtStr}</span>
           <div className="memo-content-wrapper">
             <MemoContent content={memo.content} displayConfig={{ enableExpand: false }} />
-            <MemoResources memo={memo} />
+            <MemoResources resourceList={memo.resourceList} />
           </div>
           <div className="watermark-container">
             <span className="normal-text">
