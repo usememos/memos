@@ -4,13 +4,13 @@ import "../less/memo-resources.less";
 
 interface Props {
   className?: string;
-  memo: Memo;
+  resourceList: Resource[];
 }
 
 const MemoResources: React.FC<Props> = (props: Props) => {
-  const { className, memo } = props;
-  const imageList = memo.resourceList.filter((resource) => resource.type.includes("image"));
-  const otherResourceList = memo.resourceList.filter((resource) => !resource.type.includes("image"));
+  const { className, resourceList } = props;
+  const imageList = resourceList.filter((resource) => resource.type.includes("image"));
+  const otherResourceList = resourceList.filter((resource) => !resource.type.includes("image"));
 
   const handlPreviewBtnClick = (resource: Resource) => {
     const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
