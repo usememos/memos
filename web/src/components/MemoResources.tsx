@@ -3,13 +3,14 @@ import Icon from "./Icon";
 import "../less/memo-resources.less";
 
 interface Props {
-  memo: Memo;
+  className?: string;
+  resourceList: Resource[];
 }
 
 const MemoResources: React.FC<Props> = (props: Props) => {
-  const { memo } = props;
-  const imageList = memo.resourceList.filter((resource) => resource.type.includes("image"));
-  const otherResourceList = memo.resourceList.filter((resource) => !resource.type.includes("image"));
+  const { className, resourceList } = props;
+  const imageList = resourceList.filter((resource) => resource.type.includes("image"));
+  const otherResourceList = resourceList.filter((resource) => !resource.type.includes("image"));
 
   const handlPreviewBtnClick = (resource: Resource) => {
     const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
@@ -21,7 +22,7 @@ const MemoResources: React.FC<Props> = (props: Props) => {
   });
 
   return (
-    <div className="resource-wrapper">
+    <div className={`resource-wrapper  ${className || ""}`}>
       {imageList.length > 0 && (
         <div className="images-wrapper">
           {imageList.map((resource, index) => (

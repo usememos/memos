@@ -148,7 +148,7 @@ const MemoDetail = () => {
                 />
               </div>
               <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
-              <MemoResources memo={state.memo} />
+              <MemoResources resourceList={state.memo.resourceList} />
             </div>
           </main>
         )}
