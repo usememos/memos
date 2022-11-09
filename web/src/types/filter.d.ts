@@ -33,6 +33,22 @@ interface TextFilter extends BaseFilter {
   };
 }
 
-type FilterType = "TEXT" | "TYPE" | "TAG";
+interface CreatedTimeFilter extends BaseFilter {
+  type: "CREATED_TIME";
+  value: {
+    operator: "BEFORE" | "AFTER";
+    value: string;
+  };
+}
 
-type Filter = BaseFilter | TagFilter | TypeFilter | TextFilter;
+interface UpdatedTimeFilter extends BaseFilter {
+  type: "UPDATED_TIME";
+  value: {
+    operator: "BEFORE" | "AFTER";
+    value: string;
+  };
+}
+
+type FilterType = "TEXT" | "TYPE" | "TAG" | "CREATED_TIME" | "UPDATED_TIME";
+
+type Filter = BaseFilter | TagFilter | TypeFilter | TextFilter | CreatedTimeFilter | UpdatedTimeFilter;

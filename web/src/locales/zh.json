@@ -112,7 +112,9 @@
       "contains": "包含",
       "not-contains": "不包含",
       "is": "是",
-      "is-not": "不是"
+      "is-not": "不是",
+      "before": "早于",
+      "after": "晚于"
     },
     "value": {
       "not-tagged": "无标签",
