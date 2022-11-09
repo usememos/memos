@@ -195,7 +195,7 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
         </div>
         <div className="memo-container">
           <MemoContent displayConfig={{ enableExpand: false }} content={memo.content} onMemoContentClick={handleMemoContentClick} />
-          <MemoResources memo={memo} />
+          <MemoResources resourceList={memo.resourceList} />
         </div>
         <div className="layer-container"></div>
         {linkMemos.map((_, idx) => {
