@@ -22,7 +22,7 @@ const MemoResources: React.FC<Props> = (props: Props) => {
   });
 
   return (
-    <div className={`resource-wrapper  ${className || ""}`}>
+    <div className={`resource-wrapper ${className || ""}`}>
       {imageList.length > 0 && (
         <div className="images-wrapper">
           {imageList.map((resource, index) => (
