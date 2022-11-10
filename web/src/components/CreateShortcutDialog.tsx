@@ -180,7 +180,7 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
   const maxDatetimeValue = dayjs().format("9999-12-31T23:59");
 
   useEffect(() => {
-    if (type === "CREATED_TIME" || type === "UPDATED_TIME") {
+    if (type === "DISPLAY_TIME") {
       const nowDatetimeValue = dayjs().format("YYYY-MM-DDTHH:mm");
       handleValueChange(nowDatetimeValue);
     } else {
@@ -268,7 +268,7 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
           }}
           placeholder={t("filter.text-placeholder")}
         />
-      ) : type === "CREATED_TIME" || type === "UPDATED_TIME" ? (
+      ) : type === "DISPLAY_TIME" ? (
         <input
           className="datetime-selector"
           type="datetime-local"

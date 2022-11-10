@@ -33,22 +33,14 @@ interface TextFilter extends BaseFilter {
   };
 }
 
-interface CreatedTimeFilter extends BaseFilter {
-  type: "CREATED_TIME";
+interface DisplayTimeFilter extends BaseFilter {
+  type: "DISPLAY_TIME";
   value: {
     operator: "BEFORE" | "AFTER";
     value: string;
   };
 }
 
-interface UpdatedTimeFilter extends BaseFilter {
-  type: "UPDATED_TIME";
-  value: {
-    operator: "BEFORE" | "AFTER";
-    value: string;
-  };
-}
+type FilterType = "TEXT" | "TYPE" | "TAG" | "DISPLAY_TIME";
 
-type FilterType = "TEXT" | "TYPE" | "TAG" | "CREATED_TIME" | "UPDATED_TIME";
-
-type Filter = BaseFilter | TagFilter | TypeFilter | TextFilter | CreatedTimeFilter | UpdatedTimeFilter;
+type Filter = BaseFilter | TagFilter | TypeFilter | TextFilter | DisplayTimeFilter;

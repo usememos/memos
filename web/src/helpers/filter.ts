@@ -59,23 +59,9 @@ export const filterConsts = {
       },
     ],
   },
-  CREATED_TIME: {
-    text: "Created Time",
-    value: "CREATED_TIME",
-    operators: [
-      {
-        text: "filter.operator.before",
-        value: "BEFORE",
-      },
-      {
-        text: "filter.operator.after",
-        value: "AFTER",
-      },
-    ],
-  },
-  UPDATED_TIME: {
-    text: "Updated Time",
-    value: "UPDATED_TIME",
+  DISPLAY_TIME: {
+    text: "Display Time",
+    value: "DISPLAY_TIME",
     operators: [
       {
         text: "filter.operator.before",
@@ -181,17 +167,11 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
       }
       shouldShow = contained;
     }
-  } else if (type === "CREATED_TIME") {
+  } else if (type === "DISPLAY_TIME") {
     if (operator === "BEFORE") {
-      return memo.createdTs < dayjs(value).valueOf();
+      return memo.displayTs < dayjs(value).valueOf();
     } else {
-      return memo.createdTs > dayjs(value).valueOf();
-    }
-  } else if (type === "UPDATED_TIME") {
-    if (operator === "BEFORE") {
-      return memo.updatedTs < dayjs(value).valueOf();
-    } else {
-      return memo.updatedTs > dayjs(value).valueOf();
+      return memo.displayTs > dayjs(value).valueOf();
     }
   }
 
