@@ -22,7 +22,7 @@ func getUserIDContextKey() string {
 }
 
 func setUserSession(ctx echo.Context, user *api.User) error {
-	sess, _ := session.Get("session", ctx)
+	sess, _ := session.Get("memos_session", ctx)
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   3600 * 24 * 30,
@@ -37,7 +37,7 @@ func setUserSession(ctx echo.Context, user *api.User) error {
 }
 
 func removeUserSession(ctx echo.Context) error {
-	sess, _ := session.Get("session", ctx)
+	sess, _ := session.Get("memos_session", ctx)
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   0,
@@ -84,7 +84,7 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 		}
 
 		{
-			sess, _ := session.Get("session", c)
+			sess, _ := session.Get("memos_session", c)
 			userIDValue := sess.Values[userIDContextKey]
 			if userIDValue != nil {
 				userID, _ := strconv.Atoi(fmt.Sprintf("%v", userIDValue))
