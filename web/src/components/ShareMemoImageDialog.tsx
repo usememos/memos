@@ -8,6 +8,7 @@ import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MemoContent from "./MemoContent";
 import "../less/share-memo-image-dialog.less";
+import MemoResources from "./MemoResources";
 
 interface Props extends DialogProps {
   memo: Memo;
@@ -72,7 +73,10 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
         <div className="memo-container" ref={memoElRef}>
           {shortcutImgUrl !== "" && <img className="memo-shortcut-img" onClick={handleDownloadBtnClick} src={shortcutImgUrl} />}
           <span className="time-text">{memo.createdAtStr}</span>
-          <MemoContent className="memo-content-wrapper" content={memo.content} displayConfig={{ enableExpand: false }} />
+          <div className="memo-content-wrapper">
+            <MemoContent content={memo.content} displayConfig={{ enableExpand: false }} />
+            <MemoResources resourceList={memo.resourceList} />
+          </div>
           <div className="watermark-container">
             <span className="normal-text">
               <span className="icon-text">✍️</span> by <span className="name-text">{userinfo?.name}</span>

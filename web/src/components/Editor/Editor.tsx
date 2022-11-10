@@ -18,12 +18,13 @@ interface Props {
   fullscreen: boolean;
   tools?: ReactNode;
   onPaste: (event: React.ClipboardEvent) => void;
+  onFocus: () => void;
   onContentChange: (content: string) => void;
 }
 
 // eslint-disable-next-line react/display-name
 const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefActions>) => {
-  const { className, initialContent, placeholder, fullscreen, onPaste, onContentChange: handleContentChangeCallback } = props;
+  const { className, initialContent, placeholder, fullscreen, onPaste, onFocus, onContentChange: handleContentChangeCallback } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
   const refresh = useRefresh();
 
@@ -105,6 +106,7 @@ const Editor = forwardRef((props: Props, ref: React.ForwardedRef<EditorRefAction
         ref={editorRef}
         onPaste={onPaste}
         onInput={handleEditorInput}
+        onFocus={onFocus}
       ></textarea>
     </div>
   );

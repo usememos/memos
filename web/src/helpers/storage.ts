@@ -6,6 +6,8 @@ interface StorageData {
   editorContentCache: string;
   // Editing memo id cache
   editingMemoIdCache: MemoId;
+  // Editing memo visibility
+  editingMemoVisibilityCache: Visibility;
   // locale
   locale: Locale;
   // skipped version

@@ -1,7 +1,7 @@
 import { inlineElementParserList } from ".";
 import { marked } from "..";
 
-export const ORDERED_LIST_REG = /^(\d+)\. ([\S ]+)(\n?)/;
+export const ORDERED_LIST_REG = /^(\d+)\. (.+)(\n?)/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(ORDERED_LIST_REG);

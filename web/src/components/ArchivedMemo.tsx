@@ -67,7 +67,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
         </div>
       </div>
       <MemoContent content={memo.content} />
-      <MemoResources memo={memo} />
+      <MemoResources resourceList={memo.resourceList} />
     </div>
   );
 };
