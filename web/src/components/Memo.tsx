@@ -243,7 +243,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         onMemoContentClick={handleMemoContentClick}
         onMemoContentDoubleClick={handleMemoContentDoubleClick}
       />
-      <MemoResources memo={memo} />
+      <MemoResources resourceList={memo.resourceList} />
     </div>
   );
 };
