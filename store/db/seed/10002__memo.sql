@@ -40,9 +40,9 @@ INSERT INTO
 VALUES
   (
     1003,
-    "DevJoy is **the Developer's ChinaJoy**.
-![](https://www.devjoy.org/images/skateboard.webp)
-🌐 [devjoy.org](https://www.devjoy.org/)",
+    "**Bytebase** - Database CI/CD for DevOps teams.
+![](https://star-history.com/bytebase.webp)
+🌐 [https://bytebase.com](https://www.bytebase.com)",
     101,
     'PUBLIC'
   );
