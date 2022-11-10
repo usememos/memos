@@ -1,3 +1,4 @@
+/* eslint-disable no-irregular-whitespace */
 import { describe, expect, test } from "@jest/globals";
 import { unescape } from "lodash-es";
 import { marked } from ".";
@@ -164,6 +165,19 @@ text below the table
         want: `<p>| a | b | c |</p>
 <p>| 1 | 2 | 3 |</p>
 <p>| 4 | 5 | 6 |</p>`,
+      },
+    ];
+    for (const t of tests) {
+      expect(unescape(marked(t.markdown))).toBe(t.want);
+    }
+  });
+  test("parse full width space", () => {
+    const tests = [
+      {
+        markdown: `　　line1
+　　line2`,
+        want: `<p>　　line1</p>
+<p>　　line2</p>`,
       },
     ];
     for (const t of tests) {

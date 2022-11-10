@@ -1,6 +1,6 @@
 import { escape } from "lodash";
 
-export const BLOCKQUOTE_REG = /^>\s+([\S ]+)(\n?)/;
+export const BLOCKQUOTE_REG = /^>\s+(.+)(\n?)/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(BLOCKQUOTE_REG);

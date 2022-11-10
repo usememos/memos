@@ -2,7 +2,7 @@ import { escape } from "lodash-es";
 import { inlineElementParserList } from ".";
 import { marked } from "..";
 
-export const TODO_LIST_REG = /^- \[ \] ([\S ]+)(\n?)/;
+export const TODO_LIST_REG = /^- \[ \] (.+)(\n?)/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(TODO_LIST_REG);
