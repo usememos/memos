@@ -88,7 +88,7 @@ const Explore = () => {
                     </a>
                   </div>
                   <MemoContent className="memo-content" content={memo.content} onMemoContentClick={() => undefined} />
-                  <MemoResources memo={memo} />
+                  <MemoResources resourceList={memo.resourceList} />
                 </div>
               );
             })}

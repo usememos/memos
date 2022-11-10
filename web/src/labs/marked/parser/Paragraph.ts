@@ -1,7 +1,7 @@
 import { inlineElementParserList } from ".";
 import { marked } from "..";
 
-export const PARAGRAPH_REG = /^([\S ]*)(\n?)/;
+export const PARAGRAPH_REG = /^(.*)(\n?)/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(PARAGRAPH_REG);
