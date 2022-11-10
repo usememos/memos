@@ -1,7 +1,7 @@
 import { marked } from "..";
 import Link from "./Link";
 
-export const EMPHASIS_REG = /\*([\S ]+?)\*/;
+export const EMPHASIS_REG = /\*(.+?)\*/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(EMPHASIS_REG);

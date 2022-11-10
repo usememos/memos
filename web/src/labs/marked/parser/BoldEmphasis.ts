@@ -1,7 +1,7 @@
 import { marked } from "..";
 import Link from "./Link";
 
-export const BOLD_EMPHASIS_REG = /\*\*\*([\S ]+?)\*\*\*/;
+export const BOLD_EMPHASIS_REG = /\*\*\*(.+?)\*\*\*/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(BOLD_EMPHASIS_REG);
