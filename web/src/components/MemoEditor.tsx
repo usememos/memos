@@ -35,7 +35,7 @@ interface State {
   isUploadingResource: boolean;
   shouldShowEmojiPicker: boolean;
   resourceList: Resource[];
-  isFocus: boolean;
+  hasFocused: boolean;
 }
 
 const MemoEditor: React.FC = () => {
@@ -49,7 +49,7 @@ const MemoEditor: React.FC = () => {
     fullscreen: false,
     shouldShowEmojiPicker: false,
     resourceList: [],
-    isFocus: false,
+    hasFocused: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const prevGlobalStateRef = useRef(editorState);
@@ -393,7 +393,7 @@ const MemoEditor: React.FC = () => {
   const handleEditorFocus = () => {
     setState({
       ...state,
-      isFocus: true,
+      hasFocused: true,
     });
   };
 
@@ -410,7 +410,7 @@ const MemoEditor: React.FC = () => {
         </button>
       </div>
       <Editor ref={editorRef} {...editorConfig} onPaste={handlePasteEvent} onFocus={handleEditorFocus} />
-      <div className={`visibility-selector-container ${state.isFocus || allowSave ? "" : "!hidden"}`}>
+      <div className={`visibility-selector-container ${state.hasFocused || allowSave ? "" : "!hidden"}`}>
         <div className="memo-visibility-selector">
           <label className="form-label selector">
             <Selector
