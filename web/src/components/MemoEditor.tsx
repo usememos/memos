@@ -33,9 +33,9 @@ const setEditingMemoVisibilityCache = (visibility: Visibility) => {
 interface State {
   fullscreen: boolean;
   isUploadingResource: boolean;
-  shouldShowEmojiPicker: boolean;
   resourceList: Resource[];
-  hasFocused: boolean;
+  shouldShowEmojiPicker: boolean;
+  isEditorFocused: boolean;
 }
 
 const MemoEditor: React.FC = () => {
@@ -49,7 +49,7 @@ const MemoEditor: React.FC = () => {
     fullscreen: false,
     shouldShowEmojiPicker: false,
     resourceList: [],
-    hasFocused: false,
+    isEditorFocused: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const prevGlobalStateRef = useRef(editorState);
@@ -57,6 +57,12 @@ const MemoEditor: React.FC = () => {
   const tagSeletorRef = useRef<HTMLDivElement>(null);
   const editorFontStyle = user?.setting.editorFontStyle || "normal";
   const mobileEditorStyle = user?.setting.mobileEditorStyle || "normal";
+  const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
+    return {
+      value: item.value,
+      text: t(`memo.visibility.${toLower(item.value)}`),
+    };
+  });
 
   useEffect(() => {
     const { editingMemoIdCache, editingMemoVisibilityCache } = storage.get(["editingMemoIdCache", "editingMemoVisibilityCache"]);
@@ -364,6 +370,27 @@ const MemoEditor: React.FC = () => {
     }
   };
 
+  const handleMemoVisibilityOptionChanged = async (value: string) => {
+    const visibilityValue = value as Visibility;
+    editorStateService.setMemoVisibility(visibilityValue);
+    setEditingMemoVisibilityCache(visibilityValue);
+  };
+
+  const handleEditorFocus = () => {
+    editorRef.current?.focus();
+    setState({
+      ...state,
+      isEditorFocused: true,
+    });
+  };
+
+  const handleEditorBlur = () => {
+    setState({
+      ...state,
+      isEditorFocused: false,
+    });
+  };
+
   const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);
 
   const editorConfig = useMemo(
@@ -373,55 +400,35 @@ const MemoEditor: React.FC = () => {
       placeholder: t("editor.placeholder"),
       fullscreen: state.fullscreen,
       onContentChange: handleContentChange,
+      onPaste: handlePasteEvent,
     }),
     [state.fullscreen, i18n.language, editorFontStyle]
   );
 
-  const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
-    return {
-      value: item.value,
-      text: t(`memo.visibility.${toLower(item.value)}`),
-    };
-  });
-
-  const handleMemoVisibilityOptionChanged = async (value: string) => {
-    const visibilityValue = value as Visibility;
-    editorStateService.setMemoVisibility(visibilityValue);
-    setEditingMemoVisibilityCache(visibilityValue);
-  };
-
-  const handleEditorFocus = () => {
-    setState({
-      ...state,
-      hasFocused: true,
-    });
-  };
-
   return (
     <div
       className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
+      tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
+      onFocus={handleEditorFocus}
+      onBlur={handleEditorBlur}
     >
-      <div className={`tip-container ${isEditing ? "" : "!hidden"}`}>
-        <span className="tip-text">{t("editor.editing")}</span>
-        <button className="cancel-btn" onClick={handleCancelEdit}>
-          {t("common.cancel")}
-        </button>
-      </div>
-      <Editor ref={editorRef} {...editorConfig} onPaste={handlePasteEvent} onFocus={handleEditorFocus} />
-      <div className={`visibility-selector-container ${state.hasFocused || allowSave ? "" : "!hidden"}`}>
-        <div className="memo-visibility-selector">
-          <label className="form-label selector">
-            <Selector
-              className="w-36"
-              value={editorState.memoVisibility}
-              dataSource={memoVisibilityOptionSelectorItems}
-              handleValueChanged={handleMemoVisibilityOptionChanged}
-            />
-          </label>
+      <div className="editor-header-container">
+        <Selector
+          className={`visibility-selector ${state.isEditorFocused || allowSave ? "" : "!hidden"}`}
+          value={editorState.memoVisibility}
+          dataSource={memoVisibilityOptionSelectorItems}
+          handleValueChanged={handleMemoVisibilityOptionChanged}
+        />
+        <div className={`editing-container ${isEditing ? "" : "!hidden"}`}>
+          <span className="tip-text">{t("editor.editing")}</span>
+          <button className="cancel-btn" onClick={handleCancelEdit}>
+            {t("common.cancel")}
+          </button>
         </div>
       </div>
+      <Editor ref={editorRef} {...editorConfig} />
       <div className="common-tools-wrapper">
         <div className="common-tools-container">
           <div className="action-btn tag-action">
