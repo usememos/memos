@@ -33,6 +33,14 @@ interface TextFilter extends BaseFilter {
   };
 }
 
-type FilterType = "TEXT" | "TYPE" | "TAG";
+interface DisplayTimeFilter extends BaseFilter {
+  type: "DISPLAY_TIME";
+  value: {
+    operator: "BEFORE" | "AFTER";
+    value: string;
+  };
+}
 
-type Filter = BaseFilter | TagFilter | TypeFilter | TextFilter;
+type FilterType = "TEXT" | "TYPE" | "TAG" | "DISPLAY_TIME";
+
+type Filter = BaseFilter | TagFilter | TypeFilter | TextFilter | DisplayTimeFilter;

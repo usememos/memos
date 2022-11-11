@@ -8,6 +8,7 @@ import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import Selector from "./common/Selector";
 import "../less/create-shortcut-dialog.less";
+import dayjs from "dayjs";
 
 interface Props extends DialogProps {
   shortcutId?: ShortcutId;
@@ -176,8 +177,15 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
           return { text: t, value: t };
         });
 
+  const maxDatetimeValue = dayjs().format("9999-12-31T23:59");
+
   useEffect(() => {
-    setValue(filter.value.value);
+    if (type === "DISPLAY_TIME") {
+      const nowDatetimeValue = dayjs().format("YYYY-MM-DDTHH:mm");
+      handleValueChange(nowDatetimeValue);
+    } else {
+      setValue(filter.value.value);
+    }
   }, [type]);
 
   const handleRelationChange = (value: string) => {
@@ -259,6 +267,16 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
             handleValueChange(event.target.value);
           }}
           placeholder={t("filter.text-placeholder")}
+        />
+      ) : type === "DISPLAY_TIME" ? (
+        <input
+          className="datetime-selector"
+          type="datetime-local"
+          value={value}
+          max={maxDatetimeValue}
+          onChange={(event) => {
+            handleValueChange(event.target.value);
+          }}
         />
       ) : (
         <Selector className="value-selector" dataSource={valueDataSource} value={value} handleValueChanged={handleValueChange} />

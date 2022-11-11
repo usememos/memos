@@ -1,4 +1,5 @@
 import { TAG_REG, LINK_REG } from "../labs/marked/parser";
+import dayjs from "dayjs";
 
 export const relationConsts = [
   { text: "And", value: "AND" },
@@ -55,6 +56,20 @@ export const filterConsts = {
       {
         text: "filter.operator.not-contains",
         value: "NOT_CONTAIN",
+      },
+    ],
+  },
+  DISPLAY_TIME: {
+    text: "Display Time",
+    value: "DISPLAY_TIME",
+    operators: [
+      {
+        text: "filter.operator.before",
+        value: "BEFORE",
+      },
+      {
+        text: "filter.operator.after",
+        value: "AFTER",
       },
     ],
   },
@@ -151,6 +166,12 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
         contained = !contained;
       }
       shouldShow = contained;
+    }
+  } else if (type === "DISPLAY_TIME") {
+    if (operator === "BEFORE") {
+      return memo.displayTs < dayjs(value).valueOf();
+    } else {
+      return memo.displayTs > dayjs(value).valueOf();
     }
   }
 

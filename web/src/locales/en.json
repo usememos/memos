@@ -112,7 +112,9 @@
       "contains": "Contains",
       "not-contains": "Does not contain",
       "is": "Is",
-      "is-not": "Is Not"
+      "is-not": "Is Not",
+      "before": "Before",
+      "after": "After"
     },
     "value": {
       "not-tagged": "No tags",
