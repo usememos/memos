@@ -73,19 +73,24 @@
     }
 
     &.type-selector {
-      @apply w-20;
-    }
-
-    &.operator-selector {
       @apply w-24;
     }
 
+    &.operator-selector {
+      @apply w-20;
+    }
+
     &.value-selector {
-      flex-grow: 1;
+    @apply grow;
     }
   }
 
   > input.value-inputer {
+    max-width: calc(100% - 152px);
+    @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50;
+  }
+
+  > input.datetime-selector{
     max-width: calc(100% - 152px);
     @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50;
   }

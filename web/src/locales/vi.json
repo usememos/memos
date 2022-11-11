@@ -109,10 +109,12 @@
   "filter": {
     "new-filter": "Bộ lọc mới",
     "operator": {
-      "contains": "Contains",
-      "not-contains": "Does not contain",
-      "is": "Is",
-      "is-not": "Is Not"
+      "contains": "Chứa",
+      "not-contains": "Không chứa",
+      "is": "Là",
+      "is-not": "không phải",
+      "before": "Trước",
+      "after": "sau"
     },
     "value": {
       "not-tagged": "Không có thẻ",
