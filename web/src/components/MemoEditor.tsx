@@ -55,7 +55,6 @@ const MemoEditor: React.FC = () => {
   const prevGlobalStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
   const tagSeletorRef = useRef<HTMLDivElement>(null);
-  const editorFontStyle = user?.setting.editorFontStyle || "normal";
   const mobileEditorStyle = user?.setting.mobileEditorStyle || "normal";
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
@@ -395,14 +394,14 @@ const MemoEditor: React.FC = () => {
 
   const editorConfig = useMemo(
     () => ({
-      className: `memo-editor ${editorFontStyle}`,
+      className: `memo-editor`,
       initialContent: getEditorContentCache(),
       placeholder: t("editor.placeholder"),
       fullscreen: state.fullscreen,
       onContentChange: handleContentChange,
       onPaste: handlePasteEvent,
     }),
-    [state.fullscreen, i18n.language, editorFontStyle]
+    [state.fullscreen, i18n.language]
   );
 
   return (

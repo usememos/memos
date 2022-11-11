@@ -63,14 +63,8 @@ const UserBanner = () => {
   };
 
   const handleSignOutBtnClick = async () => {
-    userService
-      .doSignOut()
-      .then(() => {
-        navigate("/auth");
-      })
-      .catch(() => {
-        // do nth
-      });
+    userService.doSignOut().catch();
+    navigate("/auth");
   };
 
   return (

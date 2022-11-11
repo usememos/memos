@@ -6,5 +6,8 @@ type SystemStatus struct {
 	Host    *User            `json:"host"`
 	Profile *profile.Profile `json:"profile"`
 	// System settings
+	// Allow sign up.
 	AllowSignUp bool `json:"allowSignUp"`
+	// Additional style.
+	AdditionalStyle string `json:"additionalStyle"`
 }

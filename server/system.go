@@ -38,9 +38,10 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		}
 
 		systemStatus := api.SystemStatus{
-			Host:        hostUser,
-			Profile:     s.Profile,
-			AllowSignUp: false,
+			Host:            hostUser,
+			Profile:         s.Profile,
+			AllowSignUp:     false,
+			AdditionalStyle: "",
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -56,6 +57,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 
 			if systemSetting.Name == api.SystemSettingAllowSignUpName {
 				systemStatus.AllowSignUp = value.(bool)
+			} else if systemSetting.Name == api.SystemSettingAdditionalStyleName {
+				systemStatus.AdditionalStyle = value.(string)
 			}
 		}
 

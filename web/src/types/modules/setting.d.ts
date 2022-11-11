@@ -1,7 +1,6 @@
 interface Setting {
   locale: Locale;
   memoVisibility: Visibility;
-  editorFontStyle: "normal" | "mono";
   mobileEditorStyle: "normal" | "float";
   memoDisplayTsOption: "created_ts" | "updated_ts";
 }
@@ -16,12 +15,7 @@ interface UserMemoVisibilitySetting {
   value: Visibility;
 }
 
-interface UserEditorFontStyleSetting {
-  key: "editorFontStyle";
-  value: "normal" | "mono";
-}
-
-type UserSetting = UserLocaleSetting | UserMemoVisibilitySetting | UserEditorFontStyleSetting;
+type UserSetting = UserLocaleSetting | UserMemoVisibilitySetting;
 
 interface UserSettingUpsert {
   key: keyof Setting;

@@ -10,15 +10,16 @@ type SystemSettingName string
 const (
 	// SystemSettingAllowSignUpName is the key type of allow signup setting.
 	SystemSettingAllowSignUpName SystemSettingName = "allowSignUp"
-	SystemSettingPlaceholderName SystemSettingName = "placeholder"
+	// SystemSettingAdditionalStyleName is the key type of additional style.
+	SystemSettingAdditionalStyleName SystemSettingName = "additionalStyle"
 )
 
 func (key SystemSettingName) String() string {
 	switch key {
 	case SystemSettingAllowSignUpName:
 		return "allowSignUp"
-	case SystemSettingPlaceholderName:
-		return "placeholder"
+	case SystemSettingAdditionalStyleName:
+		return "additionalStyle"
 	}
 	return ""
 }
@@ -57,6 +58,12 @@ func (upsert SystemSettingUpsert) Validate() error {
 		}
 		if invalid {
 			return fmt.Errorf("invalid system setting allow signup value")
+		}
+	} else if upsert.Name == SystemSettingAdditionalStyleName {
+		value := ""
+		err := json.Unmarshal([]byte(upsert.Value), &value)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal system setting additional style value")
 		}
 	} else {
 		return fmt.Errorf("invalid system setting name")
