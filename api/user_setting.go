@@ -12,9 +12,7 @@ const (
 	UserSettingLocaleKey UserSettingKey = "locale"
 	// UserSettingMemoVisibilityKey is the key type for user preference memo default visibility.
 	UserSettingMemoVisibilityKey UserSettingKey = "memoVisibility"
-	// UserSettingEditorFontStyleKey is the key type for editor font style.
-	UserSettingEditorFontStyleKey UserSettingKey = "editorFontStyle"
-	// UserSettingEditorFontStyleKey is the key type for mobile editor style.
+	// UserSettingMobileEditorStyleKey is the key type for mobile editor style.
 	UserSettingMobileEditorStyleKey UserSettingKey = "mobileEditorStyle"
 	// UserSettingMemoDisplayTsOptionKey is the key type for memo display ts option.
 	UserSettingMemoDisplayTsOptionKey UserSettingKey = "memoDisplayTsOption"
@@ -27,8 +25,6 @@ func (key UserSettingKey) String() string {
 		return "locale"
 	case UserSettingMemoVisibilityKey:
 		return "memoVisibility"
-	case UserSettingEditorFontStyleKey:
-		return "editorFontFamily"
 	case UserSettingMobileEditorStyleKey:
 		return "mobileEditorStyle"
 	case UserSettingMemoDisplayTsOptionKey:
@@ -92,23 +88,6 @@ func (upsert UserSettingUpsert) Validate() error {
 		}
 		if invalid {
 			return fmt.Errorf("invalid user setting memo visibility value")
-		}
-	} else if upsert.Key == UserSettingEditorFontStyleKey {
-		editorFontStyleValue := "normal"
-		err := json.Unmarshal([]byte(upsert.Value), &editorFontStyleValue)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting editor font style")
-		}
-
-		invalid := true
-		for _, value := range UserSettingEditorFontStyleValue {
-			if editorFontStyleValue == value {
-				invalid = false
-				break
-			}
-		}
-		if invalid {
-			return fmt.Errorf("invalid user setting editor font style value")
 		}
 	} else if upsert.Key == UserSettingMobileEditorStyleKey {
 		mobileEditorStyleValue := "normal"

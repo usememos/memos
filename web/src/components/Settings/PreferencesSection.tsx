@@ -20,17 +20,6 @@ const localeSelectorItems = [
   },
 ];
 
-const editorFontStyleSelectorItems = [
-  {
-    text: "Normal",
-    value: "normal",
-  },
-  {
-    text: "Mono",
-    value: "mono",
-  },
-];
-
 const mobileEditorStyleSelectorItems = [
   {
     text: "Normal",
@@ -68,10 +57,6 @@ const PreferencesSection = () => {
     await userService.upsertUserSetting("memoVisibility", value);
   };
 
-  const handleEditorFontStyleChanged = async (value: string) => {
-    await userService.upsertUserSetting("editorFontStyle", value);
-  };
-
   const handleMobileEditorStyleChanged = async (value: string) => {
     await userService.upsertUserSetting("mobileEditorStyle", value);
   };
@@ -95,15 +80,6 @@ const PreferencesSection = () => {
           value={setting.memoVisibility}
           dataSource={visibilitySelectorItems}
           handleValueChanged={handleDefaultMemoVisibilityChanged}
-        />
-      </label>
-      <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.editor-font-style")}</span>
-        <Selector
-          className="ml-2 w-32"
-          value={setting.editorFontStyle}
-          dataSource={editorFontStyleSelectorItems}
-          handleValueChanged={handleEditorFontStyleChanged}
         />
       </label>
       <label className="form-label selector">
