@@ -5,6 +5,7 @@ import { RouterProvider } from "react-router-dom";
 import { globalService, locationService } from "./services";
 import { useAppSelector } from "./store";
 import router from "./router";
+import * as api from "./helpers/api";
 import * as storage from "./helpers/storage";
 
 function App() {
@@ -18,6 +19,18 @@ function App() {
     };
 
     globalService.initialState();
+  }, []);
+
+  useEffect(() => {
+    api.getSystemStatus().then(({ data }) => {
+      const { data: status } = data;
+      if (status.additionalStyle) {
+        const styleEl = document.createElement("style");
+        styleEl.innerHTML = status.additionalStyle;
+        styleEl.setAttribute("type", "text/css");
+        document.head.appendChild(styleEl);
+      }
+    });
   }, []);
 
   useEffect(() => {

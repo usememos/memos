@@ -8,6 +8,7 @@ interface SystemStatus {
   profile: Profile;
   // System settings
   allowSignUp: boolean;
+  additionalStyle: string;
 }
 
 interface SystemSetting {
