@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var tagRegexpList = []*regexp.Regexp{regexp.MustCompile(`^#([^\s#]+?) `), regexp.MustCompile(`\s#([^\s#]+?) `)}
+var tagRegexpList = []*regexp.Regexp{regexp.MustCompile(`^#([^\s#]+?) `), regexp.MustCompile(`[^\S#]?#([^\s#]+?) `)}
 
 func (s *Server) registerTagRoutes(g *echo.Group) {
 	g.GET("/tag", func(c echo.Context) error {
@@ -47,22 +47,10 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}
 
-		tagMapSet := make(map[string]bool)
-
-		for _, memo := range memoList {
-			for _, tagRegexp := range tagRegexpList {
-				for _, rawTag := range tagRegexp.FindAllString(memo.Content, -1) {
-					tag := tagRegexp.ReplaceAllString(rawTag, "$1")
-					tagMapSet[tag] = true
-				}
-			}
-		}
-
 		tagList := []string{}
-		for tag := range tagMapSet {
-			tagList = append(tagList, tag)
+		for _, memo := range memoList {
+			tagList = append(tagList, findTagListFromMemoContent(memo.Content)...)
 		}
-
 		sort.Strings(tagList)
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
@@ -71,4 +59,21 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		}
 		return nil
 	})
+}
+
+func findTagListFromMemoContent(memoContent string) []string {
+	tagMapSet := make(map[string]bool)
+	for _, tagRegexp := range tagRegexpList {
+		for _, rawTag := range tagRegexp.FindAllString(memoContent, -1) {
+			tag := tagRegexp.ReplaceAllString(rawTag, "$1")
+			tagMapSet[tag] = true
+		}
+	}
+
+	tagList := []string{}
+	for tag := range tagMapSet {
+		tagList = append(tagList, tag)
+	}
+	sort.Strings(tagList)
+	return tagList
 }
