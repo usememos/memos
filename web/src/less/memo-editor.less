@@ -1,7 +1,7 @@
 @import "./mixin.less";
 
 .memo-editor-container {
-  @apply transition-all relative w-full flex flex-col justify-start items-start bg-white p-4 pt-3 rounded-lg border-2 border-gray-200;
+  @apply transition-all relative w-full flex flex-col justify-start items-start bg-white px-4 rounded-lg border-2 border-gray-200;
 
   &.fullscreen {
     @apply fixed w-full h-full top-0 left-0 z-1000 border-none rounded-none sm:p-8;
@@ -31,7 +31,7 @@
   }
 
   > .editor-header-container {
-    @apply w-full flex flex-row justify-between items-center mb-1;
+    @apply w-full flex flex-row justify-between items-center mt-3 mb-1;
 
     > .editing-container {
       @apply flex flex-row justify-start items-center text-xs;
@@ -121,16 +121,16 @@
   }
 
   > .editor-footer-container {
-    @apply w-full flex flex-row justify-between items-center border-t pt-2 mt-2;
+    @apply w-full flex flex-row justify-between items-center border-t py-3 mt-2;
 
     > .visibility-selector {
-      @apply h-7;
+      @apply h-8;
 
       > .current-value-container {
         @apply rounded-full;
 
         > .value-text {
-          @apply text-xs w-full;
+          @apply text-sm w-full;
         }
       }
     }
