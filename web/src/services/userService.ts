@@ -7,7 +7,6 @@ import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
 const defauleSetting: Setting = {
   locale: "en",
   memoVisibility: "PRIVATE",
-  mobileEditorStyle: "normal",
   memoDisplayTsOption: "created_ts",
 };
 

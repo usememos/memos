@@ -1,7 +1,6 @@
 interface Setting {
   locale: Locale;
   memoVisibility: Visibility;
-  mobileEditorStyle: "normal" | "float";
   memoDisplayTsOption: "created_ts" | "updated_ts";
 }
 
