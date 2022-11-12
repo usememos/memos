@@ -31,7 +31,7 @@ func TestFindTagListFromMemoContent(t *testing.T) {
 		},
 	}
 	for _, test := range tests {
-		result := findTagListFromMemoContent(test.memoContent)
+		result := findTagSetFromMemoContent(test.memoContent)
 		if len(result) != len(test.want) {
 			t.Errorf("Find tag list %s: got result %v, want %v.", test.memoContent, result, test.want)
 		}
