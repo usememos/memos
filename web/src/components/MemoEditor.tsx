@@ -35,10 +35,9 @@ interface State {
   isUploadingResource: boolean;
   resourceList: Resource[];
   shouldShowEmojiPicker: boolean;
-  isEditorFocused: boolean;
 }
 
-const MemoEditor: React.FC = () => {
+const MemoEditor = () => {
   const { t, i18n } = useTranslation();
   const user = useAppSelector((state) => state.user.user as User);
   const setting = user.setting;
@@ -49,13 +48,11 @@ const MemoEditor: React.FC = () => {
     fullscreen: false,
     shouldShowEmojiPicker: false,
     resourceList: [],
-    isEditorFocused: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const prevGlobalStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
   const tagSeletorRef = useRef<HTMLDivElement>(null);
-  const mobileEditorStyle = user?.setting.mobileEditorStyle || "normal";
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
@@ -155,9 +152,11 @@ const MemoEditor: React.FC = () => {
           }
         }
       }
-      setState({
-        ...state,
-        resourceList: [...state.resourceList, ...resourceList],
+      setState((state) => {
+        return {
+          ...state,
+          resourceList: [...state.resourceList, ...resourceList],
+        };
       });
     }
   };
@@ -168,18 +167,22 @@ const MemoEditor: React.FC = () => {
       const file = event.clipboardData.files[0];
       const resource = await handleUploadResource(file);
       if (resource) {
-        setState({
-          ...state,
-          resourceList: [...state.resourceList, resource],
+        setState((state) => {
+          return {
+            ...state,
+            resourceList: [...state.resourceList, resource],
+          };
         });
       }
     }
   };
 
   const handleUploadResource = async (file: File) => {
-    setState({
-      ...state,
-      isUploadingResource: true,
+    setState((state) => {
+      return {
+        ...state,
+        isUploadingResource: true,
+      };
     });
 
     let resource = undefined;
@@ -191,9 +194,11 @@ const MemoEditor: React.FC = () => {
       toastHelper.error(error.response.data.message);
     }
 
-    setState({
-      ...state,
-      isUploadingResource: false,
+    setState((state) => {
+      return {
+        ...state,
+        isUploadingResource: false,
+      };
     });
     return resource;
   };
@@ -232,10 +237,12 @@ const MemoEditor: React.FC = () => {
       toastHelper.error(error.response.data.message);
     }
 
-    setState({
-      ...state,
-      fullscreen: false,
-      resourceList: [],
+    setState((state) => {
+      return {
+        ...state,
+        fullscreen: false,
+        resourceList: [],
+      };
     });
     setEditorContentCache("");
     storage.remove(["editingMemoVisibilityCache"]);
@@ -314,9 +321,11 @@ const MemoEditor: React.FC = () => {
           }
         }
       }
-      setState({
-        ...state,
-        resourceList: [...state.resourceList, ...resourceList],
+      setState((state) => {
+        return {
+          ...state,
+          resourceList: [...state.resourceList, ...resourceList],
+        };
       });
       document.body.removeChild(inputEl);
     };
@@ -324,9 +333,11 @@ const MemoEditor: React.FC = () => {
   };
 
   const handleFullscreenBtnClick = () => {
-    setState({
-      ...state,
-      fullscreen: !state.fullscreen,
+    setState((state) => {
+      return {
+        ...state,
+        fullscreen: !state.fullscreen,
+      };
     });
   };
 
@@ -354,9 +365,11 @@ const MemoEditor: React.FC = () => {
   };
 
   const handleDeleteResource = async (resourceId: ResourceId) => {
-    setState({
-      ...state,
-      resourceList: state.resourceList.filter((resource) => resource.id !== resourceId),
+    setState((state) => {
+      return {
+        ...state,
+        resourceList: state.resourceList.filter((resource) => resource.id !== resourceId),
+      };
     });
 
     if (editorState.editMemoId) {
@@ -372,17 +385,10 @@ const MemoEditor: React.FC = () => {
 
   const handleEditorFocus = () => {
     editorRef.current?.focus();
-    setState({
-      ...state,
-      isEditorFocused: true,
-    });
   };
 
   const handleEditorBlur = () => {
-    setState({
-      ...state,
-      isEditorFocused: false,
-    });
+    // do nth
   };
 
   const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);
@@ -401,7 +407,7 @@ const MemoEditor: React.FC = () => {
 
   return (
     <div
-      className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
+      className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
@@ -409,12 +415,6 @@ const MemoEditor: React.FC = () => {
       onBlur={handleEditorBlur}
     >
       <div className="editor-header-container">
-        <Selector
-          className={`visibility-selector ${state.isEditorFocused || allowSave ? "" : "!hidden"}`}
-          value={editorState.memoVisibility}
-          dataSource={memoVisibilityOptionSelectorItems}
-          handleValueChanged={handleMemoVisibilityOptionChanged}
-        />
         <div className={`editing-container ${isEditing ? "" : "!hidden"}`}>
           <span className="tip-text">{t("editor.editing")}</span>
           <button className="cancel-btn" onClick={handleCancelEdit}>
@@ -465,12 +465,6 @@ const MemoEditor: React.FC = () => {
             onShouldShowEmojiPickerChange={handleChangeShouldShowEmojiPicker}
           />
         </div>
-        <div className="btns-container">
-          <button className="action-btn confirm-btn" disabled={!allowSave || state.isUploadingResource} onClick={handleSaveBtnClick}>
-            {t("editor.save")}
-            <img className="icon-img" src="/logo.webp" />
-          </button>
-        </div>
       </div>
       {state.resourceList.length > 0 && (
         <div className="resource-list-wrapper">
@@ -485,6 +479,20 @@ const MemoEditor: React.FC = () => {
           })}
         </div>
       )}
+      <div className="editor-footer-container">
+        <Selector
+          className={`visibility-selector`}
+          value={editorState.memoVisibility}
+          dataSource={memoVisibilityOptionSelectorItems}
+          handleValueChanged={handleMemoVisibilityOptionChanged}
+        />
+        <div className="buttons-container">
+          <button className="action-btn confirm-btn" disabled={!allowSave || state.isUploadingResource} onClick={handleSaveBtnClick}>
+            {t("editor.save")}
+            <img className="icon-img w-4 h-auto" src="/logo.webp" />
+          </button>
+        </div>
+      </div>
     </div>
   );
 };

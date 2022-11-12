@@ -20,17 +20,6 @@ const localeSelectorItems = [
   },
 ];
 
-const mobileEditorStyleSelectorItems = [
-  {
-    text: "Normal",
-    value: "normal",
-  },
-  {
-    text: "Float",
-    value: "float",
-  },
-];
-
 const PreferencesSection = () => {
   const { t } = useTranslation();
   const { setting } = useAppSelector((state) => state.user.user as User);
@@ -57,10 +46,6 @@ const PreferencesSection = () => {
     await userService.upsertUserSetting("memoVisibility", value);
   };
 
-  const handleMobileEditorStyleChanged = async (value: string) => {
-    await userService.upsertUserSetting("mobileEditorStyle", value);
-  };
-
   const handleMemoDisplayTsOptionChanged = async (value: string) => {
     await userService.upsertUserSetting("memoDisplayTsOption", value);
   };
@@ -80,15 +65,6 @@ const PreferencesSection = () => {
           value={setting.memoVisibility}
           dataSource={visibilitySelectorItems}
           handleValueChanged={handleDefaultMemoVisibilityChanged}
-        />
-      </label>
-      <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.mobile-editor-style")}</span>
-        <Selector
-          className="ml-2 w-32"
-          value={setting.mobileEditorStyle}
-          dataSource={mobileEditorStyleSelectorItems}
-          handleValueChanged={handleMobileEditorStyleChanged}
         />
       </label>
       <label className="form-label selector">
