@@ -19,7 +19,7 @@ type MetricCollector struct {
 }
 
 const (
-	segmentMetricWriteKey = "FqYUl1CmssHytFSnnVd0efV4gyGeH0dx"
+	segmentMetricWriteKey = "fTn5BumOkj352n3TGw9tu0ARH2dOkcoQ"
 )
 
 func NewMetricCollector(profile *profile.Profile, store *store.Store) MetricCollector {
