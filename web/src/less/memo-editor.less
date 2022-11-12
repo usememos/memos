@@ -1,7 +1,7 @@
 @import "./mixin.less";
 
 .memo-editor-container {
-  @apply transition-all relative w-full flex flex-col justify-start items-start bg-white p-4 rounded-lg border-2 border-gray-200;
+  @apply transition-all relative w-full flex flex-col justify-start items-start bg-white p-4 pt-3 rounded-lg border-2 border-gray-200;
 
   &.float {
     @media (max-width: 640px) {
@@ -47,26 +47,14 @@
   }
 
   &.edit-ing {
-    border-color: @text-blue;
+    @apply border-blue-500;
   }
 
   > .editor-header-container {
-    @apply w-full flex flex-row justify-between items-center;
-
-    > .visibility-selector {
-      @apply h-7;
-
-      > .current-value-container {
-        @apply rounded-full;
-
-        > .value-text {
-          @apply text-xs w-full;
-        }
-      }
-    }
+    @apply w-full flex flex-row justify-between items-center mb-1;
 
     > .editing-container {
-      @apply mb-1 flex flex-row justify-start items-center text-xs leading-6;
+      @apply flex flex-row justify-start items-center text-xs;
 
       > .tip-text {
         @apply text-gray-400 mr-2;
@@ -130,33 +118,13 @@
         }
       }
     }
-
-    > .btns-container {
-      @apply grow-0 shrink-0 flex flex-row justify-end items-center;
-
-      > .action-btn {
-        @apply border-none select-none cursor-pointer py-1 px-3 rounded text-sm hover:opacity-80;
-      }
-
-      > .cancel-btn {
-        @apply text-gray-500 bg-transparent mr-2;
-      }
-
-      > .confirm-btn {
-        @apply flex flex-row justify-center items-center shadow cursor-pointer px-3 py-0 leading-8 bg-green-600 text-white text-sm hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60;
-
-        > .icon-img {
-          @apply ml-1 w-6 h-auto;
-        }
-      }
-    }
   }
 
   > .resource-list-wrapper {
     @apply w-full flex flex-row justify-start flex-wrap;
 
     > .resource-container {
-      @apply mt-1 mr-1 flex flex-row justify-start items-center flex-nowrap bg-gray-50 px-2 py-1 rounded cursor-pointer hover:bg-gray-100;
+      @apply mt-1 mr-1 flex flex-row justify-start items-center flex-nowrap bg-gray-100 px-2 py-1 rounded cursor-pointer hover:bg-gray-200;
 
       > .icon-img {
         @apply w-4 h-auto mr-1 text-gray-500;
@@ -168,6 +136,34 @@
 
       > .close-icon {
         @apply w-4 h-auto ml-1 text-gray-500 hover:text-gray-800;
+      }
+    }
+  }
+
+  > .editor-footer-container {
+    @apply w-full flex flex-row justify-between items-center border-t pt-2 mt-2;
+
+    > .visibility-selector {
+      @apply h-7;
+
+      > .current-value-container {
+        @apply rounded-full;
+
+        > .value-text {
+          @apply text-xs w-full;
+        }
+      }
+    }
+
+    > .buttons-container {
+      @apply grow-0 shrink-0 flex flex-row justify-end items-center;
+
+      > .confirm-btn {
+        @apply border-none select-none rounded flex flex-row justify-center items-center shadow cursor-pointer px-3 py-0 leading-8 bg-green-600 text-white text-sm hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60;
+
+        > .icon-img {
+          @apply ml-1 w-6 h-auto;
+        }
       }
     }
   }
