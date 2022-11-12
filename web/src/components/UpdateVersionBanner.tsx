@@ -32,7 +32,7 @@ const UpdateVersionBanner: React.FC = () => {
           const skipped = skippedVersion ? skippedVersion === latestVersion : false;
           setState({
             latestVersion,
-            show: !skipped && currentVersion !== latestVersion,
+            show: !skipped && currentVersion < latestVersion,
           });
         }
       )
