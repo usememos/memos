@@ -3,26 +3,6 @@
 .memo-editor-container {
   @apply transition-all relative w-full flex flex-col justify-start items-start bg-white p-4 pt-3 rounded-lg border-2 border-gray-200;
 
-  &.float {
-    @media (max-width: 640px) {
-      @apply fixed w-full bottom-0 left-0 border-none rounded-none;
-      background-color: #f6f5f4;
-
-      > .memo-editor {
-        @apply p-4 mb-2 rounded-lg border-2 flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white;
-      }
-
-      .tag-action > .tag-list {
-        @apply bottom-7;
-        top: unset !important;
-      }
-      .emoji-picker-react {
-        @apply !bottom-8;
-        top: unset !important;
-      }
-    }
-  }
-
   &.fullscreen {
     @apply fixed w-full h-full top-0 left-0 z-1000 border-none rounded-none sm:p-8;
     background-color: #f6f5f4;

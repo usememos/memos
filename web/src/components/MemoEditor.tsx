@@ -53,7 +53,6 @@ const MemoEditor = () => {
   const prevGlobalStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
   const tagSeletorRef = useRef<HTMLDivElement>(null);
-  const mobileEditorStyle = user?.setting.mobileEditorStyle || "normal";
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
@@ -408,7 +407,7 @@ const MemoEditor = () => {
 
   return (
     <div
-      className={`memo-editor-container ${mobileEditorStyle} ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
+      className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
