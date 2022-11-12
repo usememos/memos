@@ -47,9 +47,15 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}
 
-		tagList := []string{}
+		tagMapSet := make(map[string]bool)
 		for _, memo := range memoList {
-			tagList = append(tagList, findTagListFromMemoContent(memo.Content)...)
+			for _, tag := range findTagListFromMemoContent(memo.Content) {
+				tagMapSet[tag] = true
+			}
+		}
+		tagList := []string{}
+		for tag := range tagMapSet {
+			tagList = append(tagList, tag)
 		}
 		sort.Strings(tagList)
 
