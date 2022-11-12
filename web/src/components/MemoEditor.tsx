@@ -40,8 +40,8 @@ interface State {
 
 const MemoEditor: React.FC = () => {
   const { t, i18n } = useTranslation();
-  const user = useAppSelector((state) => state.user.user);
-  const { setting } = useAppSelector((state) => state.user.user as User);
+  const user = useAppSelector((state) => state.user.user as User);
+  const setting = user.setting;
   const editorState = useAppSelector((state) => state.editor);
   const tags = useAppSelector((state) => state.memo.tags);
   const [state, setState] = useState<State>({
@@ -85,33 +85,29 @@ const MemoEditor: React.FC = () => {
   }, [editorState.markMemoId]);
 
   useEffect(() => {
-    if (
-      editorState.editMemoId &&
-      editorState.editMemoId !== UNKNOWN_ID &&
-      editorState.editMemoId !== prevGlobalStateRef.current.editMemoId
-    ) {
+    if (editorState.editMemoId) {
       memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
         if (memo) {
-          setState({
-            ...state,
-            resourceList: memo.resourceList,
-          });
+          handleEditorFocus();
           editorStateService.setMemoVisibility(memo.visibility);
           editorRef.current?.setContent(memo.content ?? "");
-          editorRef.current?.focus();
+          setState((state) => {
+            return {
+              ...state,
+              resourceList: memo.resourceList,
+            };
+          });
         }
       });
-    }
-
-    prevGlobalStateRef.current = editorState;
-    if (editorState.editMemoId) {
       storage.set({
         editingMemoIdCache: editorState.editMemoId,
       });
     } else {
       storage.remove(["editingMemoIdCache"]);
     }
-  }, [state, editorState.editMemoId]);
+
+    prevGlobalStateRef.current = editorState;
+  }, [editorState.editMemoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Escape" && state.fullscreen) {
@@ -241,7 +237,6 @@ const MemoEditor: React.FC = () => {
       fullscreen: false,
       resourceList: [],
     });
-    editorStateService.setMemoVisibility(setting.memoVisibility);
     setEditorContentCache("");
     storage.remove(["editingMemoVisibilityCache"]);
     editorRef.current?.setContent("");
@@ -338,7 +333,7 @@ const MemoEditor: React.FC = () => {
   const handleTagSeletorClick = useCallback((event: React.MouseEvent) => {
     if (tagSeletorRef.current !== event.target && tagSeletorRef.current?.contains(event.target as Node)) {
       editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
-      editorRef.current?.focus();
+      handleEditorFocus();
     }
   }, []);
 

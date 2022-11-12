@@ -9,7 +9,11 @@
   }
 
   > .filter-item-container {
-    @apply px-2 mr-2 cursor-pointer bg-gray-200 rounded whitespace-nowrap truncate hover:line-through;
+    @apply flex flex-row justify-start items-center px-2 mr-2 cursor-pointer bg-gray-200 rounded whitespace-nowrap truncate hover:line-through;
     max-width: 256px;
+
+    > .icon-text {
+      @apply w-4 h-auto mr-1 text-gray-500;
+    }
   }
 }
