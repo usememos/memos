@@ -1,4 +1,5 @@
 import { IEmojiData } from "emoji-picker-react";
+import { toLower } from "lodash";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
@@ -11,7 +12,7 @@ import toastHelper from "./Toast";
 import Selector from "./common/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import EmojiPicker from "./Editor/EmojiPicker";
-import { toLower } from "lodash";
+import ResourceIcon from "./ResourceIcon";
 import "../less/memo-editor.less";
 
 const getEditorContentCache = (): string => {
@@ -471,7 +472,7 @@ const MemoEditor = () => {
           {state.resourceList.map((resource) => {
             return (
               <div key={resource.id} className="resource-container">
-                {resource.type.includes("image") ? <Icon.Image className="icon-img" /> : <Icon.FileText className="icon-img" />}
+                <ResourceIcon resourceType="resource.type" className="icon-img" />
                 <span className="name-text">{resource.filename}</span>
                 <Icon.X className="close-icon" onClick={() => handleDeleteResource(resource.id)} />
               </div>

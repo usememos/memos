@@ -63,7 +63,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
 
         editorRef.current.value = value;
         editorRef.current.focus();
-        editorRef.current.selectionEnd = endPosition + prefix.length + suffix.length + content.length;
+        editorRef.current.selectionEnd = endPosition + prefix.length + content.length;
         handleContentChangeCallback(editorRef.current.value);
         refresh();
       },

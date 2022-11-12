@@ -1,5 +1,3 @@
-@import "../mixin.less";
-
 .account-section-container {
   > .form-label {
     min-height: 28px;
@@ -50,8 +48,7 @@
   }
 
   > .usage-guide-container {
-    .flex(column, flex-start, flex-start);
-    @apply mt-2 w-full;
+    @apply flex flex-col justify-start items-start mt-2 w-full;
 
     > .title-text {
       @apply my-2 text-sm;
