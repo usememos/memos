@@ -68,8 +68,10 @@ const SystemSection = () => {
         className="w-full"
         sx={{
           fontFamily: "monospace",
+          fontSize: "14px",
         }}
         minRows={5}
+        maxRows={10}
         defaultValue={state.additionalStyle}
         onChange={(event) => handleAdditionalStyleChanged(event.target.value)}
       />

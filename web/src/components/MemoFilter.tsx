@@ -3,6 +3,7 @@ import { useAppSelector } from "../store";
 import { locationService, shortcutService } from "../services";
 import * as utils from "../helpers/utils";
 import { getTextWithMemoType } from "../helpers/filter";
+import Icon from "./Icon";
 import "../less/memo-filter.less";
 
 const MemoFilter = () => {
@@ -16,28 +17,28 @@ const MemoFilter = () => {
     <div className={`filter-query-container ${showFilter ? "" : "!hidden"}`}>
       <span className="tip-text">{t("common.filter")}:</span>
       <div
-        className={"filter-item-container " + (shortcut ? "" : "hidden")}
+        className={"filter-item-container " + (shortcut ? "" : "!hidden")}
         onClick={() => {
           locationService.setMemoShortcut(undefined);
         }}
       >
-        <span className="icon-text">🎯</span> {shortcut?.title}
+        <Icon.Target className="icon-text" /> {shortcut?.title}
       </div>
       <div
-        className={"filter-item-container " + (tagQuery ? "" : "hidden")}
+        className={"filter-item-container " + (tagQuery ? "" : "!hidden")}
         onClick={() => {
           locationService.setTagQuery(undefined);
         }}
       >
-        <span className="icon-text">🏷️</span> {tagQuery}
+        <Icon.Tag className="icon-text" /> {tagQuery}
       </div>
       <div
-        className={"filter-item-container " + (memoType ? "" : "hidden")}
+        className={"filter-item-container " + (memoType ? "" : "!hidden")}
         onClick={() => {
           locationService.setMemoTypeQuery(undefined);
         }}
       >
-        <span className="icon-text">📦</span> {t(getTextWithMemoType(memoType as MemoSpecType))}
+        <Icon.Box className="icon-text" /> {t(getTextWithMemoType(memoType as MemoSpecType))}
       </div>
       {duration && duration.from < duration.to ? (
         <div
@@ -46,16 +47,16 @@ const MemoFilter = () => {
             locationService.setFromAndToQuery();
           }}
         >
-          <span className="icon-text">🗓️</span> {utils.getDateString(duration.from)} to {utils.getDateString(duration.to)}
+          <Icon.Calendar className="icon-text" /> {utils.getDateString(duration.from)} to {utils.getDateString(duration.to)}
         </div>
       ) : null}
       <div
-        className={"filter-item-container " + (textQuery ? "" : "hidden")}
+        className={"filter-item-container " + (textQuery ? "" : "!hidden")}
         onClick={() => {
           locationService.setTextQuery("");
         }}
       >
-        <span className="icon-text">🔍</span> {textQuery}
+        <Icon.Search className="icon-text" /> {textQuery}
       </div>
     </div>
   );

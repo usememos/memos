@@ -3,7 +3,6 @@ import store from "../store";
 import { setQuery, setPathname, Query, updateStateWithLocation } from "../store/modules/location";
 
 const updateLocationUrl = (method: "replace" | "push" = "replace") => {
-  store.dispatch(updateStateWithLocation());
   const { query, pathname, hash } = store.getState().location;
   let queryString = stringify(query);
   if (queryString) {
@@ -17,6 +16,7 @@ const updateLocationUrl = (method: "replace" | "push" = "replace") => {
   } else {
     window.history.pushState(null, "", pathname + hash + queryString);
   }
+  store.dispatch(updateStateWithLocation());
 };
 
 const locationService = {
