@@ -1,5 +1,3 @@
-@import "../mixin.less";
-
 .date-picker-wrapper {
   @apply flex flex-col justify-start items-start p-4;
 
@@ -16,16 +14,15 @@
   }
 
   > .date-picker-day-container {
-    .flex(row, flex-start, flex-start);
+    @apply flex flex-row justify-start items-start;
     width: 280px;
     flex-wrap: wrap;
 
     > .date-picker-day-header {
-      .flex(row, space-around, center);
-      width: 100%;
+      @apply flex flex-row justify-around items-center w-full;
 
       > .day-item {
-        .flex(column, center, center);
+        @apply flex flex-col justify-center items-center;
         width: 36px;
         height: 36px;
         user-select: none;
@@ -36,7 +33,7 @@
     }
 
     > .day-item {
-      .flex(column, center, center);
+      @apply flex flex-col justify-center items-center;
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -46,14 +43,11 @@
       margin: 2px;
 
       &:hover {
-        background-color: @bg-whitegray;
+        @apply bg-gray-100;
       }
 
       &.current {
-        background-color: @bg-light-blue;
-        font-size: 16px;
-        color: @text-blue;
-        font-weight: bold;
+        @apply text-blue-600 bg-blue-100 text-base font-medium;
       }
 
       &.null {
