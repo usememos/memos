@@ -46,7 +46,7 @@ const MemoFilter = () => {
           locationService.setMemoVisibilityQuery(undefined);
         }}
       >
-        <Icon.Globe className="icon-text" /> {visibility}
+        <Icon.Eye className="icon-text" /> {visibility}
       </div>
       {duration && duration.from < duration.to ? (
         <div
