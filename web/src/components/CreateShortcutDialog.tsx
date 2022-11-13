@@ -173,6 +173,8 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
   const valueDataSource =
     type === "TYPE"
       ? filterConsts["TYPE"].values.map(({ text, value }) => ({ text: t(text), value }))
+      : type === "VISIBILITY"
+      ? filterConsts["VISIBILITY"].values.map(({ text, value }) => ({ text: t(text), value }))
       : tags.sort().map((t) => {
           return { text: t, value: t };
         });
