@@ -73,6 +73,34 @@ export const filterConsts = {
       },
     ],
   },
+  VISIBILITY: {
+    text: "Visibility",
+    value: "VISIBILITY",
+    operators: [
+      {
+        text: "filter.operator.is",
+        value: "IS",
+      },
+      {
+        text: "filter.operator.is-not",
+        value: "IS_NOT",
+      },
+    ],
+    values: [
+      {
+        text: "memo.visibility.public",
+        value: "PUBLIC",
+      },
+      {
+        text: "memo.visibility.protected",
+        value: "PROTECTED",
+      },
+      {
+        text: "memo.visibility.private",
+        value: "PRIVATE",
+      },
+    ],
+  },
 };
 
 export const memoSpecialTypes = filterConsts["TYPE"].values;
@@ -173,6 +201,12 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
     } else {
       return memo.displayTs > dayjs(value).valueOf();
     }
+  } else if (type === "VISIBILITY") {
+    let matched = memo.visibility === value;
+    if (operator === "IS_NOT") {
+      matched = !matched;
+    }
+    shouldShow = matched;
   }
 
   return shouldShow;
