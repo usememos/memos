@@ -17,9 +17,9 @@ const MemoList = () => {
   const { memos, isFetching } = useAppSelector((state) => state.memo);
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query ?? {};
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query ?? {};
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
-  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut);
+  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
 
   const shownMemos =
     showMemoFilter || shortcut
@@ -64,6 +64,9 @@ const MemoList = () => {
           }
           if (textQuery && !memo.content.toLowerCase().includes(textQuery.toLowerCase())) {
             shouldShow = false;
+          }
+          if (visibility) {
+            shouldShow = memo.visibility === visibility;
           }
 
           return shouldShow;

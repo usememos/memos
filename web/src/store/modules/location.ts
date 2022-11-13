@@ -11,6 +11,7 @@ export interface Query {
   type?: MemoSpecType;
   text?: string;
   shortcutId?: ShortcutId;
+  visibility?: Visibility;
 }
 
 interface State {
@@ -52,6 +53,7 @@ const getStateFromLocation = () => {
         to,
       };
     }
+    state.query.visibility = (urlParams.get("visibility") as Visibility) ?? undefined;
   }
 
   return state;

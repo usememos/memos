@@ -195,6 +195,15 @@ const Memo: React.FC<Props> = (props: Props) => {
     editorStateService.setEditMemoWithId(memo.id);
   };
 
+  const handleMemoVisibilityClick = (visibility: Visibility) => {
+    const currVisibilityQuery = locationService.getState().query?.visibility;
+    if (currVisibilityQuery === visibility) {
+      locationService.setMemoVisibilityQuery(undefined);
+    } else {
+      locationService.setMemoVisibilityQuery(visibility);
+    }
+  };
+
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
       {memo.pinned && <div className="corner-container"></div>}
@@ -204,7 +213,12 @@ const Memo: React.FC<Props> = (props: Props) => {
             {displayTimeStr}
           </span>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
-            <span className={`status-text ${memo.visibility.toLocaleLowerCase()}`}>{memo.visibility}</span>
+            <span
+              className={`status-text ${memo.visibility.toLocaleLowerCase()}`}
+              onClick={() => handleMemoVisibilityClick(memo.visibility)}
+            >
+              {memo.visibility}
+            </span>
           )}
         </div>
         {!isVisitorMode && (
