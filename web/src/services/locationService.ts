@@ -59,6 +59,7 @@ const locationService = {
         duration: undefined,
         text: undefined,
         shortcutId: undefined,
+        visibility: undefined,
       })
     );
     updateLocationUrl();
@@ -112,6 +113,15 @@ const locationService = {
     store.dispatch(
       setQuery({
         duration,
+      })
+    );
+    updateLocationUrl();
+  },
+
+  setMemoVisibilityQuery: (visibility?: Visibility) => {
+    store.dispatch(
+      setQuery({
+        visibility: visibility,
       })
     );
     updateLocationUrl();
