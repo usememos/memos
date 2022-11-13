@@ -41,6 +41,14 @@ interface DisplayTimeFilter extends BaseFilter {
   };
 }
 
-type FilterType = "TEXT" | "TYPE" | "TAG" | "DISPLAY_TIME";
+interface VisibilityFilter extends BaseFilter {
+  type: "VISIBILITY";
+  value: {
+    operator: "IS" | "IS_NOT";
+    value: string;
+  };
+}
 
-type Filter = BaseFilter | TagFilter | TypeFilter | TextFilter | DisplayTimeFilter;
+type FilterType = "TEXT" | "TYPE" | "TAG" | "DISPLAY_TIME" | "VISIBILITY";
+
+type Filter = BaseFilter | TagFilter | TypeFilter | TextFilter | DisplayTimeFilter | VisibilityFilter;
