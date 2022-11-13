@@ -1,5 +1,3 @@
-@import "./mixin.less";
-
 .create-shortcut-dialog {
   @apply px-4;
 
@@ -7,11 +5,10 @@
     @apply w-128 max-w-full;
 
     > .dialog-content-container {
-      .flex(column, flex-start, flex-start);
+      @apply flex flex-col justify-start items-start;
 
       > .form-item-container {
-        .flex(row, flex-start, flex-start);
-        @apply w-full mt-2 py-1;
+        @apply w-full mt-2 py-1 flex flex-row justify-start items-start;
 
         > .normal-text {
           @apply block flex-shrink-0 w-12 mr-3 text-right text-sm leading-8;
@@ -23,8 +20,7 @@
         }
 
         > .filters-wrapper {
-          .flex(column, flex-start, flex-start);
-          @apply w-full;
+          @apply w-full flex flex-col justify-start items-start;
 
           > .create-filter-btn {
             @apply text-sm py-1 px-2 rounded shadow flex flex-row justify-start items-center border cursor-pointer text-blue-500 hover:opacity-80;
@@ -34,11 +30,10 @@
     }
 
     > .dialog-footer-container {
-      .flex(row, space-between, center);
-      @apply w-full mt-0;
+      @apply w-full mt-0 flex flex-row justify-between items-center;
 
       > .btns-container {
-        .flex(row, flex-start, center);
+        @apply flex flex-row justify-start items-center;
 
         > .tip-text {
           @apply text-sm text-gray-400 mr-2;
@@ -61,8 +56,7 @@
 }
 
 .memo-filter-input-wrapper {
-  .flex(row, flex-start, center);
-  @apply w-full mb-3 shrink-0;
+  @apply w-full mb-3 shrink-0 flex flex-row justify-start items-center;
 
   > .selector-wrapper {
     @apply mr-1 h-9 grow-0 shrink-0;
@@ -81,7 +75,7 @@
     }
 
     &.value-selector {
-    @apply grow;
+      @apply grow;
     }
   }
 
@@ -90,7 +84,7 @@
     @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50;
   }
 
-  > input.datetime-selector{
+  > input.datetime-selector {
     max-width: calc(100% - 152px);
     @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50;
   }

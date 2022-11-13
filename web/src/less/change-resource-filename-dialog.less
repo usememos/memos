@@ -1,11 +1,9 @@
-@import "./mixin.less";
-
 .change-resource-filename-dialog {
   > .dialog-container {
     @apply w-72;
 
     > .dialog-content-container {
-      .flex(column, flex-start, flex-start);
+      @apply flex flex-col justify-start items-start;
 
       > .tip-text {
         @apply bg-gray-400 text-xs p-2 rounded-lg;
