@@ -18,4 +18,18 @@ export const MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS = [
   { text: "created_ts", value: "updated_ts" },
 ];
 
+export const IS_FOLDING_ENABLED_SELECTOR_ITEMS = [
+  { text: "true", value: true },
+  { text: "false", value: false },
+];
+export const IS_FOLDING_ENABLED_DEFAULT_VALUE = true;
+export const SETTING_IS_FOLDING_ENABLED_KEY = "setting_IS_FOLDING_ENABLED";
+
+export const IS_FOLDING_DEFAULT_SELECTOR_ITEMS = [
+  { text: "true", value: true },
+  { text: "false", value: false },
+];
+export const IS_FOLDING_DEFAULT_DEFAULT_VALUE = true;
+export const SETTING_IS_FOLDING_DEFAULT_KEY = "setting_IS_FOLDING_DEFAULT";
+
 export const TAB_SPACE_WIDTH = 2;

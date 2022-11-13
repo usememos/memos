@@ -41,7 +41,9 @@
     "changed": "changed",
     "update-on": "Update on",
     "fold": "Fold",
-    "expand": "Expand"
+    "expand": "Expand",
+    "true": "True",
+    "false": "False"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
@@ -139,6 +141,8 @@
     },
     "preference-section": {
       "default-memo-visibility": "Default memo visibility",
+      "is-folding-fuction-enabled": "Is folding function enabled",
+      "is-folding-default": "Is folding default",
       "editor-font-style": "Editor font style",
       "mobile-editor-style": "Mobile editor style",
       "default-memo-sort-option": "Display by created/updated time",
