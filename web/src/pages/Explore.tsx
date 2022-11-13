@@ -82,9 +82,8 @@ const Explore = () => {
                 <div className="memo-container" key={memo.id}>
                   <div className="memo-header">
                     <span className="time-text">{createdAtStr}</span>
-                    <span className="split-text">by</span>
                     <a className="name-text" href={`/u/${memo.creator.id}`}>
-                      {memo.creator.name}
+                      @{memo.creator.name}
                     </a>
                   </div>
                   <MemoContent className="memo-content" content={memo.content} onMemoContentClick={() => undefined} />

@@ -1,5 +1,3 @@
-@import "./mixin.less";
-
 .page-wrapper.memo-detail {
   @apply relative top-0 w-full h-screen overflow-y-auto overflow-x-hidden;
   background-color: #f6f5f4;
@@ -44,34 +42,10 @@
           @apply mb-2 w-full flex flex-row justify-between items-center;
 
           > .status-container {
-            @apply flex flex-row justify-start items-center text-sm font-mono text-gray-400;
-
-            > .split-text {
-              @apply mx-2;
-            }
+            @apply flex flex-row justify-start items-center text-sm text-gray-400;
 
             > .name-text {
-              @apply hover:text-green-600 hover:underline;
-            }
-
-            > .visibility-selector {
-              @apply ml-2;
-
-              > .status-text {
-                @apply flex flex-row justify-start items-center leading-5 text-xs cursor-pointer ml-2 rounded border px-1;
-
-                &.public {
-                  @apply border-green-600 text-green-600;
-                }
-
-                &.protected {
-                  @apply border-gray-400 text-gray-400;
-                }
-              }
-
-              .action-button {
-                @apply px-2 leading-7 w-full rounded text-gray-600 hover:bg-gray-100;
-              }
+              @apply ml-2 hover:text-green-600 hover:underline;
             }
           }
         }

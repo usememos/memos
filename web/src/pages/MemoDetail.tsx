@@ -48,24 +48,6 @@ const MemoDetail = () => {
     }
   }, [location]);
 
-  const handleVisibilitySelectorChange = async (visibility: Visibility) => {
-    if (state.memo.visibility === visibility) {
-      return;
-    }
-
-    await memoService.patchMemo({
-      id: state.memo.id,
-      visibility: visibility,
-    });
-    setState({
-      ...state,
-      memo: {
-        ...state.memo,
-        visibility: visibility,
-      },
-    });
-  };
-
   const handleCopyContent = () => {
     copy(state.memo.content);
     toastHelper.success(t("message.succeed-copy-content"));
@@ -100,37 +82,9 @@ const MemoDetail = () => {
               <div className="memo-header">
                 <div className="status-container">
                   <span className="time-text">{dayjs(state.memo.displayTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
-                  {user?.id === state.memo.creatorId ? (
-                    <Dropdown
-                      className="visibility-selector"
-                      trigger={
-                        <span className={`status-text ${state.memo.visibility.toLowerCase()}`}>
-                          {state.memo.visibility} <Icon.ChevronDown className="w-4 h-auto ml-px" />
-                        </span>
-                      }
-                      actions={
-                        <>
-                          <span className="action-button" onClick={() => handleVisibilitySelectorChange("PRIVATE")}>
-                            Private
-                          </span>
-                          <span className="action-button" onClick={() => handleVisibilitySelectorChange("PROTECTED")}>
-                            Protected
-                          </span>
-                          <span className="action-button" onClick={() => handleVisibilitySelectorChange("PUBLIC")}>
-                            Public
-                          </span>
-                        </>
-                      }
-                      actionsClassName="!w-28 !left-0 !p-1"
-                    />
-                  ) : (
-                    <>
-                      <span className="split-text">by</span>
-                      <a className="name-text" href={`/u/${state.memo.creator.id}`}>
-                        {state.memo.creator.name}
-                      </a>
-                    </>
-                  )}
+                  <a className="name-text" href={`/u/${state.memo.creator.id}`}>
+                    @{state.memo.creator.name}
+                  </a>
                 </div>
                 <Dropdown
                   trigger={<Icon.MoreHorizontal className="ml-2 w-4 h-auto cursor-pointer text-gray-500" />}
@@ -141,7 +95,7 @@ const MemoDetail = () => {
                         className="w-full flex flex-row justify-start items-center px-3 whitespace-nowrap text-sm text-left leading-8 cursor-pointer rounded hover:bg-gray-100"
                         onClick={handleCopyContent}
                       >
-                        <Icon.Clipboard className="w-4 h-auto mr-2" /> {t("memo.copy")}
+                        {t("memo.copy")}
                       </button>
                     </>
                   }

@@ -482,7 +482,7 @@ const MemoEditor = () => {
       )}
       <div className="editor-footer-container">
         <Selector
-          className={`visibility-selector`}
+          className="visibility-selector"
           value={editorState.memoVisibility}
           dataSource={memoVisibilityOptionSelectorItems}
           handleValueChanged={handleMemoVisibilityOptionChanged}
