@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { editorStateService, memoService, userService } from "../services";
 import { useAppSelector } from "../store";
-import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
+import { UNKNOWN_ID } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { parseHTMLToRawText } from "../helpers/utils";
 import { marked } from "../labs/marked";
@@ -11,7 +11,6 @@ import { MARK_REG } from "../labs/marked/parser";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import Selector from "./common/Selector";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
@@ -35,12 +34,6 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
   const [linkMemos, setLinkMemos] = useState<LinkedMemo[]>([]);
   const [linkedMemos, setLinkedMemos] = useState<LinkedMemo[]>([]);
   const isVisitorMode = userService.isVisitorMode();
-  const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
-    return {
-      value: item.value,
-      text: t(`memo.visibility.${item.text.toLowerCase()}`),
-    };
-  });
 
   useEffect(() => {
     const fetchLinkedMemos = async () => {
@@ -138,36 +131,8 @@ const MemoCardDialog: React.FC<Props> = (props: Props) => {
     toastHelper.success(t("message.succeed-copy-content"));
   };
 
-  const handleVisibilitySelectorChange = async (visibility: Visibility) => {
-    if (memo.visibility === visibility) {
-      return;
-    }
-
-    await memoService.patchMemo({
-      id: memo.id,
-      visibility: visibility,
-    });
-    setMemo({
-      ...memo,
-      visibility: visibility,
-    });
-  };
-
   return (
     <>
-      {!isVisitorMode && (
-        <div className="card-header-container">
-          <div className="visibility-selector-container">
-            <Icon.Eye className="icon-img" />
-            <Selector
-              className="visibility-selector"
-              dataSource={visibilitySelectorItems}
-              value={memo.visibility}
-              handleValueChanged={(value) => handleVisibilitySelectorChange(value as Visibility)}
-            />
-          </div>
-        </div>
-      )}
       <div className="memo-card-container">
         <div className="header-container">
           <p className="time-text" onClick={handleMemoCreatedAtClick}>
