@@ -66,6 +66,13 @@ const locationSlice = createSlice({
     updateStateWithLocation: () => {
       return getStateFromLocation();
     },
+    updatePathnameStateWithLocation: (state) => {
+      const { pathname } = window.location;
+      return {
+        ...state,
+        pathname: getValidPathname(pathname),
+      };
+    },
     setPathname: (state, action: PayloadAction<string>) => {
       if (state.pathname === action.payload) {
         return state;
@@ -92,6 +99,6 @@ const locationSlice = createSlice({
   },
 });
 
-export const { setPathname, setQuery, updateStateWithLocation } = locationSlice.actions;
+export const { setPathname, setQuery, updateStateWithLocation, updatePathnameStateWithLocation } = locationSlice.actions;
 
 export default locationSlice.reducer;

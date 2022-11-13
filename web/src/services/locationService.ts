@@ -1,8 +1,11 @@
 import { stringify } from "qs";
 import store from "../store";
-import { setQuery, setPathname, Query, updateStateWithLocation } from "../store/modules/location";
+import { setQuery, setPathname, Query, updateStateWithLocation, updatePathnameStateWithLocation } from "../store/modules/location";
 
 const updateLocationUrl = (method: "replace" | "push" = "replace") => {
+  // avoid pathname confusion when entering from non-home page
+  store.dispatch(updatePathnameStateWithLocation());
+
   const { query, pathname, hash } = store.getState().location;
   let queryString = stringify(query);
   if (queryString) {
