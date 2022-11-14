@@ -53,7 +53,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 		feed.Items = make([]*feeds.Item, len(memoList))
 		for i, memo := range memoList {
 			feed.Items[i] = &feeds.Item{
-				Title:       memo.Content,
+				Title:       user.Name + "-memos-" + strconv.Itoa(memo.ID),
 				Link:        &feeds.Link{Href: baseURL + "/m/" + strconv.Itoa(memo.ID)},
 				Description: memo.Content,
 				Created:     time.Unix(memo.CreatedTs, 0),
