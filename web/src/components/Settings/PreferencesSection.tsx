@@ -81,10 +81,6 @@ const PreferencesSection = () => {
         />
       </label>
       <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.fold-memo")}</span>
-        <Switch className="ml-2" checked={isFoldingEnabled} onChange={handleIsFoldingEnabledChanged} />
-      </label>
-      <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.default-memo-sort-option")}</span>
         <Selector
           className="ml-2 w-32"
@@ -92,6 +88,10 @@ const PreferencesSection = () => {
           dataSource={memoDisplayTsOptionSelectorItems}
           handleValueChanged={handleMemoDisplayTsOptionChanged}
         />
+      </label>
+      <label className="form-label selector">
+        <span className="normal-text">{t("setting.preference-section.enable-folding-memo")}</span>
+        <Switch className="ml-2" checked={isFoldingEnabled} onChange={handleIsFoldingEnabledChanged} />
       </label>
     </div>
   );

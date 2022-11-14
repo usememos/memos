@@ -12,6 +12,8 @@ const (
 	SystemSettingAllowSignUpName SystemSettingName = "allowSignUp"
 	// SystemSettingAdditionalStyleName is the key type of additional style.
 	SystemSettingAdditionalStyleName SystemSettingName = "additionalStyle"
+	// SystemSettingAdditionalScriptName is the key type of additional script.
+	SystemSettingAdditionalScriptName SystemSettingName = "additionalScript"
 )
 
 func (key SystemSettingName) String() string {
@@ -20,6 +22,8 @@ func (key SystemSettingName) String() string {
 		return "allowSignUp"
 	case SystemSettingAdditionalStyleName:
 		return "additionalStyle"
+	case SystemSettingAdditionalScriptName:
+		return "additionalScript"
 	}
 	return ""
 }
@@ -64,6 +68,12 @@ func (upsert SystemSettingUpsert) Validate() error {
 		err := json.Unmarshal([]byte(upsert.Value), &value)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal system setting additional style value")
+		}
+	} else if upsert.Name == SystemSettingAdditionalScriptName {
+		value := ""
+		err := json.Unmarshal([]byte(upsert.Value), &value)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal system setting additional script value")
 		}
 	} else {
 		return fmt.Errorf("invalid system setting name")
