@@ -1,4 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { parse, ParsedQs } from "qs";
 
 interface Duration {
   from: number;
@@ -31,7 +32,7 @@ const getValidPathname = (pathname: string): string => {
 
 const getStateFromLocation = () => {
   const { pathname, search, hash } = window.location;
-  const urlParams = new URLSearchParams(search);
+  const urlParams = parse(search.slice(1));
   const state: State = {
     pathname: getValidPathname(pathname),
     hash: hash,
@@ -40,20 +41,22 @@ const getStateFromLocation = () => {
 
   if (search !== "") {
     state.query = {};
-    state.query.tag = urlParams.get("tag") ?? undefined;
-    state.query.type = (urlParams.get("type") as MemoSpecType) ?? undefined;
-    state.query.text = urlParams.get("text") ?? undefined;
-    const shortcutIdStr = urlParams.get("shortcutId");
+    state.query.tag = urlParams["tag"] as string;
+    state.query.type = urlParams["type"] as MemoSpecType;
+    state.query.text = urlParams["text"] as string;
+    const shortcutIdStr = urlParams["shortcutId"] as string;
     state.query.shortcutId = shortcutIdStr ? Number(shortcutIdStr) : undefined;
-    const from = parseInt(urlParams.get("from") ?? "0");
-    const to = parseInt(urlParams.get("to") ?? "0");
-    if (to > from && to !== 0) {
-      state.query.duration = {
-        from,
-        to,
+    const durationObj = urlParams["duration"] as ParsedQs;
+    if (durationObj) {
+      const duration: Duration = {
+        from: Number(durationObj["from"]),
+        to: Number(durationObj["to"]),
       };
+      if (duration.to > duration.from && duration.to !== 0) {
+        state.query.duration = duration;
+      }
     }
-    state.query.visibility = (urlParams.get("visibility") as Visibility) ?? undefined;
+    state.query.visibility = urlParams["visibility"] as Visibility;
   }
 
   return state;
