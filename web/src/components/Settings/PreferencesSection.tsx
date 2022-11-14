@@ -1,15 +1,12 @@
 import { useTranslation } from "react-i18next";
+import Switch from "@mui/joy/Switch";
 import { globalService, userService } from "../../services";
 import { useAppSelector } from "../../store";
 import {
   VISIBILITY_SELECTOR_ITEMS,
   MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS,
-  IS_FOLDING_DEFAULT_SELECTOR_ITEMS,
-  IS_FOLDING_ENABLED_SELECTOR_ITEMS,
   SETTING_IS_FOLDING_ENABLED_KEY,
   IS_FOLDING_ENABLED_DEFAULT_VALUE,
-  SETTING_IS_FOLDING_DEFAULT_KEY,
-  IS_FOLDING_DEFAULT_DEFAULT_VALUE,
 } from "../../helpers/consts";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import Selector from "../common/Selector";
@@ -47,21 +44,7 @@ const PreferencesSection = () => {
     };
   });
 
-  const isFoldingEnabledSelectorItems = IS_FOLDING_ENABLED_SELECTOR_ITEMS.map((item) => {
-    return {
-      value: String(item.value),
-      text: t(`common.${item.text}`),
-    };
-  });
   const [isFoldingEnabled, setIsFoldingEnabled] = useLocalStorage(SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE);
-
-  const isFoldingDefaultSelectorItems = IS_FOLDING_DEFAULT_SELECTOR_ITEMS.map((item) => {
-    return {
-      value: String(item.value),
-      text: t(`common.${item.text}`),
-    };
-  });
-  const [isFoldingDefault, setIsFoldingDefault] = useLocalStorage(SETTING_IS_FOLDING_DEFAULT_KEY, IS_FOLDING_DEFAULT_DEFAULT_VALUE);
 
   const handleLocaleChanged = async (value: string) => {
     await userService.upsertUserSetting("locale", value);
@@ -76,12 +59,8 @@ const PreferencesSection = () => {
     await userService.upsertUserSetting("memoDisplayTsOption", value);
   };
 
-  const handleIsFoldingEnabledChanged = (value: string) => {
-    setIsFoldingEnabled(value === "true");
-  };
-
-  const handleIsFoldingDefaultChanged = async (value: string) => {
-    setIsFoldingDefault(value === "true");
+  const handleIsFoldingEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsFoldingEnabled(event.target.checked);
   };
 
   return (
@@ -102,25 +81,9 @@ const PreferencesSection = () => {
         />
       </label>
       <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.is-folding-fuction-enabled")}</span>
-        <Selector
-          className="ml-2 w-32"
-          value={String(isFoldingEnabled)}
-          dataSource={isFoldingEnabledSelectorItems}
-          handleValueChanged={handleIsFoldingEnabledChanged}
-        />
+        <span className="normal-text">{t("setting.preference-section.fold-memo")}</span>
+        <Switch className="ml-2" checked={isFoldingEnabled} onChange={handleIsFoldingEnabledChanged} />
       </label>
-      {isFoldingEnabled && (
-        <label className="form-label selector">
-          <span className="normal-text">{t("setting.preference-section.is-folding-default")}</span>
-          <Selector
-            className="ml-2 w-32"
-            value={String(isFoldingDefault)}
-            dataSource={isFoldingDefaultSelectorItems}
-            handleValueChanged={handleIsFoldingDefaultChanged}
-          />
-        </label>
-      )}
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.default-memo-sort-option")}</span>
         <Selector
