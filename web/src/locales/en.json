@@ -139,7 +139,7 @@
     },
     "preference-section": {
       "default-memo-visibility": "Default memo visibility",
-      "fold-memo": "Fold Memo",
+      "enable-folding-memo": "Enable folding memo",
       "editor-font-style": "Editor font style",
       "mobile-editor-style": "Mobile editor style",
       "default-memo-sort-option": "Display by created/updated time",

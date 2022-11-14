@@ -10,4 +10,6 @@ type SystemStatus struct {
 	AllowSignUp bool `json:"allowSignUp"`
 	// Additional style.
 	AdditionalStyle string `json:"additionalStyle"`
+	// Additional script.
+	AdditionalScript string `json:"additionalScript"`
 }

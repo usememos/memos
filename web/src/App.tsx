@@ -30,6 +30,11 @@ function App() {
         styleEl.setAttribute("type", "text/css");
         document.head.appendChild(styleEl);
       }
+      if (status.additionalScript) {
+        const scriptEl = document.createElement("script");
+        scriptEl.innerHTML = status.additionalScript;
+        document.head.appendChild(scriptEl);
+      }
     });
   }, []);
 

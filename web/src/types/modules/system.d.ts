@@ -9,6 +9,7 @@ interface SystemStatus {
   // System settings
   allowSignUp: boolean;
   additionalStyle: string;
+  additionalScript: string;
 }
 
 interface SystemSetting {
