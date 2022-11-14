@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { marked } from "../labs/marked";
 import Icon from "./Icon";
+import { SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE } from "../helpers/consts";
+import useLocalStorage from "../hooks/useLocalStorage";
 import "../less/memo-content.less";
 
 export interface DisplayConfig {
@@ -31,6 +33,7 @@ const MAX_MEMO_CONTAINER_HEIGHT = 384;
 const MemoContent: React.FC<Props> = (props: Props) => {
   const { className, content, onMemoContentClick, onMemoContentDoubleClick } = props;
   const { t } = useTranslation();
+  const [isFoldingEnabled] = useLocalStorage(SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE);
   const [state, setState] = useState<State>({
     expandButtonStatus: -1,
   });
@@ -45,7 +48,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    if (displayConfig.enableExpand) {
+    if (displayConfig.enableExpand && isFoldingEnabled) {
       if (Number(memoContentContainerRef.current?.clientHeight) > MAX_MEMO_CONTAINER_HEIGHT) {
         setState({
           ...state,

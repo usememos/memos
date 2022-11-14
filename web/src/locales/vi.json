@@ -138,6 +138,7 @@
     },
     "preference-section": {
       "default-memo-visibility": "Chế độ memo mặc định",
+      "fold-memo": "nếp gấp Memo",
       "editor-font-style": "Thay đổi font cho trình soạn thảo",
       "mobile-editor-style": "Vị trí editor trên mobile",
       "default-memo-sort-option": "Sắp xếp theo thời gian đã tạo",

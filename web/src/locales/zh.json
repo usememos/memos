@@ -139,6 +139,7 @@
     },
     "preference-section": {
       "default-memo-visibility": "默认 Memo 可见性",
+      "fold-memo": "折叠 Memo",
       "editor-font-style": "编辑器字体样式",
       "mobile-editor-style": "移动端编辑器样式",
       "default-memo-sort-option": "按创建时间/更新时间显示",

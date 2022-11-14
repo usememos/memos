@@ -1,7 +1,14 @@
 import { useTranslation } from "react-i18next";
+import Switch from "@mui/joy/Switch";
 import { globalService, userService } from "../../services";
 import { useAppSelector } from "../../store";
-import { VISIBILITY_SELECTOR_ITEMS, MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS } from "../../helpers/consts";
+import {
+  VISIBILITY_SELECTOR_ITEMS,
+  MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS,
+  SETTING_IS_FOLDING_ENABLED_KEY,
+  IS_FOLDING_ENABLED_DEFAULT_VALUE,
+} from "../../helpers/consts";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import Selector from "../common/Selector";
 import "../../less/settings/preferences-section.less";
 
@@ -37,6 +44,8 @@ const PreferencesSection = () => {
     };
   });
 
+  const [isFoldingEnabled, setIsFoldingEnabled] = useLocalStorage(SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE);
+
   const handleLocaleChanged = async (value: string) => {
     await userService.upsertUserSetting("locale", value);
     globalService.setLocale(value as Locale);
@@ -48,6 +57,10 @@ const PreferencesSection = () => {
 
   const handleMemoDisplayTsOptionChanged = async (value: string) => {
     await userService.upsertUserSetting("memoDisplayTsOption", value);
+  };
+
+  const handleIsFoldingEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsFoldingEnabled(event.target.checked);
   };
 
   return (
@@ -66,6 +79,10 @@ const PreferencesSection = () => {
           dataSource={visibilitySelectorItems}
           handleValueChanged={handleDefaultMemoVisibilityChanged}
         />
+      </label>
+      <label className="form-label selector">
+        <span className="normal-text">{t("setting.preference-section.fold-memo")}</span>
+        <Switch className="ml-2" checked={isFoldingEnabled} onChange={handleIsFoldingEnabledChanged} />
       </label>
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.default-memo-sort-option")}</span>
