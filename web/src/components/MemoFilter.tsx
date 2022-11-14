@@ -9,9 +9,9 @@ import "../less/memo-filter.less";
 const MemoFilter = () => {
   const { t } = useTranslation();
   const query = useAppSelector((state) => state.location.query);
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId } = query;
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query;
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
-  const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut);
+  const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
 
   return (
     <div className={`filter-query-container ${showFilter ? "" : "!hidden"}`}>
@@ -39,6 +39,14 @@ const MemoFilter = () => {
         }}
       >
         <Icon.Box className="icon-text" /> {t(getTextWithMemoType(memoType as MemoSpecType))}
+      </div>
+      <div
+        className={"filter-item-container " + (visibility ? "" : "!hidden")}
+        onClick={() => {
+          locationService.setMemoVisibilityQuery(undefined);
+        }}
+      >
+        <Icon.Eye className="icon-text" /> {visibility}
       </div>
       {duration && duration.from < duration.to ? (
         <div
