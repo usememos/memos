@@ -5,7 +5,7 @@ import { marked } from "..";
 import InlineCode from "./InlineCode";
 import BoldEmphasis from "./BoldEmphasis";
 
-export const LINK_REG = /\[(.*?)\]\((.+?)\)/;
+export const LINK_REG = /\[(.*?)\]\((.+?)\)+/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(LINK_REG);
