@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { marked } from "../labs/marked";
 import Icon from "./Icon";
@@ -32,6 +32,17 @@ const MAX_MEMO_CONTAINER_HEIGHT = 384;
 
 const MemoContent: React.FC<Props> = (props: Props) => {
   const { className, content, onMemoContentClick, onMemoContentDoubleClick } = props;
+  const foldedContent = useMemo(() => {
+    const horizontalRuleFlag = ["\n---\n", "\n***\n", "\n___\n"];
+    const firstHorizontalRuleIndex = horizontalRuleFlag.reduce((acc, cur) => {
+      const index = content.indexOf(cur);
+      if (index !== -1) {
+        return Math.min(acc, index);
+      }
+      return acc;
+    }, Infinity);
+    return firstHorizontalRuleIndex !== Infinity ? content.slice(0, firstHorizontalRuleIndex) : content;
+  }, [content]);
   const { t } = useTranslation();
   const [isFoldingEnabled] = useLocalStorage(SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE);
   const [state, setState] = useState<State>({
@@ -84,7 +95,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
-        dangerouslySetInnerHTML={{ __html: marked(content) }}
+        dangerouslySetInnerHTML={{ __html: marked(state.expandButtonStatus === 0 ? content : foldedContent) }}
       ></div>
       {state.expandButtonStatus !== -1 && (
         <div className="expand-btn-container">
