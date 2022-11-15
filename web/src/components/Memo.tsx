@@ -11,7 +11,6 @@ import Icon from "./Icon";
 import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
-import showMemoCardDialog from "./MemoCardDialog";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import "../less/memo.less";
@@ -50,14 +49,6 @@ const Memo: React.FC<Props> = (props: Props) => {
       clearInterval(intervalFlag);
     };
   }, [i18n.language]);
-
-  const handleShowMemoStoryDialog = () => {
-    if (isVisitorMode) {
-      return;
-    }
-
-    showMemoCardDialog(memo);
-  };
 
   const handleViewMemoDetailPage = () => {
     navigate(`/m/${memo.id}`);
@@ -116,7 +107,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       const memoTemp = await memoService.getMemoById(Number(memoId) ?? UNKNOWN_ID);
 
       if (memoTemp) {
-        showMemoCardDialog(memoTemp);
+        navigate(`/m/${memoTemp.id}`);
       } else {
         toastHelper.error(t("message.memo-not-found"));
         targetEl.classList.remove("memo-link-text");
@@ -209,9 +200,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       {memo.pinned && <div className="corner-container"></div>}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
-          <span className="time-text" onClick={handleShowMemoStoryDialog}>
-            {displayTimeStr}
-          </span>
+          <span className="time-text">{displayTimeStr}</span>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span
               className={`status-text ${memo.visibility.toLocaleLowerCase()}`}
