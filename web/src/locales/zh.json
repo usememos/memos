@@ -80,6 +80,7 @@
   },
   "editor": {
     "editing": "编辑中...",
+    "cancel-edit": "退出编辑",
     "save": "记下",
     "placeholder": "现在的想法是...",
     "only-image-supported": "仅支持图片文件。",

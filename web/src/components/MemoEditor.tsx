@@ -415,14 +415,6 @@ const MemoEditor = () => {
       onFocus={handleEditorFocus}
       onBlur={handleEditorBlur}
     >
-      <div className="editor-header-container">
-        <div className={`editing-container ${isEditing ? "" : "!hidden"}`}>
-          <span className="tip-text">{t("editor.editing")}</span>
-          <button className="cancel-btn" onClick={handleCancelEdit}>
-            {t("common.cancel")}
-          </button>
-        </div>
-      </div>
       <Editor ref={editorRef} {...editorConfig} />
       <div className="common-tools-wrapper">
         <div className="common-tools-container">
@@ -488,6 +480,9 @@ const MemoEditor = () => {
           handleValueChanged={handleMemoVisibilityOptionChanged}
         />
         <div className="buttons-container">
+          <button className={`action-btn cancel-btn ${isEditing ? "" : "!hidden"}`} onClick={handleCancelEdit}>
+            {t("editor.cancel-edit")}
+          </button>
           <button className="action-btn confirm-btn" disabled={!allowSave || state.isUploadingResource} onClick={handleSaveBtnClick}>
             {t("editor.save")}
             <img className="icon-img w-4 h-auto" src="/logo.webp" />

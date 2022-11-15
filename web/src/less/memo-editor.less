@@ -28,24 +28,8 @@
     @apply border-blue-500;
   }
 
-  > .editor-header-container {
-    @apply w-full flex flex-row justify-between items-center mt-3 mb-1;
-
-    > .editing-container {
-      @apply flex flex-row justify-start items-center text-xs;
-
-      > .tip-text {
-        @apply text-gray-400 mr-2;
-      }
-
-      > .cancel-btn {
-        @apply px-2 border rounded-full leading-5 text-blue-600 hover:border-blue-600;
-      }
-    }
-  }
-
   > .memo-editor {
-    @apply flex flex-col justify-start items-start relative w-full h-auto bg-white;
+    @apply mt-4 flex flex-col justify-start items-start relative w-full h-auto bg-white;
   }
 
   > .common-tools-wrapper {
@@ -135,6 +119,10 @@
 
     > .buttons-container {
       @apply grow-0 shrink-0 flex flex-row justify-end items-center;
+
+      > .cancel-btn {
+        @apply mr-4 text-sm text-gray-600 hover:opacity-80;
+      }
 
       > .confirm-btn {
         @apply border-none select-none rounded flex flex-row justify-center items-center shadow cursor-pointer px-3 py-0 leading-8 bg-green-600 text-white text-sm hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60;
