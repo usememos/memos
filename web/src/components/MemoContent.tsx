@@ -31,15 +31,8 @@ const defaultDisplayConfig: DisplayConfig = {
 const MemoContent: React.FC<Props> = (props: Props) => {
   const { className, content, onMemoContentClick, onMemoContentDoubleClick } = props;
   const foldedContent = useMemo(() => {
-    const horizontalRuleFlag = ["\n---\n", "\n***\n", "\n___\n"];
-    const firstHorizontalRuleIndex = horizontalRuleFlag.reduce((acc, cur) => {
-      const index = content.indexOf(cur);
-      if (index !== -1) {
-        return Math.min(acc, index);
-      }
-      return acc;
-    }, Infinity);
-    return firstHorizontalRuleIndex !== Infinity ? content.slice(0, firstHorizontalRuleIndex) : content;
+    const firstHorizontalRuleIndex = content.search(/^---$|^\*\*\*$|^___$/gm);
+    return firstHorizontalRuleIndex !== -1 ? content.slice(0, firstHorizontalRuleIndex) : content;
   }, [content]);
   const { t } = useTranslation();
   const [isFoldingEnabled] = useLocalStorage(SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE);
