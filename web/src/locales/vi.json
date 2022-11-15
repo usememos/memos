@@ -80,6 +80,7 @@
   },
   "editor": {
     "editing": "Đang chỉnh sửa...",
+    "cancel-edit": "Cancel Edit",
     "save": "Lưu",
     "placeholder": "Bất cứ gì bạn đang nghĩ...",
     "only-image-supported": "Chỉ hỗ trợ hình ảnh.",

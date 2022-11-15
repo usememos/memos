@@ -80,6 +80,7 @@
   },
   "editor": {
     "editing": "Editing...",
+    "cancel-edit": "Cancel Edit",
     "save": "Save",
     "placeholder": "Any thoughts...",
     "only-image-supported": "Only image file supported.",
