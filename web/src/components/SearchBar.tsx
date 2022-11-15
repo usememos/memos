@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { locationService } from "../services";
 import { useAppSelector } from "../store";
@@ -8,6 +9,12 @@ import "../less/search-bar.less";
 const SearchBar = () => {
   const { t } = useTranslation();
   const memoType = useAppSelector((state) => state.location.query?.type);
+  const [queryText, setQueryText] = useState("");
+
+  useEffect(() => {
+    const text = locationService.getState().query.text;
+    setQueryText(text === undefined ? "" : text);
+  }, [locationService.getState().query.text]);
 
   const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
     const { type: prevType } = locationService.getState().query ?? {};
@@ -19,6 +26,7 @@ const SearchBar = () => {
 
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;
+    setQueryText(text);
     locationService.setTextQuery(text);
   };
 
@@ -26,7 +34,7 @@ const SearchBar = () => {
     <div className="search-bar-container">
       <div className="search-bar-inputer">
         <Icon.Search className="icon-img" />
-        <input className="text-input" type="text" placeholder="" onChange={handleTextQueryInput} />
+        <input className="text-input" type="text" placeholder="" value={queryText} onChange={handleTextQueryInput} />
       </div>
       <div className="quickly-action-wrapper">
         <div className="quickly-action-container">

@@ -61,7 +61,7 @@ const MemoFilter = () => {
       <div
         className={"filter-item-container " + (textQuery ? "" : "!hidden")}
         onClick={() => {
-          locationService.setTextQuery("");
+          locationService.setTextQuery(undefined);
         }}
       >
         <Icon.Search className="icon-text" /> {textQuery}
