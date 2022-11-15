@@ -48,7 +48,7 @@
         }
 
         > .memo-content-wrapper {
-          @apply w-full px-6 text-base bg-white pb-2;
+          @apply w-full px-6 text-base bg-white pb-4;
         }
 
         > .images-container {
@@ -60,18 +60,30 @@
         }
 
         > .watermark-container {
-          @apply flex flex-row justify-start items-center w-full py-3 px-6;
+          @apply flex flex-row justify-between items-center w-full py-3 px-6;
 
           > .normal-text {
             @apply w-full flex flex-row justify-start items-center text-sm leading-6 text-gray-500;
 
-            > .icon-text {
-              @apply text-lg ml-1 mr-2 leading-6;
+            > .name-text {
+              @apply text-black;
             }
+          }
+
+          > .userinfo-container {
+            @apply w-64 flex flex-col justify-center items-start;
 
             > .name-text {
-              @apply text-black ml-2 leading-6;
+              @apply text-lg truncate font-bold text-gray-600;
             }
+
+            > .usage-text {
+              @apply -mt-1 text-sm text-gray-400 font-medium;
+            }
+          }
+
+          > .logo-img {
+            @apply h-12 w-auto;
           }
         }
       }
