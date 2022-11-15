@@ -15,6 +15,7 @@ import PlainText from "./PlainText";
 import Table from "./Table";
 import BoldEmphasis from "./BoldEmphasis";
 import Blockquote from "./Blockquote";
+import HorizontalRules from "./HorizontalRules";
 
 export { CODE_BLOCK_REG } from "./CodeBlock";
 export { TODO_LIST_REG } from "./TodoList";
@@ -23,8 +24,19 @@ export { TAG_REG } from "./Tag";
 export { IMAGE_REG } from "./Image";
 export { LINK_REG } from "./Link";
 export { TABLE_REG } from "./Table";
+export { HORIZONTAL_RULES_REG } from "./HorizontalRules";
 
 // The order determines the order of execution.
-export const blockElementParserList = [Table, CodeBlock, Blockquote, TodoList, DoneList, OrderedList, UnorderedList, Paragraph];
+export const blockElementParserList = [
+  HorizontalRules,
+  Table,
+  CodeBlock,
+  Blockquote,
+  TodoList,
+  DoneList,
+  OrderedList,
+  UnorderedList,
+  Paragraph,
+];
 export const inlineElementParserList = [Image, BoldEmphasis, Bold, Emphasis, Link, InlineCode, PlainLink, Tag, PlainText];
 export const parserList = [...blockElementParserList, ...inlineElementParserList];

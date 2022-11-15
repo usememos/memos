@@ -4,6 +4,29 @@ import { unescape } from "lodash-es";
 import { marked } from ".";
 
 describe("test marked parser", () => {
+  test("horizontal rule", () => {
+    const tests = [
+      {
+        markdown: `To create a horizontal rule, use three or more asterisks (***), dashes (---), or underscores (___) on a line by themselves.
+---
+This is some text after the horizontal rule.
+___
+This is some text after the horizontal rule.
+***
+This is some text after the horizontal rule.`,
+        want: `<p>To create a horizontal rule, use three or more asterisks (<em>*</em>), dashes (---), or underscores (___) on a line by themselves.</p>
+<hr>
+<p>This is some text after the horizontal rule.</p>
+<hr>
+<p>This is some text after the horizontal rule.</p>
+<hr>
+<p>This is some text after the horizontal rule.</p>`,
+      },
+    ];
+    for (const t of tests) {
+      expect(unescape(marked(t.markdown))).toBe(t.want);
+    }
+  });
   test("parse code block", () => {
     const tests = [
       {
