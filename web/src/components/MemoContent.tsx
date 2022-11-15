@@ -31,7 +31,7 @@ const defaultDisplayConfig: DisplayConfig = {
 const MemoContent: React.FC<Props> = (props: Props) => {
   const { className, content, onMemoContentClick, onMemoContentDoubleClick } = props;
   const foldedContent = useMemo(() => {
-    const firstHorizontalRuleIndex = content.search(/^---$|^\*\*\*$|^___$/gm);
+    const firstHorizontalRuleIndex = content.search(/^---$|^\*\*\*$|^___$/m);
     return firstHorizontalRuleIndex !== -1 ? content.slice(0, firstHorizontalRuleIndex) : content;
   }, [content]);
   const { t } = useTranslation();
