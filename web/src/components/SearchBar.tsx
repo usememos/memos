@@ -9,6 +9,12 @@ import "../less/search-bar.less";
 const SearchBar = () => {
   const { t } = useTranslation();
   const memoType = useAppSelector((state) => state.location.query?.type);
+  const [queryText, setQueryText] = useState("");
+
+  useEffect(() => {
+    const text = locationService.getState().query.text;
+    setQueryText(text === undefined ? "" : text);
+  }, [locationService.getState().query.text]);
 
   const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
     const { type: prevType } = locationService.getState().query ?? {};
@@ -18,18 +24,11 @@ const SearchBar = () => {
     locationService.setMemoTypeQuery(type);
   };
 
-  const [queryText, setQueryText] = useState("");
-
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;
     setQueryText(text);
     locationService.setTextQuery(text);
   };
-
-  useEffect(() => {
-    const text = locationService.getState().query.text;
-    setQueryText(text === undefined ? "" : text);
-  }, [locationService.getState().query.text]);
 
   return (
     <div className="search-bar-container">
