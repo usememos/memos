@@ -1,10 +1,10 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { locationService } from "../services";
 import { useAppSelector } from "../store";
 import { memoSpecialTypes } from "../helpers/filter";
 import Icon from "./Icon";
 import "../less/search-bar.less";
-import { useEffect, useState } from "react";
 
 const SearchBar = () => {
   const { t } = useTranslation();
