@@ -74,15 +74,6 @@ const MemoEditor = () => {
   }, []);
 
   useEffect(() => {
-    if (editorState.markMemoId && editorState.markMemoId !== UNKNOWN_ID) {
-      const editorCurrentValue = editorRef.current?.getContent();
-      const memoLinkText = `${editorCurrentValue ? "\n" : ""}Mark: @[MEMO](${editorState.markMemoId})`;
-      editorRef.current?.insertText(memoLinkText);
-      editorStateService.clearMarkMemo();
-    }
-  }, [editorState.markMemoId]);
-
-  useEffect(() => {
     if (editorState.editMemoId) {
       memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
         if (memo) {

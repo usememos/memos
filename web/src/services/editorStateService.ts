@@ -1,5 +1,5 @@
 import store from "../store";
-import { setEditMemoId, setMarkMemoId, setMemoVisibility } from "../store/modules/editor";
+import { setEditMemoId, setMemoVisibility } from "../store/modules/editor";
 
 const editorStateService = {
   getState: () => {
@@ -12,14 +12,6 @@ const editorStateService = {
 
   clearEditMemo: () => {
     store.dispatch(setEditMemoId());
-  },
-
-  setMarkMemoWithId: (markMemoId: MemoId) => {
-    store.dispatch(setMarkMemoId(markMemoId));
-  },
-
-  clearMarkMemo: () => {
-    store.dispatch(setMarkMemoId());
   },
 
   setMemoVisibility: (memoVisibility: Visibility) => {

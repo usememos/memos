@@ -5,7 +5,6 @@ import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import "dayjs/locale/zh";
-import { UNKNOWN_ID } from "../helpers/consts";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -71,10 +70,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleMarkMemoClick = () => {
-    editorStateService.setMarkMemoWithId(memo.id);
-  };
-
   const handleEditMemoClick = () => {
     editorStateService.setEditMemoWithId(memo.id);
   };
@@ -102,17 +97,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
-    if (targetEl.className === "memo-link-text") {
-      const memoId = targetEl.dataset?.value;
-      const memoTemp = await memoService.getMemoById(Number(memoId) ?? UNKNOWN_ID);
-
-      if (memoTemp) {
-        navigate(`/m/${memoTemp.id}`);
-      } else {
-        toastHelper.error(t("message.memo-not-found"));
-        targetEl.classList.remove("memo-link-text");
-      }
-    } else if (targetEl.className === "tag-span") {
+    if (targetEl.className === "tag-span") {
       const tagName = targetEl.innerText.slice(1);
       const currTagQuery = locationService.getState().query?.tag;
       if (currTagQuery === tagName) {
@@ -231,9 +216,6 @@ const Memo: React.FC<Props> = (props: Props) => {
                     <span className="tip-text">{t("common.share")}</span>
                   </div>
                 </div>
-                <span className="btn" onClick={handleMarkMemoClick}>
-                  {t("common.mark")}
-                </span>
                 <span className="btn" onClick={handleCopyContent}>
                   {t("memo.copy")}
                 </span>
