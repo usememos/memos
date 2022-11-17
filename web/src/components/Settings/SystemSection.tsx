@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Switch, Textarea } from "@mui/joy";
 import * as api from "../../helpers/api";
+import toastHelper from "../Toast";
 import "../../less/settings/preferences-section.less";
 
 interface State {
@@ -48,10 +49,16 @@ const SystemSection = () => {
   };
 
   const handleSaveAdditionalStyle = async () => {
-    await api.upsertSystemSetting({
-      name: "additionalStyle",
-      value: JSON.stringify(state.additionalStyle),
-    });
+    try {
+      await api.upsertSystemSetting({
+        name: "additionalStyle",
+        value: JSON.stringify(state.additionalStyle),
+      });
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    toastHelper.success("Succeed to update additional style");
   };
 
   const handleAdditionalScriptChanged = (value: string) => {
@@ -62,10 +69,16 @@ const SystemSection = () => {
   };
 
   const handleSaveAdditionalScript = async () => {
-    await api.upsertSystemSetting({
-      name: "additionalScript",
-      value: JSON.stringify(state.additionalScript),
-    });
+    try {
+      await api.upsertSystemSetting({
+        name: "additionalScript",
+        value: JSON.stringify(state.additionalScript),
+      });
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    toastHelper.success("Succeed to update additional script");
   };
 
   return (
@@ -89,7 +102,7 @@ const SystemSection = () => {
         }}
         minRows={5}
         maxRows={10}
-        defaultValue={state.additionalStyle}
+        value={state.additionalStyle}
         onChange={(event) => handleAdditionalStyleChanged(event.target.value)}
       />
       <div className="form-label selector mt-2">
@@ -106,7 +119,7 @@ const SystemSection = () => {
         }}
         minRows={5}
         maxRows={10}
-        defaultValue={state.additionalScript}
+        value={state.additionalScript}
         onChange={(event) => handleAdditionalScriptChanged(event.target.value)}
       />
     </div>
