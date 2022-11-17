@@ -1,5 +1,5 @@
 import Picker, { IEmojiPickerProps } from "emoji-picker-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface Props {
   shouldShow: boolean;
@@ -7,8 +7,15 @@ interface Props {
   onShouldShowEmojiPickerChange: (status: boolean) => void;
 }
 
+interface State {
+  hasShown: boolean;
+}
+
 export const EmojiPicker: React.FC<Props> = (props: Props) => {
   const { shouldShow, onEmojiClick, onShouldShowEmojiPickerChange } = props;
+  const [state, setState] = useState<State>({
+    hasShown: false,
+  });
 
   useEffect(() => {
     if (shouldShow) {
@@ -25,13 +32,20 @@ export const EmojiPicker: React.FC<Props> = (props: Props) => {
         capture: true,
         once: true,
       });
+      setState({
+        hasShown: true,
+      });
     }
   }, [shouldShow]);
 
   return (
-    <div className={`emoji-picker ${shouldShow ? "" : "hidden"}`}>
-      <Picker onEmojiClick={onEmojiClick} disableSearchBar />
-    </div>
+    <>
+      {state.hasShown && (
+        <div className={`emoji-picker ${shouldShow ? "" : "hidden"}`}>
+          <Picker onEmojiClick={onEmojiClick} disableSearchBar />
+        </div>
+      )}
+    </>
   );
 };
 
