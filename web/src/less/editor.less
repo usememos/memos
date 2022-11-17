@@ -1,12 +1,9 @@
-@import "./mixin.less";
-
 .common-editor-wrapper {
   @apply flex flex-col justify-start items-start relative w-full h-auto bg-white;
 
   > .common-editor-inputer {
     @apply w-full h-full my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent whitespace-pre-wrap;
     max-height: 300px;
-    .pretty-scroll-bar(2px, 0);
 
     &::placeholder {
       padding-left: 2px;
