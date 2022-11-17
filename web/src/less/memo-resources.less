@@ -1,17 +1,38 @@
-@import "./mixin.less";
-
 .resource-wrapper {
   @apply w-full flex flex-col justify-start items-start;
 
   > .images-wrapper {
-    @apply flex flex-row justify-start items-start mt-2 w-full overflow-x-auto overflow-y-hidden pb-1;
+    @apply w-full flex mt-2 pb-1;
 
     > .memo-img {
-      @apply mr-2 last:mr-0 w-auto h-auto shrink-0 grow-0 overflow-y-hidden;
-      .hide-scroll-bar();
+      @apply w-auto h-auto shrink-0 grow-0;
 
       > img {
-        @apply w-auto max-h-40 rounded;
+        @apply rounded;
+      }
+    }
+
+    &.row {
+      @apply flex-row justify-start items-start overflow-x-auto overflow-y-hidden;
+
+      > .memo-img {
+        @apply mr-2 last:mr-0;
+
+        > img {
+          @apply w-auto max-h-40;
+        }
+      }
+    }
+
+    &.col {
+      @apply flex-col justify-start items-start;
+
+      > .memo-img {
+        @apply w-full h-auto shrink-0 mb-2 last:mb-0 hide-scrollbar;
+
+        > img {
+          @apply w-full h-auto;
+        }
       }
     }
   }

@@ -1,5 +1,3 @@
-@import "../mixin.less";
-
 .selector-wrapper {
   @apply flex flex-col justify-start items-start relative h-8;
 
@@ -26,11 +24,10 @@
   }
 
   > .items-wrapper {
-    @apply flex flex-col justify-start items-start absolute top-full left-0 w-auto p-1 mt-1 -ml-2 bg-white rounded-md overflow-y-auto z-1;
+    @apply flex flex-col justify-start items-start absolute top-full left-0 w-auto p-1 mt-1 -ml-2 bg-white rounded-md overflow-y-auto z-1 hide-scrollbar;
     min-width: calc(100% + 16px);
     max-height: 256px;
     box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
-    .hide-scroll-bar();
 
     > .item-container {
       @apply flex flex-col justify-start items-start w-full px-3 text-sm select-none leading-8 cursor-pointer rounded whitespace-nowrap hover:bg-gray-100;
