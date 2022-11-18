@@ -6,6 +6,7 @@ interface Profile {
 interface SystemStatus {
   host: User;
   profile: Profile;
+  dbSize: number;
   // System settings
   allowSignUp: boolean;
   additionalStyle: string;

@@ -21,6 +21,7 @@ function App() {
     globalService.initialState();
   }, []);
 
+  // Inject additional style and script codes.
   useEffect(() => {
     api.getSystemStatus().then(({ data }) => {
       const { data: status } = data;

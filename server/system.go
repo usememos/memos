@@ -3,9 +3,11 @@ package server
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 )
@@ -65,6 +67,12 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			}
 		}
 
+		fi, err := os.Stat(s.Profile.DSN)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read database fileinfo").SetInternal(err)
+		}
+		systemStatus.DBSize = fi.Size()
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(systemStatus)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode system status response").SetInternal(err)
@@ -103,6 +111,10 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
 		}
+		s.Collector.Collect(ctx, &metric.Metric{
+			Name:   "systemSetting updated",
+			Labels: map[string]string{"field": string(systemSettingUpsert.Name)},
+		})
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(systemSetting)); err != nil {
