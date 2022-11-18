@@ -16,6 +16,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+const (
+	// The max file size is 32MB.
+	maxFileSize = (32 * 8) << 20
+)
+
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -24,13 +29,15 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		err := c.Request().ParseMultipartForm(64 << 20)
-		if err != nil {
+		if err := c.Request().ParseMultipartForm(maxFileSize); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Upload file overload max size").SetInternal(err)
 		}
 
 		file, err := c.FormFile("file")
 		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get uploading file").SetInternal(err)
+		}
+		if file == nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Upload file not found").SetInternal(err)
 		}
 
