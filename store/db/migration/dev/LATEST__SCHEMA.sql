@@ -1,3 +1,17 @@
+-- migration_history
+CREATE TABLE migration_history (
+  version TEXT NOT NULL PRIMARY KEY,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
+);
+
+-- system_setting
+CREATE TABLE system_setting (
+  name TEXT NOT NULL,
+  value TEXT NOT NULL,
+  description TEXT NOT NULL DEFAULT '',
+  UNIQUE(name)
+);
+
 -- user
 CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -9,6 +23,14 @@ CREATE TABLE user (
   name TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   open_id TEXT NOT NULL UNIQUE
+);
+
+-- user_setting
+CREATE TABLE user_setting (
+  user_id INTEGER NOT NULL,
+  key TEXT NOT NULL,
+  value TEXT NOT NULL,
+  UNIQUE(user_id, key)
 );
 
 -- memo
@@ -55,14 +77,6 @@ CREATE TABLE resource (
   size INTEGER NOT NULL DEFAULT 0
 );
 
--- user_setting
-CREATE TABLE user_setting (
-  user_id INTEGER NOT NULL,
-  key TEXT NOT NULL,
-  value TEXT NOT NULL,
-  UNIQUE(user_id, key)
-);
-
 -- memo_resource
 CREATE TABLE memo_resource (
   memo_id INTEGER NOT NULL,
@@ -72,10 +86,14 @@ CREATE TABLE memo_resource (
   UNIQUE(memo_id, resource_id)
 );
 
--- system_setting
-CREATE TABLE system_setting (
-  name TEXT NOT NULL,
-  value TEXT NOT NULL,
+-- memo_relation
+CREATE TABLE memo_relation (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  memo_id INTEGER NOT NULL,
+  related_memo_id INTEGER NOT NULL,
+  type TEXT NOT NULL,
   description TEXT NOT NULL DEFAULT '',
-  UNIQUE(name)
+  UNIQUE(memo_id, related_memo_id, type)
 );
