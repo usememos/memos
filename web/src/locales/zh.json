@@ -133,6 +133,7 @@
     "preference": "偏好设置",
     "member": "成员",
     "member-list": "成员列表",
+    "system": "系统",
     "account-section": {
       "title": "账号信息",
       "change-password": "修改密码"
@@ -148,6 +149,14 @@
     },
     "member-section": {
       "create-a-member": "创建成员"
+    },
+    "system-section": {
+      "database-file-size": "数据库文件大小",
+      "allow-user-signup": "允许用户注册",
+      "additional-style": "自定义样式",
+      "additional-script": "自定义脚本",
+      "additional-style-placeholder": "自定义 CSS 代码",
+      "additional-script-placeholder": "自定义 JavaScript 代码"
     }
   },
   "amount-text": {

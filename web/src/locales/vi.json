@@ -132,6 +132,7 @@
     "preference": "Sở thích",
     "member": "Thành viên",
     "member-list": "Danh sách thành viên",
+    "system": "hệ thống",
     "account-section": {
       "title": "Thông tin tài khoản",
       "change-password": "Đổi mật khẩu"
@@ -147,6 +148,14 @@
     },
     "member-section": {
       "create-a-member": "Tạo thành viên"
+    },
+    "system-section": {
+      "database-file-size": "Kích thước tệp cơ sở dữ liệu",
+      "allow-user-signup": "Cho phép người dùng đăng ký",
+      "additional-style": "Phong cách bổ sung",
+      "additional-script": "Tập lệnh bổ sung",
+      "additional-style-placeholder": "Mã css bổ sung",
+      "additional-script-placeholder": "Mã JavaScript bổ sung"
     }
   },
   "amount-text": {
