@@ -65,7 +65,7 @@ jobs:
           cache: true
       - name: Verify go.mod is tidy
         run: |
-          go mod tidy
+          go mod tidy -go=1.19
           git diff --exit-code
       - name: golangci-lint
         uses: golangci/golangci-lint-action@v3
