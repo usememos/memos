@@ -42,6 +42,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		systemStatus := api.SystemStatus{
 			Host:             hostUser,
 			Profile:          s.Profile,
+			DBSize:           0,
 			AllowSignUp:      false,
 			AdditionalStyle:  "",
 			AdditionalScript: "",
@@ -67,11 +68,22 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			}
 		}
 
-		fi, err := os.Stat(s.Profile.DSN)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read database fileinfo").SetInternal(err)
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if ok {
+			user, err := s.Store.FindUser(ctx, &api.UserFind{
+				ID: &userID,
+			})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+			}
+			if user != nil && user.Role == api.Host {
+				fi, err := os.Stat(s.Profile.DSN)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read database fileinfo").SetInternal(err)
+				}
+				systemStatus.DBSize = fi.Size()
+			}
 		}
-		systemStatus.DBSize = fi.Size()
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(systemStatus)); err != nil {
