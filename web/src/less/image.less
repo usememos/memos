@@ -1,11 +1,8 @@
 .image-container {
-  width: 200px;
-  height: auto;
-  overflow-y: scroll;
-  cursor: pointer;
+  @apply hide-scrollbar;
   -webkit-tap-highlight-color: transparent;
 
   > img {
-    @apply m-auto w-full h-auto;
+    @apply w-full h-auto;
   }
 }

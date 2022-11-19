@@ -5,10 +5,10 @@
     @apply w-full flex mt-2 pb-1;
 
     > .memo-img {
-      @apply w-auto h-auto shrink-0 grow-0;
+      @apply w-auto h-auto shrink-0 grow-0 cursor-pointer;
 
       > img {
-        @apply rounded;
+        @apply rounded hover:shadow;
       }
     }
 
@@ -16,7 +16,7 @@
       @apply flex-row justify-start items-start overflow-x-auto overflow-y-hidden;
 
       > .memo-img {
-        @apply mr-2 last:mr-0;
+        @apply max-w-xs h-auto mr-2 last:mr-0;
 
         > img {
           @apply w-auto max-h-40;
@@ -28,10 +28,10 @@
       @apply flex-col justify-start items-start;
 
       > .memo-img {
-        @apply w-full h-auto shrink-0 mb-2 last:mb-0 hide-scrollbar;
+        @apply w-full h-auto mb-2 last:mb-0;
 
         > img {
-          @apply w-full h-auto;
+          @apply w-full h-auto shadow;
         }
       }
     }
