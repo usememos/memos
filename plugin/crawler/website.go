@@ -3,6 +3,7 @@ package crawler
 import (
 	"io"
 	"net/http"
+	urlUtil "net/url"
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -15,6 +16,10 @@ type HTMLMeta struct {
 }
 
 func GetWebsiteMeta(url string) (*HTMLMeta, error) {
+	if _, err := urlUtil.Parse(url); err != nil {
+		return nil, err
+	}
+
 	response, err := http.Get(url)
 	if err != nil {
 		return nil, err
