@@ -66,10 +66,6 @@ func (db *DB) Open(ctx context.Context) (err error) {
 				return fmt.Errorf("failed to apply latest schema: %w", err)
 			}
 		} else {
-			if err := db.createMigrationHistoryTable(ctx); err != nil {
-				return fmt.Errorf("failed to create migration_history table: %w", err)
-			}
-
 			currentVersion := version.GetCurrentVersion(db.profile.Mode)
 			migrationHistory, err := db.FindMigrationHistory(ctx, &MigrationHistoryFind{})
 			if err != nil {
@@ -235,24 +231,4 @@ func getMinorVersionList() []string {
 	sort.Strings(minorVersionList)
 
 	return minorVersionList
-}
-
-// createMigrationHistoryTable creates the migration_history table if it doesn't exist.
-func (db *DB) createMigrationHistoryTable(ctx context.Context) error {
-	tx, err := db.Db.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	if err := createTable(ctx, tx, `
-	CREATE TABLE IF NOT EXISTS migration_history (
-		version TEXT NOT NULL PRIMARY KEY,
-		created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
-	);
-	`); err != nil {
-		return err
-	}
-
-	return tx.Commit()
 }

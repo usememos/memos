@@ -20,7 +20,7 @@ type MigrationHistoryFind struct {
 }
 
 func (db *DB) FindMigrationHistory(ctx context.Context, find *MigrationHistoryFind) (*MigrationHistory, error) {
-	tx, err := db.Db.Begin()
+	tx, err := db.Db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (db *DB) FindMigrationHistory(ctx context.Context, find *MigrationHistoryFi
 }
 
 func (db *DB) UpsertMigrationHistory(ctx context.Context, upsert *MigrationHistoryUpsert) (*MigrationHistory, error) {
-	tx, err := db.Db.Begin()
+	tx, err := db.Db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -111,22 +111,11 @@ func upsertMigrationHistory(ctx context.Context, tx *sql.Tx, upsert *MigrationHi
 			version=EXCLUDED.version
 		RETURNING version, created_ts
 	`
-	row, err := tx.QueryContext(ctx, query, upsert.Version)
-	if err != nil {
-		return nil, err
-	}
-	defer row.Close()
-
-	row.Next()
 	var migrationHistory MigrationHistory
-	if err := row.Scan(
+	if err := tx.QueryRowContext(ctx, query, upsert.Version).Scan(
 		&migrationHistory.Version,
 		&migrationHistory.CreatedTs,
 	); err != nil {
-		return nil, err
-	}
-
-	if err := row.Err(); err != nil {
 		return nil, err
 	}
 
