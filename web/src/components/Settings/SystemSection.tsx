@@ -97,17 +97,17 @@ const SystemSection = () => {
     <div className="section-container system-section-container">
       <p className="title-text">{t("common.basic")}</p>
       <p className="text-value">
-        Database File Size: <span className="font-mono font-medium">{formatBytes(state.dbSize)}</span>
+        {t("setting.system-section.database-file-size")}: <span className="font-mono font-medium">{formatBytes(state.dbSize)}</span>
       </p>
       <p className="title-text">{t("sidebar.setting")}</p>
       <label className="form-label">
-        <span className="normal-text">Allow user signup</span>
+        <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
         <Switch size="sm" checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
       </label>
       <div className="form-label">
-        <span className="normal-text">Additional style</span>
+        <span className="normal-text">{t("setting.system-section.additional-style")}</span>
         <Button size="sm" onClick={handleSaveAdditionalStyle}>
-          Save
+          {t("common.save")}
         </Button>
       </div>
       <Textarea
@@ -118,14 +118,14 @@ const SystemSection = () => {
         }}
         minRows={4}
         maxRows={10}
-        placeholder="Additional css codes"
+        placeholder={t("setting.system-section.additional-style-placeholder")}
         value={state.additionalStyle}
         onChange={(event) => handleAdditionalStyleChanged(event.target.value)}
       />
       <div className="form-label mt-2">
-        <span className="normal-text">Additional script</span>
+        <span className="normal-text">{t("setting.system-section.additional-script")}</span>
         <Button size="sm" onClick={handleSaveAdditionalScript}>
-          Save
+          {t("common.save")}
         </Button>
       </div>
       <Textarea
@@ -136,7 +136,7 @@ const SystemSection = () => {
         }}
         minRows={4}
         maxRows={10}
-        placeholder="Additional JavaScript codes"
+        placeholder={t("setting.system-section.additional-script-placeholder")}
         value={state.additionalScript}
         onChange={(event) => handleAdditionalScriptChanged(event.target.value)}
       />

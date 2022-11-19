@@ -133,6 +133,7 @@
     "preference": "Preference",
     "member": "Member",
     "member-list": "Member list",
+    "system": "System",
     "account-section": {
       "title": "Account Information",
       "change-password": "Change password"
@@ -148,6 +149,14 @@
     },
     "member-section": {
       "create-a-member": "Create a member"
+    },
+    "system-section": {
+      "database-file-size": "Database File Size",
+      "allow-user-signup": "Allow user signup",
+      "additional-style": "Additional style",
+      "additional-script": "Additional script",
+      "additional-style-placeholder": "Additional CSS codes",
+      "additional-script-placeholder": "Additional JavaScript codes"
     }
   },
   "amount-text": {
