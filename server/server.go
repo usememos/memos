@@ -66,6 +66,7 @@ func NewServer(profile *profile.Profile) *Server {
 
 	publicGroup := e.Group("/o")
 	s.registerResourcePublicRoutes(publicGroup)
+	s.registerCrawlerPublicRoutes(publicGroup)
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
