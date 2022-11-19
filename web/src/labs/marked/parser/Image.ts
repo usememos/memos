@@ -8,7 +8,8 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
-  return `<img class='img' src='${escape(matchResult[1])}' />`;
+  // NOTE: Get image blob from backend to avoid CORS.
+  return `<img class='img' src='/o/get/image?url=${escape(matchResult[1])}' />`;
 };
 
 export default {
