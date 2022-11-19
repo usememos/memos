@@ -1,9 +1,10 @@
-package crawler
+package getter
 
 import (
+	"fmt"
 	"io"
 	"net/http"
-	urlUtil "net/url"
+	"net/url"
 
 	"golang.org/x/net/html"
 	"golang.org/x/net/html/atom"
@@ -15,19 +16,26 @@ type HTMLMeta struct {
 	Image       string `json:"image"`
 }
 
-func GetWebsiteMeta(url string) (*HTMLMeta, error) {
-	if _, err := urlUtil.Parse(url); err != nil {
+func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
+	if _, err := url.Parse(urlStr); err != nil {
 		return nil, err
 	}
 
-	response, err := http.Get(url)
+	response, err := http.Get(urlStr)
 	if err != nil {
 		return nil, err
 	}
 	defer response.Body.Close()
 
-	htmlMeta := extractHTMLMeta(response.Body)
+	mediatype, err := getMediatype(response)
+	if err != nil {
+		return nil, err
+	}
+	if mediatype != "text/html" {
+		return nil, fmt.Errorf("Wrong website mediatype")
+	}
 
+	htmlMeta := extractHTMLMeta(response.Body)
 	return htmlMeta, nil
 }
 

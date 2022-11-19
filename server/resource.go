@@ -161,7 +161,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if _, err := c.Response().Writer.Write(resource.Blob); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write resource blob").SetInternal(err)
 		}
-
 		return nil
 	})
 
