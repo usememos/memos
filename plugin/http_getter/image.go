@@ -33,6 +33,10 @@ func GetImage(urlStr string) (*Image, error) {
 	}
 
 	bodyBytes, err := io.ReadAll(response.Body)
+	if err != nil {
+		return nil, err
+	}
+
 	image := &Image{
 		Blob:      bodyBytes,
 		Mediatype: mediatype,
