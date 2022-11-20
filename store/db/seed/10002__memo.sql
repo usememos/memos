@@ -40,9 +40,9 @@ INSERT INTO
 VALUES
   (
     1003,
-    "**Bytebase** - Database CI/CD for DevOps teams.
+    "**Bytebase** - An open source Database CI/CD for DevOps teams.
 ![](https://star-history.com/bytebase.webp)
-🌐 [https://bytebase.com](https://www.bytebase.com)",
+🌐 [Source code](https://github.com/bytebase/bytebase)",
     101,
     'PUBLIC'
   );
