@@ -1,6 +1,6 @@
 <p align="center"><a href="https://usememos.com"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.webp" alt="✍️ memos" /></a></p>
 
-<p align="center">An open-source, self-hosted memo hub for knowledge management and collaboration.</p>
+<p align="center">An open-source, self-hosted memo hub with knowledge management and collaboration.</p>
 
 <p align="center">
   <a href="https://github.com/usememos/memos/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos" /></a>
@@ -49,12 +49,16 @@ Contributions are what make the open source community such an amazing place to b
 
 See more in [development guide](https://github.com/usememos/memos/tree/main/docs/development.md).
 
-## Community Products
+## Products made by Community
 
 - [Moe Memos](https://memos.moe/) - Third party client for iOS and Android
 - [lmm214/memos-bber](https://github.com/lmm214/memos-bber) - Chrome extension
 - [Rabithua/memos_wmp](https://github.com/Rabithua/memos_wmp) - Wechat miniprogram
 - [qazxcdswe123/telegramMemoBot](https://github.com/qazxcdswe123/telegramMemoBot) - Telegram bot
+
+## License
+
+This project is open source and available under the [MIT License](https://github.com/usememos/memos/blob/main/LICENSE).
 
 ## Star history
 
