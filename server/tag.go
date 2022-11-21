@@ -12,7 +12,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-var tagRegexpList = []*regexp.Regexp{regexp.MustCompile(`^#([^\s#]+?) `), regexp.MustCompile(`[^\S#]?#([^\s#]+?) `)}
+var tagRegexpList = []*regexp.Regexp{regexp.MustCompile(`^#([^\s#]+?) `), regexp.MustCompile(`[^\S]#([^\s#]+?) `), regexp.MustCompile(` #([^\s#]+?) `)}
 
 func (s *Server) registerTagRoutes(g *echo.Group) {
 	g.GET("/tag", func(c echo.Context) error {
