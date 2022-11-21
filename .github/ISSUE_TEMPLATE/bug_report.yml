@@ -26,13 +26,6 @@ body:
       required: true
   - type: textarea
     attributes:
-      label: Expected behavior
-      description: |
-        Describe what you expected to happen.
-    validations:
-      required: true
-  - type: textarea
-    attributes:
       label: Screenshots or additional context
       description: |
-        Add screenshots or any other context about the problem here.
+        Add screenshots or any other context about the problem.
