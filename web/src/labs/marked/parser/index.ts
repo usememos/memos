@@ -38,5 +38,6 @@ export const blockElementParserList = [
   UnorderedList,
   Paragraph,
 ];
+// TODO 感觉会递归
 export const inlineElementParserList = [Image, BoldEmphasis, Bold, Emphasis, Link, InlineCode, PlainLink, Tag, PlainText];
 export const parserList = [...blockElementParserList, ...inlineElementParserList];

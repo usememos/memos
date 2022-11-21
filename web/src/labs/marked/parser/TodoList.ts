@@ -4,13 +4,13 @@ import { marked } from "..";
 
 export const TODO_LIST_REG = /^- \[ \] (.+)(\n?)/;
 
-const renderer = (rawStr: string): string => {
+const renderer = (rawStr: string, highlightWord: string | undefined): string => {
   const matchResult = rawStr.match(TODO_LIST_REG);
   if (!matchResult) {
     return rawStr;
   }
 
-  const parsedContent = marked(matchResult[1], [], inlineElementParserList);
+  const parsedContent = marked(matchResult[1], highlightWord, [], inlineElementParserList);
   return `<p><span class='todo-block todo' data-value='TODO'></span>${parsedContent}</p>${escape(matchResult[2])}`;
 };
 

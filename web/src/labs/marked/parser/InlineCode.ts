@@ -1,14 +1,15 @@
 import { escape } from "lodash-es";
+import { renderWithHighlightWord } from "./utils";
 
 export const INLINE_CODE_REG = /`(.+?)`/;
 
-const renderer = (rawStr: string): string => {
+const renderer = (rawStr: string, highlightWord: string | undefined): string => {
   const matchResult = rawStr.match(INLINE_CODE_REG);
   if (!matchResult) {
     return rawStr;
   }
 
-  return `<code>${escape(matchResult[1])}</code>`;
+  return `<code>${renderWithHighlightWord(escape(matchResult[1]), highlightWord)}</code>`;
 };
 
 export default {

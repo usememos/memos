@@ -10,7 +10,12 @@ const match = (rawStr: string, regex: RegExp): number => {
   return matchStr.length;
 };
 
-export const marked = (markdownStr: string, blockParsers = blockElementParserList, inlineParsers = inlineElementParserList): string => {
+export const marked = (
+  markdownStr: string,
+  highlightWord: string | undefined,
+  blockParsers = blockElementParserList,
+  inlineParsers = inlineElementParserList
+): string => {
   for (const parser of blockParsers) {
     const startIndex = markdownStr.search(parser.regex);
     const matchedLength = match(markdownStr, parser.regex);
@@ -19,7 +24,11 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
       const prefixStr = markdownStr.slice(0, startIndex);
       const matchedStr = markdownStr.slice(startIndex, startIndex + matchedLength);
       const suffixStr = markdownStr.slice(startIndex + matchedLength);
-      return marked(prefixStr, blockParsers, inlineParsers) + parser.renderer(matchedStr) + marked(suffixStr, blockParsers, inlineParsers);
+      return (
+        marked(prefixStr, highlightWord, blockParsers, inlineParsers) +
+        parser.renderer(matchedStr, highlightWord) +
+        marked(suffixStr, highlightWord, blockParsers, inlineParsers)
+      );
     }
   }
 
@@ -47,7 +56,7 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
     const prefixStr = markdownStr.slice(0, matchedIndex);
     const matchedStr = markdownStr.slice(matchedIndex, matchedIndex + matchedLength);
     const suffixStr = markdownStr.slice(matchedIndex + matchedLength);
-    return prefixStr + matchedInlineParser.renderer(matchedStr) + marked(suffixStr, [], inlineParsers);
+    return prefixStr + matchedInlineParser.renderer(matchedStr, highlightWord) + marked(suffixStr, highlightWord, [], inlineParsers);
   }
 
   return markdownStr;

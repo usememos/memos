@@ -6,9 +6,11 @@
  * | 1 | 2 | 3 |
  * | 4 | 5 | 6 |
  */
+import { renderWithHighlightWord } from "./utils";
+
 export const TABLE_REG = /^(\|.*\|)(?:(?:\n(?:\|-*)+\|))((?:\n\|.*\|)+)(\n?)/;
 
-const renderer = (rawStr: string): string => {
+const renderer = (rawStr: string, highlightWord: string | undefined): string => {
   const matchResult = rawStr.match(TABLE_REG);
   if (!matchResult) {
     return rawStr;
@@ -29,11 +31,11 @@ const renderer = (rawStr: string): string => {
   return `<table>
   <thead>
     <tr>
-      ${tableHeader.map((str) => `<th>${str}</th>`).join("")}
+      ${tableHeader.map((str) => `<th>${renderWithHighlightWord(str, highlightWord)}</th>`).join("")}
     </tr>
   </thead>
   <tbody>
-    ${tableBody.map((row) => `<tr>${row.map((str) => `<td>${str}</td>`).join("")}</tr>`).join("")}
+    ${tableBody.map((row) => `<tr>${row.map((str) => `<td>${renderWithHighlightWord(str, highlightWord)}</td>`).join("")}</tr>`).join("")}
   </tbody>
 </table>${matchResult[3]}`;
 };

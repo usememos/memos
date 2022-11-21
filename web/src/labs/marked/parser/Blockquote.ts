@@ -1,14 +1,17 @@
 import { escape } from "lodash";
+import { renderWithHighlightWord } from "./utils";
 
 export const BLOCKQUOTE_REG = /^>\s+(.+)(\n?)/;
 
-const renderer = (rawStr: string): string => {
+const renderer = (rawStr: string, highlightWord: string | undefined): string => {
   const matchResult = rawStr.match(BLOCKQUOTE_REG);
   if (!matchResult) {
     return rawStr;
   }
 
-  return `<blockquote>${escape(matchResult[1])}</blockquote>${matchResult[2]}`;
+  const result = renderWithHighlightWord(escape(matchResult[1]), highlightWord);
+
+  return `<blockquote>${result}</blockquote>${matchResult[2]}`;
 };
 
 export default {
