@@ -12,7 +12,7 @@ const match = (rawStr: string, regex: RegExp): number => {
 
 export const marked = (
   markdownStr: string,
-  highlightWord: string | undefined,
+  highlightWord: string | undefined = undefined,
   blockParsers = blockElementParserList,
   inlineParsers = inlineElementParserList
 ): string => {
