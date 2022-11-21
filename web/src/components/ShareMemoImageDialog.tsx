@@ -64,6 +64,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
       }
 
       toImage(memoElRef.current, {
+        backgroundColor: "#eaeaea",
         pixelRatio: window.devicePixelRatio * 2,
       })
         .then((url) => {
