@@ -185,6 +185,8 @@
     "succeed-copy-content": "复制内容到剪贴板成功。",
     "change-resource-filename": "更改资源文件名",
     "resource-filename-updated": "资源文件名更改成功。",
-    "invalid-resource-filename": "无效的资源文件名"
+    "invalid-resource-filename": "无效的资源文件名",
+    "click-to-save-the-image": "点击保存图片",
+    "generating-the-screenshot": "正在生成图片..."
   }
 }
