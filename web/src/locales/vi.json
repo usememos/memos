@@ -184,6 +184,8 @@
     "succeed-copy-content": "Đã sao chép nội dung memo thành công.",
     "change-resource-filename": "Thay đổi tên tệp tài nguyên",
     "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi.",
-    "invalid-resource-filename": "Tên tệp không hợp lệ."
+    "invalid-resource-filename": "Tên tệp không hợp lệ.",
+    "click-to-save-the-image": "Bấm để lưu hình ảnh",
+    "generating-the-screenshot": "Đang tạo ảnh chụp màn hình ..."
   }
 }
