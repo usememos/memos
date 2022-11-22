@@ -1,7 +1,8 @@
-import { locationService } from ".";
+import { globalService, locationService } from ".";
 import * as api from "../helpers/api";
 import { UNKNOWN_ID } from "../helpers/consts";
 import store from "../store";
+import { setLocale } from "../store/modules/global";
 import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
 
 const defauleSetting: Setting = {
@@ -35,11 +36,9 @@ const userService = {
   },
 
   initialState: async () => {
-    const {
-      data: { host },
-    } = (await api.getSystemStatus()).data;
-    if (host) {
-      store.dispatch(setHost(convertResponseModelUser(host)));
+    const { systemStatus } = globalService.getState();
+    if (systemStatus.host) {
+      store.dispatch(setHost(convertResponseModelUser(systemStatus.host)));
     }
 
     const ownerUserId = userService.getUserIdFromPath();
@@ -53,6 +52,9 @@ const userService = {
     const { data: user } = (await api.getMyselfUser()).data;
     if (user) {
       store.dispatch(setUser(convertResponseModelUser(user)));
+      if (user.setting.locale) {
+        store.dispatch(setLocale(user.setting.locale));
+      }
     }
   },
 

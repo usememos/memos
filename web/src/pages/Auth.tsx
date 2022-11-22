@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../store";
 import * as api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
@@ -19,23 +20,11 @@ const validateConfig: ValidatorConfig = {
 const Auth = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const pageLoadingState = useLoading(true);
-  const [systemStatus, setSystemStatus] = useState<SystemStatus>();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const systemStatus = useAppSelector((state) => state.global.systemStatus);
   const actionBtnLoadingState = useLoading(false);
-
-  useEffect(() => {
-    api.getSystemStatus().then(({ data }) => {
-      const { data: status } = data;
-      setSystemStatus(status);
-      if (status.profile.mode === "dev") {
-        setEmail("demo@usememos.com");
-        setPassword("secret");
-      }
-      pageLoadingState.setFinish();
-    });
-  }, []);
+  const mode = systemStatus.profile.mode;
+  const [email, setEmail] = useState(mode === "dev" ? "demo@usememos.com" : "");
+  const [password, setPassword] = useState(mode === "dev" ? "secret" : "");
 
   const handleEmailInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -138,39 +127,32 @@ const Auth = () => {
             </div>
           </div>
           <div className="action-btns-container">
-            {!pageLoadingState.isLoading && (
+            {systemStatus?.host ? (
               <>
-                {systemStatus?.host ? (
-                  <>
-                    {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto animate-spin" />}
-                    {systemStatus?.allowSignUp && (
-                      <>
-                        <button
-                          className={`btn signup-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                          onClick={() => handleSignUpBtnsClick("USER")}
-                        >
-                          {t("common.sign-up")}
-                        </button>
-                        <span className="mr-2 font-mono text-gray-200">/</span>
-                      </>
-                    )}
-                    <button
-                      className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                      onClick={handleSigninBtnsClick}
-                    >
-                      {t("common.sign-in")}
-                    </button>
-                  </>
-                ) : (
+                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto animate-spin" />}
+                {systemStatus?.allowSignUp && (
                   <>
                     <button
-                      className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                      onClick={() => handleSignUpBtnsClick("HOST")}
+                      className={`btn signup-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                      onClick={() => handleSignUpBtnsClick("USER")}
                     >
-                      {t("auth.signup-as-host")}
+                      {t("common.sign-up")}
                     </button>
+                    <span className="mr-2 font-mono text-gray-200">/</span>
                   </>
                 )}
+                <button className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSigninBtnsClick}>
+                  {t("common.sign-in")}
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                  onClick={() => handleSignUpBtnsClick("HOST")}
+                >
+                  {t("auth.signup-as-host")}
+                </button>
               </>
             )}
           </div>

@@ -1,6 +1,6 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 import { isNullorUndefined } from "../helpers/utils";
-import { userService } from "../services";
+import { globalService, userService } from "../services";
 import Auth from "../pages/Auth";
 import Explore from "../pages/Explore";
 import Home from "../pages/Home";
@@ -10,12 +10,20 @@ const router = createBrowserRouter([
   {
     path: "/auth",
     element: <Auth />,
+    loader: async () => {
+      try {
+        await globalService.initialState();
+      } catch (error) {
+        // do nth
+      }
+    },
   },
   {
     path: "/",
     element: <Home />,
     loader: async () => {
       try {
+        await globalService.initialState();
         await userService.initialState();
       } catch (error) {
         // do nth
@@ -34,6 +42,7 @@ const router = createBrowserRouter([
     element: <Home />,
     loader: async () => {
       try {
+        await globalService.initialState();
         await userService.initialState();
       } catch (error) {
         // do nth
@@ -50,6 +59,7 @@ const router = createBrowserRouter([
     element: <Explore />,
     loader: async () => {
       try {
+        await globalService.initialState();
         await userService.initialState();
       } catch (error) {
         // do nth
@@ -66,6 +76,7 @@ const router = createBrowserRouter([
     element: <MemoDetail />,
     loader: async () => {
       try {
+        await globalService.initialState();
         await userService.initialState();
       } catch (error) {
         // do nth
