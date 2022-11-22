@@ -3,7 +3,7 @@
     "about": "About",
     "email": "Email",
     "password": "Password",
-    "new-password": "New passworld",
+    "new-password": "New password",
     "repeat-new-password": "Repeat the new password",
     "username": "Username",
     "save": "Save",
@@ -35,11 +35,11 @@
     "title": "Title",
     "filter": "Filter",
     "tags": "Tags",
-    "yourself": "Yourself",
+    "yourself": "You",
     "archived-at": "Archived at",
     "changed": "changed",
     "update-on": "Update on",
-    "fold": "Fold",
+    "fold": "Collapse",
     "expand": "Expand"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
@@ -51,11 +51,11 @@
   "sidebar": {
     "daily-review": "Daily Review",
     "resources": "Resources",
-    "setting": "Setting",
+    "setting": "Settings",
     "archived": "Archived"
   },
   "daily-review": {
-    "oops-nothing": "Oops, there is nothing."
+    "oops-nothing": "Oops, there is nothing to review."
   },
   "resources": {
     "description": "View your static resources in memos. e.g. images",
@@ -65,11 +65,11 @@
     "preview": "Preview",
     "copy-link": "Copy Link",
     "delete-resource": "Delete Resource",
-    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE❗",
+    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIBLE❗",
     "linked-amount": "Linked memo amount",
     "rename": "Rename",
     "clear-unused-resources": "Clear unused resources",
-    "warning-text-unused": "Are you sure to delete these unused resource? THIS ACTION IS IRREVERSIABLE❗",
+    "warning-text-unused": "Are you sure to delete these unused resource? THIS ACTION IS IRREVERSIBLE❗",
     "no-unused-resources": "No unused resources"
   },
   "archived": {
@@ -124,10 +124,10 @@
     "text-placeholder": "Starts with ^ to use regex"
   },
   "tag-list": {
-    "tip-text": "Enter `#tag ` to create"
+    "tip-text": "Enter `#tag` to create"
   },
   "search": {
-    "quickly-filter": "Quickly filter"
+    "quickly-filter": "Quick filter"
   },
   "setting": {
     "my-account": "My Account",
@@ -141,7 +141,7 @@
     },
     "preference-section": {
       "default-memo-visibility": "Default memo visibility",
-      "enable-folding-memo": "Enable folding memo",
+      "enable-folding-memo": "Enable collapsing memos",
       "editor-font-style": "Editor font style",
       "mobile-editor-style": "Mobile editor style",
       "default-memo-sort-option": "Display by created/updated time",
