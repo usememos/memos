@@ -20,8 +20,8 @@ body:
         Provide the steps to reproduce the issue.
       placeholder: |
         1. Go to '...'
-        3. Click on '....'
-        4. See error
+        2. Click on '....'
+        3. See error
     validations:
       required: true
   - type: textarea
