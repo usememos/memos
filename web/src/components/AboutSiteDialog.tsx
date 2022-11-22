@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import * as api from "../helpers/api";
+import { useAppSelector } from "../store";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import GitHubBadge from "./GitHubBadge";
@@ -10,23 +9,7 @@ type Props = DialogProps;
 
 const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
   const { t } = useTranslation();
-  const [profile, setProfile] = useState<Profile>();
-
-  useEffect(() => {
-    try {
-      api.getSystemStatus().then(({ data }) => {
-        const {
-          data: { profile },
-        } = data;
-        setProfile(profile);
-      });
-    } catch (error) {
-      setProfile({
-        mode: "dev",
-        version: "0.0.0",
-      });
-    }
-  }, []);
+  const profile = useAppSelector((state) => state.global.systemStatus.profile);
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -49,15 +32,13 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <br />
         <div className="addtion-info-container">
           <GitHubBadge />
-          {profile !== undefined && (
-            <>
-              {t("common.version")}:
-              <span className="pre-text">
-                {profile?.version}-{profile?.mode}
-              </span>
-              🎉
-            </>
-          )}
+          <>
+            {t("common.version")}:
+            <span className="pre-text">
+              {profile.version}-{profile.mode}
+            </span>
+            🎉
+          </>
         </div>
       </div>
     </>

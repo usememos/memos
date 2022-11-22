@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useAppSelector } from "../store";
 import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
@@ -10,35 +11,23 @@ interface State {
 }
 
 const UpdateVersionBanner: React.FC = () => {
+  const profile = useAppSelector((state) => state.global.systemStatus.profile);
   const [state, setState] = useState<State>({
     latestVersion: "",
     show: false,
   });
 
   useEffect(() => {
-    Promise.all([api.getRepoLatestTag(), api.getSystemStatus()])
-      .then(
-        ([
-          latestTag,
-          {
-            data: {
-              data: { profile },
-            },
-          },
-        ]) => {
-          const { skippedVersion } = storage.get(["skippedVersion"]);
-          const latestVersion = latestTag.slice(1) || "0.0.0";
-          const currentVersion = profile.version;
-          const skipped = skippedVersion ? skippedVersion === latestVersion : false;
-          setState({
-            latestVersion,
-            show: !skipped && currentVersion < latestVersion,
-          });
-        }
-      )
-      .catch(() => {
-        // do nth
+    api.getRepoLatestTag().then((latestTag) => {
+      const { skippedVersion } = storage.get(["skippedVersion"]);
+      const latestVersion = latestTag.slice(1) || "0.0.0";
+      const currentVersion = profile.version;
+      const skipped = skippedVersion ? skippedVersion === latestVersion : false;
+      setState({
+        latestVersion,
+        show: !skipped && currentVersion < latestVersion,
       });
+    });
   }, []);
 
   const onSkip = () => {

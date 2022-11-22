@@ -8,6 +8,7 @@ import "../less/memo-filter.less";
 
 const MemoFilter = () => {
   const { t } = useTranslation();
+  useAppSelector((state) => state.shortcut.shortcuts);
   const query = useAppSelector((state) => state.location.query);
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query;
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
