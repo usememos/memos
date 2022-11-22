@@ -104,7 +104,8 @@
     "edit-shortcut": "Edit Shortcut",
     "eligible-memo": "eligible memo",
     "fill-previous": "Please fill in previous filter value",
-    "title-required": "Title is required"
+    "title-required": "Title is required",
+    "value-required": "Filter value is required"
   },
   "filter": {
     "new-filter": "New Filter",

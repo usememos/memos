@@ -104,7 +104,8 @@
     "edit-shortcut": "Chỉnh sửa lối tắt",
     "eligible-memo": "memo đạt chuẩn",
     "fill-previous": "Vui lòng nhập vào giá trị của bộ lọc trước đó",
-    "title-required": "Tiêu đề là bắt buộc"
+    "title-required": "Tiêu đề là bắt buộc",
+    "value-required": "Giá trị bộ lọc là bắt buộc"
   },
   "filter": {
     "new-filter": "Bộ lọc mới",

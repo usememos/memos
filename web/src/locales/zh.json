@@ -104,7 +104,8 @@
     "edit-shortcut": "编辑捷径",
     "eligible-memo": "符合条件的 Memo",
     "fill-previous": "请填写之前的过滤值",
-    "title-required": "标题是必填项。"
+    "title-required": "标题是必填项。",
+    "value-required": "过滤值是必填项"
   },
   "filter": {
     "new-filter": "新建过滤器",
