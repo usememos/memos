@@ -99,8 +99,12 @@ const MemoEditor = () => {
   }, [editorState.editMemoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape" && state.fullscreen) {
-      handleFullscreenBtnClick();
+    if (event.key === "Escape") {
+      if (state.fullscreen) {
+        handleFullscreenBtnClick();
+      } else {
+        handleCancelEdit();
+      }
       return;
     }
     if (event.key === "Tab") {
