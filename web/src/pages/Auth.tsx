@@ -11,7 +11,7 @@ import "../less/auth.less";
 
 const validateConfig: ValidatorConfig = {
   minLength: 4,
-  maxLength: 24,
+  maxLength: 320,
   noSpace: true,
   noChinese: true,
 };
