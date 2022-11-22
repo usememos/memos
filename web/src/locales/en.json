@@ -90,8 +90,8 @@
     "copy": "Copy",
     "visibility": {
       "private": "Private",
-      "protected": "Protected",
-      "public": "Public"
+      "protected": "Visible to members",
+      "public": "Everyone can see"
     }
   },
   "memo-list": {
