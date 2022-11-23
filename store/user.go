@@ -21,9 +21,10 @@ type userRaw struct {
 	UpdatedTs int64
 
 	// Domain specific fields
-	Email        string
+	Username     string
 	Role         api.Role
-	Name         string
+	Email        string
+	Nickname     string
 	PasswordHash string
 	OpenID       string
 }
@@ -36,9 +37,10 @@ func (raw *userRaw) toUser() *api.User {
 		CreatedTs: raw.CreatedTs,
 		UpdatedTs: raw.UpdatedTs,
 
-		Email:        raw.Email,
+		Username:     raw.Username,
 		Role:         raw.Role,
-		Name:         raw.Name,
+		Email:        raw.Email,
+		Nickname:     raw.Nickname,
 		PasswordHash: raw.PasswordHash,
 		OpenID:       raw.OpenID,
 	}
@@ -194,27 +196,30 @@ func (s *Store) DeleteUser(ctx context.Context, delete *api.UserDelete) error {
 func createUser(ctx context.Context, tx *sql.Tx, create *api.UserCreate) (*userRaw, error) {
 	query := `
 		INSERT INTO user (
-			email,
+			username,
 			role,
-			name,
+			email,
+			nickname,
 			password_hash,
 			open_id
 		)
-		VALUES (?, ?, ?, ?, ?)
-		RETURNING id, email, role, name, password_hash, open_id, created_ts, updated_ts, row_status
+		VALUES (?, ?, ?, ?, ?, ?)
+		RETURNING id, username, role, email, nickname, password_hash, open_id, created_ts, updated_ts, row_status
 	`
 	var userRaw userRaw
 	if err := tx.QueryRowContext(ctx, query,
-		create.Email,
+		create.Username,
 		create.Role,
-		create.Name,
+		create.Email,
+		create.Nickname,
 		create.PasswordHash,
 		create.OpenID,
 	).Scan(
 		&userRaw.ID,
-		&userRaw.Email,
+		&userRaw.Username,
 		&userRaw.Role,
-		&userRaw.Name,
+		&userRaw.Email,
+		&userRaw.Nickname,
 		&userRaw.PasswordHash,
 		&userRaw.OpenID,
 		&userRaw.CreatedTs,
@@ -236,11 +241,14 @@ func patchUser(ctx context.Context, tx *sql.Tx, patch *api.UserPatch) (*userRaw,
 	if v := patch.RowStatus; v != nil {
 		set, args = append(set, "row_status = ?"), append(args, *v)
 	}
+	if v := patch.Username; v != nil {
+		set, args = append(set, "username = ?"), append(args, *v)
+	}
 	if v := patch.Email; v != nil {
 		set, args = append(set, "email = ?"), append(args, *v)
 	}
-	if v := patch.Name; v != nil {
-		set, args = append(set, "name = ?"), append(args, *v)
+	if v := patch.Nickname; v != nil {
+		set, args = append(set, "nickname = ?"), append(args, *v)
 	}
 	if v := patch.PasswordHash; v != nil {
 		set, args = append(set, "password_hash = ?"), append(args, *v)
@@ -255,38 +263,25 @@ func patchUser(ctx context.Context, tx *sql.Tx, patch *api.UserPatch) (*userRaw,
 		UPDATE user
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, email, role, name, password_hash, open_id, created_ts, updated_ts, row_status
+		RETURNING id, username, role, email, nickname, password_hash, open_id, created_ts, updated_ts, row_status
 	`
-	row, err := tx.QueryContext(ctx, query, args...)
-	if err != nil {
+	var userRaw userRaw
+	if err := tx.QueryRowContext(ctx, query, args...).Scan(
+		&userRaw.ID,
+		&userRaw.Username,
+		&userRaw.Role,
+		&userRaw.Email,
+		&userRaw.Nickname,
+		&userRaw.PasswordHash,
+		&userRaw.OpenID,
+		&userRaw.CreatedTs,
+		&userRaw.UpdatedTs,
+		&userRaw.RowStatus,
+	); err != nil {
 		return nil, FormatError(err)
 	}
-	defer row.Close()
 
-	if row.Next() {
-		var userRaw userRaw
-		if err := row.Scan(
-			&userRaw.ID,
-			&userRaw.Email,
-			&userRaw.Role,
-			&userRaw.Name,
-			&userRaw.PasswordHash,
-			&userRaw.OpenID,
-			&userRaw.CreatedTs,
-			&userRaw.UpdatedTs,
-			&userRaw.RowStatus,
-		); err != nil {
-			return nil, FormatError(err)
-		}
-
-		if err := row.Err(); err != nil {
-			return nil, err
-		}
-
-		return &userRaw, nil
-	}
-
-	return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("user ID not found: %d", patch.ID)}
+	return &userRaw, nil
 }
 
 func findUserList(ctx context.Context, tx *sql.Tx, find *api.UserFind) ([]*userRaw, error) {
@@ -295,14 +290,17 @@ func findUserList(ctx context.Context, tx *sql.Tx, find *api.UserFind) ([]*userR
 	if v := find.ID; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)
 	}
+	if v := find.Username; v != nil {
+		where, args = append(where, "username = ?"), append(args, *v)
+	}
 	if v := find.Role; v != nil {
 		where, args = append(where, "role = ?"), append(args, *v)
 	}
 	if v := find.Email; v != nil {
 		where, args = append(where, "email = ?"), append(args, *v)
 	}
-	if v := find.Name; v != nil {
-		where, args = append(where, "name = ?"), append(args, *v)
+	if v := find.Nickname; v != nil {
+		where, args = append(where, "nickname = ?"), append(args, *v)
 	}
 	if v := find.OpenID; v != nil {
 		where, args = append(where, "open_id = ?"), append(args, *v)
@@ -311,9 +309,10 @@ func findUserList(ctx context.Context, tx *sql.Tx, find *api.UserFind) ([]*userR
 	query := `
 		SELECT 
 			id,
-			email,
+			username,
 			role,
-			name,
+			email,
+			nickname,
 			password_hash,
 			open_id,
 			created_ts,
@@ -334,9 +333,10 @@ func findUserList(ctx context.Context, tx *sql.Tx, find *api.UserFind) ([]*userR
 		var userRaw userRaw
 		if err := rows.Scan(
 			&userRaw.ID,
-			&userRaw.Email,
+			&userRaw.Username,
 			&userRaw.Role,
-			&userRaw.Name,
+			&userRaw.Email,
+			&userRaw.Nickname,
 			&userRaw.PasswordHash,
 			&userRaw.OpenID,
 			&userRaw.CreatedTs,

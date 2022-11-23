@@ -94,7 +94,7 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 				}
 				if user != nil {
 					if user.RowStatus == api.Archived {
-						return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with email %s", user.Email))
+						return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", user.Username))
 					}
 					c.Set(getUserIDContextKey(), userID)
 				}

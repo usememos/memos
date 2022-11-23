@@ -8,9 +8,10 @@ interface User {
   updatedTs: TimeStamp;
   rowStatus: RowStatus;
 
+  username: string;
   role: UserRole;
   email: string;
-  name: string;
+  nickname: string;
   openId: string;
   userSettingList: UserSetting[];
 
@@ -18,18 +19,17 @@ interface User {
 }
 
 interface UserCreate {
-  email: string;
+  username: string;
   password: string;
-  name: string;
   role: UserRole;
 }
 
 interface UserPatch {
   id: UserId;
-
   rowStatus?: RowStatus;
-
-  name?: string;
+  username?: string;
+  email?: string;
+  nickname?: string;
   password?: string;
   resetOpenId?: boolean;
 }

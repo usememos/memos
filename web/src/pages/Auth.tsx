@@ -23,12 +23,12 @@ const Auth = () => {
   const systemStatus = useAppSelector((state) => state.global.systemStatus);
   const actionBtnLoadingState = useLoading(false);
   const mode = systemStatus.profile.mode;
-  const [email, setEmail] = useState(mode === "dev" ? "demo@usememos.com" : "");
+  const [username, setUsername] = useState(mode === "dev" ? "demohero" : "");
   const [password, setPassword] = useState(mode === "dev" ? "secret" : "");
 
-  const handleEmailInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
-    setEmail(text);
+    setUsername(text);
   };
 
   const handlePasswordInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,9 +41,9 @@ const Auth = () => {
       return;
     }
 
-    const emailValidResult = validate(email, validateConfig);
-    if (!emailValidResult.result) {
-      toastHelper.error(t("common.email") + ": " + emailValidResult.reason);
+    const usernameValidResult = validate(username, validateConfig);
+    if (!usernameValidResult.result) {
+      toastHelper.error(t("common.username") + ": " + usernameValidResult.reason);
       return;
     }
 
@@ -55,7 +55,7 @@ const Auth = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.signin(email, password);
+      await api.signin(username, password);
       const user = await userService.doSignIn();
       if (user) {
         navigate("/");
@@ -74,9 +74,9 @@ const Auth = () => {
       return;
     }
 
-    const emailValidResult = validate(email, validateConfig);
-    if (!emailValidResult.result) {
-      toastHelper.error(t("common.email") + ": " + emailValidResult.reason);
+    const usernameValidResult = validate(username, validateConfig);
+    if (!usernameValidResult.result) {
+      toastHelper.error(t("common.username") + ": " + usernameValidResult.reason);
       return;
     }
 
@@ -88,7 +88,7 @@ const Auth = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.signup(email, password, role);
+      await api.signup(username, password, role);
       const user = await userService.doSignIn();
       if (user) {
         navigate("/");
@@ -118,8 +118,8 @@ const Auth = () => {
           </div>
           <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
             <div className="form-item-container input-form-container">
-              <span className={`normal-text ${email ? "not-null" : ""}`}>{t("common.email")}</span>
-              <input type="email" value={email} onChange={handleEmailInputChanged} required />
+              <span className={`normal-text ${username ? "not-null" : ""}`}>{t("common.username")}</span>
+              <input type="text" value={username} onChange={handleUsernameInputChanged} required />
             </div>
             <div className="form-item-container input-form-container">
               <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>

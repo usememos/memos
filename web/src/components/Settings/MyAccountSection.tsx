@@ -1,57 +1,15 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../../store";
 import { userService } from "../../services";
-import { validate, ValidatorConfig } from "../../helpers/validator";
-import toastHelper from "../Toast";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangePasswordDialog from "../ChangePasswordDialog";
+import showUpdateAccountDialog from "../UpdateAccountDialog";
 import "../../less/settings/my-account-section.less";
 
-const validateConfig: ValidatorConfig = {
-  minLength: 1,
-  maxLength: 24,
-  noSpace: true,
-  noChinese: false,
-};
-
 const MyAccountSection = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const user = useAppSelector((state) => state.user.user as User);
-  const [username, setUsername] = useState<string>(user.name);
   const openAPIRoute = `${window.location.origin}/api/memo?openId=${user.openId}`;
-
-  const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nextUsername = e.target.value as string;
-    setUsername(nextUsername);
-  };
-
-  const handleConfirmEditUsernameBtnClick = async () => {
-    if (username === user.name) {
-      return;
-    }
-
-    const usernameValidResult = validate(username, validateConfig);
-    if (!usernameValidResult.result) {
-      toastHelper.error(t("common.username") + i18n.language === "zh" ? "" : " " + usernameValidResult.reason);
-      return;
-    }
-
-    try {
-      await userService.patchUser({
-        id: user.id,
-        name: username,
-      });
-      toastHelper.info(t("common.username") + i18n.language === "zh" ? "" : " " + t("common.changed"));
-    } catch (error: any) {
-      console.error(error);
-      toastHelper.error(error.response.data.message);
-    }
-  };
-
-  const handleChangePasswordBtnClick = () => {
-    showChangePasswordDialog();
-  };
 
   const handleResetOpenIdBtnClick = async () => {
     showCommonDialog({
@@ -67,42 +25,23 @@ const MyAccountSection = () => {
     });
   };
 
-  const handlePreventDefault = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
   return (
     <>
       <div className="section-container account-section-container">
         <p className="title-text">{t("setting.account-section.title")}</p>
-        <label className="form-label">
-          <span className="normal-text">{t("common.email")}:</span>
-          <span className="normal-text">{user.email}</span>
-        </label>
-        <label className="form-label input-form-label username-label">
-          <span className="normal-text">{t("common.username")}:</span>
-          <input type="text" value={username} onChange={handleUsernameChanged} />
-          <div className={`btns-container ${username === user.name ? "!hidden" : ""}`} onClick={handlePreventDefault}>
-            <span className="btn confirm-btn" onClick={handleConfirmEditUsernameBtnClick}>
-              {t("common.save")}
-            </span>
-            <span
-              className="btn cancel-btn"
-              onClick={() => {
-                setUsername(user.name);
-              }}
-            >
-              {t("common.cancel")}
-            </span>
-          </div>
-        </label>
-        <label className="form-label password-label">
-          <span className="normal-text">{t("common.password")}:</span>
-          <span className="btn" onClick={handleChangePasswordBtnClick}>
-            {t("common.change")}
-          </span>
-        </label>
+        <div className="flex flex-row justify-start items-end">
+          <span className="text-2xl leading-10 font-medium">{user.nickname}</span>
+          <span className="text-base ml-1 text-gray-500 leading-8">({user.username})</span>
+        </div>
+        <div className="flex flex-row justify-start items-center text-base text-gray-600">{user.email}</div>
+        <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
+          <button className="px-2 py-1 border rounded-md text-sm hover:bg-gray-100" onClick={showUpdateAccountDialog}>
+            Update Information
+          </button>
+          <button className="px-2 py-1 border rounded-md text-sm hover:bg-gray-100" onClick={showChangePasswordDialog}>
+            Change Password
+          </button>
+        </div>
       </div>
       <div className="section-container openapi-section-container">
         <p className="title-text">Open API</p>
