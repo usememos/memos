@@ -118,7 +118,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
           </div>
           <div className="watermark-container">
             <div className="userinfo-container">
-              <span className="name-text">{user.name}</span>
+              <span className="name-text">{user.nickname || user.username}</span>
               <span className="usage-text">
                 {createdDays} DAYS / {state.memoAmount} MEMOS
               </span>
