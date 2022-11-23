@@ -104,7 +104,8 @@
     "edit-shortcut": "编辑捷径",
     "eligible-memo": "符合条件的 Memo",
     "fill-previous": "请填写之前的过滤值",
-    "title-required": "标题是必填项。"
+    "title-required": "标题是必填项。",
+    "value-required": "过滤值是必填项"
   },
   "filter": {
     "new-filter": "新建过滤器",
@@ -185,6 +186,8 @@
     "succeed-copy-content": "复制内容到剪贴板成功。",
     "change-resource-filename": "更改资源文件名",
     "resource-filename-updated": "资源文件名更改成功。",
-    "invalid-resource-filename": "无效的资源文件名"
+    "invalid-resource-filename": "无效的资源文件名",
+    "click-to-save-the-image": "点击保存图片",
+    "generating-the-screenshot": "正在生成图片..."
   }
 }

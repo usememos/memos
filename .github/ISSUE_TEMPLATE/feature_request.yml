@@ -25,4 +25,4 @@ body:
   - type: textarea
     attributes:
       label: Additional context
-      description: Add any other context or screenshots about the feature request here.
+      description: Add any other context or screenshots about the feature request.

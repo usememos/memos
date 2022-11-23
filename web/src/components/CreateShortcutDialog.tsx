@@ -48,7 +48,12 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       toastHelper.error(t("shortcut-list.title-required"));
       return;
     }
-
+    for (const filter of filters) {
+      if (!filter.value.value) {
+        toastHelper.error(t("shortcut-list.value-required"));
+        return;
+      }
+    }
     try {
       if (shortcutId) {
         await shortcutService.patchShortcut({

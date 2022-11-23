@@ -2,7 +2,6 @@ import store from "../store";
 import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
 import { setGlobalState, setLocale } from "../store/modules/global";
-import { convertResponseModelUser } from "./userService";
 
 const globalService = {
   getState: () => {
@@ -12,19 +11,22 @@ const globalService = {
   initialState: async () => {
     const defaultGlobalState = {
       locale: "en" as Locale,
+      systemStatus: {
+        allowSignUp: false,
+        additionalStyle: "",
+        additionalScript: "",
+      } as SystemStatus,
     };
 
     const { locale: storageLocale } = storage.get(["locale"]);
     if (storageLocale) {
       defaultGlobalState.locale = storageLocale;
     }
+
     try {
-      const { data } = (await api.getMyselfUser()).data;
+      const { data } = (await api.getSystemStatus()).data;
       if (data) {
-        const user = convertResponseModelUser(data);
-        if (user.setting.locale) {
-          defaultGlobalState.locale = user.setting.locale;
-        }
+        defaultGlobalState.systemStatus = data;
       }
     } catch (error) {
       // do nth

@@ -11,7 +11,7 @@ import (
 	metric "github.com/usememos/memos/plugin/metrics"
 )
 
-func (s *Server) registerCrawlerPublicRoutes(g *echo.Group) {
+func (s *Server) registerGetterPublicRoutes(g *echo.Group) {
 	g.GET("/get/httpmeta", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		urlStr := c.QueryParam("url")
@@ -39,6 +39,7 @@ func (s *Server) registerCrawlerPublicRoutes(g *echo.Group) {
 		}
 		return nil
 	})
+
 	g.GET("/get/image", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		urlStr := c.QueryParam("url")
@@ -51,7 +52,7 @@ func (s *Server) registerCrawlerPublicRoutes(g *echo.Group) {
 
 		image, err := getter.GetImage(urlStr)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusNotAcceptable, fmt.Sprintf("Failed to get image url: %s", urlStr)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to get image url: %s", urlStr)).SetInternal(err)
 		}
 		s.Collector.Collect(ctx, &metric.Metric{
 			Name: "getter used",
@@ -62,6 +63,7 @@ func (s *Server) registerCrawlerPublicRoutes(g *echo.Group) {
 
 		c.Response().Writer.WriteHeader(http.StatusOK)
 		c.Response().Writer.Header().Set("Content-Type", image.Mediatype)
+		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 		if _, err := c.Response().Writer.Write(image.Blob); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write image blob").SetInternal(err)
 		}

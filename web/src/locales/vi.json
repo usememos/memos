@@ -104,7 +104,8 @@
     "edit-shortcut": "Chỉnh sửa lối tắt",
     "eligible-memo": "memo đạt chuẩn",
     "fill-previous": "Vui lòng nhập vào giá trị của bộ lọc trước đó",
-    "title-required": "Tiêu đề là bắt buộc"
+    "title-required": "Tiêu đề là bắt buộc",
+    "value-required": "Giá trị bộ lọc là bắt buộc"
   },
   "filter": {
     "new-filter": "Bộ lọc mới",
@@ -184,6 +185,8 @@
     "succeed-copy-content": "Đã sao chép nội dung memo thành công.",
     "change-resource-filename": "Thay đổi tên tệp tài nguyên",
     "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi.",
-    "invalid-resource-filename": "Tên tệp không hợp lệ."
+    "invalid-resource-filename": "Tên tệp không hợp lệ.",
+    "click-to-save-the-image": "Bấm để lưu hình ảnh",
+    "generating-the-screenshot": "Đang tạo ảnh chụp màn hình ..."
   }
 }

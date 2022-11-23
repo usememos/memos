@@ -3,9 +3,9 @@ package api
 import "github.com/usememos/memos/server/profile"
 
 type SystemStatus struct {
-	Host    *User            `json:"host"`
-	Profile *profile.Profile `json:"profile"`
-	DBSize  int64            `json:"dbSize"`
+	Host    *User           `json:"host"`
+	Profile profile.Profile `json:"profile"`
+	DBSize  int64           `json:"dbSize"`
 
 	// System settings
 	// Allow sign up.

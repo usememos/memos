@@ -90,8 +90,8 @@
     "copy": "Copy",
     "visibility": {
       "private": "Private",
-      "protected": "Protected",
-      "public": "Public"
+      "protected": "Visible to members",
+      "public": "Everyone can see"
     }
   },
   "memo-list": {
@@ -104,7 +104,8 @@
     "edit-shortcut": "Edit Shortcut",
     "eligible-memo": "eligible memo",
     "fill-previous": "Please fill in previous filter value",
-    "title-required": "Title is required"
+    "title-required": "Title is required",
+    "value-required": "Filter value is required"
   },
   "filter": {
     "new-filter": "New Filter",
@@ -185,6 +186,8 @@
     "succeed-copy-content": "Succeed to copy content to clipboard.",
     "change-resource-filename": "Change resource filename",
     "resource-filename-updated": "Resource filename changed.",
-    "invalid-resource-filename": "Invalid filename."
+    "invalid-resource-filename": "Invalid filename.",
+    "click-to-save-the-image": "Click to save the image",
+    "generating-the-screenshot": "Generating the screenshot..."
   }
 }

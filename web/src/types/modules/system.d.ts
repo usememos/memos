@@ -4,7 +4,7 @@ interface Profile {
 }
 
 interface SystemStatus {
-  host: User;
+  host?: User;
   profile: Profile;
   dbSize: number;
   // System settings

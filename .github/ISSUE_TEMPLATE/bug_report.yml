@@ -20,19 +20,12 @@ body:
         Provide the steps to reproduce the issue.
       placeholder: |
         1. Go to '...'
-        3. Click on '....'
-        4. See error
-    validations:
-      required: true
-  - type: textarea
-    attributes:
-      label: Expected behavior
-      description: |
-        Describe what you expected to happen.
+        2. Click on '....'
+        3. See error
     validations:
       required: true
   - type: textarea
     attributes:
       label: Screenshots or additional context
       description: |
-        Add screenshots or any other context about the problem here.
+        Add screenshots or any other context about the problem.

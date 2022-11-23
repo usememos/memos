@@ -105,7 +105,9 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container">
         <div className={`tip-words-container ${state.shortcutImgUrl ? "finish" : "loading"}`}>
-          <p className="tip-text">{state.shortcutImgUrl ? "Click to save the image 👇" : "Generating the screenshot..."}</p>
+          <p className="tip-text">
+            {state.shortcutImgUrl ? t("message.click-to-save-the-image") + " 👇" : t("message.generating-the-screenshot")}
+          </p>
         </div>
         <div className="memo-container" ref={memoElRef}>
           {state.shortcutImgUrl !== "" && <img className="memo-shortcut-img" onClick={handleDownloadBtnClick} src={state.shortcutImgUrl} />}

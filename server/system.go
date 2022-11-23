@@ -41,7 +41,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 
 		systemStatus := api.SystemStatus{
 			Host:             hostUser,
-			Profile:          s.Profile,
+			Profile:          *s.Profile,
 			DBSize:           0,
 			AllowSignUp:      false,
 			AdditionalStyle:  "",
