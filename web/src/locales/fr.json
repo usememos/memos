@@ -173,8 +173,7 @@
     "memo-updated-datetime": "La date et l\'heure de création du mémo ont été modifiées.",
     "invalid-created-datetime": "Date/heure de création non valide.",
     "change-memo-created-time": "Modifier l\'heure de création du mémo",
-    "memo-not-found": "Mémo introuvable
-",
+    "memo-not-found": "Mémo introuvable",
     "fill-all": "Veuillez remplir tous les champs.",
     "new-password-not-match": "Les mots de passe ne correspondent pas",
     "image-load-failed": "Le chargement de l\'image a échoué",
