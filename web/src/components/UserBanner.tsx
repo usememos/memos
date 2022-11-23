@@ -28,10 +28,10 @@ const UserBanner = () => {
       if (!owner) {
         return;
       }
-      setUsername(owner.name);
+      setUsername(owner.nickname || owner.username);
       setCreatedDays(Math.ceil((Date.now() - utils.getTimeStampByDate(owner.createdTs)) / 1000 / 3600 / 24));
     } else if (user) {
-      setUsername(user.name);
+      setUsername(user.nickname || user.username);
       setCreatedDays(Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24));
     }
   }, [isVisitorMode, user, owner]);

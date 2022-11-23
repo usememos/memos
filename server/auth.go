@@ -22,16 +22,16 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 
 		userFind := &api.UserFind{
-			Email: &signin.Email,
+			Username: &signin.Username,
 		}
 		user, err := s.Store.FindUser(ctx, userFind)
 		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by email %s", signin.Email)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by username %s", signin.Username)).SetInternal(err)
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found with email %s", signin.Email))
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found with username %s", signin.Username))
 		} else if user.RowStatus == api.Archived {
-			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with email %s", signin.Email))
+			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", signin.Username))
 		}
 
 		// Compare the stored hashed password, with the hashed version of the password that was received.
@@ -107,9 +107,9 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 
 		userCreate := &api.UserCreate{
-			Email:    signup.Email,
+			Username: signup.Username,
 			Role:     api.Role(signup.Role),
-			Name:     signup.Name,
+			Nickname: signup.Username,
 			Password: signup.Password,
 			OpenID:   common.GenUUID(),
 		}

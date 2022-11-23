@@ -14,19 +14,18 @@ export function upsertSystemSetting(systemSetting: SystemSetting) {
   return axios.post<ResponseObject<SystemSetting>>("/api/system/setting", systemSetting);
 }
 
-export function signin(email: string, password: string) {
+export function signin(username: string, password: string) {
   return axios.post<ResponseObject<User>>("/api/auth/signin", {
-    email,
+    username,
     password,
   });
 }
 
-export function signup(email: string, password: string, role: UserRole) {
+export function signup(username: string, password: string, role: UserRole) {
   return axios.post<ResponseObject<User>>("/api/auth/signup", {
-    email,
+    username,
     password,
     role,
-    name: email,
   });
 }
 

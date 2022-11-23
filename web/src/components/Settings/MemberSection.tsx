@@ -9,7 +9,7 @@ import { showCommonDialog } from "../Dialog/CommonDialog";
 import "../../less/settings/member-section.less";
 
 interface State {
-  createUserEmail: string;
+  createUserUsername: string;
   createUserPassword: string;
 }
 
@@ -17,7 +17,7 @@ const PreferencesSection = () => {
   const { t } = useTranslation();
   const currentUser = useAppSelector((state) => state.user.user);
   const [state, setState] = useState<State>({
-    createUserEmail: "",
+    createUserUsername: "",
     createUserPassword: "",
   });
   const [userList, setUserList] = useState<User[]>([]);
@@ -31,10 +31,10 @@ const PreferencesSection = () => {
     setUserList(data);
   };
 
-  const handleEmailInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUsernameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setState({
       ...state,
-      createUserEmail: event.target.value,
+      createUserUsername: event.target.value,
     });
   };
 
@@ -46,16 +46,15 @@ const PreferencesSection = () => {
   };
 
   const handleCreateUserBtnClick = async () => {
-    if (state.createUserEmail === "" || state.createUserPassword === "") {
+    if (state.createUserUsername === "" || state.createUserPassword === "") {
       toastHelper.error(t("message.fill-form"));
       return;
     }
 
     const userCreate: UserCreate = {
-      email: state.createUserEmail,
+      username: state.createUserUsername,
       password: state.createUserPassword,
       role: "USER",
-      name: state.createUserEmail,
     };
 
     try {
@@ -66,7 +65,7 @@ const PreferencesSection = () => {
     }
     await fetchUserList();
     setState({
-      createUserEmail: "",
+      createUserUsername: "",
       createUserPassword: "",
     });
   };
@@ -74,7 +73,7 @@ const PreferencesSection = () => {
   const handleArchiveUserClick = (user: User) => {
     showCommonDialog({
       title: `Archive Member`,
-      content: `❗️Are you sure to archive ${user.name}?`,
+      content: `❗️Are you sure to archive ${user.username}?`,
       style: "warning",
       onConfirm: async () => {
         await userService.patchUser({
@@ -97,7 +96,7 @@ const PreferencesSection = () => {
   const handleDeleteUserClick = (user: User) => {
     showCommonDialog({
       title: `Delete Member`,
-      content: `Are you sure to delete ${user.name}? THIS ACTION IS IRREVERSIABLE.❗️`,
+      content: `Are you sure to delete ${user.username}? THIS ACTION IS IRREVERSIABLE.❗️`,
       style: "warning",
       onConfirm: async () => {
         await userService.deleteUser({
@@ -113,8 +112,8 @@ const PreferencesSection = () => {
       <p className="title-text">{t("setting.member-section.create-a-member")}</p>
       <div className="create-member-container">
         <div className="input-form-container">
-          <span className="field-text">{t("common.email")}</span>
-          <input type="email" placeholder={t("common.email")} value={state.createUserEmail} onChange={handleEmailInputChange} />
+          <span className="field-text">{t("common.username")}</span>
+          <input type="text" placeholder={t("common.username")} value={state.createUserUsername} onChange={handleUsernameInputChange} />
         </div>
         <div className="input-form-container">
           <span className="field-text">{t("common.password")}</span>
@@ -127,13 +126,13 @@ const PreferencesSection = () => {
       <p className="title-text">{t("setting.member-list")}</p>
       <div className="member-container field-container">
         <span className="field-text">ID</span>
-        <span className="field-text">{t("common.email")}</span>
+        <span className="field-text username-field">{t("common.username")}</span>
         <span></span>
       </div>
       {userList.map((user) => (
         <div key={user.id} className={`member-container ${user.rowStatus === "ARCHIVED" ? "archived" : ""}`}>
           <span className="field-text id-text">{user.id}</span>
-          <span className="field-text email-text">{user.email}</span>
+          <span className="field-text username-text">{user.username}</span>
           <div className="buttons-container">
             {currentUser?.id === user.id ? (
               <span className="tip-text">{t("common.yourself")}</span>

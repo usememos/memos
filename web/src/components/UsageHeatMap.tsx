@@ -123,7 +123,7 @@ const UsageHeatMap = () => {
         })}
         {nullCell.map((_, i) => (
           <div className="stat-wrapper" key={i}>
-            <span className="stat-container null"></span>
+            <span className="null"></span>
           </div>
         ))}
       </div>

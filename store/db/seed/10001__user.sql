@@ -1,18 +1,20 @@
 INSERT INTO 
   user (
     `id`, 
-    `email`,
+    `username`, 
     `role`,
-    `name`, 
+    `email`,
+    `nickname`, 
     `open_id`,
     `password_hash`
   )
 VALUES
   (
     101, 
-    'demo@usememos.com',
+    'demohero',
     'HOST',
-    'Demo Host',
+    'demo@usememos.com',
+    'Demo Hero',
     'demo_open_id',
     -- raw password: secret
     '$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK'
@@ -21,17 +23,19 @@ VALUES
 INSERT INTO 
   user (
     `id`, 
-    `email`,
+    `username`, 
     `role`,
-    `name`, 
+    `email`,
+    `nickname`, 
     `open_id`,
     `password_hash`
   )
 VALUES
   (
     102, 
-    'jack@usememos.com',
+    'jack',
     'USER',
+    'jack@usememos.com',
     'Jack',
     'jack_open_id',
     -- raw password: secret
@@ -42,9 +46,10 @@ INSERT INTO
   user (
     `id`, 
     `row_status`, 
-    `email`,
+    `username`, 
     `role`,
-    `name`, 
+    `email`,
+    `nickname`, 
     `open_id`,
     `password_hash`
   )
@@ -52,8 +57,9 @@ VALUES
   (
     103, 
     'ARCHIVED', 
-    'bob@usememos.com',
+    'bob',
     'USER',
+    'bob@usememos.com',
     'Bob',
     'bob_open_id',
     -- raw password: secret

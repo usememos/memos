@@ -45,6 +45,15 @@
       margin-right: 6px;
     }
 
+    li {
+      list-style-type: none;
+
+      &::before {
+        @apply font-bold mr-1;
+        content: "•";
+      }
+    }
+
     pre {
       @apply w-full my-1 p-3 rounded bg-gray-100 whitespace-pre-wrap;
 

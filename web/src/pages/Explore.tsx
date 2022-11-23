@@ -83,7 +83,7 @@ const Explore = () => {
                   <div className="memo-header">
                     <span className="time-text">{createdAtStr}</span>
                     <a className="name-text" href={`/u/${memo.creator.id}`}>
-                      @{memo.creator.name}
+                      @{memo.creator.nickname || memo.creator.username}
                     </a>
                   </div>
                   <MemoContent className="memo-content" content={memo.content} onMemoContentClick={() => undefined} />

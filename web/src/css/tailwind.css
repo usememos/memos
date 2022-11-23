@@ -13,3 +13,15 @@
     scrollbar-width: none; /* Firefox */
   }
 }
+
+.btn-primary {
+  @apply select-none inline-flex border border-transparent cursor-pointer px-3 bg-green-600 text-sm leading-8 text-white rounded-md hover:opacity-80;
+}
+
+.btn-text {
+  @apply select-none inline-flex border border-transparent cursor-pointer px-2 text-sm text-gray-600 leading-8 hover:opacity-80;
+}
+
+.input-text {
+  @apply w-full px-3 py-2 leading-6 text-sm border rounded;
+}
