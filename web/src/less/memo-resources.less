@@ -4,8 +4,8 @@
   > .images-wrapper {
     @apply w-full flex mt-2 pb-1;
 
-    > .memo-img {
-      @apply w-auto h-auto shrink-0 grow-0 cursor-pointer;
+    > .memo-resource {
+      @apply w-auto h-auto shrink-0 grow-0 cursor-pointer rounded;
 
       > img {
         @apply rounded hover:shadow;
@@ -15,8 +15,8 @@
     &.row {
       @apply flex-row justify-start items-start overflow-x-auto overflow-y-hidden;
 
-      > .memo-img {
-        @apply max-w-xs h-auto mr-2 last:mr-0;
+      > .memo-resource {
+        @apply max-w-xs h-auto max-h-40 mr-2 last:mr-0;
 
         > img {
           @apply w-auto max-h-40;
@@ -27,7 +27,7 @@
     &.col {
       @apply flex-col justify-start items-start;
 
-      > .memo-img {
+      > .memo-resource {
         @apply w-full h-auto mb-2 last:mb-0;
 
         > img {
