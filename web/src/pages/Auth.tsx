@@ -1,3 +1,4 @@
+import { Option, Select } from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -159,18 +160,18 @@ const Auth = () => {
           {!systemStatus?.host && <p className="tip-text">{t("auth.host-tip")}</p>}
         </div>
         <div className="footer-container">
-          <div className="language-container">
-            <span className={`locale-item ${i18n.language === "en" ? "active" : ""}`} onClick={() => handleLocaleItemClick("en")}>
-              English
-            </span>
-            <span className="split-line">/</span>
-            <span className={`locale-item ${i18n.language === "zh" ? "active" : ""}`} onClick={() => handleLocaleItemClick("zh")}>
-              中文
-            </span>
-            <span className="split-line">/</span>
-            <span className={`locale-item ${i18n.language === "vi" ? "active" : ""}`} onClick={() => handleLocaleItemClick("vi")}>
-              Tiếng Việt
-            </span>
+          <div className="w-full flex flex-row justify-center items-center">
+            <Select
+              className="w-40 text-sm"
+              startDecorator={<Icon.Globe className="w-4 h-auto" />}
+              value={i18n.language}
+              onChange={(e, value) => handleLocaleItemClick(value as Locale)}
+            >
+              <Option value="en">English</Option>
+              <Option value="zh">中文</Option>
+              <Option value="vi">Tiếng Việt</Option>
+              <Option value="fr">French</Option>
+            </Select>
           </div>
         </div>
       </div>
