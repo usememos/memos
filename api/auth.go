@@ -1,13 +1,12 @@
 package api
 
 type Signin struct {
-	Email    string `json:"email"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
 type Signup struct {
-	Email    string `json:"email"`
-	Role     Role   `json:"role"`
-	Name     string `json:"name"`
+	Username string `json:"username"`
 	Password string `json:"password"`
+	Role     Role   `json:"role"`
 }

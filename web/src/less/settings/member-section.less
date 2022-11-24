@@ -26,6 +26,10 @@
   > .field-container {
     > .field-text {
       @apply text-gray-400 text-sm;
+
+      &.username-field {
+        @apply col-span-2 w-full;
+      }
     }
   }
 
@@ -39,7 +43,7 @@
         @apply font-mono text-gray-600;
       }
 
-      &.email-text {
+      &.username-text {
         @apply w-auto col-span-2;
       }
     }

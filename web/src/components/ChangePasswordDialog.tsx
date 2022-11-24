@@ -5,7 +5,6 @@ import { userService } from "../services";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
-import "../less/change-password-dialog.less";
 
 const validateConfig: ValidatorConfig = {
   minLength: 4,
@@ -73,29 +72,34 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   return (
     <>
-      <div className="dialog-header-container">
+      <div className="dialog-header-container !w-64">
         <p className="title-text">{t("setting.account-section.change-password")}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container">
-        <label className="form-label input-form-label">
-          <input type="password" placeholder={t("common.new-password")} value={newPassword} onChange={handleNewPasswordChanged} />
-        </label>
-        <label className="form-label input-form-label">
-          <input
-            type="password"
-            placeholder={t("common.repeat-new-password")}
-            value={newPasswordAgain}
-            onChange={handleNewPasswordAgainChanged}
-          />
-        </label>
-        <div className="btns-container">
-          <span className="btn cancel-btn" onClick={handleCloseBtnClick}>
+        <p className="text-sm mb-1">{t("common.new-password")}</p>
+        <input
+          type="password"
+          className="input-text"
+          placeholder={t("common.repeat-new-password")}
+          value={newPassword}
+          onChange={handleNewPasswordChanged}
+        />
+        <p className="text-sm mb-1 mt-2">{t("common.repeat-new-password")}</p>
+        <input
+          type="password"
+          className="input-text"
+          placeholder={t("common.repeat-new-password")}
+          value={newPasswordAgain}
+          onChange={handleNewPasswordAgainChanged}
+        />
+        <div className="mt-4 w-full flex flex-row justify-end items-center space-x-2">
+          <span className="btn-text" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </span>
-          <span className="btn confirm-btn" onClick={handleSaveBtnClick}>
+          <span className="btn-primary" onClick={handleSaveBtnClick}>
             {t("common.save")}
           </span>
         </div>

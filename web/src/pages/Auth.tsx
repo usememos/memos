@@ -1,3 +1,4 @@
+import { Option, Select } from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
@@ -23,12 +24,12 @@ const Auth = () => {
   const systemStatus = useAppSelector((state) => state.global.systemStatus);
   const actionBtnLoadingState = useLoading(false);
   const mode = systemStatus.profile.mode;
-  const [email, setEmail] = useState(mode === "dev" ? "demo@usememos.com" : "");
+  const [username, setUsername] = useState(mode === "dev" ? "demohero" : "");
   const [password, setPassword] = useState(mode === "dev" ? "secret" : "");
 
-  const handleEmailInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
-    setEmail(text);
+    setUsername(text);
   };
 
   const handlePasswordInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,9 +42,9 @@ const Auth = () => {
       return;
     }
 
-    const emailValidResult = validate(email, validateConfig);
-    if (!emailValidResult.result) {
-      toastHelper.error(t("common.email") + ": " + emailValidResult.reason);
+    const usernameValidResult = validate(username, validateConfig);
+    if (!usernameValidResult.result) {
+      toastHelper.error(t("common.username") + ": " + usernameValidResult.reason);
       return;
     }
 
@@ -55,7 +56,7 @@ const Auth = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.signin(email, password);
+      await api.signin(username, password);
       const user = await userService.doSignIn();
       if (user) {
         navigate("/");
@@ -74,9 +75,9 @@ const Auth = () => {
       return;
     }
 
-    const emailValidResult = validate(email, validateConfig);
-    if (!emailValidResult.result) {
-      toastHelper.error(t("common.email") + ": " + emailValidResult.reason);
+    const usernameValidResult = validate(username, validateConfig);
+    if (!usernameValidResult.result) {
+      toastHelper.error(t("common.username") + ": " + usernameValidResult.reason);
       return;
     }
 
@@ -88,7 +89,7 @@ const Auth = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.signup(email, password, role);
+      await api.signup(username, password, role);
       const user = await userService.doSignIn();
       if (user) {
         navigate("/");
@@ -118,8 +119,8 @@ const Auth = () => {
           </div>
           <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
             <div className="form-item-container input-form-container">
-              <span className={`normal-text ${email ? "not-null" : ""}`}>{t("common.email")}</span>
-              <input type="email" value={email} onChange={handleEmailInputChanged} required />
+              <span className={`normal-text ${username ? "not-null" : ""}`}>{t("common.username")}</span>
+              <input type="text" value={username} onChange={handleUsernameInputChanged} required />
             </div>
             <div className="form-item-container input-form-container">
               <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
@@ -159,18 +160,18 @@ const Auth = () => {
           {!systemStatus?.host && <p className="tip-text">{t("auth.host-tip")}</p>}
         </div>
         <div className="footer-container">
-          <div className="language-container">
-            <span className={`locale-item ${i18n.language === "en" ? "active" : ""}`} onClick={() => handleLocaleItemClick("en")}>
-              English
-            </span>
-            <span className="split-line">/</span>
-            <span className={`locale-item ${i18n.language === "zh" ? "active" : ""}`} onClick={() => handleLocaleItemClick("zh")}>
-              中文
-            </span>
-            <span className="split-line">/</span>
-            <span className={`locale-item ${i18n.language === "vi" ? "active" : ""}`} onClick={() => handleLocaleItemClick("vi")}>
-              Tiếng Việt
-            </span>
+          <div className="w-full flex flex-row justify-center items-center">
+            <Select
+              className="w-40 text-sm"
+              startDecorator={<Icon.Globe className="w-4 h-auto" />}
+              value={i18n.language}
+              onChange={(e, value) => handleLocaleItemClick(value as Locale)}
+            >
+              <Option value="en">English</Option>
+              <Option value="zh">中文</Option>
+              <Option value="vi">Tiếng Việt</Option>
+              <Option value="fr">French</Option>
+            </Select>
           </div>
         </div>
       </div>

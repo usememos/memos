@@ -2,8 +2,6 @@ package api
 
 import (
 	"fmt"
-
-	"github.com/usememos/memos/common"
 )
 
 // Role is the type of a role.
@@ -12,6 +10,8 @@ type Role string
 const (
 	// Host is the HOST role.
 	Host Role = "HOST"
+	// Admin is the ADMIN role.
+	Admin Role = "ADMIN"
 	// NormalUser is the USER role.
 	NormalUser Role = "USER"
 )
@@ -20,6 +20,8 @@ func (e Role) String() string {
 	switch e {
 	case Host:
 		return "HOST"
+	case Admin:
+		return "ADMIN"
 	case NormalUser:
 		return "USER"
 	}
@@ -35,9 +37,10 @@ type User struct {
 	UpdatedTs int64     `json:"updatedTs"`
 
 	// Domain specific fields
-	Email           string         `json:"email"`
+	Username        string         `json:"username"`
 	Role            Role           `json:"role"`
-	Name            string         `json:"name"`
+	Email           string         `json:"email"`
+	Nickname        string         `json:"nickname"`
 	PasswordHash    string         `json:"-"`
 	OpenID          string         `json:"openId"`
 	UserSettingList []*UserSetting `json:"userSettingList"`
@@ -45,23 +48,21 @@ type User struct {
 
 type UserCreate struct {
 	// Domain specific fields
-	Email        string `json:"email"`
+	Username     string `json:"username"`
 	Role         Role   `json:"role"`
-	Name         string `json:"name"`
+	Email        string `json:"email"`
+	Nickname     string `json:"nickname"`
 	Password     string `json:"password"`
 	PasswordHash string
 	OpenID       string
 }
 
 func (create UserCreate) Validate() error {
-	if !common.ValidateEmail(create.Email) {
-		return fmt.Errorf("invalid email format")
+	if len(create.Username) < 4 {
+		return fmt.Errorf("username is too short, minimum length is 4")
 	}
-	if len(create.Email) < 6 {
-		return fmt.Errorf("email is too short, minimum length is 6")
-	}
-	if len(create.Password) < 6 {
-		return fmt.Errorf("password is too short, minimum length is 6")
+	if len(create.Password) < 4 {
+		return fmt.Errorf("password is too short, minimum length is 4")
 	}
 
 	return nil
@@ -75,8 +76,9 @@ type UserPatch struct {
 	RowStatus *RowStatus `json:"rowStatus"`
 
 	// Domain specific fields
+	Username     *string `json:"username"`
 	Email        *string `json:"email"`
-	Name         *string `json:"name"`
+	Nickname     *string `json:"nickname"`
 	Password     *string `json:"password"`
 	ResetOpenID  *bool   `json:"resetOpenId"`
 	PasswordHash *string
@@ -90,10 +92,11 @@ type UserFind struct {
 	RowStatus *RowStatus `json:"rowStatus"`
 
 	// Domain specific fields
-	Email  *string `json:"email"`
-	Role   *Role
-	Name   *string `json:"name"`
-	OpenID *string
+	Username *string `json:"username"`
+	Role     *Role
+	Email    *string `json:"email"`
+	Nickname *string `json:"nickname"`
+	OpenID   *string
 }
 
 type UserDelete struct {
