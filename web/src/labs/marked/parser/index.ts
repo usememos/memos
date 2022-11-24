@@ -16,6 +16,7 @@ import Table from "./Table";
 import BoldEmphasis from "./BoldEmphasis";
 import Blockquote from "./Blockquote";
 import HorizontalRules from "./HorizontalRules";
+import Strikethrough from "./Strikethrough";
 
 export { CODE_BLOCK_REG } from "./CodeBlock";
 export { TODO_LIST_REG } from "./TodoList";
@@ -38,5 +39,5 @@ export const blockElementParserList = [
   UnorderedList,
   Paragraph,
 ];
-export const inlineElementParserList = [Image, BoldEmphasis, Bold, Emphasis, Link, InlineCode, PlainLink, Tag, PlainText];
+export const inlineElementParserList = [Image, BoldEmphasis, Bold, Emphasis, Link, InlineCode, PlainLink, Strikethrough, Tag, PlainText];
 export const parserList = [...blockElementParserList, ...inlineElementParserList];
