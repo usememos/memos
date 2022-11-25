@@ -76,7 +76,7 @@ const UserBanner = () => {
         </div>
         <Dropdown
           trigger={<Icon.MoreHorizontal className="ml-2 w-5 h-auto cursor-pointer" />}
-          actionsClassName="!w-36"
+          actionsClassName="min-w-36"
           actions={
             <>
               {!userService.isVisitorMode() && (

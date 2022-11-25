@@ -199,7 +199,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
 		}
 
-		if userPatch.Email != nil && !common.ValidateEmail(*userPatch.Email) {
+		if userPatch.Email != nil && *userPatch.Email != "" && !common.ValidateEmail(*userPatch.Email) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid email format")
 		}
 
