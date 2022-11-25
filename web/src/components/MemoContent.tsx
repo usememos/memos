@@ -5,6 +5,7 @@ import Icon from "./Icon";
 import { SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE } from "../helpers/consts";
 import useLocalStorage from "../hooks/useLocalStorage";
 import "../less/memo-content.less";
+import highlightWithWord from "../labs/highlighter";
 
 export interface DisplayConfig {
   enableExpand: boolean;
@@ -12,7 +13,7 @@ export interface DisplayConfig {
 
 interface Props {
   content: string;
-  highlightWord?: string | undefined;
+  highlightWord?: string;
   className?: string;
   displayConfig?: Partial<DisplayConfig>;
   onMemoContentClick?: (e: React.MouseEvent) => void;
@@ -80,14 +81,6 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const highlightMemoContent = (content: string, highlightWord: string | undefined): string => {
-    let highlightContent = content;
-    if (highlightWord) {
-      highlightContent = highlightContent.replace(new RegExp(highlightWord, "g"), `<span class="highlight-word">${highlightWord}</span>`);
-    }
-    return highlightContent;
-  };
-
   return (
     <div className={`memo-content-wrapper ${className || ""}`}>
       <div
@@ -96,7 +89,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
         dangerouslySetInnerHTML={{
-          __html: highlightMemoContent(marked(state.expandButtonStatus === 0 ? foldedContent : content), highlightWord),
+          __html: highlightWithWord(marked(state.expandButtonStatus === 0 ? foldedContent : content), highlightWord),
         }}
       ></div>
       {state.expandButtonStatus !== -1 && (
