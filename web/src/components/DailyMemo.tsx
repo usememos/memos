@@ -21,7 +21,7 @@ const DailyMemo: React.FC<Props> = (props: Props) => {
       </div>
       <div className="memo-container">
         <MemoContent content={memo.content} displayConfig={displayConfig} />
-        <MemoResources resourceList={memo.resourceList} />
+        <MemoResources resourceList={memo.resourceList} style="col" />
       </div>
       <div className="split-line"></div>
     </div>
