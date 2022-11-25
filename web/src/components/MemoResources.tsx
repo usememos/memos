@@ -21,25 +21,34 @@ const MemoResources: React.FC<Props> = (props: Props) => {
     ...getDefaultProps(),
     ...props,
   };
-  const imageList = resourceList.filter((resource) => resource.type.includes("image"));
-  const otherResourceList = resourceList.filter((resource) => !resource.type.includes("image"));
+  const availableResourceList = resourceList.filter((resource) => resource.type.startsWith("image") || resource.type.startsWith("video"));
+  const otherResourceList = resourceList.filter((resource) => !availableResourceList.includes(resource));
 
   const handlPreviewBtnClick = (resource: Resource) => {
     const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
     window.open(resourceUrl);
   };
 
-  const imgUrls = imageList.map((resource) => {
-    return `/o/r/${resource.id}/${resource.filename}`;
-  });
+  const imgUrls = availableResourceList
+    .filter((resource) => resource.type.startsWith("image"))
+    .map((resource) => {
+      return `/o/r/${resource.id}/${resource.filename}`;
+    });
 
   return (
     <div className={`resource-wrapper ${className || ""}`}>
-      {imageList.length > 0 && (
+      {availableResourceList.length > 0 && (
         <div className={`images-wrapper ${style}`}>
-          {imageList.map((resource, index) => (
-            <Image className="memo-img" key={resource.id} imgUrls={imgUrls} index={index} />
-          ))}
+          {availableResourceList.map((resource) => {
+            const url = `/o/r/${resource.id}/${resource.filename}`;
+            if (resource.type.startsWith("image")) {
+              return (
+                <Image className="memo-resource" key={resource.id} imgUrls={imgUrls} index={imgUrls.findIndex((item) => item === url)} />
+              );
+            } else {
+              return <video className="memo-resource" controls key={resource.id} src={url} />;
+            }
+          })}
         </div>
       )}
       <div className="other-resource-wrapper">

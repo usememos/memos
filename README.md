@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://demo.usememos.com/">Live Demo</a> •
-  Discuss in <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a> / <b><a href="https://discord.gg/tfPJa4UmAv">Discard 🏂</a></b>
+  Discuss in <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a> / <b><a href="https://discord.gg/tfPJa4UmAv">Discord 🏂</a></b>
 </p>
 
 ![demo](https://raw.githubusercontent.com/usememos/memos/main/resources/demo.webp)

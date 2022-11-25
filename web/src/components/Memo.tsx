@@ -12,6 +12,7 @@ import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "../less/memo.less";
 
 dayjs.extend(relativeTime);
@@ -172,6 +173,10 @@ const Memo: React.FC<Props> = (props: Props) => {
     editorStateService.setEditMemoWithId(memo.id);
   };
 
+  const handleMemoDisplayTimeClick = () => {
+    showChangeMemoCreatedTsDialog(memo.id);
+  };
+
   const handleMemoVisibilityClick = (visibility: Visibility) => {
     const currVisibilityQuery = locationService.getState().query?.visibility;
     if (currVisibilityQuery === visibility) {
@@ -186,7 +191,9 @@ const Memo: React.FC<Props> = (props: Props) => {
       {memo.pinned && <div className="corner-container"></div>}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
-          <span className="time-text">{displayTimeStr}</span>
+          <span className="time-text" onDoubleClick={handleMemoDisplayTimeClick}>
+            {displayTimeStr}
+          </span>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span
               className={`status-text ${memo.visibility.toLocaleLowerCase()}`}
