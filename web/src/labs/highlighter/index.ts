@@ -9,7 +9,7 @@ function dfsAndHighlight(node: HTMLElement, keyword: string) {
     node.parentNode?.insertBefore(span, node);
     node.parentNode?.removeChild(node);
   }
-  for (const child of node.childNodes) {
+  for (const child of Array.from(node.childNodes)) {
     dfsAndHighlight(<HTMLElement>child, keyword);
   }
   return node.innerHTML;
