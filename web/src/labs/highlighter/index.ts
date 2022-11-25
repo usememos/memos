@@ -2,7 +2,7 @@ const escapeRegExp = (str: string): string => {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 };
 
-function dfsAndHighlight(node: HTMLElement, keyword: string) {
+const walkthroughNodeWithKeyword = (node: HTMLElement, keyword: string) => {
   if (node.nodeType === 3) {
     const span = document.createElement("span");
     span.innerHTML = node.nodeValue?.replace(new RegExp(keyword, "g"), `<mark>${keyword}</mark>`) ?? "";
@@ -10,19 +10,17 @@ function dfsAndHighlight(node: HTMLElement, keyword: string) {
     node.parentNode?.removeChild(node);
   }
   for (const child of Array.from(node.childNodes)) {
-    dfsAndHighlight(<HTMLElement>child, keyword);
+    walkthroughNodeWithKeyword(<HTMLElement>child, keyword);
   }
   return node.innerHTML;
-}
+};
 
-const highlightWithWord = (html: string, keyword: string | undefined): string => {
+export const highlightWithWord = (html: string, keyword?: string): string => {
   if (!keyword) {
     return html;
   }
   keyword = escapeRegExp(keyword);
   const wrap = document.createElement("div");
   wrap.innerHTML = html;
-  return dfsAndHighlight(wrap, keyword);
+  return walkthroughNodeWithKeyword(wrap, keyword);
 };
-
-export default highlightWithWord;

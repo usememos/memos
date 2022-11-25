@@ -1,11 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { marked } from "../labs/marked";
+import { highlightWithWord } from "../labs/highlighter";
 import Icon from "./Icon";
 import { SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE } from "../helpers/consts";
 import useLocalStorage from "../hooks/useLocalStorage";
 import "../less/memo-content.less";
-import highlightWithWord from "../labs/highlighter";
 
 export interface DisplayConfig {
   enableExpand: boolean;

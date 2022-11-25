@@ -19,7 +19,7 @@ dayjs.extend(relativeTime);
 
 interface Props {
   memo: Memo;
-  highlightWord: string | undefined;
+  highlightWord?: string;
 }
 
 export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
