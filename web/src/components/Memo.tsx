@@ -19,6 +19,7 @@ dayjs.extend(relativeTime);
 
 interface Props {
   memo: Memo;
+  highlightWord?: string;
 }
 
 export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
@@ -30,7 +31,7 @@ export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
 };
 
 const Memo: React.FC<Props> = (props: Props) => {
-  const memo = props.memo;
+  const { memo, highlightWord } = props;
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [displayTimeStr, setDisplayTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
@@ -239,6 +240,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       </div>
       <MemoContent
         content={memo.content}
+        highlightWord={highlightWord}
         onMemoContentClick={handleMemoContentClick}
         onMemoContentDoubleClick={handleMemoContentDoubleClick}
       />
