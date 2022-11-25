@@ -1,3 +1,4 @@
+import { isEqual } from "lodash";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useAppSelector } from "../store";
@@ -64,12 +65,19 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     try {
       const user = userService.getState().user as User;
-      await userService.patchUser({
+      const userPatch: UserPatch = {
         id: user.id,
-        username: state.username,
-        nickname: state.nickname,
-        email: state.email,
-      });
+      };
+      if (!isEqual(user.nickname, state.nickname)) {
+        userPatch.nickname = state.nickname;
+      }
+      if (!isEqual(user.username, state.username)) {
+        userPatch.username = state.username;
+      }
+      if (!isEqual(user.email, state.email)) {
+        userPatch.email = state.email;
+      }
+      await userService.patchUser(userPatch);
       toastHelper.info("Update succeed");
       handleCloseBtnClick();
     } catch (error: any) {
