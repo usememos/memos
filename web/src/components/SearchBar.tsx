@@ -27,7 +27,7 @@ const SearchBar = () => {
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;
     setQueryText(text);
-    locationService.setTextQuery(text);
+    locationService.setTextQuery(text.length === 0 ? undefined : text);
   };
 
   return (
