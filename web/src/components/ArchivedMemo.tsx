@@ -57,10 +57,10 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
           {t("common.archived-at")} {utils.getDateTimeString(memo.updatedTs)}
         </span>
         <div className="btns-container">
-          <span className="btn restore-btn" onClick={handleRestoreMemoClick}>
+          <span className="btn-text" onClick={handleRestoreMemoClick}>
             {t("common.restore")}
           </span>
-          <span className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
+          <span className={`btn-text ${showConfirmDeleteBtn ? "final-confirm" : ""}`} onClick={handleDeleteMemoClick}>
             {t("common.delete")}
             {showConfirmDeleteBtn ? "!" : ""}
           </span>

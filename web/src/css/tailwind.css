@@ -14,12 +14,20 @@
   }
 }
 
+.btn-normal {
+  @apply select-none inline-flex border cursor-pointer px-3 text-sm leading-8 rounded-md hover:opacity-80 hover:shadow;
+}
+
 .btn-primary {
-  @apply select-none inline-flex border border-transparent cursor-pointer px-3 bg-green-600 text-sm leading-8 text-white rounded-md hover:opacity-80;
+  @apply btn-normal border-transparent bg-green-600 text-white;
+}
+
+.btn-danger {
+  @apply btn-normal border-red-600 bg-red-50 text-red-600;
 }
 
 .btn-text {
-  @apply select-none inline-flex border border-transparent cursor-pointer px-2 text-sm text-gray-600 leading-8 hover:opacity-80;
+  @apply btn-normal text-gray-600 border-none hover:shadow-none;
 }
 
 .input-text {

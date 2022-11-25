@@ -9,36 +9,8 @@
         @apply bg-gray-400 text-xs p-2 rounded-lg;
       }
 
-      > .form-label {
-        @apply flex flex-col justify-start items-start relative w-full leading-relaxed;
-
-        &.input-form-label {
-          @apply py-3 pb-1;
-
-          > input {
-            @apply w-full p-2 text-sm leading-6 rounded border border-gray-400 bg-transparent;
-          }
-        }
-      }
-
       > .btns-container {
         @apply flex flex-row justify-end items-center mt-2 w-full;
-
-        > .btn {
-          @apply text-sm px-4 py-2 rounded ml-2 bg-gray-400;
-
-          &:hover {
-            @apply opacity-80;
-          }
-
-          &.confirm-btn {
-            @apply bg-green-600 text-white shadow-inner;
-          }
-
-          &.cancel-btn {
-            background-color: unset;
-          }
-        }
       }
     }
   }
