@@ -14,7 +14,7 @@ const renderer = (rawStr: string): string => {
 };
 
 export default {
-  name: "ordered list",
+  name: "paragraph",
   regex: PARAGRAPH_REG,
   renderer,
 };
