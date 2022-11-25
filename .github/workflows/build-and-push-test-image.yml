@@ -25,22 +25,12 @@ jobs:
         with:
           install: true
 
-      - name: Build and Push to linux/amd64
+      - name: Build and Push
         id: docker_build
         uses: docker/build-push-action@v3
         with:
           context: ./
           file: ./Dockerfile
           platforms: linux/amd64
-          push: true
-          tags: neosmemo/memos:test
-
-      - name: Build and Push linux/arm64
-        id: docker_build
-        uses: docker/build-push-action@v3
-        with:
-          context: ./
-          file: ./Dockerfile
-          platforms: linux/arm64
           push: true
           tags: neosmemo/memos:test
