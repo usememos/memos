@@ -162,9 +162,9 @@
       "additional-script-placeholder": "Additional JavaScript codes"
     },
     "apperance-option": {
-      "follow-system": "Follow system",
-      "always-light": "Always light",
-      "always-dark": "Always dark"
+      "auto": "Follow system",
+      "light": "Always light",
+      "dark": "Always dark"
     }
   },
   "amount-text": {
