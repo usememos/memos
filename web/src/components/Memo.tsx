@@ -153,7 +153,6 @@ const Memo: React.FC<Props> = (props: Props) => {
                   .slice(1, -1) ?? ""
               }`
           ) ?? [];
-        console.log(currImgUrl, imageUrls);
         showPreviewImageDialog(
           imageUrls,
           imageUrls.findIndex((item) => item === currImgUrl)
