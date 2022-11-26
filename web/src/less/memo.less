@@ -118,30 +118,4 @@
       }
     }
   }
-
-  > .expand-btn-container {
-    @apply w-full relative flex flex-row justify-start items-center;
-
-    > .btn {
-      @apply flex flex-row justify-start items-center pl-2 pr-1 py-1 my-1 text-xs rounded-lg border bg-gray-100 border-gray-200 opacity-80 shadow hover:opacity-60;
-
-      &.expand-btn {
-        @apply mt-2;
-
-        > .icon-img {
-          @apply rotate-90;
-        }
-      }
-
-      &.fold-btn {
-        > .icon-img {
-          @apply -rotate-90;
-        }
-      }
-
-      > .icon-img {
-        @apply w-4 h-auto ml-1 transition-all;
-      }
-    }
-  }
 }
