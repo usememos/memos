@@ -8,8 +8,8 @@ const (
 	Public Visibility = "PUBLIC"
 	// Protected is the PROTECTED visibility.
 	Protected Visibility = "PROTECTED"
-	// Privite is the PRIVATE visibility.
-	Privite Visibility = "PRIVATE"
+	// Private is the PRIVATE visibility.
+	Private Visibility = "PRIVATE"
 )
 
 func (e Visibility) String() string {
@@ -18,7 +18,7 @@ func (e Visibility) String() string {
 		return "PUBLIC"
 	case Protected:
 		return "PROTECTED"
-	case Privite:
+	case Private:
 		return "PRIVATE"
 	}
 	return "PRIVATE"

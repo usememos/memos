@@ -3,7 +3,7 @@ import { memoService, shortcutService } from "../services";
 import { useAppSelector } from "../store";
 import Icon from "./Icon";
 import SearchBar from "./SearchBar";
-import { toggleSiderbar } from "./Sidebar";
+import { toggleSidebar } from "./Sidebar";
 import "../less/memos-header.less";
 
 let prevRequestTimestamp = Date.now();
@@ -38,7 +38,7 @@ const MemosHeader = () => {
   return (
     <div className="section-header-container memos-header-container">
       <div className="title-container">
-        <div className="action-btn" onClick={() => toggleSiderbar(true)}>
+        <div className="action-btn" onClick={() => toggleSidebar(true)}>
           <Icon.Menu className="icon-img" />
         </div>
         <span className="title-text" onClick={handleTitleTextClick}>

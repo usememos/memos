@@ -17,7 +17,7 @@ const Sidebar = () => {
   const location = useAppSelector((state) => state.location);
 
   useEffect(() => {
-    toggleSiderbar(false);
+    toggleSidebar(false);
   }, [location.query]);
 
   const handleSettingBtnClick = () => {
@@ -26,7 +26,7 @@ const Sidebar = () => {
 
   return (
     <>
-      <div className="mask" onClick={() => toggleSiderbar(false)}></div>
+      <div className="mask" onClick={() => toggleSidebar(false)}></div>
       <aside className="sidebar-wrapper">
         <UserBanner />
         <UsageHeatMap />
@@ -52,7 +52,7 @@ const Sidebar = () => {
   );
 };
 
-export const toggleSiderbar = (show?: boolean) => {
+export const toggleSidebar = (show?: boolean) => {
   const sidebarEl = document.body.querySelector(".sidebar-wrapper") as HTMLDivElement;
   const maskEl = document.body.querySelector(".mask") as HTMLDivElement;
 

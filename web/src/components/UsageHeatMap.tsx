@@ -11,11 +11,11 @@ const tableConfig = {
   height: 7,
 };
 
-const getInitialUsageStat = (usedDaysAmount: number, beginDayTimestemp: number): DailyUsageStat[] => {
+const getInitialUsageStat = (usedDaysAmount: number, beginDayTimestamp: number): DailyUsageStat[] => {
   const initialUsageStat: DailyUsageStat[] = [];
   for (let i = 1; i <= usedDaysAmount; i++) {
     initialUsageStat.push({
-      timestamp: beginDayTimestemp + DAILY_TIMESTAMP * i,
+      timestamp: beginDayTimestamp + DAILY_TIMESTAMP * i,
       count: 0,
     });
   }
@@ -32,19 +32,19 @@ const UsageHeatMap = () => {
   const todayDay = new Date(todayTimeStamp).getDay() + 1;
   const nullCell = new Array(7 - todayDay).fill(0);
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
-  const beginDayTimestemp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
+  const beginDayTimestamp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
 
   const { memos } = useAppSelector((state) => state.memo);
-  const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestemp));
+  const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestamp));
   const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
   const containerElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     getMemoStats(userService.getCurrentUserId())
       .then(({ data: { data } }) => {
-        const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestemp);
+        const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestamp);
         for (const record of data) {
-          const index = (utils.getDateStampByDate(record * 1000) - beginDayTimestemp) / (1000 * 3600 * 24) - 1;
+          const index = (utils.getDateStampByDate(record * 1000) - beginDayTimestamp) / (1000 * 3600 * 24) - 1;
           if (index >= 0) {
             newStat[index].count += 1;
           }
