@@ -138,6 +138,7 @@
     "system": "系统",
     "account-section": {
       "title": "账号信息",
+      "update-information": "更新个人信息",
       "change-password": "修改密码"
     },
     "preference-section": {
