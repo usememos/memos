@@ -9,6 +9,7 @@ import useLoading from "../hooks/useLoading";
 import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
+import useApperance from "../hooks/useApperance";
 import "../less/explore.less";
 
 interface State {
@@ -16,6 +17,8 @@ interface State {
 }
 
 const Explore = () => {
+  useApperance();
+
   const { t, i18n } = useTranslation();
   const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);

@@ -1,5 +1,5 @@
 .page-wrapper.explore {
-  @apply relative top-0 w-full h-screen overflow-y-auto overflow-x-hidden;
+  @apply relative top-0 w-full h-screen overflow-y-auto overflow-x-hidden dark:bg-zinc-900;
   background-color: #f6f5f4;
 
   > .page-container {
@@ -16,13 +16,13 @@
         }
 
         > .title-text {
-          @apply text-xl sm:text-3xl font-mono text-gray-700;
+          @apply text-xl sm:text-3xl font-mono text-gray-700 dark:text-gray-300;
         }
       }
 
       > .action-button-container {
         > .btn {
-          @apply block text-gray-600 font-mono text-base py-1 border px-3 leading-8 rounded-xl hover:opacity-80 hover:underline;
+          @apply block text-gray-600 dark:text-gray-300 font-mono text-base py-1 border px-3 leading-8 rounded-xl hover:opacity-80 hover:underline;
 
           > .icon {
             @apply text-lg;
@@ -35,7 +35,7 @@
       @apply relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 sm:pr-6;
 
       > .memo-container {
-        @apply flex flex-col justify-start items-start w-full p-4 mt-2 bg-white rounded-lg border border-white hover:border-gray-200;
+        @apply flex flex-col justify-start items-start w-full p-4 mt-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-700;
 
         > .memo-header {
           @apply mb-2 w-full flex flex-row justify-start items-center text-sm text-gray-400;
@@ -46,7 +46,7 @@
         }
 
         > .memo-content {
-          @apply cursor-default;
+          @apply cursor-default dark:text-zinc-50;
 
           > * {
             @apply cursor-default;
