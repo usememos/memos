@@ -10,12 +10,15 @@ import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
 import "../less/explore.less";
+import useApperance from "../hooks/useApperance";
 
 interface State {
   memos: Memo[];
 }
 
 const Explore = () => {
+  useApperance();
+
   const { t, i18n } = useTranslation();
   const user = useAppSelector((state) => state.user.user);
   const location = useAppSelector((state) => state.location);
