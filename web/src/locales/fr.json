@@ -138,6 +138,7 @@
     "system": "Système",
     "account-section": {
       "title": "Informations sur le compte",
+      "update-information": "Mettre à jour les informations",
       "change-password": "Modifier le mot de passe"
     },
     "preference-section": {

@@ -22,3 +22,6 @@ export const IS_FOLDING_ENABLED_DEFAULT_VALUE = true;
 export const SETTING_IS_FOLDING_ENABLED_KEY = "setting_IS_FOLDING_ENABLED";
 
 export const TAB_SPACE_WIDTH = 2;
+
+export const APPERANCE_OPTIONS = ["auto", "light", "dark"] as const;
+export const APPERANCE_OPTIONS_STORAGE_KEY = "setting_APPERANCE_OPTIONS";

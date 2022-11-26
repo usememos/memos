@@ -1,6 +1,8 @@
 /* eslint-disable no-undef */
+/** @type {import('tailwindcss').Config} */
 module.exports = {
   content: ["./index.html", "./src/**/*.{js,ts,tsx}"],
+  darkMode: "class",
   theme: {
     fontSize: {
       xs: ".75rem",
