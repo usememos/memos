@@ -146,10 +146,12 @@ const Memo: React.FC<Props> = (props: Props) => {
         const imageUrls =
           memo.content.match(/!\[.*?\]\((.*?)\)/g)?.map(
             (item) =>
-              item
-                .match(/\((.*?)\)/g)
-                ?.slice(-1)[0]
-                .slice(1, -1) ?? ""
+              `/o/get/image?url=${
+                item
+                  .match(/\((.*?)\)/g)
+                  ?.slice(-1)[0]
+                  .slice(1, -1) ?? ""
+              }`
           ) ?? [];
         showPreviewImageDialog(
           imageUrls,
