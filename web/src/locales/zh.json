@@ -162,9 +162,9 @@
       "additional-script-placeholder": "自定义 JavaScript 代码"
     },
     "apperance-option": {
-      "follow-system": "跟随系统",
-      "always-light": "总是浅色",
-      "always-dark": "总是深色"
+      "auto": "跟随系统",
+      "light": "总是浅色",
+      "dark": "总是深色"
     }
   },
   "amount-text": {

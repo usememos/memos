@@ -9,7 +9,7 @@ import useLoading from "../hooks/useLoading";
 import { globalService, userService } from "../services";
 import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
-import ApperanceDropdownMenu from "../components/ApperanceDropdownMenu";
+import ApperanceSelect from "../components/ApperanceSelect";
 import "../less/auth.less";
 
 const validateConfig: ValidatorConfig = {
@@ -164,17 +164,17 @@ const Auth = () => {
         <div className="footer-container">
           <div className="w-full flex flex-row justify-center items-center gap-2">
             <Select
-              className="w-40 text-sm"
+              className="!min-w-[9rem] w-auto whitespace-nowrap"
               startDecorator={<Icon.Globe className="w-4 h-auto" />}
               value={i18n.language}
-              onChange={(e, value) => handleLocaleItemClick(value as Locale)}
+              onChange={(_, value) => handleLocaleItemClick(value as Locale)}
             >
               <Option value="en">English</Option>
               <Option value="zh">中文</Option>
               <Option value="vi">Tiếng Việt</Option>
               <Option value="fr">French</Option>
             </Select>
-            <ApperanceDropdownMenu />
+            <ApperanceSelect />
           </div>
         </div>
       </div>
