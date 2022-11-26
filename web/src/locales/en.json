@@ -160,6 +160,11 @@
       "additional-script": "Additional script",
       "additional-style-placeholder": "Additional CSS codes",
       "additional-script-placeholder": "Additional JavaScript codes"
+    },
+    "apperance-option": {
+      "follow-system": "Follow system",
+      "always-light": "Always light",
+      "always-dark": "Always dark"
     }
   },
   "amount-text": {
