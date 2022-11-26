@@ -5,7 +5,7 @@ import store from "../store";
 import { setLocale } from "../store/modules/global";
 import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
 
-const defauleSetting: Setting = {
+const defaultSetting: Setting = {
   locale: "en",
   memoVisibility: "PRIVATE",
   memoDisplayTsOption: "created_ts",
@@ -13,7 +13,7 @@ const defauleSetting: Setting = {
 
 export const convertResponseModelUser = (user: User): User => {
   const setting: Setting = {
-    ...defauleSetting,
+    ...defaultSetting,
   };
 
   if (user.userSettingList) {

@@ -93,13 +93,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		for _, resource := range list {
-			memoResoureceList, err := s.Store.FindMemoResourceList(ctx, &api.MemoResourceFind{
+			memoResourceList, err := s.Store.FindMemoResourceList(ctx, &api.MemoResourceFind{
 				ResourceID: &resource.ID,
 			})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo resource list").SetInternal(err)
 			}
-			resource.LinkedMemoAmount = len(memoResoureceList)
+			resource.LinkedMemoAmount = len(memoResourceList)
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)

@@ -45,7 +45,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 
 			if userMemoVisibilitySetting != nil {
-				memoVisibility := api.Privite
+				memoVisibility := api.Private
 				err := json.Unmarshal([]byte(userMemoVisibilitySetting.Value), &memoVisibility)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal user setting value").SetInternal(err)
@@ -53,7 +53,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				memoCreate.Visibility = memoVisibility
 			} else {
 				// Private is the default memo visibility.
-				memoCreate.Visibility = api.Privite
+				memoCreate.Visibility = api.Private
 			}
 		}
 
@@ -176,10 +176,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			contentSearch := "#" + tag + " "
 			memoFind.ContentSearch = &contentSearch
 		}
-		visibilitListStr := c.QueryParam("visibility")
-		if visibilitListStr != "" {
+		visibilityListStr := c.QueryParam("visibility")
+		if visibilityListStr != "" {
 			visibilityList := []api.Visibility{}
-			for _, visibility := range strings.Split(visibilitListStr, ",") {
+			for _, visibility := range strings.Split(visibilityListStr, ",") {
 				visibilityList = append(visibilityList, api.Visibility(visibility))
 			}
 			memoFind.VisibilityList = visibilityList
@@ -271,7 +271,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			if *memoFind.CreatorID != currentUserID {
 				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
 			} else {
-				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected, api.Privite}
+				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected, api.Private}
 			}
 		}
 
@@ -313,10 +313,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			contentSearch := "#" + tag + " "
 			memoFind.ContentSearch = &contentSearch
 		}
-		visibilitListStr := c.QueryParam("visibility")
-		if visibilitListStr != "" {
+		visibilityListStr := c.QueryParam("visibility")
+		if visibilityListStr != "" {
 			visibilityList := []api.Visibility{}
-			for _, visibility := range strings.Split(visibilitListStr, ",") {
+			for _, visibility := range strings.Split(visibilityListStr, ",") {
 				visibilityList = append(visibilityList, api.Visibility(visibility))
 			}
 			memoFind.VisibilityList = visibilityList
@@ -372,7 +372,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if memo.Visibility == api.Privite {
+		if memo.Visibility == api.Private {
 			if !ok || memo.CreatorID != userID {
 				return echo.NewHTTPError(http.StatusForbidden, "this memo is private only")
 			}

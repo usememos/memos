@@ -26,7 +26,7 @@ const Selector: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const [showSelector, toggleSelectorStatus] = useToggle(false);
 
-  const seletorElRef = useRef<HTMLDivElement>(null);
+  const selectorElRef = useRef<HTMLDivElement>(null);
 
   let currentItem = nullItem;
   for (const d of dataSource) {
@@ -39,7 +39,7 @@ const Selector: React.FC<Props> = (props: Props) => {
   useEffect(() => {
     if (showSelector) {
       const handleClickOutside = (event: MouseEvent) => {
-        if (!seletorElRef.current?.contains(event.target as Node)) {
+        if (!selectorElRef.current?.contains(event.target as Node)) {
           toggleSelectorStatus(false);
         }
       };
@@ -63,7 +63,7 @@ const Selector: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`selector-wrapper ${className ?? ""}`} ref={seletorElRef}>
+    <div className={`selector-wrapper ${className ?? ""}`} ref={selectorElRef}>
       <div className={`current-value-container ${showSelector ? "active" : ""}`} onClick={handleCurrentValueClick}>
         <span className="value-text">{currentItem.text}</span>
         <span className="arrow-text">

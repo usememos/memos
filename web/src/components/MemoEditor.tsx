@@ -53,7 +53,7 @@ const MemoEditor = () => {
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const prevGlobalStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
-  const tagSeletorRef = useRef<HTMLDivElement>(null);
+  const tagSelectorRef = useRef<HTMLDivElement>(null);
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
@@ -337,8 +337,8 @@ const MemoEditor = () => {
     });
   };
 
-  const handleTagSeletorClick = useCallback((event: React.MouseEvent) => {
-    if (tagSeletorRef.current !== event.target && tagSeletorRef.current?.contains(event.target as Node)) {
+  const handleTagSelectorClick = useCallback((event: React.MouseEvent) => {
+    if (tagSelectorRef.current !== event.target && tagSelectorRef.current?.contains(event.target as Node)) {
       editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
       handleEditorFocus();
     }
@@ -415,7 +415,7 @@ const MemoEditor = () => {
         <div className="common-tools-container">
           <div className="action-btn tag-action">
             <Icon.Hash className="icon-img" />
-            <div ref={tagSeletorRef} className="tag-list" onClick={handleTagSeletorClick}>
+            <div ref={tagSelectorRef} className="tag-list" onClick={handleTagSelectorClick}>
               {tags.length > 0 ? (
                 tags.map((tag) => {
                   return (

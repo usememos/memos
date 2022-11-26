@@ -6,7 +6,7 @@ import "../../less/common/date-picker.less";
 interface DatePickerProps {
   className?: string;
   datestamp: DateStamp;
-  handleDateStampChange: (datastamp: DateStamp) => void;
+  handleDateStampChange: (datestamp: DateStamp) => void;
 }
 
 const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {

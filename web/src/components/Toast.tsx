@@ -14,22 +14,22 @@ type ToastItemProps = {
   type: ToastType;
   content: string;
   duration: number;
-  destory: FunctionType;
+  destroy: FunctionType;
 };
 
 const Toast: React.FC<ToastItemProps> = (props: ToastItemProps) => {
-  const { destory, duration } = props;
+  const { destroy, duration } = props;
 
   useEffect(() => {
     if (duration > 0) {
       setTimeout(() => {
-        destory();
+        destroy();
       }, duration);
     }
   }, []);
 
   return (
-    <div className="toast-container" onClick={destory}>
+    <div className="toast-container" onClick={destroy}>
       <p className="content-text">{props.content}</p>
     </div>
   );
@@ -57,8 +57,8 @@ const initialToastHelper = () => {
     shownToastContainers.push([toast, tempDiv]);
 
     const cbs = {
-      destory: () => {
-        tempDiv.classList.add("destory");
+      destroy: () => {
+        tempDiv.classList.add("destroy");
 
         setTimeout(() => {
           if (!tempDiv.parentElement) {
@@ -77,7 +77,7 @@ const initialToastHelper = () => {
       },
     };
 
-    toast.render(<Toast {...config} destory={cbs.destory} />);
+    toast.render(<Toast {...config} destroy={cbs.destroy} />);
 
     setTimeout(() => {
       tempDiv.classList.add("showup");
