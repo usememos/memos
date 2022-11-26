@@ -138,6 +138,7 @@
     "system": "System",
     "account-section": {
       "title": "Account Information",
+      "update-information": "Update Information",
       "change-password": "Change password"
     },
     "preference-section": {

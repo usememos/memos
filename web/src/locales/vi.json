@@ -137,6 +137,7 @@
     "system": "hệ thống",
     "account-section": {
       "title": "Thông tin tài khoản",
+      "update-information": "Cập nhật thông tin",
       "change-password": "Đổi mật khẩu"
     },
     "preference-section": {
