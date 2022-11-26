@@ -9,8 +9,8 @@ import useLoading from "../hooks/useLoading";
 import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
-import "../less/explore.less";
 import useApperance from "../hooks/useApperance";
+import "../less/explore.less";
 
 interface State {
   memos: Memo[];
