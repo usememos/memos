@@ -9,8 +9,8 @@ import useLoading from "../hooks/useLoading";
 import { globalService, userService } from "../services";
 import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
-import "../less/auth.less";
 import ApperanceDropdownMenu from "../components/ApperanceDropdownMenu";
+import "../less/auth.less";
 
 const validateConfig: ValidatorConfig = {
   minLength: 4,
