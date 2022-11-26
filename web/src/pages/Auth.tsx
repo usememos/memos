@@ -9,6 +9,7 @@ import useLoading from "../hooks/useLoading";
 import { globalService, userService } from "../services";
 import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
+import ApperanceDropdownMenu from "../components/ApperanceDropdownMenu";
 import "../less/auth.less";
 
 const validateConfig: ValidatorConfig = {
@@ -113,7 +114,8 @@ const Auth = () => {
         <div className="auth-form-wrapper">
           <div className="page-header-container">
             <div className="title-container">
-              <img className="logo-img" src="/logo-full.webp" alt="" />
+              <img className="logo-img" src="/logo.webp" alt="" />
+              <p className="logo-text">memos</p>
             </div>
             <p className="slogan-text">{t("slogan")}</p>
           </div>
@@ -160,7 +162,7 @@ const Auth = () => {
           {!systemStatus?.host && <p className="tip-text">{t("auth.host-tip")}</p>}
         </div>
         <div className="footer-container">
-          <div className="w-full flex flex-row justify-center items-center">
+          <div className="w-full flex flex-row justify-center items-center gap-2">
             <Select
               className="w-40 text-sm"
               startDecorator={<Icon.Globe className="w-4 h-auto" />}
@@ -172,6 +174,7 @@ const Auth = () => {
               <Option value="vi">Tiếng Việt</Option>
               <Option value="fr">French</Option>
             </Select>
+            <ApperanceDropdownMenu />
           </div>
         </div>
       </div>

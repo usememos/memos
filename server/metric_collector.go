@@ -13,9 +13,10 @@ import (
 
 // MetricCollector is the metric collector.
 type MetricCollector struct {
-	collector metric.Collector
-	profile   *profile.Profile
-	store     *store.Store
+	Collector metric.Collector
+	Enabled   bool
+	Profile   *profile.Profile
+	Store     *store.Store
 }
 
 const (
@@ -26,23 +27,28 @@ func NewMetricCollector(profile *profile.Profile, store *store.Store) MetricColl
 	c := segment.NewCollector(segmentMetricWriteKey)
 
 	return MetricCollector{
-		collector: c,
-		profile:   profile,
-		store:     store,
+		Collector: c,
+		Enabled:   true,
+		Profile:   profile,
+		Store:     store,
 	}
 }
 
 func (mc *MetricCollector) Collect(_ context.Context, metric *metric.Metric) {
-	if mc.profile.Mode == "dev" {
+	if !mc.Enabled {
+		return
+	}
+
+	if mc.Profile.Mode == "dev" {
 		return
 	}
 
 	if metric.Labels == nil {
 		metric.Labels = map[string]string{}
 	}
-	metric.Labels["version"] = version.GetCurrentVersion(mc.profile.Mode)
+	metric.Labels["version"] = version.GetCurrentVersion(mc.Profile.Mode)
 
-	err := mc.collector.Collect(metric)
+	err := mc.Collector.Collect(metric)
 	if err != nil {
 		fmt.Printf("Failed to request segment, error: %+v\n", err)
 	}

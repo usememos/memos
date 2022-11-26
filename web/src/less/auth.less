@@ -1,5 +1,5 @@
 .page-wrapper.auth {
-  @apply flex flex-row justify-center items-center w-full h-screen bg-white;
+  @apply flex flex-row justify-center items-center w-full h-screen bg-white dark:bg-zinc-900;
 
   > .page-container {
     @apply w-80 max-w-full h-full py-4 flex flex-col justify-start items-center;
@@ -11,15 +11,19 @@
         @apply flex flex-col justify-start items-start w-full mb-4;
 
         > .title-container {
-          @apply w-full flex flex-row justify-between items-center;
+          @apply w-full flex flex-row justify-start items-center;
 
           > .logo-img {
             @apply h-20 w-auto;
           }
+
+          > .logo-text {
+            @apply text-4xl tracking-wide text-black dark:text-white;
+          }
         }
 
         > .slogan-text {
-          @apply text-sm text-gray-700;
+          @apply text-sm text-gray-700 dark:text-gray-200;
         }
       }
 
@@ -33,7 +37,7 @@
             @apply absolute top-3 left-3 px-1 leading-10 flex-shrink-0 text-base cursor-text text-gray-400 bg-transparent transition-all select-none;
 
             &.not-null {
-              @apply text-sm top-0 z-10 leading-4 bg-white rounded;
+              @apply text-sm top-0 z-10 leading-4 bg-white dark:bg-zinc-800 rounded;
             }
           }
 
@@ -41,7 +45,7 @@
             @apply py-2;
 
             > input {
-              @apply w-full py-3 px-3 text-base shadow-inner rounded-lg border border-solid border-gray-400 hover:opacity-80;
+              @apply w-full py-3 px-3 text-base shadow-inner rounded-lg border border-solid border-gray-400 hover:opacity-80 dark:bg-zinc-800 dark:text-white;
             }
           }
         }
@@ -58,7 +62,7 @@
           @apply flex flex-row justify-center items-center px-1 py-2 text-sm rounded hover:opacity-80;
 
           &.signup-btn {
-            @apply px-3;
+            @apply px-3 dark:text-white dark:opacity-70;
           }
 
           &.signin-btn {

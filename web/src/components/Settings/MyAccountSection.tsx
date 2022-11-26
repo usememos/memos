@@ -36,10 +36,10 @@ const MyAccountSection = () => {
         <div className="flex flex-row justify-start items-center text-base text-gray-600">{user.email}</div>
         <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
           <button className="btn-normal" onClick={showUpdateAccountDialog}>
-            Update Information
+            {t("setting.account-section.update-information")}
           </button>
           <button className="btn-normal" onClick={showChangePasswordDialog}>
-            Change Password
+            {t("setting.account-section.change-password")}
           </button>
         </div>
       </div>
