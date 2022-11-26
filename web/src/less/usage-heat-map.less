@@ -54,6 +54,12 @@
     @apply text-gray-300;
   }
 
+  &.offset-left {
+    &::before {
+      left: calc(10% - 5px);
+    }
+  }
+
   &::before {
     content: "";
     position: absolute;
