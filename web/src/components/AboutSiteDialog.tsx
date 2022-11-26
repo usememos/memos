@@ -30,7 +30,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <img className="logo-img" src="/logo-full.webp" alt="" />
         <p>{t("slogan")}</p>
         <br />
-        <div className="addtion-info-container">
+        <div className="addition-info-container">
           <GitHubBadge />
           <>
             {t("common.version")}:

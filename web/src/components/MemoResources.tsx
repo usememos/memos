@@ -24,7 +24,7 @@ const MemoResources: React.FC<Props> = (props: Props) => {
   const availableResourceList = resourceList.filter((resource) => resource.type.startsWith("image") || resource.type.startsWith("video"));
   const otherResourceList = resourceList.filter((resource) => !availableResourceList.includes(resource));
 
-  const handlPreviewBtnClick = (resource: Resource) => {
+  const handlePreviewBtnClick = (resource: Resource) => {
     const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
     window.open(resourceUrl);
   };
@@ -54,7 +54,7 @@ const MemoResources: React.FC<Props> = (props: Props) => {
       <div className="other-resource-wrapper">
         {otherResourceList.map((resource) => {
           return (
-            <div className="other-resource-container" key={resource.id} onClick={() => handlPreviewBtnClick(resource)}>
+            <div className="other-resource-container" key={resource.id} onClick={() => handlePreviewBtnClick(resource)}>
               <Icon.FileText className="icon-img" />
               <span className="name-text">{resource.filename}</span>
             </div>

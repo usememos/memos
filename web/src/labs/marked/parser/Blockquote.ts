@@ -12,7 +12,7 @@ const renderer = (rawStr: string): string => {
 };
 
 export default {
-  name: "blockqoute",
+  name: "blockquote",
   regex: BLOCKQUOTE_REG,
   renderer,
 };

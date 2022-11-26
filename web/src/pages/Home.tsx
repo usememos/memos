@@ -48,7 +48,7 @@ function Home() {
           </div>
           <MemoList />
           {userService.isVisitorMode() && (
-            <div className="addtion-btn-container">
+            <div className="addition-btn-container">
               {user ? (
                 <button className="btn" onClick={() => (window.location.href = "/")}>
                   <span className="icon">🏠</span> {t("common.back-to-home")}

@@ -192,7 +192,7 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
     if (["AND", "OR"].includes(value)) {
       handleFilterChange(index, {
         ...filter,
-        relation: value as MemoFilterRalation,
+        relation: value as MemoFilterRelation,
       });
     }
   };

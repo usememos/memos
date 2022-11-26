@@ -49,7 +49,7 @@ func (s *Store) Vacuum(ctx context.Context) error {
 	return nil
 }
 
-// Exec vacuum records in a transcation.
+// Exec vacuum records in a transaction.
 func vacuum(ctx context.Context, tx *sql.Tx) error {
 	if err := vacuumMemo(ctx, tx); err != nil {
 		return err

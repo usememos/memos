@@ -1,4 +1,4 @@
-type MemoFilterRalation = "AND" | "OR";
+type MemoFilterRelation = "AND" | "OR";
 
 interface BaseFilter {
   type: FilterType;
@@ -6,7 +6,7 @@ interface BaseFilter {
     operator: string;
     value: string;
   };
-  relation: MemoFilterRalation;
+  relation: MemoFilterRelation;
 }
 
 interface TagFilter extends BaseFilter {
