@@ -40,6 +40,8 @@ func run(profile *profile.Profile) error {
 	serverInstance.Store = storeInstance
 
 	metricCollector := server.NewMetricCollector(profile, storeInstance)
+	// Disable metrics collector.
+	metricCollector.Enabled = false
 	serverInstance.Collector = &metricCollector
 
 	println(greetingBanner)
