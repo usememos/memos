@@ -68,16 +68,14 @@ const ChangeResourceFilenameDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <label className="form-label input-form-label">
-          <input type="text" value={filename} onChange={handleFilenameChanged} />
-        </label>
+        <input className="input-text" type="text" value={filename} onChange={handleFilenameChanged} />
         <div className="btns-container">
-          <span className="btn cancel-btn" onClick={handleCloseBtnClick}>
+          <button className="btn-text" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
-          </span>
-          <span className="btn confirm-btn" onClick={handleSaveBtnClick}>
+          </button>
+          <button className="btn-primary" onClick={handleSaveBtnClick}>
             {t("common.save")}
-          </span>
+          </button>
         </div>
       </div>
     </>

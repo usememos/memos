@@ -1,14 +1,14 @@
+import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { memoService, shortcutService } from "../services";
-import { checkShouldShowMemoWithFilters, filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
+import { filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import Selector from "./common/Selector";
 import "../less/create-shortcut-dialog.less";
-import dayjs from "dayjs";
 
 interface Props extends DialogProps {
   shortcutId?: ShortcutId;
@@ -20,10 +20,6 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   const [filters, setFilters] = useState<Filter[]>([]);
   const requestState = useLoading(false);
   const { t } = useTranslation();
-
-  const shownMemoLength = memoService.getState().memos.filter((memo) => {
-    return checkShouldShowMemoWithFilters(memo, filters);
-  }).length;
 
   useEffect(() => {
     if (shortcutId) {
@@ -146,10 +142,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-footer-container">
         <div></div>
         <div className="btns-container">
-          <span className={`tip-text ${filters.length === 0 && "hidden"}`}>
-            <strong>{shownMemoLength}</strong> {t("shortcut-list.eligible-memo")}
-          </span>
-          <button className={`btn save-btn ${requestState.isLoading ? "requesting" : ""}`} onClick={handleSaveBtnClick}>
+          <button className={`btn-primary ${requestState.isLoading ? "requesting" : ""}`} onClick={handleSaveBtnClick}>
             {t("common.save")}
           </button>
         </div>

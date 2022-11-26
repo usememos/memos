@@ -12,12 +12,6 @@ func TestGetHTMLMeta(t *testing.T) {
 		htmlMeta HTMLMeta
 	}{
 		{
-			urlStr: "https://baidu.com",
-			htmlMeta: HTMLMeta{
-				Title: "百度一下，你就知道",
-			},
-		},
-		{
 			urlStr: "https://www.bytebase.com/blog/sql-review-tool-for-devs",
 			htmlMeta: HTMLMeta{
 				Title:       "The SQL Review Tool for Developers",

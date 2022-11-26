@@ -16,6 +16,7 @@ const MemoList = () => {
   const memoDisplayTsOption = useAppSelector((state) => state.user.user?.setting.memoDisplayTsOption);
   const { memos, isFetching } = useAppSelector((state) => state.memo);
   const [isComplete, setIsComplete] = useState<boolean>(false);
+  const [highlightWord, setHighlightWord] = useState<string | undefined>("");
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query ?? {};
   const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
@@ -103,6 +104,7 @@ const MemoList = () => {
     if (pageWrapper) {
       pageWrapper.scrollTo(0, 0);
     }
+    setHighlightWord(query?.text);
   }, [query]);
 
   useEffect(() => {
@@ -131,7 +133,7 @@ const MemoList = () => {
   return (
     <div className="memo-list-container">
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} />
+        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} highlightWord={highlightWord} />
       ))}
       {isFetching ? (
         <div className="status-text-container fetching-tip">

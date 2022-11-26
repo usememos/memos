@@ -35,10 +35,10 @@ const MyAccountSection = () => {
         </div>
         <div className="flex flex-row justify-start items-center text-base text-gray-600">{user.email}</div>
         <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
-          <button className="px-2 py-1 border rounded-md text-sm hover:bg-gray-100" onClick={showUpdateAccountDialog}>
+          <button className="btn-normal" onClick={showUpdateAccountDialog}>
             Update Information
           </button>
-          <button className="px-2 py-1 border rounded-md text-sm hover:bg-gray-100" onClick={showChangePasswordDialog}>
+          <button className="btn-normal" onClick={showChangePasswordDialog}>
             Change Password
           </button>
         </div>
@@ -46,7 +46,7 @@ const MyAccountSection = () => {
       <div className="section-container openapi-section-container">
         <p className="title-text">Open API</p>
         <p className="value-text">{openAPIRoute}</p>
-        <span className="reset-btn" onClick={handleResetOpenIdBtnClick}>
+        <span className="btn-danger mt-2" onClick={handleResetOpenIdBtnClick}>
           {t("common.reset")} API
         </span>
         <div className="usage-guide-container">
