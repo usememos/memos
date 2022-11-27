@@ -117,7 +117,7 @@ const PreferencesSection = () => {
         </div>
         <div className="input-form-container">
           <span className="field-text">{t("common.password")}</span>
-          <input type="text" placeholder={t("common.password")} value={state.createUserPassword} onChange={handlePasswordInputChange} />
+          <input type="password" placeholder={t("common.password")} value={state.createUserPassword} onChange={handlePasswordInputChange} />
         </div>
         <div className="btns-container">
           <button onClick={handleCreateUserBtnClick}>{t("common.create")}</button>
