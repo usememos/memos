@@ -139,24 +139,9 @@ const Memo: React.FC<Props> = (props: Props) => {
         }
       }
     } else if (targetEl.tagName === "IMG") {
-      const currImgUrl = targetEl.getAttribute("src");
-
-      if (currImgUrl) {
-        // use regex to get all image urls from memo content
-        const imageUrls =
-          memo.content.match(/!\[.*?\]\((.*?)\)/g)?.map(
-            (item) =>
-              `/o/get/image?url=${
-                item
-                  .match(/\((.*?)\)/g)
-                  ?.slice(-1)[0]
-                  .slice(1, -1) ?? ""
-              }`
-          ) ?? [];
-        showPreviewImageDialog(
-          imageUrls,
-          imageUrls.findIndex((item) => item === currImgUrl)
-        );
+      const imgUrl = targetEl.getAttribute("src");
+      if (imgUrl) {
+        showPreviewImageDialog([imgUrl], 0);
       }
     }
   };
