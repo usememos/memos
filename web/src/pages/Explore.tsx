@@ -82,7 +82,7 @@ const Explore = () => {
             {state.memos.map((memo) => {
               const createdAtStr = dayjs(memo.displayTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
               return (
-                <div className="memo-container" key={memo.id}>
+                <div className="memo-container card-memo" key={memo.id}>
                   <div className="memo-header">
                     <span className="time-text">{createdAtStr}</span>
                     <a className="name-text" href={`/u/${memo.creator.id}`}>
