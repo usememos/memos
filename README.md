@@ -1,6 +1,6 @@
 <p align="center"><a href="https://usememos.com"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.webp" alt="✍️ memos" /></a></p>
 
-<p align="center">An open-source, self-hosted memo hub with knowledge management and collaboration.</p>
+<p align="center">An open-source, self-hosted memo hub with knowledge management and socialization.</p>
 
 <p align="center">
   <a href="https://github.com/usememos/memos/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos" /></a>
@@ -20,7 +20,7 @@
 - 🦄 Open source and free forever;
 - 🚀 Support for self-hosting with `Docker` in seconds;
 - 📜 Plain textarea first and support some useful markdown syntax;
-- 👥 Collaborate and share with your teammates;
+- 👥 Set memo private or public to others;
 - 🧑‍💻 RESTful API for self-service.
 
 ## Deploy with Docker in seconds
@@ -31,7 +31,7 @@
 docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:latest
 ```
 
-Memos should be running at [http://localhost:5230](http://localhost:5230). If the `~/.memos/` does not have a `memos_prod.db` file, then memos will auto generate it.
+If the `~/.memos/` does not have a `memos_prod.db` file, then memos will auto generate it. Memos will be running at [http://localhost:5230](http://localhost:5230).
 
 ### Docker Compose
 
