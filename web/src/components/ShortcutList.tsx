@@ -76,6 +76,10 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
     if (showConfirmDeleteBtn) {
       try {
         await shortcutService.deleteShortcutById(shortcut.id);
+        if (locationService.getState().query?.shortcutId === shortcut.id) {
+          // need clear shortcut filter
+          locationService.setMemoShortcut(undefined);
+        }
       } catch (error: any) {
         console.error(error);
         toastHelper.error(error.response.data.message);
