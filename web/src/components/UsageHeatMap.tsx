@@ -64,6 +64,11 @@ const UsageHeatMap = () => {
     tempDiv.style.top = bounding.top - 2 + "px";
     tempDiv.innerHTML = `${item.count} memos on <span className="date-text">${new Date(item.timestamp as number).toDateString()}</span>`;
     document.body.appendChild(tempDiv);
+
+    if (tempDiv.offsetLeft - tempDiv.clientWidth / 2 < 0) {
+      tempDiv.style.left = bounding.left + tempDiv.clientWidth * 0.4 + "px";
+      tempDiv.className += " offset-left";
+    }
   }, []);
 
   const handleUsageStatItemMouseLeave = useCallback(() => {
