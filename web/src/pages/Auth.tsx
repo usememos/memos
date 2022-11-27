@@ -173,6 +173,7 @@ const Auth = () => {
               <Option value="zh">中文</Option>
               <Option value="vi">Tiếng Việt</Option>
               <Option value="fr">French</Option>
+              <Option value="nl">Nederlands</Option>
             </Select>
             <ApperanceSelect />
           </div>
