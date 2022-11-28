@@ -11,6 +11,7 @@ import "../../less/settings/member-section.less";
 interface State {
   createUserUsername: string;
   createUserPassword: string;
+  repeatUserPassword: string;
 }
 
 const PreferencesSection = () => {
@@ -19,6 +20,7 @@ const PreferencesSection = () => {
   const [state, setState] = useState<State>({
     createUserUsername: "",
     createUserPassword: "",
+    repeatUserPassword: "",
   });
   const [userList, setUserList] = useState<User[]>([]);
 
@@ -45,9 +47,20 @@ const PreferencesSection = () => {
     });
   };
 
+  const handleRepeatPasswordInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setState({
+      ...state,
+      repeatUserPassword: event.target.value,
+    });
+  };
+
   const handleCreateUserBtnClick = async () => {
     if (state.createUserUsername === "" || state.createUserPassword === "") {
       toastHelper.error(t("message.fill-form"));
+      return;
+    }
+    if (state.createUserPassword !== state.repeatUserPassword) {
+      toastHelper.error(t("message.password-not-match"));
       return;
     }
 
@@ -60,13 +73,13 @@ const PreferencesSection = () => {
     try {
       await api.createUser(userCreate);
     } catch (error: any) {
-      console.error(error);
       toastHelper.error(error.response.data.message);
     }
     await fetchUserList();
     setState({
       createUserUsername: "",
       createUserPassword: "",
+      repeatUserPassword: "",
     });
   };
 
@@ -118,6 +131,15 @@ const PreferencesSection = () => {
         <div className="input-form-container">
           <span className="field-text">{t("common.password")}</span>
           <input type="password" placeholder={t("common.password")} value={state.createUserPassword} onChange={handlePasswordInputChange} />
+        </div>
+        <div className="input-form-container">
+          <span className="field-text">{t("common.repeat-password-short")}</span>
+          <input
+            type="password"
+            placeholder={t("common.repeat-password")}
+            value={state.repeatUserPassword}
+            onChange={handleRepeatPasswordInputChange}
+          />
         </div>
         <div className="btns-container">
           <button onClick={handleCreateUserBtnClick}>{t("common.create")}</button>
