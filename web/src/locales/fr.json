@@ -43,7 +43,9 @@
     "changed": "modifié",
     "update-on": "Mise à jour sur",
     "fold": "Plier",
-    "expand": "Développer"
+    "expand": "Développer",
+    "image": "Image",
+    "link": "Link"
   },
   "slogan": "Un hub de mémos open source et auto-hébergé pour la gestion des connaissances et la collaboration.",
   "auth": {
@@ -189,6 +191,7 @@
     "private-only": "Ce mémo est uniquement privé.",
     "copied": "Copié",
     "succeed-copy-content": "La copie dans le presse-papiers a été effectuée avec succès",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Changer le nom du fichier de ressources",
     "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
     "invalid-resource-filename": "Nom de fichier invalide.",

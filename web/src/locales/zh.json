@@ -43,7 +43,9 @@
     "changed": "已更改",
     "update-on": "更新于",
     "fold": "折叠",
-    "expand": "展开"
+    "expand": "展开",
+    "image": "图片",
+    "link": "链接"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
@@ -194,6 +196,7 @@
     "private-only": "此 Memo 仅自己可见",
     "copied": "已复制",
     "succeed-copy-content": "复制内容到剪贴板成功。",
+    "succeed-copy-link": "复制链接到剪贴板成功。",
     "change-resource-filename": "更改资源文件名",
     "resource-filename-updated": "资源文件名更改成功。",
     "invalid-resource-filename": "无效的资源文件名",

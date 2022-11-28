@@ -43,7 +43,9 @@
     "changed": "đã thay đổi",
     "update-on": "Cập nhật",
     "fold": "Fold",
-    "expand": "Expand"
+    "expand": "Expand",
+    "image": "Image",
+    "link": "Link"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
@@ -188,6 +190,7 @@
     "private-only": "Memo này có trạng thái riêng tư.",
     "copied": "Đã sao chép",
     "succeed-copy-content": "Đã sao chép nội dung memo thành công.",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Thay đổi tên tệp tài nguyên",
     "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi.",
     "invalid-resource-filename": "Tên tệp không hợp lệ.",

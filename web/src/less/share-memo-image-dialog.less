@@ -1,6 +1,6 @@
 .share-memo-image-dialog {
   > .dialog-container {
-    @apply w-96 p-0 bg-gray-200;
+    @apply w-96 p-0 bg-zinc-100;
 
     > .dialog-header-container {
       @apply py-2 pt-4 px-4 pl-6 mb-0 bg-white rounded-t-lg;
@@ -58,7 +58,7 @@
         }
 
         > .watermark-container {
-          @apply flex flex-row justify-between items-center w-full py-3 px-6;
+          @apply flex flex-row justify-between items-center w-full py-2 px-6;
 
           > .normal-text {
             @apply w-full flex flex-row justify-start items-center text-sm leading-6 text-gray-500;
@@ -82,6 +82,38 @@
 
           > .logo-img {
             @apply h-12 w-auto;
+          }
+        }
+      }
+
+      .share-actions-container{
+        @apply flex justify-between px-4 py-3 mb-0 bg-white w-full rounded-b-lg border-t;
+
+        > .visibility-selector{
+          @apply  w-36;
+
+          > .selector-wrapper{
+            @apply h-10;
+          }
+        }
+
+        > .share-btns-container{
+          @apply flex justify-end;
+
+          > .buttons-wrapper {
+          @apply flex flex-row justify-start items-center;
+
+            > .share-btn{
+            @apply text-sm cursor-pointer px-3 py-2 rounded flex flex-row justify-center items-center border bg-gray-50 hover:bg-gray-100;
+
+              > .icon-img {
+              @apply w-4 h-auto mr-1;
+              }
+            }
+
+            > .share-image-btn {
+            @apply mr-3;
+            }
           }
         }
       }

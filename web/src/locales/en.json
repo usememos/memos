@@ -43,7 +43,9 @@
     "changed": "changed",
     "update-on": "Update on",
     "fold": "Fold",
-    "expand": "Expand"
+    "expand": "Expand",
+    "image": "Image",
+    "link": "Link"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
@@ -194,6 +196,7 @@
     "private-only": "This memo is private only.",
     "copied": "Copied",
     "succeed-copy-content": "Succeed to copy content to clipboard.",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Change resource filename",
     "resource-filename-updated": "Resource filename changed.",
     "invalid-resource-filename": "Invalid filename.",
