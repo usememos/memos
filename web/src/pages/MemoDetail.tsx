@@ -7,6 +7,7 @@ import { memoService } from "../services";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { useAppSelector } from "../store";
 import useLoading from "../hooks/useLoading";
+import useApperance from "../hooks/useApperance";
 import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
 import Dropdown from "../components/common/Dropdown";
@@ -19,6 +20,8 @@ interface State {
 }
 
 const MemoDetail = () => {
+  useApperance();
+
   const { t, i18n } = useTranslation();
   const params = useParams();
   const user = useAppSelector((state) => state.user.user);
@@ -58,7 +61,8 @@ const MemoDetail = () => {
       <div className="page-container">
         <div className="page-header">
           <div className="title-container">
-            <img className="logo-img" src="/logo-full.webp" alt="" />
+            <img className="logo-img" src="/logo.webp" alt="" />
+            <p className="logo-text">memos</p>
           </div>
           <div className="action-button-container">
             {!loadingState.isLoading && (
