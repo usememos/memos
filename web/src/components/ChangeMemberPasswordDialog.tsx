@@ -115,7 +115,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
 function showChangeMemberPasswordDialog(user: User) {
   generateDialog(
     {
-      className: "change-password-dialog",
+      className: "change-member-password-dialog",
     },
     ChangeMemberPasswordDialog,
     { user }
