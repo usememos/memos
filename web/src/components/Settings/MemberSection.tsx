@@ -59,7 +59,7 @@ const PreferencesSection = () => {
       toastHelper.error(t("message.fill-form"));
       return;
     }
-    if (state.createUserUsername !== state.repeatUserPassword) {
+    if (state.createUserPassword !== state.repeatUserPassword) {
       toastHelper.error(t("message.password-not-match"));
       return;
     }
