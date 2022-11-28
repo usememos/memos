@@ -41,7 +41,10 @@
     "changed": "已更改",
     "update-on": "更新于",
     "fold": "折叠",
-    "expand": "展开"
+    "expand": "展开",
+    "add": "添加",
+    "local": "本地文件",
+    "resources": "资源库"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
@@ -195,6 +198,7 @@
     "resource-filename-updated": "资源文件名更改成功。",
     "invalid-resource-filename": "无效的资源文件名",
     "click-to-save-the-image": "点击保存图片",
-    "generating-the-screenshot": "正在生成图片..."
+    "generating-the-screenshot": "正在生成图片...",
+    "count-selected-resources": "已选资源总数"
   }
 }

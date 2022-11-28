@@ -41,7 +41,10 @@
     "changed": "changed",
     "update-on": "Update on",
     "fold": "Fold",
-    "expand": "Expand"
+    "expand": "Expand",
+    "add": "Add",
+    "local": "Local",
+    "resources": "Resources"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
@@ -195,6 +198,7 @@
     "resource-filename-updated": "Resource filename changed.",
     "invalid-resource-filename": "Invalid filename.",
     "click-to-save-the-image": "Click to save the image",
-    "generating-the-screenshot": "Generating the screenshot..."
+    "generating-the-screenshot": "Generating the screenshot...",
+    "count-selected-resources": "Number of selected resources"
   }
 }

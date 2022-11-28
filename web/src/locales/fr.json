@@ -41,7 +41,10 @@
     "changed": "modifié",
     "update-on": "Mise à jour sur",
     "fold": "Plier",
-    "expand": "Développer"
+    "expand": "Développer",
+    "add": "Add",
+    "local": "Local",
+    "resources": "Resources"
   },
   "slogan": "Un hub de mémos open source et auto-hébergé pour la gestion des connaissances et la collaboration.",
   "auth": {
@@ -190,6 +193,7 @@
     "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
     "invalid-resource-filename": "Nom de fichier invalide.",
     "click-to-save-the-image": "Cliquez pour enregistrer l'image",
-    "generating-the-screenshot": "Génération de la capture d'écran..."
+    "generating-the-screenshot": "Génération de la capture d'écran...",
+    "count-selected-resources": "Number of selected resources"
   }
 }
