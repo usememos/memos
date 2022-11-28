@@ -1,3 +1,4 @@
+import { Checkbox } from "@mui/joy";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as utils from "../helpers/utils";
@@ -8,7 +9,6 @@ import Icon from "./Icon";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
-import { Checkbox } from "@mui/joy";
 import "../less/resources-selector-dialog.less";
 
 type Props = DialogProps;
@@ -40,8 +40,11 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
   }, []);
 
   useEffect(() => {
+    const checkedResourceIdArray = editorState.resourceList.map((resource) => resource.id);
     setState({
-      checkedArray: new Array(resources.length).fill(false),
+      checkedArray: resources.map((resource) => {
+        return checkedResourceIdArray.includes(resource.id);
+      }),
     });
   }, [resources]);
 
@@ -83,11 +86,11 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const handleAddBtnClick = () => {
+  const handleConfirmBtnClick = () => {
     const resourceList = resources.filter((_, index) => {
       return state.checkedArray[index];
     });
-    editorStateService.setResourceList([...editorState.resourceList, ...resourceList]);
+    editorStateService.setResourceList(resourceList);
     destroy();
   };
 
@@ -149,10 +152,10 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
           <div className="flex flex-row justify-start items-center">
             <div
               className="text-sm cursor-pointer px-3 py-1 rounded flex flex-row justify-center items-center border border-blue-600 text-blue-600 bg-blue-50 hover:opacity-80"
-              onClick={handleAddBtnClick}
+              onClick={handleConfirmBtnClick}
             >
               <Icon.PlusSquare className=" w-4 h-auto mr-1" />
-              <span>{t("common.add")}</span>
+              <span>{t("common.confirm")}</span>
             </div>
           </div>
         </div>
@@ -164,7 +167,7 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
 export default function showResourcesSelectorDialog() {
   generateDialog(
     {
-      className: "resources-dialog",
+      className: "resources-selector-dialog",
     },
     ResourcesSelectorDialog,
     {}
