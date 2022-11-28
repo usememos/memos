@@ -10,6 +10,8 @@ import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
+import copy from "copy-to-clipboard";
+import toastHelper from "./Toast";
 import "../less/share-memo-image-dialog.less";
 
 interface Props extends DialogProps {
@@ -64,7 +66,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
       }
 
       toImage(memoElRef.current, {
-        backgroundColor: "#eaeaea",
+        backgroundColor: "#f4f4f5",
         pixelRatio: window.devicePixelRatio * 2,
       })
         .then((url) => {
@@ -92,6 +94,11 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
     a.click();
   };
 
+  const handleCopyLinkBtnClick = () => {
+    copy(`${document.baseURI}m/${memo.id}`);
+    toastHelper.success(t("message.succeed-copy-content"));
+  };
+
   return (
     <>
       <div className="dialog-header-container">
@@ -104,13 +111,8 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <div className={`tip-words-container ${state.shortcutImgUrl ? "finish" : "loading"}`}>
-          <p className="tip-text">
-            {state.shortcutImgUrl ? t("message.click-to-save-the-image") + " 👇" : t("message.generating-the-screenshot")}
-          </p>
-        </div>
         <div className="memo-container" ref={memoElRef}>
-          {state.shortcutImgUrl !== "" && <img className="memo-shortcut-img" onClick={handleDownloadBtnClick} src={state.shortcutImgUrl} />}
+          {state.shortcutImgUrl !== "" && <img className="memo-shortcut-img" src={state.shortcutImgUrl} />}
           <span className="time-text">{memo.createdAtStr}</span>
           <div className="memo-content-wrapper">
             <MemoContent content={memo.content} displayConfig={{ enableExpand: false }} />
@@ -124,6 +126,20 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
               </span>
             </div>
             <img className="logo-img" src="/logo.webp" alt="" />
+          </div>
+        </div>
+        <div className="share-btns-container">
+          <div className="buttons-wrapper">
+            <div className="share-btn share-image-btn" onClick={handleDownloadBtnClick}>
+              <Icon.Download className="icon-img" />
+              <span>Image</span>
+            </div>
+          </div>
+          <div className="buttons-wrapper">
+            <div className="share-btn share-link-btn" onClick={handleCopyLinkBtnClick}>
+              <Icon.Link className="icon-img" />
+              <span>Link</span>
+            </div>
           </div>
         </div>
       </div>

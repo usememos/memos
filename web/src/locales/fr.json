@@ -186,6 +186,7 @@
     "private-only": "Ce mémo est uniquement privé.",
     "copied": "Copié",
     "succeed-copy-content": "La copie dans le presse-papiers a été effectuée avec succès",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Changer le nom du fichier de ressources",
     "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
     "invalid-resource-filename": "Nom de fichier invalide.",
