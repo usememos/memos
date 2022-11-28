@@ -34,8 +34,4 @@
   .input-text {
     @apply w-full px-3 py-2 leading-6 text-sm border rounded;
   }
-
-  .card-memo {
-    @apply flex flex-col justify-start items-start w-full p-4 pt-3 mt-2 bg-white dark:bg-zinc-800 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 hover:dark:border-zinc-700;
-  }
 }
