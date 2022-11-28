@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import copy from "copy-to-clipboard";
+import { toLower } from "lodash";
 import toImage from "../labs/html2image";
 import { ANIMATION_DURATION, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
@@ -8,12 +10,10 @@ import { memoService, userService } from "../services";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
+import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
-import copy from "copy-to-clipboard";
-import toastHelper from "./Toast";
 import Selector from "./common/Selector";
-import { toLower } from "lodash";
 import "../less/share-memo-image-dialog.less";
 
 interface Props extends DialogProps {
@@ -99,7 +99,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleCopyLinkBtnClick = () => {
-    copy(`${window.location.origin}m/${memo.id}`);
+    copy(`${window.location.origin}/m/${memo.id}`);
     toastHelper.success(t("message.succeed-copy-content"));
   };
 
