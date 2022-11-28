@@ -56,6 +56,12 @@ See more in [development guide](https://github.com/usememos/memos/tree/main/docs
 - [Rabithua/memos_wmp](https://github.com/Rabithua/memos_wmp) - Wechat miniprogram
 - [qazxcdswe123/telegramMemoBot](https://github.com/qazxcdswe123/telegramMemoBot) - Telegram bot
 
+### Join the community to build memos together!
+
+<a href="https://github.com/usememos/memos/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=usememos/memos" />
+</a>
+
 ## License
 
 This project is open source and available under the [MIT License](https://github.com/usememos/memos/blob/main/LICENSE).
