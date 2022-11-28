@@ -41,7 +41,9 @@
     "changed": "已更改",
     "update-on": "更新于",
     "fold": "折叠",
-    "expand": "展开"
+    "expand": "展开",
+    "image": "图片",
+    "link": "链接"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {

@@ -41,7 +41,9 @@
     "changed": "modifié",
     "update-on": "Mise à jour sur",
     "fold": "Plier",
-    "expand": "Développer"
+    "expand": "Développer",
+    "image": "Image",
+    "link": "Link"
   },
   "slogan": "Un hub de mémos open source et auto-hébergé pour la gestion des connaissances et la collaboration.",
   "auth": {

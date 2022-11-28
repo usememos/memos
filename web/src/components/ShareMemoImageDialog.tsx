@@ -99,7 +99,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleCopyLinkBtnClick = () => {
-    copy(`${document.baseURI}m/${memo.id}`);
+    copy(`${window.location.origin}m/${memo.id}`);
     toastHelper.success(t("message.succeed-copy-content"));
   };
 
@@ -164,13 +164,13 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
             <div className="buttons-wrapper">
               <div className="share-btn share-image-btn" onClick={handleDownloadBtnClick}>
                 <Icon.Download className="icon-img" />
-                <span>Image</span>
+                <span>{t("common.image")}</span>
               </div>
             </div>
             <div className="buttons-wrapper">
               <div className="share-btn share-link-btn" onClick={handleCopyLinkBtnClick}>
                 <Icon.Link className="icon-img" />
-                <span>Link</span>
+                <span>{t("common.link")}</span>
               </div>
             </div>
           </div>

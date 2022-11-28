@@ -41,7 +41,9 @@
     "changed": "đã thay đổi",
     "update-on": "Cập nhật",
     "fold": "Fold",
-    "expand": "Expand"
+    "expand": "Expand",
+    "image": "Image",
+    "link": "Link"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
