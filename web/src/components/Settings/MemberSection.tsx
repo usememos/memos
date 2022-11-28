@@ -7,8 +7,8 @@ import toastHelper from "../Toast";
 import Icon from "../Icon";
 import Dropdown from "../common/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
-import "../../less/settings/member-section.less";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
+import "../../less/settings/member-section.less";
 
 interface State {
   createUserUsername: string;
