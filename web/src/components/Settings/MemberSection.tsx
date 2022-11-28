@@ -33,10 +33,6 @@ const PreferencesSection = () => {
     fetchUserList();
   }, []);
 
-  useEffect(() => {
-    fetchUserList();
-  }, [userNameQueryText]);
-
   const fetchUserList = async () => {
     const { data } = (await api.getUserList()).data;
     setUserList(data);
