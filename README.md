@@ -55,6 +55,7 @@ See more in [development guide](https://github.com/usememos/memos/tree/main/docs
 - [lmm214/memos-bber](https://github.com/lmm214/memos-bber) - Chrome extension
 - [Rabithua/memos_wmp](https://github.com/Rabithua/memos_wmp) - Wechat miniprogram
 - [qazxcdswe123/telegramMemoBot](https://github.com/qazxcdswe123/telegramMemoBot) - Telegram bot
+- [eallion/memos.top](https://github.com/eallion/memos.top) - A static page rendered with the Memos API
 
 ### Join the community to build memos together!
 
