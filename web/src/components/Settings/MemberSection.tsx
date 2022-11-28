@@ -24,27 +24,22 @@ const PreferencesSection = () => {
   });
   const [userNameQueryText, setUserNameQueryText] = useState("");
   const [userList, setUserList] = useState<User[]>([]);
-  const [showUserList, setShowUserList] = useState<User[]>([]);
+
+  const showUserList = userList.filter((user: User) => {
+    return user.username.toLowerCase().includes(userNameQueryText.toLowerCase());
+  });
 
   useEffect(() => {
     fetchUserList();
-    setShowUserList(userList);
   }, []);
 
   useEffect(() => {
-    filterUserList();
-  }, [userNameQueryText, userList]);
+    fetchUserList();
+  }, [userNameQueryText]);
 
   const fetchUserList = async () => {
     const { data } = (await api.getUserList()).data;
     setUserList(data);
-  };
-
-  const filterUserList = async () => {
-    const data = userList.filter((user: User) => {
-      return user.username.toLowerCase().includes(userNameQueryText.toLowerCase());
-    });
-    setShowUserList(data);
   };
 
   const handleUsernameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
