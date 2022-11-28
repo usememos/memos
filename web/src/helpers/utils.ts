@@ -134,3 +134,9 @@ export const parseHTMLToRawText = (htmlStr: string): string => {
   const text = tempEl.innerText;
   return text;
 };
+
+export function absolutifyLink(rel: string): string {
+  const anchor = document.createElement("a");
+  anchor.setAttribute("href", rel);
+  return anchor.href;
+}

@@ -3,6 +3,8 @@
     "about": "À propos",
     "email": "Email",
     "password": "Mot de passe",
+    "repeat-password-short": "Repeat",
+    "repeat-password": "Repeat the password",
     "new-password": "Nouveau mot de passe",
     "repeat-new-password": "Répétez le nouveau mot de passe",
     "username": "Nom d'utilisateur",
@@ -42,9 +44,8 @@
     "update-on": "Mise à jour sur",
     "fold": "Plier",
     "expand": "Développer",
-    "add": "Add",
-    "local": "Local",
-    "resources": "Resources"
+    "image": "Image",
+    "link": "Link"
   },
   "slogan": "Un hub de mémos open source et auto-hébergé pour la gestion des connaissances et la collaboration.",
   "auth": {
@@ -185,15 +186,16 @@
     "login-failed": "Connexion échouée",
     "signup-failed": "L'inscription a échoué",
     "user-not-found": "Utilisateur introuvable",
+    "password-not-match": "Passwords do not match.",
     "password-changed": "Mot de passe modifié",
     "private-only": "Ce mémo est uniquement privé.",
     "copied": "Copié",
     "succeed-copy-content": "La copie dans le presse-papiers a été effectuée avec succès",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Changer le nom du fichier de ressources",
     "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
     "invalid-resource-filename": "Nom de fichier invalide.",
     "click-to-save-the-image": "Cliquez pour enregistrer l'image",
-    "generating-the-screenshot": "Génération de la capture d'écran...",
-    "count-selected-resources": "Number of selected resources"
+    "generating-the-screenshot": "Génération de la capture d'écran..."
   }
 }

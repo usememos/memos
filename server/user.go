@@ -223,6 +223,14 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch user").SetInternal(err)
 		}
 
+		userSettingList, err := s.Store.FindUserSettingList(ctx, &api.UserSettingFind{
+			UserID: userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
+		}
+		user.UserSettingList = userSettingList
+
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)

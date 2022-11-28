@@ -13,9 +13,12 @@ const validateConfig: ValidatorConfig = {
   noChinese: true,
 };
 
-type Props = DialogProps;
+interface Props extends DialogProps {
+  user: User;
+}
 
-const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
+const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
+  const { user: propsUser, destroy } = props;
   const { t } = useTranslation();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
@@ -57,9 +60,8 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
     }
 
     try {
-      const user = userService.getState().user as User;
       await userService.patchUser({
-        id: user.id,
+        id: propsUser.id,
         password: newPassword,
       });
       toastHelper.info(t("message.password-changed"));
@@ -73,7 +75,9 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   return (
     <>
       <div className="dialog-header-container !w-64">
-        <p className="title-text">{t("setting.account-section.change-password")}</p>
+        <p className="title-text">
+          {t("setting.account-section.change-password")} ({propsUser.username})
+        </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
@@ -108,13 +112,14 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   );
 };
 
-function showChangePasswordDialog() {
+function showChangeMemberPasswordDialog(user: User) {
   generateDialog(
     {
-      className: "change-password-dialog",
+      className: "change-member-password-dialog",
     },
-    ChangePasswordDialog
+    ChangeMemberPasswordDialog,
+    { user }
   );
 }
 
-export default showChangePasswordDialog;
+export default showChangeMemberPasswordDialog;

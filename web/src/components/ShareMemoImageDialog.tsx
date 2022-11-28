@@ -1,15 +1,19 @@
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { userService } from "../services";
+import copy from "copy-to-clipboard";
+import { toLower } from "lodash";
 import toImage from "../labs/html2image";
-import { ANIMATION_DURATION } from "../helpers/consts";
+import { ANIMATION_DURATION, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { getMemoStats } from "../helpers/api";
+import { memoService, userService } from "../services";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
+import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
+import Selector from "./common/Selector";
 import "../less/share-memo-image-dialog.less";
 
 interface Props extends DialogProps {
@@ -19,6 +23,7 @@ interface Props extends DialogProps {
 interface State {
   memoAmount: number;
   shortcutImgUrl: string;
+  memoVisibility: string;
 }
 
 const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
@@ -28,6 +33,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
   const [state, setState] = useState<State>({
     memoAmount: 0,
     shortcutImgUrl: "",
+    memoVisibility: propsMemo.visibility,
   });
   const loadingState = useLoading();
   const memoElRef = useRef<HTMLDivElement>(null);
@@ -64,7 +70,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
       }
 
       toImage(memoElRef.current, {
-        backgroundColor: "#eaeaea",
+        backgroundColor: "#f4f4f5",
         pixelRatio: window.devicePixelRatio * 2,
       })
         .then((url) => {
@@ -92,6 +98,30 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
     a.click();
   };
 
+  const handleCopyLinkBtnClick = () => {
+    copy(`${window.location.origin}/m/${memo.id}`);
+    toastHelper.success(t("message.succeed-copy-content"));
+  };
+
+  const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
+    return {
+      value: item.value,
+      text: t(`memo.visibility.${toLower(item.value)}`),
+    };
+  });
+
+  const handleMemoVisibilityOptionChanged = async (value: string) => {
+    const visibilityValue = value as Visibility;
+    setState({
+      ...state,
+      memoVisibility: visibilityValue,
+    });
+    await memoService.patchMemo({
+      id: memo.id,
+      visibility: visibilityValue,
+    });
+  };
+
   return (
     <>
       <div className="dialog-header-container">
@@ -104,13 +134,8 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <div className={`tip-words-container ${state.shortcutImgUrl ? "finish" : "loading"}`}>
-          <p className="tip-text">
-            {state.shortcutImgUrl ? t("message.click-to-save-the-image") + " 👇" : t("message.generating-the-screenshot")}
-          </p>
-        </div>
         <div className="memo-container" ref={memoElRef}>
-          {state.shortcutImgUrl !== "" && <img className="memo-shortcut-img" onClick={handleDownloadBtnClick} src={state.shortcutImgUrl} />}
+          {state.shortcutImgUrl !== "" && <img className="memo-shortcut-img" src={state.shortcutImgUrl} />}
           <span className="time-text">{memo.createdAtStr}</span>
           <div className="memo-content-wrapper">
             <MemoContent content={memo.content} displayConfig={{ enableExpand: false }} />
@@ -124,6 +149,30 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
               </span>
             </div>
             <img className="logo-img" src="/logo.webp" alt="" />
+          </div>
+        </div>
+        <div className="share-actions-container">
+          <div className="visibility-selector">
+            <Selector
+              className="visibility-selector"
+              value={state.memoVisibility}
+              dataSource={memoVisibilityOptionSelectorItems}
+              handleValueChanged={handleMemoVisibilityOptionChanged}
+            />
+          </div>
+          <div className="share-btns-container">
+            <div className="buttons-wrapper">
+              <div className="share-btn share-image-btn" onClick={handleDownloadBtnClick}>
+                <Icon.Download className="icon-img" />
+                <span>{t("common.image")}</span>
+              </div>
+            </div>
+            <div className="buttons-wrapper">
+              <div className="share-btn share-link-btn" onClick={handleCopyLinkBtnClick}>
+                <Icon.Link className="icon-img" />
+                <span>{t("common.link")}</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>

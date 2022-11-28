@@ -14,22 +14,24 @@
   }
 }
 
-.btn-normal {
-  @apply select-none inline-flex border cursor-pointer px-3 text-sm leading-8 rounded-md hover:opacity-80 hover:shadow;
-}
-
-.btn-primary {
-  @apply btn-normal border-transparent bg-green-600 text-white;
-}
-
-.btn-danger {
-  @apply btn-normal border-red-600 bg-red-50 text-red-600;
-}
-
-.btn-text {
-  @apply btn-normal text-gray-600 border-none hover:shadow-none;
-}
-
-.input-text {
-  @apply w-full px-3 py-2 leading-6 text-sm border rounded;
+@layer components {
+  .btn-normal {
+    @apply select-none inline-flex border cursor-pointer px-3 text-sm leading-8 rounded-md hover:opacity-80 hover:shadow;
+  }
+  
+  .btn-primary {
+    @apply btn-normal border-transparent bg-green-600 text-white;
+  }
+  
+  .btn-danger {
+    @apply btn-normal border-red-600 bg-red-50 text-red-600;
+  }
+  
+  .btn-text {
+    @apply btn-normal text-gray-600 border-none hover:shadow-none;
+  }
+  
+  .input-text {
+    @apply w-full px-3 py-2 leading-6 text-sm border rounded;
+  }
 }

@@ -3,6 +3,8 @@
     "about": "About",
     "email": "Email",
     "password": "Password",
+    "repeat-password-short": "Repeat",
+    "repeat-password": "Repeat the password",
     "new-password": "New password",
     "repeat-new-password": "Repeat the new password",
     "username": "Username",
@@ -42,9 +44,8 @@
     "update-on": "Update on",
     "fold": "Fold",
     "expand": "Expand",
-    "add": "Add",
-    "local": "Local",
-    "resources": "Resources"
+    "image": "Image",
+    "link": "Link"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
@@ -184,6 +185,7 @@
     "change-memo-created-time": "Change memo created time",
     "memo-not-found": "Memo not found.",
     "fill-all": "Please fill in all fields.",
+    "password-not-match": "Passwords do not match.",
     "new-password-not-match": "New passwords do not match.",
     "image-load-failed": "Image load failed",
     "fill-form": "Please fill out this form",
@@ -194,11 +196,11 @@
     "private-only": "This memo is private only.",
     "copied": "Copied",
     "succeed-copy-content": "Succeed to copy content to clipboard.",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Change resource filename",
     "resource-filename-updated": "Resource filename changed.",
     "invalid-resource-filename": "Invalid filename.",
     "click-to-save-the-image": "Click to save the image",
-    "generating-the-screenshot": "Generating the screenshot...",
-    "count-selected-resources": "Number of selected resources"
+    "generating-the-screenshot": "Generating the screenshot..."
   }
 }

@@ -4,13 +4,16 @@ import { userService } from "../../services";
 import { useAppSelector } from "../../store";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
+import Icon from "../Icon";
 import Dropdown from "../common/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
+import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import "../../less/settings/member-section.less";
 
 interface State {
   createUserUsername: string;
   createUserPassword: string;
+  repeatUserPassword: string;
 }
 
 const PreferencesSection = () => {
@@ -19,8 +22,14 @@ const PreferencesSection = () => {
   const [state, setState] = useState<State>({
     createUserUsername: "",
     createUserPassword: "",
+    repeatUserPassword: "",
   });
+  const [userNameQueryText, setUserNameQueryText] = useState("");
   const [userList, setUserList] = useState<User[]>([]);
+
+  const showUserList = userList.filter((user: User) => {
+    return user.username.toLowerCase().includes(userNameQueryText.toLowerCase());
+  });
 
   useEffect(() => {
     fetchUserList();
@@ -45,9 +54,20 @@ const PreferencesSection = () => {
     });
   };
 
+  const handleRepeatPasswordInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setState({
+      ...state,
+      repeatUserPassword: event.target.value,
+    });
+  };
+
   const handleCreateUserBtnClick = async () => {
     if (state.createUserUsername === "" || state.createUserPassword === "") {
       toastHelper.error(t("message.fill-form"));
+      return;
+    }
+    if (state.createUserPassword !== state.repeatUserPassword) {
+      toastHelper.error(t("message.password-not-match"));
       return;
     }
 
@@ -60,14 +80,23 @@ const PreferencesSection = () => {
     try {
       await api.createUser(userCreate);
     } catch (error: any) {
-      console.error(error);
       toastHelper.error(error.response.data.message);
     }
     await fetchUserList();
     setState({
       createUserUsername: "",
       createUserPassword: "",
+      repeatUserPassword: "",
     });
+  };
+
+  const handleUserNameQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
+    const text = event.currentTarget.value;
+    setUserNameQueryText(text);
+  };
+
+  const handleChangePasswordClick = (user: User) => {
+    showChangeMemberPasswordDialog(user);
   };
 
   const handleArchiveUserClick = (user: User) => {
@@ -119,17 +148,42 @@ const PreferencesSection = () => {
           <span className="field-text">{t("common.password")}</span>
           <input type="password" placeholder={t("common.password")} value={state.createUserPassword} onChange={handlePasswordInputChange} />
         </div>
+        <div className="input-form-container">
+          <span className="field-text">{t("common.repeat-password-short")}</span>
+          <input
+            type="password"
+            placeholder={t("common.repeat-password")}
+            value={state.repeatUserPassword}
+            onChange={handleRepeatPasswordInputChange}
+          />
+        </div>
         <div className="btns-container">
           <button onClick={handleCreateUserBtnClick}>{t("common.create")}</button>
         </div>
       </div>
-      <p className="title-text">{t("setting.member-list")}</p>
+      <div className="section-header-container">
+        <div className="title-text">{t("setting.member-list")}</div>
+        <div className="search-bar">
+          <div className="search-bar-container">
+            <div className="search-bar-inputer">
+              <Icon.Search className="icon-img" />
+              <input
+                className="text-input"
+                type="text"
+                placeholder={t("common.username")}
+                value={userNameQueryText}
+                onChange={handleUserNameQueryInput}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
       <div className="member-container field-container">
         <span className="field-text">ID</span>
         <span className="field-text username-field">{t("common.username")}</span>
         <span></span>
       </div>
-      {userList.map((user) => (
+      {showUserList.map((user) => (
         <div key={user.id} className={`member-container ${user.rowStatus === "ARCHIVED" ? "archived" : ""}`}>
           <span className="field-text id-text">{user.id}</span>
           <span className="field-text username-text">{user.username}</span>
@@ -141,6 +195,12 @@ const PreferencesSection = () => {
                 actionsClassName="!w-24"
                 actions={
                   <>
+                    <button
+                      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
+                      onClick={() => handleChangePasswordClick(user)}
+                    >
+                      {t("setting.account-section.change-password")}
+                    </button>
                     {user.rowStatus === "NORMAL" ? (
                       <button
                         className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"

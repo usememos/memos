@@ -3,6 +3,8 @@
     "about": "Thông Tin",
     "email": "Email",
     "password": "Mật khẩu",
+    "repeat-password-short": "Repeat",
+    "repeat-password": "Repeat the password",
     "new-password": "Mật khẩu mới",
     "repeat-new-password": "Nhập lại mật khẩu mới",
     "username": "Tên đăng nhập",
@@ -42,9 +44,8 @@
     "update-on": "Cập nhật",
     "fold": "Fold",
     "expand": "Expand",
-    "add": "Add",
-    "local": "Local",
-    "resources": "Resources"
+    "image": "Image",
+    "link": "Link"
   },
   "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
   "auth": {
@@ -184,15 +185,16 @@
     "login-failed": "Đăng nhập thất bại",
     "signup-failed": "Đăng ký thất bại",
     "user-not-found": "Không tìm thấy người dùng này",
+    "password-not-match": "Passwords do not match.",
     "password-changed": "Mật khẩu đã được thay đổi",
     "private-only": "Memo này có trạng thái riêng tư.",
     "copied": "Đã sao chép",
     "succeed-copy-content": "Đã sao chép nội dung memo thành công.",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Thay đổi tên tệp tài nguyên",
     "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi.",
     "invalid-resource-filename": "Tên tệp không hợp lệ.",
     "click-to-save-the-image": "Bấm để lưu hình ảnh",
-    "generating-the-screenshot": "Đang tạo ảnh chụp màn hình ...",
-    "count-selected-resources": "Number of selected resources"
+    "generating-the-screenshot": "Đang tạo ảnh chụp màn hình ..."
   }
 }
