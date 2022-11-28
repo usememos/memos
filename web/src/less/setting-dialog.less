@@ -41,7 +41,19 @@
         > .section-container {
           @apply flex flex-col justify-start items-start w-full my-2;
 
-          > .title-text {
+          > .section-header-container{
+            @apply flex bg-white;
+
+            > .text-text {
+              @apply w-20;
+            }
+
+            > .search-bar{
+              @apply w-48;
+            }
+          }
+
+          .title-text {
             @apply text-sm mt-4 first:mt-2 mb-3 font-mono text-gray-500;
           }
 
