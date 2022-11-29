@@ -1,7 +1,7 @@
+import { Tooltip } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import * as utils from "../helpers/utils";
 import useLoading from "../hooks/useLoading";
 import { resourceService } from "../services";
 import { useAppSelector } from "../store";
@@ -149,20 +149,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const handleResourceNameOrTypeMouseEnter = useCallback((event: React.MouseEvent, nameOrType: string) => {
-    const tempDiv = document.createElement("div");
-    tempDiv.className = "usage-detail-container pop-up";
-    const bounding = utils.getElementBounding(event.target as HTMLElement);
-    tempDiv.style.left = bounding.left + "px";
-    tempDiv.style.top = bounding.top - 2 + "px";
-    tempDiv.innerHTML = `<span>${nameOrType}</span>`;
-    document.body.appendChild(tempDiv);
-  }, []);
-
-  const handleResourceNameOrTypeMouseLeave = useCallback(() => {
-    document.body.querySelectorAll("div.usage-detail-container.pop-up").forEach((node) => node.remove());
-  }, []);
-
   return (
     <>
       <div className="dialog-header-container">
@@ -206,14 +192,9 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
               resources.map((resource) => (
                 <div key={resource.id} className="resource-container">
                   <span className="field-text id-text">{resource.id}</span>
-                  <span className="field-text name-text">
-                    <span
-                      onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.filename)}
-                      onMouseLeave={handleResourceNameOrTypeMouseLeave}
-                    >
-                      {resource.filename}
-                    </span>
-                  </span>
+                  <Tooltip title={resource.filename}>
+                    <span className="field-text name-text">{resource.filename}</span>
+                  </Tooltip>
                   <div className="buttons-container">
                     <Dropdown
                       actionsClassName="!w-28"
