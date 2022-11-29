@@ -36,7 +36,6 @@ interface State {
   fullscreen: boolean;
   isUploadingResource: boolean;
   shouldShowEmojiPicker: boolean;
-  shouldShowResourceActionList: boolean;
 }
 
 const MemoEditor = () => {
@@ -49,7 +48,6 @@ const MemoEditor = () => {
     isUploadingResource: false,
     fullscreen: false,
     shouldShowEmojiPicker: false,
-    shouldShowResourceActionList: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const prevGlobalStateRef = useRef(editorState);
@@ -373,23 +371,6 @@ const MemoEditor = () => {
     [state.fullscreen, i18n.language]
   );
 
-  const handleUploadBtnMouseOver = () => {
-    if (state.isUploadingResource) {
-      return;
-    }
-    setState({
-      ...state,
-      shouldShowResourceActionList: true,
-    });
-  };
-
-  const handleUploadBtnMouseOut = () => {
-    setState({
-      ...state,
-      shouldShowResourceActionList: false,
-    });
-  };
-
   return (
     <div
       className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
@@ -429,23 +410,19 @@ const MemoEditor = () => {
           <button className="action-btn">
             <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
           </button>
-          <div className="action-btn resource-btn" onMouseOver={handleUploadBtnMouseOver} onMouseOut={handleUploadBtnMouseOut}>
+          <div className="action-btn resource-btn">
             <Icon.FileText className="icon-img" />
             <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
-            {state.shouldShowResourceActionList ? (
-              <div className="resource-action-list">
-                <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
-                  <Icon.Upload className="icon-img" />
-                  <span>{t("editor.local")}</span>
-                </div>
-                <div className="resource-action-item" onClick={showResourcesSelectorDialog}>
-                  <Icon.Database className="icon-img" />
-                  <span>{t("editor.resources")}</span>
-                </div>
+            <div className="resource-action-list">
+              <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
+                <Icon.Upload className="icon-img" />
+                <span>{t("editor.local")}</span>
               </div>
-            ) : (
-              ""
-            )}
+              <div className="resource-action-item" onClick={showResourcesSelectorDialog}>
+                <Icon.Database className="icon-img" />
+                <span>{t("editor.resources")}</span>
+              </div>
+            </div>
           </div>
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
