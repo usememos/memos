@@ -6,6 +6,7 @@ import { locationService } from "./services";
 import { useAppSelector } from "./store";
 import router from "./router";
 import * as storage from "./helpers/storage";
+import theme from "./theme";
 
 function App() {
   const { i18n } = useTranslation();
@@ -41,7 +42,7 @@ function App() {
   }, [locale]);
 
   return (
-    <CssVarsProvider>
+    <CssVarsProvider theme={theme}>
       <RouterProvider router={router} />
     </CssVarsProvider>
   );

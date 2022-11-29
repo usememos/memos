@@ -1,5 +1,5 @@
 import { Option, Select } from "@mui/joy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAppSelector } from "../store";
@@ -27,6 +27,10 @@ const Auth = () => {
   const mode = systemStatus.profile.mode;
   const [username, setUsername] = useState(mode === "dev" ? "demohero" : "");
   const [password, setPassword] = useState(mode === "dev" ? "secret" : "");
+
+  useEffect(() => {
+    userService.doSignOut().catch();
+  }, []);
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
