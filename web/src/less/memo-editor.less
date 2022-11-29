@@ -1,12 +1,12 @@
 .memo-editor-container {
-  @apply transition-all relative w-full flex flex-col justify-start items-start bg-white px-4 rounded-lg border-2 border-gray-200;
+  @apply transition-all relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-700 px-4 rounded-lg border-2 border-gray-200 dark:border-zinc-600;
 
   &.fullscreen {
     @apply fixed w-full h-full top-0 left-0 z-1000 border-none rounded-none sm:p-8;
     background-color: #f6f5f4;
 
     > .memo-editor {
-      @apply p-4 mb-4 rounded-lg border shadow-lg flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white;
+      @apply p-4 mb-4 rounded-lg border shadow-lg flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white dark:bg-zinc-700;
 
       > .common-editor-inputer {
         @apply flex-grow w-full !h-full max-h-full;
@@ -33,7 +33,7 @@
   }
 
   > .memo-editor {
-    @apply mt-4 flex flex-col justify-start items-start relative w-full h-auto bg-white;
+    @apply mt-4 flex flex-col justify-start items-start relative w-full h-auto bg-inherit dark:text-gray-200;
   }
 
   > .common-tools-wrapper {
@@ -43,7 +43,7 @@
       @apply flex flex-row justify-start items-center;
 
       > .action-btn {
-        @apply flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer opacity-60 hover:opacity-90 hover:bg-gray-300 hover:shadow;
+        @apply flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer dark:text-gray-200 opacity-60 hover:opacity-90 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow;
 
         &.tag-action {
           @apply relative;
@@ -67,8 +67,8 @@
           }
         }
 
-        &.resource-btn{
-          @apply relative ;
+        &.resource-btn {
+          @apply relative;
 
           &:hover {
             > .resource-action-list {
@@ -76,18 +76,16 @@
             }
           }
 
-          >.resource-action-list{
+          > .resource-action-list {
             @apply hidden flex-col justify-start items-start absolute top-6 left-0 mt-1 p-1 z-1 rounded w-36 max-h-52 overflow-auto font-mono bg-zinc-100;
 
-            >.resource-action-item{
+            > .resource-action-item {
               @apply w-full flex text-black cursor-pointer rounded text-sm leading-6 px-2 truncate hover:bg-zinc-300 shrink-0;
 
-              >.icon-img{
+              > .icon-img {
                 @apply w-4 mr-2;
               }
-
             }
-
           }
         }
 
@@ -131,7 +129,7 @@
   }
 
   > .editor-footer-container {
-    @apply w-full flex flex-row justify-between items-center border-t border-t-gray-100 py-3 mt-2;
+    @apply w-full flex flex-row justify-between items-center border-t border-t-gray-100 dark:border-t-zinc-500 py-3 mt-2;
 
     > .visibility-selector {
       @apply h-8;
