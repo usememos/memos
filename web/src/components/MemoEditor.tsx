@@ -13,6 +13,7 @@ import Selector from "./common/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import EmojiPicker from "./Editor/EmojiPicker";
 import ResourceIcon from "./ResourceIcon";
+import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import "../less/memo-editor.less";
 
 const getEditorContentCache = (): string => {
@@ -34,7 +35,6 @@ const setEditingMemoVisibilityCache = (visibility: Visibility) => {
 interface State {
   fullscreen: boolean;
   isUploadingResource: boolean;
-  resourceList: Resource[];
   shouldShowEmojiPicker: boolean;
 }
 
@@ -48,7 +48,6 @@ const MemoEditor = () => {
     isUploadingResource: false,
     fullscreen: false,
     shouldShowEmojiPicker: false,
-    resourceList: [],
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const prevGlobalStateRef = useRef(editorState);
@@ -79,13 +78,8 @@ const MemoEditor = () => {
         if (memo) {
           handleEditorFocus();
           editorStateService.setMemoVisibility(memo.visibility);
+          editorStateService.setResourceList(memo.resourceList);
           editorRef.current?.setContent(memo.content ?? "");
-          setState((state) => {
-            return {
-              ...state,
-              resourceList: memo.resourceList,
-            };
-          });
         }
       });
       storage.set({
@@ -148,12 +142,7 @@ const MemoEditor = () => {
           }
         }
       }
-      setState((state) => {
-        return {
-          ...state,
-          resourceList: [...state.resourceList, ...resourceList],
-        };
-      });
+      editorStateService.setResourceList([...editorState.resourceList, ...resourceList]);
     }
   };
 
@@ -163,12 +152,7 @@ const MemoEditor = () => {
       const file = event.clipboardData.files[0];
       const resource = await handleUploadResource(file);
       if (resource) {
-        setState((state) => {
-          return {
-            ...state,
-            resourceList: [...state.resourceList, resource],
-          };
-        });
+        editorStateService.setResourceList([...editorState.resourceList, resource]);
       }
     }
   };
@@ -216,7 +200,7 @@ const MemoEditor = () => {
             id: prevMemo.id,
             content,
             visibility: editorState.memoVisibility,
-            resourceIdList: state.resourceList.map((resource) => resource.id),
+            resourceIdList: editorState.resourceList.map((resource) => resource.id),
           });
         }
         editorStateService.clearEditMemo();
@@ -224,7 +208,7 @@ const MemoEditor = () => {
         await memoService.createMemo({
           content,
           visibility: editorState.memoVisibility,
-          resourceIdList: state.resourceList.map((resource) => resource.id),
+          resourceIdList: editorState.resourceList.map((resource) => resource.id),
         });
         locationService.clearQuery();
       }
@@ -237,20 +221,17 @@ const MemoEditor = () => {
       return {
         ...state,
         fullscreen: false,
-        resourceList: [],
       };
     });
+    editorStateService.clearResourceList();
     setEditorContentCache("");
     storage.remove(["editingMemoVisibilityCache"]);
     editorRef.current?.setContent("");
   };
 
   const handleCancelEdit = () => {
-    setState({
-      ...state,
-      resourceList: [],
-    });
     editorStateService.clearEditMemo();
+    editorStateService.clearResourceList();
     editorRef.current?.setContent("");
     setEditorContentCache("");
     storage.remove(["editingMemoVisibilityCache"]);
@@ -317,12 +298,7 @@ const MemoEditor = () => {
           }
         }
       }
-      setState((state) => {
-        return {
-          ...state,
-          resourceList: [...state.resourceList, ...resourceList],
-        };
-      });
+      editorStateService.setResourceList([...editorState.resourceList, ...resourceList]);
       document.body.removeChild(inputEl);
     };
     inputEl.click();
@@ -361,13 +337,7 @@ const MemoEditor = () => {
   };
 
   const handleDeleteResource = async (resourceId: ResourceId) => {
-    setState((state) => {
-      return {
-        ...state,
-        resourceList: state.resourceList.filter((resource) => resource.id !== resourceId),
-      };
-    });
-
+    editorStateService.setResourceList(editorState.resourceList.filter((resource) => resource.id !== resourceId));
     if (editorState.editMemoId) {
       await deleteMemoResource(editorState.editMemoId, resourceId);
     }
@@ -440,10 +410,20 @@ const MemoEditor = () => {
           <button className="action-btn">
             <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
           </button>
-          <button className="action-btn">
-            <Icon.FileText className="icon-img" onClick={handleUploadFileBtnClick} />
+          <div className="action-btn resource-btn">
+            <Icon.FileText className="icon-img" />
             <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
-          </button>
+            <div className="resource-action-list">
+              <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
+                <Icon.Upload className="icon-img" />
+                <span>{t("editor.local")}</span>
+              </div>
+              <div className="resource-action-item" onClick={showResourcesSelectorDialog}>
+                <Icon.Database className="icon-img" />
+                <span>{t("editor.resources")}</span>
+              </div>
+            </div>
+          </div>
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>
@@ -454,9 +434,9 @@ const MemoEditor = () => {
           />
         </div>
       </div>
-      {state.resourceList.length > 0 && (
+      {editorState.resourceList && editorState.resourceList.length > 0 && (
         <div className="resource-list-wrapper">
-          {state.resourceList.map((resource) => {
+          {editorState.resourceList.map((resource) => {
             return (
               <div key={resource.id} className="resource-container">
                 <ResourceIcon resourceType="resource.type" className="icon-img" />

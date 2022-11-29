@@ -1,5 +1,5 @@
 import store from "../store";
-import { setEditMemoId, setMemoVisibility } from "../store/modules/editor";
+import { setEditMemoId, setMemoVisibility, setResourceList } from "../store/modules/editor";
 
 const editorStateService = {
   getState: () => {
@@ -16,6 +16,14 @@ const editorStateService = {
 
   setMemoVisibility: (memoVisibility: Visibility) => {
     store.dispatch(setMemoVisibility(memoVisibility));
+  },
+
+  setResourceList: (resourceList: Resource[]) => {
+    store.dispatch(setResourceList(resourceList));
+  },
+
+  clearResourceList: () => {
+    store.dispatch(setResourceList([]));
   },
 };
 

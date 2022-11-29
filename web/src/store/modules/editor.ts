@@ -3,11 +3,15 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface State {
   editMemoId?: MemoId;
   memoVisibility: Visibility;
+  resourceList: Resource[];
 }
 
 const editorSlice = createSlice({
   name: "editor",
-  initialState: {} as State,
+  initialState: {
+    memoVisibility: "PRIVATE",
+    resourceList: [],
+  } as State,
   reducers: {
     setEditMemoId: (state, action: PayloadAction<Option<MemoId>>) => {
       return {
@@ -21,9 +25,15 @@ const editorSlice = createSlice({
         memoVisibility: action.payload,
       };
     },
+    setResourceList: (state, action: PayloadAction<Resource[]>) => {
+      return {
+        ...state,
+        resourceList: action.payload,
+      };
+    },
   },
 });
 
-export const { setEditMemoId, setMemoVisibility } = editorSlice.actions;
+export const { setEditMemoId, setMemoVisibility, setResourceList } = editorSlice.actions;
 
 export default editorSlice.reducer;

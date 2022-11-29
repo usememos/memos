@@ -67,6 +67,30 @@
           }
         }
 
+        &.resource-btn{
+          @apply relative ;
+
+          &:hover {
+            > .resource-action-list {
+              @apply flex;
+            }
+          }
+
+          >.resource-action-list{
+            @apply hidden flex-col justify-start items-start absolute top-6 left-0 mt-1 p-1 z-1 rounded w-36 max-h-52 overflow-auto font-mono bg-zinc-100;
+
+            >.resource-action-item{
+              @apply w-full flex text-black cursor-pointer rounded text-sm leading-6 px-2 truncate hover:bg-zinc-300 shrink-0;
+
+              >.icon-img{
+                @apply w-4 mr-2;
+              }
+
+            }
+
+          }
+        }
+
         > .icon-img {
           @apply w-5 h-5 mx-auto flex flex-row justify-center items-center;
         }

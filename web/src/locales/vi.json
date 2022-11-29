@@ -88,7 +88,9 @@
     "save": "Lưu",
     "placeholder": "Bất cứ gì bạn đang nghĩ...",
     "only-image-supported": "Chỉ hỗ trợ hình ảnh.",
-    "cant-empty": "Nội dung không thể trống"
+    "cant-empty": "Nội dung không thể trống",
+    "local": "Local",
+    "resources": "Resources"
   },
   "memo": {
     "view-detail": "Xem chi tiết",
