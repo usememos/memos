@@ -21,7 +21,7 @@ const ApperanceSelect = () => {
 
   return (
     <Select
-      className="!min-w-[12rem] w-auto text-sm"
+      className="!min-w-[10rem] w-auto text-sm"
       value={apperance}
       onChange={(_, value) => {
         setApperance(value as Apperance);
