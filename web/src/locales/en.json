@@ -203,6 +203,11 @@
     "resource-filename-updated": "Resource filename changed.",
     "invalid-resource-filename": "Invalid filename.",
     "click-to-save-the-image": "Click to save the image",
-    "generating-the-screenshot": "Generating the screenshot..."
+    "generating-the-screenshot": "Generating the screenshot...",
+    "count-selected-resources": "Total selected",
+    "too-short": "Too short",
+    "too-long": "Too long",
+    "not-allow-space": "Don't allow space",
+    "not-allow-chinese": "Don't allow chinese"
   }
 }

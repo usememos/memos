@@ -49,13 +49,13 @@ const Auth = () => {
 
     const usernameValidResult = validate(username, validateConfig);
     if (!usernameValidResult.result) {
-      toastHelper.error(t("common.username") + ": " + usernameValidResult.reason);
+      toastHelper.error(t("common.username") + ": " + t(usernameValidResult.reason as string));
       return;
     }
 
     const passwordValidResult = validate(password, validateConfig);
     if (!passwordValidResult.result) {
-      toastHelper.error(t("common.password") + ": " + passwordValidResult.reason);
+      toastHelper.error(t("common.password") + ": " + t(passwordValidResult.reason as string));
       return;
     }
 
@@ -82,13 +82,13 @@ const Auth = () => {
 
     const usernameValidResult = validate(username, validateConfig);
     if (!usernameValidResult.result) {
-      toastHelper.error(t("common.username") + ": " + usernameValidResult.reason);
+      toastHelper.error(t("common.username") + ": " + t(usernameValidResult.reason as string));
       return;
     }
 
     const passwordValidResult = validate(password, validateConfig);
     if (!passwordValidResult.result) {
-      toastHelper.error(t("common.password") + ": " + passwordValidResult.reason);
+      toastHelper.error(t("common.password") + ": " + t(passwordValidResult.reason as string));
       return;
     }
 

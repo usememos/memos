@@ -197,6 +197,11 @@
     "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi.",
     "invalid-resource-filename": "Tên tệp không hợp lệ.",
     "click-to-save-the-image": "Bấm để lưu hình ảnh",
-    "generating-the-screenshot": "Đang tạo ảnh chụp màn hình ..."
+    "generating-the-screenshot": "Đang tạo ảnh chụp màn hình ...",
+    "count-selected-resources": "Total selected",
+    "too-short": "Too short",
+    "too-long": "Too long",
+    "not-allow-space": "Don't allow space",
+    "not-allow-chinese": "Don't allow chinese"
   }
 }
