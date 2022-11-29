@@ -108,11 +108,9 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
               resources.map((resource, index) => (
                 <div key={resource.id} className="resource-container">
                   <span className="field-text id-text">{resource.id}</span>
-                  <span className="field-text name-text">
-                    <Tooltip title={resource.filename}>
-                      <span>{resource.filename}</span>
-                    </Tooltip>
-                  </span>
+                  <Tooltip title={resource.filename}>
+                    <span className="field-text name-text">{resource.filename}</span>
+                  </Tooltip>
                   <div className="flex justify-end">
                     <Icon.Eye
                       className=" text-left text-sm leading-6 px-1 mr-2 cursor-pointer hover:bg-gray-100"
