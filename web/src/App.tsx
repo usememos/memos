@@ -1,9 +1,10 @@
 import { CssVarsProvider } from "@mui/joy/styles";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
 import { locationService } from "./services";
 import { useAppSelector } from "./store";
+import Loading from "./pages/Loading";
 import router from "./router";
 import * as storage from "./helpers/storage";
 
@@ -42,7 +43,9 @@ function App() {
 
   return (
     <CssVarsProvider>
-      <RouterProvider router={router} />
+      <Suspense fallback={<Loading />}>
+        <RouterProvider router={router} />
+      </Suspense>
     </CssVarsProvider>
   );
 }
