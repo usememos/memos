@@ -6,6 +6,14 @@ import { userService } from "../services";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
+import { validate, ValidatorConfig } from "../helpers/validator";
+
+const validateConfig: ValidatorConfig = {
+  minLength: 4,
+  maxLength: 320,
+  noSpace: true,
+  noChinese: true,
+};
 
 type Props = DialogProps;
 
@@ -60,6 +68,12 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
   const handleSaveBtnClick = async () => {
     if (state.username === "") {
       toastHelper.error(t("message.fill-all"));
+      return;
+    }
+
+    const usernameValidResult = validate(state.username, validateConfig);
+    if (!usernameValidResult.result) {
+      toastHelper.error(t("common.username") + ": " + usernameValidResult.reason);
       return;
     }
 
