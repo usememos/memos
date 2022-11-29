@@ -73,7 +73,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     const usernameValidResult = validate(state.username, validateConfig);
     if (!usernameValidResult.result) {
-      toastHelper.error(t("common.username") + ": " + usernameValidResult.reason);
+      toastHelper.error(t("common.username") + ": " + t(usernameValidResult.reason as string));
       return;
     }
 

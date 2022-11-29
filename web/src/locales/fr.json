@@ -198,6 +198,11 @@
     "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
     "invalid-resource-filename": "Nom de fichier invalide.",
     "click-to-save-the-image": "Cliquez pour enregistrer l'image",
-    "generating-the-screenshot": "Génération de la capture d'écran..."
+    "generating-the-screenshot": "Génération de la capture d'écran...",
+    "count-selected-resources": "Total selected",
+    "too-short": "Too short",
+    "too-long": "Too long",
+    "not-allow-space": "Don't allow space",
+    "not-allow-chinese": "Don't allow chinese"
   }
 }
