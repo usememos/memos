@@ -1,5 +1,5 @@
 .page-wrapper.auth {
-  @apply flex flex-row justify-center items-center w-full h-screen bg-white dark:bg-zinc-900;
+  @apply flex flex-row justify-center items-center w-full h-screen bg-white dark:bg-zinc-800;
 
   > .page-container {
     @apply w-80 max-w-full h-full py-4 flex flex-col justify-start items-center;
@@ -18,12 +18,12 @@
           }
 
           > .logo-text {
-            @apply text-4xl tracking-wide text-black dark:text-white;
+            @apply text-6xl tracking-wide text-black dark:text-gray-200;
           }
         }
 
         > .slogan-text {
-          @apply text-sm text-gray-700 dark:text-gray-200;
+          @apply text-sm text-gray-700 dark:text-gray-300;
         }
       }
 
@@ -45,7 +45,7 @@
             @apply py-2;
 
             > input {
-              @apply w-full py-3 px-3 text-base shadow-inner rounded-lg border border-solid border-gray-400 hover:opacity-80 dark:bg-zinc-800 dark:text-white;
+              @apply w-full py-3 px-3 text-base shadow-inner rounded-lg border border-solid border-gray-400 hover:opacity-80 dark:bg-zinc-800 dark:text-gray-200 dark:border-gray-600;
             }
           }
         }
@@ -58,20 +58,8 @@
       > .action-btns-container {
         @apply flex flex-row justify-end items-center w-full mt-2;
 
-        > .btn {
-          @apply flex flex-row justify-center items-center px-1 py-2 text-sm rounded hover:opacity-80;
-
-          &.signup-btn {
-            @apply px-3 dark:text-white dark:opacity-70;
-          }
-
-          &.signin-btn {
-            @apply bg-green-600 text-white px-3 shadow;
-          }
-
-          &.requesting {
-            @apply cursor-wait opacity-80;
-          }
+        > .requesting {
+          @apply cursor-wait opacity-80;
         }
       }
 
@@ -80,26 +68,6 @@
 
         &.host-tip {
           @apply text-blue-600;
-        }
-      }
-    }
-
-    > .footer-container {
-      @apply w-full flex flex-col justify-start items-center;
-
-      > .language-container {
-        @apply mt-2 w-full flex flex-row justify-center items-center text-sm text-gray-400;
-
-        > .locale-item {
-          @apply px-2 cursor-pointer;
-
-          &.active {
-            @apply text-blue-600 font-bold;
-          }
-        }
-
-        > .split-line {
-          @apply font-mono text-gray-400;
         }
       }
     }
