@@ -2,15 +2,15 @@
   @apply flex flex-col justify-start items-start relative h-8;
 
   > .current-value-container {
-    @apply flex flex-row justify-between items-center w-full h-full rounded px-2 pr-1 bg-white border cursor-pointer select-none;
+    @apply flex flex-row justify-between items-center w-full h-full rounded px-2 pr-1 bg-white dark:bg-zinc-700 dark:border-zinc-600 border cursor-pointer select-none;
 
     &:hover,
     &.active {
-      @apply bg-gray-100;
+      @apply bg-gray-100 dark:bg-zinc-700;
     }
 
     > .value-text {
-      @apply text-sm mr-0 truncate;
+      @apply text-sm mr-0 truncate dark:text-gray-300;
       width: calc(100% - 20px);
     }
 
@@ -18,19 +18,19 @@
       @apply flex flex-row justify-center items-center w-4 shrink-0;
 
       > .icon-img {
-        @apply w-4 h-auto opacity-40;
+        @apply w-4 h-auto opacity-40 dark:text-gray-300;
       }
     }
   }
 
   > .items-wrapper {
-    @apply flex flex-col justify-start items-start absolute top-full left-0 w-auto p-1 mt-1 -ml-2 bg-white rounded-md overflow-y-auto z-1 hide-scrollbar;
+    @apply flex flex-col justify-start items-start absolute top-full left-0 w-auto p-1 mt-1 -ml-2 bg-white dark:bg-zinc-700 dark:border-zinc-600 rounded-md overflow-y-auto z-1 hide-scrollbar;
     min-width: calc(100% + 16px);
     max-height: 256px;
     box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
 
     > .item-container {
-      @apply flex flex-col justify-start items-start w-full px-3 text-sm select-none leading-8 cursor-pointer rounded whitespace-nowrap hover:bg-gray-100;
+      @apply flex flex-col justify-start items-start w-full px-3 text-sm select-none leading-8 cursor-pointer rounded whitespace-nowrap dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-600;
 
       &.selected {
         @apply text-green-600;

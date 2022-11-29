@@ -1,5 +1,6 @@
 // Validator
 // * use for validating form data
+
 const chineseReg = /[\u3000\u3400-\u4DBF\u4E00-\u9FFF]/;
 
 export interface ValidatorConfig {
@@ -18,7 +19,7 @@ export function validate(text: string, config: Partial<ValidatorConfig>): { resu
     if (text.length < config.minLength) {
       return {
         result: false,
-        reason: "Too short",
+        reason: "message.too-short",
       };
     }
   }
@@ -27,7 +28,7 @@ export function validate(text: string, config: Partial<ValidatorConfig>): { resu
     if (text.length > config.maxLength) {
       return {
         result: false,
-        reason: "Too long",
+        reason: "message.too-long",
       };
     }
   }
@@ -35,14 +36,14 @@ export function validate(text: string, config: Partial<ValidatorConfig>): { resu
   if (config.noSpace && text.includes(" ")) {
     return {
       result: false,
-      reason: "Don't allow space",
+      reason: "message.not-allow-space",
     };
   }
 
   if (config.noChinese && chineseReg.test(text)) {
     return {
       result: false,
-      reason: "Don't allow chinese",
+      reason: "message.not-allow-chinese",
     };
   }
 

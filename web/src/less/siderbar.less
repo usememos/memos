@@ -1,5 +1,5 @@
 .sidebar-wrapper {
-  @apply fixed sm:sticky top-0 z-30 sm:z-0 -translate-x-64 sm:translate-x-0 sm:flex flex-col justify-start items-start w-64 h-screen py-4 pl-2 bg-white sm:bg-transparent overflow-x-hidden overflow-y-auto transition-transform duration-300 overscroll-contain hide-scrollbar;
+  @apply fixed sm:sticky top-0 z-30 sm:z-0 -translate-x-64 sm:translate-x-0 sm:flex flex-col justify-start items-start w-64 h-screen py-4 pl-2 bg-white dark:bg-zinc-800 sm:bg-transparent overflow-x-hidden overflow-y-auto transition-transform duration-300 overscroll-contain hide-scrollbar;
 
   &.show {
     @apply translate-x-0 shadow-2xl sm:shadow-none;
@@ -9,7 +9,7 @@
     @apply w-full px-2 my-2 flex flex-col justify-start items-start shrink-0;
 
     > .action-btn {
-      @apply leading-10 px-4 rounded-lg text-base hover:bg-white;
+      @apply leading-10 px-4 rounded-lg text-base dark:text-gray-200 hover:bg-white dark:hover:bg-zinc-700;
 
       > .icon {
         @apply mr-1;

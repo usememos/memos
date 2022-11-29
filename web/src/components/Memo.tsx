@@ -149,9 +149,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
-    if (targetEl.className === "memo-link-text") {
-      return;
-    } else if (targetEl.className === "tag-span") {
+    if (targetEl.className === "tag-span") {
       return;
     } else if (targetEl.classList.contains("todo-block")) {
       return;

@@ -88,7 +88,9 @@
     "save": "记下",
     "placeholder": "现在的想法是...",
     "only-image-supported": "仅支持图片文件。",
-    "cant-empty": "内容不能为空"
+    "cant-empty": "内容不能为空",
+    "local": "本地上传",
+    "resources": "资源库"
   },
   "memo": {
     "view-detail": "查看详情",
@@ -201,6 +203,11 @@
     "resource-filename-updated": "资源文件名更改成功。",
     "invalid-resource-filename": "无效的资源文件名",
     "click-to-save-the-image": "点击保存图片",
-    "generating-the-screenshot": "正在生成图片..."
+    "generating-the-screenshot": "正在生成图片...",
+    "count-selected-resources": "所选资源总数",
+    "too-short": "过短",
+    "too-long": "过长",
+    "not-allow-space": "不允许包含空格",
+    "not-allow-chinese": "不允许包含中文"
   }
 }

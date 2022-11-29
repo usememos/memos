@@ -5,11 +5,11 @@
     @apply shrink flex flex-row justify-start items-center flex-nowrap truncate;
 
     > .username-text {
-      @apply font-bold text-lg pr-1 text-slate-800 cursor-pointer shrink truncate;
+      @apply font-bold text-lg pr-1 text-slate-800 dark:text-gray-200 cursor-pointer shrink truncate;
     }
 
     > .tag {
-      @apply text-xs px-1 bg-blue-600 rounded text-white shadow;
+      @apply text-xs px-1 bg-blue-600 dark:bg-blue-800 rounded text-white dark:text-gray-200 shadow;
     }
   }
 
@@ -33,7 +33,7 @@
     @apply flex flex-col justify-start items-start;
 
     > .amount-text {
-      @apply font-bold text-2xl opacity-80 leading-10 text-slate-600;
+      @apply font-bold text-2xl opacity-80 leading-10 text-slate-600 dark:text-gray-300;
     }
 
     > .type-text {

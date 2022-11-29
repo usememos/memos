@@ -55,7 +55,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
 
     const passwordValidResult = validate(newPassword, validateConfig);
     if (!passwordValidResult.result) {
-      toastHelper.error(`${t("common.password")} ${passwordValidResult.reason}`);
+      toastHelper.error(`${t("common.password")} ${t(passwordValidResult.reason as string)}`);
       return;
     }
 

@@ -7,6 +7,7 @@ import { useAppSelector } from "./store";
 import Loading from "./pages/Loading";
 import router from "./router";
 import * as storage from "./helpers/storage";
+import theme from "./theme";
 
 function App() {
   const { i18n } = useTranslation();
@@ -42,7 +43,7 @@ function App() {
   }, [locale]);
 
   return (
-    <CssVarsProvider>
+    <CssVarsProvider theme={theme}>
       <Suspense fallback={<Loading />}>
         <RouterProvider router={router} />
       </Suspense>

@@ -1,12 +1,12 @@
 .memo-wrapper {
-  @apply relative flex flex-col justify-start items-start w-full p-4 pt-3 mt-2 bg-white rounded-lg border border-white hover:border-gray-200;
+  @apply relative flex flex-col justify-start items-start w-full p-4 pt-3 mt-2 bg-white dark:bg-zinc-700 rounded-lg border border-white dark:border-zinc-600 hover:border-gray-200 dark:hover:border-zinc-600;
 
   &.archived-memo {
     @apply border-gray-200;
   }
 
   &.pinned {
-    @apply border-gray-200 border-2;
+    @apply border-gray-200 border-2 dark:border-zinc-600;
   }
 
   > .corner-container {
@@ -54,14 +54,14 @@
         @apply hidden flex-col justify-start items-center absolute top-2 -right-4 flex-nowrap hover:flex p-3;
 
         > .more-action-btns-container {
-          @apply w-28 h-auto p-1 z-1 whitespace-nowrap rounded-lg bg-white;
+          @apply w-28 h-auto p-1 z-1 whitespace-nowrap rounded-lg bg-white dark:bg-zinc-700;
           box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
 
           > .btns-container {
-            @apply w-full flex flex-row justify-around items-center border-b border-gray-100 p-1 mb-1;
+            @apply w-full flex flex-row justify-around items-center border-b border-gray-100 dark:border-zinc-600 p-1 mb-1;
 
             > .btn {
-              @apply relative w-6 h-6 p-1 text-gray-600 cursor-pointer select-none;
+              @apply relative w-6 h-6 p-1 text-gray-600 dark:text-gray-300 cursor-pointer select-none;
 
               &:hover > .tip-text {
                 @apply block;
@@ -78,7 +78,7 @@
           }
 
           > .btn {
-            @apply w-full text-sm leading-6 py-1 px-3 rounded justify-start  cursor-pointer;
+            @apply w-full text-sm leading-6 py-1 px-3 rounded justify-start cursor-pointer dark:text-gray-300;
 
             &.archive-btn {
               @apply text-orange-600;
@@ -88,13 +88,13 @@
       }
 
       .btn {
-        @apply flex flex-row justify-center items-center px-2 leading-6 text-sm rounded hover:bg-gray-200;
+        @apply flex flex-row justify-center items-center px-2 leading-6 text-sm rounded hover:bg-gray-200 dark:hover:bg-zinc-600;
 
         &.more-action-btn {
           @apply w-8 -mr-2 opacity-60 cursor-default hover:bg-transparent;
 
           > .icon-img {
-            @apply w-4 h-auto;
+            @apply w-4 h-auto dark:text-gray-300;
           }
 
           &:hover {
