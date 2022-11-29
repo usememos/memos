@@ -63,16 +63,16 @@ const Explore = () => {
         <div className="page-header">
           <div className="title-container">
             <img className="logo-img" src="/logo.webp" alt="" />
-            <span className="title-text">Explore</span>
+            <span className="title-text">memos</span>
           </div>
           <div className="action-button-container">
             {!loadingState.isLoading && user ? (
-              <Link to="/" className="btn">
-                <span className="icon">🏠</span> {t("common.back-to-home")}
+              <Link to="/" className="link-btn btn-normal">
+                <span>🏠</span> {t("common.back-to-home")}
               </Link>
             ) : (
-              <Link to="/auth" className="btn">
-                <span className="icon">👉</span> {t("common.sign-in")}
+              <Link to="/auth" className="link-btn btn-normal">
+                <span>👉</span> {t("common.sign-in")}
               </Link>
             )}
           </div>

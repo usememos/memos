@@ -37,12 +37,12 @@ const Dropdown: React.FC<Props> = (props: Props) => {
       {trigger ? (
         trigger
       ) : (
-        <button className="flex flex-row justify-center items-center border p-1 rounded shadow text-gray-600 cursor-pointer hover:opacity-80">
+        <button className="flex flex-row justify-center items-center border p-1 rounded shadow text-gray-600 dark:text-gray-200 cursor-pointer hover:opacity-80">
           <Icon.MoreHorizontal className="w-4 h-auto" />
         </button>
       )}
       <div
-        className={`w-auto mt-1 absolute top-full right-0 flex flex-col justify-start items-start bg-white z-1 border p-1 rounded-md shadow ${
+        className={`w-auto mt-1 absolute top-full right-0 flex flex-col justify-start items-start bg-white dark:bg-zinc-700 z-1 p-1 rounded-md shadow ${
           actionsClassName ?? ""
         } ${dropdownStatus ? "" : "!hidden"}`}
       >

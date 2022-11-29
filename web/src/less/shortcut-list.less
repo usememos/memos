@@ -9,10 +9,10 @@
     }
 
     > .btn {
-      @apply flex flex-col justify-center items-center w-5 h-5 bg-gray-200 rounded ml-2 hover:shadow;
+      @apply flex flex-col justify-center items-center w-5 h-5 bg-gray-200 dark:bg-zinc-700 rounded ml-2 hover:shadow;
 
       > .icon-img {
-        @apply w-4 h-4 text-gray-500;
+        @apply w-4 h-4 text-gray-400;
       }
     }
   }
@@ -21,7 +21,7 @@
     @apply flex flex-col justify-start items-start relative w-full h-auto flex-nowrap mb-2;
 
     > .shortcut-container {
-      @apply relative flex flex-row justify-between items-center w-full h-10 py-0 px-4 mt-px first:mt-2 rounded-lg text-base cursor-pointer select-none shrink-0 hover:bg-white;
+      @apply relative flex flex-row justify-between items-center w-full h-10 py-0 px-4 mt-px first:mt-2 rounded-lg text-base cursor-pointer select-none shrink-0 hover:bg-white dark:hover:bg-zinc-700;
 
       &:hover {
         > .btns-container {
@@ -36,7 +36,7 @@
       }
 
       > .shortcut-text-container {
-        @apply flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-black;
+        @apply flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-black dark:text-gray-200;
 
         > .icon-text {
           @apply block w-4 shrink-0;
@@ -54,7 +54,7 @@
           @apply flex flex-row justify-center items-center;
 
           &.toggle-btn {
-            @apply text-gray-600;
+            @apply text-gray-600 dark:text-gray-400;
 
             > .icon-img {
               @apply w-4 h-auto;
@@ -72,11 +72,11 @@
           @apply absolute top-6 right-0 flex-col justify-start items-start w-auto h-auto px-4 pt-3 hidden z-1;
 
           > .action-btns-container {
-            @apply flex flex-col justify-start items-start w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white;
+            @apply flex flex-col justify-start items-start w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white dark:bg-zinc-700;
             box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
 
             > .btn {
-              @apply w-full text-sm leading-6 py-1 px-3 rounded text-left hover:bg-gray-100;
+              @apply w-full text-sm leading-6 py-1 px-3 rounded text-left dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800;
 
               &.delete-btn {
                 @apply text-orange-600;

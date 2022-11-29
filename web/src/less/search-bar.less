@@ -9,14 +9,14 @@
   }
 
   > .search-bar-inputer {
-    @apply h-9 flex flex-row justify-start items-center w-full py-2 px-3 sm:px-4 rounded-full sm:rounded-lg bg-zinc-200;
+    @apply h-9 flex flex-row justify-start items-center w-full py-2 px-3 sm:px-4 rounded-full sm:rounded-lg bg-zinc-200 dark:bg-zinc-700;
 
     > .icon-img {
-      @apply w-4 h-auto opacity-30;
+      @apply w-4 h-auto opacity-30 dark:text-gray-200;
     }
 
     > .text-input {
-      @apply flex ml-2 w-24 grow text-sm outline-none bg-transparent;
+      @apply flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200;
     }
   }
 
@@ -24,18 +24,18 @@
     @apply hidden absolute top-9 -right-2 p-2 w-80 z-10;
 
     > .quickly-action-container {
-      @apply flex flex-col justify-start items-start w-full bg-white px-4 py-3 rounded-lg;
+      @apply flex flex-col justify-start items-start w-full bg-white dark:bg-zinc-700 px-4 py-3 rounded-lg;
       box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
 
       > .title-text {
-        @apply text-gray-600 text-xs;
+        @apply text-gray-600 dark:text-gray-400 text-xs;
       }
 
       > .types-container {
         @apply flex flex-row justify-start items-start w-full text-xs mt-2;
 
         > .section-text {
-          @apply text-gray-600 mr-1 shrink-0 leading-6;
+          @apply text-gray-600 dark:text-gray-400 mr-1 shrink-0 leading-6;
         }
 
         > .values-container {
@@ -45,10 +45,10 @@
             @apply flex flex-row justify-start items-center leading-6;
 
             .type-item {
-              @apply cursor-pointer px-1 rounded hover:bg-gray-100;
+              @apply cursor-pointer px-1 rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-600;
 
               &.selected {
-                @apply bg-green-600 text-white;
+                @apply !bg-green-600 text-white;
               }
             }
 

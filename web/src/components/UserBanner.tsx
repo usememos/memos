@@ -74,20 +74,20 @@ const UserBanner = () => {
           {!isVisitorMode && user?.role === "HOST" ? <span className="tag">MOD</span> : null}
         </div>
         <Dropdown
-          trigger={<Icon.MoreHorizontal className="ml-2 w-5 h-auto cursor-pointer" />}
+          trigger={<Icon.MoreHorizontal className="ml-2 w-5 h-auto cursor-pointer dark:text-gray-200" />}
           actionsClassName="min-w-36"
           actions={
             <>
               {!userService.isVisitorMode() && (
                 <>
                   <button
-                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-zinc-800"
                     onClick={handleResourcesBtnClick}
                   >
                     <span className="mr-1">🌄</span> {t("sidebar.resources")}
                   </button>
                   <button
-                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-zinc-800"
                     onClick={handleArchivedBtnClick}
                   >
                     <span className="mr-1">🗂</span> {t("sidebar.archived")}
@@ -95,14 +95,14 @@ const UserBanner = () => {
                 </>
               )}
               <button
-                className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-zinc-800"
                 onClick={handleAboutBtnClick}
               >
                 <span className="mr-1">🤠</span> {t("common.about")}
               </button>
               {!userService.isVisitorMode() && (
                 <button
-                  className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded hover:bg-gray-100"
+                  className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-zinc-800"
                   onClick={handleSignOutBtnClick}
                 >
                   <span className="mr-1">👋</span> {t("common.sign-out")}

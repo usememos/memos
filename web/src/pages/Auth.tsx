@@ -136,11 +136,11 @@ const Auth = () => {
           <div className="action-btns-container">
             {systemStatus?.host ? (
               <>
-                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto animate-spin" />}
+                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin" />}
                 {systemStatus?.allowSignUp && (
                   <>
                     <button
-                      className={`btn signup-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                      className={`btn-text ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
                       onClick={() => handleSignUpBtnsClick("USER")}
                     >
                       {t("common.sign-up")}
@@ -148,14 +148,14 @@ const Auth = () => {
                     <span className="mr-2 font-mono text-gray-200">/</span>
                   </>
                 )}
-                <button className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSigninBtnsClick}>
+                <button className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSigninBtnsClick}>
                   {t("common.sign-in")}
                 </button>
               </>
             ) : (
               <>
                 <button
-                  className={`btn signin-btn ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
+                  className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
                   onClick={() => handleSignUpBtnsClick("HOST")}
                 >
                   {t("auth.signup-as-host")}
@@ -165,21 +165,19 @@ const Auth = () => {
           </div>
           {!systemStatus?.host && <p className="tip-text">{t("auth.host-tip")}</p>}
         </div>
-        <div className="footer-container">
-          <div className="w-full flex flex-row justify-center items-center gap-2">
-            <Select
-              className="!min-w-[9rem] w-auto whitespace-nowrap"
-              startDecorator={<Icon.Globe className="w-4 h-auto" />}
-              value={i18n.language}
-              onChange={(_, value) => handleLocaleItemClick(value as Locale)}
-            >
-              <Option value="en">English</Option>
-              <Option value="zh">中文</Option>
-              <Option value="vi">Tiếng Việt</Option>
-              <Option value="fr">French</Option>
-            </Select>
-            <ApperanceSelect />
-          </div>
+        <div className="w-full flex flex-row justify-center items-center gap-2">
+          <Select
+            className="!min-w-[9rem] w-auto whitespace-nowrap"
+            startDecorator={<Icon.Globe className="w-4 h-auto" />}
+            value={i18n.language}
+            onChange={(_, value) => handleLocaleItemClick(value as Locale)}
+          >
+            <Option value="en">English</Option>
+            <Option value="zh">中文</Option>
+            <Option value="vi">Tiếng Việt</Option>
+            <Option value="fr">French</Option>
+          </Select>
+          <ApperanceSelect />
         </div>
       </div>
     </div>
