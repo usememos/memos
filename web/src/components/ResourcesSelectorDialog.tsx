@@ -1,7 +1,6 @@
-import { Checkbox } from "@mui/joy";
+import { Checkbox, Tooltip } from "@mui/joy";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import * as utils from "../helpers/utils";
 import useLoading from "../hooks/useLoading";
 import { editorStateService, resourceService } from "../services";
 import { useAppSelector } from "../store";
@@ -64,20 +63,6 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleResourceNameOrTypeMouseEnter = useCallback((event: React.MouseEvent, nameOrType: string) => {
-    const tempDiv = document.createElement("div");
-    tempDiv.className = "usage-detail-container pop-up";
-    const bounding = utils.getElementBounding(event.target as HTMLElement);
-    tempDiv.style.left = bounding.left + "px";
-    tempDiv.style.top = bounding.top - 2 + "px";
-    tempDiv.innerHTML = `<span>${nameOrType}</span>`;
-    document.body.appendChild(tempDiv);
-  }, []);
-
-  const handleResourceNameOrTypeMouseLeave = useCallback(() => {
-    document.body.querySelectorAll("div.usage-detail-container.pop-up").forEach((node) => node.remove());
-  }, []);
-
   const handleCheckboxChange = (index: number) => {
     const newCheckedArr = state.checkedArray;
     newCheckedArr[index] = !newCheckedArr[index];
@@ -124,12 +109,9 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
                 <div key={resource.id} className="resource-container">
                   <span className="field-text id-text">{resource.id}</span>
                   <span className="field-text name-text">
-                    <span
-                      onMouseEnter={(e) => handleResourceNameOrTypeMouseEnter(e, resource.filename)}
-                      onMouseLeave={handleResourceNameOrTypeMouseLeave}
-                    >
-                      {resource.filename}
-                    </span>
+                    <Tooltip title={resource.filename}>
+                      <span>{resource.filename}</span>
+                    </Tooltip>
                   </span>
                   <div className="flex justify-end">
                     <Icon.Eye

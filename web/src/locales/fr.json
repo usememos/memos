@@ -88,7 +88,9 @@
     "save": "Sauvegarder",
     "placeholder": "Une idée...",
     "only-image-supported": "Seul le fichier image est pris en charge.",
-    "cant-empty": "Le contenu ne doit pas être vide"
+    "cant-empty": "Le contenu ne doit pas être vide",
+    "local": "Local",
+    "resources": "Resources"
   },
   "memo": {
     "view-detail": "Voir le détail",

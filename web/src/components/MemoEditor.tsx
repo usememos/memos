@@ -436,11 +436,11 @@ const MemoEditor = () => {
               <div className="resource-action-list">
                 <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
                   <Icon.Upload className="icon-img" />
-                  <span>{t("common.local")}</span>
+                  <span>{t("editor.local")}</span>
                 </div>
                 <div className="resource-action-item" onClick={showResourcesSelectorDialog}>
                   <Icon.Database className="icon-img" />
-                  <span>{t("common.resources")}</span>
+                  <span>{t("editor.resources")}</span>
                 </div>
               </div>
             ) : (

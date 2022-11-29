@@ -88,7 +88,9 @@
     "save": "记下",
     "placeholder": "现在的想法是...",
     "only-image-supported": "仅支持图片文件。",
-    "cant-empty": "内容不能为空"
+    "cant-empty": "内容不能为空",
+    "local": "本地上传",
+    "resources": "资源库"
   },
   "memo": {
     "view-detail": "查看详情",
