@@ -1,5 +1,6 @@
 import { globalService, locationService } from ".";
 import * as api from "../helpers/api";
+import * as storage from "../helpers/storage";
 import { UNKNOWN_ID } from "../helpers/consts";
 import store from "../store";
 import { setLocale } from "../store/modules/global";
@@ -11,9 +12,18 @@ const defaultSetting: Setting = {
   memoDisplayTsOption: "created_ts",
 };
 
+const defaultLocalSetting: LocalSetting = {
+  isFoldingEnabled: true,
+};
+
 export const convertResponseModelUser = (user: User): User => {
   const setting: Setting = {
     ...defaultSetting,
+  };
+  const { localSetting: storageLocalSetting } = storage.get(["localSetting"]);
+  const localSetting: LocalSetting = {
+    ...defaultLocalSetting,
+    ...storageLocalSetting,
   };
 
   if (user.userSettingList) {
@@ -25,6 +35,7 @@ export const convertResponseModelUser = (user: User): User => {
   return {
     ...user,
     setting,
+    localSetting,
     createdTs: user.createdTs * 1000,
     updatedTs: user.updatedTs * 1000,
   };
@@ -109,6 +120,11 @@ const userService = {
       value: JSON.stringify(value),
     });
     await userService.doSignIn();
+  },
+
+  upsertLocalSetting: async (key: keyof LocalSetting, value: any) => {
+    storage.set({ localSetting: { [key]: value } });
+    store.dispatch(patchUser({ localSetting: { [key]: value } }));
   },
 
   patchUser: async (userPatch: UserPatch): Promise<void> => {

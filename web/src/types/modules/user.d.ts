@@ -16,6 +16,7 @@ interface User {
   userSettingList: UserSetting[];
 
   setting: Setting;
+  localSetting: LocalSetting;
 }
 
 interface UserCreate {
