@@ -10,6 +10,8 @@ interface StorageData {
   editingMemoVisibilityCache: Visibility;
   // locale
   locale: Locale;
+  // local setting
+  localSetting: LocalSetting;
   // skipped version
   skippedVersion: string;
 }

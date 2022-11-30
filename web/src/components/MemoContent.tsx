@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import { marked } from "../labs/marked";
 import { highlightWithWord } from "../labs/highlighter";
 import Icon from "./Icon";
-import { SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE } from "../helpers/consts";
-import useLocalStorage from "../hooks/useLocalStorage";
+import { useAppSelector } from "../store";
 import "../less/memo-content.less";
 
 export interface DisplayConfig {
@@ -37,7 +36,8 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     return firstHorizontalRuleIndex !== -1 ? content.slice(0, firstHorizontalRuleIndex) : content;
   }, [content]);
   const { t } = useTranslation();
-  const [isFoldingEnabled] = useLocalStorage(SETTING_IS_FOLDING_ENABLED_KEY, IS_FOLDING_ENABLED_DEFAULT_VALUE);
+  const user = useAppSelector((state) => state.user.user);
+
   const [state, setState] = useState<State>({
     expandButtonStatus: -1,
   });
@@ -52,15 +52,20 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    if (displayConfig.enableExpand && isFoldingEnabled) {
+    if (displayConfig.enableExpand && user && user.localSetting.isFoldingEnabled) {
       if (foldedContent.length !== content.length) {
         setState({
           ...state,
           expandButtonStatus: 0,
         });
       }
+    } else {
+      setState({
+        ...state,
+        expandButtonStatus: -1,
+      });
     }
-  }, []);
+  }, [user?.localSetting.isFoldingEnabled]);
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     if (onMemoContentClick) {

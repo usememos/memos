@@ -18,9 +18,6 @@ export const MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS = [
   { text: "created_ts", value: "updated_ts" },
 ];
 
-export const IS_FOLDING_ENABLED_DEFAULT_VALUE = true;
-export const SETTING_IS_FOLDING_ENABLED_KEY = "setting_IS_FOLDING_ENABLED";
-
 export const TAB_SPACE_WIDTH = 2;
 
 export const APPERANCE_OPTIONS = ["auto", "light", "dark"] as const;

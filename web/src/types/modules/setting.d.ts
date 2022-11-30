@@ -4,6 +4,10 @@ interface Setting {
   memoDisplayTsOption: "created_ts" | "updated_ts";
 }
 
+interface LocalSetting {
+  isFoldingEnabled: boolean;
+}
+
 interface UserLocaleSetting {
   key: "locale";
   value: Locale;
