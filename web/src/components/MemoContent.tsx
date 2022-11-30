@@ -36,9 +36,8 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     return firstHorizontalRuleIndex !== -1 ? content.slice(0, firstHorizontalRuleIndex) : content;
   }, [content]);
   const { t } = useTranslation();
-  const {
-    localSetting: { isFoldingEnabled },
-  } = useAppSelector((state) => state.user.user as User);
+  const user = useAppSelector((state) => state.user.user);
+
   const [state, setState] = useState<State>({
     expandButtonStatus: -1,
   });
@@ -53,7 +52,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    if (displayConfig.enableExpand && isFoldingEnabled) {
+    if (displayConfig.enableExpand && user && user.localSetting.isFoldingEnabled) {
       if (foldedContent.length !== content.length) {
         setState({
           ...state,
@@ -66,7 +65,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         expandButtonStatus: -1,
       });
     }
-  }, [isFoldingEnabled]);
+  }, [user?.localSetting.isFoldingEnabled]);
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     if (onMemoContentClick) {
