@@ -7,7 +7,6 @@ import { memoService } from "../services";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { useAppSelector } from "../store";
 import useLoading from "../hooks/useLoading";
-import useApperance from "../hooks/useApperance";
 import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
 import Dropdown from "../components/common/Dropdown";
@@ -20,8 +19,6 @@ interface State {
 }
 
 const MemoDetail = () => {
-  useApperance();
-
   const { t, i18n } = useTranslation();
   const params = useParams();
   const user = useAppSelector((state) => state.user.user);

@@ -11,11 +11,8 @@ import MemoFilter from "../components/MemoFilter";
 import MemoList from "../components/MemoList";
 import UpdateVersionBanner from "../components/UpdateVersionBanner";
 import "../less/home.less";
-import useApperance from "../hooks/useApperance";
 
 function Home() {
-  useApperance();
-
   const { t } = useTranslation();
   const location = useLocation();
   const user = useAppSelector((state) => state.user.user);

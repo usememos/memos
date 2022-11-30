@@ -1,12 +1,11 @@
 .memo-editor-container {
-  @apply transition-all relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-700 px-4 rounded-lg border-2 border-gray-200 dark:border-zinc-600;
+  @apply relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-700 px-4 rounded-lg border-2 border-gray-200 dark:border-zinc-600;
 
   &.fullscreen {
-    @apply fixed w-full h-full top-0 left-0 z-1000 border-none rounded-none sm:p-8;
-    background-color: #f6f5f4;
+    @apply transition-all fixed w-full h-full top-0 left-0 z-1000 border-none rounded-none sm:p-8;
 
     > .memo-editor {
-      @apply p-4 mb-4 rounded-lg border shadow-lg flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white dark:bg-zinc-700;
+      @apply p-4 mb-4 rounded-lg border shadow-lg flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white dark:bg-zinc-700 dark:border-zinc-600;
 
       > .common-editor-inputer {
         @apply flex-grow w-full !h-full max-h-full;

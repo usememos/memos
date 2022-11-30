@@ -22,10 +22,7 @@
       @apply flex flex-row justify-around items-center w-full;
 
       > .day-item {
-        @apply flex flex-col justify-center items-center;
-        width: 36px;
-        height: 36px;
-        user-select: none;
+        @apply w-9 h-9 select-none flex flex-col justify-center items-center;
         color: gray;
         font-size: 13px;
         margin: 2px 0;
@@ -33,21 +30,11 @@
     }
 
     > .day-item {
-      @apply flex flex-col justify-center items-center;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      font-size: 14px;
-      user-select: none;
-      cursor: pointer;
+      @apply w-9 h-9 rounded-full text-sm select-none cursor-pointer flex flex-col justify-center items-center hover:bg-gray-200 dark:hover:bg-zinc-600;
       margin: 2px;
 
-      &:hover {
-        @apply bg-gray-100;
-      }
-
       &.current {
-        @apply text-blue-600 bg-blue-100 text-base font-medium;
+        @apply text-blue-600 !bg-blue-100 text-base font-medium;
       }
 
       &.null {

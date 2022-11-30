@@ -47,7 +47,7 @@
     "image": "Image",
     "link": "Link"
   },
-  "slogan": "Un hub de mémos open source et auto-hébergé pour la gestion des connaissances et la collaboration.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
     "signup-as-host": "S'inscrire en tant qu'hôte",
     "host-tip": "Vous vous inscrivez en tant qu'hébergeur du site.",

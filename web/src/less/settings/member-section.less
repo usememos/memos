@@ -10,16 +10,12 @@
       }
 
       > input {
-        @apply border rounded text-sm leading-7 shadow-inner px-2;
+        @apply border dark:border-zinc-700 rounded text-sm leading-7 shadow-inner px-2 dark:bg-zinc-800;
       }
     }
 
     > .btns-container {
       @apply w-full mb-6 pl-20 flex flex-row justify-start items-center;
-
-      > button {
-        @apply border text-sm px-3 rounded leading-7 shadow hover:opacity-80;
-      }
     }
   }
 
@@ -34,13 +30,13 @@
   }
 
   > .member-container {
-    @apply w-full grid grid-cols-4 border-b py-2;
+    @apply w-full grid grid-cols-4 border-b dark:border-b-zinc-700 py-2;
 
     > .field-text {
       @apply text-base pl-2 mr-4 w-16 truncate;
 
       &.id-text {
-        @apply font-mono text-gray-600;
+        @apply font-mono text-gray-400;
       }
 
       &.username-text {

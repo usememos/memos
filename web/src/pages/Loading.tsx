@@ -1,11 +1,10 @@
 import Icon from "../components/Icon";
-import "../less/loading.less";
 
 function Loading() {
   return (
-    <div className="page-wrapper loading">
-      <div className="page-container">
-        <Icon.Loader className="loading-icon" />
+    <div className="flex flex-row justify-center items-center w-full h-screen bg-white dark:bg-zinc-800">
+      <div className="w-80 max-w-full h-full py-4 flex flex-col justify-center items-center">
+        <Icon.Loader className="animate-spin dark:text-gray-200" />
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
     @apply w-96 p-0 bg-zinc-100;
 
     > .dialog-header-container {
-      @apply py-2 pt-4 px-4 pl-6 mb-0 bg-white rounded-t-lg;
+      @apply py-2 pt-4 px-4 pl-6 mb-0 rounded-t-lg;
     }
 
     > .dialog-content-container {
@@ -11,7 +11,7 @@
       min-height: 128px;
 
       > .tip-words-container {
-        @apply w-full flex flex-col justify-center items-start border-b bg-white px-6 py-0 pb-2;
+        @apply w-full flex flex-col justify-center items-start border-b px-6 py-0 pb-2;
 
         > .tip-text {
           @apply text-sm text-gray-500;
@@ -38,15 +38,15 @@
         @apply w-96 max-w-full h-auto select-none relative flex flex-col justify-start items-start;
 
         > .memo-shortcut-img {
-          @apply absolute top-0 left-0 w-full h-auto rounded-b-lg z-10;
+          @apply absolute top-0 left-0 w-full h-auto z-10;
         }
 
         > .time-text {
-          @apply w-full px-6 pt-5 pb-2 text-sm text-gray-500 bg-white;
+          @apply w-full px-6 pt-5 pb-2 text-sm text-gray-500;
         }
 
         > .memo-content-wrapper {
-          @apply w-full px-6 text-base bg-white pb-4;
+          @apply w-full px-6 text-base pb-4;
         }
 
         > .images-container {
@@ -58,7 +58,7 @@
         }
 
         > .watermark-container {
-          @apply flex flex-row justify-between items-center w-full py-2 px-6;
+          @apply flex flex-row justify-between items-center w-full dark:bg-zinc-900 py-2 px-6;
 
           > .normal-text {
             @apply w-full flex flex-row justify-start items-center text-sm leading-6 text-gray-500;
@@ -86,33 +86,33 @@
         }
       }
 
-      .share-actions-container{
-        @apply flex justify-between px-4 py-3 mb-0 bg-white w-full rounded-b-lg border-t;
+      .share-actions-container {
+        @apply flex justify-between px-4 py-3 mb-0 w-full border-t dark:border-t-zinc-700;
 
-        > .visibility-selector{
-          @apply  w-36;
+        > .visibility-selector {
+          @apply w-36;
 
-          > .selector-wrapper{
+          > .selector-wrapper {
             @apply h-10;
           }
         }
 
-        > .share-btns-container{
+        > .share-btns-container {
           @apply flex justify-end;
 
           > .buttons-wrapper {
-          @apply flex flex-row justify-start items-center;
+            @apply flex flex-row justify-start items-center;
 
-            > .share-btn{
-            @apply text-sm cursor-pointer px-3 py-2 rounded flex flex-row justify-center items-center border bg-gray-50 hover:bg-gray-100;
+            > .share-btn {
+              @apply text-sm cursor-pointer px-3 py-2 rounded flex flex-row justify-center items-center border dark:border-zinc-700 hover:opacity-80;
 
               > .icon-img {
-              @apply w-4 h-auto mr-1;
+                @apply w-4 h-auto mr-1;
               }
             }
 
             > .share-image-btn {
-            @apply mr-3;
+              @apply mr-3;
             }
           }
         }
