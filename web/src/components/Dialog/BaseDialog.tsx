@@ -4,6 +4,8 @@ import { Provider } from "react-redux";
 import { ANIMATION_DURATION } from "../../helpers/consts";
 import store from "../../store";
 import "../../less/base-dialog.less";
+import { CssVarsProvider } from "@mui/joy";
+import theme from "../../theme";
 
 interface DialogConfig {
   className: string;
@@ -77,9 +79,11 @@ export function generateDialog<T extends DialogProps>(
 
   const Fragment = (
     <Provider store={store}>
-      <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
-        <DialogComponent {...dialogProps} />
-      </BaseDialog>
+      <CssVarsProvider theme={theme}>
+        <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
+          <DialogComponent {...dialogProps} />
+        </BaseDialog>
+      </CssVarsProvider>
     </Provider>
   );
 

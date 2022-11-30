@@ -10,7 +10,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
-    "@mui/joy": "^5.0.0-alpha.52",
+    "@mui/joy": "^5.0.0-alpha.56",
     "@reduxjs/toolkit": "^1.8.1",
     "axios": "^0.27.2",
     "copy-to-clipboard": "^3.3.2",

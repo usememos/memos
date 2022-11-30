@@ -16,7 +16,7 @@
 
 @layer components {
   .btn-normal {
-    @apply select-none inline-flex border cursor-pointer px-3 text-sm leading-8 rounded-md hover:opacity-80 hover:shadow;
+    @apply select-none inline-flex border dark:border-zinc-700 cursor-pointer px-3 text-sm leading-8 rounded-md hover:opacity-80 hover:shadow;
   }
 
   .btn-primary {
@@ -32,6 +32,6 @@
   }
 
   .input-text {
-    @apply w-full px-3 py-2 leading-6 text-sm border rounded;
+    @apply w-full px-3 py-2 leading-6 text-sm rounded border dark:border-zinc-700 dark:bg-zinc-800;
   }
 }

@@ -130,6 +130,7 @@ const SystemSection = () => {
       </div>
       <Textarea
         className="w-full"
+        color="neutral"
         sx={{
           fontFamily: "monospace",
           fontSize: "14px",

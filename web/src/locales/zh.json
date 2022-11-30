@@ -47,7 +47,7 @@
     "image": "图片",
     "link": "链接"
   },
-  "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
     "signup-as-host": "注册为 Host",
     "host-tip": "你正在注册为 Host 用户账号。",

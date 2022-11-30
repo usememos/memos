@@ -2,20 +2,20 @@
   @apply p-0 sm:py-16;
 
   > .dialog-container {
-    @apply w-full sm:w-112 max-w-full grow sm:grow-0 bg-white p-0 rounded-none sm:rounded-lg;
+    @apply w-full sm:w-112 max-w-full grow sm:grow-0 p-0 rounded-none sm:rounded-lg;
 
     > .dialog-header-container {
       @apply relative flex flex-row justify-between items-center w-full p-6 pb-0 mb-0;
 
       > .title-text {
-        @apply px-2 py-1 -ml-2 cursor-pointer select-none rounded hover:bg-gray-100;
+        @apply px-2 py-1 -ml-2 cursor-pointer select-none rounded hover:bg-gray-100 dark:hover:bg-zinc-700;
       }
 
       > .btns-container {
         @apply flex flex-row justify-start items-center;
 
         > .btn-text {
-          @apply w-6 h-6 mr-2 rounded cursor-pointer select-none text-gray-600 last:mr-0 hover:bg-gray-200 p-0.5;
+          @apply w-6 h-6 mr-2 rounded cursor-pointer select-none last:mr-0 hover:bg-gray-200 dark:hover:bg-zinc-700 p-0.5;
 
           > .icon-img {
             @apply w-full h-auto;
@@ -28,7 +28,7 @@
       }
 
       > .date-picker {
-        @apply absolute top-12 left-4 mt-2 bg-white shadow z-20 mx-auto border border-gray-200 rounded-lg mb-6;
+        @apply absolute top-12 left-4 mt-2 bg-white dark:bg-zinc-700 shadow z-20 mx-auto border dark:border-zinc-800 rounded-lg mb-6;
       }
     }
 
@@ -40,7 +40,7 @@
         z-index: 1;
 
         > .year-text {
-          @apply m-auto font-bold text-gray-600 text-center leading-6 mb-2;
+          @apply m-auto font-bold text-gray-600 dark:text-gray-300 text-center leading-6 mb-2;
         }
 
         > .date-container {

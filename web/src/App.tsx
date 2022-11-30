@@ -1,4 +1,3 @@
-import { CssVarsProvider } from "@mui/joy/styles";
 import { useEffect, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
@@ -7,11 +6,12 @@ import { useAppSelector } from "./store";
 import Loading from "./pages/Loading";
 import router from "./router";
 import * as storage from "./helpers/storage";
-import theme from "./theme";
+import useApperance from "./hooks/useApperance";
 
 function App() {
   const { i18n } = useTranslation();
   const { locale, systemStatus } = useAppSelector((state) => state.global);
+  useApperance();
 
   useEffect(() => {
     locationService.updateStateWithLocation();
@@ -43,11 +43,9 @@ function App() {
   }, [locale]);
 
   return (
-    <CssVarsProvider theme={theme}>
-      <Suspense fallback={<Loading />}>
-        <RouterProvider router={router} />
-      </Suspense>
-    </CssVarsProvider>
+    <Suspense fallback={<Loading />}>
+      <RouterProvider router={router} />
+    </Suspense>
   );
 }
 

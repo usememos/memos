@@ -1,10 +1,8 @@
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import "dayjs/locale/zh";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -14,8 +12,6 @@ import showShareMemoImageDialog from "./ShareMemoImageDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "../less/memo.less";
-
-dayjs.extend(relativeTime);
 
 interface Props {
   memo: Memo;

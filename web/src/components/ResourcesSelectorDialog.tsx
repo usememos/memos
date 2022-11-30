@@ -108,12 +108,12 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
               resources.map((resource, index) => (
                 <div key={resource.id} className="resource-container">
                   <span className="field-text id-text">{resource.id}</span>
-                  <Tooltip title={resource.filename}>
+                  <Tooltip placement="top-start" title={resource.filename}>
                     <span className="field-text name-text">{resource.filename}</span>
                   </Tooltip>
                   <div className="flex justify-end">
                     <Icon.Eye
-                      className=" text-left text-sm leading-6 px-1 mr-2 cursor-pointer hover:bg-gray-100"
+                      className=" text-left text-sm leading-6 px-1 mr-2 cursor-pointer hover:opacity-80"
                       onClick={() => handlePreviewBtnClick(resource)}
                     >
                       {t("resources.preview")}
@@ -126,7 +126,7 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
           </div>
         )}
         <div className="flex justify-between w-full mt-2 px-2">
-          <span className="text-sm font-mono text-gray-500 leading-8">
+          <span className="text-sm font-mono text-gray-400 leading-8">
             {t("message.count-selected-resources")}: {state.checkedArray.filter((checked) => checked).length}
           </span>
           <div className="flex flex-row justify-start items-center">

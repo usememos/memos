@@ -15,6 +15,7 @@ import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import Selector from "./common/Selector";
 import "../less/share-memo-image-dialog.less";
+import useApperance from "../hooks/useApperance";
 
 interface Props extends DialogProps {
   memo: Memo;
@@ -35,6 +36,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
     shortcutImgUrl: "",
     memoVisibility: propsMemo.visibility,
   });
+  const [apperance] = useApperance();
   const loadingState = useLoading();
   const memoElRef = useRef<HTMLDivElement>(null);
   const memo = {
@@ -70,7 +72,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
       }
 
       toImage(memoElRef.current, {
-        backgroundColor: "#f4f4f5",
+        backgroundColor: apperance === "light" ? "#f4f4f5" : "#27272a",
         pixelRatio: window.devicePixelRatio * 2,
       })
         .then((url) => {

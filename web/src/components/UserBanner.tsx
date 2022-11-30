@@ -81,13 +81,13 @@ const UserBanner = () => {
               {!userService.isVisitorMode() && (
                 <>
                   <button
-                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-zinc-800"
+                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                     onClick={handleResourcesBtnClick}
                   >
                     <span className="mr-1">🌄</span> {t("sidebar.resources")}
                   </button>
                   <button
-                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-zinc-800"
+                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                     onClick={handleArchivedBtnClick}
                   >
                     <span className="mr-1">🗂</span> {t("sidebar.archived")}
@@ -95,14 +95,14 @@ const UserBanner = () => {
                 </>
               )}
               <button
-                className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-zinc-800"
+                className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                 onClick={handleAboutBtnClick}
               >
                 <span className="mr-1">🤠</span> {t("common.about")}
               </button>
               {!userService.isVisitorMode() && (
                 <button
-                  className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-zinc-800"
+                  className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                   onClick={handleSignOutBtnClick}
                 >
                   <span className="mr-1">👋</span> {t("common.sign-out")}

@@ -8,11 +8,11 @@
       @apply flex flex-col sm:flex-row justify-start items-start relative w-full overflow-y-scroll p-0 hide-scrollbar;
 
       > .close-btn {
-        @apply z-1 flex flex-col justify-center items-center absolute top-4 right-4 w-6 h-6 rounded bg-white hover:bg-gray-200 hover:shadow;
+        @apply z-1 flex flex-col justify-center items-center absolute top-4 right-4 w-6 h-6 rounded hover:bg-gray-200 dark:hover:bg-zinc-700 hover:shadow;
       }
 
       > .section-selector-container {
-        @apply w-full sm:w-44 h-auto sm:h-full shrink-0 rounded-t-lg sm:rounded-none sm:rounded-l-lg p-4 border-r bg-gray-100 flex flex-col justify-start items-start;
+        @apply w-full sm:w-44 h-auto sm:h-full shrink-0 rounded-t-lg sm:rounded-none sm:rounded-l-lg p-4 bg-gray-100 dark:bg-zinc-700 flex flex-col justify-start items-start;
 
         > .section-title {
           @apply text-sm mt-2 sm:mt-4 first:mt-4 mb-1 font-mono text-gray-400;
@@ -22,7 +22,7 @@
           @apply w-full h-auto flex flex-row sm:flex-col justify-start items-start;
 
           > .section-item {
-            @apply flex flex-row justify-start items-center text-base select-none mr-3 sm:mr-0 mt-0 sm:mt-2 text-gray-700 cursor-pointer hover:opacity-80;
+            @apply flex flex-row justify-start items-center text-base select-none mr-3 sm:mr-0 mt-0 sm:mt-2 text-gray-700 dark:text-gray-300 cursor-pointer hover:opacity-80;
 
             &.selected {
               @apply font-bold hover:opacity-100;
@@ -40,18 +40,6 @@
 
         > .section-container {
           @apply flex flex-col justify-start items-start w-full my-2;
-
-          > .section-header-container{
-            @apply flex bg-white;
-
-            > .text-text {
-              @apply w-20;
-            }
-
-            > .search-bar{
-              @apply w-48;
-            }
-          }
 
           .title-text {
             @apply text-sm mt-4 first:mt-2 mb-3 font-mono text-gray-500;
