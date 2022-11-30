@@ -193,6 +193,7 @@ const PreferencesSection = () => {
             ) : (
               <Dropdown
                 actionsClassName="!w-24"
+                positionClassName="bottom-full right-0 mb-1"
                 actions={
                   <>
                     <button

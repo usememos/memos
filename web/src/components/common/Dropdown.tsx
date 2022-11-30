@@ -7,10 +7,11 @@ interface Props {
   actions?: ReactNode;
   className?: string;
   actionsClassName?: string;
+  positionClassName?: string;
 }
 
 const Dropdown: React.FC<Props> = (props: Props) => {
-  const { trigger, actions, className, actionsClassName } = props;
+  const { trigger, actions, className, actionsClassName, positionClassName } = props;
   const [dropdownStatus, toggleDropdownStatus] = useToggle(false);
   const dropdownWrapperRef = useRef<HTMLDivElement>(null);
 
@@ -42,9 +43,9 @@ const Dropdown: React.FC<Props> = (props: Props) => {
         </button>
       )}
       <div
-        className={`w-auto mt-1 absolute top-full right-0 flex flex-col justify-start items-start bg-white dark:bg-zinc-700 z-1 p-1 rounded-md shadow ${
+        className={`w-auto absolute flex flex-col justify-start items-start bg-white dark:bg-zinc-700 z-10 p-1 rounded-md shadow ${
           actionsClassName ?? ""
-        } ${dropdownStatus ? "" : "!hidden"}`}
+        } ${dropdownStatus ? "" : "!hidden"} ${positionClassName ?? "top-full right-0 mt-1"}`}
       >
         {actions}
       </div>
