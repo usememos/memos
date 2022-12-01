@@ -8,6 +8,7 @@ import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
 
 const defaultSetting: Setting = {
   locale: "en",
+  appearance: "system",
   memoVisibility: "PRIVATE",
   memoDisplayTsOption: "created_ts",
 };

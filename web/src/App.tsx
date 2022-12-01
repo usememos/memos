@@ -6,12 +6,12 @@ import { useAppSelector } from "./store";
 import Loading from "./pages/Loading";
 import router from "./router";
 import * as storage from "./helpers/storage";
-import useApperance from "./hooks/useApperance";
+import useAppearance from "./hooks/useAppearance";
 
 function App() {
   const { i18n } = useTranslation();
   const { locale, systemStatus } = useAppSelector((state) => state.global);
-  useApperance();
+  useAppearance();
 
   useEffect(() => {
     locationService.updateStateWithLocation();

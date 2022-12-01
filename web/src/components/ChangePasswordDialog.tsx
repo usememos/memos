@@ -82,6 +82,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
         <p className="text-sm mb-1">{t("common.new-password")}</p>
         <input
           type="password"
+          autoComplete="new-password"
           className="input-text"
           placeholder={t("common.repeat-new-password")}
           value={newPassword}
@@ -90,6 +91,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
         <p className="text-sm mb-1 mt-2">{t("common.repeat-new-password")}</p>
         <input
           type="password"
+          autoComplete="new-password"
           className="input-text"
           placeholder={t("common.repeat-new-password")}
           value={newPasswordAgain}

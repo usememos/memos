@@ -152,7 +152,7 @@
       "enable-folding-memo": "Activer le mémo pliable",
       "editor-font-style": "Style de police de l'éditeur",
       "mobile-editor-style": "Style de l'éditeur mobile",
-      "default-memo-sort-option": "Affichage par heure de création/mise à jour",
+      "default-memo-sort-option": "Memo display time",
       "created_ts": "Heure de création",
       "updated_ts": "Heure de mise à jour"
     },

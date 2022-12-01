@@ -151,7 +151,7 @@
       "enable-folding-memo": "Enable folding memo",
       "editor-font-style": "Thay đổi font cho trình soạn thảo",
       "mobile-editor-style": "Vị trí editor trên mobile",
-      "default-memo-sort-option": "Sắp xếp theo thời gian đã tạo",
+      "default-memo-sort-option": "Memo display time",
       "created_ts": "tạo thời gian",
       "updated_ts": "Thời gian cập nhật"
     },

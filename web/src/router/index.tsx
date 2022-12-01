@@ -18,6 +18,7 @@ const router = createBrowserRouter([
       } catch (error) {
         // do nth
       }
+      return null;
     },
   },
   {
@@ -37,6 +38,7 @@ const router = createBrowserRouter([
       } else if (isNullorUndefined(user)) {
         return redirect("/explore");
       }
+      return null;
     },
   },
   {
@@ -54,6 +56,7 @@ const router = createBrowserRouter([
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       }
+      return null;
     },
   },
   {
@@ -71,6 +74,7 @@ const router = createBrowserRouter([
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       }
+      return null;
     },
   },
   {
@@ -88,6 +92,7 @@ const router = createBrowserRouter([
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       }
+      return null;
     },
   },
 ]);
