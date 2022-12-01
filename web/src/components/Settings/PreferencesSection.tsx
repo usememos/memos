@@ -4,6 +4,7 @@ import { globalService, userService } from "../../services";
 import { useAppSelector } from "../../store";
 import { VISIBILITY_SELECTOR_ITEMS, MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS } from "../../helpers/consts";
 import Selector from "../common/Selector";
+import AppearanceSelect from "../AppearanceSelect";
 import "../../less/settings/preferences-section.less";
 
 const localeSelectorItems = [
@@ -65,6 +66,10 @@ const PreferencesSection = () => {
       <label className="form-label selector">
         <span className="normal-text">{t("common.language")}</span>
         <Selector className="ml-2 w-32" value={setting.locale} dataSource={localeSelectorItems} handleValueChanged={handleLocaleChanged} />
+      </label>
+      <label className="form-label selector">
+        <span className="normal-text">Theme</span>
+        <AppearanceSelect />
       </label>
       <p className="title-text">{t("setting.preference")}</p>
       <label className="form-label selector">

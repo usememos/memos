@@ -34,7 +34,14 @@ const SearchBar = () => {
     <div className="search-bar-container">
       <div className="search-bar-inputer">
         <Icon.Search className="icon-img" />
-        <input className="text-input" autoComplete="off" type="text" placeholder="" value={queryText} onChange={handleTextQueryInput} />
+        <input
+          className="text-input"
+          autoComplete="new-password"
+          type="text"
+          placeholder=""
+          value={queryText}
+          onChange={handleTextQueryInput}
+        />
       </div>
       <div className="quickly-action-wrapper">
         <div className="quickly-action-container">

@@ -19,6 +19,3 @@ export const MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS = [
 ];
 
 export const TAB_SPACE_WIDTH = 2;
-
-export const APPERANCE_OPTIONS = ["auto", "light", "dark"] as const;
-export const APPERANCE_OPTIONS_STORAGE_KEY = "setting_APPERANCE_OPTIONS";

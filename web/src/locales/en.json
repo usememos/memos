@@ -152,7 +152,7 @@
       "enable-folding-memo": "Enable folding memo",
       "editor-font-style": "Editor font style",
       "mobile-editor-style": "Mobile editor style",
-      "default-memo-sort-option": "Display by created/updated time",
+      "default-memo-sort-option": "Memo display time",
       "created_ts": "Created Time",
       "updated_ts": "Updated Time"
     },
@@ -168,9 +168,9 @@
       "additional-script-placeholder": "Additional JavaScript codes"
     },
     "apperance-option": {
-      "auto": "Follow system",
       "light": "Always light",
-      "dark": "Always dark"
+      "dark": "Always dark",
+      "system": "Follow system"
     }
   },
   "amount-text": {

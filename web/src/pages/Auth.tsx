@@ -9,7 +9,7 @@ import useLoading from "../hooks/useLoading";
 import { globalService, userService } from "../services";
 import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
-import ApperanceSelect from "../components/ApperanceSelect";
+import AppearanceSelect from "../components/AppearanceSelect";
 import "../less/auth.less";
 
 const validateConfig: ValidatorConfig = {
@@ -177,7 +177,7 @@ const Auth = () => {
             <Option value="vi">Tiếng Việt</Option>
             <Option value="fr">French</Option>
           </Select>
-          <ApperanceSelect />
+          <AppearanceSelect />
         </div>
       </div>
     </div>

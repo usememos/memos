@@ -1,14 +1,16 @@
 import { Option, Select } from "@mui/joy";
 import { useTranslation } from "react-i18next";
+import { globalService } from "../services";
+import { useAppSelector } from "../store";
 import Icon from "./Icon";
-import { APPERANCE_OPTIONS } from "../helpers/consts";
-import useApperance, { Apperance } from "../hooks/useApperance";
 
-const ApperanceSelect = () => {
-  const [apperance, setApperance] = useApperance();
+const appearanceList = ["system", "light", "dark"];
+
+const AppearanceSelect = () => {
+  const appearance = useAppSelector((state) => state.global.appearance);
   const { t } = useTranslation();
 
-  const getPrefixIcon = (apperance: Apperance) => {
+  const getPrefixIcon = (apperance: Appearance) => {
     const className = "w-4 h-auto";
     if (apperance === "light") {
       return <Icon.Sun className={className} />;
@@ -19,16 +21,22 @@ const ApperanceSelect = () => {
     }
   };
 
+  const handleSelectChange = (appearance: Appearance) => {
+    globalService.setAppearance(appearance);
+  };
+
   return (
     <Select
       className="!min-w-[10rem] w-auto text-sm"
-      value={apperance}
-      onChange={(_, value) => {
-        setApperance(value as Apperance);
+      value={appearance}
+      onChange={(_, appearance) => {
+        if (appearance) {
+          handleSelectChange(appearance);
+        }
       }}
-      startDecorator={getPrefixIcon(apperance)}
+      startDecorator={getPrefixIcon(appearance)}
     >
-      {APPERANCE_OPTIONS.map((item) => (
+      {appearanceList.map((item) => (
         <Option key={item} value={item} className="whitespace-nowrap">
           {t(`setting.apperance-option.${item}`)}
         </Option>
@@ -37,4 +45,4 @@ const ApperanceSelect = () => {
   );
 };
 
-export default ApperanceSelect;
+export default AppearanceSelect;

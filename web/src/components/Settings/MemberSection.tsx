@@ -12,7 +12,6 @@ import "../../less/settings/member-section.less";
 interface State {
   createUserUsername: string;
   createUserPassword: string;
-  repeatUserPassword: string;
 }
 
 const PreferencesSection = () => {
@@ -21,7 +20,6 @@ const PreferencesSection = () => {
   const [state, setState] = useState<State>({
     createUserUsername: "",
     createUserPassword: "",
-    repeatUserPassword: "",
   });
   const [userList, setUserList] = useState<User[]>([]);
 
@@ -48,20 +46,9 @@ const PreferencesSection = () => {
     });
   };
 
-  const handleRepeatPasswordInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setState({
-      ...state,
-      repeatUserPassword: event.target.value,
-    });
-  };
-
   const handleCreateUserBtnClick = async () => {
     if (state.createUserUsername === "" || state.createUserPassword === "") {
       toastHelper.error(t("message.fill-form"));
-      return;
-    }
-    if (state.createUserPassword !== state.repeatUserPassword) {
-      toastHelper.error(t("message.password-not-match"));
       return;
     }
 
@@ -80,7 +67,6 @@ const PreferencesSection = () => {
     setState({
       createUserUsername: "",
       createUserPassword: "",
-      repeatUserPassword: "",
     });
   };
 
@@ -131,19 +117,22 @@ const PreferencesSection = () => {
       <div className="create-member-container">
         <div className="input-form-container">
           <span className="field-text">{t("common.username")}</span>
-          <input type="text" placeholder={t("common.username")} value={state.createUserUsername} onChange={handleUsernameInputChange} />
+          <input
+            type="text"
+            autoComplete="new-password"
+            placeholder={t("common.username")}
+            value={state.createUserUsername}
+            onChange={handleUsernameInputChange}
+          />
         </div>
         <div className="input-form-container">
           <span className="field-text">{t("common.password")}</span>
-          <input type="password" placeholder={t("common.password")} value={state.createUserPassword} onChange={handlePasswordInputChange} />
-        </div>
-        <div className="input-form-container">
-          <span className="field-text">{t("common.repeat-password-short")}</span>
           <input
             type="password"
-            placeholder={t("common.repeat-password")}
-            value={state.repeatUserPassword}
-            onChange={handleRepeatPasswordInputChange}
+            autoComplete="new-password"
+            placeholder={t("common.password")}
+            value={state.createUserPassword}
+            onChange={handlePasswordInputChange}
           />
         </div>
         <div className="btns-container">
