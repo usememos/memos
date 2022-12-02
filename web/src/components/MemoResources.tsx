@@ -45,8 +45,10 @@ const MemoResources: React.FC<Props> = (props: Props) => {
               return (
                 <Image className="memo-resource" key={resource.id} imgUrls={imgUrls} index={imgUrls.findIndex((item) => item === url)} />
               );
-            } else {
+            } else if (resource.type.startsWith("video")) {
               return <video className="memo-resource" controls key={resource.id} src={url} />;
+            } else {
+              return null;
             }
           })}
         </div>
