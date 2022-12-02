@@ -10,7 +10,7 @@ const globalSlice = createSlice({
   name: "global",
   initialState: {
     locale: "en",
-    appearance: "system",
+    appearance: "light",
     systemStatus: {
       host: undefined,
       profile: {

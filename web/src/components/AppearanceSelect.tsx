@@ -1,12 +1,13 @@
 import { Option, Select } from "@mui/joy";
 import { useTranslation } from "react-i18next";
-import { globalService } from "../services";
+import { globalService, userService } from "../services";
 import { useAppSelector } from "../store";
 import Icon from "./Icon";
 
-const appearanceList = ["system", "light", "dark"];
+const appearanceList = ["light", "dark"];
 
 const AppearanceSelect = () => {
+  const user = useAppSelector((state) => state.user.user);
   const appearance = useAppSelector((state) => state.global.appearance);
   const { t } = useTranslation();
 
@@ -16,12 +17,13 @@ const AppearanceSelect = () => {
       return <Icon.Sun className={className} />;
     } else if (apperance === "dark") {
       return <Icon.Moon className={className} />;
-    } else {
-      return <Icon.Smile className={className} />;
     }
   };
 
-  const handleSelectChange = (appearance: Appearance) => {
+  const handleSelectChange = async (appearance: Appearance) => {
+    if (user) {
+      await userService.upsertUserSetting("appearance", appearance);
+    }
     globalService.setAppearance(appearance);
   };
 

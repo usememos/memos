@@ -14,7 +14,6 @@ import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import Selector from "./common/Selector";
-import useAppearance from "../hooks/useAppearance";
 import "../less/share-memo-image-dialog.less";
 
 interface Props extends DialogProps {
@@ -36,7 +35,6 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
     shortcutImgUrl: "",
     memoVisibility: propsMemo.visibility,
   });
-  const [appearance] = useAppearance();
   const loadingState = useLoading();
   const memoElRef = useRef<HTMLDivElement>(null);
   const memo = {
@@ -72,7 +70,6 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
       }
 
       toImage(memoElRef.current, {
-        backgroundColor: appearance === "light" ? "#f4f4f5" : "#27272a",
         pixelRatio: window.devicePixelRatio * 2,
       })
         .then((url) => {
@@ -147,7 +144,7 @@ const ShareMemoImageDialog: React.FC<Props> = (props: Props) => {
             <div className="userinfo-container">
               <span className="name-text">{user.nickname || user.username}</span>
               <span className="usage-text">
-                {createdDays} DAYS / {state.memoAmount} MEMOS
+                {state.memoAmount} MEMOS / {createdDays} DAYS
               </span>
             </div>
             <img className="logo-img" src="/logo.webp" alt="" />

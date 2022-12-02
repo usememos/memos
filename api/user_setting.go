@@ -10,6 +10,8 @@ type UserSettingKey string
 const (
 	// UserSettingLocaleKey is the key type for user locale.
 	UserSettingLocaleKey UserSettingKey = "locale"
+	// UserSettingAppearanceKey is the key type for user appearance.
+	UserSettingAppearanceKey UserSettingKey = "appearance"
 	// UserSettingMemoVisibilityKey is the key type for user preference memo default visibility.
 	UserSettingMemoVisibilityKey UserSettingKey = "memoVisibility"
 	// UserSettingMemoDisplayTsOptionKey is the key type for memo display ts option.
@@ -21,6 +23,8 @@ func (key UserSettingKey) String() string {
 	switch key {
 	case UserSettingLocaleKey:
 		return "locale"
+	case UserSettingAppearanceKey:
+		return "appearance"
 	case UserSettingMemoVisibilityKey:
 		return "memoVisibility"
 	case UserSettingMemoDisplayTsOptionKey:
@@ -31,8 +35,8 @@ func (key UserSettingKey) String() string {
 
 var (
 	UserSettingLocaleValue                 = []string{"en", "zh", "vi", "fr"}
+	UserSettingAppearanceValue             = []string{"light", "dark"}
 	UserSettingMemoVisibilityValue         = []Visibility{Private, Protected, Public}
-	UserSettingEditorFontStyleValue        = []string{"normal", "mono"}
 	UserSettingMemoDisplayTsOptionKeyValue = []string{"created_ts", "updated_ts"}
 )
 
@@ -66,6 +70,23 @@ func (upsert UserSettingUpsert) Validate() error {
 		}
 		if invalid {
 			return fmt.Errorf("invalid user setting locale value")
+		}
+	} else if upsert.Key == UserSettingAppearanceKey {
+		appearanceValue := "light"
+		err := json.Unmarshal([]byte(upsert.Value), &appearanceValue)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal user setting appearance value")
+		}
+
+		invalid := true
+		for _, value := range UserSettingAppearanceValue {
+			if appearanceValue == value {
+				invalid = false
+				break
+			}
+		}
+		if invalid {
+			return fmt.Errorf("invalid user setting appearance value")
 		}
 	} else if upsert.Key == UserSettingMemoVisibilityKey {
 		memoVisibilityValue := Private

@@ -1,6 +1,6 @@
 .share-memo-image-dialog {
   > .dialog-container {
-    @apply w-96 p-0 bg-zinc-100;
+    @apply w-96 p-0 bg-white dark:bg-zinc-800;
 
     > .dialog-header-container {
       @apply py-2 pt-4 px-4 pl-6 mb-0 rounded-t-lg;
@@ -35,7 +35,7 @@
       }
 
       > .memo-container {
-        @apply w-96 max-w-full h-auto select-none relative flex flex-col justify-start items-start;
+        @apply w-96 max-w-full h-auto select-none relative flex flex-col justify-start items-start bg-white dark:bg-zinc-800;
 
         > .memo-shortcut-img {
           @apply absolute top-0 left-0 w-full h-auto z-10;
@@ -50,7 +50,7 @@
         }
 
         > .images-container {
-          @apply w-full h-auto flex flex-col justify-start items-start px-6 pb-2 bg-white;
+          @apply w-full h-auto flex flex-col justify-start items-start px-6 pb-2;
 
           > img {
             @apply w-full h-auto mb-2 rounded;
@@ -58,30 +58,22 @@
         }
 
         > .watermark-container {
-          @apply flex flex-row justify-between items-center w-full dark:bg-zinc-900 py-2 px-6;
-
-          > .normal-text {
-            @apply w-full flex flex-row justify-start items-center text-sm leading-6 text-gray-500;
-
-            > .name-text {
-              @apply text-black;
-            }
-          }
+          @apply flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-2 px-6;
 
           > .userinfo-container {
             @apply w-64 flex flex-col justify-center items-start;
 
             > .name-text {
-              @apply text-lg truncate font-medium text-gray-600;
+              @apply text-sm truncate font-bold text-gray-600 dark:text-gray-300;
             }
 
             > .usage-text {
-              @apply -mt-1 text-sm text-gray-400;
+              @apply text-xs text-gray-400;
             }
           }
 
           > .logo-img {
-            @apply h-12 w-auto;
+            @apply h-10 w-auto;
           }
         }
       }
