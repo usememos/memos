@@ -1,9 +1,9 @@
+import { Select, Switch, Option } from "@mui/joy";
 import { useTranslation } from "react-i18next";
-import Switch from "@mui/joy/Switch";
 import { globalService, userService } from "../../services";
 import { useAppSelector } from "../../store";
 import { VISIBILITY_SELECTOR_ITEMS, MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS } from "../../helpers/consts";
-import Selector from "../common/Selector";
+import Icon from "../Icon";
 import AppearanceSelect from "../AppearanceSelect";
 import "../../less/settings/preferences-section.less";
 
@@ -63,32 +63,65 @@ const PreferencesSection = () => {
   return (
     <div className="section-container preferences-section-container">
       <p className="title-text">{t("common.basic")}</p>
-      <label className="form-label selector">
+      <div className="form-label selector">
         <span className="normal-text">{t("common.language")}</span>
-        <Selector className="ml-2 w-32" value={setting.locale} dataSource={localeSelectorItems} handleValueChanged={handleLocaleChanged} />
-      </label>
-      <label className="form-label selector">
+        <Select
+          className="!min-w-[10rem] w-auto text-sm"
+          value={setting.locale}
+          onChange={(_, locale) => {
+            if (locale) {
+              handleLocaleChanged(locale);
+            }
+          }}
+          startDecorator={<Icon.Globe className="w-4 h-auto" />}
+        >
+          {localeSelectorItems.map((item) => (
+            <Option key={item.value} value={item.value} className="whitespace-nowrap">
+              {item.text}
+            </Option>
+          ))}
+        </Select>
+      </div>
+      <div className="form-label selector">
         <span className="normal-text">Theme</span>
         <AppearanceSelect />
-      </label>
+      </div>
       <p className="title-text">{t("setting.preference")}</p>
-      <label className="form-label selector">
+      <div className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.default-memo-visibility")}</span>
-        <Selector
-          className="ml-2 w-32"
+        <Select
+          className="!min-w-[10rem] w-auto text-sm"
           value={setting.memoVisibility}
-          dataSource={visibilitySelectorItems}
-          handleValueChanged={handleDefaultMemoVisibilityChanged}
-        />
-      </label>
+          onChange={(_, visibility) => {
+            if (visibility) {
+              handleDefaultMemoVisibilityChanged(visibility);
+            }
+          }}
+        >
+          {visibilitySelectorItems.map((item) => (
+            <Option key={item.value} value={item.value} className="whitespace-nowrap">
+              {item.text}
+            </Option>
+          ))}
+        </Select>
+      </div>
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.default-memo-sort-option")}</span>
-        <Selector
-          className="ml-2 w-32"
+        <Select
+          className="!min-w-[10rem] w-auto text-sm"
           value={setting.memoDisplayTsOption}
-          dataSource={memoDisplayTsOptionSelectorItems}
-          handleValueChanged={handleMemoDisplayTsOptionChanged}
-        />
+          onChange={(_, value) => {
+            if (value) {
+              handleMemoDisplayTsOptionChanged(value);
+            }
+          }}
+        >
+          {memoDisplayTsOptionSelectorItems.map((item) => (
+            <Option key={item.value} value={item.value} className="whitespace-nowrap">
+              {item.text}
+            </Option>
+          ))}
+        </Select>
       </label>
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.enable-folding-memo")}</span>

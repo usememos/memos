@@ -140,3 +140,11 @@ export function absolutifyLink(rel: string): string {
   anchor.setAttribute("href", rel);
   return anchor.href;
 }
+
+export function getSystemColorScheme() {
+  if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
+    return "dark";
+  } else {
+    return "light";
+  }
+}

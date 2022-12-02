@@ -3,12 +3,12 @@ import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
 import { UNKNOWN_ID } from "../helpers/consts";
 import store from "../store";
-import { setLocale } from "../store/modules/global";
 import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
+import { getSystemColorScheme } from "../helpers/utils";
 
 const defaultSetting: Setting = {
   locale: "en",
-  appearance: "system",
+  appearance: getSystemColorScheme(),
   memoVisibility: "PRIVATE",
   memoDisplayTsOption: "created_ts",
 };
@@ -61,11 +61,15 @@ const userService = {
       }
     }
 
-    const { data: user } = (await api.getMyselfUser()).data;
-    if (user) {
-      store.dispatch(setUser(convertResponseModelUser(user)));
+    const { data } = (await api.getMyselfUser()).data;
+    if (data) {
+      const user = convertResponseModelUser(data);
+      store.dispatch(setUser(user));
       if (user.setting.locale) {
-        store.dispatch(setLocale(user.setting.locale));
+        globalService.setLocale(user.setting.locale);
+      }
+      if (user.setting.appearance) {
+        globalService.setAppearance(user.setting.appearance);
       }
     }
   },

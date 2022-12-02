@@ -6,12 +6,12 @@ import { useAppSelector } from "./store";
 import Loading from "./pages/Loading";
 import router from "./router";
 import * as storage from "./helpers/storage";
-import useAppearance from "./hooks/useAppearance";
+import { useColorScheme } from "@mui/joy";
 
 function App() {
   const { i18n } = useTranslation();
-  const { locale, systemStatus } = useAppSelector((state) => state.global);
-  useAppearance();
+  const { appearance, locale, systemStatus } = useAppSelector((state) => state.global);
+  const { setMode } = useColorScheme();
 
   useEffect(() => {
     locationService.updateStateWithLocation();
@@ -41,6 +41,19 @@ function App() {
       locale: locale,
     });
   }, [locale]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (appearance === "light") {
+      root.classList.remove("dark");
+    } else if (appearance === "dark") {
+      root.classList.add("dark");
+    }
+    setMode(appearance);
+    storage.set({
+      appearance: appearance,
+    });
+  }, [appearance]);
 
   return (
     <Suspense fallback={<Loading />}>

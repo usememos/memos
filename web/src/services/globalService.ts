@@ -11,7 +11,7 @@ const globalService = {
   initialState: async () => {
     const defaultGlobalState = {
       locale: "en" as Locale,
-      appearance: "system" as Appearance,
+      appearance: "light" as Appearance,
       systemStatus: {
         allowSignUp: false,
         additionalStyle: "",
@@ -19,9 +19,12 @@ const globalService = {
       } as SystemStatus,
     };
 
-    const { locale: storageLocale } = storage.get(["locale"]);
+    const { locale: storageLocale, appearance: storageAppearance } = storage.get(["locale", "appearance"]);
     if (storageLocale) {
       defaultGlobalState.locale = storageLocale;
+    }
+    if (storageAppearance) {
+      defaultGlobalState.appearance = storageAppearance;
     }
 
     try {
