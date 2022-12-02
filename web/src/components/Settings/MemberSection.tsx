@@ -158,12 +158,10 @@ const PreferencesSection = () => {
               <span className="tip-text">{t("common.yourself")}</span>
             ) : (
               <Dropdown
-                actionsClassName="!w-24"
-                positionClassName="bottom-full right-0 mb-1"
                 actions={
                   <>
                     <button
-                      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+                      className="w-full text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
                       onClick={() => handleChangePasswordClick(user)}
                     >
                       {t("setting.account-section.change-password")}
@@ -184,7 +182,7 @@ const PreferencesSection = () => {
                           {t("common.restore")}
                         </button>
                         <button
-                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100"
+                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
                           onClick={() => handleDeleteUserClick(user)}
                         >
                           {t("common.delete")}

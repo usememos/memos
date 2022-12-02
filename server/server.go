@@ -61,6 +61,9 @@ func NewServer(profile *profile.Profile) *Server {
 	rootGroup := e.Group("")
 	s.registerRSSRoutes(rootGroup)
 
+	webhookGroup := e.Group("/h")
+	s.registerResourcePublicRoutes(webhookGroup)
+
 	publicGroup := e.Group("/o")
 	s.registerResourcePublicRoutes(publicGroup)
 	s.registerGetterPublicRoutes(publicGroup)
