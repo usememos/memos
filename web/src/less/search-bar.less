@@ -21,11 +21,11 @@
   }
 
   > .quickly-action-wrapper {
-    @apply hidden absolute top-9 -right-2 p-2 w-80 z-10;
+    @apply hidden absolute top-9 -right-2 p-2 w-60 z-10;
 
     > .quickly-action-container {
       @apply flex flex-col justify-start items-start w-full bg-white dark:bg-zinc-700 px-4 py-3 rounded-lg;
-      box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
+      box-shadow: 0 0 8px 0 rgb(0 0 0 / 40%);
 
       > .title-text {
         @apply text-gray-600 dark:text-gray-400 text-xs;
@@ -45,7 +45,7 @@
             @apply flex flex-row justify-start items-center leading-6;
 
             .type-item {
-              @apply cursor-pointer px-1 rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-600;
+              @apply cursor-pointer px-2 rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-600;
 
               &.selected {
                 @apply !bg-green-600 text-white;

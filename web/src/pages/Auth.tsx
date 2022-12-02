@@ -136,7 +136,7 @@ const Auth = () => {
           <div className="action-btns-container">
             {systemStatus?.host ? (
               <>
-                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin" />}
+                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
                 {systemStatus?.allowSignUp && (
                   <>
                     <button

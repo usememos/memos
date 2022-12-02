@@ -96,7 +96,7 @@
     "view-detail": "View Detail",
     "copy": "Copy",
     "visibility": {
-      "private": "Private",
+      "private": "Only visible to you",
       "protected": "Visible to members",
       "public": "Everyone can see"
     }

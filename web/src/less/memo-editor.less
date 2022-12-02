@@ -2,7 +2,7 @@
   @apply relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-700 px-4 rounded-lg border-2 border-gray-200 dark:border-zinc-600;
 
   &.fullscreen {
-    @apply transition-all fixed w-full h-full top-0 left-0 z-1000 border-none rounded-none sm:p-8;
+    @apply transition-all fixed w-full h-full top-0 left-0 z-1000 border-none rounded-none sm:p-8 dark:bg-zinc-800;
 
     > .memo-editor {
       @apply p-4 mb-4 rounded-lg border shadow-lg flex flex-col flex-grow justify-start items-start relative w-full h-full bg-white dark:bg-zinc-700 dark:border-zinc-600;
@@ -146,7 +146,7 @@
       @apply grow-0 shrink-0 flex flex-row justify-end items-center;
 
       > .cancel-btn {
-        @apply mr-4 text-sm text-gray-600 hover:opacity-80;
+        @apply mr-4 text-sm text-gray-500 hover:opacity-80 dark:text-gray-300;
       }
 
       > .confirm-btn {
