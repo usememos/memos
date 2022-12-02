@@ -7,30 +7,6 @@
     > .dialog-content-container {
       @apply flex flex-col justify-start items-start w-full;
 
-      > .action-buttons-container {
-        @apply w-full flex flex-row justify-between items-center mb-2;
-
-        > .buttons-wrapper {
-          @apply flex flex-row justify-start items-center;
-
-          > .upload-resource-btn {
-            @apply text-sm cursor-pointer px-3 py-1 rounded flex flex-row justify-center items-center border border-blue-600 text-blue-600 bg-blue-50 hover:opacity-80;
-
-            > .icon-img {
-              @apply w-4 h-auto mr-1;
-            }
-          }
-
-          > .delete-unused-resource-btn {
-            @apply text-sm cursor-pointer px-3 py-1 rounded flex flex-row justify-center items-center border border-red-600 text-red-600 bg-red-100 hover:opacity-80;
-
-            > .icon-img {
-            @apply w-4 h-auto mr-1;
-            }
-          }
-        }
-      }
-
       > .loading-text-container {
         @apply flex flex-col justify-center items-center w-full h-32;
       }
@@ -39,7 +15,7 @@
         @apply flex flex-col justify-start items-start w-full;
 
         > .fields-container {
-          @apply px-2 py-2 w-full grid grid-cols-7 border-b;
+          @apply px-2 py-2 w-full grid grid-cols-7 border-b dark:border-b-gray-500;
 
           > .field-text {
             @apply font-mono text-gray-400;
@@ -51,7 +27,7 @@
         }
 
         > .resource-container {
-          @apply px-2 py-2 w-full grid grid-cols-7;
+          @apply px-2 py-2 w-full grid grid-cols-7 dark:bg-zinc-700;
 
           > .buttons-container {
             @apply w-full flex flex-row justify-end items-center;
