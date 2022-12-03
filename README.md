@@ -19,7 +19,7 @@
 
 - 🦄 Open source and free forever;
 - 🚀 Support for self-hosting with `Docker` in seconds;
-- 📜 Plain textarea first and support some useful markdown syntax;
+- 📜 Plain textarea first and support some useful Markdown syntax;
 - 👥 Set memo private or public to others;
 - 🧑‍💻 RESTful API for self-service.
 
@@ -45,7 +45,7 @@ docker-compose down && docker image rm neosmemo/memos:latest && docker-compose u
 
 ## Contribute
 
-Contributions are what make the open source community such an amazing place to be learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
 
 See more in [development guide](https://github.com/usememos/memos/tree/main/docs/development.md).
 
@@ -53,10 +53,10 @@ See more in [development guide](https://github.com/usememos/memos/tree/main/docs
 
 - [Moe Memos](https://memos.moe/) - Third party client for iOS and Android
 - [lmm214/memos-bber](https://github.com/lmm214/memos-bber) - Chrome extension
-- [Rabithua/memos_wmp](https://github.com/Rabithua/memos_wmp) - Wechat miniprogram
+- [Rabithua/memos_wmp](https://github.com/Rabithua/memos_wmp) - WeChat MiniProgram
 - [qazxcdswe123/telegramMemoBot](https://github.com/qazxcdswe123/telegramMemoBot) - Telegram bot
 - [eallion/memos.top](https://github.com/eallion/memos.top) - A static page rendered with the Memos API
-- [eindex/logseq-memos-sync](https://github.com/EINDEX/logseq-memos-sync) - A logseq Plugin
+- [eindex/logseq-memos-sync](https://github.com/EINDEX/logseq-memos-sync) - A Logseq plugin
 
 ### Join the community to build memos together!
 
