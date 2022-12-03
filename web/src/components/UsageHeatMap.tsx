@@ -94,7 +94,12 @@ const UsageHeatMap = () => {
 
           return (
             <div className="stat-wrapper" key={i} onClick={() => handleUsageStatItemClick(v)}>
-              <Tooltip title={`${v.count} ${v.count > 1 ? "memos" : "memo"} on ${new Date(v.timestamp as number).toDateString()}`}>
+              <Tooltip
+                title={`${v.count} ${v.count > 1 ? "memos" : "memo"} on ${new Date(v.timestamp as number).toDateString()}`}
+                color="neutral"
+                placement="top"
+                variant="solid"
+              >
                 <span
                   className={`stat-container ${colorLevel} ${currentStat === v ? "current" : ""} ${
                     todayTimeStamp === v.timestamp ? "today" : ""
