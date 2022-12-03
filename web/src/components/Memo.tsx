@@ -8,7 +8,7 @@ import Icon from "./Icon";
 import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
-import showShareMemoImageDialog from "./ShareMemoImageDialog";
+import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "../less/memo.less";
@@ -89,7 +89,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleGenMemoImageBtnClick = () => {
-    showShareMemoImageDialog(memo);
+    showShareMemo(memo);
   };
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
