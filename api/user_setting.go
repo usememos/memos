@@ -34,7 +34,7 @@ func (key UserSettingKey) String() string {
 }
 
 var (
-	UserSettingLocaleValue                 = []string{"en", "zh", "vi", "fr"}
+	UserSettingLocaleValue                 = []string{"en", "zh", "vi", "fr", "sv"}
 	UserSettingAppearanceValue             = []string{"light", "dark"}
 	UserSettingMemoVisibilityValue         = []Visibility{Private, Protected, Public}
 	UserSettingMemoDisplayTsOptionKeyValue = []string{"created_ts", "updated_ts"}

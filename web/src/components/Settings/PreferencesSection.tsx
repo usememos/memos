@@ -24,6 +24,10 @@ const localeSelectorItems = [
     text: "French",
     value: "fr",
   },
+  {
+    text: "Svenska",
+    value: "sv",
+  },
 ];
 
 const PreferencesSection = () => {
