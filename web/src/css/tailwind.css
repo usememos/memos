@@ -20,7 +20,7 @@
   }
 
   .btn-primary {
-    @apply btn-normal border-transparent bg-green-600 text-white dark:text-gray-200;
+    @apply btn-normal border-transparent bg-green-600 text-white dark:border-transparent dark:text-gray-200;
   }
 
   .btn-danger {
@@ -32,6 +32,6 @@
   }
 
   .input-text {
-    @apply w-full px-3 py-2 leading-6 text-sm rounded border dark:border-zinc-700 dark:bg-zinc-800;
+    @apply w-full px-3 py-2 leading-6 text-sm dark:text-gray-200 rounded border focus:outline focus:outline-2 dark:border-zinc-700 dark:bg-zinc-800;
   }
 }

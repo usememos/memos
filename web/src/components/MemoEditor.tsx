@@ -1,4 +1,3 @@
-import { IEmojiData } from "emoji-picker-react";
 import { toLower } from "lodash";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -11,7 +10,6 @@ import Icon from "./Icon";
 import toastHelper from "./Toast";
 import Selector from "./common/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
-import EmojiPicker from "./Editor/EmojiPicker";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import "../less/memo-editor.less";
@@ -242,10 +240,6 @@ const MemoEditor = () => {
     setEditorContentCache(content);
   };
 
-  const handleEmojiPickerBtnClick = () => {
-    handleChangeShouldShowEmojiPicker(!state.shouldShowEmojiPicker);
-  };
-
   const handleCheckBoxBtnClick = () => {
     if (!editorRef.current) {
       return;
@@ -320,22 +314,6 @@ const MemoEditor = () => {
     }
   }, []);
 
-  const handleChangeShouldShowEmojiPicker = (status: boolean) => {
-    setState({
-      ...state,
-      shouldShowEmojiPicker: status,
-    });
-  };
-
-  const handleEmojiClick = (_: any, emojiObject: IEmojiData) => {
-    if (!editorRef.current) {
-      return;
-    }
-
-    editorRef.current.insertText(`${emojiObject.emoji}`);
-    handleChangeShouldShowEmojiPicker(false);
-  };
-
   const handleDeleteResource = async (resourceId: ResourceId) => {
     editorStateService.setResourceList(editorState.resourceList.filter((resource) => resource.id !== resourceId));
     if (editorState.editMemoId) {
@@ -401,9 +379,6 @@ const MemoEditor = () => {
               )}
             </div>
           </div>
-          <button className="action-btn !hidden sm:!flex ">
-            <Icon.Smile className="icon-img" onClick={handleEmojiPickerBtnClick} />
-          </button>
           <button className="action-btn">
             <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
           </button>
@@ -427,11 +402,6 @@ const MemoEditor = () => {
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>
-          <EmojiPicker
-            shouldShow={state.shouldShowEmojiPicker}
-            onEmojiClick={handleEmojiClick}
-            onShouldShowEmojiPickerChange={handleChangeShouldShowEmojiPicker}
-          />
         </div>
       </div>
       {editorState.resourceList && editorState.resourceList.length > 0 && (

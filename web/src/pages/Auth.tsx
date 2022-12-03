@@ -126,11 +126,11 @@ const Auth = () => {
           <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
             <div className="form-item-container input-form-container">
               <span className={`normal-text ${username ? "not-null" : ""}`}>{t("common.username")}</span>
-              <input type="text" value={username} onChange={handleUsernameInputChanged} required />
+              <input className="input-text" type="text" value={username} onChange={handleUsernameInputChanged} required />
             </div>
             <div className="form-item-container input-form-container">
               <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
-              <input type="password" value={password} onChange={handlePasswordInputChanged} required />
+              <input className="input-text" type="password" value={password} onChange={handlePasswordInputChanged} required />
             </div>
           </div>
           <div className="action-btns-container">

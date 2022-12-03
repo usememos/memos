@@ -15,7 +15,6 @@
     "axios": "^0.27.2",
     "copy-to-clipboard": "^3.3.2",
     "dayjs": "^1.11.3",
-    "emoji-picker-react": "^3.6.2",
     "highlight.js": "^11.6.0",
     "i18next": "^21.9.2",
     "lodash-es": "^4.17.21",
