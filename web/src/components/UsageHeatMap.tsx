@@ -5,6 +5,7 @@ import { getMemoStats } from "../helpers/api";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import "../less/usage-heat-map.less";
+import { Tooltip } from "@mui/joy";
 
 const tableConfig = {
   width: 12,
@@ -56,25 +57,6 @@ const UsageHeatMap = () => {
       });
   }, [memos.length]);
 
-  const handleUsageStatItemMouseEnter = useCallback((event: React.MouseEvent, item: DailyUsageStat) => {
-    const tempDiv = document.createElement("div");
-    tempDiv.className = "usage-detail-container pop-up";
-    const bounding = utils.getElementBounding(event.target as HTMLElement);
-    tempDiv.style.left = bounding.left + "px";
-    tempDiv.style.top = bounding.top - 2 + "px";
-    tempDiv.innerHTML = `${item.count} memos on <span className="date-text">${new Date(item.timestamp as number).toDateString()}</span>`;
-    document.body.appendChild(tempDiv);
-
-    if (tempDiv.offsetLeft - tempDiv.clientWidth / 2 < 0) {
-      tempDiv.style.left = bounding.left + tempDiv.clientWidth * 0.4 + "px";
-      tempDiv.className += " offset-left";
-    }
-  }, []);
-
-  const handleUsageStatItemMouseLeave = useCallback(() => {
-    document.body.querySelectorAll("div.usage-detail-container.pop-up").forEach((node) => node.remove());
-  }, []);
-
   const handleUsageStatItemClick = useCallback((item: DailyUsageStat) => {
     if (locationService.getState().query?.duration?.from === item.timestamp) {
       locationService.setFromAndToQuery();
@@ -111,18 +93,14 @@ const UsageHeatMap = () => {
               : "stat-day-l4-bg";
 
           return (
-            <div
-              className="stat-wrapper"
-              key={i}
-              onMouseEnter={(e) => handleUsageStatItemMouseEnter(e, v)}
-              onMouseLeave={handleUsageStatItemMouseLeave}
-              onClick={() => handleUsageStatItemClick(v)}
-            >
-              <span
-                className={`stat-container ${colorLevel} ${currentStat === v ? "current" : ""} ${
-                  todayTimeStamp === v.timestamp ? "today" : ""
-                }`}
-              ></span>
+            <div className="stat-wrapper" key={i} onClick={() => handleUsageStatItemClick(v)}>
+              <Tooltip title={`${v.count} ${v.count > 1 ? "memos" : "memo"} on ${new Date(v.timestamp as number).toDateString()}`}>
+                <span
+                  className={`stat-container ${colorLevel} ${currentStat === v ? "current" : ""} ${
+                    todayTimeStamp === v.timestamp ? "today" : ""
+                  }`}
+                ></span>
+              </Tooltip>
             </div>
           );
         })}
