@@ -61,7 +61,7 @@ const PreferencesSection = () => {
   };
 
   const handleIsFoldingEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    userService.upsertLocalSetting("isFoldingEnabled", event.target.checked);
+    userService.upsertLocalSetting("enableFoldMemo", event.target.checked);
   };
 
   return (
@@ -129,7 +129,7 @@ const PreferencesSection = () => {
       </label>
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.enable-folding-memo")}</span>
-        <Switch className="ml-2" checked={localSetting.isFoldingEnabled} onChange={handleIsFoldingEnabledChanged} />
+        <Switch className="ml-2" checked={localSetting.enableFoldMemo} onChange={handleIsFoldingEnabledChanged} />
       </label>
     </div>
   );

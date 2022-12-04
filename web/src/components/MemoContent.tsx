@@ -52,7 +52,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    if (displayConfig.enableExpand && user && user.localSetting.isFoldingEnabled) {
+    if (displayConfig.enableExpand && user && user.localSetting.enableFoldMemo) {
       if (foldedContent.length !== content.length) {
         setState({
           ...state,
@@ -65,7 +65,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         expandButtonStatus: -1,
       });
     }
-  }, [user?.localSetting.isFoldingEnabled]);
+  }, [user?.localSetting.enableFoldMemo]);
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     if (onMemoContentClick) {
