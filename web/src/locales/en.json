@@ -168,9 +168,9 @@
       "additional-script-placeholder": "Additional JavaScript codes"
     },
     "apperance-option": {
+      "system": "Follow system",
       "light": "Always light",
-      "dark": "Always dark",
-      "system": "Follow system"
+      "dark": "Always dark"
     }
   },
   "amount-text": {
