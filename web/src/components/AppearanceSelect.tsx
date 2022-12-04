@@ -4,7 +4,7 @@ import { globalService, userService } from "../services";
 import { useAppSelector } from "../store";
 import Icon from "./Icon";
 
-const appearanceList = ["light", "dark"];
+const appearanceList = ["system", "light", "dark"];
 
 const AppearanceSelect = () => {
   const user = useAppSelector((state) => state.user.user);
@@ -17,6 +17,8 @@ const AppearanceSelect = () => {
       return <Icon.Sun className={className} />;
     } else if (apperance === "dark") {
       return <Icon.Moon className={className} />;
+    } else {
+      return <Icon.Smile className={className} />;
     }
   };
 

@@ -168,9 +168,9 @@
       "additional-script-placeholder": "自定义 JavaScript 代码"
     },
     "apperance-option": {
+      "system": "跟随系统",
       "light": "总是浅色",
-      "dark": "总是深色",
-      "system": "跟随系统"
+      "dark": "总是深色"
     }
   },
   "amount-text": {

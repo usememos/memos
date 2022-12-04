@@ -1,4 +1,4 @@
-type Appearance = "light" | "dark";
+type Appearance = "system" | "light" | "dark";
 
 interface Setting {
   locale: Locale;

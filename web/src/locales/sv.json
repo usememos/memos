@@ -168,9 +168,9 @@
       "additional-script-placeholder": "Ytterligare JavaScript kod"
     },
     "apperance-option": {
+      "system": "Follow system",
       "light": "Alltid ljus",
-      "dark": "Alltid mörk",
-      "system": "Följ systeminställningarna"
+      "dark": "Alltid mörk"
     }
   },
   "amount-text": {

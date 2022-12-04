@@ -11,7 +11,7 @@ const globalService = {
   initialState: async () => {
     const defaultGlobalState = {
       locale: "en" as Locale,
-      appearance: "light" as Appearance,
+      appearance: "system" as Appearance,
       systemStatus: {
         allowSignUp: false,
         additionalStyle: "",
