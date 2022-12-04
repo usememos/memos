@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
 import { globalService, locationService } from "./services";
 import { useAppSelector } from "./store";
-import Loading from "./pages/Loading";
 import router from "./router";
 import * as storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
+import Loading from "./pages/Loading";
 
 function App() {
   const { i18n } = useTranslation();
@@ -69,7 +69,7 @@ function App() {
     const root = document.documentElement;
     if (mode === "light") {
       root.classList.remove("dark");
-    } else {
+    } else if (mode === "dark") {
       root.classList.add("dark");
     }
   }, [mode]);

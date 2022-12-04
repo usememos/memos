@@ -14,7 +14,7 @@ const defaultSetting: Setting = {
 };
 
 const defaultLocalSetting: LocalSetting = {
-  isFoldingEnabled: true,
+  enableFoldMemo: true,
 };
 
 export const convertResponseModelUser = (user: User): User => {

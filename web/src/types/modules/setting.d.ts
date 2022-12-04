@@ -8,7 +8,7 @@ interface Setting {
 }
 
 interface LocalSetting {
-  isFoldingEnabled: boolean;
+  enableFoldMemo: boolean;
 }
 
 interface UserLocaleSetting {
