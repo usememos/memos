@@ -4,6 +4,10 @@ import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import "../less/preview-image-dialog.less";
 
+const MIN_SCALE = 0.5;
+const MAX_SCALE = 5;
+const SCALE_UNIT = 0.25;
+
 interface Props extends DialogProps {
   imgUrls: string[];
   initialIndex: number;
@@ -24,10 +28,6 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     originX: -1,
     originY: -1,
   });
-
-  const MIN_SCALE = 0.5;
-  const MAX_SCALE = 5;
-  const SCALE_UNIT = 0.25;
 
   const handleCloseBtnClick = () => {
     destroy();
