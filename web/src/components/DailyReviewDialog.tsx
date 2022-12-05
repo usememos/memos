@@ -43,7 +43,6 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
     toggleShowDatePicker(false);
 
     toImage(memosElRef.current, {
-      backgroundColor: "#ffffff",
       pixelRatio: window.devicePixelRatio * 2,
     })
       .then((url) => {

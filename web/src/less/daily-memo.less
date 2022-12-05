@@ -8,18 +8,18 @@
   }
 
   > .split-line {
-    @apply h-full px-px bg-gray-50 absolute top-1 left-6 z-0 -ml-px;
+    @apply h-full px-px bg-gray-50 dark:bg-zinc-600 absolute top-1 left-6 z-0 -ml-px;
   }
 
   > .time-wrapper {
-    @apply mt-px mr-4 w-12 h-7 shrink-0 text-xs leading-6 text-center font-mono rounded-lg bg-gray-100 border-2 border-white text-gray-600 z-10;
+    @apply mt-px mr-4 w-12 h-7 shrink-0 text-xs leading-6 text-center font-mono rounded-lg bg-gray-100 dark:bg-zinc-600 border-2 border-white dark:border-zinc-800 text-gray-600 dark:text-gray-300 z-10;
   }
 
   > .memo-container {
     @apply w-full overflow-x-hidden flex flex-col justify-start items-start;
 
     .memo-content-text {
-      margin-top: 3px;
+      @apply mt-1;
     }
   }
 }

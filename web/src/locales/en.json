@@ -3,6 +3,8 @@
     "about": "About",
     "email": "Email",
     "password": "Password",
+    "repeat-password-short": "Repeat",
+    "repeat-password": "Repeat the password",
     "new-password": "New password",
     "repeat-new-password": "Repeat the new password",
     "username": "Username",
@@ -41,9 +43,11 @@
     "changed": "changed",
     "update-on": "Update on",
     "fold": "Fold",
-    "expand": "Expand"
+    "expand": "Expand",
+    "image": "Image",
+    "link": "Link"
   },
-  "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
     "signup-as-host": "Sign up as Host",
     "host-tip": "You are registering as the Site Host.",
@@ -84,13 +88,15 @@
     "save": "Save",
     "placeholder": "Any thoughts...",
     "only-image-supported": "Only image file supported.",
-    "cant-empty": "Content can't be empty"
+    "cant-empty": "Content can't be empty",
+    "local": "Local",
+    "resources": "Resources"
   },
   "memo": {
     "view-detail": "View Detail",
     "copy": "Copy",
     "visibility": {
-      "private": "Private",
+      "private": "Only visible to you",
       "protected": "Visible to members",
       "public": "Everyone can see"
     }
@@ -146,7 +152,7 @@
       "enable-folding-memo": "Enable folding memo",
       "editor-font-style": "Editor font style",
       "mobile-editor-style": "Mobile editor style",
-      "default-memo-sort-option": "Display by created/updated time",
+      "default-memo-sort-option": "Memo display time",
       "created_ts": "Created Time",
       "updated_ts": "Updated Time"
     },
@@ -162,7 +168,7 @@
       "additional-script-placeholder": "Additional JavaScript codes"
     },
     "apperance-option": {
-      "auto": "Follow system",
+      "system": "Follow system",
       "light": "Always light",
       "dark": "Always dark"
     }
@@ -181,6 +187,7 @@
     "change-memo-created-time": "Change memo created time",
     "memo-not-found": "Memo not found.",
     "fill-all": "Please fill in all fields.",
+    "password-not-match": "Passwords do not match.",
     "new-password-not-match": "New passwords do not match.",
     "image-load-failed": "Image load failed",
     "fill-form": "Please fill out this form",
@@ -191,10 +198,16 @@
     "private-only": "This memo is private only.",
     "copied": "Copied",
     "succeed-copy-content": "Succeed to copy content to clipboard.",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Change resource filename",
     "resource-filename-updated": "Resource filename changed.",
     "invalid-resource-filename": "Invalid filename.",
     "click-to-save-the-image": "Click to save the image",
-    "generating-the-screenshot": "Generating the screenshot..."
+    "generating-the-screenshot": "Generating the screenshot...",
+    "count-selected-resources": "Total selected",
+    "too-short": "Too short",
+    "too-long": "Too long",
+    "not-allow-space": "Don't allow space",
+    "not-allow-chinese": "Don't allow chinese"
   }
 }

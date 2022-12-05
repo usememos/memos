@@ -1,19 +1,30 @@
 import { globalService, locationService } from ".";
 import * as api from "../helpers/api";
+import * as storage from "../helpers/storage";
 import { UNKNOWN_ID } from "../helpers/consts";
 import store from "../store";
-import { setLocale } from "../store/modules/global";
 import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
+import { getSystemColorScheme } from "../helpers/utils";
 
 const defaultSetting: Setting = {
   locale: "en",
+  appearance: getSystemColorScheme(),
   memoVisibility: "PRIVATE",
   memoDisplayTsOption: "created_ts",
+};
+
+const defaultLocalSetting: LocalSetting = {
+  enableFoldMemo: true,
 };
 
 export const convertResponseModelUser = (user: User): User => {
   const setting: Setting = {
     ...defaultSetting,
+  };
+  const { localSetting: storageLocalSetting } = storage.get(["localSetting"]);
+  const localSetting: LocalSetting = {
+    ...defaultLocalSetting,
+    ...storageLocalSetting,
   };
 
   if (user.userSettingList) {
@@ -25,6 +36,7 @@ export const convertResponseModelUser = (user: User): User => {
   return {
     ...user,
     setting,
+    localSetting,
     createdTs: user.createdTs * 1000,
     updatedTs: user.updatedTs * 1000,
   };
@@ -49,11 +61,15 @@ const userService = {
       }
     }
 
-    const { data: user } = (await api.getMyselfUser()).data;
-    if (user) {
-      store.dispatch(setUser(convertResponseModelUser(user)));
+    const { data } = (await api.getMyselfUser()).data;
+    if (data) {
+      const user = convertResponseModelUser(data);
+      store.dispatch(setUser(user));
       if (user.setting.locale) {
-        store.dispatch(setLocale(user.setting.locale));
+        globalService.setLocale(user.setting.locale);
+      }
+      if (user.setting.appearance) {
+        globalService.setAppearance(user.setting.appearance);
       }
     }
   },
@@ -109,6 +125,11 @@ const userService = {
       value: JSON.stringify(value),
     });
     await userService.doSignIn();
+  },
+
+  upsertLocalSetting: async (key: keyof LocalSetting, value: any) => {
+    storage.set({ localSetting: { [key]: value } });
+    store.dispatch(patchUser({ localSetting: { [key]: value } }));
   },
 
   patchUser: async (userPatch: UserPatch): Promise<void> => {

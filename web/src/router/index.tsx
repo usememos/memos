@@ -1,10 +1,12 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
+import { lazy } from "react";
 import { isNullorUndefined } from "../helpers/utils";
 import { globalService, userService } from "../services";
-import Auth from "../pages/Auth";
-import Explore from "../pages/Explore";
-import Home from "../pages/Home";
-import MemoDetail from "../pages/MemoDetail";
+
+const Auth = lazy(() => import("../pages/Auth"));
+const Explore = lazy(() => import("../pages/Explore"));
+const Home = lazy(() => import("../pages/Home"));
+const MemoDetail = lazy(() => import("../pages/MemoDetail"));
 
 const router = createBrowserRouter([
   {
@@ -16,6 +18,7 @@ const router = createBrowserRouter([
       } catch (error) {
         // do nth
       }
+      return null;
     },
   },
   {
@@ -35,6 +38,7 @@ const router = createBrowserRouter([
       } else if (isNullorUndefined(user)) {
         return redirect("/explore");
       }
+      return null;
     },
   },
   {
@@ -52,6 +56,7 @@ const router = createBrowserRouter([
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       }
+      return null;
     },
   },
   {
@@ -69,6 +74,7 @@ const router = createBrowserRouter([
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       }
+      return null;
     },
   },
   {
@@ -86,6 +92,7 @@ const router = createBrowserRouter([
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       }
+      return null;
     },
   },
 ]);

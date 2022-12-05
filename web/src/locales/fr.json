@@ -3,6 +3,8 @@
     "about": "À propos",
     "email": "Email",
     "password": "Mot de passe",
+    "repeat-password-short": "Repeat",
+    "repeat-password": "Repeat the password",
     "new-password": "Nouveau mot de passe",
     "repeat-new-password": "Répétez le nouveau mot de passe",
     "username": "Nom d'utilisateur",
@@ -41,9 +43,11 @@
     "changed": "modifié",
     "update-on": "Mise à jour sur",
     "fold": "Plier",
-    "expand": "Développer"
+    "expand": "Développer",
+    "image": "Image",
+    "link": "Link"
   },
-  "slogan": "Un hub de mémos open source et auto-hébergé pour la gestion des connaissances et la collaboration.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
     "signup-as-host": "S'inscrire en tant qu'hôte",
     "host-tip": "Vous vous inscrivez en tant qu'hébergeur du site.",
@@ -84,7 +88,9 @@
     "save": "Sauvegarder",
     "placeholder": "Une idée...",
     "only-image-supported": "Seul le fichier image est pris en charge.",
-    "cant-empty": "Le contenu ne doit pas être vide"
+    "cant-empty": "Le contenu ne doit pas être vide",
+    "local": "Local",
+    "resources": "Resources"
   },
   "memo": {
     "view-detail": "Voir le détail",
@@ -146,7 +152,7 @@
       "enable-folding-memo": "Activer le mémo pliable",
       "editor-font-style": "Style de police de l'éditeur",
       "mobile-editor-style": "Style de l'éditeur mobile",
-      "default-memo-sort-option": "Affichage par heure de création/mise à jour",
+      "default-memo-sort-option": "Memo display time",
       "created_ts": "Heure de création",
       "updated_ts": "Heure de mise à jour"
     },
@@ -182,14 +188,21 @@
     "login-failed": "Connexion échouée",
     "signup-failed": "L'inscription a échoué",
     "user-not-found": "Utilisateur introuvable",
+    "password-not-match": "Passwords do not match.",
     "password-changed": "Mot de passe modifié",
     "private-only": "Ce mémo est uniquement privé.",
     "copied": "Copié",
     "succeed-copy-content": "La copie dans le presse-papiers a été effectuée avec succès",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Changer le nom du fichier de ressources",
     "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
     "invalid-resource-filename": "Nom de fichier invalide.",
     "click-to-save-the-image": "Cliquez pour enregistrer l'image",
-    "generating-the-screenshot": "Génération de la capture d'écran..."
+    "generating-the-screenshot": "Génération de la capture d'écran...",
+    "count-selected-resources": "Total selected",
+    "too-short": "Too short",
+    "too-long": "Too long",
+    "not-allow-space": "Don't allow space",
+    "not-allow-chinese": "Don't allow chinese"
   }
 }

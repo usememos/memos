@@ -1,21 +1,17 @@
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import "dayjs/locale/zh";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
-import showShareMemoImageDialog from "./ShareMemoImageDialog";
+import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "../less/memo.less";
-
-dayjs.extend(relativeTime);
 
 interface Props {
   memo: Memo;
@@ -93,7 +89,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleGenMemoImageBtnClick = () => {
-    showShareMemoImageDialog(memo);
+    showShareMemo(memo);
   };
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
@@ -149,9 +145,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
-    if (targetEl.className === "memo-link-text") {
-      return;
-    } else if (targetEl.className === "tag-span") {
+    if (targetEl.className === "tag-span") {
       return;
     } else if (targetEl.classList.contains("todo-block")) {
       return;

@@ -6,6 +6,7 @@ import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
 import Dropdown from "../common/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
+import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import "../../less/settings/member-section.less";
 
 interface State {
@@ -60,7 +61,6 @@ const PreferencesSection = () => {
     try {
       await api.createUser(userCreate);
     } catch (error: any) {
-      console.error(error);
       toastHelper.error(error.response.data.message);
     }
     await fetchUserList();
@@ -68,6 +68,10 @@ const PreferencesSection = () => {
       createUserUsername: "",
       createUserPassword: "",
     });
+  };
+
+  const handleChangePasswordClick = (user: User) => {
+    showChangeMemberPasswordDialog(user);
   };
 
   const handleArchiveUserClick = (user: User) => {
@@ -113,17 +117,33 @@ const PreferencesSection = () => {
       <div className="create-member-container">
         <div className="input-form-container">
           <span className="field-text">{t("common.username")}</span>
-          <input type="text" placeholder={t("common.username")} value={state.createUserUsername} onChange={handleUsernameInputChange} />
+          <input
+            type="text"
+            autoComplete="new-password"
+            placeholder={t("common.username")}
+            value={state.createUserUsername}
+            onChange={handleUsernameInputChange}
+          />
         </div>
         <div className="input-form-container">
           <span className="field-text">{t("common.password")}</span>
-          <input type="text" placeholder={t("common.password")} value={state.createUserPassword} onChange={handlePasswordInputChange} />
+          <input
+            type="password"
+            autoComplete="new-password"
+            placeholder={t("common.password")}
+            value={state.createUserPassword}
+            onChange={handlePasswordInputChange}
+          />
         </div>
         <div className="btns-container">
-          <button onClick={handleCreateUserBtnClick}>{t("common.create")}</button>
+          <button className="btn-normal" onClick={handleCreateUserBtnClick}>
+            {t("common.create")}
+          </button>
         </div>
       </div>
-      <p className="title-text">{t("setting.member-list")}</p>
+      <div className="w-full flex flex-row justify-between items-center">
+        <div className="title-text">{t("setting.member-list")}</div>
+      </div>
       <div className="member-container field-container">
         <span className="field-text">ID</span>
         <span className="field-text username-field">{t("common.username")}</span>
@@ -138,12 +158,17 @@ const PreferencesSection = () => {
               <span className="tip-text">{t("common.yourself")}</span>
             ) : (
               <Dropdown
-                actionsClassName="!w-24"
                 actions={
                   <>
+                    <button
+                      className="w-full text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+                      onClick={() => handleChangePasswordClick(user)}
+                    >
+                      {t("setting.account-section.change-password")}
+                    </button>
                     {user.rowStatus === "NORMAL" ? (
                       <button
-                        className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
+                        className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
                         onClick={() => handleArchiveUserClick(user)}
                       >
                         {t("common.archive")}
@@ -151,13 +176,13 @@ const PreferencesSection = () => {
                     ) : (
                       <>
                         <button
-                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100"
+                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
                           onClick={() => handleRestoreUserClick(user)}
                         >
                           {t("common.restore")}
                         </button>
                         <button
-                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100"
+                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
                           onClick={() => handleDeleteUserClick(user)}
                         >
                           {t("common.delete")}

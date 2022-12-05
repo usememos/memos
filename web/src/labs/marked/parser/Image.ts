@@ -1,4 +1,5 @@
 import { escape } from "lodash-es";
+import { absolutifyLink } from "../../../helpers/utils";
 
 export const IMAGE_REG = /!\[.*?\]\((.+?)\)/;
 
@@ -8,8 +9,9 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
+  const imageUrl = absolutifyLink(escape(matchResult[1]));
   // NOTE: Get image blob from backend to avoid CORS.
-  return `<img class='img' src='/o/get/image?url=${escape(matchResult[1])}' />`;
+  return `<img class='img' src='/o/get/image?url=${imageUrl}' />`;
 };
 
 export default {

@@ -18,27 +18,27 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">
-          <span className="icon-text">🤠</span>
-          {t("common.about")}
-        </p>
+        <p className="title-text">{t("common.about")}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container">
-        <img className="logo-img" src="/logo-full.webp" alt="" />
+        <p className="flex justify-start items-center">
+          <img className="logo-img w-16 h-auto" src="/logo.webp" alt="" />
+          <span className=" font-mono text-4xl">memos</span>
+        </p>
         <p>{t("slogan")}</p>
         <br />
         <div className="addition-info-container">
           <GitHubBadge />
-          <>
+          <span className="ml-2">
             {t("common.version")}:
             <span className="pre-text">
               {profile.version}-{profile.mode}
             </span>
             🎉
-          </>
+          </span>
         </div>
       </div>
     </>

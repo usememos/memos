@@ -157,43 +157,6 @@ console.log("hello world!")
       expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
-  test("parse table", () => {
-    const tests = [
-      {
-        markdown: `text above the table
-| a | b | c |
-|---|---|---|
-| 1 | 2 | 3 |
-| 4 | 5 | 6 |
-text below the table
-`,
-        want: `<p>text above the table</p>
-<table>
-  <thead>
-    <tr>
-      <th>a</th><th>b</th><th>c</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr>
-  </tbody>
-</table>
-<p>text below the table</p>
-`,
-      },
-      {
-        markdown: `| a | b | c |
-| 1 | 2 | 3 |
-| 4 | 5 | 6 |`,
-        want: `<p>| a | b | c |</p>
-<p>| 1 | 2 | 3 |</p>
-<p>| 4 | 5 | 6 |</p>`,
-      },
-    ];
-    for (const t of tests) {
-      expect(unescape(marked(t.markdown))).toBe(t.want);
-    }
-  });
   test("parse full width space", () => {
     const tests = [
       {

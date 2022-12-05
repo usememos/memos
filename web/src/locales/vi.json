@@ -3,6 +3,8 @@
     "about": "Thông Tin",
     "email": "Email",
     "password": "Mật khẩu",
+    "repeat-password-short": "Repeat",
+    "repeat-password": "Repeat the password",
     "new-password": "Mật khẩu mới",
     "repeat-new-password": "Nhập lại mật khẩu mới",
     "username": "Tên đăng nhập",
@@ -41,9 +43,11 @@
     "changed": "đã thay đổi",
     "update-on": "Cập nhật",
     "fold": "Fold",
-    "expand": "Expand"
+    "expand": "Expand",
+    "image": "Image",
+    "link": "Link"
   },
-  "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
     "signup-as-host": "Đăng ký như chủ nhân",
     "host-tip": "Bạn đang đăng ký với tư cách chủ nhân của trang web này.",
@@ -84,7 +88,9 @@
     "save": "Lưu",
     "placeholder": "Bất cứ gì bạn đang nghĩ...",
     "only-image-supported": "Chỉ hỗ trợ hình ảnh.",
-    "cant-empty": "Nội dung không thể trống"
+    "cant-empty": "Nội dung không thể trống",
+    "local": "Local",
+    "resources": "Resources"
   },
   "memo": {
     "view-detail": "Xem chi tiết",
@@ -145,7 +151,7 @@
       "enable-folding-memo": "Enable folding memo",
       "editor-font-style": "Thay đổi font cho trình soạn thảo",
       "mobile-editor-style": "Vị trí editor trên mobile",
-      "default-memo-sort-option": "Sắp xếp theo thời gian đã tạo",
+      "default-memo-sort-option": "Memo display time",
       "created_ts": "tạo thời gian",
       "updated_ts": "Thời gian cập nhật"
     },
@@ -181,14 +187,21 @@
     "login-failed": "Đăng nhập thất bại",
     "signup-failed": "Đăng ký thất bại",
     "user-not-found": "Không tìm thấy người dùng này",
+    "password-not-match": "Passwords do not match.",
     "password-changed": "Mật khẩu đã được thay đổi",
     "private-only": "Memo này có trạng thái riêng tư.",
     "copied": "Đã sao chép",
     "succeed-copy-content": "Đã sao chép nội dung memo thành công.",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Thay đổi tên tệp tài nguyên",
     "resource-filename-updated": "Tên tệp tài nguyên đã thay đổi.",
     "invalid-resource-filename": "Tên tệp không hợp lệ.",
     "click-to-save-the-image": "Bấm để lưu hình ảnh",
-    "generating-the-screenshot": "Đang tạo ảnh chụp màn hình ..."
+    "generating-the-screenshot": "Đang tạo ảnh chụp màn hình ...",
+    "count-selected-resources": "Total selected",
+    "too-short": "Too short",
+    "too-long": "Too long",
+    "not-allow-space": "Don't allow space",
+    "not-allow-chinese": "Don't allow chinese"
   }
 }

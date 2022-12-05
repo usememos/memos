@@ -8,20 +8,14 @@ export const ANIMATION_DURATION = 200;
 export const DAILY_TIMESTAMP = 3600 * 24 * 1000;
 
 export const VISIBILITY_SELECTOR_ITEMS = [
-  { text: "PUBLIC", value: "PUBLIC" },
-  { text: "PROTECTED", value: "PROTECTED" },
   { text: "PRIVATE", value: "PRIVATE" },
+  { text: "PROTECTED", value: "PROTECTED" },
+  { text: "PUBLIC", value: "PUBLIC" },
 ];
 
 export const MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS = [
   { text: "created_ts", value: "created_ts" },
-  { text: "created_ts", value: "updated_ts" },
+  { text: "updated_ts", value: "updated_ts" },
 ];
 
-export const IS_FOLDING_ENABLED_DEFAULT_VALUE = true;
-export const SETTING_IS_FOLDING_ENABLED_KEY = "setting_IS_FOLDING_ENABLED";
-
 export const TAB_SPACE_WIDTH = 2;
-
-export const APPERANCE_OPTIONS = ["auto", "light", "dark"] as const;
-export const APPERANCE_OPTIONS_STORAGE_KEY = "setting_APPERANCE_OPTIONS";

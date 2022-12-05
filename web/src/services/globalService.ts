@@ -1,7 +1,7 @@
 import store from "../store";
 import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
-import { setGlobalState, setLocale } from "../store/modules/global";
+import { setAppearance, setGlobalState, setLocale } from "../store/modules/global";
 
 const globalService = {
   getState: () => {
@@ -11,6 +11,7 @@ const globalService = {
   initialState: async () => {
     const defaultGlobalState = {
       locale: "en" as Locale,
+      appearance: "system" as Appearance,
       systemStatus: {
         allowSignUp: false,
         additionalStyle: "",
@@ -18,9 +19,12 @@ const globalService = {
       } as SystemStatus,
     };
 
-    const { locale: storageLocale } = storage.get(["locale"]);
+    const { locale: storageLocale, appearance: storageAppearance } = storage.get(["locale", "appearance"]);
     if (storageLocale) {
       defaultGlobalState.locale = storageLocale;
+    }
+    if (storageAppearance) {
+      defaultGlobalState.appearance = storageAppearance;
     }
 
     try {
@@ -37,6 +41,10 @@ const globalService = {
 
   setLocale: (locale: Locale) => {
     store.dispatch(setLocale(locale));
+  },
+
+  setAppearance: (appearance: Appearance) => {
+    store.dispatch(setAppearance(appearance));
   },
 };
 

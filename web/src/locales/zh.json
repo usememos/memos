@@ -3,6 +3,8 @@
     "about": "关于",
     "email": "邮箱",
     "password": "密码",
+    "repeat-password-short": "重复密码",
+    "repeat-password": "重复密码",
     "new-password": "新密码",
     "repeat-new-password": "重复新密码",
     "username": "用户名",
@@ -41,9 +43,11 @@
     "changed": "已更改",
     "update-on": "更新于",
     "fold": "折叠",
-    "expand": "展开"
+    "expand": "展开",
+    "image": "图片",
+    "link": "链接"
   },
-  "slogan": "An open-source, self-hosted memo hub for knowledge management and collaboration.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
     "signup-as-host": "注册为 Host",
     "host-tip": "你正在注册为 Host 用户账号。",
@@ -84,7 +88,9 @@
     "save": "记下",
     "placeholder": "现在的想法是...",
     "only-image-supported": "仅支持图片文件。",
-    "cant-empty": "内容不能为空"
+    "cant-empty": "内容不能为空",
+    "local": "本地上传",
+    "resources": "资源库"
   },
   "memo": {
     "view-detail": "查看详情",
@@ -146,7 +152,7 @@
       "enable-folding-memo": "开启折叠 Memo",
       "editor-font-style": "编辑器字体样式",
       "mobile-editor-style": "移动端编辑器样式",
-      "default-memo-sort-option": "按创建时间/更新时间显示",
+      "default-memo-sort-option": "Memo 显示时间",
       "created_ts": "创建时间",
       "updated_ts": "更新时间"
     },
@@ -162,7 +168,7 @@
       "additional-script-placeholder": "自定义 JavaScript 代码"
     },
     "apperance-option": {
-      "auto": "跟随系统",
+      "system": "跟随系统",
       "light": "总是浅色",
       "dark": "总是深色"
     }
@@ -181,6 +187,7 @@
     "change-memo-created-time": "更改 Memo 创建时间",
     "memo-not-found": "找不到 Memo。",
     "fill-all": "请填写所有字段。",
+    "password-not-match": "密码不一致。",
     "new-password-not-match": "新密码不匹配。",
     "image-load-failed": "图片加载失败",
     "fill-form": "请填写此表单",
@@ -191,10 +198,16 @@
     "private-only": "此 Memo 仅自己可见",
     "copied": "已复制",
     "succeed-copy-content": "复制内容到剪贴板成功。",
+    "succeed-copy-link": "复制链接到剪贴板成功。",
     "change-resource-filename": "更改资源文件名",
     "resource-filename-updated": "资源文件名更改成功。",
     "invalid-resource-filename": "无效的资源文件名",
     "click-to-save-the-image": "点击保存图片",
-    "generating-the-screenshot": "正在生成图片..."
+    "generating-the-screenshot": "正在生成图片...",
+    "count-selected-resources": "所选资源总数",
+    "too-short": "过短",
+    "too-long": "过长",
+    "not-allow-space": "不允许包含空格",
+    "not-allow-chinese": "不允许包含中文"
   }
 }
