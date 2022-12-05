@@ -91,6 +91,23 @@ const MemoEditor = () => {
   }, [editorState.editMemoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      if (!editorRef.current) {
+        return;
+      }
+      const cursorPosition = editorRef.current.getCursorPosition();
+      const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
+      const prevRows = prevValue.split("\n");
+      const curRowIndex = prevRows.length;
+      const prevRowValue = prevRows[curRowIndex - 1];
+      if (prevRowValue.startsWith("- [ ] ") || prevRowValue.startsWith("- [x] ") || prevRowValue.startsWith("- [X] ")) {
+        event.preventDefault();
+        editorRef.current.insertText("", "\n- [ ] ");
+      } else if (prevRowValue.startsWith("- ")) {
+        event.preventDefault();
+        editorRef.current.insertText("", "\n- ");
+      }
+    }
     if (event.key === "Escape") {
       if (state.fullscreen) {
         handleFullscreenBtnClick();
