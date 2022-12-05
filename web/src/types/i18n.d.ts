@@ -1,1 +1,1 @@
-type Locale = "en" | "zh" | "vi" | "fr" | "sv";
+type Locale = "en" | "zh" | "vi" | "fr" | "sv" | "de";

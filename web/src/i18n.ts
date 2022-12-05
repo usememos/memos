@@ -5,6 +5,7 @@ import zhLocale from "./locales/zh.json";
 import viLocale from "./locales/vi.json";
 import frLocale from "./locales/fr.json";
 import svLocale from "./locales/sv.json";
+import deLocale from "./locales/de.json";
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -22,6 +23,9 @@ i18n.use(initReactI18next).init({
     },
     sv: {
       translation: svLocale,
+    },
+    de: {
+      translation: deLocale,
     },
   },
   lng: "en",

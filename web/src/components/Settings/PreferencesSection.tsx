@@ -28,6 +28,10 @@ const localeSelectorItems = [
     text: "Svenska",
     value: "sv",
   },
+  {
+    text: "German",
+    value: "de",
+  },
 ];
 
 const PreferencesSection = () => {
