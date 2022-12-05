@@ -9,15 +9,25 @@ interface Props extends DialogProps {
   initialIndex: number;
 }
 
+interface State {
+  angle: number;
+  scale: number;
+  originX: number;
+  originY: number;
+}
+
 const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }: Props) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [imgAngle, setImgAngle] = useState(0);
-  const [imgScale, setImgScale] = useState(1);
-  const [imgTransformOrigin, setImgTransformOrigin] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [state, setState] = useState<State>({
+    angle: 0,
+    scale: 1,
+    originX: -1,
+    originY: -1,
+  });
 
   const MIN_SCALE = 0.5;
   const MAX_SCALE = 5;
-  const SCALE_UNIT = 0.5;
+  const SCALE_UNIT = 0.25;
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -47,34 +57,34 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   };
 
   const handleImgRotate = (event: React.MouseEvent, angle: number) => {
-    const curImgAngle = (imgAngle + angle + 360) % 360;
-    setImgAngle(curImgAngle);
+    const curImgAngle = (state.angle + angle + 360) % 360;
+    setState({
+      ...state,
+      originX: -1,
+      originY: -1,
+      angle: curImgAngle,
+    });
   };
 
   const handleImgContainerScroll = (event: React.WheelEvent) => {
     const offsetX = event.nativeEvent.offsetX;
     const offsetY = event.nativeEvent.offsetY;
-    setImgTransformOrigin({
-      x: offsetX,
-      y: offsetY,
+    const sign = event.deltaY < 0 ? 1 : -1;
+    const curAngle = Math.max(MIN_SCALE, Math.min(MAX_SCALE, state.scale + sign * SCALE_UNIT));
+    setState({
+      ...state,
+      originX: offsetX,
+      originY: offsetY,
+      scale: curAngle,
     });
-    if (event.deltaY < 0 && imgScale < MAX_SCALE) {
-      const enlargeRate = imgScale + SCALE_UNIT;
-      setImgScale(enlargeRate);
-    } else if (event.deltaY > 0 && imgScale > MIN_SCALE) {
-      const shrinkRate = imgScale - SCALE_UNIT;
-      setImgScale(shrinkRate);
-    }
   };
 
-  const getImageRotateClass = () => {
-    return imgAngle === 90 ? "rotate-90" : imgAngle === 180 ? "rotate-180" : imgAngle === 270 ? "rotate-270" : "rotate-0";
-  };
-
-  const getImageScaleStyle = () => {
+  const getImageComputedStyle = () => {
     return {
-      transform: `scale(${imgScale})`,
-      transformOrigin: `${imgTransformOrigin.x}px ${imgTransformOrigin.y}px`,
+      transform: `scale(${state.scale}) rotate(${state.angle}deg)`,
+      transformOrigin: `${state.originX === -1 ? "center" : `${state.originX}px`} ${
+        state.originY === -1 ? "center" : `${state.originY}px`
+      }`,
     };
   };
 
@@ -99,8 +109,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
           onClick={(e) => e.stopPropagation()}
           src={imgUrls[currentIndex]}
           onWheel={handleImgContainerScroll}
-          className={`${getImageRotateClass()}`}
-          style={getImageScaleStyle()}
+          style={getImageComputedStyle()}
         />
       </div>
     </>
