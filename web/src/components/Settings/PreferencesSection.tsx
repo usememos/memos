@@ -25,6 +25,10 @@ const localeSelectorItems = [
     value: "fr",
   },
   {
+    text: "Nederlands",
+    value: "nl",
+  },
+  {
     text: "Svenska",
     value: "sv",
   },
