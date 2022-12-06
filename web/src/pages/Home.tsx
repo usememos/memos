@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { globalService, userService } from "../services";
 import { useAppSelector } from "../store";
+import { useScrollDirection } from "../hooks/useScrollDirection";
 import toastHelper from "../components/Toast";
 import Sidebar from "../components/Sidebar";
 import MemosHeader from "../components/MemosHeader";
@@ -33,14 +34,17 @@ function Home() {
     }
   }, [user?.setting.locale]);
 
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [scrollDirection] = useScrollDirection(scrollRef);
+
   return (
-    <section className="page-wrapper home">
+    <section className="page-wrapper home" ref={scrollRef}>
       <div className="banner-wrapper">
         <UpdateVersionBanner />
       </div>
       <div className="page-container">
         <Sidebar />
-        <main className="memos-wrapper">
+        <main className={`memos-wrapper scroll-${scrollDirection}`}>
           <div className="memos-editor-wrapper">
             <MemosHeader />
             {!userService.isVisitorMode() && <MemoEditor />}

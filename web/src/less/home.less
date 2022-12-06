@@ -16,8 +16,12 @@
     > .memos-wrapper {
       @apply relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 sm:pr-6;
 
+      &.scroll-up > .memos-editor-wrapper {
+        @apply sticky;
+      }
+
       > .memos-editor-wrapper {
-        @apply sticky top-0 w-full h-full flex flex-col justify-start items-start z-10 dark:bg-zinc-800;
+        @apply top-0 w-full h-full flex flex-col justify-start items-start z-10 dark:bg-zinc-800;
         background-color: #f6f5f4;
       }
 
