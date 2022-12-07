@@ -174,9 +174,9 @@
     }
   },
   "amount-text": {
-    "memo": "MEMO",
-    "tag": "TAG",
-    "day": "TAG"
+    "memo": "MEMOS",
+    "tag": "TAGS",
+    "day": "TAGE"
   },
   "message": {
     "no-memos": "Keine Memos 🌃",
