@@ -162,7 +162,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
 		if user == nil || user.Role != api.Host {
-			// throw error
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 		if err := s.Store.Vacuum(ctx); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to vacuum database").SetInternal(err)
