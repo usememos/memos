@@ -62,11 +62,14 @@ const SystemSection = () => {
 
   const handleVacuumBtnClick = async () => {
     try {
-      api.vacuumDatabase().then(({ data }) => {
+      await api.vacuumDatabase();
+      api.getSystemStatus().then(({ data }) => {
         const { data: status } = data;
         setState({
-          ...state,
           dbSize: status.dbSize,
+          allowSignUp: status.allowSignUp,
+          additionalStyle: status.additionalStyle,
+          additionalScript: status.additionalScript,
         });
       });
     } catch (error) {
