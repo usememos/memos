@@ -45,7 +45,8 @@
     "fold": "Vik ihop",
     "expand": "Expandera",
     "image": "Bild",
-    "link": "Länk"
+    "link": "Länk",
+    "vacuum": "Vacuum"
   },
   "slogan": "En öppen källkod, self-hosted antecknings hubb med kunskapshantering och socialisering",
   "auth": {

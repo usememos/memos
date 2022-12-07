@@ -148,4 +148,26 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		}
 		return nil
 	})
+
+	g.POST("/system/vacuum", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+		user, err := s.Store.FindUser(ctx, &api.UserFind{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil || user.Role != api.Host {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+		if err := s.Store.Vacuum(ctx); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to vacuum database").SetInternal(err)
+		}
+		c.Response().WriteHeader(http.StatusOK)
+		return nil
+	})
 }

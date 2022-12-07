@@ -14,6 +14,10 @@ export function upsertSystemSetting(systemSetting: SystemSetting) {
   return axios.post<ResponseObject<SystemSetting>>("/api/system/setting", systemSetting);
 }
 
+export function vacuumDatabase() {
+  return axios.post("/api/system/vacuum");
+}
+
 export function signin(username: string, password: string) {
   return axios.post<ResponseObject<User>>("/api/auth/signin", {
     username,
