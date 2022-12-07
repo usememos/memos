@@ -148,4 +148,37 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		}
 		return nil
 	})
+
+	g.POST("/system/vacuum", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		systemStatus := api.SystemStatus{
+			DBSize: 0,
+		}
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if ok {
+			user, err := s.Store.FindUser(ctx, &api.UserFind{
+				ID: &userID,
+			})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+			}
+			if user != nil && user.Role == api.Host {
+				if err := s.Store.Vacuum(ctx); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to vacuum database").SetInternal(err)
+				}
+
+				fi, err := os.Stat(s.Profile.DSN)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read database fileinfo").SetInternal(err)
+				}
+				systemStatus.DBSize = fi.Size()
+			}
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(systemStatus)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode system setting list response").SetInternal(err)
+		}
+		return nil
+	})
 }

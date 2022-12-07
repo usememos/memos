@@ -45,7 +45,8 @@
     "fold": "折叠",
     "expand": "展开",
     "image": "图片",
-    "link": "链接"
+    "link": "链接",
+    "vacuum": "清理"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {

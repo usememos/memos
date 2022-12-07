@@ -45,7 +45,8 @@
     "fold": "Falten",
     "expand": "Erweitern",
     "image": "Bild",
-    "link": "Link"
+    "link": "Link",
+    "vacuum": "Vacuum"
   },
   "slogan": "Eine quelloffene, selbst gehostete Sammlung an Memos zur Wissensverwaltung und Vernetzung.",
   "auth": {

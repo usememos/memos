@@ -60,6 +60,22 @@ const SystemSection = () => {
     });
   };
 
+  const handleVacuumBtnClick = async () => {
+    try {
+      api.vacuumDatabase().then(({ data }) => {
+        const { data: status } = data;
+        setState({
+          ...state,
+          dbSize: status.dbSize,
+        });
+      });
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    toastHelper.success("Succeed to vacuum database");
+  };
+
   const handleSaveAdditionalStyle = async () => {
     try {
       await api.upsertSystemSetting({
@@ -96,9 +112,14 @@ const SystemSection = () => {
   return (
     <div className="section-container system-section-container">
       <p className="title-text">{t("common.basic")}</p>
-      <p className="text-value">
-        {t("setting.system-section.database-file-size")}: <span className="font-mono font-medium">{formatBytes(state.dbSize)}</span>
-      </p>
+      <label className="form-label">
+        <span className="normal-text">
+          {t("setting.system-section.database-file-size")}: <span className="font-mono font-medium">{formatBytes(state.dbSize)}</span>
+        </span>
+        <Button size="sm" onClick={handleVacuumBtnClick}>
+          {t("common.vacuum")}
+        </Button>
+      </label>
       <p className="title-text">{t("sidebar.setting")}</p>
       <label className="form-label">
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>

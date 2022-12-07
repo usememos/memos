@@ -45,7 +45,8 @@
     "fold": "Fold",
     "expand": "Expand",
     "image": "Image",
-    "link": "Link"
+    "link": "Link",
+    "vacuum": "Vacuum"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {

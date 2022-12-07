@@ -41,7 +41,8 @@
     "changed": "gewijzigd",
     "update-on": "Update op",
     "fold": "Invouwen",
-    "expand": "Uitklappen"
+    "expand": "Uitklappen",
+    "vacuum": "Vacuum"
   },
   "slogan": "Een open-source, zelf-beheerd memo applicatie voor kennismanagement en collaboratie.",
   "auth": {
