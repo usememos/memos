@@ -290,6 +290,7 @@ export default function showCreateShortcutDialog(shortcutId?: ShortcutId): void 
   generateDialog(
     {
       className: "create-shortcut-dialog",
+      dialogName: "create-shortcut-dialog",
     },
     CreateShortcutDialog,
     { shortcutId }

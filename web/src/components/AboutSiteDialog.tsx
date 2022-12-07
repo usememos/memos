@@ -49,6 +49,7 @@ export default function showAboutSiteDialog(): void {
   generateDialog(
     {
       className: "about-site-dialog",
+      dialogName: "about-site-dialog",
     },
     AboutSiteDialog
   );

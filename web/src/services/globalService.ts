@@ -1,7 +1,7 @@
 import store from "../store";
 import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
-import { setAppearance, setGlobalState, setLocale } from "../store/modules/global";
+import { setAppearance, setGlobalState, setLocale, pushDialogStack, popDialogStack } from "../store/modules/global";
 
 const globalService = {
   getState: () => {
@@ -17,6 +17,7 @@ const globalService = {
         additionalStyle: "",
         additionalScript: "",
       } as SystemStatus,
+      dialogStack: [],
     };
 
     const { locale: storageLocale, appearance: storageAppearance } = storage.get(["locale", "appearance"]);
@@ -45,6 +46,19 @@ const globalService = {
 
   setAppearance: (appearance: Appearance) => {
     store.dispatch(setAppearance(appearance));
+  },
+
+  pushDialogStack: (name: string) => {
+    store.dispatch(pushDialogStack(name));
+  },
+
+  popDialogStack: () => {
+    store.dispatch(popDialogStack());
+  },
+
+  topDialogStack: () => {
+    const stack = store.getState().global.dialogStack;
+    return stack[stack.length - 1];
   },
 };
 

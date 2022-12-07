@@ -91,6 +91,7 @@ export default function showSettingDialog(): void {
   generateDialog(
     {
       className: "setting-dialog",
+      dialogName: "setting-dialog",
     },
     SettingDialog,
     {}

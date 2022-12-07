@@ -96,6 +96,7 @@ function showChangeMemoCreatedTsDialog(memoId: MemoId) {
   generateDialog(
     {
       className: "change-memo-created-ts-dialog",
+      dialogName: "change-memo-created-ts-dialog",
     },
     ChangeMemoCreatedTsDialog,
     {

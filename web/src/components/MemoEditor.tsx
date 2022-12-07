@@ -100,8 +100,33 @@ const MemoEditor = () => {
       return;
     }
     if (event.key === "Tab") {
-      event.preventDefault();
-      editorRef.current?.insertText(" ".repeat(TAB_SPACE_WIDTH));
+      if (!editorRef.current) {
+        return;
+      }
+      const { start, end } = editorRef.current.getSelectedRange();
+      if (start && end) {
+        event.preventDefault();
+        const rows = editorRef.current.getContent().split("\n");
+        let rowStart = 0;
+        let rowEnd = 0;
+        const newContent = rows
+          .map((row) => {
+            rowEnd = rowStart + row.length + 1;
+            console.log(start, end, rowStart, rowEnd);
+            if (start <= rowEnd && rowStart <= end) {
+              rowStart = rowEnd + 1;
+              return `${" ".repeat(TAB_SPACE_WIDTH)}${row}`;
+            } else {
+              rowStart = rowEnd + 1;
+              return row;
+            }
+          })
+          .join("\n");
+        editorRef.current.setContent(newContent);
+      } else {
+        event.preventDefault();
+        editorRef.current.insertText(" ".repeat(TAB_SPACE_WIDTH));
+      }
       return;
     }
     if (event.ctrlKey || event.metaKey) {

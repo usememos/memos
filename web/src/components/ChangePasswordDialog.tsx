@@ -114,6 +114,7 @@ function showChangePasswordDialog() {
   generateDialog(
     {
       className: "change-password-dialog",
+      dialogName: "change-password-dialog",
     },
     ChangePasswordDialog
   );

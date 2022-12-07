@@ -79,6 +79,7 @@ const PreferencesSection = () => {
       title: `Archive Member`,
       content: `❗️Are you sure to archive ${user.username}?`,
       style: "warning",
+      dialogName: "archive-user-dialog",
       onConfirm: async () => {
         await userService.patchUser({
           id: user.id,
@@ -102,6 +103,7 @@ const PreferencesSection = () => {
       title: `Delete Member`,
       content: `Are you sure to delete ${user.username}? THIS ACTION IS IRREVERSIABLE.❗️`,
       style: "warning",
+      dialogName: "delete-user-dialog",
       onConfirm: async () => {
         await userService.deleteUser({
           id: user.id,
