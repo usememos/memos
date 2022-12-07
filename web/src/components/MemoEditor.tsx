@@ -98,14 +98,19 @@ const MemoEditor = () => {
       const cursorPosition = editorRef.current.getCursorPosition();
       const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
       const prevRows = prevValue.split("\n");
-      const curRowIndex = prevRows.length;
-      const prevRowValue = prevRows[curRowIndex - 1];
-      if (prevRowValue.startsWith("- [ ] ") || prevRowValue.startsWith("- [x] ") || prevRowValue.startsWith("- [X] ")) {
+      const prevRowValue = prevRows[prevRows.length - 1];
+      if (prevRowValue === "- " || prevRowValue === "- [ ] " || prevRowValue === "- [x] " || prevRowValue === "- [X] ") {
         event.preventDefault();
-        editorRef.current.insertText("", "\n- [ ] ");
-      } else if (prevRowValue.startsWith("- ")) {
-        event.preventDefault();
-        editorRef.current.insertText("", "\n- ");
+        prevRows[prevRows.length - 1] = "";
+        editorRef.current.setContent(prevRows.join("\n"));
+      } else {
+        if (prevRowValue.startsWith("- [ ] ") || prevRowValue.startsWith("- [x] ") || prevRowValue.startsWith("- [X] ")) {
+          event.preventDefault();
+          editorRef.current.insertText("", "\n- [ ] ");
+        } else if (prevRowValue.startsWith("- ")) {
+          event.preventDefault();
+          editorRef.current.insertText("", "\n- ");
+        }
       }
     }
     if (event.key === "Escape") {
