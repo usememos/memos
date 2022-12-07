@@ -164,6 +164,9 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		if user == nil || user.Role != api.Host {
 			// throw error
 		}
+		if err := s.Store.Vacuum(ctx); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to vacuum database").SetInternal(err)
+		}
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		return nil
 	})
