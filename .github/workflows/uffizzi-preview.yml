@@ -1,12 +1,13 @@
 name: Deploy Uffizzi Preview
 
 on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
   workflow_run:
     workflows:
       - "Build PR Image"
     types:
       - completed
-
 
 jobs:
   cache-compose-file:
@@ -16,7 +17,7 @@ jobs:
       compose-file-cache-key: ${{ env.HASH }}
       pr-number: ${{ env.PR_NUMBER }}
     steps:
-      - name: 'Download artifacts'
+      - name: "Download artifacts"
         # Fetch output (zip archive) from the workflow run that triggered this workflow.
         uses: actions/github-script@v6
         with:
@@ -38,7 +39,7 @@ jobs:
             let fs = require('fs');
             fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/preview-spec.zip`, Buffer.from(download.data));
 
-      - name: 'Unzip artifact'
+      - name: "Unzip artifact"
         run: unzip preview-spec.zip
       - name: Read Event into ENV
         run: |
