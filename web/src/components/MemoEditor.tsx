@@ -91,6 +91,27 @@ const MemoEditor = () => {
   }, [editorState.editMemoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.ctrlKey || event.metaKey) {
+      if (event.key === "Enter") {
+        handleSaveBtnClick();
+        return;
+      }
+      if (event.key === "b") {
+        event.preventDefault();
+        editorRef.current?.insertText("", "**", "**");
+        return;
+      }
+      if (event.key === "i") {
+        event.preventDefault();
+        editorRef.current?.insertText("", "*", "*");
+        return;
+      }
+      if (event.key === "e") {
+        event.preventDefault();
+        editorRef.current?.insertText("", "`", "`");
+        return;
+      }
+    }
     if (event.key === "Enter") {
       if (!editorRef.current) {
         return;
@@ -126,27 +147,6 @@ const MemoEditor = () => {
       event.preventDefault();
       editorRef.current?.insertText(" ".repeat(TAB_SPACE_WIDTH));
       return;
-    }
-    if (event.ctrlKey || event.metaKey) {
-      if (event.key === "Enter") {
-        handleSaveBtnClick();
-        return;
-      }
-      if (event.key === "b") {
-        event.preventDefault();
-        editorRef.current?.insertText("", "**", "**");
-        return;
-      }
-      if (event.key === "i") {
-        event.preventDefault();
-        editorRef.current?.insertText("", "*", "*");
-        return;
-      }
-      if (event.key === "e") {
-        event.preventDefault();
-        editorRef.current?.insertText("", "`", "`");
-        return;
-      }
     }
   };
 
