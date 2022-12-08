@@ -112,6 +112,7 @@ const MemoEditor = () => {
           editorRef.current.insertText("", "\n- ");
         }
       }
+      return;
     }
     if (event.key === "Escape") {
       if (state.fullscreen) {
