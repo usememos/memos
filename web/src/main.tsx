@@ -11,7 +11,7 @@ import "dayjs/locale/zh";
 import "dayjs/locale/fr";
 import "dayjs/locale/vi";
 import theme from "./theme";
-import "highlight.js/styles/github.css";
+import "./less/code-highlight.less";
 import "./css/global.css";
 import "./css/tailwind.css";
 
