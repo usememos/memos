@@ -46,7 +46,11 @@ const UsageHeatMap = () => {
         for (const record of data) {
           const index = (utils.getDateStampByDate(record * 1000) - beginDayTimestamp) / (1000 * 3600 * 24) - 1;
           if (index >= 0) {
-            newStat[index].count += 1;
+            // because of dailight savings, some days may be 23 hours long instead of 24 hours long
+            // this causes the calculations to yield weird indices such as 40.93333333333
+            // rounding them may not give you the exact day on the heat map, but it's not too bad
+            const exactIndex = +index.toFixed(0);
+            newStat[exactIndex].count += 1;
           }
         }
         setAllStat([...newStat]);
