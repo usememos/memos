@@ -9,6 +9,7 @@ interface Setting {
 
 interface LocalSetting {
   enableFoldMemo: boolean;
+  enableDoubleClickEdit: boolean;
 }
 
 interface UserLocaleSetting {

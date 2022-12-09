@@ -12,6 +12,7 @@ import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "../less/memo.less";
+import { useAppSelector } from "../store";
 
 interface Props {
   memo: Memo;
@@ -30,6 +31,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const { memo, highlightWord } = props;
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const { localSetting } = useAppSelector((state) => state.user.user as User);
   const [displayTimeStr, setDisplayTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
@@ -151,7 +153,9 @@ const Memo: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    editorStateService.setEditMemoWithId(memo.id);
+    if (localSetting.enableDoubleClickEdit) {
+      editorStateService.setEditMemoWithId(memo.id);
+    }
   };
 
   const handleMemoDisplayTimeClick = () => {

@@ -151,6 +151,7 @@
     "preference-section": {
       "default-memo-visibility": "默认 Memo 可见性",
       "enable-folding-memo": "开启折叠 Memo",
+      "enable-double-click-to-edit": "开启双击编辑 Memo",
       "editor-font-style": "编辑器字体样式",
       "mobile-editor-style": "移动端编辑器样式",
       "default-memo-sort-option": "Memo 显示时间",

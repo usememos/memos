@@ -69,7 +69,11 @@ const PreferencesSection = () => {
   };
 
   const handleIsFoldingEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    userService.upsertLocalSetting("enableFoldMemo", event.target.checked);
+    userService.upsertLocalSetting({ ...localSetting, enableFoldMemo: event.target.checked });
+  };
+
+  const handleDoubleClickEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    userService.upsertLocalSetting({ ...localSetting, enableDoubleClickEdit: event.target.checked });
   };
 
   return (
@@ -138,6 +142,10 @@ const PreferencesSection = () => {
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.enable-folding-memo")}</span>
         <Switch className="ml-2" checked={localSetting.enableFoldMemo} onChange={handleIsFoldingEnabledChanged} />
+      </label>
+      <label className="form-label selector">
+        <span className="normal-text">{t("setting.preference-section.enable-double-click-to-edit")}</span>
+        <Switch className="ml-2" checked={localSetting.enableDoubleClickEdit} onChange={handleDoubleClickEnabledChanged} />
       </label>
     </div>
   );
