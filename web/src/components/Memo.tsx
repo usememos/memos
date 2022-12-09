@@ -3,6 +3,7 @@ import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../store";
 import { editorStateService, locationService, memoService, userService } from "../services";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -12,7 +13,6 @@ import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "../less/memo.less";
-import { useAppSelector } from "../store";
 
 interface Props {
   memo: Memo;
