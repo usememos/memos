@@ -2,11 +2,15 @@
   @apply w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-200;
 
   > .memo-content-text {
-    @apply w-full break-words text-base leading-7;
+    @apply w-full max-w-full word-break text-base leading-6;
 
     > p {
-      @apply w-full h-auto mb-1 last:mb-0 text-base leading-6 whitespace-pre-wrap break-words;
+      @apply w-full h-auto mb-1 last:mb-0 text-base;
       min-height: 24px;
+    }
+
+    > .li-container {
+      @apply w-full flex flex-row flex-nowrap;
     }
 
     .img {
@@ -28,27 +32,19 @@
     .ol-block,
     .ul-block,
     .todo-block {
-      @apply inline-block box-border text-right w-8 mr-px font-mono select-none whitespace-nowrap;
+      @apply shrink-0 inline-block box-border text-right w-8 mr-px font-mono text-sm leading-6 select-none whitespace-nowrap;
+    }
+
+    .ol-block {
+      @apply opacity-80 mt-px;
     }
 
     .ul-block {
-      @apply text-center;
+      @apply text-center mt-px;
     }
 
     .todo-block {
-      @apply w-4 h-4 leading-4 border rounded box-border text-lg cursor-pointer shadow-inner hover:opacity-80;
-      transform: translateY(2px);
-      margin-left: 6px;
-      margin-right: 6px;
-    }
-
-    li {
-      list-style-type: none;
-
-      &::before {
-        @apply font-bold mr-1;
-        content: "•";
-      }
+      @apply w-4 h-4 leading-4 mx-2 mt-1 border rounded box-border text-lg cursor-pointer shadow-inner hover:opacity-80;
     }
 
     pre {
@@ -60,7 +56,7 @@
     }
 
     code {
-      @apply bg-gray-100 dark:bg-zinc-600 px-1 rounded text-sm font-mono leading-6 inline-block;
+      @apply break-all bg-gray-100 dark:bg-zinc-600 px-1 rounded text-sm font-mono leading-6 inline-block;
     }
 
     table {
