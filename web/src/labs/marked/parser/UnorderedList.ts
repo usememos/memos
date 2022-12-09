@@ -11,7 +11,7 @@ const renderer = (rawStr: string): string => {
   }
 
   const parsedContent = marked(matchResult[1], [], inlineElementParserList);
-  return `<p><span class='ul-block'>•</span>${parsedContent}</p>${escape(matchResult[2])}`;
+  return `<p class='li-container'><span class='ul-block'>•</span>${parsedContent}</p>${escape(matchResult[2])}`;
 };
 
 export default {
