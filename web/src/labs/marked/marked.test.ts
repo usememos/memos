@@ -60,8 +60,8 @@ console.log("hello world!")
 - [ ] finish my homework
 - [x] yahaha`,
         want: `<p>My task:</p>
-<p><span class='todo-block todo' data-value='TODO'></span>finish my homework</p>
-<p><span class='todo-block done' data-value='DONE'>✓</span>yahaha</p>`,
+<p class='li-container'><span class='todo-block todo' data-value='TODO'></span>finish my homework</p>
+<p class='li-container'><span class='todo-block done' data-value='DONE'>✓</span>yahaha</p>`,
       },
     ];
 
@@ -76,8 +76,8 @@ console.log("hello world!")
 * list 123
 1. 123123`,
         want: `<p>This is a list</p>
-<p><span class='ul-block'>•</span>list 123</p>
-<p><span class='ol-block'>1.</span>123123</p>`,
+<p class='li-container'><span class='ul-block'>•</span>list 123</p>
+<p class='li-container'><span class='ol-block'>1.</span>123123</p>`,
       },
     ];
 
