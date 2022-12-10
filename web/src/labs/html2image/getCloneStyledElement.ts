@@ -6,11 +6,20 @@ const applyStyles = async (sourceElement: HTMLElement, clonedElement: HTMLElemen
   }
 
   if (sourceElement.tagName === "IMG") {
+    const url = sourceElement.getAttribute("src") ?? "";
+    let covertFailed = false;
     try {
-      const url = await convertResourceToDataURL(sourceElement.getAttribute("src") ?? "");
-      (clonedElement as HTMLImageElement).src = url;
+      (clonedElement as HTMLImageElement).src = await convertResourceToDataURL(url);
     } catch (error) {
-      // do nth
+      covertFailed = true;
+    }
+    // NOTE: Get image blob from backend to avoid CORS error.
+    if (covertFailed) {
+      try {
+        (clonedElement as HTMLImageElement).src = await convertResourceToDataURL(`/o/get/image?url=${url}`);
+      } catch (error) {
+        // do nth
+      }
     }
   }
 

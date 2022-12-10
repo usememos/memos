@@ -10,8 +10,7 @@ const renderer = (rawStr: string): string => {
   }
 
   const imageUrl = absolutifyLink(escape(matchResult[1]));
-  // NOTE: Get image blob from backend to avoid CORS.
-  return `<img class='img' src='/o/get/image?url=${imageUrl}' />`;
+  return `<img class='img' src='${imageUrl}' />`;
 };
 
 export default {
