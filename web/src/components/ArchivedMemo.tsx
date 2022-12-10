@@ -51,7 +51,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`memo-wrapper archived-memo ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
+    <div className={`memo-wrapper archived ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
         <span className="time-text">
           {t("common.archived-at")} {utils.getDateTimeString(memo.updatedTs)}

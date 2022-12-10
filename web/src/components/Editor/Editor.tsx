@@ -5,6 +5,7 @@ import "../../less/editor.less";
 export interface EditorRefActions {
   focus: FunctionType;
   insertText: (text: string, prefix?: string, suffix?: string) => void;
+  removeText: (start: number, length: number) => void;
   setContent: (text: string) => void;
   getContent: () => string;
   getSelectedContent: () => string;
@@ -64,6 +65,19 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         editorRef.current.value = value;
         editorRef.current.focus();
         editorRef.current.selectionEnd = endPosition + prefix.length + content.length;
+        handleContentChangeCallback(editorRef.current.value);
+        refresh();
+      },
+      removeText: (start: number, length: number) => {
+        if (!editorRef.current) {
+          return;
+        }
+
+        const prevValue = editorRef.current.value;
+        const value = prevValue.slice(0, start) + prevValue.slice(start + length);
+        editorRef.current.value = value;
+        editorRef.current.focus();
+        editorRef.current.selectionEnd = start;
         handleContentChangeCallback(editorRef.current.value);
         refresh();
       },
