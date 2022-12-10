@@ -8,10 +8,10 @@
       @apply flex flex-col justify-start items-start;
 
       > .form-item-container {
-        @apply w-full mt-2 py-1 flex flex-row justify-start items-start;
+        @apply w-full mt-2 py-1 flex sm:flex-row flex-col justify-start items-start;
 
         > .normal-text {
-          @apply block flex-shrink-0 w-12 mr-3 text-right text-sm leading-8;
+          @apply block flex-shrink-0 w-12 mr-3 sm:text-right text-left text-sm leading-8;
           color: gray;
         }
 
@@ -23,7 +23,7 @@
           @apply w-full flex flex-col justify-start items-start;
 
           > .create-filter-btn {
-            @apply text-sm py-1 px-2 rounded shadow flex flex-row justify-start items-center border dark:border-zinc-700 cursor-pointer text-blue-500 hover:opacity-80;
+            @apply text-sm py-1 px-2 rounded shadow flex flex-row sm:justify-start justify-center items-center border dark:border-zinc-700 cursor-pointer text-blue-500 hover:opacity-80 sm:min-w-0 min-w-full  sm:mb-0 mb-1;
           }
         }
       }
@@ -56,14 +56,16 @@
 }
 
 .memo-filter-input-wrapper {
-  @apply w-full mb-3 shrink-0 flex flex-row justify-start items-center;
+  @apply w-full mb-3 shrink-0 flex flex-row sm:justify-start justify-center items-center sm:flex-nowrap flex-wrap sm:gap-0 gap-3;
 
   > .selector-wrapper {
-    @apply mr-1 h-9 grow-0 shrink-0;
+    @apply mr-1 h-9 grow-0 shrink-0 sm:min-w-0 min-w-full;
 
     &.relation-selector {
       @apply w-16;
-      margin-left: -68px;
+      @media only screen and (min-width: 640px) {
+        margin-left: -68px;
+      }
     }
 
     &.type-selector {
@@ -80,13 +82,17 @@
   }
 
   > input.value-inputer {
-    max-width: calc(100% - 152px);
-    @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50;
+    @media only screen and (min-width: 640px) {
+      max-width: calc(100% - 152px);
+    }
+    @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50 sm:min-w-0 min-w-full;
   }
 
   > input.datetime-selector {
-    max-width: calc(100% - 152px);
-    @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50;
+    @media only screen and (min-width: 640px) {
+      max-width: calc(100% - 152px);
+    }
+    @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50 sm:min-w-0 min-w-full;
   }
 
   > .remove-btn {
