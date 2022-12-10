@@ -69,6 +69,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		}
 
 		userID, ok := c.Get(getUserIDContextKey()).(int)
+		// Get database size for host user.
 		if ok {
 			user, err := s.Store.FindUser(ctx, &api.UserFind{
 				ID: &userID,
