@@ -1,4 +1,4 @@
-import { toLower } from "lodash";
+import { last, toLower } from "lodash";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
@@ -13,6 +13,8 @@ import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import "../less/memo-editor.less";
+
+const listItemSymbolList = ["* ", "- ", "- [ ] ", "- [x] ", "- [X] "];
 
 const getEditorContentCache = (): string => {
   return storage.get(["editorContentCache"]).editorContentCache ?? "";
@@ -48,7 +50,7 @@ const MemoEditor = () => {
     shouldShowEmojiPicker: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
-  const prevGlobalStateRef = useRef(editorState);
+  const prevEditorStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
   const tagSelectorRef = useRef<HTMLDivElement>(null);
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
@@ -87,10 +89,14 @@ const MemoEditor = () => {
       storage.remove(["editingMemoIdCache"]);
     }
 
-    prevGlobalStateRef.current = editorState;
+    prevEditorStateRef.current = editorState;
   }, [editorState.editMemoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (!editorRef.current) {
+      return;
+    }
+
     if (event.ctrlKey || event.metaKey) {
       if (event.key === "Enter") {
         handleSaveBtnClick();
@@ -98,39 +104,36 @@ const MemoEditor = () => {
       }
       if (event.key === "b") {
         event.preventDefault();
-        editorRef.current?.insertText("", "**", "**");
+        editorRef.current.insertText("", "**", "**");
         return;
       }
       if (event.key === "i") {
         event.preventDefault();
-        editorRef.current?.insertText("", "*", "*");
+        editorRef.current.insertText("", "*", "*");
         return;
       }
       if (event.key === "e") {
         event.preventDefault();
-        editorRef.current?.insertText("", "`", "`");
+        editorRef.current.insertText("", "`", "`");
         return;
       }
     }
+
     if (event.key === "Enter") {
-      if (!editorRef.current) {
-        return;
-      }
       const cursorPosition = editorRef.current.getCursorPosition();
-      const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
-      const prevRows = prevValue.split("\n");
-      const prevRowValue = prevRows[prevRows.length - 1];
-      if (prevRowValue === "- " || prevRowValue === "- [ ] " || prevRowValue === "- [x] " || prevRowValue === "- [X] ") {
-        event.preventDefault();
-        prevRows[prevRows.length - 1] = "";
-        editorRef.current.setContent(prevRows.join("\n"));
-      } else {
-        if (prevRowValue.startsWith("- [ ] ") || prevRowValue.startsWith("- [x] ") || prevRowValue.startsWith("- [X] ")) {
+      const contentBeforeCursor = editorRef.current.getContent().slice(0, cursorPosition);
+      const rowValue = last(contentBeforeCursor.split("\n"));
+      if (rowValue) {
+        if (listItemSymbolList.includes(rowValue)) {
           event.preventDefault();
-          editorRef.current.insertText("", "\n- [ ] ");
-        } else if (prevRowValue.startsWith("- ")) {
-          event.preventDefault();
-          editorRef.current.insertText("", "\n- ");
+          editorRef.current.removeText(cursorPosition - rowValue.length, rowValue.length);
+        } else {
+          for (const listItemSymbol of listItemSymbolList) {
+            if (rowValue.startsWith(listItemSymbol)) {
+              event.preventDefault();
+              editorRef.current.insertText("", `\n${listItemSymbol}`);
+            }
+          }
         }
       }
       return;
@@ -138,14 +141,14 @@ const MemoEditor = () => {
     if (event.key === "Escape") {
       if (state.fullscreen) {
         handleFullscreenBtnClick();
-      } else {
+      } else if (editorState.editMemoId) {
         handleCancelEdit();
       }
       return;
     }
     if (event.key === "Tab") {
       event.preventDefault();
-      editorRef.current?.insertText(" ".repeat(TAB_SPACE_WIDTH));
+      editorRef.current.insertText(" ".repeat(TAB_SPACE_WIDTH));
       return;
     }
   };
@@ -251,11 +254,13 @@ const MemoEditor = () => {
   };
 
   const handleCancelEdit = () => {
-    editorStateService.clearEditMemo();
-    editorStateService.clearResourceList();
-    editorRef.current?.setContent("");
-    setEditorContentCache("");
-    storage.remove(["editingMemoVisibilityCache"]);
+    if (editorState.editMemoId) {
+      editorStateService.clearEditMemo();
+      editorStateService.clearResourceList();
+      editorRef.current?.setContent("");
+      setEditorContentCache("");
+      storage.remove(["editingMemoVisibilityCache"]);
+    }
   };
 
   const handleContentChange = (content: string) => {
