@@ -46,6 +46,7 @@ function App() {
   }, [systemStatus]);
 
   useEffect(() => {
+    document.documentElement.setAttribute("lang", locale);
     i18n.changeLanguage(locale);
     storage.set({
       locale: locale,
