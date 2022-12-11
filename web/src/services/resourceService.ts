@@ -34,7 +34,7 @@ const resourceService = {
     const { data } = (await api.uploadFile(formData)).data;
     const resource = convertResponseModelResource(data);
     const resourceList = resourceService.getState().resources;
-    store.dispatch(setResources(resourceList.concat(resource)));
+    store.dispatch(setResources([resource, ...resourceList]));
     return resource;
   },
 
