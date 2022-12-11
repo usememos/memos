@@ -141,8 +141,6 @@ const MemoEditor = () => {
     if (event.key === "Escape") {
       if (state.fullscreen) {
         handleFullscreenBtnClick();
-      } else if (editorState.editMemoId) {
-        handleCancelEdit();
       }
       return;
     }
@@ -364,7 +362,7 @@ const MemoEditor = () => {
   };
 
   const handleEditorBlur = () => {
-    // do nth
+    // do nothing
   };
 
   const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);
