@@ -152,19 +152,19 @@ const MemoEditor = () => {
   };
 
   const handleMultiFiles = async (files: FileList) => {
-    const resourceList: Resource[] = [];
+    const handledResourceList: Resource[] = [];
     for (const file of files) {
       const resource = await handleUploadResource(file);
       if (resource) {
-        resourceList.push(resource);
+        handledResourceList.push(resource);
         if (editorState.editMemoId) {
           await upsertMemoResource(editorState.editMemoId, resource.id);
         }
       }
     }
-    if (resourceList.length > 0) {
+    if (handledResourceList.length > 0) {
       const resourceList = editorStateService.getState().resourceList;
-      editorStateService.setResourceList([...resourceList, ...resourceList]);
+      editorStateService.setResourceList([...resourceList, ...handledResourceList]);
     }
   };
 
