@@ -151,34 +151,34 @@ const MemoEditor = () => {
     }
   };
 
-  const handleMultiFiles = async (files: FileList) => {
-    const handledResourceList: Resource[] = [];
+  const uploadMultiFiles = async (files: FileList) => {
+    const uploadedResourceList: Resource[] = [];
     for (const file of files) {
       const resource = await handleUploadResource(file);
       if (resource) {
-        handledResourceList.push(resource);
+        uploadedResourceList.push(resource);
         if (editorState.editMemoId) {
           await upsertMemoResource(editorState.editMemoId, resource.id);
         }
       }
     }
-    if (handledResourceList.length > 0) {
+    if (uploadedResourceList.length > 0) {
       const resourceList = editorStateService.getState().resourceList;
-      editorStateService.setResourceList([...resourceList, ...handledResourceList]);
+      editorStateService.setResourceList([...resourceList, ...uploadedResourceList]);
     }
   };
 
   const handleDropEvent = async (event: React.DragEvent) => {
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
       event.preventDefault();
-      await handleMultiFiles(event.dataTransfer.files);
+      await uploadMultiFiles(event.dataTransfer.files);
     }
   };
 
   const handlePasteEvent = async (event: React.ClipboardEvent) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
-      await handleMultiFiles(event.clipboardData.files);
+      await uploadMultiFiles(event.clipboardData.files);
     }
   };
 
