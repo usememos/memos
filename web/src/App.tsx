@@ -22,12 +22,23 @@ function App() {
   }, []);
 
   useEffect(() => {
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
+    const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleColorSchemeChange = (e: MediaQueryListEvent) => {
       if (globalService.getState().appearance === "system") {
         const mode = e.matches ? "dark" : "light";
         setMode(mode);
       }
-    });
+    };
+
+    try {
+      if (darkMediaQuery.addEventListener) {
+        darkMediaQuery.addEventListener("change", handleColorSchemeChange);
+      } else {
+        darkMediaQuery.addListener(handleColorSchemeChange);
+      }
+    } catch (error) {
+      console.error("failed to initial color scheme listener", error);
+    }
   }, []);
 
   // Inject additional style and script codes.
