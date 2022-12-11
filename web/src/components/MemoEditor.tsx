@@ -151,35 +151,34 @@ const MemoEditor = () => {
     }
   };
 
+  const uploadMultiFiles = async (files: FileList) => {
+    const uploadedResourceList: Resource[] = [];
+    for (const file of files) {
+      const resource = await handleUploadResource(file);
+      if (resource) {
+        uploadedResourceList.push(resource);
+        if (editorState.editMemoId) {
+          await upsertMemoResource(editorState.editMemoId, resource.id);
+        }
+      }
+    }
+    if (uploadedResourceList.length > 0) {
+      const resourceList = editorStateService.getState().resourceList;
+      editorStateService.setResourceList([...resourceList, ...uploadedResourceList]);
+    }
+  };
+
   const handleDropEvent = async (event: React.DragEvent) => {
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
       event.preventDefault();
-      const uploadResourceList: Resource[] = [];
-      for (const file of event.dataTransfer.files) {
-        const resource = await handleUploadResource(file);
-        if (resource) {
-          uploadResourceList.push(resource);
-          if (editorState.editMemoId) {
-            await upsertMemoResource(editorState.editMemoId, resource.id);
-          }
-        }
-      }
-      if (uploadResourceList.length > 0) {
-        const resourceList = editorStateService.getState().resourceList;
-        editorStateService.setResourceList([...resourceList, ...uploadResourceList]);
-      }
+      await uploadMultiFiles(event.dataTransfer.files);
     }
   };
 
   const handlePasteEvent = async (event: React.ClipboardEvent) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
-      const file = event.clipboardData.files[0];
-      const resource = await handleUploadResource(file);
-      if (resource) {
-        const resourceList = editorStateService.getState().resourceList;
-        editorStateService.setResourceList([...resourceList, resource]);
-      }
+      await uploadMultiFiles(event.clipboardData.files);
     }
   };
 
