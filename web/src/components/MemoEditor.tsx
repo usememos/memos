@@ -14,7 +14,7 @@ import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import "../less/memo-editor.less";
 
-const listItemSymbolList = ["* ", "- ", "- [ ] ", "- [x] ", "- [X] "];
+const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 
 const getEditorContentCache = (): string => {
   return storage.get(["editorContentCache"]).editorContentCache ?? "";
@@ -132,6 +132,7 @@ const MemoEditor = () => {
             if (rowValue.startsWith(listItemSymbol)) {
               event.preventDefault();
               editorRef.current.insertText("", `\n${listItemSymbol}`);
+              break;
             }
           }
         }
