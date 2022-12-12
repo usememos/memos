@@ -249,7 +249,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
-		filename, _ := url.QueryUnescape(c.Param("filename"))
+		filename, err := url.QueryUnescape(c.Param("filename"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("filename is invalid: %s", c.Param("filename"))).SetInternal(err)
 		}
