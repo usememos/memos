@@ -1,0 +1,214 @@
+{
+    "common": {
+        "about": "Acerca de",
+        "email": "Email",
+        "password": "Contraseña",
+        "repeat-password-short": "Repetir",
+        "repeat-password": "Repetir la contraseña",
+        "new-password": "Nueva contraseña",
+        "repeat-new-password": "Repetir la nueva contraseña",
+        "username": "Usuario",
+        "nickname": "Apodo",
+        "save": "Guardar",
+        "close": "Cerrar",
+        "cancel": "Cancelar",
+        "create": "Crear",
+        "change": "Cambiar",
+        "confirm": "Confirmar",
+        "reset": "Restablecer",
+        "language": "Idioma",
+        "version": "Versión",
+        "pin": "Enganchar",
+        "unpin": "Desenganchar",
+        "edit": "Editar",
+        "restore": "Restaurar",
+        "delete": "Eliminar",
+        "null": "Nulo",
+        "share": "Compartir",
+        "archive": "Archivar",
+        "basic": "Básico",
+        "admin": "Admin",
+        "explore": "Explorar",
+        "sign-in": "Iniciar sesión",
+        "sign-up": "Registrarse",
+        "sign-out": "Cerrar sesión",
+        "back-to-home": "Volver al Inicio",
+        "type": "Tipo",
+        "shortcuts": "Atajos",
+        "title": "Título",
+        "filter": "Filtros",
+        "tags": "Etiquetas",
+        "yourself": "Tu",
+        "archived-at": "Archivado en",
+        "changed": "cambiado",
+        "update-on": "Actualización de",
+        "fold": "Fold",
+        "expand": "Expandir",
+        "image": "Imagen",
+        "link": "Enlace",
+        "vacuum": "Vaciar"
+    },
+    "slogan": "Un código abierto, centro de notas autoalojado con la gestión del conocimiento y la socialización.",
+    "auth": {
+        "signup-as-host": "Registrarse como Anfitrión",
+        "host-tip": "Te estás registrando como Anfitrión del Sitio.",
+        "not-host-tip": "Si no tienes una cuenta, ponte en contacto con el anfitrión del sitio."
+    },
+    "sidebar": {
+        "daily-review": "Análisis diario",
+        "resources": "Recursos",
+        "setting": "Configuración",
+        "archived": "Archivado"
+    },
+    "daily-review": {
+        "oops-nothing": "Oops, no hay nada."
+    },
+    "resources": {
+        "description": "Visualiza tus recursos estáticos en notas. p.ej., imágenes",
+        "no-resources": "Sin recursos.",
+        "fetching-data": "obteniendo datos...",
+        "upload": "Subir",
+        "preview": "Vista previa",
+        "copy-link": "Copiar Enlace",
+        "delete-resource": "Borrar Recurso",
+        "warning-text": "Seguro que quieres eliminar este recurso? ESTA ACCIÓN ES IRREVERSIBLE❗.",
+        "linked-amount": "Importe de la nota vinculado",
+        "rename": "Renombrar",
+        "clear-unused-resources": "Borrar los recursos no utilizados",
+        "warning-text-unused": "Seguro que quieres eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE❗.",
+        "no-unused-resources": "No hay recursos sin utilizar"
+    },
+    "archived": {
+        "archived-memos": "Notas Archivadas",
+        "no-archived-memos": "No hay notas archivadas.",
+        "fetching-data": "obteniendo datos..."
+    },
+    "editor": {
+        "editing": "Editando...",
+        "cancel-edit": "Cancelar edición",
+        "save": "Guardar",
+        "placeholder": "Alguna idea...",
+        "only-image-supported": "Solo se admiten archivos de imagen.",
+        "cant-empty": "El contenido no puede estar vacío",
+        "local": "Local",
+        "resources": "Recursos"
+    },
+    "memo": {
+        "view-detail": "Ver Detalles",
+        "copy": "Copiar",
+        "visibility": {
+            "private": "Solo visible para ti",
+            "protected": "Visible para los miembros",
+            "public": "Todo el mundo lo puede ver"
+        }
+    },
+    "memo-list": {
+        "fetching-data": "obteniendo datos...",
+        "fetch-more": "Click aqui para obtener más información"
+    },
+    "shortcut-list": {
+        "shortcut-title": "título del atajo",
+        "create-shortcut": "Crear Atajo",
+        "edit-shortcut": "Editar Atajo",
+        "eligible-memo": "nota elegible",
+        "fill-previous": "Introduce el valor del filtro anterior",
+        "title-required": "El título es obligatorio",
+        "value-required": "El valor del filtro es obligatorio"
+    },
+    "filter": {
+        "new-filter": "Nuevo Filtro",
+        "operator": {
+            "contains": "Contiene",
+            "not-contains": "No contiene",
+            "is": "Es",
+            "is-not": "No Es",
+            "before": "Antes",
+            "after": "Después"
+        },
+        "value": {
+            "not-tagged": "Sin etiquetas",
+            "linked": "Tiene enlaces"
+        },
+        "text-placeholder": "Empieza por ^ para usar regex"
+    },
+    "tag-list": {
+        "tip-text": "Introduce `#etiqueta ` para crearla"
+    },
+    "search": {
+        "quickly-filter": "Filtro rápido"
+    },
+    "setting": {
+        "my-account": "Mi Cuenta",
+        "preference": "Preferencias",
+        "member": "Miembros",
+        "member-list": "Lista de miembros",
+        "system": "Sistema",
+        "account-section": {
+            "title": "Información de la Cuenta",
+            "update-information": "Actualizar Información",
+            "change-password": "Cambiar Contraseña"
+        },
+        "preference-section": {
+            "default-memo-visibility": "Visibilidad predeterminada de las notas",
+            "enable-folding-memo": "Habilitar nota plegable",
+            "editor-font-style": "Estilo de fuente del editor",
+            "mobile-editor-style": "Estilo del editor móvil",
+            "default-memo-sort-option": "Hora de visualización de la nota",
+            "created_ts": "Hora de Creación",
+            "updated_ts": "Hora de Actualización"
+        },
+        "member-section": {
+            "create-a-member": "Crear un miembro"
+        },
+        "system-section": {
+            "database-file-size": "Tamaño de la Base de Datos",
+            "allow-user-signup": "Permitir el registro de usuarios",
+            "additional-style": "Estilo adicional",
+            "additional-script": "Script adicional",
+            "additional-style-placeholder": "Códigos CSS adicionales",
+            "additional-script-placeholder": "Códigos JavaScript adicionales"
+        },
+        "apperance-option": {
+            "system": "Según el sistema",
+            "light": "Siempre claro",
+            "dark": "Siempre oscuro"
+        }
+    },
+    "amount-text": {
+        "memo": "NOTA",
+        "tag": "ETIQUETA",
+        "day": "DÍA"
+    },
+    "message": {
+        "no-memos": "no hay notas 🌃",
+        "memos-ready": "todos las notas están listos 🎉",
+        "restored-successfully": "Restaurado con éxito",
+        "memo-updated-datetime": "Fecha de creación de la nota modificada.",
+        "invalid-created-datetime": "Fecha de creación no válida.",
+        "change-memo-created-time": "Cambiar la hora de creación de la nota",
+        "memo-not-found": "Nota no encontrado.",
+        "fill-all": "Rellena todos los campos.",
+        "password-not-match": "Las contraseñas no coinciden.",
+        "new-password-not-match": "Las nuevas contraseñas no coinciden.",
+        "image-load-failed": "Error al subir la imagen",
+        "fill-form": "Rellena este formulario",
+        "login-failed": "Error al iniciar sesión",
+        "signup-failed": "Error al registrarse",
+        "user-not-found": "Usuario no encontrado",
+        "password-changed": "Contraseña cambiada",
+        "private-only": "Esta nota es privada.",
+        "copied": "Copiado",
+        "succeed-copy-content": "Contenido copiado al portapapeles.",
+        "succeed-copy-link": "Enlace copiado al portapapeles.",
+        "change-resource-filename": "Cambiar el nombre de un archivo de recursos",
+        "resource-filename-updated": "El nombre del archivo de recursos se ha cambiado correctamente..",
+        "invalid-resource-filename": "Nombre de archivo de recursos no válido.",
+        "click-to-save-the-image": "Haz clic para guardar la imagen",
+        "generating-the-screenshot": "Generando la captura de pantalla...",
+        "count-selected-resources": "Total seleccionado",
+        "too-short": "Demasiado corto",
+        "too-long": "Demasiado largo",
+        "not-allow-space": "No se admiten espacios",
+        "not-allow-chinese": "El chino no está permitido"
+    }
+}
