@@ -7,6 +7,7 @@ import frLocale from "./locales/fr.json";
 import nlLocale from "./locales/nl.json";
 import svLocale from "./locales/sv.json";
 import deLocale from "./locales/de.json";
+import esLocale from "./locales/es.json";
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -30,6 +31,9 @@ i18n.use(initReactI18next).init({
     },
     de: {
       translation: deLocale,
+    },
+    es: {
+      translation: esLocale,
     },
   },
   lng: "nl",

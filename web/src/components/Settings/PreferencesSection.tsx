@@ -36,6 +36,10 @@ const localeSelectorItems = [
     text: "German",
     value: "de",
   },
+  {
+    text: "Spanish",
+    value: "es",
+  },
 ];
 
 const PreferencesSection = () => {
