@@ -149,6 +149,7 @@
       "change-password": "Ändra lösenord"
     },
     "preference-section": {
+      "theme": "Tema",
       "default-memo-visibility": "Standard synlighet för anteckningar",
       "enable-folding-memo": "Aktivera vikbara anteckningar",
       "editor-font-style": "Redigerare teckensnitt",

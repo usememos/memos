@@ -149,6 +149,7 @@
       "change-password": "Passwort ändern"
     },
     "preference-section": {
+      "theme": "Thema",
       "default-memo-visibility": "Standard Sichtbarkeit von Memos",
       "enable-folding-memo": "Aktiviere Falten von Memos",
       "editor-font-style": "Editor Textstil",

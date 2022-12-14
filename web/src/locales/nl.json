@@ -143,6 +143,7 @@
       "change-password": "Wachtwoord wijzigen"
     },
     "preference-section": {
+      "theme": "Thema",
       "default-memo-visibility": "Standaard memo zichtbaarheid",
       "enable-folding-memo": "Vouwende memo aanzetten",
       "editor-font-style": "Editor lettertype",
