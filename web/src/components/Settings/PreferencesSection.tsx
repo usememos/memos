@@ -99,7 +99,7 @@ const PreferencesSection = () => {
         </Select>
       </div>
       <div className="form-label selector">
-        <span className="normal-text">Theme</span>
+        <span className="normal-text">{t("setting.preference-section.theme")}</span>
         <AppearanceSelect />
       </div>
       <p className="title-text">{t("setting.preference")}</p>

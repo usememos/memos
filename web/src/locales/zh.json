@@ -149,6 +149,7 @@
       "change-password": "修改密码"
     },
     "preference-section": {
+      "theme": "主题",
       "default-memo-visibility": "默认 Memo 可见性",
       "enable-folding-memo": "开启折叠 Memo",
       "editor-font-style": "编辑器字体样式",

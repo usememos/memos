@@ -149,6 +149,7 @@
             "change-password": "Cambiar Contraseña"
         },
         "preference-section": {
+            "theme": "Tema",
             "default-memo-visibility": "Visibilidad predeterminada de las notas",
             "enable-folding-memo": "Habilitar nota plegable",
             "editor-font-style": "Estilo de fuente del editor",

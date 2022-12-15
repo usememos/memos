@@ -148,6 +148,7 @@
       "change-password": "Đổi mật khẩu"
     },
     "preference-section": {
+      "theme": "Chủ đề",
       "default-memo-visibility": "Chế độ memo mặc định",
       "enable-folding-memo": "Enable folding memo",
       "editor-font-style": "Thay đổi font cho trình soạn thảo",
