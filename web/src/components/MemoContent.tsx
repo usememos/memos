@@ -65,7 +65,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         expandButtonStatus: -1,
       });
     }
-  }, [user?.localSetting.enableFoldMemo]);
+  }, [user?.localSetting.enableFoldMemo, content]);
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     if (onMemoContentClick) {
