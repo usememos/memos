@@ -10,7 +10,7 @@ const renderer = (rawStr: string): string => {
   }
 
   const parsedContent = marked(matchResult[1], [], inlineElementParserList);
-  return `<p class='li-container'><span class='todo-block done' data-value='DONE'>✓</span>${parsedContent}</p>${matchResult[2]}`;
+  return `<p class='li-container'><span class='todo-block done' data-value='DONE'>✓</span><span>${parsedContent}</span></p>${matchResult[2]}`;
 };
 
 export default {
