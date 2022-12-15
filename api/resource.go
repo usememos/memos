@@ -9,10 +9,11 @@ type Resource struct {
 	UpdatedTs int64 `json:"updatedTs"`
 
 	// Domain specific fields
-	Filename string `json:"filename"`
-	Blob     []byte `json:"-"`
-	Type     string `json:"type"`
-	Size     int64  `json:"size"`
+	Filename   string     `json:"filename"`
+	Blob       []byte     `json:"-"`
+	Type       string     `json:"type"`
+	Size       int64      `json:"size"`
+	Visibility Visibility `json:"visibility"`
 
 	// Related fields
 	LinkedMemoAmount int `json:"linkedMemoAmount"`
@@ -23,10 +24,11 @@ type ResourceCreate struct {
 	CreatorID int
 
 	// Domain specific fields
-	Filename string `json:"filename"`
-	Blob     []byte `json:"blob"`
-	Type     string `json:"type"`
-	Size     int64  `json:"size"`
+	Filename   string     `json:"filename"`
+	Blob       []byte     `json:"blob"`
+	Type       string     `json:"type"`
+	Size       int64      `json:"size"`
+	Visibility Visibility `json:"visibility"`
 }
 
 type ResourceFind struct {
@@ -36,8 +38,9 @@ type ResourceFind struct {
 	CreatorID *int `json:"creatorId"`
 
 	// Domain specific fields
-	Filename *string `json:"filename"`
-	MemoID   *int
+	Filename   *string `json:"filename"`
+	MemoID     *int
+	Visibility *Visibility `json:"visibility"`
 }
 
 type ResourcePatch struct {
@@ -47,7 +50,8 @@ type ResourcePatch struct {
 	UpdatedTs *int64
 
 	// Domain specific fields
-	Filename *string `json:"filename"`
+	Filename   *string     `json:"filename"`
+	Visibility *Visibility `json:"visibility"`
 }
 
 type ResourceDelete struct {
