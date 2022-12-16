@@ -16,7 +16,7 @@ const MemoFilter = () => {
 
   return (
     <div className={`filter-query-container ${showFilter ? "" : "!hidden"}`}>
-      <span className="tip-text">{t("common.filter")}:</span>
+      <span className="mx-2 text-gray-400">{t("common.filter")}:</span>
       <div
         className={"filter-item-container " + (shortcut ? "" : "!hidden")}
         onClick={() => {
