@@ -41,8 +41,8 @@ function Home() {
       <div className="page-container">
         <Sidebar />
         <main className="memos-wrapper">
+          <MemosHeader />
           <div className="memos-editor-wrapper">
-            <MemosHeader />
             {!userService.isVisitorMode() && <MemoEditor />}
             <MemoFilter />
           </div>
