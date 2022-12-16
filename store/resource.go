@@ -22,11 +22,10 @@ type resourceRaw struct {
 	UpdatedTs int64
 
 	// Domain specific fields
-	Filename   string
-	Blob       []byte
-	Type       string
-	Size       int64
-	Visibility api.Visibility
+	Filename string
+	Blob     []byte
+	Type     string
+	Size     int64
 }
 
 func (raw *resourceRaw) toResource() *api.Resource {
@@ -39,11 +38,10 @@ func (raw *resourceRaw) toResource() *api.Resource {
 		UpdatedTs: raw.UpdatedTs,
 
 		// Domain specific fields
-		Filename:   raw.Filename,
-		Blob:       raw.Blob,
-		Type:       raw.Type,
-		Size:       raw.Size,
-		Visibility: raw.Visibility,
+		Filename: raw.Filename,
+		Blob:     raw.Blob,
+		Type:     raw.Type,
+		Size:     raw.Size,
 	}
 }
 
@@ -219,20 +217,18 @@ func createResource(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate)
 			blob,
 			type,
 			size,
-			visibility,
 			creator_id
 		)
-		VALUES (?, ?, ?, ?, ?, ?)
-		RETURNING id, filename, blob, type, size, visibility, creator_id, created_ts, updated_ts
+		VALUES (?, ?, ?, ?, ?)
+		RETURNING id, filename, blob, type, size, creator_id, created_ts, updated_ts
 	`
 	var resourceRaw resourceRaw
-	if err := tx.QueryRowContext(ctx, query, create.Filename, create.Blob, create.Type, create.Size, create.Visibility, create.CreatorID).Scan(
+	if err := tx.QueryRowContext(ctx, query, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID).Scan(
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
 		&resourceRaw.Blob,
 		&resourceRaw.Type,
 		&resourceRaw.Size,
-		&resourceRaw.Visibility,
 		&resourceRaw.CreatorID,
 		&resourceRaw.CreatedTs,
 		&resourceRaw.UpdatedTs,
@@ -252,9 +248,6 @@ func patchResource(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*
 	if v := patch.Filename; v != nil {
 		set, args = append(set, "filename = ?"), append(args, *v)
 	}
-	if v := patch.Visibility; v != nil {
-		set, args = append(set, "visibility = ?"), append(args, *v)
-	}
 
 	args = append(args, patch.ID)
 
@@ -262,7 +255,7 @@ func patchResource(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*
 		UPDATE resource
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, filename, blob, type, size, visibility, creator_id, created_ts, updated_ts
+		RETURNING id, filename, blob, type, size, creator_id, created_ts, updated_ts
 	`
 	var resourceRaw resourceRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
@@ -271,7 +264,6 @@ func patchResource(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*
 		&resourceRaw.Blob,
 		&resourceRaw.Type,
 		&resourceRaw.Size,
-		&resourceRaw.Visibility,
 		&resourceRaw.CreatorID,
 		&resourceRaw.CreatedTs,
 		&resourceRaw.UpdatedTs,
@@ -294,9 +286,6 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 	if v := find.Filename; v != nil {
 		where, args = append(where, "filename = ?"), append(args, *v)
 	}
-	if v := find.Visibility; v != nil {
-		where, args = append(where, "visibility = ?"), append(args, *v)
-	}
 	if v := find.MemoID; v != nil {
 		where, args = append(where, "id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
 	}
@@ -308,7 +297,6 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 			blob,
 			type,
 			size,
-			visibility,
 			creator_id,
 			created_ts,
 			updated_ts
@@ -331,7 +319,6 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 			&resourceRaw.Blob,
 			&resourceRaw.Type,
 			&resourceRaw.Size,
-			&resourceRaw.Visibility,
 			&resourceRaw.CreatorID,
 			&resourceRaw.CreatedTs,
 			&resourceRaw.UpdatedTs,

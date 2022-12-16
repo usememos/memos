@@ -75,8 +75,7 @@ CREATE TABLE resource (
   blob BLOB DEFAULT NULL,
   external_link TEXT NOT NULL DEFAULT '',
   type TEXT NOT NULL DEFAULT '',
-  size INTEGER NOT NULL DEFAULT 0,
-  visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE'
+  size INTEGER NOT NULL DEFAULT 0
 );
 
 -- memo_resource
