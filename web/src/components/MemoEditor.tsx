@@ -15,6 +15,7 @@ import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import "../less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
+const emptyOlReg = /^([1-9][0-9]*)\. $/;
 
 const getEditorContentCache = (): string => {
   return storage.get(["editorContentCache"]).editorContentCache ?? "";
@@ -124,15 +125,50 @@ const MemoEditor = () => {
       const contentBeforeCursor = editorRef.current.getContent().slice(0, cursorPosition);
       const rowValue = last(contentBeforeCursor.split("\n"));
       if (rowValue) {
-        if (listItemSymbolList.includes(rowValue)) {
+        if (listItemSymbolList.includes(rowValue) || emptyOlReg.test(rowValue)) {
           event.preventDefault();
           editorRef.current.removeText(cursorPosition - rowValue.length, rowValue.length);
         } else {
+          // unordered list / checked list
+          let matched = false;
           for (const listItemSymbol of listItemSymbolList) {
             if (rowValue.startsWith(listItemSymbol)) {
               event.preventDefault();
               editorRef.current.insertText("", `\n${listItemSymbol}`);
+              matched = true;
               break;
+            }
+          }
+          if (!matched) {
+            // ordered list
+            const olReg = /^([1-9][0-9]*)\. /;
+            const olRes = olReg.exec(rowValue);
+            if (olRes) {
+              let order = parseInt(olRes[1]) + 1;
+              event.preventDefault();
+              const contentAfterCursor = editorRef.current.getContent().slice(cursorPosition);
+              editorRef.current.insertText("", `\n${order}. `);
+              if (contentAfterCursor) {
+                // correct the order
+                order++;
+                const nextRows = contentAfterCursor.split("\n").slice(1);
+                const rowStart = contentBeforeCursor.split("\n").length + 1;
+                const content = editorRef.current.getContent().split("\n");
+                let updated = false;
+                for (let i = 0; i < nextRows.length; i++) {
+                  const rowRes = olReg.exec(nextRows[i]);
+                  if (rowRes) {
+                    content[rowStart + i] = nextRows[i].replace(rowRes[1], (order + i).toString());
+                    updated = true;
+                  } else {
+                    break;
+                  }
+                }
+                if (updated) {
+                  editorRef.current.setContent(content.join("\n"));
+                  editorRef.current.setCursorPosition(cursorPosition + 4);
+                }
+              }
             }
           }
         }
