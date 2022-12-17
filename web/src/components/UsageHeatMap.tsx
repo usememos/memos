@@ -60,7 +60,7 @@ const UsageHeatMap = () => {
       });
 
     return () => {
-      document.body.querySelectorAll("div.usage-detail-container.pop-up").forEach((node) => node.remove());
+      handleUsageStatItemMouseLeave();
     };
   }, [memos.length]);
 
