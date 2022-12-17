@@ -11,9 +11,9 @@ import "dayjs/locale/zh";
 import "dayjs/locale/fr";
 import "dayjs/locale/vi";
 import theme from "./theme";
-import "./less/code-highlight.less";
-import "./css/global.css";
 import "./css/tailwind.css";
+import "./less/global.less";
+import "./less/code-highlight.less";
 
 dayjs.extend(relativeTime);
 
