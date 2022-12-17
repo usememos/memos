@@ -58,6 +58,10 @@ const UsageHeatMap = () => {
       .catch((error) => {
         console.error(error);
       });
+
+    return () => {
+      handleUsageStatItemMouseLeave();
+    };
   }, [memos.length]);
 
   const handleUsageStatItemMouseEnter = useCallback((event: React.MouseEvent, item: DailyUsageStat) => {
