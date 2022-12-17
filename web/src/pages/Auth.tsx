@@ -29,6 +29,8 @@ const Auth = () => {
   const [password, setPassword] = useState(mode === "dev" ? "secret" : "");
 
   useEffect(() => {
+    /* removes all heatmap popups */
+    document.body.querySelectorAll("div.usage-detail-container.pop-up").forEach((node) => node.remove());
     userService.doSignOut().catch();
   }, []);
 
