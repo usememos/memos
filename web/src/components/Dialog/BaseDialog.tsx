@@ -40,8 +40,8 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`dialog-wrapper ${className}`} onClick={handleSpaceClicked}>
-      <div className="dialog-container" onClick={(e) => e.stopPropagation()}>
+    <div className={`dialog-wrapper ${className}`} onMouseDown={handleSpaceClicked}>
+      <div className="dialog-container" onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
