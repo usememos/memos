@@ -58,6 +58,10 @@ const UsageHeatMap = () => {
       .catch((error) => {
         console.error(error);
       });
+
+    return () => {
+      document.body.querySelectorAll("div.usage-detail-container.pop-up").forEach((node) => node.remove());
+    };
   }, [memos.length]);
 
   const handleUsageStatItemMouseEnter = useCallback((event: React.MouseEvent, item: DailyUsageStat) => {
