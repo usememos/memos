@@ -1,5 +1,4 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
-import useRefresh from "../../hooks/useRefresh";
 import "../../less/editor.less";
 
 export interface EditorRefActions {
@@ -10,6 +9,7 @@ export interface EditorRefActions {
   getContent: () => string;
   getSelectedContent: () => string;
   getCursorPosition: () => number;
+  setCursorPosition: (pos: number) => void;
 }
 
 interface Props {
@@ -25,7 +25,6 @@ interface Props {
 const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<EditorRefActions>) {
   const { className, initialContent, placeholder, fullscreen, onPaste, onContentChange: handleContentChangeCallback } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
-  const refresh = useRefresh();
 
   useEffect(() => {
     if (editorRef.current && initialContent) {
@@ -36,10 +35,16 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
 
   useEffect(() => {
     if (editorRef.current && !fullscreen) {
+      updateEditorHeight();
+    }
+  }, [editorRef.current?.value, fullscreen]);
+
+  const updateEditorHeight = () => {
+    if (editorRef.current) {
       editorRef.current.style.height = "auto";
       editorRef.current.style.height = (editorRef.current.scrollHeight ?? 0) + "px";
     }
-  }, [editorRef.current?.value, fullscreen]);
+  };
 
   useImperativeHandle(
     ref,
@@ -66,7 +71,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         editorRef.current.focus();
         editorRef.current.selectionEnd = endPosition + prefix.length + content.length;
         handleContentChangeCallback(editorRef.current.value);
-        refresh();
+        updateEditorHeight();
       },
       removeText: (start: number, length: number) => {
         if (!editorRef.current) {
@@ -79,14 +84,14 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         editorRef.current.focus();
         editorRef.current.selectionEnd = start;
         handleContentChangeCallback(editorRef.current.value);
-        refresh();
+        updateEditorHeight();
       },
       setContent: (text: string) => {
         if (editorRef.current) {
           editorRef.current.value = text;
           editorRef.current.focus();
           handleContentChangeCallback(editorRef.current.value);
-          refresh();
+          updateEditorHeight();
         }
       },
       getContent: (): string => {
@@ -100,13 +105,16 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         const end = editorRef.current?.selectionEnd;
         return editorRef.current?.value.slice(start, end) ?? "";
       },
+      setCursorPosition: (pos: number) => {
+        editorRef.current?.setSelectionRange(pos, pos);
+      },
     }),
     []
   );
 
   const handleEditorInput = useCallback(() => {
     handleContentChangeCallback(editorRef.current?.value ?? "");
-    refresh();
+    updateEditorHeight();
   }, []);
 
   return (
