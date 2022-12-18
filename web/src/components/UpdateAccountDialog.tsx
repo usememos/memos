@@ -1,12 +1,11 @@
 import { isEqual } from "lodash";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "../store";
-import { userService } from "../services";
+import { useUserStore } from "../store/module";
+import { validate, ValidatorConfig } from "../helpers/validator";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
-import { validate, ValidatorConfig } from "../helpers/validator";
 
 const validateConfig: ValidatorConfig = {
   minLength: 4,
@@ -25,7 +24,8 @@ interface State {
 
 const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
   const { t } = useTranslation();
-  const user = useAppSelector((state) => state.user.user as User);
+  const userStore = useUserStore();
+  const user = userStore.state.user as User;
   const [state, setState] = useState<State>({
     username: user.username,
     nickname: user.nickname,
@@ -78,7 +78,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     }
 
     try {
-      const user = userService.getState().user as User;
+      const user = userStore.getState().user as User;
       const userPatch: UserPatch = {
         id: user.id,
       };
@@ -91,7 +91,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
       if (!isEqual(user.email, state.email)) {
         userPatch.email = state.email;
       }
-      await userService.patchUser(userPatch);
+      await userStore.patchUser(userPatch);
       toastHelper.info("Update succeed");
       handleCloseBtnClick();
     } catch (error: any) {

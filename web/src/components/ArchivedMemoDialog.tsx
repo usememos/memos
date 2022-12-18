@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useMemoStore } from "../store/module";
 import useLoading from "../hooks/useLoading";
-import { memoService } from "../services";
-import { useAppSelector } from "../store";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
@@ -14,12 +13,13 @@ type Props = DialogProps;
 const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const { destroy } = props;
-  const memos = useAppSelector((state) => state.memo.memos);
+  const memoStore = useMemoStore();
+  const memos = memoStore.state.memos;
   const loadingState = useLoading();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
 
   useEffect(() => {
-    memoService
+    memoStore
       .fetchArchivedMemos()
       .then((result) => {
         setArchivedMemos(result);

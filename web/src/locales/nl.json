@@ -41,7 +41,8 @@
     "changed": "gewijzigd",
     "update-on": "Update op",
     "fold": "Invouwen",
-    "expand": "Uitklappen"
+    "expand": "Uitklappen",
+    "vacuum": "Vacuum"
   },
   "slogan": "Een open-source, zelf-beheerd memo applicatie voor kennismanagement en collaboratie.",
   "auth": {
@@ -142,6 +143,7 @@
       "change-password": "Wachtwoord wijzigen"
     },
     "preference-section": {
+      "theme": "Thema",
       "default-memo-visibility": "Standaard memo zichtbaarheid",
       "enable-folding-memo": "Vouwende memo aanzetten",
       "editor-font-style": "Editor lettertype",

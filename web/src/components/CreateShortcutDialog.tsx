@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { memoService, shortcutService } from "../services";
+import { useMemoStore, useShortcutStore } from "../store/module";
 import { filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
@@ -16,6 +16,7 @@ interface Props extends DialogProps {
 
 const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   const { destroy, shortcutId } = props;
+  const shortcutStore = useShortcutStore();
   const [title, setTitle] = useState<string>("");
   const [filters, setFilters] = useState<Filter[]>([]);
   const requestState = useLoading(false);
@@ -23,7 +24,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     if (shortcutId) {
-      const shortcutTemp = shortcutService.getShortcutById(shortcutId);
+      const shortcutTemp = shortcutStore.getShortcutById(shortcutId);
       if (shortcutTemp) {
         setTitle(shortcutTemp.title);
         const temp = JSON.parse(shortcutTemp.payload);
@@ -52,13 +53,13 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
     }
     try {
       if (shortcutId) {
-        await shortcutService.patchShortcut({
+        await shortcutStore.patchShortcut({
           id: shortcutId,
           title,
           payload: JSON.stringify(filters),
         });
       } else {
-        await shortcutService.createShortcut({
+        await shortcutStore.createShortcut({
           title,
           payload: JSON.stringify(filters),
         });
@@ -161,9 +162,9 @@ interface MemoFilterInputerProps {
 const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInputerProps) => {
   const { index, filter, handleFilterChange, handleFilterRemove } = props;
   const { t } = useTranslation();
+  const memoStore = useMemoStore();
   const [value, setValue] = useState<string>(filter.value.value);
-
-  const tags = Array.from(memoService.getState().tags);
+  const tags = Array.from(memoStore.getState().tags);
   const { type } = filter;
 
   const operatorDataSource = Object.values(filterConsts[type as FilterType].operators).map(({ text, value }) => ({ text: t(text), value }));

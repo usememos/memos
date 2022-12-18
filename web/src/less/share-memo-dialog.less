@@ -1,9 +1,9 @@
 .share-memo-dialog {
   > .dialog-container {
-    @apply w-96 p-0 bg-white dark:bg-zinc-800;
+    @apply w-96 max-w-full p-0 bg-white dark:bg-zinc-800;
 
     > .dialog-header-container {
-      @apply py-2 pt-4 px-4 pl-6 mb-0 rounded-t-lg;
+      @apply py-3 px-4 pl-6 mb-0 rounded-t-lg border-b dark:border-b-zinc-600;
     }
 
     > .dialog-content-container {
@@ -61,10 +61,10 @@
           @apply flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-2 px-6;
 
           > .userinfo-container {
-            @apply w-64 flex flex-col justify-center items-start;
+            @apply w-auto grow truncate flex mr-2 flex-col justify-center items-start;
 
             > .name-text {
-              @apply text-sm truncate font-bold text-gray-600 dark:text-gray-300;
+              @apply w-full text-sm truncate font-bold text-gray-600 dark:text-gray-300;
             }
 
             > .usage-text {
@@ -73,7 +73,7 @@
           }
 
           > .logo-img {
-            @apply h-10 w-auto;
+            @apply h-10 shrink-0 w-auto;
           }
         }
       }

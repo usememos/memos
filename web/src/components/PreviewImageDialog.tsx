@@ -20,14 +20,16 @@ interface State {
   originY: number;
 }
 
+const defaultState: State = {
+  angle: 0,
+  scale: 1,
+  originX: -1,
+  originY: -1,
+};
+
 const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }: Props) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
-  const [state, setState] = useState<State>({
-    angle: 0,
-    scale: 1,
-    originX: -1,
-    originY: -1,
-  });
+  const [state, setState] = useState<State>(defaultState);
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -43,12 +45,14 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   const handleImgContainerClick = (event: React.MouseEvent) => {
     if (event.clientX < window.innerWidth / 2) {
       if (currentIndex > 0) {
+        setState(defaultState);
         setCurrentIndex(currentIndex - 1);
       } else {
         destroy();
       }
     } else {
       if (currentIndex < imgUrls.length - 1) {
+        setState(defaultState);
         setCurrentIndex(currentIndex + 1);
       } else {
         destroy();

@@ -45,7 +45,8 @@
     "fold": "Plier",
     "expand": "Développer",
     "image": "Image",
-    "link": "Link"
+    "link": "Link",
+    "vacuum": "Vacuum"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
@@ -148,6 +149,7 @@
       "change-password": "Modifier le mot de passe"
     },
     "preference-section": {
+      "theme": "Thème",
       "default-memo-visibility": "Visibilité du mémo par défaut",
       "enable-folding-memo": "Activer le mémo pliable",
       "editor-font-style": "Style de police de l'éditeur",

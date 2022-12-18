@@ -4,10 +4,10 @@ import { useTranslation } from "react-i18next";
 import copy from "copy-to-clipboard";
 import { toLower } from "lodash";
 import toImage from "../labs/html2image";
+import { useMemoStore, useUserStore } from "../store/module";
 import { VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { getMemoStats } from "../helpers/api";
-import { memoService, userService } from "../services";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
@@ -29,7 +29,9 @@ interface State {
 const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const { memo: propsMemo, destroy } = props;
   const { t } = useTranslation();
-  const user = userService.getState().user as User;
+  const userStore = useUserStore();
+  const memoStore = useMemoStore();
+  const user = userStore.state.user as User;
   const [state, setState] = useState<State>({
     memoAmount: 0,
     memoVisibility: propsMemo.visibility,
@@ -113,7 +115,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       ...state,
       memoVisibility: visibilityValue,
     });
-    await memoService.patchMemo({
+    await memoStore.patchMemo({
       id: memo.id,
       visibility: visibilityValue,
     });

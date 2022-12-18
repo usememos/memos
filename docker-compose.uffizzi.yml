@@ -1,0 +1,18 @@
+version: "3.0"
+
+# uffizzi integration
+x-uffizzi:
+  ingress:
+    service: memos
+    port: 5230
+
+services:
+  memos:
+    image: "${MEMOS_IMAGE}"
+    volumes:
+      - memos_volume:/var/opt/memos
+    command: ["--mode", "dev"]
+
+volumes:
+  memos_volume:
+

@@ -60,6 +60,23 @@ const SystemSection = () => {
     });
   };
 
+  const handleVacuumBtnClick = async () => {
+    try {
+      await api.vacuumDatabase();
+      const { data: status } = (await api.getSystemStatus()).data;
+      setState({
+        dbSize: status.dbSize,
+        allowSignUp: status.allowSignUp,
+        additionalStyle: status.additionalStyle,
+        additionalScript: status.additionalScript,
+      });
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    toastHelper.success("Succeed to vacuum database");
+  };
+
   const handleSaveAdditionalStyle = async () => {
     try {
       await api.upsertSystemSetting({
@@ -96,19 +113,20 @@ const SystemSection = () => {
   return (
     <div className="section-container system-section-container">
       <p className="title-text">{t("common.basic")}</p>
-      <p className="text-value">
-        {t("setting.system-section.database-file-size")}: <span className="font-mono font-medium">{formatBytes(state.dbSize)}</span>
-      </p>
+      <label className="form-label">
+        <span className="normal-text">
+          {t("setting.system-section.database-file-size")}: <span className="font-mono font-medium">{formatBytes(state.dbSize)}</span>
+        </span>
+        <Button onClick={handleVacuumBtnClick}>{t("common.vacuum")}</Button>
+      </label>
       <p className="title-text">{t("sidebar.setting")}</p>
       <label className="form-label">
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
-        <Switch size="sm" checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
+        <Switch checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
       </label>
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.additional-style")}</span>
-        <Button size="sm" onClick={handleSaveAdditionalStyle}>
-          {t("common.save")}
-        </Button>
+        <Button onClick={handleSaveAdditionalStyle}>{t("common.save")}</Button>
       </div>
       <Textarea
         className="w-full"
@@ -117,16 +135,14 @@ const SystemSection = () => {
           fontSize: "14px",
         }}
         minRows={4}
-        maxRows={10}
+        maxRows={4}
         placeholder={t("setting.system-section.additional-style-placeholder")}
         value={state.additionalStyle}
         onChange={(event) => handleAdditionalStyleChanged(event.target.value)}
       />
       <div className="form-label mt-2">
         <span className="normal-text">{t("setting.system-section.additional-script")}</span>
-        <Button size="sm" onClick={handleSaveAdditionalScript}>
-          {t("common.save")}
-        </Button>
+        <Button onClick={handleSaveAdditionalScript}>{t("common.save")}</Button>
       </div>
       <Textarea
         className="w-full"
@@ -136,7 +152,7 @@ const SystemSection = () => {
           fontSize: "14px",
         }}
         minRows={4}
-        maxRows={10}
+        maxRows={4}
         placeholder={t("setting.system-section.additional-script-placeholder")}
         value={state.additionalScript}
         onChange={(event) => handleAdditionalScriptChanged(event.target.value)}

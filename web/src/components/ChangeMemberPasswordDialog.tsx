@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useUserStore } from "../store/module";
 import { validate, ValidatorConfig } from "../helpers/validator";
-import { userService } from "../services";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
@@ -20,6 +20,7 @@ interface Props extends DialogProps {
 const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
   const { user: propsUser, destroy } = props;
   const { t } = useTranslation();
+  const userStore = useUserStore();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 
@@ -60,7 +61,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
     }
 
     try {
-      await userService.patchUser({
+      await userStore.patchUser({
         id: propsUser.id,
         password: newPassword,
       });

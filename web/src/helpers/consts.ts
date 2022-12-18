@@ -18,4 +18,8 @@ export const MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS = [
   { text: "updated_ts", value: "updated_ts" },
 ];
 
+// space width for tab action in editor
 export const TAB_SPACE_WIDTH = 2;
+
+// default fetch memo amount
+export const DEFAULT_MEMO_LIMIT = 30;

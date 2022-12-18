@@ -45,7 +45,8 @@
     "fold": "Falten",
     "expand": "Erweitern",
     "image": "Bild",
-    "link": "Link"
+    "link": "Link",
+    "vacuum": "Vacuum"
   },
   "slogan": "Eine quelloffene, selbst gehostete Sammlung an Memos zur Wissensverwaltung und Vernetzung.",
   "auth": {
@@ -148,6 +149,7 @@
       "change-password": "Passwort ändern"
     },
     "preference-section": {
+      "theme": "Thema",
       "default-memo-visibility": "Standard Sichtbarkeit von Memos",
       "enable-folding-memo": "Aktiviere Falten von Memos",
       "editor-font-style": "Editor Textstil",
@@ -174,9 +176,9 @@
     }
   },
   "amount-text": {
-    "memo": "MEMO",
-    "tag": "TAG",
-    "day": "TAG"
+    "memo": "MEMOS",
+    "tag": "TAGS",
+    "day": "TAGE"
   },
   "message": {
     "no-memos": "Keine Memos 🌃",

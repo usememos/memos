@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { memoService, shortcutService } from "../services";
-import { DEFAULT_MEMO_LIMIT } from "../services/memoService";
-import { useAppSelector } from "../store";
+import { useLocationStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
 import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
+import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";
 import Memo from "./Memo";
@@ -12,14 +11,18 @@ import "../less/memo-list.less";
 
 const MemoList = () => {
   const { t } = useTranslation();
-  const query = useAppSelector((state) => state.location.query);
-  const memoDisplayTsOption = useAppSelector((state) => state.user.user?.setting.memoDisplayTsOption);
-  const { memos, isFetching } = useAppSelector((state) => state.memo);
+  const userStore = useUserStore();
+  const memoStore = useMemoStore();
+  const shortcutStore = useShortcutStore();
+  const locationStore = useLocationStore();
+  const query = locationStore.state.query;
+  const memoDisplayTsOption = userStore.state.user?.setting.memoDisplayTsOption;
+  const { memos, isFetching } = memoStore.state;
   const [isComplete, setIsComplete] = useState<boolean>(false);
   const [highlightWord, setHighlightWord] = useState<string | undefined>("");
 
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query ?? {};
-  const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
+  const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
 
   const shownMemos =
@@ -84,7 +87,7 @@ const MemoList = () => {
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   useEffect(() => {
-    memoService
+    memoStore
       .fetchMemos()
       .then((fetchedMemos) => {
         if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
@@ -118,7 +121,7 @@ const MemoList = () => {
 
   const handleFetchMoreClick = async () => {
     try {
-      const fetchedMemos = await memoService.fetchMemos(DEFAULT_MEMO_LIMIT, memos.length);
+      const fetchedMemos = await memoStore.fetchMemos(DEFAULT_MEMO_LIMIT, memos.length);
       if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       } else {

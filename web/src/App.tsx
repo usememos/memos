@@ -2,32 +2,44 @@ import { useColorScheme } from "@mui/joy";
 import { useEffect, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
-import { globalService, locationService } from "./services";
-import { useAppSelector } from "./store";
 import router from "./router";
+import { useLocationStore, useGlobalStore } from "./store/module";
 import * as storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import Loading from "./pages/Loading";
 
-function App() {
+const App = () => {
   const { i18n } = useTranslation();
-  const { appearance, locale, systemStatus } = useAppSelector((state) => state.global);
+  const globalStore = useGlobalStore();
+  const locationStore = useLocationStore();
   const { mode, setMode } = useColorScheme();
+  const { appearance, locale, systemStatus } = globalStore.state;
 
   useEffect(() => {
-    locationService.updateStateWithLocation();
+    locationStore.updateStateWithLocation();
     window.onpopstate = () => {
-      locationService.updateStateWithLocation();
+      locationStore.updateStateWithLocation();
     };
   }, []);
 
   useEffect(() => {
-    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-      if (globalService.getState().appearance === "system") {
+    const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
+    const handleColorSchemeChange = (e: MediaQueryListEvent) => {
+      if (globalStore.getState().appearance === "system") {
         const mode = e.matches ? "dark" : "light";
         setMode(mode);
       }
-    });
+    };
+
+    try {
+      if (darkMediaQuery.addEventListener) {
+        darkMediaQuery.addEventListener("change", handleColorSchemeChange);
+      } else {
+        darkMediaQuery.addListener(handleColorSchemeChange);
+      }
+    } catch (error) {
+      console.error("failed to initial color scheme listener", error);
+    }
   }, []);
 
   // Inject additional style and script codes.
@@ -46,6 +58,7 @@ function App() {
   }, [systemStatus]);
 
   useEffect(() => {
+    document.documentElement.setAttribute("lang", locale);
     i18n.changeLanguage(locale);
     storage.set({
       locale: locale,
@@ -79,6 +92,6 @@ function App() {
       <RouterProvider router={router} />
     </Suspense>
   );
-}
+};
 
 export default App;

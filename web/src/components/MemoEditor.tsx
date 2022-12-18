@@ -1,10 +1,9 @@
-import { toLower } from "lodash";
+import { isNumber, last, toLower } from "lodash";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import { editorStateService, locationService, memoService, resourceService } from "../services";
-import { useAppSelector } from "../store";
+import { useEditorStore, useLocationStore, useMemoStore, useResourceStore, useUserStore } from "../store/module";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -13,6 +12,9 @@ import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import "../less/memo-editor.less";
+
+const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
+const emptyOlReg = /^(\d+)\. $/;
 
 const getEditorContentCache = (): string => {
   return storage.get(["editorContentCache"]).editorContentCache ?? "";
@@ -38,19 +40,25 @@ interface State {
 
 const MemoEditor = () => {
   const { t, i18n } = useTranslation();
-  const user = useAppSelector((state) => state.user.user as User);
-  const setting = user.setting;
-  const editorState = useAppSelector((state) => state.editor);
-  const tags = useAppSelector((state) => state.memo.tags);
+  const userStore = useUserStore();
+  const editorStore = useEditorStore();
+  const locationStore = useLocationStore();
+  const memoStore = useMemoStore();
+  const resourceStore = useResourceStore();
+
   const [state, setState] = useState<State>({
     isUploadingResource: false,
     fullscreen: false,
     shouldShowEmojiPicker: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
-  const prevGlobalStateRef = useRef(editorState);
+  const editorState = editorStore.state;
+  const prevEditorStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
   const tagSelectorRef = useRef<HTMLDivElement>(null);
+  const user = userStore.state.user as User;
+  const setting = user.setting;
+  const tags = memoStore.state.tags;
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
@@ -61,22 +69,22 @@ const MemoEditor = () => {
   useEffect(() => {
     const { editingMemoIdCache, editingMemoVisibilityCache } = storage.get(["editingMemoIdCache", "editingMemoVisibilityCache"]);
     if (editingMemoIdCache) {
-      editorStateService.setEditMemoWithId(editingMemoIdCache);
+      editorStore.setEditMemoWithId(editingMemoIdCache);
     }
     if (editingMemoVisibilityCache) {
-      editorStateService.setMemoVisibility(editingMemoVisibilityCache as "PUBLIC" | "PROTECTED" | "PRIVATE");
+      editorStore.setMemoVisibility(editingMemoVisibilityCache as "PUBLIC" | "PROTECTED" | "PRIVATE");
     } else {
-      editorStateService.setMemoVisibility(setting.memoVisibility);
+      editorStore.setMemoVisibility(setting.memoVisibility);
     }
   }, []);
 
   useEffect(() => {
     if (editorState.editMemoId) {
-      memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
+      memoStore.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
         if (memo) {
           handleEditorFocus();
-          editorStateService.setMemoVisibility(memo.visibility);
-          editorStateService.setResourceList(memo.resourceList);
+          editorStore.setMemoVisibility(memo.visibility);
+          editorStore.setResourceList(memo.resourceList);
           editorRef.current?.setContent(memo.content ?? "");
         }
       });
@@ -87,48 +95,14 @@ const MemoEditor = () => {
       storage.remove(["editingMemoIdCache"]);
     }
 
-    prevGlobalStateRef.current = editorState;
+    prevEditorStateRef.current = editorState;
   }, [editorState.editMemoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Escape") {
-      if (state.fullscreen) {
-        handleFullscreenBtnClick();
-      } else {
-        handleCancelEdit();
-      }
+    if (!editorRef.current) {
       return;
     }
-    if (event.key === "Tab") {
-      if (!editorRef.current) {
-        return;
-      }
-      const { start, end } = editorRef.current.getSelectedRange();
-      if (start && end) {
-        event.preventDefault();
-        const rows = editorRef.current.getContent().split("\n");
-        let rowStart = 0;
-        let rowEnd = 0;
-        const newContent = rows
-          .map((row) => {
-            rowEnd = rowStart + row.length + 1;
-            console.log(start, end, rowStart, rowEnd);
-            if (start <= rowEnd && rowStart <= end) {
-              rowStart = rowEnd + 1;
-              return `${" ".repeat(TAB_SPACE_WIDTH)}${row}`;
-            } else {
-              rowStart = rowEnd + 1;
-              return row;
-            }
-          })
-          .join("\n");
-        editorRef.current.setContent(newContent);
-      } else {
-        event.preventDefault();
-        editorRef.current.insertText(" ".repeat(TAB_SPACE_WIDTH));
-      }
-      return;
-    }
+
     if (event.ctrlKey || event.metaKey) {
       if (event.key === "Enter") {
         handleSaveBtnClick();
@@ -136,47 +110,97 @@ const MemoEditor = () => {
       }
       if (event.key === "b") {
         event.preventDefault();
-        editorRef.current?.insertText("", "**", "**");
+        editorRef.current.insertText("", "**", "**");
         return;
       }
       if (event.key === "i") {
         event.preventDefault();
-        editorRef.current?.insertText("", "*", "*");
+        editorRef.current.insertText("", "*", "*");
         return;
       }
       if (event.key === "e") {
         event.preventDefault();
-        editorRef.current?.insertText("", "`", "`");
+        editorRef.current.insertText("", "`", "`");
         return;
       }
+    }
+
+    if (event.key === "Enter") {
+      const cursorPosition = editorRef.current.getCursorPosition();
+      const contentBeforeCursor = editorRef.current.getContent().slice(0, cursorPosition);
+      const rowValue = last(contentBeforeCursor.split("\n"));
+      if (rowValue) {
+        if (listItemSymbolList.includes(rowValue) || emptyOlReg.test(rowValue)) {
+          event.preventDefault();
+          editorRef.current.removeText(cursorPosition - rowValue.length, rowValue.length);
+        } else {
+          // unordered/todo list
+          let matched = false;
+          for (const listItemSymbol of listItemSymbolList) {
+            if (rowValue.startsWith(listItemSymbol)) {
+              event.preventDefault();
+              editorRef.current.insertText("", `\n${listItemSymbol}`);
+              matched = true;
+              break;
+            }
+          }
+
+          if (!matched) {
+            // ordered list
+            const olMatchRes = /^(\d+)\. /.exec(rowValue);
+            if (olMatchRes) {
+              const order = parseInt(olMatchRes[1]);
+              if (isNumber(order)) {
+                event.preventDefault();
+                editorRef.current.insertText("", `\n${order + 1}. `);
+              }
+            }
+          }
+        }
+      }
+      return;
+    }
+    if (event.key === "Escape") {
+      if (state.fullscreen) {
+        handleFullscreenBtnClick();
+      }
+      return;
+    }
+    if (event.key === "Tab") {
+      event.preventDefault();
+      editorRef.current.insertText(" ".repeat(TAB_SPACE_WIDTH));
+      return;
+    }
+  };
+
+  const uploadMultiFiles = async (files: FileList) => {
+    const uploadedResourceList: Resource[] = [];
+    for (const file of files) {
+      const resource = await handleUploadResource(file);
+      if (resource) {
+        uploadedResourceList.push(resource);
+        if (editorState.editMemoId) {
+          await upsertMemoResource(editorState.editMemoId, resource.id);
+        }
+      }
+    }
+    if (uploadedResourceList.length > 0) {
+      const resourceList = editorStore.getState().resourceList;
+      editorStore.setResourceList([...resourceList, ...uploadedResourceList]);
     }
   };
 
   const handleDropEvent = async (event: React.DragEvent) => {
     if (event.dataTransfer && event.dataTransfer.files.length > 0) {
       event.preventDefault();
-      const resourceList: Resource[] = [];
-      for (const file of event.dataTransfer.files) {
-        const resource = await handleUploadResource(file);
-        if (resource) {
-          resourceList.push(resource);
-          if (editorState.editMemoId) {
-            await upsertMemoResource(editorState.editMemoId, resource.id);
-          }
-        }
-      }
-      editorStateService.setResourceList([...editorState.resourceList, ...resourceList]);
+      await uploadMultiFiles(event.dataTransfer.files);
     }
   };
 
   const handlePasteEvent = async (event: React.ClipboardEvent) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
-      const file = event.clipboardData.files[0];
-      const resource = await handleUploadResource(file);
-      if (resource) {
-        editorStateService.setResourceList([...editorState.resourceList, resource]);
-      }
+      await uploadMultiFiles(event.clipboardData.files);
     }
   };
 
@@ -191,7 +215,7 @@ const MemoEditor = () => {
     let resource = undefined;
 
     try {
-      resource = await resourceService.upload(file);
+      resource = await resourceStore.upload(file);
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
@@ -214,26 +238,26 @@ const MemoEditor = () => {
     }
 
     try {
-      const { editMemoId } = editorStateService.getState();
+      const { editMemoId } = editorStore.getState();
       if (editMemoId && editMemoId !== UNKNOWN_ID) {
-        const prevMemo = await memoService.getMemoById(editMemoId ?? UNKNOWN_ID);
+        const prevMemo = await memoStore.getMemoById(editMemoId ?? UNKNOWN_ID);
 
         if (prevMemo) {
-          await memoService.patchMemo({
+          await memoStore.patchMemo({
             id: prevMemo.id,
             content,
             visibility: editorState.memoVisibility,
             resourceIdList: editorState.resourceList.map((resource) => resource.id),
           });
         }
-        editorStateService.clearEditMemo();
+        editorStore.clearEditMemo();
       } else {
-        await memoService.createMemo({
+        await memoStore.createMemo({
           content,
           visibility: editorState.memoVisibility,
           resourceIdList: editorState.resourceList.map((resource) => resource.id),
         });
-        locationService.clearQuery();
+        locationStore.clearQuery();
       }
     } catch (error: any) {
       console.error(error);
@@ -246,18 +270,20 @@ const MemoEditor = () => {
         fullscreen: false,
       };
     });
-    editorStateService.clearResourceList();
+    editorStore.clearResourceList();
     setEditorContentCache("");
     storage.remove(["editingMemoVisibilityCache"]);
     editorRef.current?.setContent("");
   };
 
   const handleCancelEdit = () => {
-    editorStateService.clearEditMemo();
-    editorStateService.clearResourceList();
-    editorRef.current?.setContent("");
-    setEditorContentCache("");
-    storage.remove(["editingMemoVisibilityCache"]);
+    if (editorState.editMemoId) {
+      editorStore.clearEditMemo();
+      editorStore.clearResourceList();
+      editorRef.current?.setContent("");
+      setEditorContentCache("");
+      storage.remove(["editingMemoVisibilityCache"]);
+    }
   };
 
   const handleContentChange = (content: string) => {
@@ -317,7 +343,7 @@ const MemoEditor = () => {
           }
         }
       }
-      editorStateService.setResourceList([...editorState.resourceList, ...resourceList]);
+      editorStore.setResourceList([...editorState.resourceList, ...resourceList]);
       document.body.removeChild(inputEl);
     };
     inputEl.click();
@@ -340,7 +366,7 @@ const MemoEditor = () => {
   }, []);
 
   const handleDeleteResource = async (resourceId: ResourceId) => {
-    editorStateService.setResourceList(editorState.resourceList.filter((resource) => resource.id !== resourceId));
+    editorStore.setResourceList(editorState.resourceList.filter((resource) => resource.id !== resourceId));
     if (editorState.editMemoId) {
       await deleteMemoResource(editorState.editMemoId, resourceId);
     }
@@ -348,7 +374,7 @@ const MemoEditor = () => {
 
   const handleMemoVisibilityOptionChanged = async (value: string) => {
     const visibilityValue = value as Visibility;
-    editorStateService.setMemoVisibility(visibilityValue);
+    editorStore.setMemoVisibility(visibilityValue);
     setEditingMemoVisibilityCache(visibilityValue);
   };
 
@@ -357,7 +383,7 @@ const MemoEditor = () => {
   };
 
   const handleEditorBlur = () => {
-    // do nth
+    // do nothing
   };
 
   const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);

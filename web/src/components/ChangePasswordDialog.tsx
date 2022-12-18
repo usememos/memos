@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useUserStore } from "../store/module";
 import { validate, ValidatorConfig } from "../helpers/validator";
-import { userService } from "../services";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
@@ -17,6 +17,7 @@ type Props = DialogProps;
 
 const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   const { t } = useTranslation();
+  const userStore = useUserStore();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 
@@ -57,8 +58,8 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
     }
 
     try {
-      const user = userService.getState().user as User;
-      await userService.patchUser({
+      const user = userStore.getState().user as User;
+      await userStore.patchUser({
         id: user.id,
         password: newPassword,
       });
