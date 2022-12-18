@@ -117,6 +117,7 @@ function showChangeMemberPasswordDialog(user: User) {
   generateDialog(
     {
       className: "change-member-password-dialog",
+      dialogName: "change-member-password-dialog",
     },
     ChangeMemberPasswordDialog,
     { user }

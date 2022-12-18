@@ -87,6 +87,7 @@ function showChangeResourceFilenameDialog(resourceId: ResourceId, resourceFilena
   generateDialog(
     {
       className: "change-resource-filename-dialog",
+      dialogName: "change-resource-filename-dialog",
     },
     ChangeResourceFilenameDialog,
     {

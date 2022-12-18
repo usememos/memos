@@ -7,6 +7,7 @@ import editorReducer from "./reducer/editor";
 import shortcutReducer from "./reducer/shortcut";
 import locationReducer from "./reducer/location";
 import resourceReducer from "./reducer/resource";
+import dialogReducer from "./reducer/dialog";
 
 const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ const store = configureStore({
     shortcut: shortcutReducer,
     location: locationReducer,
     resource: resourceReducer,
+    dialog: dialogReducer,
   },
 });
 

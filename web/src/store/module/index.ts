@@ -5,3 +5,4 @@ export * from "./memo";
 export * from "./resource";
 export * from "./shortcut";
 export * from "./user";
+export * from "./dialog";

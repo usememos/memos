@@ -16,6 +16,7 @@ const MyAccountSection = () => {
       title: "Reset Open API",
       content: "❗️The existing API will be invalidated and a new one will be generated, are you sure you want to reset?",
       style: "warning",
+      dialogName: "reset-openid-dialog",
       onConfirm: async () => {
         await userStore.patchUser({
           id: user.id,

@@ -115,6 +115,7 @@ export default function showDailyReviewDialog(datestamp: DateStamp = Date.now())
   generateDialog(
     {
       className: "daily-review-dialog",
+      dialogName: "daily-review-dialog",
     },
     DailyReviewDialog,
     { currentDateStamp: datestamp }

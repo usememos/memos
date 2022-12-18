@@ -72,6 +72,7 @@ interface CommonDialogProps {
   content: string;
   className?: string;
   style?: DialogStyle;
+  dialogName: string;
   closeBtnText?: string;
   confirmBtnText?: string;
   onClose?: () => void;
@@ -82,6 +83,7 @@ export const showCommonDialog = (props: CommonDialogProps) => {
   generateDialog(
     {
       className: `common-dialog ${props?.className ?? ""}`,
+      dialogName: `common-dialog ${props?.className ?? ""}`,
     },
     CommonDialog,
     props

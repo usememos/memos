@@ -3,13 +3,15 @@ import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { ANIMATION_DURATION } from "../../helpers/consts";
 import store from "../../store";
-import "../../less/base-dialog.less";
+import { useDialogStore } from "../../store/module";
 import { CssVarsProvider } from "@mui/joy";
 import theme from "../../theme";
+import "../../less/base-dialog.less";
 
 interface DialogConfig {
   className: string;
   clickSpaceDestroy?: boolean;
+  dialogName: string;
 }
 
 interface Props extends DialogConfig, DialogProps {
@@ -17,12 +19,17 @@ interface Props extends DialogConfig, DialogProps {
 }
 
 const BaseDialog: React.FC<Props> = (props: Props) => {
-  const { children, className, clickSpaceDestroy, destroy } = props;
+  const { children, className, clickSpaceDestroy, dialogName, destroy } = props;
+  const dialogStore = useDialogStore();
 
   useEffect(() => {
+    dialogStore.pushDialogStack(dialogName);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Escape") {
-        destroy();
+        if (dialogName === dialogStore.topDialogStack()) {
+          dialogStore.popDialogStack();
+          destroy();
+        }
       }
     };
 

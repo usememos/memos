@@ -125,6 +125,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       title: t("resources.delete-resource"),
       content: warningText,
       style: "warning",
+      dialogName: "delete-unused-resources",
       onConfirm: async () => {
         for (const resource of unusedResources) {
           await resourceStore.deleteResourceById(resource.id);
@@ -143,6 +144,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       title: t("resources.delete-resource"),
       content: warningText,
       style: "warning",
+      dialogName: "delete-resource-dialog",
       onConfirm: async () => {
         await resourceStore.deleteResourceById(resource.id);
       },
@@ -242,6 +244,7 @@ export default function showResourcesDialog() {
   generateDialog(
     {
       className: "resources-dialog",
+      dialogName: "resources-dialog",
     },
     ResourcesDialog,
     {}

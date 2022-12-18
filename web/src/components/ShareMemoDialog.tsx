@@ -190,6 +190,7 @@ export default function showShareMemoDialog(memo: Memo): void {
   generateDialog(
     {
       className: "share-memo-dialog",
+      dialogName: "share-memo-dialog",
     },
     ShareMemoDialog,
     { memo }

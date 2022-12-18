@@ -139,6 +139,7 @@ function showUpdateAccountDialog() {
   generateDialog(
     {
       className: "update-account-dialog",
+      dialogName: "update-account-dialog",
     },
     UpdateAccountDialog
   );

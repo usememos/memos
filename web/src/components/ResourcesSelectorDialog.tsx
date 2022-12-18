@@ -148,6 +148,7 @@ export default function showResourcesSelectorDialog() {
   generateDialog(
     {
       className: "resources-selector-dialog",
+      dialogName: "resources-selector-dialog",
     },
     ResourcesSelectorDialog,
     {}
