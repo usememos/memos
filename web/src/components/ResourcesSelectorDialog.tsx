@@ -2,8 +2,7 @@ import { Checkbox, Tooltip } from "@mui/joy";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
-import { editorStateService, resourceService } from "../services";
-import { useAppSelector } from "../store";
+import { useEditorStore, useResourceStore } from "../store/module";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
@@ -20,14 +19,15 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const { t } = useTranslation();
   const loadingState = useLoading();
-  const { resources } = useAppSelector((state) => state.resource);
-  const editorState = useAppSelector((state) => state.editor);
+  const editorStore = useEditorStore();
+  const resourceStore = useResourceStore();
+  const resources = resourceStore.state.resources;
   const [state, setState] = useState<State>({
     checkedArray: [],
   });
 
   useEffect(() => {
-    resourceService
+    resourceStore
       .fetchResourceList()
       .catch((error) => {
         console.error(error);
@@ -39,7 +39,7 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    const checkedResourceIdArray = editorState.resourceList.map((resource) => resource.id);
+    const checkedResourceIdArray = editorStore.state.resourceList.map((resource) => resource.id);
     setState({
       checkedArray: resources.map((resource) => {
         return checkedResourceIdArray.includes(resource.id);
@@ -75,7 +75,7 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
     const resourceList = resources.filter((_, index) => {
       return state.checkedArray[index];
     });
-    editorStateService.setResourceList(resourceList);
+    editorStore.setResourceList(resourceList);
     destroy();
   };
 

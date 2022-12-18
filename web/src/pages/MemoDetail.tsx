@@ -2,9 +2,8 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
-import { memoService } from "../services";
 import { UNKNOWN_ID } from "../helpers/consts";
-import { useAppSelector } from "../store";
+import { useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import useLoading from "../hooks/useLoading";
 import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
@@ -18,8 +17,11 @@ interface State {
 const MemoDetail = () => {
   const { t, i18n } = useTranslation();
   const params = useParams();
-  const user = useAppSelector((state) => state.user.user);
-  const location = useAppSelector((state) => state.location);
+  const locationStore = useLocationStore();
+  const memoStore = useMemoStore();
+  const userStore = useUserStore();
+  const user = userStore.state.user;
+  const location = locationStore.state;
   const [state, setState] = useState<State>({
     memo: {
       id: UNKNOWN_ID,
@@ -30,7 +32,7 @@ const MemoDetail = () => {
   useEffect(() => {
     const memoId = Number(params.memoId);
     if (memoId && !isNaN(memoId)) {
-      memoService
+      memoStore
         .fetchMemoById(memoId)
         .then((memo) => {
           setState({

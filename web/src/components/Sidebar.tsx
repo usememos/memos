@@ -2,8 +2,7 @@ import { isUndefined } from "lodash-es";
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { userService } from "../services";
-import { useAppSelector } from "../store";
+import { useLocationStore, useUserStore } from "../store/module";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showSettingDialog from "./SettingDialog";
 import UserBanner from "./UserBanner";
@@ -14,11 +13,13 @@ import "../less/siderbar.less";
 
 const Sidebar = () => {
   const { t } = useTranslation();
-  const location = useAppSelector((state) => state.location);
+  const userStore = useUserStore();
+  const locationStore = useLocationStore();
+  const query = locationStore.state.query;
 
   useEffect(() => {
     toggleSidebar(false);
-  }, [location.query]);
+  }, [query]);
 
   const handleSettingBtnClick = () => {
     showSettingDialog();
@@ -34,7 +35,7 @@ const Sidebar = () => {
           <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
             <span className="icon">📅</span> {t("sidebar.daily-review")}
           </button>
-          {!userService.isVisitorMode() && (
+          {!userStore.isVisitorMode() && (
             <>
               <Link to="/explore" className="btn action-btn">
                 <span className="icon">🏂</span> {t("common.explore")}
@@ -45,7 +46,7 @@ const Sidebar = () => {
             </>
           )}
         </div>
-        {!userService.isVisitorMode() && <ShortcutList />}
+        {!userStore.isVisitorMode() && <ShortcutList />}
         <TagList />
       </aside>
     </>

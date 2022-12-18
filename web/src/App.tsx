@@ -2,29 +2,30 @@ import { useColorScheme } from "@mui/joy";
 import { useEffect, Suspense } from "react";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
-import { globalService, locationService } from "./services";
-import { useAppSelector } from "./store";
 import router from "./router";
+import { useLocationStore, useGlobalStore } from "./store/module";
 import * as storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import Loading from "./pages/Loading";
 
-function App() {
+const App = () => {
   const { i18n } = useTranslation();
-  const { appearance, locale, systemStatus } = useAppSelector((state) => state.global);
+  const globalStore = useGlobalStore();
+  const locationStore = useLocationStore();
   const { mode, setMode } = useColorScheme();
+  const { appearance, locale, systemStatus } = globalStore.state;
 
   useEffect(() => {
-    locationService.updateStateWithLocation();
+    locationStore.updateStateWithLocation();
     window.onpopstate = () => {
-      locationService.updateStateWithLocation();
+      locationStore.updateStateWithLocation();
     };
   }, []);
 
   useEffect(() => {
     const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleColorSchemeChange = (e: MediaQueryListEvent) => {
-      if (globalService.getState().appearance === "system") {
+      if (globalStore.getState().appearance === "system") {
         const mode = e.matches ? "dark" : "light";
         setMode(mode);
       }
@@ -91,6 +92,6 @@ function App() {
       <RouterProvider router={router} />
     </Suspense>
   );
-}
+};
 
 export default App;

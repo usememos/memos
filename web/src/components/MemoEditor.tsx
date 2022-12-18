@@ -3,8 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import { editorStateService, locationService, memoService, resourceService } from "../services";
-import { useAppSelector } from "../store";
+import { useEditorStore, useLocationStore, useMemoStore, useResourceStore, useUserStore } from "../store/module";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -41,19 +40,25 @@ interface State {
 
 const MemoEditor = () => {
   const { t, i18n } = useTranslation();
-  const user = useAppSelector((state) => state.user.user as User);
-  const setting = user.setting;
-  const editorState = useAppSelector((state) => state.editor);
-  const tags = useAppSelector((state) => state.memo.tags);
+  const userStore = useUserStore();
+  const editorStore = useEditorStore();
+  const locationStore = useLocationStore();
+  const memoStore = useMemoStore();
+  const resourceStore = useResourceStore();
+
   const [state, setState] = useState<State>({
     isUploadingResource: false,
     fullscreen: false,
     shouldShowEmojiPicker: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
+  const editorState = editorStore.state;
   const prevEditorStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
   const tagSelectorRef = useRef<HTMLDivElement>(null);
+  const user = userStore.state.user as User;
+  const setting = user.setting;
+  const tags = memoStore.state.tags;
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
@@ -64,22 +69,22 @@ const MemoEditor = () => {
   useEffect(() => {
     const { editingMemoIdCache, editingMemoVisibilityCache } = storage.get(["editingMemoIdCache", "editingMemoVisibilityCache"]);
     if (editingMemoIdCache) {
-      editorStateService.setEditMemoWithId(editingMemoIdCache);
+      editorStore.setEditMemoWithId(editingMemoIdCache);
     }
     if (editingMemoVisibilityCache) {
-      editorStateService.setMemoVisibility(editingMemoVisibilityCache as "PUBLIC" | "PROTECTED" | "PRIVATE");
+      editorStore.setMemoVisibility(editingMemoVisibilityCache as "PUBLIC" | "PROTECTED" | "PRIVATE");
     } else {
-      editorStateService.setMemoVisibility(setting.memoVisibility);
+      editorStore.setMemoVisibility(setting.memoVisibility);
     }
   }, []);
 
   useEffect(() => {
     if (editorState.editMemoId) {
-      memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
+      memoStore.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
         if (memo) {
           handleEditorFocus();
-          editorStateService.setMemoVisibility(memo.visibility);
-          editorStateService.setResourceList(memo.resourceList);
+          editorStore.setMemoVisibility(memo.visibility);
+          editorStore.setResourceList(memo.resourceList);
           editorRef.current?.setContent(memo.content ?? "");
         }
       });
@@ -180,8 +185,8 @@ const MemoEditor = () => {
       }
     }
     if (uploadedResourceList.length > 0) {
-      const resourceList = editorStateService.getState().resourceList;
-      editorStateService.setResourceList([...resourceList, ...uploadedResourceList]);
+      const resourceList = editorStore.getState().resourceList;
+      editorStore.setResourceList([...resourceList, ...uploadedResourceList]);
     }
   };
 
@@ -210,7 +215,7 @@ const MemoEditor = () => {
     let resource = undefined;
 
     try {
-      resource = await resourceService.upload(file);
+      resource = await resourceStore.upload(file);
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
@@ -233,26 +238,26 @@ const MemoEditor = () => {
     }
 
     try {
-      const { editMemoId } = editorStateService.getState();
+      const { editMemoId } = editorStore.getState();
       if (editMemoId && editMemoId !== UNKNOWN_ID) {
-        const prevMemo = await memoService.getMemoById(editMemoId ?? UNKNOWN_ID);
+        const prevMemo = await memoStore.getMemoById(editMemoId ?? UNKNOWN_ID);
 
         if (prevMemo) {
-          await memoService.patchMemo({
+          await memoStore.patchMemo({
             id: prevMemo.id,
             content,
             visibility: editorState.memoVisibility,
             resourceIdList: editorState.resourceList.map((resource) => resource.id),
           });
         }
-        editorStateService.clearEditMemo();
+        editorStore.clearEditMemo();
       } else {
-        await memoService.createMemo({
+        await memoStore.createMemo({
           content,
           visibility: editorState.memoVisibility,
           resourceIdList: editorState.resourceList.map((resource) => resource.id),
         });
-        locationService.clearQuery();
+        locationStore.clearQuery();
       }
     } catch (error: any) {
       console.error(error);
@@ -265,7 +270,7 @@ const MemoEditor = () => {
         fullscreen: false,
       };
     });
-    editorStateService.clearResourceList();
+    editorStore.clearResourceList();
     setEditorContentCache("");
     storage.remove(["editingMemoVisibilityCache"]);
     editorRef.current?.setContent("");
@@ -273,8 +278,8 @@ const MemoEditor = () => {
 
   const handleCancelEdit = () => {
     if (editorState.editMemoId) {
-      editorStateService.clearEditMemo();
-      editorStateService.clearResourceList();
+      editorStore.clearEditMemo();
+      editorStore.clearResourceList();
       editorRef.current?.setContent("");
       setEditorContentCache("");
       storage.remove(["editingMemoVisibilityCache"]);
@@ -338,7 +343,7 @@ const MemoEditor = () => {
           }
         }
       }
-      editorStateService.setResourceList([...editorState.resourceList, ...resourceList]);
+      editorStore.setResourceList([...editorState.resourceList, ...resourceList]);
       document.body.removeChild(inputEl);
     };
     inputEl.click();
@@ -361,7 +366,7 @@ const MemoEditor = () => {
   }, []);
 
   const handleDeleteResource = async (resourceId: ResourceId) => {
-    editorStateService.setResourceList(editorState.resourceList.filter((resource) => resource.id !== resourceId));
+    editorStore.setResourceList(editorState.resourceList.filter((resource) => resource.id !== resourceId));
     if (editorState.editMemoId) {
       await deleteMemoResource(editorState.editMemoId, resourceId);
     }
@@ -369,7 +374,7 @@ const MemoEditor = () => {
 
   const handleMemoVisibilityOptionChanged = async (value: string) => {
     const visibilityValue = value as Visibility;
-    editorStateService.setMemoVisibility(visibilityValue);
+    editorStore.setMemoVisibility(visibilityValue);
     setEditingMemoVisibilityCache(visibilityValue);
   };
 
