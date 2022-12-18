@@ -84,6 +84,9 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     setState({
       expandButtonStatus: Number(expandButtonStatus) as ExpandButtonStatus,
     });
+    if (!expandButtonStatus) {
+      memoContentContainerRef.current?.scrollIntoView();
+    }
   };
 
   return (

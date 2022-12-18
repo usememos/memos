@@ -1,7 +1,7 @@
 import store from "../store";
 import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
-import { setAppearance, setGlobalState, setLocale } from "../store/modules/global";
+import { setAppearance, setGlobalState, setLocale } from "../store/reducer/global";
 
 const globalService = {
   getState: () => {

@@ -3,7 +3,7 @@ import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
 import { UNKNOWN_ID } from "../helpers/consts";
 import store from "../store";
-import { setUser, patchUser, setHost, setOwner } from "../store/modules/user";
+import { setUser, patchUser, setHost, setOwner } from "../store/reducer/user";
 import { getSystemColorScheme } from "../helpers/utils";
 
 const defaultSetting: Setting = {

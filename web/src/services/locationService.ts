@@ -1,6 +1,6 @@
 import { stringify } from "qs";
 import store from "../store";
-import { setQuery, setPathname, Query, updateStateWithLocation, updatePathnameStateWithLocation } from "../store/modules/location";
+import { setQuery, setPathname, Query, updateStateWithLocation, updatePathnameStateWithLocation } from "../store/reducer/location";
 
 const updateLocationUrl = (method: "replace" | "push" = "replace") => {
   // avoid pathname confusion when entering from non-home page

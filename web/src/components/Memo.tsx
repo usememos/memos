@@ -3,7 +3,8 @@ import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { editorStateService, locationService, memoService, userService } from "../services";
+import { locationService, memoService, userService } from "../services";
+import { useEditorStore } from "../store/module";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
@@ -30,6 +31,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const { memo, highlightWord } = props;
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const editorStore = useEditorStore();
   const [displayTimeStr, setDisplayTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userService.isVisitorMode();
@@ -69,7 +71,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleEditMemoClick = () => {
-    editorStateService.setEditMemoWithId(memo.id);
+    editorStore.setEditMemoWithId(memo.id);
   };
 
   const handleArchiveMemoClick = async () => {
@@ -83,8 +85,8 @@ const Memo: React.FC<Props> = (props: Props) => {
       toastHelper.error(error.response.data.message);
     }
 
-    if (editorStateService.getState().editMemoId === memo.id) {
-      editorStateService.clearEditMemo();
+    if (editorStore.getState().editMemoId === memo.id) {
+      editorStore.clearEditMemo();
     }
   };
 
@@ -151,7 +153,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    editorStateService.setEditMemoWithId(memo.id);
+    editorStore.setEditMemoWithId(memo.id);
   };
 
   const handleMemoDisplayTimeClick = () => {

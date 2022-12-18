@@ -1,6 +1,6 @@
 import * as api from "../helpers/api";
 import store from "../store";
-import { patchResource, setResources, deleteResource } from "../store/modules/resource";
+import { patchResource, setResources, deleteResource } from "../store/reducer/resource";
 
 const convertResponseModelResource = (resource: Resource): Resource => {
   return {

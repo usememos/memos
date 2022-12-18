@@ -1,6 +1,6 @@
 import { uniqBy } from "lodash";
 import * as api from "../helpers/api";
-import { createMemo, deleteMemo, patchMemo, setIsFetching, setMemos, setTags } from "../store/modules/memo";
+import { createMemo, deleteMemo, patchMemo, setIsFetching, setMemos, setTags } from "../store/reducer/memo";
 import store from "../store";
 import userService from "./userService";
 
