@@ -6,12 +6,14 @@ written by [AJ](https://memos.ajstephens.website/) (also a noob)
 [Live Demo](https://demo.usememos.com) • [Official Website](https://usememos.com) • [Source Code](https://github.com/usememos/memos)
 
 ## Who is this guide for?
-  Someone who...
+
+Someone who...
+
 - doesn't have much experience with self hosting
 - has a minimal understanding of docker
 
+Someone who wants...
 
-Someone who wants... 
 - to use memos
 - to support the memos project
 - a cost effective and simple way to host it on the cloud with reliablity and persistance
@@ -19,20 +21,20 @@ Someone who wants...
 
 ## Requirements
 
-  - Can follow instructions
-  - Have 7ish USD a month on a debit/credit card
+- Can follow instructions
+- Have 7ish USD a month on a debit/credit card
 
 ## Guide
 
 Create an account at [Render](https://dashboard.render.com/register)
 ![ss1](https://i.imgur.com/l3K7aqC.png)
 
-1. Go to your dashboard 
+1. Go to your dashboard
 
 [https://dashboard.render.com/](https://dashboard.render.com/)
 
 2. Select New Web Service
-![ss2](https://i.imgur.com/IIDdK2y.png)
+   ![ss2](https://i.imgur.com/IIDdK2y.png)
 
 3. Scroll down to "Public Git repository"
 
@@ -60,7 +62,7 @@ Create an account at [Render](https://dashboard.render.com/register)
 
 ![ss7](https://i.imgur.com/MHe45J4.png)
 
-11. Wait patiently while the *magic* happens 🤷‍♂️
+11. Wait patiently while the _magic_ happens 🤷‍♂️
 
 ![ss8](https://i.imgur.com/h1PXHHJ.png)
 
@@ -76,7 +78,7 @@ Create an account at [Render](https://dashboard.render.com/register)
 
 15. Name your disk (can be whatever)
 
-16. Set the "Mount Path" to ```/var/opt/memos```
+16. Set the "Mount Path" to `/var/opt/memos`
 
 17. Set the disk size (default is 10GB but 1GB is plenty and can be increased at any time)
 
@@ -94,7 +96,7 @@ Create an account at [Render](https://dashboard.render.com/register)
 
 21. Time to test! We're going to make sure everything is working correctly.
 
-22. Click the link in the top left, it should look like ```https://the-name-you-chose.onrender.com``` - this is your self hosted memos link!
+22. Click the link in the top left, it should look like `https://the-name-you-chose.onrender.com` - this is your self hosted memos link!
 
 ![ss14](https://i.imgur.com/cgzFSIn.png)
 
@@ -127,4 +129,3 @@ Create an account at [Render](https://dashboard.render.com/register)
 You did it! Enjoy using memos!
 
 Want to learn more or need more guidance? Join the community on [telegram](https://t.me/+-_tNF1k70UU4ZTc9) and [discord](https://discord.gg/tfPJa4UmAv).
-
