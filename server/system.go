@@ -46,6 +46,9 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			AllowSignUp:      false,
 			AdditionalStyle:  "",
 			AdditionalScript: "",
+			CustomizedProfile: api.CustomizedProfile{
+				Name: "memos",
+			},
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -65,6 +68,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				systemStatus.AdditionalStyle = value.(string)
 			} else if systemSetting.Name == api.SystemSettingAdditionalScriptName {
 				systemStatus.AdditionalScript = value.(string)
+			} else if systemSetting.Name == api.SystemSettingCustomizedProfileName {
+				systemStatus.CustomizedProfile = value.(api.CustomizedProfile)
 			}
 		}
 

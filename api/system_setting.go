@@ -14,7 +14,19 @@ const (
 	SystemSettingAdditionalStyleName SystemSettingName = "additionalStyle"
 	// SystemSettingAdditionalScriptName is the key type of additional script.
 	SystemSettingAdditionalScriptName SystemSettingName = "additionalScript"
+	// SystemSettingCustomizedProfileName is the key type of customized server profile.
+	SystemSettingCustomizedProfileName SystemSettingName = "customizedProfile"
 )
+
+// CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
+type CustomizedProfile struct {
+	// Name is the server name, default is `memos`
+	Name string `json:"name"`
+	// IconURL is the url of icon image.
+	IconURL string `json:"iconUrl"`
+	// ExternalURL is the external url of server. e.g. https://usermemos.com
+	ExternalURL string `json:"externalUrl"`
+}
 
 func (key SystemSettingName) String() string {
 	switch key {
@@ -24,6 +36,8 @@ func (key SystemSettingName) String() string {
 		return "additionalStyle"
 	case SystemSettingAdditionalScriptName:
 		return "additionalScript"
+	case SystemSettingCustomizedProfileName:
+		return "customizedProfile"
 	}
 	return ""
 }
@@ -74,6 +88,16 @@ func (upsert SystemSettingUpsert) Validate() error {
 		err := json.Unmarshal([]byte(upsert.Value), &value)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal system setting additional script value")
+		}
+	} else if upsert.Name == SystemSettingCustomizedProfileName {
+		value := CustomizedProfile{
+			Name:        "memos",
+			IconURL:     "",
+			ExternalURL: "",
+		}
+		err := json.Unmarshal([]byte(upsert.Value), &value)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal system setting customized profile value")
 		}
 	} else {
 		return fmt.Errorf("invalid system setting name")
