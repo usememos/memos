@@ -21,6 +21,7 @@ interface Props extends DialogConfig, DialogProps {
 const BaseDialog: React.FC<Props> = (props: Props) => {
   const { children, className, clickSpaceDestroy, dialogName, destroy } = props;
   const dialogStore = useDialogStore();
+
   useEffect(() => {
     dialogStore.pushDialogStack(dialogName);
     const handleKeyDown = (event: KeyboardEvent) => {
