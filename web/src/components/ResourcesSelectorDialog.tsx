@@ -2,9 +2,7 @@ import { Checkbox, Tooltip } from "@mui/joy";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
-import { resourceService } from "../services";
-import { useAppSelector } from "../store";
-import { useEditorStore } from "../store/module";
+import { useEditorStore, useResourceStore } from "../store/module";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
@@ -22,13 +20,14 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const loadingState = useLoading();
   const editorStore = useEditorStore();
-  const { resources } = useAppSelector((state) => state.resource);
+  const resourceStore = useResourceStore();
+  const resources = resourceStore.state.resources;
   const [state, setState] = useState<State>({
     checkedArray: [],
   });
 
   useEffect(() => {
-    resourceService
+    resourceStore
       .fetchResourceList()
       .catch((error) => {
         console.error(error);

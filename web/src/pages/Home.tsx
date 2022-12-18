@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { globalService, userService } from "../services";
-import { useAppSelector } from "../store";
+import { useGlobalStore, useUserStore } from "../store/module";
 import toastHelper from "../components/Toast";
 import Sidebar from "../components/Sidebar";
 import MemosHeader from "../components/MemosHeader";
@@ -15,12 +14,14 @@ import "../less/home.less";
 function Home() {
   const { t } = useTranslation();
   const location = useLocation();
-  const user = useAppSelector((state) => state.user.user);
+  const globalStore = useGlobalStore();
+  const userStore = useUserStore();
+  const user = userStore.state.user;
 
   useEffect(() => {
-    const { owner } = userService.getState();
+    const { owner } = userStore.getState();
 
-    if (userService.isVisitorMode()) {
+    if (userStore.isVisitorMode()) {
       if (!owner) {
         toastHelper.error(t("message.user-not-found"));
       }
@@ -29,7 +30,7 @@ function Home() {
 
   useEffect(() => {
     if (user?.setting.locale) {
-      globalService.setLocale(user.setting.locale);
+      globalStore.setLocale(user.setting.locale);
     }
   }, [user?.setting.locale]);
 
@@ -43,11 +44,11 @@ function Home() {
         <main className="memos-wrapper">
           <MemosHeader />
           <div className="memos-editor-wrapper">
-            {!userService.isVisitorMode() && <MemoEditor />}
+            {!userStore.isVisitorMode() && <MemoEditor />}
             <MemoFilter />
           </div>
           <MemoList />
-          {userService.isVisitorMode() && (
+          {userStore.isVisitorMode() && (
             <div className="addition-btn-container">
               {user ? (
                 <button className="btn" onClick={() => (window.location.href = "/")}>

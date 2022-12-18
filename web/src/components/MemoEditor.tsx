@@ -3,9 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import { locationService, memoService, resourceService } from "../services";
-import { useAppSelector } from "../store";
-import { useEditorStore } from "../store/module";
+import { useEditorStore, useLocationStore, useMemoStore, useResourceStore, useUserStore } from "../store/module";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -42,10 +40,12 @@ interface State {
 
 const MemoEditor = () => {
   const { t, i18n } = useTranslation();
-  const user = useAppSelector((state) => state.user.user as User);
-  const setting = user.setting;
+  const userStore = useUserStore();
   const editorStore = useEditorStore();
-  const tags = useAppSelector((state) => state.memo.tags);
+  const locationStore = useLocationStore();
+  const memoStore = useMemoStore();
+  const resourceStore = useResourceStore();
+
   const [state, setState] = useState<State>({
     isUploadingResource: false,
     fullscreen: false,
@@ -56,6 +56,9 @@ const MemoEditor = () => {
   const prevEditorStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
   const tagSelectorRef = useRef<HTMLDivElement>(null);
+  const user = userStore.state.user as User;
+  const setting = user.setting;
+  const tags = memoStore.state.tags;
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
@@ -77,7 +80,7 @@ const MemoEditor = () => {
 
   useEffect(() => {
     if (editorState.editMemoId) {
-      memoService.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
+      memoStore.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
         if (memo) {
           handleEditorFocus();
           editorStore.setMemoVisibility(memo.visibility);
@@ -212,7 +215,7 @@ const MemoEditor = () => {
     let resource = undefined;
 
     try {
-      resource = await resourceService.upload(file);
+      resource = await resourceStore.upload(file);
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
@@ -237,10 +240,10 @@ const MemoEditor = () => {
     try {
       const { editMemoId } = editorStore.getState();
       if (editMemoId && editMemoId !== UNKNOWN_ID) {
-        const prevMemo = await memoService.getMemoById(editMemoId ?? UNKNOWN_ID);
+        const prevMemo = await memoStore.getMemoById(editMemoId ?? UNKNOWN_ID);
 
         if (prevMemo) {
-          await memoService.patchMemo({
+          await memoStore.patchMemo({
             id: prevMemo.id,
             content,
             visibility: editorState.memoVisibility,
@@ -249,12 +252,12 @@ const MemoEditor = () => {
         }
         editorStore.clearEditMemo();
       } else {
-        await memoService.createMemo({
+        await memoStore.createMemo({
           content,
           visibility: editorState.memoVisibility,
           resourceIdList: editorState.resourceList.map((resource) => resource.id),
         });
-        locationService.clearQuery();
+        locationStore.clearQuery();
       }
     } catch (error: any) {
       console.error(error);

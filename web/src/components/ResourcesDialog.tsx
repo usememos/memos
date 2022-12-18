@@ -3,8 +3,7 @@ import copy from "copy-to-clipboard";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
-import { resourceService } from "../services";
-import { useAppSelector } from "../store";
+import { useResourceStore } from "../store/module";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import Dropdown from "./common/Dropdown";
@@ -24,13 +23,14 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const { t } = useTranslation();
   const loadingState = useLoading();
-  const { resources } = useAppSelector((state) => state.resource);
+  const resourceStore = useResourceStore();
+  const resources = resourceStore.state.resources;
   const [state, setState] = useState<State>({
     isUploadingResource: false,
   });
 
   useEffect(() => {
-    resourceService
+    resourceStore
       .fetchResourceList()
       .catch((error) => {
         console.error(error);
@@ -66,7 +66,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
 
       for (const file of inputEl.files) {
         try {
-          await resourceService.upload(file);
+          await resourceStore.upload(file);
         } catch (error: any) {
           console.error(error);
           toastHelper.error(error.response.data.message);
@@ -127,7 +127,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       style: "warning",
       onConfirm: async () => {
         for (const resource of unusedResources) {
-          await resourceService.deleteResourceById(resource.id);
+          await resourceStore.deleteResourceById(resource.id);
         }
       },
     });
@@ -144,7 +144,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       content: warningText,
       style: "warning",
       onConfirm: async () => {
-        await resourceService.deleteResourceById(resource.id);
+        await resourceStore.deleteResourceById(resource.id);
       },
     });
   };

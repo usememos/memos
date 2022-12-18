@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "../store";
-import { locationService, shortcutService } from "../services";
+import { useLocationStore, useShortcutStore } from "../store/module";
 import * as utils from "../helpers/utils";
 import { getTextWithMemoType } from "../helpers/filter";
 import Icon from "./Icon";
@@ -8,10 +7,11 @@ import "../less/memo-filter.less";
 
 const MemoFilter = () => {
   const { t } = useTranslation();
-  useAppSelector((state) => state.shortcut.shortcuts);
-  const query = useAppSelector((state) => state.location.query);
+  const locationStore = useLocationStore();
+  const shortcutStore = useShortcutStore();
+  const query = locationStore.state.query;
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query;
-  const shortcut = shortcutId ? shortcutService.getShortcutById(shortcutId) : null;
+  const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
   const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
 
   return (
@@ -20,7 +20,7 @@ const MemoFilter = () => {
       <div
         className={"filter-item-container " + (shortcut ? "" : "!hidden")}
         onClick={() => {
-          locationService.setMemoShortcut(undefined);
+          locationStore.setMemoShortcut(undefined);
         }}
       >
         <Icon.Target className="icon-text" /> {shortcut?.title}
@@ -28,7 +28,7 @@ const MemoFilter = () => {
       <div
         className={"filter-item-container " + (tagQuery ? "" : "!hidden")}
         onClick={() => {
-          locationService.setTagQuery(undefined);
+          locationStore.setTagQuery(undefined);
         }}
       >
         <Icon.Tag className="icon-text" /> {tagQuery}
@@ -36,7 +36,7 @@ const MemoFilter = () => {
       <div
         className={"filter-item-container " + (memoType ? "" : "!hidden")}
         onClick={() => {
-          locationService.setMemoTypeQuery(undefined);
+          locationStore.setMemoTypeQuery(undefined);
         }}
       >
         <Icon.Box className="icon-text" /> {t(getTextWithMemoType(memoType as MemoSpecType))}
@@ -44,7 +44,7 @@ const MemoFilter = () => {
       <div
         className={"filter-item-container " + (visibility ? "" : "!hidden")}
         onClick={() => {
-          locationService.setMemoVisibilityQuery(undefined);
+          locationStore.setMemoVisibilityQuery(undefined);
         }}
       >
         <Icon.Eye className="icon-text" /> {visibility}
@@ -53,7 +53,7 @@ const MemoFilter = () => {
         <div
           className="filter-item-container"
           onClick={() => {
-            locationService.setFromAndToQuery();
+            locationStore.setFromAndToQuery();
           }}
         >
           <Icon.Calendar className="icon-text" /> {utils.getDateString(duration.from)} to {utils.getDateString(duration.to)}
@@ -62,7 +62,7 @@ const MemoFilter = () => {
       <div
         className={"filter-item-container " + (textQuery ? "" : "!hidden")}
         onClick={() => {
-          locationService.setTextQuery(undefined);
+          locationStore.setTextQuery(undefined);
         }}
       >
         <Icon.Search className="icon-text" /> {textQuery}

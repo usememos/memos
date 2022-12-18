@@ -2,9 +2,7 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { memoService } from "../services";
-import { DEFAULT_MEMO_LIMIT } from "../services/memoService";
-import { useAppSelector } from "../store";
+import { DEFAULT_MEMO_LIMIT, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import useLoading from "../hooks/useLoading";
 import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
@@ -17,8 +15,11 @@ interface State {
 
 const Explore = () => {
   const { t, i18n } = useTranslation();
-  const user = useAppSelector((state) => state.user.user);
-  const location = useAppSelector((state) => state.location);
+  const locationStore = useLocationStore();
+  const userStore = useUserStore();
+  const memoStore = useMemoStore();
+  const user = userStore.state.user;
+  const location = locationStore.state;
   const [state, setState] = useState<State>({
     memos: [],
   });
@@ -26,7 +27,7 @@ const Explore = () => {
   const loadingState = useLoading();
 
   useEffect(() => {
-    memoService.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length).then((memos) => {
+    memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length).then((memos) => {
       if (memos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       }
@@ -39,7 +40,7 @@ const Explore = () => {
 
   const handleFetchMoreClick = async () => {
     try {
-      const fetchedMemos = await memoService.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length);
+      const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length);
       if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       } else {

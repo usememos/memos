@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useAppSelector } from "../store";
 import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import "../less/about-site-dialog.less";
+import { useGlobalStore } from "../store/module";
 
 interface State {
   latestVersion: string;
@@ -11,7 +11,8 @@ interface State {
 }
 
 const UpdateVersionBanner: React.FC = () => {
-  const profile = useAppSelector((state) => state.global.systemStatus.profile);
+  const globalStore = useGlobalStore();
+  const profile = globalStore.state.systemStatus.profile;
   const [state, setState] = useState<State>({
     latestVersion: "",
     show: false,

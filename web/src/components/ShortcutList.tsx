@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { locationService, shortcutService } from "../services";
-import { useAppSelector } from "../store";
+import { useLocationStore, useShortcutStore } from "../store/module";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
@@ -11,10 +10,12 @@ import showCreateShortcutDialog from "./CreateShortcutDialog";
 import "../less/shortcut-list.less";
 
 const ShortcutList = () => {
-  const query = useAppSelector((state) => state.location.query);
-  const shortcuts = useAppSelector((state) => state.shortcut.shortcuts);
-  const loadingState = useLoading();
   const { t } = useTranslation();
+  const locationStore = useLocationStore();
+  const shortcutStore = useShortcutStore();
+  const query = locationStore.state.query;
+  const shortcuts = shortcutStore.state.shortcuts;
+  const loadingState = useLoading();
 
   const pinnedShortcuts = shortcuts
     .filter((s) => s.rowStatus === "ARCHIVED")
@@ -25,7 +26,7 @@ const ShortcutList = () => {
   const sortedShortcuts = pinnedShortcuts.concat(unpinnedShortcuts);
 
   useEffect(() => {
-    shortcutService
+    shortcutStore
       .getMyAllShortcuts()
       .catch(() => {
         // do nth
@@ -60,13 +61,15 @@ interface ShortcutContainerProps {
 const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
   const { shortcut, isActive } = props;
   const { t } = useTranslation();
+  const locationStore = useLocationStore();
+  const shortcutStore = useShortcutStore();
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
   const handleShortcutClick = () => {
     if (isActive) {
-      locationService.setMemoShortcut(undefined);
+      locationStore.setMemoShortcut(undefined);
     } else {
-      locationService.setMemoShortcut(shortcut.id);
+      locationStore.setMemoShortcut(shortcut.id);
     }
   };
 
@@ -75,10 +78,10 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
 
     if (showConfirmDeleteBtn) {
       try {
-        await shortcutService.deleteShortcutById(shortcut.id);
-        if (locationService.getState().query?.shortcutId === shortcut.id) {
+        await shortcutStore.deleteShortcutById(shortcut.id);
+        if (locationStore.getState().query?.shortcutId === shortcut.id) {
           // need clear shortcut filter
-          locationService.setMemoShortcut(undefined);
+          locationStore.setMemoShortcut(undefined);
         }
       } catch (error: any) {
         console.error(error);
@@ -102,7 +105,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
         id: shortcut.id,
         rowStatus: shortcut.rowStatus === "ARCHIVED" ? "NORMAL" : "ARCHIVED",
       };
-      await shortcutService.patchShortcut(shortcutPatch);
+      await shortcutStore.patchShortcut(shortcutPatch);
     } catch (error) {
       // do nth
     }

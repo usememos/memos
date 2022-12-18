@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { memoService, shortcutService } from "../services";
-import { useAppSelector } from "../store";
+import { useLocationStore, useMemoStore, useShortcutStore } from "../store/module";
 import Icon from "./Icon";
 import SearchBar from "./SearchBar";
 import { toggleSidebar } from "./Sidebar";
@@ -9,8 +8,11 @@ import "../less/memos-header.less";
 let prevRequestTimestamp = Date.now();
 
 const MemosHeader = () => {
-  const query = useAppSelector((state) => state.location.query);
-  const shortcuts = useAppSelector((state) => state.shortcut.shortcuts);
+  const locationStore = useLocationStore();
+  const memoStore = useMemoStore();
+  const shortcutStore = useShortcutStore();
+  const query = locationStore.state.query;
+  const shortcuts = shortcutStore.state.shortcuts;
   const [titleText, setTitleText] = useState("MEMOS");
 
   useEffect(() => {
@@ -19,7 +21,7 @@ const MemosHeader = () => {
       return;
     }
 
-    const shortcut = shortcutService.getShortcutById(query?.shortcutId);
+    const shortcut = shortcutStore.getShortcutById(query?.shortcutId);
     if (shortcut) {
       setTitleText(shortcut.title);
     }
@@ -29,7 +31,7 @@ const MemosHeader = () => {
     const now = Date.now();
     if (now - prevRequestTimestamp > 1 * 1000) {
       prevRequestTimestamp = now;
-      memoService.fetchMemos().catch(() => {
+      memoStore.fetchMemos().catch(() => {
         // do nth
       });
     }

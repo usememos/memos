@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "../store";
+import { useMemoStore } from "../store/module";
 import toImage from "../labs/html2image";
 import useToggle from "../hooks/useToggle";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
@@ -21,7 +21,8 @@ const weekdayChineseStrArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 const DailyReviewDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
-  const memos = useAppSelector((state) => state.memo.memos);
+  const memoStore = useMemoStore();
+  const memos = memoStore.state.memos;
   const [currentDateStamp, setCurrentDateStamp] = useState(utils.getDateStampByDate(utils.getDateString(props.currentDateStamp)));
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const memosElRef = useRef<HTMLDivElement>(null);
