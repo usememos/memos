@@ -7,8 +7,6 @@ export interface EditorRefActions {
   removeText: (start: number, length: number) => void;
   setContent: (text: string) => void;
   getContent: () => string;
-  setSelectedRange: (selectionStart: number, selectionEnd: number) => void;
-  getSelectedRange: () => { start?: number; end?: number };
   getSelectedContent: () => string;
   getCursorPosition: () => number;
   setCursorPosition: (pos: number) => void;
@@ -101,18 +99,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       },
       getCursorPosition: (): number => {
         return editorRef.current?.selectionStart ?? 0;
-      },
-      setSelectedRange: (selectionStart: number, selectionEnd: number): void => {
-        editorRef.current?.setSelectionRange(selectionStart, selectionEnd);
-      },
-      getSelectedRange: (): {
-        start?: number;
-        end?: number;
-      } => {
-        return {
-          start: editorRef.current?.selectionStart,
-          end: editorRef.current?.selectionEnd,
-        };
       },
       getSelectedContent: () => {
         const start = editorRef.current?.selectionStart;

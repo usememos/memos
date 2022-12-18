@@ -83,7 +83,7 @@ export const showCommonDialog = (props: CommonDialogProps) => {
   generateDialog(
     {
       className: `common-dialog ${props?.className ?? ""}`,
-      dialogName: props.dialogName,
+      dialogName: `common-dialog ${props?.className ?? ""}`,
     },
     CommonDialog,
     props
