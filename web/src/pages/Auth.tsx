@@ -23,8 +23,8 @@ const Auth = () => {
   const navigate = useNavigate();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
-  const systemStatus = globalStore.state.systemStatus;
   const actionBtnLoadingState = useLoading(false);
+  const systemStatus = globalStore.state.systemStatus;
   const mode = systemStatus.profile.mode;
   const [username, setUsername] = useState(mode === "dev" ? "demohero" : "");
   const [password, setPassword] = useState(mode === "dev" ? "secret" : "");
@@ -119,8 +119,8 @@ const Auth = () => {
         <div className="auth-form-wrapper">
           <div className="page-header-container">
             <div className="title-container">
-              <img className="logo-img" src="/logo.webp" alt="" />
-              <p className="logo-text">memos</p>
+              <img className="logo-img" src={systemStatus.customizedProfile.iconUrl} alt="" />
+              <p className="logo-text">{systemStatus.customizedProfile.name}</p>
             </div>
             <p className="slogan-text">{t("slogan")}</p>
           </div>

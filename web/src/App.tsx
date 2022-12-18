@@ -55,6 +55,11 @@ const App = () => {
       scriptEl.innerHTML = systemStatus.additionalScript;
       document.head.appendChild(scriptEl);
     }
+
+    // dynamic update metadata with customized profile.
+    document.title = systemStatus.customizedProfile.name;
+    const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
+    link.href = systemStatus.customizedProfile.iconUrl || "/logo.webp";
   }, [systemStatus]);
 
   useEffect(() => {

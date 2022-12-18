@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { UNKNOWN_ID } from "../helpers/consts";
-import { useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { useGlobalStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import useLoading from "../hooks/useLoading";
 import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
@@ -17,17 +17,19 @@ interface State {
 const MemoDetail = () => {
   const { t, i18n } = useTranslation();
   const params = useParams();
+  const globalStore = useGlobalStore();
   const locationStore = useLocationStore();
   const memoStore = useMemoStore();
   const userStore = useUserStore();
-  const user = userStore.state.user;
-  const location = locationStore.state;
   const [state, setState] = useState<State>({
     memo: {
       id: UNKNOWN_ID,
     } as Memo,
   });
   const loadingState = useLoading();
+  const customizedProfile = globalStore.state.systemStatus.customizedProfile;
+  const user = userStore.state.user;
+  const location = locationStore.state;
 
   useEffect(() => {
     const memoId = Number(params.memoId);
@@ -52,8 +54,8 @@ const MemoDetail = () => {
       <div className="page-container">
         <div className="page-header">
           <div className="title-container">
-            <img className="logo-img" src="/logo.webp" alt="" />
-            <p className="logo-text">memos</p>
+            <img className="logo-img" src={customizedProfile.iconUrl} alt="" />
+            <p className="logo-text">{customizedProfile.name}</p>
           </div>
           <div className="action-button-container">
             {!loadingState.isLoading && (

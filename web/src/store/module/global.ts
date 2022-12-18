@@ -11,6 +11,11 @@ export const initialGlobalState = async () => {
       allowSignUp: false,
       additionalStyle: "",
       additionalScript: "",
+      customizedProfile: {
+        name: "memos",
+        iconUrl: "/logo.webp",
+        externalUrl: "",
+      },
     } as SystemStatus,
   };
 
@@ -41,6 +46,11 @@ export const useGlobalStore = () => {
     state,
     getState: () => {
       return store.getState().global;
+    },
+    fetchSystemStatus: async () => {
+      const { data: systemStatus } = (await api.getSystemStatus()).data;
+      store.dispatch(setGlobalState({ systemStatus: systemStatus }));
+      return systemStatus;
     },
     setLocale: (locale: Locale) => {
       store.dispatch(setLocale(locale));

@@ -46,6 +46,9 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			AllowSignUp:      false,
 			AdditionalStyle:  "",
 			AdditionalScript: "",
+			CustomizedProfile: api.CustomizedProfile{
+				Name: "memos",
+			},
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -54,7 +57,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		}
 		for _, systemSetting := range systemSettingList {
 			var value interface{}
-			err = json.Unmarshal([]byte(systemSetting.Value), &value)
+			err := json.Unmarshal([]byte(systemSetting.Value), &value)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
 			}
@@ -65,6 +68,13 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				systemStatus.AdditionalStyle = value.(string)
 			} else if systemSetting.Name == api.SystemSettingAdditionalScriptName {
 				systemStatus.AdditionalScript = value.(string)
+			} else if systemSetting.Name == api.SystemSettingCustomizedProfileName {
+				valueMap := value.(map[string]interface{})
+				systemStatus.CustomizedProfile = api.CustomizedProfile{
+					Name:        valueMap["name"].(string),
+					IconURL:     valueMap["iconUrl"].(string),
+					ExternalURL: valueMap["externalUrl"].(string),
+				}
 			}
 		}
 

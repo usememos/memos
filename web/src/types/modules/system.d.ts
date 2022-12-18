@@ -3,6 +3,12 @@ interface Profile {
   version: string;
 }
 
+interface CustomizedProfile {
+  name: string;
+  iconUrl: string;
+  externalUrl: string;
+}
+
 interface SystemStatus {
   host?: User;
   profile: Profile;
@@ -11,6 +17,7 @@ interface SystemStatus {
   allowSignUp: boolean;
   additionalStyle: string;
   additionalScript: string;
+  customizedProfile: CustomizedProfile;
 }
 
 interface SystemSetting {

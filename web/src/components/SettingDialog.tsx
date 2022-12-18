@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useUserStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MyAccountSection from "./Settings/MyAccountSection";
@@ -7,7 +8,6 @@ import PreferencesSection from "./Settings/PreferencesSection";
 import MemberSection from "./Settings/MemberSection";
 import SystemSection from "./Settings/SystemSection";
 import "../less/setting-dialog.less";
-import { useUserStore } from "../store/module";
 
 type Props = DialogProps;
 
@@ -67,7 +67,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
                 onClick={() => handleSectionSelectorItemClick("system")}
                 className={`section-item ${state.selectedSection === "system" ? "selected" : ""}`}
               >
-                <span className="icon-text">🧑‍🔧</span> {t("setting.system")}
+                <span className="icon-text">🛠️</span> {t("setting.system")}
               </span>
             </div>
           </>

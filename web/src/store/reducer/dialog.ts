@@ -22,9 +22,16 @@ const dialogSlice = createSlice({
         dialogStack: state.dialogStack.slice(0, state.dialogStack.length - 1),
       };
     },
+    removeDialog: (state, action: PayloadAction<string>) => {
+      const filterDialogStack = state.dialogStack.filter((dialogName) => dialogName !== action.payload);
+      return {
+        ...state,
+        dialogStack: filterDialogStack,
+      };
+    },
   },
 });
 
-export const { pushDialogStack, popDialogStack } = dialogSlice.actions;
+export const { pushDialogStack, popDialogStack, removeDialog } = dialogSlice.actions;
 
 export default dialogSlice.reducer;

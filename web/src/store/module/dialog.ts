@@ -1,9 +1,9 @@
-import store, { useAppSelector } from "..";
-import { pushDialogStack, popDialogStack } from "../reducer/dialog";
 import { last } from "lodash";
+import store, { useAppSelector } from "..";
+import { pushDialogStack, popDialogStack, removeDialog } from "../reducer/dialog";
 
 export const useDialogStore = () => {
-  const state = useAppSelector((state) => state.editor);
+  const state = useAppSelector((state) => state.dialog);
 
   return {
     state,
@@ -15,6 +15,9 @@ export const useDialogStore = () => {
     },
     popDialogStack: () => {
       store.dispatch(popDialogStack());
+    },
+    removeDialog: (dialogName: string) => {
+      store.dispatch(removeDialog(dialogName));
     },
     topDialogStack: () => {
       return last(store.getState().dialog.dialogStack);

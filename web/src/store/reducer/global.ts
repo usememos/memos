@@ -21,11 +21,19 @@ const globalSlice = createSlice({
       allowSignUp: false,
       additionalStyle: "",
       additionalScript: "",
+      customizedProfile: {
+        name: "memos",
+        iconUrl: "/logo.webp",
+        externalUrl: "",
+      },
     },
   } as State,
   reducers: {
-    setGlobalState: (_, action: PayloadAction<State>) => {
-      return action.payload;
+    setGlobalState: (state, action: PayloadAction<Partial<State>>) => {
+      return {
+        ...state,
+        ...action.payload,
+      };
     },
     setLocale: (state, action: PayloadAction<Locale>) => {
       return {
