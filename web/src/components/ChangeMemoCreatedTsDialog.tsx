@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { memoService } from "../services";
+import { useMemoStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
@@ -14,11 +14,12 @@ interface Props extends DialogProps {
 const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const { destroy, memoId } = props;
+  const memoStore = useMemoStore();
   const [createdAt, setCreatedAt] = useState("");
   const maxDatetimeValue = dayjs().format("YYYY-MM-DDTHH:mm");
 
   useEffect(() => {
-    memoService.getMemoById(memoId).then((memo) => {
+    memoStore.getMemoById(memoId).then((memo) => {
       if (memo) {
         const datetime = dayjs(memo.createdTs).format("YYYY-MM-DDTHH:mm");
         setCreatedAt(datetime);
@@ -48,7 +49,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
     }
 
     try {
-      await memoService.patchMemo({
+      await memoStore.patchMemo({
         id: memoId,
         createdTs,
       });

@@ -1,33 +1,33 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { locationService } from "../services";
-import { useAppSelector } from "../store";
+import { useLocationStore } from "../store/module";
 import { memoSpecialTypes } from "../helpers/filter";
 import Icon from "./Icon";
 import "../less/search-bar.less";
 
 const SearchBar = () => {
   const { t } = useTranslation();
-  const memoType = useAppSelector((state) => state.location.query?.type);
+  const locationStore = useLocationStore();
+  const memoType = locationStore.state.query.type;
   const [queryText, setQueryText] = useState("");
 
   useEffect(() => {
-    const text = locationService.getState().query.text;
+    const text = locationStore.getState().query.text;
     setQueryText(text === undefined ? "" : text);
-  }, [locationService.getState().query.text]);
+  }, [locationStore.getState().query.text]);
 
   const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
-    const { type: prevType } = locationService.getState().query ?? {};
+    const { type: prevType } = locationStore.getState().query ?? {};
     if (type === prevType) {
       type = undefined;
     }
-    locationService.setMemoTypeQuery(type);
+    locationStore.setMemoTypeQuery(type);
   };
 
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;
     setQueryText(text);
-    locationService.setTextQuery(text.length === 0 ? undefined : text);
+    locationStore.setTextQuery(text.length === 0 ? undefined : text);
   };
 
   return (

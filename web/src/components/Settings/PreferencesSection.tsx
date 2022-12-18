@@ -1,7 +1,6 @@
 import { Select, Switch, Option } from "@mui/joy";
 import { useTranslation } from "react-i18next";
-import { globalService, userService } from "../../services";
-import { useAppSelector } from "../../store";
+import { useGlobalStore, useUserStore } from "../../store/module";
 import { VISIBILITY_SELECTOR_ITEMS, MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS } from "../../helpers/consts";
 import Icon from "../Icon";
 import AppearanceSelect from "../AppearanceSelect";
@@ -44,7 +43,9 @@ const localeSelectorItems = [
 
 const PreferencesSection = () => {
   const { t } = useTranslation();
-  const { setting, localSetting } = useAppSelector((state) => state.user.user as User);
+  const globalStore = useGlobalStore();
+  const userStore = useUserStore();
+  const { setting, localSetting } = userStore.state.user as User;
   const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
@@ -60,20 +61,20 @@ const PreferencesSection = () => {
   });
 
   const handleLocaleChanged = async (value: string) => {
-    await userService.upsertUserSetting("locale", value);
-    globalService.setLocale(value as Locale);
+    await userStore.upsertUserSetting("locale", value);
+    globalStore.setLocale(value as Locale);
   };
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {
-    await userService.upsertUserSetting("memoVisibility", value);
+    await userStore.upsertUserSetting("memoVisibility", value);
   };
 
   const handleMemoDisplayTsOptionChanged = async (value: string) => {
-    await userService.upsertUserSetting("memoDisplayTsOption", value);
+    await userStore.upsertUserSetting("memoDisplayTsOption", value);
   };
 
   const handleIsFoldingEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    userService.upsertLocalSetting("enableFoldMemo", event.target.checked);
+    userStore.upsertLocalSetting("enableFoldMemo", event.target.checked);
   };
 
   return (

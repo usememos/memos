@@ -1,6 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "../../store";
-import { userService } from "../../services";
+import { useUserStore } from "../../store/module";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangePasswordDialog from "../ChangePasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
@@ -8,7 +7,8 @@ import "../../less/settings/my-account-section.less";
 
 const MyAccountSection = () => {
   const { t } = useTranslation();
-  const user = useAppSelector((state) => state.user.user as User);
+  const userStore = useUserStore();
+  const user = userStore.state.user as User;
   const openAPIRoute = `${window.location.origin}/api/memo?openId=${user.openId}`;
 
   const handleResetOpenIdBtnClick = async () => {
@@ -17,7 +17,7 @@ const MyAccountSection = () => {
       content: "❗️The existing API will be invalidated and a new one will be generated, are you sure you want to reset?",
       style: "warning",
       onConfirm: async () => {
-        await userService.patchUser({
+        await userStore.patchUser({
           id: user.id,
           resetOpenId: true,
         });

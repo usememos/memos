@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "../store";
+import { useGlobalStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import GitHubBadge from "./GitHubBadge";
@@ -9,7 +9,8 @@ type Props = DialogProps;
 
 const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
   const { t } = useTranslation();
-  const profile = useAppSelector((state) => state.global.systemStatus.profile);
+  const globalStore = useGlobalStore();
+  const profile = globalStore.state.systemStatus.profile;
 
   const handleCloseBtnClick = () => {
     destroy();

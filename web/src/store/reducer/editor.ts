@@ -1,9 +1,9 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 interface State {
-  editMemoId?: MemoId;
   memoVisibility: Visibility;
   resourceList: Resource[];
+  editMemoId?: MemoId;
 }
 
 const editorSlice = createSlice({

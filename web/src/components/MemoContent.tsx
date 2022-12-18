@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useUserStore } from "../store/module";
 import { marked } from "../labs/marked";
 import { highlightWithWord } from "../labs/highlighter";
 import Icon from "./Icon";
-import { useAppSelector } from "../store";
 import "../less/memo-content.less";
 
 export interface DisplayConfig {
@@ -36,7 +36,8 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     return firstHorizontalRuleIndex !== -1 ? content.slice(0, firstHorizontalRuleIndex) : content;
   }, [content]);
   const { t } = useTranslation();
-  const user = useAppSelector((state) => state.user.user);
+  const userStore = useUserStore();
+  const user = userStore.state.user;
 
   const [state, setState] = useState<State>({
     expandButtonStatus: -1,
@@ -84,6 +85,9 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     setState({
       expandButtonStatus: Number(expandButtonStatus) as ExpandButtonStatus,
     });
+    if (!expandButtonStatus) {
+      memoContentContainerRef.current?.scrollIntoView();
+    }
   };
 
   return (

@@ -2,11 +2,10 @@ import { Option, Select } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useAppSelector } from "../store";
+import { useGlobalStore, useUserStore } from "../store/module";
 import * as api from "../helpers/api";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
-import { globalService, userService } from "../services";
 import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
 import AppearanceSelect from "../components/AppearanceSelect";
@@ -22,14 +21,16 @@ const validateConfig: ValidatorConfig = {
 const Auth = () => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const systemStatus = useAppSelector((state) => state.global.systemStatus);
+  const globalStore = useGlobalStore();
+  const userStore = useUserStore();
+  const systemStatus = globalStore.state.systemStatus;
   const actionBtnLoadingState = useLoading(false);
   const mode = systemStatus.profile.mode;
   const [username, setUsername] = useState(mode === "dev" ? "demohero" : "");
   const [password, setPassword] = useState(mode === "dev" ? "secret" : "");
 
   useEffect(() => {
-    userService.doSignOut().catch();
+    userStore.doSignOut().catch();
   }, []);
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +63,7 @@ const Auth = () => {
     try {
       actionBtnLoadingState.setLoading();
       await api.signin(username, password);
-      const user = await userService.doSignIn();
+      const user = await userStore.doSignIn();
       if (user) {
         navigate("/");
       } else {
@@ -95,7 +96,7 @@ const Auth = () => {
     try {
       actionBtnLoadingState.setLoading();
       await api.signup(username, password, role);
-      const user = await userService.doSignIn();
+      const user = await userStore.doSignIn();
       if (user) {
         navigate("/");
       } else {
@@ -109,7 +110,7 @@ const Auth = () => {
   };
 
   const handleLocaleItemClick = (locale: Locale) => {
-    globalService.setLocale(locale);
+    globalStore.setLocale(locale);
   };
 
   return (

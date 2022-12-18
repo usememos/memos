@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
+import { useMemoStore } from "../store/module";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
-import { memoService } from "../services";
 import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
@@ -14,13 +14,13 @@ interface Props {
 const ArchivedMemo: React.FC<Props> = (props: Props) => {
   const { memo } = props;
   const { t } = useTranslation();
-
+  const memoStore = useMemoStore();
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
   const handleDeleteMemoClick = async () => {
     if (showConfirmDeleteBtn) {
       try {
-        await memoService.deleteMemoById(memo.id);
+        await memoStore.deleteMemoById(memo.id);
       } catch (error: any) {
         console.error(error);
         toastHelper.error(error.response.data.message);
@@ -32,11 +32,11 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
 
   const handleRestoreMemoClick = async () => {
     try {
-      await memoService.patchMemo({
+      await memoStore.patchMemo({
         id: memo.id,
         rowStatus: "NORMAL",
       });
-      await memoService.fetchMemos();
+      await memoStore.fetchMemos();
       toastHelper.info(t("message.restored-successfully"));
     } catch (error: any) {
       console.error(error);

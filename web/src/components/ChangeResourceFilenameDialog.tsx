@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { resourceService } from "../services";
+import { useResourceStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
@@ -24,8 +24,9 @@ const validateFilename = (filename: string): boolean => {
 };
 
 const ChangeResourceFilenameDialog: React.FC<Props> = (props: Props) => {
-  const { t } = useTranslation();
   const { destroy, resourceId, resourceFilename } = props;
+  const { t } = useTranslation();
+  const resourceStore = useResourceStore();
   const [filename, setFilename] = useState<string>(resourceFilename);
 
   const handleFilenameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +48,7 @@ const ChangeResourceFilenameDialog: React.FC<Props> = (props: Props) => {
       return;
     }
     try {
-      await resourceService.patchResource({
+      await resourceStore.patchResource({
         id: resourceId,
         filename: filename,
       });
