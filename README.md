@@ -13,7 +13,7 @@
   Discuss in <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a> / <b><a href="https://discord.gg/tfPJa4UmAv">Discord 🏂</a></b>
 </p>
 
-![demo](https://raw.githubusercontent.com/usememos/memos/main/resources/demo.webp)
+![demo](./resources/demo.webp)
 
 ## Features
 
@@ -43,11 +43,16 @@ If you want to upgrade the version of memos, use the following command.
 docker-compose down && docker image rm neosmemo/memos:latest && docker-compose up -d
 ```
 
+### Other guides
+
+- [Deploy on render.com](./docs/deploy-with-render.md)
+- [Deploy on fly.io](https://github.com/hu3rror/memos-on-fly)
+
 ## Contribute
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
 
-See more in [development guide](https://github.com/usememos/memos/tree/main/docs/development.md).
+See more in [development guide](./docs/development.md).
 
 ## Products made by Community
 

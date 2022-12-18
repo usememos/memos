@@ -2,7 +2,8 @@
 
 written by [AJ](https://memos.ajstephens.website/) (also a noob)
 
-![memos logo](https://usememos.com/logo-full.webp)
+<img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.webp" alt="✍️ memos" />
+
 [Live Demo](https://demo.usememos.com) • [Official Website](https://usememos.com) • [Source Code](https://github.com/usememos/memos)
 
 ## Who is this guide for?
@@ -34,13 +35,14 @@ Create an account at [Render](https://dashboard.render.com/register)
 [https://dashboard.render.com/](https://dashboard.render.com/)
 
 2. Select New Web Service
+
    ![ss2](https://i.imgur.com/IIDdK2y.png)
 
 3. Scroll down to "Public Git repository"
 
 4. Paste in the link for the public git repository for memos (https://github.com/usememos/memos) and press continue
 
-![ss3](https://i.imgur.com/OXoCWoJ.png)
+   ![ss3](https://i.imgur.com/OXoCWoJ.png)
 
 5. Render will pre-fill most of the fields but you will need to create a unique name for your web service
 
@@ -48,13 +50,13 @@ Create an account at [Render](https://dashboard.render.com/register)
 
 7. Don't touch the "branch", "root directory", and "environment" fields
 
-![ss4](https://i.imgur.com/v7Sw3fp.png)
+   ![ss4](https://i.imgur.com/v7Sw3fp.png)
 
 8. Click "enter your payment information" and do so
 
-![ss5](https://i.imgur.com/paKcQFl.png)
+   ![ss5](https://i.imgur.com/paKcQFl.png)
 
-![ss6](https://i.imgur.com/JdcO1HC.png)
+   ![ss6](https://i.imgur.com/JdcO1HC.png)
 
 9. Select the starter plan ($7 a month - a requirement for persistant data - render's free instances spin down when inactive and lose all data)
 
@@ -84,45 +86,45 @@ Create an account at [Render](https://dashboard.render.com/register)
 
 18. Click "Save"
 
-![ss11](https://i.imgur.com/Jbg7O6q.png)
+    ![ss11](https://i.imgur.com/Jbg7O6q.png)
 
 19. Wait...again...while the webservice redeploys with the persistant disk
 
-![ss12](https://i.imgur.com/pTzpE34.png)
+    ![ss12](https://i.imgur.com/pTzpE34.png)
 
 20. aaaand....we're back online!
 
-![ss13](https://i.imgur.com/qdsFfSa.png)
+    ![ss13](https://i.imgur.com/qdsFfSa.png)
 
 21. Time to test! We're going to make sure everything is working correctly.
 
 22. Click the link in the top left, it should look like `https://the-name-you-chose.onrender.com` - this is your self hosted memos link!
 
-![ss14](https://i.imgur.com/cgzFSIn.png)
+    ![ss14](https://i.imgur.com/cgzFSIn.png)
 
 23. Create a Username and Password (remember these) then click "Sign up as Host"
 
-![ss15](https://i.imgur.com/kuRStAj.png)
+    ![ss15](https://i.imgur.com/kuRStAj.png)
 
 24. Create a test memo then click save
 
-![ss16](https://i.imgur.com/Eh2AB44.png)
+    ![ss16](https://i.imgur.com/Eh2AB44.png)
 
 25. Sign out of your self-hosted memos
 
-![ss17](https://i.imgur.com/0mMb88G.png)
+    ![ss17](https://i.imgur.com/0mMb88G.png)
 
 26. Return to your Render dashboard, click the "Manual Deploy" dropdown button and click "Deploy latest commit" and wait until the webservice is live again (This is to test that your data is persistant)
 
-![ss18](https://i.imgur.com/w1N7VTb.png)
+    ![ss18](https://i.imgur.com/w1N7VTb.png)
 
 27. Once the webservice is live go back to your self-hosted memos page and sign in! (If your memos screen looks different then something went wrong)
 
 28. Once you're logged in, verify your test memo is still there after the redeploy
 
-![ss19](https://i.imgur.com/dTcEQZS.png)
+    ![ss19](https://i.imgur.com/dTcEQZS.png)
 
-![ss20](https://i.imgur.com/VE2lu8H.png)
+    ![ss20](https://i.imgur.com/VE2lu8H.png)
 
 ## 🎉Celebrate!🎉
 
