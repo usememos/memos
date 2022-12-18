@@ -118,13 +118,13 @@ const SystemSection = () => {
       <p className="title-text">{t("common.basic")}</p>
       <div className="form-label">
         <div className="normal-text">
-          Server name: <span className="font-mono font-medium">{systemStatus.customizedProfile.name}</span>
+          Server name: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
         </div>
         <Button onClick={handleUpdateCustomizedProfileButtonClick}>Edit</Button>
       </div>
       <div className="form-label">
         <span className="normal-text">
-          {t("setting.system-section.database-file-size")}: <span className="font-mono font-medium">{formatBytes(state.dbSize)}</span>
+          {t("setting.system-section.database-file-size")}: <span className="font-mono font-bold">{formatBytes(state.dbSize)}</span>
         </span>
         <Button onClick={handleVacuumBtnClick}>{t("common.vacuum")}</Button>
       </div>

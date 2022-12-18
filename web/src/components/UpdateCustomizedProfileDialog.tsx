@@ -40,7 +40,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
   };
 
   const handleSaveBtnClick = async () => {
-    if (state.name === "") {
+    if (state.name === "" || state.iconUrl === "") {
       toastHelper.error(t("message.fill-all"));
       return;
     }

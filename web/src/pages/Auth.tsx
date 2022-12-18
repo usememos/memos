@@ -119,7 +119,7 @@ const Auth = () => {
         <div className="auth-form-wrapper">
           <div className="page-header-container">
             <div className="title-container">
-              <img className="logo-img" src={systemStatus.customizedProfile.iconUrl || "/logo.webp"} alt="" />
+              <img className="logo-img" src={systemStatus.customizedProfile.iconUrl} alt="" />
               <p className="logo-text">{systemStatus.customizedProfile.name}</p>
             </div>
             <p className="slogan-text">{t("slogan")}</p>
