@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { ANIMATION_DURATION } from "../../helpers/consts";
@@ -10,8 +10,8 @@ import "../../less/base-dialog.less";
 
 interface DialogConfig {
   className: string;
-  clickSpaceDestroy?: boolean;
   dialogName: string;
+  clickSpaceDestroy?: boolean;
 }
 
 interface Props extends DialogConfig, DialogProps {
@@ -21,13 +21,14 @@ interface Props extends DialogConfig, DialogProps {
 const BaseDialog: React.FC<Props> = (props: Props) => {
   const { children, className, clickSpaceDestroy, dialogName, destroy } = props;
   const dialogStore = useDialogStore();
+  const dialogContainerRef = useRef<HTMLDivElement>(null);
+  const dialogIndex = dialogStore.state.dialogStack.findIndex((item) => item === dialogName);
 
   useEffect(() => {
     dialogStore.pushDialogStack(dialogName);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Escape") {
         if (dialogName === dialogStore.topDialogStack()) {
-          dialogStore.popDialogStack();
           destroy();
         }
       }
@@ -37,8 +38,15 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
 
     return () => {
       document.body.removeEventListener("keydown", handleKeyDown);
+      dialogStore.removeDialog(dialogName);
     };
   }, []);
+
+  useEffect(() => {
+    if (dialogIndex > 0 && dialogContainerRef.current) {
+      dialogContainerRef.current.style.marginTop = `${dialogIndex * 16}px`;
+    }
+  }, [dialogIndex]);
 
   const handleSpaceClicked = () => {
     if (clickSpaceDestroy) {
@@ -48,7 +56,7 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`dialog-wrapper ${className}`} onMouseDown={handleSpaceClicked}>
-      <div className="dialog-container" onMouseDown={(e) => e.stopPropagation()}>
+      <div ref={dialogContainerRef} className="dialog-container" onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
