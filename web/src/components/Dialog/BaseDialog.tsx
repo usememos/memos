@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { ANIMATION_DURATION } from "../../helpers/consts";
-import { globalService } from "../../services";
 import store from "../../store";
+import { useDialogStore } from "../../store/module/dialog";
 import "../../less/base-dialog.less";
 import { CssVarsProvider } from "@mui/joy";
 import theme from "../../theme";
@@ -20,13 +20,13 @@ interface Props extends DialogConfig, DialogProps {
 
 const BaseDialog: React.FC<Props> = (props: Props) => {
   const { children, className, clickSpaceDestroy, dialogName, destroy } = props;
-
+  const dialogStore = useDialogStore();
   useEffect(() => {
-    globalService.pushDialogStack(dialogName);
+    dialogStore.pushDialogStack(dialogName);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Escape") {
-        if (dialogName === globalService.topDialogStack()) {
-          globalService.popDialogStack();
+        if (dialogName === dialogStore.topDialogStack()) {
+          dialogStore.popDialogStack();
           destroy();
         }
       }

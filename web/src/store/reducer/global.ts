@@ -4,7 +4,6 @@ interface State {
   locale: Locale;
   appearance: Appearance;
   systemStatus: SystemStatus;
-  dialogStack: string[];
 }
 
 const globalSlice = createSlice({
@@ -23,7 +22,6 @@ const globalSlice = createSlice({
       additionalStyle: "",
       additionalScript: "",
     },
-    dialogStack: [],
   } as State,
   reducers: {
     setGlobalState: (_, action: PayloadAction<State>) => {
@@ -41,21 +39,9 @@ const globalSlice = createSlice({
         appearance: action.payload,
       };
     },
-    pushDialogStack: (state, action: PayloadAction<string>) => {
-      return {
-        ...state,
-        dialogStack: [...state.dialogStack, action.payload],
-      };
-    },
-    popDialogStack: (state) => {
-      return {
-        ...state,
-        dialogStack: state.dialogStack.slice(0, state.dialogStack.length - 1),
-      };
-    },
   },
 });
 
-export const { setGlobalState, setLocale, setAppearance, pushDialogStack, popDialogStack } = globalSlice.actions;
+export const { setGlobalState, setLocale, setAppearance } = globalSlice.actions;
 
 export default globalSlice.reducer;
