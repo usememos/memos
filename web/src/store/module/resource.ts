@@ -1,6 +1,6 @@
-import * as api from "../../helpers/api";
 import store, { useAppSelector } from "../";
 import { patchResource, setResources, deleteResource } from "../reducer/resource";
+import * as api from "../../helpers/api";
 
 const convertResponseModelResource = (resource: Resource): Resource => {
   return {

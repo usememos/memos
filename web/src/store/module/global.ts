@@ -1,6 +1,6 @@
-import store, { useAppSelector } from "../";
 import * as api from "../../helpers/api";
 import * as storage from "../../helpers/storage";
+import store, { useAppSelector } from "../";
 import { setAppearance, setGlobalState, setLocale } from "../reducer/global";
 
 export const initialGlobalState = async () => {

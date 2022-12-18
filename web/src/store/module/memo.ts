@@ -1,10 +1,9 @@
 import { uniqBy } from "lodash";
 import * as api from "../../helpers/api";
-import { createMemo, deleteMemo, patchMemo, setIsFetching, setMemos, setTags } from "../reducer/memo";
+import { DEFAULT_MEMO_LIMIT } from "../../helpers/consts";
+import { useUserStore } from "./";
 import store, { useAppSelector } from "../";
-import { useUserStore } from "./user";
-
-export const DEFAULT_MEMO_LIMIT = 30;
+import { createMemo, deleteMemo, patchMemo, setIsFetching, setMemos, setTags } from "../reducer/memo";
 
 const convertResponseModelMemo = (memo: Memo): Memo => {
   return {

@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { DEFAULT_MEMO_LIMIT, useLocationStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
+import { useLocationStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
 import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
+import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";
 import Memo from "./Memo";
