@@ -57,7 +57,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		}
 		for _, systemSetting := range systemSettingList {
 			var value interface{}
-			err = json.Unmarshal([]byte(systemSetting.Value), &value)
+			err := json.Unmarshal([]byte(systemSetting.Value), &value)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
 			}
@@ -69,7 +69,12 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			} else if systemSetting.Name == api.SystemSettingAdditionalScriptName {
 				systemStatus.AdditionalScript = value.(string)
 			} else if systemSetting.Name == api.SystemSettingCustomizedProfileName {
-				systemStatus.CustomizedProfile = value.(api.CustomizedProfile)
+				valueMap := value.(map[string]interface{})
+				systemStatus.CustomizedProfile = api.CustomizedProfile{
+					Name:        valueMap["name"].(string),
+					IconURL:     valueMap["iconUrl"].(string),
+					ExternalURL: valueMap["externalUrl"].(string),
+				}
 			}
 		}
 
