@@ -43,7 +43,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		filename := file.Filename
-		if  strings.HasSuffix(filename, ".html") {
+		if strings.HasSuffix(filename, ".html") {
 			return echo.NewHTTPError(http.StatusBadRequest, "html file is not allowed")
 		}
 
