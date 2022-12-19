@@ -43,10 +43,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		filename := file.Filename
-		if strings.HasSuffix(filename, ".html") {
-			return echo.NewHTTPError(http.StatusBadRequest, "html file is not allowed")
-		}
-
 		filetype := file.Header.Get("Content-Type")
 		size := file.Size
 		src, err := file.Open()
@@ -169,42 +165,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		return nil
 	})
 
-	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		resourceID, err := strconv.Atoi(c.Param("resourceId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
-		}
-
-		resource, err := s.Store.FindResource(ctx, &api.ResourceFind{
-			ID:        &resourceID,
-			CreatorID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
-		}
-		if resource == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "Not find resource").SetInternal(err)
-		}
-
-		resourceDelete := &api.ResourceDelete{
-			ID: resourceID,
-		}
-		if err := s.Store.DeleteResource(ctx, resourceDelete); err != nil {
-			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource ID not found: %d", resourceID))
-			}
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
-		}
-
-		return c.JSON(http.StatusOK, true)
-	})
-
 	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
@@ -245,6 +205,42 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		return nil
 	})
+
+	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		resourceID, err := strconv.Atoi(c.Param("resourceId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
+		}
+
+		resource, err := s.Store.FindResource(ctx, &api.ResourceFind{
+			ID:        &resourceID,
+			CreatorID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
+		}
+		if resource == nil {
+			return echo.NewHTTPError(http.StatusNotFound, "Not find resource").SetInternal(err)
+		}
+
+		resourceDelete := &api.ResourceDelete{
+			ID: resourceID,
+		}
+		if err := s.Store.DeleteResource(ctx, resourceDelete); err != nil {
+			if common.ErrorCode(err) == common.NotFound {
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource ID not found: %d", resourceID))
+			}
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
+		}
+
+		return c.JSON(http.StatusOK, true)
+	})
 }
 
 func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
@@ -267,8 +263,12 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch resource ID: %v", resourceID)).SetInternal(err)
 		}
 
+		if strings.HasPrefix(resource.Type, echo.MIMETextHTML) {
+			c.Response().Writer.Header().Set("Content-Type", echo.MIMETextPlain)
+		} else {
+			c.Response().Writer.Header().Set("Content-Type", resource.Type)
+		}
 		c.Response().Writer.WriteHeader(http.StatusOK)
-		c.Response().Writer.Header().Set("Content-Type", resource.Type)
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 		if _, err := c.Response().Writer.Write(resource.Blob); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write response").SetInternal(err)
