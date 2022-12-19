@@ -176,9 +176,12 @@
     }
   },
   "amount-text": {
-    "memo": "MEMOS",
-    "tag": "TAGS",
-    "day": "TAGE"
+    "memo": "MEMO",
+    "memo-plural": "MEMOS",
+    "tag": "TAG",
+    "tag-plural": "TAGS",
+    "day": "TAG",
+    "day-plural": "TAGE"
   },
   "message": {
     "no-memos": "Keine Memos 🌃",

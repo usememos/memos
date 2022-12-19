@@ -177,8 +177,11 @@
   },
   "amount-text": {
     "memo": "ANTECKNING",
+    "memo-plural": "ANTECKNINGAR",
     "tag": "TAGG",
-    "day": "DAG"
+    "tag-plural": "TAGGAR",
+    "day": "DAG",
+    "day-plural": "DAGAR"
   },
   "message": {
     "no-memos": "inga anteckningar 🌃",

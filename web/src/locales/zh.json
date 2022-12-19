@@ -177,8 +177,11 @@
   },
   "amount-text": {
     "memo": "MEMO",
+    "memo-plural": "MEMOS",
     "tag": "TAG",
-    "day": "DAY"
+    "tag-plural": "TAGS",
+    "day": "DAY",
+    "day-plural": "DAYS"
   },
   "message": {
     "no-memos": "没有 Memo 了 🌃",

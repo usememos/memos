@@ -171,8 +171,11 @@
   },
   "amount-text": {
     "memo": "MEMO",
+    "memo-plural": "MEMO",
     "tag": "THẺ",
-    "day": "NGÀY"
+    "tag-plural": "THẺ",
+    "day": "NGÀY",
+    "day-plural": "NGÀY"
   },
   "message": {
     "no-memos": "Không có memo nào 🌃",

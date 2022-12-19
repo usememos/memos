@@ -177,8 +177,11 @@
     },
     "amount-text": {
         "memo": "NOTA",
+        "memo-plural": "NOTAS",
         "tag": "ETIQUETA",
-        "day": "DÍA"
+        "tag-plural": "ETIQUETAS",
+        "day": "DÍA",
+        "day-plural": "DÍAS"
     },
     "message": {
         "no-memos": "no hay notas 🌃",

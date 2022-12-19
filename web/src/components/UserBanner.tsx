@@ -116,15 +116,15 @@ const UserBanner = () => {
       <div className="amount-text-container">
         <div className="status-text memos-text">
           <span className="amount-text">{memoAmount}</span>
-          <span className="type-text">{t("amount-text.memo")}</span>
+          <span className="type-text">{memoAmount == 1 ? t("amount-text.memo") : t("amount-text.memo-plural")}</span>
         </div>
         <div className="status-text tags-text">
           <span className="amount-text">{tags.length}</span>
-          <span className="type-text">{t("amount-text.tag")}</span>
+          <span className="type-text">{tags.length == 1 ? t("amount-text.tag") : t("amount-text.tag-plural")}</span>
         </div>
         <div className="status-text duration-text">
           <span className="amount-text">{createdDays}</span>
-          <span className="type-text">{t("amount-text.day")}</span>
+          <span className="type-text">{createdDays == 1 ? t("amount-text.day") : t("amount-text.day-plural")}</span>
         </div>
       </div>
     </>
