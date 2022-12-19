@@ -15,6 +15,7 @@ import "../less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
+const pairSymbols = ["[]", "()", '""', "''"];
 
 const getEditorContentCache = (): string => {
   return storage.get(["editorContentCache"]).editorContentCache ?? "";
@@ -168,6 +169,14 @@ const MemoEditor = () => {
       event.preventDefault();
       editorRef.current.insertText(" ".repeat(TAB_SPACE_WIDTH));
       return;
+    }
+
+    for (const symbol of pairSymbols) {
+      if (event.key === symbol[0]) {
+        event.preventDefault();
+        editorRef.current.insertText("", symbol[0], symbol[1]);
+        return;
+      }
     }
   };
 
