@@ -15,7 +15,7 @@ import "../less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
-const pairSymbols = ["[]", "()", '""', "''", "{}", "<>", "``", "”“", "‘‘", "【】", "（）", "《》"];
+const pairSymbols = ["[]", "()", '""', "''", "{}", "``", "”“", "‘‘", "【】", "（）", "《》"];
 
 const getEditorContentCache = (): string => {
   return storage.get(["editorContentCache"]).editorContentCache ?? "";
@@ -177,6 +177,21 @@ const MemoEditor = () => {
         editorRef.current.insertText("", symbol[0], symbol[1]);
         return;
       }
+    }
+
+    if (event.key === "Backspace") {
+      if (!editorRef.current) {
+        return;
+      }
+      const cursor = editorRef.current.getCursorPosition();
+      const content = editorRef.current.getContent();
+      const deleteChar = content?.slice(cursor - 1, cursor);
+      const nextChar = content?.slice(cursor, cursor + 1);
+      if (pairSymbols.includes(`${deleteChar}${nextChar}`)) {
+        event.preventDefault();
+        editorRef.current.removeText(cursor - 1, 2);
+      }
+      return;
     }
   };
 
