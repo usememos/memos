@@ -171,11 +171,11 @@
   },
   "amount-text": {
     "memo": "MEMO",
-    "memo-plural": "MEMOS",
+    "memos": "MEMOS",
     "tag": "LABEL",
-    "tag-plural": "LABELS",
+    "tags": "LABELS",
     "day": "DAG",
-    "day-plural": "DAGEN"
+    "days": "DAGEN"
   },
   "message": {
     "no-memos": "geen memos 🌃",

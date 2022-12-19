@@ -172,11 +172,11 @@
   },
   "amount-text": {
     "memo": "MEMO",
-    "memo-plural": "MEMOS",
+    "memos": "MEMOS",
     "tag": "ÉTIQUETTE",
-    "tag-plural": "ÉTIQUETTES",
+    "tags": "ÉTIQUETTES",
     "day": "JOUR",
-    "day-plural": "JOURS"
+    "days": "JOURS"
   },
   "message": {
     "no-memos": "pas de mémos 🌃",
