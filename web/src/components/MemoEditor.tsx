@@ -15,7 +15,7 @@ import "../less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
-const pairSymbols = ["[]", "()", '""', "''"];
+const pairSymbols = ["[]", "()", '""', "''", "{}", "<>", "``", "”“", "‘‘", "【】", "（）", "《》"];
 
 const getEditorContentCache = (): string => {
   return storage.get(["editorContentCache"]).editorContentCache ?? "";
