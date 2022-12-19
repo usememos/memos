@@ -211,5 +211,21 @@
     "too-long": "Zu lang",
     "not-allow-space": "Keine Leerzeichen erlaubt",
     "not-allow-chinese": "Keine chinesischen Zeichen erlaubt"
+  },
+  "days": {
+    "monday": "Montag",
+    "mon": "Mo",
+    "tuesday": "Dienstag",
+    "tue": "Di",
+    "wednesday": "Mittwoch",
+    "wed": "Mi",
+    "thursday": "Donnerstag",
+    "thu": "Do",
+    "friday": "Freitag",
+    "fri": "Fr",
+    "saturday": "Samstag",
+    "sat": "Sa",
+    "sunday": "Sonntag",
+    "sun": "So"
   }
 }

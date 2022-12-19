@@ -206,5 +206,21 @@
     "too-long": "Too long",
     "not-allow-space": "Don't allow space",
     "not-allow-chinese": "Don't allow chinese"
+  },
+  "days": {
+    "monday": "Lundi",
+    "mon": "Lu",
+    "tuesday": "Mardi",
+    "tue": "Ma",
+    "wednesday": "Mercredi",
+    "wed": "Me",
+    "thursday": "Jeudi",
+    "thu": "Je",
+    "friday": "Vendredi",
+    "fri": "Ve",
+    "saturday": "Samedi",
+    "sat": "Sa",
+    "sunday": "Dimanche",
+    "sun": "Di"
   }
 }

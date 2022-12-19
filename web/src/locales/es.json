@@ -211,5 +211,21 @@
         "too-long": "Demasiado largo",
         "not-allow-space": "No se admiten espacios",
         "not-allow-chinese": "El chino no está permitido"
+    },
+    "days": {
+      "monday": "Lunes",
+      "mon": "Lun",
+      "tuesday": "Martes",
+      "tue": "Mart",
+      "wednesday": "Miércoles",
+      "wed": "Miérc",
+      "thursday": "Jueves",
+      "thu": "Juev",
+      "friday": "Viernes",
+      "fri": "Vier",
+      "saturday": "Sábado",
+      "sat": "Sáb",
+      "sunday": "Domingo",
+      "sun": "Dom"
     }
 }

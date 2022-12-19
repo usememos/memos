@@ -211,5 +211,21 @@
     "too-long": "För långt",
     "not-allow-space": "Tillåt inte mellanslag",
     "not-allow-chinese": "Tillåt inte kinesiska"
+  },
+  "days": {
+    "monday": "Måndag",
+    "mon": "Mån",
+    "tuesday": "Tisdag",
+    "tue": "Tis",
+    "wednesday": "Onsdag",
+    "wed": "Ons",
+    "thursday": "Torsdag",
+    "thu": "Tors",
+    "friday": "Fredag",
+    "fri": "Fre",
+    "saturday": "Lördag",
+    "sat": "Lör",
+    "sunday": "Söndag",
+    "sun": "Sön"
   }
 }

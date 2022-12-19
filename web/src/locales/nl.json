@@ -198,5 +198,21 @@
     "invalid-resource-filename": "Onjuiste bestandsnaam.",
     "click-to-save-the-image": "Klik om de afbeelding op te slaan",
     "generating-the-screenshot": "Screenshot genereren..."
+  },
+  "days": {
+    "monday": "Maandag",
+    "mon": "ma",
+    "tuesday": "Dinsdag",
+    "tue": "di",
+    "wednesday": "Woensdag",
+    "wed": "woe",
+    "thursday": "Donderdag",
+    "thu": "don",
+    "friday": "Vrijdag",
+    "fri": "vrij",
+    "saturday": "Zaterdag",
+    "sat": "zat",
+    "sunday": "Zondag",
+    "sun": "zon"
   }
 }

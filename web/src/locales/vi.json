@@ -205,5 +205,21 @@
     "too-long": "Too long",
     "not-allow-space": "Don't allow space",
     "not-allow-chinese": "Don't allow chinese"
+  },
+  "days": {
+    "monday": "thứ hai",
+    "mon": "T2",
+    "tuesday": "thứ ba",
+    "tue": "T3",
+    "wednesday": "thứ tư",
+    "wed": "T4",
+    "thursday": "thứ năm",
+    "thu": "T5",
+    "friday": "thứ sáu",
+    "fri": "T6",
+    "saturday": "thứ bảy",
+    "sat": "T7",
+    "sunday": "chủ nhật",
+    "sun": "CN"
   }
 }
