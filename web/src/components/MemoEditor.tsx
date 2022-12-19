@@ -35,7 +35,6 @@ const setEditingMemoVisibilityCache = (visibility: Visibility) => {
 interface State {
   fullscreen: boolean;
   isUploadingResource: boolean;
-  shouldShowEmojiPicker: boolean;
 }
 
 const MemoEditor = () => {
@@ -49,7 +48,6 @@ const MemoEditor = () => {
   const [state, setState] = useState<State>({
     isUploadingResource: false,
     fullscreen: false,
-    shouldShowEmojiPicker: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const editorState = editorStore.state;
