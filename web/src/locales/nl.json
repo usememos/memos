@@ -185,9 +185,12 @@
     }
   },
   "amount-text": {
-    "memo": "MEMO",
-    "tag": "LABEL",
-    "day": "DAG"
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "LABEL",
+    "tag_other": "LABELS",
+    "day_one": "DAG",
+    "day_other": "DAGEN"
   },
   "message": {
     "no-memos": "geen memos 🌃",

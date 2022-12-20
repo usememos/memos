@@ -191,9 +191,12 @@
     }
   },
   "amount-text": {
-    "memo": "MEMO",
-    "tag": "TAG",
-    "day": "DAY"
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "TAG",
+    "tag_other": "TAGS",
+    "day_one": "DAY",
+    "day_other": "DAYS"
   },
   "message": {
     "no-memos": "没有 Memo 了 🌃",

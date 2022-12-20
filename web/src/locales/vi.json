@@ -185,9 +185,12 @@
     }
   },
   "amount-text": {
-    "memo": "MEMO",
-    "tag": "THẺ",
-    "day": "NGÀY"
+    "memo_one": "MEMO",
+    "memo_other": "MEMO",
+    "tag_one": "THẺ",
+    "tag_other": "THẺ",
+    "day_one": "NGÀY",
+    "day_other": "NGÀY"
   },
   "message": {
     "no-memos": "Không có memo nào 🌃",

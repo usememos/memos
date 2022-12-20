@@ -191,9 +191,12 @@
     }
   },
   "amount-text": {
-    "memo": "MEMOS",
-    "tag": "TAGS",
-    "day": "TAGE"
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "TAG",
+    "tag_other": "TAGS",
+    "day_one": "TAG",
+    "day_other": "TAGE"
   },
   "message": {
     "no-memos": "Keine Memos 🌃",

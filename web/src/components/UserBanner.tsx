@@ -116,15 +116,15 @@ const UserBanner = () => {
       <div className="amount-text-container">
         <div className="status-text memos-text">
           <span className="amount-text">{memoAmount}</span>
-          <span className="type-text">{t("amount-text.memo")}</span>
+          <span className="type-text">{t("amount-text.memo", { count: memoAmount })}</span>
         </div>
         <div className="status-text tags-text">
           <span className="amount-text">{tags.length}</span>
-          <span className="type-text">{t("amount-text.tag")}</span>
+          <span className="type-text">{t("amount-text.tag", { count: tags.length })}</span>
         </div>
         <div className="status-text duration-text">
           <span className="amount-text">{createdDays}</span>
-          <span className="type-text">{t("amount-text.day")}</span>
+          <span className="type-text">{t("amount-text.day", { count: createdDays })}</span>
         </div>
       </div>
     </>

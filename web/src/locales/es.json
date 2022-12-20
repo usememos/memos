@@ -191,9 +191,12 @@
         }
     },
     "amount-text": {
-        "memo": "NOTAS",
-        "tag": "TAGS",
-        "day": "DÍAS"
+        "memo_one": "NOTA",
+        "memo_other": "NOTAS",
+        "tag_one": "ETIQUETA",
+        "tag_other": "ETIQUETAS",
+        "day_one": "DÍA",
+        "day_other": "DÍAS"
     },
     "message": {
         "no-memos": "no hay notas 🌃",

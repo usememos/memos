@@ -186,9 +186,12 @@
     }
   },
   "amount-text": {
-    "memo": "MEMO",
-    "tag": "ÉTIQUETTE",
-    "day": "JOUR"
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "ÉTIQUETTE",
+    "tag_other": "ÉTIQUETTES",
+    "day_one": "JOUR",
+    "day_other": "JOURS"
   },
   "message": {
     "no-memos": "pas de mémos 🌃",
