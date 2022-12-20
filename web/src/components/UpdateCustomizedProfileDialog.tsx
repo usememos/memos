@@ -69,7 +69,8 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <p className="text-sm mb-1">
-          {t("setting.system-section.server-name")}<span className="text-sm text-gray-400 ml-1">({t("setting.system-section.customize-server.default")})</span>
+          {t("setting.system-section.server-name")}
+          <span className="text-sm text-gray-400 ml-1">({t("setting.system-section.customize-server.default")})</span>
         </p>
         <input type="text" className="input-text" value={state.name} onChange={handleNameChanged} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.icon-url")}</p>
