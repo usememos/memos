@@ -6,8 +6,15 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
     if (!matchResult) {
       continue;
     }
-    const matchedStr = matchResult[0];
-    const retainContent = markdownStr.slice(matchedStr.length);
+    let matchedStr = "";
+    let retainContent = "";
+    if (parser.name === "heading") {
+      matchedStr = matchResult[1];
+      retainContent = markdownStr.slice(2 + matchedStr.length);
+    } else {
+      matchedStr = matchResult[0];
+      retainContent = markdownStr.slice(matchedStr.length);
+    }
 
     if (parser.name === "br") {
       return parser.renderer(matchedStr) + marked(retainContent, blockParsers, inlineParsers);

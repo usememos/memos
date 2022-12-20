@@ -17,6 +17,7 @@ import BoldEmphasis from "./BoldEmphasis";
 import Blockquote from "./Blockquote";
 import HorizontalRules from "./HorizontalRules";
 import Strikethrough from "./Strikethrough";
+import Heading from "./Heading";
 
 export { TAG_REG } from "./Tag";
 export { LINK_REG } from "./Link";
@@ -31,6 +32,7 @@ export const blockElementParserList = [
   OrderedList,
   UnorderedList,
   HorizontalRules,
+  Heading,
   Paragraph,
 ];
 
