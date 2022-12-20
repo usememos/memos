@@ -249,12 +249,7 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
           handleValueChanged={handleRelationChange}
         />
       ) : null}
-      <Selector
-        className="type-selector"
-        dataSource={typeDataSource}
-        value={filter.type}
-        handleValueChanged={handleTypeChange}
-      />
+      <Selector className="type-selector" dataSource={typeDataSource} value={filter.type} handleValueChanged={handleTypeChange} />
       <Selector
         className="operator-selector"
         dataSource={operatorDataSource}
