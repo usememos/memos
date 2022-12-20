@@ -124,10 +124,11 @@ const MemoEditor = () => {
       if (event.key === "k") {
         event.preventDefault();
         const selectedContent = editorRef.current.getSelectedContent();
-        editorRef.current.insertText("", "[", "]()");
-        const pos = editorRef.current.getCursorPosition();
+        editorRef.current.insertText("", "[", "](url)");
         if (selectedContent) {
-          editorRef.current.setCursorPosition(pos + 2);
+          const startPos = editorRef.current.getCursorPosition() + 2;
+          const endPos = startPos + 3;
+          editorRef.current.setCursorPosition(startPos, endPos);
         }
       }
     }
