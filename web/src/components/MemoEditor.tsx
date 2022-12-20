@@ -203,6 +203,7 @@ const MemoEditor = () => {
           }
           editorRef.current.setCursorPosition(startPos, endPos);
         }
+        return;
       } else {
         editorRef.current.insertText(tabSpace);
         if (selectedContent) {
