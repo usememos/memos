@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocationStore } from "../store/module";
+import { useLocationStore, useDialogStore } from "../store/module";
 import { memoSpecialTypes } from "../helpers/filter";
 import Icon from "./Icon";
 import "../less/search-bar.less";
@@ -8,8 +8,31 @@ import "../less/search-bar.less";
 const SearchBar = () => {
   const { t } = useTranslation();
   const locationStore = useLocationStore();
+  const dialogStore = useDialogStore();
   const memoType = locationStore.state.query.type;
   const [queryText, setQueryText] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!inputRef.current) {
+        return;
+      }
+      if (dialogStore.getState().dialogStack.length) {
+        return;
+      }
+      const isMetaKey = event.ctrlKey || event.metaKey;
+      if (isMetaKey && event.key === "f") {
+        event.preventDefault();
+        inputRef.current.focus();
+        return;
+      }
+    };
+    document.body.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   useEffect(() => {
     const text = locationStore.getState().query.text;
@@ -39,6 +62,7 @@ const SearchBar = () => {
           autoComplete="new-password"
           type="text"
           placeholder=""
+          ref={inputRef}
           value={queryText}
           onChange={handleTextQueryInput}
         />
