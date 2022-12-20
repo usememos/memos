@@ -17,7 +17,7 @@ interface Props {
 }
 
 const nullItem = {
-  text: "Select",
+  text: "common.select",
   value: "",
 };
 

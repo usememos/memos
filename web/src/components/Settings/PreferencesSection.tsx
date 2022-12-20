@@ -37,7 +37,7 @@ const localeSelectorItems = [
     value: "de",
   },
   {
-    text: "Spanish",
+    text: "Español",
     value: "es",
   },
 ];
