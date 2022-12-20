@@ -9,7 +9,7 @@ export interface EditorRefActions {
   getContent: () => string;
   getSelectedContent: () => string;
   getCursorPosition: () => number;
-  setCursorPosition: (pos: number, endPos?: number) => void;
+  setCursorPosition: (startPos: number, endPos?: number) => void;
 }
 
 interface Props {
