@@ -101,7 +101,9 @@ const MemoEditor = () => {
       return;
     }
 
-    if (event.ctrlKey || event.metaKey) {
+    const isMetaKey = (event.ctrlKey || event.metaKey);
+    const isShiftKey = event.shiftKey;
+    if (!isShiftKey && isMetaKey) {
       if (event.key === "Enter") {
         handleSaveBtnClick();
         return;
@@ -123,7 +125,7 @@ const MemoEditor = () => {
       }
     }
 
-    if (event.key === "Enter") {
+    if (!isShiftKey && event.key === "Enter") {
       const cursorPosition = editorRef.current.getCursorPosition();
       const contentBeforeCursor = editorRef.current.getContent().slice(0, cursorPosition);
       const rowValue = last(contentBeforeCursor.split("\n"));
@@ -158,13 +160,13 @@ const MemoEditor = () => {
       }
       return;
     }
-    if (event.key === "Escape") {
+    if (!isShiftKey && event.key === "Escape") {
       if (state.fullscreen) {
         handleFullscreenBtnClick();
       }
       return;
     }
-    if (event.key === "Tab") {
+    if (!isShiftKey && event.key === "Tab") {
       event.preventDefault();
       editorRef.current.insertText(" ".repeat(TAB_SPACE_WIDTH));
       return;
