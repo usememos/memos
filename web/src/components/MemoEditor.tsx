@@ -314,7 +314,7 @@ const MemoEditor = () => {
     const cursorPosition = editorRef.current.getCursorPosition();
     const inputValue = (ev?.nativeEvent as InputEvent)?.data as string;
     const quote = quotes[inputValue];
-    if (quote && ev?.type === 'input') {
+    if (quote && ev?.type === "input") {
       editorRef.current?.insertText(quote);
       editorRef.current?.setCursorPosition(cursorPosition);
     }
