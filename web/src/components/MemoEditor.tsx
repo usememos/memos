@@ -122,6 +122,16 @@ const MemoEditor = () => {
         editorRef.current.insertText("", "`", "`");
         return;
       }
+      if (event.key === "k") {
+        event.preventDefault();
+        const selectedContent = editorRef.current.getSelectedContent();
+        editorRef.current.insertText("", "[", "](url)");
+        if (selectedContent) {
+          const startPos = editorRef.current.getCursorPosition() + 2;
+          const endPos = startPos + 3;
+          editorRef.current.setCursorPosition(startPos, endPos);
+        }
+      }
     }
 
     if (event.key === "Enter") {

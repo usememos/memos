@@ -9,7 +9,7 @@ export interface EditorRefActions {
   getContent: () => string;
   getSelectedContent: () => string;
   getCursorPosition: () => number;
-  setCursorPosition: (pos: number) => void;
+  setCursorPosition: (startPos: number, endPos?: number) => void;
 }
 
 interface Props {
@@ -105,8 +105,9 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         const end = editorRef.current?.selectionEnd;
         return editorRef.current?.value.slice(start, end) ?? "";
       },
-      setCursorPosition: (pos: number) => {
-        editorRef.current?.setSelectionRange(pos, pos);
+      setCursorPosition: (startPos: number, endPos?: number) => {
+        const _endPos = isNaN(endPos as number) ? startPos : (endPos as number);
+        editorRef.current?.setSelectionRange(startPos, _endPos);
       },
     }),
     []
