@@ -180,9 +180,6 @@ const MemoEditor = () => {
     }
 
     if (event.key === "Backspace") {
-      if (!editorRef.current) {
-        return;
-      }
       const cursor = editorRef.current.getCursorPosition();
       const content = editorRef.current.getContent();
       const deleteChar = content?.slice(cursor - 1, cursor);
