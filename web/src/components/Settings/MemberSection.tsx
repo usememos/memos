@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { userService } from "../../services";
-import { useAppSelector } from "../../store";
+import { useUserStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
 import Dropdown from "../common/Dropdown";
@@ -16,7 +15,8 @@ interface State {
 
 const PreferencesSection = () => {
   const { t } = useTranslation();
-  const currentUser = useAppSelector((state) => state.user.user);
+  const userStore = useUserStore();
+  const currentUser = userStore.state.user;
   const [state, setState] = useState<State>({
     createUserUsername: "",
     createUserPassword: "",
@@ -79,8 +79,9 @@ const PreferencesSection = () => {
       title: `Archive Member`,
       content: `❗️Are you sure to archive ${user.username}?`,
       style: "warning",
+      dialogName: "archive-user-dialog",
       onConfirm: async () => {
-        await userService.patchUser({
+        await userStore.patchUser({
           id: user.id,
           rowStatus: "ARCHIVED",
         });
@@ -90,7 +91,7 @@ const PreferencesSection = () => {
   };
 
   const handleRestoreUserClick = async (user: User) => {
-    await userService.patchUser({
+    await userStore.patchUser({
       id: user.id,
       rowStatus: "NORMAL",
     });
@@ -102,8 +103,9 @@ const PreferencesSection = () => {
       title: `Delete Member`,
       content: `Are you sure to delete ${user.username}? THIS ACTION IS IRREVERSIABLE.❗️`,
       style: "warning",
+      dialogName: "delete-user-dialog",
       onConfirm: async () => {
-        await userService.deleteUser({
+        await userStore.deleteUser({
           id: user.id,
         });
         fetchUserList();

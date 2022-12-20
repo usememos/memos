@@ -61,10 +61,10 @@
           @apply flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-2 px-6;
 
           > .userinfo-container {
-            @apply w-64 flex flex-col justify-center items-start;
+            @apply w-auto grow truncate flex mr-2 flex-col justify-center items-start;
 
             > .name-text {
-              @apply text-sm truncate font-bold text-gray-600 dark:text-gray-300;
+              @apply w-full text-sm truncate font-bold text-gray-600 dark:text-gray-300;
             }
 
             > .usage-text {
@@ -73,7 +73,7 @@
           }
 
           > .logo-img {
-            @apply h-10 w-auto;
+            @apply h-10 shrink-0 w-auto;
           }
         }
       }

@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { editorStateService, locationService, memoService, userService } from "../services";
+import { useEditorStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
@@ -30,9 +30,13 @@ const Memo: React.FC<Props> = (props: Props) => {
   const { memo, highlightWord } = props;
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const editorStore = useEditorStore();
+  const locationStore = useLocationStore();
+  const userStore = useUserStore();
+  const memoStore = useMemoStore();
   const [displayTimeStr, setDisplayTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const isVisitorMode = userService.isVisitorMode();
+  const isVisitorMode = userStore.isVisitorMode();
 
   useEffect(() => {
     let intervalFlag: any = -1;
@@ -59,9 +63,9 @@ const Memo: React.FC<Props> = (props: Props) => {
   const handleTogglePinMemoBtnClick = async () => {
     try {
       if (memo.pinned) {
-        await memoService.unpinMemo(memo.id);
+        await memoStore.unpinMemo(memo.id);
       } else {
-        await memoService.pinMemo(memo.id);
+        await memoStore.pinMemo(memo.id);
       }
     } catch (error) {
       // do nth
@@ -69,12 +73,12 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleEditMemoClick = () => {
-    editorStateService.setEditMemoWithId(memo.id);
+    editorStore.setEditMemoWithId(memo.id);
   };
 
   const handleArchiveMemoClick = async () => {
     try {
-      await memoService.patchMemo({
+      await memoStore.patchMemo({
         id: memo.id,
         rowStatus: "ARCHIVED",
       });
@@ -83,8 +87,8 @@ const Memo: React.FC<Props> = (props: Props) => {
       toastHelper.error(error.response.data.message);
     }
 
-    if (editorStateService.getState().editMemoId === memo.id) {
-      editorStateService.clearEditMemo();
+    if (editorStore.getState().editMemoId === memo.id) {
+      editorStore.clearEditMemo();
     }
   };
 
@@ -97,14 +101,14 @@ const Memo: React.FC<Props> = (props: Props) => {
 
     if (targetEl.className === "tag-span") {
       const tagName = targetEl.innerText.slice(1);
-      const currTagQuery = locationService.getState().query?.tag;
+      const currTagQuery = locationStore.getState().query?.tag;
       if (currTagQuery === tagName) {
-        locationService.setTagQuery(undefined);
+        locationStore.setTagQuery(undefined);
       } else {
-        locationService.setTagQuery(tagName);
+        locationStore.setTagQuery(tagName);
       }
     } else if (targetEl.classList.contains("todo-block")) {
-      if (userService.isVisitorMode()) {
+      if (userStore.isVisitorMode()) {
         return;
       }
 
@@ -128,7 +132,7 @@ const Memo: React.FC<Props> = (props: Props) => {
               finalContent += `${tempList[i]}`;
             }
           }
-          await memoService.patchMemo({
+          await memoStore.patchMemo({
             id: memo.id,
             content: finalContent,
           });
@@ -151,7 +155,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    editorStateService.setEditMemoWithId(memo.id);
+    editorStore.setEditMemoWithId(memo.id);
   };
 
   const handleMemoDisplayTimeClick = () => {
@@ -159,11 +163,11 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemoVisibilityClick = (visibility: Visibility) => {
-    const currVisibilityQuery = locationService.getState().query?.visibility;
+    const currVisibilityQuery = locationStore.getState().query?.visibility;
     if (currVisibilityQuery === visibility) {
-      locationService.setMemoVisibilityQuery(undefined);
+      locationStore.setMemoVisibilityQuery(undefined);
     } else {
-      locationService.setMemoVisibilityQuery(visibility);
+      locationStore.setMemoVisibilityQuery(visibility);
     }
   };
 

@@ -43,11 +43,11 @@ func (db *DB) Open(ctx context.Context) (err error) {
 	}
 
 	// Connect to the database without foreign_key.
-	sqlDB, err := sql.Open("sqlite3", db.profile.DSN+"?_foreign_keys=0")
+	sqliteDB, err := sql.Open("sqlite3", db.profile.DSN+"?cache=shared&_foreign_keys=0&_busy_timeout=9999999")
 	if err != nil {
 		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.profile.DSN, err)
 	}
-	db.Db = sqlDB
+	db.Db = sqliteDB
 
 	if db.profile.Mode == "dev" {
 		// In dev mode, we should migrate and seed the database.

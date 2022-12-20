@@ -1,12 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import globalReducer from "./modules/global";
-import userReducer from "./modules/user";
-import memoReducer from "./modules/memo";
-import editorReducer from "./modules/editor";
-import shortcutReducer from "./modules/shortcut";
-import locationReducer from "./modules/location";
-import resourceReducer from "./modules/resource";
+import globalReducer from "./reducer/global";
+import userReducer from "./reducer/user";
+import memoReducer from "./reducer/memo";
+import editorReducer from "./reducer/editor";
+import shortcutReducer from "./reducer/shortcut";
+import locationReducer from "./reducer/location";
+import resourceReducer from "./reducer/resource";
+import dialogReducer from "./reducer/dialog";
 
 const store = configureStore({
   reducer: {
@@ -17,6 +18,7 @@ const store = configureStore({
     shortcut: shortcutReducer,
     location: locationReducer,
     resource: resourceReducer,
+    dialog: dialogReducer,
   },
 });
 

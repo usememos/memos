@@ -124,6 +124,7 @@ export default function showPreviewImageDialog(imgUrls: string[] | string, initi
   generateDialog(
     {
       className: "preview-image-dialog",
+      dialogName: "preview-image-dialog",
     },
     PreviewImageDialog,
     {

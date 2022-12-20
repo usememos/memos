@@ -1,14 +1,16 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
 import { ANIMATION_DURATION } from "../../helpers/consts";
 import store from "../../store";
-import "../../less/base-dialog.less";
+import { useDialogStore } from "../../store/module";
 import { CssVarsProvider } from "@mui/joy";
 import theme from "../../theme";
+import "../../less/base-dialog.less";
 
 interface DialogConfig {
   className: string;
+  dialogName: string;
   clickSpaceDestroy?: boolean;
 }
 
@@ -17,12 +19,18 @@ interface Props extends DialogConfig, DialogProps {
 }
 
 const BaseDialog: React.FC<Props> = (props: Props) => {
-  const { children, className, clickSpaceDestroy, destroy } = props;
+  const { children, className, clickSpaceDestroy, dialogName, destroy } = props;
+  const dialogStore = useDialogStore();
+  const dialogContainerRef = useRef<HTMLDivElement>(null);
+  const dialogIndex = dialogStore.state.dialogStack.findIndex((item) => item === dialogName);
 
   useEffect(() => {
+    dialogStore.pushDialogStack(dialogName);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Escape") {
-        destroy();
+        if (dialogName === dialogStore.topDialogStack()) {
+          destroy();
+        }
       }
     };
 
@@ -30,8 +38,15 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
 
     return () => {
       document.body.removeEventListener("keydown", handleKeyDown);
+      dialogStore.removeDialog(dialogName);
     };
   }, []);
+
+  useEffect(() => {
+    if (dialogIndex > 0 && dialogContainerRef.current) {
+      dialogContainerRef.current.style.marginTop = `${dialogIndex * 16}px`;
+    }
+  }, [dialogIndex]);
 
   const handleSpaceClicked = () => {
     if (clickSpaceDestroy) {
@@ -40,8 +55,8 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`dialog-wrapper ${className}`} onClick={handleSpaceClicked}>
-      <div className="dialog-container" onClick={(e) => e.stopPropagation()}>
+    <div className={`dialog-wrapper ${className}`} onMouseDown={handleSpaceClicked}>
+      <div ref={dialogContainerRef} className="dialog-container" onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>

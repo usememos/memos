@@ -1,15 +1,16 @@
 import { Option, Select } from "@mui/joy";
 import { useTranslation } from "react-i18next";
-import { globalService, userService } from "../services";
-import { useAppSelector } from "../store";
+import { useGlobalStore, useUserStore } from "../store/module";
 import Icon from "./Icon";
 
 const appearanceList = ["system", "light", "dark"];
 
 const AppearanceSelect = () => {
-  const user = useAppSelector((state) => state.user.user);
-  const appearance = useAppSelector((state) => state.global.appearance);
   const { t } = useTranslation();
+  const globalStore = useGlobalStore();
+  const userStore = useUserStore();
+  const { appearance } = globalStore.state;
+  const user = userStore.state.user;
 
   const getPrefixIcon = (apperance: Appearance) => {
     const className = "w-4 h-auto";
@@ -24,9 +25,9 @@ const AppearanceSelect = () => {
 
   const handleSelectChange = async (appearance: Appearance) => {
     if (user) {
-      await userService.upsertUserSetting("appearance", appearance);
+      await userStore.upsertUserSetting("appearance", appearance);
     }
-    globalService.setAppearance(appearance);
+    globalStore.setAppearance(appearance);
   };
 
   return (

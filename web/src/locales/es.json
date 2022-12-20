@@ -77,7 +77,8 @@
         "rename": "Renombrar",
         "clear-unused-resources": "Borrar los recursos no utilizados",
         "warning-text-unused": "Seguro que quieres eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE❗.",
-        "no-unused-resources": "No hay recursos sin utilizar"
+        "no-unused-resources": "No hay recursos sin utilizar",
+        "name": "Name"
     },
     "archived": {
         "archived-memos": "Notas Archivadas",
@@ -118,13 +119,13 @@
     },
     "filter": {
         "new-filter": "Nuevo Filtro",
-        "title": {
+        "type": {
             "tag": "Tag",
-            "type": "Tipo",
-            "text": "Texto",
-            "display-time": "Fecha de Subida",
-            "visibility": "Visibilidad"
-        },
+            "type": "Type",
+            "text": "Text",
+            "display-time": "Display Time",
+            "visibility": "Visibility"
+          },
         "operator": {
             "contains": "Contiene",
             "not-contains": "No contiene",
@@ -157,6 +158,7 @@
             "change-password": "Cambiar Contraseña"
         },
         "preference-section": {
+            "theme": "Tema",
             "default-memo-visibility": "Visibilidad predeterminada de las notas",
             "enable-folding-memo": "Habilitar nota plegable",
             "editor-font-style": "Estilo de fuente del editor",
@@ -169,6 +171,12 @@
             "create-a-member": "Crear un miembro"
         },
         "system-section": {
+            "server-name": "Server Name",
+            "customize-server": {
+                "title": "Customize Server",
+                "default": "Default is memos",
+                "icon-url": "Icon URL"
+            },
             "database-file-size": "Tamaño de la Base de Datos",
             "allow-user-signup": "Permitir el registro de usuarios",
             "additional-style": "Estilos adicionales",
@@ -217,6 +225,28 @@
         "too-short": "Demasiado corto",
         "too-long": "Demasiado largo",
         "not-allow-space": "No se admiten espacios",
-        "not-allow-chinese": "El chino no está permitido"
+        "not-allow-chinese": "El chino no está permitido",
+        "succeed-vacuum-database": "Succeed to vacuum database",
+        "succeed-update-additional-style": "Succeed to update additional style",
+        "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+        "succeed-update-customized-profile": "Succeed to update customized profile",
+        "succeed-update-additional-script": "Succeed to update additional script",
+        "update-succeed": "Update succeed"
+    },
+    "days": {
+      "monday": "Lunes",
+      "mon": "Lun",
+      "tuesday": "Martes",
+      "tue": "Mart",
+      "wednesday": "Miércoles",
+      "wed": "Miérc",
+      "thursday": "Jueves",
+      "thu": "Juev",
+      "friday": "Viernes",
+      "fri": "Vier",
+      "saturday": "Sábado",
+      "sat": "Sáb",
+      "sunday": "Domingo",
+      "sun": "Dom"
     }
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "../store";
+import { useUserStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MyAccountSection from "./Settings/MyAccountSection";
@@ -20,7 +20,8 @@ interface State {
 const SettingDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const { t } = useTranslation();
-  const user = useAppSelector((state) => state.user.user);
+  const userStore = useUserStore();
+  const user = userStore.state.user;
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });
@@ -66,7 +67,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
                 onClick={() => handleSectionSelectorItemClick("system")}
                 className={`section-item ${state.selectedSection === "system" ? "selected" : ""}`}
               >
-                <span className="icon-text">🧑‍🔧</span> {t("setting.system")}
+                <span className="icon-text">🛠️</span> {t("setting.system")}
               </span>
             </div>
           </>
@@ -91,6 +92,7 @@ export default function showSettingDialog(): void {
   generateDialog(
     {
       className: "setting-dialog",
+      dialogName: "setting-dialog",
     },
     SettingDialog,
     {}

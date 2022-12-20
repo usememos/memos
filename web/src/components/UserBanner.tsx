@@ -1,11 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
+import { useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import { getMemoStats } from "../helpers/api";
 import * as utils from "../helpers/utils";
-import userService from "../services/userService";
-import { locationService } from "../services";
-import { useAppSelector } from "../store";
 import Icon from "./Icon";
 import Dropdown from "./common/Dropdown";
 import showResourcesDialog from "./ResourcesDialog";
@@ -16,12 +14,15 @@ import "../less/user-banner.less";
 const UserBanner = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { user, owner } = useAppSelector((state) => state.user);
-  const { memos, tags } = useAppSelector((state) => state.memo);
+  const locationStore = useLocationStore();
+  const userStore = useUserStore();
+  const memoStore = useMemoStore();
+  const { user, owner } = userStore.state;
+  const { memos, tags } = memoStore.state;
   const [username, setUsername] = useState("Memos");
   const [memoAmount, setMemoAmount] = useState(0);
   const [createdDays, setCreatedDays] = useState(0);
-  const isVisitorMode = userService.isVisitorMode();
+  const isVisitorMode = userStore.isVisitorMode();
 
   useEffect(() => {
     if (isVisitorMode) {
@@ -37,7 +38,7 @@ const UserBanner = () => {
   }, [isVisitorMode, user, owner]);
 
   useEffect(() => {
-    getMemoStats(userService.getCurrentUserId())
+    getMemoStats(userStore.getCurrentUserId())
       .then(({ data: { data } }) => {
         setMemoAmount(data.length);
       })
@@ -47,7 +48,7 @@ const UserBanner = () => {
   }, [memos]);
 
   const handleUsernameClick = useCallback(() => {
-    locationService.clearQuery();
+    locationStore.clearQuery();
   }, []);
 
   const handleResourcesBtnClick = () => {
@@ -78,7 +79,7 @@ const UserBanner = () => {
           actionsClassName="min-w-36"
           actions={
             <>
-              {!userService.isVisitorMode() && (
+              {!userStore.isVisitorMode() && (
                 <>
                   <button
                     className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
@@ -100,7 +101,7 @@ const UserBanner = () => {
               >
                 <span className="mr-1">🤠</span> {t("common.about")}
               </button>
-              {!userService.isVisitorMode() && (
+              {!userStore.isVisitorMode() && (
                 <button
                   className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                   onClick={handleSignOutBtnClick}

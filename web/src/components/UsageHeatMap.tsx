@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useAppSelector } from "../store";
-import { locationService, userService } from "../services";
+import { useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { useTranslation } from "react-i18next";
 import { getMemoStats } from "../helpers/api";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
@@ -28,19 +28,22 @@ interface DailyUsageStat {
 }
 
 const UsageHeatMap = () => {
+  const { t } = useTranslation();
+  const locationStore = useLocationStore();
+  const userStore = useUserStore();
+  const memoStore = useMemoStore();
   const todayTimeStamp = utils.getDateStampByDate(Date.now());
   const todayDay = new Date(todayTimeStamp).getDay() + 1;
   const nullCell = new Array(7 - todayDay).fill(0);
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
   const beginDayTimestamp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
-
-  const { memos } = useAppSelector((state) => state.memo);
+  const memos = memoStore.state.memos;
   const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestamp));
   const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
   const containerElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    getMemoStats(userService.getCurrentUserId())
+    getMemoStats(userStore.getCurrentUserId())
       .then(({ data: { data } }) => {
         const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestamp);
         for (const record of data) {
@@ -58,6 +61,10 @@ const UsageHeatMap = () => {
       .catch((error) => {
         console.error(error);
       });
+
+    return () => {
+      handleUsageStatItemMouseLeave();
+    };
   }, [memos.length]);
 
   const handleUsageStatItemMouseEnter = useCallback((event: React.MouseEvent, item: DailyUsageStat) => {
@@ -80,11 +87,11 @@ const UsageHeatMap = () => {
   }, []);
 
   const handleUsageStatItemClick = useCallback((item: DailyUsageStat) => {
-    if (locationService.getState().query?.duration?.from === item.timestamp) {
-      locationService.setFromAndToQuery();
+    if (locationStore.getState().query?.duration?.from === item.timestamp) {
+      locationStore.setFromAndToQuery();
       setCurrentStat(null);
     } else if (item.count > 0) {
-      locationService.setFromAndToQuery(item.timestamp, item.timestamp + DAILY_TIMESTAMP);
+      locationStore.setFromAndToQuery(item.timestamp, item.timestamp + DAILY_TIMESTAMP);
       setCurrentStat(item);
     }
   }, []);
@@ -92,13 +99,13 @@ const UsageHeatMap = () => {
   return (
     <div className="usage-heat-map-wrapper" ref={containerElRef}>
       <div className="day-tip-text-container">
-        <span className="tip-text">Sun</span>
+        <span className="tip-text">{t("days.sun")}</span>
         <span className="tip-text"></span>
-        <span className="tip-text">Tue</span>
+        <span className="tip-text">{t("days.tue")}</span>
         <span className="tip-text"></span>
-        <span className="tip-text">Thu</span>
+        <span className="tip-text">{t("days.thu")}</span>
         <span className="tip-text"></span>
-        <span className="tip-text">Sat</span>
+        <span className="tip-text">{t("days.sat")}</span>
       </div>
       <div className="usage-heat-map">
         {allStat.map((v, i) => {

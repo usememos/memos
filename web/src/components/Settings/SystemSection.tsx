@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Switch, Textarea } from "@mui/joy";
+import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
-import "../../less/settings/system-section.less";
+import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
+import "@/less/settings/system-section.less";
 
 interface State {
   dbSize: number;
@@ -23,24 +25,27 @@ const formatBytes = (bytes: number) => {
 
 const SystemSection = () => {
   const { t } = useTranslation();
+  const globalStore = useGlobalStore();
+  const systemStatus = globalStore.state.systemStatus;
   const [state, setState] = useState<State>({
-    dbSize: 0,
-    allowSignUp: false,
-    additionalStyle: "",
-    additionalScript: "",
+    dbSize: systemStatus.dbSize,
+    allowSignUp: systemStatus.allowSignUp,
+    additionalStyle: systemStatus.additionalStyle,
+    additionalScript: systemStatus.additionalScript,
   });
 
   useEffect(() => {
-    api.getSystemStatus().then(({ data }) => {
-      const { data: status } = data;
-      setState({
-        dbSize: status.dbSize,
-        allowSignUp: status.allowSignUp,
-        additionalStyle: status.additionalStyle,
-        additionalScript: status.additionalScript,
-      });
-    });
+    globalStore.fetchSystemStatus();
   }, []);
+
+  useEffect(() => {
+    setState({
+      dbSize: systemStatus.dbSize,
+      allowSignUp: systemStatus.allowSignUp,
+      additionalStyle: systemStatus.additionalStyle,
+      additionalScript: systemStatus.additionalScript,
+    });
+  }, [systemStatus]);
 
   const handleAllowSignUpChanged = async (value: boolean) => {
     setState({
@@ -60,21 +65,19 @@ const SystemSection = () => {
     });
   };
 
+  const handleUpdateCustomizedProfileButtonClick = () => {
+    showUpdateCustomizedProfileDialog();
+  };
+
   const handleVacuumBtnClick = async () => {
     try {
       await api.vacuumDatabase();
-      const { data: status } = (await api.getSystemStatus()).data;
-      setState({
-        dbSize: status.dbSize,
-        allowSignUp: status.allowSignUp,
-        additionalStyle: status.additionalStyle,
-        additionalScript: status.additionalScript,
-      });
+      await globalStore.fetchSystemStatus();
     } catch (error) {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to vacuum database");
+    toastHelper.success(t("message.succeed-vacuum-database"));
   };
 
   const handleSaveAdditionalStyle = async () => {
@@ -87,7 +90,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to update additional style");
+    toastHelper.success(t("message.succeed-update-additional-style"));
   };
 
   const handleAdditionalScriptChanged = (value: string) => {
@@ -107,23 +110,29 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to update additional script");
+    toastHelper.success(t("message.succeed-update-additional-script"));
   };
 
   return (
     <div className="section-container system-section-container">
       <p className="title-text">{t("common.basic")}</p>
-      <label className="form-label">
+      <div className="form-label">
+        <div className="normal-text">
+          {t("setting.system-section.server-name")}: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
+        </div>
+        <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
+      </div>
+      <div className="form-label">
         <span className="normal-text">
-          {t("setting.system-section.database-file-size")}: <span className="font-mono font-medium">{formatBytes(state.dbSize)}</span>
+          {t("setting.system-section.database-file-size")}: <span className="font-mono font-bold">{formatBytes(state.dbSize)}</span>
         </span>
         <Button onClick={handleVacuumBtnClick}>{t("common.vacuum")}</Button>
-      </label>
+      </div>
       <p className="title-text">{t("sidebar.setting")}</p>
-      <label className="form-label">
+      <div className="form-label">
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
         <Switch checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
-      </label>
+      </div>
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.additional-style")}</span>
         <Button onClick={handleSaveAdditionalStyle}>{t("common.save")}</Button>

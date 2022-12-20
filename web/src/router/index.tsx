@@ -1,7 +1,8 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 import { lazy } from "react";
 import { isNullorUndefined } from "../helpers/utils";
-import { globalService, userService } from "../services";
+import store from "../store";
+import { initialGlobalState, initialUserState } from "../store/module";
 
 const Auth = lazy(() => import("../pages/Auth"));
 const Explore = lazy(() => import("../pages/Explore"));
@@ -14,7 +15,7 @@ const router = createBrowserRouter([
     element: <Auth />,
     loader: async () => {
       try {
-        await globalService.initialState();
+        await initialGlobalState();
       } catch (error) {
         // do nth
       }
@@ -26,13 +27,13 @@ const router = createBrowserRouter([
     element: <Home />,
     loader: async () => {
       try {
-        await globalService.initialState();
-        await userService.initialState();
+        await initialGlobalState();
+        await initialUserState();
       } catch (error) {
         // do nth
       }
 
-      const { host, user } = userService.getState();
+      const { host, user } = store.getState().user;
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       } else if (isNullorUndefined(user)) {
@@ -46,13 +47,13 @@ const router = createBrowserRouter([
     element: <Home />,
     loader: async () => {
       try {
-        await globalService.initialState();
-        await userService.initialState();
+        await initialGlobalState();
+        await initialUserState();
       } catch (error) {
         // do nth
       }
 
-      const { host } = userService.getState();
+      const { host } = store.getState().user;
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       }
@@ -64,13 +65,13 @@ const router = createBrowserRouter([
     element: <Explore />,
     loader: async () => {
       try {
-        await globalService.initialState();
-        await userService.initialState();
+        await initialGlobalState();
+        await initialUserState();
       } catch (error) {
         // do nth
       }
 
-      const { host } = userService.getState();
+      const { host } = store.getState().user;
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       }
@@ -82,13 +83,13 @@ const router = createBrowserRouter([
     element: <MemoDetail />,
     loader: async () => {
       try {
-        await globalService.initialState();
-        await userService.initialState();
+        await initialGlobalState();
+        await initialUserState();
       } catch (error) {
         // do nth
       }
 
-      const { host } = userService.getState();
+      const { host } = store.getState().user;
       if (isNullorUndefined(host)) {
         return redirect("/auth");
       }

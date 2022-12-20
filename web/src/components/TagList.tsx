@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useAppSelector } from "../store";
-import { locationService, memoService, userService } from "../services";
+import { useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import useToggle from "../hooks/useToggle";
 import Icon from "./Icon";
 import "../less/tag-list.less";
@@ -14,13 +13,16 @@ interface Tag {
 
 const TagList = () => {
   const { t } = useTranslation();
-  const { memos, tags: tagsText } = useAppSelector((state) => state.memo);
-  const query = useAppSelector((state) => state.location.query);
+  const locationStore = useLocationStore();
+  const userStore = useUserStore();
+  const memoStore = useMemoStore();
+  const { memos, tags: tagsText } = memoStore.state;
+  const query = locationStore.state.query;
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
     if (memos.length > 0) {
-      memoService.updateTagsState();
+      memoStore.updateTagsState();
     }
   }, [memos]);
 
@@ -75,7 +77,7 @@ const TagList = () => {
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        {!userService.isVisitorMode() && tags.length === 0 && <p className="tip-text">{t("tag-list.tip-text")}</p>}
+        {!userStore.isVisitorMode() && tags.length === 0 && <p className="tip-text">{t("tag-list.tip-text")}</p>}
       </div>
     </div>
   );
@@ -87,6 +89,7 @@ interface TagItemContainerProps {
 }
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
+  const locationStore = useLocationStore();
   const { tag, tagQuery } = props;
   const isActive = tagQuery === tag.text;
   const hasSubTags = tag.subTags.length > 0;
@@ -94,9 +97,9 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
 
   const handleTagClick = () => {
     if (isActive) {
-      locationService.setTagQuery(undefined);
+      locationStore.setTagQuery(undefined);
     } else {
-      locationService.setTagQuery(tag.text);
+      locationStore.setTagQuery(tag.text);
     }
   };
 
