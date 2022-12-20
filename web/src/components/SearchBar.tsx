@@ -13,22 +13,21 @@ const SearchBar = () => {
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (!inputRef.current) {
-      return;
-    }
-    if (dialogStore.getState().dialogStack.length) {
-      return;
-    }
-    const isMetaKey = event.ctrlKey || event.metaKey;
-    if (isMetaKey && event.key === "f") {
-      event.preventDefault();
-      inputRef.current.focus();
-      return;
-    }
-  };
-
   useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (!inputRef.current) {
+        return;
+      }
+      if (dialogStore.getState().dialogStack.length) {
+        return;
+      }
+      const isMetaKey = event.ctrlKey || event.metaKey;
+      if (isMetaKey && event.key === "f") {
+        event.preventDefault();
+        inputRef.current.focus();
+        return;
+      }
+    };
     document.body.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.removeEventListener("keydown", handleKeyDown);
