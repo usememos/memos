@@ -118,9 +118,9 @@ const SystemSection = () => {
       <p className="title-text">{t("common.basic")}</p>
       <div className="form-label">
         <div className="normal-text">
-          Server name: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
+          {t("setting.system-section.server-name")}: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
         </div>
-        <Button onClick={handleUpdateCustomizedProfileButtonClick}>Edit</Button>
+        <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
       </div>
       <div className="form-label">
         <span className="normal-text">

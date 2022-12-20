@@ -170,6 +170,12 @@
       "create-a-member": "创建成员"
     },
     "system-section": {
+      "server-name": "服务名称",
+      "customize-server": {
+        "title": "自定义服务",
+        "default": "默认为 memos",
+        "icon-url": "图标 URL"
+      },
       "database-file-size": "数据库文件大小",
       "allow-user-signup": "允许用户注册",
       "additional-style": "自定义样式",

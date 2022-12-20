@@ -170,6 +170,12 @@
       "create-a-member": "Créer un membre"
     },
     "system-section": {
+      "server-name": "Server Name",
+      "customize-server": {
+        "title": "Customize Server",
+        "default": "Default is memos",
+        "icon-url": "Icon URL"
+      },
       "database-file-size": "Taille de la base de données",
       "allow-user-signup": "Autoriser l'inscription des utilisateurs",
       "additional-style": "Style supplémentaire",

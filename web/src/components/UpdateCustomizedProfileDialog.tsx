@@ -62,17 +62,17 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
   return (
     <>
       <div className="dialog-header-container !w-64">
-        <p className="title-text">Customize server</p>
+        <p className="title-text">{t("setting.system-section.customize-server.title")}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container">
         <p className="text-sm mb-1">
-          Server Name<span className="text-sm text-gray-400 ml-1">(Default is memos)</span>
+          {t("setting.system-section.server-name")}<span className="text-sm text-gray-400 ml-1">({t("setting.system-section.customize-server.default")})</span>
         </p>
         <input type="text" className="input-text" value={state.name} onChange={handleNameChanged} />
-        <p className="text-sm mb-1 mt-2">Icon URL</p>
+        <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.icon-url")}</p>
         <input type="text" className="input-text" value={state.iconUrl} onChange={handleIconUrlChanged} />
         <div className="mt-4 w-full flex flex-row justify-end items-center space-x-2">
           <span className="btn-text" onClick={handleCloseBtnClick}>
