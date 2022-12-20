@@ -8,7 +8,7 @@ export const relationConsts = [
 
 export const filterConsts = {
   TAG: {
-    text: "Tag",
+    text: "filter.type.tag",
     value: "TAG",
     operators: [
       {
@@ -22,7 +22,7 @@ export const filterConsts = {
     ],
   },
   TYPE: {
-    text: "Type",
+    text: "filter.type.type",
     value: "TYPE",
     operators: [
       {
@@ -46,7 +46,7 @@ export const filterConsts = {
     ],
   },
   TEXT: {
-    text: "Text",
+    text: "filter.type.text",
     value: "TEXT",
     operators: [
       {
@@ -60,7 +60,7 @@ export const filterConsts = {
     ],
   },
   DISPLAY_TIME: {
-    text: "Display Time",
+    text: "filter.type.display-time",
     value: "DISPLAY_TIME",
     operators: [
       {
@@ -74,7 +74,7 @@ export const filterConsts = {
     ],
   },
   VISIBILITY: {
-    text: "Visibility",
+    text: "filter.type.visibility",
     value: "VISIBILITY",
     operators: [
       {

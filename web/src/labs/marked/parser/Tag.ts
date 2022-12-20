@@ -1,6 +1,6 @@
 import { escape } from "lodash-es";
 
-export const TAG_REG = /#([^\s#]+?) /;
+export const TAG_REG = /#([^\s#]+)/;
 
 const renderer = (rawStr: string): string => {
   const matchResult = rawStr.match(TAG_REG);

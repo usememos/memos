@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { useTranslation } from "react-i18next";
 import { getMemoStats } from "../helpers/api";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
@@ -27,6 +28,7 @@ interface DailyUsageStat {
 }
 
 const UsageHeatMap = () => {
+  const { t } = useTranslation();
   const locationStore = useLocationStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
@@ -97,13 +99,13 @@ const UsageHeatMap = () => {
   return (
     <div className="usage-heat-map-wrapper" ref={containerElRef}>
       <div className="day-tip-text-container">
-        <span className="tip-text">Sun</span>
+        <span className="tip-text">{t("days.sun")}</span>
         <span className="tip-text"></span>
-        <span className="tip-text">Tue</span>
+        <span className="tip-text">{t("days.tue")}</span>
         <span className="tip-text"></span>
-        <span className="tip-text">Thu</span>
+        <span className="tip-text">{t("days.thu")}</span>
         <span className="tip-text"></span>
-        <span className="tip-text">Sat</span>
+        <span className="tip-text">{t("days.sat")}</span>
       </div>
       <div className="usage-heat-map">
         {allStat.map((v, i) => {
