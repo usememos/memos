@@ -106,7 +106,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         return editorRef.current?.value.slice(start, end) ?? "";
       },
       setCursorPosition: (startPos: number, endPos?: number) => {
-        const _endPos = isNaN(endPos as number) ? startPos : endPos as number;
+        const _endPos = isNaN(endPos as number) ? startPos : (endPos as number);
         editorRef.current?.setSelectionRange(startPos, _endPos);
       },
     }),
