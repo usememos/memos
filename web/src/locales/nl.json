@@ -72,7 +72,8 @@
     "rename": "Hernoemen",
     "clear-unused-resources": "Ongebruikte bronnen opruimen",
     "warning-text-unused": "Weet je zeker dat je deze ongebruikte bron wilt verwijderen? Deze actie is NIET terug te draaien!",
-    "no-unused-resources": "Geen ongebruikte bronnen"
+    "no-unused-resources": "Geen ongebruikte bronnen",
+    "name": "Name"
   },
   "archived": {
     "archived-memos": "Gearchiveerde Memos",

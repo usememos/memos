@@ -77,7 +77,8 @@
     "rename": "Döp om",
     "clear-unused-resources": "Rensa outnytjade resurser",
     "warning-text-unused": "Är du säker på att du vill ta bort dessa oanvända resurser? DENNA ÅTGÄRD ÄR OÅTERSTÄLLBAR❗",
-    "no-unused-resources": "Inga oanvända resurser"
+    "no-unused-resources": "Inga oanvända resurser",
+    "name": "Name"
   },
   "archived": {
     "archived-memos": "Arkiverade anteckningar",

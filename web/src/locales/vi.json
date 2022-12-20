@@ -92,7 +92,8 @@
     "only-image-supported": "Chỉ hỗ trợ hình ảnh.",
     "cant-empty": "Nội dung không thể trống",
     "local": "Local",
-    "resources": "Resources"
+    "resources": "Resources",
+    "name": "Name"
   },
   "memo": {
     "view-detail": "Xem chi tiết",

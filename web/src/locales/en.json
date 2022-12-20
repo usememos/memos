@@ -77,7 +77,8 @@
     "rename": "Rename",
     "clear-unused-resources": "Clear unused resources",
     "warning-text-unused": "Are you sure to delete these unused resource? THIS ACTION IS IRREVERSIABLE❗",
-    "no-unused-resources": "No unused resources"
+    "no-unused-resources": "No unused resources",
+    "name": "Name"
   },
   "archived": {
     "archived-memos": "Archived Memos",

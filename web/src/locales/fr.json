@@ -77,7 +77,8 @@
     "rename": "Renommer",
     "clear-unused-resources": "Effacer les ressources inutilisées",
     "warning-text-unused": "Etes-vous sûr de vouloir supprimer ces ressources inutilisées ? CETTE ACTION EST IRRÉVERSIBLE❗",
-    "no-unused-resources": "Aucune ressource inutilisée"
+    "no-unused-resources": "Aucune ressource inutilisée",
+    "name": "Name"
   },
   "archived": {
     "archived-memos": "Mémos archivés",

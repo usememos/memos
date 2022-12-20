@@ -77,7 +77,8 @@
     "rename": "Umbenennen",
     "clear-unused-resources": "Lösche ungenutzte Ressourcen",
     "warning-text-unused": "Möchtest du diese ungenutzte Ressource wirklich löschen? Dies kann nicht rückgängig gemacht werden❗",
-    "no-unused-resources": "Keine ungenutzten Ressourcen"
+    "no-unused-resources": "Keine ungenutzten Ressourcen",
+    "name": "Name"
   },
   "archived": {
     "archived-memos": "Archivierte Memos",

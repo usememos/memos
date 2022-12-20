@@ -77,7 +77,8 @@
         "rename": "Renombrar",
         "clear-unused-resources": "Borrar los recursos no utilizados",
         "warning-text-unused": "Seguro que quieres eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE❗.",
-        "no-unused-resources": "No hay recursos sin utilizar"
+        "no-unused-resources": "No hay recursos sin utilizar",
+        "name": "Name"
     },
     "archived": {
         "archived-memos": "Notas Archivadas",
