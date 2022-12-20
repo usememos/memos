@@ -291,7 +291,7 @@ const MemoEditor = () => {
   };
 
   const handleQuotesReverse = (content: string, ev?: SyntheticEvent) => {
-    const quotes: {[key: string]: string} = {
+    const quotes: { [key: string]: string } = {
       "'": "'",
       '"': '"',
       "(": ")",
