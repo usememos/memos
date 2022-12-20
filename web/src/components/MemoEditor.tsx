@@ -127,7 +127,7 @@ const MemoEditor = () => {
         editorRef.current.insertText("", "[", "]()");
         const pos = editorRef.current.getCursorPosition();
         if (selectedContent) {
-          editorRef.current.setCursorPosition(pos + 2)
+          editorRef.current.setCursorPosition(pos + 2);
         }
       }
     }
