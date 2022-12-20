@@ -20,7 +20,6 @@ const SearchBar = () => {
     if (dialogStore.getState().dialogStack.length) {
       return;
     }
-
     const isMetaKey = event.ctrlKey || event.metaKey;
     if (isMetaKey && event.key === "f") {
       event.preventDefault();
