@@ -101,7 +101,7 @@ const MemoEditor = () => {
       return;
     }
 
-    const isMetaKey = (event.ctrlKey || event.metaKey);
+    const isMetaKey = event.ctrlKey || event.metaKey;
     const isShiftKey = event.shiftKey;
     if (!isShiftKey && isMetaKey) {
       if (event.key === "Enter") {
