@@ -166,7 +166,7 @@ const Auth = () => {
           </div>
           {!systemStatus?.host && <p className="tip-text">{t("auth.host-tip")}</p>}
         </div>
-        <div className="w-full flex flex-row justify-center items-center gap-2">
+        <div className="flex flex-row items-center justify-center w-full gap-2">
           <Select
             className="!min-w-[9rem] w-auto whitespace-nowrap"
             startDecorator={<Icon.Globe className="w-4 h-auto" />}
@@ -180,7 +180,7 @@ const Auth = () => {
             <Option value="nl">Nederlands</Option>
             <Option value="sv">Svenska</Option>
             <Option value="de">German</Option>
-            <Option value="es">Spanish</Option>
+            <Option value="es">Español</Option>
           </Select>
           <AppearanceSelect />
         </div>

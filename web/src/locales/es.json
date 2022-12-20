@@ -37,7 +37,7 @@
         "shortcuts": "Atajos",
         "title": "Título",
         "filter": "Filtros",
-        "tags": "Etiquetas",
+        "tags": "Tags",
         "yourself": "Tu",
         "archived-at": "Archivado en",
         "changed": "cambiado",
@@ -47,7 +47,7 @@
         "image": "Imagen",
         "link": "Enlace",
         "vacuum": "Vaciar",
-        "select": "Select"
+        "select": "Seleccionar"
     },
     "slogan": "Un código abierto, centro de notas autoalojado con la gestión del conocimiento y la socialización.",
     "auth": {
@@ -56,13 +56,13 @@
         "not-host-tip": "Si no tienes una cuenta, ponte en contacto con el anfitrión del sitio."
     },
     "sidebar": {
-        "daily-review": "Análisis diario",
+        "daily-review": "Resumen diario",
         "resources": "Recursos",
         "setting": "Configuración",
         "archived": "Archivado"
     },
     "daily-review": {
-        "oops-nothing": "Oops, no hay nada."
+        "oops-nothing": "Ups, no hay nada."
     },
     "resources": {
         "description": "Visualiza tus recursos estáticos en notas. p.ej., imágenes",
@@ -135,13 +135,13 @@
             "after": "Después"
         },
         "value": {
-            "not-tagged": "Sin etiquetas",
-            "linked": "Tiene enlaces"
+            "not-tagged": "Sin tags",
+            "linked": "Con enlaces"
         },
         "text-placeholder": "Empieza por ^ para usar regex"
     },
     "tag-list": {
-        "tip-text": "Introduce `#etiqueta ` para crearla"
+        "tip-text": "Escribe `#tag ` para crearlo"
     },
     "search": {
         "quickly-filter": "Filtro rápido"
@@ -176,11 +176,11 @@
                 "title": "Customize Server",
                 "default": "Default is memos",
                 "icon-url": "Icon URL"
-              },
+            },
             "database-file-size": "Tamaño de la Base de Datos",
             "allow-user-signup": "Permitir el registro de usuarios",
-            "additional-style": "Estilo adicional",
-            "additional-script": "Script adicional",
+            "additional-style": "Estilos adicionales",
+            "additional-script": "Scripts adicionales",
             "additional-style-placeholder": "Códigos CSS adicionales",
             "additional-script-placeholder": "Códigos JavaScript adicionales"
         },
@@ -191,18 +191,18 @@
         }
     },
     "amount-text": {
-        "memo": "NOTA",
-        "tag": "ETIQUETA",
-        "day": "DÍA"
+        "memo": "NOTAS",
+        "tag": "TAGS",
+        "day": "DÍAS"
     },
     "message": {
         "no-memos": "no hay notas 🌃",
-        "memos-ready": "todos las notas están listos 🎉",
+        "memos-ready": "todas las notas están listas 🎉",
         "restored-successfully": "Restaurado con éxito",
         "memo-updated-datetime": "Fecha de creación de la nota modificada.",
         "invalid-created-datetime": "Fecha de creación no válida.",
         "change-memo-created-time": "Cambiar la hora de creación de la nota",
-        "memo-not-found": "Nota no encontrado.",
+        "memo-not-found": "Nota no encontrada.",
         "fill-all": "Rellena todos los campos.",
         "password-not-match": "Las contraseñas no coinciden.",
         "new-password-not-match": "Las nuevas contraseñas no coinciden.",
