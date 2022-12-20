@@ -111,6 +111,14 @@
   },
   "filter": {
     "new-filter": "Nieuw Filter",
+    "type": {
+      "tag": "Tag",
+      "type": "Type",
+      "text": "Text",
+      "display-time": "Display Time",
+      "visibility": "Visibility",
+      "select": "Select"
+    },
     "operator": {
       "contains": "Bevat",
       "not-contains": "Bevat niet",

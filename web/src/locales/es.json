@@ -46,7 +46,8 @@
         "expand": "Expandir",
         "image": "Imagen",
         "link": "Enlace",
-        "vacuum": "Vaciar"
+        "vacuum": "Vaciar",
+        "select": "Select"
     },
     "slogan": "Un código abierto, centro de notas autoalojado con la gestión del conocimiento y la socialización.",
     "auth": {
@@ -117,6 +118,13 @@
     },
     "filter": {
         "new-filter": "Nuevo Filtro",
+        "type": {
+            "tag": "Tag",
+            "type": "Type",
+            "text": "Text",
+            "display-time": "Display Time",
+            "visibility": "Visibility"
+          },
         "operator": {
             "contains": "Contiene",
             "not-contains": "No contiene",

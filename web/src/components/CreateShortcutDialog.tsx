@@ -167,6 +167,8 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
   const tags = Array.from(memoStore.getState().tags);
   const { type } = filter;
 
+  const typeDataSource = Object.values(filterConsts).map(({ text, value }) => ({ text: t(text), value }));
+  
   const operatorDataSource = Object.values(filterConsts[type as FilterType].operators).map(({ text, value }) => ({ text: t(text), value }));
 
   const valueDataSource =
@@ -249,7 +251,7 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
       ) : null}
       <Selector
         className="type-selector"
-        dataSource={Object.values(filterConsts)}
+        dataSource={typeDataSource}
         value={filter.type}
         handleValueChanged={handleTypeChange}
       />

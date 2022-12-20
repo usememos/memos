@@ -46,7 +46,8 @@
     "expand": "Erweitern",
     "image": "Bild",
     "link": "Link",
-    "vacuum": "Vacuum"
+    "vacuum": "Vacuum",
+    "select": "Select"
   },
   "slogan": "Eine quelloffene, selbst gehostete Sammlung an Memos zur Wissensverwaltung und Vernetzung.",
   "auth": {
@@ -117,6 +118,13 @@
   },
   "filter": {
     "new-filter": "Neuer Filter",
+    "type": {
+      "tag": "Tag",
+      "type": "Type",
+      "text": "Text",
+      "display-time": "Display Time",
+      "visibility": "Visibility"
+    },
     "operator": {
       "contains": "enthält",
       "not-contains": "enthält nicht",

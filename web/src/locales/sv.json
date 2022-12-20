@@ -46,7 +46,8 @@
     "expand": "Expandera",
     "image": "Bild",
     "link": "Länk",
-    "vacuum": "Vacuum"
+    "vacuum": "Vacuum",
+    "select": "Select"
   },
   "slogan": "En öppen källkod, self-hosted antecknings hubb med kunskapshantering och socialisering",
   "auth": {
@@ -117,6 +118,13 @@
   },
   "filter": {
     "new-filter": "Nytt filter",
+    "type": {
+      "tag": "Tag",
+      "type": "Type",
+      "text": "Text",
+      "display-time": "Display Time",
+      "visibility": "Visibility"
+    },
     "operator": {
       "contains": "Innehåller",
       "not-contains": "Innehåller inte",
