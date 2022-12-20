@@ -1,5 +1,5 @@
 import { isNumber, last, toLower } from "lodash";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { SyntheticEvent, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
@@ -284,10 +284,41 @@ const MemoEditor = () => {
     }
   };
 
-  const handleContentChange = (content: string) => {
+  const handleContentChange = (content: string, ev?: SyntheticEvent) => {
     setAllowSave(content !== "");
     setEditorContentCache(content);
+    handleQuotesReverse(content, ev);
   };
+
+  const handleQuotesReverse = (content: string, ev?: SyntheticEvent) => {
+    const quotes: {[key: string]: string} = {
+      "'": "'",
+      '"': '"',
+      "(": ")",
+      "（": "）",
+      "【": "】",
+      "[": "]",
+      "《": "》",
+      "「": "」",
+      "『": "』",
+      "{": "}",
+      "“": "”",
+      "‘": "’",
+      "”": "“",
+      "’": "‘",
+      "`": "`",
+    };
+    if (!editorRef.current) {
+      return;
+    }
+    const cursorPosition = editorRef.current.getCursorPosition();
+    const inputValue = (ev?.nativeEvent as InputEvent)?.data as string;
+    const quote = quotes[inputValue];
+    if (quote && ev?.type === 'input') {
+      editorRef.current?.insertText(quote);
+      editorRef.current?.setCursorPosition(cursorPosition);
+    }
+  }
 
   const handleCheckBoxBtnClick = () => {
     if (!editorRef.current) {

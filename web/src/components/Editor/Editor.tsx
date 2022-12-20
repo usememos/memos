@@ -1,4 +1,4 @@
-import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, ReactNode, SyntheticEvent, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import "../../less/editor.less";
 
 export interface EditorRefActions {
@@ -18,7 +18,7 @@ interface Props {
   placeholder: string;
   fullscreen: boolean;
   tools?: ReactNode;
-  onContentChange: (content: string) => void;
+  onContentChange: (content: string, ev?: SyntheticEvent) => void;
   onPaste: (event: React.ClipboardEvent) => void;
 }
 
@@ -112,11 +112,10 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     []
   );
 
-  const handleEditorInput = useCallback(() => {
-    handleContentChangeCallback(editorRef.current?.value ?? "");
+  const handleEditorInput = useCallback((ev: SyntheticEvent) => {
+    handleContentChangeCallback(editorRef.current?.value ?? "", ev);
     updateEditorHeight();
   }, []);
-
   return (
     <div className={"common-editor-wrapper " + className}>
       <textarea
