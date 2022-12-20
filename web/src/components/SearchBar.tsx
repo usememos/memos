@@ -27,12 +27,15 @@ const SearchBar = () => {
   };
 
   useEffect(() => {
-    const text = locationStore.getState().query.text;
-    setQueryText(text === undefined ? "" : text);
     document.body.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.removeEventListener("keydown", handleKeyDown);
     };
+  }, [dialogStore.getState().dialogStack]);
+
+  useEffect(() => {
+    const text = locationStore.getState().query.text;
+    setQueryText(text === undefined ? "" : text);
   }, [locationStore.getState().query.text]);
 
   const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
