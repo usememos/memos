@@ -232,5 +232,21 @@
     "succeed-update-customized-profile": "Succeed to update customized profile",
     "succeed-update-additional-script": "Succeed to update additional script",
     "update-succeed": "Update succeed"
+  },
+  "days": {
+    "monday": "Montag",
+    "mon": "Mo",
+    "tuesday": "Dienstag",
+    "tue": "Di",
+    "wednesday": "Mittwoch",
+    "wed": "Mi",
+    "thursday": "Donnerstag",
+    "thu": "Do",
+    "friday": "Freitag",
+    "fri": "Fr",
+    "saturday": "Samstag",
+    "sat": "Sa",
+    "sunday": "Sonntag",
+    "sun": "So"
   }
 }

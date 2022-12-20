@@ -232,5 +232,21 @@
     "succeed-update-customized-profile": "更新自定义配置文件成功",
     "succeed-update-additional-script": "更新附加脚本成功",
     "update-succeed": "更新成功"
+  },
+  "days": {
+    "monday": "星期一",
+    "mon": "一",
+    "tuesday": "星期二",
+    "tue": "二",
+    "wednesday": "星期三",
+    "wed": "三",
+    "thursday": "星期四",
+    "thu": "四",
+    "friday": "星期五",
+    "fri": "五",
+    "saturday": "星期六",
+    "sat": "六",
+    "sunday": "星期天",
+    "sun": "日"
   }
 }

@@ -226,5 +226,21 @@
     "succeed-update-customized-profile": "Succeed to update customized profile",
     "succeed-update-additional-script": "Succeed to update additional script",
     "update-succeed": "Update succeed"
+  },
+  "days": {
+    "monday": "thứ hai",
+    "mon": "T2",
+    "tuesday": "thứ ba",
+    "tue": "T3",
+    "wednesday": "thứ tư",
+    "wed": "T4",
+    "thursday": "thứ năm",
+    "thu": "T5",
+    "friday": "thứ sáu",
+    "fri": "T6",
+    "saturday": "thứ bảy",
+    "sat": "T7",
+    "sunday": "chủ nhật",
+    "sun": "CN"
   }
 }

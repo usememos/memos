@@ -232,5 +232,21 @@
     "succeed-update-customized-profile": "Succeed to update customized profile",
     "succeed-update-additional-script": "Succeed to update additional script",
     "update-succeed": "Update succeed"
+  },
+  "days": {
+    "monday": "Måndag",
+    "mon": "Mån",
+    "tuesday": "Tisdag",
+    "tue": "Tis",
+    "wednesday": "Onsdag",
+    "wed": "Ons",
+    "thursday": "Torsdag",
+    "thu": "Tors",
+    "friday": "Fredag",
+    "fri": "Fre",
+    "saturday": "Lördag",
+    "sat": "Lör",
+    "sunday": "Söndag",
+    "sun": "Sön"
   }
 }

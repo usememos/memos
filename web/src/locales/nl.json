@@ -219,5 +219,21 @@
     "succeed-update-customized-profile": "Succeed to update customized profile",
     "succeed-update-additional-script": "Succeed to update additional script",
     "update-succeed": "Update succeed"
+  },
+  "days": {
+    "monday": "Maandag",
+    "mon": "ma",
+    "tuesday": "Dinsdag",
+    "tue": "di",
+    "wednesday": "Woensdag",
+    "wed": "woe",
+    "thursday": "Donderdag",
+    "thu": "don",
+    "friday": "Vrijdag",
+    "fri": "vrij",
+    "saturday": "Zaterdag",
+    "sat": "zat",
+    "sunday": "Zondag",
+    "sun": "zon"
   }
 }
