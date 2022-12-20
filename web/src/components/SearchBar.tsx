@@ -17,9 +17,12 @@ const SearchBar = () => {
     if (!inputRef.current) {
       return;
     }
+    if (dialogStore.getState().dialogStack.length) {
+      return;
+    }
+
     const isMetaKey = event.ctrlKey || event.metaKey;
     if (isMetaKey && event.key === "f") {
-      if (dialogStore.getState().dialogStack.length) return;
       event.preventDefault();
       inputRef.current.focus();
       return;
