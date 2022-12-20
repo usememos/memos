@@ -318,7 +318,7 @@ const MemoEditor = () => {
       editorRef.current?.insertText(quote);
       editorRef.current?.setCursorPosition(cursorPosition);
     }
-  }
+  };
 
   const handleCheckBoxBtnClick = () => {
     if (!editorRef.current) {
