@@ -179,7 +179,12 @@ const MemoEditor = () => {
     }
     if (!isShiftKey && event.key === "Tab") {
       event.preventDefault();
+      const selectedContent = editorRef.current.getSelectedContent();
+      const cursorPosition = editorRef.current.getCursorPosition();
       editorRef.current.insertText(" ".repeat(TAB_SPACE_WIDTH));
+      if (selectedContent) {
+        editorRef.current.setCursorPosition(cursorPosition + TAB_SPACE_WIDTH);
+      }
       return;
     }
 
