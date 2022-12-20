@@ -31,7 +31,7 @@ const SearchBar = () => {
     return () => {
       document.body.removeEventListener("keydown", handleKeyDown);
     };
-  }, [dialogStore.getState().dialogStack]);
+  }, []);
 
   useEffect(() => {
     const text = locationStore.getState().query.text;
