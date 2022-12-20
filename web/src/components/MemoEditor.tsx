@@ -177,15 +177,40 @@ const MemoEditor = () => {
       }
       return;
     }
-    if (!isShiftKey && event.key === "Tab") {
+    if (event.key === "Tab") {
       event.preventDefault();
-      const selectedContent = editorRef.current.getSelectedContent();
+      const tabSpace = " ".repeat(TAB_SPACE_WIDTH);
       const cursorPosition = editorRef.current.getCursorPosition();
-      editorRef.current.insertText(" ".repeat(TAB_SPACE_WIDTH));
-      if (selectedContent) {
-        editorRef.current.setCursorPosition(cursorPosition + TAB_SPACE_WIDTH);
+      const selectedContent = editorRef.current.getSelectedContent();
+      if (isShiftKey) {
+        const beforeContent = editorRef.current.getContent().slice(0, cursorPosition);
+        for (let i = beforeContent.length - 1; i >= 0; i--) {
+          if (beforeContent[i] !== "\n") {
+            continue;
+          }
+          const rowStart = i + 1;
+          const isTabSpace = beforeContent.substring(rowStart, i + TAB_SPACE_WIDTH + 1) === tabSpace;
+          const isSpace = beforeContent.substring(rowStart, i + 2) === " ";
+          if (!isTabSpace && !isSpace) {
+            break;
+          }
+          const removeLength = isTabSpace ? TAB_SPACE_WIDTH : 1;
+          editorRef.current.removeText(rowStart, removeLength);
+          const startPos = cursorPosition - removeLength;
+          let endPos = startPos;
+          if (selectedContent) {
+            endPos += selectedContent.length;
+          }
+          editorRef.current.setCursorPosition(startPos, endPos);
+        }
+        return;
+      } else {
+        editorRef.current.insertText(tabSpace);
+        if (selectedContent) {
+          editorRef.current.setCursorPosition(cursorPosition + TAB_SPACE_WIDTH);
+        }
+        return;
       }
-      return;
     }
 
     for (const symbol of pairSymbols) {
