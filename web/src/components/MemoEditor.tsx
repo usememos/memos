@@ -101,7 +101,7 @@ const MemoEditor = () => {
       return;
     }
 
-    if ((event.ctrlKey || event.metaKey)) {
+    if (event.ctrlKey || event.metaKey) {
       if (event.key === "Enter") {
         handleSaveBtnClick();
         return;
