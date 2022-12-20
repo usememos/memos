@@ -176,12 +176,12 @@
     }
   },
   "amount-text": {
-    "memo": "ANTECKNING",
-    "memos": "ANTECKNINGAR",
-    "tag": "TAGG",
-    "tags": "TAGGAR",
-    "day": "DAG",
-    "days": "DAGAR"
+    "memo_one": "ANTECKNING",
+    "memo_other": "ANTECKNINGAR",
+    "tag_one": "TAGG",
+    "tag_other": "TAGGAR",
+    "day_one": "DAG",
+    "day_other": "DAGAR"
   },
   "message": {
     "no-memos": "inga anteckningar 🌃",

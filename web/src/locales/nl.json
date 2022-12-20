@@ -170,12 +170,12 @@
     }
   },
   "amount-text": {
-    "memo": "MEMO",
-    "memos": "MEMOS",
-    "tag": "LABEL",
-    "tags": "LABELS",
-    "day": "DAG",
-    "days": "DAGEN"
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "LABEL",
+    "tag_other": "LABELS",
+    "day_one": "DAG",
+    "day_other": "DAGEN"
   },
   "message": {
     "no-memos": "geen memos 🌃",
