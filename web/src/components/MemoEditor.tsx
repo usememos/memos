@@ -121,7 +121,7 @@ const MemoEditor = () => {
         editorRef.current.insertText("", "`", "`");
         return;
       }
-      if (event.key === 'k') {
+      if (event.key === "k") {
         event.preventDefault();
         const selectedContent = editorRef.current.getSelectedContent();
         editorRef.current.insertText("", "[", "]()");
