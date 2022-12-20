@@ -42,6 +42,13 @@
         &.tag-action {
           @apply relative;
 
+          &.focus {
+            @apply opacity-90 bg-gray-300 dark:bg-zinc-800 shadow;
+            > .tag-list {
+              @apply flex;
+            }
+          }
+
           &:hover {
             > .tag-list {
               @apply flex;
@@ -53,6 +60,10 @@
 
             > .item-container {
               @apply w-full text-white cursor-pointer rounded text-sm leading-6 px-2 truncate hover:bg-gray-700 shrink-0;
+
+              &.focus {
+                @apply bg-gray-700;
+              }
             }
 
             > .tip-text {

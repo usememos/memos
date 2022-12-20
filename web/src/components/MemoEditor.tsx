@@ -36,6 +36,10 @@ const setEditingMemoVisibilityCache = (visibility: Visibility) => {
 interface State {
   fullscreen: boolean;
   isUploadingResource: boolean;
+  isSelectingTag: boolean;
+  prefix: string;
+  showTags: string[];
+  tagListIndex: number;
 }
 
 const MemoEditor = () => {
@@ -49,6 +53,10 @@ const MemoEditor = () => {
   const [state, setState] = useState<State>({
     isUploadingResource: false,
     fullscreen: false,
+    isSelectingTag: false,
+    prefix: "",
+    showTags: [],
+    tagListIndex: 0,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const editorState = editorStore.state;
@@ -64,6 +72,15 @@ const MemoEditor = () => {
       text: t(`memo.visibility.${toLower(item.value)}`),
     };
   });
+
+  useEffect(() => {
+    setState((state) => {
+      return {
+        ...state,
+        showTags: tags,
+      };
+    });
+  }, [tags]);
 
   useEffect(() => {
     const { editingMemoIdCache, editingMemoVisibilityCache } = storage.get(["editingMemoIdCache", "editingMemoVisibilityCache"]);
@@ -102,6 +119,34 @@ const MemoEditor = () => {
       return;
     }
 
+    if (state.isSelectingTag) {
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        const tagListIndex = (state.tagListIndex + 1) % state.showTags.length;
+        setState({
+          ...state,
+          tagListIndex,
+        });
+        return;
+      }
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        const tagListIndex = (state.tagListIndex - 1 + state.showTags.length) % state.showTags.length;
+        setState({
+          ...state,
+          tagListIndex,
+        });
+        return;
+      }
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        const tag = state.showTags[state.tagListIndex];
+        editorRef.current.insertText(tag.slice(state.prefix.length, tag.length) + " ");
+        quitSelectingTag();
+        return;
+      }
+    }
+
     const isMetaKey = event.ctrlKey || event.metaKey;
     const isShiftKey = event.shiftKey;
     if (!isShiftKey && isMetaKey) {
@@ -129,15 +174,15 @@ const MemoEditor = () => {
         const selectedContent = editorRef.current.getSelectedContent();
         editorRef.current.insertText("", "[", "](url)");
         if (selectedContent) {
-          const startPos = editorRef.current.getCursorPosition() + 2;
+          const startPos = editorRef.current.getCaretPosition() + 2;
           const endPos = startPos + 3;
-          editorRef.current.setCursorPosition(startPos, endPos);
+          editorRef.current.setCaretPosition(startPos, endPos);
         }
       }
     }
 
     if (!isShiftKey && event.key === "Enter") {
-      const cursorPosition = editorRef.current.getCursorPosition();
+      const cursorPosition = editorRef.current.getCaretPosition();
       const contentBeforeCursor = editorRef.current.getContent().slice(0, cursorPosition);
       const rowValue = last(contentBeforeCursor.split("\n"));
       if (rowValue) {
@@ -180,7 +225,7 @@ const MemoEditor = () => {
     if (event.key === "Tab") {
       event.preventDefault();
       const tabSpace = " ".repeat(TAB_SPACE_WIDTH);
-      const cursorPosition = editorRef.current.getCursorPosition();
+      const cursorPosition = editorRef.current.getCaretPosition();
       const selectedContent = editorRef.current.getSelectedContent();
       if (isShiftKey) {
         const beforeContent = editorRef.current.getContent().slice(0, cursorPosition);
@@ -201,13 +246,13 @@ const MemoEditor = () => {
           if (selectedContent) {
             endPos += selectedContent.length;
           }
-          editorRef.current.setCursorPosition(startPos, endPos);
+          editorRef.current.setCaretPosition(startPos, endPos);
         }
         return;
       } else {
         editorRef.current.insertText(tabSpace);
         if (selectedContent) {
-          editorRef.current.setCursorPosition(cursorPosition + TAB_SPACE_WIDTH);
+          editorRef.current.setCaretPosition(cursorPosition + TAB_SPACE_WIDTH);
         }
         return;
       }
@@ -222,7 +267,7 @@ const MemoEditor = () => {
     }
 
     if (event.key === "Backspace") {
-      const cursor = editorRef.current.getCursorPosition();
+      const cursor = editorRef.current.getCaretPosition();
       const content = editorRef.current.getContent();
       const deleteChar = content?.slice(cursor - 1, cursor);
       const nextChar = content?.slice(cursor, cursor + 1);
@@ -230,8 +275,31 @@ const MemoEditor = () => {
         event.preventDefault();
         editorRef.current.removeText(cursor - 1, 2);
       }
+      if (deleteChar === "#") {
+        quitSelectingTag();
+      }
       return;
     }
+
+    if (event.key === "#") {
+      enterSelectingTag();
+    }
+  };
+
+  const enterSelectingTag = () => {
+    setState({
+      ...state,
+      isSelectingTag: true,
+      showTags: tags,
+    });
+  };
+
+  const quitSelectingTag = () => {
+    setState({
+      ...state,
+      isSelectingTag: false,
+      showTags: tags,
+    });
   };
 
   const uploadMultiFiles = async (files: FileList) => {
@@ -347,9 +415,43 @@ const MemoEditor = () => {
     }
   };
 
-  const handleContentChange = (content: string) => {
+  useEffect(() => {
+    const showTags = tags.filter((tag) => {
+      return tag.startsWith(state.prefix);
+    });
+    setState((state) => {
+      return {
+        ...state,
+        tagListIndex: 0,
+        showTags,
+      };
+    });
+  }, [state.prefix]);
+
+  const updateTagPrefix = (content: string, cursor: number) => {
+    const lastChar = content.slice(cursor - 1, cursor);
+    if (lastChar !== "#") {
+      const lastIndex = content.slice(0, cursor - 1).lastIndexOf("#");
+      if (lastIndex !== -1) {
+        const prefix = content.slice(lastIndex + 1, cursor);
+        setState((state) => {
+          return {
+            ...state,
+            prefix,
+          };
+        });
+      }
+    }
+  };
+
+  const handleContentChange = (content: string, cursor: number) => {
     setAllowSave(content !== "");
     setEditorContentCache(content);
+    updateTagPrefix(content, cursor);
+  };
+
+  const handleCaretChange = (cursor: number) => {
+    updateTagPrefix(editorRef.current?.getContent() ?? "", cursor);
   };
 
   const handleCheckBoxBtnClick = () => {
@@ -357,7 +459,7 @@ const MemoEditor = () => {
       return;
     }
 
-    const cursorPosition = editorRef.current.getCursorPosition();
+    const cursorPosition = editorRef.current.getCaretPosition();
     const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
     if (prevValue === "" || prevValue.endsWith("\n")) {
       editorRef.current?.insertText("", "- [ ] ");
@@ -371,7 +473,7 @@ const MemoEditor = () => {
       return;
     }
 
-    const cursorPosition = editorRef.current.getCursorPosition();
+    const cursorPosition = editorRef.current.getCaretPosition();
     const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
     if (prevValue === "" || prevValue.endsWith("\n")) {
       editorRef.current?.insertText("", "```\n", "\n```");
@@ -456,6 +558,7 @@ const MemoEditor = () => {
       placeholder: t("editor.placeholder"),
       fullscreen: state.fullscreen,
       onContentChange: handleContentChange,
+      onCaretChange: handleCaretChange,
       onPaste: handlePasteEvent,
     }),
     [state.fullscreen, i18n.language]
@@ -473,13 +576,13 @@ const MemoEditor = () => {
       <Editor ref={editorRef} {...editorConfig} />
       <div className="common-tools-wrapper">
         <div className="common-tools-container">
-          <div className="action-btn tag-action">
+          <div className={`action-btn tag-action ${state.isSelectingTag ? "focus" : ""}`}>
             <Icon.Hash className="icon-img" />
             <div ref={tagSelectorRef} className="tag-list" onClick={handleTagSelectorClick}>
-              {tags.length > 0 ? (
-                tags.map((tag) => {
+              {state.showTags.length > 0 ? (
+                state.showTags.map((tag, index) => {
                   return (
-                    <span className="item-container" key={tag}>
+                    <span className={`item-container ${index === state.tagListIndex ? "focus" : ""}`} key={tag}>
                       {tag}
                     </span>
                   );
