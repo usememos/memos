@@ -17,7 +17,7 @@ interface Props {
 }
 
 const nullItem = {
-  text: "Select",
+  text: "common.select",
   value: "",
 };
 
@@ -28,7 +28,7 @@ const Selector: React.FC<Props> = (props: Props) => {
 
   const selectorElRef = useRef<HTMLDivElement>(null);
 
-  let currentItem = nullItem;
+  let currentItem = { text: t(nullItem.text), value: nullItem.value };
   for (const d of dataSource) {
     if (d.value === value) {
       currentItem = d;

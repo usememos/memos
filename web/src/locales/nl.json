@@ -72,7 +72,8 @@
     "rename": "Hernoemen",
     "clear-unused-resources": "Ongebruikte bronnen opruimen",
     "warning-text-unused": "Weet je zeker dat je deze ongebruikte bron wilt verwijderen? Deze actie is NIET terug te draaien!",
-    "no-unused-resources": "Geen ongebruikte bronnen"
+    "no-unused-resources": "Geen ongebruikte bronnen",
+    "name": "Name"
   },
   "archived": {
     "archived-memos": "Gearchiveerde Memos",
@@ -111,6 +112,14 @@
   },
   "filter": {
     "new-filter": "Nieuw Filter",
+    "type": {
+      "tag": "Tag",
+      "type": "Type",
+      "text": "Text",
+      "display-time": "Display Time",
+      "visibility": "Visibility",
+      "select": "Select"
+    },
     "operator": {
       "contains": "Bevat",
       "not-contains": "Bevat niet",
@@ -156,6 +165,12 @@
       "create-a-member": "Lid toevoegen"
     },
     "system-section": {
+      "server-name": "Server Name",
+      "customize-server": {
+        "title": "Customize Server",
+        "default": "Default is memos",
+        "icon-url": "Icon URL"
+      },
       "database-file-size": "Database bestandsgrootte",
       "allow-user-signup": "Registratie toestaan",
       "additional-style": "Optionele stijl",
@@ -197,6 +212,12 @@
     "resource-filename-updated": "Bestandsnaam van bron gewijzigd.",
     "invalid-resource-filename": "Onjuiste bestandsnaam.",
     "click-to-save-the-image": "Klik om de afbeelding op te slaan",
-    "generating-the-screenshot": "Screenshot genereren..."
+    "generating-the-screenshot": "Screenshot genereren...",
+    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-update-additional-style": "Succeed to update additional style",
+    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+    "succeed-update-customized-profile": "Succeed to update customized profile",
+    "succeed-update-additional-script": "Succeed to update additional script",
+    "update-succeed": "Update succeed"
   }
 }

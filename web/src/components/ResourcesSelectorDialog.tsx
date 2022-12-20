@@ -99,7 +99,7 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
           <div className="resource-table-container">
             <div className="fields-container">
               <span className="field-text id-text">ID</span>
-              <span className="field-text name-text">NAME</span>
+              <span className="field-text name-text">{t("resources.name")}</span>
               <span></span>
             </div>
             {resources.length === 0 ? (

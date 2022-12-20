@@ -77,7 +77,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to vacuum database");
+    toastHelper.success(t("message.succeed-vacuum-database"));
   };
 
   const handleSaveAdditionalStyle = async () => {
@@ -90,7 +90,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to update additional style");
+    toastHelper.success(t("message.succeed-update-additional-style"));
   };
 
   const handleAdditionalScriptChanged = (value: string) => {
@@ -110,7 +110,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to update additional script");
+    toastHelper.success(t("message.succeed-update-additional-script"));
   };
 
   return (
@@ -118,9 +118,9 @@ const SystemSection = () => {
       <p className="title-text">{t("common.basic")}</p>
       <div className="form-label">
         <div className="normal-text">
-          Server name: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
+          {t("setting.system-section.server-name")}: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
         </div>
-        <Button onClick={handleUpdateCustomizedProfileButtonClick}>Edit</Button>
+        <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
       </div>
       <div className="form-label">
         <span className="normal-text">

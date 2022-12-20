@@ -105,7 +105,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
 
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
     copy(`${window.location.origin}/o/r/${resource.id}/${resource.filename}`);
-    toastHelper.success("Succeed to copy resource link to clipboard");
+    toastHelper.success(t("message.succeed-copy-resource-link"));
   };
 
   const handleDeleteUnusedResourcesBtnClick = () => {
@@ -185,7 +185,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
           <div className="resource-table-container">
             <div className="fields-container">
               <span className="field-text id-text">ID</span>
-              <span className="field-text name-text">NAME</span>
+              <span className="field-text name-text">{t("resources.name")}</span>
               <span></span>
             </div>
             {resources.length === 0 ? (

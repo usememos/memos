@@ -46,7 +46,8 @@
     "expand": "展开",
     "image": "图片",
     "link": "链接",
-    "vacuum": "清理"
+    "vacuum": "清理",
+    "select": "选择"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
@@ -76,7 +77,8 @@
     "rename": "重命名",
     "clear-unused-resources": "清除无用资源",
     "warning-text-unused": "确定删除这些无用资源么？此操作不可逆❗",
-    "no-unused-resources": "无可删除的资源"
+    "no-unused-resources": "无可删除的资源",
+    "name": "资源名称"
   },
   "archived": {
     "archived-memos": "已归档的 Memo",
@@ -117,6 +119,13 @@
   },
   "filter": {
     "new-filter": "新建过滤器",
+    "type": {
+      "tag": "标签",
+      "type": "类型",
+      "text": "文本",
+      "display-time": "显示时间",
+      "visibility": "可见性"
+    },
     "operator": {
       "contains": "包含",
       "not-contains": "不包含",
@@ -162,6 +171,12 @@
       "create-a-member": "创建成员"
     },
     "system-section": {
+      "server-name": "服务名称",
+      "customize-server": {
+        "title": "自定义服务",
+        "default": "默认为 memos",
+        "icon-url": "图标 URL"
+      },
       "database-file-size": "数据库文件大小",
       "allow-user-signup": "允许用户注册",
       "additional-style": "自定义样式",
@@ -210,6 +225,12 @@
     "too-short": "过短",
     "too-long": "过长",
     "not-allow-space": "不允许包含空格",
-    "not-allow-chinese": "不允许包含中文"
+    "not-allow-chinese": "不允许包含中文",
+    "succeed-to-vacuum-database": "清空数据库成功",
+    "succeed-update-additional-style": "更新附加样式成功",
+    "succeed-copy-resource-link": "复制资源链接到剪贴板成功",
+    "succeed-update-customized-profile": "更新自定义配置文件成功",
+    "succeed-update-additional-script": "更新附加脚本成功",
+    "update-succeed": "更新成功"
   }
 }

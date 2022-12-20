@@ -46,7 +46,8 @@
     "expand": "Expandera",
     "image": "Bild",
     "link": "Länk",
-    "vacuum": "Vacuum"
+    "vacuum": "Vacuum",
+    "select": "Select"
   },
   "slogan": "En öppen källkod, self-hosted antecknings hubb med kunskapshantering och socialisering",
   "auth": {
@@ -76,7 +77,8 @@
     "rename": "Döp om",
     "clear-unused-resources": "Rensa outnytjade resurser",
     "warning-text-unused": "Är du säker på att du vill ta bort dessa oanvända resurser? DENNA ÅTGÄRD ÄR OÅTERSTÄLLBAR❗",
-    "no-unused-resources": "Inga oanvända resurser"
+    "no-unused-resources": "Inga oanvända resurser",
+    "name": "Name"
   },
   "archived": {
     "archived-memos": "Arkiverade anteckningar",
@@ -117,6 +119,13 @@
   },
   "filter": {
     "new-filter": "Nytt filter",
+    "type": {
+      "tag": "Tag",
+      "type": "Type",
+      "text": "Text",
+      "display-time": "Display Time",
+      "visibility": "Visibility"
+    },
     "operator": {
       "contains": "Innehåller",
       "not-contains": "Innehåller inte",
@@ -162,6 +171,12 @@
       "create-a-member": "Skapa en medlem"
     },
     "system-section": {
+      "server-name": "Server Name",
+      "customize-server": {
+        "title": "Customize Server",
+        "default": "Default is memos",
+        "icon-url": "Icon URL"
+      },
       "database-file-size": "Databas filstorlek",
       "allow-user-signup": "Tillåt användarregistrering",
       "additional-style": "Ytterligare stil",
@@ -210,6 +225,12 @@
     "too-short": "För kort",
     "too-long": "För långt",
     "not-allow-space": "Tillåt inte mellanslag",
-    "not-allow-chinese": "Tillåt inte kinesiska"
+    "not-allow-chinese": "Tillåt inte kinesiska",
+    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-update-additional-style": "Succeed to update additional style",
+    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+    "succeed-update-customized-profile": "Succeed to update customized profile",
+    "succeed-update-additional-script": "Succeed to update additional script",
+    "update-succeed": "Update succeed"
   }
 }

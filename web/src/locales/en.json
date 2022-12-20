@@ -46,7 +46,8 @@
     "expand": "Expand",
     "image": "Image",
     "link": "Link",
-    "vacuum": "Vacuum"
+    "vacuum": "Vacuum",
+    "select": "Select"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
@@ -76,7 +77,8 @@
     "rename": "Rename",
     "clear-unused-resources": "Clear unused resources",
     "warning-text-unused": "Are you sure to delete these unused resource? THIS ACTION IS IRREVERSIABLE❗",
-    "no-unused-resources": "No unused resources"
+    "no-unused-resources": "No unused resources",
+    "name": "Name"
   },
   "archived": {
     "archived-memos": "Archived Memos",
@@ -117,6 +119,13 @@
   },
   "filter": {
     "new-filter": "New Filter",
+    "type": {
+      "tag": "Tag",
+      "type": "Type",
+      "text": "Text",
+      "display-time": "Display Time",
+      "visibility": "Visibility"
+    },
     "operator": {
       "contains": "Contains",
       "not-contains": "Does not contain",
@@ -162,6 +171,12 @@
       "create-a-member": "Create a member"
     },
     "system-section": {
+      "server-name": "Server Name",
+      "customize-server": {
+        "title": "Customize Server",
+        "default": "Default is memos",
+        "icon-url": "Icon URL"
+      },
       "database-file-size": "Database File Size",
       "allow-user-signup": "Allow user signup",
       "additional-style": "Additional style",
@@ -210,6 +225,12 @@
     "too-short": "Too short",
     "too-long": "Too long",
     "not-allow-space": "Don't allow space",
-    "not-allow-chinese": "Don't allow chinese"
+    "not-allow-chinese": "Don't allow chinese",
+    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-update-additional-style": "Succeed to update additional style",
+    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+    "succeed-update-customized-profile": "Succeed to update customized profile",
+    "succeed-update-additional-script": "Succeed to update additional script",
+    "update-succeed": "Update succeed"
   }
 }

@@ -46,7 +46,8 @@
     "expand": "Expand",
     "image": "Image",
     "link": "Link",
-    "vacuum": "Vacuum"
+    "vacuum": "Vacuum",
+    "select": "Select"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
@@ -91,7 +92,8 @@
     "only-image-supported": "Chỉ hỗ trợ hình ảnh.",
     "cant-empty": "Nội dung không thể trống",
     "local": "Local",
-    "resources": "Resources"
+    "resources": "Resources",
+    "name": "Name"
   },
   "memo": {
     "view-detail": "Xem chi tiết",
@@ -117,6 +119,13 @@
   },
   "filter": {
     "new-filter": "Bộ lọc mới",
+    "type": {
+      "tag": "Tag",
+      "type": "Type",
+      "text": "Text",
+      "display-time": "Display Time",
+      "visibility": "Visibility"
+    },
     "operator": {
       "contains": "Chứa",
       "not-contains": "Không chứa",
@@ -161,6 +170,12 @@
       "create-a-member": "Tạo thành viên"
     },
     "system-section": {
+      "server-name": "Server Name",
+      "customize-server": {
+        "title": "Customize Server",
+        "default": "Default is memos",
+        "icon-url": "Icon URL"
+      },
       "database-file-size": "Kích thước tệp cơ sở dữ liệu",
       "allow-user-signup": "Cho phép người dùng đăng ký",
       "additional-style": "Phong cách bổ sung",
@@ -204,6 +219,12 @@
     "too-short": "Too short",
     "too-long": "Too long",
     "not-allow-space": "Don't allow space",
-    "not-allow-chinese": "Don't allow chinese"
+    "not-allow-chinese": "Don't allow chinese",
+    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-update-additional-style": "Succeed to update additional style",
+    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+    "succeed-update-customized-profile": "Succeed to update customized profile",
+    "succeed-update-additional-script": "Succeed to update additional script",
+    "update-succeed": "Update succeed"
   }
 }

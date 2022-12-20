@@ -46,7 +46,8 @@
         "expand": "Expandir",
         "image": "Imagen",
         "link": "Enlace",
-        "vacuum": "Vaciar"
+        "vacuum": "Vaciar",
+        "select": "Select"
     },
     "slogan": "Un código abierto, centro de notas autoalojado con la gestión del conocimiento y la socialización.",
     "auth": {
@@ -76,7 +77,8 @@
         "rename": "Renombrar",
         "clear-unused-resources": "Borrar los recursos no utilizados",
         "warning-text-unused": "Seguro que quieres eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE❗.",
-        "no-unused-resources": "No hay recursos sin utilizar"
+        "no-unused-resources": "No hay recursos sin utilizar",
+        "name": "Name"
     },
     "archived": {
         "archived-memos": "Notas Archivadas",
@@ -117,6 +119,13 @@
     },
     "filter": {
         "new-filter": "Nuevo Filtro",
+        "type": {
+            "tag": "Tag",
+            "type": "Type",
+            "text": "Text",
+            "display-time": "Display Time",
+            "visibility": "Visibility"
+          },
         "operator": {
             "contains": "Contiene",
             "not-contains": "No contiene",
@@ -162,6 +171,12 @@
             "create-a-member": "Crear un miembro"
         },
         "system-section": {
+            "server-name": "Server Name",
+            "customize-server": {
+                "title": "Customize Server",
+                "default": "Default is memos",
+                "icon-url": "Icon URL"
+              },
             "database-file-size": "Tamaño de la Base de Datos",
             "allow-user-signup": "Permitir el registro de usuarios",
             "additional-style": "Estilo adicional",
@@ -210,6 +225,12 @@
         "too-short": "Demasiado corto",
         "too-long": "Demasiado largo",
         "not-allow-space": "No se admiten espacios",
-        "not-allow-chinese": "El chino no está permitido"
+        "not-allow-chinese": "El chino no está permitido",
+        "succeed-vacuum-database": "Succeed to vacuum database",
+        "succeed-update-additional-style": "Succeed to update additional style",
+        "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+        "succeed-update-customized-profile": "Succeed to update customized profile",
+        "succeed-update-additional-script": "Succeed to update additional script",
+        "update-succeed": "Update succeed"
     }
 }

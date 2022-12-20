@@ -46,7 +46,8 @@
     "expand": "Erweitern",
     "image": "Bild",
     "link": "Link",
-    "vacuum": "Vacuum"
+    "vacuum": "Vacuum",
+    "select": "Select"
   },
   "slogan": "Eine quelloffene, selbst gehostete Sammlung an Memos zur Wissensverwaltung und Vernetzung.",
   "auth": {
@@ -76,7 +77,8 @@
     "rename": "Umbenennen",
     "clear-unused-resources": "Lösche ungenutzte Ressourcen",
     "warning-text-unused": "Möchtest du diese ungenutzte Ressource wirklich löschen? Dies kann nicht rückgängig gemacht werden❗",
-    "no-unused-resources": "Keine ungenutzten Ressourcen"
+    "no-unused-resources": "Keine ungenutzten Ressourcen",
+    "name": "Name"
   },
   "archived": {
     "archived-memos": "Archivierte Memos",
@@ -117,6 +119,13 @@
   },
   "filter": {
     "new-filter": "Neuer Filter",
+    "type": {
+      "tag": "Tag",
+      "type": "Type",
+      "text": "Text",
+      "display-time": "Display Time",
+      "visibility": "Visibility"
+    },
     "operator": {
       "contains": "enthält",
       "not-contains": "enthält nicht",
@@ -162,6 +171,12 @@
       "create-a-member": "Mitglied hinzufügen"
     },
     "system-section": {
+      "server-name": "Server Name",
+      "customize-server": {
+        "title": "Customize Server",
+        "default": "Default is memos",
+        "icon-url": "Icon URL"
+      },
       "database-file-size": "Dateigröße der Datenbank",
       "allow-user-signup": "Erlaube Registrierungen für neue Mitglieder",
       "additional-style": "Zusätzlicher Style",
@@ -210,6 +225,12 @@
     "too-short": "Zu kurz",
     "too-long": "Zu lang",
     "not-allow-space": "Keine Leerzeichen erlaubt",
-    "not-allow-chinese": "Keine chinesischen Zeichen erlaubt"
+    "not-allow-chinese": "Keine chinesischen Zeichen erlaubt",
+    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-update-additional-style": "Succeed to update additional style",
+    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+    "succeed-update-customized-profile": "Succeed to update customized profile",
+    "succeed-update-additional-script": "Succeed to update additional script",
+    "update-succeed": "Update succeed"
   }
 }
