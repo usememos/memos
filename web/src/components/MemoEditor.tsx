@@ -429,19 +429,17 @@ const MemoEditor = () => {
   }, [state.prefix]);
 
   const updateTagPrefix = (content: string, cursor: number) => {
-    const lastChar = content.slice(cursor - 1, cursor);
-    if (lastChar !== "#") {
-      const lastIndex = content.slice(0, cursor - 1).lastIndexOf("#");
-      if (lastIndex !== -1) {
-        const prefix = content.slice(lastIndex + 1, cursor);
-        setState((state) => {
-          return {
-            ...state,
-            prefix,
-          };
-        });
-      }
+    const lastIndex = content.slice(0, cursor - 1).lastIndexOf("#");
+    let prefix = "";
+    if (lastIndex !== -1) {
+      prefix = content.slice(lastIndex + 1, cursor);
     }
+    setState((state) => {
+      return {
+        ...state,
+        prefix,
+      };
+    });
   };
 
   const handleContentChange = (content: string, cursor: number) => {
@@ -451,6 +449,7 @@ const MemoEditor = () => {
   };
 
   const handleCaretChange = (cursor: number) => {
+    console.log(cursor);
     updateTagPrefix(editorRef.current?.getContent() ?? "", cursor);
   };
 
