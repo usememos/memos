@@ -225,6 +225,12 @@
         "too-short": "Demasiado corto",
         "too-long": "Demasiado largo",
         "not-allow-space": "No se admiten espacios",
-        "not-allow-chinese": "El chino no está permitido"
+        "not-allow-chinese": "El chino no está permitido",
+        "succeed-vacuum-database": "Succeed to vacuum database",
+        "succeed-update-additional-style": "Succeed to update additional style",
+        "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+        "succeed-update-customized-profile": "Succeed to update customized profile",
+        "succeed-update-additional-script": "Succeed to update additional script",
+        "update-succeed": "Update succeed"
     }
 }

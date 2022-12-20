@@ -77,7 +77,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to vacuum database");
+    toastHelper.success(t("message.succeed-vacuum-database"));
   };
 
   const handleSaveAdditionalStyle = async () => {
@@ -90,7 +90,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to update additional style");
+    toastHelper.success(t("message.succeed-update-additional-style"));
   };
 
   const handleAdditionalScriptChanged = (value: string) => {
@@ -110,7 +110,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to update additional script");
+    toastHelper.success(t("message.succeed-update-additional-script"));
   };
 
   return (

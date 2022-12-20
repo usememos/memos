@@ -219,6 +219,12 @@
     "too-short": "Too short",
     "too-long": "Too long",
     "not-allow-space": "Don't allow space",
-    "not-allow-chinese": "Don't allow chinese"
+    "not-allow-chinese": "Don't allow chinese",
+    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-update-additional-style": "Succeed to update additional style",
+    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+    "succeed-update-customized-profile": "Succeed to update customized profile",
+    "succeed-update-additional-script": "Succeed to update additional script",
+    "update-succeed": "Update succeed"
   }
 }

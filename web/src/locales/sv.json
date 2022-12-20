@@ -225,6 +225,12 @@
     "too-short": "För kort",
     "too-long": "För långt",
     "not-allow-space": "Tillåt inte mellanslag",
-    "not-allow-chinese": "Tillåt inte kinesiska"
+    "not-allow-chinese": "Tillåt inte kinesiska",
+    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-update-additional-style": "Succeed to update additional style",
+    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+    "succeed-update-customized-profile": "Succeed to update customized profile",
+    "succeed-update-additional-script": "Succeed to update additional script",
+    "update-succeed": "Update succeed"
   }
 }

@@ -225,6 +225,12 @@
     "too-short": "过短",
     "too-long": "过长",
     "not-allow-space": "不允许包含空格",
-    "not-allow-chinese": "不允许包含中文"
+    "not-allow-chinese": "不允许包含中文",
+    "succeed-to-vacuum-database": "清空数据库成功",
+    "succeed-update-additional-style": "更新附加样式成功",
+    "succeed-copy-resource-link": "复制资源链接到剪贴板成功",
+    "succeed-update-customized-profile": "更新自定义配置文件成功",
+    "succeed-update-additional-script": "更新附加脚本成功",
+    "update-succeed": "更新成功"
   }
 }

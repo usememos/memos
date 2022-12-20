@@ -55,7 +55,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
       console.error(error);
       return;
     }
-    toastHelper.success("Succeed to update customized profile");
+    toastHelper.success(t("message.succeed-update-customized-profile"));
     destroy();
   };
 

@@ -212,6 +212,12 @@
     "resource-filename-updated": "Bestandsnaam van bron gewijzigd.",
     "invalid-resource-filename": "Onjuiste bestandsnaam.",
     "click-to-save-the-image": "Klik om de afbeelding op te slaan",
-    "generating-the-screenshot": "Screenshot genereren..."
+    "generating-the-screenshot": "Screenshot genereren...",
+    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-update-additional-style": "Succeed to update additional style",
+    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+    "succeed-update-customized-profile": "Succeed to update customized profile",
+    "succeed-update-additional-script": "Succeed to update additional script",
+    "update-succeed": "Update succeed"
   }
 }

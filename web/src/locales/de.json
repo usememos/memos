@@ -225,6 +225,12 @@
     "too-short": "Zu kurz",
     "too-long": "Zu lang",
     "not-allow-space": "Keine Leerzeichen erlaubt",
-    "not-allow-chinese": "Keine chinesischen Zeichen erlaubt"
+    "not-allow-chinese": "Keine chinesischen Zeichen erlaubt",
+    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-update-additional-style": "Succeed to update additional style",
+    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+    "succeed-update-customized-profile": "Succeed to update customized profile",
+    "succeed-update-additional-script": "Succeed to update additional script",
+    "update-succeed": "Update succeed"
   }
 }

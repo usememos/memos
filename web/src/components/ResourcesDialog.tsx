@@ -105,7 +105,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
 
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
     copy(`${window.location.origin}/o/r/${resource.id}/${resource.filename}`);
-    toastHelper.success("Succeed to copy resource link to clipboard");
+    toastHelper.success(t("message.succeed-copy-resource-link"));
   };
 
   const handleDeleteUnusedResourcesBtnClick = () => {

@@ -92,7 +92,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
         userPatch.email = state.email;
       }
       await userStore.patchUser(userPatch);
-      toastHelper.info("Update succeed");
+      toastHelper.info(t("message.update-succeed"));
       handleCloseBtnClick();
     } catch (error: any) {
       console.error(error);
