@@ -2,8 +2,13 @@ import { escape } from "lodash-es";
 
 export const PLAIN_LINK_REG = /(https?:\/\/[^ ]+)/;
 
-const renderer = (rawStr: string): string => {
+const matcher = (rawStr: string) => {
   const matchResult = rawStr.match(PLAIN_LINK_REG);
+  return matchResult;
+};
+
+const renderer = (rawStr: string): string => {
+  const matchResult = matcher(rawStr);
   if (!matchResult) {
     return rawStr;
   }
@@ -14,5 +19,6 @@ const renderer = (rawStr: string): string => {
 export default {
   name: "plain link",
   regex: PLAIN_LINK_REG,
+  matcher,
   renderer,
 };

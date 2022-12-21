@@ -2,8 +2,13 @@ import { marked } from "..";
 
 export const STRIKETHROUGH_REG = /~~(.+?)~~/;
 
-const renderer = (rawStr: string): string => {
+const matcher = (rawStr: string) => {
   const matchResult = rawStr.match(STRIKETHROUGH_REG);
+  return matchResult;
+};
+
+const renderer = (rawStr: string): string => {
+  const matchResult = matcher(rawStr);
   if (!matchResult) {
     return rawStr;
   }
@@ -15,5 +20,6 @@ const renderer = (rawStr: string): string => {
 export default {
   name: "Strikethrough",
   regex: STRIKETHROUGH_REG,
+  matcher,
   renderer,
 };

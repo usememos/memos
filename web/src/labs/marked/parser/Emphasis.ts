@@ -3,8 +3,13 @@ import Link from "./Link";
 
 export const EMPHASIS_REG = /\*(.+?)\*/;
 
-const renderer = (rawStr: string): string => {
+const matcher = (rawStr: string) => {
   const matchResult = rawStr.match(EMPHASIS_REG);
+  return matchResult;
+};
+
+const renderer = (rawStr: string): string => {
+  const matchResult = matcher(rawStr);
   if (!matchResult) {
     return rawStr;
   }
@@ -16,5 +21,6 @@ const renderer = (rawStr: string): string => {
 export default {
   name: "emphasis",
   regex: EMPHASIS_REG,
+  matcher,
   renderer,
 };

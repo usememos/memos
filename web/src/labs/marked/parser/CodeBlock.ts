@@ -1,10 +1,15 @@
 import { escape } from "lodash-es";
 import hljs from "highlight.js";
 
-export const CODE_BLOCK_REG = /^```(\S*?)\s([\s\S]*?)```(\n?)/;
+export const CODE_BLOCK_REG = /^```(\S*?)\s([\s\S]*?)```/;
+
+const matcher = (rawStr: string) => {
+  const matchResult = rawStr.match(CODE_BLOCK_REG);
+  return matchResult;
+};
 
 const renderer = (rawStr: string): string => {
-  const matchResult = rawStr.match(CODE_BLOCK_REG);
+  const matchResult = matcher(rawStr);
   if (!matchResult) {
     return rawStr;
   }
@@ -21,11 +26,12 @@ const renderer = (rawStr: string): string => {
     // do nth
   }
 
-  return `<pre><code class="language-${language}">${highlightedCode}</code></pre>${matchResult[3]}`;
+  return `<pre><code class="language-${language}">${highlightedCode}</code></pre>`;
 };
 
 export default {
   name: "code block",
   regex: CODE_BLOCK_REG,
+  matcher,
   renderer,
 };

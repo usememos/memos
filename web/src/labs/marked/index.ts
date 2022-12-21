@@ -1,25 +1,22 @@
 import { blockElementParserList, inlineElementParserList } from "./parser";
 
-const match = (rawStr: string, regex: RegExp): number => {
-  const matchResult = rawStr.match(regex);
-  if (!matchResult) {
-    return 0;
-  }
-
-  const matchStr = matchResult[0];
-  return matchStr.length;
-};
-
 export const marked = (markdownStr: string, blockParsers = blockElementParserList, inlineParsers = inlineElementParserList): string => {
   for (const parser of blockParsers) {
-    const startIndex = markdownStr.search(parser.regex);
-    const matchedLength = match(markdownStr, parser.regex);
+    const matchResult = parser.matcher(markdownStr);
+    if (!matchResult) {
+      continue;
+    }
+    const matchedStr = matchResult[0];
+    const retainContent = markdownStr.slice(matchedStr.length);
 
-    if (startIndex > -1 && matchedLength > 0) {
-      const prefixStr = markdownStr.slice(0, startIndex);
-      const matchedStr = markdownStr.slice(startIndex, startIndex + matchedLength);
-      const suffixStr = markdownStr.slice(startIndex + matchedLength);
-      return marked(prefixStr, blockParsers, inlineParsers) + parser.renderer(matchedStr) + marked(suffixStr, blockParsers, inlineParsers);
+    if (parser.name === "br") {
+      return parser.renderer(matchedStr) + marked(retainContent, blockParsers, inlineParsers);
+    } else {
+      if (retainContent === "") {
+        return parser.renderer(matchedStr);
+      } else if (retainContent.startsWith("\n")) {
+        return parser.renderer(matchedStr) + marked(retainContent.slice(1), blockParsers, inlineParsers);
+      }
     }
   }
 
@@ -27,27 +24,31 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
   let matchedIndex = -1;
 
   for (const parser of inlineParsers) {
+    const matchResult = parser.matcher(markdownStr);
+    if (!matchResult) {
+      continue;
+    }
+
     if (parser.name === "plain text" && matchedInlineParser !== undefined) {
       continue;
     }
 
-    const startIndex = markdownStr.search(parser.regex);
-    const matchedLength = match(markdownStr, parser.regex);
-
-    if (startIndex > -1 && matchedLength > 0) {
-      if (!matchedInlineParser || matchedIndex > startIndex) {
-        matchedIndex = startIndex;
-        matchedInlineParser = parser;
-      }
+    const startIndex = matchResult.index as number;
+    if (matchedInlineParser === undefined || matchedIndex > startIndex) {
+      matchedInlineParser = parser;
+      matchedIndex = startIndex;
     }
   }
 
   if (matchedInlineParser) {
-    const matchedLength = match(markdownStr, matchedInlineParser.regex);
-    const prefixStr = markdownStr.slice(0, matchedIndex);
-    const matchedStr = markdownStr.slice(matchedIndex, matchedIndex + matchedLength);
-    const suffixStr = markdownStr.slice(matchedIndex + matchedLength);
-    return prefixStr + matchedInlineParser.renderer(matchedStr) + marked(suffixStr, [], inlineParsers);
+    const matchResult = matchedInlineParser.matcher(markdownStr);
+    if (matchResult) {
+      const matchedStr = matchResult[0];
+      const matchedLength = matchedStr.length;
+      const prefixStr = markdownStr.slice(0, matchedIndex);
+      const suffixStr = markdownStr.slice(matchedIndex + matchedLength);
+      return prefixStr + matchedInlineParser.renderer(matchedStr) + marked(suffixStr, [], inlineParsers);
+    }
   }
 
   return markdownStr;

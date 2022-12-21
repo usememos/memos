@@ -3,8 +3,13 @@ import { absolutifyLink } from "../../../helpers/utils";
 
 export const IMAGE_REG = /!\[.*?\]\((.+?)\)/;
 
-const renderer = (rawStr: string): string => {
+const matcher = (rawStr: string) => {
   const matchResult = rawStr.match(IMAGE_REG);
+  return matchResult;
+};
+
+const renderer = (rawStr: string): string => {
+  const matchResult = matcher(rawStr);
   if (!matchResult) {
     return rawStr;
   }
@@ -16,5 +21,6 @@ const renderer = (rawStr: string): string => {
 export default {
   name: "image",
   regex: IMAGE_REG,
+  matcher,
   renderer,
 };

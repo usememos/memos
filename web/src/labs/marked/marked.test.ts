@@ -7,20 +7,13 @@ describe("test marked parser", () => {
   test("horizontal rule", () => {
     const tests = [
       {
-        markdown: `To create a horizontal rule, use three or more asterisks (***), dashes (---), or underscores (___) on a line by themselves.
----
+        markdown: `---
 This is some text after the horizontal rule.
 ___
 This is some text after the horizontal rule.
 ***
 This is some text after the horizontal rule.`,
-        want: `<p>To create a horizontal rule, use three or more asterisks (<em>*</em>), dashes (---), or underscores (___) on a line by themselves.</p>
-<hr>
-<p>This is some text after the horizontal rule.</p>
-<hr>
-<p>This is some text after the horizontal rule.</p>
-<hr>
-<p>This is some text after the horizontal rule.</p>`,
+        want: `<hr><p>This is some text after the horizontal rule.</p><hr><p>This is some text after the horizontal rule.</p><hr><p>This is some text after the horizontal rule.</p>`,
       },
     ];
     for (const t of tests) {
@@ -42,9 +35,7 @@ hello world!
 \`\`\`js
 console.log("hello world!")
 \`\`\``,
-        want: `<p>test code block</p>
-<p></p>
-<pre><code class="language-js"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"hello world!"</span>)
+        want: `<p>test code block</p><br><pre><code class="language-js"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"hello world!"</span>)
 </code></pre>`,
       },
     ];
@@ -59,9 +50,7 @@ console.log("hello world!")
         markdown: `My task:
 - [ ] finish my homework
 - [x] yahaha`,
-        want: `<p>My task:</p>
-<p class='li-container'><span class='todo-block todo' data-value='TODO'></span><span>finish my homework</span></p>
-<p class='li-container'><span class='todo-block done' data-value='DONE'>✓</span><span>yahaha</span></p>`,
+        want: `<p>My task:</p><p class='li-container'><span class='todo-block todo' data-value='TODO'></span><span>finish my homework</span></p><p class='li-container'><span class='todo-block done' data-value='DONE'>✓</span><span>yahaha</span></p>`,
       },
     ];
 
@@ -75,9 +64,7 @@ console.log("hello world!")
         markdown: `This is a list
 * list 123
 1. 123123`,
-        want: `<p>This is a list</p>
-<p class='li-container'><span class='ul-block'>•</span><span>list 123</span></p>
-<p class='li-container'><span class='ol-block'>1.</span><span>123123</span></p>`,
+        want: `<p>This is a list</p><p class='li-container'><span class='ul-block'>•</span><span>list 123</span></p><p class='li-container'><span class='ol-block'>1.</span><span>123123</span></p>`,
       },
     ];
 
@@ -88,8 +75,8 @@ console.log("hello world!")
   test("parse inline element", () => {
     const tests = [
       {
-        markdown: `Link: [baidu](https://baidu.com)`,
-        want: `<p>Link: <a class='link' target='_blank' rel='noreferrer' href='https://baidu.com'>baidu</a></p>`,
+        markdown: `Link: [baidu](https://baidu.com#1231)`,
+        want: `<p>Link: <a class='link' target='_blank' rel='noreferrer' href='https://baidu.com#1231'>baidu</a></p>`,
       },
     ];
 
@@ -112,8 +99,8 @@ console.log("hello world!")
   test("parse plain link", () => {
     const tests = [
       {
-        markdown: `Link:https://baidu.com`,
-        want: `<p>Link:<a class='link' target='_blank' rel='noreferrer' href='https://baidu.com'>https://baidu.com</a></p>`,
+        markdown: `Link:https://baidu.com#1231`,
+        want: `<p>Link:<a class='link' target='_blank' rel='noreferrer' href='https://baidu.com#1231'>https://baidu.com#1231</a></p>`,
       },
     ];
 
@@ -162,8 +149,34 @@ console.log("hello world!")
       {
         markdown: `　　line1
 　　line2`,
-        want: `<p>　　line1</p>
-<p>　　line2</p>`,
+        want: `<p>　　line1</p><p>　　line2</p>`,
+      },
+    ];
+    for (const t of tests) {
+      expect(unescape(marked(t.markdown))).toBe(t.want);
+    }
+  });
+  test("parse tags", () => {
+    const tests = [
+      {
+        markdown: `#123 `,
+        want: `<p><span class='tag-span'>#123</span> </p>`,
+      },
+      {
+        markdown: `#123#asd`,
+        want: `<p><span class='tag-span'>#123</span><span class='tag-span'>#asd</span></p>`,
+      },
+      {
+        markdown: `#123`,
+        want: `<p><span class='tag-span'>#123</span></p>`,
+      },
+      {
+        markdown: `123123#123`,
+        want: `<p>123123<span class='tag-span'>#123</span></p>`,
+      },
+      {
+        markdown: `123123 #123`,
+        want: `<p>123123 <span class='tag-span'>#123</span></p>`,
       },
     ];
     for (const t of tests) {
