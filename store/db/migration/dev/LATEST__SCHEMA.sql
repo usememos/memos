@@ -86,3 +86,10 @@ CREATE TABLE memo_resource (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   UNIQUE(memo_id, resource_id)
 );
+
+-- tag
+CREATE TABLE tag (
+  name TEXT NOT NULL,
+  creator_id INTEGER NOT NULL,
+  UNIQUE(name, creator_id)
+);
