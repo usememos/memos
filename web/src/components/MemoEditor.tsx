@@ -1,6 +1,7 @@
-import { isNumber, last, toLower } from "lodash";
+import { isNumber, last, toLower, uniq } from "lodash";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getMatchedNodes } from "../labs/marked";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import { useEditorStore, useLocationStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "../store/module";
@@ -324,6 +325,13 @@ const MemoEditor = () => {
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
+    }
+
+    // Upsert tag based with content.
+    const matchedNodes = getMatchedNodes(content);
+    const tagNameList = uniq(matchedNodes.filter((node) => node.parserName === "tag").map((node) => node.matchedContent.slice(1)));
+    for (const tagName of tagNameList) {
+      await tagStore.upsertTag(tagName);
     }
 
     setState((state) => {
