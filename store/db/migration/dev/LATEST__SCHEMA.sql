@@ -91,5 +91,5 @@ CREATE TABLE memo_resource (
 CREATE TABLE tag (
   name TEXT NOT NULL,
   creator_id INTEGER NOT NULL,
-  UNIQUE(creator_id, name)
+  UNIQUE(name, creator_id)
 );
