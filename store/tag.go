@@ -107,7 +107,7 @@ func findTagList(ctx context.Context, tx *sql.Tx, find *api.TagFind) ([]*tagRaw,
 	query := `
 		SELECT
 			name,
-		  creator_id
+			creator_id
 		FROM tag
 		WHERE ` + strings.Join(where, " AND ")
 	rows, err := tx.QueryContext(ctx, query, args...)
