@@ -12,6 +12,7 @@ const SearchBar = () => {
   const memoType = locationStore.state.query.type;
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
+  const [isFocus, setIsFocus] = useState(false);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -53,8 +54,16 @@ const SearchBar = () => {
     locationStore.setTextQuery(text.length === 0 ? undefined : text);
   };
 
+  const handleFocus = () => {
+    setIsFocus(true);
+  };
+
+  const handleBlur = () => {
+    setIsFocus(false);
+  };
+
   return (
-    <div className="search-bar-container">
+    <div className={`search-bar-container ${isFocus ? "is-focus" : ""}`}>
       <div className="search-bar-inputer">
         <Icon.Search className="icon-img" />
         <input
@@ -65,6 +74,8 @@ const SearchBar = () => {
           ref={inputRef}
           value={queryText}
           onChange={handleTextQueryInput}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
         />
       </div>
       <div className="quickly-action-wrapper">
