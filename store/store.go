@@ -67,6 +67,9 @@ func vacuum(ctx context.Context, tx *sql.Tx) error {
 		return err
 	}
 	if err := vacuumMemoResource(ctx, tx); err != nil {
+		return err
+	}
+	if err := vacuumTag(ctx, tx); err != nil {
 		// Prevent revive warning.
 		return err
 	}
