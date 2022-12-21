@@ -187,6 +187,20 @@ export function getTagList(tagFind?: TagFind) {
   return axios.get<ResponseObject<string[]>>(`/api/tag?${queryList.join("&")}`);
 }
 
+export function getTagSuggestionList() {
+  return axios.get<ResponseObject<string[]>>(`/api/tag/suggestion`);
+}
+
+export function upsertTag(tagName: string) {
+  return axios.post<ResponseObject<string>>(`/api/tag`, {
+    name: tagName,
+  });
+}
+
+export function deleteTag(tagName: string) {
+  return axios.delete<ResponseObject<string>>(`/api/tag/${tagName}`);
+}
+
 export async function getRepoStarCount() {
   const { data } = await axios.get(`https://api.github.com/repos/usememos/memos`, {
     headers: {

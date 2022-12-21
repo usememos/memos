@@ -87,7 +87,9 @@ func upsertTag(ctx context.Context, tx *sql.Tx, upsert *api.TagUpsert) (*tagRaw,
 			name, creator_id
 		)
 		VALUES (?, ?)
-		ON CONFLICT(name, creator_id) DO NOTHING
+		ON CONFLICT(name, creator_id) DO UPDATE 
+		SET
+			name = EXCLUDED.name
 		RETURNING name, creator_id
 	`
 	var tagRaw tagRaw

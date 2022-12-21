@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import { useEditorStore, useLocationStore, useMemoStore, useResourceStore, useUserStore } from "../store/module";
+import { useEditorStore, useLocationStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "../store/module";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -44,6 +44,7 @@ const MemoEditor = () => {
   const editorStore = useEditorStore();
   const locationStore = useLocationStore();
   const memoStore = useMemoStore();
+  const tagStore = useTagStore();
   const resourceStore = useResourceStore();
 
   const [state, setState] = useState<State>({
@@ -57,7 +58,7 @@ const MemoEditor = () => {
   const tagSelectorRef = useRef<HTMLDivElement>(null);
   const user = userStore.state.user as User;
   const setting = user.setting;
-  const tags = memoStore.state.tags;
+  const tags = tagStore.state.tags;
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
