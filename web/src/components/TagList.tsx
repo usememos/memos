@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { useLocationStore, useTagStore, useUserStore } from "../store/module";
 import useToggle from "../hooks/useToggle";
 import Icon from "./Icon";
+import showCreateTagDialog from "./CreateTagDialog";
 import "../less/tag-list.less";
 
 interface Tag {
@@ -15,16 +16,14 @@ const TagList = () => {
   const { t } = useTranslation();
   const locationStore = useLocationStore();
   const userStore = useUserStore();
-  const memoStore = useMemoStore();
-  const { memos, tags: tagsText } = memoStore.state;
+  const tagStore = useTagStore();
+  const tagsText = tagStore.state.tags;
   const query = locationStore.state.query;
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
-    if (memos.length > 0) {
-      memoStore.updateTagsState();
-    }
-  }, [memos]);
+    tagStore.fetchTags();
+  }, []);
 
   useEffect(() => {
     const sortedTags = Array.from(tagsText).sort();
@@ -72,7 +71,15 @@ const TagList = () => {
 
   return (
     <div className="tags-wrapper">
-      <p className="title-text">{t("common.tags")}</p>
+      <div className="w-full flex flex-row justify-start items-center px-4 mb-1">
+        <span className="text-sm leading-6 font-mono text-gray-400">{t("common.tags")}</span>
+        <button
+          onClick={() => showCreateTagDialog()}
+          className="flex flex-col justify-center items-center w-5 h-5 bg-gray-200 dark:bg-zinc-700 rounded ml-2 hover:shadow"
+        >
+          <Icon.Plus className="w-4 h-4 text-gray-400" />
+        </button>
+      </div>
       <div className="tags-container">
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />

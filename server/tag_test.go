@@ -31,11 +31,11 @@ func TestFindTagListFromMemoContent(t *testing.T) {
 		},
 		{
 			memoContent: "#tag1 123123#tag2 \n#tag3  #tag4 ",
-			want:        []string{"tag1", "tag3", "tag4"},
+			want:        []string{"tag1", "tag2", "tag3", "tag4"},
 		},
 		{
 			memoContent: "#tag1 http://123123.com?123123#tag2 \n#tag3  #tag4 http://123123.com?123123#tag2) ",
-			want:        []string{"tag1", "tag3", "tag4"},
+			want:        []string{"tag1", "tag2", "tag2)", "tag3", "tag4"},
 		},
 	}
 	for _, test := range tests {

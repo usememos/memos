@@ -8,12 +8,14 @@ import shortcutReducer from "./reducer/shortcut";
 import locationReducer from "./reducer/location";
 import resourceReducer from "./reducer/resource";
 import dialogReducer from "./reducer/dialog";
+import tagReducer from "./reducer/tag";
 
 const store = configureStore({
   reducer: {
     global: globalReducer,
     user: userReducer,
     memo: memoReducer,
+    tag: tagReducer,
     editor: editorReducer,
     shortcut: shortcutReducer,
     location: locationReducer,

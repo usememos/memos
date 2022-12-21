@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useMemoStore, useShortcutStore } from "../store/module";
+import { useShortcutStore, useTagStore } from "../store/module";
 import { filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
@@ -162,9 +162,9 @@ interface MemoFilterInputerProps {
 const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInputerProps) => {
   const { index, filter, handleFilterChange, handleFilterRemove } = props;
   const { t } = useTranslation();
-  const memoStore = useMemoStore();
+  const tagStore = useTagStore();
   const [value, setValue] = useState<string>(filter.value.value);
-  const tags = Array.from(memoStore.getState().tags);
+  const tags = Array.from(tagStore.getState().tags);
   const { type } = filter;
 
   const typeDataSource = Object.values(filterConsts).map(({ text, value }) => ({ text: t(text), value }));

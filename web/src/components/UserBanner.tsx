@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { useLocationStore, useMemoStore, useTagStore, useUserStore } from "../store/module";
 import { getMemoStats } from "../helpers/api";
 import * as utils from "../helpers/utils";
 import Icon from "./Icon";
@@ -17,8 +17,10 @@ const UserBanner = () => {
   const locationStore = useLocationStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
+  const tagStore = useTagStore();
   const { user, owner } = userStore.state;
-  const { memos, tags } = memoStore.state;
+  const { memos } = memoStore.state;
+  const tags = tagStore.state.tags;
   const [username, setUsername] = useState("Memos");
   const [memoAmount, setMemoAmount] = useState(0);
   const [createdDays, setCreatedDays] = useState(0);
