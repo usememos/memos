@@ -1,4 +1,4 @@
-import { isNumber, last, toLower } from "lodash";
+import { isNumber, last, toLower, uniq } from "lodash";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
@@ -12,6 +12,7 @@ import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import "../less/memo-editor.less";
+import { getMatchedNodes } from "../labs/marked";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
@@ -324,6 +325,13 @@ const MemoEditor = () => {
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
+    }
+
+    // Upsert tag based with content.
+    const matchedNodes = getMatchedNodes(content);
+    const tagNameList = uniq(matchedNodes.filter((node) => node.parserName === "tag").map((node) => node.matchedContent.slice(1)));
+    for (const tagName of tagNameList) {
+      await tagStore.upsertTag(tagName);
     }
 
     setState((state) => {
