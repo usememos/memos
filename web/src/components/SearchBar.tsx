@@ -63,7 +63,7 @@ const SearchBar = () => {
   };
 
   return (
-    <div className={`search-bar-container ${isFocus ? "is-active" : ""}`}>
+    <div className={`search-bar-container ${isFocus ? "is-focus" : ""}`}>
       <div className="search-bar-inputer">
         <Icon.Search className="icon-img" />
         <input
