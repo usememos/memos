@@ -156,27 +156,15 @@ console.log("hello world!")
       expect(unescape(marked(t.markdown))).toBe(t.want);
     }
   });
-  test("parse tags", () => {
+  test("parse heading", () => {
     const tests = [
       {
-        markdown: `#123 `,
-        want: `<p><span class='tag-span'>#123</span> </p>`,
+        markdown: `# 123 `,
+        want: `<h1>123 </h1>`,
       },
       {
-        markdown: `#123#asd`,
-        want: `<p><span class='tag-span'>#123</span><span class='tag-span'>#asd</span></p>`,
-      },
-      {
-        markdown: `#123`,
-        want: `<p><span class='tag-span'>#123</span></p>`,
-      },
-      {
-        markdown: `123123#123`,
-        want: `<p>123123<span class='tag-span'>#123</span></p>`,
-      },
-      {
-        markdown: `123123 #123`,
-        want: `<p>123123 <span class='tag-span'>#123</span></p>`,
+        markdown: `## 123 `,
+        want: `<h2>123 </h2>`,
       },
     ];
     for (const t of tests) {
