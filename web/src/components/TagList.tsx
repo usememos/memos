@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocationStore, useTagStore, useUserStore } from "../store/module";
+import { useLocationStore, useTagStore } from "../store/module";
 import useToggle from "../hooks/useToggle";
 import Icon from "./Icon";
 import showCreateTagDialog from "./CreateTagDialog";
@@ -15,7 +15,6 @@ interface Tag {
 const TagList = () => {
   const { t } = useTranslation();
   const locationStore = useLocationStore();
-  const userStore = useUserStore();
   const tagStore = useTagStore();
   const tagsText = tagStore.state.tags;
   const query = locationStore.state.query;
@@ -84,7 +83,7 @@ const TagList = () => {
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        {!userStore.isVisitorMode() && tags.length === 0 && <p className="tip-text">{t("tag-list.tip-text")}</p>}
+        {tags.length < 3 && <p className="tip-text">{t("tag-list.tip-text")}</p>}
       </div>
     </div>
   );

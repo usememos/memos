@@ -1,5 +1,5 @@
 import { TextField } from "@mui/joy";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTagStore } from "../store/module";
 import { getTagSuggestionList } from "../helpers/api";
 import Tag from "../labs/marked/parser/Tag";
@@ -31,8 +31,14 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
     });
   }, []);
 
-  const handleTagNameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tagName = e.target.value as string;
+  const handleTagNameInputKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      handleSaveBtnClick();
+    }
+  };
+
+  const handleTagNameChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const tagName = event.target.value;
     setTagName(tagName.trim());
   };
 
@@ -48,6 +54,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
 
     try {
       await tagStore.upsertTag(tagName);
+      setTagName("");
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
@@ -80,9 +87,10 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
           placeholder="TAG_NAME"
           value={tagName}
           onChange={handleTagNameChanged}
+          onKeyDown={handleTagNameInputKeyDown}
           fullWidth
           startDecorator={<Icon.Hash className="w-4 h-auto" />}
-          endDecorator={<Icon.CheckCircle onClick={handleSaveBtnClick} className="w-4 h-auto" />}
+          endDecorator={<Icon.Check onClick={handleSaveBtnClick} className="w-4 h-auto cursor-pointer hover:opacity-80" />}
         />
         {tagNameList.length > 0 && (
           <>
@@ -90,7 +98,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
             <div className="w-full flex flex-row justify-start items-start flex-wrap">
               {tagNameList.map((tag) => (
                 <span
-                  className="text-sm mr-2 mt-1 font-mono cursor-pointer truncate hover:opacity-60 hover:line-through"
+                  className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60 hover:line-through"
                   key={tag}
                   onClick={() => handleDeleteTag(tag)}
                 >
@@ -107,7 +115,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
             <div className="w-full flex flex-row justify-start items-start flex-wrap">
               {shownSuggestTagNameList.map((tag) => (
                 <span
-                  className="text-sm mr-2 mt-1 font-mono cursor-pointer truncate hover:opacity-60"
+                  className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60"
                   key={tag}
                   onClick={() => handleUpsertSuggestTag(tag)}
                 >
@@ -116,7 +124,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
               ))}
             </div>
             <button
-              className="mt-2 text-sm border px-2 leading-6 rounded cursor-pointer hover:opacity-80 hover:shadow"
+              className="mt-2 text-sm border px-2 leading-6 rounded cursor-pointer dark:border-gray-400 dark:text-gray-300 hover:opacity-80 hover:shadow"
               onClick={handleSaveSuggestTagList}
             >
               Save all
