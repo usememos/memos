@@ -327,7 +327,7 @@ const MemoEditor = () => {
       toastHelper.error(error.response.data.message);
     }
 
-    // Upsert tag based with content.
+    // Upsert tag with the content.
     const matchedNodes = getMatchedNodes(content);
     const tagNameList = uniq(matchedNodes.filter((node) => node.parserName === "tag").map((node) => node.matchedContent.slice(1)));
     for (const tagName of tagNameList) {
