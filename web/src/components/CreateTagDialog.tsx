@@ -23,20 +23,21 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
   const [tagName, setTagName] = useState<string>("");
   const [suggestTagNameList, setSuggestTagNameList] = useState<string[]>([]);
   const tagNameList = tagStore.state.tags;
+  const shownSuggestTagNameList = suggestTagNameList.filter((tag) => !tagNameList.includes(tag));
 
   useEffect(() => {
     getTagSuggestionList().then(({ data }) => {
-      setSuggestTagNameList(data.data.filter((tag) => !tagNameList.includes(tag) && validateTagName(tag)));
+      setSuggestTagNameList(data.data.filter((tag) => validateTagName(tag)));
     });
-  }, [tagNameList]);
+  }, []);
 
   const handleTagNameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const tagName = e.target.value as string;
     setTagName(tagName.trim());
   };
 
-  const handleRemoveSuggestTag = (tag: string) => {
-    setSuggestTagNameList(suggestTagNameList.filter((item) => item !== tag));
+  const handleUpsertSuggestTag = async (tagName: string) => {
+    await tagStore.upsertTag(tagName);
   };
 
   const handleSaveBtnClick = async () => {
@@ -100,15 +101,15 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
           </>
         )}
 
-        {suggestTagNameList.length > 0 && (
+        {shownSuggestTagNameList.length > 0 && (
           <>
             <p className="w-full mt-2 mb-1 text-sm text-gray-400">Tag suggestions</p>
             <div className="w-full flex flex-row justify-start items-start flex-wrap">
-              {suggestTagNameList.map((tag) => (
+              {shownSuggestTagNameList.map((tag) => (
                 <span
-                  className="text-sm mr-2 mt-1 font-mono cursor-pointer truncate hover:opacity-60 hover:line-through"
+                  className="text-sm mr-2 mt-1 font-mono cursor-pointer truncate hover:opacity-60"
                   key={tag}
-                  onClick={() => handleRemoveSuggestTag(tag)}
+                  onClick={() => handleUpsertSuggestTag(tag)}
                 >
                   #{tag}
                 </span>
