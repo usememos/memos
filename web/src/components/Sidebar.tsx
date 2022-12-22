@@ -46,8 +46,12 @@ const Sidebar = () => {
             </>
           )}
         </div>
-        {!userStore.isVisitorMode() && <ShortcutList />}
-        <TagList />
+        {!userStore.isVisitorMode() && (
+          <>
+            <ShortcutList />
+            <TagList />
+          </>
+        )}
       </aside>
     </>
   );

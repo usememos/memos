@@ -98,7 +98,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
             <div className="w-full flex flex-row justify-start items-start flex-wrap">
               {tagNameList.map((tag) => (
                 <span
-                  className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate hover:opacity-60 hover:line-through"
+                  className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60 hover:line-through"
                   key={tag}
                   onClick={() => handleDeleteTag(tag)}
                 >
@@ -115,7 +115,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
             <div className="w-full flex flex-row justify-start items-start flex-wrap">
               {shownSuggestTagNameList.map((tag) => (
                 <span
-                  className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate hover:opacity-60"
+                  className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60"
                   key={tag}
                   onClick={() => handleUpsertSuggestTag(tag)}
                 >
@@ -124,7 +124,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
               ))}
             </div>
             <button
-              className="mt-2 text-sm border px-2 leading-6 rounded cursor-pointer hover:opacity-80 hover:shadow"
+              className="mt-2 text-sm border px-2 leading-6 rounded cursor-pointer dark:border-gray-400 dark:text-gray-300 hover:opacity-80 hover:shadow"
               onClick={handleSaveSuggestTagList}
             >
               Save all
