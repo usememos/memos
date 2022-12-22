@@ -20,7 +20,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text flex items-center">
-          <img className="w-7 h-auto mr-1" src="/logo.webp" alt="" />
+          <img className="w-7 h-auto mr-1" src="/logo.png" alt="" />
           {t("common.about")} memos
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
