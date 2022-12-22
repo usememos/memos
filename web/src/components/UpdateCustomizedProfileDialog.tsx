@@ -32,11 +32,11 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
     });
   };
 
-  const handleIconUrlChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleLogoUrlChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     setState((state) => {
       return {
         ...state,
-        iconUrl: e.target.value as string,
+        logoUrl: e.target.value as string,
       };
     });
   };
@@ -69,7 +69,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
   };
 
   const handleSaveBtnClick = async () => {
-    if (state.name === "" || state.iconUrl === "") {
+    if (state.name === "" || state.logoUrl === "") {
       toastHelper.error(t("message.fill-all"));
       return;
     }
@@ -103,7 +103,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
         </p>
         <input type="text" className="input-text" value={state.name} onChange={handleNameChanged} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.icon-url")}</p>
-        <input type="text" className="input-text" value={state.iconUrl} onChange={handleIconUrlChanged} />
+        <input type="text" className="input-text" value={state.logoUrl} onChange={handleLogoUrlChanged} />
         <p className="text-sm mb-1 mt-2">Description</p>
         <input type="text" className="input-text" value={state.description} onChange={handleDescriptionChanged} />
         <p className="text-sm mb-1 mt-2">Server locale</p>

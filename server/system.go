@@ -48,7 +48,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			AdditionalScript: "",
 			CustomizedProfile: api.CustomizedProfile{
 				Name:        "memos",
-				IconURL:     "",
+				LogoURL:     "",
 				Description: "",
 				Locale:      "en",
 				Appearance:  "system",
@@ -77,7 +77,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				valueMap := value.(map[string]interface{})
 				systemStatus.CustomizedProfile = api.CustomizedProfile{
 					Name:        valueMap["name"].(string),
-					IconURL:     valueMap["iconUrl"].(string),
+					LogoURL:     valueMap["logoUrl"].(string),
 					Description: valueMap["description"].(string),
 					Locale:      valueMap["locale"].(string),
 					Appearance:  valueMap["appearance"].(string),

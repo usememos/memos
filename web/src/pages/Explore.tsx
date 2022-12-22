@@ -63,7 +63,7 @@ const Explore = () => {
       <div className="page-container">
         <div className="page-header">
           <div className="title-container">
-            <img className="logo-img" src={customizedProfile.iconUrl} alt="" />
+            <img className="logo-img" src={customizedProfile.logoUrl} alt="" />
             <span className="title-text">{customizedProfile.name}</span>
           </div>
           <div className="action-button-container">

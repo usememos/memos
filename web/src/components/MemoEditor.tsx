@@ -551,7 +551,7 @@ const MemoEditor = () => {
           </button>
           <button className="action-btn confirm-btn" disabled={!allowSave || state.isUploadingResource} onClick={handleSaveBtnClick}>
             {t("editor.save")}
-            <img className="icon-img w-4 h-auto" src="/logo.webp" />
+            <img className="icon-img w-4 h-auto" src="/logo.png" />
           </button>
         </div>
       </div>

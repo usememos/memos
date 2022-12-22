@@ -13,7 +13,7 @@ export const initialGlobalState = async () => {
       additionalScript: "",
       customizedProfile: {
         name: "memos",
-        iconUrl: "https://usememos.com/logo.webp",
+        logoUrl: "/logo.png",
         description: "",
         locale: "en",
         appearance: "system",

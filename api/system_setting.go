@@ -24,8 +24,8 @@ const (
 type CustomizedProfile struct {
 	// Name is the server name, default is `memos`
 	Name string `json:"name"`
-	// IconURL is the url of icon image.
-	IconURL string `json:"iconUrl"`
+	// LogoURL is the url of logo image.
+	LogoURL string `json:"logoUrl"`
 	// Description is the server description.
 	Description string `json:"description"`
 	// Locale is the server default locale.
@@ -100,7 +100,7 @@ func (upsert SystemSettingUpsert) Validate() error {
 	} else if upsert.Name == SystemSettingCustomizedProfileName {
 		customizedProfile := CustomizedProfile{
 			Name:        "memos",
-			IconURL:     "",
+			LogoURL:     "",
 			Description: "",
 			Locale:      "en",
 			Appearance:  "system",
