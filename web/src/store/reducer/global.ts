@@ -23,7 +23,10 @@ const globalSlice = createSlice({
       additionalScript: "",
       customizedProfile: {
         name: "memos",
-        iconUrl: "/logo.webp",
+        iconUrl: "https://usememos.com/logo.webp",
+        description: "",
+        locale: "en",
+        appearance: "system",
         externalUrl: "",
       },
     },
