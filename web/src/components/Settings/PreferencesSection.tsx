@@ -2,49 +2,15 @@ import { Select, Switch, Option } from "@mui/joy";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "../../store/module";
 import { VISIBILITY_SELECTOR_ITEMS, MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS } from "../../helpers/consts";
-import Icon from "../Icon";
 import AppearanceSelect from "../AppearanceSelect";
+import LocaleSelect from "../LocaleSelect";
 import "../../less/settings/preferences-section.less";
-
-const localeSelectorItems = [
-  {
-    text: "English",
-    value: "en",
-  },
-  {
-    text: "中文",
-    value: "zh",
-  },
-  {
-    text: "Tiếng Việt",
-    value: "vi",
-  },
-  {
-    text: "French",
-    value: "fr",
-  },
-  {
-    text: "Nederlands",
-    value: "nl",
-  },
-  {
-    text: "Svenska",
-    value: "sv",
-  },
-  {
-    text: "German",
-    value: "de",
-  },
-  {
-    text: "Español",
-    value: "es",
-  },
-];
 
 const PreferencesSection = () => {
   const { t } = useTranslation();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
+  const { appearance, locale } = globalStore.state;
   const { setting, localSetting } = userStore.state.user as User;
   const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
@@ -60,9 +26,14 @@ const PreferencesSection = () => {
     };
   });
 
-  const handleLocaleChanged = async (value: string) => {
-    await userStore.upsertUserSetting("locale", value);
-    globalStore.setLocale(value as Locale);
+  const handleLocaleSelectChange = async (locale: Locale) => {
+    await userStore.upsertUserSetting("locale", locale);
+    globalStore.setLocale(locale);
+  };
+
+  const handleAppearanceSelectChange = async (appearance: Appearance) => {
+    await userStore.upsertUserSetting("appearance", appearance);
+    globalStore.setAppearance(appearance);
   };
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {
@@ -82,26 +53,11 @@ const PreferencesSection = () => {
       <p className="title-text">{t("common.basic")}</p>
       <div className="form-label selector">
         <span className="normal-text">{t("common.language")}</span>
-        <Select
-          className="!min-w-[10rem] w-auto text-sm"
-          value={setting.locale}
-          onChange={(_, locale) => {
-            if (locale) {
-              handleLocaleChanged(locale);
-            }
-          }}
-          startDecorator={<Icon.Globe className="w-4 h-auto" />}
-        >
-          {localeSelectorItems.map((item) => (
-            <Option key={item.value} value={item.value} className="whitespace-nowrap">
-              {item.text}
-            </Option>
-          ))}
-        </Select>
+        <LocaleSelect value={locale} onChange={handleLocaleSelectChange} />
       </div>
       <div className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.theme")}</span>
-        <AppearanceSelect />
+        <AppearanceSelect value={appearance} onChange={handleAppearanceSelectChange} />
       </div>
       <p className="title-text">{t("setting.preference")}</p>
       <div className="form-label selector">

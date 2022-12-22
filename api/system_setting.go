@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+
+	"golang.org/x/exp/slices"
 )
 
 type SystemSettingName string
@@ -24,6 +26,12 @@ type CustomizedProfile struct {
 	Name string `json:"name"`
 	// IconURL is the url of icon image.
 	IconURL string `json:"iconUrl"`
+	// Description is the server description.
+	Description string `json:"description"`
+	// Locale is the server default locale.
+	Locale string `json:"locale"`
+	// Appearance is the server default appearance.
+	Appearance string `json:"appearance"`
 	// ExternalURL is the external url of server. e.g. https://usermemos.com
 	ExternalURL string `json:"externalUrl"`
 }
@@ -90,14 +98,23 @@ func (upsert SystemSettingUpsert) Validate() error {
 			return fmt.Errorf("failed to unmarshal system setting additional script value")
 		}
 	} else if upsert.Name == SystemSettingCustomizedProfileName {
-		value := CustomizedProfile{
+		customizedProfile := CustomizedProfile{
 			Name:        "memos",
 			IconURL:     "",
+			Description: "",
+			Locale:      "en",
+			Appearance:  "system",
 			ExternalURL: "",
 		}
-		err := json.Unmarshal([]byte(upsert.Value), &value)
+		err := json.Unmarshal([]byte(upsert.Value), &customizedProfile)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal system setting customized profile value")
+		}
+		if !slices.Contains(UserSettingLocaleValue, customizedProfile.Locale) {
+			return fmt.Errorf("invalid locale value")
+		}
+		if !slices.Contains(UserSettingAppearanceValue, customizedProfile.Appearance) {
+			return fmt.Errorf("invalid appearance value")
 		}
 	} else {
 		return fmt.Errorf("invalid system setting name")

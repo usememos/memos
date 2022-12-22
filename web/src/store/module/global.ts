@@ -13,7 +13,10 @@ export const initialGlobalState = async () => {
       additionalScript: "",
       customizedProfile: {
         name: "memos",
-        iconUrl: "/logo.webp",
+        iconUrl: "https://usememos.com/logo.webp",
+        description: "",
+        locale: "en",
+        appearance: "system",
         externalUrl: "",
       },
     } as SystemStatus,
@@ -31,6 +34,8 @@ export const initialGlobalState = async () => {
     const { data } = (await api.getSystemStatus()).data;
     if (data) {
       defaultGlobalState.systemStatus = data;
+      defaultGlobalState.locale = data.customizedProfile.locale;
+      defaultGlobalState.appearance = data.customizedProfile.appearance;
     }
   } catch (error) {
     // do nth

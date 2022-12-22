@@ -3,6 +3,8 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+
+	"golang.org/x/exp/slices"
 )
 
 type UserSettingKey string
@@ -60,32 +62,16 @@ func (upsert UserSettingUpsert) Validate() error {
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal user setting locale value")
 		}
-
-		invalid := true
-		for _, value := range UserSettingLocaleValue {
-			if localeValue == value {
-				invalid = false
-				break
-			}
-		}
-		if invalid {
+		if !slices.Contains(UserSettingLocaleValue, localeValue) {
 			return fmt.Errorf("invalid user setting locale value")
 		}
 	} else if upsert.Key == UserSettingAppearanceKey {
-		appearanceValue := "light"
+		appearanceValue := "system"
 		err := json.Unmarshal([]byte(upsert.Value), &appearanceValue)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal user setting appearance value")
 		}
-
-		invalid := true
-		for _, value := range UserSettingAppearanceValue {
-			if appearanceValue == value {
-				invalid = false
-				break
-			}
-		}
-		if invalid {
+		if !slices.Contains(UserSettingAppearanceValue, appearanceValue) {
 			return fmt.Errorf("invalid user setting appearance value")
 		}
 	} else if upsert.Key == UserSettingMemoVisibilityKey {
@@ -94,15 +80,7 @@ func (upsert UserSettingUpsert) Validate() error {
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal user setting memo visibility value")
 		}
-
-		invalid := true
-		for _, value := range UserSettingMemoVisibilityValue {
-			if memoVisibilityValue == value {
-				invalid = false
-				break
-			}
-		}
-		if invalid {
+		if !slices.Contains(UserSettingMemoVisibilityValue, memoVisibilityValue) {
 			return fmt.Errorf("invalid user setting memo visibility value")
 		}
 	} else if upsert.Key == UserSettingMemoDisplayTsOptionKey {
@@ -111,15 +89,7 @@ func (upsert UserSettingUpsert) Validate() error {
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal user setting memo display ts option")
 		}
-
-		invalid := true
-		for _, value := range UserSettingMemoDisplayTsOptionKeyValue {
-			if memoDisplayTsOption == value {
-				invalid = false
-				break
-			}
-		}
-		if invalid {
+		if !slices.Contains(UserSettingMemoDisplayTsOptionKeyValue, memoDisplayTsOption) {
 			return fmt.Errorf("invalid user setting memo display ts option value")
 		}
 	} else {

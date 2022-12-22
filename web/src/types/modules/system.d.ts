@@ -6,6 +6,9 @@ interface Profile {
 interface CustomizedProfile {
   name: string;
   iconUrl: string;
+  description: string;
+  locale: Locale;
+  appearance: Appearance;
   externalUrl: string;
 }
 
