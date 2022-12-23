@@ -141,7 +141,7 @@
     "text-placeholder": "Starts with ^ to use regex"
   },
   "tag-list": {
-    "tip-text": "Click the '+' button or input `#tag ` to create a new tag."
+    "tip-text": "Input `#tag` to create"
   },
   "search": {
     "quickly-filter": "Quickly filter"

@@ -33,9 +33,20 @@ export const initialGlobalState = async () => {
   try {
     const { data } = (await api.getSystemStatus()).data;
     if (data) {
-      defaultGlobalState.systemStatus = data;
-      defaultGlobalState.locale = data.customizedProfile.locale;
-      defaultGlobalState.appearance = data.customizedProfile.appearance;
+      const customizedProfile = data.customizedProfile;
+      defaultGlobalState.systemStatus = {
+        ...data,
+        customizedProfile: {
+          name: customizedProfile.name || "memos",
+          logoUrl: customizedProfile.logoUrl || "/logo.png",
+          description: customizedProfile.description,
+          locale: customizedProfile.locale || "en",
+          appearance: customizedProfile.appearance || "system",
+          externalUrl: "",
+        },
+      };
+      defaultGlobalState.locale = customizedProfile.locale;
+      defaultGlobalState.appearance = customizedProfile.appearance;
     }
   } catch (error) {
     // do nth
