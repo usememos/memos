@@ -38,7 +38,7 @@ const SearchBar = () => {
   useEffect(() => {
     const text = locationStore.getState().query.text;
     setQueryText(text === undefined ? "" : text);
-  }, [locationStore.getState().query.text]);
+  }, [locationStore.state.query.text]);
 
   const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
     const { type: prevType } = locationStore.getState().query ?? {};

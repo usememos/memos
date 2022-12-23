@@ -1,6 +1,4 @@
-const escapeRegExp = (str: string): string => {
-  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-};
+import { escape } from "lodash";
 
 const walkthroughNodeWithKeyword = (node: HTMLElement, keyword: string) => {
   if (node.nodeType === 3) {
@@ -19,8 +17,8 @@ export const highlightWithWord = (html: string, keyword?: string): string => {
   if (!keyword) {
     return html;
   }
-  keyword = escapeRegExp(keyword);
+  keyword = escape(keyword);
   const wrap = document.createElement("div");
-  wrap.innerHTML = html;
+  wrap.innerHTML = escape(html);
   return walkthroughNodeWithKeyword(wrap, keyword);
 };
