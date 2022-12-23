@@ -4,7 +4,9 @@ WORKDIR /frontend-build
 
 COPY ./web/ .
 
-RUN yarn
+RUN npm config rm proxy
+RUN npm config rm https-proxy
+RUN yarn install --no-lockfile
 RUN yarn build
 
 # Build backend exec file.
