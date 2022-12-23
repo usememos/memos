@@ -24,7 +24,7 @@ type ShortcutCreate struct {
 }
 
 type ShortcutPatch struct {
-	ID int
+	ID int `json:"-"`
 
 	// Standard fields
 	UpdatedTs *int64

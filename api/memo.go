@@ -57,7 +57,7 @@ type MemoCreate struct {
 }
 
 type MemoPatch struct {
-	ID int
+	ID int `json:"-"`
 
 	// Standard fields
 	CreatedTs *int64 `json:"createdTs"`
