@@ -39,6 +39,6 @@ jobs:
         with:
           context: ./
           file: ./Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: neosmemo/memos:latest, neosmemo/memos:${{ env.VERSION }}
