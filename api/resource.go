@@ -41,7 +41,7 @@ type ResourceFind struct {
 }
 
 type ResourcePatch struct {
-	ID int
+	ID int `json:"-"`
 
 	// Standard fields
 	UpdatedTs *int64

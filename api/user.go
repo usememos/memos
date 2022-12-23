@@ -69,7 +69,7 @@ func (create UserCreate) Validate() error {
 }
 
 type UserPatch struct {
-	ID int
+	ID int `json:"-"`
 
 	// Standard fields
 	UpdatedTs *int64
