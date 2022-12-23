@@ -36,10 +36,7 @@ const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">
-          <span className="icon-text">🗂</span>
-          {t("archived.archived-memos")}
-        </p>
+        <p className="title-text">{t("archived.archived-memos")}</p>
         <button className="btn close-btn" onClick={destroy}>
           <Icon.X className="icon-img" />
         </button>

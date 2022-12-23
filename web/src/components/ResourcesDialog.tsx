@@ -154,10 +154,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">
-          <span className="icon-text">🌄</span>
-          {t("sidebar.resources")}
-        </p>
+        <p className="title-text">{t("sidebar.resources")}</p>
         <button className="btn close-btn" onClick={destroy}>
           <Icon.X className="icon-img" />
         </button>
