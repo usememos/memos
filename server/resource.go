@@ -265,6 +265,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		c.Response().Writer.Header().Set("Content-Type", resource.Type)
 		c.Response().Writer.WriteHeader(http.StatusOK)
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
+		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
 		if _, err := c.Response().Writer.Write(resource.Blob); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write response").SetInternal(err)
 		}

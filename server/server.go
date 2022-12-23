@@ -44,10 +44,6 @@ func NewServer(profile *profile.Profile) *Server {
 		Timeout:      30 * time.Second,
 	}))
 
-	e.Use(middleware.SecureWithConfig(middleware.SecureConfig{
-		ContentSecurityPolicy: "default-src 'self'",
-	}))
-
 	embedFrontend(e)
 
 	// In dev mode, set the const secret key to make signin session persistence.
