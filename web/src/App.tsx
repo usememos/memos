@@ -48,7 +48,7 @@ const App = () => {
       const styleEl = document.createElement("style");
       styleEl.innerHTML = systemStatus.additionalStyle;
       styleEl.setAttribute("type", "text/css");
-      document.head.appendChild(styleEl);
+      document.body.insertAdjacentElement("beforeend", styleEl);
     }
     if (systemStatus.additionalScript) {
       const scriptEl = document.createElement("script");
