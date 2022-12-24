@@ -15,6 +15,7 @@ const defaultSetting: Setting = {
 
 const defaultLocalSetting: LocalSetting = {
   enableFoldMemo: true,
+  enablePowerfulEditor: true,
 };
 
 export const convertResponseModelUser = (user: User): User => {
@@ -133,9 +134,9 @@ export const useUserStore = () => {
       });
       await doSignIn();
     },
-    upsertLocalSetting: async (key: keyof LocalSetting, value: any) => {
-      storage.set({ localSetting: { [key]: value } });
-      store.dispatch(patchUser({ localSetting: { [key]: value } }));
+    upsertLocalSetting: async (localSetting: LocalSetting) => {
+      storage.set({ localSetting });
+      store.dispatch(patchUser({ localSetting }));
     },
     patchUser: async (userPatch: UserPatch): Promise<void> => {
       const { data } = (await api.patchUser(userPatch)).data;

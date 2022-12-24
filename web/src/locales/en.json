@@ -161,6 +161,7 @@
       "theme": "Theme",
       "default-memo-visibility": "Default memo visibility",
       "enable-folding-memo": "Enable folding memo",
+      "enable-powerful-editor": "Enable powerful editor",
       "editor-font-style": "Editor font style",
       "mobile-editor-style": "Mobile editor style",
       "default-memo-sort-option": "Memo display time",

@@ -59,6 +59,7 @@ const MemoEditor = () => {
   const tagSelectorRef = useRef<HTMLDivElement>(null);
   const user = userStore.state.user as User;
   const setting = user.setting;
+  const localSetting = user.localSetting;
   const tags = tagStore.state.tags;
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
@@ -215,24 +216,25 @@ const MemoEditor = () => {
       }
     }
 
-    for (const symbol of pairSymbols) {
-      if (event.key === symbol[0]) {
-        event.preventDefault();
-        editorRef.current.insertText("", symbol[0], symbol[1]);
+    if (localSetting.enablePowerfulEditor) {
+      for (const symbol of pairSymbols) {
+        if (event.key === symbol[0]) {
+          event.preventDefault();
+          editorRef.current.insertText("", symbol[0], symbol[1]);
+          return;
+        }
+      }
+      if (event.key === "Backspace") {
+        const cursor = editorRef.current.getCursorPosition();
+        const content = editorRef.current.getContent();
+        const deleteChar = content?.slice(cursor - 1, cursor);
+        const nextChar = content?.slice(cursor, cursor + 1);
+        if (pairSymbols.includes(`${deleteChar}${nextChar}`)) {
+          event.preventDefault();
+          editorRef.current.removeText(cursor - 1, 2);
+        }
         return;
       }
-    }
-
-    if (event.key === "Backspace") {
-      const cursor = editorRef.current.getCursorPosition();
-      const content = editorRef.current.getContent();
-      const deleteChar = content?.slice(cursor - 1, cursor);
-      const nextChar = content?.slice(cursor, cursor + 1);
-      if (pairSymbols.includes(`${deleteChar}${nextChar}`)) {
-        event.preventDefault();
-        editorRef.current.removeText(cursor - 1, 2);
-      }
-      return;
     }
   };
 

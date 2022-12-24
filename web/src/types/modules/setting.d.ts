@@ -9,6 +9,7 @@ interface Setting {
 
 interface LocalSetting {
   enableFoldMemo: boolean;
+  enablePowerfulEditor: boolean;
 }
 
 interface UserLocaleSetting {
