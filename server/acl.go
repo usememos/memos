@@ -27,7 +27,6 @@ func setUserSession(ctx echo.Context, user *api.User) error {
 		Path:     "/",
 		MaxAge:   3600 * 24 * 30,
 		HttpOnly: true,
-		Secure:   true,
 	}
 	sess.Values[userIDContextKey] = user.ID
 	err := sess.Save(ctx.Request(), ctx.Response())
