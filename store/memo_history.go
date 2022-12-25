@@ -42,18 +42,6 @@ func (s *Store) ComposeMemoHistoryList(ctx context.Context, memo *api.Memo) erro
 		return err
 	}
 
-	for _, memoHistory := range memoHistoryList {
-		history, err := s.FindMemoHistory(ctx, &api.MemoHistoryFind{
-			MemoID: &memo.ID,
-		})
-		if err != nil {
-			return err
-		}
-
-		memoHistory.Content = history.Content
-		memoHistory.CreatedTs = history.CreatedTs
-	}
-
 	sort.Slice(memoHistoryList, func(i, j int) bool {
 		if memoHistoryList[i].CreatedTs != memoHistoryList[j].CreatedTs {
 			return memoHistoryList[i].CreatedTs < memoHistoryList[j].CreatedTs
