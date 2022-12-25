@@ -54,6 +54,14 @@ CREATE TABLE memo_organizer (
   UNIQUE(memo_id, user_id)
 );
 
+-- memo_history
+CREATE TABLE memo_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  memo_id INTEGER NOT NULL,
+  content TEXT NOT NULL DEFAULT '',
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now'))
+);
+
 -- shortcut
 CREATE TABLE shortcut (
   id INTEGER PRIMARY KEY AUTOINCREMENT,

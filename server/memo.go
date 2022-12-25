@@ -102,7 +102,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			ID:        &memoID,
 			CreatorID: &userID,
 		}
-		if _, err := s.Store.FindMemo(ctx, memoFind); err != nil {
+
+		foundMemo, err := s.Store.FindMemo(ctx, memoFind)
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
 		}
 
@@ -118,6 +120,16 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		memo, err := s.Store.PatchMemo(ctx, memoPatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch memo").SetInternal(err)
+		}
+
+		if strings.Compare(memo.Content, foundMemo.Content) != 0 {
+			memoHistoryCreate := &api.MemoHistoryCreate{
+				MemoID:  memoID,
+				Content: &foundMemo.Content,
+			}
+			if _, err := s.Store.CreateMemoHistory(ctx, memoHistoryCreate); err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo history").SetInternal(err)
+			}
 		}
 
 		for _, resourceID := range memoPatch.ResourceIDList {
