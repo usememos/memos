@@ -37,4 +37,4 @@ Memos is built with a curated tech stack. It is optimized for developer experien
    cd web && yarn && yarn dev
    ```
 
-Memos should now be running at [http://localhost:3000](http://localhost:3000) and change either frontend or backend code would trigger live reload.
+Memos should now be running at [http://localhost:3001](http://localhost:3001) and change either frontend or backend code would trigger live reload.
