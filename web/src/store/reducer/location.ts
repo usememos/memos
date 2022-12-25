@@ -58,7 +58,10 @@ const getStateFromLocation = () => {
       }
     }
     state.query.visibility = urlParams["visibility"] as Visibility;
-    state.query.isUpdated = urlParams["isUpdated"] === "true";
+
+    if (urlParams["isUpdated"] != undefined) {
+      state.query.isUpdated = urlParams["isUpdated"] === "true";
+    }
   }
 
   return state;
