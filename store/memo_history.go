@@ -49,10 +49,6 @@ func (s *Store) CreateMemoHistory(ctx context.Context, create *api.MemoHistoryCr
 		return nil, FormatError(err)
 	}
 
-	// if err := s.cache.UpsertCache(api.MemoHistoryCache, memoHistoryRaw.ID, memoHistoryRaw); err != nil {
-	// 	return nil, err
-	// }
-
 	shortcut := memoHistoryRaw.toMemoHistory()
 
 	return shortcut, nil
@@ -79,17 +75,6 @@ func (s *Store) FindMemoHistoryList(ctx context.Context, find *api.MemoHistoryFi
 }
 
 func (s *Store) FindMemoHistory(ctx context.Context, find *api.MemoHistoryFind) (*api.MemoHistory, error) {
-	// if find.ID != nil {
-	// 	memoHistoryRaw := &memoHistoryRaw{}
-	// 	has, err := s.cache.FindCache(api.MemoHistoryCache, *find.ID, memoHistoryRaw)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	if has {
-	// 		return memoHistoryRaw.toMemoHistory(), nil
-	// 	}
-	// }
-
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -106,10 +91,6 @@ func (s *Store) FindMemoHistory(ctx context.Context, find *api.MemoHistoryFind) 
 	}
 
 	memoHistoryRaw := list[0]
-
-	// if err := s.cache.UpsertCache(api.MemoHistoryCache, memoHistoryRaw.ID, memoHistoryRaw); err != nil {
-	// 	return nil, err
-	// }
 
 	shortcut := memoHistoryRaw.toMemoHistory()
 
