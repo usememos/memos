@@ -171,6 +171,15 @@ const Memo: React.FC<Props> = (props: Props) => {
     }
   };
 
+  const handleMemoUpdatedClick = (isUpdated: boolean) => {
+    const currIsUpdatedQuery = locationStore.getState().query?.isUpdated;
+    if (currIsUpdatedQuery === isUpdated) {
+      locationStore.setMemoIsUpdatedQuery(undefined);
+    } else {
+      locationStore.setMemoIsUpdatedQuery(isUpdated);
+    }
+  };
+
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
       {memo.pinned && <div className="corner-container"></div>}
@@ -185,6 +194,11 @@ const Memo: React.FC<Props> = (props: Props) => {
               onClick={() => handleMemoVisibilityClick(memo.visibility)}
             >
               {memo.visibility}
+            </span>
+          )}
+          {memo.isUpdated && (
+            <span className="status-text updated" onClick={() => handleMemoUpdatedClick(memo.isUpdated)}>
+              UPDATED
             </span>
           )}
         </div>

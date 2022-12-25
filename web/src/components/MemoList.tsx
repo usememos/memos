@@ -21,9 +21,11 @@ const MemoList = () => {
   const [isComplete, setIsComplete] = useState<boolean>(false);
   const [highlightWord, setHighlightWord] = useState<string | undefined>("");
 
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query ?? {};
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility, isUpdated } = query ?? {};
   const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
-  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
+  const showMemoFilter = Boolean(
+    tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility || isUpdated != null
+  );
 
   const shownMemos =
     showMemoFilter || shortcut
@@ -71,6 +73,9 @@ const MemoList = () => {
           }
           if (visibility) {
             shouldShow = memo.visibility === visibility;
+          }
+          if (isUpdated != null) {
+            shouldShow = memo.isUpdated === isUpdated;
           }
 
           return shouldShow;

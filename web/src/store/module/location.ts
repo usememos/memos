@@ -58,6 +58,7 @@ export const useLocationStore = () => {
           text: undefined,
           shortcutId: undefined,
           visibility: undefined,
+          isUpdated: undefined,
         })
       );
       updateLocationUrl();
@@ -114,6 +115,14 @@ export const useLocationStore = () => {
       store.dispatch(
         setQuery({
           visibility: visibility,
+        })
+      );
+      updateLocationUrl();
+    },
+    setMemoIsUpdatedQuery: (isUpdated?: boolean) => {
+      store.dispatch(
+        setQuery({
+          isUpdated: isUpdated,
         })
       );
       updateLocationUrl();

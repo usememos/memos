@@ -15,6 +15,8 @@ interface Memo {
   pinned: boolean;
   displayTs: TimeStamp;
 
+  isUpdated: boolean;
+
   creator: User;
   resourceList: Resource[];
 }

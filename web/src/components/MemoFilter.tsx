@@ -10,9 +10,11 @@ const MemoFilter = () => {
   const locationStore = useLocationStore();
   const shortcutStore = useShortcutStore();
   const query = locationStore.state.query;
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query;
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility, isUpdated } = query;
   const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
-  const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
+  const showFilter = Boolean(
+    tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility || isUpdated != null
+  );
 
   return (
     <div className={`filter-query-container ${showFilter ? "" : "!hidden"}`}>
@@ -48,6 +50,14 @@ const MemoFilter = () => {
         }}
       >
         <Icon.Eye className="icon-text" /> {visibility}
+      </div>
+      <div
+        className={"filter-item-container " + (isUpdated ? "" : "!hidden")}
+        onClick={() => {
+          locationStore.setMemoIsUpdatedQuery(undefined);
+        }}
+      >
+        <Icon.Eye className="icon-text" /> UPDATED
       </div>
       {duration && duration.from < duration.to ? (
         <div

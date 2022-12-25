@@ -13,6 +13,7 @@ export interface Query {
   text?: string;
   shortcutId?: ShortcutId;
   visibility?: Visibility;
+  isUpdated?: boolean;
 }
 
 interface State {
@@ -57,6 +58,7 @@ const getStateFromLocation = () => {
       }
     }
     state.query.visibility = urlParams["visibility"] as Visibility;
+    state.query.isUpdated = urlParams["isUpdated"] === "true";
   }
 
   return state;
