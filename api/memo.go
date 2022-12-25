@@ -39,6 +39,9 @@ type Memo struct {
 	Pinned     bool       `json:"pinned"`
 	DisplayTs  int64      `json:"displayTs"`
 
+	// Computed fields
+	IsUpdated bool `json:"isUpdated"`
+
 	// Related fields
 	Creator      *User       `json:"creator"`
 	ResourceList []*Resource `json:"resourceList"`
@@ -83,6 +86,9 @@ type MemoFind struct {
 	Pinned         *bool
 	ContentSearch  *string
 	VisibilityList []Visibility
+
+	// Computed fields
+	IsUpdated *bool `json:"isUpdated"`
 
 	// Pagination
 	Limit  int

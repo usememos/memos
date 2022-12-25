@@ -22,6 +22,9 @@ type memoRaw struct {
 	CreatedTs int64
 	UpdatedTs int64
 
+	// Computed fields
+	IsUpdated bool
+
 	// Domain specific fields
 	Content    string
 	Visibility api.Visibility
@@ -38,6 +41,9 @@ func (raw *memoRaw) toMemo() *api.Memo {
 		CreatorID: raw.CreatorID,
 		CreatedTs: raw.CreatedTs,
 		UpdatedTs: raw.UpdatedTs,
+
+		// Computed fields
+		IsUpdated: raw.IsUpdated,
 
 		// Domain specific fields
 		Content:    raw.Content,
@@ -302,6 +308,8 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 		return nil, FormatError(err)
 	}
 
+	memoRaw.IsUpdated = true
+
 	return &memoRaw, nil
 }
 
@@ -331,6 +339,17 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 		}
 		where = append(where, fmt.Sprintf("visibility in (%s)", strings.Join(list, ",")))
 	}
+	if v := find.IsUpdated; v != nil {
+		var keyword string
+
+		if *v == true {
+			keyword = "IN"
+		} else {
+			keyword = "NOT IN"
+		}
+
+		where, args = append(where, "id "+keyword+" (SELECT memo_id FROM memo_history WHERE memo_id = memo.id)"), append(args, *v)
+	}
 
 	query := `
 		SELECT
@@ -340,7 +359,8 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 			updated_ts,
 			row_status,
 			content,
-			visibility
+			visibility,
+			EXISTS(SELECT 1 FROM memo_history WHERE memo_id = memo.id LIMIT 1) AS isUpdated
 		FROM memo
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY created_ts DESC
@@ -362,6 +382,7 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 			&memoRaw.RowStatus,
 			&memoRaw.Content,
 			&memoRaw.Visibility,
+			&memoRaw.IsUpdated,
 		); err != nil {
 			return nil, FormatError(err)
 		}

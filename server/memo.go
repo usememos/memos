@@ -183,6 +183,11 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			pinned := pinnedStr == "true"
 			memoFind.Pinned = &pinned
 		}
+		isUpdatedStr := c.QueryParam("isUpdated")
+		if isUpdatedStr != "" {
+			isUpdated := isUpdatedStr == "true"
+			memoFind.IsUpdated = &isUpdated
+		}
 		tag := c.QueryParam("tag")
 		if tag != "" {
 			contentSearch := "#" + tag + " "
