@@ -48,7 +48,7 @@ func checkDSN(dataDir string) (string, error) {
 func GetProfile() (*Profile, error) {
 	profile := Profile{}
 	flag.StringVar(&profile.Mode, "mode", "dev", "mode of server")
-	flag.IntVar(&profile.Port, "port", 8080, "port of server")
+	flag.IntVar(&profile.Port, "port", 8081, "port of server")
 	flag.StringVar(&profile.Data, "data", "", "data directory")
 	flag.Parse()
 
