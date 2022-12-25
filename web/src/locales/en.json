@@ -102,6 +102,10 @@
       "private": "Only visible to you",
       "protected": "Visible to members",
       "public": "Everyone can see"
+    },
+    "history": {
+      "show": "Click here to show edit history",
+      "hide": "Click here to hide edit history"
     }
   },
   "memo-list": {

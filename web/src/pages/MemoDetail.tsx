@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { useGlobalStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import useLoading from "../hooks/useLoading";
+import useToggle from "../hooks/useToggle";
 import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
@@ -30,6 +31,7 @@ const MemoDetail = () => {
   const customizedProfile = globalStore.state.systemStatus.customizedProfile;
   const user = userStore.state.user;
   const location = locationStore.state;
+  const [showEditHistory, toggleShowEditHistory] = useToggle(false);
 
   useEffect(() => {
     const memoId = Number(params.memoId);
@@ -48,6 +50,10 @@ const MemoDetail = () => {
         });
     }
   }, [location]);
+
+  const handleToggleEditHistoryClick = () => {
+    toggleShowEditHistory(!showEditHistory);
+  };
 
   return (
     <section className="page-wrapper memo-detail">
@@ -87,17 +93,22 @@ const MemoDetail = () => {
               <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
               <MemoResources resourceList={state.memo.resourceList} />
             </div>
-
-            {state.memo.historyList.map((history) => (
-              <div className="memo-container">
-                <div className="memo-header">
-                  <div className="status-container">
-                    <span className="time-text">{dayjs(history.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
-                  </div>
-                </div>
-                <MemoContent className="memo-content" content={history.content} onMemoContentClick={() => undefined} />
+            <div className="flex items-center justify-center w-full mt-2 text-sm text-gray-400 italic">
+              <div className="cursor-pointer hover:text-green-600" onClick={handleToggleEditHistoryClick}>
+                {showEditHistory ? t("memo.history.hide") : t("memo.history.show")}
               </div>
-            ))}
+            </div>
+            {showEditHistory &&
+              state.memo.historyList.map((history) => (
+                <div className="memo-container" key={`${history.id}-${history.displayTs}`}>
+                  <div className="memo-header">
+                    <div className="status-container">
+                      <span className="time-text">{dayjs(history.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
+                    </div>
+                  </div>
+                  <MemoContent className="memo-content" content={history.content} onMemoContentClick={() => undefined} />
+                </div>
+              ))}
           </main>
         )}
       </div>
