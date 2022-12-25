@@ -43,8 +43,9 @@ type Memo struct {
 	IsUpdated bool `json:"isUpdated"`
 
 	// Related fields
-	Creator      *User       `json:"creator"`
-	ResourceList []*Resource `json:"resourceList"`
+	Creator      *User          `json:"creator"`
+	ResourceList []*Resource    `json:"resourceList"`
+	HistoryList  []*MemoHistory `json:"historyList"`
 }
 
 type MemoCreate struct {

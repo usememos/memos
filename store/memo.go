@@ -69,6 +69,9 @@ func (s *Store) ComposeMemo(ctx context.Context, memo *api.Memo) (*api.Memo, err
 	if err = s.ComposeMemoResourceList(ctx, memo); err != nil {
 		return nil, err
 	}
+	if err = s.ComposeMemoHistoryList(ctx, memo); err != nil {
+		return nil, err
+	}
 
 	memoDisplayTsOptionKey := api.UserSettingMemoDisplayTsOptionKey
 	memoDisplayTsOptionSetting, err := s.FindUserSetting(ctx, &api.UserSettingFind{

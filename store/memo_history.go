@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/usememos/memos/api"
@@ -31,6 +32,39 @@ func (raw *memoHistoryRaw) toMemoHistory() *api.MemoHistory {
 
 		Content: raw.Content,
 	}
+}
+
+func (s *Store) ComposeMemoHistoryList(ctx context.Context, memo *api.Memo) error {
+	memoHistoryList, err := s.FindMemoHistoryList(ctx, &api.MemoHistoryFind{
+		MemoID: &memo.ID,
+	})
+	if err != nil {
+		return err
+	}
+
+	for _, memoHistory := range memoHistoryList {
+		history, err := s.FindMemoHistory(ctx, &api.MemoHistoryFind{
+			MemoID: &memo.ID,
+		})
+		if err != nil {
+			return err
+		}
+
+		memoHistory.Content = history.Content
+		memoHistory.CreatedTs = history.CreatedTs
+	}
+
+	sort.Slice(memoHistoryList, func(i, j int) bool {
+		if memoHistoryList[i].CreatedTs != memoHistoryList[j].CreatedTs {
+			return memoHistoryList[i].CreatedTs < memoHistoryList[j].CreatedTs
+		}
+
+		return memoHistoryList[i].ID < memoHistoryList[j].ID
+	})
+
+	memo.HistoryList = memoHistoryList
+
+	return nil
 }
 
 func (s *Store) CreateMemoHistory(ctx context.Context, create *api.MemoHistoryCreate) (*api.MemoHistory, error) {
@@ -134,7 +168,7 @@ func findMemoHistoryList(ctx context.Context, tx *sql.Tx, find *api.MemoHistoryF
 			id,
 			memo_id,
 			content,
-			created_ts,
+			created_ts
 		FROM memo_history
 		WHERE `+strings.Join(where, " AND ")+`
 		ORDER BY created_ts DESC`,
