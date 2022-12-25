@@ -3,8 +3,8 @@ package api
 type MemoHistory struct {
 	ID int `json:"id"`
 
-	MemoID    int
-	CreatedTs int64
+	MemoID    int   `json:"memoId"`
+	CreatedTs int64 `json:"createdTs"`
 
 	// Domain specific fields
 	Content string `json:"content"`
