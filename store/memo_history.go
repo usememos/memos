@@ -44,10 +44,10 @@ func (s *Store) ComposeMemoHistoryList(ctx context.Context, memo *api.Memo) erro
 
 	sort.Slice(memoHistoryList, func(i, j int) bool {
 		if memoHistoryList[i].CreatedTs != memoHistoryList[j].CreatedTs {
-			return memoHistoryList[i].CreatedTs < memoHistoryList[j].CreatedTs
+			return memoHistoryList[i].CreatedTs > memoHistoryList[j].CreatedTs
 		}
 
-		return memoHistoryList[i].ID < memoHistoryList[j].ID
+		return memoHistoryList[i].ID > memoHistoryList[j].ID
 	})
 
 	memo.HistoryList = memoHistoryList
