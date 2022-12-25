@@ -19,6 +19,14 @@ interface Memo {
 
   creator: User;
   resourceList: Resource[];
+  historyList: MemoHistory[];
+}
+
+interface MemoHistory {
+  id: number;
+  content: string;
+  createdTs: TimeStamp;
+  displayTs: TimeStamp;
 }
 
 interface MemoCreate {

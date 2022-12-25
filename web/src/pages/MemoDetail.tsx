@@ -87,6 +87,17 @@ const MemoDetail = () => {
               <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
               <MemoResources resourceList={state.memo.resourceList} />
             </div>
+
+            {state.memo.historyList.map((history) => (
+              <div className="memo-container">
+                <div className="memo-header">
+                  <div className="status-container">
+                    <span className="time-text">{dayjs(history.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
+                  </div>
+                </div>
+                <MemoContent className="memo-content" content={history.content} onMemoContentClick={() => undefined} />
+              </div>
+            ))}
           </main>
         )}
       </div>

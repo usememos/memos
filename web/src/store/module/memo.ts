@@ -11,6 +11,12 @@ const convertResponseModelMemo = (memo: Memo): Memo => {
     createdTs: memo.createdTs * 1000,
     updatedTs: memo.updatedTs * 1000,
     displayTs: memo.displayTs * 1000,
+    historyList: memo.historyList.map((history: MemoHistory): MemoHistory => {
+      return {
+        ...history,
+        createdTs: history.createdTs * 1000,
+      };
+    }),
   };
 };
 
