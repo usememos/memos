@@ -345,7 +345,7 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 	if v := find.IsUpdated; v != nil {
 		var keyword string
 
-		if *v == true {
+		if *v {
 			keyword = "IN"
 		} else {
 			keyword = "NOT IN"
