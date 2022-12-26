@@ -118,7 +118,7 @@ func (patch UserPatch) Validate() error {
 		if len(*patch.Email) > 256 {
 			return fmt.Errorf("email is too long, maximum length is 256")
 		}
-		if common.ValidateEmail(*patch.Email) {
+		if !common.ValidateEmail(*patch.Email) {
 			return fmt.Errorf("invalid email format")
 		}
 	}
