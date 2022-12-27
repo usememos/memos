@@ -198,9 +198,8 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if err := json.NewDecoder(c.Request().Body).Decode(userPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
 		}
-
-		if userPatch.Email != nil && *userPatch.Email != "" && !common.ValidateEmail(*userPatch.Email) {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid email format")
+		if err := userPatch.Validate(); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user patch format.").SetInternal(err)
 		}
 
 		if userPatch.Password != nil && *userPatch.Password != "" {
