@@ -5,7 +5,7 @@ on:
     branches:
       - main
       - "release/v*.*.*"
-    paths:
+    paths-ignore:
       - "web/**"
 
 jobs:
