@@ -1,0 +1,20 @@
+name: Backend Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "release/v*.*.*"
+    paths:
+      - "web/**"
+
+jobs:
+  go-static-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "Not required"'
+
+  go-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "Not required"'

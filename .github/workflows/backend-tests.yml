@@ -1,12 +1,10 @@
 name: Backend Test
 
 on:
-  push:
+  pull_request:
     branches:
       - main
       - "release/v*.*.*"
-  pull_request:
-    branches: [main]
     paths-ignore:
       - "web/**"
 

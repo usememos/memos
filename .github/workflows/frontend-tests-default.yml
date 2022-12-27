@@ -1,0 +1,25 @@
+name: Frontend Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - "release/v*.*.*"
+    paths-ignore:
+      - "web/**"
+
+jobs:
+  eslint-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "Not required"'
+
+  jest-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "Not required"'
+
+  frontend-build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: 'echo "Not required"'
