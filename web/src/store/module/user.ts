@@ -92,7 +92,6 @@ const doSignIn = async () => {
 };
 
 const doSignOut = async () => {
-  store.dispatch(setUser());
   await api.signout();
 };
 
