@@ -26,7 +26,7 @@ This is some text after the horizontal rule.`,
         markdown: `\`\`\`
 hello world!
 \`\`\``,
-        want: `<pre><code class="language-plaintext">hello world!
+        want: `<pre><button class="codeblock-copy-btn">copy</button><code class="language-plaintext">hello world!
 </code></pre>`,
       },
       {
@@ -35,7 +35,7 @@ hello world!
 \`\`\`js
 console.log("hello world!")
 \`\`\``,
-        want: `<p>test code block</p><br><pre><code class="language-js"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"hello world!"</span>)
+        want: `<p>test code block</p><br><pre><button class="codeblock-copy-btn">copy</button><code class="language-js"><span class="hljs-variable language_">console</span>.<span class="hljs-title function_">log</span>(<span class="hljs-string">"hello world!"</span>)
 </code></pre>`,
       },
     ];
