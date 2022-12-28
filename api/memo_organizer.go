@@ -9,15 +9,15 @@ type MemoOrganizer struct {
 	Pinned bool
 }
 
+type MemoOrganizerUpsert struct {
+	MemoID int  `json:"-"`
+	UserID int  `json:"-"`
+	Pinned bool `json:"pinned"`
+}
+
 type MemoOrganizerFind struct {
 	MemoID int
 	UserID int
-}
-
-type MemoOrganizerUpsert struct {
-	MemoID int
-	UserID int
-	Pinned bool `json:"pinned"`
 }
 
 type MemoOrganizerDelete struct {

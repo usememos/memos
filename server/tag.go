@@ -23,9 +23,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		tagUpsert := &api.TagUpsert{
-			CreatorID: userID,
-		}
+		tagUpsert := &api.TagUpsert{}
 		if err := json.NewDecoder(c.Request().Body).Decode(tagUpsert); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
 		}
@@ -33,6 +31,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
 		}
 
+		tagUpsert.CreatorID = userID
 		tag, err := s.Store.UpsertTag(ctx, tagUpsert)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert tag").SetInternal(err)
@@ -82,29 +81,16 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 
 	g.GET("/tag/suggestion", func(c echo.Context) error {
 		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusBadRequest, "Missing user session")
+		}
 		contentSearch := "#"
 		normalRowStatus := api.Normal
 		memoFind := api.MemoFind{
+			CreatorID:     &userID,
 			ContentSearch: &contentSearch,
 			RowStatus:     &normalRowStatus,
-		}
-
-		if userID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
-			memoFind.CreatorID = &userID
-		}
-
-		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			if memoFind.CreatorID == nil {
-				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
-			}
-			memoFind.VisibilityList = []api.Visibility{api.Public}
-		} else {
-			if memoFind.CreatorID == nil {
-				memoFind.CreatorID = &currentUserID
-			} else {
-				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
-			}
 		}
 
 		memoList, err := s.Store.FindMemoList(ctx, &memoFind)

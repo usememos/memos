@@ -50,7 +50,7 @@ type UserSetting struct {
 }
 
 type UserSettingUpsert struct {
-	UserID int
+	UserID int            `json:"-"`
 	Key    UserSettingKey `json:"key"`
 	Value  string         `json:"value"`
 }

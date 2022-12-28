@@ -56,13 +56,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		resourceCreate := &api.ResourceCreate{
+			CreatorID: userID,
 			Filename:  filename,
 			Type:      filetype,
 			Size:      size,
 			Blob:      fileBytes,
-			CreatorID: userID,
 		}
-
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
@@ -158,6 +157,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		c.Response().Writer.WriteHeader(http.StatusOK)
 		c.Response().Writer.Header().Set("Content-Type", resource.Type)
+		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
 		if _, err := c.Response().Writer.Write(resource.Blob); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write resource blob").SetInternal(err)
 		}
@@ -177,23 +177,26 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		resourceFind := &api.ResourceFind{
-			ID:        &resourceID,
-			CreatorID: &userID,
+			ID: &resourceID,
 		}
-		if _, err := s.Store.FindResource(ctx, resourceFind); err != nil {
+		resource, err := s.Store.FindResource(ctx, resourceFind)
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
+		}
+		if resource.CreatorID != userID {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
 		currentTs := time.Now().Unix()
 		resourcePatch := &api.ResourcePatch{
-			ID:        resourceID,
 			UpdatedTs: &currentTs,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(resourcePatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch resource request").SetInternal(err)
 		}
 
-		resource, err := s.Store.PatchResource(ctx, resourcePatch)
+		resource.ID = resourceID
+		resource, err = s.Store.PatchResource(ctx, resourcePatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
 		}
@@ -224,8 +227,8 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
 		}
-		if resource == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "Not find resource").SetInternal(err)
+		if resource.CreatorID != userID {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
 		resourceDelete := &api.ResourceDelete{

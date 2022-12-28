@@ -16,7 +16,7 @@ type Shortcut struct {
 
 type ShortcutCreate struct {
 	// Standard fields
-	CreatorID int
+	CreatorID int `json:"-"`
 
 	// Domain specific fields
 	Title   string `json:"title"`

@@ -29,18 +29,20 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by id").SetInternal(err)
 		}
 		if currentUser.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Only Host user can create member.")
+			return echo.NewHTTPError(http.StatusUnauthorized, "Only Host user can create member")
 		}
 
-		userCreate := &api.UserCreate{
-			OpenID: common.GenUUID(),
-		}
+		userCreate := &api.UserCreate{}
 		if err := json.NewDecoder(c.Request().Body).Decode(userCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user request").SetInternal(err)
 		}
+		if userCreate.Role == api.Host {
+			return echo.NewHTTPError(http.StatusForbidden, "Could not create host user")
+		}
+		userCreate.OpenID = common.GenUUID()
 
 		if err := userCreate.Validate(); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format.").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format").SetInternal(err)
 		}
 
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(userCreate.Password), bcrypt.DefaultCost)
@@ -74,6 +76,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		for _, user := range userList {
 			// data desensitize
 			user.OpenID = ""
+			user.Email = ""
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
@@ -159,6 +162,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if user != nil {
 			// data desensitize
 			user.OpenID = ""
+			user.Email = ""
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
@@ -192,14 +196,14 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		currentTs := time.Now().Unix()
 		userPatch := &api.UserPatch{
-			ID:        userID,
 			UpdatedTs: &currentTs,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(userPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
 		}
+		userPatch.ID = userID
 		if err := userPatch.Validate(); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user patch format.").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user patch format").SetInternal(err)
 		}
 
 		if userPatch.Password != nil && *userPatch.Password != "" {

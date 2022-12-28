@@ -20,7 +20,7 @@ type Resource struct {
 
 type ResourceCreate struct {
 	// Standard fields
-	CreatorID int
+	CreatorID int `json:"-"`
 
 	// Domain specific fields
 	Filename string `json:"filename"`

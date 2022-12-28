@@ -84,7 +84,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
 		if signup.Role == api.Host && hostUser != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Site Host existed, please contact the site host to signin account firstly.").SetInternal(err)
+			return echo.NewHTTPError(http.StatusUnauthorized, "Site Host existed, please contact the site host to signin account firstly").SetInternal(err)
 		}
 
 		systemSettingAllowSignUpName := api.SystemSettingAllowSignUpName
@@ -103,7 +103,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			}
 		}
 		if !allowSignUpSettingValue && hostUser != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Site Host existed, please contact the site host to signin account firstly.").SetInternal(err)
+			return echo.NewHTTPError(http.StatusUnauthorized, "Site Host existed, please contact the site host to signin account firstly").SetInternal(err)
 		}
 
 		userCreate := &api.UserCreate{
@@ -114,7 +114,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			OpenID:   common.GenUUID(),
 		}
 		if err := userCreate.Validate(); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format.").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format").SetInternal(err)
 		}
 
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(signup.Password), bcrypt.DefaultCost)

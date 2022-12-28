@@ -46,7 +46,7 @@ type Memo struct {
 
 type MemoCreate struct {
 	// Standard fields
-	CreatorID int
+	CreatorID int `json:"-"`
 
 	// Domain specific fields
 	Visibility Visibility `json:"visibility"`
@@ -73,11 +73,11 @@ type MemoPatch struct {
 }
 
 type MemoFind struct {
-	ID *int `json:"id"`
+	ID *int
 
 	// Standard fields
-	RowStatus *RowStatus `json:"rowStatus"`
-	CreatorID *int       `json:"creatorId"`
+	RowStatus *RowStatus
+	CreatorID *int
 
 	// Domain specific fields
 	Pinned         *bool
