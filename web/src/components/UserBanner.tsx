@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { useLocationStore, useMemoStore, useTagStore, useUserStore } from "../store/module";
 import { getMemoStats } from "../helpers/api";
 import * as utils from "../helpers/utils";
@@ -13,7 +12,6 @@ import "../less/user-banner.less";
 
 const UserBanner = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const locationStore = useLocationStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
@@ -66,7 +64,8 @@ const UserBanner = () => {
   };
 
   const handleSignOutBtnClick = async () => {
-    navigate("/auth");
+    await userStore.doSignOut();
+    window.location.href = "/auth";
   };
 
   return (

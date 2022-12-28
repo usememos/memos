@@ -54,20 +54,6 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		return nil
 	})
 
-	g.POST("/auth/logout", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		err := removeUserSession(c)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set logout session").SetInternal(err)
-		}
-		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "user logout",
-		})
-
-		c.Response().WriteHeader(http.StatusOK)
-		return nil
-	})
-
 	g.POST("/auth/signup", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		signup := &api.Signup{}
@@ -142,5 +128,18 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode created user response").SetInternal(err)
 		}
 		return nil
+	})
+
+	g.POST("/auth/logout", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		err := removeUserSession(c)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set logout session").SetInternal(err)
+		}
+		s.Collector.Collect(ctx, &metric.Metric{
+			Name: "user logout",
+		})
+
+		return c.JSON(http.StatusOK, true)
 	})
 }
