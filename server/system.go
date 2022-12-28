@@ -76,13 +76,24 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				systemStatus.AdditionalScript = value.(string)
 			} else if systemSetting.Name == api.SystemSettingCustomizedProfileName {
 				valueMap := value.(map[string]interface{})
-				systemStatus.CustomizedProfile = api.CustomizedProfile{
-					Name:        valueMap["name"].(string),
-					LogoURL:     valueMap["logoUrl"].(string),
-					Description: valueMap["description"].(string),
-					Locale:      valueMap["locale"].(string),
-					Appearance:  valueMap["appearance"].(string),
-					ExternalURL: valueMap["externalUrl"].(string),
+				systemStatus.CustomizedProfile = api.CustomizedProfile{}
+				if v := valueMap["name"]; v != nil {
+					systemStatus.CustomizedProfile.Name = v.(string)
+				}
+				if v := valueMap["logoUrl"]; v != nil {
+					systemStatus.CustomizedProfile.LogoURL = v.(string)
+				}
+				if v := valueMap["description"]; v != nil {
+					systemStatus.CustomizedProfile.Description = v.(string)
+				}
+				if v := valueMap["locale"]; v != nil {
+					systemStatus.CustomizedProfile.Locale = v.(string)
+				}
+				if v := valueMap["appearance"]; v != nil {
+					systemStatus.CustomizedProfile.Appearance = v.(string)
+				}
+				if v := valueMap["externalUrl"]; v != nil {
+					systemStatus.CustomizedProfile.ExternalURL = v.(string)
 				}
 			}
 		}
@@ -125,9 +136,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
-		if user == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "Current signin user not found")
-		} else if user.Role != api.Host {
+		if user == nil || user.Role != api.Host {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 

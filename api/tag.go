@@ -7,7 +7,7 @@ type Tag struct {
 
 type TagUpsert struct {
 	Name      string
-	CreatorID int
+	CreatorID int `json:"-"`
 }
 
 type TagFind struct {

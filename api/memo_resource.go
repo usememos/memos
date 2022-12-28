@@ -8,7 +8,7 @@ type MemoResource struct {
 }
 
 type MemoResourceUpsert struct {
-	MemoID     int
+	MemoID     int `json:"-"`
 	ResourceID int
 	UpdatedTs  *int64
 }
