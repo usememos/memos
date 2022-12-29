@@ -36,6 +36,10 @@ func NewServer(profile *profile.Profile) *Server {
 			`"status":${status},"error":"${error}"}` + "\n",
 	}))
 
+	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
+		TokenLookup: "cookie:_csrf",
+	}))
+
 	e.Use(middleware.CORS())
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
