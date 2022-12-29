@@ -1,4 +1,4 @@
-import { marked } from "..";
+import { escape } from "lodash";
 
 export const STRIKETHROUGH_REG = /~~(.+?)~~/;
 
@@ -13,8 +13,7 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
-  const parsedContent = marked(matchResult[1], [], []);
-  return `<del>${parsedContent}</del>`;
+  return `<del>${escape(matchResult[1])}</del>`;
 };
 
 export default {

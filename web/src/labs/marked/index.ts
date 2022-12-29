@@ -47,7 +47,7 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
       const matchedLength = matchedStr.length;
       const prefixStr = markdownStr.slice(0, matchedIndex);
       const suffixStr = markdownStr.slice(matchedIndex + matchedLength);
-      return prefixStr + matchedInlineParser.renderer(matchedStr) + marked(suffixStr, [], inlineParsers);
+      return marked(prefixStr, [], inlineParsers) + matchedInlineParser.renderer(matchedStr) + marked(suffixStr, [], inlineParsers);
     }
   }
 

@@ -1,4 +1,3 @@
-import { escape } from "lodash";
 import { marked } from "..";
 import Link from "./Link";
 
@@ -15,7 +14,7 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
-  const parsedContent = marked(escape(matchResult[1]), [], [Link]);
+  const parsedContent = marked(matchResult[1], [], [Link]);
   return `<em>${parsedContent}</em>`;
 };
 
