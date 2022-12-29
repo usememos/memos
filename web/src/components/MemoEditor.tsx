@@ -496,8 +496,8 @@ const MemoEditor = () => {
                   );
                 })
               ) : (
-                <p className="tip-text" onClick={(e) => e.stopPropagation()}>
-                  {t("common.null")}
+                <p className="tip-text italic" onClick={(e) => e.stopPropagation()}>
+                  No tags found
                 </p>
               )}
             </div>
