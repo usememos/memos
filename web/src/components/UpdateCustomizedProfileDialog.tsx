@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore } from "../store/module";
 import * as api from "../helpers/api";
@@ -15,11 +15,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
   const globalStore = useGlobalStore();
   const [state, setState] = useState<CustomizedProfile>(globalStore.state.systemStatus.customizedProfile);
 
-  useEffect(() => {
-    // do nth
-  }, []);
-
-  const handleCloseBtnClick = () => {
+  const handleCloseButtonClick = () => {
     destroy();
   };
 
@@ -68,9 +64,20 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
     });
   };
 
-  const handleSaveBtnClick = async () => {
-    if (state.name === "" || state.logoUrl === "") {
-      toastHelper.error(t("message.fill-all"));
+  const handleRestoreButtonClick = () => {
+    setState({
+      name: "memos",
+      logoUrl: "/logo.png",
+      description: "",
+      locale: "en",
+      appearance: "system",
+      externalUrl: "",
+    });
+  };
+
+  const handleSaveButtonClick = async () => {
+    if (state.name === "") {
+      toastHelper.error("Please fill server name");
       return;
     }
 
@@ -92,7 +99,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">{t("setting.system-section.customize-server.title")}</p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
+        <button className="btn close-btn" onClick={handleCloseButtonClick}>
           <Icon.X />
         </button>
       </div>
@@ -110,13 +117,20 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
         <LocaleSelect className="w-full" value={state.locale} onChange={handleLocaleSelectChange} />
         <p className="text-sm mb-1 mt-2">Server appearance</p>
         <AppearanceSelect className="w-full" value={state.appearance} onChange={handleAppearanceSelectChange} />
-        <div className="mt-4 w-full flex flex-row justify-end items-center space-x-2">
-          <span className="btn-text" onClick={handleCloseBtnClick}>
-            {t("common.cancel")}
-          </span>
-          <span className="btn-primary" onClick={handleSaveBtnClick}>
-            {t("common.save")}
-          </span>
+        <div className="mt-4 w-full flex flex-row justify-between items-center space-x-2">
+          <div className="flex flex-row justify-start items-center">
+            <button className="btn-normal" onClick={handleRestoreButtonClick}>
+              {t("common.restore")}
+            </button>
+          </div>
+          <div className="flex flex-row justify-end items-center">
+            <button className="btn-text" onClick={handleCloseButtonClick}>
+              {t("common.cancel")}
+            </button>
+            <button className="btn-primary" onClick={handleSaveButtonClick}>
+              {t("common.save")}
+            </button>
+          </div>
         </div>
       </div>
     </>

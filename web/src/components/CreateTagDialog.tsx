@@ -22,6 +22,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
   const tagStore = useTagStore();
   const [tagName, setTagName] = useState<string>("");
   const [suggestTagNameList, setSuggestTagNameList] = useState<string[]>([]);
+  const [showTagSuggestions, setShowTagSuggestions] = useState<boolean>(false);
   const tagNameList = tagStore.state.tags;
   const shownSuggestTagNameList = suggestTagNameList.filter((tag) => !tagNameList.includes(tag));
 
@@ -42,8 +43,12 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
     setTagName(tagName.trim());
   };
 
-  const handleUpsertSuggestTag = async (tagName: string) => {
+  const handleUpsertTag = async (tagName: string) => {
     await tagStore.upsertTag(tagName);
+  };
+
+  const handleToggleShowSuggestionTags = () => {
+    setShowTagSuggestions((state) => !state);
   };
 
   const handleSaveBtnClick = async () => {
@@ -111,24 +116,30 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
 
         {shownSuggestTagNameList.length > 0 && (
           <>
-            <p className="w-full mt-2 mb-1 text-sm text-gray-400">Tag suggestions</p>
-            <div className="w-full flex flex-row justify-start items-start flex-wrap">
-              {shownSuggestTagNameList.map((tag) => (
-                <span
-                  className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60"
-                  key={tag}
-                  onClick={() => handleUpsertSuggestTag(tag)}
-                >
-                  #{tag}
-                </span>
-              ))}
+            <div className="mt-4 mb-1 text-sm w-full flex flex-row justify-start items-center">
+              <span className="text-gray-400">Tag suggestions</span>
+              <button className="btn-normal ml-2 px-2 py-0 leading-6 font-mono" onClick={handleToggleShowSuggestionTags}>
+                {showTagSuggestions ? "hide" : "show"}
+              </button>
             </div>
-            <button
-              className="mt-2 text-sm border px-2 leading-6 rounded cursor-pointer dark:border-gray-400 dark:text-gray-300 hover:opacity-80 hover:shadow"
-              onClick={handleSaveSuggestTagList}
-            >
-              Save all
-            </button>
+            {showTagSuggestions && (
+              <>
+                <div className="w-full flex flex-row justify-start items-start flex-wrap">
+                  {shownSuggestTagNameList.map((tag) => (
+                    <span
+                      className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60"
+                      key={tag}
+                      onClick={() => handleUpsertTag(tag)}
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+                <button className="btn-normal mt-2 px-2 py-0 leading-6 font-mono" onClick={handleSaveSuggestTagList}>
+                  Save all
+                </button>
+              </>
+            )}
           </>
         )}
       </div>
