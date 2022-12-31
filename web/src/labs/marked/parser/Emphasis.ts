@@ -1,5 +1,6 @@
 import { marked } from "..";
 import Link from "./Link";
+import PlainText from "./PlainText";
 
 export const EMPHASIS_REG = /\*(.+?)\*/;
 
@@ -14,7 +15,7 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
-  const parsedContent = marked(matchResult[1], [], [Link]);
+  const parsedContent = marked(matchResult[1], [], [Link, PlainText]);
   return `<em>${parsedContent}</em>`;
 };
 
