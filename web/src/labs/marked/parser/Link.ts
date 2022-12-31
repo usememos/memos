@@ -4,6 +4,7 @@ import Bold from "./Bold";
 import { marked } from "..";
 import InlineCode from "./InlineCode";
 import BoldEmphasis from "./BoldEmphasis";
+import PlainText from "./PlainText";
 
 export const LINK_REG = /\[(.*?)\]\((.+?)\)+/;
 
@@ -17,7 +18,7 @@ const renderer = (rawStr: string): string => {
   if (!matchResult) {
     return rawStr;
   }
-  const parsedContent = marked(matchResult[1], [], [InlineCode, BoldEmphasis, Emphasis, Bold]);
+  const parsedContent = marked(matchResult[1], [], [InlineCode, BoldEmphasis, Emphasis, Bold, PlainText]);
   return `<a class='link' target='_blank' rel='noreferrer' href='${escape(matchResult[2])}'>${parsedContent}</a>`;
 };
 
