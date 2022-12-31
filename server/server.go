@@ -42,6 +42,8 @@ func NewServer(profile *profile.Profile) *Server {
 
 	e.Use(middleware.CORS())
 
+	e.Use(middleware.Secure())
+
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Skipper:      middleware.DefaultSkipper,
 		ErrorMessage: "Request timeout",

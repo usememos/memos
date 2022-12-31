@@ -315,25 +315,32 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		currentTs := time.Now().Unix()
-		memoResourceUpsert := &api.MemoResourceUpsert{
-			UpdatedTs: &currentTs,
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
+		memoResourceUpsert := &api.MemoResourceUpsert{}
 		if err := json.NewDecoder(c.Request().Body).Decode(memoResourceUpsert); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo resource request").SetInternal(err)
 		}
-		memoResourceUpsert.MemoID = memoID
-
-		if _, err := s.Store.UpsertMemoResource(ctx, memoResourceUpsert); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
-		}
-
 		resourceFind := &api.ResourceFind{
 			ID: &memoResourceUpsert.ResourceID,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
+		}
+		if resource == nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Resource not found").SetInternal(err)
+		} else if resource.CreatorID != userID {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized to bind this resource").SetInternal(err)
+		}
+
+		memoResourceUpsert.MemoID = memoID
+		currentTs := time.Now().Unix()
+		memoResourceUpsert.UpdatedTs = &currentTs
+		if _, err := s.Store.UpsertMemoResource(ctx, memoResourceUpsert); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
 		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
