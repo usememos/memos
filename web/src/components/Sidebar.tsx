@@ -35,11 +35,11 @@ const Sidebar = () => {
           <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
             <span className="icon">📅</span> {t("sidebar.daily-review")}
           </button>
+          <Link to="/explore" className="btn action-btn">
+            <span className="icon">🏂</span> {t("common.explore")}
+          </Link>
           {!userStore.isVisitorMode() && (
             <>
-              <Link to="/explore" className="btn action-btn">
-                <span className="icon">🏂</span> {t("common.explore")}
-              </Link>
               <button className="btn action-btn" onClick={handleSettingBtnClick}>
                 <span className="icon">⚙️</span> {t("sidebar.setting")}
               </button>
