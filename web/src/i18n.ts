@@ -9,6 +9,7 @@ import svLocale from "./locales/sv.json";
 import deLocale from "./locales/de.json";
 import esLocale from "./locales/es.json";
 import ukLocale from "./locales/uk.json";
+import ruLocale from "./locales/ru.json";
 
 i18n.use(initReactI18next).init({
   resources: {
