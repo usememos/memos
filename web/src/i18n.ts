@@ -40,6 +40,9 @@ i18n.use(initReactI18next).init({
     uk: {
       translation: ukLocale,
     },
+    ru: {
+      translation: ruLocale,
+    },
   },
   lng: "nl",
   fallbackLng: "en",
