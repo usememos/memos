@@ -110,7 +110,8 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <p className="text-sm mb-1">
-          {t("common.nickname")}<span className="text-sm text-gray-400 ml-1">(Display in the banner)</span>
+          {t("common.nickname")}
+		  <span className="text-sm text-gray-400 ml-1">(Display in the banner)</span>
         </p>
         <input type="text" className="input-text" value={state.nickname} onChange={handleNicknameChanged} />
         <p className="text-sm mb-1 mt-2">
@@ -119,7 +120,8 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
         </p>
         <input type="text" className="input-text" value={state.username} onChange={handleUsernameChanged} />
         <p className="text-sm mb-1 mt-2">
-          {t("common.email")}<span className="text-sm text-gray-400 ml-1">(Optional)</span>
+          {t("common.email")}
+		  <span className="text-sm text-gray-400 ml-1">(Optional)</span>
         </p>
         <input type="text" className="input-text" value={state.email} onChange={handleEmailChanged} />
         <div className="mt-4 w-full flex flex-row justify-end items-center space-x-2">
