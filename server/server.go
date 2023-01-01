@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/usememos/memos/api"
-	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 
@@ -43,8 +41,12 @@ func NewServer(profile *profile.Profile) *Server {
 			`"status":${status},"error":"${error}"}` + "\n",
 	}))
 
+	e.Use(middleware.Gzip())
+
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		Skipper:     s.OpenAPISkipper,
+		Skipper: func(c echo.Context) bool {
+			return s.DefaultAuthSkipper(c)
+		},
 		TokenLookup: "cookie:_csrf",
 	}))
 
@@ -92,35 +94,6 @@ func NewServer(profile *profile.Profile) *Server {
 	return s
 }
 
-func (server *Server) Run() error {
-	return server.e.Start(fmt.Sprintf(":%d", server.Profile.Port))
-}
-
-func (server *Server) OpenAPISkipper(c echo.Context) bool {
-	ctx := c.Request().Context()
-	path := c.Path()
-
-	// Skip auth.
-	if common.HasPrefixes(path, "/api/auth") {
-		return true
-	}
-
-	// If there is openId in query string and related user is found, then skip auth.
-	openID := c.QueryParam("openId")
-	if openID != "" {
-		userFind := &api.UserFind{
-			OpenID: &openID,
-		}
-		user, err := server.Store.FindUser(ctx, userFind)
-		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return false
-		}
-		if user != nil {
-			// Stores userID into context.
-			c.Set(getUserIDContextKey(), user.ID)
-			return true
-		}
-	}
-
-	return false
+func (s *Server) Run() error {
+	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }

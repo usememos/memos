@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"regexp"
 	"sort"
-	"strconv"
 
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
@@ -49,19 +48,14 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 
 	g.GET("/tag", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		tagFind := &api.TagFind{}
-		if userID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
-			tagFind.CreatorID = userID
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
 		}
 
-		if tagFind.CreatorID == 0 {
-			currentUserID, ok := c.Get(getUserIDContextKey()).(int)
-			if !ok {
-				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
-			}
-			tagFind.CreatorID = currentUserID
+		tagFind := &api.TagFind{
+			CreatorID: userID,
 		}
-
 		tagList, err := s.Store.FindTagList(ctx, tagFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find tag list").SetInternal(err)

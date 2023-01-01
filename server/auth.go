@@ -16,7 +16,7 @@ import (
 func (s *Server) registerAuthRoutes(g *echo.Group) {
 	g.POST("/auth/signin", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		signin := &api.Signin{}
+		signin := &api.SignIn{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
 		}
@@ -56,7 +56,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 
 	g.POST("/auth/signup", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		signup := &api.Signup{}
+		signup := &api.SignUp{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
 		}
@@ -130,14 +130,14 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		return nil
 	})
 
-	g.POST("/auth/logout", func(c echo.Context) error {
+	g.POST("/auth/signout", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		err := removeUserSession(c)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set logout session").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set sign out session").SetInternal(err)
 		}
 		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "user logout",
+			Name: "user signout",
 		})
 
 		return c.JSON(http.StatusOK, true)

@@ -51,7 +51,7 @@ const Auth = () => {
     globalStore.setAppearance(appearance);
   };
 
-  const handleSigninBtnsClick = async () => {
+  const handleSignInBtnClick = async () => {
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -153,7 +153,7 @@ const Auth = () => {
                     <span className="mr-2 font-mono text-gray-200">/</span>
                   </>
                 )}
-                <button className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSigninBtnsClick}>
+                <button className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSignInBtnClick}>
                   {t("common.sign-in")}
                 </button>
               </>

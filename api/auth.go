@@ -1,11 +1,11 @@
 package api
 
-type Signin struct {
+type SignIn struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
-type Signup struct {
+type SignUp struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
 	Role     Role   `json:"role"`
