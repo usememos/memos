@@ -34,7 +34,7 @@ export function signup(username: string, password: string, role: UserRole) {
 }
 
 export function signout() {
-  return axios.post("/api/auth/logout");
+  return axios.post("/api/auth/signout");
 }
 
 export function createUser(userCreate: UserCreate) {

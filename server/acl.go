@@ -15,6 +15,7 @@ import (
 
 var (
 	userIDContextKey = "user-id"
+	sessionName      = "memos_session"
 )
 
 func getUserIDContextKey() string {
@@ -22,7 +23,7 @@ func getUserIDContextKey() string {
 }
 
 func setUserSession(ctx echo.Context, user *api.User) error {
-	sess, _ := session.Get("memos_session", ctx)
+	sess, _ := session.Get(sessionName, ctx)
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   3600 * 24 * 30,
@@ -38,7 +39,7 @@ func setUserSession(ctx echo.Context, user *api.User) error {
 }
 
 func removeUserSession(ctx echo.Context) error {
-	sess, _ := session.Get("memos_session", ctx)
+	sess, _ := session.Get(sessionName, ctx)
 	sess.Options = &sessions.Options{
 		Path:     "/",
 		MaxAge:   0,
@@ -57,59 +58,31 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 		ctx := c.Request().Context()
 		path := c.Path()
 
-		// Skip auth.
-		if common.HasPrefixes(path, "/api/auth") {
+		if s.DefaultAuthSkipper(c) {
 			return next(c)
 		}
 
-		{
-			// If there is openId in query string and related user is found, then skip auth.
-			openID := c.QueryParam("openId")
-			if openID != "" {
-				userFind := &api.UserFind{
-					OpenID: &openID,
+		sess, _ := session.Get(sessionName, c)
+		userIDValue := sess.Values[userIDContextKey]
+		if userIDValue != nil {
+			userID, _ := strconv.Atoi(fmt.Sprintf("%v", userIDValue))
+			userFind := &api.UserFind{
+				ID: &userID,
+			}
+			user, err := s.Store.FindUser(ctx, userFind)
+			if err != nil && common.ErrorCode(err) != common.NotFound {
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userID)).SetInternal(err)
+			}
+			if user != nil {
+				if user.RowStatus == api.Archived {
+					return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", user.Username))
 				}
-				user, err := s.Store.FindUser(ctx, userFind)
-				if err != nil && common.ErrorCode(err) != common.NotFound {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by open_id").SetInternal(err)
-				}
-				if user != nil {
-					// Stores userID into context.
-					c.Set(getUserIDContextKey(), user.ID)
-					return next(c)
-				}
+				c.Set(getUserIDContextKey(), userID)
 			}
 		}
 
-		{
-			sess, _ := session.Get("memos_session", c)
-			userIDValue := sess.Values[userIDContextKey]
-			if userIDValue != nil {
-				userID, _ := strconv.Atoi(fmt.Sprintf("%v", userIDValue))
-				userFind := &api.UserFind{
-					ID: &userID,
-				}
-				user, err := s.Store.FindUser(ctx, userFind)
-				if err != nil && common.ErrorCode(err) != common.NotFound {
-					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by ID: %d", userID)).SetInternal(err)
-				}
-				if user != nil {
-					if user.RowStatus == api.Archived {
-						return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", user.Username))
-					}
-					c.Set(getUserIDContextKey(), userID)
-				}
-			}
-		}
-
-		if common.HasPrefixes(path, "/api/ping", "/api/status", "/api/user/:id", "/api/memo/all", "/api/memo/:memoId", "/api/memo/amount") && c.Request().Method == http.MethodGet {
+		if common.HasPrefixes(path, "/api/ping", "/api/status", "/api/user/:id", "/api/memo") && c.Request().Method == http.MethodGet {
 			return next(c)
-		}
-
-		if common.HasPrefixes(path, "/api/memo", "/api/tag", "/api/shortcut") && c.Request().Method == http.MethodGet {
-			if _, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
-				return next(c)
-			}
 		}
 
 		userID := c.Get(getUserIDContextKey())

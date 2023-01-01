@@ -91,10 +91,10 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if !ok {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find shortcut")
 		}
+
 		shortcutFind := &api.ShortcutFind{
 			CreatorID: &userID,
 		}
-
 		list, err := s.Store.FindShortcutList(ctx, shortcutFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch shortcut list").SetInternal(err)
