@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 	metric "github.com/usememos/memos/plugin/metrics"
@@ -43,9 +44,9 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		if err = setUserSession(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set signin session").SetInternal(err)
 		}
-		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "user signed in",
-		})
+		if err := s.createUserAuthSignInActivity(c, user); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
@@ -142,4 +143,23 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 
 		return c.JSON(http.StatusOK, true)
 	})
+}
+
+func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) error {
+	ctx := c.Request().Context()
+	payload := api.ActivityUserAuthSignInPayload{
+		UserID: user.ID,
+		IP:     echo.ExtractIPFromRealIPHeader()(c.Request()),
+	}
+	payloadStr, err := json.Marshal(payload)
+	if err != nil {
+		return errors.Wrap(err, "failed to malshal activity payload")
+	}
+	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+		CreatorID: user.ID,
+		Type:      api.ActivityUserAuthSignIn,
+		Level:     api.ActivityInfo,
+		Payload:   string(payloadStr),
+	})
+	return err
 }

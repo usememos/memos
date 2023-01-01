@@ -1,5 +1,8 @@
 package api
 
+// UnknownID is the ID for unknowns.
+const UnknownID = -1
+
 // RowStatus is the status for a row.
 type RowStatus string
 
