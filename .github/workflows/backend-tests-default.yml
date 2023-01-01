@@ -1,10 +1,10 @@
-name: Backend Test
+name: Default Backend Test
 
 on:
   pull_request:
     branches:
       - main
-      - "release/v*.*.*"
+      - "release/*.*.*"
     paths:
       - "web/**"
 

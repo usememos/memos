@@ -1,10 +1,10 @@
-name: Frontend Test
+name: Default Frontend Test
 
 on:
   pull_request:
     branches:
       - main
-      - "release/v*.*.*"
+      - "release/*.*.*"
     paths-ignore:
       - "web/**"
 
