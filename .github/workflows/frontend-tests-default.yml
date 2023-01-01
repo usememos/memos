@@ -9,17 +9,17 @@ on:
       - "web/**"
 
 jobs:
-  skip-eslint-checks:
+  eslint-checks:
     runs-on: ubuntu-latest
     steps:
       - run: 'echo "Not required"'
 
-  skip-jest-tests:
+  jest-tests:
     runs-on: ubuntu-latest
     steps:
       - run: 'echo "Not required"'
 
-  skip-frontend-build:
+  frontend-build:
     runs-on: ubuntu-latest
     steps:
       - run: 'echo "Not required"'

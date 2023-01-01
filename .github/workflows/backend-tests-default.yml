@@ -9,12 +9,12 @@ on:
       - "web/**"
 
 jobs:
-  skip-go-static-checks:
+  go-static-checks:
     runs-on: ubuntu-latest
     steps:
       - run: 'echo "Not required"'
 
-  skip-go-tests:
+  go-tests:
     runs-on: ubuntu-latest
     steps:
       - run: 'echo "Not required"'
