@@ -10,6 +10,7 @@ import deLocale from "./locales/de.json";
 import esLocale from "./locales/es.json";
 import ukLocale from "./locales/uk.json";
 import ruLocale from "./locales/ru.json";
+import itLocale from "./locales/it.json";
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -42,6 +43,9 @@ i18n.use(initReactI18next).init({
     },
     ru: {
       translation: ruLocale,
+    },
+    it: {
+      translation: itLocale,
     },
   },
   lng: "nl",
