@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
-	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 )
@@ -31,9 +31,9 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create shortcut").SetInternal(err)
 		}
-		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "shortcut created",
-		})
+		if err := s.createShortcutCreateActivity(c, shortcut); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
@@ -163,4 +163,23 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 
 		return c.JSON(http.StatusOK, true)
 	})
+}
+
+func (s *Server) createShortcutCreateActivity(c echo.Context, shortcut *api.Shortcut) error {
+	ctx := c.Request().Context()
+	payload := api.ActivityShortcutCreatePayload{
+		Title:   shortcut.Title,
+		Payload: shortcut.Payload,
+	}
+	payloadStr, err := json.Marshal(payload)
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal activity payload")
+	}
+	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+		CreatorID: shortcut.CreatorID,
+		Type:      api.ActivityShortcutCreate,
+		Level:     api.ActivityInfo,
+		Payload:   string(payloadStr),
+	})
+	return err
 }

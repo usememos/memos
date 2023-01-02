@@ -1,9 +1,13 @@
 package server
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
 	"time"
 
+	"github.com/pkg/errors"
+	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 
@@ -77,7 +81,7 @@ func NewServer(profile *profile.Profile) *Server {
 
 	publicGroup := e.Group("/o")
 	s.registerResourcePublicRoutes(publicGroup)
-	s.registerGetterPublicRoutes(publicGroup)
+	registerGetterPublicRoutes(publicGroup)
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
@@ -94,6 +98,26 @@ func NewServer(profile *profile.Profile) *Server {
 	return s
 }
 
-func (s *Server) Run() error {
+func (s *Server) Run(ctx context.Context) error {
+	if err := s.createServerStartActivity(ctx); err != nil {
+		return errors.Wrap(err, "failed to create activity")
+	}
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
+}
+
+func (s *Server) createServerStartActivity(ctx context.Context) error {
+	payload := api.ActivityServerStartPayload{
+		Profile: s.Profile,
+	}
+	payloadStr, err := json.Marshal(payload)
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal activity payload")
+	}
+	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+		CreatorID: api.UnknownID,
+		Type:      api.ActivityServerStart,
+		Level:     api.ActivityInfo,
+		Payload:   string(payloadStr),
+	})
+	return err
 }

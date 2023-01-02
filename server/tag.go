@@ -7,9 +7,9 @@ import (
 	"regexp"
 	"sort"
 
+	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
-	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 )
@@ -35,9 +35,9 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert tag").SetInternal(err)
 		}
-		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "tag created",
-		})
+		if err := s.createTagCreateActivity(c, tag); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tag.Name)); err != nil {
@@ -154,4 +154,22 @@ func findTagListFromMemoContent(memoContent string) []string {
 	}
 	sort.Strings(tagList)
 	return tagList
+}
+
+func (s *Server) createTagCreateActivity(c echo.Context, tag *api.Tag) error {
+	ctx := c.Request().Context()
+	payload := api.ActivityTagCreatePayload{
+		TagName: tag.Name,
+	}
+	payloadStr, err := json.Marshal(payload)
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal activity payload")
+	}
+	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+		CreatorID: tag.CreatorID,
+		Type:      api.ActivityTagCreate,
+		Level:     api.ActivityInfo,
+		Payload:   string(payloadStr),
+	})
+	return err
 }

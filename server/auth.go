@@ -8,7 +8,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
-	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -115,9 +114,9 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
-		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "user signed up",
-		})
+		if err := s.createUserAuthSignUpActivity(c, user); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
 
 		err = setUserSession(c, user)
 		if err != nil {
@@ -132,14 +131,10 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 	})
 
 	g.POST("/auth/signout", func(c echo.Context) error {
-		ctx := c.Request().Context()
 		err := removeUserSession(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set sign out session").SetInternal(err)
 		}
-		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "user signout",
-		})
 
 		return c.JSON(http.StatusOK, true)
 	})
@@ -153,11 +148,30 @@ func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) er
 	}
 	payloadStr, err := json.Marshal(payload)
 	if err != nil {
-		return errors.Wrap(err, "failed to malshal activity payload")
+		return errors.Wrap(err, "failed to marshal activity payload")
 	}
 	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
 		CreatorID: user.ID,
 		Type:      api.ActivityUserAuthSignIn,
+		Level:     api.ActivityInfo,
+		Payload:   string(payloadStr),
+	})
+	return err
+}
+
+func (s *Server) createUserAuthSignUpActivity(c echo.Context, user *api.User) error {
+	ctx := c.Request().Context()
+	payload := api.ActivityUserAuthSignUpPayload{
+		Username: user.Username,
+		IP:       echo.ExtractIPFromRealIPHeader()(c.Request()),
+	}
+	payloadStr, err := json.Marshal(payload)
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal activity payload")
+	}
+	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+		CreatorID: user.ID,
+		Type:      api.ActivityUserAuthSignUp,
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
 	})

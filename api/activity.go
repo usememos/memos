@@ -1,5 +1,7 @@
 package api
 
+import "github.com/usememos/memos/server/profile"
+
 // ActivityType is the type for an activity.
 type ActivityType string
 
@@ -16,8 +18,6 @@ const (
 	ActivityUserAuthSignIn ActivityType = "user.auth.signin"
 	// ActivityUserAuthSignUp is the type for user signup.
 	ActivityUserAuthSignUp ActivityType = "user.auth.signup"
-	// ActivityUserAuthSignOut is the type for user signout.
-	ActivityUserAuthSignOut ActivityType = "user.auth.signout"
 	// ActivityUserSettingUpdate is the type for updating user settings.
 	ActivityUserSettingUpdate ActivityType = "user.setting.update"
 
@@ -38,6 +38,13 @@ const (
 	ActivityShortcutUpdate ActivityType = "shortcut.update"
 	// ActivityShortcutDelete is the type for deleting shortcuts.
 	ActivityShortcutDelete ActivityType = "shortcut.delete"
+
+	// Resource related.
+
+	// ActivityResourceCreate is the type for creating resources.
+	ActivityResourceCreate ActivityType = "resource.create"
+	// ActivityResourceDelete is the type for deleting resources.
+	ActivityResourceDelete ActivityType = "resource.delete"
 
 	// Tag related.
 
@@ -64,9 +71,39 @@ const (
 	ActivityError ActivityLevel = "ERROR"
 )
 
+type ActivityUserCreatePayload struct {
+	UserID   int    `json:"userId"`
+	Username string `json:"username"`
+	Role     Role   `json:"role"`
+}
+
 type ActivityUserAuthSignInPayload struct {
 	UserID int    `json:"userId"`
 	IP     string `json:"ip"`
+}
+
+type ActivityUserAuthSignUpPayload struct {
+	Username string `json:"username"`
+	IP       string `json:"ip"`
+}
+
+type ActivityShortcutCreatePayload struct {
+	Title   string `json:"title"`
+	Payload string `json:"payload"`
+}
+
+type ActivityResourceCreatePayload struct {
+	Filename string `json:"filename"`
+	Type     string `json:"type"`
+	Size     int64  `json:"size"`
+}
+
+type ActivityTagCreatePayload struct {
+	TagName string `json:"tagName"`
+}
+
+type ActivityServerStartPayload struct {
+	Profile *profile.Profile `json:"profile"`
 }
 
 type Activity struct {
