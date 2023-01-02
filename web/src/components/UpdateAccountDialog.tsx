@@ -103,23 +103,25 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
   return (
     <>
       <div className="dialog-header-container !w-64">
-        <p className="title-text">Update information</p>
+        <p className="title-text">{t("setting.account-section.update-information")}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container">
         <p className="text-sm mb-1">
-          Nickname<span className="text-sm text-gray-400 ml-1">(Display in the banner)</span>
+          {t("common.nickname")}
+          <span className="text-sm text-gray-400 ml-1">(Display in the banner)</span>
         </p>
         <input type="text" className="input-text" value={state.nickname} onChange={handleNicknameChanged} />
         <p className="text-sm mb-1 mt-2">
-          Username
+          {t("common.username")}
           <span className="text-sm text-gray-400 ml-1">(Using to sign in)</span>
         </p>
         <input type="text" className="input-text" value={state.username} onChange={handleUsernameChanged} />
         <p className="text-sm mb-1 mt-2">
-          Email<span className="text-sm text-gray-400 ml-1">(Optional)</span>
+          {t("common.email")}
+          <span className="text-sm text-gray-400 ml-1">(Optional)</span>
         </p>
         <input type="text" className="input-text" value={state.email} onChange={handleEmailChanged} />
         <div className="mt-4 w-full flex flex-row justify-end items-center space-x-2">
