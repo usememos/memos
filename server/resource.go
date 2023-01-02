@@ -9,9 +9,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
-	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 )
@@ -66,9 +66,9 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
-		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "resource created",
-		})
+		if err := s.createResourceCreateActivity(c, resource); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
@@ -274,4 +274,24 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		}
 		return nil
 	})
+}
+
+func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Resource) error {
+	ctx := c.Request().Context()
+	payload := api.ActivityResourceCreatePayload{
+		Filename: resource.Filename,
+		Type:     resource.Type,
+		Size:     resource.Size,
+	}
+	payloadStr, err := json.Marshal(payload)
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal activity payload")
+	}
+	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+		CreatorID: resource.CreatorID,
+		Type:      api.ActivityResourceCreate,
+		Level:     api.ActivityInfo,
+		Payload:   string(payloadStr),
+	})
+	return err
 }

@@ -8,7 +8,6 @@ import (
 	"context"
 	"fmt"
 
-	metric "github.com/usememos/memos/plugin/metrics"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -46,11 +45,7 @@ func run(profile *profile.Profile) error {
 
 	println(greetingBanner)
 	fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)
-	metricCollector.Collect(ctx, &metric.Metric{
-		Name: "service started",
-	})
-
-	return serverInstance.Run()
+	return serverInstance.Run(ctx)
 }
 
 func execute() error {

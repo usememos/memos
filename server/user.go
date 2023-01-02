@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
-	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -55,9 +55,9 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
-		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "user created",
-		})
+		if err := s.createUserCreateActivity(c, user); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
 
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
 		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
@@ -276,4 +276,24 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 
 		return c.JSON(http.StatusOK, true)
 	})
+}
+
+func (s *Server) createUserCreateActivity(c echo.Context, user *api.User) error {
+	ctx := c.Request().Context()
+	payload := api.ActivityUserCreatePayload{
+		UserID:   user.ID,
+		Username: user.Username,
+		Role:     user.Role,
+	}
+	payloadStr, err := json.Marshal(payload)
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal activity payload")
+	}
+	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+		CreatorID: user.ID,
+		Type:      api.ActivityUserCreate,
+		Level:     api.ActivityInfo,
+		Payload:   string(payloadStr),
+	})
+	return err
 }
