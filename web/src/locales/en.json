@@ -219,6 +219,7 @@
     "private-only": "This memo is private only.",
     "copied": "Copied",
     "succeed-copy-content": "Succeed to copy content to clipboard.",
+    "succeed-copy-code": "Succeed to copy code to clipboard.",
     "succeed-copy-link": "Succeed to copy link to clipboard.",
     "change-resource-filename": "Change resource filename",
     "resource-filename-updated": "Resource filename changed.",

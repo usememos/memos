@@ -143,6 +143,9 @@ const Memo: React.FC<Props> = (props: Props) => {
       if (imgUrl) {
         showPreviewImageDialog([imgUrl], 0);
       }
+    } else if (targetEl.tagName === "BUTTON" && targetEl.className === "codeblock-copy-btn") {
+      copy(targetEl.parentElement?.children[1].textContent ?? "");
+      toastHelper.success(t("message.succeed-copy-code"));
     }
   };
 

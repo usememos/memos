@@ -64,10 +64,20 @@
     }
 
     pre {
-      @apply w-full my-1 p-3 rounded bg-gray-100 dark:bg-zinc-600 whitespace-pre-wrap;
+      @apply w-full my-1 p-3 rounded bg-gray-100 dark:bg-zinc-600 whitespace-pre-wrap relative;
 
       code {
         @apply block;
+      }
+
+      &:hover{
+        .codeblock-copy-btn{
+          @apply flex;
+        }
+      }
+
+      .codeblock-copy-btn{
+        @apply btn-normal absolute hidden top-2 right-2 border-solid border-2;
       }
     }
 

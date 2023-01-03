@@ -26,7 +26,7 @@ const renderer = (rawStr: string): string => {
     // do nth
   }
 
-  return `<pre><code class="language-${language}">${highlightedCode}</code></pre>`;
+  return `<pre><button class="codeblock-copy-btn">copy</button><code class="language-${language}">${highlightedCode}</code></pre>`;
 };
 
 export default {
