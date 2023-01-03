@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 
 	"golang.org/x/exp/slices"
@@ -10,6 +11,8 @@ import (
 type SystemSettingName string
 
 const (
+	// SystemSettingServerID is the key type of server id.
+	SystemSettingServerID SystemSettingName = "serverId"
 	// SystemSettingAllowSignUpName is the key type of allow signup setting.
 	SystemSettingAllowSignUpName SystemSettingName = "allowSignUp"
 	// SystemSettingAdditionalStyleName is the key type of additional style.
@@ -38,6 +41,8 @@ type CustomizedProfile struct {
 
 func (key SystemSettingName) String() string {
 	switch key {
+	case SystemSettingServerID:
+		return "serverId"
 	case SystemSettingAllowSignUpName:
 		return "allowSignUp"
 	case SystemSettingAdditionalStyleName:
@@ -56,7 +61,7 @@ var (
 
 type SystemSetting struct {
 	Name SystemSettingName
-	// Value is a JSON string with basic value
+	// Value is a JSON string with basic value.
 	Value       string
 	Description string
 }
@@ -68,7 +73,9 @@ type SystemSettingUpsert struct {
 }
 
 func (upsert SystemSettingUpsert) Validate() error {
-	if upsert.Name == SystemSettingAllowSignUpName {
+	if upsert.Name == SystemSettingServerID {
+		return errors.New("update server id is not allowed")
+	} else if upsert.Name == SystemSettingAllowSignUpName {
 		value := false
 		err := json.Unmarshal([]byte(upsert.Value), &value)
 		if err != nil {

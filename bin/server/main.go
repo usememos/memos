@@ -26,8 +26,19 @@ const (
 `
 )
 
-func run(profile *profile.Profile) error {
+func run() error {
 	ctx := context.Background()
+	profile, err := profile.GetProfile()
+	if err != nil {
+		return err
+	}
+	println("---")
+	println("profile")
+	println("mode:", profile.Mode)
+	println("port:", profile.Port)
+	println("dsn:", profile.DSN)
+	println("version:", profile.Version)
+	println("---")
 
 	db := DB.NewDB(profile)
 	if err := db.Open(ctx); err != nil {
@@ -48,30 +59,9 @@ func run(profile *profile.Profile) error {
 	return serverInstance.Run(ctx)
 }
 
-func execute() error {
-	profile, err := profile.GetProfile()
-	if err != nil {
-		return err
-	}
-
-	println("---")
-	println("profile")
-	println("mode:", profile.Mode)
-	println("port:", profile.Port)
-	println("dsn:", profile.DSN)
-	println("version:", profile.Version)
-	println("---")
-
-	if err := run(profile); err != nil {
-		fmt.Printf("error: %+v\n", err)
-		return err
-	}
-
-	return nil
-}
-
 func main() {
-	if err := execute(); err != nil {
+	if err := run(); err != nil {
+		fmt.Printf("error: %+v\n", err)
 		os.Exit(1)
 	}
 }
