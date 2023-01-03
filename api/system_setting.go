@@ -13,6 +13,8 @@ type SystemSettingName string
 const (
 	// SystemSettingServerID is the key type of server id.
 	SystemSettingServerID SystemSettingName = "serverId"
+	// SystemSettingSecretSessionName is the key type of secret session name.
+	SystemSettingSecretSessionName SystemSettingName = "secretSessionName"
 	// SystemSettingAllowSignUpName is the key type of allow signup setting.
 	SystemSettingAllowSignUpName SystemSettingName = "allowSignUp"
 	// SystemSettingAdditionalStyleName is the key type of additional style.
@@ -43,6 +45,8 @@ func (key SystemSettingName) String() string {
 	switch key {
 	case SystemSettingServerID:
 		return "serverId"
+	case SystemSettingSecretSessionName:
+		return "secretSessionName"
 	case SystemSettingAllowSignUpName:
 		return "allowSignUp"
 	case SystemSettingAdditionalStyleName:

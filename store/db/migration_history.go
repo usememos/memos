@@ -20,7 +20,7 @@ type MigrationHistoryFind struct {
 }
 
 func (db *DB) FindMigrationHistory(ctx context.Context, find *MigrationHistoryFind) (*MigrationHistory, error) {
-	tx, err := db.Db.BeginTx(ctx, nil)
+	tx, err := db.DBInstance.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -40,7 +40,7 @@ func (db *DB) FindMigrationHistory(ctx context.Context, find *MigrationHistoryFi
 }
 
 func (db *DB) UpsertMigrationHistory(ctx context.Context, upsert *MigrationHistoryUpsert) (*MigrationHistory, error) {
-	tx, err := db.Db.BeginTx(ctx, nil)
+	tx, err := db.DBInstance.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
