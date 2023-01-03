@@ -31,6 +31,8 @@
 docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:latest
 ```
 
+> The `~/.memos/` will be used as the data directory in your machine. And `/var/opt/memos` is the directory of the volume in docker and should not be modified.
+
 If the `~/.memos/` does not have a `memos_prod.db` file, then memos will auto generate it. Memos will be running at [http://localhost:5230](http://localhost:5230).
 
 ### Docker Compose
