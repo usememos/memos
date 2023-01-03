@@ -38,6 +38,10 @@ func (raw *activityRaw) toActivity() *api.Activity {
 
 // CreateActivity creates an instance of Activity.
 func (s *Store) CreateActivity(ctx context.Context, create *api.ActivityCreate) (*api.Activity, error) {
+	if s.profile.Mode != "dev" {
+		return nil, nil
+	}
+
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
