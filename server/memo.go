@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
-	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 )
@@ -60,9 +60,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 		}
-		s.Collector.Collect(ctx, &metric.Metric{
-			Name: "memo created",
-		})
+		if err := s.createMemoCreateActivity(c, memo); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
 
 		for _, resourceID := range memoCreate.ResourceIDList {
 			if _, err := s.Store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
@@ -564,4 +564,23 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		return c.JSON(http.StatusOK, true)
 	})
+}
+
+func (s *Server) createMemoCreateActivity(c echo.Context, memo *api.Memo) error {
+	ctx := c.Request().Context()
+	payload := api.ActivityMemoCreatePayload{
+		Content:    memo.Content,
+		Visibility: memo.Visibility.String(),
+	}
+	payloadStr, err := json.Marshal(payload)
+	if err != nil {
+		return errors.Wrap(err, "failed to marshal activity payload")
+	}
+	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+		CreatorID: memo.CreatorID,
+		Type:      api.ActivityMemoCreate,
+		Level:     api.ActivityInfo,
+		Payload:   string(payloadStr),
+	})
+	return err
 }

@@ -87,6 +87,11 @@ type ActivityUserAuthSignUpPayload struct {
 	IP       string `json:"ip"`
 }
 
+type ActivityMemoCreatePayload struct {
+	Content    string `json:"content"`
+	Visibility string `json:"visibility"`
+}
+
 type ActivityShortcutCreatePayload struct {
 	Title   string `json:"title"`
 	Payload string `json:"payload"`
