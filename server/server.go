@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 
@@ -20,6 +22,8 @@ import (
 
 type Server struct {
 	e *echo.Echo
+
+	ID string
 
 	Collector *MetricCollector
 
@@ -99,15 +103,35 @@ func NewServer(profile *profile.Profile) *Server {
 }
 
 func (s *Server) Run(ctx context.Context) error {
+	serverIDKey := api.SystemSettingServerID
+	serverIDValue, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+		Name: &serverIDKey,
+	})
+	if err != nil && common.ErrorCode(err) != common.NotFound {
+		return err
+	}
+	if serverIDValue == nil || serverIDValue.Value == "" {
+		serverIDValue, err = s.Store.UpsertSystemSetting(ctx, &api.SystemSettingUpsert{
+			Name:  serverIDKey,
+			Value: uuid.NewString(),
+		})
+		if err != nil {
+			return err
+		}
+	}
+	s.ID = serverIDValue.Value
+
 	if err := s.createServerStartActivity(ctx); err != nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
+
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }
 
 func (s *Server) createServerStartActivity(ctx context.Context) error {
 	payload := api.ActivityServerStartPayload{
-		Profile: s.Profile,
+		ServerID: s.ID,
+		Profile:  s.Profile,
 	}
 	payloadStr, err := json.Marshal(payload)
 	if err != nil {

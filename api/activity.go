@@ -103,7 +103,8 @@ type ActivityTagCreatePayload struct {
 }
 
 type ActivityServerStartPayload struct {
-	Profile *profile.Profile `json:"profile"`
+	ServerID string           `json:"serverId"`
+	Profile  *profile.Profile `json:"profile"`
 }
 
 type Activity struct {
