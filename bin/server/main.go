@@ -4,15 +4,13 @@ import (
 	"os"
 
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/pkg/errors"
 
 	"context"
 	"fmt"
 
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
-	"github.com/usememos/memos/store"
-
-	DB "github.com/usememos/memos/store/db"
 )
 
 const (
@@ -40,19 +38,10 @@ func run() error {
 	println("version:", profile.Version)
 	println("---")
 
-	db := DB.NewDB(profile)
-	if err := db.Open(ctx); err != nil {
-		return fmt.Errorf("cannot open db: %w", err)
+	serverInstance, err := server.NewServer(ctx, profile)
+	if err != nil {
+		return errors.Wrap(err, "failed to start server")
 	}
-
-	serverInstance := server.NewServer(profile)
-	storeInstance := store.New(db.Db, profile)
-	serverInstance.Store = storeInstance
-
-	metricCollector := server.NewMetricCollector(profile, storeInstance)
-	// Disable metrics collector.
-	metricCollector.Enabled = false
-	serverInstance.Collector = &metricCollector
 
 	println(greetingBanner)
 	fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)

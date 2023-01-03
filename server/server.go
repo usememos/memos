@@ -6,14 +6,12 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
-	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
+	"github.com/usememos/memos/store/db"
 
-	"github.com/gorilla/securecookie"
 	"github.com/gorilla/sessions"
 	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
@@ -23,16 +21,13 @@ import (
 type Server struct {
 	e *echo.Echo
 
-	ID string
-
+	ID        string
+	Profile   *profile.Profile
+	Store     *store.Store
 	Collector *MetricCollector
-
-	Profile *profile.Profile
-
-	Store *store.Store
 }
 
-func NewServer(profile *profile.Profile) *Server {
+func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	e := echo.New()
 	e.Debug = true
 	e.HideBanner = true
@@ -42,6 +37,19 @@ func NewServer(profile *profile.Profile) *Server {
 		e:       e,
 		Profile: profile,
 	}
+
+	db := db.NewDB(profile)
+	if err := db.Open(ctx); err != nil {
+		return nil, errors.Wrap(err, "cannot open db")
+	}
+
+	storeInstance := store.New(db.DBInstance, profile)
+	s.Store = storeInstance
+
+	metricCollector := NewMetricCollector(profile, storeInstance)
+	// Disable metrics collector.
+	metricCollector.Enabled = false
+	s.Collector = &metricCollector
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339}",` +
@@ -68,14 +76,22 @@ func NewServer(profile *profile.Profile) *Server {
 		Timeout:      30 * time.Second,
 	}))
 
-	embedFrontend(e)
-
-	// In dev mode, set the const secret key to make signin session persistence.
-	secret := []byte("usememos")
-	if profile.Mode == "prod" {
-		secret = securecookie.GenerateRandomKey(16)
+	serverID, err := s.getSystemServerID(ctx)
+	if err != nil {
+		return nil, err
 	}
-	e.Use(session.Middleware(sessions.NewCookieStore(secret)))
+	s.ID = serverID
+
+	secretSessionName := "usememos"
+	if profile.Mode == "prod" {
+		secretSessionName, err = s.getSystemSecretSessionName(ctx)
+		if err != nil {
+			return nil, err
+		}
+	}
+	e.Use(session.Middleware(sessions.NewCookieStore([]byte(secretSessionName))))
+
+	embedFrontend(e)
 
 	rootGroup := e.Group("")
 	s.registerRSSRoutes(rootGroup)
@@ -99,28 +115,10 @@ func NewServer(profile *profile.Profile) *Server {
 	s.registerResourceRoutes(apiGroup)
 	s.registerTagRoutes(apiGroup)
 
-	return s
+	return s, nil
 }
 
 func (s *Server) Run(ctx context.Context) error {
-	serverIDKey := api.SystemSettingServerID
-	serverIDValue, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-		Name: &serverIDKey,
-	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
-		return err
-	}
-	if serverIDValue == nil || serverIDValue.Value == "" {
-		serverIDValue, err = s.Store.UpsertSystemSetting(ctx, &api.SystemSettingUpsert{
-			Name:  serverIDKey,
-			Value: uuid.NewString(),
-		})
-		if err != nil {
-			return err
-		}
-	}
-	s.ID = serverIDValue.Value
-
 	if err := s.createServerStartActivity(ctx); err != nil {
 		return errors.Wrap(err, "failed to create activity")
 	}

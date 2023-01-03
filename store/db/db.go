@@ -24,8 +24,8 @@ var seedFS embed.FS
 
 type DB struct {
 	// sqlite db connection instance
-	Db      *sql.DB
-	profile *profile.Profile
+	DBInstance *sql.DB
+	profile    *profile.Profile
 }
 
 // NewDB returns a new instance of DB associated with the given datasource name.
@@ -47,7 +47,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 	if err != nil {
 		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.profile.DSN, err)
 	}
-	db.Db = sqliteDB
+	db.DBInstance = sqliteDB
 
 	if db.profile.Mode == "dev" {
 		// In dev mode, we should migrate and seed the database.
@@ -156,7 +156,7 @@ func (db *DB) applyMigrationForMinorVersion(ctx context.Context, minorVersion st
 		}
 	}
 
-	tx, err := db.Db.Begin()
+	tx, err := db.DBInstance.Begin()
 	if err != nil {
 		return err
 	}
@@ -197,7 +197,7 @@ func (db *DB) seed(ctx context.Context) error {
 
 // execute runs a single SQL statement within a transaction.
 func (db *DB) execute(ctx context.Context, stmt string) error {
-	tx, err := db.Db.Begin()
+	tx, err := db.DBInstance.Begin()
 	if err != nil {
 		return err
 	}
