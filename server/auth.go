@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -150,11 +151,14 @@ func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) er
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
 		CreatorID: user.ID,
 		Type:      api.ActivityUserAuthSignIn,
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
+	})
+	s.Collector.Collect(ctx, &metric.Metric{
+		Name: string(activity.Type),
 	})
 	return err
 }
@@ -169,11 +173,14 @@ func (s *Server) createUserAuthSignUpActivity(c echo.Context, user *api.User) er
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
 		CreatorID: user.ID,
 		Type:      api.ActivityUserAuthSignUp,
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
+	})
+	s.Collector.Collect(ctx, &metric.Metric{
+		Name: string(activity.Type),
 	})
 	return err
 }

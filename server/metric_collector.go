@@ -8,29 +8,39 @@ import (
 	"github.com/usememos/memos/plugin/metrics/segment"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/version"
-	"github.com/usememos/memos/store"
 )
 
 // MetricCollector is the metric collector.
 type MetricCollector struct {
-	Collector metric.Collector
+	collector metric.Collector
+	ID        string
 	Enabled   bool
 	Profile   *profile.Profile
-	Store     *store.Store
 }
 
 const (
-	segmentMetricWriteKey = "fTn5BumOkj352n3TGw9tu0ARH2dOkcoQ"
+	segmentMetricWriteKey = "NbPruMMmfqfD2AMCw3pkxZTsszVS3hKq"
 )
 
-func NewMetricCollector(profile *profile.Profile, store *store.Store) MetricCollector {
+func (s *Server) registerMetricCollector() {
 	c := segment.NewCollector(segmentMetricWriteKey)
-
-	return MetricCollector{
-		Collector: c,
+	mc := &MetricCollector{
+		collector: c,
+		ID:        s.ID,
 		Enabled:   true,
-		Profile:   profile,
-		Store:     store,
+		Profile:   s.Profile,
+	}
+	s.Collector = mc
+}
+
+func (mc *MetricCollector) Identify(_ context.Context) {
+	if !mc.Enabled {
+		return
+	}
+
+	err := mc.collector.Identify(mc.ID)
+	if err != nil {
+		fmt.Printf("Failed to request segment, error: %+v\n", err)
 	}
 }
 
@@ -39,16 +49,13 @@ func (mc *MetricCollector) Collect(_ context.Context, metric *metric.Metric) {
 		return
 	}
 
-	if mc.Profile.Mode == "dev" {
-		return
-	}
-
 	if metric.Labels == nil {
 		metric.Labels = map[string]string{}
 	}
+	metric.Labels["mode"] = mc.Profile.Mode
 	metric.Labels["version"] = version.GetCurrentVersion(mc.Profile.Mode)
-
-	err := mc.Collector.Collect(metric)
+	metric.ID = mc.ID
+	err := mc.collector.Collect(metric)
 	if err != nil {
 		fmt.Printf("Failed to request segment, error: %+v\n", err)
 	}
