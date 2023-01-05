@@ -12,6 +12,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 )
@@ -287,11 +288,14 @@ func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Reso
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
 		CreatorID: resource.CreatorID,
 		Type:      api.ActivityResourceCreate,
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
+	})
+	s.Collector.Collect(ctx, &metric.Metric{
+		Name: string(activity.Type),
 	})
 	return err
 }

@@ -57,7 +57,8 @@ func (s *Store) CreateActivity(ctx context.Context, create *api.ActivityCreate) 
 		return nil, FormatError(err)
 	}
 
-	return activityRaw.toActivity(), nil
+	activity := activityRaw.toActivity()
+	return activity, nil
 }
 
 // createActivity creates a new activity.

@@ -3,13 +3,8 @@ package segment
 import (
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/segmentio/analytics-go"
 	metric "github.com/usememos/memos/plugin/metrics"
-)
-
-var (
-	sessionUUID = uuid.NewString()
 )
 
 // collector is the metrics collector https://segment.com/.
@@ -26,6 +21,14 @@ func NewCollector(key string) metric.Collector {
 	}
 }
 
+// Identify will identify the server caller.
+func (c *collector) Identify(id string) error {
+	return c.client.Enqueue(analytics.Identify{
+		UserId:    id,
+		Timestamp: time.Now().UTC(),
+	})
+}
+
 // Collect will exec all the segment collector.
 func (c *collector) Collect(metric *metric.Metric) error {
 	properties := analytics.NewProperties()
@@ -34,9 +37,9 @@ func (c *collector) Collect(metric *metric.Metric) error {
 	}
 
 	return c.client.Enqueue(analytics.Track{
-		Event:       string(metric.Name),
-		AnonymousId: sessionUUID,
-		Properties:  properties,
-		Timestamp:   time.Now().UTC(),
+		UserId:     metric.ID,
+		Timestamp:  time.Now().UTC(),
+		Event:      metric.Name,
+		Properties: properties,
 	})
 }

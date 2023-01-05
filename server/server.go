@@ -8,6 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
+	metric "github.com/usememos/memos/plugin/metrics"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
@@ -45,11 +46,6 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 
 	storeInstance := store.New(db.DBInstance, profile)
 	s.Store = storeInstance
-
-	metricCollector := NewMetricCollector(profile, storeInstance)
-	// Disable metrics collector.
-	metricCollector.Enabled = false
-	s.Collector = &metricCollector
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339}",` +
@@ -93,6 +89,9 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 
 	embedFrontend(e)
 
+	// Register MetricCollector to server.
+	s.registerMetricCollector()
+
 	rootGroup := e.Group("")
 	s.registerRSSRoutes(rootGroup)
 
@@ -122,7 +121,7 @@ func (s *Server) Run(ctx context.Context) error {
 	if err := s.createServerStartActivity(ctx); err != nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
-
+	s.Collector.Identify(ctx)
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }
 
@@ -135,11 +134,14 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
 		CreatorID: api.UnknownID,
 		Type:      api.ActivityServerStart,
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
+	})
+	s.Collector.Collect(ctx, &metric.Metric{
+		Name: string(activity.Type),
 	})
 	return err
 }
