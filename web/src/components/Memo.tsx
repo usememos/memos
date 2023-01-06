@@ -15,7 +15,6 @@ import "../less/memo.less";
 
 interface Props {
   memo: Memo;
-  highlightWord?: string;
 }
 
 export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
@@ -27,7 +26,7 @@ export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
 };
 
 const Memo: React.FC<Props> = (props: Props) => {
-  const { memo, highlightWord } = props;
+  const { memo } = props;
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const editorStore = useEditorStore();
@@ -143,9 +142,6 @@ const Memo: React.FC<Props> = (props: Props) => {
       if (imgUrl) {
         showPreviewImageDialog([imgUrl], 0);
       }
-    } else if (targetEl.tagName === "BUTTON" && targetEl.className === "codeblock-copy-btn") {
-      copy(targetEl.parentElement?.children[1].textContent ?? "");
-      toastHelper.success(t("message.succeed-copy-code"));
     }
   };
 
@@ -228,7 +224,6 @@ const Memo: React.FC<Props> = (props: Props) => {
       </div>
       <MemoContent
         content={memo.content}
-        highlightWord={highlightWord}
         onMemoContentClick={handleMemoContentClick}
         onMemoContentDoubleClick={handleMemoContentDoubleClick}
       />

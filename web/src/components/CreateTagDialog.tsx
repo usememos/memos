@@ -2,6 +2,7 @@ import { TextField } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { useTagStore } from "../store/module";
 import { getTagSuggestionList } from "../helpers/api";
+import { matcher } from "../labs/marked/matcher";
 import Tag from "../labs/marked/parser/Tag";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -10,7 +11,7 @@ import { generateDialog } from "./Dialog";
 type Props = DialogProps;
 
 const validateTagName = (tagName: string): boolean => {
-  const matchResult = Tag.matcher(`#${tagName}`);
+  const matchResult = matcher(`#${tagName}`, Tag.regexp);
   if (!matchResult || matchResult[1] !== tagName) {
     return false;
   }

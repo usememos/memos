@@ -2,7 +2,6 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "../store/module";
 import { marked } from "../labs/marked";
-import { highlightWithWord } from "../labs/highlighter";
 import Icon from "./Icon";
 import "../less/memo-content.less";
 
@@ -12,7 +11,6 @@ export interface DisplayConfig {
 
 interface Props {
   content: string;
-  highlightWord?: string;
   className?: string;
   displayConfig?: Partial<DisplayConfig>;
   onMemoContentClick?: (e: React.MouseEvent) => void;
@@ -30,14 +28,14 @@ const defaultDisplayConfig: DisplayConfig = {
 };
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, content, highlightWord, onMemoContentClick, onMemoContentDoubleClick } = props;
+  const { className, content, onMemoContentClick, onMemoContentDoubleClick } = props;
+  const { t } = useTranslation();
+  const userStore = useUserStore();
+  const user = userStore.state.user;
   const foldedContent = useMemo(() => {
     const firstHorizontalRuleIndex = content.search(/^---$|^\*\*\*$|^___$/m);
     return firstHorizontalRuleIndex !== -1 ? content.slice(0, firstHorizontalRuleIndex) : content;
   }, [content]);
-  const { t } = useTranslation();
-  const userStore = useUserStore();
-  const user = userStore.state.user;
 
   const [state, setState] = useState<State>({
     expandButtonStatus: -1,
@@ -97,10 +95,9 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         className={`memo-content-text ${state.expandButtonStatus === 0 ? "expanded" : ""}`}
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
-        dangerouslySetInnerHTML={{
-          __html: highlightWithWord(marked(state.expandButtonStatus === 0 ? foldedContent : content), highlightWord),
-        }}
-      ></div>
+      >
+        {marked(state.expandButtonStatus === 0 ? foldedContent : content)}
+      </div>
       {state.expandButtonStatus !== -1 && (
         <div className="expand-btn-container">
           <span className={`btn ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleExpandBtnClick}>

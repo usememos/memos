@@ -1,8 +1,13 @@
+import { matcher } from "./matcher";
 import { blockElementParserList, inlineElementParserList } from "./parser";
 
-export const marked = (markdownStr: string, blockParsers = blockElementParserList, inlineParsers = inlineElementParserList): string => {
+export const marked = (
+  markdownStr: string,
+  blockParsers = blockElementParserList,
+  inlineParsers = inlineElementParserList
+): string | JSX.Element => {
   for (const parser of blockParsers) {
-    const matchResult = parser.matcher(markdownStr);
+    const matchResult = matcher(markdownStr, parser.regexp);
     if (!matchResult) {
       continue;
     }
@@ -10,12 +15,22 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
     const retainContent = markdownStr.slice(matchedStr.length);
 
     if (parser.name === "br") {
-      return parser.renderer(matchedStr) + marked(retainContent, blockParsers, inlineParsers);
+      return (
+        <>
+          {parser.renderer(matchedStr)}
+          {marked(retainContent, blockParsers, inlineParsers)}
+        </>
+      );
     } else {
       if (retainContent === "") {
         return parser.renderer(matchedStr);
       } else if (retainContent.startsWith("\n")) {
-        return parser.renderer(matchedStr) + marked(retainContent.slice(1), blockParsers, inlineParsers);
+        return (
+          <>
+            {parser.renderer(matchedStr)}
+            {marked(retainContent.slice(1), blockParsers, inlineParsers)}
+          </>
+        );
       }
     }
   }
@@ -24,7 +39,7 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
   let matchedIndex = -1;
 
   for (const parser of inlineParsers) {
-    const matchResult = parser.matcher(markdownStr);
+    const matchResult = matcher(markdownStr, parser.regexp);
     if (!matchResult) {
       continue;
     }
@@ -41,17 +56,23 @@ export const marked = (markdownStr: string, blockParsers = blockElementParserLis
   }
 
   if (matchedInlineParser) {
-    const matchResult = matchedInlineParser.matcher(markdownStr);
+    const matchResult = matcher(markdownStr, matchedInlineParser.regexp);
     if (matchResult) {
       const matchedStr = matchResult[0];
       const matchedLength = matchedStr.length;
       const prefixStr = markdownStr.slice(0, matchedIndex);
       const suffixStr = markdownStr.slice(matchedIndex + matchedLength);
-      return marked(prefixStr, [], inlineParsers) + matchedInlineParser.renderer(matchedStr) + marked(suffixStr, [], inlineParsers);
+      return (
+        <>
+          {marked(prefixStr, [], inlineParsers)}
+          {matchedInlineParser.renderer(matchedStr)}
+          {marked(suffixStr, [], inlineParsers)}
+        </>
+      );
     }
   }
 
-  return markdownStr;
+  return <>{markdownStr}</>;
 };
 
 interface MatchedNode {
@@ -64,7 +85,7 @@ export const getMatchedNodes = (markdownStr: string): MatchedNode[] => {
 
   const walkthough = (markdownStr: string, blockParsers = blockElementParserList, inlineParsers = inlineElementParserList): string => {
     for (const parser of blockParsers) {
-      const matchResult = parser.matcher(markdownStr);
+      const matchResult = matcher(markdownStr, parser.regexp);
       if (!matchResult) {
         continue;
       }
@@ -79,6 +100,7 @@ export const getMatchedNodes = (markdownStr: string): MatchedNode[] => {
         return walkthough(retainContent, blockParsers, inlineParsers);
       } else {
         if (retainContent.startsWith("\n")) {
+          walkthough(matchedStr, [], inlineParsers);
           return walkthough(retainContent.slice(1), blockParsers, inlineParsers);
         }
       }
@@ -88,7 +110,7 @@ export const getMatchedNodes = (markdownStr: string): MatchedNode[] => {
     let matchedIndex = -1;
 
     for (const parser of inlineParsers) {
-      const matchResult = parser.matcher(markdownStr);
+      const matchResult = matcher(markdownStr, parser.regexp);
       if (!matchResult) {
         continue;
       }
@@ -105,7 +127,7 @@ export const getMatchedNodes = (markdownStr: string): MatchedNode[] => {
     }
 
     if (matchedInlineParser) {
-      const matchResult = matchedInlineParser.matcher(markdownStr);
+      const matchResult = matcher(markdownStr, matchedInlineParser.regexp);
       if (matchResult) {
         const matchedStr = matchResult[0];
         const matchedLength = matchedStr.length;
