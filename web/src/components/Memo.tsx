@@ -10,6 +10,7 @@ import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import showEmbedMemoDialog from "./EmbedMemoDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "../less/memo.less";
 
@@ -52,6 +53,10 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   const handleViewMemoDetailPage = () => {
     navigate(`/m/${memo.id}`);
+  };
+
+  const handleShowEmbedMemoDialog = () => {
+    showEmbedMemoDialog(memo.id);
   };
 
   const handleCopyContent = () => {
@@ -213,6 +218,9 @@ const Memo: React.FC<Props> = (props: Props) => {
                 </span>
                 <span className="btn" onClick={handleViewMemoDetailPage}>
                   {t("memo.view-detail")}
+                </span>
+                <span className="btn" onClick={handleShowEmbedMemoDialog}>
+                  Embed memo
                 </span>
                 <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
                   {t("common.archive")}
