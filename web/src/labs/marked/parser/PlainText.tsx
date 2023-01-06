@@ -1,14 +1,10 @@
 import { escape } from "lodash-es";
+import { matcher } from "../matcher";
 
 export const PLAIN_TEXT_REG = /(.+)/;
 
-const matcher = (rawStr: string) => {
-  const matchResult = rawStr.match(PLAIN_TEXT_REG);
-  return matchResult;
-};
-
 const renderer = (rawStr: string): string => {
-  const matchResult = matcher(rawStr);
+  const matchResult = matcher(rawStr, PLAIN_TEXT_REG);
   if (!matchResult) {
     return rawStr;
   }
@@ -18,7 +14,6 @@ const renderer = (rawStr: string): string => {
 
 export default {
   name: "plain text",
-  regex: PLAIN_TEXT_REG,
-  matcher,
+  regexp: PLAIN_TEXT_REG,
   renderer,
 };

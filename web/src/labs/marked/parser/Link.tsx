@@ -5,26 +5,25 @@ import { marked } from "..";
 import InlineCode from "./InlineCode";
 import BoldEmphasis from "./BoldEmphasis";
 import PlainText from "./PlainText";
+import { matcher } from "../matcher";
 
 export const LINK_REG = /\[(.*?)\]\((.+?)\)+/;
 
-const matcher = (rawStr: string) => {
-  const matchResult = rawStr.match(LINK_REG);
-  return matchResult;
-};
-
-const renderer = (rawStr: string): string => {
-  const matchResult = matcher(rawStr);
+const renderer = (rawStr: string) => {
+  const matchResult = matcher(rawStr, LINK_REG);
   if (!matchResult) {
     return rawStr;
   }
   const parsedContent = marked(matchResult[1], [], [InlineCode, BoldEmphasis, Emphasis, Bold, PlainText]);
-  return `<a class='link' target='_blank' rel='noreferrer' href='${escape(matchResult[2])}'>${parsedContent}</a>`;
+  return (
+    <a className="link" target="_blank" rel="noreferrer" href={escape(matchResult[2])}>
+      {parsedContent}
+    </a>
+  );
 };
 
 export default {
   name: "link",
-  regex: LINK_REG,
-  matcher,
+  regexp: LINK_REG,
   renderer,
 };
