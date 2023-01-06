@@ -99,7 +99,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
 
   const handleCopyLinkBtnClick = () => {
     copy(`${window.location.origin}/m/${memo.id}`);
-    toastHelper.success(t("message.succeed-copy-content"));
+    toastHelper.success("Succeed to copy memo link to clipboard.");
   };
 
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {

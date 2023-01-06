@@ -8,6 +8,7 @@ const Auth = lazy(() => import("../pages/Auth"));
 const Explore = lazy(() => import("../pages/Explore"));
 const Home = lazy(() => import("../pages/Home"));
 const MemoDetail = lazy(() => import("../pages/MemoDetail"));
+const EmbedMemo = lazy(() => import("../pages/EmbedMemo"));
 
 const router = createBrowserRouter([
   {
@@ -92,6 +93,19 @@ const router = createBrowserRouter([
       const { host } = store.getState().user;
       if (isNullorUndefined(host)) {
         return redirect("/auth");
+      }
+      return null;
+    },
+  },
+  {
+    path: "/m/:memoId/embed",
+    element: <EmbedMemo />,
+    loader: async () => {
+      try {
+        await initialGlobalState();
+        await initialUserState();
+      } catch (error) {
+        // do nth
       }
       return null;
     },
