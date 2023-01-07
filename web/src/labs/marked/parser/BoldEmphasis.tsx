@@ -14,7 +14,7 @@ const renderer = (rawStr: string) => {
   const parsedContent = marked(matchResult[1], [], [Link, PlainText]);
   return (
     <strong>
-      <em>${parsedContent}</em>
+      <em>{parsedContent}</em>
     </strong>
   );
 };
