@@ -34,7 +34,7 @@ const EmbedMemoDialog: React.FC<Props> = (props: Props) => {
           <code className="w-full break-all whitespace-pre-wrap">{memoEmbeddedCode()}</code>
         </pre>
         <p className="w-full text-sm leading-6 flex flex-row justify-between items-center mt-2">
-          * Only the public memo supports.
+          <span className="italic opacity-80">* Only the public memo supports.</span>
           <span className="btn-primary" onClick={handleCopyCode}>
             Copy
           </span>
