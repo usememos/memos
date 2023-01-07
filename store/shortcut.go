@@ -217,13 +217,14 @@ func patchShortcut(ctx context.Context, tx *sql.Tx, patch *api.ShortcutPatch) (*
 		UPDATE shortcut
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, title, payload, created_ts, updated_ts, row_status
+		RETURNING id, title, payload, creator_id, created_ts, updated_ts, row_status
 	`
 	var shortcutRaw shortcutRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
 		&shortcutRaw.ID,
 		&shortcutRaw.Title,
 		&shortcutRaw.Payload,
+		&shortcutRaw.CreatorID,
 		&shortcutRaw.CreatedTs,
 		&shortcutRaw.UpdatedTs,
 		&shortcutRaw.RowStatus,
