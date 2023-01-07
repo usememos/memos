@@ -165,11 +165,14 @@ func (s *Server) createTagCreateActivity(c echo.Context, tag *api.Tag) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
 		CreatorID: tag.CreatorID,
 		Type:      api.ActivityTagCreate,
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
 	})
+	if err != nil || activity == nil {
+		return errors.Wrap(err, "failed to create activity")
+	}
 	return err
 }

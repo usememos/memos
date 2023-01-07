@@ -175,11 +175,14 @@ func (s *Server) createShortcutCreateActivity(c echo.Context, shortcut *api.Shor
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	_, err = s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
 		CreatorID: shortcut.CreatorID,
 		Type:      api.ActivityShortcutCreate,
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
 	})
+	if err != nil || activity == nil {
+		return errors.Wrap(err, "failed to create activity")
+	}
 	return err
 }
