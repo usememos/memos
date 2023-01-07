@@ -1,4 +1,3 @@
-import { escape } from "lodash";
 import { matcher } from "../matcher";
 
 export const BLOCKQUOTE_REG = /^> ([^\n]+)/;
@@ -9,7 +8,7 @@ const renderer = (rawStr: string) => {
     return <>{rawStr}</>;
   }
 
-  return <blockquote>{escape(matchResult[1])}</blockquote>;
+  return <blockquote>{matchResult[1]}</blockquote>;
 };
 
 export default {

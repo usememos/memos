@@ -1,5 +1,4 @@
 import copy from "copy-to-clipboard";
-import { escape } from "lodash-es";
 import hljs from "highlight.js";
 import { useTranslation } from "react-i18next";
 import { matcher } from "../matcher";
@@ -14,7 +13,7 @@ const renderer = (rawStr: string) => {
     return <>{rawStr}</>;
   }
 
-  const language = escape(matchResult[1]) || "plaintext";
+  const language = matchResult[1] || "plaintext";
   let highlightedCode = hljs.highlightAuto(matchResult[2]).value;
 
   try {

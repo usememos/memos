@@ -1,4 +1,3 @@
-import { escape } from "lodash-es";
 import { absolutifyLink } from "../../../helpers/utils";
 import { matcher } from "../matcher";
 
@@ -10,7 +9,7 @@ const renderer = (rawStr: string) => {
     return rawStr;
   }
 
-  const imageUrl = absolutifyLink(escape(matchResult[1]));
+  const imageUrl = absolutifyLink(matchResult[1]);
   return <img className="img" src={imageUrl} />;
 };
 
