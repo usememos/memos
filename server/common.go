@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
@@ -14,6 +16,10 @@ func composeResponse(data interface{}) response {
 	return response{
 		Data: data,
 	}
+}
+
+func DefaultGetRequestSkipper(c echo.Context) bool {
+	return c.Request().Method == http.MethodGet
 }
 
 func (server *Server) DefaultAuthSkipper(c echo.Context) bool {

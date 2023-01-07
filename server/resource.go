@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -266,7 +267,11 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch resource ID: %v", resourceID)).SetInternal(err)
 		}
 
-		c.Response().Writer.Header().Set("Content-Type", resource.Type)
+		if strings.HasPrefix(resource.Type, "text") || strings.HasPrefix(resource.Type, "application") {
+			c.Response().Writer.Header().Set("Content-Type", echo.MIMETextPlain)
+		} else {
+			c.Response().Writer.Header().Set("Content-Type", resource.Type)
+		}
 		c.Response().Writer.WriteHeader(http.StatusOK)
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")

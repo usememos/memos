@@ -64,7 +64,13 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 
 	e.Use(middleware.CORS())
 
-	e.Use(middleware.Secure())
+	e.Use(middleware.SecureWithConfig(middleware.SecureConfig{
+		Skipper:            DefaultGetRequestSkipper,
+		XSSProtection:      "1; mode=block",
+		ContentTypeNosniff: "nosniff",
+		XFrameOptions:      "SAMEORIGIN",
+		HSTSPreloadEnabled: false,
+	}))
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Skipper:      middleware.DefaultSkipper,
