@@ -157,6 +157,9 @@ func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) er
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
 	})
+	if err != nil || activity == nil {
+		return errors.Wrap(err, "failed to create activity")
+	}
 	s.Collector.Collect(ctx, &metric.Metric{
 		Name: string(activity.Type),
 	})
@@ -179,6 +182,9 @@ func (s *Server) createUserAuthSignUpActivity(c echo.Context, user *api.User) er
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
 	})
+	if err != nil || activity == nil {
+		return errors.Wrap(err, "failed to create activity")
+	}
 	s.Collector.Collect(ctx, &metric.Metric{
 		Name: string(activity.Type),
 	})

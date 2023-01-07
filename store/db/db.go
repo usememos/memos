@@ -68,11 +68,11 @@ func (db *DB) Open(ctx context.Context) (err error) {
 		}
 
 		currentVersion := version.GetCurrentVersion(db.profile.Mode)
-		migrationHistory, err := db.FindMigrationHistory(ctx, &MigrationHistoryFind{})
+		migrationHistoryList, err := db.FindMigrationHistoryList(ctx, &MigrationHistoryFind{})
 		if err != nil {
 			return fmt.Errorf("failed to find migration history, err: %w", err)
 		}
-		if migrationHistory == nil {
+		if len(migrationHistoryList) == 0 {
 			if _, err = db.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
 				Version: currentVersion,
 			}); err != nil {
@@ -80,8 +80,14 @@ func (db *DB) Open(ctx context.Context) (err error) {
 			}
 			return nil
 		}
+		migrationHistoryVersionList := []string{}
+		for _, migrationHistory := range migrationHistoryList {
+			migrationHistoryVersionList = append(migrationHistoryVersionList, migrationHistory.Version)
+		}
+		sort.Strings(migrationHistoryVersionList)
+		latestMigrationHistoryVersion := migrationHistoryVersionList[0]
 
-		if version.IsVersionGreaterThan(version.GetSchemaVersion(currentVersion), migrationHistory.Version) {
+		if version.IsVersionGreaterThan(version.GetSchemaVersion(currentVersion), latestMigrationHistoryVersion) {
 			minorVersionList := getMinorVersionList()
 
 			// backup the raw database file before migration
@@ -98,7 +104,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 			println("start migrate")
 			for _, minorVersion := range minorVersionList {
 				normalizedVersion := minorVersion + ".0"
-				if version.IsVersionGreaterThan(normalizedVersion, migrationHistory.Version) && version.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
+				if version.IsVersionGreaterThan(normalizedVersion, latestMigrationHistoryVersion) && version.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
 					println("applying migration for", normalizedVersion)
 					if err := db.applyMigrationForMinorVersion(ctx, minorVersion); err != nil {
 						return fmt.Errorf("failed to apply minor version migration: %w", err)

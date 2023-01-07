@@ -146,6 +146,9 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 		Level:     api.ActivityInfo,
 		Payload:   string(payloadStr),
 	})
+	if err != nil || activity == nil {
+		return errors.Wrap(err, "failed to create activity")
+	}
 	s.Collector.Collect(ctx, &metric.Metric{
 		Name: string(activity.Type),
 	})
