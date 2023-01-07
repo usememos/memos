@@ -1,8 +1,10 @@
 package version
 
 import (
-	"strconv"
+	"fmt"
 	"strings"
+
+	"golang.org/x/mod/semver"
 )
 
 // Version is the service current released version.
@@ -32,35 +34,28 @@ func GetSchemaVersion(version string) string {
 	return minorVersion + ".0"
 }
 
-// convSemanticVersionToInt converts version string to int.
-func convSemanticVersionToInt(version string) int {
-	versionList := strings.Split(version, ".")
-
-	if len(versionList) < 3 {
-		return 0
-	}
-	major, err := strconv.Atoi(versionList[0])
-	if err != nil {
-		return 0
-	}
-	minor, err := strconv.Atoi(versionList[1])
-	if err != nil {
-		return 0
-	}
-	patch, err := strconv.Atoi(versionList[2])
-	if err != nil {
-		return 0
-	}
-
-	return major*10000 + minor*100 + patch
-}
-
 // IsVersionGreaterThanOrEqualTo returns true if version is greater than or equal to target.
 func IsVersionGreaterOrEqualThan(version, target string) bool {
-	return convSemanticVersionToInt(version) >= convSemanticVersionToInt(target)
+	return semver.Compare(fmt.Sprintf("v%s", version), fmt.Sprintf("v%s", target)) > -1
 }
 
 // IsVersionGreaterThan returns true if version is greater than target.
 func IsVersionGreaterThan(version, target string) bool {
-	return convSemanticVersionToInt(version) > convSemanticVersionToInt(target)
+	return semver.Compare(fmt.Sprintf("v%s", version), fmt.Sprintf("v%s", target)) > 0
+}
+
+type SortVersion []string
+
+func (s SortVersion) Len() int {
+	return len(s)
+}
+
+func (s SortVersion) Swap(i, j int) {
+	s[i], s[j] = s[j], s[i]
+}
+
+func (s SortVersion) Less(i, j int) bool {
+	v1 := fmt.Sprintf("v%s", s[i])
+	v2 := fmt.Sprintf("v%s", s[j])
+	return semver.Compare(v1, v2) == -1
 }
