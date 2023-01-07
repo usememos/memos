@@ -84,8 +84,8 @@ func (db *DB) Open(ctx context.Context) (err error) {
 		for _, migrationHistory := range migrationHistoryList {
 			migrationHistoryVersionList = append(migrationHistoryVersionList, migrationHistory.Version)
 		}
-		sort.Strings(migrationHistoryVersionList)
-		latestMigrationHistoryVersion := migrationHistoryVersionList[0]
+		sort.Sort(version.SortVersion(migrationHistoryVersionList))
+		latestMigrationHistoryVersion := migrationHistoryVersionList[len(migrationHistoryVersionList)-1]
 
 		if version.IsVersionGreaterThan(version.GetSchemaVersion(currentVersion), latestMigrationHistoryVersion) {
 			minorVersionList := getMinorVersionList()
@@ -235,7 +235,7 @@ func getMinorVersionList() []string {
 		panic(err)
 	}
 
-	sort.Strings(minorVersionList)
+	sort.Sort(version.SortVersion(minorVersionList))
 
 	return minorVersionList
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { compare } from "semver";
 import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
@@ -26,7 +27,7 @@ const UpdateVersionBanner: React.FC = () => {
       const skipped = skippedVersion ? skippedVersion === latestVersion : false;
       setState({
         latestVersion,
-        show: !skipped && currentVersion < latestVersion,
+        show: !skipped && compare(currentVersion, latestVersion) === -1,
       });
     });
   }, []);

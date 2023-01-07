@@ -48,5 +48,6 @@ require (
 require (
 	github.com/pkg/errors v0.9.1
 	github.com/segmentio/analytics-go v3.1.0+incompatible
-	golang.org/x/exp v0.0.0-20221217163422-3c43f8badb15
+	golang.org/x/exp v0.0.0-20230105202349-8879d0199aa3
+	golang.org/x/mod v0.7.0
 )
