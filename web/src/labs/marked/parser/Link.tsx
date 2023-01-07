@@ -1,4 +1,3 @@
-import { escape } from "lodash-es";
 import Emphasis from "./Emphasis";
 import Bold from "./Bold";
 import { marked } from "..";
@@ -16,7 +15,7 @@ const renderer = (rawStr: string) => {
   }
   const parsedContent = marked(matchResult[1], [], [InlineCode, BoldEmphasis, Emphasis, Bold, PlainText]);
   return (
-    <a className="link" target="_blank" rel="noreferrer" href={escape(matchResult[2])}>
+    <a className="link" target="_blank" rel="noreferrer" href={matchResult[2]}>
       {parsedContent}
     </a>
   );

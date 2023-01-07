@@ -1,4 +1,3 @@
-import { escape } from "lodash";
 import { matcher } from "../matcher";
 
 export const STRIKETHROUGH_REG = /~~(.+?)~~/;
@@ -9,7 +8,7 @@ const renderer = (rawStr: string) => {
     return rawStr;
   }
 
-  return <del>{escape(matchResult[1])}</del>;
+  return <del>{matchResult[1]}</del>;
 };
 
 export default {

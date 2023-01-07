@@ -1,4 +1,3 @@
-import { escape } from "lodash-es";
 import { matcher } from "../matcher";
 
 export const PLAIN_LINK_REG = /(https?:\/\/[^ ]+)/;
@@ -10,8 +9,8 @@ const renderer = (rawStr: string) => {
   }
 
   return (
-    <a className="link" target="_blank" rel="noreferrer" href={escape(matchResult[1])}>
-      {escape(matchResult[1])}
+    <a className="link" target="_blank" rel="noreferrer" href={matchResult[1]}>
+      {matchResult[1]}
     </a>
   );
 };

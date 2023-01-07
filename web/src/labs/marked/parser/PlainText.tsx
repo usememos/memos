@@ -1,4 +1,3 @@
-import { escape } from "lodash-es";
 import { matcher } from "../matcher";
 
 export const PLAIN_TEXT_REG = /(.+)/;
@@ -9,7 +8,7 @@ const renderer = (rawStr: string): string => {
     return rawStr;
   }
 
-  return `${escape(matchResult[1])}`;
+  return matchResult[1];
 };
 
 export default {

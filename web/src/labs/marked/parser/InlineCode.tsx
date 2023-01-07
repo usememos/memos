@@ -1,4 +1,3 @@
-import { escape } from "lodash-es";
 import { matcher } from "../matcher";
 
 export const INLINE_CODE_REG = /`(.+?)`/;
@@ -9,7 +8,7 @@ const renderer = (rawStr: string) => {
     return rawStr;
   }
 
-  return <code>{escape(matchResult[1])}</code>;
+  return <code>{matchResult[1]}</code>;
 };
 
 export default {
