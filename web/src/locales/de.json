@@ -27,7 +27,7 @@
     "share": "Teilen",
     "archive": "Archivieren",
     "basic": "Allgemeines",
-    "admin": "Administrierung",
+    "admin": "Administration",
     "explore": "Erkunden",
     "sign-in": "Anmelden",
     "sign-up": "Registrieren",
@@ -42,18 +42,18 @@
     "archived-at": "Archiviert am",
     "changed": "Verändert",
     "update-on": "Verändert am",
-    "fold": "Falten",
+    "fold": "Einklappen",
     "expand": "Erweitern",
     "image": "Bild",
     "link": "Link",
-    "vacuum": "Vacuum",
-    "select": "Select"
+    "vacuum": "Aufräumen",
+    "select": "Auswählen"
   },
   "slogan": "Eine quelloffene, selbst gehostete Sammlung an Memos zur Wissensverwaltung und Vernetzung.",
   "auth": {
     "signup-as-host": "Als Host registrieren",
     "host-tip": "Du registrierst dich als Host dieser Seite.",
-    "not-host-tip": "Wenn du noch keinen Account hast, kontaktiere den Host dieser Seite."
+    "not-host-tip": "Kontaktiere den Host dieser Seite, wenn du noch kein Konto hast."
   },
   "sidebar": {
     "daily-review": "Tagesbilanz",
@@ -62,10 +62,9 @@
     "archived": "Archiviert"
   },
   "daily-review": {
-    "oops-nothing": "Oops, hier ist nichts."
+    "oops-nothing": "Ups, hier ist nichts."
   },
   "resources": {
-    "description": "Zeige deine Ressourcen in Memos. Beispielsweise Bilder.",
     "no-resources": "Keine Ressourcen.",
     "fetching-data": "Lade Daten...",
     "upload": "Hochladen",
@@ -86,8 +85,7 @@
     "fetching-data": "Lade Daten..."
   },
   "editor": {
-    "editing": "Bearbeitung...",
-    "cancel-edit": "Bearbeitung abbrechen",
+    "cancel-edit": "Bearbeiten abbrechen",
     "save": "Speichern",
     "placeholder": "Ein Gedanke...",
     "only-image-supported": "Nur Bilder werden unterstützt.",
@@ -96,7 +94,7 @@
     "resources": "Ressourcen"
   },
   "memo": {
-    "view-detail": "Zeige Details",
+    "view-detail": "Details anzeigen",
     "copy": "Kopieren",
     "visibility": {
       "private": "Nur für dich sichtbar",
@@ -112,7 +110,6 @@
     "shortcut-title": "Titel der Verknüpfung",
     "create-shortcut": "Verknüpfung erstellen",
     "edit-shortcut": "Verknüpfung bearbeiten",
-    "eligible-memo": "Förderfähige Memo",
     "fill-previous": "Bitte vorherigen Filterwert ausfüllen",
     "title-required": "Titel wird benötigt",
     "value-required": "Filterwert wird benötigt"
@@ -121,10 +118,10 @@
     "new-filter": "Neuer Filter",
     "type": {
       "tag": "Tag",
-      "type": "Type",
+      "type": "Typ",
       "text": "Text",
-      "display-time": "Display Time",
-      "visibility": "Visibility"
+      "display-time": "angezeigte Zeit",
+      "visibility": "Sichtbarkeit"
     },
     "operator": {
       "contains": "enthält",
@@ -138,48 +135,48 @@
       "not-tagged": "Keine Tags",
       "linked": "Hat Links"
     },
-    "text-placeholder": "Starte einen Regex mit ^"
+    "text-placeholder": "Beginne einen Regex mit ^"
   },
   "tag-list": {
-    "tip-text": "Erstelle einen Tag mit `#tag `"
+    "tip-text": "Erstelle einen Tag mit `#tag`"
   },
   "search": {
-    "quickly-filter": "Schnelles Filtern"
+    "quickly-filter": "Schnellfilter"
   },
   "setting": {
-    "my-account": "Mein Account",
-    "preference": "Präferenz",
-    "member": "Mitglied",
+    "my-account": "Mein Konto",
+    "preference": "Einstellungen",
+    "member": "Mitglieder",
     "member-list": "Mitgliederliste",
     "system": "System",
     "account-section": {
-      "title": "Account Informationen",
-      "update-information": "Informationen aktualisieren",
+      "title": "Konto-Informationen",
+      "update-information": "Informationen ändern",
       "change-password": "Passwort ändern"
     },
     "preference-section": {
-      "theme": "Thema",
+      "theme": "Erscheinungsbild",
       "default-memo-visibility": "Standard Sichtbarkeit von Memos",
-      "enable-folding-memo": "Aktiviere Falten von Memos",
-      "editor-font-style": "Editor Textstil",
-      "mobile-editor-style": "Mobiler Editorstil",
-      "default-memo-sort-option": "Angezeigter Memo Zeitpunkt",
-      "created_ts": "Zeitpunkt der Erstellung",
-      "updated_ts": "Zeitpunkt der Änderung"
+      "enable-folding-memo": "Einklappen von Memos aktivieren",
+      "editor-font-style": "Textstil des Editors",
+      "mobile-editor-style": "Stil des mobilen Editors",
+      "default-memo-sort-option": "Angezeigter Memo-Zeitpunkt",
+      "created_ts": "Erstellungszeitpunkt",
+      "updated_ts": "Änderungszeitpunkt"
     },
     "member-section": {
       "create-a-member": "Mitglied hinzufügen"
     },
     "system-section": {
-      "server-name": "Server Name",
+      "server-name": "Servername",
       "customize-server": {
-        "title": "Customize Server",
-        "default": "Default is memos",
-        "icon-url": "Icon URL"
+        "title": "Server bearbeiten",
+        "default": "Standard: \"memos\"",
+        "icon-url": "Icon-URL"
       },
       "database-file-size": "Dateigröße der Datenbank",
-      "allow-user-signup": "Erlaube Registrierungen für neue Mitglieder",
-      "additional-style": "Zusätzlicher Style",
+      "allow-user-signup": "Erlaube Registrierung neuer Mitglieder",
+      "additional-style": "Zusätzlicher Stil",
       "additional-script": "Zusätzliches Skript",
       "additional-style-placeholder": "Zusätzliches CSS",
       "additional-script-placeholder": "Zusätzliches JavaScript"
@@ -200,16 +197,16 @@
   },
   "message": {
     "no-memos": "Keine Memos 🌃",
-    "memos-ready": "Alle Memos bereit 🎉",
+    "memos-ready": "Alle Memos geladen 🎉",
     "restored-successfully": "Erfolgreich wiederhergestellt",
-    "memo-updated-datetime": "Zeitpunkt der Erstellung geändert.",
-    "invalid-created-datetime": "Ungültiger Zeitpunkt der Erstellung",
-    "change-memo-created-time": "Ändere den Zeitpunkt der Erstellung",
+    "memo-updated-datetime": "Erstellungszeitpunkt geändert.",
+    "invalid-created-datetime": "Ungültiger Erstellungszeitpunkt",
+    "change-memo-created-time": "Erstellungszeitpunkt ändern",
     "memo-not-found": "Memo nicht gefunden.",
     "fill-all": "Bitte alle Felder ausfüllen.",
     "password-not-match": "Passwörter stimmen nicht überein",
     "new-password-not-match": "Neue Passwörter stimmen nicht überein.",
-    "image-load-failed": "Laden des Bilds fehlgeschlagen",
+    "image-load-failed": "Laden des Bildes fehlgeschlagen",
     "fill-form": "Bitte das Formular ausfüllen",
     "login-failed": "Anmeldung fehlgeschlagen",
     "signup-failed": "Registrierung fehlgeschlagen",
@@ -219,7 +216,7 @@
     "copied": "Kopiert",
     "succeed-copy-content": "Inhalt erfolgreich kopiert",
     "succeed-copy-link": "Link erfolgreich kopiert",
-    "change-resource-filename": "Ändere den Dateinamen der Ressource",
+    "change-resource-filename": "Dateinamen der Ressource ändern",
     "resource-filename-updated": "Dateiname der Ressource geändert.",
     "invalid-resource-filename": "Ungültiger Dateiname.",
     "click-to-save-the-image": "Klicken um Bild zu speichern",
@@ -229,12 +226,12 @@
     "too-long": "Zu lang",
     "not-allow-space": "Keine Leerzeichen erlaubt",
     "not-allow-chinese": "Keine chinesischen Zeichen erlaubt",
-    "succeed-vacuum-database": "Succeed to vacuum database",
-    "succeed-update-additional-style": "Succeed to update additional style",
-    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
-    "succeed-update-customized-profile": "Succeed to update customized profile",
-    "succeed-update-additional-script": "Succeed to update additional script",
-    "update-succeed": "Update succeed"
+    "succeed-vacuum-database": "Aufräumen der Datenbank erfolgreich",
+    "succeed-update-additional-style": "Zusätzlicher Stil wurde erfolgreich aktualisiert",
+    "succeed-copy-resource-link": "Link zur Ressource wurde erfolgreich kopiert",
+    "succeed-update-customized-profile": "Server-Einstlelungen wurden erfolgreich gespeichert",
+    "succeed-update-additional-script": "Zusätzliches Skript wurde erfolgreich aktualisiert",
+    "update-succeed": "Update erfolgreich"
   },
   "days": {
     "monday": "Montag",
