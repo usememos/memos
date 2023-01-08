@@ -99,11 +99,14 @@ export const getMatchedNodes = (markdownStr: string): MatchedNode[] => {
       if (parser.name === "br") {
         return walkthough(retainContent, blockParsers, inlineParsers);
       } else {
-        if (retainContent.startsWith("\n")) {
+        if (parser.name !== "code block") {
           walkthough(matchedStr, [], inlineParsers);
+        }
+        if (retainContent.startsWith("\n")) {
           return walkthough(retainContent.slice(1), blockParsers, inlineParsers);
         }
       }
+      return "";
     }
 
     let matchedInlineParser = undefined;

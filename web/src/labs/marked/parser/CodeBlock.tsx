@@ -1,13 +1,11 @@
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
-import { useTranslation } from "react-i18next";
 import { matcher } from "../matcher";
 import toastHelper from "../../../components/Toast";
 
 export const CODE_BLOCK_REG = /^```(\S*?)\s([\s\S]*?)```/;
 
 const renderer = (rawStr: string) => {
-  const { t } = useTranslation();
   const matchResult = matcher(rawStr, CODE_BLOCK_REG);
   if (!matchResult) {
     return <>{rawStr}</>;
@@ -27,7 +25,7 @@ const renderer = (rawStr: string) => {
 
   const handleCopyButtonClick = () => {
     copy(matchResult[2]);
-    toastHelper.success(t("message.succeed-copy-code"));
+    toastHelper.success("Copy succeed");
   };
 
   return (
