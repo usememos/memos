@@ -38,7 +38,7 @@ const renderer = (rawStr: string) => {
       >
         copy
       </button>
-      <code className={`language-${language}`}>{highlightedCode}</code>
+      <code className={`language-${language}`} dangerouslySetInnerHTML={{ __html: highlightedCode }}></code>
     </pre>
   );
 };
