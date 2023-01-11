@@ -30,8 +30,8 @@ const defaultState: State = {
 const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }: Props) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [state, setState] = useState<State>(defaultState);
-  var startX = -1;
-  var endX = -1;
+  let startX = -1;
+  let endX = -1;
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -45,16 +45,28 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   };
 
   const handleTouchStart = (event: React.TouchEvent) => {
+    if (event.touches.length > 1){
+      // two or more fingers, ignore
+      return;
+    }
     startX = event.touches[0].clientX;
-  }
+  };
 
   const handleTouchMove = (event: React.TouchEvent) => {
+    if (event.touches.length > 1){
+      // two or more fingers, ignore
+      return;
+    }
     endX = event.touches[0].clientX;
   };
 
   const handleTouchEnd = (event: React.TouchEvent) => {
+    if (event.touches.length > 1){
+      // two or more fingers, ignore
+      return;
+    }
     if (startX > -1 && endX > -1) {
-      let distance = startX - endX;
+      const distance = startX - endX;
       if (distance > 50) {
         showNextImg();
       } else if (distance < -50) {
@@ -64,7 +76,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
 
     endX = -1;
     startX = -1;
-  }
+  };
 
   const showPrevImg = () => {
     if (currentIndex > 0) {
@@ -73,7 +85,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     } else {
       destroy();
     }
-  }
+  };
 
   const showNextImg = () => {
     if (currentIndex < imgUrls.length - 1) {
@@ -82,7 +94,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     } else {
       destroy();
     }
-  }
+  };
 
   const handleImgContainerClick = (event: React.MouseEvent) => {
     if (event.clientX < window.innerWidth / 2) {
@@ -118,8 +130,9 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   const getImageComputedStyle = () => {
     return {
       transform: `scale(${state.scale}) rotate(${state.angle}deg)`,
-      transformOrigin: `${state.originX === -1 ? "center" : `${state.originX}px`} ${state.originY === -1 ? "center" : `${state.originY}px`
-        }`,
+      transformOrigin: `${state.originX === -1 ? "center" : `${state.originX}px`} ${
+        state.originY === -1 ? "center" : `${state.originY}px`
+      }`,
     };
   };
 
