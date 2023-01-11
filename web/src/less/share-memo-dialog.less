@@ -47,13 +47,11 @@
 
         > .memo-content-wrapper {
           @apply w-full px-6 text-base pb-4;
-        }
 
-        > .images-container {
-          @apply w-full h-auto flex flex-col justify-start items-start px-6 pb-2;
-
-          > img {
-            @apply w-full h-auto mb-2 rounded;
+          > .resource-wrapper {
+            > .images-wrapper {
+              @apply !grid-cols-2;
+            }
           }
         }
 
