@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -267,18 +268,13 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch resource ID: %v", resourceID)).SetInternal(err)
 		}
 
+		resourceType := resource.Type
 		if strings.HasPrefix(resource.Type, "text") || strings.HasPrefix(resource.Type, "application") {
-			c.Response().Writer.Header().Set("Content-Type", echo.MIMETextPlain)
-		} else {
-			c.Response().Writer.Header().Set("Content-Type", resource.Type)
+			resourceType = echo.MIMETextPlain
 		}
-		c.Response().Writer.WriteHeader(http.StatusOK)
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
-		if _, err := c.Response().Writer.Write(resource.Blob); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write response").SetInternal(err)
-		}
-		return nil
+		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(resource.Blob))
 	})
 }
 
