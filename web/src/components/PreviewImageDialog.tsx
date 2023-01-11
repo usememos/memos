@@ -45,7 +45,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   };
 
   const handleTouchStart = (event: React.TouchEvent) => {
-    if (event.touches.length > 1){
+    if (event.touches.length > 1) {
       // two or more fingers, ignore
       return;
     }
@@ -53,7 +53,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   };
 
   const handleTouchMove = (event: React.TouchEvent) => {
-    if (event.touches.length > 1){
+    if (event.touches.length > 1) {
       // two or more fingers, ignore
       return;
     }
@@ -61,7 +61,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   };
 
   const handleTouchEnd = (event: React.TouchEvent) => {
-    if (event.touches.length > 1){
+    if (event.touches.length > 1) {
       // two or more fingers, ignore
       return;
     }
