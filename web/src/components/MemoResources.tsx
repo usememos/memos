@@ -1,23 +1,23 @@
-import Image from "./Image";
+import { absolutifyLink } from "../helpers/utils";
 import Icon from "./Icon";
+import SquareDiv from "./common/SquareDiv";
+import showPreviewImageDialog from "./PreviewImageDialog";
 import "../less/memo-resources.less";
 
 interface Props {
   resourceList: Resource[];
   className?: string;
-  style?: "row" | "col";
 }
 
 const getDefaultProps = (): Props => {
   return {
     className: "",
-    style: "row",
     resourceList: [],
   };
 };
 
 const MemoResources: React.FC<Props> = (props: Props) => {
-  const { className, style, resourceList } = {
+  const { className, resourceList } = {
     ...getDefaultProps(),
     ...props,
   };
@@ -35,24 +35,39 @@ const MemoResources: React.FC<Props> = (props: Props) => {
       return `/o/r/${resource.id}/${resource.filename}`;
     });
 
+  const handleImageClick = (imgUrl: string) => {
+    const index = imgUrls.findIndex((url) => url === imgUrl);
+    showPreviewImageDialog(imgUrls, index);
+  };
+
   return (
-    <div className={`resource-wrapper ${className || ""}`}>
-      {availableResourceList.length > 0 && (
-        <div className={`images-wrapper ${style}`}>
-          {availableResourceList.map((resource) => {
-            const url = `/o/r/${resource.id}/${resource.filename}`;
-            if (resource.type.startsWith("image")) {
-              return (
-                <Image className="memo-resource" key={resource.id} imgUrls={imgUrls} index={imgUrls.findIndex((item) => item === url)} />
-              );
-            } else if (resource.type.startsWith("video")) {
-              return <video className="memo-resource" controls key={resource.id} src={url} />;
-            } else {
-              return null;
-            }
-          })}
-        </div>
-      )}
+    <>
+      <div className={`resource-wrapper ${className || ""}`}>
+        {availableResourceList.length > 0 && (
+          <div className="images-wrapper">
+            {availableResourceList.map((resource) => {
+              const url = `/o/r/${resource.id}/${resource.filename}`;
+              if (resource.type.startsWith("image")) {
+                return (
+                  <SquareDiv key={resource.id} className="memo-resource">
+                    <img src={absolutifyLink(url)} onClick={() => handleImageClick(url)} decoding="async" loading="lazy" />
+                  </SquareDiv>
+                );
+              } else if (resource.type.startsWith("video")) {
+                return (
+                  <SquareDiv key={resource.id} className="memo-resource">
+                    <video preload="metadata" controls key={resource.id}>
+                      <source src={absolutifyLink(url)} type={resource.type} />
+                    </video>
+                  </SquareDiv>
+                );
+              } else {
+                return null;
+              }
+            })}
+          </div>
+        )}
+      </div>
       <div className="other-resource-wrapper">
         {otherResourceList.map((resource) => {
           return (
@@ -63,7 +78,7 @@ const MemoResources: React.FC<Props> = (props: Props) => {
           );
         })}
       </div>
-    </div>
+    </>
   );
 };
 

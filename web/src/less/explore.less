@@ -1,11 +1,11 @@
 .page-wrapper.explore {
-  @apply relative top-0 w-full h-full overflow-y-auto overflow-x-hidden bg-zinc-100 dark:bg-zinc-800;
+  @apply w-full h-full overflow-y-auto overflow-x-hidden bg-zinc-100 dark:bg-zinc-800;
 
   > .page-container {
     @apply relative w-full min-h-full mx-auto flex flex-col justify-start items-center pb-8;
 
     > .page-header {
-      @apply sticky top-0 z-10 max-w-2xl w-full min-h-full flex flex-row justify-between backdrop-blur-sm items-center px-4 sm:pr-6 pt-6 mb-2 ml-calc;
+      @apply sticky top-0 z-10 max-w-2xl w-full h-auto flex flex-row justify-between backdrop-blur-sm items-center px-4 sm:pr-6 pt-6 mb-2 ml-calc;
 
       > .title-container {
         @apply flex flex-row justify-start items-center;
@@ -27,7 +27,7 @@
     }
 
     > .memos-wrapper {
-      @apply relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 sm:pr-6 ml-calc;
+      @apply relative flex-grow max-w-2xl w-full h-auto flex flex-col justify-start items-start px-4 sm:pr-6 ml-calc;
 
       > .memo-container {
         @apply flex flex-col justify-start items-start w-full p-4 mt-2 bg-white dark:bg-zinc-700 rounded-lg border border-white dark:border-zinc-800 hover:border-gray-200 dark:hover:border-zinc-600;

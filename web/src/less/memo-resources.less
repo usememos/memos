@@ -2,54 +2,34 @@
   @apply w-full flex flex-col justify-start items-start;
 
   > .images-wrapper {
-    @apply w-full flex mt-2 pb-1;
+    @apply w-full grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2;
 
     > .memo-resource {
-      @apply w-auto h-auto shrink-0 grow-0 cursor-pointer rounded;
+      @apply shadow overflow-auto hide-scrollbar;
 
       > img {
-        @apply rounded hover:shadow;
+        @apply cursor-pointer rounded min-h-full w-auto min-w-full object-cover;
       }
-    }
 
-    &.row {
-      @apply flex-row justify-start items-start overflow-x-auto overflow-y-hidden;
-
-      > .memo-resource {
-        @apply max-w-xs h-auto max-h-40 mr-2 last:mr-0;
-
-        > img {
-          @apply w-auto max-h-40;
-        }
-      }
-    }
-
-    &.col {
-      @apply flex-col justify-start items-start;
-
-      > .memo-resource {
-        @apply w-full h-auto mb-2 last:mb-0;
-
-        > img {
-          @apply w-full h-auto shadow;
-        }
+      > video {
+        @apply cursor-pointer rounded w-full h-full object-contain bg-zinc-100 dark:bg-zinc-800;
       }
     }
   }
+}
 
-  > .other-resource-wrapper {
-    @apply w-full flex flex-row justify-start flex-wrap;
+.other-resource-wrapper {
+  @apply w-full flex flex-row justify-start flex-wrap;
 
-    > .other-resource-container {
-      @apply mt-1 mr-1 max-w-full flex flex-row justify-start items-center flex-nowrap bg-gray-100 px-2 py-1 rounded cursor-pointer hover:bg-gray-200;
+  > .other-resource-container {
+    @apply mt-1 mr-1 max-w-full flex flex-row justify-start items-center flex-nowrap bg-gray-100 px-2 py-1 rounded cursor-pointer hover:bg-gray-200;
 
-      > .icon-img {
-        @apply w-4 h-auto mr-1 text-gray-500;
-      }
+    > .icon-img {
+      @apply w-4 h-auto mr-1 text-gray-500;
+    }
 
-      > .name-text {
-        @apply text-gray-500 text-sm max-w-xs truncate font-mono;
-      }
+    > .name-text {
+      @apply text-gray-500 text-sm max-w-xs truncate font-mono;
     }
   }
 }
