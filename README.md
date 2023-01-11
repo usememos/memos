@@ -65,6 +65,10 @@ See more in [development guide](./docs/development.md).
 - [eallion/memos.top](https://github.com/eallion/memos.top) - A static page rendered with the Memos API
 - [eindex/logseq-memos-sync](https://github.com/EINDEX/logseq-memos-sync) - A Logseq plugin
 
+## User stories
+
+- [Memos - A Twitter Like Notes App You can Self Host](https://noted.lol/memos/)
+
 ### Join the community to build memos together!
 
 <a href="https://github.com/usememos/memos/graphs/contributors">
