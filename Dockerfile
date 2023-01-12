@@ -26,6 +26,6 @@ WORKDIR /usr/local/memos
 COPY --from=backend /backend-build/memos /usr/local/memos/
 
 # Directory to store the data, which can be referenced as the mounting point.
-RUN mkdir -p /var/opt/memos
+RUN mkdir -p /var/opt/memos && apk add --no-cache sqlite
 
 ENTRYPOINT ["./memos", "--mode", "prod", "--port", "5230"]
