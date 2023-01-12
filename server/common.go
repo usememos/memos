@@ -22,6 +22,11 @@ func DefaultGetRequestSkipper(c echo.Context) bool {
 	return c.Request().Method == http.MethodGet
 }
 
+func DefaultAPIRequestSkipper(c echo.Context) bool {
+	path := c.Path()
+	return common.HasPrefixes(path, "/api")
+}
+
 func (server *Server) DefaultAuthSkipper(c echo.Context) bool {
 	ctx := c.Request().Context()
 	path := c.Path()
