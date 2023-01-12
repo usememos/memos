@@ -1,4 +1,8 @@
+import { marked } from "..";
 import { matcher } from "../matcher";
+import Link from "./Link";
+import PlainLink from "./PlainLink";
+import PlainText from "./PlainText";
 
 export const HEADING_REG = /^(#+) ([^\n]+)/;
 
@@ -9,16 +13,17 @@ const renderer = (rawStr: string) => {
   }
 
   const level = matchResult[1].length;
+  const parsedContent = marked(matchResult[2], [], [Link, PlainLink, PlainText]);
   if (level === 1) {
-    return <h1>{matchResult[2]}</h1>;
+    return <h1>{parsedContent}</h1>;
   } else if (level === 2) {
-    return <h2>{matchResult[2]}</h2>;
+    return <h2>{parsedContent}</h2>;
   } else if (level === 3) {
-    return <h3>{matchResult[2]}</h3>;
+    return <h3>{parsedContent}</h3>;
   } else if (level === 4) {
-    return <h4>{matchResult[2]}</h4>;
+    return <h4>{parsedContent}</h4>;
   }
-  return <h5>{matchResult[2]}</h5>;
+  return <h5>{parsedContent}</h5>;
 };
 
 export default {
