@@ -33,6 +33,10 @@ docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/mem
 
 > The `~/.memos/` will be used as the data directory in your machine. And `/var/opt/memos` is the directory of the volume in docker and should not be modified.
 
+> Reset the administrator password command: `docker exec -it memos sqlite3 /var/opt/memos/memos_prod.db 'update user set password_hash="$2a$14$ajq8Q7fbtFRQvXpdCq7Jcuy.Rx1h/L4J60Otx.gyNLbAYctGMJ9tK" where id=1'` [Since the 0.11.x version and the later version, the version has begun to take effect]
+
+> The password after resetting is: `secret`
+
 If the `~/.memos/` does not have a `memos_prod.db` file, then memos will auto generate it. Memos will be running at [http://localhost:5230](http://localhost:5230).
 
 ### Docker Compose
