@@ -56,9 +56,7 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	e.Use(middleware.Gzip())
 
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		Skipper: func(c echo.Context) bool {
-			return s.DefaultAuthSkipper(c)
-		},
+		Skipper:     s.DefaultAuthSkipper,
 		TokenLookup: "cookie:_csrf",
 	}))
 
@@ -73,7 +71,6 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	}))
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
-		Skipper:      middleware.DefaultSkipper,
 		ErrorMessage: "Request timeout",
 		Timeout:      30 * time.Second,
 	}))
