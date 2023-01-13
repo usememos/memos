@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	"golang.org/x/exp/slices"
 
 	"github.com/labstack/echo/v4"
 )
@@ -92,10 +93,24 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}
 
+		tagFind := &api.TagFind{
+			CreatorID: userID,
+		}
+		existTagList, err := s.Store.FindTagList(ctx, tagFind)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find tag list").SetInternal(err)
+		}
+		tagNameList := []string{}
+		for _, tag := range existTagList {
+			tagNameList = append(tagNameList, tag.Name)
+		}
+
 		tagMapSet := make(map[string]bool)
 		for _, memo := range memoList {
 			for _, tag := range findTagListFromMemoContent(memo.Content) {
-				tagMapSet[tag] = true
+				if !slices.Contains(tagNameList, tag) {
+					tagMapSet[tag] = true
+				}
 			}
 		}
 		tagList := []string{}
