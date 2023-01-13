@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import useDebounce from "../hooks/useDebounce";
 import { useLocationStore, useDialogStore } from "../store/module";
 import { memoSpecialTypes } from "../helpers/filter";
 import Icon from "./Icon";
@@ -11,8 +12,8 @@ const SearchBar = () => {
   const dialogStore = useDialogStore();
   const memoType = locationStore.state.query.type;
   const [queryText, setQueryText] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
   const [isFocus, setIsFocus] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -40,6 +41,14 @@ const SearchBar = () => {
     setQueryText(text === undefined ? "" : text);
   }, [locationStore.state.query.text]);
 
+  useDebounce(
+    () => {
+      locationStore.setTextQuery(queryText.length === 0 ? undefined : queryText);
+    },
+    200,
+    [queryText]
+  );
+
   const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
     const { type: prevType } = locationStore.getState().query ?? {};
     if (type === prevType) {
@@ -51,7 +60,6 @@ const SearchBar = () => {
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;
     setQueryText(text);
-    locationStore.setTextQuery(text.length === 0 ? undefined : text);
   };
 
   const handleFocus = () => {
