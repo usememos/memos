@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useDebounce } from "react-use";
+import useDebounce from "../hooks/useDebounce";
 import { useLocationStore, useDialogStore } from "../store/module";
 import { memoSpecialTypes } from "../helpers/filter";
 import Icon from "./Icon";
