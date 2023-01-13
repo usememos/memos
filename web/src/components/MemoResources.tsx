@@ -1,7 +1,7 @@
 import { absolutifyLink } from "../helpers/utils";
-import Icon from "./Icon";
 import SquareDiv from "./common/SquareDiv";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import MemoResource from "./MemoResource";
 import "../less/memo-resources.less";
 
 interface Props {
@@ -23,11 +23,6 @@ const MemoResources: React.FC<Props> = (props: Props) => {
   };
   const availableResourceList = resourceList.filter((resource) => resource.type.startsWith("image") || resource.type.startsWith("video"));
   const otherResourceList = resourceList.filter((resource) => !availableResourceList.includes(resource));
-
-  const handlePreviewBtnClick = (resource: Resource) => {
-    const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
-    window.open(resourceUrl);
-  };
 
   const imgUrls = availableResourceList
     .filter((resource) => resource.type.startsWith("image"))
@@ -68,16 +63,13 @@ const MemoResources: React.FC<Props> = (props: Props) => {
           </div>
         )}
       </div>
-      <div className="other-resource-wrapper">
-        {otherResourceList.map((resource) => {
-          return (
-            <div className="other-resource-container" key={resource.id} onClick={() => handlePreviewBtnClick(resource)}>
-              <Icon.FileText className="icon-img" />
-              <span className="name-text">{resource.filename}</span>
-            </div>
-          );
-        })}
-      </div>
+      {otherResourceList.length > 0 && (
+        <div className="w-full flex flex-row justify-start flex-wrap mt-2">
+          {otherResourceList.map((resource) => {
+            return <MemoResource key={resource.id} className="my-1 mr-2" resource={resource} />;
+          })}
+        </div>
+      )}
     </>
   );
 };
