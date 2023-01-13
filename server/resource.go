@@ -268,8 +268,8 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch resource ID: %v", resourceID)).SetInternal(err)
 		}
 
-		resourceType := resource.Type
-		if strings.HasPrefix(resource.Type, "text") || strings.HasPrefix(resource.Type, "application") {
+		resourceType := strings.ToLower(resource.Type)
+		if strings.HasPrefix(resourceType, "text") || strings.HasPrefix(resourceType, "application") {
 			resourceType = echo.MIMETextPlain
 		}
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")

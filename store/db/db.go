@@ -73,13 +73,15 @@ func (db *DB) Open(ctx context.Context) (err error) {
 			return fmt.Errorf("failed to find migration history, err: %w", err)
 		}
 		if len(migrationHistoryList) == 0 {
-			if _, err = db.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
+			_, err := db.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
 				Version: currentVersion,
-			}); err != nil {
+			})
+			if err != nil {
 				return fmt.Errorf("failed to upsert migration history, err: %w", err)
 			}
 			return nil
 		}
+
 		migrationHistoryVersionList := []string{}
 		for _, migrationHistory := range migrationHistoryList {
 			migrationHistoryVersionList = append(migrationHistoryVersionList, migrationHistory.Version)
