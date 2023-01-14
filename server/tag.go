@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"regexp"
 	"sort"
 
@@ -133,8 +134,10 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		tagName := c.Param("tagName")
-		if tagName == "" {
+		tagName, err := url.QueryUnescape(c.Param("tagName"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid tag name").SetInternal(err)
+		} else if tagName == "" {
 			return echo.NewHTTPError(http.StatusBadRequest, "Tag name cannot be empty")
 		}
 

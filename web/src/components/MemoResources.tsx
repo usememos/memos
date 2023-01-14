@@ -1,4 +1,5 @@
 import { absolutifyLink } from "../helpers/utils";
+import { getResourceUrl } from "../utils/resource";
 import SquareDiv from "./common/SquareDiv";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import MemoResource from "./MemoResource";
@@ -27,7 +28,7 @@ const MemoResources: React.FC<Props> = (props: Props) => {
   const imgUrls = availableResourceList
     .filter((resource) => resource.type.startsWith("image"))
     .map((resource) => {
-      return `/o/r/${resource.id}/${resource.filename}`;
+      return getResourceUrl(resource);
     });
 
   const handleImageClick = (imgUrl: string) => {
@@ -41,7 +42,7 @@ const MemoResources: React.FC<Props> = (props: Props) => {
         {availableResourceList.length > 0 && (
           <div className="images-wrapper">
             {availableResourceList.map((resource) => {
-              const url = `/o/r/${resource.id}/${resource.filename}`;
+              const url = getResourceUrl(resource);
               if (resource.type.startsWith("image")) {
                 return (
                   <SquareDiv key={resource.id} className="memo-resource">
