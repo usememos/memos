@@ -123,7 +123,7 @@
             "tag": "Etiqueta",
             "type": "Tipo",
             "text": "Texto",
-            "display-time": "Tiempo de Visualización",
+            "display-time": "Fecha y Hora de Visualización",
             "visibility": "Visibilidad"
           },
         "operator": {
