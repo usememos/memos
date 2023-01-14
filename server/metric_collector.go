@@ -27,7 +27,7 @@ func (s *Server) registerMetricCollector() {
 	mc := &MetricCollector{
 		collector: c,
 		ID:        s.ID,
-		Enabled:   true,
+		Enabled:   false,
 		Profile:   s.Profile,
 	}
 	s.Collector = mc
