@@ -1,3 +1,4 @@
+import { getResourceUrl } from "../utils/resource";
 import Icon from "./Icon";
 
 interface Props {
@@ -7,7 +8,7 @@ interface Props {
 
 const MemoResource: React.FC<Props> = (props: Props) => {
   const { className, resource } = props;
-  const resourceUrl = `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
+  const resourceUrl = getResourceUrl(resource);
 
   const handlePreviewBtnClick = () => {
     window.open(resourceUrl);
