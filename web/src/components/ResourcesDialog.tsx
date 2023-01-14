@@ -1,9 +1,10 @@
 import { Tooltip } from "@mui/joy";
 import copy from "copy-to-clipboard";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
 import { useResourceStore } from "../store/module";
+import { getResourceUrl } from "../utils/resource";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import Dropdown from "./common/Dropdown";
@@ -83,10 +84,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     inputEl.click();
   };
 
-  const getResourceUrl = useCallback((resource: Resource) => {
-    return `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
-  }, []);
-
   const handlePreviewBtnClick = (resource: Resource) => {
     const resourceUrl = getResourceUrl(resource);
     if (resource.type.startsWith("image")) {
@@ -104,7 +101,8 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
-    copy(`${window.location.origin}/o/r/${resource.id}/${resource.filename}`);
+    const url = getResourceUrl(resource);
+    copy(url);
     toastHelper.success(t("message.succeed-copy-resource-link"));
   };
 

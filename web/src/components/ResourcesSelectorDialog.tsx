@@ -1,8 +1,9 @@
 import { Checkbox, Tooltip } from "@mui/joy";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
 import { useEditorStore, useResourceStore } from "../store/module";
+import { getResourceUrl } from "../utils/resource";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
@@ -46,10 +47,6 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
       }),
     });
   }, [resources]);
-
-  const getResourceUrl = useCallback((resource: Resource) => {
-    return `${window.location.origin}/o/r/${resource.id}/${resource.filename}`;
-  }, []);
 
   const handlePreviewBtnClick = (resource: Resource) => {
     const resourceUrl = getResourceUrl(resource);
