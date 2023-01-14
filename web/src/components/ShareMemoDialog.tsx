@@ -150,8 +150,8 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             <QRCodeSVG
               value={`${window.location.origin}/m/${memo.id}`}
               size={64}
-              bgColor={"#ffffff"}
-              fgColor={"#000000"}
+              bgColor={"#F3F4F6"}
+              fgColor={"#4B5563"}
               level={"L"}
               includeMargin={false}
             />
