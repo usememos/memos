@@ -31,6 +31,10 @@ export default defineConfig({
         target: "http://localhost:8081/",
         changeOrigin: true,
       },
+      "/manifest.json": {
+        target: "http://localhost:8081/",
+        changeOrigin: true,
+      },
     },
   },
   resolve: {
