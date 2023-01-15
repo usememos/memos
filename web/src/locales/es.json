@@ -27,7 +27,7 @@
         "share": "Compartir",
         "archive": "Archivar",
         "basic": "Básico",
-        "admin": "Admin",
+        "admin": "Administrador",
         "explore": "Explorar",
         "sign-in": "Iniciar sesión",
         "sign-up": "Registrarse",
@@ -37,12 +37,12 @@
         "shortcuts": "Atajos",
         "title": "Título",
         "filter": "Filtros",
-        "tags": "Tags",
+        "tags": "Etiquetas",
         "yourself": "Tu",
         "archived-at": "Archivado en",
         "changed": "cambiado",
         "update-on": "Actualización de",
-        "fold": "Fold",
+        "fold": "Plegar",
         "expand": "Expandir",
         "image": "Imagen",
         "link": "Enlace",
@@ -78,7 +78,7 @@
         "clear-unused-resources": "Borrar los recursos no utilizados",
         "warning-text-unused": "Seguro que quieres eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE❗.",
         "no-unused-resources": "No hay recursos sin utilizar",
-        "name": "Name"
+        "name": "Nombre"
     },
     "archived": {
         "archived-memos": "Notas Archivadas",
@@ -120,11 +120,11 @@
     "filter": {
         "new-filter": "Nuevo Filtro",
         "type": {
-            "tag": "Tag",
-            "type": "Type",
-            "text": "Text",
-            "display-time": "Display Time",
-            "visibility": "Visibility"
+            "tag": "Etiqueta",
+            "type": "Tipo",
+            "text": "Texto",
+            "display-time": "Fecha y Hora de Visualización",
+            "visibility": "Visibilidad"
           },
         "operator": {
             "contains": "Contiene",
@@ -135,13 +135,13 @@
             "after": "Después"
         },
         "value": {
-            "not-tagged": "Sin tags",
+            "not-tagged": "Sin etiquetas",
             "linked": "Con enlaces"
         },
         "text-placeholder": "Empieza por ^ para usar regex"
     },
     "tag-list": {
-        "tip-text": "Escribe `#tag ` para crearlo"
+        "tip-text": "Escribe '#etiqueta' para crearlo"
     },
     "search": {
         "quickly-filter": "Filtro rápido"
@@ -171,11 +171,11 @@
             "create-a-member": "Crear un miembro"
         },
         "system-section": {
-            "server-name": "Server Name",
+            "server-name": "Nombre del Servidor",
             "customize-server": {
-                "title": "Customize Server",
-                "default": "Default is memos",
-                "icon-url": "Icon URL"
+                "title": "Personalizar Servidor",
+                "default": "Por defecto es memos",
+                "icon-url": "Icono URL"
             },
             "database-file-size": "Tamaño de la Base de Datos",
             "allow-user-signup": "Permitir el registro de usuarios",
@@ -229,12 +229,12 @@
         "too-long": "Demasiado largo",
         "not-allow-space": "No se admiten espacios",
         "not-allow-chinese": "El chino no está permitido",
-        "succeed-vacuum-database": "Succeed to vacuum database",
-        "succeed-update-additional-style": "Succeed to update additional style",
-        "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
-        "succeed-update-customized-profile": "Succeed to update customized profile",
-        "succeed-update-additional-script": "Succeed to update additional script",
-        "update-succeed": "Update succeed"
+        "succeed-vacuum-database": "Exito al limpiar la base de datos",
+        "succeed-update-additional-style": "Éxito al actualizar el estilo adicional",
+        "succeed-copy-resource-link": "Éxito al copiar el enlace del recurso al portapapeles",
+        "succeed-update-customized-profile": "Éxito al actualizar el perfil personalizado",
+        "succeed-update-additional-script": "Éxito al actualizar el script adicional",
+        "update-succeed": "Actualización exitosa"
     },
     "days": {
       "monday": "Lunes",
