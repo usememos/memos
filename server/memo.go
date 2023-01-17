@@ -29,9 +29,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err := json.NewDecoder(c.Request().Body).Decode(memoCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
 		}
-		if memoCreate.Content == "" {
-			return echo.NewHTTPError(http.StatusBadRequest, "Memo content shouldn't be empty")
-		}
 
 		if memoCreate.Visibility == "" {
 			userSettingMemoVisibilityKey := api.UserSettingMemoVisibilityKey
