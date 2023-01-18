@@ -1,4 +1,5 @@
 import { Select, Option } from "@mui/joy";
+import { QRCodeSVG } from "qrcode.react";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import copy from "copy-to-clipboard";
@@ -69,7 +70,6 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
     if (!memoElRef.current) {
       return;
     }
-
     toImage(memoElRef.current, {
       pixelRatio: window.devicePixelRatio * 2,
     })
@@ -138,13 +138,23 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             <MemoResources resourceList={memo.resourceList} />
           </div>
           <div className="watermark-container">
+            <div className="logo-container">
+              <img className="logo-img" src="/logo.png" alt="" />
+            </div>
             <div className="userinfo-container">
               <span className="name-text">{user.nickname || user.username}</span>
               <span className="usage-text">
                 {state.memoAmount} MEMOS / {createdDays} DAYS
               </span>
             </div>
-            <img className="logo-img" src="/logo.png" alt="" />
+            <QRCodeSVG
+              value={`${window.location.origin}/m/${memo.id}`}
+              size={64}
+              bgColor={"#F3F4F6"}
+              fgColor={"#4B5563"}
+              level={"L"}
+              includeMargin={false}
+            />
           </div>
         </div>
         <div className="px-4 py-3 w-full flex flex-row justify-between items-center">
