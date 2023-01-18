@@ -296,12 +296,7 @@ const MemoEditor = () => {
   };
 
   const handleSaveBtnClick = async () => {
-    const content = editorRef.current?.getContent();
-    if (!content) {
-      toastHelper.error(t("editor.cant-empty"));
-      return;
-    }
-
+    const content = editorRef.current?.getContent() ?? "";
     try {
       const { editMemoId } = editorStore.getState();
       if (editMemoId && editMemoId !== UNKNOWN_ID) {
@@ -551,7 +546,11 @@ const MemoEditor = () => {
           <button className={`action-btn cancel-btn ${isEditing ? "" : "!hidden"}`} onClick={handleCancelEdit}>
             {t("editor.cancel-edit")}
           </button>
-          <button className="action-btn confirm-btn" disabled={!allowSave || state.isUploadingResource} onClick={handleSaveBtnClick}>
+          <button
+            className="action-btn confirm-btn"
+            disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource}
+            onClick={handleSaveBtnClick}
+          >
             {t("editor.save")}
             <img className="icon-img w-4 h-auto" src="/logo.png" />
           </button>
