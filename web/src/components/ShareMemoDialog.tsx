@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import copy from "copy-to-clipboard";
 import { toLower } from "lodash";
 import toImage from "../labs/html2image";
-import { useMemoStore, useUserStore } from "../store/module";
+import { useGlobalStore, useMemoStore, useUserStore } from "../store/module";
 import { VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { getMemoStats } from "../helpers/api";
@@ -32,7 +32,9 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
+  const globalStore = useGlobalStore();
   const user = userStore.state.user as User;
+  const { systemStatus } = globalStore.state;
   const [state, setState] = useState<State>({
     memoAmount: 0,
     memoVisibility: propsMemo.visibility,
@@ -139,7 +141,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
           </div>
           <div className="watermark-container">
             <div className="logo-container">
-              <img className="logo-img" src="/logo.png" alt="" />
+              <img className="logo-img" src={`${systemStatus.customizedProfile.logoUrl || "/logo.png"}`} alt="" />
             </div>
             <div className="userinfo-container">
               <span className="name-text">{user.nickname || user.username}</span>
