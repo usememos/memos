@@ -5,14 +5,14 @@
     @apply w-full grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2;
 
     > .memo-resource {
-      @apply shadow overflow-auto hide-scrollbar;
+      @apply shadow rounded overflow-hidden hide-scrollbar;
 
       > img {
-        @apply cursor-pointer rounded min-h-full w-auto min-w-full object-cover;
+        @apply cursor-pointer min-h-full w-auto min-w-full object-cover;
       }
 
       > video {
-        @apply cursor-pointer rounded w-full h-full object-contain bg-zinc-100 dark:bg-zinc-800;
+        @apply cursor-pointer w-full h-full object-contain bg-zinc-100 dark:bg-zinc-800;
       }
     }
   }
