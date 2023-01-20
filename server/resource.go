@@ -274,7 +274,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		}
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
-		if strings.HasPrefix(resourceType, "video") {
+		if strings.HasPrefix(resourceType, "video") || strings.HasPrefix(resourceType, "audio") {
 			http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(resource.Blob))
 			return nil
 		}
