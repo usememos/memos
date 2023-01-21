@@ -90,6 +90,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container !w-80">
         <Input
           className="mb-2"
+          size="md"
           placeholder="TAG_NAME"
           value={tagName}
           onChange={handleTagNameChanged}

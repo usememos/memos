@@ -9,10 +9,11 @@ type Resource struct {
 	UpdatedTs int64 `json:"updatedTs"`
 
 	// Domain specific fields
-	Filename string `json:"filename"`
-	Blob     []byte `json:"-"`
-	Type     string `json:"type"`
-	Size     int64  `json:"size"`
+	Filename     string `json:"filename"`
+	Blob         []byte `json:"-"`
+	ExternalLink string `json:"externalLink"`
+	Type         string `json:"type"`
+	Size         int64  `json:"size"`
 
 	// Related fields
 	LinkedMemoAmount int `json:"linkedMemoAmount"`
@@ -23,10 +24,11 @@ type ResourceCreate struct {
 	CreatorID int `json:"-"`
 
 	// Domain specific fields
-	Filename string `json:"filename"`
-	Blob     []byte `json:"blob"`
-	Type     string `json:"type"`
-	Size     int64  `json:"size"`
+	Filename     string `json:"filename"`
+	Blob         []byte `json:"-"`
+	ExternalLink string `json:"externalLink"`
+	Type         string `json:"-"`
+	Size         int64  `json:"-"`
 }
 
 type ResourceFind struct {

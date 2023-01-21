@@ -1,6 +1,6 @@
-import { Tooltip } from "@mui/joy";
+import { Button } from "@mui/joy";
 import copy from "copy-to-clipboard";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
 import { useResourceStore } from "../store/module";
@@ -16,19 +16,12 @@ import "../less/resources-dialog.less";
 
 type Props = DialogProps;
 
-interface State {
-  isUploadingResource: boolean;
-}
-
 const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const { t } = useTranslation();
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
-  const [state, setState] = useState<State>({
-    isUploadingResource: false,
-  });
 
   useEffect(() => {
     resourceStore
@@ -43,10 +36,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   }, []);
 
   const handleUploadFileBtnClick = async () => {
-    if (state.isUploadingResource) {
-      return;
-    }
-
     const inputEl = document.createElement("input");
     inputEl.style.position = "fixed";
     inputEl.style.top = "-100vh";
@@ -60,22 +49,12 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         return;
       }
 
-      setState({
-        ...state,
-        isUploadingResource: true,
-      });
-
       for (const file of inputEl.files) {
         try {
-          await resourceStore.upload(file);
+          await resourceStore.createResourceWithBlob(file);
         } catch (error: any) {
           console.error(error);
           toastHelper.error(error.response.data.message);
-        } finally {
-          setState({
-            ...state,
-            isUploadingResource: false,
-          });
         }
       }
 
@@ -158,18 +137,16 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <div className="action-buttons-container">
-          <div className="buttons-wrapper">
-            <div className="upload-resource-btn" onClick={() => handleUploadFileBtnClick()}>
-              <Icon.File className="icon-img" />
-              <span>{t("resources.upload")}</span>
-            </div>
+        <div className="w-full flex flex-row justify-between items-center">
+          <div className="flex flex-row justify-start items-center space-x-2">
+            <Button onClick={() => handleUploadFileBtnClick()} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
+              {t("common.create")}
+            </Button>
           </div>
-          <div className="buttons-wrapper">
-            <div className="delete-unused-resource-btn" onClick={handleDeleteUnusedResourcesBtnClick}>
-              <Icon.Trash2 className="icon-img" />
-              <span>{t("resources.clear-unused-resources")}</span>
-            </div>
+          <div className="flex flex-row justify-end items-center">
+            <Button color="danger" onClick={handleDeleteUnusedResourcesBtnClick} startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
+              <span>{t("resources.clear")}</span>
+            </Button>
           </div>
         </div>
         {loadingState.isLoading ? (
@@ -189,9 +166,9 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
               resources.map((resource) => (
                 <div key={resource.id} className="resource-container">
                   <span className="field-text id-text">{resource.id}</span>
-                  <Tooltip title={resource.filename}>
-                    <span className="field-text name-text">{resource.filename}</span>
-                  </Tooltip>
+                  <span className="field-text name-text" onClick={() => handleRenameBtnClick(resource)}>
+                    {resource.filename}
+                  </span>
                   <div className="buttons-container">
                     <Dropdown
                       actionsClassName="!w-28"
@@ -202,12 +179,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                             onClick={() => handlePreviewBtnClick(resource)}
                           >
                             {t("resources.preview")}
-                          </button>
-                          <button
-                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                            onClick={() => handleRenameBtnClick(resource)}
-                          >
-                            {t("resources.rename")}
                           </button>
                           <button
                             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"

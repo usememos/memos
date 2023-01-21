@@ -21,11 +21,39 @@ import (
 
 const (
 	// The max file size is 32MB.
-	maxFileSize = (32 * 8) << 20
+	maxFileSize = 32 << 20
 )
 
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		resourceCreate := &api.ResourceCreate{}
+		if err := json.NewDecoder(c.Request().Body).Decode(resourceCreate); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post resource request").SetInternal(err)
+		}
+
+		resourceCreate.CreatorID = userID
+		resource, err := s.Store.CreateResource(ctx, resourceCreate)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
+		}
+		if err := s.createResourceCreateActivity(c, resource); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
+		}
+		return nil
+	})
+
+	g.POST("/resource/blob", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
