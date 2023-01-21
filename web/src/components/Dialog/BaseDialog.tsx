@@ -9,8 +9,8 @@ import theme from "../../theme";
 import "../../less/base-dialog.less";
 
 interface DialogConfig {
-  className: string;
   dialogName: string;
+  className?: string;
   clickSpaceDestroy?: boolean;
 }
 
@@ -55,7 +55,7 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`dialog-wrapper ${className}`} onMouseDown={handleSpaceClicked}>
+    <div className={`dialog-wrapper ${className ?? ""}`} onMouseDown={handleSpaceClicked}>
       <div ref={dialogContainerRef} className="dialog-container" onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>

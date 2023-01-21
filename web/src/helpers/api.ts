@@ -153,8 +153,12 @@ export function getResourceList() {
   return axios.get<ResponseObject<Resource[]>>("/api/resource");
 }
 
-export function uploadFile(formData: FormData) {
-  return axios.post<ResponseObject<Resource>>("/api/resource", formData);
+export function createResource(resourceCreate: ResourceCreate) {
+  return axios.post<ResponseObject<Resource>>("/api/resource", resourceCreate);
+}
+
+export function createResourceWithBlob(formData: FormData) {
+  return axios.post<ResponseObject<Resource>>("/api/resource/blob", formData);
 }
 
 export function deleteResourceById(id: ResourceId) {

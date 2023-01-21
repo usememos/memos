@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLocationStore, useUserStore } from "../store/module";
 import showDailyReviewDialog from "./DailyReviewDialog";
+import showResourcesDialog from "./ResourcesDialog";
 import showSettingDialog from "./SettingDialog";
 import UserBanner from "./UserBanner";
 import UsageHeatMap from "./UsageHeatMap";
@@ -38,6 +39,9 @@ const Sidebar = () => {
           <Link to="/explore" className="btn action-btn">
             <span className="icon">🏂</span> {t("common.explore")}
           </Link>
+          <button className="btn action-btn" onClick={() => showResourcesDialog()}>
+            <span className="icon">🗂️</span> {t("sidebar.resources")}
+          </button>
           {!userStore.isVisitorMode() && (
             <>
               <button className="btn action-btn" onClick={handleSettingBtnClick}>

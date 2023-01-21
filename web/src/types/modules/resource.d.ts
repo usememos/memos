@@ -7,10 +7,16 @@ interface Resource {
   updatedTs: TimeStamp;
 
   filename: string;
+  externalLink: string;
   type: string;
   size: string;
 
   linkedMemoAmount: number;
+}
+
+interface ResourceCreate {
+  filename: string;
+  externalLink: string;
 }
 
 interface ResourcePatch {

@@ -37,6 +37,7 @@ const setEditingMemoVisibilityCache = (visibility: Visibility) => {
 interface State {
   fullscreen: boolean;
   isUploadingResource: boolean;
+  isRequesting: boolean;
 }
 
 const MemoEditor = () => {
@@ -51,6 +52,7 @@ const MemoEditor = () => {
   const [state, setState] = useState<State>({
     isUploadingResource: false,
     fullscreen: false,
+    isRequesting: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const editorState = editorStore.state;
@@ -280,7 +282,7 @@ const MemoEditor = () => {
     let resource = undefined;
 
     try {
-      resource = await resourceStore.upload(file);
+      resource = await resourceStore.createResourceWithBlob(file);
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
@@ -305,6 +307,16 @@ const MemoEditor = () => {
   }, [editorState.editMemoId]);
 
   const handleSaveBtnClick = async () => {
+    if (state.isRequesting) {
+      return;
+    }
+
+    setState((state) => {
+      return {
+        ...state,
+        isRequesting: true,
+      };
+    });
     const content = editorRef.current?.getContent() ?? "";
     try {
       const { editMemoId } = editorStore.getState();
@@ -332,6 +344,12 @@ const MemoEditor = () => {
       console.error(error);
       toastHelper.error(error.response.data.message);
     }
+    setState((state) => {
+      return {
+        ...state,
+        isRequesting: false,
+      };
+    });
 
     // Upsert tag with the content.
     const matchedNodes = getMatchedNodes(content);
@@ -561,7 +579,7 @@ const MemoEditor = () => {
           </button>
           <button
             className="action-btn confirm-btn"
-            disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource}
+            disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource || state.isRequesting}
             onClick={handleSaveBtnClick}
           >
             {t("editor.save")}

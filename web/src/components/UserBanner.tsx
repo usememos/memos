@@ -5,7 +5,6 @@ import { getMemoStats } from "../helpers/api";
 import * as utils from "../helpers/utils";
 import Icon from "./Icon";
 import Dropdown from "./common/Dropdown";
-import showResourcesDialog from "./ResourcesDialog";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import "../less/user-banner.less";
@@ -51,10 +50,6 @@ const UserBanner = () => {
     locationStore.clearQuery();
   }, []);
 
-  const handleResourcesBtnClick = () => {
-    showResourcesDialog();
-  };
-
   const handleArchivedBtnClick = () => {
     showArchivedMemoDialog();
   };
@@ -84,15 +79,9 @@ const UserBanner = () => {
                 <>
                   <button
                     className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
-                    onClick={handleResourcesBtnClick}
-                  >
-                    <span className="mr-1">🌄</span> {t("sidebar.resources")}
-                  </button>
-                  <button
-                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                     onClick={handleArchivedBtnClick}
                   >
-                    <span className="mr-1">🗂</span> {t("sidebar.archived")}
+                    <span className="mr-1">🗃️</span> {t("sidebar.archived")}
                   </button>
                 </>
               )}
