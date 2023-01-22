@@ -27,7 +27,7 @@ type ResourceCreate struct {
 	Filename     string `json:"filename"`
 	Blob         []byte `json:"-"`
 	ExternalLink string `json:"externalLink"`
-	Type         string `json:"-"`
+	Type         string `json:"type"`
 	Size         int64  `json:"-"`
 }
 

@@ -17,6 +17,7 @@ interface Resource {
 interface ResourceCreate {
   filename: string;
   externalLink: string;
+  type: string;
 }
 
 interface ResourcePatch {

@@ -12,6 +12,7 @@ import Selector from "./common/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
+import showCreateResourceDialog from "./CreateResourceDialog";
 import "../less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
@@ -418,33 +419,11 @@ const MemoEditor = () => {
   };
 
   const handleUploadFileBtnClick = () => {
-    const inputEl = document.createElement("input");
-    inputEl.style.position = "fixed";
-    inputEl.style.top = "-100vh";
-    inputEl.style.left = "-100vw";
-    document.body.appendChild(inputEl);
-    inputEl.type = "file";
-    inputEl.multiple = true;
-    inputEl.accept = "*";
-    inputEl.onchange = async () => {
-      if (!inputEl.files || inputEl.files.length === 0) {
-        return;
-      }
-
-      const resourceList: Resource[] = [];
-      for (const file of inputEl.files) {
-        const resource = await handleUploadResource(file);
-        if (resource) {
-          resourceList.push(resource);
-          if (editorState.editMemoId) {
-            await upsertMemoResource(editorState.editMemoId, resource.id);
-          }
-        }
-      }
-      editorStore.setResourceList([...editorState.resourceList, ...resourceList]);
-      document.body.removeChild(inputEl);
-    };
-    inputEl.click();
+    showCreateResourceDialog({
+      onConfirm: (resourceList) => {
+        editorStore.setResourceList([...editorState.resourceList, ...resourceList]);
+      },
+    });
   };
 
   const handleFullscreenBtnClick = () => {
@@ -536,7 +515,6 @@ const MemoEditor = () => {
           </button>
           <div className="action-btn resource-btn">
             <Icon.FileText className="icon-img" />
-            <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
             <div className="resource-action-list">
               <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
                 <Icon.Upload className="icon-img" />
