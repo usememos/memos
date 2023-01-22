@@ -11,6 +11,7 @@ import Dropdown from "./common/Dropdown";
 import { generateDialog } from "./Dialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import showCreateResourceDialog from "./CreateResourceDialog";
 import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
 import "../less/resources-dialog.less";
 
@@ -34,34 +35,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         loadingState.setFinish();
       });
   }, []);
-
-  const handleUploadFileBtnClick = async () => {
-    const inputEl = document.createElement("input");
-    inputEl.style.position = "fixed";
-    inputEl.style.top = "-100vh";
-    inputEl.style.left = "-100vw";
-    document.body.appendChild(inputEl);
-    inputEl.type = "file";
-    inputEl.multiple = true;
-    inputEl.accept = "*";
-    inputEl.onchange = async () => {
-      if (!inputEl.files || inputEl.files.length === 0) {
-        return;
-      }
-
-      for (const file of inputEl.files) {
-        try {
-          await resourceStore.createResourceWithBlob(file);
-        } catch (error: any) {
-          console.error(error);
-          toastHelper.error(error.response.data.message);
-        }
-      }
-
-      document.body.removeChild(inputEl);
-    };
-    inputEl.click();
-  };
 
   const handlePreviewBtnClick = (resource: Resource) => {
     const resourceUrl = getResourceUrl(resource);
@@ -139,7 +112,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container">
         <div className="w-full flex flex-row justify-between items-center">
           <div className="flex flex-row justify-start items-center space-x-2">
-            <Button onClick={() => handleUploadFileBtnClick()} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
+            <Button onClick={() => showCreateResourceDialog({})} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
               {t("common.create")}
             </Button>
           </div>
