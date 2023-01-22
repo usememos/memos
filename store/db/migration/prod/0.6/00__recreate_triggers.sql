@@ -10,6 +10,7 @@ SET
   updated_ts = (strftime('%s', 'now'))
 WHERE
   rowid = old.rowid;
+
 END;
 
 DROP TRIGGER IF EXISTS `trigger_update_memo_modification_time`;
@@ -24,6 +25,7 @@ SET
   updated_ts = (strftime('%s', 'now'))
 WHERE
   rowid = old.rowid;
+
 END;
 
 DROP TRIGGER IF EXISTS `trigger_update_shortcut_modification_time`;
@@ -38,6 +40,7 @@ SET
   updated_ts = (strftime('%s', 'now'))
 WHERE
   rowid = old.rowid;
+
 END;
 
 DROP TRIGGER IF EXISTS `trigger_update_resource_modification_time`;
@@ -52,4 +55,5 @@ SET
   updated_ts = (strftime('%s', 'now'))
 WHERE
   rowid = old.rowid;
+
 END;
