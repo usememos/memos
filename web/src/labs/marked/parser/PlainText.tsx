@@ -2,7 +2,8 @@ import { matcher } from "../matcher";
 
 export const PLAIN_TEXT_REG = /(.+)/;
 
-const renderer = (rawStr: string): string => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const renderer = (rawStr: string, highlightWord?: string) => {
   const matchResult = matcher(rawStr, PLAIN_TEXT_REG);
   if (!matchResult) {
     return rawStr;

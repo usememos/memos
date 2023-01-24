@@ -12,6 +12,7 @@ export interface DisplayConfig {
 interface Props {
   content: string;
   className?: string;
+  highlightWord?: string;
   displayConfig?: Partial<DisplayConfig>;
   onMemoContentClick?: (e: React.MouseEvent) => void;
   onMemoContentDoubleClick?: (e: React.MouseEvent) => void;
@@ -28,7 +29,7 @@ const defaultDisplayConfig: DisplayConfig = {
 };
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, content, onMemoContentClick, onMemoContentDoubleClick } = props;
+  const { className, content, highlightWord, onMemoContentClick, onMemoContentDoubleClick } = props;
   const { t } = useTranslation();
   const userStore = useUserStore();
   const user = userStore.state.user;
@@ -96,7 +97,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
       >
-        {marked(state.expandButtonStatus === 0 ? foldedContent : content)}
+        {marked(state.expandButtonStatus === 0 ? foldedContent : content, highlightWord)}
       </div>
       {state.expandButtonStatus !== -1 && (
         <div className="expand-btn-container">

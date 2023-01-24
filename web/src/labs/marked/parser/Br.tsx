@@ -1,6 +1,7 @@
 export const BR_REG = /^(\n+)/;
 
-const renderer = (rawStr: string) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const renderer = (rawStr: string, highlightWord?: string): JSX.Element => {
   const length = rawStr.split("\n").length - 1;
   const brList = [];
   for (let i = 0; i < length; i++) {

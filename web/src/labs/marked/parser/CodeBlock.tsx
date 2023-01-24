@@ -5,7 +5,8 @@ import toastHelper from "../../../components/Toast";
 
 export const CODE_BLOCK_REG = /^```(\S*?)\s([\s\S]*?)```/;
 
-const renderer = (rawStr: string) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const renderer = (rawStr: string, highlightWord?: string) => {
   const matchResult = matcher(rawStr, CODE_BLOCK_REG);
   if (!matchResult) {
     return <>{rawStr}</>;

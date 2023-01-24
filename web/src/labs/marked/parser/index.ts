@@ -18,6 +18,7 @@ import Blockquote from "./Blockquote";
 import HorizontalRules from "./HorizontalRules";
 import Strikethrough from "./Strikethrough";
 import Heading from "./Heading";
+import Mark from "./Mark";
 
 export { TAG_REG } from "./Tag";
 export { LINK_REG } from "./Link";
@@ -36,4 +37,16 @@ export const blockElementParserList = [
   Paragraph,
 ];
 
-export const inlineElementParserList = [Image, BoldEmphasis, Bold, Emphasis, Link, InlineCode, PlainLink, Strikethrough, Tag, PlainText];
+export const inlineElementParserList = [
+  Image,
+  BoldEmphasis,
+  Bold,
+  Emphasis,
+  Link,
+  InlineCode,
+  PlainLink,
+  Strikethrough,
+  Tag,
+  Mark,
+  PlainText,
+];

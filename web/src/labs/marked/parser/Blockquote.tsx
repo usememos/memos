@@ -1,14 +1,21 @@
 import { matcher } from "../matcher";
+import { marked } from "../index";
+import Mark from "./Mark";
 
 export const BLOCKQUOTE_REG = /^> ([^\n]+)/;
 
-const renderer = (rawStr: string) => {
+const renderer = (rawStr: string, highlightWord?: string) => {
   const matchResult = matcher(rawStr, BLOCKQUOTE_REG);
   if (!matchResult) {
     return <>{rawStr}</>;
   }
-
-  return <blockquote>{matchResult[1]}</blockquote>;
+  let parsedContent;
+  if (highlightWord) {
+    parsedContent = marked(rawStr, highlightWord, [], [Mark]);
+  } else {
+    parsedContent = marked(rawStr, highlightWord, [], []);
+  }
+  return <blockquote>{parsedContent}</blockquote>;
 };
 
 export default {

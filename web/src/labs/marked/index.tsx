@@ -3,6 +3,7 @@ import { blockElementParserList, inlineElementParserList } from "./parser";
 
 export const marked = (
   markdownStr: string,
+  highlightWord?: string,
   blockParsers = blockElementParserList,
   inlineParsers = inlineElementParserList
 ): string | JSX.Element => {
@@ -17,18 +18,18 @@ export const marked = (
     if (parser.name === "br") {
       return (
         <>
-          {parser.renderer(matchedStr)}
-          {marked(retainContent, blockParsers, inlineParsers)}
+          {parser.renderer(matchedStr, highlightWord)}
+          {marked(retainContent, highlightWord, blockParsers, inlineParsers)}
         </>
       );
     } else {
       if (retainContent === "") {
-        return parser.renderer(matchedStr);
+        return parser.renderer(matchedStr, highlightWord);
       } else if (retainContent.startsWith("\n")) {
         return (
           <>
-            {parser.renderer(matchedStr)}
-            {marked(retainContent.slice(1), blockParsers, inlineParsers)}
+            {parser.renderer(matchedStr, highlightWord)}
+            {marked(retainContent.slice(1), highlightWord, blockParsers, inlineParsers)}
           </>
         );
       }
@@ -39,11 +40,17 @@ export const marked = (
   let matchedIndex = -1;
 
   for (const parser of inlineParsers) {
+    if (parser.name === "mark") {
+      if (highlightWord) {
+        parser.regexp = new RegExp(`(${highlightWord.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`);
+      } else {
+        continue;
+      }
+    }
     const matchResult = matcher(markdownStr, parser.regexp);
     if (!matchResult) {
       continue;
     }
-
     if (parser.name === "plain text" && matchedInlineParser !== undefined) {
       continue;
     }
@@ -64,9 +71,9 @@ export const marked = (
       const suffixStr = markdownStr.slice(matchedIndex + matchedLength);
       return (
         <>
-          {marked(prefixStr, [], inlineParsers)}
-          {matchedInlineParser.renderer(matchedStr)}
-          {marked(suffixStr, [], inlineParsers)}
+          {marked(prefixStr, highlightWord, [], inlineParsers)}
+          {matchedInlineParser.renderer(matchedStr, highlightWord)}
+          {marked(suffixStr, highlightWord, [], inlineParsers)}
         </>
       );
     }

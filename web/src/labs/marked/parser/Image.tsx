@@ -3,7 +3,8 @@ import { matcher } from "../matcher";
 
 export const IMAGE_REG = /!\[.*?\]\((.+?)\)/;
 
-const renderer = (rawStr: string) => {
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const renderer = (rawStr: string, highlightWord?: string) => {
   const matchResult = matcher(rawStr, IMAGE_REG);
   if (!matchResult) {
     return rawStr;
