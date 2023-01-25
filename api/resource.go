@@ -40,6 +40,7 @@ type ResourceFind struct {
 	// Domain specific fields
 	Filename *string `json:"filename"`
 	MemoID   *int
+	GetBlob  bool
 }
 
 type ResourcePatch struct {

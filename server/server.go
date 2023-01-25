@@ -98,9 +98,6 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	rootGroup := e.Group("")
 	s.registerRSSRoutes(rootGroup)
 
-	webhookGroup := e.Group("/h")
-	s.registerResourcePublicRoutes(webhookGroup)
-
 	publicGroup := e.Group("/o")
 	s.registerResourcePublicRoutes(publicGroup)
 	registerGetterPublicRoutes(publicGroup)

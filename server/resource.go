@@ -153,6 +153,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			ID:        &resourceID,
 			CreatorID: &userID,
+			GetBlob:   true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
@@ -180,6 +181,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			ID:        &resourceID,
 			CreatorID: &userID,
+			GetBlob:   true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
@@ -290,6 +292,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			ID:       &resourceID,
 			Filename: &filename,
+			GetBlob:  true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
