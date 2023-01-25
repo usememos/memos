@@ -1,4 +1,4 @@
-import { isNumber, last, toLower, uniq } from "lodash";
+import { isNumber, last, toLower, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "../labs/marked";
@@ -517,8 +517,8 @@ const MemoEditor = () => {
             <Icon.FileText className="icon-img" />
             <div className="resource-action-list">
               <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
-                <Icon.Upload className="icon-img" />
-                <span>{t("editor.local")}</span>
+                <Icon.Plus className="icon-img" />
+                <span>{t("common.create")}</span>
               </div>
               <div className="resource-action-item" onClick={showResourcesSelectorDialog}>
                 <Icon.Database className="icon-img" />

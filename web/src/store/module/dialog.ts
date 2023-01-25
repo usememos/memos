@@ -1,4 +1,4 @@
-import { last } from "lodash";
+import { last } from "lodash-es";
 import store, { useAppSelector } from "..";
 import { pushDialogStack, popDialogStack, removeDialog } from "../reducer/dialog";
 
