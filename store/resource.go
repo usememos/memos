@@ -295,21 +295,18 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 		where, args = append(where, "id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
 	}
 
-	query := `
+	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
+	if find.GetBlob {
+		fields = append(fields, "blob")
+	}
+
+	query := fmt.Sprintf(`
 		SELECT
-			id,
-			filename,
-			blob,
-			external_link,
-			type,
-			size,
-			creator_id,
-			created_ts,
-			updated_ts
+			%s
 		FROM resource
-		WHERE ` + strings.Join(where, " AND ") + `
+		WHERE %s
 		ORDER BY id DESC
-	`
+	`, strings.Join(fields, ", "), strings.Join(where, " AND "))
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, FormatError(err)
@@ -319,16 +316,21 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 	resourceRawList := make([]*resourceRaw, 0)
 	for rows.Next() {
 		var resourceRaw resourceRaw
-		if err := rows.Scan(
+		dest := []interface{}{
 			&resourceRaw.ID,
 			&resourceRaw.Filename,
-			&resourceRaw.Blob,
 			&resourceRaw.ExternalLink,
 			&resourceRaw.Type,
 			&resourceRaw.Size,
 			&resourceRaw.CreatorID,
 			&resourceRaw.CreatedTs,
 			&resourceRaw.UpdatedTs,
+		}
+		if find.GetBlob {
+			dest = append(dest, &resourceRaw.Blob)
+		}
+		if err := rows.Scan(
+			dest...,
 		); err != nil {
 			return nil, FormatError(err)
 		}
