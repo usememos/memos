@@ -117,7 +117,7 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	return s, nil
 }
 
-func (s *Server) Run(ctx context.Context) error {
+func (s *Server) Start(ctx context.Context) error {
 	if err := s.createServerStartActivity(ctx); err != nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
