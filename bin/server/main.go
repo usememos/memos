@@ -45,7 +45,7 @@ func run() error {
 
 	println(greetingBanner)
 	fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)
-	return serverInstance.Run(ctx)
+	return serverInstance.Start(ctx)
 }
 
 func main() {
