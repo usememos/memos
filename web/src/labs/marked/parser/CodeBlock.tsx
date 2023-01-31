@@ -29,9 +29,9 @@ const renderer = (rawStr: string) => {
   };
 
   return (
-    <pre>
+    <pre className="group">
       <button
-        className="text-xs font-mono italic absolute top-0 right-0 px-2 leading-6 border btn-text rounded opacity-60"
+        className="text-xs font-mono italic absolute top-0 right-0 px-2 leading-6 border btn-text rounded opacity-0 group-hover:opacity-60"
         onClick={handleCopyButtonClick}
       >
         copy
