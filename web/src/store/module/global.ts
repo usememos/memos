@@ -9,6 +9,7 @@ export const initialGlobalState = async () => {
     appearance: "system" as Appearance,
     systemStatus: {
       allowSignUp: false,
+      disablePublicMemos: false,
       additionalStyle: "",
       additionalScript: "",
       customizedProfile: {

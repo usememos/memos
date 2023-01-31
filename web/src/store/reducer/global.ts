@@ -19,6 +19,7 @@ const globalSlice = createSlice({
       },
       dbSize: 0,
       allowSignUp: false,
+      disablePublicMemos: false,
       additionalStyle: "",
       additionalScript: "",
       customizedProfile: {
