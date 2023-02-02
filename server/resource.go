@@ -300,7 +300,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		}
 
 		resourceType := strings.ToLower(resource.Type)
-		if strings.HasPrefix(resourceType, "text") || strings.HasPrefix(resourceType, "application") {
+		if strings.HasPrefix(resourceType, "text") || (strings.HasPrefix(resourceType, "application") && resourceType != "application/pdf") {
 			resourceType = echo.MIMETextPlain
 		}
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
