@@ -14,6 +14,7 @@ const MemoFilter = () => {
   const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
   const showFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
 
+  const tags = tagQuery?.split(" ");
   return (
     <div className={`filter-query-container ${showFilter ? "" : "!hidden"}`}>
       <span className="mx-2 text-gray-400">{t("common.filter")}:</span>
@@ -25,14 +26,20 @@ const MemoFilter = () => {
       >
         <Icon.Target className="icon-text" /> {shortcut?.title}
       </div>
-      <div
-        className={"filter-item-container " + (tagQuery ? "" : "!hidden")}
-        onClick={() => {
-          locationStore.setTagQuery(undefined);
-        }}
-      >
-        <Icon.Tag className="icon-text" /> {tagQuery}
-      </div>
+      {tags?.map((tag) => {
+        return (
+          <div
+            className={"filter-item-container " + (tagQuery ? "" : "!hidden")}
+            key={tag}
+            onClick={() => {
+              const curTagQuery = tags.filter((_tag) => _tag !== tag).join(" ");
+              locationStore.setTagQuery(curTagQuery.length === 0 ? undefined : curTagQuery);
+            }}
+          >
+            <Icon.Tag className="icon-text" /> {tag}
+          </div>
+        );
+      })}
       <div
         className={"filter-item-container " + (memoType ? "" : "!hidden")}
         onClick={() => {

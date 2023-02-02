@@ -43,7 +43,19 @@ const SearchBar = () => {
 
   useDebounce(
     () => {
-      locationStore.setTextQuery(queryText.length === 0 ? undefined : queryText);
+      if (queryText.length == 0) {
+        locationStore.setTextQuery(undefined);
+      } else {
+        if (queryText.startsWith("#")) {
+          const tagQuery = queryText
+            .split(" ")
+            .map((item) => item.slice(1))
+            .join(" ");
+          locationStore.setTagQuery(tagQuery);
+        } else {
+          locationStore.setTextQuery(queryText);
+        }
+      }
     },
     200,
     [queryText]

@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocationStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
 import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
+import { intersection } from "lodash-es";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
 import toastHelper from "./Toast";
@@ -36,6 +37,7 @@ const MemoList = () => {
             }
           }
           if (tagQuery) {
+            const tags = tagQuery.split(" ");
             const tagsSet = new Set<string>();
             for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
               const tag = t.replace(TAG_REG, "$1").trim();
@@ -47,7 +49,7 @@ const MemoList = () => {
                 temp += "/";
               }
             }
-            if (!tagsSet.has(tagQuery)) {
+            if (intersection([...tagsSet], tags).length < tags.length) {
               shouldShow = false;
             }
           }
