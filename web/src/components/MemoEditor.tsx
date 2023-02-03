@@ -83,6 +83,13 @@ const MemoEditor = () => {
   });
 
   useEffect(() => {
+    if (systemStatus.disablePublicMemos) {
+      editorStore.setMemoVisibility("PRIVATE");
+      setEditingMemoVisibilityCache("PRIVATE");
+    }
+  }, [systemStatus.disablePublicMemos]);
+
+  useEffect(() => {
     const { editingMemoIdCache, editingMemoVisibilityCache } = storage.get(["editingMemoIdCache", "editingMemoVisibilityCache"]);
     if (editingMemoIdCache) {
       editorStore.setEditMemoWithId(editingMemoIdCache);
