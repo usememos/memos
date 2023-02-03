@@ -117,6 +117,12 @@ const Auth = () => {
     actionBtnLoadingState.setFinish();
   };
 
+  const handleSignInKeyUp = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSignInBtnClick();
+    }
+  };
+
   return (
     <div className="page-wrapper auth">
       <div className="page-container">
@@ -135,7 +141,14 @@ const Auth = () => {
             </div>
             <div className="form-item-container input-form-container">
               <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
-              <input className="input-text" type="password" value={password} onChange={handlePasswordInputChanged} required />
+              <input
+                className="input-text"
+                type="password"
+                value={password}
+                onChange={handlePasswordInputChanged}
+                onKeyUp={handleSignInKeyUp}
+                required
+              />
             </div>
           </div>
           <div className="action-btns-container">
