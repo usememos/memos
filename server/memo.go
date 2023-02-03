@@ -35,6 +35,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
 			Name: &systemSettingKey,
 		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+		}
 
 		if systemSetting.Value == "true" {
 			memoCreate.Visibility = api.Private
