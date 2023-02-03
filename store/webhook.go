@@ -4,10 +4,9 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strings"
-
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	"strings"
 )
 
 type webhookRaw struct {
