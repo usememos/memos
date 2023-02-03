@@ -30,6 +30,16 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
 		}
 
+		// Find system settings
+		systemSettingKey := api.SystemSettingDisablePublicMemosName
+		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+			Name: &systemSettingKey,
+		})
+
+		if systemSetting.Value == "true" {
+			memoCreate.Visibility = api.Private
+		}
+
 		if memoCreate.Visibility == "" {
 			userSettingMemoVisibilityKey := api.UserSettingMemoVisibilityKey
 			userMemoVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
