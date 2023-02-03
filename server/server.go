@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -20,7 +21,8 @@ import (
 )
 
 type Server struct {
-	e *echo.Echo
+	e  *echo.Echo
+	db *sql.DB
 
 	ID        string
 	Profile   *profile.Profile
@@ -34,16 +36,16 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	e.HideBanner = true
 	e.HidePort = true
 
-	s := &Server{
-		e:       e,
-		Profile: profile,
-	}
-
 	db := db.NewDB(profile)
 	if err := db.Open(ctx); err != nil {
 		return nil, errors.Wrap(err, "cannot open db")
 	}
 
+	s := &Server{
+		e:       e,
+		db:      db.DBInstance,
+		Profile: profile,
+	}
 	storeInstance := store.New(db.DBInstance, profile)
 	s.Store = storeInstance
 
@@ -123,6 +125,23 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 	s.Collector.Identify(ctx)
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
+}
+
+func (s *Server) Shutdown(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	// Shutdown echo server
+	if err := s.e.Shutdown(ctx); err != nil {
+		fmt.Printf("failed to shutdown server, error: %v\n", err)
+	}
+
+	// Close database connection
+	if err := s.db.Close(); err != nil {
+		fmt.Printf("failed to close database, error: %v\n", err)
+	}
+
+	fmt.Printf("memos stopped properly\n")
 }
 
 func (s *Server) createServerStartActivity(ctx context.Context) error {
