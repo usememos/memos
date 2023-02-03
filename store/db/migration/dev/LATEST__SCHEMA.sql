@@ -103,3 +103,16 @@ CREATE TABLE activity (
   level TEXT NOT NULL CHECK (level IN ('INFO', 'WARN', 'ERROR')) DEFAULT 'INFO',
   payload TEXT NOT NULL DEFAULT '{}'
 );
+
+-- webhook
+CREATE TABLE webhook (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  creator_id INTEGER NOT NULL,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  name TEXT NOT NULL,
+  description TEXT,
+  enabled INTEGER NOT NULL CHECK (enabled IN (0, 1)) DEFAULT 1,
+  type INTEGER NOT NULL,
+  headers TEXT NOT NULL DEFAULT '{}',
+  body TEXT NOT NULL DEFAULT '{}'
+)

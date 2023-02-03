@@ -12,6 +12,7 @@ const (
 	ShortcutCache CacheNamespace = "s"
 	// ResourceCache is the cache type of resources.
 	ResourceCache CacheNamespace = "r"
+	WebhookCache  CacheNamespace = "w"
 )
 
 // CacheService is the service for caches.
