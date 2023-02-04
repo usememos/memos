@@ -1,10 +1,11 @@
 import { Select, Option } from "@mui/joy";
+import { QRCodeSVG } from "qrcode.react";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import copy from "copy-to-clipboard";
-import { toLower } from "lodash";
+import { toLower } from "lodash-es";
 import toImage from "../labs/html2image";
-import { useMemoStore, useUserStore } from "../store/module";
+import { useGlobalStore, useMemoStore, useUserStore } from "../store/module";
 import { VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import { getMemoStats } from "../helpers/api";
@@ -31,7 +32,9 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
+  const globalStore = useGlobalStore();
   const user = userStore.state.user as User;
+  const { systemStatus } = globalStore.state;
   const [state, setState] = useState<State>({
     memoAmount: 0,
     memoVisibility: propsMemo.visibility,
@@ -69,7 +72,6 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
     if (!memoElRef.current) {
       return;
     }
-
     toImage(memoElRef.current, {
       pixelRatio: window.devicePixelRatio * 2,
     })
@@ -138,13 +140,23 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             <MemoResources resourceList={memo.resourceList} />
           </div>
           <div className="watermark-container">
+            <div className="logo-container">
+              <img className="logo-img" src={`${systemStatus.customizedProfile.logoUrl || "/logo.png"}`} alt="" />
+            </div>
             <div className="userinfo-container">
               <span className="name-text">{user.nickname || user.username}</span>
               <span className="usage-text">
                 {state.memoAmount} MEMOS / {createdDays} DAYS
               </span>
             </div>
-            <img className="logo-img" src="/logo.png" alt="" />
+            <QRCodeSVG
+              value={`${window.location.origin}/m/${memo.id}`}
+              size={64}
+              bgColor={"#F3F4F6"}
+              fgColor={"#4B5563"}
+              level={"L"}
+              includeMargin={false}
+            />
           </div>
         </div>
         <div className="px-4 py-3 w-full flex flex-row justify-between items-center">

@@ -30,6 +30,8 @@ const defaultState: State = {
 const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }: Props) => {
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [state, setState] = useState<State>(defaultState);
+  let startX = -1;
+  let endX = -1;
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -42,21 +44,63 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
     a.click();
   };
 
+  const handleTouchStart = (event: React.TouchEvent) => {
+    if (event.touches.length > 1) {
+      // two or more fingers, ignore
+      return;
+    }
+    startX = event.touches[0].clientX;
+  };
+
+  const handleTouchMove = (event: React.TouchEvent) => {
+    if (event.touches.length > 1) {
+      // two or more fingers, ignore
+      return;
+    }
+    endX = event.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (event: React.TouchEvent) => {
+    if (event.touches.length > 1) {
+      // two or more fingers, ignore
+      return;
+    }
+    if (startX > -1 && endX > -1) {
+      const distance = startX - endX;
+      if (distance > 50) {
+        showNextImg();
+      } else if (distance < -50) {
+        showPrevImg();
+      }
+    }
+
+    endX = -1;
+    startX = -1;
+  };
+
+  const showPrevImg = () => {
+    if (currentIndex > 0) {
+      setState(defaultState);
+      setCurrentIndex(currentIndex - 1);
+    } else {
+      destroy();
+    }
+  };
+
+  const showNextImg = () => {
+    if (currentIndex < imgUrls.length - 1) {
+      setState(defaultState);
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      destroy();
+    }
+  };
+
   const handleImgContainerClick = (event: React.MouseEvent) => {
     if (event.clientX < window.innerWidth / 2) {
-      if (currentIndex > 0) {
-        setState(defaultState);
-        setCurrentIndex(currentIndex - 1);
-      } else {
-        destroy();
-      }
+      showPrevImg();
     } else {
-      if (currentIndex < imgUrls.length - 1) {
-        setState(defaultState);
-        setCurrentIndex(currentIndex + 1);
-      } else {
-        destroy();
-      }
+      showNextImg();
     }
   };
 
@@ -111,6 +155,9 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
       <div className="img-container" onClick={handleImgContainerClick}>
         <img
           onClick={(e) => e.stopPropagation()}
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
           src={imgUrls[currentIndex]}
           onWheel={handleImgContainerScroll}
           style={getImageComputedStyle()}

@@ -2,6 +2,8 @@ import store, { useAppSelector } from "../";
 import { patchResource, setResources, deleteResource } from "../reducer/resource";
 import * as api from "../../helpers/api";
 
+const MAX_FILE_SIZE = 32 << 20;
+
 const convertResponseModelResource = (resource: Resource): Resource => {
   return {
     ...resource,
@@ -24,16 +26,22 @@ export const useResourceStore = () => {
       store.dispatch(setResources(resourceList));
       return resourceList;
     },
-    async upload(file: File): Promise<Resource> {
+    async createResource(resourceCreate: ResourceCreate): Promise<Resource> {
+      const { data } = (await api.createResource(resourceCreate)).data;
+      const resource = convertResponseModelResource(data);
+      const resourceList = state.resources;
+      store.dispatch(setResources([resource, ...resourceList]));
+      return resource;
+    },
+    async createResourceWithBlob(file: File): Promise<Resource> {
       const { name: filename, size } = file;
-
-      if (size > 64 << 20) {
-        return Promise.reject("overload max size: 8MB");
+      if (size > MAX_FILE_SIZE) {
+        return Promise.reject("overload max size: 32MB");
       }
 
       const formData = new FormData();
       formData.append("file", file, filename);
-      const { data } = (await api.uploadFile(formData)).data;
+      const { data } = (await api.createResourceWithBlob(formData)).data;
       const resource = convertResponseModelResource(data);
       const resourceList = state.resources;
       store.dispatch(setResources([resource, ...resourceList]));

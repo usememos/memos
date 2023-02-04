@@ -21,11 +21,39 @@ import (
 
 const (
 	// The max file size is 32MB.
-	maxFileSize = (32 * 8) << 20
+	maxFileSize = 32 << 20
 )
 
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		resourceCreate := &api.ResourceCreate{}
+		if err := json.NewDecoder(c.Request().Body).Decode(resourceCreate); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post resource request").SetInternal(err)
+		}
+
+		resourceCreate.CreatorID = userID
+		resource, err := s.Store.CreateResource(ctx, resourceCreate)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
+		}
+		if err := s.createResourceCreateActivity(c, resource); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
+
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
+		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
+		}
+		return nil
+	})
+
+	g.POST("/resource/blob", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
@@ -125,6 +153,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			ID:        &resourceID,
 			CreatorID: &userID,
+			GetBlob:   true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
@@ -152,6 +181,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			ID:        &resourceID,
 			CreatorID: &userID,
+			GetBlob:   true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
@@ -262,6 +292,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			ID:       &resourceID,
 			Filename: &filename,
+			GetBlob:  true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
@@ -269,11 +300,15 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		}
 
 		resourceType := strings.ToLower(resource.Type)
-		if strings.HasPrefix(resourceType, "text") || strings.HasPrefix(resourceType, "application") {
+		if strings.HasPrefix(resourceType, "text") || (strings.HasPrefix(resourceType, "application") && resourceType != "application/pdf") {
 			resourceType = echo.MIMETextPlain
 		}
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
+		if strings.HasPrefix(resourceType, "video") || strings.HasPrefix(resourceType, "audio") {
+			http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(resource.Blob))
+			return nil
+		}
 		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(resource.Blob))
 	})
 }

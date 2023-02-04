@@ -7,6 +7,11 @@ const theme = extendTheme({
         size: "sm",
       },
     },
+    JoyInput: {
+      defaultProps: {
+        size: "sm",
+      },
+    },
     JoySelect: {
       defaultProps: {
         size: "sm",

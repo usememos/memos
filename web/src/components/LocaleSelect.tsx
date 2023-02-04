@@ -23,7 +23,7 @@ const LocaleSelect: FC<Props> = (props: Props) => {
       onChange={(_, value) => handleSelectChange(value as Locale)}
     >
       <Option value="en">English</Option>
-      <Option value="zh">中文</Option>
+      <Option value="zh">简体中文</Option>
       <Option value="vi">Tiếng Việt</Option>
       <Option value="fr">French</Option>
       <Option value="nl">Nederlands</Option>
@@ -33,6 +33,7 @@ const LocaleSelect: FC<Props> = (props: Props) => {
       <Option value="uk">Українська</Option>
       <Option value="ru">Русский</Option>
       <Option value="it">Italiano</Option>
+      <Option value="hant">繁體中文</Option>
     </Select>
   );
 };

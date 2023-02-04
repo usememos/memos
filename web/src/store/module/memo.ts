@@ -1,4 +1,4 @@
-import { uniqBy } from "lodash";
+import { uniqBy } from "lodash-es";
 import * as api from "../../helpers/api";
 import { DEFAULT_MEMO_LIMIT } from "../../helpers/consts";
 import { useUserStore } from "./";

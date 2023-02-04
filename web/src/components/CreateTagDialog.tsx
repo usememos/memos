@@ -1,4 +1,4 @@
-import { TextField } from "@mui/joy";
+import { Input } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { useTagStore } from "../store/module";
 import { getTagSuggestionList } from "../helpers/api";
@@ -88,8 +88,9 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container !w-80">
-        <TextField
+        <Input
           className="mb-2"
+          size="md"
           placeholder="TAG_NAME"
           value={tagName}
           onChange={handleTagNameChanged}

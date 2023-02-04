@@ -75,7 +75,7 @@
     "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE❗",
     "linked-amount": "Linked memo amount",
     "rename": "Rename",
-    "clear-unused-resources": "Clear unused resources",
+    "clear": "Clear",
     "warning-text-unused": "Are you sure to delete these unused resource? THIS ACTION IS IRREVERSIABLE❗",
     "no-unused-resources": "No unused resources",
     "name": "Name"

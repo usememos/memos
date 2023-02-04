@@ -11,3 +11,5 @@ tmp_dir = ".air"
   exclude_unchanged = false
   follow_symlink = false
   full_bin = ""
+  send_interrupt = true
+  kill_delay = 2000

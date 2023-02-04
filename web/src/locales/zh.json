@@ -75,7 +75,7 @@
     "warning-text": "确定删除这个资源么？此操作不可逆❗",
     "linked-amount": "链接的 Memo 数量",
     "rename": "重命名",
-    "clear-unused-resources": "清除无用资源",
+    "clear": "清除",
     "warning-text-unused": "确定删除这些无用资源么？此操作不可逆❗",
     "no-unused-resources": "无可删除的资源",
     "name": "资源名称"

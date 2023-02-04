@@ -1,4 +1,4 @@
-import { isNumber, last, toLower, uniq } from "lodash";
+import { isNumber, last, toLower, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "../labs/marked";
@@ -12,6 +12,7 @@ import Selector from "./common/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
+import showCreateResourceDialog from "./CreateResourceDialog";
 import "../less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
@@ -37,6 +38,7 @@ const setEditingMemoVisibilityCache = (visibility: Visibility) => {
 interface State {
   fullscreen: boolean;
   isUploadingResource: boolean;
+  isRequesting: boolean;
 }
 
 const MemoEditor = () => {
@@ -51,6 +53,7 @@ const MemoEditor = () => {
   const [state, setState] = useState<State>({
     isUploadingResource: false,
     fullscreen: false,
+    isRequesting: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const editorState = editorStore.state;
@@ -280,7 +283,7 @@ const MemoEditor = () => {
     let resource = undefined;
 
     try {
-      resource = await resourceStore.upload(file);
+      resource = await resourceStore.createResourceWithBlob(file);
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
@@ -295,7 +298,26 @@ const MemoEditor = () => {
     return resource;
   };
 
+  const scrollToEditingMemo = useCallback(() => {
+    if (editorState.editMemoId) {
+      const memoElements = document.getElementsByClassName(`memos-${editorState.editMemoId}`);
+      if (memoElements.length !== 0) {
+        memoElements[0].scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  }, [editorState.editMemoId]);
+
   const handleSaveBtnClick = async () => {
+    if (state.isRequesting) {
+      return;
+    }
+
+    setState((state) => {
+      return {
+        ...state,
+        isRequesting: true,
+      };
+    });
     const content = editorRef.current?.getContent() ?? "";
     try {
       const { editMemoId } = editorStore.getState();
@@ -323,6 +345,12 @@ const MemoEditor = () => {
       console.error(error);
       toastHelper.error(error.response.data.message);
     }
+    setState((state) => {
+      return {
+        ...state,
+        isRequesting: false,
+      };
+    });
 
     // Upsert tag with the content.
     const matchedNodes = getMatchedNodes(content);
@@ -341,6 +369,8 @@ const MemoEditor = () => {
     setEditorContentCache("");
     storage.remove(["editingMemoVisibilityCache"]);
     editorRef.current?.setContent("");
+
+    scrollToEditingMemo();
   };
 
   const handleCancelEdit = () => {
@@ -351,6 +381,8 @@ const MemoEditor = () => {
       setEditorContentCache("");
       storage.remove(["editingMemoVisibilityCache"]);
     }
+
+    scrollToEditingMemo();
   };
 
   const handleContentChange = (content: string) => {
@@ -387,33 +419,11 @@ const MemoEditor = () => {
   };
 
   const handleUploadFileBtnClick = () => {
-    const inputEl = document.createElement("input");
-    inputEl.style.position = "fixed";
-    inputEl.style.top = "-100vh";
-    inputEl.style.left = "-100vw";
-    document.body.appendChild(inputEl);
-    inputEl.type = "file";
-    inputEl.multiple = true;
-    inputEl.accept = "*";
-    inputEl.onchange = async () => {
-      if (!inputEl.files || inputEl.files.length === 0) {
-        return;
-      }
-
-      const resourceList: Resource[] = [];
-      for (const file of inputEl.files) {
-        const resource = await handleUploadResource(file);
-        if (resource) {
-          resourceList.push(resource);
-          if (editorState.editMemoId) {
-            await upsertMemoResource(editorState.editMemoId, resource.id);
-          }
-        }
-      }
-      editorStore.setResourceList([...editorState.resourceList, ...resourceList]);
-      document.body.removeChild(inputEl);
-    };
-    inputEl.click();
+    showCreateResourceDialog({
+      onConfirm: (resourceList) => {
+        editorStore.setResourceList([...editorState.resourceList, ...resourceList]);
+      },
+    });
   };
 
   const handleFullscreenBtnClick = () => {
@@ -505,11 +515,10 @@ const MemoEditor = () => {
           </button>
           <div className="action-btn resource-btn">
             <Icon.FileText className="icon-img" />
-            <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
             <div className="resource-action-list">
               <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
-                <Icon.Upload className="icon-img" />
-                <span>{t("editor.local")}</span>
+                <Icon.Plus className="icon-img" />
+                <span>{t("common.create")}</span>
               </div>
               <div className="resource-action-item" onClick={showResourcesSelectorDialog}>
                 <Icon.Database className="icon-img" />
@@ -548,7 +557,7 @@ const MemoEditor = () => {
           </button>
           <button
             className="action-btn confirm-btn"
-            disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource}
+            disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource || state.isRequesting}
             onClick={handleSaveBtnClick}
           >
             {t("editor.save")}
