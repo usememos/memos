@@ -8,8 +8,6 @@ import useLoading from "../hooks/useLoading";
 import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
-import MemoFilter from "../components/MemoFilter";
-import { TAG_REG } from "../labs/marked/parser";
 import "../less/explore.less";
 
 interface State {
@@ -22,7 +20,6 @@ const Explore = () => {
   const locationStore = useLocationStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
-  const query = locationStore.state.query;
   const [state, setState] = useState<State>({
     memos: [],
   });
@@ -33,7 +30,7 @@ const Explore = () => {
   const location = locationStore.state;
 
   useEffect(() => {
-    memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, 0).then((memos) => {
+    memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length).then((memos) => {
       if (memos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       }
@@ -43,46 +40,6 @@ const Explore = () => {
       loadingState.setFinish();
     });
   }, [location]);
-
-  const { tag: tagQuery, text: textQuery } = query ?? {};
-  const showMemoFilter = Boolean(tagQuery || textQuery);
-
-  const shownMemos = showMemoFilter
-    ? state.memos.filter((memo) => {
-        let shouldShow = true;
-
-        if (tagQuery) {
-          const tagsSet = new Set<string>();
-          for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
-            const tag = t.replace(TAG_REG, "$1").trim();
-            const items = tag.split("/");
-            let temp = "";
-            for (const i of items) {
-              temp += i;
-              tagsSet.add(temp);
-              temp += "/";
-            }
-          }
-          if (!tagsSet.has(tagQuery)) {
-            shouldShow = false;
-          }
-        }
-
-        if (textQuery && !memo.content.toLowerCase().includes(textQuery.toLowerCase())) {
-          shouldShow = false;
-        }
-        return shouldShow;
-      })
-    : state.memos;
-
-  const pinnedMemos = shownMemos.filter((m) => m.pinned);
-  const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
-  const memoSort = (mi: Memo, mj: Memo) => {
-    return mj.displayTs - mi.displayTs;
-  };
-  pinnedMemos.sort(memoSort);
-  unpinnedMemos.sort(memoSort);
-  const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   const handleFetchMoreClick = async () => {
     try {
@@ -98,20 +55,6 @@ const Explore = () => {
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
-    }
-  };
-
-  const handleMemoContentClick = async (e: React.MouseEvent) => {
-    const targetEl = e.target as HTMLElement;
-
-    if (targetEl.className === "tag-span") {
-      const tagName = targetEl.innerText.slice(1);
-      const currTagQuery = locationStore.getState().query?.tag;
-      if (currTagQuery === tagName) {
-        locationStore.setTagQuery(undefined);
-      } else {
-        locationStore.setTagQuery(tagName);
-      }
     }
   };
 
@@ -137,8 +80,7 @@ const Explore = () => {
         </div>
         {!loadingState.isLoading && (
           <main className="memos-wrapper">
-            <MemoFilter />
-            {sortedMemos.map((memo) => {
+            {state.memos.map((memo) => {
               const createdAtStr = dayjs(memo.displayTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
               return (
                 <div className="memo-container" key={memo.id}>
@@ -148,7 +90,7 @@ const Explore = () => {
                       @{memo.creator.nickname || memo.creator.username}
                     </a>
                   </div>
-                  <MemoContent className="memo-content" content={memo.content} onMemoContentClick={handleMemoContentClick} />
+                  <MemoContent className="memo-content" content={memo.content} onMemoContentClick={() => undefined} />
                   <MemoResources resourceList={memo.resourceList} />
                 </div>
               );
