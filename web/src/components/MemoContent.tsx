@@ -11,7 +11,7 @@ export interface DisplayConfig {
 
 interface Props {
   content: string;
-  todolistUpdated: boolean;
+  todolistUpdated?: boolean;
   className?: string;
   displayConfig?: Partial<DisplayConfig>;
   onMemoContentClick?: (e: React.MouseEvent) => void;
