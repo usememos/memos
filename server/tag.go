@@ -156,7 +156,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 	})
 }
 
-var tagRegexp = regexp.MustCompile(`#([^\s#]+)`)
+var tagRegexp = regexp.MustCompile(`#([^\s#/][^\s#]*)`)
 
 func findTagListFromMemoContent(memoContent string) []string {
 	tagMapSet := make(map[string]bool)
