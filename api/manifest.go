@@ -1,7 +1,9 @@
 package api
 
 type Icon struct {
-	Src string `json:"src"`
+	Src   string `json:"src"`
+	Type  string `json:"type"`
+	Sizes string `json:"sizes"`
 }
 
 type Manifest struct {

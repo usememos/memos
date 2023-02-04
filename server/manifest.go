@@ -2,9 +2,10 @@ package server
 
 import (
 	"encoding/json"
+	"net/http"
+
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
-	"net/http"
 )
 
 func (s *Server) registerManifestRoutes(g *echo.Group) {
@@ -41,7 +42,7 @@ func (s *Server) registerManifestRoutes(g *echo.Group) {
 					manifest.ShortName = v.(string)
 				}
 				if v := valueMap["logoUrl"]; v != nil {
-					manifest.Icons = []api.Icon{{Src: v.(string)}}
+					manifest.Icons = []api.Icon{{Src: v.(string), Type: "image/png", Sizes: "520x520"}}
 				}
 				if v := valueMap["description"]; v != nil {
 					manifest.Description = v.(string)
