@@ -9,6 +9,7 @@ import locationReducer from "./reducer/location";
 import resourceReducer from "./reducer/resource";
 import dialogReducer from "./reducer/dialog";
 import tagReducer from "./reducer/tag";
+import storageReducer from "./reducer/storage";
 
 const store = configureStore({
   reducer: {
@@ -21,6 +22,7 @@ const store = configureStore({
     location: locationReducer,
     resource: resourceReducer,
     dialog: dialogReducer,
+    storage: storageReducer,
   },
 });
 

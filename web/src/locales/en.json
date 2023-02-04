@@ -149,6 +149,7 @@
   "setting": {
     "my-account": "My Account",
     "preference": "Preference",
+    "storage": "Storage",
     "member": "Member",
     "member-list": "Member list",
     "system": "System",
@@ -236,6 +237,7 @@
     "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
     "succeed-update-customized-profile": "Succeed to update customized profile",
     "succeed-update-additional-script": "Succeed to update additional script",
+    "succeed-update-storage-config": "Succeed to update storage config",
     "update-succeed": "Update succeed"
   },
   "days": {
