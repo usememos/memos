@@ -13,7 +13,7 @@ func (s *Server) registerManifestRoutes(g *echo.Group) {
 		ctx := c.Request().Context()
 
 		manifest := api.Manifest{
-			StartUrl:        "/",
+			StartURL:        "/",
 			Scope:           "/",
 			Display:         "standalone",
 			ThemeColor:      "#f4f4f5",

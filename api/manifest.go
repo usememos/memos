@@ -11,7 +11,7 @@ type Manifest struct {
 	ShortName       string `json:"short_name"`
 	Description     string `json:"description"`
 	Icons           []Icon `json:"icons"`
-	StartUrl        string `json:"start_url"`
+	StartURL        string `json:"start_url"`
 	Scope           string `json:"scope"`
 	Display         string `json:"display"`
 	ThemeColor      string `json:"theme_color"`
