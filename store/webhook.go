@@ -37,7 +37,6 @@ func (raw *webhookRaw) toWebhook() *api.Webhook {
 }
 
 func (s *Store) CreateWebhook(ctx context.Context, create *api.WebhookCreate) (*api.Webhook, error) {
-
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
