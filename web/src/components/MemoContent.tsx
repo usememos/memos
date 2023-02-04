@@ -11,6 +11,7 @@ export interface DisplayConfig {
 
 interface Props {
   content: string;
+  todolistUpdated: boolean;
   className?: string;
   displayConfig?: Partial<DisplayConfig>;
   onMemoContentClick?: (e: React.MouseEvent) => void;
@@ -28,7 +29,7 @@ const defaultDisplayConfig: DisplayConfig = {
 };
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, content, onMemoContentClick, onMemoContentDoubleClick } = props;
+  const { className, content, todolistUpdated, onMemoContentClick, onMemoContentDoubleClick } = props;
   const { t } = useTranslation();
   const userStore = useUserStore();
   const user = userStore.state.user;
@@ -52,7 +53,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     }
 
     if (displayConfig.enableExpand && user && user.localSetting.enableFoldMemo) {
-      if (foldedContent.length !== content.length) {
+      if (foldedContent.length !== content.length && !todolistUpdated) {
         setState({
           ...state,
           expandButtonStatus: 0,

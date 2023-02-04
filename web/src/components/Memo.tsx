@@ -35,6 +35,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const userStore = useUserStore();
   const memoStore = useMemoStore();
   const [displayTimeStr, setDisplayTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
+  const [todolistUpdated, setTodolistUpdated] = useState(false);
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userStore.isVisitorMode();
 
@@ -136,6 +137,7 @@ const Memo: React.FC<Props> = (props: Props) => {
               finalContent += `${tempList[i]}`;
             }
           }
+          setTodolistUpdated(true);
           await memoStore.patchMemo({
             id: memo.id,
             content: finalContent,
@@ -232,6 +234,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       </div>
       <MemoContent
         content={memo.content}
+        todolistUpdated={todolistUpdated}
         onMemoContentClick={handleMemoContentClick}
         onMemoContentDoubleClick={handleMemoContentDoubleClick}
       />
