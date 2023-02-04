@@ -8,10 +8,11 @@ import PreferencesSection from "./Settings/PreferencesSection";
 import MemberSection from "./Settings/MemberSection";
 import SystemSection from "./Settings/SystemSection";
 import "../less/setting-dialog.less";
+import StorageSection from "./Settings/StorageSection";
 
 type Props = DialogProps;
 
-type SettingSection = "my-account" | "preferences" | "member" | "system";
+type SettingSection = "my-account" | "preferences" | "storage" | "member" | "system";
 
 interface State {
   selectedSection: SettingSection;
@@ -52,6 +53,12 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
           >
             <span className="icon-text">🏟</span> {t("setting.preference")}
           </span>
+          <span
+            onClick={() => handleSectionSelectorItemClick("storage")}
+            className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
+          >
+            <span className="icon-text">🗃️</span> {t("setting.storage")}
+          </span>
         </div>
         {user?.role === "HOST" ? (
           <>
@@ -82,7 +89,10 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
           <MemberSection />
         ) : state.selectedSection === "system" ? (
           <SystemSection />
+        ) : state.selectedSection === "storage" ? (
+          <StorageSection />
         ) : null}
+        {/*  TODO 顺序*/}
       </div>
     </div>
   );
