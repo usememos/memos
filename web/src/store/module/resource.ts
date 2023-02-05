@@ -1,5 +1,5 @@
 import store, { useAppSelector } from "../";
-import Resource, { patchResource, setResources, deleteResource } from "../reducer/resource";
+import { patchResource, setResources, deleteResource } from "../reducer/resource";
 import * as api from "../../helpers/api";
 import { last } from "lodash-es";
 

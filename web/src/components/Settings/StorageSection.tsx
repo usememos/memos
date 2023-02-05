@@ -33,10 +33,10 @@ const StorageSection = () => {
       <div className="form-label">
         <span className="normal-text"></span>
         <div className="w-16 flex justify-between">
-          <Tooltip title="Images">
+          <Tooltip title={t("common.image")}>
             <div>🖼️</div>
           </Tooltip>
-          <Tooltip title="Other resources">
+          <Tooltip title={t("common.other-resources")}>
             <div>🗂️</div>
           </Tooltip>
         </div>
@@ -47,7 +47,7 @@ const StorageSection = () => {
         </span>
         <div className="w-16 flex justify-between">
           <Checkbox checked={setting.storageConfig?.imageStorage === "SMMS"} value="SMMS" onChange={handleImageStorageLocationChanged} />
-          <Tooltip title="Not support">
+          <Tooltip title={t("common.no-support")}>
             <Checkbox disabled />
           </Tooltip>
         </div>

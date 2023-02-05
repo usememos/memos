@@ -47,7 +47,9 @@
     "image": "图片",
     "link": "链接",
     "vacuum": "清理",
-    "select": "选择"
+    "select": "选择",
+    "other-resources": "其他资源",
+    "no-support": "不支持"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
@@ -236,6 +238,7 @@
     "succeed-copy-resource-link": "复制资源链接到剪贴板成功",
     "succeed-update-customized-profile": "更新自定义配置文件成功",
     "succeed-update-additional-script": "更新附加脚本成功",
+    "succeed-update-storage-config": "更新存储配置成功",
     "update-succeed": "更新成功"
   },
   "days": {

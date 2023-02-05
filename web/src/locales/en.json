@@ -47,7 +47,9 @@
     "image": "Image",
     "link": "Link",
     "vacuum": "Vacuum",
-    "select": "Select"
+    "select": "Select",
+    "other-resources": "Other resources",
+    "no-support": "No support"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
