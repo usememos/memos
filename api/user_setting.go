@@ -98,6 +98,7 @@ func (upsert UserSettingUpsert) Validate() error {
 	} else {
 		return fmt.Errorf("invalid user setting key")
 	}
+
 	return nil
 }
 
