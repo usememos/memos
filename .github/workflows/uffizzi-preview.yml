@@ -11,6 +11,7 @@ on:
 jobs:
   cache-compose-file:
     name: Cache Compose File
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     outputs:
       compose-file-cache-key: ${{ env.HASH }}
@@ -70,9 +71,10 @@ jobs:
 
   deploy-uffizzi-preview:
     name: Use Remote Workflow to Preview on Uffizzi
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     needs:
       - cache-compose-file
-    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@check_pr_state
+    uses: UffizziCloud/preview-action/.github/workflows/reusable.yaml@v2
     with:
       # If this workflow was triggered by a PR close event, cache-key will be an empty string
       # and this reusable workflow will delete the preview deployment.
