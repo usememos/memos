@@ -18,14 +18,6 @@ export function vacuumDatabase() {
   return axios.post("/api/system/vacuum");
 }
 
-export function getStorageStatus() {
-  return axios.get<ResponseObject<StorageStatus>>("/api/storage/status");
-}
-
-export function upsertStorageSetting(storageSetting: StorageSetting) {
-  return axios.post<ResponseObject<StorageSetting>>("/api/storage/setting", storageSetting);
-}
-
 export function signin(username: string, password: string) {
   return axios.post<ResponseObject<User>>("/api/auth/signin", {
     username,
@@ -167,6 +159,14 @@ export function createResource(resourceCreate: ResourceCreate) {
 
 export function createResourceWithBlob(formData: FormData) {
   return axios.post<ResponseObject<Resource>>("/api/resource/blob", formData);
+}
+
+export function uploadImageWithSMMS(formData: FormData, config: SMMSConfig) {
+  return axios.post("/smms-api/upload", formData, {
+    headers: {
+      Authorization: config.token,
+    },
+  });
 }
 
 export function deleteResourceById(id: ResourceId) {

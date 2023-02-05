@@ -11,6 +11,13 @@ const defaultSetting: Setting = {
   appearance: getSystemColorScheme(),
   memoVisibility: "PRIVATE",
   memoDisplayTsOption: "created_ts",
+  storageConfig: {
+    imageStorage: "Database",
+    othersStorage: "Database",
+    smmsConfig: {
+      token: "",
+    },
+  },
 };
 
 const defaultLocalSetting: LocalSetting = {

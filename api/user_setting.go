@@ -18,6 +18,7 @@ const (
 	UserSettingMemoVisibilityKey UserSettingKey = "memoVisibility"
 	// UserSettingMemoDisplayTsOptionKey is the key type for memo display ts option.
 	UserSettingMemoDisplayTsOptionKey UserSettingKey = "memoDisplayTsOption"
+	UserSettingStorageConfigKey                      = "storageConfig"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -92,10 +93,11 @@ func (upsert UserSettingUpsert) Validate() error {
 		if !slices.Contains(UserSettingMemoDisplayTsOptionKeyValue, memoDisplayTsOption) {
 			return fmt.Errorf("invalid user setting memo display ts option value")
 		}
+	} else if upsert.Key == UserSettingStorageConfigKey {
+		return nil
 	} else {
 		return fmt.Errorf("invalid user setting key")
 	}
-
 	return nil
 }
 

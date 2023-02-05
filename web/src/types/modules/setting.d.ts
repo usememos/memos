@@ -1,10 +1,22 @@
 type Appearance = "system" | "light" | "dark";
 
+type StorageLocation = "SMMS" | "Database";
+interface SMMSConfig {
+  token: string;
+}
+
+interface StorageConfig {
+  imageStorage: StorageLocation;
+  othersStorage: StorageLocation;
+  smmsConfig: SMMSConfig;
+}
+
 interface Setting {
   locale: Locale;
   appearance: Appearance;
   memoVisibility: Visibility;
   memoDisplayTsOption: "created_ts" | "updated_ts";
+  storageConfig?: StorageConfig;
 }
 
 interface LocalSetting {

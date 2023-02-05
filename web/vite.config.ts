@@ -21,6 +21,11 @@ export default defineConfig({
         target: "http://localhost:8081/",
         changeOrigin: true,
       },
+      "/smms-api": {
+        target: "https://smms.app/api/v2/",
+        changeOrigin: true,
+        rewrite: (path) => path.replace("/smms-api/", ""),
+      },
     },
   },
   resolve: {
