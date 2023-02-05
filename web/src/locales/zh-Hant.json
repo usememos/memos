@@ -29,10 +29,10 @@
     "basic": "基礎",
     "admin": "管理員",
     "explore": "探索",
-    "sign-in": "登錄",
-    "sign-up": "注冊",
-    "sign-out": "退出登錄",
-    "back-to-home": "回到主頁",
+    "sign-in": "登入",
+    "sign-up": "註冊",
+    "sign-out": "登出",
+    "back-to-home": "回到首頁",
     "type": "類型",
     "shortcuts": "捷徑",
     "title": "標題",
@@ -45,15 +45,15 @@
     "fold": "折疊",
     "expand": "展開",
     "image": "圖片",
-    "link": "鏈接",
+    "link": "連結",
     "vacuum": "清理",
     "select": "選擇"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
-    "signup-as-host": "注冊為 Host",
-    "host-tip": "你正在注冊為 Host 用戶賬號。",
-    "not-host-tip": "如果你沒有賬號，請聯係站點 Host"
+    "signup-as-host": "註冊為 Host",
+    "host-tip": "你正在註冊為 Host 用戶賬號。",
+    "not-host-tip": "如果你沒有帳號，請聯繫站點 Host"
   },
   "sidebar": {
     "daily-review": "每日回顧",
@@ -70,11 +70,11 @@
     "fetching-data": "請求數據中...",
     "upload": "上傳",
     "preview": "預覽",
-    "copy-link": "拷貝鏈接",
+    "copy-link": "拷貝連結",
     "delete-resource": "刪除資源",
-    "warning-text": "確定刪除這個資源麼？此操作不可逆❗",
-    "linked-amount": "鏈接的 Memo 數量",
-    "rename": "重命名",
+    "warning-text": "確定刪除這個資源嗎？此操作不可逆❗",
+    "linked-amount": "連結的 Memo 數量",
+    "rename": "重新命名",
     "clear": "清除",
     "warning-text-unused": "確定刪除這些無用資源嗎？此操作不可逆❗",
     "no-unused-resources": "無可刪除的資源",
@@ -97,10 +97,10 @@
   },
   "memo": {
     "view-detail": "查看詳情",
-    "copy": "覆制",
+    "copy": "複製",
     "visibility": {
       "private": "僅自己可見",
-      "protected": "登錄用戶可見",
+      "protected": "登入用戶可見",
       "public": "所有人可見"
     }
   },
@@ -136,7 +136,7 @@
     },
     "value": {
       "not-tagged": "無標簽",
-      "linked": "包含鏈接"
+      "linked": "包含連結"
     },
     "text-placeholder": "以 ^ 開頭使用正則表達式"
   },
@@ -147,19 +147,19 @@
     "quickly-filter": "快速過濾"
   },
   "setting": {
-    "my-account": "我的賬號",
+    "my-account": "我的帳號",
     "preference": "偏好設置",
     "member": "成員",
     "member-list": "成員列表",
     "system": "系統",
     "account-section": {
-      "title": "賬號信息",
-      "update-information": "更新個人信息",
+      "title": "帳號信息",
+      "update-information": "更新個人資料",
       "change-password": "修改密碼"
     },
     "preference-section": {
       "theme": "主題",
-      "default-memo-visibility": "默認 Memo 可見性",
+      "default-memo-visibility": "預設 Memo 可見性",
       "enable-folding-memo": "開啟折疊 Memo",
       "enable-powerful-editor": "開啟編輯器自動補全",
       "editor-font-style": "編輯器字體樣式",
@@ -175,11 +175,11 @@
       "server-name": "服務名稱",
       "customize-server": {
         "title": "自定義服務",
-        "default": "默認為 memos",
-        "icon-url": "圖標 URL"
+        "default": "預設為 memos",
+        "icon-url": "圖示 URL"
       },
-      "database-file-size": "數據庫文件大小",
-      "allow-user-signup": "允許用戶注冊",
+      "database-file-size": "資料庫檔案大小",
+      "allow-user-signup": "允許用戶註冊",
       "additional-style": "自定義樣式",
       "additional-script": "自定義腳本",
       "additional-style-placeholder": "自定義 CSS 代碼",
@@ -202,7 +202,7 @@
   "message": {
     "no-memos": "沒有 Memos 了 🌃",
     "memos-ready": "所有 Memos 已就緒 🎉",
-    "restored-successfully": "恢覆成功",
+    "restored-successfully": "還原成功",
     "memo-updated-datetime": "Memo 創建日期時間已更改。",
     "invalid-created-datetime": "創建的日期時間無效。",
     "change-memo-created-time": "更改 Memo 創建時間",
@@ -210,30 +210,30 @@
     "fill-all": "請填寫所有字段。",
     "password-not-match": "密碼不一致。",
     "new-password-not-match": "新密碼不匹配。",
-    "image-load-failed": "圖片加載失敗",
+    "image-load-failed": "圖片讀取失敗",
     "fill-form": "請填寫此表單",
-    "login-failed": "登錄失敗",
-    "signup-failed": "注冊失敗",
+    "login-failed": "登入失敗",
+    "signup-failed": "註冊失敗",
     "user-not-found": "未找到用戶",
     "password-changed": "密碼已修改",
     "private-only": "此 Memo 僅自己可見",
-    "copied": "已覆制",
-    "succeed-copy-content": "覆制內容到剪貼板成功。",
-    "succeed-copy-code": "覆制代碼到剪貼板成功。",
-    "succeed-copy-link": "覆制鏈接到剪貼板成功。",
+    "copied": "已複製",
+    "succeed-copy-content": "複製內容到剪貼板成功。",
+    "succeed-copy-code": "複製代碼到剪貼板成功。",
+    "succeed-copy-link": "複製連結到剪貼板成功。",
     "change-resource-filename": "更改資源文件名",
     "resource-filename-updated": "資源文件名更改成功。",
     "invalid-resource-filename": "無效的資源文件名",
-    "click-to-save-the-image": "點擊保存圖片",
+    "click-to-save-the-image": "點擊儲存圖片",
     "generating-the-screenshot": "正在生成圖片...",
     "count-selected-resources": "所選資源總數",
     "too-short": "過短",
     "too-long": "過長",
     "not-allow-space": "不允許包含空格",
     "not-allow-chinese": "不允許包含中文",
-    "succeed-to-vacuum-database": "清空數據庫成功",
+    "succeed-to-vacuum-database": "清空資料庫成功",
     "succeed-update-additional-style": "更新附加樣式成功",
-    "succeed-copy-resource-link": "覆制資源鏈接到剪貼板成功",
+    "succeed-copy-resource-link": "複製資源連結到剪貼板成功",
     "succeed-update-customized-profile": "更新自定義配置文件成功",
     "succeed-update-additional-script": "更新附加腳本成功",
     "update-succeed": "更新成功"
