@@ -152,7 +152,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
-    if (!localSetting.enableDoubleClick) {
+    if (!localSetting.enableDoubleClickEditing) {
       return;
     }
     const targetEl = e.target as HTMLElement;

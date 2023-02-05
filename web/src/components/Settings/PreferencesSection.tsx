@@ -54,7 +54,7 @@ const PreferencesSection = () => {
   };
 
   const handleDoubleClickEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    userStore.upsertLocalSetting({ ...localSetting, enableDoubleClick: event.target.checked });
+    userStore.upsertLocalSetting({ ...localSetting, enableDoubleClickEditing: event.target.checked });
   };
 
   return (
@@ -115,7 +115,7 @@ const PreferencesSection = () => {
       </label>
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.enable-double-click")}</span>
-        <Switch className="ml-2" checked={localSetting.enableDoubleClick} onChange={handleDoubleClickEnabledChanged} />
+        <Switch className="ml-2" checked={localSetting.enableDoubleClickEditing} onChange={handleDoubleClickEnabledChanged} />
       </label>
     </div>
   );
