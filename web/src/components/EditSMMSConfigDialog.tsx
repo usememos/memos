@@ -3,17 +3,15 @@ import Icon from "./Icon";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import toastHelper from "./Toast";
-import * as api from "../helpers/api";
-import { useStorageStore } from "../store/module";
+import { useUserStore } from "../store/module";
 
 type Props = DialogProps;
 
 const EditSMMSConfigDialog: React.FC<Props> = ({ destroy }: Props) => {
   const { t } = useTranslation();
-  const [state, setState] = useState<SMMSConfig>({
-    token: "",
-  });
-  const storageStore = useStorageStore();
+  const userStore = useUserStore();
+  const { setting } = userStore.state.user as User;
+  const [state, setState] = useState<SMMSConfig>(setting.storageConfig?.smmsConfig ?? { token: "" });
 
   const handleCloseButtonClick = () => {
     destroy();
@@ -30,11 +28,10 @@ const EditSMMSConfigDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   const handleSaveButtonClick = async () => {
     try {
-      await api.upsertStorageSetting({
-        name: "SMMS",
-        value: JSON.stringify(state),
+      await userStore.upsertUserSetting("storageConfig", {
+        ...setting.storageConfig,
+        smmsConfig: state,
       });
-      await storageStore.fetchStorageStatus();
     } catch (error) {
       console.error(error);
       return;

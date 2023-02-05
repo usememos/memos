@@ -7,8 +7,8 @@ import MyAccountSection from "./Settings/MyAccountSection";
 import PreferencesSection from "./Settings/PreferencesSection";
 import MemberSection from "./Settings/MemberSection";
 import SystemSection from "./Settings/SystemSection";
-import "../less/setting-dialog.less";
 import StorageSection from "./Settings/StorageSection";
+import "../less/setting-dialog.less";
 
 type Props = DialogProps;
 
@@ -85,14 +85,13 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
           <MyAccountSection />
         ) : state.selectedSection === "preferences" ? (
           <PreferencesSection />
+        ) : state.selectedSection === "storage" ? (
+          <StorageSection />
         ) : state.selectedSection === "member" ? (
           <MemberSection />
         ) : state.selectedSection === "system" ? (
           <SystemSection />
-        ) : state.selectedSection === "storage" ? (
-          <StorageSection />
         ) : null}
-        {/*  TODO 顺序*/}
       </div>
     </div>
   );

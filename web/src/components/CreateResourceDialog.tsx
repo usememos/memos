@@ -1,6 +1,6 @@
 import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete } from "@mui/joy";
 import React, { useRef, useState } from "react";
-import { useResourceStore } from "../store/module";
+import { useResourceStore, useUserStore } from "../store/module";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
@@ -22,6 +22,8 @@ interface State {
 const CreateResourceDialog: React.FC<Props> = (props: Props) => {
   const { destroy, onCancel, onConfirm } = props;
   const resourceStore = useResourceStore();
+  const userStore = useUserStore();
+  const { setting } = userStore.state.user as User;
   const [state, setState] = useState<State>({
     selectedMode: "local-file",
     uploadingFlag: false,
@@ -123,7 +125,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
           return;
         }
         for (const file of fileInputRef.current.files) {
-          const resource = await resourceStore.createResourceWithBlob(file);
+          const resource = await resourceStore.createResourceWithBlob(file, setting.storageConfig?.imageStorage);
           createdResourceList.push(resource);
         }
       } else {
