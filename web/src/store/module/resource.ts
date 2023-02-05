@@ -34,16 +34,16 @@ export const useResourceStore = () => {
       store.dispatch(setResources([resource, ...resourceList]));
       return resource;
     },
-    async createResourceWithBlob(file: File, storageLocation?: StorageLocation): Promise<Resource> {
-      const { name: filename, size } = file;
+    async createResourceWithBlob(file: File, storageConfig?: StorageConfig): Promise<Resource> {
+      const { name: filename, size, type } = file;
       if (size > MAX_FILE_SIZE) {
         return Promise.reject("overload max size: 32MB");
       }
       const formData = new FormData();
       let resource;
-      if (storageLocation === "SMMS") {
+      if (type.startsWith("image") && storageConfig?.imageStorage === "SMMS") {
         formData.append("smfile", file, filename);
-        const { data } = (await api.uploadImageWithSMMS(formData)).data;
+        const { data } = (await api.uploadImageWithSMMS(formData, storageConfig.smmsConfig)).data;
         const resourceCreate = {
           filename: data.filename,
           externalLink: data.url,
