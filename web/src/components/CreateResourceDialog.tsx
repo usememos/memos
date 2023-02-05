@@ -125,7 +125,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
           return;
         }
         for (const file of fileInputRef.current.files) {
-          const resource = await resourceStore.createResourceWithBlob(file, setting.storageConfig?.imageStorage);
+          const resource = await resourceStore.createResourceWithBlob(file, setting.storageConfig);
           createdResourceList.push(resource);
         }
       } else {
