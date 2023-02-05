@@ -67,10 +67,6 @@ const Explore = () => {
             shouldShow = false;
           }
         }
-
-        if (textQuery && !memo.content.toLowerCase().includes(textQuery.toLowerCase())) {
-          shouldShow = false;
-        }
         return shouldShow;
       })
     : state.memos;
