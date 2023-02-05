@@ -71,14 +71,11 @@ const Explore = () => {
       })
     : state.memos;
 
-  const pinnedMemos = shownMemos.filter((m) => m.pinned);
-  const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
   const memoSort = (mi: Memo, mj: Memo) => {
     return mj.displayTs - mi.displayTs;
   };
-  pinnedMemos.sort(memoSort);
-  unpinnedMemos.sort(memoSort);
-  const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
+  shownMemos.sort(memoSort);
+  const sortedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL");
 
   const handleFetchMoreClick = async () => {
     try {
