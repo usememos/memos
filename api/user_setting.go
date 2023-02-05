@@ -18,7 +18,7 @@ const (
 	UserSettingMemoVisibilityKey UserSettingKey = "memoVisibility"
 	// UserSettingMemoDisplayTsOptionKey is the key type for memo display ts option.
 	UserSettingMemoDisplayTsOptionKey UserSettingKey = "memoDisplayTsOption"
-	UserSettingStorageConfigKey                      = "storageConfig"
+	UserSettingStorageConfigKey       UserSettingKey = "storageConfig"
 )
 
 // String returns the string format of UserSettingKey type.
