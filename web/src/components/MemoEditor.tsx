@@ -1,6 +1,7 @@
 import { isNumber, last, toLower, uniq } from "lodash";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Vditor from "vditor";
 import { getMatchedNodes } from "../labs/marked";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
@@ -12,7 +13,10 @@ import Selector from "./common/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
+import "vditor/dist/index.css";
 import "../less/memo-editor.less";
+import "../less/vditor-change.less";
+import "../less/editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
@@ -67,6 +71,18 @@ const MemoEditor = () => {
       text: t(`memo.visibility.${toLower(item.value)}`),
     };
   });
+  const [vt, setVd] = useState<Vditor>();
+
+  useEffect(() => {
+    const vditor = new Vditor("vditor", {
+      after: () => {
+        vditor.setValue("`Vditor` 最小代码示例");
+        setVd(vditor);
+      },
+      typewriterMode: true,
+      toolbar: [],
+    });
+  }, []);
 
   useEffect(() => {
     const { editingMemoIdCache, editingMemoVisibilityCache } = storage.get(["editingMemoIdCache", "editingMemoVisibilityCache"]);
@@ -481,7 +497,10 @@ const MemoEditor = () => {
       onFocus={handleEditorFocus}
       onBlur={handleEditorBlur}
     >
-      <Editor ref={editorRef} {...editorConfig} />
+      {/* <Editor ref={editorRef} {...editorConfig} /> */}
+      <div className={"common-editor-wrapper " + `memo-editor`}>
+        <div id="vditor" className="vditor common-editor-inputer" />
+      </div>
       <div className="common-tools-wrapper">
         <div className="common-tools-container">
           <div className="action-btn tag-action">
