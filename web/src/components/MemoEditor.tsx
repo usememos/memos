@@ -13,7 +13,7 @@ import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import "../less/memo-editor.less";
-
+//tst
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
 const pairSymbols = ["[]", "()", '""', "''", "{}", "``", "”“", "‘‘", "【】", "（）", "《》"];
