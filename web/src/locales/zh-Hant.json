@@ -233,7 +233,7 @@
     "not-allow-chinese": "不允許包含中文",
     "succeed-to-vacuum-database": "清理資料庫成功",
     "succeed-update-additional-style": "更新附加樣式成功",
-    "succeed-copy-resource-link": "複製資源連結到剪貼板成功",
+    "succeed-copy-resource-link": "複製資源連結到剪貼簿成功",
     "succeed-update-customized-profile": "更新自定義配置文件成功",
     "succeed-update-additional-script": "更新附加腳本成功",
     "update-succeed": "更新成功"
