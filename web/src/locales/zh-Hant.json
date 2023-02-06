@@ -9,9 +9,9 @@
     "repeat-new-password": "重複新密碼",
     "username": "用戶名",
     "nickname": "暱稱",
-    "save": "保存",
+    "save": "儲存",
     "close": "關閉",
-    "cancel": "退出",
+    "cancel": "取消",
     "create": "創建",
     "change": "修改",
     "confirm": "確定",
@@ -21,11 +21,11 @@
     "pin": "置頂",
     "unpin": "取消置頂",
     "edit": "編輯",
-    "restore": "恢復",
+    "restore": "還原",
     "delete": "刪除",
     "null": "空",
     "share": "分享",
-    "archive": "歸檔",
+    "archive": "封存",
     "basic": "基礎",
     "admin": "管理員",
     "explore": "探索",
@@ -37,9 +37,9 @@
     "shortcuts": "捷徑",
     "title": "標題",
     "filter": "過濾器",
-    "tags": "全部標簽",
+    "tags": "全部標籤",
     "yourself": "你自己",
-    "archived-at": "歸檔於",
+    "archived-at": "封存於",
     "changed": "已更改",
     "update-on": "更新於",
     "fold": "折疊",
@@ -51,15 +51,15 @@
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
   "auth": {
-    "signup-as-host": "註冊為 Host",
-    "host-tip": "你正在註冊為 Host 用戶賬號。",
-    "not-host-tip": "如果你沒有帳號，請聯繫站點 Host"
+    "signup-as-host": "註冊為管理員",
+    "host-tip": "你正在註冊為管理員帳號。",
+    "not-host-tip": "如果你沒有帳號，請聯繫網站管理員"
   },
   "sidebar": {
     "daily-review": "每日回顧",
     "resources": "資源庫",
     "setting": "設置",
-    "archived": "已歸檔"
+    "archived": "已封存"
   },
   "daily-review": {
     "oops-nothing": "啊哦，空空蕩蕩。"
@@ -67,10 +67,10 @@
   "resources": {
     "description": "查看在 Memo 中的靜態資源。例如：圖片",
     "no-resources": "沒有資源",
-    "fetching-data": "請求數據中...",
+    "fetching-data": "擷取資料中...",
     "upload": "上傳",
     "preview": "預覽",
-    "copy-link": "拷貝連結",
+    "copy-link": "複製連結",
     "delete-resource": "刪除資源",
     "warning-text": "確定刪除這個資源嗎？此操作不可逆❗",
     "linked-amount": "連結的 Memo 數量",
@@ -81,16 +81,16 @@
     "name": "資源名稱"
   },
   "archived": {
-    "archived-memos": "已歸檔的 Memo",
-    "no-archived-memos": "沒有歸檔的 Memo",
-    "fetching-data": "請求數據中..."
+    "archived-memos": "已封存的 Memo",
+    "no-archived-memos": "沒有封存的 Memo",
+    "fetching-data": "擷取資料中..."
   },
   "editor": {
     "editing": "編輯中...",
-    "cancel-edit": "退出編輯",
+    "cancel-edit": "取消編輯",
     "save": "記下",
     "placeholder": "現在的想法是...",
-    "only-image-supported": "僅支持圖片文件。",
+    "only-image-supported": "僅支援圖片檔。",
     "cant-empty": "內容不能為空",
     "local": "本地上傳",
     "resources": "資源庫"
@@ -105,12 +105,12 @@
     }
   },
   "memo-list": {
-    "fetching-data": "請求數據中...",
-    "fetch-more": "點擊加載更多"
+    "fetching-data": "擷取資料中...",
+    "fetch-more": "點擊載入更多"
   },
   "shortcut-list": {
     "shortcut-title": "捷徑標題",
-    "create-shortcut": "創建捷徑",
+    "create-shortcut": "新增捷徑",
     "edit-shortcut": "編輯捷徑",
     "eligible-memo": "符合條件的 Memo",
     "fill-previous": "請填寫之前的過濾值",
@@ -118,9 +118,9 @@
     "value-required": "過濾值是必填項"
   },
   "filter": {
-    "new-filter": "新建過濾器",
+    "new-filter": "新增過濾器",
     "type": {
-      "tag": "標簽",
+      "tag": "標籤",
       "type": "類型",
       "text": "文本",
       "display-time": "顯示時間",
@@ -135,13 +135,13 @@
       "after": "晚於"
     },
     "value": {
-      "not-tagged": "無標簽",
+      "not-tagged": "無標籤",
       "linked": "包含連結"
     },
     "text-placeholder": "以 ^ 開頭使用正則表達式"
   },
   "tag-list": {
-    "tip-text": "輸入`#tag `來創建標簽"
+    "tip-text": "輸入`#tag `來新增標籤"
   },
   "search": {
     "quickly-filter": "快速過濾"
@@ -153,8 +153,8 @@
     "member-list": "成員列表",
     "system": "系統",
     "account-section": {
-      "title": "帳號信息",
-      "update-information": "更新個人資料",
+      "title": "帳號資訊",
+      "update-information": "更新個人資訊",
       "change-password": "修改密碼"
     },
     "preference-section": {
@@ -165,16 +165,16 @@
       "editor-font-style": "編輯器字體樣式",
       "mobile-editor-style": "移動端編輯器樣式",
       "default-memo-sort-option": "Memo 顯示時間",
-      "created_ts": "創建時間",
+      "created_ts": "建立時間",
       "updated_ts": "更新時間"
     },
     "member-section": {
-      "create-a-member": "創建成員"
+      "create-a-member": "新增成員"
     },
     "system-section": {
-      "server-name": "服務名稱",
+      "server-name": "伺服器名稱",
       "customize-server": {
-        "title": "自定義服務",
+        "title": "自訂伺服器名稱",
         "default": "預設為 memos",
         "icon-url": "圖示 URL"
       },
@@ -204,8 +204,8 @@
     "memos-ready": "所有 Memos 已就緒 🎉",
     "restored-successfully": "還原成功",
     "memo-updated-datetime": "Memo 創建日期時間已更改。",
-    "invalid-created-datetime": "創建的日期時間無效。",
-    "change-memo-created-time": "更改 Memo 創建時間",
+    "invalid-created-datetime": "建立的日期時間無效。",
+    "change-memo-created-time": "更改 Memo 建立時間",
     "memo-not-found": "找不到 Memo。",
     "fill-all": "請填寫所有字段。",
     "password-not-match": "密碼不一致。",
@@ -221,9 +221,9 @@
     "succeed-copy-content": "複製內容到剪貼板成功。",
     "succeed-copy-code": "複製代碼到剪貼板成功。",
     "succeed-copy-link": "複製連結到剪貼板成功。",
-    "change-resource-filename": "更改資源文件名",
+    "change-resource-filename": "更改資源檔名",
     "resource-filename-updated": "資源文件名更改成功。",
-    "invalid-resource-filename": "無效的資源文件名",
+    "invalid-resource-filename": "無效的資源檔名",
     "click-to-save-the-image": "點擊儲存圖片",
     "generating-the-screenshot": "正在生成圖片...",
     "count-selected-resources": "所選資源總數",
@@ -231,9 +231,9 @@
     "too-long": "過長",
     "not-allow-space": "不允許包含空格",
     "not-allow-chinese": "不允許包含中文",
-    "succeed-to-vacuum-database": "清空資料庫成功",
+    "succeed-to-vacuum-database": "清理資料庫成功",
     "succeed-update-additional-style": "更新附加樣式成功",
-    "succeed-copy-resource-link": "複製資源連結到剪貼板成功",
+    "succeed-copy-resource-link": "複製資源連結到剪貼簿成功",
     "succeed-update-customized-profile": "更新自定義配置文件成功",
     "succeed-update-additional-script": "更新附加腳本成功",
     "update-succeed": "更新成功"
