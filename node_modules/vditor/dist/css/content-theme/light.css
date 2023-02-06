@@ -1,0 +1,101 @@
+/*!
+ * Vditor - A markdown editor written in TypeScript.
+ *
+ * MIT License
+ *
+ * Copyright (c) 2018-present B3log 开源, b3log.org
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+.vditor-reset h1, .vditor-reset h2 {
+    padding-bottom: 0.3em;
+    border-bottom: 1px solid #eaecef;
+}
+
+.vditor-reset hr {
+    background-color: #eaecef;
+}
+
+.vditor-reset blockquote {
+    color: #6a737d;
+    border-left: .25em solid #eaecef
+}
+
+.vditor-reset iframe {
+    border: 1px solid #d1d5da
+}
+
+.vditor-reset table tr {
+    border-top: 1px solid #c6cbd1;
+    background-color: #fafbfc
+}
+
+.vditor-reset table td, .vditor-reset table th {
+    border: 1px solid #dfe2e5
+}
+
+.vditor-reset table tbody tr:nth-child(2n) {
+    background-color: #fff
+}
+
+.vditor-reset code:not(.hljs):not(.highlight-chroma) {
+    background-color: rgba(27, 31, 35, .05);
+}
+
+.vditor-reset kbd {
+    color: #24292e;
+    background-color: #fafbfc;
+    border: solid 1px #d1d5da;
+    box-shadow: inset 0 -1px 0 #d1d5da;
+}
+
+.vditor-speech {
+    background-color: #f6f8fa;
+    border: 1px solid #d1d5da;
+    color: #586069;
+}
+
+.vditor-speech--current, .vditor-speech:hover {
+    color: #4285f4;
+}
+
+.vditor-linkcard a {
+    background-color: #f6f8fa;
+}
+
+.vditor-linkcard a:visited .vditor-linkcard__abstract {
+    color: rgba(88, 96, 105, 0.36);
+}
+
+.vditor-linkcard__title {
+    color: #24292e;
+}
+
+.vditor-linkcard__abstract {
+    color: #586069;
+}
+
+.vditor-linkcard__site {
+    color: #4285f4;
+}
+
+.vditor-linkcard__image {
+    background-color: rgba(88, 96, 105, 0.36);
+}

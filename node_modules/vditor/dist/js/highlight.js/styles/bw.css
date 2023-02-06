@@ -1,0 +1,150 @@
+/* Background */ .highlight-bg { background-color: #ffffff }
+/* PreWrapper */ .highlight-chroma { background-color: #ffffff; }
+/* Error */ .highlight-chroma .highlight-err {  }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #e5e5e5 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { font-weight: bold }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { font-weight: bold }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { font-weight: bold }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { font-weight: bold }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp {  }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { font-weight: bold }
+/* KeywordType */ .highlight-chroma .highlight-kt {  }
+/* NameClass */ .highlight-chroma .highlight-nc { font-weight: bold }
+/* NameEntity */ .highlight-chroma .highlight-ni { font-weight: bold }
+/* NameException */ .highlight-chroma .highlight-ne { font-weight: bold }
+/* NameNamespace */ .highlight-chroma .highlight-nn { font-weight: bold }
+/* NameTag */ .highlight-chroma .highlight-nt { font-weight: bold }
+/* LiteralString */ .highlight-chroma .highlight-s { font-style: italic }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { font-style: italic }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { font-style: italic }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { font-style: italic }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { font-style: italic }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { font-style: italic }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { font-style: italic }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { font-weight: bold; font-style: italic }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { font-style: italic }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { font-weight: bold; font-style: italic }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { font-style: italic }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { font-style: italic }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { font-style: italic }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { font-style: italic }
+/* OperatorWord */ .highlight-chroma .highlight-ow { font-weight: bold }
+/* Comment */ .highlight-chroma .highlight-c { font-style: italic }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { font-style: italic }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { font-style: italic }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { font-style: italic }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { font-style: italic }
+/* CommentPreproc */ .highlight-chroma .highlight-cp {  }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf {  }
+/* GenericEmph */ .highlight-chroma .highlight-ge { font-style: italic }
+/* GenericHeading */ .highlight-chroma .highlight-gh { font-weight: bold }
+/* GenericPrompt */ .highlight-chroma .highlight-gp { font-weight: bold }
+/* GenericStrong */ .highlight-chroma .highlight-gs { font-weight: bold }
+/* GenericSubheading */ .highlight-chroma .highlight-gu { font-weight: bold }
+
+/*
+
+grayscale style (c) MY Sun <simonmysun@gmail.com>
+
+*/
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    color: #333;
+    background: #fff;
+}
+
+.hljs-comment,
+.hljs-quote {
+    color: #777;
+    font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-subst {
+    color: #333;
+    font-weight: bold;
+}
+
+.hljs-number,
+.hljs-literal {
+    color: #777;
+}
+
+.hljs-string,
+.hljs-doctag,
+.hljs-formula {
+    color: #333;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAAECAYAAACp8Z5+AAAAJ0lEQVQIW2O8e/fufwYGBgZBQUEQxcCIIfDu3Tuwivfv30NUoAsAALHpFMMLqZlPAAAAAElFTkSuQmCC) repeat;
+}
+
+.hljs-title,
+.hljs-section,
+.hljs-selector-id {
+    color: #000;
+    font-weight: bold;
+}
+
+.hljs-subst {
+    font-weight: normal;
+}
+
+.hljs-class .hljs-title,
+.hljs-type,
+.hljs-name {
+    color: #333;
+    font-weight: bold;
+}
+
+.hljs-tag {
+    color: #333;
+}
+
+.hljs-regexp {
+    color: #333;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAICAYAAADA+m62AAAAPUlEQVQYV2NkQAN37979r6yszIgujiIAU4RNMVwhuiQ6H6wQl3XI4oy4FMHcCJPHcDS6J2A2EqUQpJhohQDexSef15DBCwAAAABJRU5ErkJggg==) repeat;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+    color: #000;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAKElEQVQIW2NkQAO7d+/+z4gsBhJwdXVlhAvCBECKwIIwAbhKZBUwBQA6hBpm5efZsgAAAABJRU5ErkJggg==) repeat;
+}
+
+.hljs-built_in,
+.hljs-builtin-name {
+    color: #000;
+    text-decoration: underline;
+}
+
+.hljs-meta {
+    color: #999;
+    font-weight: bold;
+}
+
+.hljs-deletion {
+    color: #fff;
+    background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAADCAYAAABS3WWCAAAAE0lEQVQIW2MMDQ39zzhz5kwIAQAyxweWgUHd1AAAAABJRU5ErkJggg==) repeat;
+}
+
+.hljs-addition {
+    color: #000;
+    background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAJCAYAAADgkQYQAAAALUlEQVQYV2N89+7dfwYk8P79ewZBQUFkIQZGOiu6e/cuiptQHAPl0NtNxAQBAM97Oejj3Dg7AAAAAElFTkSuQmCC) repeat;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}

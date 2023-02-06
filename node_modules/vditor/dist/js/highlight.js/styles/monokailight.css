@@ -1,0 +1,180 @@
+/* Background */ .highlight-bg { color: #272822; background-color: #fafafa }
+/* PreWrapper */ .highlight-chroma { color: #272822; background-color: #fafafa; }
+/* Error */ .highlight-chroma .highlight-err { color: #960050; background-color: #1e0010 }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #e1e1e1 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #00a8c8 }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #00a8c8 }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #00a8c8 }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #f92672 }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #00a8c8 }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #00a8c8 }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #00a8c8 }
+/* Name */ .highlight-chroma .highlight-n { color: #111111 }
+/* NameAttribute */ .highlight-chroma .highlight-na { color: #75af00 }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { color: #111111 }
+/* NameBuiltinPseudo */ .highlight-chroma .highlight-bp { color: #111111 }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #75af00 }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #00a8c8 }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #75af00 }
+/* NameEntity */ .highlight-chroma .highlight-ni { color: #111111 }
+/* NameException */ .highlight-chroma .highlight-ne { color: #75af00 }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #75af00 }
+/* NameFunctionMagic */ .highlight-chroma .highlight-fm { color: #111111 }
+/* NameLabel */ .highlight-chroma .highlight-nl { color: #111111 }
+/* NameNamespace */ .highlight-chroma .highlight-nn { color: #111111 }
+/* NameOther */ .highlight-chroma .highlight-nx { color: #75af00 }
+/* NameProperty */ .highlight-chroma .highlight-py { color: #111111 }
+/* NameTag */ .highlight-chroma .highlight-nt { color: #f92672 }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #111111 }
+/* NameVariableClass */ .highlight-chroma .highlight-vc { color: #111111 }
+/* NameVariableGlobal */ .highlight-chroma .highlight-vg { color: #111111 }
+/* NameVariableInstance */ .highlight-chroma .highlight-vi { color: #111111 }
+/* NameVariableMagic */ .highlight-chroma .highlight-vm { color: #111111 }
+/* Literal */ .highlight-chroma .highlight-l { color: #ae81ff }
+/* LiteralDate */ .highlight-chroma .highlight-ld { color: #d88200 }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #d88200 }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #d88200 }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #d88200 }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #d88200 }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #d88200 }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #d88200 }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #d88200 }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #8045ff }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #d88200 }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #d88200 }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #d88200 }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #d88200 }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #d88200 }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #d88200 }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #ae81ff }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #ae81ff }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #ae81ff }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #ae81ff }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #ae81ff }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #ae81ff }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #ae81ff }
+/* Operator */ .highlight-chroma .highlight-o { color: #f92672 }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #f92672 }
+/* Punctuation */ .highlight-chroma .highlight-p { color: #111111 }
+/* Comment */ .highlight-chroma .highlight-c { color: #75715e }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #75715e }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #75715e }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #75715e }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #75715e }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #75715e }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #75715e }
+/* GenericEmph */ .highlight-chroma .highlight-ge { font-style: italic }
+/* GenericStrong */ .highlight-chroma .highlight-gs { font-weight: bold }
+/*
+
+Gruvbox style (light) (c) Pavel Pertsev (original style at https://github.com/morhetz/gruvbox)
+
+*/
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #fbf1c7;
+}
+
+.hljs,
+.hljs-subst {
+    color: #3c3836;
+}
+
+/* Gruvbox Red */
+.hljs-deletion,
+.hljs-formula,
+.hljs-keyword,
+.hljs-link,
+.hljs-selector-tag {
+    color: #9d0006;
+}
+
+/* Gruvbox Blue */
+.hljs-built_in,
+.hljs-emphasis,
+.hljs-name,
+.hljs-quote,
+.hljs-strong,
+.hljs-title,
+.hljs-variable {
+    color: #076678;
+}
+
+/* Gruvbox Yellow */
+.hljs-attr,
+.hljs-params,
+.hljs-template-tag,
+.hljs-type {
+    color: #b57614;
+}
+
+/* Gruvbox Purple */
+.hljs-builtin-name,
+.hljs-doctag,
+.hljs-literal,
+.hljs-number {
+    color: #8f3f71;
+}
+
+/* Gruvbox Orange */
+.hljs-code,
+.hljs-meta,
+.hljs-regexp,
+.hljs-selector-id,
+.hljs-template-variable {
+    color: #af3a03;
+}
+
+/* Gruvbox Green */
+.hljs-addition,
+.hljs-meta-string,
+.hljs-section,
+.hljs-selector-attr,
+.hljs-selector-class,
+.hljs-string,
+.hljs-symbol {
+    color: #79740e;
+}
+
+/* Gruvbox Aqua */
+.hljs-attribute,
+.hljs-bullet,
+.hljs-class,
+.hljs-function,
+.hljs-function .hljs-keyword,
+.hljs-meta-keyword,
+.hljs-selector-pseudo,
+.hljs-tag {
+    color: #427b58;
+}
+
+/* Gruvbox Gray */
+.hljs-comment {
+    color: #928374;
+}
+
+/* Gruvbox Purple */
+.hljs-link_label,
+.hljs-literal,
+.hljs-number {
+    color: #8f3f71;
+}
+
+.hljs-comment,
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-section,
+.hljs-strong,
+.hljs-tag {
+    font-weight: bold;
+}

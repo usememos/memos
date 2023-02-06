@@ -1,0 +1,139 @@
+/* Background */ .highlight-bg { background-color: #f0f3f3 }
+/* PreWrapper */ .highlight-chroma { background-color: #f0f3f3; }
+/* Error */ .highlight-chroma .highlight-err { color: #aa0000; background-color: #ffaaaa }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #d8dada }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #006699; font-weight: bold }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #006699; font-weight: bold }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #006699; font-weight: bold }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #006699; font-weight: bold }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #006699 }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #006699; font-weight: bold }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #007788; font-weight: bold }
+/* NameAttribute */ .highlight-chroma .highlight-na { color: #330099 }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { color: #336666 }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #00aa88; font-weight: bold }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #336600 }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #9999ff }
+/* NameEntity */ .highlight-chroma .highlight-ni { color: #999999; font-weight: bold }
+/* NameException */ .highlight-chroma .highlight-ne { color: #cc0000; font-weight: bold }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #cc00ff }
+/* NameLabel */ .highlight-chroma .highlight-nl { color: #9999ff }
+/* NameNamespace */ .highlight-chroma .highlight-nn { color: #00ccff; font-weight: bold }
+/* NameTag */ .highlight-chroma .highlight-nt { color: #330099; font-weight: bold }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #003333 }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #cc3300 }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #cc3300 }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #cc3300 }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #cc3300 }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #cc3300 }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #cc3300; font-style: italic }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #cc3300 }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #cc3300; font-weight: bold }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #cc3300 }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #aa0000 }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #cc3300 }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #33aaaa }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #cc3300 }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #ffcc33 }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #ff6600 }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #ff6600 }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #ff6600 }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #ff6600 }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #ff6600 }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #ff6600 }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #ff6600 }
+/* Operator */ .highlight-chroma .highlight-o { color: #555555 }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #000000; font-weight: bold }
+/* Comment */ .highlight-chroma .highlight-c { color: #0099ff; font-style: italic }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #0099ff; font-style: italic }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #0099ff; font-style: italic }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #0099ff; font-style: italic }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #0099ff; font-weight: bold; font-style: italic }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #009999 }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #009999 }
+/* GenericDeleted */ .highlight-chroma .highlight-gd { background-color: #ffcccc }
+/* GenericEmph */ .highlight-chroma .highlight-ge { font-style: italic }
+/* GenericError */ .highlight-chroma .highlight-gr { color: #ff0000 }
+/* GenericHeading */ .highlight-chroma .highlight-gh { color: #003300; font-weight: bold }
+/* GenericInserted */ .highlight-chroma .highlight-gi { background-color: #ccffcc }
+/* GenericOutput */ .highlight-chroma .highlight-go { color: #aaaaaa }
+/* GenericPrompt */ .highlight-chroma .highlight-gp { color: #000099; font-weight: bold }
+/* GenericStrong */ .highlight-chroma .highlight-gs { font-weight: bold }
+/* GenericSubheading */ .highlight-chroma .highlight-gu { color: #003300; font-weight: bold }
+/* GenericTraceback */ .highlight-chroma .highlight-gt { color: #99cc66 }
+/* GenericUnderline */ .highlight-chroma .highlight-gl { text-decoration: underline }
+/* TextWhitespace */ .highlight-chroma .highlight-w { color: #bbbbbb }
+/* Base16 Atelier Sulphurpool Light - Theme */
+/* by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/sulphurpool) */
+/* Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16) */
+
+/* Atelier-Sulphurpool Comment */
+.hljs-comment,
+.hljs-quote {
+    color: #6b7394;
+}
+
+/* Atelier-Sulphurpool Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attribute,
+.hljs-tag,
+.hljs-name,
+.hljs-regexp,
+.hljs-link,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+    color: #c94922;
+}
+
+/* Atelier-Sulphurpool Orange */
+.hljs-number,
+.hljs-meta,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params {
+    color: #c76b29;
+}
+
+/* Atelier-Sulphurpool Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet {
+    color: #ac9739;
+}
+
+/* Atelier-Sulphurpool Blue */
+.hljs-title,
+.hljs-section {
+    color: #3d8fd1;
+}
+
+/* Atelier-Sulphurpool Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+    color: #6679cc;
+}
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    background: #f5f7ff;
+    color: #5e6687;
+    padding: 0.5em;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}

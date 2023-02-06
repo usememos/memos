@@ -1,0 +1,210 @@
+/*!
+ * Vditor - A markdown editor written in TypeScript.
+ *
+ * MIT License
+ *
+ * Copyright (c) 2018-present B3log 开源, b3log.org
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
+.vditor-reset {
+    color: rgba(0, 0, 0, .85);
+    font-size: 14px;
+    line-height: 2;
+}
+
+.vditor-reset img {
+    max-width: calc(100% - 32px);
+}
+
+.vditor-reset p > img {
+    margin: 34px 0;
+    box-shadow: 0 8px 20px rgba(143, 168, 191, 0.35);
+}
+
+.vditor-reset h1 {
+    margin-bottom: 20px;
+    color: rgba(0, 0, 0, .85);
+    font-weight: 500;
+    font-size: 30px;
+    font-family: Avenir, -apple-system, BlinkMacSystemFont, segoe ui, Roboto, helvetica neue, Arial, noto sans, sans-serif, apple color emoji, segoe ui emoji, segoe ui symbol, noto color emoji, sans-serif;
+    line-height: 38px
+}
+
+.vditor-reset h2 {
+    font-size: 24px;
+    line-height: 32px;
+}
+
+.vditor-reset h2,
+.vditor-reset h3,
+.vditor-reset h4,
+.vditor-reset h5,
+.vditor-reset h6 {
+    clear: both;
+    margin: 1.6em 0 .6em;
+    color: rgba(0, 0, 0, .85);
+    font-weight: 500;
+    font-family: Avenir, -apple-system, BlinkMacSystemFont, segoe ui, Roboto, helvetica neue, Arial, noto sans, sans-serif, apple color emoji, segoe ui emoji, segoe ui symbol, noto color emoji, sans-serif
+}
+
+.vditor-reset h3 {
+    font-size: 18px;
+}
+
+.vditor-reset h4 {
+    font-size: 16px;
+}
+
+.vditor-reset h5 {
+    font-size: 14px;
+}
+
+.vditor-reset h6 {
+    font-size: 12px;
+}
+
+.vditor-reset hr {
+    clear: both;
+    height: 1px;
+    margin: 56px 0;
+    background: #f0f0f0;
+    border: 0;
+}
+
+.vditor-reset p,
+.vditor-reset pre {
+    margin: 1em 0;
+}
+
+.vditor-reset ul > li {
+    margin-left: 20px;
+    padding-left: 4px;
+    list-style-type: circle;
+}
+
+.vditor-reset ol > li {
+    margin-left: 20px;
+    padding-left: 4px;
+    list-style-type: decimal;
+}
+
+.vditor-reset ul > li > p,
+.vditor-reset ol > li > p {
+    margin: 0.2em 0;
+}
+
+.vditor-reset code {
+    margin: 0 1px;
+    padding: .2em .4em;
+    font-size: .9em;
+    border-radius: 3px;
+    border: 1px solid #f0f0f0;
+    font-family: sfmono-regular, Consolas, liberation mono, Menlo, Courier, monospace;
+}
+
+.vditor-reset code:not(.hljs):not(.highlight-chroma) {
+    background: #f2f4f5;
+    color: rgba(0, 0, 0, .65);
+}
+
+.vditor-reset pre {
+    font-family: sfmono-regular, Consolas, liberation mono, Menlo, Courier, monospace;
+    border-radius: 2px;
+}
+
+.vditor-reset .language-abc svg,
+.vditor-reset .language-abc path {
+    fill: currentColor;
+    color: rgba(0, 0, 0, .85);
+}
+
+.vditor-reset .language-graphviz polygon {
+    fill: transparent;
+}
+
+.vditor-reset strong,
+.vditor-reset b {
+    font-weight: 500;
+}
+
+.vditor-reset > table {
+    width: 100%;
+    margin: 8px 0 16px;
+    direction: ltr;
+    empty-cells: show;
+    border: 1px solid #f0f0f0;
+    border-collapse: collapse;
+    border-spacing: 0
+}
+
+.vditor-reset > table th {
+    color: #5c6b77;
+    font-weight: 500;
+    white-space: nowrap;
+    background: rgba(0, 0, 0, .02)
+}
+
+.vditor-reset > table th, .vditor-reset > table td {
+    padding: 16px 24px;
+    text-align: left;
+    border: 1px solid #f0f0f0
+}
+
+.vditor-reset blockquote {
+    margin: 1em 0;
+    padding-left: .8em;
+    color: rgba(0, 0, 0, .45);
+    font-size: 90%;
+    border-left: 4px solid #f0f0f0
+}
+
+.vditor-reset blockquote p {
+    margin: 0;
+}
+
+.vditor-reset .vditor-anchor {
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.vditor-reset h1:hover .vditor-anchor,
+.vditor-reset h2:hover .vditor-anchor,
+.vditor-reset h3:hover .vditor-anchor,
+.vditor-reset h4:hover .vditor-anchor,
+.vditor-reset h5:hover .vditor-anchor,
+.vditor-reset h6:hover .vditor-anchor {
+    display: inline-block;
+    opacity: 1;
+}
+
+.vditor-reset > br,
+.vditor-reset > p > br {
+    clear: both;
+}
+
+.vditor-reset a, .vditor-ir__link {
+    color: #1890ff;
+    text-decoration: none;
+    outline: none;
+    cursor: pointer;
+}

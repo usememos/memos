@@ -1,0 +1,159 @@
+/* Background */ .highlight-bg { color: #f8f8f2; background-color: #000000 }
+/* PreWrapper */ .highlight-chroma { color: #f8f8f2; background-color: #000000; }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #191919 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7c7c79 }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7c7c79 }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #ff0000 }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #ff0000 }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #ff0000 }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #ff0000 }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #ff0000 }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #ff0000 }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #ee82ee }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #7fffd4 }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #ffff00 }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #eedd82 }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #87ceeb }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #87ceeb }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #87ceeb }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #87ceeb }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #87ceeb }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #87ceeb }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #87ceeb }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #87ceeb }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #87ceeb }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #87ceeb }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #87ceeb }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #87ceeb }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #87ceeb }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #ff6600 }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #ff6600 }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #ff6600 }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #ff6600 }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #ff6600 }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #ff6600 }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #ff6600 }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #ff6600 }
+/* Comment */ .highlight-chroma .highlight-c { color: #00ff00 }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #00ff00 }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #00ff00 }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #00ff00 }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #00ff00 }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #e5e5e5 }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #e5e5e5 }
+/*
+
+ISBL Editor style dark color scheme (c) Dmitriy Tarasov <dimatar@gmail.com>
+
+*/
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #404040;
+    color: #f0f0f0;
+}
+
+/* Base color: saturation 0; */
+
+.hljs,
+.hljs-subst {
+    color: #f0f0f0;
+}
+
+.hljs-comment {
+    color: #b5b5b5;
+    font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-attribute,
+.hljs-selector-tag,
+.hljs-meta-keyword,
+.hljs-doctag,
+.hljs-name {
+    color: #f0f0f0;
+    font-weight: bold;
+}
+
+
+/* User color: hue: 0 */
+
+.hljs-string {
+    color: #97bf0d;
+}
+
+.hljs-type,
+.hljs-number,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-quote,
+.hljs-template-tag,
+.hljs-deletion {
+    color: #f0f0f0;
+}
+
+.hljs-title,
+.hljs-section {
+    color: #df471e;
+}
+
+.hljs-title>.hljs-built_in {
+    color: #81bce9;
+    font-weight: normal;
+}
+
+.hljs-regexp,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+    color: #e2c696;
+}
+
+/* Language color: hue: 90; */
+
+.hljs-built_in,
+.hljs-literal {
+    color: #97bf0d;
+    font-weight: bold;
+}
+
+.hljs-bullet,
+.hljs-code,
+.hljs-addition {
+    color: #397300;
+}
+
+.hljs-class  {
+    color: #ce9d4d;
+    font-weight: bold;
+}
+
+/* Meta color: hue: 200 */
+
+.hljs-meta {
+    color: #1f7199;
+}
+
+.hljs-meta-string {
+    color: #4d99bf;
+}
+
+
+/* Misc effects */
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}
+

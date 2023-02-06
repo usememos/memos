@@ -1,0 +1,146 @@
+/* Background */ .highlight-bg { color: #8a8a8a; background-color: #1c1c1c }
+/* PreWrapper */ .highlight-chroma { color: #8a8a8a; background-color: #1c1c1c; }
+/* Other */ .highlight-chroma .highlight-x { color: #d75f00 }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #323232 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #454545 }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #454545 }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #5f8700 }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #d75f00 }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #0087ff }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #d75f00 }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #5f8700 }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #0087ff }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #af0000 }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { color: #0087ff }
+/* NameBuiltinPseudo */ .highlight-chroma .highlight-bp { color: #0087ff }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #0087ff }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #d75f00 }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #0087ff }
+/* NameEntity */ .highlight-chroma .highlight-ni { color: #d75f00 }
+/* NameException */ .highlight-chroma .highlight-ne { color: #af8700 }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #0087ff }
+/* NameTag */ .highlight-chroma .highlight-nt { color: #0087ff }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #0087ff }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #00afaf }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #00afaf }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #4e4e4e }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #00afaf }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #00afaf }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #00afaf }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #00afaf }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #af0000 }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #00afaf }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #00afaf }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #00afaf }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #af0000 }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #00afaf }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #00afaf }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #00afaf }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #00afaf }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #00afaf }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #00afaf }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #00afaf }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #00afaf }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #00afaf }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #5f8700 }
+/* Comment */ .highlight-chroma .highlight-c { color: #4e4e4e }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #4e4e4e }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #4e4e4e }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #4e4e4e }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #5f8700 }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #5f8700 }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #5f8700 }
+/* GenericDeleted */ .highlight-chroma .highlight-gd { color: #af0000 }
+/* GenericEmph */ .highlight-chroma .highlight-ge { font-style: italic }
+/* GenericError */ .highlight-chroma .highlight-gr { color: #af0000; font-weight: bold }
+/* GenericHeading */ .highlight-chroma .highlight-gh { color: #d75f00 }
+/* GenericInserted */ .highlight-chroma .highlight-gi { color: #5f8700 }
+/* GenericStrong */ .highlight-chroma .highlight-gs { font-weight: bold }
+/* GenericSubheading */ .highlight-chroma .highlight-gu { color: #0087ff }
+/* Base16 Atelier Cave Dark - Theme */
+/* by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/cave) */
+/* Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16) */
+
+/* Atelier-Cave Comment */
+.hljs-comment,
+.hljs-quote {
+    color: #7e7887;
+}
+
+/* Atelier-Cave Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attribute,
+.hljs-regexp,
+.hljs-link,
+.hljs-tag,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+    color: #be4678;
+}
+
+/* Atelier-Cave Orange */
+.hljs-number,
+.hljs-meta,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params {
+    color: #aa573c;
+}
+
+/* Atelier-Cave Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet {
+    color: #2a9292;
+}
+
+/* Atelier-Cave Blue */
+.hljs-title,
+.hljs-section {
+    color: #576ddb;
+}
+
+/* Atelier-Cave Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+    color: #955ae7;
+}
+
+.hljs-deletion,
+.hljs-addition {
+    color: #19171c;
+    display: inline-block;
+    width: 100%;
+}
+
+.hljs-deletion {
+    background-color: #be4678;
+}
+
+.hljs-addition {
+    background-color: #2a9292;
+}
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    background: #19171c;
+    color: #8b8792;
+    padding: 0.5em;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}
+

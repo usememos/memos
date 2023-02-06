@@ -1,0 +1,90 @@
+/* Background */ .highlight-bg { background-color: #ffffff }
+/* PreWrapper */ .highlight-chroma { background-color: #ffffff; }
+/* Error */ .highlight-chroma .highlight-err {  }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #e5e5e5 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { font-weight: bold }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { font-weight: bold }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { font-weight: bold; font-style: italic }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { font-weight: bold }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { font-weight: bold }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { font-weight: bold }
+/* KeywordType */ .highlight-chroma .highlight-kt { font-weight: bold }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { font-weight: bold; font-style: italic }
+/* NameBuiltinPseudo */ .highlight-chroma .highlight-bp { font-weight: bold; font-style: italic }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #666666; font-weight: bold; font-style: italic }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #666666; font-weight: bold; font-style: italic }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #666666; font-weight: bold; font-style: italic }
+/* NameNamespace */ .highlight-chroma .highlight-nn { color: #666666; font-weight: bold; font-style: italic }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #666666; font-weight: bold; font-style: italic }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #666666; font-style: italic }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #666666; font-style: italic }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #666666; font-style: italic }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #666666; font-style: italic }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #666666; font-style: italic }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #666666; font-style: italic }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #666666; font-style: italic }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #666666; font-style: italic }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #666666; font-style: italic }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #666666; font-style: italic }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #666666; font-style: italic }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #666666; font-style: italic }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #666666; font-style: italic }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #666666; font-style: italic }
+/* OperatorWord */ .highlight-chroma .highlight-ow { font-weight: bold }
+/* Comment */ .highlight-chroma .highlight-c { color: #888888; font-style: italic }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #888888; font-style: italic }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #888888; font-style: italic }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #888888; font-style: italic }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #888888; font-weight: bold }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #888888; font-weight: bold }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #888888; font-weight: bold }
+/*
+
+Original style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org>
+
+*/
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: white;
+    color: black;
+}
+
+.hljs-string,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-section,
+.hljs-addition,
+.hljs-attribute,
+.hljs-link {
+    color: #888;
+}
+
+.hljs-comment,
+.hljs-quote,
+.hljs-meta,
+.hljs-deletion {
+    color: #ccc;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-section,
+.hljs-name,
+.hljs-type,
+.hljs-strong {
+    font-weight: bold;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}

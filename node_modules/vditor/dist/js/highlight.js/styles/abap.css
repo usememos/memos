@@ -1,0 +1,155 @@
+/* Background */ .highlight-bg { background-color: #ffffff }
+/* PreWrapper */ .highlight-chroma { background-color: #ffffff; }
+/* Error */ .highlight-chroma .highlight-err { color: #ff0000 }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #e5e5e5 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #0000ff }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #0000ff }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #0000ff }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #0000ff }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #0000ff }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #0000ff }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #0000ff }
+/* Name */ .highlight-chroma .highlight-n { color: #000000 }
+/* NameAttribute */ .highlight-chroma .highlight-na { color: #000000 }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { color: #000000 }
+/* NameBuiltinPseudo */ .highlight-chroma .highlight-bp { color: #000000 }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #000000 }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #000000 }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #000000 }
+/* NameEntity */ .highlight-chroma .highlight-ni { color: #000000 }
+/* NameException */ .highlight-chroma .highlight-ne { color: #000000 }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #000000 }
+/* NameFunctionMagic */ .highlight-chroma .highlight-fm { color: #000000 }
+/* NameLabel */ .highlight-chroma .highlight-nl { color: #000000 }
+/* NameNamespace */ .highlight-chroma .highlight-nn { color: #000000 }
+/* NameOther */ .highlight-chroma .highlight-nx { color: #000000 }
+/* NameProperty */ .highlight-chroma .highlight-py { color: #000000 }
+/* NameTag */ .highlight-chroma .highlight-nt { color: #000000 }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #000000 }
+/* NameVariableClass */ .highlight-chroma .highlight-vc { color: #000000 }
+/* NameVariableGlobal */ .highlight-chroma .highlight-vg { color: #000000 }
+/* NameVariableInstance */ .highlight-chroma .highlight-vi { color: #000000 }
+/* NameVariableMagic */ .highlight-chroma .highlight-vm { color: #000000 }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #55aa22 }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #55aa22 }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #55aa22 }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #55aa22 }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #55aa22 }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #55aa22 }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #55aa22 }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #55aa22 }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #55aa22 }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #55aa22 }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #55aa22 }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #55aa22 }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #55aa22 }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #55aa22 }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #33aaff }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #33aaff }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #33aaff }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #33aaff }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #33aaff }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #33aaff }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #33aaff }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #0000ff }
+/* Comment */ .highlight-chroma .highlight-c { color: #888888; font-style: italic }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #888888; font-style: italic }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #888888; font-style: italic }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #888888; font-style: italic }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #888888; font-style: italic }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #888888; font-style: italic }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #888888; font-style: italic }
+/*
+
+Google Code style (c) Aahan Krish <geekpanth3r@gmail.com>
+
+*/
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: white;
+    color: black;
+}
+
+.hljs-comment,
+.hljs-quote {
+    color: #800;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-section,
+.hljs-title,
+.hljs-name {
+    color: #008;
+}
+
+.hljs-variable,
+.hljs-template-variable {
+    color: #660;
+}
+
+.hljs-string,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-regexp {
+    color: #080;
+}
+
+.hljs-literal,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-meta,
+.hljs-number,
+.hljs-link {
+    color: #066;
+}
+
+.hljs-title,
+.hljs-doctag,
+.hljs-type,
+.hljs-attr,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-params {
+    color: #606;
+}
+
+.hljs-attribute,
+.hljs-subst {
+    color: #000;
+}
+
+.hljs-formula {
+    background-color: #eee;
+    font-style: italic;
+}
+
+.hljs-selector-id,
+.hljs-selector-class {
+    color: #9B703F
+}
+
+.hljs-addition {
+    background-color: #baeeba;
+}
+
+.hljs-deletion {
+    background-color: #ffc8bd;
+}
+
+.hljs-doctag,
+.hljs-strong {
+    font-weight: bold;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}

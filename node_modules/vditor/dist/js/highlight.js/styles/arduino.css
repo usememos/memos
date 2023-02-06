@@ -1,0 +1,157 @@
+/* Background */ .highlight-bg { background-color: #ffffff }
+/* PreWrapper */ .highlight-chroma { background-color: #ffffff; }
+/* Error */ .highlight-chroma .highlight-err { color: #a61717 }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #e5e5e5 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #728e00 }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #00979d }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #728e00 }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #728e00 }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #00979d }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #00979d }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #00979d }
+/* Name */ .highlight-chroma .highlight-n { color: #434f54 }
+/* NameAttribute */ .highlight-chroma .highlight-na { color: #434f54 }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { color: #728e00 }
+/* NameBuiltinPseudo */ .highlight-chroma .highlight-bp { color: #434f54 }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #434f54 }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #434f54 }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #434f54 }
+/* NameEntity */ .highlight-chroma .highlight-ni { color: #434f54 }
+/* NameException */ .highlight-chroma .highlight-ne { color: #434f54 }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #d35400 }
+/* NameFunctionMagic */ .highlight-chroma .highlight-fm { color: #434f54 }
+/* NameLabel */ .highlight-chroma .highlight-nl { color: #434f54 }
+/* NameNamespace */ .highlight-chroma .highlight-nn { color: #434f54 }
+/* NameOther */ .highlight-chroma .highlight-nx { color: #728e00 }
+/* NameProperty */ .highlight-chroma .highlight-py { color: #434f54 }
+/* NameTag */ .highlight-chroma .highlight-nt { color: #434f54 }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #434f54 }
+/* NameVariableClass */ .highlight-chroma .highlight-vc { color: #434f54 }
+/* NameVariableGlobal */ .highlight-chroma .highlight-vg { color: #434f54 }
+/* NameVariableInstance */ .highlight-chroma .highlight-vi { color: #434f54 }
+/* NameVariableMagic */ .highlight-chroma .highlight-vm { color: #434f54 }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #7f8c8d }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #7f8c8d }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #7f8c8d }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #7f8c8d }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #7f8c8d }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #7f8c8d }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #7f8c8d }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #7f8c8d }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #7f8c8d }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #7f8c8d }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #7f8c8d }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #7f8c8d }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #7f8c8d }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #7f8c8d }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #8a7b52 }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #8a7b52 }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #8a7b52 }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #8a7b52 }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #8a7b52 }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #8a7b52 }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #8a7b52 }
+/* Operator */ .highlight-chroma .highlight-o { color: #728e00 }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #728e00 }
+/* Comment */ .highlight-chroma .highlight-c { color: #95a5a6 }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #95a5a6 }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #95a5a6 }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #95a5a6 }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #95a5a6 }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #728e00 }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #728e00 }
+
+/*
+
+Arduino® Light Theme - Stefania Mellai <s.mellai@arduino.cc>
+
+*/
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #FFFFFF;
+}
+
+.hljs,
+.hljs-subst {
+    color: #434f54;
+}
+
+.hljs-keyword,
+.hljs-attribute,
+.hljs-selector-tag,
+.hljs-doctag,
+.hljs-name {
+    color: #00979D;
+}
+
+.hljs-built_in,
+.hljs-literal,
+.hljs-bullet,
+.hljs-code,
+.hljs-addition {
+    color: #D35400;
+}
+
+.hljs-regexp,
+.hljs-symbol,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-link,
+.hljs-selector-attr,
+.hljs-selector-pseudo {
+    color: #00979D;
+}
+
+.hljs-type,
+.hljs-string,
+.hljs-selector-id,
+.hljs-selector-class,
+.hljs-quote,
+.hljs-template-tag,
+.hljs-deletion {
+    color: #005C5F;
+}
+
+.hljs-title,
+.hljs-section {
+    color: #880000;
+    font-weight: bold;
+}
+
+.hljs-comment {
+    color: rgba(149,165,166,.8);
+}
+
+.hljs-meta-keyword {
+    color: #728E00;
+}
+
+.hljs-meta {
+    color: #728E00;
+    color: #434f54;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}
+
+.hljs-function {
+    color: #728E00;
+}
+
+.hljs-number {
+    color: #8A7B52;
+}
+

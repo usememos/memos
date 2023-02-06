@@ -1,0 +1,67 @@
+.vditor-hint {
+  background-color: var(--panel-background-color);
+  position: absolute;
+  box-shadow: var(--panel-shadow);
+  border-radius: 3px;
+  padding: 5px 0;
+  z-index: 4;
+  line-height: 20px;
+  list-style: none;
+  font-size: 12px;
+  margin: 0;
+  max-width: 250px;
+  min-width: 80px;
+  display: none;
+
+  .vditor-hint {
+    margin-top: -31px;
+    left: 100%;
+    right: auto;
+
+    &.vditor-panel--left {
+      right: 100%;
+      left: auto;
+    }
+  }
+
+  button {
+    color: var(--toolbar-icon-color);
+    display: block;
+    padding: 3px 10px;
+    border: 0;
+    border-radius: 0;
+    line-height: 20px;
+    width: 100%;
+    box-sizing: border-box;
+    text-align: left;
+    margin: 0;
+    background-color: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  &--current,
+  button:not(.vditor-menu--disabled):hover {
+    background-color: var(--toolbar-background-color) !important;
+    color: var(--toolbar-icon-hover-color) !important;
+  }
+
+  &__emoji {
+    font-size: 16px;
+    float: left;
+    margin-right: 3px;
+  }
+
+  img {
+    height: 20px;
+    width: 20px;
+    float: left;
+    margin-right: 3px;
+  }
+}

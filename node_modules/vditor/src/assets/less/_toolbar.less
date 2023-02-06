@@ -1,0 +1,180 @@
+.vditor {
+  &-toolbar {
+    background-color: var(--toolbar-background-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 5px;
+    line-height: 1;
+
+    &--pin {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    &--hide {
+      transition: @transition;
+      height: 5px;
+      overflow: hidden;
+
+      &:hover {
+        background-color: var(--toolbar-background-color);
+        height: auto;
+        overflow: visible;
+      }
+    }
+
+    &__item {
+      float: left;
+      position: relative;
+
+      .vditor-tooltipped {
+        color: var(--toolbar-icon-color);
+        border: 0;
+        padding: 10px 5px;
+        background-color: transparent;
+        height: var(--toolbar-height);
+        width: 25px;
+        box-sizing: border-box;
+        font-size: 0;
+
+        &:focus {
+          outline: none;
+        }
+
+        &:focus {
+          cursor: pointer;
+          color: var(--toolbar-icon-hover-color);
+        }
+      }
+
+      svg {
+        fill: currentColor;
+        display: inline-block;
+        stroke-width: 0;
+        stroke: currentColor;
+        width: 15px;
+        height: 15px;
+      }
+
+      input {
+        position: absolute;
+        width: 25px;
+        height: var(--toolbar-height);
+        top: 0;
+        left: 0;
+        cursor: pointer;
+        opacity: .001;
+        overflow: hidden;
+      }
+    }
+
+    &__divider {
+      float: left;
+      height: calc(var(--toolbar-height) - (var(--toolbar-divider-margin-top) * 2));
+      border-left: 1px solid var(--second-color);
+      margin: var(--toolbar-divider-margin-top) 8px;
+    }
+
+    &__br {
+      width: 100%;
+      padding: 0 !important;
+      height: 0 !important;
+    }
+  }
+
+  &-menu {
+    &--current {
+      color: var(--toolbar-icon-hover-color) !important;
+    }
+
+    &--disabled {
+      color: var(--second-color) !important;
+      cursor: not-allowed !important;
+    }
+  }
+
+  &-emojis {
+    display: inline-block;
+    overflow: auto;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    &__tip {
+      flex: 1;
+      min-width: 1px;
+      width: 200px;
+      margin-right: 10px;
+      color: var(--toolbar-icon-color);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    &__tail {
+      margin-top: 5px;
+      font-size: 12px;
+      color: var(--toolbar-icon-color);
+      display: flex;
+
+      a {
+        text-decoration: none;
+        color: var(--toolbar-icon-color);
+
+        &:hover {
+          color: var(--toolbar-icon-hover-color);
+        }
+      }
+    }
+
+    button {
+      cursor: pointer;
+      border-radius: 3px;
+      float: left;
+      height: 30px;
+      width: 30px;
+      text-align: center;
+      line-height: 26px;
+      padding: 3px;
+      box-sizing: border-box;
+      font-size: 16px;
+      transition: @transition;
+      border: 0;
+      margin: 0;
+      background-color: transparent;
+      overflow: hidden;
+
+      &:focus {
+        outline: none;
+      }
+
+      &:hover .vditor-emojis__icon {
+        display: inline-block;
+        transform: scale(1.2);
+      }
+    }
+
+    img {
+      height: 20px;
+      width: 20px;
+      float: left;
+      margin: 3px 0 0 3px;
+    }
+  }
+}
+
+@media screen and (max-width: @max-width) {
+  .vditor-toolbar__item {
+    padding: 0 12px;
+  }
+  .vditor-panel--left.vditor-panel--arrow:before {
+    right: 17px;
+  }
+}
+
+@media(hover: hover) and (pointer: fine) {
+  .vditor-toolbar__item .vditor-tooltipped:hover {
+    color: var(--toolbar-icon-hover-color);
+  }
+}

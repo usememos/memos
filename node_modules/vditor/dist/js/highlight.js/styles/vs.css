@@ -1,0 +1,113 @@
+/* Background */ .highlight-bg { background-color: #ffffff }
+/* PreWrapper */ .highlight-chroma { background-color: #ffffff; }
+/* Error */ .highlight-chroma .highlight-err {  }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #e5e5e5 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #0000ff }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #0000ff }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #0000ff }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #0000ff }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #0000ff }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #0000ff }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #2b91af }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #2b91af }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #a31515 }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #a31515 }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #a31515 }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #a31515 }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #a31515 }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #a31515 }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #a31515 }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #a31515 }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #a31515 }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #a31515 }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #a31515 }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #a31515 }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #a31515 }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #a31515 }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #0000ff }
+/* Comment */ .highlight-chroma .highlight-c { color: #008000 }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #008000 }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #008000 }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #008000 }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #008000 }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #0000ff }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #0000ff }
+/* GenericEmph */ .highlight-chroma .highlight-ge { font-style: italic }
+/* GenericHeading */ .highlight-chroma .highlight-gh { font-weight: bold }
+/* GenericPrompt */ .highlight-chroma .highlight-gp { font-weight: bold }
+/* GenericStrong */ .highlight-chroma .highlight-gs { font-weight: bold }
+/* GenericSubheading */ .highlight-chroma .highlight-gu { font-weight: bold }
+/*
+
+Visual Studio-like style based on original C# coloring by Jason Diamond <jason@diamond.name>
+
+*/
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: white;
+    color: black;
+}
+
+.hljs-comment,
+.hljs-quote,
+.hljs-variable {
+    color: #008000;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-built_in,
+.hljs-name,
+.hljs-tag {
+    color: #00f;
+}
+
+.hljs-string,
+.hljs-title,
+.hljs-section,
+.hljs-attribute,
+.hljs-literal,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-type,
+.hljs-addition {
+    color: #a31515;
+}
+
+.hljs-deletion,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-meta {
+    color: #2b91af;
+}
+
+.hljs-doctag {
+    color: #808080;
+}
+
+.hljs-attr {
+    color: #f00;
+}
+
+.hljs-symbol,
+.hljs-bullet,
+.hljs-link {
+    color: #00b0e8;
+}
+
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}
+

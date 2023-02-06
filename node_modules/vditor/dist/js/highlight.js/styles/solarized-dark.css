@@ -1,0 +1,146 @@
+/* Background */ .highlight-bg { color: #93a1a1; background-color: #002b36 }
+/* PreWrapper */ .highlight-chroma { color: #93a1a1; background-color: #002b36; }
+/* Other */ .highlight-chroma .highlight-x { color: #cb4b16 }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #19404a }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #495050 }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #495050 }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #719e07 }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #cb4b16 }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #268bd2 }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #719e07 }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #719e07 }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #268bd2 }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #dc322f }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { color: #b58900 }
+/* NameBuiltinPseudo */ .highlight-chroma .highlight-bp { color: #268bd2 }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #268bd2 }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #cb4b16 }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #268bd2 }
+/* NameEntity */ .highlight-chroma .highlight-ni { color: #cb4b16 }
+/* NameException */ .highlight-chroma .highlight-ne { color: #cb4b16 }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #268bd2 }
+/* NameTag */ .highlight-chroma .highlight-nt { color: #268bd2 }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #268bd2 }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #2aa198 }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #2aa198 }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #586e75 }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #2aa198 }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #2aa198 }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #2aa198 }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #cb4b16 }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #2aa198 }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #2aa198 }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #dc322f }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #2aa198 }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #2aa198 }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #2aa198 }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #2aa198 }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #2aa198 }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #2aa198 }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #2aa198 }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #2aa198 }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #2aa198 }
+/* Operator */ .highlight-chroma .highlight-o { color: #719e07 }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #719e07 }
+/* Comment */ .highlight-chroma .highlight-c { color: #586e75 }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #586e75 }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #586e75 }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #586e75 }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #719e07 }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #719e07 }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #719e07 }
+/* GenericDeleted */ .highlight-chroma .highlight-gd { color: #dc322f }
+/* GenericEmph */ .highlight-chroma .highlight-ge { font-style: italic }
+/* GenericError */ .highlight-chroma .highlight-gr { color: #dc322f; font-weight: bold }
+/* GenericHeading */ .highlight-chroma .highlight-gh { color: #cb4b16 }
+/* GenericInserted */ .highlight-chroma .highlight-gi { color: #719e07 }
+/* GenericStrong */ .highlight-chroma .highlight-gs { font-weight: bold }
+/* GenericSubheading */ .highlight-chroma .highlight-gu { color: #268bd2 }
+/*
+
+Orginal Style from ethanschoonover.com/solarized (c) Jeremy Hull <sourdrums@gmail.com>
+
+*/
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #002b36;
+    color: #839496;
+}
+
+.hljs-comment,
+.hljs-quote {
+    color: #586e75;
+}
+
+/* Solarized Green */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-addition {
+    color: #859900;
+}
+
+/* Solarized Cyan */
+.hljs-number,
+.hljs-string,
+.hljs-meta .hljs-meta-string,
+.hljs-literal,
+.hljs-doctag,
+.hljs-regexp {
+    color: #2aa198;
+}
+
+/* Solarized Blue */
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+    color: #268bd2;
+}
+
+/* Solarized Yellow */
+.hljs-attribute,
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-class .hljs-title,
+.hljs-type {
+    color: #b58900;
+}
+
+/* Solarized Orange */
+.hljs-symbol,
+.hljs-bullet,
+.hljs-subst,
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-link {
+    color: #cb4b16;
+}
+
+/* Solarized Red */
+.hljs-built_in,
+.hljs-deletion {
+    color: #dc322f;
+}
+
+.hljs-formula {
+    background: #073642;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}
+

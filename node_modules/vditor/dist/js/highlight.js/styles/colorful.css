@@ -1,0 +1,158 @@
+/* Background */ .highlight-bg { background-color: #ffffff }
+/* PreWrapper */ .highlight-chroma { background-color: #ffffff; }
+/* Error */ .highlight-chroma .highlight-err { color: #ff0000; background-color: #ffaaaa }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #e5e5e5 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #008800; font-weight: bold }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #008800; font-weight: bold }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #008800; font-weight: bold }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #008800; font-weight: bold }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #003388; font-weight: bold }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #008800; font-weight: bold }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #333399; font-weight: bold }
+/* NameAttribute */ .highlight-chroma .highlight-na { color: #0000cc }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { color: #007020 }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #bb0066; font-weight: bold }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #003366; font-weight: bold }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #555555; font-weight: bold }
+/* NameEntity */ .highlight-chroma .highlight-ni { color: #880000; font-weight: bold }
+/* NameException */ .highlight-chroma .highlight-ne { color: #ff0000; font-weight: bold }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #0066bb; font-weight: bold }
+/* NameLabel */ .highlight-chroma .highlight-nl { color: #997700; font-weight: bold }
+/* NameNamespace */ .highlight-chroma .highlight-nn { color: #0e84b5; font-weight: bold }
+/* NameTag */ .highlight-chroma .highlight-nt { color: #007700 }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #996633 }
+/* NameVariableClass */ .highlight-chroma .highlight-vc { color: #336699 }
+/* NameVariableGlobal */ .highlight-chroma .highlight-vg { color: #dd7700; font-weight: bold }
+/* NameVariableInstance */ .highlight-chroma .highlight-vi { color: #3333bb }
+/* LiteralString */ .highlight-chroma .highlight-s { background-color: #fff0f0 }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { background-color: #fff0f0 }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { background-color: #fff0f0 }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #0044dd; background-color: #fff0f0 }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { background-color: #fff0f0 }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #dd4422; background-color: #fff0f0 }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { background-color: #fff0f0 }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #666666; background-color: #fff0f0; font-weight: bold }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { background-color: #fff0f0 }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { background-color: #eeeeee }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #dd2200; background-color: #fff0f0 }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #000000; background-color: #fff0ff }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { background-color: #fff0f0 }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #aa6600; background-color: #fff0f0 }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #6600ee; font-weight: bold }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #6600ee; font-weight: bold }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #6600ee; font-weight: bold }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #005588; font-weight: bold }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #0000dd; font-weight: bold }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #6600ee; font-weight: bold }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #4400ee; font-weight: bold }
+/* Operator */ .highlight-chroma .highlight-o { color: #333333 }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #000000; font-weight: bold }
+/* Comment */ .highlight-chroma .highlight-c { color: #888888 }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #888888 }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #888888 }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #888888 }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #cc0000; font-weight: bold }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #557799 }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #557799 }
+/* GenericDeleted */ .highlight-chroma .highlight-gd { color: #a00000 }
+/* GenericEmph */ .highlight-chroma .highlight-ge { font-style: italic }
+/* GenericError */ .highlight-chroma .highlight-gr { color: #ff0000 }
+/* GenericHeading */ .highlight-chroma .highlight-gh { color: #000080; font-weight: bold }
+/* GenericInserted */ .highlight-chroma .highlight-gi { color: #00a000 }
+/* GenericOutput */ .highlight-chroma .highlight-go { color: #888888 }
+/* GenericPrompt */ .highlight-chroma .highlight-gp { color: #c65d09; font-weight: bold }
+/* GenericStrong */ .highlight-chroma .highlight-gs { font-weight: bold }
+/* GenericSubheading */ .highlight-chroma .highlight-gu { color: #800080; font-weight: bold }
+/* GenericTraceback */ .highlight-chroma .highlight-gt { color: #0044dd }
+/* GenericUnderline */ .highlight-chroma .highlight-gl { text-decoration: underline }
+/* TextWhitespace */ .highlight-chroma .highlight-w { color: #bbbbbb }
+
+/* Base16 Atelier Plateau Light - Theme */
+/* by Bram de Haan (http://atelierbram.github.io/syntax-highlighting/atelier-schemes/plateau) */
+/* Original Base16 color scheme by Chris Kempson (https://github.com/chriskempson/base16) */
+
+/* Atelier-Plateau Comment */
+.hljs-comment,
+.hljs-quote {
+    color: #655d5d;
+}
+
+/* Atelier-Plateau Red */
+.hljs-variable,
+.hljs-template-variable,
+.hljs-attribute,
+.hljs-tag,
+.hljs-name,
+.hljs-regexp,
+.hljs-link,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+    color: #ca4949;
+}
+
+/* Atelier-Plateau Orange */
+.hljs-number,
+.hljs-meta,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-literal,
+.hljs-type,
+.hljs-params {
+    color: #b45a3c;
+}
+
+/* Atelier-Plateau Green */
+.hljs-string,
+.hljs-symbol,
+.hljs-bullet {
+    color: #4b8b8b;
+}
+
+/* Atelier-Plateau Blue */
+.hljs-title,
+.hljs-section {
+    color: #7272ca;
+}
+
+/* Atelier-Plateau Purple */
+.hljs-keyword,
+.hljs-selector-tag {
+    color: #8464c4;
+}
+
+.hljs-deletion,
+.hljs-addition {
+    color: #1b1818;
+    display: inline-block;
+    width: 100%;
+}
+
+.hljs-deletion {
+    background-color: #ca4949;
+}
+
+.hljs-addition {
+    background-color: #4b8b8b;
+}
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    background: #f4ecec;
+    color: #585050;
+    padding: 0.5em;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}

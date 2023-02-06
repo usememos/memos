@@ -1,0 +1,171 @@
+/**
+ * tool tip.
+ *
+ * @author <a href="http://vanessa.b3log.org">Liyuan Li</a>
+ * @version 0.1.0.0, Jan 25, 2019
+ */
+@keyframes tooltip-appear {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.vditor-tooltipped {
+  position: relative;
+  cursor: pointer;
+
+  &::after {
+    position: absolute;
+    z-index: 1000000;
+    display: none;
+    padding: 5px 8px;
+    font-size: 11px;
+    font-weight: normal;
+    -webkit-font-smoothing: subpixel-antialiased;
+    color: #fff;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: none;
+    text-transform: none;
+    letter-spacing: normal;
+    word-wrap: break-word;
+    white-space: pre;
+    pointer-events: none;
+    content: attr(aria-label);
+    background: #3b3e43;
+    border-radius: 3px;
+    line-height: 16px;
+    opacity: 0;
+  }
+
+  &::before {
+    position: absolute;
+    z-index: 1000001;
+    display: none;
+    width: 0;
+    height: 0;
+    color: #3b3e43;
+    pointer-events: none;
+    content: "";
+    border: 5px solid transparent;
+    opacity: 0;
+  }
+
+  &--hover::before,
+  &--hover::after,
+  &:hover::before,
+  &:hover::after,
+  &:active::before,
+  &:active::after,
+  &:focus::before,
+  &:focus::after {
+    display: inline-block;
+    text-decoration: none;
+    animation-name: tooltip-appear;
+    animation-duration: 0.15s;
+    animation-fill-mode: forwards;
+    animation-timing-function: ease-in;
+  }
+
+  &__s::after,
+  &__se::after,
+  &__sw::after {
+    top: 100%;
+    right: 50%;
+    margin-top: 5px;
+  }
+
+  &__s::before,
+  &__se::before,
+  &__sw::before {
+    top: auto;
+    right: 50%;
+    bottom: -5px;
+    margin-right: -5px;
+    border-bottom-color: #3b3e43;
+  }
+
+  &__se::after {
+    right: auto;
+    left: 50%;
+    margin-left: -15px;
+  }
+
+  &__sw::after {
+    margin-right: -15px;
+  }
+
+  &__n::after,
+  &__ne::after,
+  &__nw::after {
+    right: 50%;
+    bottom: 100%;
+    margin-bottom: 5px;
+  }
+
+  &__n::before,
+  &__ne::before,
+  &__nw::before {
+    top: -5px;
+    right: 50%;
+    bottom: auto;
+    margin-right: -5px;
+    border-top-color: #3b3e43;
+  }
+
+  &__ne::after {
+    right: auto;
+    left: 50%;
+    margin-left: -15px;
+  }
+
+  &__nw::after {
+    margin-right: -15px;
+  }
+
+  &__s::after,
+  &__n::after {
+    transform: translateX(50%);
+  }
+
+  &__w::after {
+    right: 100%;
+    bottom: 50%;
+    margin-right: 5px;
+    transform: translateY(50%);
+  }
+
+  &__w::before {
+    top: 50%;
+    bottom: 50%;
+    left: -5px;
+    margin-top: -5px;
+    border-left-color: #3b3e43;
+  }
+
+  &__e::after {
+    bottom: 50%;
+    left: 100%;
+    margin-left: 5px;
+    transform: translateY(50%);
+  }
+
+  &__e::before {
+    top: 50%;
+    right: -5px;
+    bottom: 50%;
+    margin-top: -5px;
+    border-right-color: #3b3e43;
+  }
+}
+
+@media screen and (max-width: @max-width) {
+  .vditor-tooltipped:before,
+  .vditor-tooltipped:after {
+    content: none;
+  }
+}

@@ -1,0 +1,110 @@
+/**
+ * panel.
+ *
+ * @author <a href="http://vanessa.b3log.org">Liyuan Li</a>
+ * @version 1.0.0.0, Jan 22, 2020
+ */
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.vditor {
+  &-panel {
+    background-color: var(--panel-background-color);
+    position: absolute;
+    box-shadow: var(--panel-shadow);
+    border-radius: 3px;
+    padding: 5px;
+    z-index: 3;
+    font-size: 14px;
+    display: none;
+    user-select: none;
+    max-width: 320px;
+    min-width: 80px;
+    animation-duration: 0.15s;
+    animation-name: scale-in;
+    animation-timing-function: cubic-bezier(0.2, 0, 0.13, 1.5);
+    color: var(--toolbar-icon-color);
+
+    &--none {
+      padding: 0;
+      animation: none;
+      min-width: auto;
+      max-width: none;
+      white-space: nowrap;
+      opacity: 0.86;
+    }
+
+    &--arrow:before {
+      position: absolute;
+      width: 0;
+      height: 0;
+      pointer-events: none;
+      content: " ";
+      border: 7px solid transparent;
+      top: -14px;
+      left: 5px;
+      border-bottom-color: var(--panel-background-color);
+    }
+
+    &--left {
+      right: 0;
+
+      &.vditor-panel--arrow:before {
+        right: 5px;
+        left: auto;
+      }
+    }
+  }
+
+  &-input {
+    border: 0;
+    padding: 3px 5px;
+    background-color: var(--panel-background-color);
+    font-size: 12px;
+    color: var(--textarea-text-color);
+
+    &:focus {
+      background-color: var(--toolbar-background-color);
+      outline: none;
+    }
+  }
+
+  &-icon {
+    color: var(--toolbar-icon-color);
+    cursor: pointer;
+    float: left;
+    padding: 4px 5px;
+    height: 21px;
+    width: 23px;
+    background-color: transparent;
+    border: 0;
+    box-sizing: border-box;
+
+    &:hover,
+    &--current {
+      color: var(--toolbar-icon-hover-color);
+      background-color: transparent;
+    }
+
+    &:focus {
+      outline: none;
+    }
+
+    svg {
+      height: 13px !important;
+      width: 13px !important;
+      float: left;
+      fill: currentColor;
+      pointer-events: none;
+    }
+  }
+}

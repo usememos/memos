@@ -1,0 +1,163 @@
+/* Background */ .highlight-bg { color: #586e75; background-color: #eee8d5 }
+/* PreWrapper */ .highlight-chroma { color: #586e75; background-color: #eee8d5; }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #d6d0bf }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #859900 }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #859900; font-weight: bold }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #859900 }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #dc322f; font-weight: bold }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #859900 }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #859900 }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #859900; font-weight: bold }
+/* Name */ .highlight-chroma .highlight-n { color: #268bd2 }
+/* NameAttribute */ .highlight-chroma .highlight-na { color: #268bd2 }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { color: #cb4b16 }
+/* NameBuiltinPseudo */ .highlight-chroma .highlight-bp { color: #268bd2 }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #cb4b16 }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #268bd2 }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #268bd2 }
+/* NameEntity */ .highlight-chroma .highlight-ni { color: #268bd2 }
+/* NameException */ .highlight-chroma .highlight-ne { color: #268bd2 }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #268bd2 }
+/* NameFunctionMagic */ .highlight-chroma .highlight-fm { color: #268bd2 }
+/* NameLabel */ .highlight-chroma .highlight-nl { color: #268bd2 }
+/* NameNamespace */ .highlight-chroma .highlight-nn { color: #268bd2 }
+/* NameOther */ .highlight-chroma .highlight-nx { color: #268bd2 }
+/* NameProperty */ .highlight-chroma .highlight-py { color: #268bd2 }
+/* NameTag */ .highlight-chroma .highlight-nt { color: #268bd2; font-weight: bold }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #268bd2 }
+/* NameVariableClass */ .highlight-chroma .highlight-vc { color: #268bd2 }
+/* NameVariableGlobal */ .highlight-chroma .highlight-vg { color: #268bd2 }
+/* NameVariableInstance */ .highlight-chroma .highlight-vi { color: #268bd2 }
+/* NameVariableMagic */ .highlight-chroma .highlight-vm { color: #268bd2 }
+/* Literal */ .highlight-chroma .highlight-l { color: #2aa198 }
+/* LiteralDate */ .highlight-chroma .highlight-ld { color: #2aa198 }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #2aa198 }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #2aa198 }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #2aa198 }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #2aa198 }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #2aa198 }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #2aa198 }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #2aa198 }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #2aa198 }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #2aa198 }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #2aa198 }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #2aa198 }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #2aa198 }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #2aa198 }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #2aa198 }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #2aa198; font-weight: bold }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #2aa198; font-weight: bold }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #2aa198; font-weight: bold }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #2aa198; font-weight: bold }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #2aa198; font-weight: bold }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #2aa198; font-weight: bold }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #2aa198; font-weight: bold }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #859900 }
+/* Comment */ .highlight-chroma .highlight-c { color: #93a1a1; font-style: italic }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #93a1a1; font-style: italic }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #93a1a1; font-style: italic }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #93a1a1; font-style: italic }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #93a1a1; font-style: italic }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #93a1a1; font-style: italic }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #93a1a1; font-style: italic }
+/* Generic */ .highlight-chroma .highlight-g { color: #d33682 }
+/* GenericDeleted */ .highlight-chroma .highlight-gd { color: #d33682 }
+/* GenericEmph */ .highlight-chroma .highlight-ge { color: #d33682 }
+/* GenericError */ .highlight-chroma .highlight-gr { color: #d33682 }
+/* GenericHeading */ .highlight-chroma .highlight-gh { color: #d33682 }
+/* GenericInserted */ .highlight-chroma .highlight-gi { color: #d33682 }
+/* GenericOutput */ .highlight-chroma .highlight-go { color: #d33682 }
+/* GenericPrompt */ .highlight-chroma .highlight-gp { color: #d33682 }
+/* GenericStrong */ .highlight-chroma .highlight-gs { color: #d33682 }
+/* GenericSubheading */ .highlight-chroma .highlight-gu { color: #d33682 }
+/* GenericTraceback */ .highlight-chroma .highlight-gt { color: #d33682 }
+/* GenericUnderline */ .highlight-chroma .highlight-gl { color: #d33682 }
+/*
+
+Orginal Style from ethanschoonover.com/solarized (c) Jeremy Hull <sourdrums@gmail.com>
+
+*/
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #fdf6e3;
+    color: #657b83;
+}
+
+.hljs-comment,
+.hljs-quote {
+    color: #93a1a1;
+}
+
+/* Solarized Green */
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-addition {
+    color: #859900;
+}
+
+/* Solarized Cyan */
+.hljs-number,
+.hljs-string,
+.hljs-meta .hljs-meta-string,
+.hljs-literal,
+.hljs-doctag,
+.hljs-regexp {
+    color: #2aa198;
+}
+
+/* Solarized Blue */
+.hljs-title,
+.hljs-section,
+.hljs-name,
+.hljs-selector-id,
+.hljs-selector-class {
+    color: #268bd2;
+}
+
+/* Solarized Yellow */
+.hljs-attribute,
+.hljs-attr,
+.hljs-variable,
+.hljs-template-variable,
+.hljs-class .hljs-title,
+.hljs-type {
+    color: #b58900;
+}
+
+/* Solarized Orange */
+.hljs-symbol,
+.hljs-bullet,
+.hljs-subst,
+.hljs-meta,
+.hljs-meta .hljs-keyword,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-link {
+    color: #cb4b16;
+}
+
+/* Solarized Red */
+.hljs-built_in,
+.hljs-deletion {
+    color: #dc322f;
+}
+
+.hljs-formula {
+    background: #eee8d5;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+
+.hljs-strong {
+    font-weight: bold;
+}

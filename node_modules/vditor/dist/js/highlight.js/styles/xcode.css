@@ -1,0 +1,174 @@
+/* Background */ .highlight-bg { background-color: #ffffff }
+/* PreWrapper */ .highlight-chroma { background-color: #ffffff; }
+/* Error */ .highlight-chroma .highlight-err { color: #000000 }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #e5e5e5 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #a90d91 }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #a90d91 }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #a90d91 }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #a90d91 }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #a90d91 }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #a90d91 }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #a90d91 }
+/* Name */ .highlight-chroma .highlight-n { color: #000000 }
+/* NameAttribute */ .highlight-chroma .highlight-na { color: #836c28 }
+/* NameBuiltin */ .highlight-chroma .highlight-nb { color: #a90d91 }
+/* NameBuiltinPseudo */ .highlight-chroma .highlight-bp { color: #5b269a }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #3f6e75 }
+/* NameConstant */ .highlight-chroma .highlight-no { color: #000000 }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #000000 }
+/* NameEntity */ .highlight-chroma .highlight-ni { color: #000000 }
+/* NameException */ .highlight-chroma .highlight-ne { color: #000000 }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #000000 }
+/* NameFunctionMagic */ .highlight-chroma .highlight-fm { color: #000000 }
+/* NameLabel */ .highlight-chroma .highlight-nl { color: #000000 }
+/* NameNamespace */ .highlight-chroma .highlight-nn { color: #000000 }
+/* NameOther */ .highlight-chroma .highlight-nx { color: #000000 }
+/* NameProperty */ .highlight-chroma .highlight-py { color: #000000 }
+/* NameTag */ .highlight-chroma .highlight-nt { color: #000000 }
+/* NameVariable */ .highlight-chroma .highlight-nv { color: #000000 }
+/* NameVariableClass */ .highlight-chroma .highlight-vc { color: #000000 }
+/* NameVariableGlobal */ .highlight-chroma .highlight-vg { color: #000000 }
+/* NameVariableInstance */ .highlight-chroma .highlight-vi { color: #000000 }
+/* NameVariableMagic */ .highlight-chroma .highlight-vm { color: #000000 }
+/* Literal */ .highlight-chroma .highlight-l { color: #1c01ce }
+/* LiteralDate */ .highlight-chroma .highlight-ld { color: #1c01ce }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #c41a16 }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #c41a16 }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #c41a16 }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #2300ce }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #c41a16 }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #c41a16 }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #c41a16 }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #c41a16 }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #c41a16 }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #c41a16 }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #c41a16 }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #c41a16 }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #c41a16 }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #c41a16 }
+/* LiteralNumber */ .highlight-chroma .highlight-m { color: #1c01ce }
+/* LiteralNumberBin */ .highlight-chroma .highlight-mb { color: #1c01ce }
+/* LiteralNumberFloat */ .highlight-chroma .highlight-mf { color: #1c01ce }
+/* LiteralNumberHex */ .highlight-chroma .highlight-mh { color: #1c01ce }
+/* LiteralNumberInteger */ .highlight-chroma .highlight-mi { color: #1c01ce }
+/* LiteralNumberIntegerLong */ .highlight-chroma .highlight-il { color: #1c01ce }
+/* LiteralNumberOct */ .highlight-chroma .highlight-mo { color: #1c01ce }
+/* Operator */ .highlight-chroma .highlight-o { color: #000000 }
+/* OperatorWord */ .highlight-chroma .highlight-ow { color: #000000 }
+/* Comment */ .highlight-chroma .highlight-c { color: #177500 }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #177500 }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #177500 }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #177500 }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #177500 }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #633820 }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #633820 }
+/*
+
+XCode style (c) Angel Garcia <angelgarcia.mail@gmail.com>
+
+*/
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #fff;
+    color: black;
+}
+
+/* Gray DOCTYPE selectors like WebKit */
+.xml .hljs-meta {
+    color: #c0c0c0;
+}
+
+.hljs-comment,
+.hljs-quote {
+    color: #007400;
+}
+
+.hljs-tag,
+.hljs-attribute,
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-literal,
+.hljs-name {
+    color: #aa0d91;
+}
+
+.hljs-variable,
+.hljs-template-variable {
+    color: #3F6E74;
+}
+
+.hljs-code,
+.hljs-string,
+.hljs-meta-string {
+    color: #c41a16;
+}
+
+.hljs-regexp,
+.hljs-link {
+    color: #0E0EFF;
+}
+
+.hljs-title,
+.hljs-symbol,
+.hljs-bullet,
+.hljs-number {
+    color: #1c00cf;
+}
+
+.hljs-section,
+.hljs-meta {
+    color: #643820;
+}
+
+
+.hljs-class .hljs-title,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-params {
+    color: #5c2699;
+}
+
+.hljs-attr {
+    color: #836C28;
+}
+
+.hljs-subst {
+    color: #000;
+}
+
+.hljs-formula {
+    background-color: #eee;
+    font-style: italic;
+}
+
+.hljs-addition {
+    background-color: #baeeba;
+}
+
+.hljs-deletion {
+    background-color: #ffc8bd;
+}
+
+.hljs-selector-id,
+.hljs-selector-class {
+    color: #9b703f;
+}
+
+.hljs-doctag,
+.hljs-strong {
+    font-weight: bold;
+}
+
+.hljs-emphasis {
+    font-style: italic;
+}
+

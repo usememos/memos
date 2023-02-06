@@ -1,0 +1,124 @@
+/* Background */ .highlight-bg { background-color: #ffffff }
+/* PreWrapper */ .highlight-chroma { background-color: #ffffff; }
+/* LineTableTD */ .highlight-chroma .highlight-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+/* LineTable */ .highlight-chroma .highlight-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; }
+/* LineHighlight */ .highlight-chroma .highlight-hl { background-color: #e5e5e5 }
+/* LineNumbersTable */ .highlight-chroma .highlight-lnt { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* LineNumbers */ .highlight-chroma .highlight-ln { white-space: pre; user-select: none; margin-right: 0.4em; padding: 0 0.4em 0 0.4em;color: #7f7f7f }
+/* Line */ .highlight-chroma .highlight-line { display: flex; }
+/* Keyword */ .highlight-chroma .highlight-k { color: #0000ff }
+/* KeywordConstant */ .highlight-chroma .highlight-kc { color: #0000ff }
+/* KeywordDeclaration */ .highlight-chroma .highlight-kd { color: #0000ff }
+/* KeywordNamespace */ .highlight-chroma .highlight-kn { color: #0000ff }
+/* KeywordPseudo */ .highlight-chroma .highlight-kp { color: #0000ff }
+/* KeywordReserved */ .highlight-chroma .highlight-kr { color: #0000ff }
+/* KeywordType */ .highlight-chroma .highlight-kt { color: #0000ff }
+/* NameClass */ .highlight-chroma .highlight-nc { color: #007575 }
+/* NameDecorator */ .highlight-chroma .highlight-nd { color: #cc00a3 }
+/* NameFunction */ .highlight-chroma .highlight-nf { color: #c34e00 }
+/* LiteralString */ .highlight-chroma .highlight-s { color: #009c00 }
+/* LiteralStringAffix */ .highlight-chroma .highlight-sa { color: #009c00 }
+/* LiteralStringBacktick */ .highlight-chroma .highlight-sb { color: #009c00 }
+/* LiteralStringChar */ .highlight-chroma .highlight-sc { color: #009c00 }
+/* LiteralStringDelimiter */ .highlight-chroma .highlight-dl { color: #009c00 }
+/* LiteralStringDoc */ .highlight-chroma .highlight-sd { color: #009c00 }
+/* LiteralStringDouble */ .highlight-chroma .highlight-s2 { color: #009c00 }
+/* LiteralStringEscape */ .highlight-chroma .highlight-se { color: #009c00 }
+/* LiteralStringHeredoc */ .highlight-chroma .highlight-sh { color: #009c00 }
+/* LiteralStringInterpol */ .highlight-chroma .highlight-si { color: #009c00 }
+/* LiteralStringOther */ .highlight-chroma .highlight-sx { color: #009c00 }
+/* LiteralStringRegex */ .highlight-chroma .highlight-sr { color: #009c00 }
+/* LiteralStringSingle */ .highlight-chroma .highlight-s1 { color: #009c00 }
+/* LiteralStringSymbol */ .highlight-chroma .highlight-ss { color: #009c00 }
+/* Comment */ .highlight-chroma .highlight-c { color: #ff0000; font-style: italic }
+/* CommentHashbang */ .highlight-chroma .highlight-ch { color: #ff0000; font-style: italic }
+/* CommentMultiline */ .highlight-chroma .highlight-cm { color: #ff0000; font-style: italic }
+/* CommentSingle */ .highlight-chroma .highlight-c1 { color: #ff0000; font-style: italic }
+/* CommentSpecial */ .highlight-chroma .highlight-cs { color: #ff0000; font-style: italic }
+/* CommentPreproc */ .highlight-chroma .highlight-cp { color: #ff0000; font-style: italic }
+/* CommentPreprocFile */ .highlight-chroma .highlight-cpf { color: #ff0000; font-style: italic }
+
+/*
+
+Qt Creator light color scheme
+
+*/
+
+
+.hljs {
+    display: block;
+    overflow-x: auto;
+    padding: 0.5em;
+    background: #ffffff;
+}
+
+.hljs,
+.hljs-subst,
+.hljs-tag,
+.hljs-title {
+    color: #000000;
+}
+
+.hljs-strong,
+.hljs-emphasis {
+    color: #000000;
+}
+
+.hljs-bullet,
+.hljs-quote,
+.hljs-number,
+.hljs-regexp,
+.hljs-literal {
+    color: #000080;
+}
+
+.hljs-code
+.hljs-selector-class {
+    color: #800080;
+}
+
+.hljs-emphasis,
+.hljs-stronge,
+.hljs-type {
+    font-style: italic;
+}
+
+.hljs-keyword,
+.hljs-selector-tag,
+.hljs-function,
+.hljs-section,
+.hljs-symbol,
+.hljs-name {
+    color: #808000;
+}
+
+.hljs-attribute {
+    color: #800000;
+}
+
+.hljs-variable,
+.hljs-params,
+.hljs-class .hljs-title {
+    color: #0055AF;
+}
+
+.hljs-string,
+.hljs-selector-id,
+.hljs-selector-attr,
+.hljs-selector-pseudo,
+.hljs-type,
+.hljs-built_in,
+.hljs-builtin-name,
+.hljs-template-tag,
+.hljs-template-variable,
+.hljs-addition,
+.hljs-link {
+    color: #008000;
+}
+
+.hljs-comment,
+.hljs-meta,
+.hljs-deletion {
+    color: #008000;
+}
+

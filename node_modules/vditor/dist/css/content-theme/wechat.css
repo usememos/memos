@@ -1,0 +1,94 @@
+/*!
+ * Vditor - A markdown editor written in TypeScript.
+ *
+ * MIT License
+ *
+ * Copyright (c) 2018-present B3log 开源, b3log.org
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+.vditor-reset {
+    font-family: "mp-quote", -apple-system-font, BlinkMacSystemFont, "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "Segoe UI Symbol", "Android Emoji", "EmojiSymbols";
+    color: rgb(62, 62, 62);
+}
+
+.vditor-reset a, .vditor-ir__link {
+    color: #576b95;
+}
+
+.vditor-reset h1 {
+    font-weight: 400;
+    text-align: center;
+    color: rgb(26, 173, 25);
+    font-size: 24px;
+    background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABQAAAACCAYAAABYBvyLAAAAGElEQVQImWNkXs/wn4GKgImahjEwMDAAAA6aAbVUOzXRAAAAAElFTkSuQmCC);
+    background-repeat: no-repeat;
+    background-position: center bottom;
+}
+
+.vditor-reset h2 {
+    font-weight: 400;
+    text-align: center;
+    font-size: 20px;
+}
+
+.vditor-reset h3,
+.vditor-reset h4,
+.vditor-reset h5,
+.vditor-reset h6 {
+    font-weight: 400;
+}
+
+.vditor-reset hr {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    transform-origin: 0 0;
+    transform: scale(1, 0.5);
+    height: 0;
+}
+
+.vditor-reset blockquote {
+    padding: 4px 0 0 10px;
+    border-left: 3px solid #dbdbdb;
+    color: #9a9a9a;
+    line-height: 1.6;
+    font-size: 15px;
+    margin: 1em 0;
+}
+
+.vditor-reset code {
+    font-size: 14px;
+    border: 1px solid #f0f0f0;
+    border-radius: 2px;
+}
+
+.vditor-reset code:not(.hljs):not(.highlight-chroma) {
+    background-color: rgba(0, 0, 0, 0.03);
+    color: #333;
+}
+
+.vditor-reset .language-abc svg,
+.vditor-reset .language-abc path {
+    fill: currentColor;
+    color: rgb(62, 62, 62);
+}
+
+.vditor-reset .language-graphviz polygon {
+    fill: transparent;
+}
