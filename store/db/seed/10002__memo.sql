@@ -36,9 +36,8 @@ INSERT INTO
 VALUES
   (
     1003,
-    "**Bytebase** - An open source Database CI/CD for DevOps teams.
-![](https://star-history.com/bytebase.webp)
-🌐 [Source code](https://github.com/bytebase/bytebase)",
+    "**[star-history.com](https://star-history.com/)**: The missing GitHub star history graph of GitHub repos.
+![](https://api.star-history.com/svg?repos=usememos/memos&type=Date)",
     101,
     'PUBLIC'
   );
