@@ -402,6 +402,7 @@ const MemoEditor = () => {
     } else {
       editorRef.current?.insertText("", "\n- [ ] ");
     }
+    editorRef.current?.scrollToCursor();
   };
 
   const handleCodeBlockBtnClick = () => {
@@ -416,6 +417,7 @@ const MemoEditor = () => {
     } else {
       editorRef.current?.insertText("", "\n```\n", "\n```");
     }
+    editorRef.current?.scrollToCursor();
   };
 
   const handleUploadFileBtnClick = () => {
@@ -438,7 +440,7 @@ const MemoEditor = () => {
   const handleTagSelectorClick = useCallback((event: React.MouseEvent) => {
     if (tagSelectorRef.current !== event.target && tagSelectorRef.current?.contains(event.target as Node)) {
       editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
-      handleEditorFocus();
+      editorRef.current?.scrollToCursor();
     }
   }, []);
 
@@ -481,7 +483,10 @@ const MemoEditor = () => {
     <div
       className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
       tabIndex={0}
-      onKeyDown={handleKeyDown}
+      onKeyDown={(e) => {
+        handleKeyDown(e);
+        editorRef.current?.scrollToCursor();
+      }}
       onDrop={handleDropEvent}
       onFocus={handleEditorFocus}
       onBlur={handleEditorBlur}
