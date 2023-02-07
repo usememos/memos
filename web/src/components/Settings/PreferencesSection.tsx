@@ -5,6 +5,7 @@ import { VISIBILITY_SELECTOR_ITEMS, MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS } from
 import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
 import "../../less/settings/preferences-section.less";
+import React from "react";
 
 const PreferencesSection = () => {
   const { t } = useTranslation();
@@ -50,6 +51,10 @@ const PreferencesSection = () => {
 
   const handlePowerfulEditorEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, enablePowerfulEditor: event.target.checked });
+  };
+
+  const handleDoubleClickEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    userStore.upsertLocalSetting({ ...localSetting, enableDoubleClickEditing: event.target.checked });
   };
 
   return (
@@ -107,6 +112,10 @@ const PreferencesSection = () => {
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.enable-powerful-editor")}</span>
         <Switch className="ml-2" checked={localSetting.enablePowerfulEditor} onChange={handlePowerfulEditorEnabledChanged} />
+      </label>
+      <label className="form-label selector">
+        <span className="normal-text">{t("setting.preference-section.enable-double-click")}</span>
+        <Switch className="ml-2" checked={localSetting.enableDoubleClickEditing} onChange={handleDoubleClickEnabledChanged} />
       </label>
     </div>
   );

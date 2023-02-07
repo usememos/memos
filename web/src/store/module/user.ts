@@ -16,6 +16,7 @@ const defaultSetting: Setting = {
 const defaultLocalSetting: LocalSetting = {
   enableFoldMemo: true,
   enablePowerfulEditor: true,
+  enableDoubleClickEditing: true,
 };
 
 export const convertResponseModelUser = (user: User): User => {
