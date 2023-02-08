@@ -49,7 +49,7 @@
     "vacuum": "清理",
     "select": "選擇"
   },
-  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
   "auth": {
     "signup-as-host": "註冊為管理員",
     "host-tip": "你正在註冊為管理員帳號。",

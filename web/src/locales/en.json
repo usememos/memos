@@ -49,7 +49,7 @@
     "vacuum": "Vacuum",
     "select": "Select"
   },
-  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
   "auth": {
     "signup-as-host": "Sign up as Host",
     "host-tip": "You are registering as the Site Host.",
