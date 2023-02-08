@@ -69,7 +69,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
         <div className="date-picker-day-header">
           <span className="day-item">Mon</span>
           <span className="day-item">Tue</span>
-          <span className="day-item">Web</span>
+          <span className="day-item">Wed</span>
           <span className="day-item">Thu</span>
           <span className="day-item">Fri</span>
           <span className="day-item">Sat</span>
