@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useLocationStore, useMemoStore, useShortcutStore } from "../store/module";
+import { useLocationStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
 import Icon from "./Icon";
 import SearchBar from "./SearchBar";
 import { toggleSidebar } from "./Sidebar";
@@ -11,6 +11,8 @@ const MemosHeader = () => {
   const locationStore = useLocationStore();
   const memoStore = useMemoStore();
   const shortcutStore = useShortcutStore();
+  const userStore = useUserStore();
+  const user = userStore.state.user;
   const query = locationStore.state.query;
   const shortcuts = shortcutStore.state.shortcuts;
   const [titleText, setTitleText] = useState("MEMOS");
@@ -46,6 +48,11 @@ const MemosHeader = () => {
         <span className="title-text" onClick={handleTitleTextClick}>
           {titleText}
         </span>
+        {user && (
+          <a className="dark:text-white" href={"/u/" + user.id + "/rss.xml"} target="_blank" rel="noreferrer">
+            <Icon.Rss />
+          </a>
+        )}
       </div>
       <SearchBar />
     </div>

@@ -21,6 +21,10 @@ export default defineConfig({
         target: "http://localhost:8081/",
         changeOrigin: true,
       },
+      "/explore/rss.xml": {
+        target: "http://localhost:8081/",
+        changeOrigin: true,
+      },
     },
   },
   resolve: {

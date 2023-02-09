@@ -9,6 +9,7 @@ import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
 import MemoFilter from "../components/MemoFilter";
+import Icon from "../components/Icon";
 import { TAG_REG } from "../labs/marked/parser";
 import "../less/explore.less";
 
@@ -115,6 +116,9 @@ const Explore = () => {
           <div className="title-container">
             <img className="logo-img" src={customizedProfile.logoUrl} alt="" />
             <span className="title-text">{customizedProfile.name}</span>
+            <a className="dark:text-white ml-2" href="/explore/rss.xml" target="_blank" rel="noreferrer">
+              <Icon.Rss />
+            </a>
           </div>
           <div className="action-button-container">
             {!loadingState.isLoading && user ? (
