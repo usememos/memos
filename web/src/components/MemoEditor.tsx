@@ -173,6 +173,8 @@ const MemoEditor = () => {
               }
             }
           }
+
+          editorRef.current?.scrollToCursor();
         }
       }
       return;
@@ -483,10 +485,7 @@ const MemoEditor = () => {
     <div
       className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
       tabIndex={0}
-      onKeyDown={(e) => {
-        handleKeyDown(e);
-        editorRef.current?.scrollToCursor();
-      }}
+      onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
       onFocus={handleEditorFocus}
       onBlur={handleEditorBlur}
