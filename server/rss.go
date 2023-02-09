@@ -27,7 +27,6 @@ func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.
 
 	feed.Items = make([]*feeds.Item, len(memoList))
 	for i, memo := range memoList {
-
 		var useTitle = strings.HasPrefix(memo.Content, "# ")
 
 		var title string
@@ -67,7 +66,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 	g.GET("/explore/rss.xml", func(c echo.Context) error {
 		ctx := c.Request().Context()
 
-		systemCustomizedProfile, err := getSystemCustomizedProfile(s, ctx)
+		systemCustomizedProfile, err := getSystemCustomizedProfile(ctx, s)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get system customized profile").SetInternal(err)
 		}
@@ -97,7 +96,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 	g.GET("/u/:id/rss.xml", func(c echo.Context) error {
 		ctx := c.Request().Context()
 
-		systemCustomizedProfile, err := getSystemCustomizedProfile(s, ctx)
+		systemCustomizedProfile, err := getSystemCustomizedProfile(ctx, s)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get system customized profile").SetInternal(err)
 		}
@@ -131,7 +130,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 	})
 }
 
-func getSystemCustomizedProfile(s *Server, ctx context.Context) (api.CustomizedProfile, error) {
+func getSystemCustomizedProfile(ctx context.Context, s *Server) (api.CustomizedProfile, error) {
 	systemStatus := api.SystemStatus{
 		CustomizedProfile: api.CustomizedProfile{
 			Name:        "memos",
