@@ -50,7 +50,7 @@ const MemosHeader = () => {
         </span>
         {user && (
           <a className="dark:text-white" href={"/u/" + user.id + "/rss.xml"} target="_blank" rel="noreferrer">
-            <Icon.Rss />
+            <Icon.Rss className="w-4 h-auto opacity-40 hover:opacity-60" />
           </a>
         )}
       </div>

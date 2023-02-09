@@ -116,8 +116,8 @@ const Explore = () => {
           <div className="title-container">
             <img className="logo-img" src={customizedProfile.logoUrl} alt="" />
             <span className="title-text">{customizedProfile.name}</span>
-            <a className="dark:text-white ml-2" href="/explore/rss.xml" target="_blank" rel="noreferrer">
-              <Icon.Rss />
+            <a className="dark:text-white ml-1 mt-1" href="/explore/rss.xml" target="_blank" rel="noreferrer">
+              <Icon.Rss className="w-6 h-auto opacity-40 hover:opacity-60" />
             </a>
           </div>
           <div className="action-button-container">
