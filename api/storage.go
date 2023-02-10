@@ -1,6 +1,6 @@
 package api
 
-type StorageSetting struct {
+type Storage struct {
 	ID        int    `json:"id"`
 	CreatorID int    `json:"creatorId"`
 	CreatedTs int64  `json:"createdTs"`
@@ -11,7 +11,7 @@ type StorageSetting struct {
 	Bucket    string `json:"bucket"`
 }
 
-type StorageSettingCreate struct {
+type StorageCreate struct {
 	CreatorID int    `json:"creatorId"`
 	Name      string `json:"name"`
 	EndPoint  string `json:"endPoint"`
@@ -20,7 +20,7 @@ type StorageSettingCreate struct {
 	Bucket    string `json:"bucket"`
 }
 
-type StorageSettingPatch struct {
+type StoragePatch struct {
 	ID        int     `json:"id"`
 	Name      *string `json:"name"`
 	EndPoint  *string `json:"endPoint"`
@@ -29,10 +29,10 @@ type StorageSettingPatch struct {
 	Bucket    *string `json:"bucket"`
 }
 
-type StorageSettingFind struct {
+type StorageFind struct {
 	CreatorID *int `json:"creatorId"`
 }
 
-type StorageSettingDelete struct {
+type StorageDelete struct {
 	ID int `json:"id"`
 }

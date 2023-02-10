@@ -10,7 +10,7 @@ import (
 	"github.com/usememos/memos/common"
 )
 
-type storageSettingRaw struct {
+type storageRaw struct {
 	ID        int
 	CreatorID int
 	CreatedTs int64
@@ -21,8 +21,8 @@ type storageSettingRaw struct {
 	Bucket    string
 }
 
-func (raw *storageSettingRaw) toStorageSetting() *api.StorageSetting {
-	return &api.StorageSetting{
+func (raw *storageRaw) toStorage() *api.Storage {
+	return &api.Storage{
 		ID:        raw.ID,
 		CreatorID: raw.CreatorID,
 		CreatedTs: raw.CreatedTs,
@@ -34,14 +34,14 @@ func (raw *storageSettingRaw) toStorageSetting() *api.StorageSetting {
 	}
 }
 
-func (s *Store) CreateStorageSetting(ctx context.Context, create *api.StorageSettingCreate) (*api.StorageSetting, error) {
+func (s *Store) CreateStorage(ctx context.Context, create *api.StorageCreate) (*api.Storage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
 	}
 	defer tx.Rollback()
 
-	storageSettingRaw, err := createStorageSettingRaw(ctx, tx, create)
+	storageRaw, err := createStorageRaw(ctx, tx, create)
 	if err != nil {
 		return nil, err
 	}
@@ -50,17 +50,17 @@ func (s *Store) CreateStorageSetting(ctx context.Context, create *api.StorageSet
 		return nil, FormatError(err)
 	}
 
-	return storageSettingRaw.toStorageSetting(), nil
+	return storageRaw.toStorage(), nil
 }
 
-func (s *Store) PatchStorageSetting(ctx context.Context, patch *api.StorageSettingPatch) (*api.StorageSetting, error) {
+func (s *Store) PatchStorage(ctx context.Context, patch *api.StoragePatch) (*api.Storage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
 	}
 	defer tx.Rollback()
 
-	storageSettingRaw, err := patchStorageSettingRaw(ctx, tx, patch)
+	storageRaw, err := patchStorageRaw(ctx, tx, patch)
 	if err != nil {
 		return nil, err
 	}
@@ -69,37 +69,37 @@ func (s *Store) PatchStorageSetting(ctx context.Context, patch *api.StorageSetti
 		return nil, FormatError(err)
 	}
 
-	return storageSettingRaw.toStorageSetting(), nil
+	return storageRaw.toStorage(), nil
 }
 
-func (s *Store) FindStorageSettingList(ctx context.Context, find *api.StorageSettingFind) ([]*api.StorageSetting, error) {
+func (s *Store) FindStorageList(ctx context.Context, find *api.StorageFind) ([]*api.Storage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
 	}
 	defer tx.Rollback()
 
-	storageSettingRawList, err := findStorageSettingRawList(ctx, tx, find)
+	storageRawList, err := findStorageRawList(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
 
-	list := []*api.StorageSetting{}
-	for _, raw := range storageSettingRawList {
-		list = append(list, raw.toStorageSetting())
+	list := []*api.Storage{}
+	for _, raw := range storageRawList {
+		list = append(list, raw.toStorage())
 	}
 
 	return list, nil
 }
 
-func (s *Store) DeleteStorageSetting(ctx context.Context, delete *api.StorageSettingDelete) error {
+func (s *Store) DeleteStorage(ctx context.Context, delete *api.StorageDelete) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return FormatError(err)
 	}
 	defer tx.Rollback()
 
-	if err := deleteStorageSetting(ctx, tx, delete); err != nil {
+	if err := deleteStorage(ctx, tx, delete); err != nil {
 		return FormatError(err)
 	}
 
@@ -110,36 +110,36 @@ func (s *Store) DeleteStorageSetting(ctx context.Context, delete *api.StorageSet
 	return nil
 }
 
-func createStorageSettingRaw(ctx context.Context, tx *sql.Tx, create *api.StorageSettingCreate) (*storageSettingRaw, error) {
+func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate) (*storageRaw, error) {
 	set := []string{"creator_id", "name", "end_point", "access_key", "secret_key", "bucket"}
 	args := []interface{}{create.CreatorID, create.Name, create.AccessKey, create.SecretKey, create.Bucket}
 	placeholder := []string{"?", "?", "?", "?", "?", "?"}
 
 	query := `
-		INSERT INTO storage_setting (
+		INSERT INTO storage (
 			` + strings.Join(set, ", ") + `
 		)
 		VALUES (` + strings.Join(placeholder, ",") + `)
 		RETURNING id, creator_id, created_ts, name, end_point, access_key, secret_key, bucket
 	`
-	var storageSettingRaw storageSettingRaw
+	var storageRaw storageRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
-		&storageSettingRaw.ID,
-		&storageSettingRaw.CreatorID,
-		&storageSettingRaw.CreatedTs,
-		&storageSettingRaw.Name,
-		&storageSettingRaw.EndPoint,
-		&storageSettingRaw.AccessKey,
-		&storageSettingRaw.SecretKey,
-		&storageSettingRaw.Bucket,
+		&storageRaw.ID,
+		&storageRaw.CreatorID,
+		&storageRaw.CreatedTs,
+		&storageRaw.Name,
+		&storageRaw.EndPoint,
+		&storageRaw.AccessKey,
+		&storageRaw.SecretKey,
+		&storageRaw.Bucket,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return &storageSettingRaw, nil
+	return &storageRaw, nil
 }
 
-func patchStorageSettingRaw(ctx context.Context, tx *sql.Tx, patch *api.StorageSettingPatch) (*storageSettingRaw, error) {
+func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (*storageRaw, error) {
 	set, args := []string{}, []interface{}{}
 	// TODO
 	if v := patch.Name; v != nil {
@@ -161,30 +161,30 @@ func patchStorageSettingRaw(ctx context.Context, tx *sql.Tx, patch *api.StorageS
 	args = append(args, patch.ID)
 
 	query := `
-		UPDATE storage_setting
+		UPDATE storage
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
 		RETURNING id, creator_id, created_ts, name, end_point, access_key, secret_key, bucket
 	`
 
-	var storageSettingRaw storageSettingRaw
+	var storageRaw storageRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
-		&storageSettingRaw.ID,
-		&storageSettingRaw.CreatorID,
-		&storageSettingRaw.CreatedTs,
-		&storageSettingRaw.Name,
-		&storageSettingRaw.EndPoint,
-		&storageSettingRaw.AccessKey,
-		&storageSettingRaw.SecretKey,
-		&storageSettingRaw.Bucket,
+		&storageRaw.ID,
+		&storageRaw.CreatorID,
+		&storageRaw.CreatedTs,
+		&storageRaw.Name,
+		&storageRaw.EndPoint,
+		&storageRaw.AccessKey,
+		&storageRaw.SecretKey,
+		&storageRaw.Bucket,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return &storageSettingRaw, nil
+	return &storageRaw, nil
 }
 
-func findStorageSettingRawList(ctx context.Context, tx *sql.Tx, find *api.StorageSettingFind) ([]*storageSettingRaw, error) {
+func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) ([]*storageRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.CreatorID; v != nil {
@@ -201,7 +201,7 @@ func findStorageSettingRawList(ctx context.Context, tx *sql.Tx, find *api.Storag
 			access_key, 
 			secret_key, 
 			bucket
-		FROM storage_setting
+		FROM storage
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY created_ts DESC
 	`
@@ -211,36 +211,36 @@ func findStorageSettingRawList(ctx context.Context, tx *sql.Tx, find *api.Storag
 	}
 	defer rows.Close()
 
-	storageSettingRawList := make([]*storageSettingRaw, 0)
+	storageRawList := make([]*storageRaw, 0)
 	for rows.Next() {
-		var storageSettingRaw storageSettingRaw
+		var storageRaw storageRaw
 		if err := rows.Scan(
-			&storageSettingRaw.ID,
-			&storageSettingRaw.CreatorID,
-			&storageSettingRaw.CreatedTs,
-			&storageSettingRaw.Name,
-			&storageSettingRaw.EndPoint,
-			&storageSettingRaw.AccessKey,
-			&storageSettingRaw.SecretKey,
-			&storageSettingRaw.Bucket,
+			&storageRaw.ID,
+			&storageRaw.CreatorID,
+			&storageRaw.CreatedTs,
+			&storageRaw.Name,
+			&storageRaw.EndPoint,
+			&storageRaw.AccessKey,
+			&storageRaw.SecretKey,
+			&storageRaw.Bucket,
 		); err != nil {
 			return nil, FormatError(err)
 		}
 
-		storageSettingRawList = append(storageSettingRawList, &storageSettingRaw)
+		storageRawList = append(storageRawList, &storageRaw)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return storageSettingRawList, nil
+	return storageRawList, nil
 }
 
-func deleteStorageSetting(ctx context.Context, tx *sql.Tx, delete *api.StorageSettingDelete) error {
+func deleteStorage(ctx context.Context, tx *sql.Tx, delete *api.StorageDelete) error {
 	where, args := []string{"id = ?"}, []interface{}{delete.ID}
 
-	stmt := `DELETE FROM storage_setting WHERE ` + strings.Join(where, " AND ")
+	stmt := `DELETE FROM storage WHERE ` + strings.Join(where, " AND ")
 	result, err := tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return FormatError(err)
@@ -248,7 +248,7 @@ func deleteStorageSetting(ctx context.Context, tx *sql.Tx, delete *api.StorageSe
 
 	rows, _ := result.RowsAffected()
 	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("storage setting not found")}
+		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("storage not found")}
 	}
 
 	return nil

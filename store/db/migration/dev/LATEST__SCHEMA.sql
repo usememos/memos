@@ -104,8 +104,8 @@ CREATE TABLE activity (
   payload TEXT NOT NULL DEFAULT '{}'
 );
 
--- storage_setting
-CREATE TABLE storage_setting (
+-- storage
+CREATE TABLE storage (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   creator_id INTEGER NOT NULL,
   created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
@@ -114,4 +114,4 @@ CREATE TABLE storage_setting (
   access_key TEXT NOT NULL DEFAULT '',
   secret_key TEXT NOT NULL DEFAULT '',
   bucket TEXT NOT NULL DEFAULT '',
-)
+);
