@@ -5,27 +5,27 @@ type StorageSetting struct {
 	CreatorID int    `json:"creatorId"`
 	CreatedTs int64  `json:"createdTs"`
 	Name      string `json:"name"`
-	EndPoint  string `json:"end_point"`
-	AccessKey string `json:"access_key"`
-	SecretKey string `json:"secret_key"`
+	EndPoint  string `json:"endPoint"`
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
 	Bucket    string `json:"bucket"`
 }
 
 type StorageSettingCreate struct {
 	CreatorID int    `json:"creatorId"`
 	Name      string `json:"name"`
-	EndPoint  string `json:"end_point"`
-	AccessKey string `json:"access_key"`
-	SecretKey string `json:"secret_key"`
+	EndPoint  string `json:"endPoint"`
+	AccessKey string `json:"accessKey"`
+	SecretKey string `json:"secretKey"`
 	Bucket    string `json:"bucket"`
 }
 
 type StorageSettingPatch struct {
 	ID        int     `json:"id"`
 	Name      *string `json:"name"`
-	EndPoint  *string `json:"end_point"`
-	AccessKey *string `json:"access_key"`
-	SecretKey *string `json:"secret_key"`
+	EndPoint  *string `json:"endPoint"`
+	AccessKey *string `json:"accessKey"`
+	SecretKey *string `json:"secretKey"`
 	Bucket    *string `json:"bucket"`
 }
 
