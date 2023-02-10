@@ -14,10 +14,6 @@ import (
 )
 
 func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.CustomizedProfile) (string, error) {
-	if len(memoList) == 0 {
-		return "", nil
-	}
-
 	feed := &feeds.Feed{
 		Title:       profile.Name,
 		Link:        &feeds.Link{Href: baseURL},
@@ -56,10 +52,7 @@ func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.
 	if err != nil {
 		return "", err
 	}
-
-	rssPrefix := `<?xml version="1.0" encoding="UTF-8"?>`
-
-	return rss[len(rssPrefix):], nil
+	return rss, nil
 }
 
 func (s *Server) registerRSSRoutes(g *echo.Group) {
@@ -84,13 +77,13 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 		}
 
 		baseURL := c.Scheme() + "://" + c.Request().Host
-
 		rss, err := generateRSSFromMemoList(memoList, baseURL, &systemCustomizedProfile)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate rss").SetInternal(err)
 		}
 
-		return c.XMLBlob(http.StatusOK, []byte(rss))
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationXMLCharsetUTF8)
+		return c.String(http.StatusOK, rss)
 	})
 
 	g.GET("/u/:id/rss.xml", func(c echo.Context) error {
@@ -125,8 +118,8 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate rss").SetInternal(err)
 		}
-
-		return c.XMLBlob(http.StatusOK, []byte(rss))
+		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationXMLCharsetUTF8)
+		return c.String(http.StatusOK, rss)
 	})
 }
 
