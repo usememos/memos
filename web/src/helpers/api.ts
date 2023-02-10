@@ -202,7 +202,9 @@ export function upsertTag(tagName: string) {
 }
 
 export function deleteTag(tagName: string) {
-  return axios.delete<ResponseObject<string>>(`/api/tag/${encodeURIComponent(tagName)}`);
+  return axios.post<ResponseObject<boolean>>(`/api/tag/delete`, {
+    name: tagName,
+  });
 }
 
 export async function getRepoStarCount() {
