@@ -48,6 +48,10 @@ docker-compose down && docker image rm neosmemo/memos:latest && docker-compose u
 - [Deploy on render.com](./docs/deploy-with-render.md)
 - [Deploy on fly.io](https://github.com/hu3rror/memos-on-fly)
 
+## 🙇‍♂️ Acknowledgments
+
+- Thanks [Uffizzi](https://www.uffizzi.com/) for sponsoring preview environments for PRs.
+
 ## Contribute
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
