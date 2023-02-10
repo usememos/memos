@@ -102,7 +102,7 @@ func (s *Store) CreateMemo(ctx context.Context, create *api.MemoCreate) (*api.Me
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.MemoCache, memoRaw.ID, memoRaw); err != nil {
+	if err := s.cache.UpsertCache(MemoCache, memoRaw.ID, memoRaw); err != nil {
 		return nil, err
 	}
 
@@ -130,7 +130,7 @@ func (s *Store) PatchMemo(ctx context.Context, patch *api.MemoPatch) (*api.Memo,
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.MemoCache, memoRaw.ID, memoRaw); err != nil {
+	if err := s.cache.UpsertCache(MemoCache, memoRaw.ID, memoRaw); err != nil {
 		return nil, err
 	}
 
@@ -170,7 +170,7 @@ func (s *Store) FindMemoList(ctx context.Context, find *api.MemoFind) ([]*api.Me
 func (s *Store) FindMemo(ctx context.Context, find *api.MemoFind) (*api.Memo, error) {
 	if find.ID != nil {
 		memoRaw := &memoRaw{}
-		has, err := s.cache.FindCache(api.MemoCache, *find.ID, memoRaw)
+		has, err := s.cache.FindCache(MemoCache, *find.ID, memoRaw)
 		if err != nil {
 			return nil, err
 		}
@@ -199,7 +199,7 @@ func (s *Store) FindMemo(ctx context.Context, find *api.MemoFind) (*api.Memo, er
 	}
 
 	memoRaw := list[0]
-	if err := s.cache.UpsertCache(api.MemoCache, memoRaw.ID, memoRaw); err != nil {
+	if err := s.cache.UpsertCache(MemoCache, memoRaw.ID, memoRaw); err != nil {
 		return nil, err
 	}
 
@@ -229,7 +229,7 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *api.MemoDelete) error {
 		return FormatError(err)
 	}
 
-	s.cache.DeleteCache(api.MemoCache, delete.ID)
+	s.cache.DeleteCache(MemoCache, delete.ID)
 
 	return nil
 }

@@ -78,7 +78,7 @@ func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.Us
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.UserCache, userRaw.ID, userRaw); err != nil {
+	if err := s.cache.UpsertCache(UserCache, userRaw.ID, userRaw); err != nil {
 		return nil, err
 	}
 
@@ -103,7 +103,7 @@ func (s *Store) PatchUser(ctx context.Context, patch *api.UserPatch) (*api.User,
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.UserCache, userRaw.ID, userRaw); err != nil {
+	if err := s.cache.UpsertCache(UserCache, userRaw.ID, userRaw); err != nil {
 		return nil, err
 	}
 
@@ -135,7 +135,7 @@ func (s *Store) FindUserList(ctx context.Context, find *api.UserFind) ([]*api.Us
 func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, error) {
 	if find.ID != nil {
 		userRaw := &userRaw{}
-		has, err := s.cache.FindCache(api.UserCache, *find.ID, userRaw)
+		has, err := s.cache.FindCache(UserCache, *find.ID, userRaw)
 		if err != nil {
 			return nil, err
 		}
@@ -161,7 +161,7 @@ func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, er
 
 	userRaw := list[0]
 
-	if err := s.cache.UpsertCache(api.UserCache, userRaw.ID, userRaw); err != nil {
+	if err := s.cache.UpsertCache(UserCache, userRaw.ID, userRaw); err != nil {
 		return nil, err
 	}
 
@@ -188,7 +188,7 @@ func (s *Store) DeleteUser(ctx context.Context, delete *api.UserDelete) error {
 		return err
 	}
 
-	s.cache.DeleteCache(api.UserCache, delete.ID)
+	s.cache.DeleteCache(UserCache, delete.ID)
 
 	return nil
 }
