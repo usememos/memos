@@ -4,6 +4,7 @@ type Storage struct {
 	ID        int    `json:"id"`
 	CreatorID int    `json:"creatorId"`
 	CreatedTs int64  `json:"createdTs"`
+	UpdatedTs int64  `json:"updatedTs"`
 	Name      string `json:"name"`
 	EndPoint  string `json:"endPoint"`
 	AccessKey string `json:"accessKey"`
@@ -21,7 +22,8 @@ type StorageCreate struct {
 }
 
 type StoragePatch struct {
-	ID        int     `json:"id"`
+	ID        int `json:"id"`
+	UpdatedTs *int64
 	Name      *string `json:"name"`
 	EndPoint  *string `json:"endPoint"`
 	AccessKey *string `json:"accessKey"`

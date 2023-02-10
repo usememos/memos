@@ -14,6 +14,7 @@ type storageRaw struct {
 	ID        int
 	CreatorID int
 	CreatedTs int64
+	UpdatedTs int64
 	Name      string
 	EndPoint  string
 	AccessKey string
@@ -26,6 +27,7 @@ func (raw *storageRaw) toStorage() *api.Storage {
 		ID:        raw.ID,
 		CreatorID: raw.CreatorID,
 		CreatedTs: raw.CreatedTs,
+		UpdatedTs: raw.UpdatedTs,
 		Name:      raw.Name,
 		EndPoint:  raw.EndPoint,
 		AccessKey: raw.AccessKey,
@@ -120,13 +122,14 @@ func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate
 			` + strings.Join(set, ", ") + `
 		)
 		VALUES (` + strings.Join(placeholder, ",") + `)
-		RETURNING id, creator_id, created_ts, name, end_point, access_key, secret_key, bucket
+		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, access_key, secret_key, bucket
 	`
 	var storageRaw storageRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
 		&storageRaw.ID,
 		&storageRaw.CreatorID,
 		&storageRaw.CreatedTs,
+		&storageRaw.UpdatedTs,
 		&storageRaw.Name,
 		&storageRaw.EndPoint,
 		&storageRaw.AccessKey,
@@ -141,7 +144,9 @@ func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate
 
 func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (*storageRaw, error) {
 	set, args := []string{}, []interface{}{}
-	// TODO
+	if v := patch.UpdatedTs; v != nil {
+		set, args = append(set, "updated_ts = ?"), append(args, *v)
+	}
 	if v := patch.Name; v != nil {
 		set, args = append(set, "name = ?"), append(args, *v)
 	}
@@ -164,7 +169,7 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 		UPDATE storage
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, creator_id, created_ts, name, end_point, access_key, secret_key, bucket
+		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, access_key, secret_key, bucket
 	`
 
 	var storageRaw storageRaw
@@ -172,6 +177,7 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 		&storageRaw.ID,
 		&storageRaw.CreatorID,
 		&storageRaw.CreatedTs,
+		&storageRaw.UpdatedTs,
 		&storageRaw.Name,
 		&storageRaw.EndPoint,
 		&storageRaw.AccessKey,
