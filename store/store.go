@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 
-	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/server/profile"
 )
 
@@ -12,7 +11,7 @@ import (
 type Store struct {
 	db      *sql.DB
 	profile *profile.Profile
-	cache   api.CacheService
+	cache   *CacheService
 }
 
 // New creates a new instance of Store.

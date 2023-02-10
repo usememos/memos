@@ -7,19 +7,29 @@ import (
 	"fmt"
 
 	"github.com/VictoriaMetrics/fastcache"
-	"github.com/usememos/memos/api"
 )
 
 var (
 	// 64 MiB.
-	cacheSize                  = 1024 * 1024 * 64
-	_         api.CacheService = (*CacheService)(nil)
+	cacheSize = 1024 * 1024 * 64
 )
 
 // CacheService implements a cache.
 type CacheService struct {
 	cache *fastcache.Cache
 }
+
+// CacheNamespace is the type of a cache.
+type CacheNamespace string
+
+const (
+	// UserCache is the cache type of users.
+	UserCache CacheNamespace = "u"
+	// MemoCache is the cache type of memos.
+	MemoCache CacheNamespace = "m"
+	// ShortcutCache is the cache type of shortcuts.
+	ShortcutCache CacheNamespace = "s"
+)
 
 // NewCacheService creates a cache service.
 func NewCacheService() *CacheService {
@@ -29,7 +39,7 @@ func NewCacheService() *CacheService {
 }
 
 // FindCache finds the value in cache.
-func (s *CacheService) FindCache(namespace api.CacheNamespace, id int, entry interface{}) (bool, error) {
+func (s *CacheService) FindCache(namespace CacheNamespace, id int, entry interface{}) (bool, error) {
 	buf1 := []byte{0, 0, 0, 0, 0, 0, 0, 0}
 	binary.LittleEndian.PutUint64(buf1, uint64(id))
 
@@ -46,7 +56,7 @@ func (s *CacheService) FindCache(namespace api.CacheNamespace, id int, entry int
 }
 
 // UpsertCache upserts the value to cache.
-func (s *CacheService) UpsertCache(namespace api.CacheNamespace, id int, entry interface{}) error {
+func (s *CacheService) UpsertCache(namespace CacheNamespace, id int, entry interface{}) error {
 	buf1 := []byte{0, 0, 0, 0, 0, 0, 0, 0}
 	binary.LittleEndian.PutUint64(buf1, uint64(id))
 
@@ -61,7 +71,7 @@ func (s *CacheService) UpsertCache(namespace api.CacheNamespace, id int, entry i
 }
 
 // DeleteCache deletes the cache.
-func (s *CacheService) DeleteCache(namespace api.CacheNamespace, id int) {
+func (s *CacheService) DeleteCache(namespace CacheNamespace, id int) {
 	buf1 := []byte{0, 0, 0, 0, 0, 0, 0, 0}
 	binary.LittleEndian.PutUint64(buf1, uint64(id))
 

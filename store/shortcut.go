@@ -56,7 +56,7 @@ func (s *Store) CreateShortcut(ctx context.Context, create *api.ShortcutCreate) 
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.ShortcutCache, shortcutRaw.ID, shortcutRaw); err != nil {
+	if err := s.cache.UpsertCache(ShortcutCache, shortcutRaw.ID, shortcutRaw); err != nil {
 		return nil, err
 	}
 
@@ -81,7 +81,7 @@ func (s *Store) PatchShortcut(ctx context.Context, patch *api.ShortcutPatch) (*a
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.ShortcutCache, shortcutRaw.ID, shortcutRaw); err != nil {
+	if err := s.cache.UpsertCache(ShortcutCache, shortcutRaw.ID, shortcutRaw); err != nil {
 		return nil, err
 	}
 
@@ -113,7 +113,7 @@ func (s *Store) FindShortcutList(ctx context.Context, find *api.ShortcutFind) ([
 func (s *Store) FindShortcut(ctx context.Context, find *api.ShortcutFind) (*api.Shortcut, error) {
 	if find.ID != nil {
 		shortcutRaw := &shortcutRaw{}
-		has, err := s.cache.FindCache(api.ShortcutCache, *find.ID, shortcutRaw)
+		has, err := s.cache.FindCache(ShortcutCache, *find.ID, shortcutRaw)
 		if err != nil {
 			return nil, err
 		}
@@ -139,7 +139,7 @@ func (s *Store) FindShortcut(ctx context.Context, find *api.ShortcutFind) (*api.
 
 	shortcutRaw := list[0]
 
-	if err := s.cache.UpsertCache(api.ShortcutCache, shortcutRaw.ID, shortcutRaw); err != nil {
+	if err := s.cache.UpsertCache(ShortcutCache, shortcutRaw.ID, shortcutRaw); err != nil {
 		return nil, err
 	}
 
@@ -164,7 +164,7 @@ func (s *Store) DeleteShortcut(ctx context.Context, delete *api.ShortcutDelete) 
 		return FormatError(err)
 	}
 
-	s.cache.DeleteCache(api.ShortcutCache, *delete.ID)
+	s.cache.DeleteCache(ShortcutCache, *delete.ID)
 
 	return nil
 }
