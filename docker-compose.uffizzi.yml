@@ -15,4 +15,3 @@ services:
 
 volumes:
   memos_volume:
-
