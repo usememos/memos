@@ -38,6 +38,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		resourceCreate.CreatorID = userID
+		// Only allow those external links with http prefix.
+		if resourceCreate.ExternalLink != "" && !strings.HasPrefix(resourceCreate.ExternalLink, "http") {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link")
+		}
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
@@ -188,13 +192,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
 
-		c.Response().Writer.WriteHeader(http.StatusOK)
-		c.Response().Writer.Header().Set("Content-Type", resource.Type)
-		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
-		if _, err := c.Response().Writer.Write(resource.Blob); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write resource blob").SetInternal(err)
-		}
-		return nil
+		return c.Stream(http.StatusOK, resource.Type, bytes.NewReader(resource.Blob))
 	})
 
 	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
@@ -296,16 +294,15 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch resource ID: %v", resourceID)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
 		}
 
-		resourceType := strings.ToLower(resource.Type)
-		if strings.HasPrefix(resourceType, "text") || (strings.HasPrefix(resourceType, "application") && resourceType != "application/pdf") {
-			resourceType = echo.MIMETextPlain
-		}
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
-		if strings.HasPrefix(resourceType, "video") || strings.HasPrefix(resourceType, "audio") {
+		resourceType := strings.ToLower(resource.Type)
+		if strings.HasPrefix(resourceType, "text") {
+			resourceType = echo.MIMETextPlainCharsetUTF8
+		} else if strings.HasPrefix(resourceType, "video") || strings.HasPrefix(resourceType, "audio") {
 			http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(resource.Blob))
 			return nil
 		}
