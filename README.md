@@ -1,10 +1,6 @@
 <p align="center"><a href="https://usememos.com"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.webp" alt="✍️ memos" /></a></p>
 
 <p align="center">
-  <b>A customizable, self-hosted alternative to Twitter</b>
-</p>
-
-<p align="center">
   <a href="https://github.com/usememos/memos/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos" /></a>
   <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg" /></a>
   <a href="https://discord.gg/tfPJa4UmAv"><img alt="Discord" src="https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5" /></a>
@@ -19,10 +15,10 @@
 
 ![demo-dark](./resources/demo-dark.webp#gh-dark-mode-only)
 
-# 📝 What is memos?
+# What is memos?
 memos is an open-sourced, self-hosted memo hub featuring knowledge management and socialization. 
 memos offers a minimalistic design and is packed with notable features.
-Users can easliy adjust whether their notes are public or private to other users on their instance.
+Users can easily adjust whether their notes are public or private to other users on their instance.
 Running memos locally is as easy as running 1 Docker command!
 
 You can read more about memo [here](https://noted.lol/memos/).
@@ -34,7 +30,7 @@ You can read more about memo [here](https://noted.lol/memos/).
 - 📜 Plain textarea first and support some useful Markdown syntax
 - 👥 Set memo private or public to others
 - 🧑‍💻 RESTful API for self-service
-- 📋 Embed memos on other sites using iframes
+- 📋 Embed memos on other sites using iframe
 - #️⃣ Hashtags for organizing memos
 - 📆 Interactive calendar view
 - 💾 Easy data migration and backups
@@ -59,7 +55,7 @@ docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/mem
 docker-compose down && docker image rm neosmemo/memos:latest && docker-compose up -d
 ```
 
-### Other instillation methods
+### Other installation methods
 
 - [Deploy on render.com](./docs/deploy-with-render.md)
 - [Deploy on fly.io](https://github.com/hu3rror/memos-on-fly)
@@ -68,7 +64,7 @@ docker-compose down && docker image rm neosmemo/memos:latest && docker-compose u
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
 
-Learn more ab out contributing in our [development guide](./docs/development.md).
+Learn more about contributing in [development guide](./docs/development.md).
 
 ### Products made by our Community
 
