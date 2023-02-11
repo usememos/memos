@@ -76,11 +76,15 @@ const MemoEditor = () => {
   useEffect(() => {
     const vditor = new Vditor("vditor", {
       after: () => {
-        vditor.setValue("`Vditor` 最小代码示例");
+        vditor.setValue("");
         setVd(vditor);
       },
       typewriterMode: true,
-      toolbar: [],
+      toolbar: ["list", "check", "indent", "outdent", "code", "inline-code", "undo", "redo"],
+      input: (value) => {
+        const content = value === '\n' ? "" : value;
+        handleContentChange(content || "");
+      },
     });
   }, []);
 
@@ -312,7 +316,8 @@ const MemoEditor = () => {
   };
 
   const handleSaveBtnClick = async () => {
-    const content = editorRef.current?.getContent();
+    // const content = editorRef.current?.getContent();
+    const content = vt?.getValue();
     if (!content) {
       toastHelper.error(t("editor.cant-empty"));
       return;
@@ -446,12 +451,20 @@ const MemoEditor = () => {
     });
   };
 
-  const handleTagSelectorClick = useCallback((event: React.MouseEvent) => {
+  // const handleTagSelectorClick = useCallback((event: React.MouseEvent) => {
+  //   if (tagSelectorRef.current !== event.target && tagSelectorRef.current?.contains(event.target as Node)) {
+  //     editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
+  //     handleEditorFocus();
+  //   }
+  // }, []);
+
+  const handleTagSelectorClick = (event: React.MouseEvent) => {
     if (tagSelectorRef.current !== event.target && tagSelectorRef.current?.contains(event.target as Node)) {
-      editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
-      handleEditorFocus();
+      const content = vt?.getValue() + (`#${(event.target as HTMLElement).textContent} ` ?? "");
+      vt?.setValue(content);
+      vt?.focus();
     }
-  }, []);
+  };
 
   const handleDeleteResource = async (resourceId: ResourceId) => {
     editorStore.setResourceList(editorState.resourceList.filter((resource) => resource.id !== resourceId));
@@ -521,12 +534,12 @@ const MemoEditor = () => {
               )}
             </div>
           </div>
-          <button className="action-btn">
+          {/* <button className="action-btn">
             <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
           </button>
           <button className="action-btn">
             <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
-          </button>
+          </button> */}
           <div className="action-btn resource-btn">
             <Icon.FileText className="icon-img" />
             <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
