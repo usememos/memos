@@ -217,6 +217,10 @@ func createMemoRaw(ctx context.Context, tx *sql.Tx, create *api.MemoCreate) (*me
 	args := []interface{}{create.CreatorID, create.Content, create.Visibility}
 	placeholder := []string{"?", "?", "?"}
 
+	if v := create.CreatedTs; v != nil {
+		set, args, placeholder = append(set, "created_ts"), append(args, *v), append(placeholder, "?")
+	}
+
 	query := `
 		INSERT INTO memo (
 			` + strings.Join(set, ", ") + `
