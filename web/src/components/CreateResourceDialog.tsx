@@ -194,7 +194,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
             </Typography>
             <Input
               className="mb-2"
-              placeholder="File link"
+              placeholder="https://the.link.to/your/resource"
               value={resourceCreate.externalLink}
               onChange={handleExternalLinkChanged}
               fullWidth
