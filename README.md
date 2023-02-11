@@ -1,6 +1,10 @@
 <p align="center"><a href="https://usememos.com"><img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/resources/logo-full.webp" alt="✍️ memos" /></a></p>
 
 <p align="center">
+  <b>A customizable, self-hosted alternative to Twitter</b>
+</p>
+
+<p align="center">
   <a href="https://github.com/usememos/memos/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos" /></a>
   <a href="https://hub.docker.com/r/neosmemo/memos"><img alt="Docker pull" src="https://img.shields.io/docker/pulls/neosmemo/memos.svg" /></a>
   <a href="https://discord.gg/tfPJa4UmAv"><img alt="Discord" src="https://img.shields.io/badge/discord-chat-5865f2?logo=discord&logoColor=f5f5f5" /></a>
@@ -8,53 +12,65 @@
 
 <p align="center">
   <a href="https://demo.usememos.com/">Live Demo</a> •
-  Discuss in <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a> / <b><a href="https://discord.gg/tfPJa4UmAv">Discord 🏂</a></b>
+  Discuss in our <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a> and <a href="https://discord.gg/tfPJa4UmAv">Discord</a>
 </p>
 
 ![demo](./resources/demo.webp#gh-light-mode-only)
 
 ![demo-dark](./resources/demo-dark.webp#gh-dark-mode-only)
 
-## Features
+# 📝 What is memos?
+memos is an open-sourced, self-hosted memo hub featuring knowledge management and socialization. 
+memos offers a minimalistic design and is packed with notable features.
+Users can easliy adjust whether their notes are public or private to other users on their instance.
+Running memos locally is as easy as running 1 Docker command!
 
-- 🦄 Open source and free forever;
-- 🚀 Support for self-hosting with `Docker` in seconds;
-- 📜 Plain textarea first and support some useful Markdown syntax;
-- 👥 Set memo private or public to others;
-- 🧑‍💻 RESTful API for self-service.
+You can read more about memo [here](https://noted.lol/memos/).
 
-## Deploy with Docker in seconds
+### Notable Features
 
-### Docker Run
+- 🦄 Open source and free forever
+- 🚀 Support for self-hosting with `Docker` in seconds
+- 📜 Plain textarea first and support some useful Markdown syntax
+- 👥 Set memo private or public to others
+- 🧑‍💻 RESTful API for self-service
+- 📋 Embed memos on other sites using iframes
+- #️⃣ Hashtags for organizing memos
+- 📆 Interactive calendar view
+- 💾 Easy data migration and backups
+
+# 🐳 Installing with Docker
+
+### Install using `docker run`
 
 ```docker
 docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:latest
 ```
 
-> `~/.memos/` will be used as the data directory in your machine. And `/var/opt/memos` is the directory of the volume in docker and should not be modified.
+> `~/.memos/` will be used as the data directory in your machine and `/var/opt/memos` is the directory of the volume in Docker and should not be modified.
 
-### Docker Compose
+### Install using `docker compose`
 
-Example docker compose YAML file: [`docker-compose.yaml`](./docker-compose.yaml).
+- Provided docker compose YAML file: [`docker-compose.yaml`](./docker-compose.yaml).
 
-You can upgrade memos with the following command.
+- You can upgrade to the latest version memos with:
 
 ```sh
 docker-compose down && docker image rm neosmemo/memos:latest && docker-compose up -d
 ```
 
-### Other guides
+### Other instillation methods
 
 - [Deploy on render.com](./docs/deploy-with-render.md)
 - [Deploy on fly.io](https://github.com/hu3rror/memos-on-fly)
 
-## Contribute
+# 😎 Contribute
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
 
-See more in [development guide](./docs/development.md).
+Learn more ab out contributing in our [development guide](./docs/development.md).
 
-### Products made by Community
+### Products made by our Community
 
 - [Moe Memos](https://memos.moe/) - Third party client for iOS and Android
 - [lmm214/memos-bber](https://github.com/lmm214/memos-bber) - Chrome extension
