@@ -34,7 +34,6 @@ const Memo: React.FC<Props> = (props: Props) => {
   const locationStore = useLocationStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
-  const { localSetting } = userStore.state.user as User;
   const [displayTimeStr, setDisplayTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userStore.isVisitorMode();
@@ -152,7 +151,8 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
-    if (!localSetting.enableDoubleClickEditing) {
+    const loginUser = userStore.state.user;
+    if (loginUser && !loginUser.localSetting.enableDoubleClickEditing) {
       return;
     }
     const targetEl = e.target as HTMLElement;
