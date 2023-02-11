@@ -81,7 +81,7 @@ const MemoEditor = () => {
       },
       typewriterMode: true,
       toolbar: ["list", "check", "indent", "outdent", "code", "inline-code", "link", "undo", "redo", "bold", "strike"],
-      input: (value) => {
+      input: (value: string) => {
         const content = value === "\n" ? "" : value;
         handleContentChange(content || "");
       },

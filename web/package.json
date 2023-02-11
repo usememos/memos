@@ -25,7 +25,8 @@
     "react-redux": "^8.0.1",
     "react-router-dom": "^6.4.0",
     "semver": "^7.3.8",
-    "tailwindcss": "^3.2.4"
+    "tailwindcss": "^3.2.4",
+    "vditor": "^3.9.0"
   },
   "devDependencies": {
     "@jest/globals": "^29.1.2",
