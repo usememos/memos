@@ -80,9 +80,9 @@ const MemoEditor = () => {
         setVd(vditor);
       },
       typewriterMode: true,
-      toolbar: ["list", "check", "indent", "outdent", "code", "inline-code", "undo", "redo"],
+      toolbar: ["list", "check", "indent", "outdent", "code", "inline-code", "link", "undo", "redo", "bold", "strike"],
       input: (value) => {
-        const content = value === '\n' ? "" : value;
+        const content = value === "\n" ? "" : value;
         handleContentChange(content || "");
       },
     });
