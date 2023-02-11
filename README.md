@@ -73,6 +73,10 @@ See more in [development guide](./docs/development.md).
   <img src="https://contrib.rocks/image?repo=usememos/memos" />
 </a>
 
+## Acknowledgements
+
+- Thanks [Uffizzi](https://www.uffizzi.com/) for sponsoring preview environments for PRs.
+
 ## License
 
 [MIT License](https://github.com/usememos/memos/blob/main/LICENSE).
