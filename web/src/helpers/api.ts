@@ -25,11 +25,10 @@ export function signin(username: string, password: string) {
   });
 }
 
-export function signup(username: string, password: string, role: UserRole) {
+export function signup(username: string, password: string) {
   return axios.post<ResponseObject<User>>("/api/auth/signup", {
     username,
     password,
-    role,
   });
 }
 
