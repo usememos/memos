@@ -13,48 +13,6 @@ import (
 	"github.com/usememos/memos/api"
 )
 
-func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.CustomizedProfile) (string, error) {
-	feed := &feeds.Feed{
-		Title:       profile.Name,
-		Link:        &feeds.Link{Href: baseURL},
-		Description: profile.Description,
-		Created:     time.Now(),
-	}
-
-	feed.Items = make([]*feeds.Item, len(memoList))
-	for i, memo := range memoList {
-		var useTitle = strings.HasPrefix(memo.Content, "# ")
-
-		var title string
-		if useTitle {
-			title = strings.Split(memo.Content, "\n")[0][2:]
-		} else {
-			title = memo.Creator.Username + "-memos-" + strconv.Itoa(memo.ID)
-		}
-
-		var description string
-		if useTitle {
-			var firstLineEnd = strings.Index(memo.Content, "\n")
-			description = memo.Content[firstLineEnd+1:]
-		} else {
-			description = memo.Content
-		}
-
-		feed.Items[i] = &feeds.Item{
-			Title:       title,
-			Link:        &feeds.Link{Href: baseURL + "/m/" + strconv.Itoa(memo.ID)},
-			Description: description,
-			Created:     time.Unix(memo.CreatedTs, 0),
-		}
-	}
-
-	rss, err := feed.ToRss()
-	if err != nil {
-		return "", err
-	}
-	return rss, nil
-}
-
 func (s *Server) registerRSSRoutes(g *echo.Group) {
 	g.GET("/explore/rss.xml", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -121,6 +79,48 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationXMLCharsetUTF8)
 		return c.String(http.StatusOK, rss)
 	})
+}
+
+func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.CustomizedProfile) (string, error) {
+	feed := &feeds.Feed{
+		Title:       profile.Name,
+		Link:        &feeds.Link{Href: baseURL},
+		Description: profile.Description,
+		Created:     time.Now(),
+	}
+
+	feed.Items = make([]*feeds.Item, len(memoList))
+	for i, memo := range memoList {
+		var useTitle = strings.HasPrefix(memo.Content, "# ")
+
+		var title string
+		if useTitle {
+			title = strings.Split(memo.Content, "\n")[0][2:]
+		} else {
+			title = memo.Creator.Username + "-memos-" + strconv.Itoa(memo.ID)
+		}
+
+		var description string
+		if useTitle {
+			var firstLineEnd = strings.Index(memo.Content, "\n")
+			description = memo.Content[firstLineEnd+1:]
+		} else {
+			description = memo.Content
+		}
+
+		feed.Items[i] = &feeds.Item{
+			Title:       title,
+			Link:        &feeds.Link{Href: baseURL + "/m/" + strconv.Itoa(memo.ID)},
+			Description: description,
+			Created:     time.Unix(memo.CreatedTs, 0),
+		}
+	}
+
+	rss, err := feed.ToRss()
+	if err != nil {
+		return "", err
+	}
+	return rss, nil
 }
 
 func getSystemCustomizedProfile(ctx context.Context, s *Server) (api.CustomizedProfile, error) {

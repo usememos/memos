@@ -58,10 +58,8 @@ func (s *Store) ComposeMemoCreator(ctx context.Context, memo *api.Memo) error {
 	user.OpenID = ""
 	user.UserSettingList = nil
 	memo.Creator = user
-
 	return nil
 }
-
 func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.User, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -78,12 +76,8 @@ func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.Us
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(UserCache, userRaw.ID, userRaw); err != nil {
-		return nil, err
-	}
-
+	s.userCache.Store(userRaw.ID, userRaw)
 	user := userRaw.toUser()
-
 	return user, nil
 }
 
@@ -103,12 +97,8 @@ func (s *Store) PatchUser(ctx context.Context, patch *api.UserPatch) (*api.User,
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(UserCache, userRaw.ID, userRaw); err != nil {
-		return nil, err
-	}
-
+	s.userCache.Store(userRaw.ID, userRaw)
 	user := userRaw.toUser()
-
 	return user, nil
 }
 
@@ -134,13 +124,8 @@ func (s *Store) FindUserList(ctx context.Context, find *api.UserFind) ([]*api.Us
 
 func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, error) {
 	if find.ID != nil {
-		userRaw := &userRaw{}
-		has, err := s.cache.FindCache(UserCache, *find.ID, userRaw)
-		if err != nil {
-			return nil, err
-		}
-		if has {
-			return userRaw.toUser(), nil
+		if user, ok := s.userCache.Load(*find.ID); ok {
+			return user.(*userRaw).toUser(), nil
 		}
 	}
 
@@ -160,13 +145,8 @@ func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, er
 	}
 
 	userRaw := list[0]
-
-	if err := s.cache.UpsertCache(UserCache, userRaw.ID, userRaw); err != nil {
-		return nil, err
-	}
-
+	s.userCache.Store(userRaw.ID, userRaw)
 	user := userRaw.toUser()
-
 	return user, nil
 }
 
@@ -188,8 +168,7 @@ func (s *Store) DeleteUser(ctx context.Context, delete *api.UserDelete) error {
 		return err
 	}
 
-	s.cache.DeleteCache(UserCache, delete.ID)
-
+	s.userCache.Delete(delete.ID)
 	return nil
 }
 
