@@ -1,0 +1,18 @@
+.page-wrapper.not-found {
+  @apply w-full h-full overflow-y-auto overflow-x-hidden bg-zinc-100 dark:bg-zinc-800;
+  
+  > .page-container {
+    @apply relative w-full min-h-full mx-auto flex flex-col justify-center items-center;
+      
+    > .title-text {
+      @apply text-xl sm:text-4xl text-gray-700 dark:text-gray-200;
+    }
+
+    > .action-button-container {
+      > .link-btn {
+        @apply block text-gray-600 dark:text-gray-200 dark:border-gray-600 font-mono text-base py-1 border px-3 leading-8 rounded-xl hover:opacity-80 my-3;
+      }
+    }
+  }
+}
+  
