@@ -32,6 +32,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		// Find system settings
 		systemSettingKey := api.SystemSettingDisablePublicMemosName
+
 		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
 			Name: &systemSettingKey,
 		})
@@ -39,8 +40,16 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 		}
 
-		if systemSetting.Value == "true" {
-			memoCreate.Visibility = api.Private
+		if systemSetting != nil {
+			memoVisibility := api.Private
+			err = json.Unmarshal([]byte(systemSetting.Value), &memoVisibility)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
+			}
+
+			if systemSetting.Value == "true" {
+				memoCreate.Visibility = memoVisibility
+			}
 		}
 
 		if memoCreate.Visibility == "" {
