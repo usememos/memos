@@ -31,7 +31,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
     getTagSuggestionList().then(({ data }) => {
       setSuggestTagNameList(data.data.filter((tag) => validateTagName(tag)));
     });
-  }, []);
+  }, [tagNameList]);
 
   const handleTagNameInputKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
