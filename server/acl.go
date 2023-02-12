@@ -58,7 +58,7 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 		ctx := c.Request().Context()
 		path := c.Path()
 
-		if s.DefaultAuthSkipper(c) {
+		if s.defaultAuthSkipper(c) {
 			return next(c)
 		}
 

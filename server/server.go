@@ -58,14 +58,14 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	e.Use(middleware.Gzip())
 
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		Skipper:     s.DefaultAuthSkipper,
+		Skipper:     s.defaultAuthSkipper,
 		TokenLookup: "cookie:_csrf",
 	}))
 
 	e.Use(middleware.CORS())
 
 	e.Use(middleware.SecureWithConfig(middleware.SecureConfig{
-		Skipper:            DefaultGetRequestSkipper,
+		Skipper:            defaultGetRequestSkipper,
 		XSSProtection:      "1; mode=block",
 		ContentTypeNosniff: "nosniff",
 		XFrameOptions:      "SAMEORIGIN",

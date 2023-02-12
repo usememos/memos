@@ -15,11 +15,11 @@ type Profile struct {
 	// Mode can be "prod" or "dev"
 	Mode string `json:"mode"`
 	// Port is the binding port for server
-	Port int `json:"port"`
+	Port int `json:"-"`
 	// Data is the data directory
-	Data string `json:"data"`
+	Data string `json:"-"`
 	// DSN points to where Memos stores its own data
-	DSN string `json:"dsn"`
+	DSN string `json:"-"`
 	// Version is the current version of server
 	Version string `json:"version"`
 }
