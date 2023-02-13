@@ -137,7 +137,7 @@ func (s *Store) DeleteStorage(ctx context.Context, delete *api.StorageDelete) er
 }
 
 func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate) (*storageRaw, error) {
-	set := []string{"creator_id", "name", "end_point", "region", "access_key", "secret_key", "bucket", "urlPrefix"}
+	set := []string{"creator_id", "name", "end_point", "region", "access_key", "secret_key", "bucket", "url_prefix"}
 	args := []interface{}{create.CreatorID, create.Name, create.EndPoint, create.Region, create.AccessKey, create.SecretKey, create.Bucket, create.URLPrefix}
 	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?"}
 
@@ -146,7 +146,7 @@ func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate
 			` + strings.Join(set, ", ") + `
 		)
 		VALUES (` + strings.Join(placeholder, ",") + `)
-		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, region, access_key, secret_key, bucket, urlPrefix
+		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, region, access_key, secret_key, bucket, url_prefix
 	`
 	var storageRaw storageRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
@@ -192,7 +192,7 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 		set, args = append(set, "bucket = ?"), append(args, *v)
 	}
 	if v := patch.URLPrefix; v != nil {
-		set, args = append(set, "urlPrefix = ?"), append(args, *v)
+		set, args = append(set, "url_prefix = ?"), append(args, *v)
 	}
 
 	args = append(args, patch.ID)
@@ -201,7 +201,7 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 		UPDATE storage
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, region, access_key, secret_key, bucket, urlPrefix
+		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, region, access_key, secret_key, bucket, url_prefix
 	`
 
 	var storageRaw storageRaw
@@ -245,7 +245,7 @@ func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) 
 			access_key, 
 			secret_key, 
 			bucket,
-			urlPrefix
+			url_prefix
 		FROM storage
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY created_ts DESC

@@ -116,5 +116,5 @@ CREATE TABLE storage (
   access_key TEXT NOT NULL DEFAULT '',
   secret_key TEXT NOT NULL DEFAULT '',
   bucket TEXT NOT NULL DEFAULT '',
-  urlPrefix TEXT NOT NULL DEFAULT ''
+  url_prefix TEXT NOT NULL DEFAULT ''
 );
