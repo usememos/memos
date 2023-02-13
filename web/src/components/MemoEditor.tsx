@@ -4,7 +4,15 @@ import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "../labs/marked";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import { useEditorStore, useLocationStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "../store/module";
+import {
+  useEditorStore,
+  useGlobalStore,
+  useLocationStore,
+  useMemoStore,
+  useResourceStore,
+  useTagStore,
+  useUserStore,
+} from "../store/module";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -42,6 +50,9 @@ const MemoEditor = () => {
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
   const resourceStore = useResourceStore();
+  const {
+    state: { systemStatus },
+  } = useGlobalStore();
 
   const [state, setState] = useState<State>({
     fullscreen: false,
@@ -62,6 +73,12 @@ const MemoEditor = () => {
       text: t(`memo.visibility.${toLower(item.value)}`),
     };
   });
+
+  useEffect(() => {
+    if (systemStatus.disablePublicMemos) {
+      editorStore.setMemoVisibility("PRIVATE");
+    }
+  }, [systemStatus.disablePublicMemos]);
 
   useEffect(() => {
     const { editingMemoIdCache } = storage.get(["editingMemoIdCache"]);
@@ -484,7 +501,9 @@ const MemoEditor = () => {
         <Selector
           className="visibility-selector"
           value={editorState.memoVisibility}
+          tooltipTitle={t("memo.visibility.disabled")}
           dataSource={memoVisibilityOptionSelectorItems}
+          disabled={systemStatus.disablePublicMemos}
           handleValueChanged={handleMemoVisibilityOptionChanged}
         />
         <div className="buttons-container">

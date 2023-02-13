@@ -2,6 +2,7 @@ import { memo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import useToggle from "../../hooks/useToggle";
 import Icon from "../Icon";
+import { Tooltip } from "@mui/joy";
 import "../../less/common/selector.less";
 
 interface SelectorItem {
@@ -14,6 +15,8 @@ interface Props {
   value: string;
   dataSource: SelectorItem[];
   handleValueChanged?: (value: string) => void;
+  disabled?: boolean;
+  tooltipTitle?: string;
 }
 
 const nullItem = {
@@ -22,7 +25,7 @@ const nullItem = {
 };
 
 const Selector: React.FC<Props> = (props: Props) => {
-  const { className, dataSource, handleValueChanged, value } = props;
+  const { className, dataSource, handleValueChanged, value, disabled, tooltipTitle } = props;
   const { t } = useTranslation();
   const [showSelector, toggleSelectorStatus] = useToggle(false);
 
@@ -58,39 +61,52 @@ const Selector: React.FC<Props> = (props: Props) => {
   };
 
   const handleCurrentValueClick = (event: React.MouseEvent) => {
+    if (disabled) return;
     event.stopPropagation();
     toggleSelectorStatus();
   };
 
   return (
-    <div className={`selector-wrapper ${className ?? ""}`} ref={selectorElRef}>
-      <div className={`current-value-container ${showSelector ? "active" : ""}`} onClick={handleCurrentValueClick}>
-        <span className="value-text">{currentItem.text}</span>
-        <span className="arrow-text">
-          <Icon.ChevronDown className="icon-img" />
-        </span>
-      </div>
+    <Tooltip title={tooltipTitle} hidden={!disabled}>
+      <div className={`selector-wrapper ${className ?? ""} `} ref={selectorElRef}>
+        <div
+          className={`current-value-container ${showSelector ? "active" : ""} ${disabled && "selector-disabled"}`}
+          onClick={handleCurrentValueClick}
+        >
+          {disabled && (
+            <span className="lock-text">
+              <Icon.Lock className="icon-img" />
+            </span>
+          )}
+          <span className="value-text">{currentItem.text}</span>
+          {!disabled && (
+            <span className="arrow-text">
+              <Icon.ChevronDown className="icon-img" />
+            </span>
+          )}
+        </div>
 
-      <div className={`items-wrapper ${showSelector ? "" : "!hidden"}`}>
-        {dataSource.length > 0 ? (
-          dataSource.map((d) => {
-            return (
-              <div
-                className={`item-container ${d.value === value ? "selected" : ""}`}
-                key={d.value}
-                onClick={() => {
-                  handleItemClick(d);
-                }}
-              >
-                {d.text}
-              </div>
-            );
-          })
-        ) : (
-          <p className="tip-text">{t("common.null")}</p>
-        )}
+        <div className={`items-wrapper ${showSelector ? "" : "!hidden"}`}>
+          {dataSource.length > 0 ? (
+            dataSource.map((d) => {
+              return (
+                <div
+                  className={`item-container ${d.value === value ? "selected" : ""}`}
+                  key={d.value}
+                  onClick={() => {
+                    handleItemClick(d);
+                  }}
+                >
+                  {d.text}
+                </div>
+              );
+            })
+          ) : (
+            <p className="tip-text">{t("common.null")}</p>
+          )}
+        </div>
       </div>
-    </div>
+    </Tooltip>
   );
 };
 

@@ -17,6 +17,8 @@ const (
 	SystemSettingSecretSessionName SystemSettingName = "secretSessionName"
 	// SystemSettingAllowSignUpName is the key type of allow signup setting.
 	SystemSettingAllowSignUpName SystemSettingName = "allowSignUp"
+	// SystemSettingsDisablePublicMemos is the key type of disable public memos setting.
+	SystemSettingDisablePublicMemosName SystemSettingName = "disablePublicMemos"
 	// SystemSettingAdditionalStyleName is the key type of additional style.
 	SystemSettingAdditionalStyleName SystemSettingName = "additionalStyle"
 	// SystemSettingAdditionalScriptName is the key type of additional script.
@@ -51,6 +53,8 @@ func (key SystemSettingName) String() string {
 		return "secretSessionName"
 	case SystemSettingAllowSignUpName:
 		return "allowSignUp"
+	case SystemSettingDisablePublicMemosName:
+		return "disablePublicMemos"
 	case SystemSettingAdditionalStyleName:
 		return "additionalStyle"
 	case SystemSettingAdditionalScriptName:
@@ -64,7 +68,8 @@ func (key SystemSettingName) String() string {
 }
 
 var (
-	SystemSettingAllowSignUpValue = []bool{true, false}
+	SystemSettingAllowSignUpValue        = []bool{true, false}
+	SystemSettingDisbalePublicMemosValue = []bool{true, false}
 )
 
 type SystemSetting struct {
@@ -99,6 +104,24 @@ func (upsert SystemSettingUpsert) Validate() error {
 		}
 		if invalid {
 			return fmt.Errorf("invalid system setting allow signup value")
+		}
+	} else if upsert.Name == SystemSettingDisablePublicMemosName {
+		value := false
+		err := json.Unmarshal([]byte(upsert.Value), &value)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal system setting disable public memos value")
+		}
+
+		invalid := true
+		for _, v := range SystemSettingDisbalePublicMemosValue {
+			if value == v {
+				invalid = false
+				break
+			}
+		}
+
+		if invalid {
+			return fmt.Errorf("invalid system setting disable public memos value")
 		}
 	} else if upsert.Name == SystemSettingAdditionalStyleName {
 		value := ""

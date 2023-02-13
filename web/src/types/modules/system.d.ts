@@ -18,6 +18,7 @@ interface SystemStatus {
   dbSize: number;
   // System settings
   allowSignUp: boolean;
+  disablePublicMemos: boolean;
   additionalStyle: string;
   additionalScript: string;
   customizedProfile: CustomizedProfile;
