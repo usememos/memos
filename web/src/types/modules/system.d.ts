@@ -21,6 +21,7 @@ interface SystemStatus {
   additionalStyle: string;
   additionalScript: string;
   customizedProfile: CustomizedProfile;
+  storageServiceId: number;
 }
 
 interface SystemSetting {

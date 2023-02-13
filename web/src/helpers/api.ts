@@ -206,6 +206,22 @@ export function deleteTag(tagName: string) {
   });
 }
 
+export function getStorageList() {
+  return axios.get<ResponseObject<Storage[]>>(`/api/storage`);
+}
+
+export function createStorage(storageCreate: StorageCreate) {
+  return axios.post<ResponseObject<Storage>>(`/api/storage`, storageCreate);
+}
+
+export function patchStorage(storagePatch: StoragePatch) {
+  return axios.patch<ResponseObject<Storage>>(`/api/storage/${storagePatch.id}`, storagePatch);
+}
+
+export function deleteStorage(storageId: StorageId) {
+  return axios.delete(`/api/storage/${storageId}`);
+}
+
 export async function getRepoStarCount() {
   const { data } = await axios.get(`https://api.github.com/repos/usememos/memos`, {
     headers: {

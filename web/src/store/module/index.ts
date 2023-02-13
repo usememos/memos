@@ -7,3 +7,4 @@ export * from "./resource";
 export * from "./shortcut";
 export * from "./user";
 export * from "./dialog";
+export * from "./storage";
