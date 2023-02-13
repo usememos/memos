@@ -160,7 +160,6 @@ const MemoEditor = () => {
               }
             }
           }
-
           editorRef.current?.scrollToCursor();
         }
       }

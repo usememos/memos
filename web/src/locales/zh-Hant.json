@@ -161,7 +161,6 @@
       "theme": "主題",
       "default-memo-visibility": "預設 Memo 可見性",
       "enable-folding-memo": "開啟折疊 Memo",
-      "enable-powerful-editor": "開啟編輯器自動補全",
       "editor-font-style": "編輯器字體樣式",
       "mobile-editor-style": "移動端編輯器樣式",
       "default-memo-sort-option": "Memo 顯示時間",
