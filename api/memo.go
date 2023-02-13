@@ -46,7 +46,8 @@ type Memo struct {
 
 type MemoCreate struct {
 	// Standard fields
-	CreatorID int `json:"-"`
+	CreatorID int    `json:"-"`
+	CreatedTs *int64 `json:"createdTs"`
 
 	// Domain specific fields
 	Visibility Visibility `json:"visibility"`

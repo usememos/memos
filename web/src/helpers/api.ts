@@ -25,11 +25,10 @@ export function signin(username: string, password: string) {
   });
 }
 
-export function signup(username: string, password: string, role: UserRole) {
+export function signup(username: string, password: string) {
   return axios.post<ResponseObject<User>>("/api/auth/signup", {
     username,
     password,
-    role,
   });
 }
 
@@ -202,7 +201,9 @@ export function upsertTag(tagName: string) {
 }
 
 export function deleteTag(tagName: string) {
-  return axios.delete<ResponseObject<string>>(`/api/tag/${encodeURI(tagName)}`);
+  return axios.post<ResponseObject<boolean>>(`/api/tag/delete`, {
+    name: tagName,
+  });
 }
 
 export async function getRepoStarCount() {

@@ -8,5 +8,4 @@ type SignIn struct {
 type SignUp struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
-	Role     Role   `json:"role"`
 }

@@ -62,44 +62,45 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
 		}
 
-		hostUserType := api.Host
-		hostUserFind := api.UserFind{
-			Role: &hostUserType,
-		}
-		hostUser, err := s.Store.FindUser(ctx, &hostUserFind)
-		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
-		}
-		if signup.Role == api.Host && hostUser != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Site Host existed, please contact the site host to signin account firstly").SetInternal(err)
-		}
-
-		systemSettingAllowSignUpName := api.SystemSettingAllowSignUpName
-		allowSignUpSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: &systemSettingAllowSignUpName,
-		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
-		}
-
-		allowSignUpSettingValue := false
-		if allowSignUpSetting != nil {
-			err = json.Unmarshal([]byte(allowSignUpSetting.Value), &allowSignUpSettingValue)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting allow signup").SetInternal(err)
-			}
-		}
-		if !allowSignUpSettingValue && hostUser != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Site Host existed, please contact the site host to signin account firstly").SetInternal(err)
-		}
-
 		userCreate := &api.UserCreate{
 			Username: signup.Username,
-			Role:     api.Role(signup.Role),
+			// The new signup user should be normal user by default.
+			Role:     api.NormalUser,
 			Nickname: signup.Username,
 			Password: signup.Password,
 			OpenID:   common.GenUUID(),
 		}
+		hostUserType := api.Host
+		existedHostUsers, err := s.Store.FindUserList(ctx, &api.UserFind{
+			Role: &hostUserType,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Failed to find users").SetInternal(err)
+		}
+		if len(existedHostUsers) == 0 {
+			// Change the default role to host if there is no host user.
+			userCreate.Role = api.Host
+		} else {
+			systemSettingAllowSignUpName := api.SystemSettingAllowSignUpName
+			allowSignUpSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+				Name: &systemSettingAllowSignUpName,
+			})
+			if err != nil && common.ErrorCode(err) != common.NotFound {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+			}
+
+			allowSignUpSettingValue := false
+			if allowSignUpSetting != nil {
+				err = json.Unmarshal([]byte(allowSignUpSetting.Value), &allowSignUpSettingValue)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting allow signup").SetInternal(err)
+				}
+			}
+			if !allowSignUpSettingValue {
+				return echo.NewHTTPError(http.StatusUnauthorized, "signup is disabled").SetInternal(err)
+			}
+		}
+
 		if err := userCreate.Validate(); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format").SetInternal(err)
 		}
@@ -110,7 +111,6 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 
 		userCreate.PasswordHash = string(passwordHash)
-
 		user, err := s.Store.CreateUser(ctx, userCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)

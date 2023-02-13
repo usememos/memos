@@ -97,10 +97,6 @@ func (s *Store) CreateResource(ctx context.Context, create *api.ResourceCreate) 
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.ResourceCache, resourceRaw.ID, resourceRaw); err != nil {
-		return nil, err
-	}
-
 	resource := resourceRaw.toResource()
 
 	return resource, nil
@@ -127,17 +123,6 @@ func (s *Store) FindResourceList(ctx context.Context, find *api.ResourceFind) ([
 }
 
 func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.Resource, error) {
-	if find.ID != nil {
-		resourceRaw := &resourceRaw{}
-		has, err := s.cache.FindCache(api.ResourceCache, *find.ID, resourceRaw)
-		if err != nil {
-			return nil, err
-		}
-		if has {
-			return resourceRaw.toResource(), nil
-		}
-	}
-
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -154,11 +139,6 @@ func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.
 	}
 
 	resourceRaw := list[0]
-
-	if err := s.cache.UpsertCache(api.ResourceCache, resourceRaw.ID, resourceRaw); err != nil {
-		return nil, err
-	}
-
 	resource := resourceRaw.toResource()
 
 	return resource, nil
@@ -182,8 +162,6 @@ func (s *Store) DeleteResource(ctx context.Context, delete *api.ResourceDelete) 
 		return FormatError(err)
 	}
 
-	s.cache.DeleteCache(api.ResourceCache, delete.ID)
-
 	return nil
 }
 
@@ -201,10 +179,6 @@ func (s *Store) PatchResource(ctx context.Context, patch *api.ResourcePatch) (*a
 
 	if err := tx.Commit(); err != nil {
 		return nil, FormatError(err)
-	}
-
-	if err := s.cache.UpsertCache(api.ResourceCache, resourceRaw.ID, resourceRaw); err != nil {
-		return nil, err
 	}
 
 	resource := resourceRaw.toResource()

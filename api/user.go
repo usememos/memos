@@ -60,14 +60,11 @@ type UserCreate struct {
 }
 
 func (create UserCreate) Validate() error {
-	if len(create.Username) < 4 {
-		return fmt.Errorf("username is too short, minimum length is 4")
+	if len(create.Username) < 3 {
+		return fmt.Errorf("username is too short, minimum length is 3")
 	}
 	if len(create.Username) > 32 {
 		return fmt.Errorf("username is too long, maximum length is 32")
-	}
-	if len(create.Password) < 4 {
-		return fmt.Errorf("password is too short, minimum length is 4")
 	}
 	if len(create.Nickname) > 64 {
 		return fmt.Errorf("nickname is too long, maximum length is 64")
@@ -102,14 +99,11 @@ type UserPatch struct {
 }
 
 func (patch UserPatch) Validate() error {
-	if patch.Username != nil && len(*patch.Username) < 4 {
-		return fmt.Errorf("username is too short, minimum length is 4")
+	if patch.Username != nil && len(*patch.Username) < 3 {
+		return fmt.Errorf("username is too short, minimum length is 3")
 	}
 	if patch.Username != nil && len(*patch.Username) > 32 {
 		return fmt.Errorf("username is too long, maximum length is 32")
-	}
-	if patch.Password != nil && len(*patch.Password) < 4 {
-		return fmt.Errorf("password is too short, minimum length is 4")
 	}
 	if patch.Nickname != nil && len(*patch.Nickname) > 64 {
 		return fmt.Errorf("nickname is too long, maximum length is 64")

@@ -49,7 +49,7 @@
     "vacuum": "Vacuum",
     "select": "Select"
   },
-  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
   "auth": {
     "signup-as-host": "Sign up as Host",
     "host-tip": "You are registering as the Site Host.",
@@ -162,7 +162,7 @@
       "theme": "Theme",
       "default-memo-visibility": "Default memo visibility",
       "enable-folding-memo": "Enable folding memo",
-      "enable-powerful-editor": "Enable powerful editor",
+      "enable-double-click": "Enable double-click to edit",
       "editor-font-style": "Editor font style",
       "mobile-editor-style": "Mobile editor style",
       "default-memo-sort-option": "Memo display time",
@@ -238,7 +238,8 @@
     "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
     "succeed-update-customized-profile": "Succeed to update customized profile",
     "succeed-update-additional-script": "Succeed to update additional script",
-    "update-succeed": "Update succeed"
+    "update-succeed": "Update succeed",
+    "page-not-found": "404 - Page Not Found 😥"
   },
   "days": {
     "monday": "Monday",

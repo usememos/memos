@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 	metric "github.com/usememos/memos/plugin/metrics"
-
-	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/plugin/storage/s3"
 )
 
 const (
@@ -38,6 +38,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		resourceCreate.CreatorID = userID
+		// Only allow those external links with http prefix.
+		if resourceCreate.ExternalLink != "" && !strings.HasPrefix(resourceCreate.ExternalLink, "http") {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link")
+		}
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
@@ -81,18 +85,48 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		defer src.Close()
 
-		fileBytes, err := io.ReadAll(src)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
+		var resourceCreate *api.ResourceCreate
+		systemSettingStorageServiceName := api.SystemSettingStorageServiceName
+		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: &systemSettingStorageServiceName})
+		if err != nil && common.ErrorCode(err) != common.NotFound {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
+		}
+		if common.ErrorCode(err) == common.NotFound || systemSetting.Value == "" {
+			fileBytes, err := io.ReadAll(src)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
+			}
+			resourceCreate = &api.ResourceCreate{
+				CreatorID: userID,
+				Filename:  filename,
+				Type:      filetype,
+				Size:      size,
+				Blob:      fileBytes,
+			}
+		} else {
+			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{Name: &systemSetting.Value})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
+			}
+
+			s3client, err := s3.NewClient(ctx, storage)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
+			}
+
+			link, err := s3client.UploadFile(ctx, filename, filetype, src, storage)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
+			}
+
+			resourceCreate = &api.ResourceCreate{
+				CreatorID:    userID,
+				Filename:     filename,
+				Type:         filetype,
+				ExternalLink: *link,
+			}
 		}
 
-		resourceCreate := &api.ResourceCreate{
-			CreatorID: userID,
-			Filename:  filename,
-			Type:      filetype,
-			Size:      size,
-			Blob:      fileBytes,
-		}
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
@@ -188,13 +222,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
 
-		c.Response().Writer.WriteHeader(http.StatusOK)
-		c.Response().Writer.Header().Set("Content-Type", resource.Type)
-		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
-		if _, err := c.Response().Writer.Write(resource.Blob); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write resource blob").SetInternal(err)
-		}
-		return nil
+		return c.Stream(http.StatusOK, resource.Type, bytes.NewReader(resource.Blob))
 	})
 
 	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
@@ -228,7 +256,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch resource request").SetInternal(err)
 		}
 
-		resource.ID = resourceID
+		resourcePatch.ID = resourceID
 		resource, err = s.Store.PatchResource(ctx, resourcePatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
@@ -296,16 +324,15 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch resource ID: %v", resourceID)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
 		}
 
-		resourceType := strings.ToLower(resource.Type)
-		if strings.HasPrefix(resourceType, "text") || strings.HasPrefix(resourceType, "application") {
-			resourceType = echo.MIMETextPlain
-		}
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
-		if strings.HasPrefix(resourceType, "video") || strings.HasPrefix(resourceType, "audio") {
+		resourceType := strings.ToLower(resource.Type)
+		if strings.HasPrefix(resourceType, "text") {
+			resourceType = echo.MIMETextPlainCharsetUTF8
+		} else if strings.HasPrefix(resourceType, "video") || strings.HasPrefix(resourceType, "audio") {
 			http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(resource.Blob))
 			return nil
 		}

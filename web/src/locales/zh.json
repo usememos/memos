@@ -49,7 +49,7 @@
     "vacuum": "清理",
     "select": "选择"
   },
-  "slogan": "An open-source, self-hosted memo hub with knowledge management and socialization.",
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
   "auth": {
     "signup-as-host": "注册为 Host",
     "host-tip": "你正在注册为 Host 用户账号。",
@@ -161,7 +161,7 @@
       "theme": "主题",
       "default-memo-visibility": "默认 Memo 可见性",
       "enable-folding-memo": "开启折叠 Memo",
-      "enable-powerful-editor": "开启编辑器自动补全",
+      "enable-double-click":"开启双击编辑",
       "editor-font-style": "编辑器字体样式",
       "mobile-editor-style": "移动端编辑器样式",
       "default-memo-sort-option": "Memo 显示时间",
@@ -236,7 +236,8 @@
     "succeed-copy-resource-link": "复制资源链接到剪贴板成功",
     "succeed-update-customized-profile": "更新自定义配置文件成功",
     "succeed-update-additional-script": "更新附加脚本成功",
-    "update-succeed": "更新成功"
+    "update-succeed": "更新成功",
+    "page-not-found": "404 - 未找到网页 😥"
   },
   "days": {
     "monday": "星期一",

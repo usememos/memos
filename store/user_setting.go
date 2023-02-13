@@ -38,6 +38,7 @@ func (s *Store) UpsertUserSetting(ctx context.Context, upsert *api.UserSettingUp
 		return nil, err
 	}
 
+	s.userSettingCache.Store(getUserSettingCacheKey(*userSettingRaw), userSettingRaw)
 	userSetting := userSettingRaw.toUserSetting()
 
 	return userSetting, nil
@@ -57,6 +58,7 @@ func (s *Store) FindUserSettingList(ctx context.Context, find *api.UserSettingFi
 
 	list := []*api.UserSetting{}
 	for _, raw := range userSettingRawList {
+		s.userSettingCache.Store(getUserSettingCacheKey(*raw), raw)
 		list = append(list, raw.toUserSetting())
 	}
 
@@ -64,6 +66,13 @@ func (s *Store) FindUserSettingList(ctx context.Context, find *api.UserSettingFi
 }
 
 func (s *Store) FindUserSetting(ctx context.Context, find *api.UserSettingFind) (*api.UserSetting, error) {
+	if userSetting, ok := s.userSettingCache.Load(getUserSettingFindCacheKey(find)); ok {
+		if userSetting == nil {
+			return nil, nil
+		}
+		return userSetting.(*userSettingRaw).toUserSetting(), nil
+	}
+
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -76,12 +85,13 @@ func (s *Store) FindUserSetting(ctx context.Context, find *api.UserSettingFind) 
 	}
 
 	if len(list) == 0 {
+		s.userSettingCache.Store(getUserSettingFindCacheKey(find), nil)
 		return nil, nil
 	}
 
-	userSetting := list[0].toUserSetting()
-
-	return userSetting, nil
+	userSettingRaw := list[0]
+	s.userSettingCache.Store(getUserSettingCacheKey(*userSettingRaw), userSettingRaw)
+	return userSettingRaw.toUserSetting(), nil
 }
 
 func upsertUserSetting(ctx context.Context, tx *sql.Tx, upsert *api.UserSettingUpsert) (*userSettingRaw, error) {

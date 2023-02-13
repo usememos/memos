@@ -1,6 +1,6 @@
 import { matcher } from "../matcher";
 
-export const PLAIN_LINK_REG = /(https?:\/\/[^ ]+)/;
+export const PLAIN_LINK_REG = /((?:https?|chrome|edge):\/\/[^ ]+)/;
 
 const renderer = (rawStr: string) => {
   const matchResult = matcher(rawStr, PLAIN_LINK_REG);

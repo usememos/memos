@@ -84,7 +84,7 @@ const Auth = () => {
     actionBtnLoadingState.setFinish();
   };
 
-  const handleSignUpBtnsClick = async (role: UserRole) => {
+  const handleSignUpBtnsClick = async () => {
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -103,7 +103,7 @@ const Auth = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.signup(username, password, role);
+      await api.signup(username, password);
       const user = await userStore.doSignIn();
       if (user) {
         navigate("/");
@@ -115,6 +115,12 @@ const Auth = () => {
       toastHelper.error(error.response.data.error);
     }
     actionBtnLoadingState.setFinish();
+  };
+
+  const handleSignInKeyUp = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSignInBtnClick();
+    }
   };
 
   return (
@@ -135,7 +141,14 @@ const Auth = () => {
             </div>
             <div className="form-item-container input-form-container">
               <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
-              <input className="input-text" type="password" value={password} onChange={handlePasswordInputChanged} required />
+              <input
+                className="input-text"
+                type="password"
+                value={password}
+                onChange={handlePasswordInputChanged}
+                onKeyUp={handleSignInKeyUp}
+                required
+              />
             </div>
           </div>
           <div className="action-btns-container">
@@ -144,10 +157,7 @@ const Auth = () => {
                 {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
                 {systemStatus?.allowSignUp && (
                   <>
-                    <button
-                      className={`btn-text ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                      onClick={() => handleSignUpBtnsClick("USER")}
-                    >
+                    <button className={`btn-text ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSignUpBtnsClick}>
                       {t("common.sign-up")}
                     </button>
                     <span className="mr-2 font-mono text-gray-200">/</span>
@@ -159,10 +169,7 @@ const Auth = () => {
               </>
             ) : (
               <>
-                <button
-                  className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}
-                  onClick={() => handleSignUpBtnsClick("HOST")}
-                >
+                <button className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSignUpBtnsClick}>
                   {t("auth.signup-as-host")}
                 </button>
               </>

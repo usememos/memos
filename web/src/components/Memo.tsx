@@ -151,6 +151,10 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
+    const loginUser = userStore.state.user;
+    if (loginUser && !loginUser.localSetting.enableDoubleClickEditing) {
+      return;
+    }
     const targetEl = e.target as HTMLElement;
 
     if (targetEl.className === "tag-span") {

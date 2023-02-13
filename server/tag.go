@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"regexp"
 	"sort"
 
@@ -127,29 +126,27 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		return nil
 	})
 
-	g.DELETE("/tag/:tagName", func(c echo.Context) error {
+	g.POST("/tag/delete", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		tagName, err := url.QueryUnescape(c.Param("tagName"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid tag name").SetInternal(err)
-		} else if tagName == "" {
-			return echo.NewHTTPError(http.StatusBadRequest, "Tag name cannot be empty")
+		tagDelete := &api.TagDelete{}
+		if err := json.NewDecoder(c.Request().Body).Decode(tagDelete); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
+		}
+		if tagDelete.Name == "" {
+			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
 		}
 
-		tagDelete := &api.TagDelete{
-			Name:      tagName,
-			CreatorID: userID,
-		}
+		tagDelete.CreatorID = userID
 		if err := s.Store.DeleteTag(ctx, tagDelete); err != nil {
 			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Tag name not found: %s", tagName))
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Tag name not found: %s", tagDelete.Name))
 			}
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete tag name: %v", tagName)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete tag name: %v", tagDelete.Name)).SetInternal(err)
 		}
 
 		return c.JSON(http.StatusOK, true)
