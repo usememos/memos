@@ -8,8 +8,5 @@
       "name": "web",
       "path": "../web"
     }
-  ],
-  "settings": {
-    "i18n-ally.keystyle": "nested"
-  }
+  ]
 }
