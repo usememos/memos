@@ -101,7 +101,8 @@
     "visibility": {
       "private": "Only visible to you",
       "protected": "Visible to members",
-      "public": "Everyone can see"
+      "public": "Everyone can see",
+      "disabled": "Public memos are disabled"
     }
   },
   "memo-list": {
@@ -180,6 +181,7 @@
       },
       "database-file-size": "Database File Size",
       "allow-user-signup": "Allow user signup",
+      "disable-public-memos": "Disable public memos",
       "additional-style": "Additional style",
       "additional-script": "Additional script",
       "additional-style-placeholder": "Additional CSS codes",

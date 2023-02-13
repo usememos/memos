@@ -42,12 +42,13 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		}
 
 		systemStatus := api.SystemStatus{
-			Host:             hostUser,
-			Profile:          *s.Profile,
-			DBSize:           0,
-			AllowSignUp:      false,
-			AdditionalStyle:  "",
-			AdditionalScript: "",
+			Host:               hostUser,
+			Profile:            *s.Profile,
+			DBSize:             0,
+			AllowSignUp:        false,
+			DisablePublicMemos: false,
+			AdditionalStyle:    "",
+			AdditionalScript:   "",
 			CustomizedProfile: api.CustomizedProfile{
 				Name:        "memos",
 				LogoURL:     "",
@@ -75,6 +76,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 
 			if systemSetting.Name == api.SystemSettingAllowSignUpName {
 				systemStatus.AllowSignUp = value.(bool)
+			} else if systemSetting.Name == api.SystemSettingDisablePublicMemosName {
+				systemStatus.DisablePublicMemos = value.(bool)
 			} else if systemSetting.Name == api.SystemSettingAdditionalStyleName {
 				systemStatus.AdditionalStyle = value.(string)
 			} else if systemSetting.Name == api.SystemSettingAdditionalScriptName {

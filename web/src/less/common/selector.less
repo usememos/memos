@@ -14,6 +14,10 @@
       width: calc(100% - 20px);
     }
 
+    > .lock-text {
+      @apply flex flex-row justify-center items-center w-4 shrink-0 mr-1;
+    }
+
     > .arrow-text {
       @apply flex flex-row justify-center items-center w-4 shrink-0;
 
@@ -40,5 +44,12 @@
     > .tip-text {
       @apply px-3 py-1 text-sm text-gray-600;
     }
+  }
+
+  > .selector-disabled {
+    @apply cursor-not-allowed;
+    @apply pointer-events-none;
+
+    @apply bg-gray-200 dark:bg-zinc-700 dark:border-zinc-600 text-gray-400;
   }
 }
