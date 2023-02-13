@@ -95,12 +95,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if common.ErrorCode(err) == common.NotFound {
 			storeLocal = true
 		} else {
-			var value interface{}
+			var value int
 			err = json.Unmarshal([]byte(systemSetting.Value), &value)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
 			}
-			if int(value.(float64)) == 0 {
+			if value == 0 {
 				storeLocal = true
 			}
 		}

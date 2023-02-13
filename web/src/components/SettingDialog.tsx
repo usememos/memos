@@ -53,17 +53,17 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
           >
             <span className="icon-text">🏟</span> {t("setting.preference")}
           </span>
-          <span
-            onClick={() => handleSectionSelectorItemClick("storage")}
-            className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
-          >
-            <span className="icon-text">🗃️</span> {t("setting.storage")}
-          </span>
         </div>
         {user?.role === "HOST" ? (
           <>
             <span className="section-title">{t("common.admin")}</span>
             <div className="section-items-container">
+              <span
+                onClick={() => handleSectionSelectorItemClick("storage")}
+                className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
+              >
+                <span className="icon-text">🗃️</span> {t("setting.storage")}
+              </span>
               <span
                 onClick={() => handleSectionSelectorItemClick("member")}
                 className={`section-item ${state.selectedSection === "member" ? "selected" : ""}`}
