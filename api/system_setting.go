@@ -25,7 +25,7 @@ const (
 	SystemSettingAdditionalScriptName SystemSettingName = "additionalScript"
 	// SystemSettingCustomizedProfileName is the key type of customized server profile.
 	SystemSettingCustomizedProfileName SystemSettingName = "customizedProfile"
-	// SystemSettingStorageServiceID is the key type of sotrage service name.
+	// SystemSettingStorageServiceID is the key type of sotrage service ID.
 	SystemSettingStorageServiceID SystemSettingName = "storageServiceId"
 )
 

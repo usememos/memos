@@ -1,11 +1,11 @@
 import { Radio } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import * as api from "../../helpers/api";
 import { useGlobalStore, useStorageStore } from "../../store/module";
+import * as api from "../../helpers/api";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
-import "../../less/settings/storage-section.less";
 import showUpdateStorageServiceDialog from "../UpdateStorageServiceDialog";
+import "../../less/settings/storage-section.less";
 
 const StorageSection = () => {
   const { t } = useTranslation();
