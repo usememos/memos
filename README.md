@@ -63,6 +63,7 @@ See more in [development guide](./docs/development.md).
 - [eallion/memos.top](https://github.com/eallion/memos.top) - A static page rendered with the Memos API
 - [eindex/logseq-memos-sync](https://github.com/EINDEX/logseq-memos-sync) - A Logseq plugin
 - [JakeLaoyu/memos-import-from-flomo](https://github.com/JakeLaoyu/memos-import-from-flomo) - Import data. Support from flomo, wechat reading.
+- [Send to memos](https://sharecuts.cn/shortcut/12640) - A shortcut for iOS.
 
 ### User stories
 
