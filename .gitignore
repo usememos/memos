@@ -19,3 +19,6 @@ build
 .vscode
 
 bin/air
+
+# build docker image
+docker_images

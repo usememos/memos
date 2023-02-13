@@ -80,7 +80,7 @@ const MemoEditor = () => {
         setVd(vditor);
       },
       typewriterMode: true,
-      toolbar: ["list", "check", "indent", "outdent", "code", "inline-code", "link", "undo", "redo", "bold", "strike"],
+      toolbar: ["list", "check", "indent", "outdent", "code", "inline-code", "link", "undo", "redo", "bold", "edit-mode"],
       input: (value: string) => {
         const content = value === "\n" ? "" : value;
         handleContentChange(content || "");
@@ -107,7 +107,8 @@ const MemoEditor = () => {
           handleEditorFocus();
           editorStore.setMemoVisibility(memo.visibility);
           editorStore.setResourceList(memo.resourceList);
-          editorRef.current?.setContent(memo.content ?? "");
+          // editorRef.current?.setContent(memo.content ?? "");
+          vt?.setValue(memo.content ?? "");
         }
       });
       storage.set({
