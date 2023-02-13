@@ -91,7 +91,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
-		if common.ErrorCode(err) == common.NotFound || systemSetting.Value == "Database" {
+		if common.ErrorCode(err) == common.NotFound || systemSetting.Value == "" {
 			fileBytes, err := io.ReadAll(src)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
