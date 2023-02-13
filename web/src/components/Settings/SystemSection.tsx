@@ -5,9 +5,9 @@ import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
-import "@/less/settings/system-section.less";
 import { useAppDispatch } from "../../store";
 import { setGlobalState } from "../../store/reducer/global";
+import "@/less/settings/system-section.less";
 
 interface State {
   dbSize: number;

@@ -2,8 +2,8 @@ import { memo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import useToggle from "../../hooks/useToggle";
 import Icon from "../Icon";
-import "../../less/common/selector.less";
 import { Tooltip } from "@mui/joy";
+import "../../less/common/selector.less";
 
 interface SelectorItem {
   text: string;
