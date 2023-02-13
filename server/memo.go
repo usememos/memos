@@ -30,28 +30,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
 		}
 
-		// Find system settings
-		systemSettingKey := api.SystemSettingDisablePublicMemosName
-
-		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: &systemSettingKey,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
-		}
-
-		if systemSetting != nil {
-			memoVisibility := api.Private
-			err = json.Unmarshal([]byte(systemSetting.Value), &memoVisibility)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
-			}
-
-			if systemSetting.Value == "true" {
-				memoCreate.Visibility = memoVisibility
-			}
-		}
-
 		if memoCreate.Visibility == "" {
 			userSettingMemoVisibilityKey := api.UserSettingMemoVisibilityKey
 			userMemoVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
@@ -71,6 +49,25 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				memoCreate.Visibility = memoVisibility
 			} else {
 				// Private is the default memo visibility.
+				memoCreate.Visibility = api.Private
+			}
+		}
+
+		// Find system settings
+		disablePublicMemosSystemSettingKey := api.SystemSettingDisablePublicMemosName
+		disablePublicMemosSystemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+			Name: &disablePublicMemosSystemSettingKey,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+		}
+		if disablePublicMemosSystemSetting != nil {
+			disablePublicMemosValue := false
+			err = json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemosValue)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
+			}
+			if disablePublicMemosValue {
 				memoCreate.Visibility = api.Private
 			}
 		}
