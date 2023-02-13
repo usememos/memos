@@ -7,18 +7,22 @@ type Storage struct {
 	UpdatedTs int64  `json:"updatedTs"`
 	Name      string `json:"name"`
 	EndPoint  string `json:"endPoint"`
+	Region    string `json:"region"`
 	AccessKey string `json:"accessKey"`
 	SecretKey string `json:"secretKey"`
 	Bucket    string `json:"bucket"`
+	URLPrefix string `json:"urlPrefix"`
 }
 
 type StorageCreate struct {
 	CreatorID int    `json:"creatorId"`
 	Name      string `json:"name"`
 	EndPoint  string `json:"endPoint"`
+	Region    string `json:"region"`
 	AccessKey string `json:"accessKey"`
 	SecretKey string `json:"secretKey"`
 	Bucket    string `json:"bucket"`
+	URLPrefix string `json:"urlPrefix"`
 }
 
 type StoragePatch struct {
@@ -26,13 +30,17 @@ type StoragePatch struct {
 	UpdatedTs *int64
 	Name      *string `json:"name"`
 	EndPoint  *string `json:"endPoint"`
+	Region    *string `json:"region"`
 	AccessKey *string `json:"accessKey"`
 	SecretKey *string `json:"secretKey"`
 	Bucket    *string `json:"bucket"`
+	URLPrefix *string `json:"urlPrefix"`
 }
 
 type StorageFind struct {
-	CreatorID *int `json:"creatorId"`
+	ID        *int    `json:"id"`
+	Name      *string `json:"name"`
+	CreatorID *int    `json:"creatorId"`
 }
 
 type StorageDelete struct {

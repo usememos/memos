@@ -17,9 +17,11 @@ type storageRaw struct {
 	UpdatedTs int64
 	Name      string
 	EndPoint  string
+	Region    string
 	AccessKey string
 	SecretKey string
 	Bucket    string
+	URLPrefix string
 }
 
 func (raw *storageRaw) toStorage() *api.Storage {
@@ -30,9 +32,11 @@ func (raw *storageRaw) toStorage() *api.Storage {
 		UpdatedTs: raw.UpdatedTs,
 		Name:      raw.Name,
 		EndPoint:  raw.EndPoint,
+		Region:    raw.Region,
 		AccessKey: raw.AccessKey,
 		SecretKey: raw.SecretKey,
 		Bucket:    raw.Bucket,
+		URLPrefix: raw.URLPrefix,
 	}
 }
 
@@ -94,6 +98,26 @@ func (s *Store) FindStorageList(ctx context.Context, find *api.StorageFind) ([]*
 	return list, nil
 }
 
+func (s *Store) FindStorage(ctx context.Context, find *api.StorageFind) (*api.Storage, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	list, err := findStorageRawList(ctx, tx, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(list) == 0 {
+		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+	}
+
+	storageRaw := list[0]
+	return storageRaw.toStorage(), nil
+}
+
 func (s *Store) DeleteStorage(ctx context.Context, delete *api.StorageDelete) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -113,16 +137,16 @@ func (s *Store) DeleteStorage(ctx context.Context, delete *api.StorageDelete) er
 }
 
 func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate) (*storageRaw, error) {
-	set := []string{"creator_id", "name", "end_point", "access_key", "secret_key", "bucket"}
-	args := []interface{}{create.CreatorID, create.Name, create.AccessKey, create.SecretKey, create.Bucket}
-	placeholder := []string{"?", "?", "?", "?", "?", "?"}
+	set := []string{"creator_id", "name", "end_point", "region", "access_key", "secret_key", "bucket", "url_prefix"}
+	args := []interface{}{create.CreatorID, create.Name, create.EndPoint, create.Region, create.AccessKey, create.SecretKey, create.Bucket, create.URLPrefix}
+	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?"}
 
 	query := `
 		INSERT INTO storage (
 			` + strings.Join(set, ", ") + `
 		)
 		VALUES (` + strings.Join(placeholder, ",") + `)
-		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, access_key, secret_key, bucket
+		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, region, access_key, secret_key, bucket, url_prefix
 	`
 	var storageRaw storageRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
@@ -132,9 +156,11 @@ func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate
 		&storageRaw.UpdatedTs,
 		&storageRaw.Name,
 		&storageRaw.EndPoint,
+		&storageRaw.Region,
 		&storageRaw.AccessKey,
 		&storageRaw.SecretKey,
 		&storageRaw.Bucket,
+		&storageRaw.URLPrefix,
 	); err != nil {
 		return nil, FormatError(err)
 	}
@@ -153,6 +179,9 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 	if v := patch.EndPoint; v != nil {
 		set, args = append(set, "end_point = ?"), append(args, *v)
 	}
+	if v := patch.Region; v != nil {
+		set, args = append(set, "region = ?"), append(args, *v)
+	}
 	if v := patch.AccessKey; v != nil {
 		set, args = append(set, "access_key = ?"), append(args, *v)
 	}
@@ -162,6 +191,9 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 	if v := patch.Bucket; v != nil {
 		set, args = append(set, "bucket = ?"), append(args, *v)
 	}
+	if v := patch.URLPrefix; v != nil {
+		set, args = append(set, "url_prefix = ?"), append(args, *v)
+	}
 
 	args = append(args, patch.ID)
 
@@ -169,7 +201,7 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 		UPDATE storage
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, access_key, secret_key, bucket
+		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, region, access_key, secret_key, bucket, url_prefix
 	`
 
 	var storageRaw storageRaw
@@ -180,9 +212,11 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 		&storageRaw.UpdatedTs,
 		&storageRaw.Name,
 		&storageRaw.EndPoint,
+		&storageRaw.Region,
 		&storageRaw.AccessKey,
 		&storageRaw.SecretKey,
 		&storageRaw.Bucket,
+		&storageRaw.URLPrefix,
 	); err != nil {
 		return nil, FormatError(err)
 	}
@@ -193,6 +227,9 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) ([]*storageRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
+	if v := find.Name; v != nil {
+		where, args = append(where, "name = ?"), append(args, *v)
+	}
 	if v := find.CreatorID; v != nil {
 		where, args = append(where, "creator_id = ?"), append(args, *v)
 	}
@@ -204,9 +241,11 @@ func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) 
 			created_ts, 
 			name, 
 			end_point, 
+			region,
 			access_key, 
 			secret_key, 
-			bucket
+			bucket,
+			url_prefix
 		FROM storage
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY created_ts DESC
@@ -226,9 +265,11 @@ func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) 
 			&storageRaw.CreatedTs,
 			&storageRaw.Name,
 			&storageRaw.EndPoint,
+			&storageRaw.Region,
 			&storageRaw.AccessKey,
 			&storageRaw.SecretKey,
 			&storageRaw.Bucket,
+			&storageRaw.URLPrefix,
 		); err != nil {
 			return nil, FormatError(err)
 		}

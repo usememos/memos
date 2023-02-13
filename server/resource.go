@@ -11,12 +11,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 	metric "github.com/usememos/memos/plugin/metrics"
-
-	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/plugin/storage/s3"
 )
 
 const (
@@ -85,18 +85,48 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		defer src.Close()
 
-		fileBytes, err := io.ReadAll(src)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
+		var resourceCreate *api.ResourceCreate
+		systemSettingStorageServiceName := api.SystemSettingStorageServiceName
+		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: &systemSettingStorageServiceName})
+		if err != nil && common.ErrorCode(err) != common.NotFound {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
+		}
+		if common.ErrorCode(err) == common.NotFound || systemSetting.Value == "" {
+			fileBytes, err := io.ReadAll(src)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
+			}
+			resourceCreate = &api.ResourceCreate{
+				CreatorID: userID,
+				Filename:  filename,
+				Type:      filetype,
+				Size:      size,
+				Blob:      fileBytes,
+			}
+		} else {
+			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{Name: &systemSetting.Value})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
+			}
+
+			s3client, err := s3.NewClient(ctx, storage)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
+			}
+
+			link, err := s3client.UploadFile(ctx, filename, filetype, src, storage)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
+			}
+
+			resourceCreate = &api.ResourceCreate{
+				CreatorID:    userID,
+				Filename:     filename,
+				Type:         filetype,
+				ExternalLink: *link,
+			}
 		}
 
-		resourceCreate := &api.ResourceCreate{
-			CreatorID: userID,
-			Filename:  filename,
-			Type:      filetype,
-			Size:      size,
-			Blob:      fileBytes,
-		}
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
