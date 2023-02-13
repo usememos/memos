@@ -114,7 +114,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
 			}
 
-			link, err := s3.UploadFile(ctx, s3client, filename, filetype, src, storage)
+			link, err := s3client.UploadFile(ctx, filename, filetype, src, storage)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
 			}

@@ -21,7 +21,7 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, storage *api.Storage) (*Client, error) {
-	r2Resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+	resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 		return aws.Endpoint{
 			URL:           storage.EndPoint,
 			SigningRegion: storage.Region,
@@ -29,7 +29,7 @@ func NewClient(ctx context.Context, storage *api.Storage) (*Client, error) {
 	})
 
 	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithEndpointResolverWithOptions(r2Resolver),
+		config.WithEndpointResolverWithOptions(resolver),
 		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(storage.AccessKey, storage.SecretKey, "")),
 	)
 	if err != nil {
@@ -45,7 +45,7 @@ func NewClient(ctx context.Context, storage *api.Storage) (*Client, error) {
 	}, nil
 }
 
-func UploadFile(ctx context.Context, client *Client, filename string, fileType string, src io.Reader, storage *api.Storage) (*string, error) {
+func (client *Client) UploadFile(ctx context.Context, filename string, fileType string, src io.Reader, storage *api.Storage) (*string, error) {
 	uploader := manager.NewUploader(client.Client)
 	resp, err := uploader.Upload(ctx, &awss3.PutObjectInput{
 		Bucket:      aws.String(client.BucketName),
