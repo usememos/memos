@@ -37,7 +37,7 @@
       @apply flex flex-row justify-start items-center;
 
       > .action-btn {
-        @apply flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer dark:text-gray-200 opacity-60 hover:opacity-90 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow;
+        @apply flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow;
 
         &.tag-action {
           @apply relative;
@@ -49,14 +49,14 @@
           }
 
           > .tag-list {
-            @apply hidden flex-col justify-start items-start absolute top-6 left-0 mt-1 p-1 z-1 rounded w-36 max-h-52 overflow-auto font-mono bg-black;
+            @apply hidden flex-row justify-start items-start flex-wrap absolute top-6 left-0 mt-1 p-1 z-1 rounded w-52 h-auto max-h-48 overflow-y-auto font-mono shadow bg-zinc-200 dark:bg-zinc-600;
 
             > .item-container {
-              @apply w-full text-white cursor-pointer rounded text-sm leading-6 px-2 truncate hover:bg-gray-700 shrink-0;
+              @apply w-auto max-w-full truncate text-black dark:text-gray-300 cursor-pointer rounded text-sm leading-6 px-2 truncate hover:bg-zinc-300 dark:hover:bg-zinc-700 shrink-0;
             }
 
             > .tip-text {
-              @apply w-full text-sm text-gray-200 leading-6 px-2 cursor-default;
+              @apply w-auto text-sm text-gray-200 leading-6 px-2 cursor-default;
             }
           }
         }
