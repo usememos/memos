@@ -122,7 +122,7 @@ func findSystemSettingList(ctx context.Context, tx *sql.Tx, find *api.SystemSett
 	query := `
 		SELECT
 			name,
-		  value,
+		  	value,
 			description
 		FROM system_setting
 		WHERE ` + strings.Join(where, " AND ")
