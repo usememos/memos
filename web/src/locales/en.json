@@ -236,7 +236,8 @@
     "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
     "succeed-update-customized-profile": "Succeed to update customized profile",
     "succeed-update-additional-script": "Succeed to update additional script",
-    "update-succeed": "Update succeed"
+    "update-succeed": "Update succeed",
+    "page-not-found": "404 - Page Not Found 😥"
   },
   "days": {
     "monday": "Monday",

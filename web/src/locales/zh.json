@@ -236,7 +236,8 @@
     "succeed-copy-resource-link": "复制资源链接到剪贴板成功",
     "succeed-update-customized-profile": "更新自定义配置文件成功",
     "succeed-update-additional-script": "更新附加脚本成功",
-    "update-succeed": "更新成功"
+    "update-succeed": "更新成功",
+    "page-not-found": "404 - 未找到网页 😥"
   },
   "days": {
     "monday": "星期一",
