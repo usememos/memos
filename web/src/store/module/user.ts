@@ -15,7 +15,6 @@ const defaultSetting: Setting = {
 
 const defaultLocalSetting: LocalSetting = {
   enableFoldMemo: true,
-  enablePowerfulEditor: true,
   enableDoubleClickEditing: true,
 };
 
