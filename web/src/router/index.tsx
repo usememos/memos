@@ -9,6 +9,7 @@ const Explore = lazy(() => import("../pages/Explore"));
 const Home = lazy(() => import("../pages/Home"));
 const MemoDetail = lazy(() => import("../pages/MemoDetail"));
 const EmbedMemo = lazy(() => import("../pages/EmbedMemo"));
+const NotFound = lazy(() => import("../pages/NotFound"));
 
 const router = createBrowserRouter([
   {
@@ -104,6 +105,18 @@ const router = createBrowserRouter([
       try {
         await initialGlobalState();
         await initialUserState();
+      } catch (error) {
+        // do nth
+      }
+      return null;
+    },
+  },
+  {
+    path: "*",
+    element: <NotFound />,
+    loader: async () => {
+      try {
+        await initialGlobalState();
       } catch (error) {
         // do nth
       }
