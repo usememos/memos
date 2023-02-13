@@ -54,8 +54,9 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         editorRef.current?.focus();
       },
       scrollToCursor: () => {
-        editorRef.current?.blur();
-        editorRef.current?.focus();
+        if (editorRef.current) {
+          editorRef.current.scrollTop = editorRef.current.scrollHeight;
+        }
       },
       insertText: (content = "", prefix = "", suffix = "") => {
         if (!editorRef.current) {
