@@ -4,8 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useGlobalStore, useStorageStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
-import showUpdateStorageServiceDialog from "../UpdateStorageServiceDialog";
-import "../../less/settings/storage-section.less";
 
 const StorageSection = () => {
   const { t } = useTranslation();
@@ -35,29 +33,29 @@ const StorageSection = () => {
 
   const handleStorageServiceUpdate = async (event: React.MouseEvent, storage: Storage) => {
     event.preventDefault();
-    showUpdateStorageServiceDialog(storage);
+    showCreateStorageServiceDialog(storage);
   };
 
   return (
-    <div className="section-container storage-section-container">
-      <p className="title-text">{t("setting.storage-section.storage-services-list")}</p>
+    <div className="section-container">
+      <div className="mt-4 mb-2 w-full flex flex-row justify-start items-center">
+        <span className="font-mono text-sm text-gray-400 mr-2">{t("setting.storage-section.storage-services-list")}</span>
+        <button className="btn-normal px-2 py-0 leading-7" onClick={() => showCreateStorageServiceDialog()}>
+          {t("common.create")}
+        </button>
+      </div>
       {storages.map((storage) => (
-        <label className="form-label selector" key={storage.id}>
-          <span className="normal-text underline cursor-pointer" onClick={(event) => handleStorageServiceUpdate(event, storage)}>
+        <label className="w-full my-2 flex flex-row justify-between items-center" key={storage.id}>
+          <span className="mr-2 text-sm underline cursor-pointer" onClick={(event) => handleStorageServiceUpdate(event, storage)}>
             {storage.name}
           </span>
           <Radio value={storage.id} checked={storageServiceId === storage.id} onChange={handleActiveStorageServiceChanged} />
         </label>
       ))}
-      <label className="form-label selector">
-        <span className="normal-text">{t("common.database")}</span>
+      <label className="w-full my-2 flex flex-row justify-between items-center">
+        <span className="mr-2 text-sm">{t("common.database")}</span>
         <Radio value={0} checked={storageServiceId === 0} onChange={handleActiveStorageServiceChanged} />
       </label>
-      <div className="w-full flex flex-row justify-end items-center mt-2 space-x-2">
-        <button className="btn-normal" onClick={showCreateStorageServiceDialog}>
-          {t("setting.storage-section.create-a-service")}
-        </button>
-      </div>
     </div>
   );
 };
