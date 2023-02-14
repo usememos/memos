@@ -57,6 +57,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				Appearance:  "system",
 				ExternalURL: "",
 			},
+			StorageServiceID: 0,
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -64,7 +65,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
 		}
 		for _, systemSetting := range systemSettingList {
-			if systemSetting.Name == api.SystemSettingServerID || systemSetting.Name == api.SystemSettingSecretSessionName || systemSetting.Name == api.SystemSettingStorageServiceName {
+			if systemSetting.Name == api.SystemSettingServerID || systemSetting.Name == api.SystemSettingSecretSessionName {
 				continue
 			}
 
@@ -103,6 +104,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				if v := valueMap["externalUrl"]; v != nil {
 					systemStatus.CustomizedProfile.ExternalURL = v.(string)
 				}
+			} else if systemSetting.Name == api.SystemSettingStorageServiceID {
+				systemStatus.StorageServiceID = int(value.(float64))
 			}
 		}
 

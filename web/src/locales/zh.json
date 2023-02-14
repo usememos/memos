@@ -47,7 +47,8 @@
     "image": "图片",
     "link": "链接",
     "vacuum": "清理",
-    "select": "选择"
+    "select": "选择",
+    "database": "数据库"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
   "auth": {
@@ -149,6 +150,7 @@
   "setting": {
     "my-account": "我的账号",
     "preference": "偏好设置",
+    "storage": "存储设置",
     "member": "成员",
     "member-list": "成员列表",
     "system": "系统",
@@ -161,12 +163,19 @@
       "theme": "主题",
       "default-memo-visibility": "默认 Memo 可见性",
       "enable-folding-memo": "开启折叠 Memo",
-      "enable-double-click":"开启双击编辑",
+      "enable-double-click": "开启双击编辑",
       "editor-font-style": "编辑器字体样式",
       "mobile-editor-style": "移动端编辑器样式",
       "default-memo-sort-option": "Memo 显示时间",
       "created_ts": "创建时间",
       "updated_ts": "更新时间"
+    },
+    "storage-section": {
+      "storage-services-list": "存储服务列表",
+      "create-a-service": "新建服务",
+      "update-a-service": "更新服务",
+      "delete-storage": "删除存储服务",
+      "warning-text": "确定删除这个存储服务么？此操作不可逆❗"
     },
     "member-section": {
       "create-a-member": "创建成员"

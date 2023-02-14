@@ -25,8 +25,8 @@ const (
 	SystemSettingAdditionalScriptName SystemSettingName = "additionalScript"
 	// SystemSettingCustomizedProfileName is the key type of customized server profile.
 	SystemSettingCustomizedProfileName SystemSettingName = "customizedProfile"
-	// SystemSettingStorageServiceName is the key type of sotrage service name.
-	SystemSettingStorageServiceName SystemSettingName = "storageServiceName"
+	// SystemSettingStorageServiceID is the key type of sotrage service ID.
+	SystemSettingStorageServiceID SystemSettingName = "storageServiceId"
 )
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
@@ -61,8 +61,8 @@ func (key SystemSettingName) String() string {
 		return "additionalScript"
 	case SystemSettingCustomizedProfileName:
 		return "customizedProfile"
-	case SystemSettingStorageServiceName:
-		return "storageServiceName"
+	case SystemSettingStorageServiceID:
+		return "storageServiceId"
 	}
 	return ""
 }
@@ -154,7 +154,7 @@ func (upsert SystemSettingUpsert) Validate() error {
 		if !slices.Contains(UserSettingAppearanceValue, customizedProfile.Appearance) {
 			return fmt.Errorf("invalid appearance value")
 		}
-	} else if upsert.Name == SystemSettingStorageServiceName {
+	} else if upsert.Name == SystemSettingStorageServiceID {
 		return nil
 	} else {
 		return fmt.Errorf("invalid system setting name")

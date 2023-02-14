@@ -47,7 +47,8 @@
     "image": "Image",
     "link": "Link",
     "vacuum": "Vacuum",
-    "select": "Select"
+    "select": "Select",
+    "database": "Database"
   },
   "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
   "auth": {
@@ -150,6 +151,7 @@
   "setting": {
     "my-account": "My Account",
     "preference": "Preference",
+    "storage": "Storage",
     "member": "Member",
     "member-list": "Member list",
     "system": "System",
@@ -168,6 +170,13 @@
       "default-memo-sort-option": "Memo display time",
       "created_ts": "Created Time",
       "updated_ts": "Updated Time"
+    },
+    "storage-section": {
+      "storage-services-list": "Storage service list",
+      "create-a-service": "Create a service",
+      "update-a-service": "Update a service",
+      "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIABLE❗",
+      "delete-storage": "Delete Storage"
     },
     "member-section": {
       "create-a-member": "Create a member"

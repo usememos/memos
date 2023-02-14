@@ -86,12 +86,25 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		defer src.Close()
 
 		var resourceCreate *api.ResourceCreate
-		systemSettingStorageServiceName := api.SystemSettingStorageServiceName
+		systemSettingStorageServiceName := api.SystemSettingStorageServiceID
 		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: &systemSettingStorageServiceName})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
-		if common.ErrorCode(err) == common.NotFound || systemSetting.Value == "" {
+		storeLocal := false
+		if common.ErrorCode(err) == common.NotFound {
+			storeLocal = true
+		} else {
+			var value int
+			err = json.Unmarshal([]byte(systemSetting.Value), &value)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
+			}
+			if value == 0 {
+				storeLocal = true
+			}
+		}
+		if storeLocal {
 			fileBytes, err := io.ReadAll(src)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
@@ -104,7 +117,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				Blob:      fileBytes,
 			}
 		} else {
-			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{Name: &systemSetting.Value})
+			storageID, err := strconv.Atoi(systemSetting.Value)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to convert storageID").SetInternal(err)
+			}
+
+			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageID})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 			}
