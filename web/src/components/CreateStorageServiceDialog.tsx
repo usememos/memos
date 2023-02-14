@@ -2,14 +2,16 @@ import { useTranslation } from "react-i18next";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import { Button, Input, Typography } from "@mui/joy";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useStorageStore } from "../store/module";
 import toastHelper from "./Toast";
 
-type Props = DialogProps;
+interface Props extends DialogProps {
+  storage?: Storage;
+}
 
 const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
-  const { destroy } = props;
+  const { destroy, storage } = props;
   const { t } = useTranslation();
   const storageStore = useStorageStore();
   const [storageCreate, setStorageCreate] = useState<StorageCreate>({
@@ -21,6 +23,13 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     bucket: "",
     urlPrefix: "",
   });
+  const isCreating = storage === undefined;
+
+  useEffect(() => {
+    if (storage) {
+      setStorageCreate({ ...storage });
+    }
+  }, []);
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -42,7 +51,14 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
 
   const handleConfirmBtnClick = async () => {
     try {
-      await storageStore.createStorage(storageCreate);
+      if (isCreating) {
+        await storageStore.createStorage(storageCreate);
+      } else {
+        await storageStore.patchStorage({
+          id: storage.id,
+          ...storageCreate,
+        });
+      }
     } catch (error: any) {
       console.error(error);
       toastHelper.error(error.response.data.message);
@@ -109,7 +125,9 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container !w-64">
-        <p className="title-text">{t("setting.storage-section.create-a-service")}</p>
+        <p className="title-text">
+          {isCreating ? t("setting.storage-section.create-a-service") : t("setting.storage-section.update-a-service")}
+        </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
@@ -148,7 +166,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
             Cancel
           </Button>
           <Button onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
-            Create
+            {isCreating ? "Create" : "Update"}
           </Button>
         </div>
       </div>
@@ -156,13 +174,14 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-function showCreateStorageServiceDialog() {
+function showCreateStorageServiceDialog(storage?: Storage) {
   generateDialog(
     {
       className: "create-storage-service-dialog",
       dialogName: "create-storage-service-dialog",
     },
-    CreateStorageServiceDialog
+    CreateStorageServiceDialog,
+    { storage }
   );
 }
 
