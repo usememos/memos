@@ -8,22 +8,14 @@
 
 <p align="center">
   <a href="https://demo.usememos.com/">Live Demo</a> •
-  Discuss in our <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a> and <a href="https://discord.gg/tfPJa4UmAv">Discord</a>
+  Discuss in <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a> / <a href="https://discord.gg/tfPJa4UmAv">Discord</a>
 </p>
 
 ![demo](./resources/demo.webp#gh-light-mode-only)
 
 ![demo-dark](./resources/demo-dark.webp#gh-dark-mode-only)
 
-# What is memos?
-memos is an open-sourced, self-hosted memo hub featuring knowledge management and socialization. 
-memos offers a minimalistic design and is packed with notable features.
-Users can easily adjust whether their notes are public or private to other users on their instance.
-Running memos locally is as easy as running 1 Docker command!
-
-You can read more about memo [here](https://noted.lol/memos/).
-
-### Notable Features
+## Features
 
 - 🦄 Open source and free forever
 - 🚀 Support for self-hosting with `Docker` in seconds
@@ -35,9 +27,9 @@ You can read more about memo [here](https://noted.lol/memos/).
 - 📆 Interactive calendar view
 - 💾 Easy data migration and backups
 
-# 🐳 Installing with Docker
+## Deploy with Docker in seconds
 
-### Install using `docker run`
+### Docker Run
 
 ```docker
 docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/memos:latest
@@ -45,7 +37,7 @@ docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos neosmemo/mem
 
 > `~/.memos/` will be used as the data directory in your machine and `/var/opt/memos` is the directory of the volume in Docker and should not be modified.
 
-### Install using `docker compose`
+### Docker Compose
 
 - Provided docker compose YAML file: [`docker-compose.yaml`](./docker-compose.yaml).
 
@@ -60,7 +52,7 @@ docker-compose down && docker image rm neosmemo/memos:latest && docker-compose u
 - [Deploy on render.com](./docs/deploy-with-render.md)
 - [Deploy on fly.io](https://github.com/hu3rror/memos-on-fly)
 
-# 😎 Contribute
+## Contribute
 
 Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
 
@@ -91,7 +83,7 @@ Learn more about contributing in [development guide](./docs/development.md).
 
 ## License
 
-[MIT License](https://github.com/usememos/memos/blob/main/LICENSE).
+[MIT License](https://github.com/usememos/memos/blob/main/LICENSE)
 
 ## Star history
 
