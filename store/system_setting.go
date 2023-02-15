@@ -114,10 +114,7 @@ func upsertSystemSetting(ctx context.Context, tx *sql.Tx, upsert *api.SystemSett
 
 func findSystemSettingList(ctx context.Context, tx *sql.Tx, find *api.SystemSettingFind) ([]*systemSettingRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
-
-	if v := find.Name; v != nil {
-		where, args = append(where, "name = ?"), append(args, v.String())
-	}
+	where, args = append(where, "name = ?"), append(args, find.Name.String())
 
 	query := `
 		SELECT

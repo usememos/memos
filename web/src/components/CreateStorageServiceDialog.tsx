@@ -1,10 +1,11 @@
-import { useTranslation } from "react-i18next";
-import Icon from "./Icon";
-import { generateDialog } from "./Dialog";
-import { Button, Input, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Button, Input, Typography } from "@mui/joy";
 import { useStorageStore } from "../store/module";
+import { generateDialog } from "./Dialog";
+import Icon from "./Icon";
 import toastHelper from "./Toast";
+import { showCommonDialog } from "./Dialog/CommonDialog";
 
 interface Props extends DialogProps {
   storage?: Storage;
@@ -64,6 +65,28 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       toastHelper.error(error.response.data.message);
     }
     destroy();
+  };
+
+  const handleDeleteBtnClick = async () => {
+    if (isCreating) {
+      return;
+    }
+
+    showCommonDialog({
+      title: t("setting.storage-section.delete-storage"),
+      content: t("setting.storage-section.warning-text"),
+      style: "warning",
+      dialogName: "delete-storage-dialog",
+      onConfirm: async () => {
+        try {
+          await storageStore.deleteStorageById(storage.id);
+        } catch (error: any) {
+          console.error(error);
+          toastHelper.error(error.response.data.message);
+        }
+        destroy();
+      },
+    });
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -165,6 +188,11 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
             Cancel
           </Button>
+          {!isCreating && (
+            <Button color="danger" onClick={handleDeleteBtnClick}>
+              Delete
+            </Button>
+          )}
           <Button onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
             {isCreating ? "Create" : "Update"}
           </Button>

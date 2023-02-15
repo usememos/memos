@@ -45,7 +45,7 @@ func NewClient(ctx context.Context, storage *api.Storage) (*Client, error) {
 	}, nil
 }
 
-func (client *Client) UploadFile(ctx context.Context, filename string, fileType string, src io.Reader, storage *api.Storage) (*string, error) {
+func (client *Client) UploadFile(ctx context.Context, filename string, fileType string, src io.Reader, storage *api.Storage) (string, error) {
 	uploader := manager.NewUploader(client.Client)
 	resp, err := uploader.Upload(ctx, &awss3.PutObjectInput{
 		Bucket:      aws.String(client.BucketName),
@@ -55,7 +55,7 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 		ACL:         types.ObjectCannedACL(*aws.String("public-read")),
 	})
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 	var link string
 	if storage.URLPrefix == "" {
@@ -63,5 +63,5 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	} else {
 		link = fmt.Sprintf("%s/%s", storage.URLPrefix, filename)
 	}
-	return &link, nil
+	return link, nil
 }
