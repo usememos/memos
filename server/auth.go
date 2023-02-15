@@ -81,9 +81,8 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			// Change the default role to host if there is no host user.
 			userCreate.Role = api.Host
 		} else {
-			systemSettingAllowSignUpName := api.SystemSettingAllowSignUpName
 			allowSignUpSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-				Name: &systemSettingAllowSignUpName,
+				Name: api.SystemSettingAllowSignUpName,
 			})
 			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)

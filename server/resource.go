@@ -85,26 +85,20 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		defer src.Close()
 
-		var resourceCreate *api.ResourceCreate
-		systemSettingStorageServiceName := api.SystemSettingStorageServiceID
-		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: &systemSettingStorageServiceName})
+		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingStorageServiceIDName})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
-		storeLocal := false
-		if common.ErrorCode(err) == common.NotFound {
-			storeLocal = true
-		} else {
-			var value int
-			err = json.Unmarshal([]byte(systemSetting.Value), &value)
+		storageServiceID := 0
+		if systemSetting != nil {
+			err = json.Unmarshal([]byte(systemSetting.Value), &storageServiceID)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
 			}
-			if value == 0 {
-				storeLocal = true
-			}
 		}
-		if storeLocal {
+
+		var resourceCreate *api.ResourceCreate
+		if storageServiceID == 0 {
 			fileBytes, err := io.ReadAll(src)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
@@ -117,12 +111,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				Blob:      fileBytes,
 			}
 		} else {
-			storageID, err := strconv.Atoi(systemSetting.Value)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to convert storageID").SetInternal(err)
-			}
-
-			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageID})
+			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageServiceID})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 			}
@@ -136,12 +125,11 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
 			}
-
 			resourceCreate = &api.ResourceCreate{
 				CreatorID:    userID,
 				Filename:     filename,
 				Type:         filetype,
-				ExternalLink: *link,
+				ExternalLink: link,
 			}
 		}
 

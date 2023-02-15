@@ -104,8 +104,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				if v := valueMap["externalUrl"]; v != nil {
 					systemStatus.CustomizedProfile.ExternalURL = v.(string)
 				}
-			} else if systemSetting.Name == api.SystemSettingStorageServiceID {
-				systemStatus.StorageServiceID = int(value.(float64))
+			} else if systemSetting.Name == api.SystemSettingStorageServiceIDName {
+				systemStatus.StorageServiceID = value.(int)
 			}
 		}
 
@@ -209,16 +209,15 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 }
 
 func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
-	serverIDKey := api.SystemSettingServerID
 	serverIDValue, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-		Name: &serverIDKey,
+		Name: api.SystemSettingServerID,
 	})
 	if err != nil && common.ErrorCode(err) != common.NotFound {
 		return "", err
 	}
 	if serverIDValue == nil || serverIDValue.Value == "" {
 		serverIDValue, err = s.Store.UpsertSystemSetting(ctx, &api.SystemSettingUpsert{
-			Name:  serverIDKey,
+			Name:  api.SystemSettingServerID,
 			Value: uuid.NewString(),
 		})
 		if err != nil {
@@ -229,16 +228,15 @@ func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
 }
 
 func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error) {
-	secretSessionNameKey := api.SystemSettingSecretSessionName
 	secretSessionNameValue, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-		Name: &secretSessionNameKey,
+		Name: api.SystemSettingSecretSessionName,
 	})
 	if err != nil && common.ErrorCode(err) != common.NotFound {
 		return "", err
 	}
 	if secretSessionNameValue == nil || secretSessionNameValue.Value == "" {
 		secretSessionNameValue, err = s.Store.UpsertSystemSetting(ctx, &api.SystemSettingUpsert{
-			Name:  secretSessionNameKey,
+			Name:  api.SystemSettingSecretSessionName,
 			Value: uuid.NewString(),
 		})
 		if err != nil {

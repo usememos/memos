@@ -25,8 +25,8 @@ const (
 	SystemSettingAdditionalScriptName SystemSettingName = "additionalScript"
 	// SystemSettingCustomizedProfileName is the key type of customized server profile.
 	SystemSettingCustomizedProfileName SystemSettingName = "customizedProfile"
-	// SystemSettingStorageServiceID is the key type of sotrage service ID.
-	SystemSettingStorageServiceID SystemSettingName = "storageServiceId"
+	// SystemSettingStorageServiceIDName is the key type of storage service ID.
+	SystemSettingStorageServiceIDName SystemSettingName = "storageServiceId"
 )
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
@@ -61,7 +61,7 @@ func (key SystemSettingName) String() string {
 		return "additionalScript"
 	case SystemSettingCustomizedProfileName:
 		return "customizedProfile"
-	case SystemSettingStorageServiceID:
+	case SystemSettingStorageServiceIDName:
 		return "storageServiceId"
 	}
 	return ""
@@ -154,7 +154,12 @@ func (upsert SystemSettingUpsert) Validate() error {
 		if !slices.Contains(UserSettingAppearanceValue, customizedProfile.Appearance) {
 			return fmt.Errorf("invalid appearance value")
 		}
-	} else if upsert.Name == SystemSettingStorageServiceID {
+	} else if upsert.Name == SystemSettingStorageServiceIDName {
+		value := 0
+		err := json.Unmarshal([]byte(upsert.Value), &value)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal system setting storage service id value")
+		}
 		return nil
 	} else {
 		return fmt.Errorf("invalid system setting name")
@@ -164,5 +169,5 @@ func (upsert SystemSettingUpsert) Validate() error {
 }
 
 type SystemSettingFind struct {
-	Name *SystemSettingName `json:"name"`
+	Name SystemSettingName `json:"name"`
 }

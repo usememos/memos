@@ -117,6 +117,21 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("storageId"))).SetInternal(err)
 		}
 
+		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingStorageServiceIDName})
+		if err != nil && common.ErrorCode(err) != common.NotFound {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
+		}
+		if systemSetting != nil {
+			storageServiceID := 0
+			err = json.Unmarshal([]byte(systemSetting.Value), &storageServiceID)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
+			}
+			if storageServiceID == storageID {
+				return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Storage service %d is using", storageID))
+			}
+		}
+
 		storage, err := s.Store.FindStorage(ctx, &api.StorageFind{
 			ID: &storageID,
 		})
