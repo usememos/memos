@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Switch, Textarea } from "@mui/joy";
+import { Button, Divider, Switch, Textarea } from "@mui/joy";
 import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
@@ -157,6 +157,11 @@ const SystemSection = () => {
         <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
       </div>
+      <div className="form-label">
+        <span className="normal-text">Storage</span>
+        <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
+      </div>
+      <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.additional-style")}</span>
         <Button onClick={handleSaveAdditionalStyle}>{t("common.save")}</Button>

@@ -64,6 +64,9 @@ export const useGlobalStore = () => {
     getState: () => {
       return store.getState().global;
     },
+    isDev: () => {
+      return state.systemStatus.profile.mode === "dev";
+    },
     fetchSystemStatus: async () => {
       const { data: systemStatus } = (await api.getSystemStatus()).data;
       store.dispatch(setGlobalState({ systemStatus: systemStatus }));
