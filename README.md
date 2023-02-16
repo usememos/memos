@@ -68,6 +68,7 @@ Learn more about contributing in [development guide](./docs/development.md).
 - [eindex/logseq-memos-sync](https://github.com/EINDEX/logseq-memos-sync) - A Logseq plugin
 - [JakeLaoyu/memos-import-from-flomo](https://github.com/JakeLaoyu/memos-import-from-flomo) - Import data. Support from flomo, wechat reading.
 - [Send to memos](https://sharecuts.cn/shortcut/12640) - A shortcut for iOS.
+- [Memos Raycast Extension](https://www.raycast.com/JakeYu/memos) - Raycast extension, [source code](https://github.com/JakeLaoyu/memos-raycast).
 
 ### User stories
 
