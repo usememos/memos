@@ -57,7 +57,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		disablePublicMemosSystemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
 			Name: api.SystemSettingDisablePublicMemosName,
 		})
-		if err != nil {
+		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 		}
 		if disablePublicMemosSystemSetting != nil {
