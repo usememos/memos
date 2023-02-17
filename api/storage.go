@@ -2,9 +2,6 @@ package api
 
 type Storage struct {
 	ID        int    `json:"id"`
-	CreatorID int    `json:"creatorId"`
-	CreatedTs int64  `json:"createdTs"`
-	UpdatedTs int64  `json:"updatedTs"`
 	Name      string `json:"name"`
 	EndPoint  string `json:"endPoint"`
 	Region    string `json:"region"`
@@ -15,7 +12,6 @@ type Storage struct {
 }
 
 type StorageCreate struct {
-	CreatorID int    `json:"creatorId"`
 	Name      string `json:"name"`
 	EndPoint  string `json:"endPoint"`
 	Region    string `json:"region"`
@@ -26,8 +22,7 @@ type StorageCreate struct {
 }
 
 type StoragePatch struct {
-	ID        int `json:"id"`
-	UpdatedTs *int64
+	ID        int     `json:"id"`
 	Name      *string `json:"name"`
 	EndPoint  *string `json:"endPoint"`
 	Region    *string `json:"region"`
@@ -38,9 +33,8 @@ type StoragePatch struct {
 }
 
 type StorageFind struct {
-	ID        *int    `json:"id"`
-	Name      *string `json:"name"`
-	CreatorID *int    `json:"creatorId"`
+	ID   *int    `json:"id"`
+	Name *string `json:"name"`
 }
 
 type StorageDelete struct {

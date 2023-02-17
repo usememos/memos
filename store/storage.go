@@ -12,9 +12,6 @@ import (
 
 type storageRaw struct {
 	ID        int
-	CreatorID int
-	CreatedTs int64
-	UpdatedTs int64
 	Name      string
 	EndPoint  string
 	Region    string
@@ -27,9 +24,6 @@ type storageRaw struct {
 func (raw *storageRaw) toStorage() *api.Storage {
 	return &api.Storage{
 		ID:        raw.ID,
-		CreatorID: raw.CreatorID,
-		CreatedTs: raw.CreatedTs,
-		UpdatedTs: raw.UpdatedTs,
 		Name:      raw.Name,
 		EndPoint:  raw.EndPoint,
 		Region:    raw.Region,
@@ -137,23 +131,20 @@ func (s *Store) DeleteStorage(ctx context.Context, delete *api.StorageDelete) er
 }
 
 func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate) (*storageRaw, error) {
-	set := []string{"creator_id", "name", "end_point", "region", "access_key", "secret_key", "bucket", "url_prefix"}
-	args := []interface{}{create.CreatorID, create.Name, create.EndPoint, create.Region, create.AccessKey, create.SecretKey, create.Bucket, create.URLPrefix}
-	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?"}
+	set := []string{"name", "end_point", "region", "access_key", "secret_key", "bucket", "url_prefix"}
+	args := []interface{}{create.Name, create.EndPoint, create.Region, create.AccessKey, create.SecretKey, create.Bucket, create.URLPrefix}
+	placeholder := []string{"?", "?", "?", "?", "?", "?", "?"}
 
 	query := `
 		INSERT INTO storage (
 			` + strings.Join(set, ", ") + `
 		)
 		VALUES (` + strings.Join(placeholder, ",") + `)
-		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, region, access_key, secret_key, bucket, url_prefix
+		RETURNING id, name, end_point, region, access_key, secret_key, bucket, url_prefix
 	`
 	var storageRaw storageRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
 		&storageRaw.ID,
-		&storageRaw.CreatorID,
-		&storageRaw.CreatedTs,
-		&storageRaw.UpdatedTs,
 		&storageRaw.Name,
 		&storageRaw.EndPoint,
 		&storageRaw.Region,
@@ -170,9 +161,6 @@ func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate
 
 func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (*storageRaw, error) {
 	set, args := []string{}, []interface{}{}
-	if v := patch.UpdatedTs; v != nil {
-		set, args = append(set, "updated_ts = ?"), append(args, *v)
-	}
 	if v := patch.Name; v != nil {
 		set, args = append(set, "name = ?"), append(args, *v)
 	}
@@ -201,15 +189,12 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 		UPDATE storage
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, creator_id, created_ts, updated_ts, name, end_point, region, access_key, secret_key, bucket, url_prefix
+		RETURNING id, name, end_point, region, access_key, secret_key, bucket, url_prefix
 	`
 
 	var storageRaw storageRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
 		&storageRaw.ID,
-		&storageRaw.CreatorID,
-		&storageRaw.CreatedTs,
-		&storageRaw.UpdatedTs,
 		&storageRaw.Name,
 		&storageRaw.EndPoint,
 		&storageRaw.Region,
@@ -233,15 +218,10 @@ func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) 
 	if v := find.Name; v != nil {
 		where, args = append(where, "name = ?"), append(args, *v)
 	}
-	if v := find.CreatorID; v != nil {
-		where, args = append(where, "creator_id = ?"), append(args, *v)
-	}
 
 	query := `
 		SELECT
 			id, 
-			creator_id, 
-			created_ts, 
 			name, 
 			end_point, 
 			region,
@@ -251,7 +231,7 @@ func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) 
 			url_prefix
 		FROM storage
 		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY created_ts DESC
+		ORDER BY id DESC
 	`
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -264,8 +244,6 @@ func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) 
 		var storageRaw storageRaw
 		if err := rows.Scan(
 			&storageRaw.ID,
-			&storageRaw.CreatorID,
-			&storageRaw.CreatedTs,
 			&storageRaw.Name,
 			&storageRaw.EndPoint,
 			&storageRaw.Region,

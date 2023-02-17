@@ -107,9 +107,6 @@ CREATE TABLE activity (
 -- storage
 CREATE TABLE storage (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  creator_id INTEGER NOT NULL,
-  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   name TEXT NOT NULL DEFAULT '' UNIQUE,
   end_point TEXT NOT NULL DEFAULT '',
   region TEXT NOT NULL DEFAULT '',
