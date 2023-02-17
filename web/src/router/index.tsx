@@ -11,16 +11,28 @@ const MemoDetail = lazy(() => import("../pages/MemoDetail"));
 const EmbedMemo = lazy(() => import("../pages/EmbedMemo"));
 const NotFound = lazy(() => import("../pages/NotFound"));
 
+const initialGlobalStateLoader = (() => {
+  let done = false;
+
+  return async () => {
+    if (done) {
+      return;
+    }
+    done = true;
+    try {
+      await initialGlobalState();
+    } catch (error) {
+      // do nth
+    }
+  };
+})();
+
 const router = createBrowserRouter([
   {
     path: "/auth",
     element: <Auth />,
     loader: async () => {
-      try {
-        await initialGlobalState();
-      } catch (error) {
-        // do nth
-      }
+      await initialGlobalStateLoader();
       return null;
     },
   },
@@ -28,8 +40,9 @@ const router = createBrowserRouter([
     path: "/",
     element: <Home />,
     loader: async () => {
+      await initialGlobalStateLoader();
+
       try {
-        await initialGlobalState();
         await initialUserState();
       } catch (error) {
         // do nth
@@ -48,8 +61,9 @@ const router = createBrowserRouter([
     path: "/u/:userId",
     element: <Home />,
     loader: async () => {
+      await initialGlobalStateLoader();
+
       try {
-        await initialGlobalState();
         await initialUserState();
       } catch (error) {
         // do nth
@@ -66,8 +80,9 @@ const router = createBrowserRouter([
     path: "/explore",
     element: <Explore />,
     loader: async () => {
+      await initialGlobalStateLoader();
+
       try {
-        await initialGlobalState();
         await initialUserState();
       } catch (error) {
         // do nth
@@ -84,8 +99,9 @@ const router = createBrowserRouter([
     path: "/m/:memoId",
     element: <MemoDetail />,
     loader: async () => {
+      await initialGlobalStateLoader();
+
       try {
-        await initialGlobalState();
         await initialUserState();
       } catch (error) {
         // do nth
@@ -102,8 +118,9 @@ const router = createBrowserRouter([
     path: "/m/:memoId/embed",
     element: <EmbedMemo />,
     loader: async () => {
+      await initialGlobalStateLoader();
+
       try {
-        await initialGlobalState();
         await initialUserState();
       } catch (error) {
         // do nth
@@ -115,11 +132,7 @@ const router = createBrowserRouter([
     path: "*",
     element: <NotFound />,
     loader: async () => {
-      try {
-        await initialGlobalState();
-      } catch (error) {
-        // do nth
-      }
+      await initialGlobalStateLoader();
       return null;
     },
   },
