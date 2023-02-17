@@ -47,12 +47,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		if err := s.createUserAuthSignInActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(user))
 	})
 
 	g.POST("/auth/signup", func(c echo.Context) error {
@@ -122,12 +117,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set signup session").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode created user response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(user))
 	})
 
 	g.POST("/auth/signout", func(c echo.Context) error {
@@ -146,7 +136,7 @@ func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) er
 		UserID: user.ID,
 		IP:     echo.ExtractIPFromRealIPHeader()(c.Request()),
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -154,7 +144,7 @@ func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) er
 		CreatorID: user.ID,
 		Type:      api.ActivityUserAuthSignIn,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")
@@ -171,7 +161,7 @@ func (s *Server) createUserAuthSignUpActivity(c echo.Context, user *api.User) er
 		Username: user.Username,
 		IP:       echo.ExtractIPFromRealIPHeader()(c.Request()),
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -179,7 +169,7 @@ func (s *Server) createUserAuthSignUpActivity(c echo.Context, user *api.User) er
 		CreatorID: user.ID,
 		Type:      api.ActivityUserAuthSignUp,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")

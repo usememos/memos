@@ -38,12 +38,7 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create storage").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(storage)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode storage response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(storage))
 	})
 
 	g.PATCH("/storage/:storageId", func(c echo.Context) error {
@@ -79,12 +74,7 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch storage").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(storage)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(storage))
 	})
 
 	g.GET("/storage", func(c echo.Context) error {
@@ -109,12 +99,7 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage list").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(storageList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode storage list response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(storageList))
 	})
 
 	g.DELETE("/storage/:storageId", func(c echo.Context) error {
@@ -160,7 +145,6 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			}
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete storage").SetInternal(err)
 		}
-
 		return c.JSON(http.StatusOK, true)
 	})
 }

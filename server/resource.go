@@ -49,12 +49,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err := s.createResourceCreateActivity(c, resource); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(resource))
 	})
 
 	g.POST("/resource/blob", func(c echo.Context) error {
@@ -140,12 +135,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err := s.createResourceCreateActivity(c, resource); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(resource))
 	})
 
 	g.GET("/resource", func(c echo.Context) error {
@@ -171,12 +161,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 			resource.LinkedMemoAmount = len(memoResourceList)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource list response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(list))
 	})
 
 	g.GET("/resource/:resourceId", func(c echo.Context) error {
@@ -199,12 +184,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(resource))
 	})
 
 	g.GET("/resource/:resourceId/blob", func(c echo.Context) error {
@@ -227,7 +207,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
-
 		return c.Stream(http.StatusOK, resource.Type, bytes.NewReader(resource.Blob))
 	})
 
@@ -267,12 +246,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(resource))
 	})
 
 	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
@@ -307,7 +281,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 		}
-
 		return c.JSON(http.StatusOK, true)
 	})
 }
@@ -353,7 +326,7 @@ func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Reso
 		Type:     resource.Type,
 		Size:     resource.Size,
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -361,7 +334,7 @@ func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Reso
 		CreatorID: resource.CreatorID,
 		Type:      api.ActivityResourceCreate,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")

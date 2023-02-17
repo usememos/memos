@@ -45,6 +45,7 @@ type User struct {
 	Nickname        string         `json:"nickname"`
 	PasswordHash    string         `json:"-"`
 	OpenID          string         `json:"openId"`
+	AvatarURL       string         `json:"avatarUrl"`
 	UserSettingList []*UserSetting `json:"userSettingList"`
 }
 
@@ -55,6 +56,7 @@ type UserCreate struct {
 	Email        string `json:"email"`
 	Nickname     string `json:"nickname"`
 	Password     string `json:"password"`
+	AvatarURL    string `json:"avatarUrl"`
 	PasswordHash string
 	OpenID       string
 }
@@ -94,6 +96,7 @@ type UserPatch struct {
 	Nickname     *string `json:"nickname"`
 	Password     *string `json:"password"`
 	ResetOpenID  *bool   `json:"resetOpenId"`
+	AvatarURL    *string `json:"avatarUrl"`
 	PasswordHash *string
 	OpenID       *string
 }

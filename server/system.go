@@ -15,13 +15,7 @@ import (
 
 func (s *Server) registerSystemRoutes(g *echo.Group) {
 	g.GET("/ping", func(c echo.Context) error {
-		data := s.Profile
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(data)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose system profile").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(s.Profile))
 	})
 
 	g.GET("/status", func(c echo.Context) error {
@@ -126,12 +120,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				systemStatus.DBSize = fi.Size()
 			}
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(systemStatus)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode system status response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(systemStatus))
 	})
 
 	g.POST("/system/setting", func(c echo.Context) error {
@@ -163,12 +152,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(systemSetting)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode system setting response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(systemSetting))
 	})
 
 	g.GET("/system/setting", func(c echo.Context) error {
@@ -177,12 +161,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(systemSettingList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode system setting list response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(systemSettingList))
 	})
 
 	g.POST("/system/vacuum", func(c echo.Context) error {
@@ -203,8 +182,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		if err := s.Store.Vacuum(ctx); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to vacuum database").SetInternal(err)
 		}
-		c.Response().WriteHeader(http.StatusOK)
-		return nil
+		return c.JSON(http.StatusOK, true)
 	})
 }
 

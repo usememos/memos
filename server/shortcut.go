@@ -34,12 +34,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if err := s.createShortcutCreateActivity(c, shortcut); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(shortcut))
 	})
 
 	g.PATCH("/shortcut/:shortcutId", func(c echo.Context) error {
@@ -77,12 +72,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch shortcut").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(shortcut))
 	})
 
 	g.GET("/shortcut", func(c echo.Context) error {
@@ -99,12 +89,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch shortcut list").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut list response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(list))
 	})
 
 	g.GET("/shortcut/:shortcutId", func(c echo.Context) error {
@@ -121,12 +106,7 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch shortcut by ID %d", *shortcutFind.ID)).SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(shortcut)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode shortcut response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(shortcut))
 	})
 
 	g.DELETE("/shortcut/:shortcutId", func(c echo.Context) error {
@@ -160,7 +140,6 @@ func (s *Server) registerShortcutRoutes(g *echo.Group) {
 			}
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete shortcut").SetInternal(err)
 		}
-
 		return c.JSON(http.StatusOK, true)
 	})
 }
@@ -171,7 +150,7 @@ func (s *Server) createShortcutCreateActivity(c echo.Context, shortcut *api.Shor
 		Title:   shortcut.Title,
 		Payload: shortcut.Payload,
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -179,7 +158,7 @@ func (s *Server) createShortcutCreateActivity(c echo.Context, shortcut *api.Shor
 		CreatorID: shortcut.CreatorID,
 		Type:      api.ActivityShortcutCreate,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")
