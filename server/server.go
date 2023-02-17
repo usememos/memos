@@ -150,7 +150,7 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 		ServerID: s.ID,
 		Profile:  s.Profile,
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -158,7 +158,7 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 		CreatorID: api.UnknownID,
 		Type:      api.ActivityServerStart,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")

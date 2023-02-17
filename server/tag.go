@@ -39,12 +39,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		if err := s.createTagCreateActivity(c, tag); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tag.Name)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode tag response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(tag.Name))
 	})
 
 	g.GET("/tag", func(c echo.Context) error {
@@ -66,12 +61,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		for _, tag := range tagList {
 			tagNameList = append(tagNameList, tag.Name)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tagNameList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode tags response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(tagNameList))
 	})
 
 	g.GET("/tag/suggestion", func(c echo.Context) error {
@@ -118,12 +108,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			tagList = append(tagList, tag)
 		}
 		sort.Strings(tagList)
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tagList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode tags response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(tagList))
 	})
 
 	g.POST("/tag/delete", func(c echo.Context) error {
@@ -148,7 +133,6 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			}
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete tag name: %v", tagDelete.Name)).SetInternal(err)
 		}
-
 		return c.JSON(http.StatusOK, true)
 	})
 }
@@ -176,7 +160,7 @@ func (s *Server) createTagCreateActivity(c echo.Context, tag *api.Tag) error {
 	payload := api.ActivityTagCreatePayload{
 		TagName: tag.Name,
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -184,7 +168,7 @@ func (s *Server) createTagCreateActivity(c echo.Context, tag *api.Tag) error {
 		CreatorID: tag.CreatorID,
 		Type:      api.ActivityTagCreate,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")

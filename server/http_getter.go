@@ -1,7 +1,6 @@
 package server
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -24,12 +23,7 @@ func registerGetterPublicRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusNotAcceptable, fmt.Sprintf("Failed to get website meta with url: %s", urlStr)).SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(htmlMeta)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode website HTML meta").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(htmlMeta))
 	})
 
 	g.GET("/get/image", func(c echo.Context) error {
