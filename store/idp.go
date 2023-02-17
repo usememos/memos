@@ -18,7 +18,7 @@ const (
 
 type IdentityProviderConfig interface{}
 
-type OAuth2IdentityProviderConfig struct {
+type IdentityProviderOAuth2Config struct {
 	ClientID     string        `json:"clientId"`
 	ClientSecret string        `json:"clientSecret"`
 	AuthURL      string        `json:"authUrl"`
@@ -48,6 +48,7 @@ type FindIdentityProviderMessage struct {
 
 type UpdateIdentityProviderMessage struct {
 	ID               int
+	Type             IdentityProvideType
 	Name             *string
 	IdentifierFilter *string
 	Config           *IdentityProviderConfig
@@ -64,9 +65,14 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProv
 	}
 	defer tx.Rollback()
 
-	configBytes, err := json.Marshal(create.Config)
-	if err != nil {
-		return nil, err
+	var configBytes []byte
+	if create.Type == IdentityProviderOAuth2 {
+		configBytes, err = json.Marshal(any(create.Config).(*IdentityProviderOAuth2Config))
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, fmt.Errorf("unsupported idp type %s", string(create.Type))
 	}
 	query := `
 		INSERT INTO idp (
@@ -145,9 +151,14 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 		set, args = append(set, "identifier_filter = ?"), append(args, *v)
 	}
 	if v := update.Config; v != nil {
-		configBytes, err := json.Marshal(update.Config)
-		if err != nil {
-			return nil, err
+		var configBytes []byte
+		if update.Type == IdentityProviderOAuth2 {
+			configBytes, err = json.Marshal(any(update.Config).(*IdentityProviderOAuth2Config))
+			if err != nil {
+				return nil, err
+			}
+		} else {
+			return nil, fmt.Errorf("unsupported idp type %s", string(update.Type))
 		}
 		set, args = append(set, "config = ?"), append(args, string(configBytes))
 	}
@@ -171,7 +182,7 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 		return nil, FormatError(err)
 	}
 	if identityProviderMessage.Type == IdentityProviderOAuth2 {
-		if err := json.Unmarshal([]byte(identityProviderConfig), identityProviderMessage.Config); err != nil {
+		if err := json.Unmarshal([]byte(identityProviderConfig), any(identityProviderMessage.Config).(*IdentityProviderOAuth2Config)); err != nil {
 			return nil, err
 		}
 	} else {
@@ -241,7 +252,7 @@ func listIdentityProviders(ctx context.Context, tx *sql.Tx, find *FindIdentityPr
 			return nil, FormatError(err)
 		}
 		if identityProviderMessage.Type == IdentityProviderOAuth2 {
-			if err := json.Unmarshal([]byte(identityProviderConfig), identityProviderMessage.Config); err != nil {
+			if err := json.Unmarshal([]byte(identityProviderConfig), any(identityProviderMessage.Config).(*IdentityProviderOAuth2Config)); err != nil {
 				return nil, err
 			}
 		} else {
