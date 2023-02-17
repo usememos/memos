@@ -2,9 +2,6 @@ type StorageId = number;
 
 interface Storage {
   id: StorageId;
-  creatorId: UserId;
-  createdTs: TimeStamp;
-  updatedTs: TimeStamp;
   name: string;
   endPoint: string;
   region: string;

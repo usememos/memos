@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
@@ -35,7 +34,6 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post storage request").SetInternal(err)
 		}
 
-		storageCreate.CreatorID = userID
 		storage, err := s.Store.CreateStorage(ctx, storageCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create storage").SetInternal(err)
@@ -55,31 +53,29 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
+		user, err := s.Store.FindUser(ctx, &api.UserFind{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil || user.Role != api.Host {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
 		storageID, err := strconv.Atoi(c.Param("storageId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("storageId"))).SetInternal(err)
 		}
 
-		storage, err := s.Store.FindStorage(ctx, &api.StorageFind{
-			ID: &storageID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
-		}
-		if storage.CreatorID != userID {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
-
-		currentTs := time.Now().Unix()
 		storagePatch := &api.StoragePatch{
-			ID:        storageID,
-			UpdatedTs: &currentTs,
+			ID: storageID,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(storagePatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch storage request").SetInternal(err)
 		}
 
-		storage, err = s.Store.PatchStorage(ctx, storagePatch)
+		storage, err := s.Store.PatchStorage(ctx, storagePatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch storage").SetInternal(err)
 		}
@@ -93,6 +89,22 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 
 	g.GET("/storage", func(c echo.Context) error {
 		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		user, err := s.Store.FindUser(ctx, &api.UserFind{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		// We should only show storage list to host user.
+		if user == nil || user.Role != api.Host {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
 		storageList, err := s.Store.FindStorageList(ctx, &api.StorageFind{})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage list").SetInternal(err)
@@ -110,6 +122,16 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		user, err := s.Store.FindUser(ctx, &api.UserFind{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil || user.Role != api.Host {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
 		storageID, err := strconv.Atoi(c.Param("storageId"))
@@ -132,21 +154,7 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			}
 		}
 
-		storage, err := s.Store.FindStorage(ctx, &api.StorageFind{
-			ID: &storageID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
-		}
-		if storage.CreatorID != userID {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
-
-		storageDelete := &api.StorageDelete{
-			ID: storageID,
-		}
-
-		if err = s.Store.DeleteStorage(ctx, storageDelete); err != nil {
+		if err = s.Store.DeleteStorage(ctx, &api.StorageDelete{ID: storageID}); err != nil {
 			if common.ErrorCode(err) == common.NotFound {
 				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Storage ID not found: %d", storageID))
 			}
