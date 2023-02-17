@@ -115,3 +115,12 @@ CREATE TABLE storage (
   bucket TEXT NOT NULL DEFAULT '',
   url_prefix TEXT NOT NULL DEFAULT ''
 );
+
+-- idp
+CREATE TABLE idp (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL DEFAULT '',
+  type TEXT NOT NULL,
+  identifier_filter TEXT NOT NULL DEFAULT '',
+  config TEXT NOT NULL DEFAULT '{}'
+);
