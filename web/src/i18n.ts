@@ -52,7 +52,7 @@ i18n.use(initReactI18next).init({
       translation: hantLocale,
     },
   },
-  lng: "nl",
+  lng: "en",
   fallbackLng: "en",
 });
 

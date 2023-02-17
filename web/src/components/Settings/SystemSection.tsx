@@ -157,10 +157,6 @@ const SystemSection = () => {
         <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
       </div>
-      <div className="form-label">
-        <span className="normal-text">Storage</span>
-        <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
-      </div>
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.additional-style")}</span>
