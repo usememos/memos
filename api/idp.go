@@ -6,7 +6,9 @@ const (
 	IdentityProviderOAuth2 IdentityProviderType = "OAUTH2"
 )
 
-type IdentityProviderConfig interface{}
+type IdentityProviderConfig struct {
+	OAuth2Config *IdentityProviderOAuth2Config `json:"oauth2Config"`
+}
 
 type IdentityProviderOAuth2Config struct {
 	ClientID     string        `json:"clientId"`

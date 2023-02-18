@@ -16,7 +16,9 @@ const (
 	IdentityProviderOAuth2 IdentityProviderType = "OAUTH2"
 )
 
-type IdentityProviderConfig interface{}
+type IdentityProviderConfig struct {
+	OAuth2Config *IdentityProviderOAuth2Config
+}
 
 type IdentityProviderOAuth2Config struct {
 	ClientID     string        `json:"clientId"`
@@ -67,7 +69,7 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProv
 
 	var configBytes []byte
 	if create.Type == IdentityProviderOAuth2 {
-		configBytes, err = json.Marshal(any(create.Config).(*IdentityProviderOAuth2Config))
+		configBytes, err = json.Marshal(create.Config.OAuth2Config)
 		if err != nil {
 			return nil, err
 		}
@@ -153,7 +155,7 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 	if v := update.Config; v != nil {
 		var configBytes []byte
 		if update.Type == IdentityProviderOAuth2 {
-			configBytes, err = json.Marshal(any(update.Config).(*IdentityProviderOAuth2Config))
+			configBytes, err = json.Marshal(update.Config.OAuth2Config)
 			if err != nil {
 				return nil, err
 			}
@@ -182,8 +184,12 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 		return nil, FormatError(err)
 	}
 	if identityProviderMessage.Type == IdentityProviderOAuth2 {
-		if err := json.Unmarshal([]byte(identityProviderConfig), any(identityProviderMessage.Config).(*IdentityProviderOAuth2Config)); err != nil {
+		oauth2Config := &IdentityProviderOAuth2Config{}
+		if err := json.Unmarshal([]byte(identityProviderConfig), oauth2Config); err != nil {
 			return nil, err
+		}
+		identityProviderMessage.Config = &IdentityProviderConfig{
+			OAuth2Config: oauth2Config,
 		}
 	} else {
 		return nil, fmt.Errorf("unsupported idp type %s", string(identityProviderMessage.Type))
@@ -252,8 +258,12 @@ func listIdentityProviders(ctx context.Context, tx *sql.Tx, find *FindIdentityPr
 			return nil, FormatError(err)
 		}
 		if identityProviderMessage.Type == IdentityProviderOAuth2 {
-			if err := json.Unmarshal([]byte(identityProviderConfig), any(identityProviderMessage.Config).(*IdentityProviderOAuth2Config)); err != nil {
+			oauth2Config := &IdentityProviderOAuth2Config{}
+			if err := json.Unmarshal([]byte(identityProviderConfig), oauth2Config); err != nil {
 				return nil, err
+			}
+			identityProviderMessage.Config = &IdentityProviderConfig{
+				OAuth2Config: oauth2Config,
 			}
 		} else {
 			return nil, fmt.Errorf("unsupported idp type %s", string(identityProviderMessage.Type))
