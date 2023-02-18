@@ -222,6 +222,22 @@ export function deleteStorage(storageId: StorageId) {
   return axios.delete(`/api/storage/${storageId}`);
 }
 
+export function getIdentityProviderList() {
+  return axios.get<ResponseObject<IdentityProvider[]>>(`/api/idp`);
+}
+
+export function createIdentityProvider(identityProviderCreate: IdentityProviderCreate) {
+  return axios.post<ResponseObject<IdentityProvider>>(`/api/idp`, identityProviderCreate);
+}
+
+export function patchIdentityProvider(identityProviderPatch: IdentityProviderPatch) {
+  return axios.patch<ResponseObject<IdentityProvider>>(`/api/idp/${identityProviderPatch.id}`, identityProviderPatch);
+}
+
+export function deleteIdentityProvider(id: IdentityProviderId) {
+  return axios.delete(`/api/idp/${id}`);
+}
+
 export async function getRepoStarCount() {
   const { data } = await axios.get(`https://api.github.com/repos/usememos/memos`, {
     headers: {

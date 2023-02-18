@@ -3,17 +3,18 @@ import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
+import BetaBadge from "./BetaBadge";
 import MyAccountSection from "./Settings/MyAccountSection";
 import PreferencesSection from "./Settings/PreferencesSection";
 import MemberSection from "./Settings/MemberSection";
 import SystemSection from "./Settings/SystemSection";
 import StorageSection from "./Settings/StorageSection";
-import BetaBadge from "./BetaBadge";
+import SSOSection from "./Settings/SSOSection";
 import "../less/setting-dialog.less";
 
 type Props = DialogProps;
 
-type SettingSection = "my-account" | "preferences" | "storage" | "member" | "system";
+type SettingSection = "my-account" | "preferences" | "member" | "system" | "storage" | "sso";
 
 interface State {
   selectedSection: SettingSection;
@@ -47,13 +48,13 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
             onClick={() => handleSectionSelectorItemClick("my-account")}
             className={`section-item ${state.selectedSection === "my-account" ? "selected" : ""}`}
           >
-            <span className="icon-text">🤠</span> {t("setting.my-account")}
+            <Icon.User className="w-4 h-auto mr-2 opacity-80" /> {t("setting.my-account")}
           </span>
           <span
             onClick={() => handleSectionSelectorItemClick("preferences")}
             className={`section-item ${state.selectedSection === "preferences" ? "selected" : ""}`}
           >
-            <span className="icon-text">🏟</span> {t("setting.preference")}
+            <Icon.Cog className="w-4 h-auto mr-2 opacity-80" /> {t("setting.preference")}
           </span>
         </div>
         {user?.role === "HOST" ? (
@@ -64,20 +65,28 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
                 onClick={() => handleSectionSelectorItemClick("member")}
                 className={`section-item ${state.selectedSection === "member" ? "selected" : ""}`}
               >
-                <span className="icon-text">👤</span> {t("setting.member")}
+                <Icon.Users className="w-4 h-auto mr-2 opacity-80" /> {t("setting.member")}
               </span>
               <span
                 onClick={() => handleSectionSelectorItemClick("system")}
                 className={`section-item ${state.selectedSection === "system" ? "selected" : ""}`}
               >
-                <span className="icon-text">🛠️</span> {t("setting.system")}
+                <Icon.Settings2 className="w-4 h-auto mr-2 opacity-80" /> {t("setting.system")}
               </span>
               {globalStore.isDev() && (
                 <span
                   onClick={() => handleSectionSelectorItemClick("storage")}
                   className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
                 >
-                  <span className="icon-text">💾</span> {t("setting.storage")} <BetaBadge />
+                  <Icon.Database className="w-4 h-auto mr-2 opacity-80" /> {t("setting.storage")} <BetaBadge />
+                </span>
+              )}
+              {globalStore.isDev() && (
+                <span
+                  onClick={() => handleSectionSelectorItemClick("sso")}
+                  className={`section-item ${state.selectedSection === "sso" ? "selected" : ""}`}
+                >
+                  <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> SSO <BetaBadge />
                 </span>
               )}
             </div>
@@ -89,12 +98,14 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
           <MyAccountSection />
         ) : state.selectedSection === "preferences" ? (
           <PreferencesSection />
-        ) : state.selectedSection === "storage" ? (
-          <StorageSection />
         ) : state.selectedSection === "member" ? (
           <MemberSection />
         ) : state.selectedSection === "system" ? (
           <SystemSection />
+        ) : state.selectedSection === "storage" ? (
+          <StorageSection />
+        ) : state.selectedSection === "sso" ? (
+          <SSOSection />
         ) : null}
       </div>
     </div>
