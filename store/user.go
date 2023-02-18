@@ -182,10 +182,9 @@ func createUser(ctx context.Context, tx *sql.Tx, create *api.UserCreate) (*userR
 			email,
 			nickname,
 			password_hash,
-			open_id,
-			avatar_url
+			open_id
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?)
 		RETURNING id, username, role, email, nickname, password_hash, open_id, avatar_url, created_ts, updated_ts, row_status
 	`
 	var userRaw userRaw
@@ -196,7 +195,6 @@ func createUser(ctx context.Context, tx *sql.Tx, create *api.UserCreate) (*userR
 		create.Nickname,
 		create.PasswordHash,
 		create.OpenID,
-		create.AvatarURL,
 	).Scan(
 		&userRaw.ID,
 		&userRaw.Username,

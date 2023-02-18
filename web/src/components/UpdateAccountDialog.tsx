@@ -64,8 +64,6 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
         console.error(error);
         toastHelper.error(`Failed to convert image to base64`);
       }
-    } else {
-      toastHelper.error("Image not found");
     }
   };
 

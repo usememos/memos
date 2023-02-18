@@ -32,20 +32,32 @@ const Sidebar = () => {
       <aside className="sidebar-wrapper">
         <UserBanner />
         <UsageHeatMap />
-        <div className="action-btns-container">
-          <button className="btn action-btn" onClick={() => showDailyReviewDialog()}>
-            <span className="icon">📅</span> {t("sidebar.daily-review")}
+        <div className="w-full px-2 my-2 flex flex-col justify-start items-start shrink-0">
+          <button
+            className="leading-10 px-4 rounded-lg text-base dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+            onClick={() => showDailyReviewDialog()}
+          >
+            <span className="mr-1">📅</span> {t("sidebar.daily-review")}
           </button>
-          <Link to="/explore" className="btn action-btn">
-            <span className="icon">🏂</span> {t("common.explore")}
+          <Link
+            to="/explore"
+            className="leading-10 px-4 rounded-lg text-base dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+          >
+            <span className="mr-1">🏂</span> {t("common.explore")}
           </Link>
-          <button className="btn action-btn" onClick={() => showResourcesDialog()}>
-            <span className="icon">🗂️</span> {t("sidebar.resources")}
+          <button
+            className="leading-10 px-4 rounded-lg text-base dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+            onClick={() => showResourcesDialog()}
+          >
+            <span className="mr-1">🗂️</span> {t("sidebar.resources")}
           </button>
           {!userStore.isVisitorMode() && (
             <>
-              <button className="btn action-btn" onClick={handleSettingBtnClick}>
-                <span className="icon">⚙️</span> {t("sidebar.setting")}
+              <button
+                className="leading-10 px-4 rounded-lg text-base dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+                onClick={handleSettingBtnClick}
+              >
+                <span className="mr-1">⚙️</span> {t("sidebar.setting")}
               </button>
             </>
           )}
