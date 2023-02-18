@@ -188,7 +188,7 @@ func getRSSItemTitle(content string) string {
 	return title
 }
 
-func getRssItemDescription(content string) string {
+func getRSSItemDescription(content string) string {
 	var description string
 	if isTitleDefined(content) {
 		var firstLineEnd = strings.Index(content, "\n")
