@@ -10,10 +10,10 @@ import (
 	"github.com/usememos/memos/common"
 )
 
-type IdentityProvideType string
+type IdentityProviderType string
 
 const (
-	IdentityProviderOAuth2 IdentityProvideType = "OAUTH2"
+	IdentityProviderOAuth2 IdentityProviderType = "OAUTH2"
 )
 
 type IdentityProviderConfig interface{}
@@ -29,15 +29,15 @@ type IdentityProviderOAuth2Config struct {
 }
 
 type FieldMapping struct {
-	Identifier  string
-	DisplayName string
-	Email       string
+	Identifier  string `json:"identifier"`
+	DisplayName string `json:"displayName"`
+	Email       string `json:"email"`
 }
 
 type IdentityProviderMessage struct {
 	ID               int
 	Name             string
-	Type             IdentityProvideType
+	Type             IdentityProviderType
 	IdentifierFilter string
 	Config           *IdentityProviderConfig
 }
@@ -48,7 +48,7 @@ type FindIdentityProviderMessage struct {
 
 type UpdateIdentityProviderMessage struct {
 	ID               int
-	Type             IdentityProvideType
+	Type             IdentityProviderType
 	Name             *string
 	IdentifierFilter *string
 	Config           *IdentityProviderConfig
