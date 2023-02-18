@@ -56,7 +56,6 @@ type UserCreate struct {
 	Email        string `json:"email"`
 	Nickname     string `json:"nickname"`
 	Password     string `json:"password"`
-	AvatarURL    string `json:"avatarUrl"`
 	PasswordHash string
 	OpenID       string
 }
@@ -111,7 +110,12 @@ func (patch UserPatch) Validate() error {
 	if patch.Nickname != nil && len(*patch.Nickname) > 64 {
 		return fmt.Errorf("nickname is too long, maximum length is 64")
 	}
-	if patch.Email != nil {
+	if patch.AvatarURL != nil {
+		if len(*patch.AvatarURL) > 2<<20 {
+			return fmt.Errorf("avatar is too large, maximum is 2MB")
+		}
+	}
+	if patch.Email != nil && *patch.Email != "" {
 		if len(*patch.Email) > 256 {
 			return fmt.Errorf("email is too long, maximum length is 256")
 		}
