@@ -35,16 +35,16 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post identity provider request").SetInternal(err)
 		}
 
-		identityProvider, err := s.Store.CreateIdentityProvider(ctx, &store.IdentityProviderMessage{
+		identityProviderMessage, err := s.Store.CreateIdentityProvider(ctx, &store.IdentityProviderMessage{
 			Name:             identityProviderCreate.Name,
 			Type:             store.IdentityProviderType(identityProviderCreate.Type),
 			IdentifierFilter: identityProviderCreate.IdentifierFilter,
-			Config:           (*store.IdentityProviderConfig)(identityProviderCreate.Config),
+			Config:           convertIdentityProviderConfigToStore(identityProviderCreate.Config),
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(identityProvider))
+		return c.JSON(http.StatusOK, composeResponse(convertIdentityProviderFromStore(identityProviderMessage)))
 	})
 
 	g.PATCH("/idp/:idpId", func(c echo.Context) error {
@@ -76,17 +76,17 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch identity provider request").SetInternal(err)
 		}
 
-		identityProvider, err := s.Store.UpdateIdentityProvider(ctx, &store.UpdateIdentityProviderMessage{
+		identityProviderMessage, err := s.Store.UpdateIdentityProvider(ctx, &store.UpdateIdentityProviderMessage{
 			ID:               identityProviderPatch.ID,
 			Type:             store.IdentityProviderType(identityProviderPatch.Type),
 			Name:             identityProviderPatch.Name,
 			IdentifierFilter: identityProviderPatch.IdentifierFilter,
-			Config:           (*store.IdentityProviderConfig)(identityProviderPatch.Config),
+			Config:           convertIdentityProviderConfigToStore(identityProviderPatch.Config),
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch identity provider").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, identityProvider)
+		return c.JSON(http.StatusOK, composeResponse(convertIdentityProviderFromStore(identityProviderMessage)))
 	})
 
 	g.GET("/idp", func(c echo.Context) error {
@@ -112,11 +112,42 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider list").SetInternal(err)
 		}
 
-		var identityProviderList []*api.IdentityProvider
+		identityProviderList := []*api.IdentityProvider{}
 		for _, identityProviderMessage := range identityProviderMessageList {
 			identityProviderList = append(identityProviderList, convertIdentityProviderFromStore(identityProviderMessage))
 		}
 		return c.JSON(http.StatusOK, composeResponse(identityProviderList))
+	})
+
+	g.GET("/idp/:idpId", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		user, err := s.Store.FindUser(ctx, &api.UserFind{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		// We should only show identity provider list to host user.
+		if user == nil || user.Role != api.Host {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		identityProviderID, err := strconv.Atoi(c.Param("idpId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
+		}
+		identityProviderMessage, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProviderMessage{
+			ID: &identityProviderID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get identity provider").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, composeResponse(convertIdentityProviderFromStore(identityProviderMessage)))
 	})
 
 	g.DELETE("/idp/:idpId", func(c echo.Context) error {
@@ -152,27 +183,47 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 }
 
 func convertIdentityProviderFromStore(identityProviderMessage *store.IdentityProviderMessage) *api.IdentityProvider {
-	identityProvider := &api.IdentityProvider{
+	return &api.IdentityProvider{
 		ID:               identityProviderMessage.ID,
 		Name:             identityProviderMessage.Name,
 		Type:             api.IdentityProviderType(identityProviderMessage.Type),
 		IdentifierFilter: identityProviderMessage.IdentifierFilter,
+		Config:           convertIdentityProviderConfigFromStore(identityProviderMessage.Config),
 	}
-	if identityProvider.Type == api.IdentityProviderOAuth2 {
-		configMessage := any(identityProviderMessage.Config).(*store.IdentityProviderOAuth2Config)
-		identityProvider.Config = any(&api.IdentityProviderOAuth2Config{
-			ClientID:     configMessage.ClientID,
-			ClientSecret: configMessage.ClientSecret,
-			AuthURL:      configMessage.AuthURL,
-			TokenURL:     configMessage.TokenURL,
-			UserInfoURL:  configMessage.UserInfoURL,
-			Scopes:       configMessage.Scopes,
+}
+
+func convertIdentityProviderConfigFromStore(config *store.IdentityProviderConfig) *api.IdentityProviderConfig {
+	return &api.IdentityProviderConfig{
+		OAuth2Config: &api.IdentityProviderOAuth2Config{
+			ClientID:     config.OAuth2Config.ClientID,
+			ClientSecret: config.OAuth2Config.ClientSecret,
+			AuthURL:      config.OAuth2Config.AuthURL,
+			TokenURL:     config.OAuth2Config.TokenURL,
+			UserInfoURL:  config.OAuth2Config.UserInfoURL,
+			Scopes:       config.OAuth2Config.Scopes,
 			FieldMapping: &api.FieldMapping{
-				Identifier:  configMessage.FieldMapping.Identifier,
-				DisplayName: configMessage.FieldMapping.DisplayName,
-				Email:       configMessage.FieldMapping.Email,
+				Identifier:  config.OAuth2Config.FieldMapping.Identifier,
+				DisplayName: config.OAuth2Config.FieldMapping.DisplayName,
+				Email:       config.OAuth2Config.FieldMapping.Email,
 			},
-		}).(*api.IdentityProviderConfig)
+		},
 	}
-	return identityProvider
+}
+
+func convertIdentityProviderConfigToStore(config *api.IdentityProviderConfig) *store.IdentityProviderConfig {
+	return &store.IdentityProviderConfig{
+		OAuth2Config: &store.IdentityProviderOAuth2Config{
+			ClientID:     config.OAuth2Config.ClientID,
+			ClientSecret: config.OAuth2Config.ClientSecret,
+			AuthURL:      config.OAuth2Config.AuthURL,
+			TokenURL:     config.OAuth2Config.TokenURL,
+			UserInfoURL:  config.OAuth2Config.UserInfoURL,
+			Scopes:       config.OAuth2Config.Scopes,
+			FieldMapping: &store.FieldMapping{
+				Identifier:  config.OAuth2Config.FieldMapping.Identifier,
+				DisplayName: config.OAuth2Config.FieldMapping.DisplayName,
+				Email:       config.OAuth2Config.FieldMapping.Email,
+			},
+		},
+	}
 }
