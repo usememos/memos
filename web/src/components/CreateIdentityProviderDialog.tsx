@@ -57,11 +57,11 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     }
     if (type === "OAUTH2") {
       if (
+        oauth2Config.clientId === "" ||
+        oauth2Config.clientSecret === "" ||
         oauth2Config.authUrl === "" ||
         oauth2Config.tokenUrl === "" ||
         oauth2Config.userInfoUrl === "" ||
-        oauth2Config.clientId === "" ||
-        oauth2Config.clientSecret === "" ||
         oauth2Scopes === "" ||
         oauth2Config.fieldMapping.identifier === ""
       ) {
