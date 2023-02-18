@@ -158,30 +158,37 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container">
         <Typography className="!mb-1" level="body2">
           Name
+          <span className="text-sm text-gray-400 ml-1">(Unique identifier)</span>
         </Typography>
         <Input className="mb-2" placeholder="Name" value={storageCreate.name} onChange={handleNameChange} fullWidth />
         <Typography className="!mb-1" level="body2">
           EndPoint
+          <span className="text-sm text-gray-400 ml-1">(S3-compatible server URL)</span>
         </Typography>
         <Input className="mb-2" placeholder="EndPoint" value={storageCreate.endPoint} onChange={handleEndPointChange} fullWidth />
         <Typography className="!mb-1" level="body2">
           Region
+          <span className="text-sm text-gray-400 ml-1">(Region name)</span>
         </Typography>
         <Input className="mb-2" placeholder="Region" value={storageCreate.region} onChange={handleRegionChange} fullWidth />
         <Typography className="!mb-1" level="body2">
           AccessKey
+          <span className="text-sm text-gray-400 ml-1">(Access Key / Access ID)</span>
         </Typography>
         <Input className="mb-2" placeholder="AccessKey" value={storageCreate.accessKey} onChange={handleAccessKeyChange} fullWidth />
         <Typography className="!mb-1" level="body2">
           SecretKey
+          <span className="text-sm text-gray-400 ml-1">(Secret Key / Secret Access Key)</span>
         </Typography>
         <Input className="mb-2" placeholder="SecretKey" value={storageCreate.secretKey} onChange={handleSecretKeyChange} fullWidth />
         <Typography className="!mb-1" level="body2">
           Bucket
+          <span className="text-sm text-gray-400 ml-1">(Bucket name)</span>
         </Typography>
         <Input className="mb-2" placeholder="Bucket" value={storageCreate.bucket} onChange={handleBucketChange} fullWidth />
         <Typography className="!mb-1" level="body2">
           URLPrefix
+          <span className="text-sm text-gray-400 ml-1">(Custom URL prefix; Optional)</span>
         </Typography>
         <Input className="mb-2" placeholder="URLPrefix" value={storageCreate.urlPrefix} onChange={handleURLPrefixChange} fullWidth />
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
