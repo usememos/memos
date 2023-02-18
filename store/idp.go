@@ -102,7 +102,10 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProv
 	if err := tx.Commit(); err != nil {
 		return nil, FormatError(err)
 	}
-	return create, nil
+
+	identityProviderMessage := create
+	s.idpCache.Store(identityProviderMessage.ID, identityProviderMessage)
+	return identityProviderMessage, nil
 }
 
 func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityProviderMessage) ([]*IdentityProviderMessage, error) {
@@ -117,10 +120,19 @@ func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityPro
 		return nil, err
 	}
 
+	for _, item := range list {
+		s.idpCache.Store(item.ID, item)
+	}
 	return list, nil
 }
 
 func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProviderMessage) (*IdentityProviderMessage, error) {
+	if find.ID != nil {
+		if cache, ok := s.idpCache.Load(*find.ID); ok {
+			return cache.(*IdentityProviderMessage), nil
+		}
+	}
+
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -135,7 +147,9 @@ func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProvi
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	return list[0], nil
+	identityProviderMessage := list[0]
+	s.idpCache.Store(identityProviderMessage.ID, identityProviderMessage)
+	return identityProviderMessage, nil
 }
 
 func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProviderMessage) (*IdentityProviderMessage, error) {
@@ -195,6 +209,7 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 		return nil, fmt.Errorf("unsupported idp type %s", string(identityProviderMessage.Type))
 	}
 
+	s.idpCache.Store(identityProviderMessage.ID, identityProviderMessage)
 	return &identityProviderMessage, nil
 }
 
@@ -219,6 +234,7 @@ func (s *Store) DeleteIdentityProvider(ctx context.Context, delete *DeleteIdenti
 	if rows == 0 {
 		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("idp not found")}
 	}
+	s.idpCache.Delete(delete.ID)
 	return nil
 }
 
