@@ -3,11 +3,10 @@ import { useTranslation } from "react-i18next";
 import { useLocationStore, useMemoStore, useTagStore, useUserStore } from "../store/module";
 import { getMemoStats } from "../helpers/api";
 import * as utils from "../helpers/utils";
-import Icon from "./Icon";
 import Dropdown from "./common/Dropdown";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
 import showAboutSiteDialog from "./AboutSiteDialog";
-import "../less/user-banner.less";
+import UserAvatar from "./UserAvatar";
 
 const UserBanner = () => {
   const { t } = useTranslation();
@@ -65,20 +64,29 @@ const UserBanner = () => {
 
   return (
     <>
-      <div className="user-banner-container">
-        <div className="username-container" onClick={handleUsernameClick}>
-          <span className="username-text">{username}</span>
-          {!isVisitorMode && user?.role === "HOST" ? <span className="tag">MOD</span> : null}
-        </div>
+      <div className="flex flex-row justify-between items-center relative w-full h-auto px-3 flex-nowrap shrink-0">
         <Dropdown
-          trigger={<Icon.MoreHorizontal className="ml-2 w-5 h-auto cursor-pointer dark:text-gray-200" />}
-          actionsClassName="min-w-36"
+          className="w-full"
+          trigger={
+            <div
+              className="px-2 py-1 max-w-full flex flex-row justify-start items-center cursor-pointer rounded hover:shadow hover:bg-white dark:hover:bg-zinc-700"
+              onClick={handleUsernameClick}
+            >
+              <UserAvatar avatarUrl={user?.avatarUrl} />
+              <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{username}</span>
+              {!isVisitorMode && user?.role === "HOST" ? (
+                <span className="text-xs px-1 bg-blue-600 dark:bg-blue-800 rounded text-white dark:text-gray-200 shadow">MOD</span>
+              ) : null}
+            </div>
+          }
+          actionsClassName="min-w-[128px] max-w-full"
+          positionClassName="top-full mt-2"
           actions={
             <>
               {!userStore.isVisitorMode() && (
                 <>
                   <button
-                    className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                    className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                     onClick={handleArchivedBtnClick}
                   >
                     <span className="mr-1">🗃️</span> {t("sidebar.archived")}
@@ -86,14 +94,14 @@ const UserBanner = () => {
                 </>
               )}
               <button
-                className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                 onClick={handleAboutBtnClick}
               >
                 <span className="mr-1">🤠</span> {t("common.about")}
               </button>
               {!userStore.isVisitorMode() && (
                 <button
-                  className="w-full px-3 whitespace-nowrap text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                  className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                   onClick={handleSignOutBtnClick}
                 >
                   <span className="mr-1">👋</span> {t("common.sign-out")}
@@ -103,18 +111,18 @@ const UserBanner = () => {
           }
         />
       </div>
-      <div className="amount-text-container">
-        <div className="status-text memos-text">
-          <span className="amount-text">{memoAmount}</span>
-          <span className="type-text">{t("amount-text.memo", { count: memoAmount })}</span>
+      <div className="flex flex-row justify-between items-start w-full px-6 select-none shrink-0 pb-2">
+        <div className="flex flex-col justify-start items-start">
+          <span className="font-bold text-2xl opacity-80 leading-10 text-slate-600 dark:text-gray-300">{memoAmount}</span>
+          <span className="text-gray-400 text-xs font-mono">{t("amount-text.memo", { count: memoAmount })}</span>
         </div>
-        <div className="status-text tags-text">
-          <span className="amount-text">{tags.length}</span>
-          <span className="type-text">{t("amount-text.tag", { count: tags.length })}</span>
+        <div className="flex flex-col justify-start items-start">
+          <span className="font-bold text-2xl opacity-80 leading-10 text-slate-600 dark:text-gray-300">{tags.length}</span>
+          <span className="text-gray-400 text-xs font-mono">{t("amount-text.tag", { count: tags.length })}</span>
         </div>
-        <div className="status-text duration-text">
-          <span className="amount-text">{createdDays}</span>
-          <span className="type-text">{t("amount-text.day", { count: createdDays })}</span>
+        <div className="flex flex-col justify-start items-start">
+          <span className="font-bold text-2xl opacity-80 leading-10 text-slate-600 dark:text-gray-300">{createdDays}</span>
+          <span className="text-gray-400 text-xs font-mono">{t("amount-text.day", { count: createdDays })}</span>
         </div>
       </div>
     </>

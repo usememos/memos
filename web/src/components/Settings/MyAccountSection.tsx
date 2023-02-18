@@ -3,6 +3,7 @@ import { useUserStore } from "../../store/module";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangePasswordDialog from "../ChangePasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
+import UserAvatar from "../UserAvatar";
 import "../../less/settings/my-account-section.less";
 
 const MyAccountSection = () => {
@@ -30,14 +31,15 @@ const MyAccountSection = () => {
     <>
       <div className="section-container account-section-container">
         <p className="title-text">{t("setting.account-section.title")}</p>
-        <div className="flex flex-row justify-start items-end">
+        <div className="flex flex-row justify-start items-center">
+          <UserAvatar className="mr-2" avatarUrl={user.avatarUrl} />
           <span className="text-2xl leading-10 font-medium">{user.nickname}</span>
-          <span className="text-base ml-1 text-gray-500 leading-8">({user.username})</span>
+          <span className="text-base ml-1 text-gray-500 leading-10">({user.username})</span>
         </div>
         <div className="flex flex-row justify-start items-center text-base text-gray-600">{user.email}</div>
         <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
           <button className="btn-normal" onClick={showUpdateAccountDialog}>
-            {t("setting.account-section.update-information")}
+            {t("common.edit")}
           </button>
           <button className="btn-normal" onClick={showChangePasswordDialog}>
             {t("setting.account-section.change-password")}
