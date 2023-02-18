@@ -102,7 +102,7 @@ func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.
 		feed.Items[i] = &feeds.Item{
 			Title:       getRSSItemTitle(memo.Content),
 			Link:        &feeds.Link{Href: baseURL + "/m/" + strconv.Itoa(memo.ID)},
-			Description: getRssItemDescription(memo.Content),
+			Description: getRSSItemDescription(memo.Content),
 			Created:     time.Unix(memo.CreatedTs, 0),
 		}
 	}
