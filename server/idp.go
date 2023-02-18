@@ -116,12 +116,7 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 		for _, identityProviderMessage := range identityProviderMessageList {
 			identityProviderList = append(identityProviderList, convertIdentityProviderFromStore(identityProviderMessage))
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(identityProviderList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode identity provider list response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(identityProviderList))
 	})
 
 	g.DELETE("/idp/:idpId", func(c echo.Context) error {
