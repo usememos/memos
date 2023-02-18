@@ -81,6 +81,9 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 	})
 }
 
+const MaxRSSItemCount = 100
+const MaxRSSItemTitleLength = 100
+
 func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.CustomizedProfile) (string, error) {
 	feed := &feeds.Feed{
 		Title:       profile.Name,
@@ -89,29 +92,17 @@ func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.
 		Created:     time.Now(),
 	}
 
-	feed.Items = make([]*feeds.Item, len(memoList))
-	for i, memo := range memoList {
-		var useTitle = strings.HasPrefix(memo.Content, "# ")
+	var itemCountLimit = min(len(memoList), MaxRSSItemCount)
 
-		var title string
-		if useTitle {
-			title = strings.Split(memo.Content, "\n")[0][2:]
-		} else {
-			title = memo.Creator.Username + "-memos-" + strconv.Itoa(memo.ID)
-		}
+	feed.Items = make([]*feeds.Item, itemCountLimit)
 
-		var description string
-		if useTitle {
-			var firstLineEnd = strings.Index(memo.Content, "\n")
-			description = memo.Content[firstLineEnd+1:]
-		} else {
-			description = memo.Content
-		}
+	for i := 0; i < itemCountLimit; i++ {
+		memo := memoList[i]
 
 		feed.Items[i] = &feeds.Item{
-			Title:       title,
+			Title:       getRSSItemTitle(memo.Content),
 			Link:        &feeds.Link{Href: baseURL + "/m/" + strconv.Itoa(memo.ID)},
-			Description: description,
+			Description: getRSSItemDescription(memo.Content),
 			Created:     time.Unix(memo.CreatedTs, 0),
 		}
 	}
@@ -174,4 +165,40 @@ func getSystemCustomizedProfile(ctx context.Context, s *Server) (api.CustomizedP
 		}
 	}
 	return systemStatus.CustomizedProfile, nil
+}
+
+func min(a, b int) int {
+	if a < b {
+		return a
+	}
+	return b
+}
+
+func getRSSItemTitle(content string) string {
+	var title string
+	if isTitleDefined(content) {
+		title = strings.Split(content, "\n")[0][2:]
+	} else {
+		title = strings.Split(content, "\n")[0]
+		var titleLengthLimit = min(len(title), MaxRSSItemTitleLength)
+		if titleLengthLimit < len(title) {
+			title = title[:titleLengthLimit] + "..."
+		}
+	}
+	return title
+}
+
+func getRSSItemDescription(content string) string {
+	var description string
+	if isTitleDefined(content) {
+		var firstLineEnd = strings.Index(content, "\n")
+		description = strings.Trim(content[firstLineEnd+1:], " ")
+	} else {
+		description = content
+	}
+	return description
+}
+
+func isTitleDefined(content string) bool {
+	return strings.HasPrefix(content, "# ")
 }
