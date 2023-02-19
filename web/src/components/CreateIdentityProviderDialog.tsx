@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Alert, Button, Divider, Input, Radio, RadioGroup, Typography } from "@mui/joy";
+import { Button, Divider, Input, Radio, RadioGroup, Typography } from "@mui/joy";
 import * as api from "../helpers/api";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { absolutifyLink } from "../helpers/utils";
@@ -207,13 +207,13 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <div className="dialog-header-container !w-96">
+      <div className="dialog-header-container">
         <p className="title-text">{isCreating ? "Create SSO" : "Update SSO"}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
       </div>
-      <div className="dialog-content-container">
+      <div className="dialog-content-container w-full max-w-[24rem]">
         {isCreating && (
           <>
             <Typography className="!mb-1" level="body2">
@@ -276,9 +276,10 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         {type === "OAUTH2" && (
           <>
             {isCreating && (
-              <Alert variant="outlined" color="neutral" className="w-full mb-2">
-                Redirect URL: {absolutifyLink("/auth/callback")}
-              </Alert>
+              <p className="border rounded-md p-2 text-sm w-full mb-2 break-all">
+                Redirect URL: {absolutifyLink("/auth/callback")}{" "}
+                RedirectRedirectRedirectRedirectRedirectRedirectRedirectRedirectRedirectRedirectRedirect
+              </p>
             )}
             <Typography className="!mb-1" level="body2">
               Client ID<span className="text-red-600">*</span>

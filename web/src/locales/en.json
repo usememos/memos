@@ -152,10 +152,11 @@
   "setting": {
     "my-account": "My Account",
     "preference": "Preference",
-    "storage": "Storage",
     "member": "Member",
     "member-list": "Member list",
     "system": "System",
+    "storage": "Storage",
+    "sso": "SSO",
     "account-section": {
       "title": "Account Information",
       "update-information": "Update Information",

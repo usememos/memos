@@ -1,3 +1,4 @@
+import { Option, Select } from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "../store/module";
@@ -14,7 +15,7 @@ import "../less/setting-dialog.less";
 
 type Props = DialogProps;
 
-type SettingSection = "my-account" | "preferences" | "member" | "system" | "storage" | "sso";
+type SettingSection = "my-account" | "preference" | "member" | "system" | "storage" | "sso";
 
 interface State {
   selectedSection: SettingSection;
@@ -29,11 +30,20 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });
+  const isHost = user?.role === "HOST";
 
   const handleSectionSelectorItemClick = (settingSection: SettingSection) => {
     setState({
       selectedSection: settingSection,
     });
+  };
+
+  const getSettingSectionList = () => {
+    let settingList: SettingSection[] = ["my-account", "preference"];
+    if (isHost) {
+      settingList = settingList.concat(["member", "system", "storage", "sso"]);
+    }
+    return settingList;
   };
 
   return (
@@ -51,13 +61,13 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
             <Icon.User className="w-4 h-auto mr-2 opacity-80" /> {t("setting.my-account")}
           </span>
           <span
-            onClick={() => handleSectionSelectorItemClick("preferences")}
-            className={`section-item ${state.selectedSection === "preferences" ? "selected" : ""}`}
+            onClick={() => handleSectionSelectorItemClick("preference")}
+            className={`section-item ${state.selectedSection === "preference" ? "selected" : ""}`}
           >
             <Icon.Cog className="w-4 h-auto mr-2 opacity-80" /> {t("setting.preference")}
           </span>
         </div>
-        {user?.role === "HOST" ? (
+        {isHost ? (
           <>
             <span className="section-title">{t("common.admin")}</span>
             <div className="section-items-container">
@@ -86,7 +96,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
                   onClick={() => handleSectionSelectorItemClick("sso")}
                   className={`section-item ${state.selectedSection === "sso" ? "selected" : ""}`}
                 >
-                  <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> SSO <BetaBadge />
+                  <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> {t("setting.sso")} <BetaBadge />
                 </span>
               )}
             </div>
@@ -94,9 +104,20 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
         ) : null}
       </div>
       <div className="section-content-container">
+        <Select
+          className="block sm:!hidden"
+          value={state.selectedSection}
+          onChange={(_, value) => handleSectionSelectorItemClick(value as SettingSection)}
+        >
+          {getSettingSectionList().map((settingSection) => (
+            <Option key={settingSection} value={settingSection}>
+              {t(`setting.${settingSection}`)}
+            </Option>
+          ))}
+        </Select>
         {state.selectedSection === "my-account" ? (
           <MyAccountSection />
-        ) : state.selectedSection === "preferences" ? (
+        ) : state.selectedSection === "preference" ? (
           <PreferencesSection />
         ) : state.selectedSection === "member" ? (
           <MemberSection />
