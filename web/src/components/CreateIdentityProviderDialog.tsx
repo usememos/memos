@@ -116,6 +116,10 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   }, []);
 
   useEffect(() => {
+    if (!isCreating) {
+      return;
+    }
+
     const template = templateList.find((t) => t.name === seletedTemplate);
     if (template) {
       setBasicInfo({
