@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { Button, Divider, Input, List, Radio, RadioGroup, Typography } from "@mui/joy";
+import { Alert, Button, Divider, Input, Radio, RadioGroup, Typography } from "@mui/joy";
 import * as api from "../helpers/api";
+import { UNKNOWN_ID } from "../helpers/consts";
+import { absolutifyLink } from "../helpers/utils";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -9,6 +11,72 @@ interface Props extends DialogProps {
   identityProvider?: IdentityProvider;
   confirmCallback?: () => void;
 }
+
+const templateList: IdentityProvider[] = [
+  {
+    id: UNKNOWN_ID,
+    name: "GitHub",
+    type: "OAUTH2",
+    identifierFilter: "",
+    config: {
+      oauth2Config: {
+        clientId: "",
+        clientSecret: "",
+        authUrl: "https://github.com/login/oauth/authorize",
+        tokenUrl: "https://github.com/login/oauth/access_token",
+        userInfoUrl: "https://api.github.com/user",
+        scopes: ["user"],
+        fieldMapping: {
+          identifier: "login",
+          displayName: "name",
+          email: "email",
+        },
+      },
+    },
+  },
+  {
+    id: UNKNOWN_ID,
+    name: "Google",
+    type: "OAUTH2",
+    identifierFilter: "",
+    config: {
+      oauth2Config: {
+        clientId: "",
+        clientSecret: "",
+        authUrl: "https://accounts.google.com/o/oauth2/v2/auth",
+        tokenUrl: "https://oauth2.googleapis.com/token",
+        userInfoUrl: "https://www.googleapis.com/oauth2/v2/userinfo",
+        scopes: ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"],
+        fieldMapping: {
+          identifier: "email",
+          displayName: "name",
+          email: "email",
+        },
+      },
+    },
+  },
+  {
+    id: UNKNOWN_ID,
+    name: "Custom",
+    type: "OAUTH2",
+    identifierFilter: "",
+    config: {
+      oauth2Config: {
+        clientId: "",
+        clientSecret: "",
+        authUrl: "",
+        tokenUrl: "",
+        userInfoUrl: "",
+        scopes: [],
+        fieldMapping: {
+          identifier: "",
+          displayName: "",
+          email: "",
+        },
+      },
+    },
+  },
+];
 
 const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   const { confirmCallback, destroy, identityProvider } = props;
@@ -31,6 +99,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     },
   });
   const [oauth2Scopes, setOAuth2Scopes] = useState<string>("");
+  const [seletedTemplate, setSelectedTemplate] = useState<string>("GitHub");
   const isCreating = identityProvider === undefined;
 
   useEffect(() => {
@@ -46,6 +115,25 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    if (!isCreating) {
+      return;
+    }
+
+    const template = templateList.find((t) => t.name === seletedTemplate);
+    if (template) {
+      setBasicInfo({
+        name: template.name,
+        identifierFilter: template.identifierFilter,
+      });
+      setType(template.type);
+      if (template.type === "OAUTH2") {
+        setOAuth2Config(template.config.oauth2Config);
+        setOAuth2Scopes(template.config.oauth2Config.scopes.join(" "));
+      }
+    }
+  }, [seletedTemplate]);
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -84,6 +172,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             },
           },
         });
+        toastHelper.info(`SSO ${basicInfo.name} created`);
       } else {
         await api.patchIdentityProvider({
           id: identityProvider?.id,
@@ -96,6 +185,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             },
           },
         });
+        toastHelper.info(`SSO ${basicInfo.name} updated`);
       }
     } catch (error: any) {
       console.error(error);
@@ -124,14 +214,34 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <Typography className="!mb-1" level="body2">
-          Type
-        </Typography>
-        <RadioGroup className="mb-2" value={type}>
-          <List>
-            <Radio value="OAUTH2" label="OAuth 2.0" />
-          </List>
-        </RadioGroup>
+        {isCreating && (
+          <>
+            <Typography className="!mb-1" level="body2">
+              Type
+            </Typography>
+            <RadioGroup className="mb-2" value={type}>
+              <div className="mt-2 w-full flex flex-row space-x-4">
+                <Radio value="OAUTH2" label="OAuth 2.0" />
+              </div>
+            </RadioGroup>
+            <Typography className="mb-2" level="body2">
+              Template
+            </Typography>
+            <RadioGroup className="mb-2" value={seletedTemplate}>
+              <div className="mt-2 w-full flex flex-row space-x-4">
+                {templateList.map((template) => (
+                  <Radio
+                    key={template.name}
+                    value={template.name}
+                    label={template.name}
+                    onChange={(e) => setSelectedTemplate(e.target.value)}
+                  />
+                ))}
+              </div>
+            </RadioGroup>
+            <Divider className="!my-2" />
+          </>
+        )}
         <Typography className="!mb-1" level="body2">
           Name<span className="text-red-600">*</span>
         </Typography>
@@ -165,6 +275,11 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         <Divider className="!my-2" />
         {type === "OAUTH2" && (
           <>
+            {isCreating && (
+              <Alert variant="outlined" color="neutral" className="w-full mb-2">
+                Redirect URL: {absolutifyLink("/auth/callback")}
+              </Alert>
+            )}
             <Typography className="!mb-1" level="body2">
               Client ID<span className="text-red-600">*</span>
             </Typography>

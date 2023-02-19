@@ -91,30 +91,33 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 
 	g.GET("/idp", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		// We should only show identity provider list to host user.
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
-
 		identityProviderMessageList, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProviderMessage{})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider list").SetInternal(err)
 		}
 
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		isHostUser := false
+		if ok {
+			user, err := s.Store.FindUser(ctx, &api.UserFind{
+				ID: &userID,
+			})
+			if err != nil && common.ErrorCode(err) != common.NotFound {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+			}
+			if user != nil && user.Role == api.Host {
+				isHostUser = true
+			}
+		}
+
 		identityProviderList := []*api.IdentityProvider{}
 		for _, identityProviderMessage := range identityProviderMessageList {
-			identityProviderList = append(identityProviderList, convertIdentityProviderFromStore(identityProviderMessage))
+			identityProvider := convertIdentityProviderFromStore(identityProviderMessage)
+			// data desensitize
+			if !isHostUser {
+				identityProvider.Config.OAuth2Config.ClientSecret = ""
+			}
+			identityProviderList = append(identityProviderList, identityProvider)
 		}
 		return c.JSON(http.StatusOK, composeResponse(identityProviderList))
 	})

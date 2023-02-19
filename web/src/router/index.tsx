@@ -5,6 +5,7 @@ import store from "../store";
 import { initialGlobalState, initialUserState } from "../store/module";
 
 const Auth = lazy(() => import("../pages/Auth"));
+const AuthCallback = lazy(() => import("../pages/AuthCallback"));
 const Explore = lazy(() => import("../pages/Explore"));
 const Home = lazy(() => import("../pages/Home"));
 const MemoDetail = lazy(() => import("../pages/MemoDetail"));
@@ -35,6 +36,10 @@ const router = createBrowserRouter([
       await initialGlobalStateLoader();
       return null;
     },
+  },
+  {
+    path: "/auth/callback",
+    element: <AuthCallback />,
   },
   {
     path: "/",
