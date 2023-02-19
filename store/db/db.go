@@ -49,17 +49,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 	}
 	db.DBInstance = sqliteDB
 
-	if db.profile.Mode == "dev" {
-		// In dev mode, we should migrate and seed the database.
-		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
-			if err := db.applyLatestSchema(ctx); err != nil {
-				return fmt.Errorf("failed to apply latest schema: %w", err)
-			}
-			if err := db.seed(ctx); err != nil {
-				return fmt.Errorf("failed to seed: %w", err)
-			}
-		}
-	} else {
+	if db.profile.Mode == "prod" {
 		// If db file not exists, we should migrate the database.
 		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
 			if err := db.applyLatestSchema(ctx); err != nil {
@@ -118,6 +108,19 @@ func (db *DB) Open(ctx context.Context) (err error) {
 			// remove the created backup db file after migrate succeed
 			if err := os.Remove(backupDBFilePath); err != nil {
 				println(fmt.Sprintf("Failed to remove temp database file, err %v", err))
+			}
+		}
+	} else {
+		// In non-prod mode, we should migrate the database.
+		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
+			if err := db.applyLatestSchema(ctx); err != nil {
+				return fmt.Errorf("failed to apply latest schema: %w", err)
+			}
+			// In demo mode, we should seed the database.
+			if db.profile.Mode == "demo" {
+				if err := db.seed(ctx); err != nil {
+					return fmt.Errorf("failed to seed: %w", err)
+				}
 			}
 		}
 	}
