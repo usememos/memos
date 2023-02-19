@@ -110,11 +110,8 @@ CREATE TABLE storage (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL DEFAULT '' UNIQUE,
   end_point TEXT NOT NULL DEFAULT '',
-  region TEXT NOT NULL DEFAULT '',
-  access_key TEXT NOT NULL DEFAULT '',
-  secret_key TEXT NOT NULL DEFAULT '',
-  bucket TEXT NOT NULL DEFAULT '',
-  url_prefix TEXT NOT NULL DEFAULT ''
+  type TEXT NOT NULL,
+  config TEXT NOT NULL DEFAULT '{}',
 );
 
 -- idp
