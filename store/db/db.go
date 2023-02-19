@@ -116,7 +116,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 			if err := db.applyLatestSchema(ctx); err != nil {
 				return fmt.Errorf("failed to apply latest schema: %w", err)
 			}
-			// In demo mode, we should migrate and seed the database.
+			// In demo mode, we should seed the database.
 			if db.profile.Mode == "demo" {
 				if err := db.seed(ctx); err != nil {
 					return fmt.Errorf("failed to seed: %w", err)
