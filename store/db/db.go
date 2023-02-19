@@ -111,7 +111,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 			}
 		}
 	} else {
-		// In non-prod mode, we should migrate the database.
+		// In non-prod mode, we should always migrate the database.
 		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
 			if err := db.applyLatestSchema(ctx); err != nil {
 				return fmt.Errorf("failed to apply latest schema: %w", err)
@@ -133,7 +133,11 @@ const (
 )
 
 func (db *DB) applyLatestSchema(ctx context.Context) error {
-	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", db.profile.Mode, latestSchemaFileName)
+	schemaMode := "dev"
+	if db.profile.Mode == "prod" {
+		schemaMode = "prod"
+	}
+	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", schemaMode, latestSchemaFileName)
 	buf, err := migrationFS.ReadFile(latestSchemaPath)
 	if err != nil {
 		return fmt.Errorf("failed to read latest schema %q, error %w", latestSchemaPath, err)
