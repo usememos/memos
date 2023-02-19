@@ -111,7 +111,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 			}
 		}
 	} else {
-		// In dev mode, we should migrate the database.
+		// In non-prod mode, we should migrate the database.
 		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
 			if err := db.applyLatestSchema(ctx); err != nil {
 				return fmt.Errorf("failed to apply latest schema: %w", err)
