@@ -139,7 +139,7 @@ func (db *DB) applyLatestSchema(ctx context.Context) error {
 	} else {
 		mode = "dev"
 	}
-	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", db.profile.Mode, latestSchemaFileName)
+	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", mode, latestSchemaFileName)
 	buf, err := migrationFS.ReadFile(latestSchemaPath)
 	if err != nil {
 		return fmt.Errorf("failed to read latest schema %q, error %w", latestSchemaPath, err)
