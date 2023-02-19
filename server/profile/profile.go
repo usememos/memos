@@ -52,7 +52,7 @@ func GetProfile() (*Profile, error) {
 	flag.StringVar(&profile.Data, "data", "", "data directory")
 	flag.Parse()
 
-	if profile.Mode != "dev" && profile.Mode != "prod" && profile.Mode != "demo" {
+	if profile.Mode != "demo" && profile.Mode != "dev" && profile.Mode != "prod" {
 		profile.Mode = "demo"
 	}
 
