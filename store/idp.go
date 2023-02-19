@@ -98,11 +98,9 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProv
 	); err != nil {
 		return nil, FormatError(err)
 	}
-
 	if err := tx.Commit(); err != nil {
 		return nil, FormatError(err)
 	}
-
 	identityProviderMessage := create
 	s.idpCache.Store(identityProviderMessage.ID, identityProviderMessage)
 	return identityProviderMessage, nil
@@ -208,7 +206,9 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 	} else {
 		return nil, fmt.Errorf("unsupported idp type %s", string(identityProviderMessage.Type))
 	}
-
+	if err := tx.Commit(); err != nil {
+		return nil, FormatError(err)
+	}
 	s.idpCache.Store(identityProviderMessage.ID, identityProviderMessage)
 	return &identityProviderMessage, nil
 }
@@ -233,6 +233,9 @@ func (s *Store) DeleteIdentityProvider(ctx context.Context, delete *DeleteIdenti
 	}
 	if rows == 0 {
 		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("idp not found")}
+	}
+	if err := tx.Commit(); err != nil {
+		return err
 	}
 	s.idpCache.Delete(delete.ID)
 	return nil

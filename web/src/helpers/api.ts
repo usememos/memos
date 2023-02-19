@@ -25,6 +25,14 @@ export function signin(username: string, password: string) {
   });
 }
 
+export function signinWithSSO(identityProviderId: IdentityProviderId, code: string, redirectUri: string) {
+  return axios.post<ResponseObject<User>>("/api/auth/signin/sso", {
+    identityProviderId,
+    code,
+    redirectUri,
+  });
+}
+
 export function signup(username: string, password: string) {
   return axios.post<ResponseObject<User>>("/api/auth/signup", {
     username,

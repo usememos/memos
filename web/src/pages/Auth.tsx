@@ -1,8 +1,10 @@
+import { Button, Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useUserStore } from "../store/module";
 import * as api from "../helpers/api";
+import { absolutifyLink } from "../helpers/utils";
 import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
 import Icon from "../components/Icon";
@@ -28,9 +30,17 @@ const Auth = () => {
   const mode = systemStatus.profile.mode;
   const [username, setUsername] = useState(mode === "dev" ? "demohero" : "");
   const [password, setPassword] = useState(mode === "dev" ? "secret" : "");
+  const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
     userStore.doSignOut().catch();
+    const fetchIdentityProviderList = async () => {
+      const {
+        data: { data: identityProviderList },
+      } = await api.getIdentityProviderList();
+      setIdentityProviderList(identityProviderList);
+    };
+    fetchIdentityProviderList();
   }, []);
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -123,6 +133,20 @@ const Auth = () => {
     }
   };
 
+  const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
+    const stateQueryParameter = `auth.signin.${identityProvider.name}-${identityProvider.id}`;
+    if (identityProvider.type === "OAUTH2") {
+      const redirectUri = absolutifyLink("/auth/callback");
+      const oauth2Config = identityProvider.config.oauth2Config;
+      const authUrl = `${oauth2Config.authUrl}?client_id=${
+        oauth2Config.clientId
+      }&redirect_uri=${redirectUri}&state=${stateQueryParameter}&response_type=code&scope=${encodeURIComponent(
+        oauth2Config.scopes.join(" ")
+      )}`;
+      window.location.href = authUrl;
+    }
+  };
+
   return (
     <div className="page-wrapper auth">
       <div className="page-container">
@@ -175,6 +199,25 @@ const Auth = () => {
               </>
             )}
           </div>
+          {identityProviderList.length > 0 && (
+            <>
+              <Divider className="!my-4">or</Divider>
+              <div className="w-full flex flex-col space-y-2">
+                {identityProviderList.map((identityProvider) => (
+                  <Button
+                    key={identityProvider.id}
+                    variant="outlined"
+                    color="neutral"
+                    className="w-full"
+                    size="md"
+                    onClick={() => handleSignInWithIdentityProvider(identityProvider)}
+                  >
+                    Sign in with {identityProvider.name}
+                  </Button>
+                ))}
+              </div>
+            </>
+          )}
           {!systemStatus?.host && <p className="tip-text">{t("auth.host-tip")}</p>}
         </div>
         <div className="flex flex-row items-center justify-center w-full gap-2">

@@ -4,11 +4,15 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/plugin/idp"
+	"github.com/usememos/memos/plugin/idp/oauth2"
 	metric "github.com/usememos/memos/plugin/metrics"
+	"github.com/usememos/memos/store"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -39,6 +43,90 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(signin.Password)); err != nil {
 			// If the two passwords don't match, return a 401 status.
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect password").SetInternal(err)
+		}
+
+		if err = setUserSession(c, user); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set signin session").SetInternal(err)
+		}
+		if err := s.createUserAuthSignInActivity(c, user); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, composeResponse(user))
+	})
+
+	g.POST("/auth/signin/sso", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		signin := &api.SSOSignIn{}
+		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
+		}
+
+		identityProviderMessage, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProviderMessage{
+			ID: &signin.IdentityProviderID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider").SetInternal(err)
+		}
+
+		var userInfo *idp.IdentityProviderUserInfo
+		if identityProviderMessage.Type == store.IdentityProviderOAuth2 {
+			oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProviderMessage.Config.OAuth2Config)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider instance").SetInternal(err)
+			}
+			token, err := oauth2IdentityProvider.ExchangeToken(ctx, signin.RedirectURI, signin.Code)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to exchange token").SetInternal(err)
+			}
+			userInfo, err = oauth2IdentityProvider.UserInfo(token)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get user info").SetInternal(err)
+			}
+		}
+
+		identifierFilter := identityProviderMessage.IdentifierFilter
+		if identifierFilter != "" {
+			identifierFilterRegex, err := regexp.Compile(identifierFilter)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compile identifier filter").SetInternal(err)
+			}
+			if !identifierFilterRegex.MatchString(userInfo.Identifier) {
+				return echo.NewHTTPError(http.StatusUnauthorized, "Access denied, identifier does not match the filter.").SetInternal(err)
+			}
+		}
+
+		user, err := s.Store.FindUser(ctx, &api.UserFind{
+			Username: &userInfo.Identifier,
+		})
+		if err != nil && common.ErrorCode(err) != common.NotFound {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by username %s", userInfo.Identifier)).SetInternal(err)
+		}
+		if user == nil {
+			userCreate := &api.UserCreate{
+				Username: userInfo.Identifier,
+				// The new signup user should be normal user by default.
+				Role:     api.NormalUser,
+				Nickname: userInfo.DisplayName,
+				Email:    userInfo.Email,
+				Password: userInfo.Email,
+				OpenID:   common.GenUUID(),
+			}
+			password, err := common.RandomString(20)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate random password").SetInternal(err)
+			}
+			passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
+			}
+			userCreate.PasswordHash = string(passwordHash)
+			user, err = s.Store.CreateUser(ctx, userCreate)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
+			}
+		}
+		if user.RowStatus == api.Archived {
+			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
 		}
 
 		if err = setUserSession(c, user); err != nil {

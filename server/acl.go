@@ -81,7 +81,7 @@ func aclMiddleware(s *Server, next echo.HandlerFunc) echo.HandlerFunc {
 			}
 		}
 
-		if common.HasPrefixes(path, "/api/ping", "/api/status", "/api/user/:id", "/api/memo") && c.Request().Method == http.MethodGet {
+		if common.HasPrefixes(path, "/api/ping", "/api/status", "/api/idp", "/api/user/:id", "/api/memo") && c.Request().Method == http.MethodGet {
 			return next(c)
 		}
 
