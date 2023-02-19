@@ -171,6 +171,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             },
           },
         });
+        toastHelper.info(`SSO ${basicInfo.name} created`);
       } else {
         await api.patchIdentityProvider({
           id: identityProvider?.id,
@@ -183,6 +184,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             },
           },
         });
+        toastHelper.info(`SSO ${basicInfo.name} updated`);
       }
     } catch (error: any) {
       console.error(error);

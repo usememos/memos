@@ -1,7 +1,7 @@
 import { last } from "lodash-es";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import * as api from "../helpers/api";
 import toastHelper from "../components/Toast";
 import { absolutifyLink } from "../helpers/utils";
@@ -15,7 +15,6 @@ interface State {
 
 const AuthCallback = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const userStore = useUserStore();
   const [state, setState] = useState<State>({
@@ -40,7 +39,7 @@ const AuthCallback = () => {
             });
             const user = await userStore.doSignIn();
             if (user) {
-              navigate("/");
+              window.location.href = "/";
             } else {
               toastHelper.error(t("message.login-failed"));
             }

@@ -1,7 +1,6 @@
 import { Button, Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useUserStore } from "../store/module";
 import * as api from "../helpers/api";
 import { absolutifyLink } from "../helpers/utils";
@@ -22,7 +21,6 @@ const validateConfig: ValidatorConfig = {
 
 const Auth = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
@@ -83,7 +81,7 @@ const Auth = () => {
       await api.signin(username, password);
       const user = await userStore.doSignIn();
       if (user) {
-        navigate("/");
+        window.location.href = "/";
       } else {
         toastHelper.error(t("message.login-failed"));
       }
@@ -116,7 +114,7 @@ const Auth = () => {
       await api.signup(username, password);
       const user = await userStore.doSignIn();
       if (user) {
-        navigate("/");
+        window.location.href = "/";
       } else {
         toastHelper.error(t("common.singup-failed"));
       }
