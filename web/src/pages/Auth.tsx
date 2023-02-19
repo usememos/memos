@@ -26,8 +26,8 @@ const Auth = () => {
   const actionBtnLoadingState = useLoading(false);
   const { appearance, locale, systemStatus } = globalStore.state;
   const mode = systemStatus.profile.mode;
-  const [username, setUsername] = useState(mode === "dev" ? "demohero" : "");
-  const [password, setPassword] = useState(mode === "dev" ? "secret" : "");
+  const [username, setUsername] = useState(mode === "demo" ? "demohero" : "");
+  const [password, setPassword] = useState(mode === "demo" ? "secret" : "");
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {

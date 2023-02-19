@@ -11,7 +11,7 @@ services:
     image: "${MEMOS_IMAGE}"
     volumes:
       - memos_volume:/var/opt/memos
-    command: ["--mode", "dev"]
+    command: ["--mode", "demo"]
 
 volumes:
   memos_volume:

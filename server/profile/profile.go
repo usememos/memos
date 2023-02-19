@@ -12,7 +12,7 @@ import (
 
 // Profile is the configuration to start main server.
 type Profile struct {
-	// Mode can be "prod" or "dev"
+	// Mode can be "prod" or "dev" or "demo"
 	Mode string `json:"mode"`
 	// Port is the binding port for server
 	Port int `json:"-"`
@@ -47,13 +47,13 @@ func checkDSN(dataDir string) (string, error) {
 // GetDevProfile will return a profile for dev or prod.
 func GetProfile() (*Profile, error) {
 	profile := Profile{}
-	flag.StringVar(&profile.Mode, "mode", "dev", "mode of server")
+	flag.StringVar(&profile.Mode, "mode", "demo", "mode of server")
 	flag.IntVar(&profile.Port, "port", 8081, "port of server")
 	flag.StringVar(&profile.Data, "data", "", "data directory")
 	flag.Parse()
 
-	if profile.Mode != "dev" && profile.Mode != "prod" {
-		profile.Mode = "dev"
+	if profile.Mode != "dev" && profile.Mode != "prod" && profile.Mode != "demo" {
+		profile.Mode = "demo"
 	}
 
 	if profile.Mode == "prod" && profile.Data == "" {
