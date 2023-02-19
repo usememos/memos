@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Button, Divider, Input, Radio, RadioGroup, Typography } from "@mui/joy";
+import { Alert, Button, Divider, Input, Radio, RadioGroup, Typography } from "@mui/joy";
 import * as api from "../helpers/api";
 import { UNKNOWN_ID } from "../helpers/consts";
+import { absolutifyLink } from "../helpers/utils";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -274,6 +275,11 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         <Divider className="!my-2" />
         {type === "OAUTH2" && (
           <>
+            {isCreating && (
+              <Alert variant="outlined" color="neutral" className="w-full mb-2">
+                Redirect URL: {absolutifyLink("/auth/callback")}
+              </Alert>
+            )}
             <Typography className="!mb-1" level="body2">
               Client ID<span className="text-red-600">*</span>
             </Typography>
