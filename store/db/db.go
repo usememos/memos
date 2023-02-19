@@ -133,6 +133,12 @@ const (
 )
 
 func (db *DB) applyLatestSchema(ctx context.Context) error {
+	var mode string
+	if db.profile.Mode == "prod" {
+		mode = "prod"
+	} else {
+		mode = "dev"
+	}
 	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", db.profile.Mode, latestSchemaFileName)
 	buf, err := migrationFS.ReadFile(latestSchemaPath)
 	if err != nil {
