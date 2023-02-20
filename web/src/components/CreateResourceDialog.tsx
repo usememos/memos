@@ -170,7 +170,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
                 Choose a file...
               </label>
               <input
-                className="absolute inset-0 hidden"
+                className="absolute inset-0 w-full h-full opacity-0"
                 ref={fileInputRef}
                 onChange={handleFileInputChange}
                 type="file"
