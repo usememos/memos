@@ -1,0 +1,271 @@
+{
+    "common": {
+        "about": "O aplikacji",
+        "email": "E-mail",
+        "password": "Hasło",
+        "repeat-password-short": "Powtórz",
+        "repeat-password": "Powtórz hasło",
+        "new-password": "Nowe hasło",
+        "repeat-new-password": "Powtórz nowe hasło",
+        "avatar": "Awatar",
+        "username": "Nazwa użytkownika",
+        "nickname": "Pseudonim",
+        "save": "Zapisz",
+        "close": "Zamknij",
+        "cancel": "Anuluj",
+        "create": "Utwórz",
+        "change": "Zmień",
+        "confirm": "Potwierdź",
+        "reset": "Resetuj",
+        "language": "Język",
+        "version": "Wersja",
+        "pin": "Przypnij",
+        "unpin": "Odepnij",
+        "edit": "Edytuj",
+        "restore": "Przywróć",
+        "delete": "Usuń",
+        "null": "Null",
+        "share": "Udostępnij",
+        "archive": "Archiwizuj",
+        "basic": "Podstawowe",
+        "admin": "Admin",
+        "explore": "Odkrywaj",
+        "sign-in": "Zaloguj",
+        "sign-up": "Utwórz konto",
+        "sign-out": "Wyloguj",
+        "back-to-home": "Powrót do Strony Głównej",
+        "type": "Typ",
+        "shortcuts": "Skróty",
+        "title": "Tytuł",
+        "filter": "Filtruj",
+        "tags": "Tagi",
+        "yourself": "Ty",
+        "archived-at": "Zarchiwizowano",
+        "changed": "zmodyfikowano",
+        "update-on": "Update on",
+        "fold": "Zwiń",
+        "expand": "Rozwiń",
+        "image": "Obrazek",
+        "link": "Link",
+        "vacuum": "Vacuum",
+        "select": "Wybierz",
+        "database": "Baza danych"
+    },
+    "slogan": "Open-source centrum notatek do samodzielnego hostowania z zarządzaniem wiedzą i sieciami społecznościowymi.",
+    "auth": {
+        "signup-as-host": "Zarejestruj się jako właściciel",
+        "host-tip": "Rejestrujesz się jako właściciel.",
+        "not-host-tip": "Jeśli nie posiadasz konta skontaktuj się z właścicielem strony."
+    },
+    "sidebar": {
+        "daily-review": "Podsumowanie dnia",
+        "resources": "Zasoby",
+        "setting": "Ustawienia",
+        "archived": "Zarchiwizowane"
+    },
+    "daily-review": {
+        "oops-nothing": "Ups, nic tu nie ma."
+    },
+    "resources": {
+        "description": "Zobacz statyczne zasoby w notatkach, na przykład obrazki",
+        "no-resources": "Brak zasobów.",
+        "fetching-data": "pobieranie danych...",
+        "upload": "Wrzuć",
+        "preview": "Podgląd",
+        "linked-amount": "Linked memo amount",
+        "copy-link": "Kopiuj odnośnik",
+        "delete-resource": "Usuń zasób",
+        "warning-text": "Czy na pewno chcesz usunąć zasób? To działanie jest nieodwracalne❗",
+        "rename": "Zmień nazwę",
+        "clear": "Wyczyść",
+        "warning-text-unused": "Czy na pewno chcesz usunąć nieużywany zasób? To działanie jest nieodwracalne❗",
+        "no-unused-resources": "Brak nieużywanych zasobów",
+        "name": "Nazwa"
+    },
+    "archived": {
+        "archived-memos": "Zarchiwizowane notatki",
+        "no-archived-memos": "Brak zarchiwizowanych notatek.",
+        "fetching-data": "pobieranie danych..."
+    },
+    "editor": {
+        "editing": "Edytowanie...",
+        "cancel-edit": "Anuluj edycję",
+        "save": "Zapisz",
+        "placeholder": "Jakieś przemyślenia...",
+        "only-image-supported": "Only image file supported.",
+        "cant-empty": "Treść nie może być pusta",
+        "local": "Local",
+        "resources": "Zasoby"
+    },
+    "memo": {
+        "view-detail": "View Detail",
+        "copy": "Kopiuj",
+        "visibility": {
+            "private": "Widoczne tylko dla ciebie",
+            "protected": "Widoczne dla użytkowników",
+            "public": "Widoczne dla wszystkich",
+            "disabled": "Publiczne notatki są wyłączone"
+        }
+    },
+    "memo-list": {
+        "fetching-data": "pobieranie danych...",
+        "fetch-more": "Kliknij, aby pobrać więcej"
+    },
+    "shortcut-list": {
+        "shortcut-title": "krótki tytuł",
+        "create-shortcut": "Utwórz skrót",
+        "edit-shortcut": "Edytuj skrót",
+        "eligible-memo": "eligible memo",
+        "fill-previous": "Proszę uzupełnij poprzednią wartość filtra",
+        "title-required": "Tytuł jest wymagany",
+        "value-required": "Wartość filtra jest wymagana"
+    },
+    "filter": {
+        "new-filter": "Nowy filtr",
+        "type": {
+            "tag": "Tag",
+            "type": "Typ",
+            "text": "Tekst",
+            "display-time": "Wyświetlana data",
+            "visibility": "Widoczność"
+        },
+        "operator": {
+            "contains": "Zawiera",
+            "not-contains": "Nie zawiera",
+            "is": "To",
+            "is-not": "Różny od",
+            "before": "Przed",
+            "after": "Po"
+        },
+        "value": {
+            "not-tagged": "Brak tagów",
+            "linked": "Posiada linki"
+        },
+        "text-placeholder": "Rozpocznij z ^, aby wykorzystać regex"
+    },
+    "tag-list": {
+        "tip-text": "Wprowadź `#tag` aby utworzyć"
+    },
+    "search": {
+        "quickly-filter": "Szybkie filtry"
+    },
+    "setting": {
+        "my-account": "Moje konto",
+        "preference": "Ustawienia",
+        "member": "Użytkownik",
+        "member-list": "Lista użytkowników",
+        "system": "System",
+        "storage": "Przechowywanie",
+        "sso": "SSO",
+        "account-section": {
+            "title": "Informacje o koncie",
+            "update-information": "Aktualizuj informacje",
+            "change-password": "Zmień hasło"
+        },
+        "preference-section": {
+            "theme": "Motyw",
+            "default-memo-visibility": "Domyślna widoczność notatki",
+            "enable-folding-memo": "Włącz zawijanie notatek",
+            "enable-double-click": "Włącz podwójne kliknięcie aby edytować",
+            "editor-font-style": "Styl czcionki w edytorze",
+            "mobile-editor-style": "Mobile editor style",
+            "default-memo-sort-option": "Wyświetlana data notatki",
+            "created_ts": "Data utworzenia",
+            "updated_ts": "Data aktualizacji"
+        },
+        "storage-section": {
+            "storage-services-list": "Storage service list",
+            "create-a-service": "Utwórz serwis",
+            "update-a-service": "Aktualizuj serwis",
+            "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIABLE❗",
+            "delete-storage": "Delete Storage"
+        },
+        "member-section": {
+            "create-a-member": "Utwórz użytkownika"
+        },
+        "system-section": {
+            "server-name": "Nazwa serwera",
+            "customize-server": {
+                "title": "Personalizuj serwer",
+                "default": "Default is memos",
+                "icon-url": "URL ikony"
+            },
+            "database-file-size": "Rozmiar bazy danych",
+            "allow-user-signup": "Zezwól na rejestrację",
+            "disable-public-memos": "Wyłącz publiczne notatki",
+            "additional-style": "Dodatkowy styl",
+            "additional-script": "Dodatkowy skrypt",
+            "additional-style-placeholder": "Dodatkowy kod CSS",
+            "additional-script-placeholder": "Dodatkowy kod JavaScript"
+        },
+        "apperance-option": {
+            "system": "Systemowy",
+            "light": "Zawsze jasny",
+            "dark": "Zawsze ciemny"
+        }
+    },
+    "amount-text": {
+        "memo_one": "MEMO",
+        "memo_few": "",
+        "tag_one": "TAG",
+        "tag_few": "",
+        "day_one": "DAY",
+        "day_few": ""
+    },
+    "message": {
+        "no-memos": "brak notatek 🌃",
+        "memos-ready": "wszystkie notatki są gotowe 🎉",
+        "restored-successfully": "Pomyślnie przywrócono",
+        "memo-updated-datetime": "Zmieniono datę utworzenia notatki.",
+        "invalid-created-datetime": "Niepoprawna data utworzenia.",
+        "change-memo-created-time": "Zmień datę utworzenia notatki",
+        "memo-not-found": "Nie znaleziono notatki.",
+        "fill-all": "Proszę uzupełnij wszystkie pola.",
+        "password-not-match": "Passwords do not match.",
+        "new-password-not-match": "New passwords do not match.",
+        "image-load-failed": "Image load failed",
+        "fill-form": "Please fill out this form",
+        "login-failed": "Login failed",
+        "signup-failed": "Signup failed",
+        "user-not-found": "User not found",
+        "password-changed": "Password Changed",
+        "private-only": "This memo is private only.",
+        "copied": "Skopiowano",
+        "succeed-copy-content": "Succeed to copy content to clipboard.",
+        "succeed-copy-code": "Succeed to copy code to clipboard.",
+        "succeed-copy-link": "Succeed to copy link to clipboard.",
+        "change-resource-filename": "Change resource filename",
+        "resource-filename-updated": "Resource filename changed.",
+        "invalid-resource-filename": "Invalid filename.",
+        "click-to-save-the-image": "Click to save the image",
+        "generating-the-screenshot": "Generating the screenshot...",
+        "count-selected-resources": "Total selected",
+        "too-short": "Too short",
+        "too-long": "Too long",
+        "not-allow-space": "Don't allow space",
+        "not-allow-chinese": "Don't allow chinese",
+        "succeed-vacuum-database": "Succeed to vacuum database",
+        "succeed-update-additional-style": "Succeed to update additional style",
+        "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
+        "succeed-update-customized-profile": "Succeed to update customized profile",
+        "succeed-update-additional-script": "Succeed to update additional script",
+        "update-succeed": "Update succeed",
+        "page-not-found": "404 - Nie znaleziono 😥"
+    },
+    "days": {
+        "monday": "Poniedziałek",
+        "mon": "Pon",
+        "tuesday": "Wtorek",
+        "tue": "Wt",
+        "wednesday": "Środa",
+        "wed": "Śr",
+        "thursday": "Czwartek",
+        "thu": "Czw",
+        "friday": "Piątek",
+        "fri": "Pt",
+        "saturday": "Sobota",
+        "sat": "Sob",
+        "sunday": "Niedziela",
+        "sun": "Nie"
+    }
+}

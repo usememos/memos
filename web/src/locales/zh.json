@@ -1,267 +1,271 @@
 {
-  "common": {
-    "about": "关于",
-    "email": "邮箱",
-    "password": "密码",
-    "repeat-password-short": "重复密码",
-    "repeat-password": "重复密码",
-    "new-password": "新密码",
-    "repeat-new-password": "重复新密码",
-    "username": "用户名",
-    "nickname": "昵称",
-    "save": "保存",
-    "close": "关闭",
-    "cancel": "退出",
-    "create": "创建",
-    "change": "修改",
-    "confirm": "确定",
-    "reset": "重置",
-    "language": "语言",
-    "version": "版本",
-    "pin": "置顶",
-    "unpin": "取消置顶",
-    "edit": "编辑",
-    "restore": "恢复",
-    "delete": "删除",
-    "null": "空",
-    "share": "分享",
-    "archive": "归档",
-    "basic": "基础",
-    "admin": "管理员",
-    "explore": "探索",
-    "sign-in": "登录",
-    "sign-up": "注册",
-    "sign-out": "退出登录",
-    "back-to-home": "回到主页",
-    "type": "类型",
-    "shortcuts": "捷径",
-    "title": "标题",
-    "filter": "过滤器",
-    "tags": "全部标签",
-    "yourself": "你自己",
-    "archived-at": "归档于",
-    "changed": "已更改",
-    "update-on": "更新于",
-    "fold": "折叠",
-    "expand": "展开",
-    "image": "图片",
-    "link": "链接",
-    "vacuum": "清理",
-    "select": "选择",
-    "database": "数据库"
-  },
-  "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
-  "auth": {
-    "signup-as-host": "注册为 Host",
-    "host-tip": "你正在注册为 Host 用户账号。",
-    "not-host-tip": "如果你没有账号，请联系站点 Host"
-  },
-  "sidebar": {
-    "daily-review": "每日回顾",
-    "resources": "资源库",
-    "setting": "设置",
-    "archived": "已归档"
-  },
-  "daily-review": {
-    "oops-nothing": "啊哦，空空荡荡。"
-  },
-  "resources": {
-    "description": "查看在 Memo 中的静态资源。例如：图片",
-    "no-resources": "没有资源",
-    "fetching-data": "请求数据中...",
-    "upload": "上传",
-    "preview": "预览",
-    "copy-link": "拷贝链接",
-    "delete-resource": "删除资源",
-    "warning-text": "确定删除这个资源么？此操作不可逆❗",
-    "linked-amount": "链接的 Memo 数量",
-    "rename": "重命名",
-    "clear": "清除",
-    "warning-text-unused": "确定删除这些无用资源么？此操作不可逆❗",
-    "no-unused-resources": "无可删除的资源",
-    "name": "资源名称"
-  },
-  "archived": {
-    "archived-memos": "已归档的 Memo",
-    "no-archived-memos": "没有归档的 Memo",
-    "fetching-data": "请求数据中..."
-  },
-  "editor": {
-    "editing": "编辑中...",
-    "cancel-edit": "退出编辑",
-    "save": "记下",
-    "placeholder": "现在的想法是...",
-    "only-image-supported": "仅支持图片文件。",
-    "cant-empty": "内容不能为空",
-    "local": "本地上传",
-    "resources": "资源库"
-  },
-  "memo": {
-    "view-detail": "查看详情",
-    "copy": "复制",
-    "visibility": {
-      "private": "仅自己可见",
-      "protected": "登录用户可见",
-      "public": "所有人可见"
+    "common": {
+        "about": "关于",
+        "email": "邮箱",
+        "password": "密码",
+        "repeat-password-short": "重复密码",
+        "repeat-password": "重复密码",
+        "new-password": "新密码",
+        "repeat-new-password": "重复新密码",
+        "username": "用户名",
+        "nickname": "昵称",
+        "save": "保存",
+        "close": "关闭",
+        "cancel": "退出",
+        "create": "创建",
+        "change": "修改",
+        "confirm": "确定",
+        "reset": "重置",
+        "language": "语言",
+        "version": "版本",
+        "pin": "置顶",
+        "unpin": "取消置顶",
+        "edit": "编辑",
+        "restore": "恢复",
+        "delete": "删除",
+        "null": "空",
+        "share": "分享",
+        "archive": "归档",
+        "basic": "基础",
+        "admin": "管理员",
+        "explore": "探索",
+        "sign-in": "登录",
+        "sign-up": "注册",
+        "sign-out": "退出登录",
+        "back-to-home": "回到主页",
+        "type": "类型",
+        "shortcuts": "捷径",
+        "title": "标题",
+        "filter": "过滤器",
+        "tags": "全部标签",
+        "yourself": "你自己",
+        "archived-at": "归档于",
+        "changed": "已更改",
+        "update-on": "更新于",
+        "fold": "折叠",
+        "expand": "展开",
+        "image": "图片",
+        "link": "链接",
+        "vacuum": "清理",
+        "select": "选择",
+        "database": "数据库",
+        "avatar": "头像"
+    },
+    "slogan": "一个可用于知识管理和社交网络的开源、自托管的备忘录中心。",
+    "auth": {
+        "signup-as-host": "注册为 Host",
+        "host-tip": "你正在注册为 Host 用户账号。",
+        "not-host-tip": "如果你没有账号，请联系站点 Host"
+    },
+    "sidebar": {
+        "daily-review": "每日回顾",
+        "resources": "资源库",
+        "setting": "设置",
+        "archived": "已归档"
+    },
+    "daily-review": {
+        "oops-nothing": "啊哦，空空荡荡。"
+    },
+    "resources": {
+        "description": "查看在 Memo 中的静态资源。例如：图片",
+        "no-resources": "没有资源",
+        "fetching-data": "请求数据中...",
+        "upload": "上传",
+        "preview": "预览",
+        "copy-link": "拷贝链接",
+        "delete-resource": "删除资源",
+        "warning-text": "确定删除这个资源么？此操作不可逆❗",
+        "linked-amount": "链接的 Memo 数量",
+        "rename": "重命名",
+        "clear": "清除",
+        "warning-text-unused": "确定删除这些无用资源么？此操作不可逆❗",
+        "no-unused-resources": "无可删除的资源",
+        "name": "资源名称"
+    },
+    "archived": {
+        "archived-memos": "已归档的 Memo",
+        "no-archived-memos": "没有归档的 Memo",
+        "fetching-data": "请求数据中..."
+    },
+    "editor": {
+        "editing": "编辑中...",
+        "cancel-edit": "退出编辑",
+        "save": "记下",
+        "placeholder": "现在的想法是...",
+        "only-image-supported": "仅支持图片文件。",
+        "cant-empty": "内容不能为空",
+        "local": "本地上传",
+        "resources": "资源库"
+    },
+    "memo": {
+        "view-detail": "查看详情",
+        "copy": "复制",
+        "visibility": {
+            "private": "仅自己可见",
+            "protected": "登录用户可见",
+            "public": "所有人可见",
+            "disabled": "公共memos已禁用"
+        }
+    },
+    "memo-list": {
+        "fetching-data": "请求数据中...",
+        "fetch-more": "点击加载更多"
+    },
+    "shortcut-list": {
+        "shortcut-title": "捷径标题",
+        "create-shortcut": "创建捷径",
+        "edit-shortcut": "编辑捷径",
+        "eligible-memo": "符合条件的 Memo",
+        "fill-previous": "请填写之前的过滤值",
+        "title-required": "标题是必填项",
+        "value-required": "过滤值是必填项"
+    },
+    "filter": {
+        "new-filter": "新建过滤器",
+        "type": {
+            "tag": "标签",
+            "type": "类型",
+            "text": "文本",
+            "display-time": "显示时间",
+            "visibility": "可见性"
+        },
+        "operator": {
+            "contains": "包含",
+            "not-contains": "不包含",
+            "is": "是",
+            "is-not": "不是",
+            "before": "早于",
+            "after": "晚于"
+        },
+        "value": {
+            "not-tagged": "无标签",
+            "linked": "包含链接"
+        },
+        "text-placeholder": "以 ^ 开头使用正则表达式"
+    },
+    "tag-list": {
+        "tip-text": "输入`#tag `来创建标签"
+    },
+    "search": {
+        "quickly-filter": "快速过滤"
+    },
+    "setting": {
+        "my-account": "我的账号",
+        "preference": "偏好设置",
+        "storage": "存储设置",
+        "member": "成员",
+        "member-list": "成员列表",
+        "system": "系统",
+        "account-section": {
+            "title": "账号信息",
+            "update-information": "更新个人信息",
+            "change-password": "修改密码"
+        },
+        "preference-section": {
+            "theme": "主题",
+            "default-memo-visibility": "默认 Memo 可见性",
+            "enable-folding-memo": "开启折叠 Memo",
+            "enable-double-click": "开启双击编辑",
+            "editor-font-style": "编辑器字体样式",
+            "mobile-editor-style": "移动端编辑器样式",
+            "default-memo-sort-option": "Memo 显示时间",
+            "created_ts": "创建时间",
+            "updated_ts": "更新时间"
+        },
+        "storage-section": {
+            "storage-services-list": "存储服务列表",
+            "create-a-service": "新建服务",
+            "update-a-service": "更新服务",
+            "delete-storage": "删除存储服务",
+            "warning-text": "确定删除这个存储服务么？此操作不可逆❗"
+        },
+        "member-section": {
+            "create-a-member": "创建成员"
+        },
+        "system-section": {
+            "server-name": "服务名称",
+            "customize-server": {
+                "title": "自定义服务",
+                "default": "默认为 memos",
+                "icon-url": "图标 URL"
+            },
+            "database-file-size": "数据库文件大小",
+            "allow-user-signup": "允许用户注册",
+            "additional-style": "自定义样式",
+            "additional-script": "自定义脚本",
+            "additional-style-placeholder": "自定义 CSS 代码",
+            "additional-script-placeholder": "自定义 JavaScript 代码",
+            "disable-public-memos": "禁用公共memos"
+        },
+        "apperance-option": {
+            "system": "跟随系统",
+            "light": "总是浅色",
+            "dark": "总是深色"
+        },
+        "sso": "SSO"
+    },
+    "amount-text": {
+        "memo_other": "MEMOS",
+        "tag_other": "TAGS",
+        "day_other": "DAYS",
+        "memo_one": "MEMO",
+        "tag_one": "TAG",
+        "day_one": "DAY"
+    },
+    "message": {
+        "no-memos": "没有 Memo 了 🌃",
+        "memos-ready": "所有 Memo 已就绪 🎉",
+        "restored-successfully": "恢复成功",
+        "memo-updated-datetime": "Memo 创建日期时间已更改。",
+        "invalid-created-datetime": "创建的日期时间无效。",
+        "change-memo-created-time": "更改 Memo 创建时间",
+        "memo-not-found": "找不到 Memo。",
+        "fill-all": "请填写所有字段。",
+        "password-not-match": "密码不一致。",
+        "new-password-not-match": "新密码不匹配。",
+        "image-load-failed": "图片加载失败",
+        "fill-form": "请填写此表单",
+        "login-failed": "登录失败",
+        "signup-failed": "注册失败",
+        "user-not-found": "未找到用户",
+        "password-changed": "密码已修改",
+        "private-only": "此 Memo 仅自己可见",
+        "copied": "已复制",
+        "succeed-copy-content": "复制内容到剪贴板成功。",
+        "succeed-copy-code": "复制代码到剪贴板成功。",
+        "succeed-copy-link": "复制链接到剪贴板成功。",
+        "change-resource-filename": "更改资源文件名",
+        "resource-filename-updated": "资源文件名更改成功。",
+        "invalid-resource-filename": "无效的资源文件名",
+        "click-to-save-the-image": "点击保存图片",
+        "generating-the-screenshot": "正在生成图片...",
+        "count-selected-resources": "所选资源总数",
+        "too-short": "过短",
+        "too-long": "过长",
+        "not-allow-space": "不允许包含空格",
+        "not-allow-chinese": "不允许包含中文",
+        "succeed-update-additional-style": "更新附加样式成功",
+        "succeed-copy-resource-link": "复制资源链接到剪贴板成功",
+        "succeed-update-customized-profile": "更新自定义配置文件成功",
+        "succeed-update-additional-script": "更新附加脚本成功",
+        "update-succeed": "更新成功",
+        "page-not-found": "404 - 未找到网页 😥",
+        "succeed-vacuum-database": "清理数据库成功"
+    },
+    "days": {
+        "monday": "星期一",
+        "mon": "一",
+        "tuesday": "星期二",
+        "tue": "二",
+        "wednesday": "星期三",
+        "wed": "三",
+        "thursday": "星期四",
+        "thu": "四",
+        "friday": "星期五",
+        "fri": "五",
+        "saturday": "星期六",
+        "sat": "六",
+        "sunday": "星期天",
+        "sun": "日"
     }
-  },
-  "memo-list": {
-    "fetching-data": "请求数据中...",
-    "fetch-more": "点击加载更多"
-  },
-  "shortcut-list": {
-    "shortcut-title": "捷径标题",
-    "create-shortcut": "创建捷径",
-    "edit-shortcut": "编辑捷径",
-    "eligible-memo": "符合条件的 Memo",
-    "fill-previous": "请填写之前的过滤值",
-    "title-required": "标题是必填项。",
-    "value-required": "过滤值是必填项"
-  },
-  "filter": {
-    "new-filter": "新建过滤器",
-    "type": {
-      "tag": "标签",
-      "type": "类型",
-      "text": "文本",
-      "display-time": "显示时间",
-      "visibility": "可见性"
-    },
-    "operator": {
-      "contains": "包含",
-      "not-contains": "不包含",
-      "is": "是",
-      "is-not": "不是",
-      "before": "早于",
-      "after": "晚于"
-    },
-    "value": {
-      "not-tagged": "无标签",
-      "linked": "包含链接"
-    },
-    "text-placeholder": "以 ^ 开头使用正则表达式"
-  },
-  "tag-list": {
-    "tip-text": "输入`#tag `来创建标签"
-  },
-  "search": {
-    "quickly-filter": "快速过滤"
-  },
-  "setting": {
-    "my-account": "我的账号",
-    "preference": "偏好设置",
-    "storage": "存储设置",
-    "member": "成员",
-    "member-list": "成员列表",
-    "system": "系统",
-    "account-section": {
-      "title": "账号信息",
-      "update-information": "更新个人信息",
-      "change-password": "修改密码"
-    },
-    "preference-section": {
-      "theme": "主题",
-      "default-memo-visibility": "默认 Memo 可见性",
-      "enable-folding-memo": "开启折叠 Memo",
-      "enable-double-click": "开启双击编辑",
-      "editor-font-style": "编辑器字体样式",
-      "mobile-editor-style": "移动端编辑器样式",
-      "default-memo-sort-option": "Memo 显示时间",
-      "created_ts": "创建时间",
-      "updated_ts": "更新时间"
-    },
-    "storage-section": {
-      "storage-services-list": "存储服务列表",
-      "create-a-service": "新建服务",
-      "update-a-service": "更新服务",
-      "delete-storage": "删除存储服务",
-      "warning-text": "确定删除这个存储服务么？此操作不可逆❗"
-    },
-    "member-section": {
-      "create-a-member": "创建成员"
-    },
-    "system-section": {
-      "server-name": "服务名称",
-      "customize-server": {
-        "title": "自定义服务",
-        "default": "默认为 memos",
-        "icon-url": "图标 URL"
-      },
-      "database-file-size": "数据库文件大小",
-      "allow-user-signup": "允许用户注册",
-      "additional-style": "自定义样式",
-      "additional-script": "自定义脚本",
-      "additional-style-placeholder": "自定义 CSS 代码",
-      "additional-script-placeholder": "自定义 JavaScript 代码"
-    },
-    "apperance-option": {
-      "system": "跟随系统",
-      "light": "总是浅色",
-      "dark": "总是深色"
-    }
-  },
-  "amount-text": {
-    "memo_one": "MEMO",
-    "memo_other": "MEMOS",
-    "tag_one": "TAG",
-    "tag_other": "TAGS",
-    "day_one": "DAY",
-    "day_other": "DAYS"
-  },
-  "message": {
-    "no-memos": "没有 Memo 了 🌃",
-    "memos-ready": "所有 Memo 已就绪 🎉",
-    "restored-successfully": "恢复成功",
-    "memo-updated-datetime": "Memo 创建日期时间已更改。",
-    "invalid-created-datetime": "创建的日期时间无效。",
-    "change-memo-created-time": "更改 Memo 创建时间",
-    "memo-not-found": "找不到 Memo。",
-    "fill-all": "请填写所有字段。",
-    "password-not-match": "密码不一致。",
-    "new-password-not-match": "新密码不匹配。",
-    "image-load-failed": "图片加载失败",
-    "fill-form": "请填写此表单",
-    "login-failed": "登录失败",
-    "signup-failed": "注册失败",
-    "user-not-found": "未找到用户",
-    "password-changed": "密码已修改",
-    "private-only": "此 Memo 仅自己可见",
-    "copied": "已复制",
-    "succeed-copy-content": "复制内容到剪贴板成功。",
-    "succeed-copy-code": "复制代码到剪贴板成功。",
-    "succeed-copy-link": "复制链接到剪贴板成功。",
-    "change-resource-filename": "更改资源文件名",
-    "resource-filename-updated": "资源文件名更改成功。",
-    "invalid-resource-filename": "无效的资源文件名",
-    "click-to-save-the-image": "点击保存图片",
-    "generating-the-screenshot": "正在生成图片...",
-    "count-selected-resources": "所选资源总数",
-    "too-short": "过短",
-    "too-long": "过长",
-    "not-allow-space": "不允许包含空格",
-    "not-allow-chinese": "不允许包含中文",
-    "succeed-to-vacuum-database": "清空数据库成功",
-    "succeed-update-additional-style": "更新附加样式成功",
-    "succeed-copy-resource-link": "复制资源链接到剪贴板成功",
-    "succeed-update-customized-profile": "更新自定义配置文件成功",
-    "succeed-update-additional-script": "更新附加脚本成功",
-    "update-succeed": "更新成功",
-    "page-not-found": "404 - 未找到网页 😥"
-  },
-  "days": {
-    "monday": "星期一",
-    "mon": "一",
-    "tuesday": "星期二",
-    "tue": "二",
-    "wednesday": "星期三",
-    "wed": "三",
-    "thursday": "星期四",
-    "thu": "四",
-    "friday": "星期五",
-    "fri": "五",
-    "saturday": "星期六",
-    "sat": "六",
-    "sunday": "星期天",
-    "sun": "日"
-  }
 }
