@@ -67,7 +67,7 @@ export const useGlobalStore = () => {
     isDev: () => {
       return state.systemStatus.profile.mode !== "prod";
     },
-    isFeatEnable: (feat: string) => {
+    isFeatEnabled: (feat: Feature) => {
       return state.systemStatus.profile.feature.split(",").includes(feat) || state.systemStatus.profile.feature === "all";
     },
     fetchSystemStatus: async () => {
