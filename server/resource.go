@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -17,6 +19,7 @@ import (
 	"github.com/usememos/memos/common"
 	metric "github.com/usememos/memos/plugin/metrics"
 	"github.com/usememos/memos/plugin/storage/s3"
+	"github.com/usememos/memos/server/profile"
 )
 
 const (
@@ -94,16 +97,38 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		var resourceCreate *api.ResourceCreate
 		if storageServiceID == 0 {
-			fileBytes, err := io.ReadAll(src)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
-			}
-			resourceCreate = &api.ResourceCreate{
-				CreatorID: userID,
-				Filename:  filename,
-				Type:      filetype,
-				Size:      size,
-				Blob:      fileBytes,
+			if s.Profile.IsFeatEnabled(profile.FeatStorageLocal) {
+				dstPath := fmt.Sprintf("%d_%s_%s", userID, time.Now().Format("20060102150405"), filename)
+				dstPath = path.Join(s.Profile.Data, "resources", dstPath)
+
+				// copy file to from src to dst
+				dst, err := os.Create(dstPath)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create file").SetInternal(err)
+				}
+				defer dst.Close()
+				if _, err = io.Copy(dst, src); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to copy file").SetInternal(err)
+				}
+				resourceCreate = &api.ResourceCreate{
+					CreatorID:    userID,
+					Filename:     filename,
+					Type:         filetype,
+					Size:         size,
+					InternalLink: dstPath,
+				}
+			} else {
+				fileBytes, err := io.ReadAll(src)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
+				}
+				resourceCreate = &api.ResourceCreate{
+					CreatorID: userID,
+					Filename:  filename,
+					Type:      filetype,
+					Size:      size,
+					Blob:      fileBytes,
+				}
 			}
 		} else {
 			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageServiceID})
@@ -178,7 +203,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			ID:        &resourceID,
 			CreatorID: &userID,
-			GetBlob:   true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
@@ -207,7 +231,16 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
-		return c.Stream(http.StatusOK, resource.Type, bytes.NewReader(resource.Blob))
+		var reader io.Reader
+		if resource.Blob != nil {
+			reader = bytes.NewReader(resource.Blob)
+		} else {
+			reader, err = os.Open(resource.ExternalLink)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open external link").SetInternal(err)
+			}
+		}
+		return c.Stream(http.StatusOK, resource.Type, reader)
 	})
 
 	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
@@ -281,6 +314,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 		}
+
+		if resource.InternalLink != "" {
+			if err := os.Remove(resource.InternalLink); err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
+			}
+		}
+
 		return c.JSON(http.StatusOK, true)
 	})
 }
@@ -315,7 +355,16 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(resource.Blob))
 			return nil
 		}
-		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(resource.Blob))
+		var reader io.Reader
+		if resource.Blob != nil {
+			reader = bytes.NewReader(resource.Blob)
+		} else {
+			reader, err = os.Open(resource.ExternalLink)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open external link").SetInternal(err)
+			}
+		}
+		return c.Stream(http.StatusOK, resource.Type, reader)
 	})
 }
 

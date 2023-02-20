@@ -25,6 +25,7 @@ type resourceRaw struct {
 	Filename     string
 	Blob         []byte
 	ExternalLink string
+	InternalLink string
 	Type         string
 	Size         int64
 }
@@ -41,9 +42,11 @@ func (raw *resourceRaw) toResource() *api.Resource {
 		// Domain specific fields
 		Filename:     raw.Filename,
 		Blob:         raw.Blob,
+		InternalLink: raw.InternalLink,
 		ExternalLink: raw.ExternalLink,
-		Type:         raw.Type,
-		Size:         raw.Size,
+
+		Type: raw.Type,
+		Size: raw.Size,
 	}
 }
 
@@ -191,19 +194,21 @@ func createResource(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate)
 		INSERT INTO resource (
 			filename,
 			blob,
+			internal_link,
 			external_link,
 			type,
 			size,
 			creator_id
 		)
-		VALUES (?, ?, ?, ?, ?, ?)
-		RETURNING id, filename, blob, external_link, type, size, creator_id, created_ts, updated_ts
+		VALUES (?, ?, ?, ?, ?, ?, ?)
+		RETURNING id, filename, blob, internal_link, external_link, type, size, creator_id, created_ts, updated_ts
 	`
 	var resourceRaw resourceRaw
-	if err := tx.QueryRowContext(ctx, query, create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID).Scan(
+	if err := tx.QueryRowContext(ctx, query, create.Filename, create.Blob, create.InternalLink, create.ExternalLink, create.Type, create.Size, create.CreatorID).Scan(
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
 		&resourceRaw.Blob,
+		&resourceRaw.InternalLink,
 		&resourceRaw.ExternalLink,
 		&resourceRaw.Type,
 		&resourceRaw.Size,
@@ -233,13 +238,14 @@ func patchResource(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*
 		UPDATE resource
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, filename, blob, external_link, type, size, creator_id, created_ts, updated_ts
+		RETURNING id, filename, blob, internal_link, external_link, type, size, creator_id, created_ts, updated_ts
 	`
 	var resourceRaw resourceRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
 		&resourceRaw.Blob,
+		&resourceRaw.InternalLink,
 		&resourceRaw.ExternalLink,
 		&resourceRaw.Type,
 		&resourceRaw.Size,
@@ -269,7 +275,7 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 		where, args = append(where, "id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
 	}
 
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
+	fields := []string{"id", "filename", "internal_link", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
 	if find.GetBlob {
 		fields = append(fields, "blob")
 	}
@@ -293,6 +299,7 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 		dest := []interface{}{
 			&resourceRaw.ID,
 			&resourceRaw.Filename,
+			&resourceRaw.InternalLink,
 			&resourceRaw.ExternalLink,
 			&resourceRaw.Type,
 			&resourceRaw.Size,

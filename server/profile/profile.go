@@ -3,12 +3,15 @@ package profile
 import (
 	"fmt"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 
 	"github.com/spf13/viper"
 	"github.com/usememos/memos/server/version"
 )
+
+type Feature string
 
 // Profile is the configuration to start main server.
 type Profile struct {
@@ -24,6 +27,21 @@ type Profile struct {
 	Version string `json:"version"`
 	// Feat is the feature set of server, split by comma
 	Feat string `json:"feature"`
+}
+
+const (
+	FeatStorageLocal Feature = "STORAGE_LOCAL"
+	FeatSSO          Feature = "SSO"
+	FeatStorageS3    Feature = "STORAGE_S3"
+)
+
+func (p *Profile) IsFeatEnabled(feat Feature) bool {
+	for _, f := range strings.Split(p.Feat, ",") {
+		if f == string(feat) {
+			return true
+		}
+	}
+	return p.Feat == "ALL"
 }
 
 func checkDSN(dataDir string) (string, error) {
@@ -58,16 +76,29 @@ func GetProfile() (*Profile, error) {
 		profile.Mode = "demo"
 	}
 
-	if profile.Mode == "prod" && profile.Data == "" {
-		profile.Data = "/var/opt/memos"
-	}
-
 	// Make feat upper
 	profile.Feat = strings.ToUpper(profile.Feat)
 
 	// If no feature flags are supplied, use all features when not in prod mode.
 	if profile.Feat == "" && profile.Mode != "prod" {
 		profile.Feat = "ALL"
+	}
+
+	if profile.Mode == "prod" && profile.Data == "" {
+		profile.Data = "/var/opt/memos"
+	}
+
+	profile.Data, err = filepath.Abs(profile.Data)
+	if err != nil {
+		return nil, err
+	}
+
+	// mkdir Data/resources
+	if profile.IsFeatEnabled(FeatStorageLocal) {
+		err = os.MkdirAll(path.Join(profile.Data, "resources"), 0755)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	dataDir, err := checkDSN(profile.Data)

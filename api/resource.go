@@ -11,6 +11,7 @@ type Resource struct {
 	// Domain specific fields
 	Filename     string `json:"filename"`
 	Blob         []byte `json:"-"`
+	InternalLink string `json:"-"`
 	ExternalLink string `json:"externalLink"`
 	Type         string `json:"type"`
 	Size         int64  `json:"size"`
@@ -26,6 +27,7 @@ type ResourceCreate struct {
 	// Domain specific fields
 	Filename     string `json:"filename"`
 	Blob         []byte `json:"-"`
+	InternalLink string `json:"-"`
 	ExternalLink string `json:"externalLink"`
 	Type         string `json:"type"`
 	Size         int64  `json:"-"`

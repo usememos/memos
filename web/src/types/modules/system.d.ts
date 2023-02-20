@@ -26,6 +26,8 @@ interface SystemStatus {
   storageServiceId: number;
 }
 
+type Feature = "STORAGE_LOCAL" | "SSO" | "STORAGE_S3";
+
 interface SystemSetting {
   name: string;
   value: string;
