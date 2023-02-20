@@ -359,7 +359,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		if resource.Blob != nil {
 			reader = bytes.NewReader(resource.Blob)
 		} else {
-			reader, err = os.Open(resource.ExternalLink)
+			reader, err = os.Open(resource.InternalLink)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open external link").SetInternal(err)
 			}
