@@ -1,12 +1,12 @@
 package profile
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/spf13/viper"
 	"github.com/usememos/memos/server/version"
 )
 
@@ -22,6 +22,8 @@ type Profile struct {
 	DSN string `json:"-"`
 	// Version is the current version of server
 	Version string `json:"version"`
+	// Feat is the feature set of server, split by comma
+	Feat string `json:"feature"`
 }
 
 func checkDSN(dataDir string) (string, error) {
@@ -47,10 +49,10 @@ func checkDSN(dataDir string) (string, error) {
 // GetDevProfile will return a profile for dev or prod.
 func GetProfile() (*Profile, error) {
 	profile := Profile{}
-	flag.StringVar(&profile.Mode, "mode", "demo", "mode of server")
-	flag.IntVar(&profile.Port, "port", 8081, "port of server")
-	flag.StringVar(&profile.Data, "data", "", "data directory")
-	flag.Parse()
+	err := viper.Unmarshal(&profile)
+	if err != nil {
+		return nil, err
+	}
 
 	if profile.Mode != "demo" && profile.Mode != "dev" && profile.Mode != "prod" {
 		profile.Mode = "demo"
@@ -58,6 +60,14 @@ func GetProfile() (*Profile, error) {
 
 	if profile.Mode == "prod" && profile.Data == "" {
 		profile.Data = "/var/opt/memos"
+	}
+
+	// Make feat upper
+	profile.Feat = strings.ToUpper(profile.Feat)
+
+	// If no feature flags are supplied, use all features when not in prod mode.
+	if profile.Feat == "" && profile.Mode != "prod" {
+		profile.Feat = "ALL"
 	}
 
 	dataDir, err := checkDSN(profile.Data)

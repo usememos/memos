@@ -83,7 +83,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
               >
                 <Icon.Settings2 className="w-4 h-auto mr-2 opacity-80" /> {t("setting.system")}
               </span>
-              {globalStore.isDev() && (
+              {globalStore.isFeatEnable("STORAGE") && (
                 <span
                   onClick={() => handleSectionSelectorItemClick("storage")}
                   className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
@@ -91,7 +91,7 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
                   <Icon.Database className="w-4 h-auto mr-2 opacity-80" /> {t("setting.storage")} <BetaBadge />
                 </span>
               )}
-              {globalStore.isDev() && (
+              {globalStore.isFeatEnable("SSO") && (
                 <span
                   onClick={() => handleSectionSelectorItemClick("sso")}
                   className={`section-item ${state.selectedSection === "sso" ? "selected" : ""}`}
