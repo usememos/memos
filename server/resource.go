@@ -364,7 +364,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open external link").SetInternal(err)
 			}
 		}
-		return c.Stream(http.StatusOK, resource.Type, reader)
+		return c.Stream(http.StatusOK, resourceType, reader)
 	})
 }
 
