@@ -29,8 +29,8 @@ type Profile struct {
 }
 
 const (
-	FeatSSO       Feature = "SSO"
-	FeatStorageS3 Feature = "STORAGE_S3"
+	FeatureSSO       Feature = "SSO"
+	FeatureStorageS3 Feature = "STORAGE_S3"
 )
 
 func (p *Profile) IsFeatEnabled(feat Feature) bool {
