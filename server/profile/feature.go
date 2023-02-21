@@ -9,7 +9,7 @@ const (
 	FeatureStorageS3 FeatureType = "STORAGE_S3"
 )
 
-func (p *Profile) IsFeatEnabled(feat FeatureType) bool {
+func (p *Profile) IsFeatureEnabled(feat FeatureType) bool {
 	for _, f := range strings.Split(p.Feature, ",") {
 		if f == string(feat) {
 			return true
