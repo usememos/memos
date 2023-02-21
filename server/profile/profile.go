@@ -10,8 +10,6 @@ import (
 	"github.com/usememos/memos/server/version"
 )
 
-type Feature string
-
 // Profile is the configuration to start main server.
 type Profile struct {
 	// Mode can be "prod" or "dev" or "demo"
@@ -25,21 +23,7 @@ type Profile struct {
 	// Version is the current version of server
 	Version string `json:"version"`
 	// Feat is the feature set of server, split by comma
-	Feat string `json:"feature"`
-}
-
-const (
-	FeatureSSO       Feature = "SSO"
-	FeatureStorageS3 Feature = "STORAGE_S3"
-)
-
-func (p *Profile) IsFeatEnabled(feat Feature) bool {
-	for _, f := range strings.Split(p.Feat, ",") {
-		if f == string(feat) {
-			return true
-		}
-	}
-	return p.Feat == "ALL"
+	Feature string `json:"feature"`
 }
 
 func checkDSN(dataDir string) (string, error) {
@@ -79,11 +63,11 @@ func GetProfile() (*Profile, error) {
 	}
 
 	// Make feat upper
-	profile.Feat = strings.ToUpper(profile.Feat)
+	profile.Feature = strings.ToUpper(profile.Feature)
 
 	// If no feature flags are supplied, use all features when not in prod mode.
-	if profile.Feat == "" && profile.Mode != "prod" {
-		profile.Feat = "ALL"
+	if profile.Feature == "" && profile.Mode != "prod" {
+		profile.Feature = "ALL"
 	}
 
 	dataDir, err := checkDSN(profile.Data)

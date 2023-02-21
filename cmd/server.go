@@ -96,7 +96,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-	err = viper.BindPFlag("feat", rootCmd.PersistentFlags().Lookup("feat"))
+	err = viper.BindPFlag("feature", rootCmd.PersistentFlags().Lookup("feat"))
 	if err != nil {
 		panic(err)
 	}
@@ -120,6 +120,6 @@ func initConfig() {
 	println("port:", profile.Port)
 	println("dsn:", profile.DSN)
 	println("version:", profile.Version)
-	println("feat: ", profile.Feat)
+	println("feature: ", profile.Feature)
 	println("---")
 }
