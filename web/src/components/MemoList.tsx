@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocationStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
+import { useLocationStore, useMemoStore, useShortcutStore } from "../store/module";
 import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
@@ -11,12 +11,10 @@ import "../less/memo-list.less";
 
 const MemoList = () => {
   const { t } = useTranslation();
-  const userStore = useUserStore();
   const memoStore = useMemoStore();
   const shortcutStore = useShortcutStore();
   const locationStore = useLocationStore();
   const query = locationStore.state.query;
-  const memoDisplayTsOption = userStore.state.user?.setting.memoDisplayTsOption;
   const { memos, isFetching } = memoStore.state;
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
@@ -54,7 +52,7 @@ const MemoList = () => {
           if (
             duration &&
             duration.from < duration.to &&
-            (utils.getTimeStampByDate(memo.displayTs) < duration.from || utils.getTimeStampByDate(memo.displayTs) > duration.to)
+            (utils.getTimeStampByDate(memo.createdTs) < duration.from || utils.getTimeStampByDate(memo.createdTs) > duration.to)
           ) {
             shouldShow = false;
           }
@@ -79,7 +77,7 @@ const MemoList = () => {
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
   const memoSort = (mi: Memo, mj: Memo) => {
-    return mj.displayTs - mi.displayTs;
+    return mj.createdTs - mi.createdTs;
   };
   pinnedMemos.sort(memoSort);
   unpinnedMemos.sort(memoSort);
@@ -99,7 +97,7 @@ const MemoList = () => {
         console.error(error);
         toastHelper.error(error.response.data.message);
       });
-  }, [memoDisplayTsOption]);
+  }, []);
 
   useEffect(() => {
     const pageWrapper = document.body.querySelector(".page-wrapper");
@@ -134,7 +132,7 @@ const MemoList = () => {
   return (
     <div className="memo-list-container">
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} />
+        <Memo key={`${memo.id}-${memo.createdTs}`} memo={memo} />
       ))}
       {isFetching ? (
         <div className="status-text-container fetching-tip">

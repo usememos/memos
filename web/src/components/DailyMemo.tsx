@@ -9,7 +9,7 @@ interface Props {
 
 const DailyMemo: React.FC<Props> = (props: Props) => {
   const { memo } = props;
-  const displayTimeStr = utils.getTimeString(memo.displayTs);
+  const createdTimeStr = utils.getTimeString(memo.createdTs);
   const displayConfig: DisplayConfig = {
     enableExpand: false,
   };
@@ -17,7 +17,7 @@ const DailyMemo: React.FC<Props> = (props: Props) => {
   return (
     <div className="daily-memo-wrapper">
       <div className="time-wrapper">
-        <span className="normal-text">{displayTimeStr}</span>
+        <span className="normal-text">{createdTimeStr}</span>
       </div>
       <div className="memo-container">
         <MemoContent content={memo.content} displayConfig={displayConfig} />

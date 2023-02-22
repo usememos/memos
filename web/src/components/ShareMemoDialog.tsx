@@ -44,7 +44,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const memoElRef = useRef<HTMLDivElement>(null);
   const memo = {
     ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.displayTs),
+    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
   };
   const createdDays = Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24);
 

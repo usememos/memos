@@ -197,9 +197,9 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
     }
   } else if (type === "DISPLAY_TIME") {
     if (operator === "BEFORE") {
-      return memo.displayTs < dayjs(value).valueOf();
+      return memo.createdTs < dayjs(value).valueOf();
     } else {
-      return memo.displayTs > dayjs(value).valueOf();
+      return memo.createdTs >= dayjs(value).valueOf();
     }
   } else if (type === "VISIBILITY") {
     let matched = memo.visibility === value;

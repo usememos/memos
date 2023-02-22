@@ -16,8 +16,6 @@ const (
 	UserSettingAppearanceKey UserSettingKey = "appearance"
 	// UserSettingMemoVisibilityKey is the key type for user preference memo default visibility.
 	UserSettingMemoVisibilityKey UserSettingKey = "memoVisibility"
-	// UserSettingMemoDisplayTsOptionKey is the key type for memo display ts option.
-	UserSettingMemoDisplayTsOptionKey UserSettingKey = "memoDisplayTsOption"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -29,17 +27,14 @@ func (key UserSettingKey) String() string {
 		return "appearance"
 	case UserSettingMemoVisibilityKey:
 		return "memoVisibility"
-	case UserSettingMemoDisplayTsOptionKey:
-		return "memoDisplayTsOption"
 	}
 	return ""
 }
 
 var (
-	UserSettingLocaleValue                 = []string{"en", "zh", "vi", "fr", "nl", "sv", "de", "es", "uk", "ru", "it", "hant", "ko"}
-	UserSettingAppearanceValue             = []string{"system", "light", "dark"}
-	UserSettingMemoVisibilityValue         = []Visibility{Private, Protected, Public}
-	UserSettingMemoDisplayTsOptionKeyValue = []string{"created_ts", "updated_ts"}
+	UserSettingLocaleValue         = []string{"en", "zh", "vi", "fr", "nl", "sv", "de", "es", "uk", "ru", "it", "hant", "ko"}
+	UserSettingAppearanceValue     = []string{"system", "light", "dark"}
+	UserSettingMemoVisibilityValue = []Visibility{Private, Protected, Public}
 )
 
 type UserSetting struct {
@@ -82,15 +77,6 @@ func (upsert UserSettingUpsert) Validate() error {
 		}
 		if !slices.Contains(UserSettingMemoVisibilityValue, memoVisibilityValue) {
 			return fmt.Errorf("invalid user setting memo visibility value")
-		}
-	} else if upsert.Key == UserSettingMemoDisplayTsOptionKey {
-		memoDisplayTsOption := "created_ts"
-		err := json.Unmarshal([]byte(upsert.Value), &memoDisplayTsOption)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting memo display ts option")
-		}
-		if !slices.Contains(UserSettingMemoDisplayTsOptionKeyValue, memoDisplayTsOption) {
-			return fmt.Errorf("invalid user setting memo display ts option value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")

@@ -76,7 +76,7 @@ const Explore = () => {
   const sortedMemos = shownMemos
     .filter((m) => m.rowStatus === "NORMAL")
     .sort((mi: Memo, mj: Memo) => {
-      return mj.displayTs - mi.displayTs;
+      return mj.createdTs - mi.createdTs;
     });
 
   const handleFetchMoreClick = async () => {
@@ -141,7 +141,7 @@ const Explore = () => {
           <main className="memos-wrapper">
             <MemoFilter />
             {sortedMemos.map((memo) => {
-              const createdAtStr = dayjs(memo.displayTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
+              const createdAtStr = dayjs(memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
               return (
                 <div className="memo-container" key={memo.id}>
                   <div className="memo-header">

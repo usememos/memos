@@ -4,7 +4,6 @@ interface Setting {
   locale: Locale;
   appearance: Appearance;
   memoVisibility: Visibility;
-  memoDisplayTsOption: "created_ts" | "updated_ts";
 }
 
 interface LocalSetting {
