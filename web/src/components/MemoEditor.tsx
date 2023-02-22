@@ -257,15 +257,6 @@ const MemoEditor = () => {
     }
   };
 
-  const scrollToEditingMemo = useCallback(() => {
-    if (editorState.editMemoId) {
-      const memoElements = document.getElementsByClassName(`memos-${editorState.editMemoId}`);
-      if (memoElements.length !== 0) {
-        memoElements[0].scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  }, [editorState.editMemoId]);
-
   const handleSaveBtnClick = async () => {
     if (state.isRequesting) {
       return;
@@ -327,7 +318,6 @@ const MemoEditor = () => {
     editorStore.clearResourceList();
     setEditorContentCache("");
     editorRef.current?.setContent("");
-    scrollToEditingMemo();
   };
 
   const handleCancelEdit = () => {
@@ -336,7 +326,6 @@ const MemoEditor = () => {
       editorStore.clearResourceList();
       editorRef.current?.setContent("");
       setEditorContentCache("");
-      scrollToEditingMemo();
     }
   };
 
