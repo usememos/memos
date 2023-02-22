@@ -191,11 +191,10 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
       console.error(error);
       toastHelper.error(error.response.data.message);
     }
-    destroy();
-
     if (confirmCallback) {
       confirmCallback();
     }
+    destroy();
   };
 
   const setPartialOAuth2Config = (state: Partial<IdentityProviderOAuth2Config>) => {
