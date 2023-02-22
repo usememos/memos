@@ -10,7 +10,6 @@ const defaultSetting: Setting = {
   locale: "en",
   appearance: getSystemColorScheme(),
   memoVisibility: "PRIVATE",
-  memoDisplayTsOption: "created_ts",
 };
 
 const defaultLocalSetting: LocalSetting = {

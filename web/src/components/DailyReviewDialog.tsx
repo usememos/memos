@@ -31,10 +31,10 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
     .filter(
       (m) =>
         m.rowStatus === "NORMAL" &&
-        utils.getTimeStampByDate(m.displayTs) >= currentDateStamp &&
-        utils.getTimeStampByDate(m.displayTs) < currentDateStamp + DAILY_TIMESTAMP
+        utils.getTimeStampByDate(m.createdTs) >= currentDateStamp &&
+        utils.getTimeStampByDate(m.createdTs) < currentDateStamp + DAILY_TIMESTAMP
     )
-    .sort((a, b) => utils.getTimeStampByDate(a.displayTs) - utils.getTimeStampByDate(b.displayTs));
+    .sort((a, b) => utils.getTimeStampByDate(a.createdTs) - utils.getTimeStampByDate(b.createdTs));
 
   const handleShareBtnClick = () => {
     if (!memosElRef.current) {

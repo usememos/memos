@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -71,6 +70,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
+		if len(memoCreate.Content) > api.MaxContentLength {
+			return echo.NewHTTPError(http.StatusBadRequest, "Content size overflow, up to 1MB").SetInternal(err)
+		}
+
 		memoCreate.CreatorID = userID
 		memo, err := s.Store.CreateMemo(ctx, memoCreate)
 		if err != nil {
@@ -125,6 +128,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(memoPatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch memo request").SetInternal(err)
+		}
+
+		if memoPatch.Content != nil && len(*memoPatch.Content) > api.MaxContentLength {
+			return echo.NewHTTPError(http.StatusBadRequest, "Content size overflow, up to 1MB").SetInternal(err)
 		}
 
 		memo, err = s.Store.PatchMemo(ctx, memoPatch)
@@ -192,10 +199,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			memoFind.VisibilityList = visibilityList
 		}
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-			memoFind.Limit = limit
+			memoFind.Limit = &limit
 		}
 		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-			memoFind.Offset = offset
+			memoFind.Offset = &offset
 		}
 
 		list, err := s.Store.FindMemoList(ctx, memoFind)
@@ -214,20 +221,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
-		sort.Slice(pinnedMemoList, func(i, j int) bool {
-			return pinnedMemoList[i].DisplayTs > pinnedMemoList[j].DisplayTs
-		})
-		sort.Slice(unpinnedMemoList, func(i, j int) bool {
-			return unpinnedMemoList[i].DisplayTs > unpinnedMemoList[j].DisplayTs
-		})
-
 		memoList := []*api.Memo{}
 		memoList = append(memoList, pinnedMemoList...)
 		memoList = append(memoList, unpinnedMemoList...)
-
-		if memoFind.Limit != 0 {
-			memoList = memoList[memoFind.Offset:common.Min(len(memoList), memoFind.Offset+memoFind.Limit)]
-		}
 		return c.JSON(http.StatusOK, composeResponse(memoList))
 	})
 
@@ -399,11 +395,11 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
 
-		displayTsList := []int64{}
+		createdTsList := []int64{}
 		for _, memo := range list {
-			displayTsList = append(displayTsList, memo.DisplayTs)
+			createdTsList = append(createdTsList, memo.CreatedTs)
 		}
-		return c.JSON(http.StatusOK, composeResponse(displayTsList))
+		return c.JSON(http.StatusOK, composeResponse(createdTsList))
 	})
 
 	g.GET("/memo/all", func(c echo.Context) error {
@@ -436,10 +432,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			memoFind.VisibilityList = visibilityList
 		}
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-			memoFind.Limit = limit
+			memoFind.Limit = &limit
 		}
 		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-			memoFind.Offset = offset
+			memoFind.Offset = &offset
 		}
 
 		// Only fetch normal status memos.
@@ -449,14 +445,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		list, err := s.Store.FindMemoList(ctx, memoFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch all memo list").SetInternal(err)
-		}
-
-		sort.Slice(list, func(i, j int) bool {
-			return list[i].DisplayTs > list[j].DisplayTs
-		})
-
-		if memoFind.Limit != 0 {
-			list = list[memoFind.Offset:common.Min(len(list), memoFind.Offset+memoFind.Limit)]
 		}
 		return c.JSON(http.StatusOK, composeResponse(list))
 	})

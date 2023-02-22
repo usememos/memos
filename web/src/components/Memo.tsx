@@ -34,15 +34,15 @@ const Memo: React.FC<Props> = (props: Props) => {
   const locationStore = useLocationStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
-  const [displayTimeStr, setDisplayTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
+  const [createdTimeStr, setCreatedTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userStore.isVisitorMode();
 
   useEffect(() => {
     let intervalFlag: any = -1;
-    if (Date.now() - memo.displayTs < 1000 * 60 * 60 * 24) {
+    if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
       intervalFlag = setInterval(() => {
-        setDisplayTimeStr(getFormatedMemoTimeStr(memo.displayTs, i18n.language));
+        setCreatedTimeStr(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
       }, 1000 * 1);
     }
 
@@ -166,7 +166,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     editorStore.setEditMemoWithId(memo.id);
   };
 
-  const handleMemoDisplayTimeClick = () => {
+  const handleMemoCreatedTimeClick = () => {
     showChangeMemoCreatedTsDialog(memo.id);
   };
 
@@ -184,8 +184,8 @@ const Memo: React.FC<Props> = (props: Props) => {
       {memo.pinned && <div className="corner-container"></div>}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
-          <span className="time-text" onDoubleClick={handleMemoDisplayTimeClick}>
-            {displayTimeStr}
+          <span className="time-text" onDoubleClick={handleMemoCreatedTimeClick}>
+            {createdTimeStr}
           </span>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span

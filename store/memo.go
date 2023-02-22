@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
 	"fmt"
 	"strings"
 
@@ -43,7 +42,6 @@ func (raw *memoRaw) toMemo() *api.Memo {
 		// Domain specific fields
 		Content:    raw.Content,
 		Visibility: raw.Visibility,
-		DisplayTs:  raw.CreatedTs,
 		Pinned:     raw.Pinned,
 	}
 }
@@ -54,25 +52,6 @@ func (s *Store) ComposeMemo(ctx context.Context, memo *api.Memo) (*api.Memo, err
 	}
 	if err := s.ComposeMemoResourceList(ctx, memo); err != nil {
 		return nil, err
-	}
-
-	memoDisplayTsOptionKey := api.UserSettingMemoDisplayTsOptionKey
-	memoDisplayTsOptionSetting, err := s.FindUserSetting(ctx, &api.UserSettingFind{
-		UserID: memo.CreatorID,
-		Key:    &memoDisplayTsOptionKey,
-	})
-	if err != nil {
-		return nil, err
-	}
-	memoDisplayTsOptionValue := "created_ts"
-	if memoDisplayTsOptionSetting != nil {
-		err = json.Unmarshal([]byte(memoDisplayTsOptionSetting.Value), &memoDisplayTsOptionValue)
-		if err != nil {
-			return nil, fmt.Errorf("failed to unmarshal user setting memo display ts option value")
-		}
-	}
-	if memoDisplayTsOptionValue == "updated_ts" {
-		memo.DisplayTs = memo.UpdatedTs
 	}
 
 	return memo, nil
@@ -329,6 +308,13 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY memo.created_ts DESC
 	`
+	if find.Limit != nil {
+		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
+		if find.Offset != nil {
+			query = fmt.Sprintf("%s OFFSET %d", query, *find.Offset)
+		}
+	}
+
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, FormatError(err)

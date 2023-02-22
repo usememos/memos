@@ -13,11 +13,6 @@ export const VISIBILITY_SELECTOR_ITEMS = [
   { text: "PUBLIC", value: "PUBLIC" },
 ];
 
-export const MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS = [
-  { text: "created_ts", value: "created_ts" },
-  { text: "updated_ts", value: "updated_ts" },
-];
-
 // space width for tab action in editor
 export const TAB_SPACE_WIDTH = 2;
 

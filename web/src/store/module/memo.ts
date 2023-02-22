@@ -10,7 +10,6 @@ const convertResponseModelMemo = (memo: Memo): Memo => {
     ...memo,
     createdTs: memo.createdTs * 1000,
     updatedTs: memo.updatedTs * 1000,
-    displayTs: memo.displayTs * 1000,
   };
 };
 
