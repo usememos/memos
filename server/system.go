@@ -66,7 +66,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			var value interface{}
 			err := json.Unmarshal([]byte(systemSetting.Value), &value)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
 			}
 
 			if systemSetting.Name == api.SystemSettingAllowSignUpName {

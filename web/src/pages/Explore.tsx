@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import useLoading from "../hooks/useLoading";
@@ -19,6 +19,7 @@ interface State {
 
 const Explore = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const globalStore = useGlobalStore();
   const locationStore = useLocationStore();
   const userStore = useUserStore();
@@ -72,11 +73,11 @@ const Explore = () => {
       })
     : state.memos;
 
-  const memoSort = (mi: Memo, mj: Memo) => {
-    return mj.displayTs - mi.displayTs;
-  };
-  shownMemos.sort(memoSort);
-  const sortedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL");
+  const sortedMemos = shownMemos
+    .filter((m) => m.rowStatus === "NORMAL")
+    .sort((mi: Memo, mj: Memo) => {
+      return mj.displayTs - mi.displayTs;
+    });
 
   const handleFetchMoreClick = async () => {
     try {
@@ -109,27 +110,31 @@ const Explore = () => {
     }
   };
 
+  const handleTitleClick = () => {
+    if (user) {
+      navigate("/");
+    } else {
+      navigate("/auth");
+    }
+  };
+
   return (
     <section className="page-wrapper explore">
       <div className="page-container">
         <div className="page-header">
-          <div className="title-container">
+          <div className="title-container cursor-pointer hover:opacity-80" onClick={handleTitleClick}>
             <img className="logo-img" src={customizedProfile.logoUrl} alt="" />
             <span className="title-text">{customizedProfile.name}</span>
-            <a className="dark:text-white ml-1 mt-1" href="/explore/rss.xml" target="_blank" rel="noreferrer">
-              <Icon.Rss className="w-6 h-auto opacity-40 hover:opacity-60" />
-            </a>
           </div>
-          <div className="action-button-container">
-            {!loadingState.isLoading && user ? (
-              <Link to="/" className="link-btn btn-normal">
-                <span>🏠</span> {t("common.back-to-home")}
-              </Link>
-            ) : (
-              <Link to="/auth" className="link-btn btn-normal">
-                <span>👉</span> {t("common.sign-in")}
-              </Link>
-            )}
+          <div className="flex flex-row justify-end items-center">
+            <a
+              className="flex flex-row justify-center items-center h-12 w-12 border rounded-full hover:opacity-80 hover:shadow dark:text-white "
+              href="/explore/rss.xml"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Icon.Rss className="w-7 h-auto opacity-60" />
+            </a>
           </div>
         </div>
         {!loadingState.isLoading && (
