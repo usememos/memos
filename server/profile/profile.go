@@ -1,12 +1,12 @@
 package profile
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/spf13/viper"
 	"github.com/usememos/memos/server/version"
 )
 
@@ -47,10 +47,10 @@ func checkDSN(dataDir string) (string, error) {
 // GetDevProfile will return a profile for dev or prod.
 func GetProfile() (*Profile, error) {
 	profile := Profile{}
-	flag.StringVar(&profile.Mode, "mode", "demo", "mode of server")
-	flag.IntVar(&profile.Port, "port", 8081, "port of server")
-	flag.StringVar(&profile.Data, "data", "", "data directory")
-	flag.Parse()
+	err := viper.Unmarshal(&profile)
+	if err != nil {
+		return nil, err
+	}
 
 	if profile.Mode != "demo" && profile.Mode != "dev" && profile.Mode != "prod" {
 		profile.Mode = "demo"
