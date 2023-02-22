@@ -48,14 +48,14 @@
         "link": "連結",
         "vacuum": "清理",
         "select": "選擇",
-        "avatar": "Avatar",
+        "avatar": "頭像",
         "database": "數據庫"
     },
-    "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
+    "slogan": "壹個可用於知識管理和社交網絡的開源、自托管的備忘錄中心。",
     "auth": {
         "signup-as-host": "註冊為管理員",
         "host-tip": "你正在註冊為管理員帳號。",
-        "not-host-tip": "如果你沒有帳號，請聯繫網站管理員"
+        "not-host-tip": "如果你沒有帳號，請聯繫網站管理員。"
     },
     "sidebar": {
         "daily-review": "每日回顧",
@@ -68,7 +68,7 @@
     },
     "resources": {
         "description": "查看在 Memo 中的靜態資源。例如：圖片",
-        "no-resources": "沒有資源",
+        "no-resources": "沒有資源。",
         "fetching-data": "擷取資料中...",
         "upload": "上傳",
         "preview": "預覽",
@@ -84,7 +84,7 @@
     },
     "archived": {
         "archived-memos": "已封存的 Memo",
-        "no-archived-memos": "沒有封存的 Memo",
+        "no-archived-memos": "沒有歸檔的 Memo。",
         "fetching-data": "擷取資料中..."
     },
     "editor": {
@@ -104,7 +104,7 @@
             "private": "僅自己可見",
             "protected": "登入用戶可見",
             "public": "所有人可見",
-            "disabled": "已禁止公開memos"
+            "disabled": "公共memos已禁用"
         }
     },
     "memo-list": {
@@ -117,7 +117,7 @@
         "edit-shortcut": "編輯捷徑",
         "eligible-memo": "符合條件的 Memo",
         "fill-previous": "請填寫之前的過濾值",
-        "title-required": "標題是必填項。",
+        "title-required": "標題是必填項",
         "value-required": "過濾值是必填項"
     },
     "filter": {
@@ -169,7 +169,7 @@
             "default-memo-sort-option": "Memo 顯示時間",
             "created_ts": "建立時間",
             "updated_ts": "更新時間",
-            "enable-double-click": "Enable double-click to edit"
+            "enable-double-click": "開啟雙擊編輯"
         },
         "member-section": {
             "create-a-member": "新增成員"
@@ -187,27 +187,27 @@
             "additional-script": "自定義腳本",
             "additional-style-placeholder": "自定義 CSS 代碼",
             "additional-script-placeholder": "自定義 JavaScript 代碼",
-            "disable-public-memos": "Disable public memos"
+            "disable-public-memos": "禁用公共memos"
         },
         "apperance-option": {
             "system": "跟隨系統",
             "light": "總是淺色",
             "dark": "總是深色"
         },
-        "storage": "Storage",
+        "storage": "存儲設置",
         "sso": "SSO",
         "storage-section": {
-            "storage-services-list": "Storage service list",
-            "create-a-service": "Create a service",
-            "update-a-service": "Update a service",
-            "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIABLE❗",
-            "delete-storage": "Delete Storage"
+            "storage-services-list": "存儲服務列表",
+            "create-a-service": "新建服務",
+            "update-a-service": "更新服務",
+            "warning-text": "確定刪除這個存儲服務麽？此操作不可逆❗",
+            "delete-storage": "刪除存儲服務"
         }
     },
     "amount-text": {
-        "memo_other": "MEMO",
-        "tag_other": "TAG",
-        "day_other": "DAY"
+        "memo_other": "",
+        "tag_other": "",
+        "day_other": ""
     },
     "message": {
         "no-memos": "沒有 Memos 了 🌃",
@@ -226,14 +226,14 @@
         "signup-failed": "註冊失敗",
         "user-not-found": "未找到用戶",
         "password-changed": "密碼已修改",
-        "private-only": "此 Memo 僅自己可見",
+        "private-only": "此 Memo 僅自己可見。",
         "copied": "已複製",
         "succeed-copy-content": "複製內容到剪貼板成功。",
         "succeed-copy-code": "複製代碼到剪貼板成功。",
         "succeed-copy-link": "複製連結到剪貼板成功。",
         "change-resource-filename": "更改資源檔名",
         "resource-filename-updated": "資源文件名更改成功。",
-        "invalid-resource-filename": "無效的資源檔名",
+        "invalid-resource-filename": "無效的資源檔名。",
         "click-to-save-the-image": "點擊儲存圖片",
         "generating-the-screenshot": "正在生成圖片...",
         "count-selected-resources": "所選資源總數",
@@ -246,8 +246,8 @@
         "succeed-update-customized-profile": "更新自定義配置文件成功",
         "succeed-update-additional-script": "更新附加腳本成功",
         "update-succeed": "更新成功",
-        "succeed-vacuum-database": "Succeed to vacuum database",
-        "page-not-found": "404 - Page Not Found 😥"
+        "succeed-vacuum-database": "清理數據庫成功",
+        "page-not-found": "404 - 未找到網頁 😥"
     },
     "days": {
         "monday": "星期一",
