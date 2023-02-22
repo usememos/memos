@@ -1,3 +1,4 @@
+import { Tooltip } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
@@ -37,6 +38,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const [createdTimeStr, setCreatedTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userStore.isVisitorMode();
+  const updatedTimeStr = getFormatedMemoTimeStr(memo.updatedTs, i18n.language);
 
   useEffect(() => {
     let intervalFlag: any = -1;
@@ -184,9 +186,11 @@ const Memo: React.FC<Props> = (props: Props) => {
       {memo.pinned && <div className="corner-container"></div>}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
-          <span className="time-text" onDoubleClick={handleMemoCreatedTimeClick}>
-            {createdTimeStr}
-          </span>
+          <Tooltip title={`Updated at ${updatedTimeStr}`} placement="top" arrow>
+            <span className="time-text" onDoubleClick={handleMemoCreatedTimeClick}>
+              {createdTimeStr}
+            </span>
+          </Tooltip>
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span
               className={`status-text ${memo.visibility.toLocaleLowerCase()}`}
