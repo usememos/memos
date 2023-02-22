@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/usememos/memos/server"
-	"github.com/usememos/memos/server/profile"
+	_profile "github.com/usememos/memos/server/profile"
 )
 
 const (
@@ -27,16 +27,16 @@ const (
 )
 
 var (
-	mode string
-	port int
-	data string
+	profile *_profile.Profile
+	mode    string
+	port    int
+	data    string
 
 	rootCmd = &cobra.Command{
 		Use:   "memos",
 		Short: `An open-source, self-hosted memo hub with knowledge management and social networking.`,
 		Run: func(_cmd *cobra.Command, _args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
-			profile, err := profile.GetProfile()
 			s, err := server.NewServer(ctx, profile)
 			if err != nil {
 				cancel()
@@ -102,9 +102,8 @@ func init() {
 
 func initConfig() {
 	viper.AutomaticEnv()
-
 	var err error
-	profile, err := profile.GetProfile()
+	profile, err = _profile.GetProfile()
 	if err != nil {
 		fmt.Printf("failed to get profile, error: %+v\n", err)
 		return
