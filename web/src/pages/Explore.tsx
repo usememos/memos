@@ -73,12 +73,7 @@ const Explore = () => {
       })
     : state.memos;
 
-  const sortedMemos = shownMemos
-    .filter((m) => m.rowStatus === "NORMAL")
-    .sort((mi: Memo, mj: Memo) => {
-      return mj.createdTs - mi.createdTs;
-    });
-
+  const sortedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL");
   const handleFetchMoreClick = async () => {
     try {
       const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length);
@@ -143,7 +138,8 @@ const Explore = () => {
             {sortedMemos.map((memo) => {
               const createdAtStr = dayjs(memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
               return (
-                <div className="memo-container" key={memo.id}>
+                <div className={`memo-container ${memo.pinned ? "pinned" : ""}`} key={memo.id}>
+                  {memo.pinned && <div className="corner-container"></div>}
                   <div className="memo-header">
                     <span className="time-text">{createdAtStr}</span>
                     <a className="name-text" href={`/u/${memo.creator.id}`}>
