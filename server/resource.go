@@ -111,20 +111,32 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 			}
 
-			s3client, err := s3.NewClient(ctx, storage)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
-			}
+			if storage.Type == api.StorageS3 {
+				s3Config := storage.Config.S3Config
+				s3client, err := s3.NewClient(ctx, &s3.Config{
+					AccessKey: s3Config.AccessKey,
+					SecretKey: s3Config.SecretKey,
+					EndPoint:  s3Config.EndPoint,
+					Region:    s3Config.Region,
+					Bucket:    s3Config.Bucket,
+					URLPrefix: s3Config.URLPrefix,
+				})
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
+				}
 
-			link, err := s3client.UploadFile(ctx, filename, filetype, src, storage)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
-			}
-			resourceCreate = &api.ResourceCreate{
-				CreatorID:    userID,
-				Filename:     filename,
-				Type:         filetype,
-				ExternalLink: link,
+				link, err := s3client.UploadFile(ctx, filename, filetype, src)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
+				}
+				resourceCreate = &api.ResourceCreate{
+					CreatorID:    userID,
+					Filename:     filename,
+					Type:         filetype,
+					ExternalLink: link,
+				}
+			} else {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Unsupported storage type")
 			}
 		}
 

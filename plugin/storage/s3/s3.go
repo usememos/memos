@@ -6,31 +6,38 @@ import (
 	"io"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
+	s3config "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	awss3 "github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
-	"github.com/usememos/memos/api"
 )
 
-type Client struct {
-	Client     *awss3.Client
-	BucketName string
-	URLPrefix  string
+type Config struct {
+	AccessKey string
+	SecretKey string
+	Bucket    string
+	EndPoint  string
+	Region    string
+	URLPrefix string
 }
 
-func NewClient(ctx context.Context, storage *api.Storage) (*Client, error) {
+type Client struct {
+	Client *awss3.Client
+	Config *Config
+}
+
+func NewClient(ctx context.Context, config *Config) (*Client, error) {
 	resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 		return aws.Endpoint{
-			URL:           storage.EndPoint,
-			SigningRegion: storage.Region,
+			URL:           config.EndPoint,
+			SigningRegion: config.Region,
 		}, nil
 	})
 
-	cfg, err := config.LoadDefaultConfig(ctx,
-		config.WithEndpointResolverWithOptions(resolver),
-		config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(storage.AccessKey, storage.SecretKey, "")),
+	cfg, err := s3config.LoadDefaultConfig(ctx,
+		s3config.WithEndpointResolverWithOptions(resolver),
+		s3config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(config.AccessKey, config.SecretKey, "")),
 	)
 	if err != nil {
 		return nil, err
@@ -39,16 +46,15 @@ func NewClient(ctx context.Context, storage *api.Storage) (*Client, error) {
 	client := awss3.NewFromConfig(cfg)
 
 	return &Client{
-		Client:     client,
-		BucketName: storage.Bucket,
-		URLPrefix:  storage.URLPrefix,
+		Client: client,
+		Config: config,
 	}, nil
 }
 
-func (client *Client) UploadFile(ctx context.Context, filename string, fileType string, src io.Reader, storage *api.Storage) (string, error) {
+func (client *Client) UploadFile(ctx context.Context, filename string, fileType string, src io.Reader) (string, error) {
 	uploader := manager.NewUploader(client.Client)
 	resp, err := uploader.Upload(ctx, &awss3.PutObjectInput{
-		Bucket:      aws.String(client.BucketName),
+		Bucket:      aws.String(client.Config.Bucket),
 		Key:         aws.String(filename),
 		Body:        src,
 		ContentType: aws.String(fileType),
@@ -58,10 +64,10 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 		return "", err
 	}
 	var link string
-	if storage.URLPrefix == "" {
+	if client.Config.URLPrefix == "" {
 		link = resp.Location
 	} else {
-		link = fmt.Sprintf("%s/%s", storage.URLPrefix, filename)
+		link = fmt.Sprintf("%s/%s", client.Config.URLPrefix, filename)
 	}
 	return link, nil
 }

@@ -215,15 +215,15 @@ export function deleteTag(tagName: string) {
 }
 
 export function getStorageList() {
-  return axios.get<ResponseObject<Storage[]>>(`/api/storage`);
+  return axios.get<ResponseObject<ObjectStorage[]>>(`/api/storage`);
 }
 
 export function createStorage(storageCreate: StorageCreate) {
-  return axios.post<ResponseObject<Storage>>(`/api/storage`, storageCreate);
+  return axios.post<ResponseObject<ObjectStorage>>(`/api/storage`, storageCreate);
 }
 
 export function patchStorage(storagePatch: StoragePatch) {
-  return axios.patch<ResponseObject<Storage>>(`/api/storage/${storagePatch.id}`, storagePatch);
+  return axios.patch<ResponseObject<ObjectStorage>>(`/api/storage/${storagePatch.id}`, storagePatch);
 }
 
 export function deleteStorage(storageId: StorageId) {
