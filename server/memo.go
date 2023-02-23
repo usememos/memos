@@ -209,22 +209,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
-
-		var pinnedMemoList []*api.Memo
-		var unpinnedMemoList []*api.Memo
-
-		for _, memo := range list {
-			if memo.Pinned {
-				pinnedMemoList = append(pinnedMemoList, memo)
-			} else {
-				unpinnedMemoList = append(unpinnedMemoList, memo)
-			}
-		}
-
-		memoList := []*api.Memo{}
-		memoList = append(memoList, pinnedMemoList...)
-		memoList = append(memoList, unpinnedMemoList...)
-		return c.JSON(http.StatusOK, composeResponse(memoList))
+		return c.JSON(http.StatusOK, composeResponse(list))
 	})
 
 	g.GET("/memo/:memoId", func(c echo.Context) error {
