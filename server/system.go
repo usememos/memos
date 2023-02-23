@@ -99,7 +99,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 					systemStatus.CustomizedProfile.ExternalURL = v.(string)
 				}
 			} else if systemSetting.Name == api.SystemSettingStorageServiceIDName {
-				systemStatus.StorageServiceID = value.(int)
+				systemStatus.StorageServiceID = int(value.(float64))
 			}
 		}
 

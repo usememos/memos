@@ -1,20 +1,19 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Button, Input, Typography } from "@mui/joy";
-import { useStorageStore } from "../store/module";
+import * as api from "../helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
-import { showCommonDialog } from "./Dialog/CommonDialog";
 
 interface Props extends DialogProps {
   storage?: Storage;
+  confirmCallback?: () => void;
 }
 
 const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
-  const { destroy, storage } = props;
+  const { destroy, storage, confirmCallback } = props;
   const { t } = useTranslation();
-  const storageStore = useStorageStore();
   const [storageCreate, setStorageCreate] = useState<StorageCreate>({
     name: "",
     endPoint: "",
@@ -53,9 +52,9 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   const handleConfirmBtnClick = async () => {
     try {
       if (isCreating) {
-        await storageStore.createStorage(storageCreate);
+        await api.createStorage(storageCreate);
       } else {
-        await storageStore.patchStorage({
+        await api.patchStorage({
           id: storage.id,
           ...storageCreate,
         });
@@ -64,29 +63,10 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       console.error(error);
       toastHelper.error(error.response.data.message);
     }
-    destroy();
-  };
-
-  const handleDeleteBtnClick = async () => {
-    if (isCreating) {
-      return;
+    if (confirmCallback) {
+      confirmCallback();
     }
-
-    showCommonDialog({
-      title: t("setting.storage-section.delete-storage"),
-      content: t("setting.storage-section.warning-text"),
-      style: "warning",
-      dialogName: "delete-storage-dialog",
-      onConfirm: async () => {
-        try {
-          await storageStore.deleteStorageById(storage.id);
-        } catch (error: any) {
-          console.error(error);
-          toastHelper.error(error.response.data.message);
-        }
-        destroy();
-      },
-    });
+    destroy();
   };
 
   const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -195,11 +175,6 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
             Cancel
           </Button>
-          {!isCreating && (
-            <Button color="danger" onClick={handleDeleteBtnClick}>
-              Delete
-            </Button>
-          )}
           <Button onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
             {isCreating ? "Create" : "Update"}
           </Button>
@@ -209,14 +184,14 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-function showCreateStorageServiceDialog(storage?: Storage) {
+function showCreateStorageServiceDialog(storage?: Storage, confirmCallback?: () => void) {
   generateDialog(
     {
       className: "create-storage-service-dialog",
       dialogName: "create-storage-service-dialog",
     },
     CreateStorageServiceDialog,
-    { storage }
+    { storage, confirmCallback }
   );
 }
 
