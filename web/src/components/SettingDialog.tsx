@@ -1,7 +1,7 @@
 import { Option, Select } from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useGlobalStore, useUserStore } from "../store/module";
+import { useUserStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import BetaBadge from "./BetaBadge";
@@ -24,7 +24,6 @@ interface State {
 const SettingDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const { t } = useTranslation();
-  const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const user = userStore.state.user;
   const [state, setState] = useState<State>({
@@ -83,22 +82,18 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
               >
                 <Icon.Settings2 className="w-4 h-auto mr-2 opacity-80" /> {t("setting.system")}
               </span>
-              {globalStore.isDev() && (
-                <span
-                  onClick={() => handleSectionSelectorItemClick("storage")}
-                  className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
-                >
-                  <Icon.Database className="w-4 h-auto mr-2 opacity-80" /> {t("setting.storage")} <BetaBadge />
-                </span>
-              )}
-              {globalStore.isDev() && (
-                <span
-                  onClick={() => handleSectionSelectorItemClick("sso")}
-                  className={`section-item ${state.selectedSection === "sso" ? "selected" : ""}`}
-                >
-                  <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> {t("setting.sso")} <BetaBadge />
-                </span>
-              )}
+              <span
+                onClick={() => handleSectionSelectorItemClick("storage")}
+                className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
+              >
+                <Icon.Database className="w-4 h-auto mr-2 opacity-80" /> {t("setting.storage")} <BetaBadge />
+              </span>
+              <span
+                onClick={() => handleSectionSelectorItemClick("sso")}
+                className={`section-item ${state.selectedSection === "sso" ? "selected" : ""}`}
+              >
+                <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> {t("setting.sso")} <BetaBadge />
+              </span>
             </div>
           </>
         ) : null}
