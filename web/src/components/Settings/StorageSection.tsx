@@ -13,15 +13,11 @@ const StorageSection = () => {
   const globalStore = useGlobalStore();
   const systemStatus = globalStore.state.systemStatus;
   const [storageServiceId, setStorageServiceId] = useState(systemStatus.storageServiceId);
-  const [storageList, setStorageList] = useState<Storage[]>([]);
+  const [storageList, setStorageList] = useState<ObjectStorage[]>([]);
 
   useEffect(() => {
     fetchStorageList();
   }, []);
-
-  useEffect(() => {
-    setStorageServiceId(systemStatus.storageServiceId);
-  }, [systemStatus]);
 
   const fetchStorageList = async () => {
     const {
@@ -31,6 +27,10 @@ const StorageSection = () => {
   };
 
   const handleActiveStorageServiceChanged = async (storageId: StorageId) => {
+    if (storageList.length === 0) {
+      return;
+    }
+
     await api.upsertSystemSetting({
       name: "storageServiceId",
       value: JSON.stringify(storageId),
@@ -38,7 +38,7 @@ const StorageSection = () => {
     setStorageServiceId(storageId);
   };
 
-  const handleDeleteStorage = (storage: Storage) => {
+  const handleDeleteStorage = (storage: ObjectStorage) => {
     showCommonDialog({
       title: t("setting.storage-section.delete-storage"),
       content: t("setting.storage-section.warning-text"),
@@ -68,12 +68,12 @@ const StorageSection = () => {
           handleActiveStorageServiceChanged(storageId || 0);
         }}
       >
+        <Option value={0}>Database</Option>
         {storageList.map((storage) => (
           <Option key={storage.id} value={storage.id}>
             {storage.name}
           </Option>
         ))}
-        <Option value={0}>Database</Option>
       </Select>
       <Divider />
       <div className="mt-4 mb-2 w-full flex flex-row justify-start items-center">
