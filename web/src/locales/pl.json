@@ -42,7 +42,7 @@
         "yourself": "Ty",
         "archived-at": "Zarchiwizowano",
         "changed": "zmodyfikowano",
-        "update-on": "Update on",
+        "update-on": "Aktualizacja dnia",
         "fold": "Zwiń",
         "expand": "Rozwiń",
         "image": "Obrazek",
@@ -72,7 +72,7 @@
         "fetching-data": "pobieranie danych...",
         "upload": "Wrzuć",
         "preview": "Podgląd",
-        "linked-amount": "Linked memo amount",
+        "linked-amount": "Liczba kwalifikujących się notatek",
         "copy-link": "Kopiuj odnośnik",
         "delete-resource": "Usuń zasób",
         "warning-text": "Czy na pewno chcesz usunąć zasób? To działanie jest nieodwracalne❗",
@@ -94,7 +94,7 @@
         "placeholder": "Jakieś przemyślenia...",
         "only-image-supported": "Obsługiwane są tylko obrazy.",
         "cant-empty": "Treść nie może być pusta",
-        "local": "Local",
+        "local": "Lokalne",
         "resources": "Zasoby"
     },
     "memo": {
@@ -115,7 +115,7 @@
         "shortcut-title": "krótki tytuł",
         "create-shortcut": "Utwórz skrót",
         "edit-shortcut": "Edytuj skrót",
-        "eligible-memo": "eligible memo",
+        "eligible-memo": "kwalifikująca się notatka",
         "fill-previous": "Proszę uzupełnij poprzednią wartość filtra",
         "title-required": "Tytuł jest wymagany",
         "value-required": "Wartość filtra jest wymagana"
@@ -206,14 +206,11 @@
     },
     "amount-text": {
         "memo_one": "NOTATKA",
-        "memo_few": "NOTATEK",
-        "memo_many": "NOTATKI",
+        "memo_few": "",
         "tag_one": "TAG",
-        "tag_few": "TAGÓW",
-        "tag_many": "TAGI",
+        "tag_few": "",
         "day_one": "DZIEŃ",
-        "day_few": "DNI",
-        "day_many": "DNI"
+        "day_few": ""
     },
     "message": {
         "no-memos": "brak notatek 🌃",
