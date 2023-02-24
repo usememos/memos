@@ -8,54 +8,76 @@ import (
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 
-	"github.com/gorilla/sessions"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 )
 
 var (
-	userIDContextKey = "user-id"
-	userContextKey   = "user"
-	sessionName      = "memos_session"
-	sessionIDKey     = "session-id"
-	validSessionID   = make(map[string]bool)
+	userContextKey = "user"
+	sessionName    = "memos_session"
+	validSessionID = make(map[string]bool)
 )
 
-func setUserSession(ctx echo.Context, user *api.User) error {
-	sess, _ := session.Get(sessionName, ctx)
-	sess.Options = &sessions.Options{
+func (s *Server) setUserSession(ctx echo.Context, user *api.User) error {
+	uuid := common.GenUUID()
+
+	token, err := s.issueJWT(ctx.Request().Context(), &jwtCustomClaims{
+		UserID:    user.ID,
+		SessionID: uuid,
+	})
+
+	if err != nil {
+		return fmt.Errorf("failed to issue JWT, err: %w", err)
+	}
+
+	validSessionID[uuid] = true
+
+	ctx.SetCookie(&http.Cookie{
+		Name:     sessionName,
+		Value:    token,
 		Path:     "/",
-		MaxAge:   3600 * 24 * 30,
+		MaxAge:   3600 * 24,
 		HttpOnly: true,
 		SameSite: http.SameSiteStrictMode,
-	}
-	sess.Values[userIDContextKey] = user.ID
-	sessionID := common.GenUUID()
-	sess.Values[sessionIDKey] = sessionID
-	validSessionID[sessionID] = true
-
-	err := sess.Save(ctx.Request(), ctx.Response())
-	if err != nil {
-		return fmt.Errorf("failed to set session, err: %w", err)
-	}
+	})
 	return nil
 }
 
-func removeUserSession(ctx echo.Context) error {
-	sess, _ := session.Get(sessionName, ctx)
-	sess.Options = &sessions.Options{
-		Path:     "/",
-		MaxAge:   0,
-		HttpOnly: true,
-	}
-	sess.Values[userIDContextKey] = nil
-	delete(validSessionID, sess.Values[sessionIDKey].(string))
-	sess.Values[sessionIDKey] = nil
-
-	err := sess.Save(ctx.Request(), ctx.Response())
+func (s *Server) getUserSession(ctx echo.Context) *jwtCustomClaims {
+	cookie, err := ctx.Cookie(sessionName)
 	if err != nil {
-		return fmt.Errorf("failed to set session, err: %w", err)
+		return nil
 	}
+
+	claims, err := s.verifyJWT(ctx.Request().Context(), cookie.Value)
+	if err != nil {
+		return nil
+	}
+
+	if _, ok := validSessionID[claims.SessionID]; !ok {
+		return nil
+	}
+
+	return claims
+}
+
+func (s *Server) removeUserSession(ctx echo.Context) error {
+	claims := s.getUserSession(ctx)
+	if claims == nil {
+		return nil
+	}
+
+	// remove session
+	ctx.SetCookie(&http.Cookie{
+		Name:     sessionName,
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	})
+
+	delete(validSessionID, claims.SessionID)
+
 	return nil
 }
 
@@ -67,14 +89,10 @@ func (s *Server) aclMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 			return next(c)
 		}
 
-		sess, _ := session.Get(sessionName, c)
-		userIDValue := sess.Values[userIDContextKey]
-		sessionIDValue := sess.Values[sessionIDKey]
-		if userIDValue != nil && sessionIDValue != nil {
-			if _, ok := validSessionID[sessionIDValue.(string)]; !ok {
-				return echo.NewHTTPError(http.StatusForbidden, "Invalid session")
-			}
-			userID, _ := strconv.Atoi(fmt.Sprintf("%v", userIDValue))
+		claims := s.getUserSession(c)
+
+		if claims != nil {
+			userID, _ := strconv.Atoi(fmt.Sprintf("%v", claims.UserID))
 			userFind := &api.UserFind{
 				ID: &userID,
 			}

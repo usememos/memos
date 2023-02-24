@@ -68,8 +68,8 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider list").SetInternal(err)
 		}
 
-		user := c.Get(userContextKey).(*api.User)
-		isHostUser := user.Role == api.Host
+		user, ok := c.Get(userContextKey).(*api.User)
+		isHostUser := ok && user.Role == api.Host
 
 		identityProviderList := []*api.IdentityProvider{}
 		for _, identityProviderMessage := range identityProviderMessageList {
@@ -81,7 +81,7 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			identityProviderList = append(identityProviderList, identityProvider)
 		}
 		return c.JSON(http.StatusOK, composeResponse(identityProviderList))
-	}, loginOnlyMiddleware)
+	})
 
 	g.GET("/idp/:idpId", func(c echo.Context) error {
 		ctx := c.Request().Context()

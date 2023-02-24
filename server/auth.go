@@ -45,7 +45,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect password").SetInternal(err)
 		}
 
-		if err = setUserSession(c, user); err != nil {
+		if err = s.setUserSession(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set signin session").SetInternal(err)
 		}
 		if err := s.createUserAuthSignInActivity(c, user); err != nil {
@@ -129,7 +129,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
 		}
 
-		if err = setUserSession(c, user); err != nil {
+		if err = s.setUserSession(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set signin session").SetInternal(err)
 		}
 		if err := s.createUserAuthSignInActivity(c, user); err != nil {
@@ -201,7 +201,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 
-		err = setUserSession(c, user)
+		err = s.setUserSession(c, user)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set signup session").SetInternal(err)
 		}
@@ -209,7 +209,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 	})
 
 	g.POST("/auth/signout", func(c echo.Context) error {
-		err := removeUserSession(c)
+		err := s.removeUserSession(c)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to set sign out session").SetInternal(err)
 		}

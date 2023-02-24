@@ -14,8 +14,6 @@ import (
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 
-	"github.com/gorilla/sessions"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -83,14 +81,6 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	}
 	s.ID = serverID
 
-	secretSessionName := "usememos"
-	if profile.Mode == "prod" {
-		secretSessionName, err = s.getSystemSecretSessionName(ctx)
-		if err != nil {
-			return nil, err
-		}
-	}
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(secretSessionName))))
 	e.Use(s.aclMiddleware)
 
 	embedFrontend(e)

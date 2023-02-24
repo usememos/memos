@@ -119,7 +119,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			user.Email = ""
 		}
 		return c.JSON(http.StatusOK, composeResponse(user))
-	}, loginOnlyMiddleware)
+	})
 
 	g.PATCH("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()

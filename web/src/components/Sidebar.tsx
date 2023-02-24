@@ -45,14 +45,14 @@ const Sidebar = () => {
           >
             <span className="mr-1">🏂</span> {t("common.explore")}
           </Link>
-          <button
-            className="leading-10 px-4 rounded-lg text-base dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-            onClick={() => showResourcesDialog()}
-          >
-            <span className="mr-1">🗂️</span> {t("sidebar.resources")}
-          </button>
           {!userStore.isVisitorMode() && (
             <>
+              <button
+                className="leading-10 px-4 rounded-lg text-base dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+                onClick={() => showResourcesDialog()}
+              >
+                <span className="mr-1">🗂️</span> {t("sidebar.resources")}
+              </button>
               <button
                 className="leading-10 px-4 rounded-lg text-base dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={handleSettingBtnClick}
