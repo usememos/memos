@@ -103,46 +103,24 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			}
 		}
 
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		user, ok := c.Get(userContextKey).(*api.User)
 		// Get database size for host user.
-		if ok {
-			user, err := s.Store.FindUser(ctx, &api.UserFind{
-				ID: &userID,
-			})
+		if ok && user != nil && user.Role == api.Host {
+			fi, err := os.Stat(s.Profile.DSN)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read database fileinfo").SetInternal(err)
 			}
-			if user != nil && user.Role == api.Host {
-				fi, err := os.Stat(s.Profile.DSN)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read database fileinfo").SetInternal(err)
-				}
-				systemStatus.DBSize = fi.Size()
-			}
+			systemStatus.DBSize = fi.Size()
 		}
 		return c.JSON(http.StatusOK, composeResponse(systemStatus))
 	})
 
 	g.POST("/system/setting", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		systemSettingUpsert := &api.SystemSettingUpsert{}
 		if err := json.NewDecoder(c.Request().Body).Decode(systemSettingUpsert); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post system setting request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed post system setting request").SetInternal(err)
 		}
 		if err := systemSettingUpsert.Validate(); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "system setting invalidate").SetInternal(err)
@@ -153,54 +131,26 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(systemSetting))
-	})
+	}, roleOnlyMiddleware(api.Host))
 
 	g.GET("/system/setting", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(systemSettingList))
-	})
+	}, roleOnlyMiddleware(api.Host))
 
 	g.POST("/system/vacuum", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		if err := s.Store.Vacuum(ctx); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to vacuum database").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)
-	})
+	}, roleOnlyMiddleware(api.Host))
 }
 
 func (s *Server) getSystemServerID(ctx context.Context) (string, error) {

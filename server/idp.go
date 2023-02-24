@@ -15,24 +15,10 @@ import (
 func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 	g.POST("/idp", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		identityProviderCreate := &api.IdentityProviderCreate{}
 		if err := json.NewDecoder(c.Request().Body).Decode(identityProviderCreate); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post identity provider request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed post identity provider request").SetInternal(err)
 		}
 
 		identityProviderMessage, err := s.Store.CreateIdentityProvider(ctx, &store.IdentityProviderMessage{
@@ -45,24 +31,10 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(convertIdentityProviderFromStore(identityProviderMessage)))
-	})
+	}, roleOnlyMiddleware(api.Host))
 
 	g.PATCH("/idp/:idpId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		identityProviderID, err := strconv.Atoi(c.Param("idpId"))
 		if err != nil {
@@ -73,7 +45,7 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			ID: identityProviderID,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(identityProviderPatch); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch identity provider request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed patch identity provider request").SetInternal(err)
 		}
 
 		identityProviderMessage, err := s.Store.UpdateIdentityProvider(ctx, &store.UpdateIdentityProviderMessage{
@@ -87,7 +59,7 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch identity provider").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(convertIdentityProviderFromStore(identityProviderMessage)))
-	})
+	}, roleOnlyMiddleware(api.Host))
 
 	g.GET("/idp", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -96,19 +68,8 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider list").SetInternal(err)
 		}
 
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		isHostUser := false
-		if ok {
-			user, err := s.Store.FindUser(ctx, &api.UserFind{
-				ID: &userID,
-			})
-			if err != nil && common.ErrorCode(err) != common.NotFound {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-			}
-			if user != nil && user.Role == api.Host {
-				isHostUser = true
-			}
-		}
+		user := c.Get(userContextKey).(*api.User)
+		isHostUser := user.Role == api.Host
 
 		identityProviderList := []*api.IdentityProvider{}
 		for _, identityProviderMessage := range identityProviderMessageList {
@@ -120,25 +81,10 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			identityProviderList = append(identityProviderList, identityProvider)
 		}
 		return c.JSON(http.StatusOK, composeResponse(identityProviderList))
-	})
+	}, loginOnlyMiddleware)
 
 	g.GET("/idp/:idpId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		// We should only show identity provider list to host user.
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		identityProviderID, err := strconv.Atoi(c.Param("idpId"))
 		if err != nil {
@@ -151,24 +97,10 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get identity provider").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(convertIdentityProviderFromStore(identityProviderMessage)))
-	})
+	}, loginOnlyMiddleware)
 
 	g.DELETE("/idp/:idpId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		identityProviderID, err := strconv.Atoi(c.Param("idpId"))
 		if err != nil {
@@ -182,7 +114,7 @@ func (s *Server) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete identity provider").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)
-	})
+	}, roleOnlyMiddleware(api.Host))
 }
 
 func convertIdentityProviderFromStore(identityProviderMessage *store.IdentityProviderMessage) *api.IdentityProvider {

@@ -27,17 +27,14 @@ const (
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+		user := c.Get(userContextKey).(*api.User)
 
 		resourceCreate := &api.ResourceCreate{}
 		if err := json.NewDecoder(c.Request().Body).Decode(resourceCreate); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post resource request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed post resource request").SetInternal(err)
 		}
 
-		resourceCreate.CreatorID = userID
+		resourceCreate.CreatorID = user.ID
 		// Only allow those external links with http prefix.
 		if resourceCreate.ExternalLink != "" && !strings.HasPrefix(resourceCreate.ExternalLink, "http") {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link")
@@ -50,14 +47,11 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(resource))
-	})
+	}, loginOnlyMiddleware)
 
 	g.POST("/resource/blob", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+		user := c.Get(userContextKey).(*api.User)
 
 		if err := c.Request().ParseMultipartForm(maxFileSize); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Upload file overload max size").SetInternal(err)
@@ -99,7 +93,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
 			}
 			resourceCreate = &api.ResourceCreate{
-				CreatorID: userID,
+				CreatorID: user.ID,
 				Filename:  filename,
 				Type:      filetype,
 				Size:      size,
@@ -130,7 +124,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
 				}
 				resourceCreate = &api.ResourceCreate{
-					CreatorID:    userID,
+					CreatorID:    user.ID,
 					Filename:     filename,
 					Type:         filetype,
 					ExternalLink: link,
@@ -148,16 +142,14 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(resource))
-	})
+	}, loginOnlyMiddleware)
 
 	g.GET("/resource", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+		user := c.Get(userContextKey).(*api.User)
+
 		resourceFind := &api.ResourceFind{
-			CreatorID: &userID,
+			CreatorID: &user.ID,
 		}
 		list, err := s.Store.FindResourceList(ctx, resourceFind)
 		if err != nil {
@@ -174,7 +166,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			resource.LinkedMemoAmount = len(memoResourceList)
 		}
 		return c.JSON(http.StatusOK, composeResponse(list))
-	})
+	}, loginOnlyMiddleware)
 
 	g.GET("/resource/:resourceId", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -183,13 +175,11 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+		user := c.Get(userContextKey).(*api.User)
+
 		resourceFind := &api.ResourceFind{
 			ID:        &resourceID,
-			CreatorID: &userID,
+			CreatorID: &user.ID,
 			GetBlob:   true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
@@ -197,7 +187,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(resource))
-	})
+	}, loginOnlyMiddleware)
 
 	g.GET("/resource/:resourceId/blob", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -206,28 +196,31 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+		user := c.Get(userContextKey).(*api.User)
+
 		resourceFind := &api.ResourceFind{
 			ID:        &resourceID,
-			CreatorID: &userID,
+			CreatorID: &user.ID,
 			GetBlob:   true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
-		return c.Stream(http.StatusOK, resource.Type, bytes.NewReader(resource.Blob))
-	})
+		response := c.Response()
+		response.Header().Set(echo.HeaderContentDisposition, fmt.Sprintf("attachment; filename=%s", resource.Filename))
+		response.Header().Set(echo.HeaderContentType, resource.Type)
+		response.WriteHeader(http.StatusOK)
+		_, err = response.Write(resource.Blob)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write response").SetInternal(err)
+		}
+		return nil
+	}, loginOnlyMiddleware)
 
 	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+		user := c.Get(userContextKey).(*api.User)
 
 		resourceID, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
@@ -241,7 +234,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
 		}
-		if resource.CreatorID != userID {
+		if resource.CreatorID != user.ID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
@@ -250,7 +243,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			UpdatedTs: &currentTs,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(resourcePatch); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch resource request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed patch resource request").SetInternal(err)
 		}
 
 		resourcePatch.ID = resourceID
@@ -259,28 +252,25 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(resource))
-	})
+	}, loginOnlyMiddleware)
 
 	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+		user := c.Get(userContextKey).(*api.User)
 
 		resourceID, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed resource delete request").SetInternal(err)
 		}
 
 		resource, err := s.Store.FindResource(ctx, &api.ResourceFind{
 			ID:        &resourceID,
-			CreatorID: &userID,
+			CreatorID: &user.ID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
 		}
-		if resource.CreatorID != userID {
+		if resource.CreatorID != user.ID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
@@ -294,7 +284,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)
-	})
+	}, loginOnlyMiddleware)
 }
 
 func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
@@ -327,7 +317,15 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(resource.Blob))
 			return nil
 		}
-		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(resource.Blob))
+		response := c.Response()
+		response.Header().Set(echo.HeaderContentDisposition, fmt.Sprintf("attachment; filename=%s", resource.Filename))
+		response.Header().Set(echo.HeaderContentType, resourceType)
+		response.WriteHeader(http.StatusOK)
+		_, err = response.Write(resource.Blob)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write response").SetInternal(err)
+		}
+		return nil
 	})
 }
 

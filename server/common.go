@@ -47,8 +47,8 @@ func (server *Server) defaultAuthSkipper(c echo.Context) bool {
 			return false
 		}
 		if user != nil {
-			// Stores userID into context.
-			c.Set(getUserIDContextKey(), user.ID)
+			// Stores user into context.
+			c.Set(userContextKey, user)
 			return true
 		}
 	}

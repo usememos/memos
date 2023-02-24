@@ -3,7 +3,6 @@ package getter
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"net/url"
 	"strings"
 )
@@ -18,7 +17,7 @@ func GetImage(urlStr string) (*Image, error) {
 		return nil, err
 	}
 
-	response, err := http.Get(urlStr)
+	response, err := client.Get(urlStr)
 	if err != nil {
 		return nil, err
 	}

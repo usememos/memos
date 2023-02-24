@@ -18,20 +18,17 @@ import (
 func (s *Server) registerTagRoutes(g *echo.Group) {
 	g.POST("/tag", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+		user := c.Get(userContextKey).(*api.User)
 
 		tagUpsert := &api.TagUpsert{}
 		if err := json.NewDecoder(c.Request().Body).Decode(tagUpsert); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed post tag request").SetInternal(err)
 		}
 		if tagUpsert.Name == "" {
 			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
 		}
 
-		tagUpsert.CreatorID = userID
+		tagUpsert.CreatorID = user.ID
 		tag, err := s.Store.UpsertTag(ctx, tagUpsert)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert tag").SetInternal(err)
@@ -40,17 +37,14 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(tag.Name))
-	})
+	}, loginOnlyMiddleware)
 
 	g.GET("/tag", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
-		}
+		user := c.Get(userContextKey).(*api.User)
 
 		tagFind := &api.TagFind{
-			CreatorID: userID,
+			CreatorID: user.ID,
 		}
 		tagList, err := s.Store.FindTagList(ctx, tagFind)
 		if err != nil {
@@ -62,18 +56,16 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			tagNameList = append(tagNameList, tag.Name)
 		}
 		return c.JSON(http.StatusOK, composeResponse(tagNameList))
-	})
+	}, loginOnlyMiddleware)
 
 	g.GET("/tag/suggestion", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusBadRequest, "Missing user session")
-		}
+		user := c.Get(userContextKey).(*api.User)
+
 		contentSearch := "#"
 		normalRowStatus := api.Normal
 		memoFind := api.MemoFind{
-			CreatorID:     &userID,
+			CreatorID:     &user.ID,
 			ContentSearch: &contentSearch,
 			RowStatus:     &normalRowStatus,
 		}
@@ -84,7 +76,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		}
 
 		tagFind := &api.TagFind{
-			CreatorID: userID,
+			CreatorID: user.ID,
 		}
 		existTagList, err := s.Store.FindTagList(ctx, tagFind)
 		if err != nil {
@@ -109,24 +101,21 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		}
 		sort.Strings(tagList)
 		return c.JSON(http.StatusOK, composeResponse(tagList))
-	})
+	}, loginOnlyMiddleware)
 
 	g.POST("/tag/delete", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+		user := c.Get(userContextKey).(*api.User)
 
 		tagDelete := &api.TagDelete{}
 		if err := json.NewDecoder(c.Request().Body).Decode(tagDelete); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed post tag request").SetInternal(err)
 		}
 		if tagDelete.Name == "" {
 			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
 		}
 
-		tagDelete.CreatorID = userID
+		tagDelete.CreatorID = user.ID
 		if err := s.Store.DeleteTag(ctx, tagDelete); err != nil {
 			if common.ErrorCode(err) == common.NotFound {
 				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Tag name not found: %s", tagDelete.Name))
@@ -134,7 +123,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete tag name: %v", tagDelete.Name)).SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)
-	})
+	}, loginOnlyMiddleware)
 }
 
 var tagRegexp = regexp.MustCompile(`#([^\s#]+)`)

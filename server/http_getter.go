@@ -24,7 +24,7 @@ func registerGetterPublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusNotAcceptable, fmt.Sprintf("Failed to get website meta with url: %s", urlStr)).SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(htmlMeta))
-	})
+	}, loginOnlyMiddleware)
 
 	g.GET("/get/image", func(c echo.Context) error {
 		urlStr := c.QueryParam("url")
@@ -47,5 +47,5 @@ func registerGetterPublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write image blob").SetInternal(err)
 		}
 		return nil
-	})
+	}, loginOnlyMiddleware)
 }

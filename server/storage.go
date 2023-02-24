@@ -14,24 +14,10 @@ import (
 func (s *Server) registerStorageRoutes(g *echo.Group) {
 	g.POST("/storage", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		storageCreate := &api.StorageCreate{}
 		if err := json.NewDecoder(c.Request().Body).Decode(storageCreate); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post storage request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed post storage request").SetInternal(err)
 		}
 
 		storage, err := s.Store.CreateStorage(ctx, storageCreate)
@@ -39,24 +25,10 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create storage").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(storage))
-	})
+	}, roleOnlyMiddleware(api.Host))
 
 	g.PATCH("/storage/:storageId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		storageID, err := strconv.Atoi(c.Param("storageId"))
 		if err != nil {
@@ -67,7 +39,7 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			ID: storageID,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(storagePatch); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch storage request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed patch storage request").SetInternal(err)
 		}
 
 		storage, err := s.Store.PatchStorage(ctx, storagePatch)
@@ -75,49 +47,20 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch storage").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(storage))
-	})
+	}, roleOnlyMiddleware(api.Host))
 
 	g.GET("/storage", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		// We should only show storage list to host user.
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		storageList, err := s.Store.FindStorageList(ctx, &api.StorageFind{})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage list").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(storageList))
-	})
+	}, roleOnlyMiddleware(api.Host))
 
 	g.DELETE("/storage/:storageId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
 
 		storageID, err := strconv.Atoi(c.Param("storageId"))
 		if err != nil {
@@ -146,5 +89,5 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete storage").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)
-	})
+	}, roleOnlyMiddleware(api.Host))
 }

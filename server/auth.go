@@ -23,7 +23,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		ctx := c.Request().Context()
 		signin := &api.SignIn{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed signin request").SetInternal(err)
 		}
 
 		userFind := &api.UserFind{
@@ -58,7 +58,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		ctx := c.Request().Context()
 		signin := &api.SSOSignIn{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed signin request").SetInternal(err)
 		}
 
 		identityProviderMessage, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProviderMessage{
@@ -142,7 +142,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		ctx := c.Request().Context()
 		signup := &api.SignUp{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed signup request").SetInternal(err)
 		}
 
 		userCreate := &api.UserCreate{

@@ -3,7 +3,6 @@ package getter
 import (
 	"fmt"
 	"io"
-	"net/http"
 	"net/url"
 
 	"golang.org/x/net/html"
@@ -21,7 +20,7 @@ func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
 		return nil, err
 	}
 
-	response, err := http.Get(urlStr)
+	response, err := client.Get(urlStr)
 	if err != nil {
 		return nil, err
 	}

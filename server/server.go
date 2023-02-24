@@ -91,6 +91,7 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 		}
 	}
 	e.Use(session.Middleware(sessions.NewCookieStore([]byte(secretSessionName))))
+	e.Use(s.aclMiddleware)
 
 	embedFrontend(e)
 
@@ -102,12 +103,9 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 
 	publicGroup := e.Group("/o")
 	s.registerResourcePublicRoutes(publicGroup)
-	registerGetterPublicRoutes(publicGroup)
 
 	apiGroup := e.Group("/api")
-	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return aclMiddleware(s, next)
-	})
+	registerGetterPublicRoutes(apiGroup)
 	s.registerSystemRoutes(apiGroup)
 	s.registerAuthRoutes(apiGroup)
 	s.registerUserRoutes(apiGroup)

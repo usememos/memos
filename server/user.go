@@ -19,23 +19,10 @@ import (
 func (s *Server) registerUserRoutes(g *echo.Group) {
 	g.POST("/user", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
-		}
-		currentUser, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by id").SetInternal(err)
-		}
-		if currentUser.Role != api.Host {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Only Host user can create member")
-		}
 
 		userCreate := &api.UserCreate{}
 		if err := json.NewDecoder(c.Request().Body).Decode(userCreate); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed post user request").SetInternal(err)
 		}
 		if userCreate.Role == api.Host {
 			return echo.NewHTTPError(http.StatusForbidden, "Could not create host user")
@@ -60,7 +47,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(user))
-	})
+	}, roleOnlyMiddleware(api.Host))
 
 	g.GET("/user", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -75,62 +62,48 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			user.Email = ""
 		}
 		return c.JSON(http.StatusOK, composeResponse(userList))
-	})
+	}, roleOnlyMiddleware(api.Host))
 
 	g.POST("/user/setting", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
-		}
+		user := c.Get(userContextKey).(*api.User)
 
 		userSettingUpsert := &api.UserSettingUpsert{}
 		if err := json.NewDecoder(c.Request().Body).Decode(userSettingUpsert); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user setting upsert request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed post user setting upsert request").SetInternal(err)
 		}
 		if err := userSettingUpsert.Validate(); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user setting format").SetInternal(err)
 		}
 
-		userSettingUpsert.UserID = userID
+		userSettingUpsert.UserID = user.ID
 		userSetting, err := s.Store.UpsertUserSetting(ctx, userSettingUpsert)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert user setting").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(userSetting))
-	})
+	}, loginOnlyMiddleware)
 
 	// GET /api/user/me is used to check if the user is logged in.
 	g.GET("/user/me", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
-		}
-
-		userFind := &api.UserFind{
-			ID: &userID,
-		}
-		user, err := s.Store.FindUser(ctx, userFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
+		user := c.Get(userContextKey).(*api.User)
 
 		userSettingList, err := s.Store.FindUserSettingList(ctx, &api.UserSettingFind{
-			UserID: userID,
+			UserID: user.ID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
 		}
 		user.UserSettingList = userSettingList
 		return c.JSON(http.StatusOK, composeResponse(user))
-	})
+	}, loginOnlyMiddleware)
 
 	g.GET("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		id, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted user id").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed user id").SetInternal(err)
 		}
 
 		user, err := s.Store.FindUser(ctx, &api.UserFind{
@@ -146,7 +119,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			user.Email = ""
 		}
 		return c.JSON(http.StatusOK, composeResponse(user))
-	})
+	}, loginOnlyMiddleware)
 
 	g.PATCH("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -154,19 +127,9 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("id"))).SetInternal(err)
 		}
-		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-		currentUser, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &currentUserID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if currentUser == nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Current session user not found with ID: %d", currentUserID)).SetInternal(err)
-		} else if currentUser.Role != api.Host && currentUserID != userID {
+		currentUser := c.Get(userContextKey).(*api.User)
+
+		if currentUser.Role != api.Host && currentUser.ID != userID {
 			return echo.NewHTTPError(http.StatusForbidden, "Access forbidden for current session user").SetInternal(err)
 		}
 
@@ -175,7 +138,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			UpdatedTs: &currentTs,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(userPatch); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformed patch user request").SetInternal(err)
 		}
 		userPatch.ID = userID
 		if err := userPatch.Validate(); err != nil {
@@ -210,26 +173,10 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 		user.UserSettingList = userSettingList
 		return c.JSON(http.StatusOK, composeResponse(user))
-	})
+	}, loginOnlyMiddleware)
 
 	g.DELETE("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-		currentUser, err := s.Store.FindUser(ctx, &api.UserFind{
-			ID: &currentUserID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if currentUser == nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Current session user not found with ID: %d", currentUserID)).SetInternal(err)
-		} else if currentUser.Role != api.Host {
-			return echo.NewHTTPError(http.StatusForbidden, "Access forbidden for current session user").SetInternal(err)
-		}
-
 		userID, err := strconv.Atoi(c.Param("id"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("id"))).SetInternal(err)
@@ -246,7 +193,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 
 		return c.JSON(http.StatusOK, true)
-	})
+	}, roleOnlyMiddleware(api.Host))
 }
 
 func (s *Server) createUserCreateActivity(c echo.Context, user *api.User) error {

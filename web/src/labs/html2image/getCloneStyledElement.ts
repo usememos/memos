@@ -16,7 +16,7 @@ const applyStyles = async (sourceElement: HTMLElement, clonedElement: HTMLElemen
     // NOTE: Get image blob from backend to avoid CORS error.
     if (covertFailed) {
       try {
-        (clonedElement as HTMLImageElement).src = await convertResourceToDataURL(`/o/get/image?url=${url}`);
+        (clonedElement as HTMLImageElement).src = await convertResourceToDataURL(`/api/get/image?url=${url}`);
       } catch (error) {
         // do nth
       }
