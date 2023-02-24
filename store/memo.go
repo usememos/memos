@@ -302,11 +302,11 @@ func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*me
 			memo.row_status,
 			memo.content,
 			memo.visibility,
-			memo_organizer.pinned
+			IFNULL(memo_organizer.pinned, 0) AS pinned
 		FROM memo
-		LEFT JOIN memo_organizer ON memo_organizer.memo_id = memo.id
+		LEFT JOIN memo_organizer ON memo_organizer.memo_id = memo.id AND memo_organizer.user_id = memo.creator_id
 		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY memo_organizer.pinned DESC, memo.created_ts DESC
+		ORDER BY pinned DESC, memo.created_ts DESC
 	`
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)

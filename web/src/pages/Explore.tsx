@@ -142,8 +142,8 @@ const Explore = () => {
                   {memo.pinned && <div className="corner-container"></div>}
                   <div className="memo-header">
                     <span className="time-text">{createdAtStr}</span>
-                    <a className="name-text" href={`/u/${memo.creator.id}`}>
-                      @{memo.creator.nickname || memo.creator.username}
+                    <a className="name-text" href={`/u/${memo.creatorId}`}>
+                      @{memo.creatorName}
                     </a>
                   </div>
                   <MemoContent className="memo-content" content={memo.content} onMemoContentClick={handleMemoContentClick} />

@@ -49,8 +49,8 @@ const EmbedMemo = () => {
           <div className="w-full flex flex-col justify-start items-start">
             <div className="w-full mb-2 flex flex-row justify-start items-center text-sm text-gray-400 dark:text-gray-300">
               <span>{dayjs(state.memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
-              <a className="ml-2 hover:underline hover:text-green-600" href={`/u/${state.memo.creator.id}`}>
-                @{state.memo.creator.nickname || state.memo.creator.username}
+              <a className="ml-2 hover:underline hover:text-green-600" href={`/u/${state.memo.creatorId}`}>
+                @{state.memo.creatorName}
               </a>
             </div>
             <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />

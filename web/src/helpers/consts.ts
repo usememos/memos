@@ -17,6 +17,6 @@ export const VISIBILITY_SELECTOR_ITEMS = [
 export const TAB_SPACE_WIDTH = 2;
 
 // default fetch memo amount
-export const DEFAULT_MEMO_LIMIT = 30;
+export const DEFAULT_MEMO_LIMIT = 20;
 
 export const MEMOS_LOGO_URL = "https://usememos.com/logo.png";
