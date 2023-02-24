@@ -14,7 +14,7 @@ interface Memo {
   visibility: Visibility;
   pinned: boolean;
 
-  creator: User;
+  creatorName: string;
   resourceList: Resource[];
 }
 

@@ -56,10 +56,11 @@ func (s *Store) ComposeMemoCreator(ctx context.Context, memo *api.Memo) error {
 		return err
 	}
 
-	user.Email = ""
-	user.OpenID = ""
-	user.UserSettingList = nil
-	memo.Creator = user
+	if user.Nickname != "" {
+		memo.CreatorName = user.Nickname
+	} else {
+		memo.CreatorName = user.Username
+	}
 	return nil
 }
 func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.User, error) {
