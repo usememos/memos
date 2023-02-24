@@ -275,10 +275,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         {type === "OAUTH2" && (
           <>
             {isCreating && (
-              <p className="border rounded-md p-2 text-sm w-full mb-2 break-all">
-                Redirect URL: {absolutifyLink("/auth/callback")}{" "}
-                RedirectRedirectRedirectRedirectRedirectRedirectRedirectRedirectRedirectRedirectRedirect
-              </p>
+              <p className="border rounded-md p-2 text-sm w-full mb-2 break-all">Redirect URL: {absolutifyLink("/auth/callback")}</p>
             )}
             <Typography className="!mb-1" level="body2">
               Client ID<span className="text-red-600">*</span>
