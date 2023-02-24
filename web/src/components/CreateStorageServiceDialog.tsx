@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { Button, Input, Typography } from "@mui/joy";
 import * as api from "../helpers/api";
 import { generateDialog } from "./Dialog";
@@ -13,7 +12,6 @@ interface Props extends DialogProps {
 
 const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   const { destroy, storage, confirmCallback } = props;
-  const { t } = useTranslation();
   const [basicInfo, setBasicInfo] = useState({
     name: "",
   });
@@ -95,9 +93,18 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <div className="dialog-header-container !w-64">
+      <div className="dialog-header-container">
         <p className="title-text">
-          {isCreating ? t("setting.storage-section.create-a-service") : t("setting.storage-section.update-a-service")}
+          {isCreating ? "Create storage" : "Update storage"}
+          <a
+            className="ml-2 text-sm text-blue-600 hover:opacity-80 hover:underline"
+            href="https://usememos.com/docs/storage"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Learn more
+            <Icon.ExternalLink className="inline -mt-1 ml-1 w-4 h-auto opacity-80" />
+          </a>
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
@@ -106,7 +113,6 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container">
         <Typography className="!mb-1" level="body2">
           Name
-          <span className="text-sm text-gray-400 ml-1">(Unique identifier)</span>
         </Typography>
         <Input
           className="mb-2"
