@@ -157,6 +157,21 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 
 	g.GET("/system/setting", func(c echo.Context) error {
 		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		user, err := s.Store.FindUser(ctx, &api.UserFind{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil || user.Role != api.Host {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
@@ -170,6 +185,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
+
 		user, err := s.Store.FindUser(ctx, &api.UserFind{
 			ID: &userID,
 		})
@@ -179,6 +195,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 		if user == nil || user.Role != api.Host {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
+
 		if err := s.Store.Vacuum(ctx); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to vacuum database").SetInternal(err)
 		}
