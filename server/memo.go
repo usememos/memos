@@ -334,23 +334,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(resourceList))
 	})
 
-	g.GET("/memo/amount", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		normalRowStatus := api.Normal
-		memoFind := &api.MemoFind{
-			RowStatus: &normalRowStatus,
-		}
-		if userID, err := strconv.Atoi(c.QueryParam("userId")); err == nil {
-			memoFind.CreatorID = &userID
-		}
-
-		memoList, err := s.Store.FindMemoList(ctx, memoFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, composeResponse(memoList))
-	})
-
 	g.GET("/memo/stats", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		normalStatus := api.Normal
