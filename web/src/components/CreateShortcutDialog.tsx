@@ -71,7 +71,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
     destroy();
   };
 
-  const handleAddFilterBenClick = () => {
+  const handleAddFilterBtnClick = () => {
     if (filters.length > 0) {
       const lastFilter = filters[filters.length - 1];
       if (lastFilter.value.value === "") {
@@ -131,7 +131,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
                 />
               );
             })}
-            <div className="create-filter-btn" onClick={handleAddFilterBenClick}>
+            <div className="create-filter-btn" onClick={handleAddFilterBtnClick}>
               {t("filter.new-filter")}
             </div>
           </div>
