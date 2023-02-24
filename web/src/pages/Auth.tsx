@@ -13,7 +13,7 @@ import LocaleSelect from "../components/LocaleSelect";
 import "../less/auth.less";
 
 const validateConfig: ValidatorConfig = {
-  minLength: 4,
+  minLength: 3,
   maxLength: 320,
   noSpace: true,
   noChinese: true,
