@@ -1,4 +1,4 @@
-import { uniqBy } from "lodash-es";
+import { omit, uniqBy } from "lodash-es";
 import * as api from "../../helpers/api";
 import { DEFAULT_MEMO_LIMIT } from "../../helpers/consts";
 import { useUserStore } from "./";
@@ -97,7 +97,7 @@ export const useMemoStore = () => {
     patchMemo: async (memoPatch: MemoPatch): Promise<Memo> => {
       const { data } = (await api.patchMemo(memoPatch)).data;
       const memo = convertResponseModelMemo(data);
-      store.dispatch(patchMemo(memo));
+      store.dispatch(patchMemo(omit(memo, "pinned")));
       return memo;
     },
     pinMemo: async (memoId: MemoId) => {
