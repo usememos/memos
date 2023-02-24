@@ -1,17 +1,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "../store/module";
-import { validate, ValidatorConfig } from "../helpers/validator";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
-
-const validateConfig: ValidatorConfig = {
-  minLength: 4,
-  maxLength: 320,
-  noSpace: true,
-  noChinese: true,
-};
 
 interface Props extends DialogProps {
   user: User;
@@ -51,12 +43,6 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
     if (newPassword !== newPasswordAgain) {
       toastHelper.error(t("message.new-password-not-match"));
       setNewPasswordAgain("");
-      return;
-    }
-
-    const passwordValidResult = validate(newPassword, validateConfig);
-    if (!passwordValidResult.result) {
-      toastHelper.error(`${t("common.password")} ${t(passwordValidResult.reason as string)}`);
       return;
     }
 
