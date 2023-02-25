@@ -17,7 +17,7 @@ const (
 	SystemSettingSecretSessionName SystemSettingName = "secretSessionName"
 	// SystemSettingAllowSignUpName is the key type of allow signup setting.
 	SystemSettingAllowSignUpName SystemSettingName = "allowSignUp"
-	// SystemSettingsDisablePublicMemos is the key type of disable public memos setting.
+	// SystemSettingDisablePublicMemosName is the key type of disable public memos setting.
 	SystemSettingDisablePublicMemosName SystemSettingName = "disablePublicMemos"
 	// SystemSettingAdditionalStyleName is the key type of additional style.
 	SystemSettingAdditionalStyleName SystemSettingName = "additionalStyle"
@@ -69,7 +69,7 @@ func (key SystemSettingName) String() string {
 
 var (
 	SystemSettingAllowSignUpValue        = []bool{true, false}
-	SystemSettingDisbalePublicMemosValue = []bool{true, false}
+	SystemSettingDisablePublicMemosValue = []bool{true, false}
 )
 
 type SystemSetting struct {
@@ -113,7 +113,7 @@ func (upsert SystemSettingUpsert) Validate() error {
 		}
 
 		invalid := true
-		for _, v := range SystemSettingDisbalePublicMemosValue {
+		for _, v := range SystemSettingDisablePublicMemosValue {
 			if value == v {
 				invalid = false
 				break
