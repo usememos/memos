@@ -2,19 +2,11 @@ import { isEqual } from "lodash-es";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "../store/module";
-import { validate, ValidatorConfig } from "../helpers/validator";
 import { convertFileToBase64 } from "../helpers/utils";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
 import UserAvatar from "./UserAvatar";
-
-const validateConfig: ValidatorConfig = {
-  minLength: 4,
-  maxLength: 320,
-  noSpace: true,
-  noChinese: true,
-};
 
 type Props = DialogProps;
 
@@ -97,12 +89,6 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
   const handleSaveBtnClick = async () => {
     if (state.username === "") {
       toastHelper.error(t("message.fill-all"));
-      return;
-    }
-
-    const usernameValidResult = validate(state.username, validateConfig);
-    if (!usernameValidResult.result) {
-      toastHelper.error(t("common.username") + ": " + t(usernameValidResult.reason as string));
       return;
     }
 

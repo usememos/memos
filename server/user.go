@@ -178,9 +178,6 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
 		}
 		userPatch.ID = userID
-		if err := userPatch.Validate(); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user patch format").SetInternal(err)
-		}
 
 		if userPatch.Password != nil && *userPatch.Password != "" {
 			passwordHash, err := bcrypt.GenerateFromPassword([]byte(*userPatch.Password), bcrypt.DefaultCost)
@@ -195,6 +192,10 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if userPatch.ResetOpenID != nil && *userPatch.ResetOpenID {
 			openID := common.GenUUID()
 			userPatch.OpenID = &openID
+		}
+
+		if err := userPatch.Validate(); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user patch format").SetInternal(err)
 		}
 
 		user, err := s.Store.PatchUser(ctx, userPatch)

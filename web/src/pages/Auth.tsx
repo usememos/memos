@@ -4,20 +4,12 @@ import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "../store/module";
 import * as api from "../helpers/api";
 import { absolutifyLink } from "../helpers/utils";
-import { validate, ValidatorConfig } from "../helpers/validator";
 import useLoading from "../hooks/useLoading";
 import Icon from "../components/Icon";
 import toastHelper from "../components/Toast";
 import AppearanceSelect from "../components/AppearanceSelect";
 import LocaleSelect from "../components/LocaleSelect";
 import "../less/auth.less";
-
-const validateConfig: ValidatorConfig = {
-  minLength: 4,
-  maxLength: 320,
-  noSpace: true,
-  noChinese: true,
-};
 
 const Auth = () => {
   const { t } = useTranslation();
@@ -64,18 +56,6 @@ const Auth = () => {
       return;
     }
 
-    const usernameValidResult = validate(username, validateConfig);
-    if (!usernameValidResult.result) {
-      toastHelper.error(t("common.username") + ": " + t(usernameValidResult.reason as string));
-      return;
-    }
-
-    const passwordValidResult = validate(password, validateConfig);
-    if (!passwordValidResult.result) {
-      toastHelper.error(t("common.password") + ": " + t(passwordValidResult.reason as string));
-      return;
-    }
-
     try {
       actionBtnLoadingState.setLoading();
       await api.signin(username, password);
@@ -94,18 +74,6 @@ const Auth = () => {
 
   const handleSignUpBtnsClick = async () => {
     if (actionBtnLoadingState.isLoading) {
-      return;
-    }
-
-    const usernameValidResult = validate(username, validateConfig);
-    if (!usernameValidResult.result) {
-      toastHelper.error(t("common.username") + ": " + t(usernameValidResult.reason as string));
-      return;
-    }
-
-    const passwordValidResult = validate(password, validateConfig);
-    if (!passwordValidResult.result) {
-      toastHelper.error(t("common.password") + ": " + t(passwordValidResult.reason as string));
       return;
     }
 
