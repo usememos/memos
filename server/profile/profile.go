@@ -44,7 +44,7 @@ func checkDSN(dataDir string) (string, error) {
 	return dataDir, nil
 }
 
-// GetDevProfile will return a profile for dev or prod.
+// GetProfile will return a profile for dev or prod.
 func GetProfile() (*Profile, error) {
 	profile := Profile{}
 	err := viper.Unmarshal(&profile)

@@ -34,7 +34,7 @@ func GetSchemaVersion(version string) string {
 	return minorVersion + ".0"
 }
 
-// IsVersionGreaterThanOrEqualTo returns true if version is greater than or equal to target.
+// IsVersionGreaterOrEqualThan returns true if version is greater than or equal to target.
 func IsVersionGreaterOrEqualThan(version, target string) bool {
 	return semver.Compare(fmt.Sprintf("v%s", version), fmt.Sprintf("v%s", target)) > -1
 }

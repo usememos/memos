@@ -2,21 +2,29 @@ module github.com/usememos/memos
 
 go 1.19
 
-require github.com/mattn/go-sqlite3 v1.14.9
-
-require github.com/google/uuid v1.3.0
-
 require (
-	golang.org/x/crypto v0.1.0
-	golang.org/x/net v0.6.0
-)
-
-require github.com/labstack/echo/v4 v4.9.0
-
-require (
+	github.com/aws/aws-sdk-go-v2 v1.17.4
+	github.com/aws/aws-sdk-go-v2/config v1.18.12
+	github.com/aws/aws-sdk-go-v2/credentials v1.13.12
+	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.51
+	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.3
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/feeds v1.1.1
 	github.com/gorilla/sessions v1.2.1
 	github.com/labstack/echo-contrib v0.13.0
+	github.com/labstack/echo/v4 v4.9.0
+	github.com/mattn/go-sqlite3 v1.14.9
+	github.com/pkg/errors v0.9.1
+	github.com/segmentio/analytics-go v3.1.0+incompatible
+	github.com/spf13/cobra v1.6.1
+	github.com/spf13/viper v1.15.0
+	github.com/stretchr/testify v1.8.1
+	go.uber.org/zap v1.24.0
+	golang.org/x/crypto v0.1.0
+	golang.org/x/exp v0.0.0-20230111222715-75897c7a292a
+	golang.org/x/mod v0.6.0
+	golang.org/x/net v0.6.0
+	golang.org/x/oauth2 v0.5.0
 )
 
 require (
@@ -71,21 +79,4 @@ require (
 	gopkg.in/check.v1 v1.0.0-20201130134442-10cb98267c6c // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-)
-
-require (
-	github.com/aws/aws-sdk-go-v2 v1.17.4
-	github.com/aws/aws-sdk-go-v2/config v1.18.12
-	github.com/aws/aws-sdk-go-v2/credentials v1.13.12
-	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.51
-	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.3
-	github.com/pkg/errors v0.9.1
-	github.com/segmentio/analytics-go v3.1.0+incompatible
-	github.com/spf13/cobra v1.6.1
-	github.com/spf13/viper v1.15.0
-	github.com/stretchr/testify v1.8.1
-	go.uber.org/zap v1.24.0
-	golang.org/x/exp v0.0.0-20230111222715-75897c7a292a
-	golang.org/x/mod v0.6.0
-	golang.org/x/oauth2 v0.5.0
 )
