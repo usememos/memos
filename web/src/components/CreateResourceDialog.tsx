@@ -1,4 +1,4 @@
-import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete } from "@mui/joy";
+import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete, Tooltip } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { useResourceStore } from "../store/module";
 import Icon from "./Icon";
@@ -179,9 +179,13 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
                 accept="*"
               />
             </div>
-            <List size="sm">
+            <List size="sm" sx={{ width: "100%" }}>
               {fileList.map((file) => (
-                <ListItem key={file.name}>{file.name}</ListItem>
+                <Tooltip title={file.name} key={file.name} placement="top">
+                  <ListItem>
+                    <Typography noWrap>{file.name}</Typography>
+                  </ListItem>
+                </Tooltip>
               ))}
             </List>
           </>
