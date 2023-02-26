@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocationStore, useMemoStore, useTagStore, useUserStore } from "../store/module";
+import { useMemoStore, useTagStore, useUserStore } from "../store/module";
 import { getMemoStats } from "../helpers/api";
 import * as utils from "../helpers/utils";
 import Dropdown from "./common/Dropdown";
@@ -10,7 +10,6 @@ import UserAvatar from "./UserAvatar";
 
 const UserBanner = () => {
   const { t } = useTranslation();
-  const locationStore = useLocationStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
@@ -45,10 +44,6 @@ const UserBanner = () => {
       });
   }, [memos]);
 
-  const handleUsernameClick = useCallback(() => {
-    locationStore.clearQuery();
-  }, []);
-
   const handleArchivedBtnClick = () => {
     showArchivedMemoDialog();
   };
@@ -68,10 +63,7 @@ const UserBanner = () => {
         <Dropdown
           className="w-full"
           trigger={
-            <div
-              className="px-2 py-1 max-w-full flex flex-row justify-start items-center cursor-pointer rounded hover:shadow hover:bg-white dark:hover:bg-zinc-700"
-              onClick={handleUsernameClick}
-            >
+            <div className="px-2 py-1 max-w-full flex flex-row justify-start items-center cursor-pointer rounded hover:shadow hover:bg-white dark:hover:bg-zinc-700">
               <UserAvatar avatarUrl={user?.avatarUrl} />
               <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{username}</span>
               {!isVisitorMode && user?.role === "HOST" ? (
