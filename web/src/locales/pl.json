@@ -178,7 +178,7 @@
             "create-a-service": "Utwórz serwis",
             "update-a-service": "Aktualizuj serwis",
             "warning-text": "Czy na pewno chcesz usunąć ten serwis przechowywania? Ta akcja jest nieodwracalna❗",
-            "delete-storage": "Delete Storage"
+            "delete-storage": "Usuń serwis przechowywania"
         },
         "member-section": {
             "create-a-member": "Utwórz użytkownika"
@@ -187,7 +187,7 @@
             "server-name": "Nazwa serwera",
             "customize-server": {
                 "title": "Personalizuj serwer",
-                "default": "Default is memos",
+                "default": "Domyślnie to memos",
                 "icon-url": "URL ikony"
             },
             "database-file-size": "Rozmiar bazy danych",
