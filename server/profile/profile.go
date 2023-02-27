@@ -24,6 +24,10 @@ type Profile struct {
 	Version string `json:"version"`
 }
 
+func (p *Profile) IsDev() bool {
+	return p.Mode != "prod"
+}
+
 func checkDSN(dataDir string) (string, error) {
 	// Convert to absolute path if relative path is supplied.
 	if !filepath.IsAbs(dataDir) {

@@ -35,7 +35,7 @@ func NewClient(ctx context.Context, config *Config) (*Client, error) {
 		}, nil
 	})
 
-	cfg, err := s3config.LoadDefaultConfig(ctx,
+	awsConfig, err := s3config.LoadDefaultConfig(ctx,
 		s3config.WithEndpointResolverWithOptions(resolver),
 		s3config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(config.AccessKey, config.SecretKey, "")),
 	)
@@ -43,7 +43,7 @@ func NewClient(ctx context.Context, config *Config) (*Client, error) {
 		return nil, err
 	}
 
-	client := awss3.NewFromConfig(cfg)
+	client := awss3.NewFromConfig(awsConfig)
 
 	return &Client{
 		Client: client,
@@ -53,7 +53,7 @@ func NewClient(ctx context.Context, config *Config) (*Client, error) {
 
 func (client *Client) UploadFile(ctx context.Context, filename string, fileType string, src io.Reader) (string, error) {
 	uploader := manager.NewUploader(client.Client)
-	resp, err := uploader.Upload(ctx, &awss3.PutObjectInput{
+	uploadOutput, err := uploader.Upload(ctx, &awss3.PutObjectInput{
 		Bucket:      aws.String(client.Config.Bucket),
 		Key:         aws.String(filename),
 		Body:        src,
@@ -63,10 +63,12 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	if err != nil {
 		return "", err
 	}
-	var link string
-	if client.Config.URLPrefix == "" {
-		link = resp.Location
-	} else {
+
+	link := uploadOutput.Location
+	if link == "" {
+		if client.Config.URLPrefix == "" {
+			return "", fmt.Errorf("url prefix is empty")
+		}
 		link = fmt.Sprintf("%s/%s", client.Config.URLPrefix, filename)
 	}
 	return link, nil
