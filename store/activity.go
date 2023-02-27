@@ -79,7 +79,7 @@ func createActivity(ctx context.Context, tx *sql.Tx, create *api.ActivityCreate)
 		&activityRaw.Type,
 		&activityRaw.Level,
 		&activityRaw.Payload,
-		&activityRaw.CreatedTs,
+		&activityRaw.CreatorID,
 		&activityRaw.CreatedTs,
 	); err != nil {
 		return nil, FormatError(err)
