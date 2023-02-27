@@ -42,7 +42,28 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if resourceCreate.ExternalLink != "" && !strings.HasPrefix(resourceCreate.ExternalLink, "http") {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link")
 		}
-		resourceCreate.Visibility = api.Private
+		if resourceCreate.Visibility == "" {
+			userResourceVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
+				UserID: userID,
+				Key:    api.UserSettingResourceVisibilityKey,
+			})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user setting").SetInternal(err)
+			}
+
+			if userResourceVisibilitySetting != nil {
+				resourceVisibility := api.Private
+				err := json.Unmarshal([]byte(userResourceVisibilitySetting.Value), &resourceVisibility)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal user setting value").SetInternal(err)
+				}
+				resourceCreate.Visibility = resourceVisibility
+			} else {
+				// Private is the default resource visibility.
+				resourceCreate.Visibility = api.Private
+			}
+		}
+
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
@@ -100,12 +121,11 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
 			}
 			resourceCreate = &api.ResourceCreate{
-				CreatorID:  userID,
-				Filename:   filename,
-				Type:       filetype,
-				Size:       size,
-				Blob:       fileBytes,
-				Visibility: api.Private,
+				CreatorID: userID,
+				Filename:  filename,
+				Type:      filetype,
+				Size:      size,
+				Blob:      fileBytes,
 			}
 		} else {
 			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageServiceID})
@@ -136,10 +156,31 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					Filename:     filename,
 					Type:         filetype,
 					ExternalLink: link,
-					Visibility:   api.Private,
 				}
 			} else {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Unsupported storage type")
+			}
+		}
+
+		if resourceCreate.Visibility == "" {
+			userResourceVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
+				UserID: userID,
+				Key:    api.UserSettingResourceVisibilityKey,
+			})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user setting").SetInternal(err)
+			}
+
+			if userResourceVisibilitySetting != nil {
+				resourceVisibility := api.Private
+				err := json.Unmarshal([]byte(userResourceVisibilitySetting.Value), &resourceVisibility)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal user setting value").SetInternal(err)
+				}
+				resourceCreate.Visibility = resourceVisibility
+			} else {
+				// Private is the default resource visibility.
+				resourceCreate.Visibility = api.Private
 			}
 		}
 
