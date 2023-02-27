@@ -30,10 +30,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		if memoCreate.Visibility == "" {
-			userSettingMemoVisibilityKey := api.UserSettingMemoVisibilityKey
 			userMemoVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
 				UserID: userID,
-				Key:    &userSettingMemoVisibilityKey,
+				Key:    api.UserSettingMemoVisibilityKey,
 			})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user setting").SetInternal(err)

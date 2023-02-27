@@ -4,6 +4,7 @@ interface Setting {
   locale: Locale;
   appearance: Appearance;
   memoVisibility: Visibility;
+  resourceVisibility: Visibility;
 }
 
 interface LocalSetting {
@@ -26,7 +27,12 @@ interface UserMemoVisibilitySetting {
   value: Visibility;
 }
 
-type UserSetting = UserLocaleSetting | UserAppearanceSetting | UserMemoVisibilitySetting;
+interface UserResourceVisibilitySetting {
+  key: "resourceVisibility";
+  value: Visibility;
+}
+
+type UserSetting = UserLocaleSetting | UserAppearanceSetting | UserMemoVisibilitySetting | UserResourceVisibilitySetting;
 
 interface UserSettingUpsert {
   key: keyof Setting;

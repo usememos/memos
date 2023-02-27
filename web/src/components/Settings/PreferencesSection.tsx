@@ -34,6 +34,10 @@ const PreferencesSection = () => {
     await userStore.upsertUserSetting("memoVisibility", value);
   };
 
+  const handleDefaultResourceVisibilityChanged = async (value: string) => {
+    await userStore.upsertUserSetting("resourceVisibility", value);
+  };
+
   const handleIsFoldingEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, enableFoldMemo: event.target.checked });
   };
@@ -62,6 +66,24 @@ const PreferencesSection = () => {
           onChange={(_, visibility) => {
             if (visibility) {
               handleDefaultMemoVisibilityChanged(visibility);
+            }
+          }}
+        >
+          {visibilitySelectorItems.map((item) => (
+            <Option key={item.value} value={item.value} className="whitespace-nowrap">
+              {item.text}
+            </Option>
+          ))}
+        </Select>
+      </div>
+      <div className="form-label selector">
+        <span className="normal-text">Default resource visibility</span>
+        <Select
+          className="!min-w-[10rem] w-auto text-sm"
+          value={setting.resourceVisibility}
+          onChange={(_, visibility) => {
+            if (visibility) {
+              handleDefaultResourceVisibilityChanged(visibility);
             }
           }}
         >

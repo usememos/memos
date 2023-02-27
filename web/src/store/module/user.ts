@@ -10,6 +10,7 @@ const defaultSetting: Setting = {
   locale: "en",
   appearance: getSystemColorScheme(),
   memoVisibility: "PRIVATE",
+  resourceVisibility: "PRIVATE",
 };
 
 const defaultLocalSetting: LocalSetting = {
