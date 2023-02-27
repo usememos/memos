@@ -7,6 +7,7 @@ import Dropdown from "./common/Dropdown";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import UserAvatar from "./UserAvatar";
+import showSettingDialog from "./SettingDialog";
 
 const UserBanner = () => {
   const { t } = useTranslation();
@@ -44,6 +45,10 @@ const UserBanner = () => {
       });
   }, [memos]);
 
+  const handleMyAccountClick = () => {
+    showSettingDialog("my-account");
+  };
+
   const handleArchivedBtnClick = () => {
     showArchivedMemoDialog();
   };
@@ -79,6 +84,12 @@ const UserBanner = () => {
                 <>
                   <button
                     className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                    onClick={handleMyAccountClick}
+                  >
+                    <span className="mr-1">🤠</span> {t("setting.my-account")}
+                  </button>
+                  <button
+                    className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                     onClick={handleArchivedBtnClick}
                   >
                     <span className="mr-1">🗃️</span> {t("sidebar.archived")}
@@ -89,7 +100,7 @@ const UserBanner = () => {
                 className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                 onClick={handleAboutBtnClick}
               >
-                <span className="mr-1">🤠</span> {t("common.about")}
+                <span className="mr-1">🏂</span> {t("common.about")}
               </button>
               {!userStore.isVisitorMode() && (
                 <button

@@ -13,21 +13,23 @@ import StorageSection from "./Settings/StorageSection";
 import SSOSection from "./Settings/SSOSection";
 import "../less/setting-dialog.less";
 
-type Props = DialogProps;
-
 type SettingSection = "my-account" | "preference" | "member" | "system" | "storage" | "sso";
+
+interface Props extends DialogProps {
+  selectedSection?: SettingSection;
+}
 
 interface State {
   selectedSection: SettingSection;
 }
 
 const SettingDialog: React.FC<Props> = (props: Props) => {
-  const { destroy } = props;
+  const { destroy, selectedSection } = props;
   const { t } = useTranslation();
   const userStore = useUserStore();
   const user = userStore.state.user;
   const [state, setState] = useState<State>({
-    selectedSection: "my-account",
+    selectedSection: selectedSection || "my-account",
   });
   const isHost = user?.role === "HOST";
 
@@ -128,13 +130,15 @@ const SettingDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default function showSettingDialog(): void {
+export default function showSettingDialog(selectedSection?: SettingSection): void {
   generateDialog(
     {
       className: "setting-dialog",
       dialogName: "setting-dialog",
     },
     SettingDialog,
-    {}
+    {
+      selectedSection,
+    }
   );
 }
