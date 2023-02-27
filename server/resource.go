@@ -42,6 +42,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if resourceCreate.ExternalLink != "" && !strings.HasPrefix(resourceCreate.ExternalLink, "http") {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link")
 		}
+		resourceCreate.Visibility = api.Private
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
@@ -99,11 +100,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
 			}
 			resourceCreate = &api.ResourceCreate{
-				CreatorID: userID,
-				Filename:  filename,
-				Type:      filetype,
-				Size:      size,
-				Blob:      fileBytes,
+				CreatorID:  userID,
+				Filename:   filename,
+				Type:       filetype,
+				Size:       size,
+				Blob:       fileBytes,
+				Visibility: api.Private,
 			}
 		} else {
 			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageServiceID})
@@ -134,6 +136,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					Filename:     filename,
 					Type:         filetype,
 					ExternalLink: link,
+					Visibility:   api.Private,
 				}
 			} else {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Unsupported storage type")
