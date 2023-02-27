@@ -12,3 +12,5 @@ func main() {
 		panic(err)
 	}
 }
+
+// Added comments
