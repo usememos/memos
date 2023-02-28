@@ -9,5 +9,6 @@
 .page-container {background-color: #INSERT COLOR HERE;}
 \`\`\`
 
-- It is recommended that you choose the same color for both options
-5. Refresh the page and the background color of your memos app will successfully update to reflect your changes
+  It is recommended that you choose the same color for both options
+
+4. Refresh the page and the background color of your memos app will successfully update to reflect your changes
