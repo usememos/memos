@@ -4,7 +4,7 @@
 2. Navigate to the System Tab
 3. In the "Additional Styles" box add these lines of code:
 
-\`\`\`css
+```css
 .memo-list-container {background-color: #INSERT COLOR HERE;}`
 .page-container {background-color: #INSERT COLOR HERE;}
 \`\`\`
