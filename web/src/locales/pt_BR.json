@@ -58,9 +58,9 @@
         "not-host-tip": "If you don't have an account, please contact the site host."
     },
     "sidebar": {
-        "daily-review": "Daily Review",
-        "resources": "Resources",
-        "setting": "Configuração",
+        "daily-review": "Revisão diária",
+        "resources": "Recursos",
+        "setting": "Configurações",
         "archived": "Arquivado"
     },
     "daily-review": {
@@ -77,7 +77,7 @@
         "delete-resource": "Delete Resource",
         "linked-amount": "Linked memo amount",
         "rename": "Renomear",
-        "clear": "Clear",
+        "clear": "Limpar",
         "warning-text-unused": "Are you sure to delete these unused resource? THIS ACTION IS IRREVERSIABLE❗",
         "no-unused-resources": "No unused resources",
         "name": "Nome"
@@ -88,9 +88,9 @@
         "fetching-data": "fetching data..."
     },
     "editor": {
-        "editing": "Editing...",
-        "cancel-edit": "Cancel edit",
-        "save": "Save",
+        "editing": "Editando...",
+        "cancel-edit": "Cancelar edição",
+        "save": "Salvar",
         "placeholder": "Any thoughts...",
         "only-image-supported": "Only image file supported.",
         "cant-empty": "Content can't be empty",
@@ -101,10 +101,10 @@
         "view-detail": "View Detail",
         "copy": "Copy",
         "visibility": {
-            "private": "Only visible to you",
-            "protected": "Visible to members",
-            "public": "Everyone can see",
-            "disabled": "Public memos are disabled"
+            "private": "Visível apenas para você",
+            "protected": "Visível para membros",
+            "public": "Todos podem ver",
+            "disabled": "Memos públicos estão desativados"
         }
     },
     "memo-list": {
@@ -113,8 +113,8 @@
     },
     "shortcut-list": {
         "shortcut-title": "shortcut title",
-        "create-shortcut": "Create Shortcut",
-        "edit-shortcut": "Edit Shortcut",
+        "create-shortcut": "Criar Atalho",
+        "edit-shortcut": "Editar Atalho",
         "eligible-memo": "eligible memo",
         "fill-previous": "Please fill in previous filter value",
         "title-required": "Title is required",
@@ -125,7 +125,7 @@
         "type": {
             "tag": "Tag",
             "type": "Type",
-            "text": "Text",
+            "text": "Texto",
             "display-time": "Display Time",
             "visibility": "Visibility"
         },
@@ -206,11 +206,11 @@
     },
     "amount-text": {
         "memo_one": "MEMO",
-        "memo_many": "MEMOS",
+        "memo_many": "",
         "tag_one": "TAG",
-        "tag_many": "TAGS",
+        "tag_many": "",
         "day_one": "DAY",
-        "day_many": "DAYS"
+        "day_many": ""
     },
     "message": {
         "no-memos": "no memos 🌃",

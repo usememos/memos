@@ -44,11 +44,11 @@
         "expand": "Uitklappen",
         "vacuum": "Vacuum",
         "avatar": "Avatar",
-        "repeat-password-short": "Repeat",
-        "repeat-password": "Repeat the password",
-        "image": "Image",
+        "repeat-password-short": "Herhaal",
+        "repeat-password": "Herhaal wachtwoord",
+        "image": "Afbeelding",
         "link": "Link",
-        "select": "Select",
+        "select": "Selecteer",
         "database": "Database"
     },
     "slogan": "Een open-source, zelf-beheerd memo applicatie voor kennismanagement en collaboratie.",
@@ -80,7 +80,7 @@
         "warning-text-unused": "Weet je zeker dat je deze ongebruikte bron wilt verwijderen? Deze actie is NIET terug te draaien!",
         "no-unused-resources": "Geen ongebruikte bronnen",
         "name": "Name",
-        "clear": "Clear"
+        "clear": "Opruimen"
     },
     "archived": {
         "archived-memos": "Gearchiveerde Memos",
@@ -94,8 +94,8 @@
         "placeholder": "Leeg je gedachten...",
         "only-image-supported": "Alleen afbeeldingen worden ondersteund.",
         "cant-empty": "Inhoud kan niet leeg zijn",
-        "local": "Local",
-        "resources": "Resources"
+        "local": "Lokaal",
+        "resources": "Bronnen"
     },
     "memo": {
         "view-detail": "Bekijk Detail",
@@ -104,7 +104,7 @@
             "private": "Privé",
             "protected": "Zichtbaar voor leden",
             "public": "Openbaar",
-            "disabled": "Public memos are disabled"
+            "disabled": "Openbare memos zijn uitgezet"
         }
     },
     "memo-list": {
@@ -169,7 +169,7 @@
             "default-memo-sort-option": "Sorteer op tijd van aanmaken/wijziging",
             "created_ts": "Tijd van aanmaken",
             "updated_ts": "Tijd van wijziging",
-            "enable-double-click": "Enable double-click to edit"
+            "enable-double-click": "Dubbelklik voor bewerken aanzetten"
         },
         "member-section": {
             "create-a-member": "Lid toevoegen"
@@ -187,21 +187,21 @@
             "additional-script": "Optionele scripts",
             "additional-style-placeholder": "Optionele CSS code",
             "additional-script-placeholder": "Optionele JavaScript code",
-            "disable-public-memos": "Disable public memos"
+            "disable-public-memos": "Openbare memos uitzetten"
         },
         "apperance-option": {
             "light": "Altijd licht",
             "dark": "Altijd donker",
-            "system": "Follow system"
+            "system": "Volg systeem"
         },
-        "storage": "Storage",
+        "storage": "Opslag",
         "sso": "SSO",
         "storage-section": {
-            "storage-services-list": "Storage service list",
-            "create-a-service": "Create a service",
-            "update-a-service": "Update a service",
-            "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIABLE❗",
-            "delete-storage": "Delete Storage"
+            "storage-services-list": "Opslagdiensten",
+            "create-a-service": "Dienst aanmaken",
+            "update-a-service": "Dienst bijwerken",
+            "warning-text": "Weet je zeker dat je deze opslagdienst wilt verwijderen? Dit is NIET terug te draaien!",
+            "delete-storage": "Opslag verwijderen"
         }
     },
     "amount-text": {
@@ -237,20 +237,20 @@
         "click-to-save-the-image": "Klik om de afbeelding op te slaan",
         "generating-the-screenshot": "Screenshot genereren...",
         "succeed-vacuum-database": "Succeed to vacuum database",
-        "succeed-update-additional-style": "Succeed to update additional style",
-        "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
-        "succeed-update-customized-profile": "Succeed to update customized profile",
-        "succeed-update-additional-script": "Succeed to update additional script",
-        "update-succeed": "Update succeed",
-        "succeed-copy-code": "Succeed to copy code to clipboard.",
-        "too-short": "Too short",
-        "too-long": "Too long",
-        "not-allow-space": "Don't allow space",
-        "not-allow-chinese": "Don't allow chinese",
-        "page-not-found": "404 - Page Not Found 😥",
-        "password-not-match": "Passwords do not match.",
-        "succeed-copy-link": "Succeed to copy link to clipboard.",
-        "count-selected-resources": "Total selected"
+        "succeed-update-additional-style": "Optionele stijl bijgewerkt",
+        "succeed-copy-resource-link": "Link naar bron gekopieërd naar klembord.",
+        "succeed-update-customized-profile": "Profiel bijgewerkt.",
+        "succeed-update-additional-script": "Optioneel script bijgewerkt.",
+        "update-succeed": "Update voltooid",
+        "succeed-copy-code": "Code gekopieërd naar klembord.",
+        "too-short": "Te kort",
+        "too-long": "Te lang",
+        "not-allow-space": "Spaties zijn niet toegestaan",
+        "not-allow-chinese": "Chinees is niet toegestaan",
+        "page-not-found": "404 - Pagina niet gevonden 😥",
+        "password-not-match": "Wachtwoorden komen niet overeen.",
+        "succeed-copy-link": "Link gekopieërd naar klembord.",
+        "count-selected-resources": "Totaal geselecteerd"
     },
     "days": {
         "monday": "Maandag",
