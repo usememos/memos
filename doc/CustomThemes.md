@@ -7,7 +7,7 @@
 ```css
 .memo-list-container {background-color: #INSERT COLOR HERE;}`
 .page-container {background-color: #INSERT COLOR HERE;}
-\`\`\`
+```
 
   It is recommended that you choose the same color for both options
 
