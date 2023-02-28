@@ -1,10 +1,18 @@
-import { isNumber, last, toLower, uniq } from "lodash";
+import { isNumber, last, toLower, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "../labs/marked";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import { useEditorStore, useLocationStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "../store/module";
+import {
+  useEditorStore,
+  useGlobalStore,
+  useLocationStore,
+  useMemoStore,
+  useResourceStore,
+  useTagStore,
+  useUserStore,
+} from "../store/module";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
@@ -12,11 +20,11 @@ import Selector from "./common/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
+import showCreateResourceDialog from "./CreateResourceDialog";
 import "../less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
-const pairSymbols = ["[]", "()", '""', "''", "{}", "``", "”“", "‘‘", "【】", "（）", "《》"];
 
 const getEditorContentCache = (): string => {
   return storage.get(["editorContentCache"]).editorContentCache ?? "";
@@ -28,15 +36,10 @@ const setEditorContentCache = (content: string) => {
   });
 };
 
-const setEditingMemoVisibilityCache = (visibility: Visibility) => {
-  storage.set({
-    editingMemoVisibilityCache: visibility,
-  });
-};
-
 interface State {
   fullscreen: boolean;
   isUploadingResource: boolean;
+  isRequesting: boolean;
 }
 
 const MemoEditor = () => {
@@ -47,10 +50,14 @@ const MemoEditor = () => {
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
   const resourceStore = useResourceStore();
+  const {
+    state: { systemStatus },
+  } = useGlobalStore();
 
   const [state, setState] = useState<State>({
-    isUploadingResource: false,
     fullscreen: false,
+    isUploadingResource: false,
+    isRequesting: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
   const editorState = editorStore.state;
@@ -59,7 +66,6 @@ const MemoEditor = () => {
   const tagSelectorRef = useRef<HTMLDivElement>(null);
   const user = userStore.state.user as User;
   const setting = user.setting;
-  const localSetting = user.localSetting;
   const tags = tagStore.state.tags;
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
@@ -69,12 +75,15 @@ const MemoEditor = () => {
   });
 
   useEffect(() => {
-    const { editingMemoIdCache, editingMemoVisibilityCache } = storage.get(["editingMemoIdCache", "editingMemoVisibilityCache"]);
+    if (systemStatus.disablePublicMemos) {
+      editorStore.setMemoVisibility("PRIVATE");
+    }
+  }, [systemStatus.disablePublicMemos]);
+
+  useEffect(() => {
+    const { editingMemoIdCache } = storage.get(["editingMemoIdCache"]);
     if (editingMemoIdCache) {
       editorStore.setEditMemoWithId(editingMemoIdCache);
-    }
-    if (editingMemoVisibilityCache) {
-      editorStore.setMemoVisibility(editingMemoVisibilityCache as "PUBLIC" | "PROTECTED" | "PRIVATE");
     } else {
       editorStore.setMemoVisibility(setting.memoVisibility);
     }
@@ -106,8 +115,7 @@ const MemoEditor = () => {
     }
 
     const isMetaKey = event.ctrlKey || event.metaKey;
-    const isShiftKey = event.shiftKey;
-    if (!isShiftKey && isMetaKey) {
+    if (isMetaKey) {
       if (event.key === "Enter") {
         handleSaveBtnClick();
         return;
@@ -138,8 +146,7 @@ const MemoEditor = () => {
         }
       }
     }
-
-    if (!isShiftKey && event.key === "Enter") {
+    if (event.key === "Enter") {
       const cursorPosition = editorRef.current.getCursorPosition();
       const contentBeforeCursor = editorRef.current.getContent().slice(0, cursorPosition);
       const rowValue = last(contentBeforeCursor.split("\n"));
@@ -170,11 +177,12 @@ const MemoEditor = () => {
               }
             }
           }
+          editorRef.current?.scrollToCursor();
         }
       }
       return;
     }
-    if (!isShiftKey && event.key === "Escape") {
+    if (event.key === "Escape") {
       if (state.fullscreen) {
         handleFullscreenBtnClick();
       }
@@ -185,57 +193,37 @@ const MemoEditor = () => {
       const tabSpace = " ".repeat(TAB_SPACE_WIDTH);
       const cursorPosition = editorRef.current.getCursorPosition();
       const selectedContent = editorRef.current.getSelectedContent();
-      if (isShiftKey) {
-        const beforeContent = editorRef.current.getContent().slice(0, cursorPosition);
-        for (let i = beforeContent.length - 1; i >= 0; i--) {
-          if (beforeContent[i] !== "\n") {
-            continue;
-          }
-          const rowStart = i + 1;
-          const isTabSpace = beforeContent.substring(rowStart, i + TAB_SPACE_WIDTH + 1) === tabSpace;
-          const isSpace = beforeContent.substring(rowStart, i + 2) === " ";
-          if (!isTabSpace && !isSpace) {
-            break;
-          }
-          const removeLength = isTabSpace ? TAB_SPACE_WIDTH : 1;
-          editorRef.current.removeText(rowStart, removeLength);
-          const startPos = cursorPosition - removeLength;
-          let endPos = startPos;
-          if (selectedContent) {
-            endPos += selectedContent.length;
-          }
-          editorRef.current.setCursorPosition(startPos, endPos);
-        }
-        return;
-      } else {
-        editorRef.current.insertText(tabSpace);
-        if (selectedContent) {
-          editorRef.current.setCursorPosition(cursorPosition + TAB_SPACE_WIDTH);
-        }
-        return;
+      editorRef.current.insertText(tabSpace);
+      if (selectedContent) {
+        editorRef.current.setCursorPosition(cursorPosition + TAB_SPACE_WIDTH);
       }
+      return;
+    }
+  };
+
+  const handleUploadResource = async (file: File) => {
+    setState((state) => {
+      return {
+        ...state,
+        isUploadingResource: true,
+      };
+    });
+
+    let resource = undefined;
+    try {
+      resource = await resourceStore.createResourceWithBlob(file);
+    } catch (error: any) {
+      console.error(error);
+      toastHelper.error(error.response.data.message);
     }
 
-    if (localSetting.enablePowerfulEditor) {
-      for (const symbol of pairSymbols) {
-        if (event.key === symbol[0]) {
-          event.preventDefault();
-          editorRef.current.insertText("", symbol[0], symbol[1]);
-          return;
-        }
-      }
-      if (event.key === "Backspace") {
-        const cursor = editorRef.current.getCursorPosition();
-        const content = editorRef.current.getContent();
-        const deleteChar = content?.slice(cursor - 1, cursor);
-        const nextChar = content?.slice(cursor, cursor + 1);
-        if (pairSymbols.includes(`${deleteChar}${nextChar}`)) {
-          event.preventDefault();
-          editorRef.current.removeText(cursor - 1, 2);
-        }
-        return;
-      }
-    }
+    setState((state) => {
+      return {
+        ...state,
+        isUploadingResource: false,
+      };
+    });
+    return resource;
   };
 
   const uploadMultiFiles = async (files: FileList) => {
@@ -269,42 +257,17 @@ const MemoEditor = () => {
     }
   };
 
-  const handleUploadResource = async (file: File) => {
-    setState((state) => {
-      return {
-        ...state,
-        isUploadingResource: true,
-      };
-    });
-
-    let resource = undefined;
-
-    try {
-      resource = await resourceStore.upload(file);
-    } catch (error: any) {
-      console.error(error);
-      toastHelper.error(error.response.data.message);
-    }
-
-    setState((state) => {
-      return {
-        ...state,
-        isUploadingResource: false,
-      };
-    });
-    return resource;
-  };
-
-  const scrollToEditingMemo = useCallback(() => {
-    if (editorState.editMemoId) {
-      const memoElements = document.getElementsByClassName(`memos-${editorState.editMemoId}`);
-      if (memoElements.length !== 0) {
-        memoElements[0].scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  }, [editorState.editMemoId]);
-
   const handleSaveBtnClick = async () => {
+    if (state.isRequesting) {
+      return;
+    }
+
+    setState((state) => {
+      return {
+        ...state,
+        isRequesting: true,
+      };
+    });
     const content = editorRef.current?.getContent() ?? "";
     try {
       const { editMemoId } = editorStore.getState();
@@ -332,6 +295,12 @@ const MemoEditor = () => {
       console.error(error);
       toastHelper.error(error.response.data.message);
     }
+    setState((state) => {
+      return {
+        ...state,
+        isRequesting: false,
+      };
+    });
 
     // Upsert tag with the content.
     const matchedNodes = getMatchedNodes(content);
@@ -348,10 +317,7 @@ const MemoEditor = () => {
     });
     editorStore.clearResourceList();
     setEditorContentCache("");
-    storage.remove(["editingMemoVisibilityCache"]);
     editorRef.current?.setContent("");
-
-    scrollToEditingMemo();
   };
 
   const handleCancelEdit = () => {
@@ -360,10 +326,7 @@ const MemoEditor = () => {
       editorStore.clearResourceList();
       editorRef.current?.setContent("");
       setEditorContentCache("");
-      storage.remove(["editingMemoVisibilityCache"]);
     }
-
-    scrollToEditingMemo();
   };
 
   const handleContentChange = (content: string) => {
@@ -383,6 +346,7 @@ const MemoEditor = () => {
     } else {
       editorRef.current?.insertText("", "\n- [ ] ");
     }
+    editorRef.current?.scrollToCursor();
   };
 
   const handleCodeBlockBtnClick = () => {
@@ -397,36 +361,15 @@ const MemoEditor = () => {
     } else {
       editorRef.current?.insertText("", "\n```\n", "\n```");
     }
+    editorRef.current?.scrollToCursor();
   };
 
   const handleUploadFileBtnClick = () => {
-    const inputEl = document.createElement("input");
-    inputEl.style.position = "fixed";
-    inputEl.style.top = "-100vh";
-    inputEl.style.left = "-100vw";
-    document.body.appendChild(inputEl);
-    inputEl.type = "file";
-    inputEl.multiple = true;
-    inputEl.accept = "*";
-    inputEl.onchange = async () => {
-      if (!inputEl.files || inputEl.files.length === 0) {
-        return;
-      }
-
-      const resourceList: Resource[] = [];
-      for (const file of inputEl.files) {
-        const resource = await handleUploadResource(file);
-        if (resource) {
-          resourceList.push(resource);
-          if (editorState.editMemoId) {
-            await upsertMemoResource(editorState.editMemoId, resource.id);
-          }
-        }
-      }
-      editorStore.setResourceList([...editorState.resourceList, ...resourceList]);
-      document.body.removeChild(inputEl);
-    };
-    inputEl.click();
+    showCreateResourceDialog({
+      onConfirm: (resourceList) => {
+        editorStore.setResourceList([...editorState.resourceList, ...resourceList]);
+      },
+    });
   };
 
   const handleFullscreenBtnClick = () => {
@@ -438,11 +381,8 @@ const MemoEditor = () => {
     });
   };
 
-  const handleTagSelectorClick = useCallback((event: React.MouseEvent) => {
-    if (tagSelectorRef.current !== event.target && tagSelectorRef.current?.contains(event.target as Node)) {
-      editorRef.current?.insertText(`#${(event.target as HTMLElement).textContent} ` ?? "");
-      handleEditorFocus();
-    }
+  const handleTagSelectorClick = useCallback((tag: string) => {
+    editorRef.current?.insertText(`#${tag} `);
   }, []);
 
   const handleDeleteResource = async (resourceId: ResourceId) => {
@@ -455,7 +395,6 @@ const MemoEditor = () => {
   const handleMemoVisibilityOptionChanged = async (value: string) => {
     const visibilityValue = value as Visibility;
     editorStore.setMemoVisibility(visibilityValue);
-    setEditingMemoVisibilityCache(visibilityValue);
   };
 
   const handleEditorFocus = () => {
@@ -494,12 +433,12 @@ const MemoEditor = () => {
         <div className="common-tools-container">
           <div className="action-btn tag-action">
             <Icon.Hash className="icon-img" />
-            <div ref={tagSelectorRef} className="tag-list" onClick={handleTagSelectorClick}>
+            <div ref={tagSelectorRef} className="tag-list">
               {tags.length > 0 ? (
                 tags.map((tag) => {
                   return (
-                    <span className="item-container" key={tag}>
-                      {tag}
+                    <span className="item-container" onClick={() => handleTagSelectorClick(tag)} key={tag}>
+                      #{tag}
                     </span>
                   );
                 })
@@ -518,11 +457,10 @@ const MemoEditor = () => {
           </button>
           <div className="action-btn resource-btn">
             <Icon.FileText className="icon-img" />
-            <span className={`tip-text ${state.isUploadingResource ? "!block" : ""}`}>Uploading</span>
             <div className="resource-action-list">
               <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
-                <Icon.Upload className="icon-img" />
-                <span>{t("editor.local")}</span>
+                <Icon.Plus className="icon-img" />
+                <span>{t("common.create")}</span>
               </div>
               <div className="resource-action-item" onClick={showResourcesSelectorDialog}>
                 <Icon.Database className="icon-img" />
@@ -552,7 +490,9 @@ const MemoEditor = () => {
         <Selector
           className="visibility-selector"
           value={editorState.memoVisibility}
+          tooltipTitle={t("memo.visibility.disabled")}
           dataSource={memoVisibilityOptionSelectorItems}
+          disabled={systemStatus.disablePublicMemos}
           handleValueChanged={handleMemoVisibilityOptionChanged}
         />
         <div className="buttons-container">
@@ -561,7 +501,7 @@ const MemoEditor = () => {
           </button>
           <button
             className="action-btn confirm-btn"
-            disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource}
+            disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource || state.isRequesting}
             onClick={handleSaveBtnClick}
           >
             {t("editor.save")}

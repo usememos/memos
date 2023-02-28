@@ -3,6 +3,7 @@ import "../../less/editor.less";
 
 export interface EditorRefActions {
   focus: FunctionType;
+  scrollToCursor: FunctionType;
   insertText: (text: string, prefix?: string, suffix?: string) => void;
   removeText: (start: number, length: number) => void;
   setContent: (text: string) => void;
@@ -51,6 +52,11 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     () => ({
       focus: () => {
         editorRef.current?.focus();
+      },
+      scrollToCursor: () => {
+        if (editorRef.current) {
+          editorRef.current.scrollTop = editorRef.current.scrollHeight;
+        }
       },
       insertText: (content = "", prefix = "", suffix = "") => {
         if (!editorRef.current) {

@@ -15,6 +15,6 @@ type TagFind struct {
 }
 
 type TagDelete struct {
-	Name      string
+	Name      string `json:"name"`
 	CreatorID int
 }

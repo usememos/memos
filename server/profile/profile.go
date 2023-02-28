@@ -1,27 +1,31 @@
 package profile
 
 import (
-	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"github.com/spf13/viper"
 	"github.com/usememos/memos/server/version"
 )
 
 // Profile is the configuration to start main server.
 type Profile struct {
-	// Mode can be "prod" or "dev"
+	// Mode can be "prod" or "dev" or "demo"
 	Mode string `json:"mode"`
 	// Port is the binding port for server
-	Port int `json:"port"`
+	Port int `json:"-"`
 	// Data is the data directory
-	Data string `json:"data"`
+	Data string `json:"-"`
 	// DSN points to where Memos stores its own data
-	DSN string `json:"dsn"`
+	DSN string `json:"-"`
 	// Version is the current version of server
 	Version string `json:"version"`
+}
+
+func (p *Profile) IsDev() bool {
+	return p.Mode != "prod"
 }
 
 func checkDSN(dataDir string) (string, error) {
@@ -44,16 +48,16 @@ func checkDSN(dataDir string) (string, error) {
 	return dataDir, nil
 }
 
-// GetDevProfile will return a profile for dev or prod.
+// GetProfile will return a profile for dev or prod.
 func GetProfile() (*Profile, error) {
 	profile := Profile{}
-	flag.StringVar(&profile.Mode, "mode", "dev", "mode of server")
-	flag.IntVar(&profile.Port, "port", 8081, "port of server")
-	flag.StringVar(&profile.Data, "data", "", "data directory")
-	flag.Parse()
+	err := viper.Unmarshal(&profile)
+	if err != nil {
+		return nil, err
+	}
 
-	if profile.Mode != "dev" && profile.Mode != "prod" {
-		profile.Mode = "dev"
+	if profile.Mode != "demo" && profile.Mode != "dev" && profile.Mode != "prod" {
+		profile.Mode = "demo"
 	}
 
 	if profile.Mode == "prod" && profile.Data == "" {

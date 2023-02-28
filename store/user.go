@@ -27,6 +27,7 @@ type userRaw struct {
 	Nickname     string
 	PasswordHash string
 	OpenID       string
+	AvatarURL    string
 }
 
 func (raw *userRaw) toUser() *api.User {
@@ -43,6 +44,7 @@ func (raw *userRaw) toUser() *api.User {
 		Nickname:     raw.Nickname,
 		PasswordHash: raw.PasswordHash,
 		OpenID:       raw.OpenID,
+		AvatarURL:    raw.AvatarURL,
 	}
 }
 
@@ -54,14 +56,13 @@ func (s *Store) ComposeMemoCreator(ctx context.Context, memo *api.Memo) error {
 		return err
 	}
 
-	user.Email = ""
-	user.OpenID = ""
-	user.UserSettingList = nil
-	memo.Creator = user
-
+	if user.Nickname != "" {
+		memo.CreatorName = user.Nickname
+	} else {
+		memo.CreatorName = user.Username
+	}
 	return nil
 }
-
 func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.User, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -78,12 +79,8 @@ func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.Us
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.UserCache, userRaw.ID, userRaw); err != nil {
-		return nil, err
-	}
-
+	s.userCache.Store(userRaw.ID, userRaw)
 	user := userRaw.toUser()
-
 	return user, nil
 }
 
@@ -103,12 +100,8 @@ func (s *Store) PatchUser(ctx context.Context, patch *api.UserPatch) (*api.User,
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.UserCache, userRaw.ID, userRaw); err != nil {
-		return nil, err
-	}
-
+	s.userCache.Store(userRaw.ID, userRaw)
 	user := userRaw.toUser()
-
 	return user, nil
 }
 
@@ -134,13 +127,8 @@ func (s *Store) FindUserList(ctx context.Context, find *api.UserFind) ([]*api.Us
 
 func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, error) {
 	if find.ID != nil {
-		userRaw := &userRaw{}
-		has, err := s.cache.FindCache(api.UserCache, *find.ID, userRaw)
-		if err != nil {
-			return nil, err
-		}
-		if has {
-			return userRaw.toUser(), nil
+		if user, ok := s.userCache.Load(*find.ID); ok {
+			return user.(*userRaw).toUser(), nil
 		}
 	}
 
@@ -160,13 +148,8 @@ func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, er
 	}
 
 	userRaw := list[0]
-
-	if err := s.cache.UpsertCache(api.UserCache, userRaw.ID, userRaw); err != nil {
-		return nil, err
-	}
-
+	s.userCache.Store(userRaw.ID, userRaw)
 	user := userRaw.toUser()
-
 	return user, nil
 }
 
@@ -188,8 +171,7 @@ func (s *Store) DeleteUser(ctx context.Context, delete *api.UserDelete) error {
 		return err
 	}
 
-	s.cache.DeleteCache(api.UserCache, delete.ID)
-
+	s.userCache.Delete(delete.ID)
 	return nil
 }
 
@@ -204,7 +186,7 @@ func createUser(ctx context.Context, tx *sql.Tx, create *api.UserCreate) (*userR
 			open_id
 		)
 		VALUES (?, ?, ?, ?, ?, ?)
-		RETURNING id, username, role, email, nickname, password_hash, open_id, created_ts, updated_ts, row_status
+		RETURNING id, username, role, email, nickname, password_hash, open_id, avatar_url, created_ts, updated_ts, row_status
 	`
 	var userRaw userRaw
 	if err := tx.QueryRowContext(ctx, query,
@@ -222,6 +204,7 @@ func createUser(ctx context.Context, tx *sql.Tx, create *api.UserCreate) (*userR
 		&userRaw.Nickname,
 		&userRaw.PasswordHash,
 		&userRaw.OpenID,
+		&userRaw.AvatarURL,
 		&userRaw.CreatedTs,
 		&userRaw.UpdatedTs,
 		&userRaw.RowStatus,
@@ -250,6 +233,9 @@ func patchUser(ctx context.Context, tx *sql.Tx, patch *api.UserPatch) (*userRaw,
 	if v := patch.Nickname; v != nil {
 		set, args = append(set, "nickname = ?"), append(args, *v)
 	}
+	if v := patch.AvatarURL; v != nil {
+		set, args = append(set, "avatar_url = ?"), append(args, *v)
+	}
 	if v := patch.PasswordHash; v != nil {
 		set, args = append(set, "password_hash = ?"), append(args, *v)
 	}
@@ -263,7 +249,7 @@ func patchUser(ctx context.Context, tx *sql.Tx, patch *api.UserPatch) (*userRaw,
 		UPDATE user
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, username, role, email, nickname, password_hash, open_id, created_ts, updated_ts, row_status
+		RETURNING id, username, role, email, nickname, password_hash, open_id, avatar_url, created_ts, updated_ts, row_status
 	`
 	var userRaw userRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
@@ -274,6 +260,7 @@ func patchUser(ctx context.Context, tx *sql.Tx, patch *api.UserPatch) (*userRaw,
 		&userRaw.Nickname,
 		&userRaw.PasswordHash,
 		&userRaw.OpenID,
+		&userRaw.AvatarURL,
 		&userRaw.CreatedTs,
 		&userRaw.UpdatedTs,
 		&userRaw.RowStatus,
@@ -315,6 +302,7 @@ func findUserList(ctx context.Context, tx *sql.Tx, find *api.UserFind) ([]*userR
 			nickname,
 			password_hash,
 			open_id,
+			avatar_url,
 			created_ts,
 			updated_ts,
 			row_status
@@ -339,13 +327,13 @@ func findUserList(ctx context.Context, tx *sql.Tx, find *api.UserFind) ([]*userR
 			&userRaw.Nickname,
 			&userRaw.PasswordHash,
 			&userRaw.OpenID,
+			&userRaw.AvatarURL,
 			&userRaw.CreatedTs,
 			&userRaw.UpdatedTs,
 			&userRaw.RowStatus,
 		); err != nil {
 			return nil, FormatError(err)
 		}
-
 		userRawList = append(userRawList, &userRaw)
 	}
 
@@ -364,7 +352,10 @@ func deleteUser(ctx context.Context, tx *sql.Tx, delete *api.UserDelete) error {
 		return FormatError(err)
 	}
 
-	rows, _ := result.RowsAffected()
+	rows, err := result.RowsAffected()
+	if err != nil {
+		return err
+	}
 	if rows == 0 {
 		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("user not found")}
 	}

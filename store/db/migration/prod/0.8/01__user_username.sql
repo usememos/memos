@@ -3,7 +3,8 @@
 -- add role `ADMIN`
 DROP TABLE IF EXISTS _user_old;
 
-ALTER TABLE user RENAME TO _user_old;
+ALTER TABLE
+  user RENAME TO _user_old;
 
 -- user
 CREATE TABLE user (
@@ -19,23 +20,31 @@ CREATE TABLE user (
   open_id TEXT NOT NULL UNIQUE
 );
 
-INSERT INTO user (
-  id, created_ts, updated_ts, row_status, 
-  username, role, email, nickname, password_hash, 
+INSERT INTO
+  user (
+    id,
+    created_ts,
+    updated_ts,
+    row_status,
+    username,
+    role,
+    email,
+    nickname,
+    password_hash,
+    open_id
+  )
+SELECT
+  id,
+  created_ts,
+  updated_ts,
+  row_status,
+  email,
+  role,
+  email,
+  name,
+  password_hash,
   open_id
-) 
-SELECT 
-  id, 
-  created_ts, 
-  updated_ts, 
-  row_status, 
-  email, 
-  role, 
-  email, 
-  name, 
-  password_hash, 
-  open_id 
-FROM 
+FROM
   _user_old;
 
 DROP TABLE IF EXISTS _user_old;

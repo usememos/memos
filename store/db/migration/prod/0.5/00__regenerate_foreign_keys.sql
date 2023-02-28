@@ -1,8 +1,9 @@
-PRAGMA foreign_keys=off;
+PRAGMA foreign_keys = off;
 
 DROP TABLE IF EXISTS _user_old;
 
-ALTER TABLE user RENAME TO _user_old;
+ALTER TABLE
+  user RENAME TO _user_old;
 
 -- user
 CREATE TABLE user (
@@ -17,7 +18,12 @@ CREATE TABLE user (
   open_id TEXT NOT NULL UNIQUE
 );
 
-INSERT INTO user SELECT * FROM _user_old;
+INSERT INTO
+  user
+SELECT
+  *
+FROM
+  _user_old;
 
 DROP TABLE IF EXISTS _user_old;
 
@@ -33,11 +39,13 @@ SET
   updated_ts = (strftime('%s', 'now'))
 WHERE
   rowid = old.rowid;
+
 END;
 
 DROP TABLE IF EXISTS _memo_old;
 
-ALTER TABLE memo RENAME TO _memo_old;
+ALTER TABLE
+  memo RENAME TO _memo_old;
 
 -- memo
 CREATE TABLE memo (
@@ -51,7 +59,12 @@ CREATE TABLE memo (
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-INSERT INTO memo SELECT * FROM _memo_old;
+INSERT INTO
+  memo
+SELECT
+  *
+FROM
+  _memo_old;
 
 DROP TABLE IF EXISTS _memo_old;
 
@@ -67,11 +80,13 @@ SET
   updated_ts = (strftime('%s', 'now'))
 WHERE
   rowid = old.rowid;
+
 END;
 
 DROP TABLE IF EXISTS _memo_organizer_old;
 
-ALTER TABLE memo_organizer RENAME TO _memo_organizer_old;
+ALTER TABLE
+  memo_organizer RENAME TO _memo_organizer_old;
 
 -- memo_organizer
 CREATE TABLE memo_organizer (
@@ -84,13 +99,19 @@ CREATE TABLE memo_organizer (
   UNIQUE(memo_id, user_id)
 );
 
-INSERT INTO memo_organizer SELECT * FROM _memo_organizer_old;
+INSERT INTO
+  memo_organizer
+SELECT
+  *
+FROM
+  _memo_organizer_old;
 
 DROP TABLE IF EXISTS _memo_organizer_old;
 
 DROP TABLE IF EXISTS _shortcut_old;
 
-ALTER TABLE shortcut RENAME TO _shortcut_old;
+ALTER TABLE
+  shortcut RENAME TO _shortcut_old;
 
 -- shortcut
 CREATE TABLE shortcut (
@@ -104,7 +125,12 @@ CREATE TABLE shortcut (
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-INSERT INTO shortcut SELECT * FROM _shortcut_old;
+INSERT INTO
+  shortcut
+SELECT
+  *
+FROM
+  _shortcut_old;
 
 DROP TABLE IF EXISTS _shortcut_old;
 
@@ -120,11 +146,13 @@ SET
   updated_ts = (strftime('%s', 'now'))
 WHERE
   rowid = old.rowid;
+
 END;
 
 DROP TABLE IF EXISTS _resource_old;
 
-ALTER TABLE resource RENAME TO _resource_old;
+ALTER TABLE
+  resource RENAME TO _resource_old;
 
 -- resource
 CREATE TABLE resource (
@@ -139,7 +167,12 @@ CREATE TABLE resource (
   FOREIGN KEY(creator_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
-INSERT INTO resource SELECT * FROM _resource_old;
+INSERT INTO
+  resource
+SELECT
+  *
+FROM
+  _resource_old;
 
 DROP TABLE IF EXISTS _resource_old;
 
@@ -155,11 +188,13 @@ SET
   updated_ts = (strftime('%s', 'now'))
 WHERE
   rowid = old.rowid;
+
 END;
 
 DROP TABLE IF EXISTS _user_setting_old;
 
-ALTER TABLE user_setting RENAME TO _user_setting_old;
+ALTER TABLE
+  user_setting RENAME TO _user_setting_old;
 
 -- user_setting
 CREATE TABLE user_setting (
@@ -170,8 +205,13 @@ CREATE TABLE user_setting (
   UNIQUE(user_id, key)
 );
 
-INSERT INTO user_setting SELECT * FROM _user_setting_old;
+INSERT INTO
+  user_setting
+SELECT
+  *
+FROM
+  _user_setting_old;
 
 DROP TABLE IF EXISTS _user_setting_old;
 
-PRAGMA foreign_keys=on;
+PRAGMA foreign_keys = on;

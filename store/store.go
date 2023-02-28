@@ -3,8 +3,8 @@ package store
 import (
 	"context"
 	"database/sql"
+	"sync"
 
-	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/server/profile"
 )
 
@@ -12,17 +12,19 @@ import (
 type Store struct {
 	db      *sql.DB
 	profile *profile.Profile
-	cache   api.CacheService
+
+	userCache        sync.Map // map[int]*userRaw
+	userSettingCache sync.Map // map[string]*userSettingRaw
+	memoCache        sync.Map // map[int]*memoRaw
+	shortcutCache    sync.Map // map[int]*shortcutRaw
+	idpCache         sync.Map // map[int]*identityProviderMessage
 }
 
 // New creates a new instance of Store.
 func New(db *sql.DB, profile *profile.Profile) *Store {
-	cacheService := NewCacheService()
-
 	return &Store{
 		db:      db,
 		profile: profile,
-		cache:   cacheService,
 	}
 }
 

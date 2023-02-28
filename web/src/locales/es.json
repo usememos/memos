@@ -47,7 +47,9 @@
         "image": "Imagen",
         "link": "Enlace",
         "vacuum": "Vaciar",
-        "select": "Seleccionar"
+        "select": "Seleccionar",
+        "database": "Base de datos",
+        "avatar": "Avatar"
     },
     "slogan": "Un código abierto, centro de notas autoalojado con la gestión del conocimiento y la socialización.",
     "auth": {
@@ -72,13 +74,13 @@
         "preview": "Vista previa",
         "copy-link": "Copiar Enlace",
         "delete-resource": "Borrar Recurso",
-        "warning-text": "Seguro que quieres eliminar este recurso? ESTA ACCIÓN ES IRREVERSIBLE❗.",
+        "warning-text": "¿Estás seguro de eliminar este recurso? ESTA ACCIÓN ES IRREVERSIABLE❗",
         "linked-amount": "Importe de la nota vinculado",
         "rename": "Renombrar",
-        "clear-unused-resources": "Borrar los recursos no utilizados",
-        "warning-text-unused": "Seguro que quieres eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE❗.",
+        "warning-text-unused": "¿Estás seguro de eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIABLE❗",
         "no-unused-resources": "No hay recursos sin utilizar",
-        "name": "Nombre"
+        "name": "Nombre",
+        "clear": "Limpiar"
     },
     "archived": {
         "archived-memos": "Notas Archivadas",
@@ -101,7 +103,8 @@
         "visibility": {
             "private": "Solo visible para ti",
             "protected": "Visible para los miembros",
-            "public": "Todo el mundo lo puede ver"
+            "public": "Todo el mundo lo puede ver",
+            "disabled": "Las notas públicas están deshabilitadas"
         }
     },
     "memo-list": {
@@ -125,7 +128,7 @@
             "text": "Texto",
             "display-time": "Fecha y Hora de Visualización",
             "visibility": "Visibilidad"
-          },
+        },
         "operator": {
             "contains": "Contiene",
             "not-contains": "No contiene",
@@ -165,7 +168,8 @@
             "mobile-editor-style": "Estilo del editor móvil",
             "default-memo-sort-option": "Hora de visualización de la nota",
             "created_ts": "Hora de Creación",
-            "updated_ts": "Hora de Actualización"
+            "updated_ts": "Hora de Actualización",
+            "enable-double-click": "Habilitar doble clic para editar"
         },
         "member-section": {
             "create-a-member": "Crear un miembro"
@@ -182,21 +186,34 @@
             "additional-style": "Estilos adicionales",
             "additional-script": "Scripts adicionales",
             "additional-style-placeholder": "Códigos CSS adicionales",
-            "additional-script-placeholder": "Códigos JavaScript adicionales"
+            "additional-script-placeholder": "Códigos JavaScript adicionales",
+            "disable-public-memos": "Deshabilitar notas públicas"
         },
         "apperance-option": {
             "system": "Según el sistema",
             "light": "Siempre claro",
             "dark": "Siempre oscuro"
+        },
+        "storage": "Almacenamiento",
+        "sso": "SSO",
+        "storage-section": {
+            "storage-services-list": "Lista de servicios de almacenamiento",
+            "create-a-service": "Crear un servicio",
+            "update-a-service": "Actualizar un servicio",
+            "warning-text": "¿Estás seguro de eliminar este servicio de almacenamiento? ESTA ACCIÓN ES IRREVERSIABLE❗",
+            "delete-storage": "Eliminar almacenamiento"
         }
     },
     "amount-text": {
         "memo_one": "NOTA",
+        "memo_many": "NOTAS",
         "memo_other": "NOTAS",
         "tag_one": "ETIQUETA",
+        "tag_many": "ETIQUETAS",
         "tag_other": "ETIQUETAS",
-        "day_one": "DÍA",
-        "day_other": "DÍAS"
+        "day_one": "DIA",
+        "day_many": "DIAS",
+        "day_other": "DIAS"
     },
     "message": {
         "no-memos": "no hay notas 🌃",
@@ -234,22 +251,24 @@
         "succeed-copy-resource-link": "Éxito al copiar el enlace del recurso al portapapeles",
         "succeed-update-customized-profile": "Éxito al actualizar el perfil personalizado",
         "succeed-update-additional-script": "Éxito al actualizar el script adicional",
-        "update-succeed": "Actualización exitosa"
+        "update-succeed": "Actualización exitosa",
+        "succeed-copy-code": "La copia al portapapeles fue exitosa.",
+        "page-not-found": "404 - Página no encontrada 😥"
     },
     "days": {
-      "monday": "Lunes",
-      "mon": "Lun",
-      "tuesday": "Martes",
-      "tue": "Mart",
-      "wednesday": "Miércoles",
-      "wed": "Miérc",
-      "thursday": "Jueves",
-      "thu": "Juev",
-      "friday": "Viernes",
-      "fri": "Vier",
-      "saturday": "Sábado",
-      "sat": "Sáb",
-      "sunday": "Domingo",
-      "sun": "Dom"
+        "monday": "Lunes",
+        "mon": "Lun",
+        "tuesday": "Martes",
+        "tue": "Mart",
+        "wednesday": "Miércoles",
+        "wed": "Miérc",
+        "thursday": "Jueves",
+        "thu": "Juev",
+        "friday": "Viernes",
+        "fri": "Vier",
+        "saturday": "Sábado",
+        "sat": "Sáb",
+        "sunday": "Domingo",
+        "sun": "Dom"
     }
 }

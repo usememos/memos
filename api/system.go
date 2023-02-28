@@ -10,10 +10,13 @@ type SystemStatus struct {
 	// System settings
 	// Allow sign up.
 	AllowSignUp bool `json:"allowSignUp"`
+	// Disable public memos.
+	DisablePublicMemos bool `json:"disablePublicMemos"`
 	// Additional style.
 	AdditionalStyle string `json:"additionalStyle"`
 	// Additional script.
 	AdditionalScript string `json:"additionalScript"`
 	// Customized server profile, including server name and external url.
 	CustomizedProfile CustomizedProfile `json:"customizedProfile"`
+	StorageServiceID  int               `json:"storageServiceId"`
 }

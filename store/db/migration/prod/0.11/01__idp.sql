@@ -1,0 +1,8 @@
+-- idp
+CREATE TABLE idp (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  identifier_filter TEXT NOT NULL DEFAULT '',
+  config TEXT NOT NULL DEFAULT '{}'
+);

@@ -25,11 +25,18 @@ export function signin(username: string, password: string) {
   });
 }
 
-export function signup(username: string, password: string, role: UserRole) {
+export function signinWithSSO(identityProviderId: IdentityProviderId, code: string, redirectUri: string) {
+  return axios.post<ResponseObject<User>>("/api/auth/signin/sso", {
+    identityProviderId,
+    code,
+    redirectUri,
+  });
+}
+
+export function signup(username: string, password: string) {
   return axios.post<ResponseObject<User>>("/api/auth/signup", {
     username,
     password,
-    role,
   });
 }
 
@@ -153,8 +160,12 @@ export function getResourceList() {
   return axios.get<ResponseObject<Resource[]>>("/api/resource");
 }
 
-export function uploadFile(formData: FormData) {
-  return axios.post<ResponseObject<Resource>>("/api/resource", formData);
+export function createResource(resourceCreate: ResourceCreate) {
+  return axios.post<ResponseObject<Resource>>("/api/resource", resourceCreate);
+}
+
+export function createResourceWithBlob(formData: FormData) {
+  return axios.post<ResponseObject<Resource>>("/api/resource/blob", formData);
 }
 
 export function deleteResourceById(id: ResourceId) {
@@ -198,7 +209,41 @@ export function upsertTag(tagName: string) {
 }
 
 export function deleteTag(tagName: string) {
-  return axios.delete<ResponseObject<string>>(`/api/tag/${encodeURI(tagName)}`);
+  return axios.post<ResponseObject<boolean>>(`/api/tag/delete`, {
+    name: tagName,
+  });
+}
+
+export function getStorageList() {
+  return axios.get<ResponseObject<ObjectStorage[]>>(`/api/storage`);
+}
+
+export function createStorage(storageCreate: StorageCreate) {
+  return axios.post<ResponseObject<ObjectStorage>>(`/api/storage`, storageCreate);
+}
+
+export function patchStorage(storagePatch: StoragePatch) {
+  return axios.patch<ResponseObject<ObjectStorage>>(`/api/storage/${storagePatch.id}`, storagePatch);
+}
+
+export function deleteStorage(storageId: StorageId) {
+  return axios.delete(`/api/storage/${storageId}`);
+}
+
+export function getIdentityProviderList() {
+  return axios.get<ResponseObject<IdentityProvider[]>>(`/api/idp`);
+}
+
+export function createIdentityProvider(identityProviderCreate: IdentityProviderCreate) {
+  return axios.post<ResponseObject<IdentityProvider>>(`/api/idp`, identityProviderCreate);
+}
+
+export function patchIdentityProvider(identityProviderPatch: IdentityProviderPatch) {
+  return axios.patch<ResponseObject<IdentityProvider>>(`/api/idp/${identityProviderPatch.id}`, identityProviderPatch);
+}
+
+export function deleteIdentityProvider(id: IdentityProviderId) {
+  return axios.delete(`/api/idp/${id}`);
 }
 
 export async function getRepoStarCount() {

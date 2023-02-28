@@ -78,9 +78,9 @@ const MemoDetail = () => {
             <div className="memo-container">
               <div className="memo-header">
                 <div className="status-container">
-                  <span className="time-text">{dayjs(state.memo.displayTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
-                  <a className="name-text" href={`/u/${state.memo.creator.id}`}>
-                    @{state.memo.creator.nickname || state.memo.creator.username}
+                  <span className="time-text">{dayjs(state.memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
+                  <a className="name-text" href={`/u/${state.memo.creatorId}`}>
+                    @{state.memo.creatorName}
                   </a>
                 </div>
               </div>

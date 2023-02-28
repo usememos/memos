@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -20,7 +21,8 @@ import (
 )
 
 type Server struct {
-	e *echo.Echo
+	e  *echo.Echo
+	db *sql.DB
 
 	ID        string
 	Profile   *profile.Profile
@@ -34,16 +36,16 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	e.HideBanner = true
 	e.HidePort = true
 
-	s := &Server{
-		e:       e,
-		Profile: profile,
-	}
-
 	db := db.NewDB(profile)
 	if err := db.Open(ctx); err != nil {
 		return nil, errors.Wrap(err, "cannot open db")
 	}
 
+	s := &Server{
+		e:       e,
+		db:      db.DBInstance,
+		Profile: profile,
+	}
 	storeInstance := store.New(db.DBInstance, profile)
 	s.Store = storeInstance
 
@@ -56,14 +58,14 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	e.Use(middleware.Gzip())
 
 	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		Skipper:     s.DefaultAuthSkipper,
+		Skipper:     s.defaultAuthSkipper,
 		TokenLookup: "cookie:_csrf",
 	}))
 
 	e.Use(middleware.CORS())
 
 	e.Use(middleware.SecureWithConfig(middleware.SecureConfig{
-		Skipper:            DefaultGetRequestSkipper,
+		Skipper:            defaultGetRequestSkipper,
 		XSSProtection:      "1; mode=block",
 		ContentTypeNosniff: "nosniff",
 		XFrameOptions:      "SAMEORIGIN",
@@ -98,9 +100,6 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	rootGroup := e.Group("")
 	s.registerRSSRoutes(rootGroup)
 
-	webhookGroup := e.Group("/h")
-	s.registerResourcePublicRoutes(webhookGroup)
-
 	publicGroup := e.Group("/o")
 	s.registerResourcePublicRoutes(publicGroup)
 	registerGetterPublicRoutes(publicGroup)
@@ -116,11 +115,13 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	s.registerShortcutRoutes(apiGroup)
 	s.registerResourceRoutes(apiGroup)
 	s.registerTagRoutes(apiGroup)
+	s.registerStorageRoutes(apiGroup)
+	s.registerIdentityProviderRoutes(apiGroup)
 
 	return s, nil
 }
 
-func (s *Server) Run(ctx context.Context) error {
+func (s *Server) Start(ctx context.Context) error {
 	if err := s.createServerStartActivity(ctx); err != nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
@@ -128,12 +129,29 @@ func (s *Server) Run(ctx context.Context) error {
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }
 
+func (s *Server) Shutdown(ctx context.Context) {
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	// Shutdown echo server
+	if err := s.e.Shutdown(ctx); err != nil {
+		fmt.Printf("failed to shutdown server, error: %v\n", err)
+	}
+
+	// Close database connection
+	if err := s.db.Close(); err != nil {
+		fmt.Printf("failed to close database, error: %v\n", err)
+	}
+
+	fmt.Printf("memos stopped properly\n")
+}
+
 func (s *Server) createServerStartActivity(ctx context.Context) error {
 	payload := api.ActivityServerStartPayload{
 		ServerID: s.ID,
 		Profile:  s.Profile,
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -141,7 +159,7 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 		CreatorID: api.UnknownID,
 		Type:      api.ActivityServerStart,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")

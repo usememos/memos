@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -31,10 +30,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		if memoCreate.Visibility == "" {
-			userSettingMemoVisibilityKey := api.UserSettingMemoVisibilityKey
 			userMemoVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
 				UserID: userID,
-				Key:    &userSettingMemoVisibilityKey,
+				Key:    api.UserSettingMemoVisibilityKey,
 			})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user setting").SetInternal(err)
@@ -51,6 +49,28 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				// Private is the default memo visibility.
 				memoCreate.Visibility = api.Private
 			}
+		}
+
+		// Find system settings
+		disablePublicMemosSystemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+			Name: api.SystemSettingDisablePublicMemosName,
+		})
+		if err != nil && common.ErrorCode(err) != common.NotFound {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+		}
+		if disablePublicMemosSystemSetting != nil {
+			disablePublicMemos := false
+			err = json.Unmarshal([]byte(disablePublicMemosSystemSetting.Value), &disablePublicMemos)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
+			}
+			if disablePublicMemos {
+				memoCreate.Visibility = api.Private
+			}
+		}
+
+		if len(memoCreate.Content) > api.MaxContentLength {
+			return echo.NewHTTPError(http.StatusBadRequest, "Content size overflow, up to 1MB").SetInternal(err)
 		}
 
 		memoCreate.CreatorID = userID
@@ -75,12 +95,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(memo))
 	})
 
 	g.PATCH("/memo/:memoId", func(c echo.Context) error {
@@ -114,6 +129,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch memo request").SetInternal(err)
 		}
 
+		if memoPatch.Content != nil && len(*memoPatch.Content) > api.MaxContentLength {
+			return echo.NewHTTPError(http.StatusBadRequest, "Content size overflow, up to 1MB").SetInternal(err)
+		}
+
 		memo, err = s.Store.PatchMemo(ctx, memoPatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch memo").SetInternal(err)
@@ -132,12 +151,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(memo))
 	})
 
 	g.GET("/memo", func(c echo.Context) error {
@@ -184,48 +198,17 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			memoFind.VisibilityList = visibilityList
 		}
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-			memoFind.Limit = limit
+			memoFind.Limit = &limit
 		}
 		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-			memoFind.Offset = offset
+			memoFind.Offset = &offset
 		}
 
 		list, err := s.Store.FindMemoList(ctx, memoFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
-
-		var pinnedMemoList []*api.Memo
-		var unpinnedMemoList []*api.Memo
-
-		for _, memo := range list {
-			if memo.Pinned {
-				pinnedMemoList = append(pinnedMemoList, memo)
-			} else {
-				unpinnedMemoList = append(unpinnedMemoList, memo)
-			}
-		}
-
-		sort.Slice(pinnedMemoList, func(i, j int) bool {
-			return pinnedMemoList[i].DisplayTs > pinnedMemoList[j].DisplayTs
-		})
-		sort.Slice(unpinnedMemoList, func(i, j int) bool {
-			return unpinnedMemoList[i].DisplayTs > unpinnedMemoList[j].DisplayTs
-		})
-
-		memoList := []*api.Memo{}
-		memoList = append(memoList, pinnedMemoList...)
-		memoList = append(memoList, unpinnedMemoList...)
-
-		if memoFind.Limit != 0 {
-			memoList = memoList[memoFind.Offset:common.Min(len(memoList), memoFind.Offset+memoFind.Limit)]
-		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memoList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo list response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(list))
 	})
 
 	g.GET("/memo/:memoId", func(c echo.Context) error {
@@ -257,12 +240,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusForbidden, "this memo is protected, missing user in session")
 			}
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(memo))
 	})
 
 	g.POST("/memo/:memoId/organizer", func(c echo.Context) error {
@@ -298,12 +276,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", memoID)).SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(memo)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(memo))
 	})
 
 	g.POST("/memo/:memoId/resource", func(c echo.Context) error {
@@ -340,12 +313,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if _, err := s.Store.UpsertMemoResource(ctx, memoResourceUpsert); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resource)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(resource))
 	})
 
 	g.GET("/memo/:memoId/resource", func(c echo.Context) error {
@@ -362,34 +330,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(resourceList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode resource list response").SetInternal(err)
-		}
-		return nil
-	})
-
-	g.GET("/memo/amount", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		normalRowStatus := api.Normal
-		memoFind := &api.MemoFind{
-			RowStatus: &normalRowStatus,
-		}
-		if userID, err := strconv.Atoi(c.QueryParam("userId")); err == nil {
-			memoFind.CreatorID = &userID
-		}
-
-		memoList, err := s.Store.FindMemoList(ctx, memoFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
-		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(len(memoList))); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo amount").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(resourceList))
 	})
 
 	g.GET("/memo/stats", func(c echo.Context) error {
@@ -421,16 +362,11 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
 
-		displayTsList := []int64{}
+		createdTsList := []int64{}
 		for _, memo := range list {
-			displayTsList = append(displayTsList, memo.DisplayTs)
+			createdTsList = append(createdTsList, memo.CreatedTs)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(displayTsList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode memo stats response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(createdTsList))
 	})
 
 	g.GET("/memo/all", func(c echo.Context) error {
@@ -463,10 +399,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			memoFind.VisibilityList = visibilityList
 		}
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-			memoFind.Limit = limit
+			memoFind.Limit = &limit
 		}
 		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-			memoFind.Offset = offset
+			memoFind.Offset = &offset
 		}
 
 		// Only fetch normal status memos.
@@ -477,20 +413,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch all memo list").SetInternal(err)
 		}
-
-		sort.Slice(list, func(i, j int) bool {
-			return list[i].DisplayTs > list[j].DisplayTs
-		})
-
-		if memoFind.Limit != 0 {
-			list = list[memoFind.Offset:common.Min(len(list), memoFind.Offset+memoFind.Limit)]
-		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(list)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode all memo list response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(list))
 	})
 
 	g.DELETE("/memo/:memoId", func(c echo.Context) error {
@@ -523,7 +446,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoID)).SetInternal(err)
 		}
-
 		return c.JSON(http.StatusOK, true)
 	})
 
@@ -559,7 +481,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err := s.Store.DeleteMemoResource(ctx, memoResourceDelete); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
 		}
-
 		return c.JSON(http.StatusOK, true)
 	})
 }
@@ -570,7 +491,7 @@ func (s *Server) createMemoCreateActivity(c echo.Context, memo *api.Memo) error 
 		Content:    memo.Content,
 		Visibility: memo.Visibility.String(),
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -578,7 +499,7 @@ func (s *Server) createMemoCreateActivity(c echo.Context, memo *api.Memo) error 
 		CreatorID: memo.CreatorID,
 		Type:      api.ActivityMemoCreate,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")

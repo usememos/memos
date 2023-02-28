@@ -16,8 +16,8 @@ const (
 	UserSettingAppearanceKey UserSettingKey = "appearance"
 	// UserSettingMemoVisibilityKey is the key type for user preference memo default visibility.
 	UserSettingMemoVisibilityKey UserSettingKey = "memoVisibility"
-	// UserSettingMemoDisplayTsOptionKey is the key type for memo display ts option.
-	UserSettingMemoDisplayTsOptionKey UserSettingKey = "memoDisplayTsOption"
+	// UserSettingResourceVisibilityKey is the key type for user preference resource default visibility.
+	UserSettingResourceVisibilityKey UserSettingKey = "resourceVisibility"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -29,17 +29,17 @@ func (key UserSettingKey) String() string {
 		return "appearance"
 	case UserSettingMemoVisibilityKey:
 		return "memoVisibility"
-	case UserSettingMemoDisplayTsOptionKey:
-		return "memoDisplayTsOption"
+	case UserSettingResourceVisibilityKey:
+		return "resourceVisibility"
 	}
 	return ""
 }
 
 var (
-	UserSettingLocaleValue                 = []string{"en", "zh", "vi", "fr", "nl", "sv", "de", "es", "uk", "ru", "it"}
-	UserSettingAppearanceValue             = []string{"system", "light", "dark"}
-	UserSettingMemoVisibilityValue         = []Visibility{Private, Protected, Public}
-	UserSettingMemoDisplayTsOptionKeyValue = []string{"created_ts", "updated_ts"}
+	UserSettingLocaleValue             = []string{"en", "zh", "vi", "fr", "nl", "sv", "de", "es", "uk", "ru", "it", "hant", "ko"}
+	UserSettingAppearanceValue         = []string{"system", "light", "dark"}
+	UserSettingMemoVisibilityValue     = []Visibility{Private, Protected, Public}
+	UserSettingResourceVisibilityValue = []Visibility{Private, Protected, Public}
 )
 
 type UserSetting struct {
@@ -83,14 +83,14 @@ func (upsert UserSettingUpsert) Validate() error {
 		if !slices.Contains(UserSettingMemoVisibilityValue, memoVisibilityValue) {
 			return fmt.Errorf("invalid user setting memo visibility value")
 		}
-	} else if upsert.Key == UserSettingMemoDisplayTsOptionKey {
-		memoDisplayTsOption := "created_ts"
-		err := json.Unmarshal([]byte(upsert.Value), &memoDisplayTsOption)
+	} else if upsert.Key == UserSettingResourceVisibilityKey {
+		resourceVisibilityValue := Private
+		err := json.Unmarshal([]byte(upsert.Value), &resourceVisibilityValue)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting memo display ts option")
+			return fmt.Errorf("failed to unmarshal user setting resource visibility value")
 		}
-		if !slices.Contains(UserSettingMemoDisplayTsOptionKeyValue, memoDisplayTsOption) {
-			return fmt.Errorf("invalid user setting memo display ts option value")
+		if !slices.Contains(UserSettingResourceVisibilityValue, resourceVisibilityValue) {
+			return fmt.Errorf("invalid user setting resource visibility value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")
@@ -102,7 +102,7 @@ func (upsert UserSettingUpsert) Validate() error {
 type UserSettingFind struct {
 	UserID int
 
-	Key *UserSettingKey `json:"key"`
+	Key UserSettingKey `json:"key"`
 }
 
 type UserSettingDelete struct {

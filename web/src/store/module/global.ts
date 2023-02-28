@@ -9,6 +9,7 @@ export const initialGlobalState = async () => {
     appearance: "system" as Appearance,
     systemStatus: {
       allowSignUp: false,
+      disablePublicMemos: false,
       additionalStyle: "",
       additionalScript: "",
       customizedProfile: {
@@ -62,6 +63,9 @@ export const useGlobalStore = () => {
     state,
     getState: () => {
       return store.getState().global;
+    },
+    isDev: () => {
+      return state.systemStatus.profile.mode !== "prod";
     },
     fetchSystemStatus: async () => {
       const { data: systemStatus } = (await api.getSystemStatus()).data;

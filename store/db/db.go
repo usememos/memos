@@ -49,17 +49,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 	}
 	db.DBInstance = sqliteDB
 
-	if db.profile.Mode == "dev" {
-		// In dev mode, we should migrate and seed the database.
-		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
-			if err := db.applyLatestSchema(ctx); err != nil {
-				return fmt.Errorf("failed to apply latest schema: %w", err)
-			}
-			if err := db.seed(ctx); err != nil {
-				return fmt.Errorf("failed to seed: %w", err)
-			}
-		}
-	} else {
+	if db.profile.Mode == "prod" {
 		// If db file not exists, we should migrate the database.
 		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
 			if err := db.applyLatestSchema(ctx); err != nil {
@@ -120,6 +110,19 @@ func (db *DB) Open(ctx context.Context) (err error) {
 				println(fmt.Sprintf("Failed to remove temp database file, err %v", err))
 			}
 		}
+	} else {
+		// In non-prod mode, we should always migrate the database.
+		if _, err := os.Stat(db.profile.DSN); errors.Is(err, os.ErrNotExist) {
+			if err := db.applyLatestSchema(ctx); err != nil {
+				return fmt.Errorf("failed to apply latest schema: %w", err)
+			}
+			// In demo mode, we should seed the database.
+			if db.profile.Mode == "demo" {
+				if err := db.seed(ctx); err != nil {
+					return fmt.Errorf("failed to seed: %w", err)
+				}
+			}
+		}
 	}
 
 	return nil
@@ -130,7 +133,11 @@ const (
 )
 
 func (db *DB) applyLatestSchema(ctx context.Context) error {
-	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", db.profile.Mode, latestSchemaFileName)
+	schemaMode := "dev"
+	if db.profile.Mode == "prod" {
+		schemaMode = "prod"
+	}
+	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", schemaMode, latestSchemaFileName)
 	buf, err := migrationFS.ReadFile(latestSchemaPath)
 	if err != nil {
 		return fmt.Errorf("failed to read latest schema %q, error %w", latestSchemaPath, err)

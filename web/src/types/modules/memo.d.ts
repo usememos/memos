@@ -13,9 +13,8 @@ interface Memo {
   content: string;
   visibility: Visibility;
   pinned: boolean;
-  displayTs: TimeStamp;
 
-  creator: User;
+  creatorName: string;
   resourceList: Resource[];
 }
 

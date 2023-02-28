@@ -22,10 +22,12 @@ type resourceRaw struct {
 	UpdatedTs int64
 
 	// Domain specific fields
-	Filename string
-	Blob     []byte
-	Type     string
-	Size     int64
+	Filename     string
+	Blob         []byte
+	ExternalLink string
+	Type         string
+	Size         int64
+	Visibility   api.Visibility
 }
 
 func (raw *resourceRaw) toResource() *api.Resource {
@@ -38,10 +40,12 @@ func (raw *resourceRaw) toResource() *api.Resource {
 		UpdatedTs: raw.UpdatedTs,
 
 		// Domain specific fields
-		Filename: raw.Filename,
-		Blob:     raw.Blob,
-		Type:     raw.Type,
-		Size:     raw.Size,
+		Filename:     raw.Filename,
+		Blob:         raw.Blob,
+		ExternalLink: raw.ExternalLink,
+		Type:         raw.Type,
+		Size:         raw.Size,
+		Visibility:   raw.Visibility,
 	}
 }
 
@@ -86,17 +90,13 @@ func (s *Store) CreateResource(ctx context.Context, create *api.ResourceCreate) 
 	}
 	defer tx.Rollback()
 
-	resourceRaw, err := createResource(ctx, tx, create)
+	resourceRaw, err := s.createResourceImpl(ctx, tx, create)
 	if err != nil {
 		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {
 		return nil, FormatError(err)
-	}
-
-	if err := s.cache.UpsertCache(api.ResourceCache, resourceRaw.ID, resourceRaw); err != nil {
-		return nil, err
 	}
 
 	resource := resourceRaw.toResource()
@@ -111,7 +111,7 @@ func (s *Store) FindResourceList(ctx context.Context, find *api.ResourceFind) ([
 	}
 	defer tx.Rollback()
 
-	resourceRawList, err := findResourceList(ctx, tx, find)
+	resourceRawList, err := s.findResourceListImpl(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -125,24 +125,13 @@ func (s *Store) FindResourceList(ctx context.Context, find *api.ResourceFind) ([
 }
 
 func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.Resource, error) {
-	if find.ID != nil {
-		resourceRaw := &resourceRaw{}
-		has, err := s.cache.FindCache(api.ResourceCache, *find.ID, resourceRaw)
-		if err != nil {
-			return nil, err
-		}
-		if has {
-			return resourceRaw.toResource(), nil
-		}
-	}
-
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
 	}
 	defer tx.Rollback()
 
-	list, err := findResourceList(ctx, tx, find)
+	list, err := s.findResourceListImpl(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -152,11 +141,6 @@ func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.
 	}
 
 	resourceRaw := list[0]
-
-	if err := s.cache.UpsertCache(api.ResourceCache, resourceRaw.ID, resourceRaw); err != nil {
-		return nil, err
-	}
-
 	resource := resourceRaw.toResource()
 
 	return resource, nil
@@ -180,8 +164,6 @@ func (s *Store) DeleteResource(ctx context.Context, delete *api.ResourceDelete) 
 		return FormatError(err)
 	}
 
-	s.cache.DeleteCache(api.ResourceCache, delete.ID)
-
 	return nil
 }
 
@@ -192,7 +174,7 @@ func (s *Store) PatchResource(ctx context.Context, patch *api.ResourcePatch) (*a
 	}
 	defer tx.Rollback()
 
-	resourceRaw, err := patchResource(ctx, tx, patch)
+	resourceRaw, err := s.patchResourceImpl(ctx, tx, patch)
 	if err != nil {
 		return nil, err
 	}
@@ -201,45 +183,50 @@ func (s *Store) PatchResource(ctx context.Context, patch *api.ResourcePatch) (*a
 		return nil, FormatError(err)
 	}
 
-	if err := s.cache.UpsertCache(api.ResourceCache, resourceRaw.ID, resourceRaw); err != nil {
-		return nil, err
-	}
-
 	resource := resourceRaw.toResource()
 
 	return resource, nil
 }
 
-func createResource(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate) (*resourceRaw, error) {
+func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate) (*resourceRaw, error) {
+	fields := []string{"filename", "blob", "external_link", "type", "size", "creator_id"}
+	values := []interface{}{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID}
+	placeholders := []string{"?", "?", "?", "?", "?", "?"}
+	if s.profile.IsDev() {
+		fields = append(fields, "visibility")
+		values = append(values, create.Visibility)
+		placeholders = append(placeholders, "?")
+	}
+
 	query := `
 		INSERT INTO resource (
-			filename,
-			blob,
-			type,
-			size,
-			creator_id
+			` + strings.Join(fields, ",") + `
 		)
-		VALUES (?, ?, ?, ?, ?)
-		RETURNING id, filename, blob, type, size, creator_id, created_ts, updated_ts
+		VALUES (` + strings.Join(placeholders, ",") + `)
+		RETURNING id, ` + strings.Join(fields, ",") + `, created_ts, updated_ts
 	`
 	var resourceRaw resourceRaw
-	if err := tx.QueryRowContext(ctx, query, create.Filename, create.Blob, create.Type, create.Size, create.CreatorID).Scan(
+	dests := []interface{}{
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
 		&resourceRaw.Blob,
+		&resourceRaw.ExternalLink,
 		&resourceRaw.Type,
 		&resourceRaw.Size,
 		&resourceRaw.CreatorID,
-		&resourceRaw.CreatedTs,
-		&resourceRaw.UpdatedTs,
-	); err != nil {
+	}
+	if s.profile.IsDev() {
+		dests = append(dests, &resourceRaw.Visibility)
+	}
+	dests = append(dests, []interface{}{&resourceRaw.CreatedTs, &resourceRaw.UpdatedTs}...)
+	if err := tx.QueryRowContext(ctx, query, values...).Scan(dests...); err != nil {
 		return nil, FormatError(err)
 	}
 
 	return &resourceRaw, nil
 }
 
-func patchResource(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*resourceRaw, error) {
+func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*resourceRaw, error) {
 	set, args := []string{}, []interface{}{}
 
 	if v := patch.UpdatedTs; v != nil {
@@ -248,33 +235,46 @@ func patchResource(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*
 	if v := patch.Filename; v != nil {
 		set, args = append(set, "filename = ?"), append(args, *v)
 	}
+	if s.profile.IsDev() {
+		if v := patch.Visibility; v != nil {
+			set, args = append(set, "visibility = ?"), append(args, *v)
+		}
+	}
 
 	args = append(args, patch.ID)
+
+	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
+	if s.profile.IsDev() {
+		fields = append(fields, "visibility")
+	}
 
 	query := `
 		UPDATE resource
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, filename, blob, type, size, creator_id, created_ts, updated_ts
-	`
+		RETURNING ` + strings.Join(fields, ", ")
 	var resourceRaw resourceRaw
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(
+	dests := []interface{}{
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
-		&resourceRaw.Blob,
+		&resourceRaw.ExternalLink,
 		&resourceRaw.Type,
 		&resourceRaw.Size,
 		&resourceRaw.CreatorID,
 		&resourceRaw.CreatedTs,
 		&resourceRaw.UpdatedTs,
-	); err != nil {
+	}
+	if s.profile.IsDev() {
+		dests = append(dests, &resourceRaw.Visibility)
+	}
+	if err := tx.QueryRowContext(ctx, query, args...).Scan(dests...); err != nil {
 		return nil, FormatError(err)
 	}
 
 	return &resourceRaw, nil
 }
 
-func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) ([]*resourceRaw, error) {
+func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) ([]*resourceRaw, error) {
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
@@ -290,20 +290,21 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 		where, args = append(where, "id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
 	}
 
-	query := `
+	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
+	if find.GetBlob {
+		fields = append(fields, "blob")
+	}
+	if s.profile.IsDev() {
+		fields = append(fields, "visibility")
+	}
+
+	query := fmt.Sprintf(`
 		SELECT
-			id,
-			filename,
-			blob,
-			type,
-			size,
-			creator_id,
-			created_ts,
-			updated_ts
+			%s
 		FROM resource
-		WHERE ` + strings.Join(where, " AND ") + `
+		WHERE %s
 		ORDER BY id DESC
-	`
+	`, strings.Join(fields, ", "), strings.Join(where, " AND "))
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, FormatError(err)
@@ -313,16 +314,23 @@ func findResourceList(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) (
 	resourceRawList := make([]*resourceRaw, 0)
 	for rows.Next() {
 		var resourceRaw resourceRaw
-		if err := rows.Scan(
+		dests := []interface{}{
 			&resourceRaw.ID,
 			&resourceRaw.Filename,
-			&resourceRaw.Blob,
+			&resourceRaw.ExternalLink,
 			&resourceRaw.Type,
 			&resourceRaw.Size,
 			&resourceRaw.CreatorID,
 			&resourceRaw.CreatedTs,
 			&resourceRaw.UpdatedTs,
-		); err != nil {
+		}
+		if find.GetBlob {
+			dests = append(dests, &resourceRaw.Blob)
+		}
+		if s.profile.IsDev() {
+			dests = append(dests, &resourceRaw.Visibility)
+		}
+		if err := rows.Scan(dests...); err != nil {
 			return nil, FormatError(err)
 		}
 

@@ -13,6 +13,7 @@ interface User {
   email: string;
   nickname: string;
   openId: string;
+  avatarUrl: string;
   userSettingList: UserSetting[];
 
   setting: Setting;
@@ -31,6 +32,7 @@ interface UserPatch {
   username?: string;
   email?: string;
   nickname?: string;
+  avatarUrl?: string;
   password?: string;
   resetOpenId?: boolean;
 }

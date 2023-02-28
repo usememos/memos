@@ -1,13 +1,16 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import useLoading from "../hooks/useLoading";
 import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
+import MemoFilter from "../components/MemoFilter";
+import Icon from "../components/Icon";
+import { TAG_REG } from "../labs/marked/parser";
 import "../less/explore.less";
 
 interface State {
@@ -16,10 +19,12 @@ interface State {
 
 const Explore = () => {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const globalStore = useGlobalStore();
   const locationStore = useLocationStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
+  const query = locationStore.state.query;
   const [state, setState] = useState<State>({
     memos: [],
   });
@@ -30,7 +35,7 @@ const Explore = () => {
   const location = locationStore.state;
 
   useEffect(() => {
-    memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length).then((memos) => {
+    memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, 0).then((memos) => {
       if (memos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       }
@@ -41,6 +46,34 @@ const Explore = () => {
     });
   }, [location]);
 
+  const { tag: tagQuery, text: textQuery } = query ?? {};
+  const showMemoFilter = Boolean(tagQuery || textQuery);
+
+  const shownMemos = showMemoFilter
+    ? state.memos.filter((memo) => {
+        let shouldShow = true;
+
+        if (tagQuery) {
+          const tagsSet = new Set<string>();
+          for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
+            const tag = t.replace(TAG_REG, "$1").trim();
+            const items = tag.split("/");
+            let temp = "";
+            for (const i of items) {
+              temp += i;
+              tagsSet.add(temp);
+              temp += "/";
+            }
+          }
+          if (!tagsSet.has(tagQuery)) {
+            shouldShow = false;
+          }
+        }
+        return shouldShow;
+      })
+    : state.memos;
+
+  const sortedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL");
   const handleFetchMoreClick = async () => {
     try {
       const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length);
@@ -58,39 +91,62 @@ const Explore = () => {
     }
   };
 
+  const handleMemoContentClick = async (e: React.MouseEvent) => {
+    const targetEl = e.target as HTMLElement;
+
+    if (targetEl.className === "tag-span") {
+      const tagName = targetEl.innerText.slice(1);
+      const currTagQuery = locationStore.getState().query?.tag;
+      if (currTagQuery === tagName) {
+        locationStore.setTagQuery(undefined);
+      } else {
+        locationStore.setTagQuery(tagName);
+      }
+    }
+  };
+
+  const handleTitleClick = () => {
+    if (user) {
+      navigate("/");
+    } else {
+      navigate("/auth");
+    }
+  };
+
   return (
     <section className="page-wrapper explore">
       <div className="page-container">
         <div className="page-header">
-          <div className="title-container">
+          <div className="title-container cursor-pointer hover:opacity-80" onClick={handleTitleClick}>
             <img className="logo-img" src={customizedProfile.logoUrl} alt="" />
             <span className="title-text">{customizedProfile.name}</span>
           </div>
-          <div className="action-button-container">
-            {!loadingState.isLoading && user ? (
-              <Link to="/" className="link-btn btn-normal">
-                <span>🏠</span> {t("common.back-to-home")}
-              </Link>
-            ) : (
-              <Link to="/auth" className="link-btn btn-normal">
-                <span>👉</span> {t("common.sign-in")}
-              </Link>
-            )}
+          <div className="flex flex-row justify-end items-center">
+            <a
+              className="flex flex-row justify-center items-center h-12 w-12 border rounded-full hover:opacity-80 hover:shadow dark:text-white "
+              href="/explore/rss.xml"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Icon.Rss className="w-7 h-auto opacity-60" />
+            </a>
           </div>
         </div>
         {!loadingState.isLoading && (
           <main className="memos-wrapper">
-            {state.memos.map((memo) => {
-              const createdAtStr = dayjs(memo.displayTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
+            <MemoFilter />
+            {sortedMemos.map((memo) => {
+              const createdAtStr = dayjs(memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
               return (
-                <div className="memo-container" key={memo.id}>
+                <div className={`memo-container ${memo.pinned ? "pinned" : ""}`} key={memo.id}>
+                  {memo.pinned && <div className="corner-container"></div>}
                   <div className="memo-header">
                     <span className="time-text">{createdAtStr}</span>
-                    <a className="name-text" href={`/u/${memo.creator.id}`}>
-                      @{memo.creator.nickname || memo.creator.username}
+                    <a className="name-text" href={`/u/${memo.creatorId}`}>
+                      @{memo.creatorName}
                     </a>
                   </div>
-                  <MemoContent className="memo-content" content={memo.content} onMemoContentClick={() => undefined} />
+                  <MemoContent className="memo-content" content={memo.content} onMemoContentClick={handleMemoContentClick} />
                   <MemoResources resourceList={memo.resourceList} />
                 </div>
               );

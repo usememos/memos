@@ -17,7 +17,7 @@ COPY --from=frontend /frontend-build/dist ./server/dist
 RUN go env -w GOPROXY=https://goproxy.cn
 RUN go env -w GO111MODULE=on
 
-RUN go build -o memos ./bin/server/main.go
+RUN go build -o memos ./main.go
 
 # Make workspace with above generated files.
 FROM alpine:3.16 AS monolithic

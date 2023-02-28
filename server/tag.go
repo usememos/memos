@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/url"
 	"regexp"
 	"sort"
 
@@ -40,12 +39,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		if err := s.createTagCreateActivity(c, tag); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tag.Name)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode tag response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(tag.Name))
 	})
 
 	g.GET("/tag", func(c echo.Context) error {
@@ -67,12 +61,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		for _, tag := range tagList {
 			tagNameList = append(tagNameList, tag.Name)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tagNameList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode tags response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(tagNameList))
 	})
 
 	g.GET("/tag/suggestion", func(c echo.Context) error {
@@ -119,39 +108,31 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			tagList = append(tagList, tag)
 		}
 		sort.Strings(tagList)
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(tagList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode tags response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(tagList))
 	})
 
-	g.DELETE("/tag/:tagName", func(c echo.Context) error {
+	g.POST("/tag/delete", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		tagName, err := url.QueryUnescape(c.Param("tagName"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid tag name").SetInternal(err)
-		} else if tagName == "" {
-			return echo.NewHTTPError(http.StatusBadRequest, "Tag name cannot be empty")
+		tagDelete := &api.TagDelete{}
+		if err := json.NewDecoder(c.Request().Body).Decode(tagDelete); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
+		}
+		if tagDelete.Name == "" {
+			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
 		}
 
-		tagDelete := &api.TagDelete{
-			Name:      tagName,
-			CreatorID: userID,
-		}
+		tagDelete.CreatorID = userID
 		if err := s.Store.DeleteTag(ctx, tagDelete); err != nil {
 			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Tag name not found: %s", tagName))
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Tag name not found: %s", tagDelete.Name))
 			}
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete tag name: %v", tagName)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete tag name: %v", tagDelete.Name)).SetInternal(err)
 		}
-
 		return c.JSON(http.StatusOK, true)
 	})
 }
@@ -179,7 +160,7 @@ func (s *Server) createTagCreateActivity(c echo.Context, tag *api.Tag) error {
 	payload := api.ActivityTagCreatePayload{
 		TagName: tag.Name,
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -187,7 +168,7 @@ func (s *Server) createTagCreateActivity(c echo.Context, tag *api.Tag) error {
 		CreatorID: tag.CreatorID,
 		Type:      api.ActivityTagCreate,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")

@@ -13,13 +13,10 @@ export const VISIBILITY_SELECTOR_ITEMS = [
   { text: "PUBLIC", value: "PUBLIC" },
 ];
 
-export const MEMO_DISPLAY_TS_OPTION_SELECTOR_ITEMS = [
-  { text: "created_ts", value: "created_ts" },
-  { text: "updated_ts", value: "updated_ts" },
-];
-
 // space width for tab action in editor
 export const TAB_SPACE_WIDTH = 2;
 
 // default fetch memo amount
-export const DEFAULT_MEMO_LIMIT = 30;
+export const DEFAULT_MEMO_LIMIT = 20;
+
+export const MEMOS_LOGO_URL = "https://usememos.com/logo.png";

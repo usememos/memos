@@ -1,3 +1,3 @@
-import * as Icon from "react-feather";
+import * as Icon from "lucide-react";
 
 export default Icon;

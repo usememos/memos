@@ -31,7 +31,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
     getTagSuggestionList().then(({ data }) => {
       setSuggestTagNameList(data.data.filter((tag) => validateTagName(tag)));
     });
-  }, []);
+  }, [tagNameList]);
 
   const handleTagNameInputKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter") {
@@ -90,6 +90,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container !w-80">
         <Input
           className="mb-2"
+          size="md"
           placeholder="TAG_NAME"
           value={tagName}
           onChange={handleTagNameChanged}

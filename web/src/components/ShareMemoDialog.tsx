@@ -3,7 +3,7 @@ import { QRCodeSVG } from "qrcode.react";
 import React, { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import copy from "copy-to-clipboard";
-import { toLower } from "lodash";
+import { toLower } from "lodash-es";
 import toImage from "../labs/html2image";
 import { useGlobalStore, useMemoStore, useUserStore } from "../store/module";
 import { VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
@@ -44,7 +44,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const memoElRef = useRef<HTMLDivElement>(null);
   const memo = {
     ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.displayTs),
+    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
   };
   const createdDays = Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24);
 

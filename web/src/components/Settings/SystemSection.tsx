@@ -1,15 +1,18 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Switch, Textarea } from "@mui/joy";
+import { Button, Divider, Switch, Textarea } from "@mui/joy";
 import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
+import { useAppDispatch } from "../../store";
+import { setGlobalState } from "../../store/reducer/global";
 import "@/less/settings/system-section.less";
 
 interface State {
   dbSize: number;
   allowSignUp: boolean;
+  disablePublicMemos: boolean;
   additionalStyle: string;
   additionalScript: string;
 }
@@ -32,7 +35,10 @@ const SystemSection = () => {
     allowSignUp: systemStatus.allowSignUp,
     additionalStyle: systemStatus.additionalStyle,
     additionalScript: systemStatus.additionalScript,
+    disablePublicMemos: systemStatus.disablePublicMemos,
   });
+
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     globalStore.fetchSystemStatus();
@@ -44,6 +50,7 @@ const SystemSection = () => {
       allowSignUp: systemStatus.allowSignUp,
       additionalStyle: systemStatus.additionalStyle,
       additionalScript: systemStatus.additionalScript,
+      disablePublicMemos: systemStatus.disablePublicMemos,
     });
   }, [systemStatus]);
 
@@ -100,6 +107,19 @@ const SystemSection = () => {
     });
   };
 
+  const handleDisablePublicMemosChanged = async (value: boolean) => {
+    setState({
+      ...state,
+      disablePublicMemos: value,
+    });
+    // Update global store immediately as MemoEditor/Selector is dependent on this value.
+    dispatch(setGlobalState({ systemStatus: { ...systemStatus, disablePublicMemos: value } }));
+    await api.upsertSystemSetting({
+      name: "disablePublicMemos",
+      value: JSON.stringify(value),
+    });
+  };
+
   const handleSaveAdditionalScript = async () => {
     try {
       await api.upsertSystemSetting({
@@ -133,6 +153,11 @@ const SystemSection = () => {
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
         <Switch checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
       </div>
+      <div className="form-label">
+        <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>
+        <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
+      </div>
+      <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.additional-style")}</span>
         <Button onClick={handleSaveAdditionalStyle}>{t("common.save")}</Button>

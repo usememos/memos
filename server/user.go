@@ -59,12 +59,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if err := s.createUserCreateActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(user))
 	})
 
 	g.GET("/user", func(c echo.Context) error {
@@ -79,12 +74,30 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			user.OpenID = ""
 			user.Email = ""
 		}
+		return c.JSON(http.StatusOK, composeResponse(userList))
+	})
 
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(userList)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user list response").SetInternal(err)
+	g.POST("/user/setting", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 		}
-		return nil
+
+		userSettingUpsert := &api.UserSettingUpsert{}
+		if err := json.NewDecoder(c.Request().Body).Decode(userSettingUpsert); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user setting upsert request").SetInternal(err)
+		}
+		if err := userSettingUpsert.Validate(); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user setting format").SetInternal(err)
+		}
+
+		userSettingUpsert.UserID = userID
+		userSetting, err := s.Store.UpsertUserSetting(ctx, userSettingUpsert)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert user setting").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, composeResponse(userSetting))
 	})
 
 	// GET /api/user/me is used to check if the user is logged in.
@@ -110,40 +123,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
 		}
 		user.UserSettingList = userSettingList
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
-		}
-		return nil
-	})
-
-	g.POST("/user/setting", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
-		}
-
-		userSettingUpsert := &api.UserSettingUpsert{}
-		if err := json.NewDecoder(c.Request().Body).Decode(userSettingUpsert); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user setting upsert request").SetInternal(err)
-		}
-		if err := userSettingUpsert.Validate(); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user setting format").SetInternal(err)
-		}
-
-		userSettingUpsert.UserID = userID
-		userSetting, err := s.Store.UpsertUserSetting(ctx, userSettingUpsert)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert user setting").SetInternal(err)
-		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(userSetting)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user setting response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(user))
 	})
 
 	g.GET("/user/:id", func(c echo.Context) error {
@@ -165,12 +145,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			user.OpenID = ""
 			user.Email = ""
 		}
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(user))
 	})
 
 	g.PATCH("/user/:id", func(c echo.Context) error {
@@ -203,9 +178,6 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch user request").SetInternal(err)
 		}
 		userPatch.ID = userID
-		if err := userPatch.Validate(); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user patch format").SetInternal(err)
-		}
 
 		if userPatch.Password != nil && *userPatch.Password != "" {
 			passwordHash, err := bcrypt.GenerateFromPassword([]byte(*userPatch.Password), bcrypt.DefaultCost)
@@ -222,6 +194,10 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			userPatch.OpenID = &openID
 		}
 
+		if err := userPatch.Validate(); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user patch format").SetInternal(err)
+		}
+
 		user, err := s.Store.PatchUser(ctx, userPatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch user").SetInternal(err)
@@ -234,12 +210,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
 		}
 		user.UserSettingList = userSettingList
-
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationJSONCharsetUTF8)
-		if err := json.NewEncoder(c.Response().Writer).Encode(composeResponse(user)); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to encode user response").SetInternal(err)
-		}
-		return nil
+		return c.JSON(http.StatusOK, composeResponse(user))
 	})
 
 	g.DELETE("/user/:id", func(c echo.Context) error {
@@ -286,7 +257,7 @@ func (s *Server) createUserCreateActivity(c echo.Context, user *api.User) error 
 		Username: user.Username,
 		Role:     user.Role,
 	}
-	payloadStr, err := json.Marshal(payload)
+	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
@@ -294,7 +265,7 @@ func (s *Server) createUserCreateActivity(c echo.Context, user *api.User) error 
 		CreatorID: user.ID,
 		Type:      api.ActivityUserCreate,
 		Level:     api.ActivityInfo,
-		Payload:   string(payloadStr),
+		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")

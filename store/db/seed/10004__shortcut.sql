@@ -1,12 +1,12 @@
-INSERT INTO 
+INSERT INTO
   shortcut (
-    `title`, 
+    `title`,
     `creator_id`,
     `payload`
   )
 VALUES
   (
-    'inbox', 
+    'inbox',
     101,
     '[{"type":"TYPE","value":{"operator":"IS","value":"NOT_TAGGED"},"relation":"AND"}]'
   );

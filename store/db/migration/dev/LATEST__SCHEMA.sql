@@ -23,7 +23,8 @@ CREATE TABLE user (
   email TEXT NOT NULL DEFAULT '',
   nickname TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
-  open_id TEXT NOT NULL UNIQUE
+  open_id TEXT NOT NULL UNIQUE,
+  avatar_url TEXT NOT NULL DEFAULT ''
 );
 
 -- user_setting
@@ -75,7 +76,8 @@ CREATE TABLE resource (
   blob BLOB DEFAULT NULL,
   external_link TEXT NOT NULL DEFAULT '',
   type TEXT NOT NULL DEFAULT '',
-  size INTEGER NOT NULL DEFAULT 0
+  size INTEGER NOT NULL DEFAULT 0,
+  visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE'
 );
 
 -- memo_resource
@@ -102,4 +104,21 @@ CREATE TABLE activity (
   type TEXT NOT NULL DEFAULT '',
   level TEXT NOT NULL CHECK (level IN ('INFO', 'WARN', 'ERROR')) DEFAULT 'INFO',
   payload TEXT NOT NULL DEFAULT '{}'
+);
+
+-- storage
+CREATE TABLE storage (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  config TEXT NOT NULL DEFAULT '{}'
+);
+
+-- idp
+CREATE TABLE idp (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  type TEXT NOT NULL,
+  identifier_filter TEXT NOT NULL DEFAULT '',
+  config TEXT NOT NULL DEFAULT '{}'
 );

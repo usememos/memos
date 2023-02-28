@@ -10,12 +10,12 @@ const defaultSetting: Setting = {
   locale: "en",
   appearance: getSystemColorScheme(),
   memoVisibility: "PRIVATE",
-  memoDisplayTsOption: "created_ts",
+  resourceVisibility: "PRIVATE",
 };
 
 const defaultLocalSetting: LocalSetting = {
   enableFoldMemo: true,
-  enablePowerfulEditor: true,
+  enableDoubleClickEditing: true,
 };
 
 export const convertResponseModelUser = (user: User): User => {

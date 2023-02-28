@@ -18,16 +18,16 @@ func composeResponse(data interface{}) response {
 	}
 }
 
-func DefaultGetRequestSkipper(c echo.Context) bool {
+func defaultGetRequestSkipper(c echo.Context) bool {
 	return c.Request().Method == http.MethodGet
 }
 
-func DefaultAPIRequestSkipper(c echo.Context) bool {
+func defaultAPIRequestSkipper(c echo.Context) bool {
 	path := c.Path()
 	return common.HasPrefixes(path, "/api")
 }
 
-func (server *Server) DefaultAuthSkipper(c echo.Context) bool {
+func (server *Server) defaultAuthSkipper(c echo.Context) bool {
 	ctx := c.Request().Context()
 	path := c.Path()
 

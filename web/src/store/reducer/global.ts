@@ -14,11 +14,12 @@ const globalSlice = createSlice({
     systemStatus: {
       host: undefined,
       profile: {
-        mode: "dev",
+        mode: "demo",
         version: "",
       },
       dbSize: 0,
       allowSignUp: false,
+      disablePublicMemos: false,
       additionalStyle: "",
       additionalScript: "",
       customizedProfile: {
