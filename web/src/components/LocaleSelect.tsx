@@ -29,12 +29,13 @@ const LocaleSelect: FC<Props> = (props: Props) => {
       <Option value="nl">Nederlands</Option>
       <Option value="sv">Svenska</Option>
       <Option value="de">German</Option>
-      <Option value="es">Español</Option>
+      <Option value="es">Español</Option> 
       <Option value="uk">Українська</Option>
       <Option value="ru">Русский</Option>
       <Option value="it">Italiano</Option>
       <Option value="hant">繁體中文</Option>
       <Option value="ko">한국어</Option>
+      <Option value="tr">Turkish</Option>
     </Select>
   );
 };
