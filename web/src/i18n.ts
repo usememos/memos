@@ -13,7 +13,7 @@ import ruLocale from "./locales/ru.json";
 import itLocale from "./locales/it.json";
 import hantLocale from "./locales/zh-Hant.json";
 import koLocale from "./locales/ko.json";
-import trLocale from ".locales/tr.json";
+import trLocale from "./locales/tr.json";
 
 i18n.use(initReactI18next).init({
   resources: {
