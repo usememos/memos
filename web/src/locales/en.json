@@ -60,7 +60,7 @@
   "sidebar": {
     "daily-review": "Daily Review",
     "resources": "Resources",
-    "setting": "Setting",
+    "setting": "Settings",
     "archived": "Archived"
   },
   "daily-review": {
@@ -74,11 +74,11 @@
     "preview": "Preview",
     "copy-link": "Copy Link",
     "delete-resource": "Delete Resource",
-    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIABLE❗",
+    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIBLE❗",
     "linked-amount": "Linked memo amount",
     "rename": "Rename",
     "clear": "Clear",
-    "warning-text-unused": "Are you sure to delete these unused resource? THIS ACTION IS IRREVERSIABLE❗",
+    "warning-text-unused": "Are you sure to delete these unused resources? THIS ACTION IS IRREVERSIBLE❗",
     "no-unused-resources": "No unused resources",
     "name": "Name"
   },
@@ -151,7 +151,7 @@
   },
   "setting": {
     "my-account": "My Account",
-    "preference": "Preference",
+    "preference": "Preferences",
     "member": "Member",
     "member-list": "Member list",
     "system": "System",
@@ -177,7 +177,7 @@
       "storage-services-list": "Storage service list",
       "create-a-service": "Create a service",
       "update-a-service": "Update a service",
-      "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIABLE❗",
+      "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIBLE❗",
       "delete-storage": "Delete Storage"
     },
     "member-section": {
@@ -195,8 +195,8 @@
       "disable-public-memos": "Disable public memos",
       "additional-style": "Additional style",
       "additional-script": "Additional script",
-      "additional-style-placeholder": "Additional CSS codes",
-      "additional-script-placeholder": "Additional JavaScript codes"
+      "additional-style-placeholder": "Additional CSS code",
+      "additional-script-placeholder": "Additional JavaScript code"
     },
     "apperance-option": {
       "system": "Follow system",
@@ -231,9 +231,9 @@
     "password-changed": "Password Changed",
     "private-only": "This memo is private only.",
     "copied": "Copied",
-    "succeed-copy-content": "Succeed to copy content to clipboard.",
-    "succeed-copy-code": "Succeed to copy code to clipboard.",
-    "succeed-copy-link": "Succeed to copy link to clipboard.",
+    "succeed-copy-content": "Content copied successfully.",
+    "succeed-copy-code": "Code copied successfully.",
+    "succeed-copy-link": "Link copied successfully.",
     "change-resource-filename": "Change resource filename",
     "resource-filename-updated": "Resource filename changed.",
     "invalid-resource-filename": "Invalid filename.",
@@ -245,11 +245,11 @@
     "not-allow-space": "Don't allow space",
     "not-allow-chinese": "Don't allow chinese",
     "succeed-vacuum-database": "Succeed to vacuum database",
-    "succeed-update-additional-style": "Succeed to update additional style",
-    "succeed-copy-resource-link": "Succeed to copy resource link to clipboard",
-    "succeed-update-customized-profile": "Succeed to update customized profile",
-    "succeed-update-additional-script": "Succeed to update additional script",
-    "update-succeed": "Update succeed",
+    "succeed-update-additional-style": "Additional style updated successfully.",
+    "succeed-copy-resource-link": "Resource link copied successfully.",
+    "succeed-update-customized-profile": "Profile successfully customized.",
+    "succeed-update-additional-script": "Additional script updated successfully.",
+    "update-succeed": "Update succeeded",
     "page-not-found": "404 - Page Not Found 😥"
   },
   "days": {
