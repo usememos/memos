@@ -31,10 +31,10 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 		user, err := s.Store.FindUser(ctx, userFind)
 		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Your login credentials are incorrect please check")).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Your login credentials are incorrect please check").SetInternal(err)
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Your login credentials are incorrect please check"))
+			return echo.NewHTTPError(http.StatusUnauthorized, "Your login credentials are incorrect please check")
 		} else if user.RowStatus == api.Archived {
 			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", signin.Username))
 		}
