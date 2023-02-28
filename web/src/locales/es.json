@@ -60,7 +60,7 @@
     "sidebar": {
         "daily-review": "Resumen diario",
         "resources": "Recursos",
-        "setting": "Configuración",
+        "setting": "Ajustes",
         "archived": "Archivado"
     },
     "daily-review": {
@@ -74,10 +74,10 @@
         "preview": "Vista previa",
         "copy-link": "Copiar Enlace",
         "delete-resource": "Borrar Recurso",
-        "warning-text": "¿Estás seguro de eliminar este recurso? ESTA ACCIÓN ES IRREVERSIABLE❗",
+        "warning-text": "¿Está seguro de eliminar este recurso? ESTA ACCIÓN ES IRREVERSIBLE❗",
         "linked-amount": "Importe de la nota vinculado",
         "rename": "Renombrar",
-        "warning-text-unused": "¿Estás seguro de eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIABLE❗",
+        "warning-text-unused": "¿Está seguro de eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE❗",
         "no-unused-resources": "No hay recursos sin utilizar",
         "name": "Nombre",
         "clear": "Limpiar"
@@ -185,8 +185,8 @@
             "allow-user-signup": "Permitir el registro de usuarios",
             "additional-style": "Estilos adicionales",
             "additional-script": "Scripts adicionales",
-            "additional-style-placeholder": "Códigos CSS adicionales",
-            "additional-script-placeholder": "Códigos JavaScript adicionales",
+            "additional-style-placeholder": "Código CSS adicional",
+            "additional-script-placeholder": "Código JavaScript adicional",
             "disable-public-memos": "Deshabilitar notas públicas"
         },
         "apperance-option": {
@@ -200,7 +200,7 @@
             "storage-services-list": "Lista de servicios de almacenamiento",
             "create-a-service": "Crear un servicio",
             "update-a-service": "Actualizar un servicio",
-            "warning-text": "¿Estás seguro de eliminar este servicio de almacenamiento? ESTA ACCIÓN ES IRREVERSIABLE❗",
+            "warning-text": "¿Está seguro de eliminar este servicio de almacenamiento? ESTA ACCIÓN ES IRREVERSIBLE❗",
             "delete-storage": "Eliminar almacenamiento"
         }
     },
@@ -234,8 +234,8 @@
         "password-changed": "Contraseña cambiada",
         "private-only": "Esta nota es privada.",
         "copied": "Copiado",
-        "succeed-copy-content": "Contenido copiado al portapapeles.",
-        "succeed-copy-link": "Enlace copiado al portapapeles.",
+        "succeed-copy-content": "Contenido copiado correctamente.",
+        "succeed-copy-link": "Enlace copiado correctamente.",
         "change-resource-filename": "Cambiar el nombre de un archivo de recursos",
         "resource-filename-updated": "El nombre del archivo de recursos se ha cambiado correctamente..",
         "invalid-resource-filename": "Nombre de archivo de recursos no válido.",
@@ -247,12 +247,12 @@
         "not-allow-space": "No se admiten espacios",
         "not-allow-chinese": "El chino no está permitido",
         "succeed-vacuum-database": "Exito al limpiar la base de datos",
-        "succeed-update-additional-style": "Éxito al actualizar el estilo adicional",
-        "succeed-copy-resource-link": "Éxito al copiar el enlace del recurso al portapapeles",
-        "succeed-update-customized-profile": "Éxito al actualizar el perfil personalizado",
-        "succeed-update-additional-script": "Éxito al actualizar el script adicional",
+        "succeed-update-additional-style": "Estilo adicional actualizado con éxito.",
+        "succeed-copy-resource-link": "Enlace del recurso copiado con éxito.",
+        "succeed-update-customized-profile": "Perfil personalizado con éxito.",
+        "succeed-update-additional-script": "Script adicional actualizado con éxito.",
         "update-succeed": "Actualización exitosa",
-        "succeed-copy-code": "La copia al portapapeles fue exitosa.",
+        "succeed-copy-code": "Código copiado con éxito.",
         "page-not-found": "404 - Página no encontrada 😥"
     },
     "days": {
