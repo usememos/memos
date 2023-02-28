@@ -24,7 +24,6 @@ interface Props extends DialogProps {
 interface State {
   memoAmount: number;
   memoVisibility: string;
-  generatedImgUrl: string;
 }
 
 const ShareMemoDialog: React.FC<Props> = (props: Props) => {
@@ -38,8 +37,8 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const [state, setState] = useState<State>({
     memoAmount: 0,
     memoVisibility: propsMemo.visibility,
-    generatedImgUrl: "",
   });
+  const createLoadingState = useLoading(false);
   const loadingState = useLoading();
   const memoElRef = useRef<HTMLDivElement>(null);
   const memo = {
@@ -64,39 +63,31 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       });
   }, []);
 
-  useEffect(() => {
-    if (loadingState.isLoading) {
-      return;
-    }
-
-    if (!memoElRef.current) {
-      return;
-    }
-    toImage(memoElRef.current, {
-      pixelRatio: window.devicePixelRatio * 2,
-    })
-      .then((url) => {
-        setState((state) => {
-          return {
-            ...state,
-            generatedImgUrl: url,
-          };
-        });
-      })
-      .catch((err) => {
-        console.error(err);
-      });
-  }, [loadingState.isLoading]);
-
   const handleCloseBtnClick = () => {
     destroy();
   };
 
   const handleDownloadBtnClick = () => {
-    const a = document.createElement("a");
-    a.href = state.generatedImgUrl;
-    a.download = `memos-${utils.getDateTimeString(Date.now())}.png`;
-    a.click();
+    if (!memoElRef.current) {
+      return;
+    }
+
+    createLoadingState.setLoading();
+
+    toImage(memoElRef.current, {
+      pixelRatio: window.devicePixelRatio * 2,
+    })
+      .then((url) => {
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `memos-${utils.getDateTimeString(Date.now())}.png`;
+        a.click();
+
+        createLoadingState.setFinish();
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   };
 
   const handleCopyLinkBtnClick = () => {
@@ -133,7 +124,6 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container">
         <div className="memo-container" ref={memoElRef}>
-          {state.generatedImgUrl !== "" && <img className="memo-shortcut-img" src={state.generatedImgUrl} />}
           <span className="time-text">{memo.createdAtStr}</span>
           <div className="memo-content-wrapper">
             <MemoContent content={memo.content} displayConfig={{ enableExpand: false }} />
@@ -176,8 +166,8 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             ))}
           </Select>
           <div className="flex flex-row justify-end items-center">
-            <button disabled={state.generatedImgUrl === ""} className="btn-normal mr-2" onClick={handleDownloadBtnClick}>
-              {state.generatedImgUrl === "" ? (
+            <button disabled={createLoadingState.isLoading} className="btn-normal mr-2" onClick={handleDownloadBtnClick}>
+              {createLoadingState.isLoading ? (
                 <Icon.Loader className="w-4 h-auto mr-1 animate-spin" />
               ) : (
                 <Icon.Download className="w-4 h-auto mr-1" />
