@@ -63,11 +63,11 @@ const Auth = () => {
       if (user) {
         window.location.href = "/";
       } else {
-        toastHelper.error(t("message.login-failed"));
+        toastHelper.error(t("message.login-failed"),5000);
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.error);
+      toastHelper.error(error.response.data.error,5000);
     }
     actionBtnLoadingState.setFinish();
   };
