@@ -205,9 +205,9 @@
         }
     },
     "amount-text": {
-        "memo_other": "",
-        "tag_other": "",
-        "day_other": ""
+        "memo_other": "MEMOS",
+        "tag_other": "TAGS",
+        "day_other": "DAYS"
     },
     "message": {
         "no-memos": "沒有 Memos 了 🌃",
@@ -228,9 +228,9 @@
         "password-changed": "密碼已修改",
         "private-only": "此 Memo 僅自己可見。",
         "copied": "已複製",
-        "succeed-copy-content": "複製內容到剪貼板成功。",
-        "succeed-copy-code": "複製代碼到剪貼板成功。",
-        "succeed-copy-link": "複製連結到剪貼板成功。",
+        "succeed-copy-content": "內容複製成功。",
+        "succeed-copy-code": "代碼複製成功。",
+        "succeed-copy-link": "鏈接複製成功。",
         "change-resource-filename": "更改資源檔名",
         "resource-filename-updated": "資源文件名更改成功。",
         "invalid-resource-filename": "無效的資源檔名。",
@@ -241,10 +241,10 @@
         "too-long": "過長",
         "not-allow-space": "不允許包含空格",
         "not-allow-chinese": "不允許包含中文",
-        "succeed-update-additional-style": "更新附加樣式成功",
-        "succeed-copy-resource-link": "複製資源連結到剪貼簿成功",
-        "succeed-update-customized-profile": "更新自定義配置文件成功",
-        "succeed-update-additional-script": "更新附加腳本成功",
+        "succeed-update-additional-style": "更新附加樣式成功。",
+        "succeed-copy-resource-link": "複製資源連結到剪貼簿成功。",
+        "succeed-update-customized-profile": "更新自定義配置文件成功。",
+        "succeed-update-additional-script": "更新附加腳本成功。",
         "update-succeed": "更新成功",
         "succeed-vacuum-database": "清理數據庫成功",
         "page-not-found": "404 - 未找到網頁 😥"
