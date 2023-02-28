@@ -20,9 +20,7 @@ const Auth = () => {
   const mode = systemStatus.profile.mode;
   const [username, setUsername] = useState(mode === "demo" ? "demohero" : "");
   const [password, setPassword] = useState(mode === "demo" ? "secret" : "");
-  const [identityProviderList, setIdentityProviderList] = useState<
-    IdentityProvider[]
-  >([]);
+  const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
     userStore.doSignOut().catch();
@@ -35,16 +33,12 @@ const Auth = () => {
     fetchIdentityProviderList();
   }, []);
 
-  const handleUsernameInputChanged = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
     setUsername(text);
   };
 
-  const handlePasswordInputChanged = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handlePasswordInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
     setPassword(text);
   };
@@ -69,11 +63,11 @@ const Auth = () => {
       if (user) {
         window.location.href = "/";
       } else {
-        toastHelper.error(t("message.login-failed"));
+        toastHelper.error(t("message.login-failed"),5000);
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.error);
+      toastHelper.error(error.response.data.error,5000);
     }
     actionBtnLoadingState.setFinish();
   };
@@ -105,9 +99,7 @@ const Auth = () => {
     }
   };
 
-  const handleSignInWithIdentityProvider = async (
-    identityProvider: IdentityProvider
-  ) => {
+  const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
     const stateQueryParameter = `auth.signin.${identityProvider.name}-${identityProvider.id}`;
     if (identityProvider.type === "OAUTH2") {
       const redirectUri = absolutifyLink("/auth/callback");
@@ -127,38 +119,18 @@ const Auth = () => {
         <div className="auth-form-wrapper">
           <div className="page-header-container">
             <div className="title-container">
-              <img
-                className="logo-img"
-                src={systemStatus.customizedProfile.logoUrl}
-                alt=""
-              />
+              <img className="logo-img" src={systemStatus.customizedProfile.logoUrl} alt="" />
               <p className="logo-text">{systemStatus.customizedProfile.name}</p>
             </div>
-            <p className="slogan-text">
-              {systemStatus.customizedProfile.description || t("slogan")}
-            </p>
+            <p className="slogan-text">{systemStatus.customizedProfile.description || t("slogan")}</p>
           </div>
-          <div
-            className={`page-content-container ${
-              actionBtnLoadingState.isLoading ? "requesting" : ""
-            }`}
-          >
+          <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
             <div className="form-item-container input-form-container">
-              <span className={`normal-text ${username ? "not-null" : ""}`}>
-                {t("common.username")}
-              </span>
-              <input
-                className="input-text"
-                type="text"
-                value={username}
-                onChange={handleUsernameInputChanged}
-                required
-              />
+              <span className={`normal-text ${username ? "not-null" : ""}`}>{t("common.username")}</span>
+              <input className="input-text" type="text" value={username} onChange={handleUsernameInputChanged} required />
             </div>
             <div className="form-item-container input-form-container">
-              <span className={`normal-text ${password ? "not-null" : ""}`}>
-                {t("common.password")}
-              </span>
+              <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
               <input
                 className="input-text"
                 type="password"
@@ -172,39 +144,22 @@ const Auth = () => {
           <div className="action-btns-container">
             {systemStatus?.host ? (
               <>
-                {actionBtnLoadingState.isLoading && (
-                  <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />
-                )}
+                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
                 {systemStatus?.allowSignUp && (
                   <>
-                    <button
-                      className={`btn-text ${
-                        actionBtnLoadingState.isLoading ? "requesting" : ""
-                      }`}
-                      onClick={handleSignUpBtnsClick}
-                    >
+                    <button className={`btn-text ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSignUpBtnsClick}>
                       {t("common.sign-up")}
                     </button>
                     <span className="mr-2 font-mono text-gray-200">/</span>
                   </>
                 )}
-                <button
-                  className={`btn-primary ${
-                    actionBtnLoadingState.isLoading ? "requesting" : ""
-                  }`}
-                  onClick={handleSignInBtnClick}
-                >
+                <button className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSignInBtnClick}>
                   {t("common.sign-in")}
                 </button>
               </>
             ) : (
               <>
-                <button
-                  className={`btn-primary ${
-                    actionBtnLoadingState.isLoading ? "requesting" : ""
-                  }`}
-                  onClick={handleSignUpBtnsClick}
-                >
+                <button className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSignUpBtnsClick}>
                   {t("auth.signup-as-host")}
                 </button>
               </>
@@ -221,9 +176,7 @@ const Auth = () => {
                     color="neutral"
                     className="w-full"
                     size="md"
-                    onClick={() =>
-                      handleSignInWithIdentityProvider(identityProvider)
-                    }
+                    onClick={() => handleSignInWithIdentityProvider(identityProvider)}
                   >
                     Sign in with {identityProvider.name}
                   </Button>
@@ -231,16 +184,11 @@ const Auth = () => {
               </div>
             </>
           )}
-          {!systemStatus?.host && (
-            <p className="tip-text">{t("auth.host-tip")}</p>
-          )}
+          {!systemStatus?.host && <p className="tip-text">{t("auth.host-tip")}</p>}
         </div>
         <div className="flex flex-row items-center justify-center w-full gap-2">
           <LocaleSelect value={locale} onChange={handleLocaleSelectChange} />
-          <AppearanceSelect
-            value={appearance}
-            onChange={handleAppearanceSelectChange}
-          />
+          <AppearanceSelect value={appearance} onChange={handleAppearanceSelectChange} />
         </div>
       </div>
     </div>
