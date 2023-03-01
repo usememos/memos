@@ -15,7 +15,6 @@ import hantLocale from "./locales/zh-Hant.json";
 import trLocale from "./locales/tr.json";
 import koLocale from "./locales/ko.json";
 
-
 i18n.use(initReactI18next).init({
   resources: {
     en: {
