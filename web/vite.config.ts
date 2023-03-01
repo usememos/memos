@@ -2,6 +2,8 @@ import { resolve } from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 
+const devProxyServer = "http://localhost:8081/";
+
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
@@ -10,19 +12,19 @@ export default defineConfig({
     port: 3001,
     proxy: {
       "^/api": {
-        target: "http://localhost:8081/",
+        target: devProxyServer,
         changeOrigin: true,
       },
       "^/o/": {
-        target: "http://localhost:8081/",
+        target: devProxyServer,
         changeOrigin: true,
       },
       "^/u/\\d*/rss.xml": {
-        target: "http://localhost:8081/",
+        target: devProxyServer,
         changeOrigin: true,
       },
       "/explore/rss.xml": {
-        target: "http://localhost:8081/",
+        target: devProxyServer,
         changeOrigin: true,
       },
     },
