@@ -5,5 +5,8 @@
   },
   "i18n-ally.localesPaths": [
     "src/locales"
-  ]
+  ],
+  "files.associations": {
+    "*.less": "postcss"
+  }
 }
