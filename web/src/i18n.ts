@@ -12,8 +12,9 @@ import ukLocale from "./locales/uk.json";
 import ruLocale from "./locales/ru.json";
 import itLocale from "./locales/it.json";
 import hantLocale from "./locales/zh-Hant.json";
-import koLocale from "./locales/ko.json";
 import trLocale from "./locales/tr.json";
+import koLocale from "./locales/ko.json";
+
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -53,11 +54,11 @@ i18n.use(initReactI18next).init({
     hant: {
       translation: hantLocale,
     },
-    ko: {
-      translation: koLocale,
-    },
     tr: {
       translation: trLocale,
+    },
+    ko: {
+      translation: koLocale,
     },
   },
   lng: "en",
