@@ -36,7 +36,7 @@ func (key UserSettingKey) String() string {
 }
 
 var (
-	UserSettingLocaleValue             = []string{"en", "zh", "vi", "fr", "nl", "sv", "de", "es", "uk", "ru", "it", "hant", "ko"}
+	UserSettingLocaleValue             = []string{"en", "zh", "vi", "fr", "nl", "sv", "de", "es", "uk", "ru", "it", "hant", "tr", "ko"}
 	UserSettingAppearanceValue         = []string{"system", "light", "dark"}
 	UserSettingMemoVisibilityValue     = []Visibility{Private, Protected, Public}
 	UserSettingResourceVisibilityValue = []Visibility{Private, Protected, Public}
