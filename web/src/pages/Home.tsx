@@ -43,7 +43,7 @@ function Home() {
         <Sidebar />
         <main className="memos-wrapper">
           <MemosHeader />
-          <div className="memos-editor-wrapper rounded-lg">
+          <div className="memos-editor-wrapper">
             {!userStore.isVisitorMode() && <MemoEditor />}
             <MemoFilter />
           </div>
