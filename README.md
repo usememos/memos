@@ -55,7 +55,7 @@ docker-compose down && docker image rm neosmemo/memos:latest && docker-compose u
 
 ## Contribute
 
-Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are greatly appreciated. 🥰
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions that you make are greatly appreciated. 🥰
 
 Learn more about contributing in [development guide](./docs/development.md).
 
