@@ -16,3 +16,6 @@ build
 .idea
 
 bin/air
+
+# docker volume
+memos-data
