@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint --ext .js,.ts,.tsx, src"
+    "lint": "eslint --ext .js,.ts,.tsx, src",
+    "lint-fix": "eslint --ext .js,.ts,.tsx, src --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",

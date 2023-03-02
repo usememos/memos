@@ -12,6 +12,7 @@ import ukLocale from "./locales/uk.json";
 import ruLocale from "./locales/ru.json";
 import itLocale from "./locales/it.json";
 import hantLocale from "./locales/zh-Hant.json";
+import trLocale from "./locales/tr.json";
 import koLocale from "./locales/ko.json";
 
 i18n.use(initReactI18next).init({
@@ -51,6 +52,9 @@ i18n.use(initReactI18next).init({
     },
     hant: {
       translation: hantLocale,
+    },
+    tr: {
+      translation: trLocale,
     },
     ko: {
       translation: koLocale,

@@ -1,271 +1,261 @@
 {
-    "setting": {
-        "system-section": {
-            "additional-style-placeholder": "Additional CSS code",
-            "additional-script-placeholder": "Additional JavaScript code",
-            "server-name": "Server Name",
-            "customize-server": {
-                "title": "Customize Server",
-                "default": "Default is memos",
-                "icon-url": "Icon URL"
-            },
-            "database-file-size": "Database File Size",
-            "allow-user-signup": "Allow user signup",
-            "disable-public-memos": "Disable public memos",
-            "additional-style": "Additional style",
-            "additional-script": "Additional script"
-        },
-        "apperance-option": {
-            "system": "Follow system",
-            "light": "Always light",
-            "dark": "Always dark"
-        },
-        "preference-section": {
-            "enable-folding-memo": "Enable folding memo",
-            "theme": "Theme",
-            "default-memo-visibility": "Default memo visibility",
-            "enable-double-click": "Enable double-click to edit",
-            "editor-font-style": "Editor font style",
-            "mobile-editor-style": "Mobile editor style",
-            "default-memo-sort-option": "Memo display time",
-            "created_ts": "Created Time",
-            "updated_ts": "Updated Time"
-        },
-        "my-account": "My Account",
-        "preference": "Preferences",
-        "member": "Member",
-        "member-list": "Member list",
-        "system": "System",
-        "storage": "Storage",
-        "sso": "SSO",
-        "account-section": {
-            "title": "Account Information",
-            "update-information": "Update Information",
-            "change-password": "Change password"
-        },
-        "storage-section": {
-            "storage-services-list": "Storage service list",
-            "create-a-service": "Create a service",
-            "update-a-service": "Update a service",
-            "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIBLE❗",
-            "delete-storage": "Delete Storage"
-        },
-        "member-section": {
-            "create-a-member": "Create a member"
-        }
-    },
-    "amount-text": {
-        "memo_one": "MEMO",
-        "memo_other": "MEMOS",
-        "tag_one": "TAG",
-        "tag_other": "TAGS",
-        "day_one": "DAY",
-        "day_other": "DAYS"
-    },
-    "message": {
-        "no-memos": "no memos 🌃",
-        "memos-ready": "all memos are ready 🎉",
-        "restored-successfully": "Restored successfully",
-        "invalid-created-datetime": "Invalid created datetime.",
-        "memo-updated-datetime": "Memo created datetime changed.",
-        "change-memo-created-time": "Change memo created time",
-        "memo-not-found": "Memo not found.",
-        "fill-all": "Please fill in all fields.",
-        "password-not-match": "Passwords do not match.",
-        "new-password-not-match": "New passwords do not match.",
-        "image-load-failed": "Image load failed",
-        "fill-form": "Please fill out this form",
-        "login-failed": "Login failed",
-        "signup-failed": "Signup failed",
-        "user-not-found": "User not found",
-        "password-changed": "Password Changed",
-        "private-only": "This memo is private only.",
-        "copied": "Copied",
-        "succeed-copy-content": "Content copied successfully.",
-        "succeed-copy-code": "Code copied successfully.",
-        "succeed-copy-link": "Link copied successfully.",
-        "change-resource-filename": "Change resource filename",
-        "resource-filename-updated": "Resource filename changed.",
-        "invalid-resource-filename": "Invalid filename.",
-        "click-to-save-the-image": "Click to save the image",
-        "generating-the-screenshot": "Generating the screenshot...",
-        "count-selected-resources": "Total selected",
-        "too-short": "Too short",
-        "too-long": "Too long",
-        "not-allow-space": "Don't allow space",
-        "not-allow-chinese": "Don't allow chinese",
-        "succeed-vacuum-database": "Succeed to vacuum database",
-        "succeed-update-additional-style": "Additional style updated successfully.",
-        "succeed-copy-resource-link": "Resource link copied successfully.",
-        "succeed-update-customized-profile": "Profile successfully customized.",
-        "succeed-update-additional-script": "Additional script updated successfully.",
-        "update-succeed": "Update succeeded",
-        "page-not-found": "404 - Page Not Found 😥"
-    },
-    "days": {
-        "monday": "Monday",
-        "mon": "Mon",
-        "tuesday": "Tuesday",
-        "tue": "Tue",
-        "wednesday": "Wednesday",
-        "wed": "Wed",
-        "thursday": "Thursday",
-        "thu": "Thu",
-        "friday": "Friday",
-        "fri": "Fri",
-        "saturday": "Saturday",
-        "sat": "Sat",
-        "sunday": "Sunday",
-        "sun": "Sun"
-    },
-    "common": {
-        "close": "Kapat",
-        "about": "Hakkında",
-        "email": "Email",
-        "password": "Şifre",
-        "repeat-password-short": "Tekrar",
-        "repeat-password": "Şifre tekrarı",
-        "new-password": "Yeni şifre",
-        "repeat-new-password": "Yeni şifreyi tekrarla",
-        "avatar": "Avatar",
-        "username": "Kullanıcı adı",
-        "nickname": "Rumuz",
-        "save": "Kaydet",
-        "cancel": "İptal",
-        "create": "Oluştur",
-        "change": "Değiştir",
-        "confirm": "Onayla",
-        "reset": "Sıfırla",
-        "language": "Dil",
-        "version": "Versiyon",
-        "pin": "İğnele",
-        "edit": "Düzenle",
-        "restore": "Geri al",
-        "unpin": "İğnelemeyi kaldır",
-        "delete": "Sil",
-        "null": "Null",
-        "share": "Paylaş",
-        "archive": "Arşiv",
-        "basic": "Temel",
-        "admin": "Yönetici",
-        "explore": "Keşfet",
-        "sign-in": "Giriş yap",
-        "sign-up": "Kaydol",
-        "sign-out": "Çıkış yap",
-        "back-to-home": "Anasayfaya dön",
-        "type": "Type",
-        "shortcuts": "Kısayollar",
-        "title": "Başlık",
-        "filter": "Filtrele",
-        "tags": "Etiketler",
-        "yourself": "Kendin",
-        "archived-at": "Arşivlendi",
-        "changed": "değişti",
-        "update-on": "Güncellendi",
-        "fold": "Katla",
-        "expand": "Genişlet",
-        "image": "Görsel",
-        "link": "Link",
-        "vacuum": "Vacuum",
-        "select": "Select",
-        "database": "Database"
-    },
-    "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
-    "auth": {
-        "signup-as-host": "Sign up as Host",
-        "host-tip": "You are registering as the Site Host.",
-        "not-host-tip": "If you don't have an account, please contact the site host."
-    },
-    "sidebar": {
-        "daily-review": "Daily Review",
-        "resources": "Resources",
-        "setting": "Settings",
-        "archived": "Archived"
-    },
-    "daily-review": {
-        "oops-nothing": "Oops, there is nothing."
-    },
-    "resources": {
-        "description": "View your static resources in memos. e.g. images",
-        "no-resources": "No resources.",
-        "fetching-data": "fetching data...",
-        "upload": "Upload",
-        "preview": "Preview",
-        "copy-link": "Copy Link",
-        "delete-resource": "Delete Resource",
-        "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIBLE❗",
-        "linked-amount": "Linked memo amount",
-        "rename": "Rename",
-        "clear": "Clear",
-        "warning-text-unused": "Are you sure to delete these unused resources? THIS ACTION IS IRREVERSIBLE❗",
-        "no-unused-resources": "No unused resources",
-        "name": "Name"
-    },
-    "archived": {
-        "archived-memos": "Archived Memos",
-        "no-archived-memos": "No archived memos.",
-        "fetching-data": "fetching data..."
-    },
-    "editor": {
-        "editing": "Editing...",
-        "cancel-edit": "Cancel edit",
-        "save": "Save",
-        "placeholder": "Any thoughts...",
-        "only-image-supported": "Only image file supported.",
-        "cant-empty": "Content can't be empty",
-        "local": "Local",
-        "resources": "Resources"
-    },
-    "memo": {
-        "view-detail": "View Detail",
-        "copy": "Copy",
-        "visibility": {
-            "private": "Only visible to you",
-            "protected": "Visible to members",
-            "public": "Everyone can see",
-            "disabled": "Public memos are disabled"
-        }
-    },
-    "memo-list": {
-        "fetching-data": "fetching data...",
-        "fetch-more": "Click here to fetch more"
-    },
-    "shortcut-list": {
-        "shortcut-title": "shortcut title",
-        "create-shortcut": "Create Shortcut",
-        "edit-shortcut": "Edit Shortcut",
-        "eligible-memo": "eligible memo",
-        "fill-previous": "Please fill in previous filter value",
-        "title-required": "Title is required",
-        "value-required": "Filter value is required"
-    },
-    "filter": {
-        "new-filter": "New Filter",
-        "type": {
-            "tag": "Tag",
-            "type": "Type",
-            "text": "Text",
-            "display-time": "Display Time",
-            "visibility": "Visibility"
-        },
-        "operator": {
-            "contains": "Contains",
-            "not-contains": "Does not contain",
-            "is": "Is",
-            "is-not": "Is Not",
-            "before": "Before",
-            "after": "After"
-        },
-        "value": {
-            "not-tagged": "No tags",
-            "linked": "Has links"
-        },
-        "text-placeholder": "Starts with ^ to use regex"
-    },
-    "tag-list": {
-        "tip-text": "Input `#tag` to create"
-    },
-    "search": {
-        "quickly-filter": "Quickly filter"
+  "common": {
+    "about": "Hakkında",
+    "email": "E-posta",
+    "password": "Parola",
+    "repeat-password-short": "Tekrar",
+    "repeat-password": "Parolayı tekrarlayın",
+    "new-password": "Yeni parola",
+    "repeat-new-password": "Yeni parolayı tekrarla",
+    "username": "Kullanıcı adı",
+    "nickname": "Takma ad",
+    "save": "Kaydet",
+    "close": "Kapat",
+    "cancel": "İptal",
+    "create": "Oluştur",
+    "change": "Değiştir",
+    "confirm": "Onayla",
+    "reset": "Sıfırla",
+    "language": "Dil",
+    "version": "Sürüm",
+    "pin": "Sabitle",
+    "unpin": "Sabitlemeyi kaldır",
+    "edit": "Düzenle",
+    "restore": "Geri yükle",
+    "delete": "Sil",
+    "null": "Boş",
+    "share": "Paylaş",
+    "archive": "Arşivle",
+    "basic": "Temel",
+    "admin": "Yönetici",
+    "explore": "Daha çok keşfet",
+    "sign-in": "Giriş yap",
+    "sign-up": "Kaydol",
+    "sign-out": "Çıkış yap",
+    "back-to-home": "Ana sayfaya dön",
+    "type": "Tip",
+    "shortcuts": "Kısayollar",
+    "title": "Başlık",
+    "filter": "Filtre",
+    "tags": "Etiketler",
+    "yourself": "Sen",
+    "archived-at": "Arşivlendi"
+  },
+  "slogan": "Açık kaynaklı bir not ve sosyalleşme platformu olan self-hosted.",
+  "auth": {
+    "signup-as-host": "Sahip olarak kaydolun",
+    "host-tip": "Site sahibi olarak kaydoluyorsunuz.",
+    "not-host-tip": "Hesabınız yoksa, site sahibiyle iletişime geçin."
+  },
+  "sidebar": {
+    "daily-review": "Günlük İnceleme",
+    "resources": "Kaynaklar",
+    "setting": "Ayarlar",
+    "archived": "Arşivlenmiş"
+  },
+  "daily-review": {
+    "oops-nothing": "Oops, burada hiçbir şey yok."
+  },
+  "resources": {
+    "description": "Memos'taki statik kaynaklarınızı (fotoğraflar) görüntüleyin",
+    "no-resources": "Kaynak yok.",
+    "fetching-data": "veriler yükleniyor...",
+    "upload": "Yükle",
+    "preview": "Önizleme",
+    "copy-link": "Bağlantıyı kopyala",
+    "delete-resource": "Kaynağı sil",
+    "warning-text": "Bu kaynağı silmek istediğinize emin misiniz? BU İŞLEM GERİ ALINAMAZ❗",
+    "linked-amount": "Notların sayısı",
+    "rename": "Yeniden Adlandır",
+    "warning-text-unused": "Kullanılmayan kaynakları silmek istediğinize emin misiniz? BU İŞLEM GERİ ALINAMAZ❗",
+    "no-unused-resources": "Kullanılmayan kaynak yok",
+    "name": "Ad",
+    "clear": "Temizle"
+  },
+  "archived": {
+    "archived-memos": "Arşivlenmiş Notlar",
+    "no-archived-memos": "Arşivlenmiş not yok.",
+    "fetching-data": "veriler yükleniyor..."
+  },
+  "editor": {
+    "editing": "Düzenleniyor...",
+    "cancel-edit": "İptal et",
+    "save": "Kaydet",
+    "placeholder": "Düşünceleriniz...",
+    "only-image-supported": "Sadece resim dosyaları desteklenir.",
+    "cant-empty": "Metin boş olamaz",
+    "local": "Bilgisayardan",
+    "resources": "Yüklenenler"
+  },
+  "memo": {
+    "view-detail": "Detayları görüntüle",
+    "copy": "Kopyala",
+    "visibility": {
+      "private": "Sadece sizin için görünür",
+      "protected": "Sadece kullanıcılara görünür",
+      "public": "Herkese açık",
+      "disabled": "Halka açık notlar devre dışı bırakıldı"
     }
+  },
+  "memo-list": {
+    "fetching-data": "Veriler yükleniyor...",
+    "fetch-more": "Daha fazla yükle"
+  },
+  "shortcut-list": {
+    "shortcut-title": "Kısayol adı",
+    "create-shortcut": "Kısayol oluştur",
+    "edit-shortcut": "Kısayolu düzenle",
+    "eligible-memo": "İlgili notlar",
+    "fill-previous": "Lütfen filtre değerini doldurun",
+    "title-required": "Başlık gerekli",
+    "value-required": "Filtre değeri gerekli"
+  },
+  "filter": {
+    "new-filter": "Yeni filtre",
+    "type": {
+      "tag": "Etiket",
+      "type": "Tip",
+      "text": "Metin",
+      "display-time": "Görüntüleme süresi",
+      "visibility": "Görünürlük"
+    },
+    "operator": {
+      "contains": "İçerir",
+      "not-contains": "İçermez",
+      "is": "Eşittir",
+      "is-not": "Eşit değildir",
+      "before": "Öncesinde",
+      "after": "Sonrasında"
+    },
+    "value": {
+      "not-tagged": "Etiketlenmemiş",
+      "linked": "Bağlantılı"
+    },
+    "text-placeholder": "Düzenli ifadeler kullanmak için ^ işaretini kullanın"
+  },
+  "tag-list": {
+    "tip-text": "Oluşturmak için #etiket girin"
+  },
+  "search": {
+    "quickly-filter": "Hızlı filtre"
+  },
+  "setting": {
+    "my-account": "Hesabım",
+    "preference": "Tercihler",
+    "member": "Kullanıcılar",
+    "member-list": "Kullanıcı listesi",
+    "system": "Sistem",
+    "account-section": {
+      "title": "Hesap Bilgisi",
+      "update-information": "Bilgi Güncelleme",
+      "change-password": "Şifre Değiştirme"
+    },
+    "preference-section": {
+      "theme": "Tema",
+      "default-memo-visibility": "Varsayılan not görünürlüğü",
+      "enable-folding-memo": "Notları katlamayı etkinleştir",
+      "editor-font-style": "Düzenleyici Yazı Stili",
+      "mobile-editor-style": "Mobil Düzenleyici Stili",
+      "default-memo-sort-option": "Yer İşareti Görüntüleme Zamanı",
+      "created_ts": "Oluşturulma zamanı",
+      "updated_ts": "Güncelleme zamanı",
+      "enable-double-click": "Düzenlemek için çift tıklatmayı etkinleştir"
+    },
+    "member-section": {
+      "create-a-member": "Kullanıcı oluştur"
+    },
+    "system-section": {
+      "server-name": "Uygulama Adı",
+      "customize-server": {
+        "title": "Uygulamayı özelleştir",
+        "default": "Varsayılan: memos",
+        "icon-url": "İkon URL'si"
+      },
+      "database-file-size": "Veritabanı Dosya Boyutu",
+      "allow-user-signup": "Kullanıcı Kaydına İzin Ver",
+      "additional-style": "Özel Stiller",
+      "additional-script": "Özel Scriptler",
+      "additional-style-placeholder": "Ek CSS",
+      "additional-script-placeholder": "Ek JavaScript",
+      "disable-public-memos": "Halka açık notları devre dışı bırak"
+    },
+    "apperance-option": {
+      "system": "Otomatik",
+      "light": "Her zaman açık renkli",
+      "dark": "Her zaman koyu renkli"
+    },
+    "storage": "Depolama",
+    "storage-section": {
+      "update-a-service": "Hizmeti güncelle",
+      "warning-text": "Bu depolama hizmetini silmek istediğinizden emin misiniz? BU İŞLEM GERİ ALINAMAZ❗",
+      "delete-storage": "Depolamayı Sil",
+      "storage-services-list": "Depolama hizmeti listesi",
+      "create-a-service": "Hizmet oluştur"
+    },
+    "sso": "SSO"
+  },
+  "amount-text": {
+    "memo_one": "NOT",
+    "tag_one": "ETİKET",
+    "day_one": "GÜN",
+    "day_other": "GÜNLER",
+    "memo_other": "NOTLAR",
+    "tag_other": "ETİKETLER"
+  },
+  "message": {
+    "no-memos": "not yok 🌃",
+    "memos-ready": "daha fazla not yok 🎉",
+    "restored-successfully": "Başarıyla geri yüklendi.",
+    "memo-updated-datetime": "Oluşturma zamanı değiştirildi.",
+    "invalid-created-datetime": "Oluşturma zamanı geçersiz.",
+    "change-memo-created-time": "Not oluşturma zamanını değiştir",
+    "memo-not-found": "Not bulunamadı.",
+    "fill-all": "Lütfen tüm alanları doldurun.",
+    "password-not-match": "Parolalar eşleşmiyor.",
+    "new-password-not-match": "Yeni parolalar eşleşmiyor.",
+    "image-load-failed": "Resim yüklenemedi",
+    "fill-form": "Lütfen formu doldurun",
+    "login-failed": "Giriş başarısız",
+    "signup-failed": "Kayıt başarısız",
+    "user-not-found": "Kullanıcı bulunamadı",
+    "password-changed": "Şifre değiştirildi",
+    "private-only": "Bu not özel.",
+    "copied": "Kopyalandı",
+    "succeed-copy-content": "Metin panosuna metin kopyalandı.",
+    "succeed-copy-link": "Bağlantı panosuna bağlantı kopyalandı.",
+    "change-resource-filename": "Dosya adını değiştir",
+    "resource-filename-updated": "Dosya adı güncellendi.",
+    "invalid-resource-filename": "Geçersiz dosya adı.",
+    "click-to-save-the-image": "Kaydetmek için tıklayın",
+    "generating-the-screenshot": "Ekran görüntüsü oluşturuluyor...",
+    "count-selected-resources": "Toplam seçilen",
+    "too-short": "Çok kısa",
+    "too-long": "Çok uzun",
+    "not-allow-space": "Boşluk izin verilmez",
+    "not-allow-chinese": "Çince karakterler izin verilmez",
+    "succeed-vacuum-database": "DB vakumlandı",
+    "succeed-update-additional-style": "Stiller başarıyla eklendi",
+    "succeed-copy-resource-link": "Kaynak bağlantısı panosuna kopyalandı",
+    "succeed-update-customized-profile": "Özel profil başarıyla güncellendi",
+    "succeed-update-additional-script": "Ek scriptler başarıyla eklendi",
+    "update-succeed": "Başarıyla güncellendi",
+    "succeed-copy-code": "Kod panosuna kopyalandı",
+    "page-not-found": "404 - Sayfa Bulunamadı 😥"
+  },
+  "days": {
+    "monday": "Pazartesi",
+    "mon": "Paz",
+    "tuesday": "Salı",
+    "tue": "Sal",
+    "wednesday": "Çarşamba",
+    "wed": "Çar",
+    "thursday": "Perşembe",
+    "thu": "Per",
+    "friday": "Cuma",
+    "fri": "Cum",
+    "saturday": "Cumartesi",
+    "sat": "Cum",
+    "sunday": "Pazar",
+    "sun": "Paz"
+  }
 }
