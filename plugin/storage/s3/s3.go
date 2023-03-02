@@ -18,6 +18,7 @@ type Config struct {
 	SecretKey string
 	Bucket    string
 	EndPoint  string
+	Path      string
 	Region    string
 	URLPrefix string
 }
@@ -55,7 +56,7 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	uploader := manager.NewUploader(client.Client)
 	uploadOutput, err := uploader.Upload(ctx, &awss3.PutObjectInput{
 		Bucket:      aws.String(client.Config.Bucket),
-		Key:         aws.String(filename),
+		Key:         aws.String(client.Config.Path + filename),
 		Body:        src,
 		ContentType: aws.String(fileType),
 		ACL:         types.ObjectCannedACL(*aws.String("public-read")),

@@ -12,6 +12,7 @@ type StorageConfig struct {
 
 type StorageS3Config struct {
 	EndPoint  string `json:"endPoint"`
+	Path      string `json:"path"`
 	Region    string `json:"region"`
 	AccessKey string `json:"accessKey"`
 	SecretKey string `json:"secretKey"`

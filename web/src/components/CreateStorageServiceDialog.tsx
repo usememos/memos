@@ -21,6 +21,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     region: "",
     accessKey: "",
     secretKey: "",
+    path: "",
     bucket: "",
     urlPrefix: "",
   });
@@ -168,6 +169,17 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           placeholder="SecretKey"
           value={s3Config.secretKey}
           onChange={(e) => setPartialS3Config({ secretKey: e.target.value })}
+          fullWidth
+        />
+        <Typography className="!mb-1" level="body2">
+          Bucket
+          <span className="text-sm text-gray-400 ml-1">(Storage Path)</span>
+        </Typography>
+        <Input
+          className="mb-2"
+          placeholder="Path"
+          value={s3Config.path}
+          onChange={(e) => setPartialS3Config({ path: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
