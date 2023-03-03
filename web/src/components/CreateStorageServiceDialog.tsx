@@ -173,17 +173,6 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         />
         <Typography className="!mb-1" level="body2">
           Bucket
-          <span className="text-sm text-gray-400 ml-1">(Storage Path)</span>
-        </Typography>
-        <Input
-          className="mb-2"
-          placeholder="Path"
-          value={s3Config.path}
-          onChange={(e) => setPartialS3Config({ path: e.target.value })}
-          fullWidth
-        />
-        <Typography className="!mb-1" level="body2">
-          Bucket
           <span className="text-sm text-gray-400 ml-1">(Bucket name)</span>
         </Typography>
         <Input
@@ -191,6 +180,17 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           placeholder="Bucket"
           value={s3Config.bucket}
           onChange={(e) => setPartialS3Config({ bucket: e.target.value })}
+          fullWidth
+        />
+        <Typography className="!mb-1" level="body2">
+          Path
+          <span className="text-sm text-gray-400 ml-1">(Storage Path)</span>
+        </Typography>
+        <Input
+          className="mb-2"
+          placeholder="Path"
+          value={s3Config.path}
+          onChange={(e) => setPartialS3Config({ path: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
