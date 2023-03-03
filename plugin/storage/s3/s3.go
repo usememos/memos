@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"path"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	s3config "github.com/aws/aws-sdk-go-v2/config"
@@ -56,7 +57,7 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	uploader := manager.NewUploader(client.Client)
 	uploadOutput, err := uploader.Upload(ctx, &awss3.PutObjectInput{
 		Bucket:      aws.String(client.Config.Bucket),
-		Key:         aws.String(client.Config.Path + filename),
+		Key:         aws.String(path.Join(client.Config.Path, filename)),
 		Body:        src,
 		ContentType: aws.String(fileType),
 		ACL:         types.ObjectCannedACL(*aws.String("public-read")),
