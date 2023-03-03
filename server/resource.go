@@ -139,6 +139,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					AccessKey: s3Config.AccessKey,
 					SecretKey: s3Config.SecretKey,
 					EndPoint:  s3Config.EndPoint,
+					Path:      s3Config.Path,
 					Region:    s3Config.Region,
 					Bucket:    s3Config.Bucket,
 					URLPrefix: s3Config.URLPrefix,
