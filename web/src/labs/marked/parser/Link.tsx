@@ -6,7 +6,7 @@ import BoldEmphasis from "./BoldEmphasis";
 import PlainText from "./PlainText";
 import { matcher } from "../matcher";
 
-export const LINK_REG = /\[(.*?)\]\((.+?)\)$/;
+export const LINK_REG = /\[(.*?)\]\((.+?)\)+/;
 
 const renderer = (rawStr: string) => {
   const matchResult = matcher(rawStr, LINK_REG);
