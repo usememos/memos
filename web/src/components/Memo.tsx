@@ -209,7 +209,7 @@ const Memo: React.FC<Props> = (props: Props) => {
             </span>
           </Tooltip>
           {isVisitorMode && (
-            <a className="ml-2 opacity-60 text-sm" href={`/u/${memo.creatorId}`}>
+            <a className="name-text" href={`/u/${memo.creatorId}`}>
               @{memo.creatorName}
             </a>
           )}

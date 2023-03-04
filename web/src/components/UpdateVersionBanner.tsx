@@ -48,7 +48,6 @@ const UpdateVersionBanner: React.FC = () => {
         className="flex flex-row items-center justify-center hover:underline"
         target="_blank"
         href="https://github.com/usememos/memos/releases"
-        rel="noreferrer"
       >
         <Icon.ArrowUpCircle className="w-5 h-auto mr-2" />
         New Update <span className="ml-1 font-bold">{state.latestVersion}</span>

@@ -32,12 +32,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <div className="mt-4 flex flex-row text-sm justify-start items-center">
           <div className="flex flex-row justify-start items-center mr-2">
             Powered by
-            <a
-              href="https://usememos.com"
-              target="_blank"
-              rel="noreferrer"
-              className="flex flex-row justify-start items-center mr-1 hover:underline"
-            >
+            <a href="https://usememos.com" target="_blank" className="flex flex-row justify-start items-center mr-1 hover:underline">
               <img className="w-6 h-auto" src="/logo.png" alt="" />
               memos
             </a>
@@ -50,7 +45,6 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
           <a
             href="https://github.com/boojack/sticky-notes"
             target="_blank"
-            rel="noreferrer"
             className="flex items-center underline text-blue-600 hover:opacity-80"
           >
             <img

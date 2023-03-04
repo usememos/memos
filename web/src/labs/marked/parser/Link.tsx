@@ -15,7 +15,7 @@ const renderer = (rawStr: string) => {
   }
   const parsedContent = marked(matchResult[1], [], [InlineCode, BoldEmphasis, Emphasis, Bold, PlainText]);
   return (
-    <a className="link" target="_blank" rel="noreferrer" href={matchResult[2]}>
+    <a className="link" target="_blank" href={matchResult[2]}>
       {parsedContent}
     </a>
   );

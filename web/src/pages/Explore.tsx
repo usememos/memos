@@ -105,10 +105,9 @@ const Explore = () => {
         </div>
         <div className="flex flex-row justify-end items-center">
           <a
-            className="flex flex-row justify-center items-center h-12 w-12 border rounded-full hover:opacity-80 hover:shadow dark:text-white "
+            className="flex flex-row justify-center items-center h-12 w-12 border rounded-full hover:opacity-80 hover:shadow dark:text-white dark:border-gray-400"
             href="/explore/rss.xml"
             target="_blank"
-            rel="noreferrer"
           >
             <Icon.Rss className="w-7 h-auto opacity-60" />
           </a>
