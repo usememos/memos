@@ -86,7 +86,7 @@ const SearchBar = () => {
           onBlur={handleBlur}
         />
       </div>
-      <div className="quickly-action-wrapper">
+      <div className="quickly-action-wrapper !hidden">
         <div className="quickly-action-container">
           <p className="title-text">{t("search.quickly-filter").toUpperCase()}</p>
           <div className="section-container types-container">

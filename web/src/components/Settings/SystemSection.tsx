@@ -148,7 +148,7 @@ const SystemSection = () => {
         </span>
         <Button onClick={handleVacuumBtnClick}>{t("common.vacuum")}</Button>
       </div>
-      <p className="title-text">{t("sidebar.setting")}</p>
+      <p className="title-text">{t("common.settings")}</p>
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
         <Switch checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />

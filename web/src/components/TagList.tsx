@@ -83,7 +83,6 @@ const TagList = () => {
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
-        {tags.length <= 3 && <p className="tip-text">{t("tag-list.tip-text")}</p>}
       </div>
     </div>
   );

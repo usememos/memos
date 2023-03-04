@@ -17,11 +17,6 @@
     overflow-wrap: anywhere;
     word-break: normal;
   }
-  @media screen and (min-width: 1024px) {
-    .ml-calc {
-      margin-left: calc(100vw - 100%);
-    }
-  }
 }
 
 @layer components {

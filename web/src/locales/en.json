@@ -1,15 +1,17 @@
 {
   "common": {
     "about": "About",
+    "home": "Home",
+    "resources": "Resources",
+    "settings": "Settings",
+    "daily-review": "Daily Review",
     "email": "Email",
     "password": "Password",
-    "repeat-password-short": "Repeat",
-    "repeat-password": "Repeat the password",
-    "new-password": "New password",
-    "repeat-new-password": "Repeat the new password",
     "avatar": "Avatar",
     "username": "Username",
     "nickname": "Nickname",
+    "new-password": "New password",
+    "repeat-new-password": "Repeat the new password",
     "save": "Save",
     "close": "Close",
     "cancel": "Cancel",
@@ -56,12 +58,6 @@
     "signup-as-host": "Sign up as Host",
     "host-tip": "You are registering as the Site Host.",
     "not-host-tip": "If you don't have an account, please contact the site host."
-  },
-  "sidebar": {
-    "daily-review": "Daily Review",
-    "resources": "Resources",
-    "setting": "Settings",
-    "archived": "Archived"
   },
   "daily-review": {
     "oops-nothing": "Oops, there is nothing."
