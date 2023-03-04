@@ -67,11 +67,12 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	}
 
 	link := uploadOutput.Location
-	if link == "" {
-		if client.Config.URLPrefix == "" {
-			return "", fmt.Errorf("url prefix is empty")
-		}
+	// If url prefix is set, use it as the file link.
+	if client.Config.URLPrefix != "" {
 		link = fmt.Sprintf("%s/%s", client.Config.URLPrefix, filename)
+	}
+	if link == "" {
+		return "", fmt.Errorf("failed to get file link")
 	}
 	return link, nil
 }
