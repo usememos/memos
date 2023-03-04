@@ -234,7 +234,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-function showCreateResourceDialog(props: Omit<Props, "destroy">) {
+function showCreateResourceDialog(props: Omit<Props, "destroy" | "hide">) {
   generateDialog<Props>(
     {
       dialogName: "create-resource-dialog",
