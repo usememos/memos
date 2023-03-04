@@ -12,9 +12,7 @@
   Discuss in <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a> / <a href="https://discord.gg/tfPJa4UmAv">Discord</a>
 </p>
 
-![demo](./resources/demo.webp#gh-light-mode-only)
-
-![demo-dark](./resources/demo-dark.webp#gh-dark-mode-only)
+![demo](./resources/demo.webp)
 
 ## Features
 
