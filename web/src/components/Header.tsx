@@ -7,6 +7,8 @@ import Icon from "./Icon";
 import showDailyReviewDialog from "./DailyReviewDialog";
 import showResourcesDialog from "./ResourcesDialog";
 import showSettingDialog from "./SettingDialog";
+import showAskAIDialog from "./AskAIDialog";
+import showArchivedMemoDialog from "./ArchivedMemoDialog";
 import UserBanner from "./UserBanner";
 import "../less/header.less";
 
@@ -48,13 +50,19 @@ const Header = () => {
             <>
               <button
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+                onClick={() => showAskAIDialog()}
+              >
+                <Icon.Bot className="mr-4 w-6 h-auto opacity-80" /> Ask AI
+              </button>
+              <button
+                className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={() => showResourcesDialog()}
               >
                 <Icon.Paperclip className="mr-4 w-6 h-auto opacity-80" /> {t("common.resources")}
               </button>
               <button
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-                onClick={() => showDailyReviewDialog()}
+                onClick={() => showArchivedMemoDialog()}
               >
                 <Icon.Archive className="mr-4 w-6 h-auto opacity-80" /> {t("common.archive")}
               </button>

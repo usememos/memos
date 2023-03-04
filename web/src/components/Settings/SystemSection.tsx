@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Button, Divider, Switch, Textarea } from "@mui/joy";
+import { Button, Divider, Input, Switch, Textarea } from "@mui/joy";
 import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
@@ -13,6 +13,7 @@ interface State {
   dbSize: number;
   allowSignUp: boolean;
   disablePublicMemos: boolean;
+  openAIApiKey: string;
   additionalStyle: string;
   additionalScript: string;
 }
@@ -34,6 +35,7 @@ const SystemSection = () => {
     dbSize: systemStatus.dbSize,
     allowSignUp: systemStatus.allowSignUp,
     additionalStyle: systemStatus.additionalStyle,
+    openAIApiKey: "",
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
   });
@@ -49,6 +51,7 @@ const SystemSection = () => {
       dbSize: systemStatus.dbSize,
       allowSignUp: systemStatus.allowSignUp,
       additionalStyle: systemStatus.additionalStyle,
+      openAIApiKey: "",
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
     });
@@ -65,13 +68,6 @@ const SystemSection = () => {
     });
   };
 
-  const handleAdditionalStyleChanged = (value: string) => {
-    setState({
-      ...state,
-      additionalStyle: value,
-    });
-  };
-
   const handleUpdateCustomizedProfileButtonClick = () => {
     showUpdateCustomizedProfileDialog();
   };
@@ -85,6 +81,33 @@ const SystemSection = () => {
       return;
     }
     toastHelper.success(t("message.succeed-vacuum-database"));
+  };
+
+  const handleOpenAIApiKeyChanged = (value: string) => {
+    setState({
+      ...state,
+      openAIApiKey: value,
+    });
+  };
+
+  const handleSaveOpenAIApiKey = async () => {
+    try {
+      await api.upsertSystemSetting({
+        name: "openAIApiKey",
+        value: JSON.stringify(state.openAIApiKey),
+      });
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    toastHelper.success("OpenAI Api Key updated");
+  };
+
+  const handleAdditionalStyleChanged = (value: string) => {
+    setState({
+      ...state,
+      additionalStyle: value,
+    });
   };
 
   const handleSaveAdditionalStyle = async () => {
@@ -107,19 +130,6 @@ const SystemSection = () => {
     });
   };
 
-  const handleDisablePublicMemosChanged = async (value: boolean) => {
-    setState({
-      ...state,
-      disablePublicMemos: value,
-    });
-    // Update global store immediately as MemoEditor/Selector is dependent on this value.
-    dispatch(setGlobalState({ systemStatus: { ...systemStatus, disablePublicMemos: value } }));
-    await api.upsertSystemSetting({
-      name: "disablePublicMemos",
-      value: JSON.stringify(value),
-    });
-  };
-
   const handleSaveAdditionalScript = async () => {
     try {
       await api.upsertSystemSetting({
@@ -131,6 +141,19 @@ const SystemSection = () => {
       return;
     }
     toastHelper.success(t("message.succeed-update-additional-script"));
+  };
+
+  const handleDisablePublicMemosChanged = async (value: boolean) => {
+    setState({
+      ...state,
+      disablePublicMemos: value,
+    });
+    // Update global store immediately as MemoEditor/Selector is dependent on this value.
+    dispatch(setGlobalState({ systemStatus: { ...systemStatus, disablePublicMemos: value } }));
+    await api.upsertSystemSetting({
+      name: "disablePublicMemos",
+      value: JSON.stringify(value),
+    });
   };
 
   return (
@@ -159,6 +182,21 @@ const SystemSection = () => {
       </div>
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
+        <span className="normal-text">OpenAI API Key</span>
+        <Button onClick={handleSaveOpenAIApiKey}>{t("common.save")}</Button>
+      </div>
+      <Input
+        className="w-full"
+        sx={{
+          fontFamily: "monospace",
+          fontSize: "14px",
+        }}
+        placeholder="Write only"
+        value={state.openAIApiKey}
+        onChange={(event) => handleOpenAIApiKeyChanged(event.target.value)}
+      />
+      <Divider className="!mt-3 !my-4" />
+      <div className="form-label">
         <span className="normal-text">{t("setting.system-section.additional-style")}</span>
         <Button onClick={handleSaveAdditionalStyle}>{t("common.save")}</Button>
       </div>
@@ -168,7 +206,7 @@ const SystemSection = () => {
           fontFamily: "monospace",
           fontSize: "14px",
         }}
-        minRows={4}
+        minRows={2}
         maxRows={4}
         placeholder={t("setting.system-section.additional-style-placeholder")}
         value={state.additionalStyle}
@@ -185,7 +223,7 @@ const SystemSection = () => {
           fontFamily: "monospace",
           fontSize: "14px",
         }}
-        minRows={4}
+        minRows={2}
         maxRows={4}
         placeholder={t("setting.system-section.additional-script-placeholder")}
         value={state.additionalScript}
