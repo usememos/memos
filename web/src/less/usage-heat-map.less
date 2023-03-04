@@ -1,8 +1,14 @@
 .usage-heat-map-wrapper {
-  @apply flex flex-row justify-start items-center w-full h-32 flex-wrap pr-6 pb-3 shrink-0;
+  @apply flex flex-row justify-start items-center flex-nowrap w-full h-32 pr-2 pb-3 shrink-0;
+
+  &:hover {
+    > .day-tip-text-container {
+      @apply visible;
+    }
+  }
 
   > .day-tip-text-container {
-    @apply w-6 h-full grid grid-rows-7;
+    @apply w-6 h-full grid grid-rows-7 invisible;
 
     > .tip-text {
       @apply pr-1 w-full h-full text-right font-mono text-gray-400;
@@ -12,13 +18,13 @@
 
   > .usage-heat-map {
     @apply h-full grid grid-rows-7;
-    width: 200px;
-    grid-template-columns: repeat(12, 1fr);
+    width: 186px;
+    grid-template-columns: repeat(11, 1fr);
     grid-auto-flow: column;
 
     > .stat-wrapper {
       > .stat-container {
-        @apply block rounded-sm bg-gray-200 dark:bg-zinc-700;
+        @apply block rounded bg-gray-200 dark:bg-zinc-700;
         width: 14px;
         height: 14px;
 

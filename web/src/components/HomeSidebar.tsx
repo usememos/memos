@@ -4,6 +4,7 @@ import { useLocationStore } from "../store/module";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
 import SearchBar from "./SearchBar";
+import UsageHeatMap from "./UsageHeatMap";
 import "../less/home-sidebar.less";
 
 const HomeSidebar = () => {
@@ -17,10 +18,11 @@ const HomeSidebar = () => {
   return (
     <>
       <div className="mask" onClick={() => toggleHomeSidebar(false)}></div>
-      <aside className="sidebar-wrapper">
-        <div className="pl-6 pr-2 mb-4 w-full">
+      <aside className="home-sidebar-wrapper">
+        <div className="pl-6 pr-4 mb-4 w-full">
           <SearchBar />
         </div>
+        <UsageHeatMap />
         <ShortcutList />
         <TagList />
       </aside>
@@ -29,7 +31,7 @@ const HomeSidebar = () => {
 };
 
 export const toggleHomeSidebar = (show?: boolean) => {
-  const sidebarEl = document.body.querySelector(".sidebar-wrapper") as HTMLDivElement;
+  const sidebarEl = document.body.querySelector(".home-sidebar-wrapper") as HTMLDivElement;
   const maskEl = sidebarEl.previousSibling as HTMLDivElement;
 
   if (isUndefined(show)) {

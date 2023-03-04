@@ -7,7 +7,7 @@ import * as utils from "../helpers/utils";
 import "../less/usage-heat-map.less";
 
 const tableConfig = {
-  width: 12,
+  width: 11,
   height: 7,
 };
 
