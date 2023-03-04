@@ -85,17 +85,22 @@ export function generateDialog<T extends DialogProps>(
         tempDiv.remove();
       }, ANIMATION_DURATION);
     },
+    hide: () => {
+      tempDiv.firstElementChild?.classList.remove("showup");
+      tempDiv.firstElementChild?.classList.add("showoff");
+    },
   };
 
   const dialogProps = {
     ...props,
     destroy: cbs.destroy,
+    hide: cbs.hide,
   } as T;
 
   const Fragment = (
     <Provider store={store}>
       <CssVarsProvider theme={theme}>
-        <BaseDialog destroy={cbs.destroy} clickSpaceDestroy={true} {...config}>
+        <BaseDialog destroy={cbs.destroy} hide={cbs.hide} clickSpaceDestroy={true} {...config}>
           <DialogComponent {...dialogProps} />
         </BaseDialog>
       </CssVarsProvider>
