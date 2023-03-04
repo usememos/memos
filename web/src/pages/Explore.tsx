@@ -1,24 +1,21 @@
-import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { TAG_REG } from "../labs/marked/parser";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import useLoading from "../hooks/useLoading";
 import toastHelper from "../components/Toast";
-import MemoContent from "../components/MemoContent";
-import MemoResources from "../components/MemoResources";
-import MemoFilter from "../components/MemoFilter";
 import Icon from "../components/Icon";
-import { TAG_REG } from "../labs/marked/parser";
-import "../less/explore.less";
+import MemoFilter from "../components/MemoFilter";
+import Memo from "../components/Memo";
 
 interface State {
   memos: Memo[];
 }
 
 const Explore = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const globalStore = useGlobalStore();
   const locationStore = useLocationStore();
@@ -91,20 +88,6 @@ const Explore = () => {
     }
   };
 
-  const handleMemoContentClick = async (e: React.MouseEvent) => {
-    const targetEl = e.target as HTMLElement;
-
-    if (targetEl.className === "tag-span") {
-      const tagName = targetEl.innerText.slice(1);
-      const currTagQuery = locationStore.getState().query?.tag;
-      if (currTagQuery === tagName) {
-        locationStore.setTagQuery(undefined);
-      } else {
-        locationStore.setTagQuery(tagName);
-      }
-    }
-  };
-
   const handleTitleClick = () => {
     if (user) {
       navigate("/");
@@ -114,58 +97,40 @@ const Explore = () => {
   };
 
   return (
-    <section className="page-wrapper explore">
-      <div className="page-container">
-        <div className="page-header">
-          <div className="title-container cursor-pointer hover:opacity-80" onClick={handleTitleClick}>
-            <img className="logo-img" src={customizedProfile.logoUrl} alt="" />
-            <span className="title-text">{customizedProfile.name}</span>
-          </div>
-          <div className="flex flex-row justify-end items-center">
-            <a
-              className="flex flex-row justify-center items-center h-12 w-12 border rounded-full hover:opacity-80 hover:shadow dark:text-white "
-              href="/explore/rss.xml"
-              target="_blank"
-              rel="noreferrer"
-            >
-              <Icon.Rss className="w-7 h-auto opacity-60" />
-            </a>
-          </div>
+    <section className="w-full min-h-full flex flex-col justify-start items-center pb-8 bg-zinc-100 dark:bg-zinc-800">
+      <div className="sticky top-0 z-10 max-w-2xl w-full h-auto flex flex-row justify-between backdrop-blur-sm items-center px-4 sm:pr-6 pt-6 mb-2">
+        <div className="flex flex-row justify-start items-center cursor-pointer hover:opacity-80" onClick={handleTitleClick}>
+          <img className="h-12 w-auto rounded-md mr-2" src={customizedProfile.logoUrl} alt="" />
+          <span className="text-xl sm:text-4xl text-gray-700 dark:text-gray-200">{customizedProfile.name}</span>
         </div>
-        {!loadingState.isLoading && (
-          <main className="memos-wrapper">
-            <MemoFilter />
-            {sortedMemos.map((memo) => {
-              const createdAtStr = dayjs(memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss");
-              return (
-                <div className={`memo-container ${memo.pinned ? "pinned" : ""}`} key={memo.id}>
-                  {memo.pinned && <div className="corner-container"></div>}
-                  <div className="memo-header">
-                    <span className="time-text">{createdAtStr}</span>
-                    <a className="name-text" href={`/u/${memo.creatorId}`}>
-                      @{memo.creatorName}
-                    </a>
-                  </div>
-                  <MemoContent className="memo-content" content={memo.content} onMemoContentClick={handleMemoContentClick} />
-                  <MemoResources resourceList={memo.resourceList} />
-                </div>
-              );
-            })}
-            {isComplete ? (
-              state.memos.length === 0 ? (
-                <p className="w-full text-center mt-12 text-gray-600">{t("message.no-memos")}</p>
-              ) : null
-            ) : (
-              <p
-                className="m-auto text-center mt-4 italic cursor-pointer text-gray-500 hover:text-green-600"
-                onClick={handleFetchMoreClick}
-              >
-                {t("memo-list.fetch-more")}
-              </p>
-            )}
-          </main>
-        )}
+        <div className="flex flex-row justify-end items-center">
+          <a
+            className="flex flex-row justify-center items-center h-12 w-12 border rounded-full hover:opacity-80 hover:shadow dark:text-white "
+            href="/explore/rss.xml"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <Icon.Rss className="w-7 h-auto opacity-60" />
+          </a>
+        </div>
       </div>
+      {!loadingState.isLoading && (
+        <main className="relative flex-grow max-w-2xl w-full h-auto flex flex-col justify-start items-start px-4 sm:pr-6">
+          <MemoFilter />
+          {sortedMemos.map((memo) => {
+            return <Memo key={`${memo.id}-${memo.createdTs}`} memo={memo} readonly={true} />;
+          })}
+          {isComplete ? (
+            state.memos.length === 0 ? (
+              <p className="w-full text-center mt-12 text-gray-600">{t("message.no-memos")}</p>
+            ) : null
+          ) : (
+            <p className="m-auto text-center mt-4 italic cursor-pointer text-gray-500 hover:text-green-600" onClick={handleFetchMoreClick}>
+              {t("memo-list.fetch-more")}
+            </p>
+          )}
+        </main>
+      )}
     </section>
   );
 };

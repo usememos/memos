@@ -17,6 +17,7 @@ import "../less/memo.less";
 
 interface Props {
   memo: Memo;
+  readonly?: boolean;
 }
 
 export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
@@ -28,7 +29,7 @@ export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
 };
 
 const Memo: React.FC<Props> = (props: Props) => {
-  const { memo } = props;
+  const { memo, readonly } = props;
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const editorStore = useEditorStore();
@@ -37,7 +38,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const memoStore = useMemoStore();
   const [createdTimeStr, setCreatedTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const isVisitorMode = userStore.isVisitorMode();
+  const isVisitorMode = userStore.isVisitorMode() || readonly;
   const updatedTimeStr = getFormatedMemoTimeStr(memo.updatedTs, i18n.language);
 
   useEffect(() => {
@@ -67,6 +68,10 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleTogglePinMemoBtnClick = async () => {
+    if (isVisitorMode) {
+      return;
+    }
+
     try {
       if (memo.pinned) {
         await memoStore.unpinMemo(memo.id);
@@ -79,10 +84,18 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleEditMemoClick = () => {
+    if (isVisitorMode) {
+      return;
+    }
+
     editorStore.setEditMemoWithId(memo.id);
   };
 
   const handleArchiveMemoClick = async () => {
+    if (isVisitorMode) {
+      return;
+    }
+
     try {
       await memoStore.patchMemo({
         id: memo.id,
@@ -114,7 +127,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         locationStore.setTagQuery(tagName);
       }
     } else if (targetEl.classList.contains("todo-block")) {
-      if (userStore.isVisitorMode()) {
+      if (isVisitorMode) {
         return;
       }
 
@@ -153,6 +166,10 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
+    if (isVisitorMode) {
+      return;
+    }
+
     const loginUser = userStore.state.user;
     if (loginUser && !loginUser.localSetting.enableDoubleClickEditing) {
       return;
@@ -191,6 +208,11 @@ const Memo: React.FC<Props> = (props: Props) => {
               {createdTimeStr}
             </span>
           </Tooltip>
+          {isVisitorMode && (
+            <a className="ml-2 opacity-60 text-sm" href={`/u/${memo.creatorId}`}>
+              @{memo.creatorName}
+            </a>
+          )}
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span
               className={`status-text ${memo.visibility.toLocaleLowerCase()}`}

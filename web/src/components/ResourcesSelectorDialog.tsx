@@ -79,7 +79,7 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">{t("sidebar.resources")}</p>
+        <p className="title-text">{t("common.resources")}</p>
         <button className="btn close-btn" onClick={destroy}>
           <Icon.X className="icon-img" />
         </button>

@@ -1,5 +1,5 @@
 .page-wrapper.home {
-  @apply w-full h-full overflow-y-auto overflow-x-hidden bg-zinc-100 dark:bg-zinc-800;
+  @apply w-full h-full overflow-y-auto bg-zinc-100 dark:bg-zinc-800;
 
   > .banner-wrapper {
     @apply w-full flex flex-col justify-start items-center;
@@ -8,27 +8,15 @@
   > .page-container {
     @apply relative w-full h-auto mx-auto flex flex-row justify-start sm:justify-center items-start;
 
-    > .sidebar-wrapper {
-      @apply flex-shrink-0 h-full ml-calc;
+    > .header-wrapper {
+      @apply flex-shrink-0 h-full;
     }
 
     > .memos-wrapper {
-      @apply relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 sm:pr-6;
+      @apply relative flex-grow max-w-2xl w-full h-auto flex flex-col justify-start items-start px-2 sm:pt-4;
 
       > .memos-editor-wrapper {
         @apply w-full h-auto flex flex-col justify-start items-start bg-zinc-100 dark:bg-zinc-800 rounded-lg;
-      }
-
-      > .addition-btn-container {
-        @apply fixed bottom-12 left-1/2 -translate-x-1/2;
-
-        > .btn {
-          @apply bg-blue-600 dark:bg-blue-800 text-white dark:text-gray-200 px-4 py-2 rounded-3xl shadow-2xl hover:opacity-80;
-
-          > .icon {
-            @apply text-lg mr-1;
-          }
-        }
       }
     }
   }
