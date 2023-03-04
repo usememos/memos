@@ -165,7 +165,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
 
         {state.selectedMode === "local-file" && (
           <>
-            <div className="w-full relative bg-blue-50 rounded-md flex flex-row justify-center items-center py-8">
+            <div className="w-full relative bg-blue-50 dark:bg-zinc-900 rounded-md flex flex-row justify-center items-center py-8">
               <label htmlFor="files" className="p-2 px-4 text-sm text-white cursor-pointer bg-blue-500 block rounded hover:opacity-80">
                 Choose a file...
               </label>

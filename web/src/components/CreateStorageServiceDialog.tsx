@@ -101,7 +101,6 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
             className="ml-2 text-sm text-blue-600 hover:opacity-80 hover:underline"
             href="https://usememos.com/docs/storage"
             target="_blank"
-            rel="noreferrer"
           >
             Learn more
             <Icon.ExternalLink className="inline -mt-1 ml-1 w-4 h-auto opacity-80" />

@@ -9,7 +9,7 @@ const renderer = (rawStr: string) => {
   }
 
   return (
-    <a className="link" target="_blank" rel="noreferrer" href={matchResult[1]}>
+    <a className="link" target="_blank" href={matchResult[1]}>
       {matchResult[1]}
     </a>
   );

@@ -26,12 +26,15 @@
       @apply flex flex-row justify-start items-center;
 
       > .time-text {
-        @apply text-xs text-gray-400;
-        font-size: 13px;
+        @apply text-sm text-gray-400;
+      }
+
+      > .name-text {
+        @apply ml-1 text-sm text-gray-400 cursor-pointer hover:opacity-80;
       }
 
       > .status-text {
-        @apply text-xs cursor-pointer ml-2 rounded border px-1;
+        @apply text-sm cursor-pointer ml-2 rounded border px-1;
 
         &.public {
           @apply border-green-600 text-green-600;
@@ -54,7 +57,7 @@
         @apply hidden flex-col justify-start items-center absolute top-2 -right-4 flex-nowrap hover:flex p-3;
 
         > .more-action-btns-container {
-          @apply w-auto h-auto p-1 z-1 whitespace-nowrap rounded-lg bg-white dark:bg-zinc-700;
+          @apply w-auto h-auto p-1 z-1 whitespace-nowrap rounded-lg bg-white dark:bg-zinc-800;
           box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
 
           > .btns-container {
@@ -106,7 +109,7 @@
       }
 
       .final-confirm {
-          color: red
+        color: red;
       }
     }
   }
