@@ -56,7 +56,7 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`dialog-wrapper ${className ?? ""}`} onMouseDown={handleSpaceClicked}>
-      <div ref={dialogContainerRef} className="dialog-container w-112" onMouseDown={(e) => e.stopPropagation()}>
+      <div ref={dialogContainerRef} className="dialog-container" onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>
