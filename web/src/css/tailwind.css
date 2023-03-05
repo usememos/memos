@@ -2,6 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    --color-primary: 255 115 179;
+    --color-secondary: 111 114 185;
+    --color-background: 244, 244, 245;
+    --color-surface: 255 255 255;
+    --color-error: 255 115 179;
+
+    --color-on-primary: 255 255 255;
+    --color-on-secondary: 255 255 255;
+    --color-on-background: 0 0 0;
+    --color-on-surface: 0 0 0;
+    --color-on-error: 255 255 255;
+  }
+
+  html.dark {
+    --color-primary: 255 115 179;
+    --color-secondary: 111 114 185;
+    --color-background: 0 0 0;
+    --color-surface: 0 0 0;
+    --color-error: 255 115 179;
+
+    --color-on-primary: 255 255 255;
+    --color-on-secondary: 255 255 255;
+    --color-on-background: 255 255 255;
+    --color-on-surface: 255 255 255;
+    --color-on-error: 255 255 255;
+  }
+}
+
+
 @layer utilities {
   .hide-scrollbar {
     -ms-overflow-style: none; /* IE and Edge */

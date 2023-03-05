@@ -17,6 +17,14 @@ module.exports = {
       "6xl": "3rem",
     },
     extend: {
+      colors: {
+        // Using modern `rgb`
+        primary: "rgb(var(--color-primary) / <alpha-value>)",
+        secondary: "rgb(var(--color-secondary) / <alpha-value>)",
+        background: "rgb(var(--color-background) / <alpha-value>)",
+        surface: "rgb(var(--color-surface) / <alpha-value>)",
+        error: "rgb(var(--color-error) / <alpha-value>)",
+      },
       spacing: {
         112: "28rem",
         128: "32rem",
