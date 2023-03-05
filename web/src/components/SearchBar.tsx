@@ -2,13 +2,11 @@ import { useEffect, useState, useRef } from "react";
 import useDebounce from "../hooks/useDebounce";
 import { useLocationStore, useDialogStore } from "../store/module";
 import Icon from "./Icon";
-import "../less/search-bar.less";
 
 const SearchBar = () => {
   const locationStore = useLocationStore();
   const dialogStore = useDialogStore();
   const [queryText, setQueryText] = useState("");
-  const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -50,30 +48,17 @@ const SearchBar = () => {
     setQueryText(text);
   };
 
-  const handleFocus = () => {
-    setIsFocus(true);
-  };
-
-  const handleBlur = () => {
-    setIsFocus(false);
-  };
-
   return (
-    <div className={`search-bar-container ${isFocus ? "is-focus" : ""}`}>
-      <div className="search-bar-inputer">
-        <Icon.Search className="icon-img" />
-        <input
-          className="text-input"
-          autoComplete="new-password"
-          type="text"
-          placeholder=""
-          ref={inputRef}
-          value={queryText}
-          onChange={handleTextQueryInput}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-        />
-      </div>
+    <div className="w-full h-9 flex flex-row justify-start items-center py-2 px-3 rounded-md bg-gray-200 dark:bg-zinc-700">
+      <Icon.Search className="w-4 h-auto opacity-30 dark:text-gray-200" />
+      <input
+        className="flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200"
+        type="text"
+        placeholder="Search memos"
+        ref={inputRef}
+        value={queryText}
+        onChange={handleTextQueryInput}
+      />
     </div>
   );
 };
