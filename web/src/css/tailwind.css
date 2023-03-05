@@ -4,7 +4,7 @@
 
 @layer base {
   html {
-    --color-primary: 255 115 179;
+    --color-primary: 22 163 74;
     --color-secondary: 111 114 185;
     --color-background: 244 244 245;
     --color-surface: 255 255 255;
@@ -56,7 +56,7 @@
   }
 
   .btn-primary {
-    @apply btn-normal border-transparent bg-green-600 text-white dark:border-transparent dark:text-gray-200;
+    @apply btn-normal border-transparent bg-primary text-white dark:border-transparent dark:text-gray-200;
   }
 
   .btn-danger {

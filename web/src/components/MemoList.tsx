@@ -149,7 +149,7 @@ const MemoList = () => {
               )
             ) : (
               <>
-                <span className="cursor-pointer hover:text-green-600" onClick={handleFetchMoreClick}>
+                <span className="cursor-pointer hover:text-primary" onClick={handleFetchMoreClick}>
                   {t("memo-list.fetch-more")}
                 </span>
               </>

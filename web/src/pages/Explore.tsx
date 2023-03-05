@@ -124,7 +124,7 @@ const Explore = () => {
               <p className="w-full text-center mt-12 text-gray-600">{t("message.no-memos")}</p>
             ) : null
           ) : (
-            <p className="m-auto text-center mt-4 italic cursor-pointer text-gray-500 hover:text-green-600" onClick={handleFetchMoreClick}>
+            <p className="m-auto text-center mt-4 italic cursor-pointer text-gray-500 hover:text-primary" onClick={handleFetchMoreClick}>
               {t("memo-list.fetch-more")}
             </p>
           )}
