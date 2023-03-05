@@ -79,7 +79,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
           <Icon.X />
         </button>
       </div>
-      <div className="dialog-content-container !w-112">
+      <div className="dialog-content-container !w-112 max-w-full">
         <Textarea className="w-full" placeholder="Ask anything…" onKeyDown={handleQuestionTextareaKeyDown} />
         {fetchingState.isLoading && (
           <p className="w-full py-2 mt-4 flex flex-row justify-center items-center">
