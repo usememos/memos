@@ -98,7 +98,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         <p className="title-text">
           {isCreating ? "Create storage" : "Update storage"}
           <a
-            className="ml-2 text-sm text-blue-600 hover:opacity-80 hover:underline"
+            className="ml-2 text-sm text-secondary hover:opacity-80 hover:underline"
             href="https://usememos.com/docs/storage"
             target="_blank"
           >

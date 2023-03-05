@@ -45,7 +45,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
           <a
             href="https://github.com/boojack/sticky-notes"
             target="_blank"
-            className="flex items-center underline text-blue-600 hover:opacity-80"
+            className="flex items-center underline text-secondary hover:opacity-80"
           >
             <img
               className="w-4 h-auto mr-1"

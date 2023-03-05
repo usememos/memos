@@ -46,7 +46,7 @@ const UserBanner = () => {
             <UserAvatar avatarUrl={user?.avatarUrl} />
             <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{username}</span>
             {!isVisitorMode && user?.role === "HOST" ? (
-              <span className="text-xs px-1 bg-blue-600 dark:bg-blue-800 rounded text-white dark:text-gray-200 shadow">MOD</span>
+              <span className="text-xs px-1 bg-secondary dark:bg-blue-800 rounded text-white dark:text-gray-200 shadow">MOD</span>
             ) : null}
           </div>
         }
