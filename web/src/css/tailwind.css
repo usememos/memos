@@ -12,7 +12,7 @@
 
     --color-on-primary: 255 255 255;
     --color-on-secondary: 255 255 255;
-    --color-on-background: 0 0 0;
+    --color-on-background: 229 231 235;
     --color-on-surface: 0 0 0;
     --color-on-error: 255 255 255;
   }
@@ -26,7 +26,7 @@
 
     --color-on-primary: 255 255 255;
     --color-on-secondary: 255 255 255;
-    --color-on-background: 255 255 255;
+    --color-on-background: 63 63 70;
     --color-on-surface: 255 255 255;
     --color-on-error: 255 255 255;
   }
