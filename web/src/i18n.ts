@@ -1,5 +1,6 @@
 import i18n from "i18next";
 import { initReactI18next } from "react-i18next";
+import LanguageDetector from "i18next-browser-languagedetector";
 import enLocale from "./locales/en.json";
 import zhLocale from "./locales/zh.json";
 import viLocale from "./locales/vi.json";
@@ -15,53 +16,60 @@ import hantLocale from "./locales/zh-Hant.json";
 import trLocale from "./locales/tr.json";
 import koLocale from "./locales/ko.json";
 
-i18n.use(initReactI18next).init({
-  resources: {
-    en: {
-      translation: enLocale,
+const DETECTION_OPTIONS = {
+  order: ["navigator"],
+};
+
+i18n
+  .use(LanguageDetector)
+  .use(initReactI18next)
+  .init({
+    detection: DETECTION_OPTIONS,
+    resources: {
+      en: {
+        translation: enLocale,
+      },
+      zh: {
+        translation: zhLocale,
+      },
+      vi: {
+        translation: viLocale,
+      },
+      fr: {
+        translation: frLocale,
+      },
+      nl: {
+        translation: nlLocale,
+      },
+      sv: {
+        translation: svLocale,
+      },
+      de: {
+        translation: deLocale,
+      },
+      es: {
+        translation: esLocale,
+      },
+      uk: {
+        translation: ukLocale,
+      },
+      ru: {
+        translation: ruLocale,
+      },
+      it: {
+        translation: itLocale,
+      },
+      hant: {
+        translation: hantLocale,
+      },
+      tr: {
+        translation: trLocale,
+      },
+      ko: {
+        translation: koLocale,
+      },
     },
-    zh: {
-      translation: zhLocale,
-    },
-    vi: {
-      translation: viLocale,
-    },
-    fr: {
-      translation: frLocale,
-    },
-    nl: {
-      translation: nlLocale,
-    },
-    sv: {
-      translation: svLocale,
-    },
-    de: {
-      translation: deLocale,
-    },
-    es: {
-      translation: esLocale,
-    },
-    uk: {
-      translation: ukLocale,
-    },
-    ru: {
-      translation: ruLocale,
-    },
-    it: {
-      translation: itLocale,
-    },
-    hant: {
-      translation: hantLocale,
-    },
-    tr: {
-      translation: trLocale,
-    },
-    ko: {
-      translation: koLocale,
-    },
-  },
-  lng: "en",
-  fallbackLng: "en",
-});
+    fallbackLng: "en",
+  });
 
 export default i18n;

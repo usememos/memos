@@ -2,6 +2,8 @@ import * as api from "../../helpers/api";
 import * as storage from "../../helpers/storage";
 import store, { useAppSelector } from "../";
 import { setAppearance, setGlobalState, setLocale } from "../reducer/global";
+import i18n from "../../i18n";
+import { convertLanguageCodeToLocale } from "../../utils/convertLanguageCodeToLocale";
 
 export const initialGlobalState = async () => {
   const defaultGlobalState = {
@@ -46,7 +48,7 @@ export const initialGlobalState = async () => {
           externalUrl: "",
         },
       };
-      defaultGlobalState.locale = customizedProfile.locale;
+      defaultGlobalState.locale = storageLocale || convertLanguageCodeToLocale(i18n.language);
       defaultGlobalState.appearance = customizedProfile.appearance;
     }
   } catch (error) {
