@@ -2,9 +2,8 @@ import { useEffect, useState } from "react";
 import { compare } from "semver";
 import * as api from "../helpers/api";
 import * as storage from "../helpers/storage";
-import Icon from "./Icon";
-import "../less/about-site-dialog.less";
 import { useGlobalStore } from "../store/module";
+import Icon from "./Icon";
 
 interface State {
   latestVersion: string;
@@ -52,7 +51,7 @@ const UpdateVersionBanner: React.FC = () => {
         <Icon.ArrowUpCircle className="w-5 h-auto mr-2" />
         New Update <span className="ml-1 font-bold">{state.latestVersion}</span>
       </a>
-      <button className="absolute opacity-20 right-4 btn" title="Skip this version" onClick={onSkip}>
+      <button className="absolute opacity-80 right-4 hover:opacity-100" title="Skip this version" onClick={onSkip}>
         <Icon.X />
       </button>
     </div>

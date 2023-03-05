@@ -1,16 +1,12 @@
 import { useEffect, useState, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import useDebounce from "../hooks/useDebounce";
 import { useLocationStore, useDialogStore } from "../store/module";
-import { memoSpecialTypes } from "../helpers/filter";
 import Icon from "./Icon";
 import "../less/search-bar.less";
 
 const SearchBar = () => {
-  const { t } = useTranslation();
   const locationStore = useLocationStore();
   const dialogStore = useDialogStore();
-  const memoType = locationStore.state.query.type;
   const [queryText, setQueryText] = useState("");
   const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -49,14 +45,6 @@ const SearchBar = () => {
     [queryText]
   );
 
-  const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
-    const { type: prevType } = locationStore.getState().query ?? {};
-    if (type === prevType) {
-      type = undefined;
-    }
-    locationStore.setMemoTypeQuery(type);
-  };
-
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;
     setQueryText(text);
@@ -85,31 +73,6 @@ const SearchBar = () => {
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
-      </div>
-      <div className="quickly-action-wrapper !hidden">
-        <div className="quickly-action-container">
-          <p className="title-text">{t("search.quickly-filter").toUpperCase()}</p>
-          <div className="section-container types-container">
-            <span className="section-text">{t("common.type").toUpperCase()}:</span>
-            <div className="values-container">
-              {memoSpecialTypes.map((type, idx) => {
-                return (
-                  <div key={type.value}>
-                    <span
-                      className={`type-item ${memoType === type.value ? "selected" : ""}`}
-                      onClick={() => {
-                        handleMemoTypeItemClick(type.value as MemoSpecType);
-                      }}
-                    >
-                      {t(type.text)}
-                    </span>
-                    {idx + 1 < memoSpecialTypes.length ? <span className="split-text">/</span> : null}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

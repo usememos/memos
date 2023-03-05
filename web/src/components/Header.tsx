@@ -31,6 +31,7 @@ const Header = () => {
           <Link
             to="/"
             className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+            onClick={() => locationStore.clearQuery()}
           >
             <Icon.Home className="mr-4 w-6 h-auto opacity-80" /> {t("common.home")}
           </Link>
