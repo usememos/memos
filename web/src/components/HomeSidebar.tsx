@@ -1,6 +1,4 @@
 import { isUndefined } from "lodash-es";
-import { useEffect } from "react";
-import { useLocationStore } from "../store/module";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
 import SearchBar from "./SearchBar";
@@ -8,13 +6,6 @@ import UsageHeatMap from "./UsageHeatMap";
 import "../less/home-sidebar.less";
 
 const HomeSidebar = () => {
-  const locationStore = useLocationStore();
-  const query = locationStore.state.query;
-
-  useEffect(() => {
-    toggleHomeSidebar(false);
-  }, [query]);
-
   return (
     <>
       <div className="mask" onClick={() => toggleHomeSidebar(false)}></div>

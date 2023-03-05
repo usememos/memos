@@ -1,18 +1,12 @@
 import { useEffect, useState, useRef } from "react";
-import { useTranslation } from "react-i18next";
 import useDebounce from "../hooks/useDebounce";
 import { useLocationStore, useDialogStore } from "../store/module";
-import { memoSpecialTypes } from "../helpers/filter";
 import Icon from "./Icon";
-import "../less/search-bar.less";
 
 const SearchBar = () => {
-  const { t } = useTranslation();
   const locationStore = useLocationStore();
   const dialogStore = useDialogStore();
-  const memoType = locationStore.state.query.type;
   const [queryText, setQueryText] = useState("");
-  const [isFocus, setIsFocus] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -49,68 +43,22 @@ const SearchBar = () => {
     [queryText]
   );
 
-  const handleMemoTypeItemClick = (type: MemoSpecType | undefined) => {
-    const { type: prevType } = locationStore.getState().query ?? {};
-    if (type === prevType) {
-      type = undefined;
-    }
-    locationStore.setMemoTypeQuery(type);
-  };
-
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;
     setQueryText(text);
   };
 
-  const handleFocus = () => {
-    setIsFocus(true);
-  };
-
-  const handleBlur = () => {
-    setIsFocus(false);
-  };
-
   return (
-    <div className={`search-bar-container ${isFocus ? "is-focus" : ""}`}>
-      <div className="search-bar-inputer">
-        <Icon.Search className="icon-img" />
-        <input
-          className="text-input"
-          autoComplete="new-password"
-          type="text"
-          placeholder=""
-          ref={inputRef}
-          value={queryText}
-          onChange={handleTextQueryInput}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-        />
-      </div>
-      <div className="quickly-action-wrapper !hidden">
-        <div className="quickly-action-container">
-          <p className="title-text">{t("search.quickly-filter").toUpperCase()}</p>
-          <div className="section-container types-container">
-            <span className="section-text">{t("common.type").toUpperCase()}:</span>
-            <div className="values-container">
-              {memoSpecialTypes.map((type, idx) => {
-                return (
-                  <div key={type.value}>
-                    <span
-                      className={`type-item ${memoType === type.value ? "selected" : ""}`}
-                      onClick={() => {
-                        handleMemoTypeItemClick(type.value as MemoSpecType);
-                      }}
-                    >
-                      {t(type.text)}
-                    </span>
-                    {idx + 1 < memoSpecialTypes.length ? <span className="split-text">/</span> : null}
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="w-full h-9 flex flex-row justify-start items-center py-2 px-3 rounded-md bg-gray-200 dark:bg-zinc-700">
+      <Icon.Search className="w-4 h-auto opacity-30 dark:text-gray-200" />
+      <input
+        className="flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200"
+        type="text"
+        placeholder="Search memos"
+        ref={inputRef}
+        value={queryText}
+        onChange={handleTextQueryInput}
+      />
     </div>
   );
 };
