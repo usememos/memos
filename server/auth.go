@@ -11,7 +11,6 @@ import (
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
-	metric "github.com/usememos/memos/plugin/metrics"
 	"github.com/usememos/memos/store"
 
 	"github.com/labstack/echo/v4"
@@ -237,9 +236,6 @@ func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) er
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
-	s.Collector.Collect(ctx, &metric.Metric{
-		Name: string(activity.Type),
-	})
 	return err
 }
 
@@ -262,8 +258,5 @@ func (s *Server) createUserAuthSignUpActivity(c echo.Context, user *api.User) er
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
-	s.Collector.Collect(ctx, &metric.Metric{
-		Name: string(activity.Type),
-	})
 	return err
 }

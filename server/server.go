@@ -9,7 +9,6 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
-	metric "github.com/usememos/memos/plugin/metrics"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
@@ -24,10 +23,9 @@ type Server struct {
 	e  *echo.Echo
 	db *sql.DB
 
-	ID        string
-	Profile   *profile.Profile
-	Store     *store.Store
-	Collector *MetricCollector
+	ID      string
+	Profile *profile.Profile
+	Store   *store.Store
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
@@ -94,9 +92,6 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 
 	embedFrontend(e)
 
-	// Register MetricCollector to server.
-	s.registerMetricCollector()
-
 	rootGroup := e.Group("")
 	s.registerRSSRoutes(rootGroup)
 
@@ -126,7 +121,6 @@ func (s *Server) Start(ctx context.Context) error {
 	if err := s.createServerStartActivity(ctx); err != nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
-	s.Collector.Identify(ctx)
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }
 
@@ -165,8 +159,5 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
-	s.Collector.Collect(ctx, &metric.Metric{
-		Name: string(activity.Type),
-	})
 	return err
 }
