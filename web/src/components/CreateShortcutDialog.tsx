@@ -7,7 +7,7 @@ import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
-import Selector from "./common/Selector";
+import Selector from "./base/Selector";
 import "../less/create-shortcut-dialog.less";
 
 interface Props extends DialogProps {

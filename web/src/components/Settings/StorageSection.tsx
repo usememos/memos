@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
-import Dropdown from "../common/Dropdown";
+import Dropdown from "../base/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import toastHelper from "../Toast";
 

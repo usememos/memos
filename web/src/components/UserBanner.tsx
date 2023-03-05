@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "../store/module";
-import Dropdown from "./common/Dropdown";
+import Dropdown from "./base/Dropdown";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import UserAvatar from "./UserAvatar";
 import showSettingDialog from "./SettingDialog";

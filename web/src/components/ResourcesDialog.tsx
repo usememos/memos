@@ -7,7 +7,7 @@ import { useResourceStore } from "../store/module";
 import { getResourceUrl } from "../utils/resource";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
-import Dropdown from "./common/Dropdown";
+import Dropdown from "./base/Dropdown";
 import { generateDialog } from "./Dialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";

@@ -7,7 +7,7 @@ import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import DatePicker from "./common/DatePicker";
+import DatePicker from "./base/DatePicker";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import DailyMemo from "./DailyMemo";
 import "../less/daily-review-dialog.less";

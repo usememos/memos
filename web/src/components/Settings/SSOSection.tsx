@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import * as api from "../../helpers/api";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
-import Dropdown from "../common/Dropdown";
+import Dropdown from "../base/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import toastHelper from "../Toast";
 
