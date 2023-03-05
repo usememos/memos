@@ -17,7 +17,7 @@ const GitHubBadge = () => {
       href="https://github.com/usememos/memos"
       target="_blank"
     >
-      <div className="apply w-auto h-full px-2 flex flex-row justify-center items-center text-xs bg-gray-100 dark:bg-zinc-700">
+      <div className="apply w-auto h-full px-2 flex flex-row justify-center items-center text-xs bg-gray-100 ">
         <Icon.Github className="mr-1 w-4 h-4" />
         Star
       </div>

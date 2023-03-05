@@ -74,7 +74,7 @@ const TagList = () => {
         <span className="text-sm leading-6 font-mono text-gray-400">{t("common.tags")}</span>
         <button
           onClick={() => showCreateTagDialog()}
-          className="flex flex-col justify-center items-center w-5 h-5 bg-gray-200 dark:bg-zinc-700 rounded ml-2 hover:shadow"
+          className="flex flex-col justify-center items-center w-5 h-5 bg-gray-200  rounded ml-2 hover:shadow"
         >
           <Icon.Plus className="w-4 h-4 text-gray-400" />
         </button>
