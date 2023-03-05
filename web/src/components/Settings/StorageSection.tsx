@@ -100,7 +100,7 @@ const StorageSection = () => {
                       Edit
                     </button>
                     <button
-                      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
+                      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-error hover:bg-gray-100 dark:hover:bg-zinc-600"
                       onClick={() => handleDeleteStorage(storage)}
                     >
                       {t("common.delete")}

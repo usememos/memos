@@ -8,7 +8,7 @@
     --color-secondary: 33 99 235;
     --color-background: 244 244 245;
     --color-surface: 255 255 255;
-    --color-error: 255 115 179;
+    --color-error: 220 38 38;
 
     --color-on-primary: 255 255 255;
     --color-on-secondary: 255 255 255;
@@ -60,7 +60,7 @@
   }
 
   .btn-danger {
-    @apply btn-normal border-red-600 bg-red-50 text-red-600;
+    @apply btn-normal border-error bg-red-50 text-error;
   }
 
   .btn-text {

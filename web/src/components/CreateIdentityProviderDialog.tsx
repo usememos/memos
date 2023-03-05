@@ -242,7 +242,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
           </>
         )}
         <Typography className="!mb-1" level="body2">
-          Name<span className="text-red-600">*</span>
+          Name<span className="text-error">*</span>
         </Typography>
         <Input
           className="mb-2"
@@ -278,7 +278,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               <p className="border rounded-md p-2 text-sm w-full mb-2 break-all">Redirect URL: {absolutifyLink("/auth/callback")}</p>
             )}
             <Typography className="!mb-1" level="body2">
-              Client ID<span className="text-red-600">*</span>
+              Client ID<span className="text-error">*</span>
             </Typography>
             <Input
               className="mb-2"
@@ -288,7 +288,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               fullWidth
             />
             <Typography className="!mb-1" level="body2">
-              Client secret<span className="text-red-600">*</span>
+              Client secret<span className="text-error">*</span>
             </Typography>
             <Input
               className="mb-2"
@@ -298,7 +298,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               fullWidth
             />
             <Typography className="!mb-1" level="body2">
-              Authorization endpoint<span className="text-red-600">*</span>
+              Authorization endpoint<span className="text-error">*</span>
             </Typography>
             <Input
               className="mb-2"
@@ -308,7 +308,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               fullWidth
             />
             <Typography className="!mb-1" level="body2">
-              Token endpoint<span className="text-red-600">*</span>
+              Token endpoint<span className="text-error">*</span>
             </Typography>
             <Input
               className="mb-2"
@@ -318,7 +318,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               fullWidth
             />
             <Typography className="!mb-1" level="body2">
-              User info endpoint<span className="text-red-600">*</span>
+              User info endpoint<span className="text-error">*</span>
             </Typography>
             <Input
               className="mb-2"
@@ -328,12 +328,12 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
               fullWidth
             />
             <Typography className="!mb-1" level="body2">
-              Scopes<span className="text-red-600">*</span>
+              Scopes<span className="text-error">*</span>
             </Typography>
             <Input className="mb-2" placeholder="Scopes" value={oauth2Scopes} onChange={(e) => setOAuth2Scopes(e.target.value)} fullWidth />
             <Divider className="!my-2" />
             <Typography className="!mb-1" level="body2">
-              Identifier<span className="text-red-600">*</span>
+              Identifier<span className="text-error">*</span>
             </Typography>
             <Input
               className="mb-2"
