@@ -1,4 +1,4 @@
-export const languageCodeCovert = (codename: string): Locale => {
+export const convertLanguageCodeToLocale = (codename: string): Locale => {
   if (codename === "zh-TW" || codename === "zh-HK") {
     return "hant";
   }
