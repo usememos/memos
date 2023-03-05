@@ -24,6 +24,11 @@ module.exports = {
         background: "rgb(var(--color-background) / <alpha-value>)",
         surface: "rgb(var(--color-surface) / <alpha-value>)",
         error: "rgb(var(--color-error) / <alpha-value>)",
+        ["on-primary"]: "rgb(var(--color-on-primary) / <alpha-value>)",
+        ["on-secondary"]: "rgb(var(--color-on-secondary) / <alpha-value>)",
+        ["on-background"]: "rgb(var(--color-on-background) / <alpha-value>)",
+        ["on-surface"]: "rgb(var(--color-on-surface) / <alpha-value>)",
+        ["on-error"]: "rgb(var(--color-on-error) / <alpha-value>)",
       },
       spacing: {
         112: "28rem",

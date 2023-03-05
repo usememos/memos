@@ -97,7 +97,7 @@ const Explore = () => {
   };
 
   return (
-    <section className="w-full min-h-full flex flex-col justify-start items-center pb-8 bg-zinc-100 dark:bg-zinc-800">
+    <section className="w-full min-h-full flex flex-col justify-start items-center pb-8 bg-background dark:bg-zinc-800">
       <div className="sticky top-0 z-10 max-w-2xl w-full h-auto flex flex-row justify-between backdrop-blur-sm items-center px-4 sm:pr-6 pt-6 mb-2">
         <div className="flex flex-row justify-start items-center cursor-pointer hover:opacity-80" onClick={handleTitleClick}>
           <img className="h-12 w-auto rounded-md mr-2" src={customizedProfile.logoUrl} alt="" />
