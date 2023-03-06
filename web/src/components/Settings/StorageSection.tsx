@@ -35,6 +35,7 @@ const StorageSection = () => {
       name: "storageServiceId",
       value: JSON.stringify(storageId),
     });
+    await globalStore.fetchSystemStatus();
     setStorageServiceId(storageId);
   };
 
