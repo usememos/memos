@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"path"
 	"strconv"
 	"strings"
 	"time"
@@ -134,11 +135,27 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 			if storage.Type == api.StorageS3 {
 				s3Config := storage.Config.S3Config
+				t := time.Now()
+				s3FileKey := s3Config.Path
+				if s3Config.Path == "" {
+					s3FileKey = filename
+				} else if !strings.Contains(s3Config.Path, "{filename}") {
+					s3FileKey = path.Join(s3Config.Path, filename)
+				} else {
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{filename}", filename)
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{filetype}", filetype)
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{timestamp}", fmt.Sprintf("%d", t.Unix()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{year}", fmt.Sprintf("%d", t.Year()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{month}", fmt.Sprintf("%02d", t.Month()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{day}", fmt.Sprintf("%02d", t.Day()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{hour}", fmt.Sprintf("%02d", t.Hour()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{minute}", fmt.Sprintf("%02d", t.Minute()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{second}", fmt.Sprintf("%02d", t.Second()))
+				}
 				s3client, err := s3.NewClient(ctx, &s3.Config{
 					AccessKey: s3Config.AccessKey,
 					SecretKey: s3Config.SecretKey,
 					EndPoint:  s3Config.EndPoint,
-					Path:      s3Config.Path,
 					Region:    s3Config.Region,
 					Bucket:    s3Config.Bucket,
 					URLPrefix: s3Config.URLPrefix,
@@ -147,7 +164,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
 				}
 
-				link, err := s3client.UploadFile(ctx, filename, filetype, src)
+				link, err := s3client.UploadFile(ctx, s3FileKey, filetype, src)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
 				}
