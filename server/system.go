@@ -52,7 +52,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				ExternalURL: "",
 			},
 			StorageServiceID: 0,
-			OpenAIApiHost:    "",
+			OpenAIAPIHost:    "",
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -102,7 +102,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			} else if systemSetting.Name == api.SystemSettingStorageServiceIDName {
 				systemStatus.StorageServiceID = int(value.(float64))
 			} else if systemSetting.Name == api.SystemSettingOpenAIAPIHost {
-				systemStatus.OpenAIApiHost = value.(string)
+				systemStatus.OpenAIAPIHost = value.(string)
 			}
 		}
 

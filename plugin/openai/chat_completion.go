@@ -29,6 +29,10 @@ func PostChatCompletion(prompt string, apiKey string, apiHost string) (string, e
 		    "model": "gpt-3.5-turbo",
         "messages": [{"role": "user", "content": "` + prompt + `"}]
     }`)
+	if apiHost == "" {
+		apiHost = "https://api.openai.com"
+	}
+	
 	url, err := url.JoinPath(apiHost, "/v1/chat/completions")
 	if err != nil {
 		return "", err

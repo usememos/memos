@@ -45,9 +45,6 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
 			}
 		}
-		if openAIApiHost == "" {
-			openAIApiHost = "https://api.openai.com"
-		}
 
 		completionRequest := api.OpenAICompletionRequest{}
 		if err := json.NewDecoder(c.Request().Body).Decode(&completionRequest); err != nil {
@@ -98,9 +95,6 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
 			}
-		}
-		if openAIApiHost == "" {
-			openAIApiHost = "https://api.openai.com"
 		}
 
 		textCompletion := api.OpenAICompletionRequest{}

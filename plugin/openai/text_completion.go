@@ -27,6 +27,10 @@ func PostTextCompletion(prompt string, apiKey string, apiHost string) (string, e
         "n": 1,
         "stop": "."
     }`)
+	if apiHost == "" {
+		apiHost = "https://api.openai.com"
+	}
+
 	url, err := url.JoinPath(apiHost, "/v1/chat/completions")
 	if err != nil {
 		return "", err
