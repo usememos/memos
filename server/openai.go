@@ -20,6 +20,13 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai api key").SetInternal(err)
 		}
 
+		openAIApiHostSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+			Name: api.SystemSettingOpenAIAPIHost,
+		})
+		if err != nil && common.ErrorCode(err) != common.NotFound {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai api host").SetInternal(err)
+		}
+
 		openAIApiKey := ""
 		if openAIApiKeySetting != nil {
 			err = json.Unmarshal([]byte(openAIApiKeySetting.Value), &openAIApiKey)
@@ -31,6 +38,17 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "OpenAI API key not set")
 		}
 
+		openAIApiHost := ""
+		if openAIApiHostSetting != nil {
+			err = json.Unmarshal([]byte(openAIApiHostSetting.Value), &openAIApiHost)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
+			}
+		}
+		if openAIApiHost == "" {
+			openAIApiHost = "https://api.openai.com"
+		}
+
 		completionRequest := api.OpenAICompletionRequest{}
 		if err := json.NewDecoder(c.Request().Body).Decode(&completionRequest); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post chat completion request").SetInternal(err)
@@ -39,7 +57,7 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Prompt is required")
 		}
 
-		result, err := openai.PostChatCompletion(completionRequest.Prompt, openAIApiKey)
+		result, err := openai.PostChatCompletion(completionRequest.Prompt, openAIApiKey, openAIApiHost)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to post chat completion").SetInternal(err)
 		}
@@ -56,6 +74,13 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai api key").SetInternal(err)
 		}
 
+		openAIApiHostSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+			Name: api.SystemSettingOpenAIAPIHost,
+		})
+		if err != nil && common.ErrorCode(err) != common.NotFound {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai api host").SetInternal(err)
+		}
+
 		openAIApiKey := ""
 		if openAIApiKeySetting != nil {
 			err = json.Unmarshal([]byte(openAIApiKeySetting.Value), &openAIApiKey)
@@ -67,6 +92,17 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "OpenAI API key not set")
 		}
 
+		openAIApiHost := ""
+		if openAIApiHostSetting != nil {
+			err = json.Unmarshal([]byte(openAIApiHostSetting.Value), &openAIApiHost)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
+			}
+		}
+		if openAIApiHost == "" {
+			openAIApiHost = "https://api.openai.com"
+		}
+
 		textCompletion := api.OpenAICompletionRequest{}
 		if err := json.NewDecoder(c.Request().Body).Decode(&textCompletion); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post text completion request").SetInternal(err)
@@ -75,7 +111,7 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Prompt is required")
 		}
 
-		result, err := openai.PostTextCompletion(textCompletion.Prompt, openAIApiKey)
+		result, err := openai.PostTextCompletion(textCompletion.Prompt, openAIApiKey, openAIApiHost)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to post text completion").SetInternal(err)
 		}
