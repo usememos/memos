@@ -143,7 +143,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					s3FileKey = path.Join(s3Config.Path, filename)
 				} else {
 					s3FileKey = strings.ReplaceAll(s3FileKey, "{filename}", filename)
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{type}", filetype)
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{filetype}", filetype)
 					s3FileKey = strings.ReplaceAll(s3FileKey, "{timestamp}", fmt.Sprintf("%d", t.Unix()))
 					s3FileKey = strings.ReplaceAll(s3FileKey, "{year}", fmt.Sprintf("%d", t.Year()))
 					s3FileKey = strings.ReplaceAll(s3FileKey, "{month}", fmt.Sprintf("%02d", t.Month()))

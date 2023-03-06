@@ -4,6 +4,7 @@ import * as api from "../helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
+import HelpBadge from "./HelpBadge";
 
 interface Props extends DialogProps {
   storage?: ObjectStorage;
@@ -26,7 +27,6 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     urlPrefix: "",
   });
   const isCreating = storage === undefined;
-
   useEffect(() => {
     if (storage) {
       setBasicInfo({
@@ -184,6 +184,11 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         <Typography className="!mb-1" level="body2">
           Path
           <span className="text-sm text-gray-400 ml-1">(Storage Path)</span>
+        </Typography>
+        <Typography className="!mb-1" level="body2">
+          <p className="text-sm text-gray-400 ml-1">{"You can use {year}, {month}, {day}, {hour}, {minute}, {second},"}</p>
+          <p className="text-sm text-gray-400 ml-1">{"{filetype}, {filename}, {timestamp} and any other words."}</p>
+          <p className="text-sm text-gray-400 ml-1">{"e.g., {year}/{month}/{day}/xxx/yyy_{filename}."}</p>
         </Typography>
         <Input
           className="mb-2"
