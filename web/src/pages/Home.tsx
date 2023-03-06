@@ -3,14 +3,11 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { useGlobalStore, useUserStore } from "../store/module";
 import toastHelper from "../components/Toast";
-import Header from "../components/Header";
 import MemoEditor from "../components/MemoEditor";
 import MemoFilter from "../components/MemoFilter";
 import MemoList from "../components/MemoList";
-import UpdateVersionBanner from "../components/UpdateVersionBanner";
 import MobileHeader from "../components/MobileHeader";
 import HomeSidebar from "../components/HomeSidebar";
-import "../less/home.less";
 
 function Home() {
   const { t } = useTranslation();
@@ -36,23 +33,17 @@ function Home() {
   }, [user?.setting.locale]);
 
   return (
-    <section className="page-wrapper home">
-      <div className="banner-wrapper">
-        <UpdateVersionBanner />
+    <div className="relative w-full min-h-full flex flex-row justify-start items-start">
+      <div className="flex-grow w-auto max-w-2xl px-4 sm:px-2 sm:pt-4">
+        <MobileHeader />
+        <div className="w-full h-auto flex flex-col justify-start items-start bg-zinc-100 dark:bg-zinc-800 rounded-lg">
+          {!userStore.isVisitorMode() && <MemoEditor />}
+          <MemoFilter />
+        </div>
+        <MemoList />
       </div>
-      <div className="page-container">
-        <Header />
-        <main className="memos-wrapper">
-          <MobileHeader />
-          <div className="memos-editor-wrapper">
-            {!userStore.isVisitorMode() && <MemoEditor />}
-            <MemoFilter />
-          </div>
-          <MemoList />
-        </main>
-        {!userStore.isVisitorMode() && <HomeSidebar />}
-      </div>
-    </section>
+      {!userStore.isVisitorMode() && <HomeSidebar />}
+    </div>
   );
 }
 

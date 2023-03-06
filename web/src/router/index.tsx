@@ -4,6 +4,7 @@ import { isNullorUndefined } from "../helpers/utils";
 import store from "../store";
 import { initialGlobalState, initialUserState } from "../store/module";
 
+const Root = lazy(() => import("../layouts/Root"));
 const Auth = lazy(() => import("../pages/Auth"));
 const AuthCallback = lazy(() => import("../pages/AuthCallback"));
 const Explore = lazy(() => import("../pages/Explore"));
@@ -43,24 +44,30 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <Home />,
-    loader: async () => {
-      await initialGlobalStateLoader();
+    element: <Root />,
+    children: [
+      {
+        path: "",
+        element: <Home />,
+        loader: async () => {
+          await initialGlobalStateLoader();
 
-      try {
-        await initialUserState();
-      } catch (error) {
-        // do nth
-      }
+          try {
+            await initialUserState();
+          } catch (error) {
+            // do nth
+          }
 
-      const { host, user } = store.getState().user;
-      if (isNullorUndefined(host)) {
-        return redirect("/auth");
-      } else if (isNullorUndefined(user)) {
-        return redirect("/explore");
-      }
-      return null;
-    },
+          const { host, user } = store.getState().user;
+          if (isNullorUndefined(host)) {
+            return redirect("/auth");
+          } else if (isNullorUndefined(user)) {
+            return redirect("/explore");
+          }
+          return null;
+        },
+      },
+    ],
   },
   {
     path: "/u/:userId",
