@@ -219,19 +219,19 @@ const SystemSection = () => {
         onChange={(event) => handleOpenAIApiKeyChanged(event.target.value)}
       />
       <div className="form-label mt-2">
-         <span className="normal-text">OpenAI API Host</span>
-         <Button onClick={handleSaveOpenAIApiHost}>{t("common.save")}</Button>
-       </div>
-       <Input
-         className="w-full"
-         sx={{
-           fontFamily: "monospace",
-           fontSize: "14px",
-         }}
-         placeholder="OpenAI Host. Default: https://api.openai.com"
-         value={state.openAIApiHost}
-         onChange={(event) => handleOpenAIApiHostChanged(event.target.value)}
-       />
+        <span className="normal-text">OpenAI API Host</span>
+        <Button onClick={handleSaveOpenAIApiHost}>{t("common.save")}</Button>
+      </div>
+      <Input
+        className="w-full"
+        sx={{
+          fontFamily: "monospace",
+          fontSize: "14px",
+        }}
+        placeholder="OpenAI Host. Default: https://api.openai.com"
+        value={state.openAIApiHost}
+        onChange={(event) => handleOpenAIApiHostChanged(event.target.value)}
+      />
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.additional-style")}</span>
