@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -18,7 +19,7 @@ type TextCompletionResponse struct {
 	Choices []TextCompletionChoice `json:"choices"`
 }
 
-func PostTextCompletion(prompt string, apiKey string) (string, error) {
+func PostTextCompletion(prompt string, apiKey string, apiHost string) (string, error) {
 	requestBody := strings.NewReader(`{
         "prompt": "` + prompt + `",
         "temperature": 0.5,
@@ -26,7 +27,15 @@ func PostTextCompletion(prompt string, apiKey string) (string, error) {
         "n": 1,
         "stop": "."
     }`)
-	req, err := http.NewRequest("POST", "https://api.openai.com/v1/completions", requestBody)
+	if apiHost == "" {
+		apiHost = "https://api.openai.com"
+	}
+	url, err := url.JoinPath(apiHost, "/v1/chat/completions")
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest("POST", url, requestBody)
 	if err != nil {
 		return "", err
 	}

@@ -14,6 +14,7 @@ interface State {
   allowSignUp: boolean;
   disablePublicMemos: boolean;
   openAIApiKey: string;
+  openAIApiHost: string;
   additionalStyle: string;
   additionalScript: string;
 }
@@ -36,6 +37,7 @@ const SystemSection = () => {
     allowSignUp: systemStatus.allowSignUp,
     additionalStyle: systemStatus.additionalStyle,
     openAIApiKey: "",
+    openAIApiHost: systemStatus.openAIApiHost,
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
   });
@@ -52,6 +54,7 @@ const SystemSection = () => {
       allowSignUp: systemStatus.allowSignUp,
       additionalStyle: systemStatus.additionalStyle,
       openAIApiKey: "",
+      openAIApiHost: systemStatus.openAIApiHost,
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
     });
@@ -101,6 +104,26 @@ const SystemSection = () => {
       return;
     }
     toastHelper.success("OpenAI Api Key updated");
+  };
+
+  const handleOpenAIApiHostChanged = (value: string) => {
+    setState({
+      ...state,
+      openAIApiHost: value,
+    });
+  };
+
+  const handleSaveOpenAIApiHost = async () => {
+    try {
+      await api.upsertSystemSetting({
+        name: "openAIApiHost",
+        value: JSON.stringify(state.openAIApiHost),
+      });
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    toastHelper.success("OpenAI Api Host updated");
   };
 
   const handleAdditionalStyleChanged = (value: string) => {
@@ -194,6 +217,20 @@ const SystemSection = () => {
         placeholder="Write only"
         value={state.openAIApiKey}
         onChange={(event) => handleOpenAIApiKeyChanged(event.target.value)}
+      />
+      <div className="form-label mt-2">
+        <span className="normal-text">OpenAI API Host</span>
+        <Button onClick={handleSaveOpenAIApiHost}>{t("common.save")}</Button>
+      </div>
+      <Input
+        className="w-full"
+        sx={{
+          fontFamily: "monospace",
+          fontSize: "14px",
+        }}
+        placeholder="OpenAI Host. Default: https://api.openai.com"
+        value={state.openAIApiHost}
+        onChange={(event) => handleOpenAIApiHostChanged(event.target.value)}
       />
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">

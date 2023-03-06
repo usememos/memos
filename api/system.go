@@ -19,4 +19,6 @@ type SystemStatus struct {
 	// Customized server profile, including server name and external url.
 	CustomizedProfile CustomizedProfile `json:"customizedProfile"`
 	StorageServiceID  int               `json:"storageServiceId"`
+	// OpenAI API Host
+	OpenAIAPIHost string `json:"openAIApiHost"`
 }

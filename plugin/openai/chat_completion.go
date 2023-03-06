@@ -5,6 +5,7 @@ import (
 	"errors"
 	"io"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -23,12 +24,20 @@ type ChatCompletionResponse struct {
 	Choices []ChatCompletionChoice `json:"choices"`
 }
 
-func PostChatCompletion(prompt string, apiKey string) (string, error) {
+func PostChatCompletion(prompt string, apiKey string, apiHost string) (string, error) {
 	requestBody := strings.NewReader(`{
 		    "model": "gpt-3.5-turbo",
         "messages": [{"role": "user", "content": "` + prompt + `"}]
     }`)
-	req, err := http.NewRequest("POST", "https://api.openai.com/v1/chat/completions", requestBody)
+	if apiHost == "" {
+		apiHost = "https://api.openai.com"
+	}
+	url, err := url.JoinPath(apiHost, "/v1/chat/completions")
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest("POST", url, requestBody)
 	if err != nil {
 		return "", err
 	}

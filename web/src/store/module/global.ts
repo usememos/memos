@@ -22,6 +22,7 @@ export const initialGlobalState = async () => {
         appearance: "system",
         externalUrl: "",
       },
+      openAIApiHost: "",
     } as SystemStatus,
   };
 

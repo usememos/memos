@@ -23,6 +23,7 @@ interface SystemStatus {
   additionalScript: string;
   customizedProfile: CustomizedProfile;
   storageServiceId: number;
+  openAIApiHost: string;
 }
 
 interface SystemSetting {
