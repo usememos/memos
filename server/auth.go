@@ -11,7 +11,6 @@ import (
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
-	metric "github.com/usememos/memos/plugin/metrics"
 	"github.com/usememos/memos/store"
 
 	"github.com/labstack/echo/v4"
@@ -31,10 +30,10 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		}
 		user, err := s.Store.FindUser(ctx, userFind)
 		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by username %s", signin.Username)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 		}
 		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("User not found with username %s", signin.Username))
+			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
 		} else if user.RowStatus == api.Archived {
 			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", signin.Username))
 		}
@@ -42,7 +41,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 		// Compare the stored hashed password, with the hashed version of the password that was received.
 		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(signin.Password)); err != nil {
 			// If the two passwords don't match, return a 401 status.
-			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect password").SetInternal(err)
+			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
 		}
 
 		if err = setUserSession(c, user); err != nil {
@@ -99,7 +98,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group) {
 			Username: &userInfo.Identifier,
 		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find user by username %s", userInfo.Identifier)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 		}
 		if user == nil {
 			userCreate := &api.UserCreate{
@@ -237,9 +236,6 @@ func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) er
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
-	s.Collector.Collect(ctx, &metric.Metric{
-		Name: string(activity.Type),
-	})
 	return err
 }
 
@@ -262,8 +258,5 @@ func (s *Server) createUserAuthSignUpActivity(c echo.Context, user *api.User) er
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
-	s.Collector.Collect(ctx, &metric.Metric{
-		Name: string(activity.Type),
-	})
 	return err
 }

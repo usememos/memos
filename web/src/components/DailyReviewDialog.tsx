@@ -7,7 +7,7 @@ import { DAILY_TIMESTAMP } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import DatePicker from "./common/DatePicker";
+import DatePicker from "./base/DatePicker";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import DailyMemo from "./DailyMemo";
 import "../less/daily-review-dialog.less";
@@ -63,7 +63,7 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text" onClick={() => toggleShowDatePicker()}>
-          <span className="icon-text">📅</span> {t("sidebar.daily-review")}
+          <span className="icon-text">📅</span> {t("common.daily-review")}
         </p>
         <div className="btns-container">
           <button className="btn-text" onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}>

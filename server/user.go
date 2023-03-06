@@ -10,7 +10,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
-	metric "github.com/usememos/memos/plugin/metrics"
 
 	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
@@ -270,8 +269,5 @@ func (s *Server) createUserCreateActivity(c echo.Context, user *api.User) error 
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
-	s.Collector.Collect(ctx, &metric.Metric{
-		Name: string(activity.Type),
-	})
 	return err
 }

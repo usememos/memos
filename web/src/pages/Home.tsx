@@ -3,12 +3,13 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { useGlobalStore, useUserStore } from "../store/module";
 import toastHelper from "../components/Toast";
-import Sidebar from "../components/Sidebar";
-import MemosHeader from "../components/MemosHeader";
+import Header from "../components/Header";
 import MemoEditor from "../components/MemoEditor";
 import MemoFilter from "../components/MemoFilter";
 import MemoList from "../components/MemoList";
 import UpdateVersionBanner from "../components/UpdateVersionBanner";
+import MobileHeader from "../components/MobileHeader";
+import HomeSidebar from "../components/HomeSidebar";
 import "../less/home.less";
 
 function Home() {
@@ -40,28 +41,16 @@ function Home() {
         <UpdateVersionBanner />
       </div>
       <div className="page-container">
-        <Sidebar />
+        <Header />
         <main className="memos-wrapper">
-          <MemosHeader />
+          <MobileHeader />
           <div className="memos-editor-wrapper">
             {!userStore.isVisitorMode() && <MemoEditor />}
             <MemoFilter />
           </div>
           <MemoList />
-          {userStore.isVisitorMode() && (
-            <div className="addition-btn-container">
-              {user ? (
-                <button className="btn" onClick={() => (window.location.href = "/")}>
-                  <span className="icon">🏠</span> {t("common.back-to-home")}
-                </button>
-              ) : (
-                <button className="btn" onClick={() => (window.location.href = "/auth")}>
-                  <span className="icon">👉</span> {t("common.sign-in")}
-                </button>
-              )}
-            </div>
-          )}
         </main>
+        {!userStore.isVisitorMode() && <HomeSidebar />}
       </div>
     </section>
   );

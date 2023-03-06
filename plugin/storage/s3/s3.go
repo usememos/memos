@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"path"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	s3config "github.com/aws/aws-sdk-go-v2/config"
@@ -18,6 +19,7 @@ type Config struct {
 	SecretKey string
 	Bucket    string
 	EndPoint  string
+	Path      string
 	Region    string
 	URLPrefix string
 }
@@ -55,7 +57,7 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	uploader := manager.NewUploader(client.Client)
 	uploadOutput, err := uploader.Upload(ctx, &awss3.PutObjectInput{
 		Bucket:      aws.String(client.Config.Bucket),
-		Key:         aws.String(filename),
+		Key:         aws.String(path.Join(client.Config.Path, filename)),
 		Body:        src,
 		ContentType: aws.String(fileType),
 		ACL:         types.ObjectCannedACL(*aws.String("public-read")),
@@ -65,11 +67,12 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	}
 
 	link := uploadOutput.Location
-	if link == "" {
-		if client.Config.URLPrefix == "" {
-			return "", fmt.Errorf("url prefix is empty")
-		}
+	// If url prefix is set, use it as the file link.
+	if client.Config.URLPrefix != "" {
 		link = fmt.Sprintf("%s/%s", client.Config.URLPrefix, filename)
+	}
+	if link == "" {
+		return "", fmt.Errorf("failed to get file link")
 	}
 	return link, nil
 }

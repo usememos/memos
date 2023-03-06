@@ -21,6 +21,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     region: "",
     accessKey: "",
     secretKey: "",
+    path: "",
     bucket: "",
     urlPrefix: "",
   });
@@ -100,7 +101,6 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
             className="ml-2 text-sm text-blue-600 hover:opacity-80 hover:underline"
             href="https://usememos.com/docs/storage"
             target="_blank"
-            rel="noreferrer"
           >
             Learn more
             <Icon.ExternalLink className="inline -mt-1 ml-1 w-4 h-auto opacity-80" />
@@ -179,6 +179,17 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           placeholder="Bucket"
           value={s3Config.bucket}
           onChange={(e) => setPartialS3Config({ bucket: e.target.value })}
+          fullWidth
+        />
+        <Typography className="!mb-1" level="body2">
+          Path
+          <span className="text-sm text-gray-400 ml-1">(Storage Path)</span>
+        </Typography>
+        <Input
+          className="mb-2"
+          placeholder="Path"
+          value={s3Config.path}
+          onChange={(e) => setPartialS3Config({ path: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">

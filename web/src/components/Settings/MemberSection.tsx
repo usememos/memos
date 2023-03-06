@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useUserStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import toastHelper from "../Toast";
-import Dropdown from "../common/Dropdown";
+import Dropdown from "../base/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import "../../less/settings/member-section.less";

@@ -15,7 +15,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
-	metric "github.com/usememos/memos/plugin/metrics"
 	"github.com/usememos/memos/plugin/storage/s3"
 )
 
@@ -139,6 +138,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					AccessKey: s3Config.AccessKey,
 					SecretKey: s3Config.SecretKey,
 					EndPoint:  s3Config.EndPoint,
+					Path:      s3Config.Path,
 					Region:    s3Config.Region,
 					Bucket:    s3Config.Bucket,
 					URLPrefix: s3Config.URLPrefix,
@@ -395,8 +395,5 @@ func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Reso
 	if err != nil || activity == nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
-	s.Collector.Collect(ctx, &metric.Metric{
-		Name: string(activity.Type),
-	})
 	return err
 }

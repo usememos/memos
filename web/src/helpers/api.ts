@@ -246,6 +246,22 @@ export function deleteIdentityProvider(id: IdentityProviderId) {
   return axios.delete(`/api/idp/${id}`);
 }
 
+export function postChatCompletion(prompt: string) {
+  return axios.post<ResponseObject<string>>(`/api/opanai/chat-completion`, {
+    prompt,
+  });
+}
+
+export function postTextCompletion(prompt: string) {
+  return axios.post<ResponseObject<string>>(`/api/opanai/text-completion`, {
+    prompt,
+  });
+}
+
+export function checkOpenAIEnabled() {
+  return axios.get<ResponseObject<boolean>>(`/api/opanai/enabled`);
+}
+
 export async function getRepoStarCount() {
   const { data } = await axios.get(`https://api.github.com/repos/usememos/memos`, {
     headers: {

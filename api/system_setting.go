@@ -27,6 +27,8 @@ const (
 	SystemSettingCustomizedProfileName SystemSettingName = "customizedProfile"
 	// SystemSettingStorageServiceIDName is the key type of storage service ID.
 	SystemSettingStorageServiceIDName SystemSettingName = "storageServiceId"
+	// SystemSettingOpenAIAPIKeyName is the key type of OpenAI API key.
+	SystemSettingOpenAIAPIKeyName SystemSettingName = "openAIApiKey"
 )
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
@@ -63,6 +65,8 @@ func (key SystemSettingName) String() string {
 		return "customizedProfile"
 	case SystemSettingStorageServiceIDName:
 		return "storageServiceId"
+	case SystemSettingOpenAIAPIKeyName:
+		return "openAIApiKey"
 	}
 	return ""
 }
@@ -161,6 +165,12 @@ func (upsert SystemSettingUpsert) Validate() error {
 			return fmt.Errorf("failed to unmarshal system setting storage service id value")
 		}
 		return nil
+	} else if upsert.Name == SystemSettingOpenAIAPIKeyName {
+		value := ""
+		err := json.Unmarshal([]byte(upsert.Value), &value)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal system setting openai api key value")
+		}
 	} else {
 		return fmt.Errorf("invalid system setting name")
 	}

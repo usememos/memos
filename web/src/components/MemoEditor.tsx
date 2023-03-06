@@ -16,7 +16,7 @@ import {
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
-import Selector from "./common/Selector";
+import Selector from "./base/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";

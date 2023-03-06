@@ -3,7 +3,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint --ext .js,.ts,.tsx, src"
+    "lint": "eslint --ext .js,.ts,.tsx, src",
+    "lint-fix": "eslint --ext .js,.ts,.tsx, src --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -15,6 +16,7 @@
     "dayjs": "^1.11.3",
     "highlight.js": "^11.6.0",
     "i18next": "^21.9.2",
+    "i18next-browser-languagedetector": "^7.0.1",
     "lodash-es": "^4.17.21",
     "lucide-react": "^0.105.0",
     "qrcode.react": "^3.1.0",

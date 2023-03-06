@@ -7,7 +7,7 @@ import { useResourceStore } from "../store/module";
 import { getResourceUrl } from "../utils/resource";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
-import Dropdown from "./common/Dropdown";
+import Dropdown from "./base/Dropdown";
 import { generateDialog } from "./Dialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
@@ -104,7 +104,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">{t("sidebar.resources")}</p>
+        <p className="title-text">{t("common.resources")}</p>
         <button className="btn close-btn" onClick={destroy}>
           <Icon.X className="icon-img" />
         </button>

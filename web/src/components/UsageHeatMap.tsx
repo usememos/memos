@@ -7,7 +7,7 @@ import * as utils from "../helpers/utils";
 import "../less/usage-heat-map.less";
 
 const tableConfig = {
-  width: 12,
+  width: 11,
   height: 7,
 };
 
@@ -98,15 +98,6 @@ const UsageHeatMap = () => {
 
   return (
     <div className="usage-heat-map-wrapper" ref={containerElRef}>
-      <div className="day-tip-text-container">
-        <span className="tip-text">{t("days.sun")}</span>
-        <span className="tip-text"></span>
-        <span className="tip-text">{t("days.tue")}</span>
-        <span className="tip-text"></span>
-        <span className="tip-text">{t("days.thu")}</span>
-        <span className="tip-text"></span>
-        <span className="tip-text">{t("days.sat")}</span>
-      </div>
       <div className="usage-heat-map">
         {allStat.map((v, i) => {
           const count = v.count;
@@ -139,9 +130,18 @@ const UsageHeatMap = () => {
         })}
         {nullCell.map((_, i) => (
           <div className="stat-wrapper" key={i}>
-            <span className="null"></span>
+            <span className="stat-container null"></span>
           </div>
         ))}
+      </div>
+      <div className="day-tip-text-container">
+        <span className="tip-text">{t("days.sun")}</span>
+        <span className="tip-text"></span>
+        <span className="tip-text">{t("days.tue")}</span>
+        <span className="tip-text"></span>
+        <span className="tip-text">{t("days.thu")}</span>
+        <span className="tip-text"></span>
+        <span className="tip-text">{t("days.sat")}</span>
       </div>
     </div>
   );

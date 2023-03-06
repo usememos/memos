@@ -93,12 +93,6 @@ const Auth = () => {
     actionBtnLoadingState.setFinish();
   };
 
-  const handleSignInKeyUp = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      handleSignInBtnClick();
-    }
-  };
-
   const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
     const stateQueryParameter = `auth.signin.${identityProvider.name}-${identityProvider.id}`;
     if (identityProvider.type === "OAUTH2") {
@@ -131,14 +125,7 @@ const Auth = () => {
             </div>
             <div className="form-item-container input-form-container">
               <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
-              <input
-                className="input-text"
-                type="password"
-                value={password}
-                onChange={handlePasswordInputChanged}
-                onKeyUp={handleSignInKeyUp}
-                required
-              />
+              <input className="input-text" type="password" value={password} onChange={handlePasswordInputChanged} required />
             </div>
           </div>
           <div className="action-btns-container">
