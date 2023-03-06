@@ -113,10 +113,10 @@ func (patch UserPatch) Validate() error {
 	if patch.Username != nil && len(*patch.Username) > 32 {
 		return fmt.Errorf("username is too long, maximum length is 32")
 	}
-	if len(*patch.Password) < 3 {
+	if patch.Password != nil && len(*patch.Password) < 3 {
 		return fmt.Errorf("password is too short, minimum length is 6")
 	}
-	if len(*patch.Password) > 512 {
+	if patch.Password != nil && len(*patch.Password) > 512 {
 		return fmt.Errorf("password is too long, maximum length is 512")
 	}
 	if patch.Nickname != nil && len(*patch.Nickname) > 64 {
