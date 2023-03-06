@@ -11,7 +11,7 @@ import (
 )
 
 func (s *Server) registerOpenAIRoutes(g *echo.Group) {
-	g.POST("/opanai/chat-completion", func(c echo.Context) error {
+	g.POST("/openai/chat-completion", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		openAIApiKeySetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
 			Name: api.SystemSettingOpenAIAPIKeyName,
@@ -62,7 +62,7 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(result))
 	})
 
-	g.POST("/opanai/text-completion", func(c echo.Context) error {
+	g.POST("/openai/text-completion", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		openAIApiKeySetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
 			Name: api.SystemSettingOpenAIAPIKeyName,
@@ -113,7 +113,7 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(result))
 	})
 
-	g.GET("/opanai/enabled", func(c echo.Context) error {
+	g.GET("/openai/enabled", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		openAIApiKeySetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
 			Name: api.SystemSettingOpenAIAPIKeyName,

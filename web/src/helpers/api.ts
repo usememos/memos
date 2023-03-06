@@ -247,19 +247,19 @@ export function deleteIdentityProvider(id: IdentityProviderId) {
 }
 
 export function postChatCompletion(prompt: string) {
-  return axios.post<ResponseObject<string>>(`/api/opanai/chat-completion`, {
+  return axios.post<ResponseObject<string>>(`/api/openai/chat-completion`, {
     prompt,
   });
 }
 
 export function postTextCompletion(prompt: string) {
-  return axios.post<ResponseObject<string>>(`/api/opanai/text-completion`, {
+  return axios.post<ResponseObject<string>>(`/api/openai/text-completion`, {
     prompt,
   });
 }
 
 export function checkOpenAIEnabled() {
-  return axios.get<ResponseObject<boolean>>(`/api/opanai/enabled`);
+  return axios.get<ResponseObject<boolean>>(`/api/openai/enabled`);
 }
 
 export async function getRepoStarCount() {
