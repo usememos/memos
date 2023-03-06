@@ -19,7 +19,6 @@ type Config struct {
 	SecretKey string
 	Bucket    string
 	EndPoint  string
-	Path      string
 	Region    string
 	URLPrefix string
 }
