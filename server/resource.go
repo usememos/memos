@@ -142,15 +142,15 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				} else if !strings.Contains(s3Config.Path, "{filename}") {
 					s3FileKey = path.Join(s3Config.Path, filename)
 				} else {
-					s3FileKey = strings.Replace(s3FileKey, "{filename}", filename, -1)
-					s3FileKey = strings.Replace(s3FileKey, "{type}", filetype, -1)
-					s3FileKey = strings.Replace(s3FileKey, "{timestamp}", fmt.Sprintf("%d", t.Unix()), -1)
-					s3FileKey = strings.Replace(s3FileKey, "{year}", fmt.Sprintf("%d", t.Year()), -1)
-					s3FileKey = strings.Replace(s3FileKey, "{month}", fmt.Sprintf("%02d", t.Month()), -1)
-					s3FileKey = strings.Replace(s3FileKey, "{day}", fmt.Sprintf("%02d", t.Day()), -1)
-					s3FileKey = strings.Replace(s3FileKey, "{hour}", fmt.Sprintf("%02d", t.Hour()), -1)
-					s3FileKey = strings.Replace(s3FileKey, "{minute}", fmt.Sprintf("%02d", t.Minute()), -1)
-					s3FileKey = strings.Replace(s3FileKey, "{second}", fmt.Sprintf("%02d", t.Second()), -1)
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{filename}", filename)
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{type}", filetype)
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{timestamp}", fmt.Sprintf("%d", t.Unix()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{year}", fmt.Sprintf("%d", t.Year()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{month}", fmt.Sprintf("%02d", t.Month()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{day}", fmt.Sprintf("%02d", t.Day()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{hour}", fmt.Sprintf("%02d", t.Hour()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{minute}", fmt.Sprintf("%02d", t.Minute()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{second}", fmt.Sprintf("%02d", t.Second()))
 				}
 				s3client, err := s3.NewClient(ctx, &s3.Config{
 					AccessKey: s3Config.AccessKey,
