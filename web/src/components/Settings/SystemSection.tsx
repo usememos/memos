@@ -218,8 +218,8 @@ const SystemSection = () => {
         value={state.openAIApiKey}
         onChange={(event) => handleOpenAIApiKeyChanged(event.target.value)}
       />
-      <div className="form-label">
-         <span className="normal-text mt-2">OpenAI API Host</span>
+      <div className="form-label mt-2">
+         <span className="normal-text">OpenAI API Host</span>
          <Button onClick={handleSaveOpenAIApiHost}>{t("common.save")}</Button>
        </div>
        <Input
