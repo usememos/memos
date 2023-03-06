@@ -4,7 +4,6 @@ import * as api from "../helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import toastHelper from "./Toast";
-import HelpBadge from "./HelpBadge";
 
 interface Props extends DialogProps {
   storage?: ObjectStorage;
