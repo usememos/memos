@@ -26,6 +26,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     urlPrefix: "",
   });
   const isCreating = storage === undefined;
+
   useEffect(() => {
     if (storage) {
       setBasicInfo({
