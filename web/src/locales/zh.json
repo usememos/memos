@@ -136,7 +136,8 @@
     },
     "value": {
       "not-tagged": "无标签",
-      "linked": "包含链接"
+      "linked": "包含链接",
+      "has-attachment": "包含附件"
     },
     "text-placeholder": "以 ^ 开头使用正则表达式"
   },

@@ -43,6 +43,10 @@ export const filterConsts = {
         text: "filter.value.linked",
         value: "LINKED",
       },
+      {
+        text: "filter.value.has-attachment",
+        value: "HAS_ATTACHMENT",
+      },
     ],
   },
   TEXT: {
@@ -178,6 +182,8 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
     if (value === "NOT_TAGGED" && memo.content.match(TAG_REG) === null) {
       matched = true;
     } else if (value === "LINKED" && memo.content.match(LINK_REG) !== null) {
+      matched = true;
+    } else if (value === "HAS_ATTACHMENT" && memo.resourceList.length > 0) {
       matched = true;
     }
     if (operator === "IS_NOT") {

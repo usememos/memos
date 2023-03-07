@@ -136,7 +136,8 @@
     },
     "value": {
       "not-tagged": "No tags",
-      "linked": "Has links"
+      "linked": "Has links",
+      "has-attachment": "Has attachments"
     },
     "text-placeholder": "Starts with ^ to use regex"
   },
