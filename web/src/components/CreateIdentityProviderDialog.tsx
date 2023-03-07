@@ -36,6 +36,27 @@ const templateList: IdentityProvider[] = [
   },
   {
     id: UNKNOWN_ID,
+    name: "GitLab",
+    type: "OAUTH2",
+    identifierFilter: "",
+    config: {
+      oauth2Config: {
+        clientId: "",
+        clientSecret: "",
+        authUrl: "https://gitlab.com/oauth/authorize",
+        tokenUrl: "https://gitlab.com/oauth/token",
+        userInfoUrl: "https://gitlab.com/oauth/userinfo",
+        scopes: ["openid"],
+        fieldMapping: {
+          identifier: "name",
+          displayName: "name",
+          email: "email",
+        },
+      },
+    },
+  },
+  {
+    id: UNKNOWN_ID,
     name: "Google",
     type: "OAUTH2",
     identifierFilter: "",
