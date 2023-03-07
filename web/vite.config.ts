@@ -2,7 +2,7 @@ import { resolve } from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 
-const devProxyServer = "http://localhost:8081/";
+const devProxyServer = "https://memos.flyneko.com/";
 
 // https://vitejs.dev/config/
 export default defineConfig({
