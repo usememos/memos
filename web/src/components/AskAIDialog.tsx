@@ -1,5 +1,4 @@
 import { Button, Textarea } from "@mui/joy";
-import { reverse } from "lodash-es";
 import { useEffect, useState } from "react";
 import * as api from "../helpers/api";
 import useLoading from "../hooks/useLoading";
@@ -60,11 +59,11 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
       data: { data: answer },
     } = await api.postChatCompletion(question);
     setHistoryList([
-      ...historyList,
       {
         question,
         answer: answer.replace(/^\n\n/, ""),
       },
+      ...historyList,
     ]);
   };
 
@@ -86,7 +85,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
             <Icon.Loader className="w-5 h-auto animate-spin" />
           </p>
         )}
-        {reverse(historyList).map((history, index) => (
+        {historyList.map((history, index) => (
           <div key={index} className="w-full flex flex-col justify-start items-start mt-4 space-y-2">
             <div className="w-full flex flex-row justify-start items-start pr-6">
               <span className="word-break rounded shadow px-3 py-2 opacity-80 bg-gray-100 dark:bg-zinc-700">{history.question}</span>
