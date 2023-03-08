@@ -1,3 +1,9 @@
+export function convertToMillis(localSetting: LocalSetting) {
+  const hoursToMillis = localSetting.dailyReviewTimeOffsetHourValue * 60 * 60 * 1000;
+  const minutesToMillis = localSetting.dailyReviewTimeOffsetMinuteValue * 60 * 1000;
+  return hoursToMillis + minutesToMillis;
+}
+
 export const isNullorUndefined = (value: any) => {
   return value === null || value === undefined;
 };

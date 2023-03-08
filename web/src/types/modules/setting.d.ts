@@ -10,6 +10,8 @@ interface Setting {
 interface LocalSetting {
   enableFoldMemo: boolean;
   enableDoubleClickEditing: boolean;
+  dailyReviewTimeOffsetHourValue: number;
+  dailyReviewTimeOffsetMinuteValue: number;
 }
 
 interface UserLocaleSetting {
@@ -32,7 +34,11 @@ interface UserResourceVisibilitySetting {
   value: Visibility;
 }
 
-type UserSetting = UserLocaleSetting | UserAppearanceSetting | UserMemoVisibilitySetting | UserResourceVisibilitySetting;
+type UserSetting =
+  UserLocaleSetting
+  | UserAppearanceSetting
+  | UserMemoVisibilitySetting
+  | UserResourceVisibilitySetting;
 
 interface UserSettingUpsert {
   key: keyof Setting;
