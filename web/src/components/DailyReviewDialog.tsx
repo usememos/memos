@@ -50,7 +50,7 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
     toggleShowDatePicker(false);
 
     toImage(memosElRef.current, {
-      pixelRatio: window.devicePixelRatio * 2
+      pixelRatio: window.devicePixelRatio * 2,
     })
       .then((url) => {
         showPreviewImageDialog(url);
@@ -121,7 +121,7 @@ export default function showDailyReviewDialog(datestamp: DateStamp = Date.now())
   generateDialog(
     {
       className: "daily-review-dialog",
-      dialogName: "daily-review-dialog"
+      dialogName: "daily-review-dialog",
     },
     DailyReviewDialog,
     { currentDateStamp: datestamp }

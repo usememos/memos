@@ -34,11 +34,7 @@ interface UserResourceVisibilitySetting {
   value: Visibility;
 }
 
-type UserSetting =
-  UserLocaleSetting
-  | UserAppearanceSetting
-  | UserMemoVisibilitySetting
-  | UserResourceVisibilitySetting;
+type UserSetting = UserLocaleSetting | UserAppearanceSetting | UserMemoVisibilitySetting | UserResourceVisibilitySetting;
 
 interface UserSettingUpsert {
   key: keyof Setting;
