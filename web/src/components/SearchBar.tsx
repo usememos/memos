@@ -54,6 +54,7 @@ const SearchBar = () => {
       <input
         className="flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200"
         type="text"
+        id="mobile-search-bar"
         placeholder="Search memos"
         ref={inputRef}
         value={queryText}
