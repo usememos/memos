@@ -32,6 +32,10 @@ export const toggleHomeSidebar = (show?: boolean) => {
   if (show) {
     sidebarEl.classList.add("show");
     maskEl.classList.add("show");
+
+    // auto focus search bar when sidebar is shown
+    const inputEl = sidebarEl.querySelector("#mobile-search-bar") as HTMLInputElement;
+    inputEl?.focus();
   } else {
     sidebarEl.classList.remove("show");
     maskEl.classList.remove("show");
