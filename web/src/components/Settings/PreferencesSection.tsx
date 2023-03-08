@@ -20,8 +20,7 @@ const PreferencesSection = () => {
     };
   });
 
-  const dailyTimeOffsetHourOptions: number[] = [...Array(24).keys()];
-  const dailyTimeOffsetMinuteOptions: number[] = [...Array(60).keys()];
+  const dailyReviewTimeOffsetOptions: number[] = [...Array(24).keys()];
 
   const handleLocaleSelectChange = async (locale: Locale) => {
     await userStore.upsertUserSetting("locale", locale);
@@ -49,13 +48,9 @@ const PreferencesSection = () => {
     userStore.upsertLocalSetting({ ...localSetting, enableDoubleClickEditing: event.target.checked });
   };
 
-  const handleDailyReviewTimeOffsetHourChanged = (value: number) => {
-    userStore.upsertLocalSetting({ ...localSetting, dailyReviewTimeOffsetHourValue: value });
+  const handleDailyReviewTimeOffsetChanged = (value: number) => {
+    userStore.upsertLocalSetting({ ...localSetting, dailyReviewTimeOffset: value });
   };
-
-  function handleDailyReviewTimeOffsetMinuteChanged(value: number) {
-    userStore.upsertLocalSetting({ ...localSetting, dailyReviewTimeOffsetMinuteValue: value });
-  }
 
   return (
     <div className="section-container preferences-section-container">
@@ -112,10 +107,10 @@ const PreferencesSection = () => {
           <Select
             placeholder="hh"
             className="!min-w-[4rem] w-auto text-sm"
-            value={localSetting.dailyReviewTimeOffsetHourValue}
+            value={localSetting.dailyReviewTimeOffset}
             onChange={(_, value) => {
               if (value !== null) {
-                handleDailyReviewTimeOffsetHourChanged(value);
+                handleDailyReviewTimeOffsetChanged(value);
               }
             }}
             slotProps={{
@@ -127,31 +122,7 @@ const PreferencesSection = () => {
               },
             }}
           >
-            {dailyTimeOffsetHourOptions.map((item) => (
-              <Option key={item} value={item} className="whitespace-nowrap">
-                {item.toString().padStart(2, "0")}
-              </Option>
-            ))}
-          </Select>
-          <Select
-            placeholder="mm"
-            className="!min-w-[2rem] w-auto text-sm"
-            value={localSetting.dailyReviewTimeOffsetMinuteValue}
-            onChange={(_, value) => {
-              if (value !== null) {
-                handleDailyReviewTimeOffsetMinuteChanged(value);
-              }
-            }}
-            slotProps={{
-              listbox: {
-                sx: {
-                  maxHeight: "15rem",
-                  overflow: "auto",
-                },
-              },
-            }}
-          >
-            {dailyTimeOffsetMinuteOptions.map((item) => (
+            {dailyReviewTimeOffsetOptions.map((item) => (
               <Option key={item} value={item} className="whitespace-nowrap">
                 {item.toString().padStart(2, "0")}
               </Option>

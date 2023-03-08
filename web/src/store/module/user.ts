@@ -16,8 +16,7 @@ const defaultSetting: Setting = {
 const defaultLocalSetting: LocalSetting = {
   enableFoldMemo: true,
   enableDoubleClickEditing: true,
-  dailyReviewTimeOffsetHourValue: 0,
-  dailyReviewTimeOffsetMinuteValue: 0,
+  dailyReviewTimeOffset: 0,
 };
 
 export const convertResponseModelUser = (user: User): User => {

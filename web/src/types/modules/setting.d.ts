@@ -10,8 +10,7 @@ interface Setting {
 interface LocalSetting {
   enableFoldMemo: boolean;
   enableDoubleClickEditing: boolean;
-  dailyReviewTimeOffsetHourValue: number;
-  dailyReviewTimeOffsetMinuteValue: number;
+  dailyReviewTimeOffset: number;
 }
 
 interface UserLocaleSetting {
