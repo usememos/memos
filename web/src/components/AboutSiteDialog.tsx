@@ -3,7 +3,6 @@ import { useGlobalStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import GitHubBadge from "./GitHubBadge";
-import "../less/about-site-dialog.less";
 
 type Props = DialogProps;
 
@@ -27,7 +26,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
           <Icon.X />
         </button>
       </div>
-      <div className="dialog-content-container">
+      <div className="flex flex-col justify-start items-start max-w-full">
         <p className="text-sm">{customizedProfile.description || "No description"}</p>
         <div className="mt-4 flex flex-row text-sm justify-start items-center">
           <div className="flex flex-row justify-start items-center mr-2">

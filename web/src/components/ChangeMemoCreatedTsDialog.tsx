@@ -5,7 +5,6 @@ import { useMemoStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import toastHelper from "./Toast";
-import "../less/change-memo-created-ts-dialog.less";
 
 interface Props extends DialogProps {
   memoId: MemoId;
@@ -69,7 +68,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
           <Icon.X />
         </button>
       </div>
-      <div className="dialog-content-container">
+      <div className="flex flex-col justify-start items-start !w-72 max-w-full">
         <p className="w-full bg-yellow-100 border border-yellow-400 rounded p-2 text-xs leading-4">
           THIS IS NOT A NORMAL BEHAVIOR. PLEASE MAKE SURE YOU REALLY NEED IT.
         </p>
@@ -80,7 +79,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
           max={maxDatetimeValue}
           onChange={handleDatetimeInputChange}
         />
-        <div className="btns-container">
+        <div className="flex flex-row justify-end items-center mt-2 w-full">
           <span className="btn-text" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
           </span>
