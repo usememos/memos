@@ -51,6 +51,7 @@ Here are some products made by our community:
 - [JakeLaoyu/memos-import-from-flomo](https://github.com/JakeLaoyu/memos-import-from-flomo) - Import data. Support from flomo, wechat reading
 - [Send to memos](https://sharecuts.cn/shortcut/12640) - A shortcut for iOS
 - [Memos Raycast Extension](https://www.raycast.com/JakeYu/memos) - Raycast extension
+- [Memos Desktop](https://github.com/xudaolong/memos-desktop) - Third party client for MacOS and Windows
 
 ## Acknowledgements
 
