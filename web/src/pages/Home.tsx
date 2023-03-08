@@ -33,7 +33,7 @@ function Home() {
   }, [user?.setting.locale]);
 
   return (
-    <div className="relative w-full min-h-full flex flex-row justify-start items-start">
+    <div className="w-full flex flex-row justify-start items-start">
       <div className="flex-grow w-auto max-w-2xl px-4 sm:px-2 sm:pt-4">
         <MobileHeader />
         <div className="w-full h-auto flex flex-col justify-start items-start bg-zinc-100 dark:bg-zinc-800 rounded-lg">

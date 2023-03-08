@@ -1,11 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import useDebounce from "../hooks/useDebounce";
-import { useLocationStore, useDialogStore } from "../store/module";
+import { useLocationStore, useDialogStore, useLayoutStore } from "../store/module";
+import { resolution } from "../utils/layout";
 import Icon from "./Icon";
 
 const SearchBar = () => {
   const locationStore = useLocationStore();
   const dialogStore = useDialogStore();
+  const layoutStore = useLayoutStore();
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -35,6 +37,14 @@ const SearchBar = () => {
     setQueryText(text === undefined ? "" : text);
   }, [locationStore.state.query.text]);
 
+  useEffect(() => {
+    if (layoutStore.state.showHomeSidebar) {
+      if (window.innerWidth < resolution.sm) {
+        inputRef.current?.focus();
+      }
+    }
+  }, [layoutStore.state.showHomeSidebar]);
+
   useDebounce(
     () => {
       locationStore.setTextQuery(queryText.length === 0 ? undefined : queryText);
@@ -54,7 +64,6 @@ const SearchBar = () => {
       <input
         className="flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200"
         type="text"
-        id="mobile-search-bar"
         placeholder="Search memos"
         ref={inputRef}
         value={queryText}
