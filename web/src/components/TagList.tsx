@@ -4,7 +4,6 @@ import { useLocationStore, useTagStore } from "../store/module";
 import useToggle from "../hooks/useToggle";
 import Icon from "./Icon";
 import showCreateTagDialog from "./CreateTagDialog";
-import "../less/tag-list.less";
 
 interface Tag {
   key: string;
@@ -69,8 +68,8 @@ const TagList = () => {
   }, [tagsText]);
 
   return (
-    <div className="tags-wrapper">
-      <div className="w-full flex flex-row justify-start items-center px-4 mb-1">
+    <div className="flex flex-col justify-start items-start w-full py-0 px-1 mt-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
+      <div className="flex flex-row justify-start items-center w-full px-4">
         <span className="text-sm leading-6 font-mono text-gray-400">{t("common.tags")}</span>
         <button
           onClick={() => showCreateTagDialog()}
@@ -79,7 +78,7 @@ const TagList = () => {
           <Icon.Plus className="w-4 h-4 text-gray-400" />
         </button>
       </div>
-      <div className="tags-container">
+      <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap mt-2 mb-2">
         {tags.map((t, idx) => (
           <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
         ))}
@@ -115,22 +114,35 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
 
   return (
     <>
-      <div className={`tag-item-container ${isActive ? "active" : ""}`} onClick={handleTagClick}>
-        <div className="tag-text-container">
-          <span className="icon-text">#</span>
-          <span className="tag-text">{tag.key}</span>
+      <div
+        className="relative group flex flex-row justify-between items-center w-full h-10 py-0 px-4 mt-px first:mt-1 rounded-lg text-base cursor-pointer select-none shrink-0 hover:opacity-60"
+        onClick={handleTagClick}
+      >
+        <div
+          className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-black dark:text-gray-200 ${
+            isActive && "text-green-600"
+          }`}
+        >
+          <span className="block w-4 shrink-0">#</span>
+          <span className="truncate">{tag.key}</span>
         </div>
-        <div className="btns-container">
+        <div className="flex flex-row justify-end items-center">
           {hasSubTags ? (
-            <span className={`action-btn toggle-btn ${showSubTags ? "shown" : ""}`} onClick={handleToggleBtnClick}>
-              <Icon.ChevronRight className="icon-img" />
+            <span
+              className={`flex flex-row justify-center items-center w-6 h-6 shrink-0 transition-all rotate-0 ${showSubTags && "rotate-90"}`}
+              onClick={handleToggleBtnClick}
+            >
+              <Icon.ChevronRight className="w-5 h-5 opacity-80 dark:text-gray-400" />
             </span>
           ) : null}
         </div>
       </div>
-
       {hasSubTags ? (
-        <div className={`subtags-container ${showSubTags ? "" : "!hidden"}`}>
+        <div
+          className={`w-full flex flex-col justify-start items-start h-auto ml-5 pl-1 border-l-2 border-l-gray-200 dark:border-l-gray-400 ${
+            !showSubTags && "!hidden"
+          }`}
+        >
           {tag.subTags.map((st, idx) => (
             <TagItemContainer key={st.text + "-" + idx} tag={st} tagQuery={tagQuery} />
           ))}
