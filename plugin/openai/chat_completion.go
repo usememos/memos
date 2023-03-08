@@ -1,12 +1,12 @@
 package openai
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 type ChatCompletionMessage struct {
@@ -25,10 +25,6 @@ type ChatCompletionResponse struct {
 }
 
 func PostChatCompletion(prompt string, apiKey string, apiHost string) (string, error) {
-	requestBody := strings.NewReader(`{
-		    "model": "gpt-3.5-turbo",
-        "messages": [{"role": "user", "content": "` + prompt + `"}]
-    }`)
 	if apiHost == "" {
 		apiHost = "https://api.openai.com"
 	}
@@ -37,7 +33,16 @@ func PostChatCompletion(prompt string, apiKey string, apiHost string) (string, e
 		return "", err
 	}
 
-	req, err := http.NewRequest("POST", url, requestBody)
+	values := map[string]interface{}{
+		"model":    "gpt-3.5-turbo",
+		"messages": []map[string]string{{"role": "user", "content": prompt}},
+	}
+	jsonValue, err := json.Marshal(values)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
 	if err != nil {
 		return "", err
 	}
