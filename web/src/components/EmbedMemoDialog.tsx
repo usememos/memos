@@ -1,8 +1,8 @@
 import React from "react";
+import { toast } from "react-hot-toast";
+import copy from "copy-to-clipboard";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import copy from "copy-to-clipboard";
-import toastHelper from "./Toast";
 
 interface Props extends DialogProps {
   memoId: MemoId;
@@ -17,7 +17,7 @@ const EmbedMemoDialog: React.FC<Props> = (props: Props) => {
 
   const handleCopyCode = () => {
     copy(memoEmbeddedCode());
-    toastHelper.success("Succeed to copy code to clipboard.");
+    toast.success("Succeed to copy code to clipboard.");
   };
 
   return (

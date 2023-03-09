@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Button, Divider, Input, Switch, Textarea } from "@mui/joy";
 import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
-import toastHelper from "../Toast";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 import { useAppDispatch } from "../../store";
 import { setGlobalState } from "../../store/reducer/global";
@@ -83,7 +83,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success(t("message.succeed-vacuum-database"));
+    toast.success(t("message.succeed-vacuum-database"));
   };
 
   const handleOpenAIApiKeyChanged = (value: string) => {
@@ -103,7 +103,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("OpenAI Api Key updated");
+    toast.success("OpenAI Api Key updated");
   };
 
   const handleOpenAIApiHostChanged = (value: string) => {
@@ -123,7 +123,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success("OpenAI Api Host updated");
+    toast.success("OpenAI Api Host updated");
   };
 
   const handleAdditionalStyleChanged = (value: string) => {
@@ -143,7 +143,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success(t("message.succeed-update-additional-style"));
+    toast.success(t("message.succeed-update-additional-style"));
   };
 
   const handleAdditionalScriptChanged = (value: string) => {
@@ -163,7 +163,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success(t("message.succeed-update-additional-script"));
+    toast.success(t("message.succeed-update-additional-script"));
   };
 
   const handleDisablePublicMemosChanged = async (value: boolean) => {

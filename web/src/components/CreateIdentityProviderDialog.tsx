@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { Button, Divider, Input, Radio, RadioGroup, Typography } from "@mui/joy";
 import * as api from "../helpers/api";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { absolutifyLink } from "../helpers/utils";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 
 interface Props extends DialogProps {
   identityProvider?: IdentityProvider;
@@ -193,7 +193,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             },
           },
         });
-        toastHelper.info(`SSO ${basicInfo.name} created`);
+        toast.success(`SSO ${basicInfo.name} created`);
       } else {
         await api.patchIdentityProvider({
           id: identityProvider?.id,
@@ -206,11 +206,11 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             },
           },
         });
-        toastHelper.info(`SSO ${basicInfo.name} updated`);
+        toast.success(`SSO ${basicInfo.name} updated`);
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
     if (confirmCallback) {
       confirmCallback();

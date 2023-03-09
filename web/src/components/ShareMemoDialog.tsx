@@ -1,6 +1,7 @@
 import { Select, Option } from "@mui/joy";
 import { QRCodeSVG } from "qrcode.react";
 import React, { useEffect, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import copy from "copy-to-clipboard";
 import { toLower } from "lodash-es";
@@ -12,7 +13,6 @@ import { getMemoStats } from "../helpers/api";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import "../less/share-memo-dialog.less";
@@ -92,7 +92,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
 
   const handleCopyLinkBtnClick = () => {
     copy(`${window.location.origin}/m/${memo.id}`);
-    toastHelper.success(t("message.succeed-copy-link"));
+    toast.success(t("message.succeed-copy-link"));
   };
 
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {

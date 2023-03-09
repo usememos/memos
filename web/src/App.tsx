@@ -1,5 +1,6 @@
 import { useColorScheme } from "@mui/joy";
 import { useEffect, Suspense } from "react";
+import { Toaster } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
@@ -95,6 +96,7 @@ const App = () => {
   return (
     <Suspense fallback={<Loading />}>
       <RouterProvider router={router} />
+      <Toaster position="top-right" />
     </Suspense>
   );
 };

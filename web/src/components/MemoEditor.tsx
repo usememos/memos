@@ -1,5 +1,6 @@
 import { isNumber, last, toLower, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "../labs/marked";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
@@ -15,7 +16,6 @@ import {
 } from "../store/module";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 import Selector from "./base/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
@@ -214,7 +214,7 @@ const MemoEditor = () => {
       resource = await resourceStore.createResourceWithBlob(file);
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
 
     setState((state) => {
@@ -293,7 +293,7 @@ const MemoEditor = () => {
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
     setState((state) => {
       return {

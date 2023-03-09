@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useLocationStore, useMemoStore, useShortcutStore } from "../store/module";
 import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import { checkShouldShowMemoWithFilters } from "../helpers/filter";
-import toastHelper from "./Toast";
 import Memo from "./Memo";
 import "../less/memo-list.less";
 
@@ -95,7 +95,7 @@ const MemoList = () => {
       })
       .catch((error) => {
         console.error(error);
-        toastHelper.error(error.response.data.message);
+        toast.error(error.response.data.message);
       });
   }, []);
 
@@ -125,7 +125,7 @@ const MemoList = () => {
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   };
 

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import * as api from "../../helpers/api";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import Dropdown from "../base/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
-import toastHelper from "../Toast";
 
 const SSOSection = () => {
   const { t } = useTranslation();
@@ -32,7 +32,7 @@ const SSOSection = () => {
           await api.deleteIdentityProvider(identityProvider.id);
         } catch (error: any) {
           console.error(error);
-          toastHelper.error(error.response.data.message);
+          toast.error(error.response.data.message);
         }
         await fetchIdentityProviderList();
       },

@@ -1,9 +1,9 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useResourceStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import toastHelper from "./Toast";
 import "../less/change-resource-filename-dialog.less";
 
 interface Props extends DialogProps {
@@ -44,7 +44,7 @@ const ChangeResourceFilenameDialog: React.FC<Props> = (props: Props) => {
       return;
     }
     if (!validateFilename(filename)) {
-      toastHelper.error(t("message.invalid-resource-filename"));
+      toast.error(t("message.invalid-resource-filename"));
       return;
     }
     try {
@@ -52,11 +52,11 @@ const ChangeResourceFilenameDialog: React.FC<Props> = (props: Props) => {
         id: resourceId,
         filename: filename,
       });
-      toastHelper.info(t("message.resource-filename-updated"));
+      toast.success(t("message.resource-filename-updated"));
       handleCloseBtnClick();
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   };
 

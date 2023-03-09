@@ -1,12 +1,12 @@
 import { Divider, Select, Option } from "@mui/joy";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
 import Dropdown from "../base/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
-import toastHelper from "../Toast";
 
 const StorageSection = () => {
   const { t } = useTranslation();
@@ -50,7 +50,7 @@ const StorageSection = () => {
           await api.deleteStorage(storage.id);
         } catch (error: any) {
           console.error(error);
-          toastHelper.error(error.response.data.message);
+          toast.error(error.response.data.message);
         }
         await fetchStorageList();
       },
