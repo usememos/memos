@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
-	"regexp"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
