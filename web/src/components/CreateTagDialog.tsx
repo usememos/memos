@@ -1,11 +1,11 @@
 import { Input } from "@mui/joy";
 import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTagStore } from "../store/module";
 import { getTagSuggestionList } from "../helpers/api";
 import { matcher } from "../labs/marked/matcher";
 import Tag from "../labs/marked/parser/Tag";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
 
 type Props = DialogProps;
@@ -54,7 +54,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
 
   const handleSaveBtnClick = async () => {
     if (!validateTagName(tagName)) {
-      toastHelper.error("Invalid tag name");
+      toast.error("Invalid tag name");
       return;
     }
 
@@ -63,7 +63,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
       setTagName("");
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   };
 

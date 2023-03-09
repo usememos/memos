@@ -2,11 +2,11 @@ import { Tooltip } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useEditorStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showShareMemo from "./ShareMemoDialog";
@@ -64,7 +64,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   const handleCopyContent = () => {
     copy(memo.content);
-    toastHelper.success(t("message.succeed-copy-content"));
+    toast.success(t("message.succeed-copy-content"));
   };
 
   const handleTogglePinMemoBtnClick = async () => {
@@ -103,7 +103,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       });
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
 
     if (editorStore.getState().editMemoId === memo.id) {

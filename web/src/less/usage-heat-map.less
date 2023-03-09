@@ -1,11 +1,8 @@
 .usage-heat-map-wrapper {
-  @apply flex flex-row justify-start items-center flex-nowrap w-full h-32 pl-6 pb-3 shrink-0;
+  @apply flex flex-row justify-start items-center flex-nowrap w-full h-32 pl-4 pb-3 shrink-0;
 
   > .usage-heat-map {
-    @apply h-full grid grid-rows-7;
-    width: 196px;
-    grid-template-columns: repeat(11, 1fr);
-    grid-auto-flow: column;
+    @apply w-full h-full grid grid-rows-7 grid-cols-10 grid-flow-col;
 
     > .stat-wrapper {
       > .stat-container {
@@ -41,10 +38,10 @@
   }
 
   > .day-tip-text-container {
-    @apply w-6 h-full grid grid-rows-7;
+    @apply w-8 h-full grid grid-rows-7;
 
     > .tip-text {
-      @apply pl-1 w-full h-full text-right font-mono text-gray-400;
+      @apply pl-1  w-full h-full text-left font-mono text-gray-400;
       font-size: 10px;
     }
   }

@@ -1,11 +1,11 @@
 import { isEqual } from "lodash-es";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "../store/module";
 import { convertFileToBase64 } from "../helpers/utils";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import toastHelper from "./Toast";
 import UserAvatar from "./UserAvatar";
 
 type Props = DialogProps;
@@ -41,7 +41,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     if (files && files.length > 0) {
       const image = files[0];
       if (image.size > 2 * 1024 * 1024) {
-        toastHelper.error("Max file size is 2MB");
+        toast.error("Max file size is 2MB");
         return;
       }
       try {
@@ -54,7 +54,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
         });
       } catch (error) {
         console.error(error);
-        toastHelper.error(`Failed to convert image to base64`);
+        toast.error(`Failed to convert image to base64`);
       }
     }
   };
@@ -88,7 +88,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   const handleSaveBtnClick = async () => {
     if (state.username === "") {
-      toastHelper.error(t("message.fill-all"));
+      toast.error(t("message.fill-all"));
       return;
     }
 
@@ -110,11 +110,11 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
         userPatch.email = state.email;
       }
       await userStore.patchUser(userPatch);
-      toastHelper.info(t("message.update-succeed"));
+      toast.success(t("message.update-succeed"));
       handleCloseBtnClick();
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.error);
+      toast.error(error.response.data.error);
     }
   };
 

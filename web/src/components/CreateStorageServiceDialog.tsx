@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { Button, Input, Typography } from "@mui/joy";
 import * as api from "../helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 
 interface Props extends DialogProps {
   storage?: ObjectStorage;
@@ -77,7 +77,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
     if (confirmCallback) {
       confirmCallback();

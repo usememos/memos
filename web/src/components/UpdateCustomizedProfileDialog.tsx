@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-hot-toast";
 import { useGlobalStore } from "../store/module";
 import * as api from "../helpers/api";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import toastHelper from "./Toast";
 import LocaleSelect from "./LocaleSelect";
 import AppearanceSelect from "./AppearanceSelect";
 
@@ -77,7 +77,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   const handleSaveButtonClick = async () => {
     if (state.name === "") {
-      toastHelper.error("Please fill server name");
+      toast.error("Please fill server name");
       return;
     }
 
@@ -91,7 +91,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
       console.error(error);
       return;
     }
-    toastHelper.success(t("message.succeed-update-customized-profile"));
+    toast.success(t("message.succeed-update-customized-profile"));
     destroy();
   };
 

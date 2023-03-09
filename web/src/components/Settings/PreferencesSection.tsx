@@ -20,6 +20,8 @@ const PreferencesSection = () => {
     };
   });
 
+  const dailyReviewTimeOffsetOptions: number[] = [...Array(24).keys()];
+
   const handleLocaleSelectChange = async (locale: Locale) => {
     await userStore.upsertUserSetting("locale", locale);
     globalStore.setLocale(locale);
@@ -44,6 +46,10 @@ const PreferencesSection = () => {
 
   const handleDoubleClickEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, enableDoubleClickEditing: event.target.checked });
+  };
+
+  const handleDailyReviewTimeOffsetChanged = (value: number) => {
+    userStore.upsertLocalSetting({ ...localSetting, dailyReviewTimeOffset: value });
   };
 
   return (
@@ -94,6 +100,37 @@ const PreferencesSection = () => {
           ))}
         </Select>
       </div>
+
+      <div className="form-label selector">
+        <span className="normal-text">Daily Review Time Offset</span>
+        <span className="w-auto inline-flex">
+          <Select
+            placeholder="hh"
+            className="!min-w-[4rem] w-auto text-sm"
+            value={localSetting.dailyReviewTimeOffset}
+            onChange={(_, value) => {
+              if (value !== null) {
+                handleDailyReviewTimeOffsetChanged(value);
+              }
+            }}
+            slotProps={{
+              listbox: {
+                sx: {
+                  maxHeight: "15rem",
+                  overflow: "auto",
+                },
+              },
+            }}
+          >
+            {dailyReviewTimeOffsetOptions.map((item) => (
+              <Option key={item} value={item} className="whitespace-nowrap">
+                {item.toString().padStart(2, "0")}
+              </Option>
+            ))}
+          </Select>
+        </span>
+      </div>
+
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.enable-folding-memo")}</span>
         <Switch className="ml-2" checked={localSetting.enableFoldMemo} onChange={handleIsFoldingEnabledChanged} />

@@ -1,12 +1,12 @@
 import { Button } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
 import { useResourceStore } from "../store/module";
 import { getResourceUrl } from "../utils/resource";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 import Dropdown from "./base/Dropdown";
 import { generateDialog } from "./Dialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
@@ -29,7 +29,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       .fetchResourceList()
       .catch((error) => {
         console.error(error);
-        toastHelper.error(error.response.data.message);
+        toast.error(error.response.data.message);
       })
       .finally(() => {
         loadingState.setFinish();
@@ -55,7 +55,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
     const url = getResourceUrl(resource);
     copy(url);
-    toastHelper.success(t("message.succeed-copy-resource-link"));
+    toast.success(t("message.succeed-copy-resource-link"));
   };
 
   const handleDeleteUnusedResourcesBtnClick = () => {
@@ -68,7 +68,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       return false;
     });
     if (unusedResources.length === 0) {
-      toastHelper.success(t("resources.no-unused-resources"));
+      toast.success(t("resources.no-unused-resources"));
       return;
     }
     showCommonDialog({

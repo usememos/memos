@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import { TAG_REG } from "../labs/marked/parser";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import useLoading from "../hooks/useLoading";
-import toastHelper from "../components/Toast";
 import Icon from "../components/Icon";
 import MemoFilter from "../components/MemoFilter";
 import Memo from "../components/Memo";
@@ -84,7 +84,7 @@ const Explore = () => {
       });
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   };
 

@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useMemoStore } from "../store/module";
+import { useMemoStore, useUserStore } from "../store/module";
 import toImage from "../labs/html2image";
 import useToggle from "../hooks/useToggle";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
@@ -23,17 +23,23 @@ const DailyReviewDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const memoStore = useMemoStore();
   const memos = memoStore.state.memos;
+
+  const userStore = useUserStore();
+  const { localSetting } = userStore.state.user as User;
   const [currentDateStamp, setCurrentDateStamp] = useState(utils.getDateStampByDate(utils.getDateString(props.currentDateStamp)));
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const memosElRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date(currentDateStamp);
   const dailyMemos = memos
-    .filter(
-      (m) =>
+    .filter((m) => {
+      const createdTimestamp = utils.getTimeStampByDate(m.createdTs);
+      const currentDateStampWithOffset = currentDateStamp + utils.convertToMillis(localSetting);
+      return (
         m.rowStatus === "NORMAL" &&
-        utils.getTimeStampByDate(m.createdTs) >= currentDateStamp &&
-        utils.getTimeStampByDate(m.createdTs) < currentDateStamp + DAILY_TIMESTAMP
-    )
+        createdTimestamp >= currentDateStampWithOffset &&
+        createdTimestamp < currentDateStampWithOffset + DAILY_TIMESTAMP
+      );
+    })
     .sort((a, b) => utils.getTimeStampByDate(a.createdTs) - utils.getTimeStampByDate(b.createdTs));
 
   const handleShareBtnClick = () => {
