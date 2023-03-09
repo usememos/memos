@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Button, Input, Typography } from "@mui/joy";
+import { toast } from "react-hot-toast";
 import * as api from "../helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 import { useGlobalStore } from "../store/module";
 
 interface Props extends DialogProps {
@@ -29,7 +29,7 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
       await globalStore.fetchSystemStatus();
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
     if (confirmCallback) {
       confirmCallback();
