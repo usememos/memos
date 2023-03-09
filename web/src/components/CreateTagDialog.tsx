@@ -103,15 +103,17 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
           <>
             <p className="w-full mt-2 mb-1 text-sm text-gray-400">All tags</p>
             <div className="w-full flex flex-row justify-start items-start flex-wrap">
-              {tagNameList.map((tag) => (
-                <span
-                  className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60 hover:line-through"
-                  key={tag}
-                  onClick={() => handleDeleteTag(tag)}
-                >
-                  #{tag}
-                </span>
-              ))}
+              {Array.from(tagNameList)
+                .sort()
+                .map((tag) => (
+                  <span
+                    className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60 hover:line-through"
+                    key={tag}
+                    onClick={() => handleDeleteTag(tag)}
+                  >
+                    #{tag}
+                  </span>
+                ))}
             </div>
           </>
         )}
