@@ -25,7 +25,7 @@ const (
 	maxFileSize = 32 << 20
 )
 
-var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`);
+var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
 
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
@@ -144,7 +144,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					s3FileKey = filename
 				} else {
 					s3FileKey = fileKeyPattern.ReplaceAllStringFunc(s3Config.Path, func(s string) string {
-						switch (s) {
+						switch s {
 						case "{filename}":
 							return filename
 						case "{filetype}":
@@ -164,7 +164,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 						case "{second}":
 							return fmt.Sprintf("%02d", t.Second())
 						}
-						return s;
+						return s
 					})
 
 					if !strings.Contains(s3Config.Path, "{filename}") {
