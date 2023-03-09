@@ -1,4 +1,3 @@
-import { Tooltip } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
@@ -39,7 +38,6 @@ const Memo: React.FC<Props> = (props: Props) => {
   const [createdTimeStr, setCreatedTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userStore.isVisitorMode() || readonly;
-  const updatedTimeStr = getFormatedMemoTimeStr(memo.updatedTs, i18n.language);
 
   useEffect(() => {
     let intervalFlag: any = -1;
@@ -111,7 +109,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleGenMemoImageBtnClick = () => {
+  const handleGenerateMemoImageBtnClick = () => {
     showShareMemo(memo);
   };
 
@@ -203,11 +201,9 @@ const Memo: React.FC<Props> = (props: Props) => {
       {memo.pinned && <div className="corner-container"></div>}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
-          <Tooltip title={`Updated at ${updatedTimeStr}`} placement="top" arrow>
-            <span className="time-text" onDoubleClick={handleMemoCreatedTimeClick}>
-              {createdTimeStr}
-            </span>
-          </Tooltip>
+          <span className="time-text" onDoubleClick={handleMemoCreatedTimeClick}>
+            {createdTimeStr}
+          </span>
           {isVisitorMode && (
             <a className="name-text" href={`/u/${memo.creatorId}`}>
               @{memo.creatorName}
@@ -238,7 +234,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                     <Icon.Edit3 className="icon-img" />
                     <span className="tip-text">{t("common.edit")}</span>
                   </div>
-                  <div className="btn" onClick={handleGenMemoImageBtnClick}>
+                  <div className="btn" onClick={handleGenerateMemoImageBtnClick}>
                     <Icon.Share className="icon-img" />
                     <span className="tip-text">{t("common.share")}</span>
                   </div>

@@ -14,7 +14,6 @@ const defaultSetting: Setting = {
 };
 
 const defaultLocalSetting: LocalSetting = {
-  enableFoldMemo: true,
   enableDoubleClickEditing: true,
   dailyReviewTimeOffset: 0,
 };
