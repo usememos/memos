@@ -426,6 +426,9 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			}
 			defer src.Close()
 			blob, err = io.ReadAll(src)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
+			}
 		}
 
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
