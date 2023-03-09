@@ -9,6 +9,7 @@ const MAX_EXPAND_HEIGHT = 384;
 interface Props {
   content: string;
   className?: string;
+  showFull?: boolean;
   onMemoContentClick?: (e: React.MouseEvent) => void;
   onMemoContentDoubleClick?: (e: React.MouseEvent) => void;
 }
@@ -20,7 +21,7 @@ interface State {
 }
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, content, onMemoContentClick, onMemoContentDoubleClick } = props;
+  const { className, content, showFull, onMemoContentClick, onMemoContentDoubleClick } = props;
   const { t } = useTranslation();
 
   const [state, setState] = useState<State>({
@@ -29,6 +30,10 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (showFull) {
+      return;
+    }
+
     if (memoContentContainerRef.current) {
       const height = memoContentContainerRef.current.clientHeight;
       if (height > MAX_EXPAND_HEIGHT) {
