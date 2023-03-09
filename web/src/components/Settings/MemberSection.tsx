@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useUserStore } from "../../store/module";
 import * as api from "../../helpers/api";
-import toastHelper from "../Toast";
 import Dropdown from "../base/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
@@ -48,7 +48,7 @@ const PreferencesSection = () => {
 
   const handleCreateUserBtnClick = async () => {
     if (state.createUserUsername === "" || state.createUserPassword === "") {
-      toastHelper.error(t("message.fill-form"));
+      toast.error(t("message.fill-form"));
       return;
     }
 
@@ -61,7 +61,7 @@ const PreferencesSection = () => {
     try {
       await api.createUser(userCreate);
     } catch (error: any) {
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
     await fetchUserList();
     setState({

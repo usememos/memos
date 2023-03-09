@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { useGlobalStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import useLoading from "../hooks/useLoading";
-import toastHelper from "../components/Toast";
 import MemoContent from "../components/MemoContent";
 import MemoResources from "../components/MemoResources";
 import "../less/memo-detail.less";
@@ -44,7 +44,7 @@ const MemoDetail = () => {
         })
         .catch((error) => {
           console.error(error);
-          toastHelper.error(error.response.data.message);
+          toast.error(error.response.data.message);
         });
     }
   }, [location]);

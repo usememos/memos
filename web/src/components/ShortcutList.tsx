@@ -1,11 +1,11 @@
 import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useLocationStore, useShortcutStore } from "../store/module";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
 
 const ShortcutList = () => {
@@ -87,7 +87,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
         }
       } catch (error: any) {
         console.error(error);
-        toastHelper.error(error.response.data.message);
+        toast.error(error.response.data.message);
       }
     } else {
       toggleConfirmDeleteBtn();

@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import { useGlobalStore, useUserStore } from "../store/module";
-import toastHelper from "../components/Toast";
 import MemoEditor from "../components/MemoEditor";
 import MemoFilter from "../components/MemoFilter";
 import MemoList from "../components/MemoList";
@@ -21,7 +21,7 @@ function Home() {
 
     if (userStore.isVisitorMode()) {
       if (!owner) {
-        toastHelper.error(t("message.user-not-found"));
+        toast.error(t("message.user-not-found"));
       }
     }
   }, [location]);

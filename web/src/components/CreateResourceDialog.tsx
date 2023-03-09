@@ -1,8 +1,8 @@
 import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete, Tooltip } from "@mui/joy";
 import React, { useRef, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useResourceStore } from "../store/module";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 import { generateDialog } from "./Dialog";
 
 const fileTypeAutocompleteOptions = ["image/*", "text/*", "audio/*", "video/*", "application/*"];
@@ -132,7 +132,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
 
     if (onConfirm) {

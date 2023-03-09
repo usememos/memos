@@ -1,11 +1,11 @@
 import { Button, Textarea } from "@mui/joy";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import * as api from "../helpers/api";
 import useLoading from "../hooks/useLoading";
 import { marked } from "../labs/marked";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import toastHelper from "./Toast";
 import showSettingDialog from "./SettingDialog";
 
 type Props = DialogProps;
@@ -44,7 +44,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
       await askQuestion(question);
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.error);
+      toast.error(error.response.data.error);
     }
     setQuestion("");
     fetchingState.setFinish();

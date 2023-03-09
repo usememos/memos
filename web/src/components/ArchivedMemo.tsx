@@ -1,8 +1,8 @@
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMemoStore } from "../store/module";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
-import toastHelper from "./Toast";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import "../less/memo.less";
@@ -23,7 +23,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
         await memoStore.deleteMemoById(memo.id);
       } catch (error: any) {
         console.error(error);
-        toastHelper.error(error.response.data.message);
+        toast.error(error.response.data.message);
       }
     } else {
       toggleConfirmDeleteBtn();
@@ -37,10 +37,10 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
         rowStatus: "NORMAL",
       });
       await memoStore.fetchMemos();
-      toastHelper.info(t("message.restored-successfully"));
+      toast(t("message.restored-successfully"));
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
   };
 
