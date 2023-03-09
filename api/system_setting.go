@@ -31,6 +31,8 @@ const (
 	SystemSettingOpenAIAPIKeyName SystemSettingName = "openAIApiKey"
 	// SystemSettingOpenAIAPIHost is the key type of OpenAI API path.
 	SystemSettingOpenAIAPIHost SystemSettingName = "openAIApiHost"
+	// SystemSettingLocalStoragePath is the key type of local storage path.
+	SystemSettingLocalStoragePath SystemSettingName = "localStoragePath"
 )
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
@@ -71,6 +73,8 @@ func (key SystemSettingName) String() string {
 		return "openAIApiKey"
 	case SystemSettingOpenAIAPIHost:
 		return "openAIApiHost"
+	case SystemSettingLocalStoragePath:
+		return "localStoragePath"
 	}
 	return ""
 }
@@ -176,6 +180,12 @@ func (upsert SystemSettingUpsert) Validate() error {
 			return fmt.Errorf("failed to unmarshal system setting openai api key value")
 		}
 	} else if upsert.Name == SystemSettingOpenAIAPIHost {
+		value := ""
+		err := json.Unmarshal([]byte(upsert.Value), &value)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal system setting openai api host value")
+		}
+	} else if upsert.Name == SystemSettingLocalStoragePath {
 		value := ""
 		err := json.Unmarshal([]byte(upsert.Value), &value)
 		if err != nil {

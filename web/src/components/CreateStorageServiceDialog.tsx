@@ -186,9 +186,11 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           <span className="text-sm text-gray-400 ml-1">(Storage Path)</span>
         </Typography>
         <Typography className="!mb-1" level="body2">
-          <p className="text-sm text-gray-400 ml-1">{"You can use {year}, {month}, {day}, {hour}, {minute}, {second},"}</p>
-          <p className="text-sm text-gray-400 ml-1">{"{filetype}, {filename}, {timestamp} and any other words."}</p>
-          <p className="text-sm text-gray-400 ml-1">{"e.g., {year}/{month}/{day}/your/path/{filename}.{filetype}"}</p>
+          <span className="text-sm text-gray-400 ml-1">{"You can use {year}, {month}, {day}, {hour}, {minute}, {second},"}</span>
+          <br />
+          <span className="text-sm text-gray-400 ml-1">{"{filetype}, {filename}, {timestamp} and any other words."}</span>
+          <br />
+          <span className="text-sm text-gray-400 ml-1">{"e.g., {year}/{month}/{day}/your/path/{filename}.{filetype}"}</span>
         </Typography>
         <Input
           className="mb-2"

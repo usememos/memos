@@ -24,6 +24,7 @@ interface SystemStatus {
   customizedProfile: CustomizedProfile;
   storageServiceId: number;
   openAIApiHost: string;
+  localStoragePath: string;
 }
 
 interface SystemSetting {

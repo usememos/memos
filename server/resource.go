@@ -7,7 +7,9 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -102,13 +104,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		defer src.Close()
 
-		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingStorageServiceIDName})
+		systemSettingStorageServiceID, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingStorageServiceIDName})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
 		storageServiceID := 0
-		if systemSetting != nil {
-			err = json.Unmarshal([]byte(systemSetting.Value), &storageServiceID)
+		if systemSettingStorageServiceID != nil {
+			err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
 			}
@@ -116,6 +118,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		var resourceCreate *api.ResourceCreate
 		if storageServiceID == 0 {
+			// Database storage.
 			fileBytes, err := io.ReadAll(src)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
@@ -127,6 +130,51 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				Size:      size,
 				Blob:      fileBytes,
 			}
+		} else if storageServiceID == -1 {
+			// Local storage.
+			systemSettingLocalStoragePath, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingLocalStoragePath})
+			if err != nil && common.ErrorCode(err) != common.NotFound {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
+			}
+			localStoragePath := ""
+			if systemSettingLocalStoragePath != nil {
+				err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
+				}
+			}
+			filePath := ""
+			if localStoragePath == "" {
+				filePath = filename
+			} else if !strings.Contains(localStoragePath, "{filename}") {
+				filePath = path.Join(localStoragePath, filename)
+			} else {
+				filePath = path.Join(s.Profile.Data, replacePathTemplate(localStoragePath, filename, filetype))
+			}
+			filePath = path.Join(s.Profile.Data, filePath)
+			dirPath := filepath.Dir(filePath)
+			err = os.MkdirAll(dirPath, os.ModePerm)
+			if err != nil {
+				fmt.Println(err)
+			}
+			dst, err := os.Create(filePath)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create file").SetInternal(err)
+			}
+			defer dst.Close()
+
+			_, err = io.Copy(dst, src)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to copy file").SetInternal(err)
+			}
+
+			resourceCreate = &api.ResourceCreate{
+				CreatorID:    userID,
+				Filename:     filename,
+				Type:         filetype,
+				Size:         size,
+				InternalPath: filePath,
+			}
 		} else {
 			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageServiceID})
 			if err != nil {
@@ -135,22 +183,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 			if storage.Type == api.StorageS3 {
 				s3Config := storage.Config.S3Config
-				t := time.Now()
 				s3FileKey := s3Config.Path
 				if s3Config.Path == "" {
 					s3FileKey = filename
 				} else if !strings.Contains(s3Config.Path, "{filename}") {
 					s3FileKey = path.Join(s3Config.Path, filename)
 				} else {
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{filename}", filename)
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{filetype}", filetype)
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{timestamp}", fmt.Sprintf("%d", t.Unix()))
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{year}", fmt.Sprintf("%d", t.Year()))
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{month}", fmt.Sprintf("%02d", t.Month()))
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{day}", fmt.Sprintf("%02d", t.Day()))
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{hour}", fmt.Sprintf("%02d", t.Hour()))
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{minute}", fmt.Sprintf("%02d", t.Minute()))
-					s3FileKey = strings.ReplaceAll(s3FileKey, "{second}", fmt.Sprintf("%02d", t.Second()))
+					s3FileKey = replacePathTemplate(s3FileKey, filename, filetype)
 				}
 				s3client, err := s3.NewClient(ctx, &s3.Config{
 					AccessKey: s3Config.AccessKey,
@@ -379,6 +418,16 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
 		}
 
+		blob := resource.Blob
+		if resource.InternalPath != "" {
+			src, err := os.Open(resource.InternalPath)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
+			}
+			defer src.Close()
+			blob, err = io.ReadAll(src)
+		}
+
 		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
 		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
 		resourceType := strings.ToLower(resource.Type)
@@ -388,7 +437,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(resource.Blob))
 			return nil
 		}
-		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(resource.Blob))
+		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(blob))
 	})
 }
 
@@ -413,4 +462,18 @@ func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Reso
 		return errors.Wrap(err, "failed to create activity")
 	}
 	return err
+}
+
+func replacePathTemplate(path string, filename string, filetype string) string {
+	t := time.Now()
+	path = strings.ReplaceAll(path, "{filename}", filename)
+	path = strings.ReplaceAll(path, "{filetype}", filetype)
+	path = strings.ReplaceAll(path, "{timestamp}", fmt.Sprintf("%d", t.Unix()))
+	path = strings.ReplaceAll(path, "{year}", fmt.Sprintf("%d", t.Year()))
+	path = strings.ReplaceAll(path, "{month}", fmt.Sprintf("%02d", t.Month()))
+	path = strings.ReplaceAll(path, "{day}", fmt.Sprintf("%02d", t.Day()))
+	path = strings.ReplaceAll(path, "{hour}", fmt.Sprintf("%02d", t.Hour()))
+	path = strings.ReplaceAll(path, "{minute}", fmt.Sprintf("%02d", t.Minute()))
+	path = strings.ReplaceAll(path, "{second}", fmt.Sprintf("%02d", t.Second()))
+	return path
 }

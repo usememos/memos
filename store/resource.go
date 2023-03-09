@@ -24,6 +24,7 @@ type resourceRaw struct {
 	// Domain specific fields
 	Filename     string
 	Blob         []byte
+	InternalPath string
 	ExternalLink string
 	Type         string
 	Size         int64
@@ -42,6 +43,7 @@ func (raw *resourceRaw) toResource() *api.Resource {
 		// Domain specific fields
 		Filename:     raw.Filename,
 		Blob:         raw.Blob,
+		InternalPath: raw.InternalPath,
 		ExternalLink: raw.ExternalLink,
 		Type:         raw.Type,
 		Size:         raw.Size,
@@ -189,9 +191,9 @@ func (s *Store) PatchResource(ctx context.Context, patch *api.ResourcePatch) (*a
 }
 
 func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate) (*resourceRaw, error) {
-	fields := []string{"filename", "blob", "external_link", "type", "size", "creator_id"}
-	values := []interface{}{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID}
-	placeholders := []string{"?", "?", "?", "?", "?", "?"}
+	fields := []string{"filename", "blob", "internal_path", "external_link", "type", "size", "creator_id"}
+	values := []interface{}{create.Filename, create.Blob, create.InternalPath, create.ExternalLink, create.Type, create.Size, create.CreatorID}
+	placeholders := []string{"?", "?", "?", "?", "?", "?", "?"}
 	if s.profile.IsDev() {
 		fields = append(fields, "visibility")
 		values = append(values, create.Visibility)
@@ -210,6 +212,7 @@ func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
 		&resourceRaw.Blob,
+		&resourceRaw.InternalPath,
 		&resourceRaw.ExternalLink,
 		&resourceRaw.Type,
 		&resourceRaw.Size,
@@ -243,7 +246,7 @@ func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.Re
 
 	args = append(args, patch.ID)
 
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
+	fields := []string{"id", "filename", "internal_path", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
 	if s.profile.IsDev() {
 		fields = append(fields, "visibility")
 	}
@@ -257,6 +260,7 @@ func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.Re
 	dests := []interface{}{
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
+		&resourceRaw.InternalPath,
 		&resourceRaw.ExternalLink,
 		&resourceRaw.Type,
 		&resourceRaw.Size,
@@ -290,7 +294,7 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 		where, args = append(where, "id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
 	}
 
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
+	fields := []string{"id", "filename", "internal_path", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
 	if find.GetBlob {
 		fields = append(fields, "blob")
 	}
@@ -317,6 +321,7 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 		dests := []interface{}{
 			&resourceRaw.ID,
 			&resourceRaw.Filename,
+			&resourceRaw.InternalPath,
 			&resourceRaw.ExternalLink,
 			&resourceRaw.Type,
 			&resourceRaw.Size,
