@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useEditorStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
@@ -66,10 +66,6 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleTogglePinMemoBtnClick = async () => {
-    if (isVisitorMode) {
-      return;
-    }
-
     try {
       if (memo.pinned) {
         await memoStore.unpinMemo(memo.id);
@@ -82,18 +78,10 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleEditMemoClick = () => {
-    if (isVisitorMode) {
-      return;
-    }
-
     editorStore.setEditMemoWithId(memo.id);
   };
 
   const handleArchiveMemoClick = async () => {
-    if (isVisitorMode) {
-      return;
-    }
-
     try {
       await memoStore.patchMemo({
         id: memo.id,
@@ -205,9 +193,9 @@ const Memo: React.FC<Props> = (props: Props) => {
             {createdTimeStr}
           </span>
           {isVisitorMode && (
-            <a className="name-text" href={`/u/${memo.creatorId}`}>
+            <Link className="name-text" to={`/u/${memo.creatorId}`}>
               @{memo.creatorName}
-            </a>
+            </Link>
           )}
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span

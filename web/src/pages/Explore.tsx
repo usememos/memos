@@ -1,14 +1,13 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { useGlobalStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { useLocationStore, useMemoStore } from "../store/module";
 import { TAG_REG } from "../labs/marked/parser";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import useLoading from "../hooks/useLoading";
-import Icon from "../components/Icon";
 import MemoFilter from "../components/MemoFilter";
 import Memo from "../components/Memo";
+import MobileHeader from "../components/MobileHeader";
 
 interface State {
   memos: Memo[];
@@ -16,10 +15,7 @@ interface State {
 
 const Explore = () => {
   const { t } = useTranslation();
-  const navigate = useNavigate();
-  const globalStore = useGlobalStore();
   const locationStore = useLocationStore();
-  const userStore = useUserStore();
   const memoStore = useMemoStore();
   const query = locationStore.state.query;
   const [state, setState] = useState<State>({
@@ -27,8 +23,6 @@ const Explore = () => {
   });
   const [isComplete, setIsComplete] = useState<boolean>(false);
   const loadingState = useLoading();
-  const customizedProfile = globalStore.state.systemStatus.customizedProfile;
-  const user = userStore.state.user;
   const location = locationStore.state;
 
   useEffect(() => {
@@ -88,33 +82,11 @@ const Explore = () => {
     }
   };
 
-  const handleTitleClick = () => {
-    if (user) {
-      navigate("/");
-    } else {
-      navigate("/auth");
-    }
-  };
-
   return (
-    <section className="w-full min-h-full flex flex-col justify-start items-center pb-8 bg-zinc-100 dark:bg-zinc-800">
-      <div className="sticky top-0 z-10 max-w-2xl w-full h-auto flex flex-row justify-between backdrop-blur-sm items-center px-4 sm:pr-6 pt-6 mb-2">
-        <div className="flex flex-row justify-start items-center cursor-pointer hover:opacity-80" onClick={handleTitleClick}>
-          <img className="h-12 w-auto rounded-md mr-2" src={customizedProfile.logoUrl} alt="" />
-          <span className="text-xl sm:text-4xl text-gray-700 dark:text-gray-200">{customizedProfile.name}</span>
-        </div>
-        <div className="flex flex-row justify-end items-center">
-          <a
-            className="flex flex-row justify-center items-center h-12 w-12 border rounded-full hover:opacity-80 hover:shadow dark:text-white dark:border-gray-400"
-            href="/explore/rss.xml"
-            target="_blank"
-          >
-            <Icon.Rss className="w-7 h-auto opacity-60" />
-          </a>
-        </div>
-      </div>
+    <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
+      <MobileHeader showSearch={false} />
       {!loadingState.isLoading && (
-        <main className="relative flex-grow max-w-2xl w-full h-auto flex flex-col justify-start items-start px-4 sm:pr-6">
+        <main className="relative w-full h-auto flex flex-col justify-start items-start -mt-2">
           <MemoFilter />
           {sortedMemos.map((memo) => {
             return <Memo key={`${memo.id}-${memo.createdTs}`} memo={memo} readonly={true} />;

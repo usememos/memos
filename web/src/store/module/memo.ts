@@ -1,9 +1,9 @@
-import { omit, uniqBy } from "lodash-es";
+import { omit } from "lodash-es";
 import * as api from "../../helpers/api";
 import { DEFAULT_MEMO_LIMIT } from "../../helpers/consts";
 import { useUserStore } from "./";
 import store, { useAppSelector } from "../";
-import { createMemo, deleteMemo, patchMemo, setIsFetching, setMemos } from "../reducer/memo";
+import { createMemo, deleteMemo, patchMemo, setIsFetching, upsertMemos } from "../reducer/memo";
 
 const convertResponseModelMemo = (memo: Memo): Memo => {
   return {
@@ -41,11 +41,7 @@ export const useMemoStore = () => {
       }
       const { data } = (await api.getMemoList(memoFind)).data;
       const fetchedMemos = data.map((m) => convertResponseModelMemo(m));
-      if (offset === 0) {
-        store.dispatch(setMemos([]));
-      }
-      const memos = state.memos;
-      store.dispatch(setMemos(uniqBy(memos.concat(fetchedMemos), "id")));
+      store.dispatch(upsertMemos(fetchedMemos));
       store.dispatch(setIsFetching(false));
 
       return fetchedMemos;
