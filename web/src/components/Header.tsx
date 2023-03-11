@@ -8,6 +8,7 @@ import showResourcesDialog from "./ResourcesDialog";
 import showSettingDialog from "./SettingDialog";
 import showAskAIDialog from "./AskAIDialog";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
+import showAboutSiteDialog from "./AboutSiteDialog";
 import UserBanner from "./UserBanner";
 
 const Header = () => {
@@ -114,6 +115,28 @@ const Header = () => {
                 onClick={() => showSettingDialog()}
               >
                 <Icon.Settings className="mr-4 w-6 h-auto opacity-80" /> {t("common.settings")}
+              </button>
+            </>
+          )}
+          {isVisitorMode && (
+            <>
+              <NavLink
+                to="/auth"
+                className={({ isActive }) =>
+                  `${
+                    isActive && "bg-white dark:bg-zinc-700 shadow"
+                  } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                }
+              >
+                <>
+                  <Icon.LogIn className="mr-4 w-6 h-auto opacity-80" /> {t("common.sign-in")}
+                </>
+              </NavLink>
+              <button
+                className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+                onClick={() => showAboutSiteDialog()}
+              >
+                <Icon.CupSoda className="mr-4 w-6 h-auto opacity-80" /> {t("common.about")}
               </button>
             </>
           )}
