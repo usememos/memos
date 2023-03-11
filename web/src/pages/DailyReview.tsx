@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { last } from "lodash-es";
+import { useEffect, useRef, useState } from "react";
+import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMemoStore, useUserStore } from "../store/module";
-import { DAILY_TIMESTAMP } from "../helpers/consts";
+import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import * as utils from "../helpers/utils";
 import MobileHeader from "../components/MobileHeader";
 import useToggle from "../hooks/useToggle";
@@ -36,6 +38,24 @@ const DailyReview = () => {
       );
     })
     .sort((a, b) => utils.getTimeStampByDate(a.createdTs) - utils.getTimeStampByDate(b.createdTs));
+
+  useEffect(() => {
+    const fetchMoreMemos = async () => {
+      try {
+        const fetchedMemos = await memoStore.fetchMemos();
+        if (fetchedMemos.length === DEFAULT_MEMO_LIMIT) {
+          const lastMemo = last(fetchedMemos);
+          if (lastMemo && lastMemo.createdTs > currentDateStamp) {
+            await fetchMoreMemos();
+          }
+        }
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.response.data.message);
+      }
+    };
+    fetchMoreMemos();
+  }, [currentDateStamp]);
 
   const handleShareBtnClick = () => {
     if (!memosElRef.current) {
@@ -99,8 +119,8 @@ const DailyReview = () => {
             handleDateStampChange={handleDataPickerChange}
           />
         </div>
-        <div className="w-full h-auto flex flex-col justify-start items-start p-12 pt-26" ref={memosElRef}>
-          <div className="flex flex-col justify-center items-center mx-auto pb-6 select-none">
+        <div className="w-full h-auto flex flex-col justify-start items-start px-2 sm:px-12 pt-14 pb-8" ref={memosElRef}>
+          <div className="flex flex-col justify-center items-center mx-auto pb-10 select-none">
             <div className="mx-auto font-bold text-gray-600 dark:text-gray-300 text-center leading-6 mb-2">{currentDate.getFullYear()}</div>
             <div className="flex flex-col justify-center items-center m-auto w-24 h-24 shadow rounded-3xl dark:bg-zinc-800">
               <div className="text-center w-full leading-6 text-sm text-white bg-blue-700 rounded-t-3xl">
@@ -113,7 +133,7 @@ const DailyReview = () => {
             </div>
           </div>
           {dailyMemos.length === 0 ? (
-            <div className="mx-auto py-6 pb-12 px-0">
+            <div className="mx-auto pt-4 pb-5 px-0">
               <p className="italic text-gray-400">{t("daily-review.oops-nothing")}</p>
             </div>
           ) : (

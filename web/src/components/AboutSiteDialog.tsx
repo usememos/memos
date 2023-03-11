@@ -53,11 +53,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
             />
             <span>Sticky notes</span>
           </a>
-          <a
-            href="https://github.com/boojack/sticky-notes"
-            target="_blank"
-            className="flex items-center underline text-blue-600 hover:opacity-80"
-          >
+          <a href="https://star-history.com" target="_blank" className="flex items-center underline text-blue-600 hover:opacity-80">
             <img className="w-4 h-auto mr-1" src="https://star-history.com/icon.png" alt="" />
             <span>Star history</span>
           </a>
