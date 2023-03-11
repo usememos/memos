@@ -1,6 +1,6 @@
 export * from "./editor";
 export * from "./global";
-export * from "./location";
+export * from "./filter";
 export * from "./memo";
 export * from "./tag";
 export * from "./resource";

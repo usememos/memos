@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useLayoutStore, useUserStore } from "../store/module";
 import { resolution } from "../utils/layout";
@@ -12,6 +12,7 @@ import UserBanner from "./UserBanner";
 
 const Header = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   const userStore = useUserStore();
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
@@ -27,7 +28,7 @@ const Header = () => {
     };
     window.addEventListener("resize", handleWindowResize);
     handleWindowResize();
-  }, []);
+  }, [location]);
 
   return (
     <div
@@ -42,7 +43,7 @@ const Header = () => {
         onClick={() => layoutStore.setHeaderStatus(false)}
       ></div>
       <header
-        className={`relative w-56 sm:w-full h-full max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start py-4 z-30 bg-white dark:bg-zinc-800 sm:bg-transparent sm:shadow-none transition-all duration-300 -translate-x-full sm:translate-x-0 ${
+        className={`relative w-56 sm:w-full h-full max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start py-4 z-30 bg-zinc-100 dark:bg-zinc-800 sm:bg-transparent sm:shadow-none transition-all duration-300 -translate-x-full sm:translate-x-0 ${
           showHeader && "translate-x-0 shadow-2xl"
         }`}
       >

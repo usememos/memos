@@ -4,7 +4,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { useEditorStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { useEditorStore, useFilterStore, useMemoStore, useUserStore } from "../store/module";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
@@ -32,7 +32,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const editorStore = useEditorStore();
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
   const [createdTimeStr, setCreatedTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
@@ -106,11 +106,11 @@ const Memo: React.FC<Props> = (props: Props) => {
 
     if (targetEl.className === "tag-span") {
       const tagName = targetEl.innerText.slice(1);
-      const currTagQuery = locationStore.getState().query?.tag;
+      const currTagQuery = filterStore.getState().tag;
       if (currTagQuery === tagName) {
-        locationStore.setTagQuery(undefined);
+        filterStore.setTagFilter(undefined);
       } else {
-        locationStore.setTagQuery(tagName);
+        filterStore.setTagFilter(tagName);
       }
     } else if (targetEl.classList.contains("todo-block")) {
       if (isVisitorMode) {
@@ -176,11 +176,11 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemoVisibilityClick = (visibility: Visibility) => {
-    const currVisibilityQuery = locationStore.getState().query?.visibility;
+    const currVisibilityQuery = filterStore.getState().visibility;
     if (currVisibilityQuery === visibility) {
-      locationStore.setMemoVisibilityQuery(undefined);
+      filterStore.setMemoVisibilityFilter(undefined);
     } else {
-      locationStore.setMemoVisibilityQuery(visibility);
+      filterStore.setMemoVisibilityFilter(visibility);
     }
   };
 

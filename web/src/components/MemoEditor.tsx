@@ -5,15 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "../labs/marked";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import {
-  useEditorStore,
-  useGlobalStore,
-  useLocationStore,
-  useMemoStore,
-  useResourceStore,
-  useTagStore,
-  useUserStore,
-} from "../store/module";
+import { useEditorStore, useGlobalStore, useFilterStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "../store/module";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import Selector from "./base/Selector";
@@ -46,7 +38,7 @@ const MemoEditor = () => {
   const { t, i18n } = useTranslation();
   const userStore = useUserStore();
   const editorStore = useEditorStore();
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
   const resourceStore = useResourceStore();
@@ -289,7 +281,7 @@ const MemoEditor = () => {
           visibility: editorState.memoVisibility,
           resourceIdList: editorState.resourceList.map((resource) => resource.id),
         });
-        locationStore.clearQuery();
+        filterStore.clearFilter();
       }
     } catch (error: any) {
       console.error(error);

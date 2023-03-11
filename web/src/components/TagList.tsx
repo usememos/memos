@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocationStore, useTagStore } from "../store/module";
+import { useFilterStore, useTagStore } from "../store/module";
 import useToggle from "../hooks/useToggle";
 import Icon from "./Icon";
 import showCreateTagDialog from "./CreateTagDialog";
@@ -13,10 +13,10 @@ interface Tag {
 
 const TagList = () => {
   const { t } = useTranslation();
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const tagStore = useTagStore();
   const tagsText = tagStore.state.tags;
-  const query = locationStore.state.query;
+  const filter = filterStore.state;
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
@@ -80,7 +80,7 @@ const TagList = () => {
       </div>
       <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap mt-2 mb-2">
         {tags.map((t, idx) => (
-          <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={query?.tag} />
+          <TagItemContainer key={t.text + "-" + idx} tag={t} tagQuery={filter.tag} />
         ))}
       </div>
     </div>
@@ -93,7 +93,7 @@ interface TagItemContainerProps {
 }
 
 const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContainerProps) => {
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const { tag, tagQuery } = props;
   const isActive = tagQuery === tag.text;
   const hasSubTags = tag.subTags.length > 0;
@@ -101,9 +101,9 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
 
   const handleTagClick = () => {
     if (isActive) {
-      locationStore.setTagQuery(undefined);
+      filterStore.setTagFilter(undefined);
     } else {
-      locationStore.setTagQuery(tag.text);
+      filterStore.setTagFilter(tag.text);
     }
   };
 
