@@ -52,7 +52,6 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				ExternalURL: "",
 			},
 			StorageServiceID: 0,
-			OpenAIAPIHost:    "",
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -60,49 +59,33 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
 		}
 		for _, systemSetting := range systemSettingList {
-			if systemSetting.Name == api.SystemSettingServerID || systemSetting.Name == api.SystemSettingSecretSessionName || systemSetting.Name == api.SystemSettingOpenAIAPIKeyName {
+			if systemSetting.Name == api.SystemSettingServerID || systemSetting.Name == api.SystemSettingSecretSessionName || systemSetting.Name == api.SystemSettingOpenAIConfigName {
 				continue
 			}
 
-			var value interface{}
-			err := json.Unmarshal([]byte(systemSetting.Value), &value)
+			var baseValue interface{}
+			err := json.Unmarshal([]byte(systemSetting.Value), &baseValue)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
 			}
 
 			if systemSetting.Name == api.SystemSettingAllowSignUpName {
-				systemStatus.AllowSignUp = value.(bool)
+				systemStatus.AllowSignUp = baseValue.(bool)
 			} else if systemSetting.Name == api.SystemSettingDisablePublicMemosName {
-				systemStatus.DisablePublicMemos = value.(bool)
+				systemStatus.DisablePublicMemos = baseValue.(bool)
 			} else if systemSetting.Name == api.SystemSettingAdditionalStyleName {
-				systemStatus.AdditionalStyle = value.(string)
+				systemStatus.AdditionalStyle = baseValue.(string)
 			} else if systemSetting.Name == api.SystemSettingAdditionalScriptName {
-				systemStatus.AdditionalScript = value.(string)
+				systemStatus.AdditionalScript = baseValue.(string)
 			} else if systemSetting.Name == api.SystemSettingCustomizedProfileName {
-				valueMap := value.(map[string]interface{})
-				systemStatus.CustomizedProfile = api.CustomizedProfile{}
-				if v := valueMap["name"]; v != nil {
-					systemStatus.CustomizedProfile.Name = v.(string)
+				customizedProfile := api.CustomizedProfile{}
+				err := json.Unmarshal([]byte(systemSetting.Value), &customizedProfile)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting customized profile value").SetInternal(err)
 				}
-				if v := valueMap["logoUrl"]; v != nil {
-					systemStatus.CustomizedProfile.LogoURL = v.(string)
-				}
-				if v := valueMap["description"]; v != nil {
-					systemStatus.CustomizedProfile.Description = v.(string)
-				}
-				if v := valueMap["locale"]; v != nil {
-					systemStatus.CustomizedProfile.Locale = v.(string)
-				}
-				if v := valueMap["appearance"]; v != nil {
-					systemStatus.CustomizedProfile.Appearance = v.(string)
-				}
-				if v := valueMap["externalUrl"]; v != nil {
-					systemStatus.CustomizedProfile.ExternalURL = v.(string)
-				}
+				systemStatus.CustomizedProfile = customizedProfile
 			} else if systemSetting.Name == api.SystemSettingStorageServiceIDName {
-				systemStatus.StorageServiceID = int(value.(float64))
-			} else if systemSetting.Name == api.SystemSettingOpenAIAPIHost {
-				systemStatus.OpenAIAPIHost = value.(string)
+				systemStatus.StorageServiceID = int(baseValue.(float64))
 			}
 		}
 

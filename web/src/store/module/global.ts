@@ -22,7 +22,6 @@ export const initialGlobalState = async () => {
         appearance: "system",
         externalUrl: "",
       },
-      openAIApiHost: "",
     } as SystemStatus,
   };
 
@@ -74,6 +73,16 @@ export const useGlobalStore = () => {
       const { data: systemStatus } = (await api.getSystemStatus()).data;
       store.dispatch(setGlobalState({ systemStatus: systemStatus }));
       return systemStatus;
+    },
+    setSystemStatus: (systemStatus: Partial<SystemStatus>) => {
+      store.dispatch(
+        setGlobalState({
+          systemStatus: {
+            ...state.systemStatus,
+            ...systemStatus,
+          },
+        })
+      );
     },
     setLocale: (locale: Locale) => {
       store.dispatch(setLocale(locale));
