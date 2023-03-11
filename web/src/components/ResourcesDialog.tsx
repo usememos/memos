@@ -20,7 +20,7 @@ type Props = DialogProps;
 
 interface FileProps {
   resouce: Resource;
-  onClick: any;
+  handle: any;
 }
 
 function getFileCover(filename: string): ReactElement {
@@ -40,14 +40,21 @@ function getFileCover(filename: string): ReactElement {
   }
 }
 
-const File = ({ resouce, onClick }: FileProps) => {
+const File = ({ resouce, handle }: FileProps) => {
   const locale = "en";
 
+  const [beSelect, setBeSelect] = useState(false);
   const cover = getFileCover(resouce.filename);
 
   return (
-    <div className="resource-card" onClick={onClick}>
-      <Icon.Circle className="resource-checkbox" />
+    <div
+      className="resource-card"
+      onClick={() => {
+        setBeSelect(!beSelect);
+        handle();
+      }}
+    >
+      {beSelect ? <Icon.CheckCircle2 /> : <Icon.Circle className={"resource-checkbox"} />}
       {cover}
       <div>
         <div className="resource-title">{resouce.filename}</div>
@@ -146,6 +153,16 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
     });
   };
 
+  const handleUnSelectBtnClick = () => {
+    setSelectList([]);
+  };
+
+  const handleDeleteSelectedBtnClick = () => {
+    selectList.map((id) => {
+      // 删除
+    });
+  };
+
   return (
     <>
       <div className="dialog-header-container">
@@ -161,10 +178,12 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
               {t("common.create")}
             </Button>
 
-            <Button startDecorator={<Icon.Plus className="w-5 h-auto" />}>{"取消选择"}</Button>
+            <Button onClick={() => handleUnSelectBtnClick()} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
+              {"取消选择"}
+            </Button>
 
-            <Button color="danger" startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
-              {"删除"}
+            <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger" startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
+              {"删除所选资源"}
             </Button>
           </div>
           <div className="flex flex-row justify-end items-center">
