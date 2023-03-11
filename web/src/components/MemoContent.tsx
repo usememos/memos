@@ -75,7 +75,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
       </div>
       {state.expandButtonStatus !== -1 && (
         <div className={`expand-btn-container ${state.expandButtonStatus === 0 && "!-mt-7"}`}>
-          <div className="absolute top-0 left-0 w-full h-full blur-lg bg-white"></div>
+          <div className="absolute top-0 left-0 w-full h-full blur-lg bg-white dark:bg-zinc-700"></div>
           <span className={`btn z-10 ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleExpandBtnClick}>
             {state.expandButtonStatus === 0 ? t("common.expand") : t("common.fold")}
             <Icon.ChevronRight className="icon-img opacity-80" />
