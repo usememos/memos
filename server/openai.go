@@ -13,37 +13,22 @@ import (
 func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 	g.POST("/openai/chat-completion", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		openAIApiKeySetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: api.SystemSettingOpenAIAPIKeyName,
+		openAIConfigSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+			Name: api.SystemSettingOpenAIConfigName,
 		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai api key").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai key").SetInternal(err)
 		}
 
-		openAIApiHostSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: api.SystemSettingOpenAIAPIHost,
-		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai api host").SetInternal(err)
-		}
-
-		openAIApiKey := ""
-		if openAIApiKeySetting != nil {
-			err = json.Unmarshal([]byte(openAIApiKeySetting.Value), &openAIApiKey)
+		openAIConfig := api.OpenAIConfig{}
+		if openAIConfigSetting != nil {
+			err = json.Unmarshal([]byte(openAIConfigSetting.Value), &openAIConfig)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal openai system setting value").SetInternal(err)
 			}
 		}
-		if openAIApiKey == "" {
+		if openAIConfig.Key == "" {
 			return echo.NewHTTPError(http.StatusBadRequest, "OpenAI API key not set")
-		}
-
-		openAIApiHost := ""
-		if openAIApiHostSetting != nil {
-			err = json.Unmarshal([]byte(openAIApiHostSetting.Value), &openAIApiHost)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
-			}
 		}
 
 		completionRequest := api.OpenAICompletionRequest{}
@@ -54,7 +39,7 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Prompt is required")
 		}
 
-		result, err := openai.PostChatCompletion(completionRequest.Prompt, openAIApiKey, openAIApiHost)
+		result, err := openai.PostChatCompletion(completionRequest.Prompt, openAIConfig.Key, openAIConfig.Host)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to post chat completion").SetInternal(err)
 		}
@@ -64,37 +49,22 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 
 	g.POST("/openai/text-completion", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		openAIApiKeySetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: api.SystemSettingOpenAIAPIKeyName,
+		openAIConfigSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+			Name: api.SystemSettingOpenAIConfigName,
 		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai api key").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai key").SetInternal(err)
 		}
 
-		openAIApiHostSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: api.SystemSettingOpenAIAPIHost,
-		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai api host").SetInternal(err)
-		}
-
-		openAIApiKey := ""
-		if openAIApiKeySetting != nil {
-			err = json.Unmarshal([]byte(openAIApiKeySetting.Value), &openAIApiKey)
+		openAIConfig := api.OpenAIConfig{}
+		if openAIConfigSetting != nil {
+			err = json.Unmarshal([]byte(openAIConfigSetting.Value), &openAIConfig)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal openai system setting value").SetInternal(err)
 			}
 		}
-		if openAIApiKey == "" {
+		if openAIConfig.Key == "" {
 			return echo.NewHTTPError(http.StatusBadRequest, "OpenAI API key not set")
-		}
-
-		openAIApiHost := ""
-		if openAIApiHostSetting != nil {
-			err = json.Unmarshal([]byte(openAIApiHostSetting.Value), &openAIApiHost)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
-			}
 		}
 
 		textCompletion := api.OpenAICompletionRequest{}
@@ -105,7 +75,7 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Prompt is required")
 		}
 
-		result, err := openai.PostTextCompletion(textCompletion.Prompt, openAIApiKey, openAIApiHost)
+		result, err := openai.PostTextCompletion(textCompletion.Prompt, openAIConfig.Key, openAIConfig.Host)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to post text completion").SetInternal(err)
 		}
@@ -115,21 +85,24 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 
 	g.GET("/openai/enabled", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		openAIApiKeySetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: api.SystemSettingOpenAIAPIKeyName,
+		openAIConfigSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+			Name: api.SystemSettingOpenAIConfigName,
 		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai api key").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai key").SetInternal(err)
 		}
 
-		openAIApiKey := ""
-		if openAIApiKeySetting != nil {
-			err = json.Unmarshal([]byte(openAIApiKeySetting.Value), &openAIApiKey)
+		openAIConfig := api.OpenAIConfig{}
+		if openAIConfigSetting != nil {
+			err = json.Unmarshal([]byte(openAIConfigSetting.Value), &openAIConfig)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal openai system setting value").SetInternal(err)
 			}
 		}
+		if openAIConfig.Key == "" {
+			return echo.NewHTTPError(http.StatusBadRequest, "OpenAI API key not set")
+		}
 
-		return c.JSON(http.StatusOK, composeResponse(openAIApiKey != ""))
+		return c.JSON(http.StatusOK, composeResponse(openAIConfig.Key != ""))
 	})
 }
