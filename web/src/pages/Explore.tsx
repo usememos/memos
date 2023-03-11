@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useLocationStore, useMemoStore } from "../store/module";
+import { useFilterStore, useMemoStore } from "../store/module";
 import { TAG_REG } from "../labs/marked/parser";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 import useLoading from "../hooks/useLoading";
 import MemoFilter from "../components/MemoFilter";
 import Memo from "../components/Memo";
 import MobileHeader from "../components/MobileHeader";
+import { useLocation } from "react-router-dom";
 
 interface State {
   memos: Memo[];
@@ -15,15 +16,15 @@ interface State {
 
 const Explore = () => {
   const { t } = useTranslation();
-  const locationStore = useLocationStore();
+  const location = useLocation();
+  const filterStore = useFilterStore();
   const memoStore = useMemoStore();
-  const query = locationStore.state.query;
+  const filter = filterStore.state;
   const [state, setState] = useState<State>({
     memos: [],
   });
   const [isComplete, setIsComplete] = useState<boolean>(false);
   const loadingState = useLoading();
-  const location = locationStore.state;
 
   useEffect(() => {
     memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, 0).then((memos) => {
@@ -37,7 +38,7 @@ const Explore = () => {
     });
   }, [location]);
 
-  const { tag: tagQuery, text: textQuery } = query ?? {};
+  const { tag: tagQuery, text: textQuery } = filter;
   const showMemoFilter = Boolean(tagQuery || textQuery);
 
   const shownMemos = showMemoFilter

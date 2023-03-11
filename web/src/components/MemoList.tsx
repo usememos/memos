@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useLocationStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
+import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
 import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
@@ -14,13 +14,13 @@ const MemoList = () => {
   const memoStore = useMemoStore();
   const userStore = useUserStore();
   const shortcutStore = useShortcutStore();
-  const locationStore = useLocationStore();
-  const query = locationStore.state.query;
+  const filterStore = useFilterStore();
+  const filter = filterStore.state;
   const { memos, isFetching } = memoStore.state;
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
   const currentUserId = userStore.getCurrentUserId();
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query ?? {};
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = filter;
   const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
 
@@ -107,7 +107,7 @@ const MemoList = () => {
     if (pageWrapper) {
       pageWrapper.scrollTo(0, 0);
     }
-  }, [query]);
+  }, [filter]);
 
   useEffect(() => {
     if (isFetching || isComplete) {
@@ -116,7 +116,7 @@ const MemoList = () => {
     if (sortedMemos.length < DEFAULT_MEMO_LIMIT) {
       handleFetchMoreClick();
     }
-  }, [isFetching, isComplete, query, sortedMemos.length]);
+  }, [isFetching, isComplete, filter, sortedMemos.length]);
 
   const handleFetchMoreClick = async () => {
     try {

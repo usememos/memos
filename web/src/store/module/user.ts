@@ -64,7 +64,7 @@ export const initialUserState = async () => {
 };
 
 const getUserIdFromPath = () => {
-  const pathname = location.pathname;
+  const pathname = window.location.pathname;
   const userIdRegex = /^\/u\/(\d+).*/;
   const result = pathname.match(userIdRegex);
   if (result && result.length === 2) {
