@@ -63,7 +63,7 @@ const DailyReview = () => {
   return (
     <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
-      <div className="w-full flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700">
+      <div className="w-full flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
         <div className="relative w-full flex flex-row justify-between items-center">
           <p
             className="px-2 py-1 flex flex-row justify-start items-center cursor-pointer select-none rounded hover:bg-gray-100 dark:hover:bg-zinc-700"
@@ -92,27 +92,29 @@ const DailyReview = () => {
             </button>
           </div>
           <DatePicker
-            className={`absolute top-8 bg-white mt-2 z-20 mx-auto border dark:border-zinc-800 rounded-lg mb-6 ${
+            className={`absolute top-8 mt-2 z-20 mx-auto border bg-white dark:border-zinc-800 rounded-lg mb-6 ${
               showDatePicker ? "" : "!hidden"
             }`}
             datestamp={currentDateStamp}
             handleDateStampChange={handleDataPickerChange}
           />
         </div>
-        <div className="w-full h-auto flex flex-col justify-start items-start p-6 pb-0 bg-white dark:bg-zinc-800" ref={memosElRef}>
+        <div className="w-full h-auto flex flex-col justify-start items-start p-12 pt-26" ref={memosElRef}>
           <div className="flex flex-col justify-center items-center mx-auto pb-6 select-none">
             <div className="mx-auto font-bold text-gray-600 dark:text-gray-300 text-center leading-6 mb-2">{currentDate.getFullYear()}</div>
-            <div className="flex flex-col justify-center items-center m-auto w-24 h-24 shadow rounded-3xl">
+            <div className="flex flex-col justify-center items-center m-auto w-24 h-24 shadow rounded-3xl dark:bg-zinc-800">
               <div className="text-center w-full leading-6 text-sm text-white bg-blue-700 rounded-t-3xl">
                 {monthChineseStrArray[currentDate.getMonth()]}
               </div>
-              <div className="text-black text-4xl font-medium leading-12">{currentDate.getDate()}</div>
-              <div className="text-center w-full leading-6 -mt-2 text-xs">{weekdayChineseStrArray[currentDate.getDay()]}</div>
+              <div className="text-black dark:text-white text-4xl font-medium leading-12">{currentDate.getDate()}</div>
+              <div className="dark:text-gray-300 text-center w-full leading-6 -mt-2 text-xs">
+                {weekdayChineseStrArray[currentDate.getDay()]}
+              </div>
             </div>
           </div>
           {dailyMemos.length === 0 ? (
             <div className="mx-auto py-6 pb-12 px-0">
-              <p className="italic">{t("daily-review.oops-nothing")}</p>
+              <p className="italic text-gray-400">{t("daily-review.oops-nothing")}</p>
             </div>
           ) : (
             <div className="flex flex-col justify-start items-start w-full mt-2">
