@@ -1,10 +1,9 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useLayoutStore, useLocationStore, useUserStore } from "../store/module";
+import { useLayoutStore, useUserStore } from "../store/module";
 import { resolution } from "../utils/layout";
 import Icon from "./Icon";
-import showDailyReviewDialog from "./DailyReviewDialog";
 import showResourcesDialog from "./ResourcesDialog";
 import showSettingDialog from "./SettingDialog";
 import showAskAIDialog from "./AskAIDialog";
@@ -14,9 +13,9 @@ import UserBanner from "./UserBanner";
 const Header = () => {
   const { t } = useTranslation();
   const userStore = useUserStore();
-  const locationStore = useLocationStore();
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
+  const isVisitorMode = userStore.isVisitorMode() && !userStore.state.user;
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -49,26 +48,47 @@ const Header = () => {
       >
         <UserBanner />
         <div className="w-full px-2 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
-          <Link
-            to="/"
-            className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-            onClick={() => locationStore.clearQuery()}
-          >
-            <Icon.Home className="mr-4 w-6 h-auto opacity-80" /> {t("common.home")}
-          </Link>
-          <button
-            className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-            onClick={() => showDailyReviewDialog()}
-          >
-            <Icon.Calendar className="mr-4 w-6 h-auto opacity-80" /> {t("common.daily-review")}
-          </button>
-          <Link
+          {!isVisitorMode && (
+            <>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `${
+                    isActive && "bg-white dark:bg-zinc-700 shadow"
+                  } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                }
+              >
+                <>
+                  <Icon.Home className="mr-4 w-6 h-auto opacity-80" /> {t("common.home")}
+                </>
+              </NavLink>
+              <NavLink
+                to="/review"
+                className={({ isActive }) =>
+                  `${
+                    isActive && "bg-white dark:bg-zinc-700 shadow"
+                  } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                }
+              >
+                <>
+                  <Icon.Calendar className="mr-4 w-6 h-auto opacity-80" /> {t("common.daily-review")}
+                </>
+              </NavLink>
+            </>
+          )}
+          <NavLink
             to="/explore"
-            className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+            className={({ isActive }) =>
+              `${
+                isActive && "bg-white dark:bg-zinc-700 shadow"
+              } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+            }
           >
-            <Icon.Hash className="mr-4 w-6 h-auto opacity-80" /> {t("common.explore")}
-          </Link>
-          {!userStore.isVisitorMode() && (
+            <>
+              <Icon.Hash className="mr-4 w-6 h-auto opacity-80" /> {t("common.explore")}
+            </>
+          </NavLink>
+          {!isVisitorMode && (
             <>
               <button
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"

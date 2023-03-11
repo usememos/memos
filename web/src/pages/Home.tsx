@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router-dom";
 import { toast } from "react-hot-toast";
 import { useGlobalStore, useUserStore } from "../store/module";
 import MemoEditor from "../components/MemoEditor";
@@ -11,20 +10,19 @@ import HomeSidebar from "../components/HomeSidebar";
 
 function Home() {
   const { t } = useTranslation();
-  const location = useLocation();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const user = userStore.state.user;
 
   useEffect(() => {
-    const { owner } = userStore.getState();
-
-    if (userStore.isVisitorMode()) {
-      if (!owner) {
+    const currentUserId = userStore.getCurrentUserId();
+    userStore.getUserById(currentUserId).then((user) => {
+      if (!user) {
         toast.error(t("message.user-not-found"));
+        return;
       }
-    }
-  }, [location]);
+    });
+  }, [userStore.getCurrentUserId()]);
 
   useEffect(() => {
     if (user?.setting.locale) {

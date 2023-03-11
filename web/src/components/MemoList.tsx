@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useLocationStore, useMemoStore, useShortcutStore } from "../store/module";
+import { useLocationStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
 import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import * as utils from "../helpers/utils";
 import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
@@ -12,17 +12,19 @@ import "../less/memo-list.less";
 const MemoList = () => {
   const { t } = useTranslation();
   const memoStore = useMemoStore();
+  const userStore = useUserStore();
   const shortcutStore = useShortcutStore();
   const locationStore = useLocationStore();
   const query = locationStore.state.query;
   const { memos, isFetching } = memoStore.state;
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
+  const currentUserId = userStore.getCurrentUserId();
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = query ?? {};
   const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
 
-  const shownMemos =
+  const shownMemos = (
     showMemoFilter || shortcut
       ? memos.filter((memo) => {
           let shouldShow = true;
@@ -72,7 +74,8 @@ const MemoList = () => {
 
           return shouldShow;
         })
-      : memos;
+      : memos
+  ).filter((memo) => memo.creatorId === currentUserId);
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
@@ -97,7 +100,7 @@ const MemoList = () => {
         console.error(error);
         toast.error(error.response.data.message);
       });
-  }, []);
+  }, [currentUserId]);
 
   useEffect(() => {
     const pageWrapper = document.body.querySelector(".page-wrapper");

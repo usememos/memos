@@ -4,7 +4,7 @@ import * as storage from "../../helpers/storage";
 import { UNKNOWN_ID } from "../../helpers/consts";
 import { getSystemColorScheme } from "../../helpers/utils";
 import { setAppearance, setLocale } from "../reducer/global";
-import { setUser, patchUser, setHost, setOwner } from "../reducer/user";
+import { setUser, patchUser, setHost, setUserById } from "../reducer/user";
 
 const defaultSetting: Setting = {
   locale: "en",
@@ -50,14 +50,6 @@ export const initialUserState = async () => {
     store.dispatch(setHost(convertResponseModelUser(systemStatus.host)));
   }
 
-  const ownerUserId = getUserIdFromPath();
-  if (ownerUserId) {
-    const { data: owner } = (await api.getUserById(ownerUserId)).data;
-    if (owner) {
-      store.dispatch(setOwner(convertResponseModelUser(owner)));
-    }
-  }
-
   const { data } = (await api.getMyselfUser()).data;
   if (data) {
     const user = convertResponseModelUser(data);
@@ -72,7 +64,7 @@ export const initialUserState = async () => {
 };
 
 const getUserIdFromPath = () => {
-  const { pathname } = store.getState().location;
+  const pathname = location.pathname;
   const userIdRegex = /^\/u\/(\d+).*/;
   const result = pathname.match(userIdRegex);
   if (result && result.length === 2) {
@@ -99,7 +91,7 @@ export const useUserStore = () => {
   const state = useAppSelector((state) => state.user);
 
   const isVisitorMode = () => {
-    return !(getUserIdFromPath() === undefined);
+    return state.user === undefined || (getUserIdFromPath() && state.user.id !== getUserIdFromPath());
   };
 
   return {
@@ -119,9 +111,11 @@ export const useUserStore = () => {
       }
     },
     getUserById: async (userId: UserId) => {
-      const { data: user } = (await api.getUserById(userId)).data;
-      if (user) {
-        return convertResponseModelUser(user);
+      const { data } = (await api.getUserById(userId)).data;
+      if (data) {
+        const user = convertResponseModelUser(data);
+        store.dispatch(setUserById(user));
+        return user;
       } else {
         return undefined;
       }
