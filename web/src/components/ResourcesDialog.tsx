@@ -1,6 +1,6 @@
 import { Button } from "@mui/joy";
 import copy from "copy-to-clipboard";
-import { useEffect } from "react";
+import { ReactElement, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
@@ -14,8 +14,48 @@ import showPreviewImageDialog from "./PreviewImageDialog";
 import showCreateResourceDialog from "./CreateResourceDialog";
 import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
 import "../less/resources-dialog.less";
+import dayjs from "dayjs";
 
 type Props = DialogProps;
+
+interface FileProps {
+  resouce: Resource;
+  onClick: any;
+}
+
+function getFileCover(filename: string): ReactElement {
+  switch (filename.split(".").pop()) {
+    case "png":
+      return <Icon.FileImage className="icon-cover" />;
+    case "jpge":
+      return <Icon.FileImage className="icon-cover" />;
+    case "docx":
+      return <Icon.FileText className="icon-cover" />;
+    case "pdf":
+      return <Icon.FileType2 className="icon-cover" />;
+    case "doc":
+      return <Icon.FileText className="icon-cover" />;
+    default:
+      return <Icon.FileImage className="icon-cover" />;
+  }
+}
+
+const File = ({ resouce, onClick }: FileProps) => {
+  const locale = "en";
+
+  const cover = getFileCover(resouce.filename);
+
+  return (
+    <div className="resource-card" onClick={onClick}>
+      <Icon.Circle className="resource-checkbox" />
+      {cover}
+      <div>
+        <div className="resource-title">{resouce.filename}</div>
+        <div className="resource-time">{dayjs(resouce.createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss")}</div>
+      </div>
+    </div>
+  );
+};
 
 const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
@@ -23,6 +63,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
+  const [selectList, setSelectList] = useState([]);
 
   useEffect(() => {
     resourceStore
@@ -35,6 +76,10 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
         loadingState.setFinish();
       });
   }, []);
+
+  const handleSelectBtnClick = (id: ResourceId) => {
+    console.log(id);
+  };
 
   const handlePreviewBtnClick = (resource: Resource) => {
     const resourceUrl = getResourceUrl(resource);
@@ -115,6 +160,12 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
             <Button onClick={() => showCreateResourceDialog({})} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
               {t("common.create")}
             </Button>
+
+            <Button startDecorator={<Icon.Plus className="w-5 h-auto" />}>{"取消选择"}</Button>
+
+            <Button color="danger" startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
+              {"删除"}
+            </Button>
           </div>
           <div className="flex flex-row justify-end items-center">
             <Button color="danger" onClick={handleDeleteUnusedResourcesBtnClick} startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
@@ -128,48 +179,11 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
           </div>
         ) : (
           <div className="resource-table-container">
-            <div className="fields-container">
-              <span className="field-text id-text">ID</span>
-              <span className="field-text name-text">{t("resources.name")}</span>
-              <span></span>
-            </div>
             {resources.length === 0 ? (
               <p className="tip-text">{t("resources.no-resources")}</p>
             ) : (
               resources.map((resource) => (
-                <div key={resource.id} className="resource-container">
-                  <span className="field-text id-text">{resource.id}</span>
-                  <span className="field-text name-text" onClick={() => handleRenameBtnClick(resource)}>
-                    {resource.filename}
-                  </span>
-                  <div className="buttons-container">
-                    <Dropdown
-                      actionsClassName="!w-28"
-                      actions={
-                        <>
-                          <button
-                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                            onClick={() => handlePreviewBtnClick(resource)}
-                          >
-                            {t("resources.preview")}
-                          </button>
-                          <button
-                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                            onClick={() => handleCopyResourceLinkBtnClick(resource)}
-                          >
-                            {t("resources.copy-link")}
-                          </button>
-                          <button
-                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
-                            onClick={() => handleDeleteResourceBtnClick(resource)}
-                          >
-                            {t("common.delete")}
-                          </button>
-                        </>
-                      }
-                    />
-                  </div>
-                </div>
+                <File key={resource.id} resouce={resource} onClick={() => handleSelectBtnClick(resource.id)}></File>
               ))
             )}
           </div>

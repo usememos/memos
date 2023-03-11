@@ -2,7 +2,7 @@
   @apply px-4;
 
   > .dialog-container {
-    @apply w-112 max-w-full mb-8;
+    @apply w-full h-full max-w-full mb-8;
 
     > .dialog-content-container {
       @apply flex flex-col justify-start items-start w-full;
@@ -36,7 +36,7 @@
       }
 
       > .resource-table-container {
-        @apply flex flex-col justify-start items-start w-full;
+        @apply flex  w-full h-full flex-wrap justify-start;
 
         > .fields-container {
           @apply px-2 py-2 w-full grid grid-cols-7 border-b dark:border-b-zinc-600;
@@ -55,6 +55,32 @@
 
           > .buttons-container {
             @apply w-full flex flex-row justify-end items-center;
+          }
+        }
+
+        .resource-card{
+          @apply flex flex-col justify-start hover:bg-slate-300 w-48 m-4 ;
+
+          &:hover {
+            .resource-checkbox {
+              display: flex;
+            }
+          }
+
+          .icon-cover{
+            @apply w-32 h-32 ml-auto mr-auto mt-3;
+          }
+
+          .resource-checkbox{
+            @apply hidden hover:flex;
+          }
+
+          .resource-title{
+            @apply text-base overflow-ellipsis text-center	;
+          }
+
+          .resource-time{
+            @apply text-sm text-gray-400 text-center	;
           }
         }
 
