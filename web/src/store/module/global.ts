@@ -74,6 +74,16 @@ export const useGlobalStore = () => {
       store.dispatch(setGlobalState({ systemStatus: systemStatus }));
       return systemStatus;
     },
+    setSystemStatus: (systemStatus: Partial<SystemStatus>) => {
+      store.dispatch(
+        setGlobalState({
+          systemStatus: {
+            ...state.systemStatus,
+            ...systemStatus,
+          },
+        })
+      );
+    },
     setLocale: (locale: Locale) => {
       store.dispatch(setLocale(locale));
     },

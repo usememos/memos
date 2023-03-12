@@ -10,6 +10,10 @@ export function getSystemStatus() {
   return axios.get<ResponseObject<SystemStatus>>("/api/status");
 }
 
+export function getSystemSetting() {
+  return axios.get<ResponseObject<SystemSetting[]>>("/api/system/setting");
+}
+
 export function upsertSystemSetting(systemSetting: SystemSetting) {
   return axios.post<ResponseObject<SystemSetting>>("/api/system/setting", systemSetting);
 }
@@ -247,19 +251,19 @@ export function deleteIdentityProvider(id: IdentityProviderId) {
 }
 
 export function postChatCompletion(prompt: string) {
-  return axios.post<ResponseObject<string>>(`/api/opanai/chat-completion`, {
+  return axios.post<ResponseObject<string>>(`/api/openai/chat-completion`, {
     prompt,
   });
 }
 
 export function postTextCompletion(prompt: string) {
-  return axios.post<ResponseObject<string>>(`/api/opanai/text-completion`, {
+  return axios.post<ResponseObject<string>>(`/api/openai/text-completion`, {
     prompt,
   });
 }
 
 export function checkOpenAIEnabled() {
-  return axios.get<ResponseObject<boolean>>(`/api/opanai/enabled`);
+  return axios.get<ResponseObject<boolean>>(`/api/openai/enabled`);
 }
 
 export async function getRepoStarCount() {

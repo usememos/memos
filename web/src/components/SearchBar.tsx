@@ -1,11 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import useDebounce from "../hooks/useDebounce";
-import { useLocationStore, useDialogStore } from "../store/module";
+import { useFilterStore, useDialogStore, useLayoutStore } from "../store/module";
+import { resolution } from "../utils/layout";
 import Icon from "./Icon";
 
 const SearchBar = () => {
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const dialogStore = useDialogStore();
+  const layoutStore = useLayoutStore();
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -31,13 +33,21 @@ const SearchBar = () => {
   }, []);
 
   useEffect(() => {
-    const text = locationStore.getState().query.text;
+    const text = filterStore.getState().text;
     setQueryText(text === undefined ? "" : text);
-  }, [locationStore.state.query.text]);
+  }, [filterStore.state.text]);
+
+  useEffect(() => {
+    if (layoutStore.state.showHomeSidebar) {
+      if (window.innerWidth < resolution.sm) {
+        inputRef.current?.focus();
+      }
+    }
+  }, [layoutStore.state.showHomeSidebar]);
 
   useDebounce(
     () => {
-      locationStore.setTextQuery(queryText.length === 0 ? undefined : queryText);
+      filterStore.setTextFilter(queryText.length === 0 ? undefined : queryText);
     },
     200,
     [queryText]

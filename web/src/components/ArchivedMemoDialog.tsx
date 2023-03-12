@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMemoStore } from "../store/module";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import toastHelper from "./Toast";
 import ArchivedMemo from "./ArchivedMemo";
 import "../less/archived-memo-dialog.less";
 
@@ -26,7 +26,7 @@ const ArchivedMemoDialog: React.FC<Props> = (props: Props) => {
       })
       .catch((error) => {
         console.error(error);
-        toastHelper.error(error.response.data.message);
+        toast.error(error.response.data.message);
       })
       .finally(() => {
         loadingState.setFinish();

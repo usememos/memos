@@ -1,9 +1,10 @@
 import { useColorScheme } from "@mui/joy";
 import { useEffect, Suspense } from "react";
+import { Toaster } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
-import { useLocationStore, useGlobalStore } from "./store/module";
+import { useGlobalStore } from "./store/module";
 import * as storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import Loading from "./pages/Loading";
@@ -11,16 +12,8 @@ import Loading from "./pages/Loading";
 const App = () => {
   const { i18n } = useTranslation();
   const globalStore = useGlobalStore();
-  const locationStore = useLocationStore();
   const { mode, setMode } = useColorScheme();
   const { appearance, locale, systemStatus } = globalStore.state;
-
-  useEffect(() => {
-    locationStore.updateStateWithLocation();
-    window.onpopstate = () => {
-      locationStore.updateStateWithLocation();
-    };
-  }, []);
 
   useEffect(() => {
     const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
@@ -95,6 +88,7 @@ const App = () => {
   return (
     <Suspense fallback={<Loading />}>
       <RouterProvider router={router} />
+      <Toaster position="top-right" />
     </Suspense>
   );
 };

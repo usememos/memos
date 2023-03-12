@@ -1,19 +1,18 @@
 import { useEffect } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useLocationStore, useShortcutStore } from "../store/module";
+import { useFilterStore, useShortcutStore } from "../store/module";
 import * as utils from "../helpers/utils";
 import useToggle from "../hooks/useToggle";
 import useLoading from "../hooks/useLoading";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
-import "../less/shortcut-list.less";
 
 const ShortcutList = () => {
   const { t } = useTranslation();
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const shortcutStore = useShortcutStore();
-  const query = locationStore.state.query;
+  const filter = filterStore.state;
   const shortcuts = shortcutStore.state.shortcuts;
   const loadingState = useLoading();
 
@@ -37,16 +36,19 @@ const ShortcutList = () => {
   }, []);
 
   return (
-    <div className="shortcuts-wrapper">
-      <p className="title-text">
-        <span className="normal-text">{t("common.shortcuts")}</span>
-        <button className="btn" onClick={() => showCreateShortcutDialog()}>
-          <Icon.Plus className="icon-img" />
+    <div className="flex flex-col justify-start items-start w-full py-0 px-1 mt-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
+      <div className="flex flex-row justify-start items-center w-full px-4">
+        <span className="text-sm leading-6 font-mono text-gray-400">{t("common.shortcuts")}</span>
+        <button
+          className="flex flex-col justify-center items-center w-5 h-5 bg-gray-200 dark:bg-zinc-700 rounded ml-2 hover:shadow"
+          onClick={() => showCreateShortcutDialog()}
+        >
+          <Icon.Plus className="w-4 h-4 text-gray-400" />
         </button>
-      </p>
-      <div className="shortcuts-container">
+      </div>
+      <div className="flex flex-col justify-start items-start relative w-full h-auto flex-nowrap mb-2">
         {sortedShortcuts.map((s) => {
-          return <ShortcutContainer key={s.id} shortcut={s} isActive={s.id === Number(query?.shortcutId)} />;
+          return <ShortcutContainer key={s.id} shortcut={s} isActive={s.id === Number(filter?.shortcutId)} />;
         })}
       </div>
     </div>
@@ -61,15 +63,15 @@ interface ShortcutContainerProps {
 const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
   const { shortcut, isActive } = props;
   const { t } = useTranslation();
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const shortcutStore = useShortcutStore();
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
 
   const handleShortcutClick = () => {
     if (isActive) {
-      locationStore.setMemoShortcut(undefined);
+      filterStore.setMemoShortcut(undefined);
     } else {
-      locationStore.setMemoShortcut(shortcut.id);
+      filterStore.setMemoShortcut(shortcut.id);
     }
   };
 
@@ -79,13 +81,13 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
     if (showConfirmDeleteBtn) {
       try {
         await shortcutStore.deleteShortcutById(shortcut.id);
-        if (locationStore.getState().query?.shortcutId === shortcut.id) {
+        if (filterStore.getState().shortcutId === shortcut.id) {
           // need clear shortcut filter
-          locationStore.setMemoShortcut(undefined);
+          filterStore.setMemoShortcut(undefined);
         }
       } catch (error: any) {
         console.error(error);
-        toastHelper.error(error.response.data.message);
+        toast.error(error.response.data.message);
       }
     } else {
       toggleConfirmDeleteBtn();
@@ -117,24 +119,39 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
 
   return (
     <>
-      <div className={`shortcut-container ${isActive ? "active" : ""}`} onClick={handleShortcutClick}>
-        <div className="shortcut-text-container">
-          <span className="shortcut-text">{shortcut.title}</span>
+      <div
+        className="relative group flex flex-row justify-between items-center w-full h-10 py-0 px-4 mt-px first:mt-2 rounded-lg text-base cursor-pointer select-none shrink-0 hover:bg-white dark:hover:bg-zinc-700"
+        onClick={handleShortcutClick}
+      >
+        <div
+          className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-black dark:text-gray-200 ${
+            isActive && "text-green-600"
+          }`}
+        >
+          <span className="truncate">{shortcut.title}</span>
         </div>
-        <div className="btns-container">
-          <span className="action-btn toggle-btn">
-            <Icon.MoreHorizontal className="icon-img" />
+        <div className="flex-row justify-end items-center hidden group/btns group-hover:flex shrink-0">
+          <span className="flex flex-row justify-center items-center toggle-btn">
+            <Icon.MoreHorizontal className="w-4 h-auto" />
           </span>
-          <div className="action-btns-wrapper">
-            <div className="action-btns-container">
-              <span className="btn" onClick={handlePinShortcutBtnClick}>
+          <div className="absolute top-4 right-0 flex-col justify-start items-start w-auto h-auto px-4 pt-3 hidden group-hover/btns:flex z-1">
+            <div className="flex flex-col justify-start items-start w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white dark:bg-zinc-700 shadow">
+              <span
+                className="w-full text-sm leading-6 py-1 px-3 rounded text-left dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                onClick={handlePinShortcutBtnClick}
+              >
                 {shortcut.rowStatus === "ARCHIVED" ? t("common.unpin") : t("common.pin")}
               </span>
-              <span className="btn" onClick={handleEditShortcutBtnClick}>
+              <span
+                className="w-full text-sm leading-6 py-1 px-3 rounded text-left dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                onClick={handleEditShortcutBtnClick}
+              >
                 {t("common.edit")}
               </span>
               <span
-                className={`btn delete-btn ${showConfirmDeleteBtn ? "final-confirm" : ""}`}
+                className={`w-full text-sm leading-6 py-1 px-3 rounded text-left dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800 text-orange-600 ${
+                  showConfirmDeleteBtn && "font-black"
+                }`}
                 onClick={handleDeleteMemoClick}
                 onMouseLeave={handleDeleteBtnMouseLeave}
               >

@@ -1,9 +1,9 @@
 import { last } from "lodash-es";
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import * as api from "../helpers/api";
-import toastHelper from "../components/Toast";
 import { absolutifyLink } from "../helpers/utils";
 import { useUserStore } from "../store/module";
 import Icon from "../components/Icon";
@@ -41,7 +41,7 @@ const AuthCallback = () => {
             if (user) {
               window.location.href = "/";
             } else {
-              toastHelper.error(t("message.login-failed"));
+              toast.error(t("message.login-failed"));
             }
           })
           .catch((error: any) => {

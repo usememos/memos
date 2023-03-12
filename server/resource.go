@@ -7,6 +7,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"path"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -22,6 +24,8 @@ const (
 	// The max file size is 32MB.
 	maxFileSize = 32 << 20
 )
+
+var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
 
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
@@ -134,11 +138,44 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 			if storage.Type == api.StorageS3 {
 				s3Config := storage.Config.S3Config
+				t := time.Now()
+				var s3FileKey string
+				if s3Config.Path == "" {
+					s3FileKey = filename
+				} else {
+					s3FileKey = fileKeyPattern.ReplaceAllStringFunc(s3Config.Path, func(s string) string {
+						switch s {
+						case "{filename}":
+							return filename
+						case "{filetype}":
+							return filetype
+						case "{timestamp}":
+							return fmt.Sprintf("%d", t.Unix())
+						case "{year}":
+							return fmt.Sprintf("%d", t.Year())
+						case "{month}":
+							return fmt.Sprintf("%02d", t.Month())
+						case "{day}":
+							return fmt.Sprintf("%02d", t.Day())
+						case "{hour}":
+							return fmt.Sprintf("%02d", t.Hour())
+						case "{minute}":
+							return fmt.Sprintf("%02d", t.Minute())
+						case "{second}":
+							return fmt.Sprintf("%02d", t.Second())
+						}
+						return s
+					})
+
+					if !strings.Contains(s3Config.Path, "{filename}") {
+						s3FileKey = path.Join(s3FileKey, filename)
+					}
+				}
+
 				s3client, err := s3.NewClient(ctx, &s3.Config{
 					AccessKey: s3Config.AccessKey,
 					SecretKey: s3Config.SecretKey,
 					EndPoint:  s3Config.EndPoint,
-					Path:      s3Config.Path,
 					Region:    s3Config.Region,
 					Bucket:    s3Config.Bucket,
 					URLPrefix: s3Config.URLPrefix,
@@ -147,7 +184,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
 				}
 
-				link, err := s3client.UploadFile(ctx, filename, filetype, src)
+				link, err := s3client.UploadFile(ctx, s3FileKey, filetype, src)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
 				}

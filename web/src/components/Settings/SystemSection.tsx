@@ -1,19 +1,16 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Button, Divider, Input, Switch, Textarea } from "@mui/joy";
 import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
-import toastHelper from "../Toast";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
-import { useAppDispatch } from "../../store";
-import { setGlobalState } from "../../store/reducer/global";
 import "@/less/settings/system-section.less";
 
 interface State {
   dbSize: number;
   allowSignUp: boolean;
   disablePublicMemos: boolean;
-  openAIApiKey: string;
   additionalStyle: string;
   additionalScript: string;
 }
@@ -35,12 +32,13 @@ const SystemSection = () => {
     dbSize: systemStatus.dbSize,
     allowSignUp: systemStatus.allowSignUp,
     additionalStyle: systemStatus.additionalStyle,
-    openAIApiKey: "",
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
   });
-
-  const dispatch = useAppDispatch();
+  const [openAIConfig, setOpenAIConfig] = useState<OpenAIConfig>({
+    key: "",
+    host: "",
+  });
 
   useEffect(() => {
     globalStore.fetchSystemStatus();
@@ -48,14 +46,23 @@ const SystemSection = () => {
 
   useEffect(() => {
     setState({
+      ...state,
       dbSize: systemStatus.dbSize,
       allowSignUp: systemStatus.allowSignUp,
       additionalStyle: systemStatus.additionalStyle,
-      openAIApiKey: "",
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
     });
   }, [systemStatus]);
+
+  useEffect(() => {
+    api.getSystemSetting().then(({ data: { data: systemSettings } }) => {
+      const openAIConfigSetting = systemSettings.find((setting) => setting.name === "openAIConfig");
+      if (openAIConfigSetting) {
+        setOpenAIConfig(JSON.parse(openAIConfigSetting.value));
+      }
+    });
+  }, []);
 
   const handleAllowSignUpChanged = async (value: boolean) => {
     setState({
@@ -80,27 +87,34 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success(t("message.succeed-vacuum-database"));
+    toast.success(t("message.succeed-vacuum-database"));
   };
 
-  const handleOpenAIApiKeyChanged = (value: string) => {
-    setState({
-      ...state,
-      openAIApiKey: value,
+  const handleOpenAIConfigKeyChanged = (value: string) => {
+    setOpenAIConfig({
+      ...openAIConfig,
+      key: value,
     });
   };
 
-  const handleSaveOpenAIApiKey = async () => {
+  const handleSaveOpenAIConfig = async () => {
     try {
       await api.upsertSystemSetting({
-        name: "openAIApiKey",
-        value: JSON.stringify(state.openAIApiKey),
+        name: "openAIConfig",
+        value: JSON.stringify(openAIConfig),
       });
     } catch (error) {
       console.error(error);
       return;
     }
-    toastHelper.success("OpenAI Api Key updated");
+    toast.success("OpenAI Config updated");
+  };
+
+  const handleOpenAIConfigHostChanged = (value: string) => {
+    setOpenAIConfig({
+      ...openAIConfig,
+      host: value,
+    });
   };
 
   const handleAdditionalStyleChanged = (value: string) => {
@@ -120,7 +134,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success(t("message.succeed-update-additional-style"));
+    toast.success(t("message.succeed-update-additional-style"));
   };
 
   const handleAdditionalScriptChanged = (value: string) => {
@@ -140,7 +154,7 @@ const SystemSection = () => {
       console.error(error);
       return;
     }
-    toastHelper.success(t("message.succeed-update-additional-script"));
+    toast.success(t("message.succeed-update-additional-script"));
   };
 
   const handleDisablePublicMemosChanged = async (value: boolean) => {
@@ -148,8 +162,7 @@ const SystemSection = () => {
       ...state,
       disablePublicMemos: value,
     });
-    // Update global store immediately as MemoEditor/Selector is dependent on this value.
-    dispatch(setGlobalState({ systemStatus: { ...systemStatus, disablePublicMemos: value } }));
+    globalStore.setSystemStatus({ disablePublicMemos: value });
     await api.upsertSystemSetting({
       name: "disablePublicMemos",
       value: JSON.stringify(value),
@@ -183,7 +196,7 @@ const SystemSection = () => {
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <span className="normal-text">OpenAI API Key</span>
-        <Button onClick={handleSaveOpenAIApiKey}>{t("common.save")}</Button>
+        <Button onClick={handleSaveOpenAIConfig}>{t("common.save")}</Button>
       </div>
       <Input
         className="w-full"
@@ -192,8 +205,21 @@ const SystemSection = () => {
           fontSize: "14px",
         }}
         placeholder="Write only"
-        value={state.openAIApiKey}
-        onChange={(event) => handleOpenAIApiKeyChanged(event.target.value)}
+        value={openAIConfig.key}
+        onChange={(event) => handleOpenAIConfigKeyChanged(event.target.value)}
+      />
+      <div className="form-label mt-2">
+        <span className="normal-text">OpenAI API Host</span>
+      </div>
+      <Input
+        className="w-full"
+        sx={{
+          fontFamily: "monospace",
+          fontSize: "14px",
+        }}
+        placeholder="OpenAI Host. Default: https://api.openai.com"
+        value={openAIConfig.host}
+        onChange={(event) => handleOpenAIConfigHostChanged(event.target.value)}
       />
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">

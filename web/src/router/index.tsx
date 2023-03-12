@@ -3,7 +3,9 @@ import { lazy } from "react";
 import { isNullorUndefined } from "../helpers/utils";
 import store from "../store";
 import { initialGlobalState, initialUserState } from "../store/module";
+import DailyReview from "../pages/DailyReview";
 
+const Root = lazy(() => import("../layouts/Root"));
 const Auth = lazy(() => import("../pages/Auth"));
 const AuthCallback = lazy(() => import("../pages/AuthCallback"));
 const Explore = lazy(() => import("../pages/Explore"));
@@ -43,62 +45,87 @@ const router = createBrowserRouter([
   },
   {
     path: "/",
-    element: <Home />,
-    loader: async () => {
-      await initialGlobalStateLoader();
+    element: <Root />,
+    children: [
+      {
+        path: "",
+        element: <Home />,
+        loader: async () => {
+          await initialGlobalStateLoader();
 
-      try {
-        await initialUserState();
-      } catch (error) {
-        // do nth
-      }
+          try {
+            await initialUserState();
+          } catch (error) {
+            // do nth
+          }
 
-      const { host, user } = store.getState().user;
-      if (isNullorUndefined(host)) {
-        return redirect("/auth");
-      } else if (isNullorUndefined(user)) {
-        return redirect("/explore");
-      }
-      return null;
-    },
-  },
-  {
-    path: "/u/:userId",
-    element: <Home />,
-    loader: async () => {
-      await initialGlobalStateLoader();
+          const { host, user } = store.getState().user;
+          if (isNullorUndefined(host)) {
+            return redirect("/auth");
+          } else if (isNullorUndefined(user)) {
+            return redirect("/explore");
+          }
+          return null;
+        },
+      },
+      {
+        path: "/u/:userId",
+        element: <Home />,
+        loader: async () => {
+          await initialGlobalStateLoader();
 
-      try {
-        await initialUserState();
-      } catch (error) {
-        // do nth
-      }
+          try {
+            await initialUserState();
+          } catch (error) {
+            // do nth
+          }
 
-      const { host } = store.getState().user;
-      if (isNullorUndefined(host)) {
-        return redirect("/auth");
-      }
-      return null;
-    },
-  },
-  {
-    path: "/explore",
-    element: <Explore />,
-    loader: async () => {
-      await initialGlobalStateLoader();
+          const { host } = store.getState().user;
+          if (isNullorUndefined(host)) {
+            return redirect("/auth");
+          }
+          return null;
+        },
+      },
+      {
+        path: "explore",
+        element: <Explore />,
+        loader: async () => {
+          await initialGlobalStateLoader();
 
-      try {
-        await initialUserState();
-      } catch (error) {
-        // do nth
-      }
+          try {
+            await initialUserState();
+          } catch (error) {
+            // do nth
+          }
 
-      const { host } = store.getState().user;
-      if (isNullorUndefined(host)) {
-        return redirect("/auth");
-      }
-      return null;
-    },
+          const { host } = store.getState().user;
+          if (isNullorUndefined(host)) {
+            return redirect("/auth");
+          }
+          return null;
+        },
+      },
+      {
+        path: "review",
+        element: <DailyReview />,
+        loader: async () => {
+          await initialGlobalStateLoader();
+
+          try {
+            await initialUserState();
+          } catch (error) {
+            // do nth
+          }
+
+          const { host } = store.getState().user;
+          if (isNullorUndefined(host)) {
+            return redirect("/auth");
+          }
+          return null;
+        },
+      },
+    ],
   },
   {
     path: "/m/:memoId",

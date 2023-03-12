@@ -1,11 +1,12 @@
 package openai
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io"
 	"net/http"
-	"strings"
+	"net/url"
 )
 
 type TextCompletionChoice struct {
@@ -18,15 +19,29 @@ type TextCompletionResponse struct {
 	Choices []TextCompletionChoice `json:"choices"`
 }
 
-func PostTextCompletion(prompt string, apiKey string) (string, error) {
-	requestBody := strings.NewReader(`{
-        "prompt": "` + prompt + `",
-        "temperature": 0.5,
-        "max_tokens": 100,
-        "n": 1,
-        "stop": "."
-    }`)
-	req, err := http.NewRequest("POST", "https://api.openai.com/v1/completions", requestBody)
+func PostTextCompletion(prompt string, apiKey string, apiHost string) (string, error) {
+	if apiHost == "" {
+		apiHost = "https://api.openai.com"
+	}
+	url, err := url.JoinPath(apiHost, "/v1/chat/completions")
+	if err != nil {
+		return "", err
+	}
+
+	values := map[string]interface{}{
+		"model":       "gpt-3.5-turbo",
+		"prompt":      prompt,
+		"temperature": 0.5,
+		"max_tokens":  100,
+		"n":           1,
+		"stop":        ".",
+	}
+	jsonValue, err := json.Marshal(values)
+	if err != nil {
+		return "", err
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonValue))
 	if err != nil {
 		return "", err
 	}

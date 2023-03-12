@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { Button, Divider, Input, Radio, RadioGroup, Typography } from "@mui/joy";
 import * as api from "../helpers/api";
 import { UNKNOWN_ID } from "../helpers/consts";
 import { absolutifyLink } from "../helpers/utils";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 
 interface Props extends DialogProps {
   identityProvider?: IdentityProvider;
@@ -28,6 +28,27 @@ const templateList: IdentityProvider[] = [
         scopes: ["user"],
         fieldMapping: {
           identifier: "login",
+          displayName: "name",
+          email: "email",
+        },
+      },
+    },
+  },
+  {
+    id: UNKNOWN_ID,
+    name: "GitLab",
+    type: "OAUTH2",
+    identifierFilter: "",
+    config: {
+      oauth2Config: {
+        clientId: "",
+        clientSecret: "",
+        authUrl: "https://gitlab.com/oauth/authorize",
+        tokenUrl: "https://gitlab.com/oauth/token",
+        userInfoUrl: "https://gitlab.com/oauth/userinfo",
+        scopes: ["openid"],
+        fieldMapping: {
+          identifier: "name",
           displayName: "name",
           email: "email",
         },
@@ -172,7 +193,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             },
           },
         });
-        toastHelper.info(`SSO ${basicInfo.name} created`);
+        toast.success(`SSO ${basicInfo.name} created`);
       } else {
         await api.patchIdentityProvider({
           id: identityProvider?.id,
@@ -185,11 +206,11 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             },
           },
         });
-        toastHelper.info(`SSO ${basicInfo.name} updated`);
+        toast.success(`SSO ${basicInfo.name} updated`);
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
     if (confirmCallback) {
       confirmCallback();

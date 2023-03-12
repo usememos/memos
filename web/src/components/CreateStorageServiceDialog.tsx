@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
 import { Button, Input, Typography } from "@mui/joy";
 import * as api from "../helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import toastHelper from "./Toast";
 
 interface Props extends DialogProps {
   storage?: ObjectStorage;
@@ -77,7 +77,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       }
     } catch (error: any) {
       console.error(error);
-      toastHelper.error(error.response.data.message);
+      toast.error(error.response.data.message);
     }
     if (confirmCallback) {
       confirmCallback();
@@ -184,6 +184,11 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         <Typography className="!mb-1" level="body2">
           Path
           <span className="text-sm text-gray-400 ml-1">(Storage Path)</span>
+        </Typography>
+        <Typography className="!mb-1" level="body2">
+          <p className="text-sm text-gray-400 ml-1">{"You can use {year}, {month}, {day}, {hour}, {minute}, {second},"}</p>
+          <p className="text-sm text-gray-400 ml-1">{"{filetype}, {filename}, {timestamp} and any other words."}</p>
+          <p className="text-sm text-gray-400 ml-1">{"e.g., {year}/{month}/{day}/your/path/{filename}.{filetype}"}</p>
         </Typography>
         <Input
           className="mb-2"
