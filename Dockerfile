@@ -14,8 +14,6 @@ RUN apk update && apk add --no-cache gcc musl-dev
 
 COPY . .
 COPY --from=frontend /frontend-build/dist ./server/dist
-RUN go env -w GOPROXY=https://goproxy.cn
-RUN go env -w GO111MODULE=on
 
 RUN go build -o memos ./main.go
 
