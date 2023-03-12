@@ -8,6 +8,8 @@ import { useResourceStore } from "../store/module";
 import { getResourceUrl } from "../utils/resource";
 import Icon from "./Icon";
 import Dropdown from "./base/Dropdown";
+import { remove } from "lodash-es";
+
 import { generateDialog } from "./Dialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
@@ -20,7 +22,8 @@ type Props = DialogProps;
 
 interface FileProps {
   resouce: Resource;
-  handle: any;
+  select: any;
+  unselect: any;
 }
 
 function getFileCover(filename: string): ReactElement {
@@ -40,21 +43,39 @@ function getFileCover(filename: string): ReactElement {
   }
 }
 
-const File = ({ resouce, handle }: FileProps) => {
+const File = ({ resouce, select, unselect }: FileProps) => {
   const locale = "en";
 
   const [beSelect, setBeSelect] = useState(false);
   const cover = getFileCover(resouce.filename);
+  const { t, _ } = useTranslation();
 
   return (
     <div
       className="resource-card"
       onClick={() => {
+        if (beSelect) {
+          unselect();
+        } else {
+          select();
+        }
+
         setBeSelect(!beSelect);
-        handle();
       }}
     >
-      {beSelect ? <Icon.CheckCircle2 /> : <Icon.Circle className={"resource-checkbox"} />}
+      <div className="btns-container">
+        <span className="btn more-action-btn">
+          <Icon.MoreHorizontal className="icon-img" />
+        </span>
+        {/* <div className="more-action-btns-wrapper">
+          <div className="more-action-btns-container">
+            <span className="btn">{"rename"}</span>
+            <span className="btn archive-btn">{"delete"}</span>
+          </div>
+        </div> */}
+
+        {beSelect ? <Icon.CheckCircle2 className="resource-checkbox-selected" /> : <Icon.Circle className="resource-checkbox" />}
+      </div>
       {cover}
       <div>
         <div className="resource-title">{resouce.filename}</div>
@@ -70,7 +91,7 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
-  const [selectList, setSelectList] = useState([]);
+  const [selectList, setSelectList] = useState<Array<Resource>>([]);
 
   useEffect(() => {
     resourceStore
@@ -84,8 +105,18 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
       });
   }, []);
 
-  const handleSelectBtnClick = (id: ResourceId) => {
-    console.log(id);
+  const handleSelectBtnClick = (resource: Resource) => {
+    // first click and second click?
+    setSelectList([...selectList, resource]);
+  };
+
+  const handleUNSelectBtnClick = (resource: Resource) => {
+    // first click and second click?
+    setSelectList(
+      remove(selectList, (res) => {
+        res == resource;
+      })
+    );
   };
 
   const handlePreviewBtnClick = (resource: Resource) => {
@@ -158,8 +189,18 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleDeleteSelectedBtnClick = () => {
-    selectList.map((id) => {
-      // 删除
+    const warningText = t("resources.warning-text");
+
+    showCommonDialog({
+      title: t("resources.delete-resource"),
+      content: warningText,
+      style: "warning",
+      dialogName: "delete-resource-dialog",
+      onConfirm: async () => {
+        selectList.map(async (resource: Resource) => {
+          await resourceStore.deleteResourceById(resource.id);
+        });
+      },
     });
   };
 
@@ -176,10 +217,6 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
           <div className="flex flex-row justify-start items-center space-x-2">
             <Button onClick={() => showCreateResourceDialog({})} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
               {t("common.create")}
-            </Button>
-
-            <Button onClick={() => handleUnSelectBtnClick()} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
-              {"取消选择"}
             </Button>
 
             <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger" startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
@@ -202,7 +239,12 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
               <p className="tip-text">{t("resources.no-resources")}</p>
             ) : (
               resources.map((resource) => (
-                <File key={resource.id} resouce={resource} onClick={() => handleSelectBtnClick(resource.id)}></File>
+                <File
+                  key={resource.id}
+                  resouce={resource}
+                  select={() => handleSelectBtnClick(resource)}
+                  unselect={() => handleUNSelectBtnClick(resource)}
+                ></File>
               ))
             )}
           </div>

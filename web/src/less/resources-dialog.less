@@ -64,9 +64,14 @@
           &:hover {
             .resource-checkbox {
               display: flex;
+              /* position: absolute; */
             }
           }
+          .resource-checkbox-selected{
+            /* position: absolute; */
+          }
 
+              
           .icon-cover{
             @apply w-32 h-32 ml-auto mr-auto mt-3;
           }
@@ -81,6 +86,21 @@
 
           .resource-time{
             @apply text-sm text-gray-400 text-center	;
+          }
+
+          .more-action-btn{
+            &:hover {
+              & + .more-action-btns-wrapper {
+                display: flex;
+              }
+            }  
+          }
+          .btns-container{
+            @apply w-full flex flex-row-reverse justify-between;
+            > .more-action-btns-wrapper {
+              @apply flex flex-col justify-start items-center absolute top-2 -right-4 flex-nowrap hover:flex p-3;
+            }
+  
           }
         }
 
