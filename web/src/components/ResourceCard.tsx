@@ -3,24 +3,24 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 import { useResourceStore } from "../store/module";
-import Icon from "../components/Icon";
+import Icon from "./Icon";
 import copy from "copy-to-clipboard";
 import { getResourceUrl } from "../utils/resource";
-import showPreviewImageDialog from "../components/PreviewImageDialog";
+import showPreviewImageDialog from "./PreviewImageDialog";
 import Dropdown from "./base/Dropdown";
-import FileCover from "./FileCover";
-import { showCommonDialog } from "../components/Dialog/CommonDialog";
-import showChangeResourceFilenameDialog from "../components/ChangeResourceFilenameDialog";
+import ResourceCover from "./ResourceCover";
+import { showCommonDialog } from "./Dialog/CommonDialog";
+import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
 
-import "../less/file-card.less";
+import "../less/resource-card.less";
 
-interface FileProps {
+interface ResourceProps {
   resource: Resource;
   handlecheck: any;
   handleUncheck: any;
 }
 
-const FileCard = ({ resource, handlecheck, handleUncheck }: FileProps) => {
+const ResourceCard = ({ resource, handlecheck, handleUncheck }: ResourceProps) => {
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
@@ -118,7 +118,7 @@ const FileCard = ({ resource, handlecheck, handleUncheck }: FileProps) => {
           }
         />
       </div>
-      <FileCover resource={resource} />
+      <ResourceCover resource={resource} />
       <div>
         <div className="text-base overflow-ellipsis text-center">{resource.filename}</div>
         <div className="text-sm text-gray-400 text-center">{dayjs(resource.createdTs).locale("en").format("YYYY/MM/DD HH:mm:ss")}</div>
@@ -127,4 +127,4 @@ const FileCard = ({ resource, handlecheck, handleUncheck }: FileProps) => {
   );
 };
 
-export default FileCard;
+export default ResourceCard;

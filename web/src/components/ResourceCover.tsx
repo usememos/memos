@@ -1,11 +1,11 @@
 import React from "react";
-import Icon from "../components/Icon";
+import Icon from "./Icon";
 
-interface FileCoverProps {
+interface ResourceCoverProps {
   resource: Resource;
 }
 
-const FileCover = ({ resource }: FileCoverProps) => {
+const RescourceCover = ({ resource }: ResourceCoverProps) => {
   switch (resource.type) {
     case "image/*":
       return <Icon.FileImage className="w-32 h-32 ml-auto mr-auto" />;
@@ -28,4 +28,4 @@ const FileCover = ({ resource }: FileCoverProps) => {
   }
 };
 
-export default React.memo(FileCover);
+export default React.memo(RescourceCover);

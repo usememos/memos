@@ -6,7 +6,7 @@ import useLoading from "../hooks/useLoading";
 import { useResourceStore } from "../store/module";
 import Icon from "../components/Icon";
 import { remove } from "lodash-es";
-import FileCard from "../components/FileCard";
+import FileCard from "../components/ResourceCard";
 
 import { showCommonDialog } from "../components/Dialog/CommonDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
