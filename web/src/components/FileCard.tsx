@@ -51,6 +51,8 @@ const FileCard = ({ resouce, select, unselect, rename, deleteHandle }: FileProps
       }}
     >
       <div className="btns-container">
+        {beSelect ? <Icon.CheckCircle2 className="resource-checkbox-selected" /> : <Icon.Circle className="resource-checkbox" />}
+
         <span className="btn more-action-btn">
           <Icon.MoreHorizontal className="icon-img" />
         </span>
@@ -74,8 +76,6 @@ const FileCard = ({ resouce, select, unselect, rename, deleteHandle }: FileProps
             </span>
           </div>
         </div>
-
-        {beSelect ? <Icon.CheckCircle2 className="resource-checkbox-selected" /> : <Icon.Circle className="resource-checkbox" />}
       </div>
       {cover}
       <div>
