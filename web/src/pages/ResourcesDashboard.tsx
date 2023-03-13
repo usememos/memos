@@ -70,6 +70,7 @@ const ResourcesDashboard = () => {
   };
 
   const handleDeleteSelectedBtnClick = () => {
+    console.log(selectList);
     if (selectList.length == 0) {
       toast.error(t("resources.no-files-selected"));
     } else {
@@ -128,8 +129,8 @@ const ResourcesDashboard = () => {
                   <FileCard
                     key={resource.id}
                     resource={resource}
-                    handlecheck={() => handleCheckBtnClick(resource.id)}
-                    handleUncheck={() => handleUncheckBtnClick(resource.id)}
+                    handlecheckClick={() => handleCheckBtnClick(resource.id)}
+                    handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
                   ></FileCard>
                 ))
               )}

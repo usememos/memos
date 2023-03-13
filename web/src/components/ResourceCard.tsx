@@ -16,11 +16,11 @@ import "../less/resource-card.less";
 
 interface ResourceProps {
   resource: Resource;
-  handlecheck: any;
-  handleUncheck: any;
+  handlecheckClick: any;
+  handleUncheckClick: any;
 }
 
-const ResourceCard = ({ resource, handlecheck, handleUncheck }: ResourceProps) => {
+const ResourceCard = ({ resource, handlecheckClick, handleUncheckClick }: ResourceProps) => {
   const [isSelected, setIsSelected] = useState<boolean>(false);
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
@@ -67,9 +67,9 @@ const ResourceCard = ({ resource, handlecheck, handleUncheck }: ResourceProps) =
 
   const handleSelectBtnClick = () => {
     if (isSelected) {
-      handlecheck();
+      handleUncheckClick();
     } else {
-      handleUncheck();
+      handlecheckClick();
     }
     setIsSelected(!isSelected);
   };
