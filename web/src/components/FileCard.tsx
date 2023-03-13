@@ -1,13 +1,13 @@
 import dayjs from "dayjs";
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import Icon from "../components/Icon";
 import { toast } from "react-hot-toast";
 import { useResourceStore } from "../store/module";
 import copy from "copy-to-clipboard";
 import { getResourceUrl } from "../utils/resource";
 import showPreviewImageDialog from "../components/PreviewImageDialog";
 import Dropdown from "./base/Dropdown";
+import FileCover from "./FileCover";
 import { showCommonDialog } from "../components/Dialog/CommonDialog";
 import showChangeResourceFilenameDialog from "../components/ChangeResourceFilenameDialog";
 
@@ -19,30 +19,12 @@ interface FileProps {
   unselect: any;
 }
 
-function getFileCover(filename: string): ReactElement {
-  switch (filename.split(".").pop()) {
-    case "png":
-      return <Icon.FileImage className="icon-cover" />;
-    case "jpge":
-      return <Icon.FileImage className="icon-cover" />;
-    case "docx":
-      return <Icon.FileText className="icon-cover" />;
-    case "pdf":
-      return <Icon.FileType2 className="icon-cover" />;
-    case "doc":
-      return <Icon.FileText className="icon-cover" />;
-    default:
-      return <Icon.FileImage className="icon-cover" />;
-  }
-}
-
 const FileCard = ({ resource, select, unselect }: FileProps) => {
   const locale = "en";
 
   const [beSelect, setBeSelect] = useState(false);
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
-  const cover = getFileCover(resource.filename);
   const { t } = useTranslation();
 
   const handleRenameBtnClick = (resource: Resource) => {
@@ -133,7 +115,7 @@ const FileCard = ({ resource, select, unselect }: FileProps) => {
           }
         />
       </div>
-      {cover}
+      <FileCover resource={resource} />
       <div>
         <div className="resource-title">{resource.filename}</div>
         <div className="resource-time">{dayjs(resource.createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss")}</div>

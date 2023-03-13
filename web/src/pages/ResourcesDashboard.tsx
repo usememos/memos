@@ -71,10 +71,6 @@ const ResourcesDashboard = () => {
     });
   };
 
-  // const handleUnSelectBtnClick = () => {
-  //   setSelectList([]);
-  // };
-
   const handleDeleteSelectedBtnClick = () => {
     const warningText = t("resources.warning-text");
 
