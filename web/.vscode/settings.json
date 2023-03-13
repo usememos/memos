@@ -8,5 +8,6 @@
   ],
   "files.associations": {
     "*.less": "postcss"
-  }
+  },
+  "i18n-ally.keystyle": "nested"
 }

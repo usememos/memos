@@ -24,6 +24,8 @@ interface FileProps {
   resouce: Resource;
   select: any;
   unselect: any;
+  rename: any;
+  deleteHandle: any;
 }
 
 function getFileCover(filename: string): ReactElement {
@@ -43,7 +45,7 @@ function getFileCover(filename: string): ReactElement {
   }
 }
 
-const File = ({ resouce, select, unselect }: FileProps) => {
+const File = ({ resouce, select, unselect, rename, deleteHandle }: FileProps) => {
   const locale = "en";
 
   const [beSelect, setBeSelect] = useState(false);
@@ -67,12 +69,26 @@ const File = ({ resouce, select, unselect }: FileProps) => {
         <span className="btn more-action-btn">
           <Icon.MoreHorizontal className="icon-img" />
         </span>
-        {/* <div className="more-action-btns-wrapper">
+        <div className="more-action-btns-wrapper">
           <div className="more-action-btns-container">
-            <span className="btn">{"rename"}</span>
-            <span className="btn archive-btn">{"delete"}</span>
+            <span
+              className="btn"
+              onClick={() => {
+                rename(resouce);
+              }}
+            >
+              {"rename"}
+            </span>
+            <span
+              className="btn"
+              onClick={() => {
+                deleteHandle(resouce);
+              }}
+            >
+              {"delete"}
+            </span>
           </div>
-        </div> */}
+        </div>
 
         {beSelect ? <Icon.CheckCircle2 className="resource-checkbox-selected" /> : <Icon.Circle className="resource-checkbox" />}
       </div>
@@ -244,6 +260,8 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
                   resouce={resource}
                   select={() => handleSelectBtnClick(resource)}
                   unselect={() => handleUNSelectBtnClick(resource)}
+                  rename={handleRenameBtnClick}
+                  deleteHandle={handleDeleteResourceBtnClick}
                 ></File>
               ))
             )}
