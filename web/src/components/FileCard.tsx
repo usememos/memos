@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 import { useResourceStore } from "../store/module";
+import Icon from "../components/Icon";
 import copy from "copy-to-clipboard";
 import { getResourceUrl } from "../utils/resource";
 import showPreviewImageDialog from "../components/PreviewImageDialog";
