@@ -5,7 +5,7 @@ interface ResourceCoverProps {
   resource: Resource;
 }
 
-const RescourceCover = ({ resource }: ResourceCoverProps) => {
+const ResourceCover = ({ resource }: ResourceCoverProps) => {
   switch (resource.type) {
     case "image/*":
       return <Icon.FileImage className="w-32 h-32 ml-auto mr-auto" />;
@@ -28,4 +28,4 @@ const RescourceCover = ({ resource }: ResourceCoverProps) => {
   }
 };
 
-export default React.memo(RescourceCover);
+export default React.memo(ResourceCover);
