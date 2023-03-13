@@ -38,20 +38,20 @@ const FileCard = ({ resouce, select, unselect, rename, deleteHandle }: FileProps
   const { t, _ } = useTranslation();
 
   return (
-    <div
-      className="resource-card"
-      onClick={() => {
-        if (beSelect) {
-          unselect();
-        } else {
-          select();
-        }
-
-        setBeSelect(!beSelect);
-      }}
-    >
+    <div className="resource-card">
       <div className="btns-container">
-        {beSelect ? <Icon.CheckCircle2 className="resource-checkbox-selected" /> : <Icon.Circle className="resource-checkbox" />}
+        <div
+          onClick={() => {
+            if (beSelect) {
+              unselect();
+            } else {
+              select();
+            }
+            setBeSelect(!beSelect);
+          }}
+        >
+          {beSelect ? <Icon.CheckCircle2 className="resource-checkbox-selected" /> : <Icon.Circle className="resource-checkbox" />}
+        </div>
 
         <span className="btn more-action-btn">
           <Icon.MoreHorizontal className="icon-img" />
