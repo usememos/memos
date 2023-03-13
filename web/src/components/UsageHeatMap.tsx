@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { useFilterStore, useMemoStore, useUserStore } from "../store/module";
 import { useTranslation } from "react-i18next";
 import { getMemoStats } from "../helpers/api";
 import { DAILY_TIMESTAMP } from "../helpers/consts";
@@ -29,7 +29,7 @@ interface DailyUsageStat {
 
 const UsageHeatMap = () => {
   const { t } = useTranslation();
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
   const todayTimeStamp = utils.getDateStampByDate(Date.now());
@@ -87,11 +87,11 @@ const UsageHeatMap = () => {
   }, []);
 
   const handleUsageStatItemClick = useCallback((item: DailyUsageStat) => {
-    if (locationStore.getState().query?.duration?.from === item.timestamp) {
-      locationStore.setFromAndToQuery();
+    if (filterStore.getState().duration?.from === item.timestamp) {
+      filterStore.setFromAndToFilter();
       setCurrentStat(null);
     } else if (item.count > 0) {
-      locationStore.setFromAndToQuery(item.timestamp, item.timestamp + DAILY_TIMESTAMP);
+      filterStore.setFromAndToFilter(item.timestamp, item.timestamp + DAILY_TIMESTAMP);
       setCurrentStat(item);
     }
   }, []);

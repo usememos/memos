@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -25,6 +26,8 @@ const (
 	// The max file size is 32MB.
 	maxFileSize = 32 << 20
 )
+
+var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
 
 func (s *Server) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
@@ -183,14 +186,21 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 			if storage.Type == api.StorageS3 {
 				s3Config := storage.Config.S3Config
-				s3FileKey := s3Config.Path
+				var s3FileKey string
 				if s3Config.Path == "" {
 					s3FileKey = filename
-				} else if !strings.Contains(s3Config.Path, "{filename}") {
-					s3FileKey = path.Join(s3Config.Path, filename)
 				} else {
-					s3FileKey = replacePathTemplate(s3FileKey, filename, filetype)
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{filename}", filename)
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{filetype}", filetype)
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{timestamp}", fmt.Sprintf("%d", t.Unix()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{year}", fmt.Sprintf("%d", t.Year()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{month}", fmt.Sprintf("%02d", t.Month()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{day}", fmt.Sprintf("%02d", t.Day()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{hour}", fmt.Sprintf("%02d", t.Hour()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{minute}", fmt.Sprintf("%02d", t.Minute()))
+					s3FileKey = strings.ReplaceAll(s3FileKey, "{second}", fmt.Sprintf("%02d", t.Second()))
 				}
+
 				s3client, err := s3.NewClient(ctx, &s3.Config{
 					AccessKey: s3Config.AccessKey,
 					SecretKey: s3Config.SecretKey,

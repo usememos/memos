@@ -9,20 +9,14 @@ import showSettingDialog from "./SettingDialog";
 const UserBanner = () => {
   const { t } = useTranslation();
   const userStore = useUserStore();
-  const { user, owner } = userStore.state;
+  const { user } = userStore.state;
   const [username, setUsername] = useState("Memos");
-  const isVisitorMode = userStore.isVisitorMode();
 
   useEffect(() => {
-    if (isVisitorMode) {
-      if (!owner) {
-        return;
-      }
-      setUsername(owner.nickname || owner.username);
-    } else if (user) {
+    if (user) {
       setUsername(user.nickname || user.username);
     }
-  }, [isVisitorMode, user, owner]);
+  }, [user]);
 
   const handleMyAccountClick = () => {
     showSettingDialog("my-account");
@@ -45,7 +39,7 @@ const UserBanner = () => {
           <div className="px-3 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-lg hover:shadow hover:bg-white dark:hover:bg-zinc-700">
             <UserAvatar avatarUrl={user?.avatarUrl} />
             <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{username}</span>
-            {!isVisitorMode && user?.role === "HOST" ? (
+            {user?.role === "HOST" ? (
               <span className="text-xs px-1 bg-blue-600 dark:bg-blue-800 rounded text-white dark:text-gray-200 shadow">MOD</span>
             ) : null}
           </div>

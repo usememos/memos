@@ -5,15 +5,7 @@ import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "../labs/marked";
 import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import {
-  useEditorStore,
-  useGlobalStore,
-  useLocationStore,
-  useMemoStore,
-  useResourceStore,
-  useTagStore,
-  useUserStore,
-} from "../store/module";
+import { useEditorStore, useGlobalStore, useFilterStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "../store/module";
 import * as storage from "../helpers/storage";
 import Icon from "./Icon";
 import Selector from "./base/Selector";
@@ -46,7 +38,7 @@ const MemoEditor = () => {
   const { t, i18n } = useTranslation();
   const userStore = useUserStore();
   const editorStore = useEditorStore();
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
   const resourceStore = useResourceStore();
@@ -119,31 +111,6 @@ const MemoEditor = () => {
       if (event.key === "Enter") {
         handleSaveBtnClick();
         return;
-      }
-      if (event.key === "b") {
-        event.preventDefault();
-        editorRef.current.insertText("", "**", "**");
-        return;
-      }
-      if (event.key === "i") {
-        event.preventDefault();
-        editorRef.current.insertText("", "*", "*");
-        return;
-      }
-      if (event.key === "e") {
-        event.preventDefault();
-        editorRef.current.insertText("", "`", "`");
-        return;
-      }
-      if (event.key === "k") {
-        event.preventDefault();
-        const selectedContent = editorRef.current.getSelectedContent();
-        editorRef.current.insertText("", "[", "](url)");
-        if (selectedContent) {
-          const startPos = editorRef.current.getCursorPosition() + 2;
-          const endPos = startPos + 3;
-          editorRef.current.setCursorPosition(startPos, endPos);
-        }
       }
     }
     if (event.key === "Enter") {
@@ -289,7 +256,7 @@ const MemoEditor = () => {
           visibility: editorState.memoVisibility,
           resourceIdList: editorState.resourceList.map((resource) => resource.id),
         });
-        locationStore.clearQuery();
+        filterStore.clearFilter();
       }
     } catch (error: any) {
       console.error(error);

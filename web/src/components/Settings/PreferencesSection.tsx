@@ -40,10 +40,6 @@ const PreferencesSection = () => {
     await userStore.upsertUserSetting("resourceVisibility", value);
   };
 
-  const handleIsFoldingEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    userStore.upsertLocalSetting({ ...localSetting, enableFoldMemo: event.target.checked });
-  };
-
   const handleDoubleClickEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, enableDoubleClickEditing: event.target.checked });
   };
@@ -131,10 +127,6 @@ const PreferencesSection = () => {
         </span>
       </div>
 
-      <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.enable-folding-memo")}</span>
-        <Switch className="ml-2" checked={localSetting.enableFoldMemo} onChange={handleIsFoldingEnabledChanged} />
-      </label>
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.enable-double-click")}</span>
         <Switch className="ml-2" checked={localSetting.enableDoubleClickEditing} onChange={handleDoubleClickEnabledChanged} />

@@ -1,11 +1,10 @@
-import { Tooltip } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
-import { useEditorStore, useLocationStore, useMemoStore, useUserStore } from "../store/module";
+import { Link, useNavigate } from "react-router-dom";
+import { useEditorStore, useFilterStore, useMemoStore, useUserStore } from "../store/module";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
@@ -33,13 +32,12 @@ const Memo: React.FC<Props> = (props: Props) => {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const editorStore = useEditorStore();
-  const locationStore = useLocationStore();
+  const filterStore = useFilterStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
   const [createdTimeStr, setCreatedTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userStore.isVisitorMode() || readonly;
-  const updatedTimeStr = getFormatedMemoTimeStr(memo.updatedTs, i18n.language);
 
   useEffect(() => {
     let intervalFlag: any = -1;
@@ -68,10 +66,6 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleTogglePinMemoBtnClick = async () => {
-    if (isVisitorMode) {
-      return;
-    }
-
     try {
       if (memo.pinned) {
         await memoStore.unpinMemo(memo.id);
@@ -84,18 +78,10 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleEditMemoClick = () => {
-    if (isVisitorMode) {
-      return;
-    }
-
     editorStore.setEditMemoWithId(memo.id);
   };
 
   const handleArchiveMemoClick = async () => {
-    if (isVisitorMode) {
-      return;
-    }
-
     try {
       await memoStore.patchMemo({
         id: memo.id,
@@ -111,7 +97,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleGenMemoImageBtnClick = () => {
+  const handleGenerateMemoImageBtnClick = () => {
     showShareMemo(memo);
   };
 
@@ -120,11 +106,11 @@ const Memo: React.FC<Props> = (props: Props) => {
 
     if (targetEl.className === "tag-span") {
       const tagName = targetEl.innerText.slice(1);
-      const currTagQuery = locationStore.getState().query?.tag;
+      const currTagQuery = filterStore.getState().tag;
       if (currTagQuery === tagName) {
-        locationStore.setTagQuery(undefined);
+        filterStore.setTagFilter(undefined);
       } else {
-        locationStore.setTagQuery(tagName);
+        filterStore.setTagFilter(tagName);
       }
     } else if (targetEl.classList.contains("todo-block")) {
       if (isVisitorMode) {
@@ -190,11 +176,11 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemoVisibilityClick = (visibility: Visibility) => {
-    const currVisibilityQuery = locationStore.getState().query?.visibility;
+    const currVisibilityQuery = filterStore.getState().visibility;
     if (currVisibilityQuery === visibility) {
-      locationStore.setMemoVisibilityQuery(undefined);
+      filterStore.setMemoVisibilityFilter(undefined);
     } else {
-      locationStore.setMemoVisibilityQuery(visibility);
+      filterStore.setMemoVisibilityFilter(visibility);
     }
   };
 
@@ -203,15 +189,13 @@ const Memo: React.FC<Props> = (props: Props) => {
       {memo.pinned && <div className="corner-container"></div>}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
-          <Tooltip title={`Updated at ${updatedTimeStr}`} placement="top" arrow>
-            <span className="time-text" onDoubleClick={handleMemoCreatedTimeClick}>
-              {createdTimeStr}
-            </span>
-          </Tooltip>
+          <span className="time-text" onDoubleClick={handleMemoCreatedTimeClick}>
+            {createdTimeStr}
+          </span>
           {isVisitorMode && (
-            <a className="name-text" href={`/u/${memo.creatorId}`}>
+            <Link className="name-text" to={`/u/${memo.creatorId}`}>
               @{memo.creatorName}
-            </a>
+            </Link>
           )}
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
             <span
@@ -238,7 +222,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                     <Icon.Edit3 className="icon-img" />
                     <span className="tip-text">{t("common.edit")}</span>
                   </div>
-                  <div className="btn" onClick={handleGenMemoImageBtnClick}>
+                  <div className="btn" onClick={handleGenerateMemoImageBtnClick}>
                     <Icon.Share className="icon-img" />
                     <span className="tip-text">{t("common.share")}</span>
                   </div>

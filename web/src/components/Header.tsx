@@ -1,22 +1,23 @@
 import { useEffect } from "react";
-import { Link } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useLayoutStore, useLocationStore, useUserStore } from "../store/module";
+import { useLayoutStore, useUserStore } from "../store/module";
 import { resolution } from "../utils/layout";
 import Icon from "./Icon";
-import showDailyReviewDialog from "./DailyReviewDialog";
 import showResourcesDialog from "./ResourcesDialog";
 import showSettingDialog from "./SettingDialog";
 import showAskAIDialog from "./AskAIDialog";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
+import showAboutSiteDialog from "./AboutSiteDialog";
 import UserBanner from "./UserBanner";
 
 const Header = () => {
   const { t } = useTranslation();
+  const location = useLocation();
   const userStore = useUserStore();
-  const locationStore = useLocationStore();
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
+  const isVisitorMode = userStore.isVisitorMode() && !userStore.state.user;
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -28,7 +29,7 @@ const Header = () => {
     };
     window.addEventListener("resize", handleWindowResize);
     handleWindowResize();
-  }, []);
+  }, [location]);
 
   return (
     <div
@@ -43,32 +44,53 @@ const Header = () => {
         onClick={() => layoutStore.setHeaderStatus(false)}
       ></div>
       <header
-        className={`relative w-56 sm:w-full h-full max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start py-4 z-30 bg-white dark:bg-zinc-800 sm:bg-transparent sm:shadow-none transition-all duration-300 -translate-x-full sm:translate-x-0 ${
+        className={`relative w-56 sm:w-full h-full max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start py-4 z-30 bg-zinc-100 dark:bg-zinc-800 sm:bg-transparent sm:shadow-none transition-all duration-300 -translate-x-full sm:translate-x-0 ${
           showHeader && "translate-x-0 shadow-2xl"
         }`}
       >
         <UserBanner />
         <div className="w-full px-2 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
-          <Link
-            to="/"
-            className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-            onClick={() => locationStore.clearQuery()}
-          >
-            <Icon.Home className="mr-4 w-6 h-auto opacity-80" /> {t("common.home")}
-          </Link>
-          <button
-            className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-            onClick={() => showDailyReviewDialog()}
-          >
-            <Icon.Calendar className="mr-4 w-6 h-auto opacity-80" /> {t("common.daily-review")}
-          </button>
-          <Link
+          {!isVisitorMode && (
+            <>
+              <NavLink
+                to="/"
+                className={({ isActive }) =>
+                  `${
+                    isActive && "bg-white dark:bg-zinc-700 shadow"
+                  } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                }
+              >
+                <>
+                  <Icon.Home className="mr-4 w-6 h-auto opacity-80" /> {t("common.home")}
+                </>
+              </NavLink>
+              <NavLink
+                to="/review"
+                className={({ isActive }) =>
+                  `${
+                    isActive && "bg-white dark:bg-zinc-700 shadow"
+                  } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                }
+              >
+                <>
+                  <Icon.Calendar className="mr-4 w-6 h-auto opacity-80" /> {t("common.daily-review")}
+                </>
+              </NavLink>
+            </>
+          )}
+          <NavLink
             to="/explore"
-            className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+            className={({ isActive }) =>
+              `${
+                isActive && "bg-white dark:bg-zinc-700 shadow"
+              } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+            }
           >
-            <Icon.Hash className="mr-4 w-6 h-auto opacity-80" /> {t("common.explore")}
-          </Link>
-          {!userStore.isVisitorMode() && (
+            <>
+              <Icon.Hash className="mr-4 w-6 h-auto opacity-80" /> {t("common.explore")}
+            </>
+          </NavLink>
+          {!isVisitorMode && (
             <>
               <button
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
@@ -93,6 +115,28 @@ const Header = () => {
                 onClick={() => showSettingDialog()}
               >
                 <Icon.Settings className="mr-4 w-6 h-auto opacity-80" /> {t("common.settings")}
+              </button>
+            </>
+          )}
+          {isVisitorMode && (
+            <>
+              <NavLink
+                to="/auth"
+                className={({ isActive }) =>
+                  `${
+                    isActive && "bg-white dark:bg-zinc-700 shadow"
+                  } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                }
+              >
+                <>
+                  <Icon.LogIn className="mr-4 w-6 h-auto opacity-80" /> {t("common.sign-in")}
+                </>
+              </NavLink>
+              <button
+                className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+                onClick={() => showAboutSiteDialog()}
+              >
+                <Icon.CupSoda className="mr-4 w-6 h-auto opacity-80" /> {t("common.about")}
               </button>
             </>
           )}
