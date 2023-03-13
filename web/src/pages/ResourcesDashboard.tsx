@@ -17,7 +17,7 @@ const ResourcesDashboard = () => {
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
-  const [selectList, setSelectList] = useState<Array<ResourceId>>([]);
+  const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
 
   useEffect(() => {
     resourceStore
@@ -32,11 +32,11 @@ const ResourcesDashboard = () => {
   }, []);
 
   const handleCheckBtnClick = (resourceId: ResourceId) => {
-    setSelectList([...selectList, resourceId]);
+    setSelectedList([...selectedList, resourceId]);
   };
 
   const handleUncheckBtnClick = (resourceId: ResourceId) => {
-    setSelectList(selectList.filter((resId) => resId !== resourceId));
+    setSelectedList(selectedList.filter((resId) => resId !== resourceId));
   };
 
   const handleDeleteUnusedResourcesBtnClick = () => {
