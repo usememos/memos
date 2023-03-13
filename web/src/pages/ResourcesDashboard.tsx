@@ -5,8 +5,7 @@ import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
 import { useResourceStore } from "../store/module";
 import Icon from "../components/Icon";
-import { remove } from "lodash-es";
-import FileCard from "../components/ResourceCard";
+import ResourceCard from "../components/ResourceCard";
 
 import { showCommonDialog } from "../components/Dialog/CommonDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
@@ -121,12 +120,12 @@ const ResourcesDashboard = () => {
                 <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
               ) : (
                 resources.map((resource) => (
-                  <FileCard
+                  <ResourceCard
                     key={resource.id}
                     resource={resource}
                     handlecheckClick={() => handleCheckBtnClick(resource.id)}
                     handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-                  ></FileCard>
+                  ></ResourceCard>
                 ))
               )}
             </div>
