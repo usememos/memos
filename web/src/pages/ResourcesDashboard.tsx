@@ -72,19 +72,22 @@ const ResourcesDashboard = () => {
   };
 
   const handleDeleteSelectedBtnClick = () => {
-    const warningText = t("resources.warning-text");
-
-    showCommonDialog({
-      title: t("resources.delete-resource"),
-      content: warningText,
-      style: "warning",
-      dialogName: "delete-resource-dialog",
-      onConfirm: async () => {
-        selectList.map(async (resource: Resource) => {
-          await resourceStore.deleteResourceById(resource.id);
-        });
-      },
-    });
+    if (selectList.length == 0) {
+      toast.error(t("resources.no-files-selected"));
+    } else {
+      const warningText = t("resources.warning-text");
+      showCommonDialog({
+        title: t("resources.delete-resource"),
+        content: warningText,
+        style: "warning",
+        dialogName: "delete-resource-dialog",
+        onConfirm: async () => {
+          selectList.map(async (resource: Resource) => {
+            await resourceStore.deleteResourceById(resource.id);
+          });
+        },
+      });
+    }
   };
 
   return (

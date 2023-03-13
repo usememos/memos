@@ -78,7 +78,8 @@
     "warning-text-unused": "Are you sure to delete these unused resources? THIS ACTION IS IRREVERSIBLE❗",
     "no-unused-resources": "No unused resources",
     "name": "Name",
-    "delete-selected-resources": "Delete Selected Resources"
+    "delete-selected-resources": "Delete Selected Resources",
+    "no-files-selected": "No files selected❗"
   },
   "archived": {
     "archived-memos": "Archived Memos",
