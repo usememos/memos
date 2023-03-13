@@ -31,13 +31,11 @@ const ResourcesDashboard = () => {
       });
   }, []);
 
-  const handleSelectBtnClick = (resourceId: ResourceId) => {
-    // first click and second click?
+  const handleCheckBtnClick = (resourceId: ResourceId) => {
     setSelectList([...selectList, resourceId]);
   };
 
-  const handleUnSelectBtnClick = (resourceId: ResourceId) => {
-    // first click and second click?
+  const handleUncheckBtnClick = (resourceId: ResourceId) => {
     setSelectList(
       remove(selectList, (resId) => {
         resId == resourceId;
@@ -130,8 +128,8 @@ const ResourcesDashboard = () => {
                   <FileCard
                     key={resource.id}
                     resource={resource}
-                    select={() => handleSelectBtnClick(resource.id)}
-                    unselect={() => handleUnSelectBtnClick(resource.id)}
+                    handlecheck={() => handleCheckBtnClick(resource.id)}
+                    handleUncheck={() => handleUncheckBtnClick(resource.id)}
                   ></FileCard>
                 ))
               )}

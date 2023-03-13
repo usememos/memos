@@ -1,7 +1,6 @@
 import React from "react";
 import Icon from "../components/Icon";
 
-// todo optimize by useMemo.
 interface FileCoverProps {
   resource: Resource;
 }

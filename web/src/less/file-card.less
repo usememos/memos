@@ -12,17 +12,10 @@
         @apply flex;
       }
     }
-    .resource-checkbox-selected{
-      @apply m-2 text-gray-500;
-      &:hover {
-        color: black;
-      }
-    }
 
     .resource-checkbox{
       @apply hidden hover:flex ;
     }
-
 
     .more-action-btn{
       @apply hidden  m-2;
@@ -32,18 +25,9 @@
         }
       }  
     }
-        
-
-    .resource-title{
-      @apply text-base overflow-ellipsis text-center	;
-    }
-
-    .resource-time{
-      @apply text-sm text-gray-400 text-center	;
-    }
 
     .btns-container{
-      @apply w-full flex flex-row justify-between items-center relative h-7; // the h-1 is must, making the checkbox and more don't move when hover
+      @apply w-full flex flex-row justify-between items-center relative h-7; 
       > .more-action-btns-wrapper {
         @apply hidden flex-col justify-start items-center absolute top-2 -right-4 flex-nowrap hover:flex p-3;
 

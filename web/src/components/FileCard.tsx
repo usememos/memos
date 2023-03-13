@@ -16,14 +16,12 @@ import "../less/file-card.less";
 
 interface FileProps {
   resource: Resource;
-  select: any;
-  unselect: any;
+  handlecheck: any;
+  handleUncheck: any;
 }
 
-const FileCard = ({ resource, select, unselect }: FileProps) => {
-  const locale = "en";
-
-  const [beSelect, setBeSelect] = useState(false);
+const FileCard = ({ resource, handlecheck, handleUncheck }: FileProps) => {
+  const [isSelected, setIsSelected] = useState<boolean>(false);
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
   const { t } = useTranslation();
@@ -67,20 +65,24 @@ const FileCard = ({ resource, select, unselect }: FileProps) => {
     toast.success(t("message.succeed-copy-resource-link"));
   };
 
+  const handleSelectBtnClick = () => {
+    if (isSelected) {
+      handlecheck();
+    } else {
+      handleUncheck();
+    }
+    setIsSelected(!isSelected);
+  };
+
   return (
     <div className="resource-card">
       <div className="btns-container">
-        <div
-          onClick={() => {
-            if (beSelect) {
-              unselect();
-            } else {
-              select();
-            }
-            setBeSelect(!beSelect);
-          }}
-        >
-          {beSelect ? <Icon.CheckCircle2 className="resource-checkbox-selected" /> : <Icon.Circle className="resource-checkbox" />}
+        <div onClick={() => handleSelectBtnClick()}>
+          {isSelected ? (
+            <Icon.CheckCircle2 className="m-2 text-gray-500 hover:text-black" />
+          ) : (
+            <Icon.Circle className="resource-checkbox" />
+          )}
         </div>
 
         <Dropdown
@@ -118,8 +120,8 @@ const FileCard = ({ resource, select, unselect }: FileProps) => {
       </div>
       <FileCover resource={resource} />
       <div>
-        <div className="resource-title">{resource.filename}</div>
-        <div className="resource-time">{dayjs(resource.createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss")}</div>
+        <div className="text-base overflow-ellipsis text-center">{resource.filename}</div>
+        <div className="text-sm text-gray-400 text-center">{dayjs(resource.createdTs).locale("en").format("YYYY/MM/DD HH:mm:ss")}</div>
       </div>
     </div>
   );
