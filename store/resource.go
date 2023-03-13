@@ -297,7 +297,7 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 		fields = append(fields, "blob")
 	}
 	if s.profile.IsDev() {
-		fields = append(fields, "visibility", "Internal_path")
+		fields = append(fields, "visibility", "internal_path")
 	}
 
 	query := fmt.Sprintf(`
