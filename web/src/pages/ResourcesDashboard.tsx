@@ -17,7 +17,7 @@ const ResourcesDashboard = () => {
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
-  const [selectList, setSelectList] = useState<Array<Resource>>([]);
+  const [selectList, setSelectList] = useState<Array<ResourceId>>([]);
 
   useEffect(() => {
     resourceStore
@@ -31,16 +31,16 @@ const ResourcesDashboard = () => {
       });
   }, []);
 
-  const handleSelectBtnClick = (resource: Resource) => {
+  const handleSelectBtnClick = (resourceId: ResourceId) => {
     // first click and second click?
-    setSelectList([...selectList, resource]);
+    setSelectList([...selectList, resourceId]);
   };
 
-  const handleUnSelectBtnClick = (resource: Resource) => {
+  const handleUnSelectBtnClick = (resourceId: ResourceId) => {
     // first click and second click?
     setSelectList(
-      remove(selectList, (res) => {
-        res == resource;
+      remove(selectList, (resId) => {
+        resId == resourceId;
       })
     );
   };
@@ -82,8 +82,8 @@ const ResourcesDashboard = () => {
         style: "warning",
         dialogName: "delete-resource-dialog",
         onConfirm: async () => {
-          selectList.map(async (resource: Resource) => {
-            await resourceStore.deleteResourceById(resource.id);
+          selectList.map(async (resourceId: ResourceId) => {
+            await resourceStore.deleteResourceById(resourceId);
           });
         },
       });
@@ -130,8 +130,8 @@ const ResourcesDashboard = () => {
                   <FileCard
                     key={resource.id}
                     resource={resource}
-                    select={() => handleSelectBtnClick(resource)}
-                    unselect={() => handleUnSelectBtnClick(resource)}
+                    select={() => handleSelectBtnClick(resource.id)}
+                    unselect={() => handleUnSelectBtnClick(resource.id)}
                   ></FileCard>
                 ))
               )}
