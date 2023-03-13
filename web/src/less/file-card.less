@@ -9,7 +9,7 @@
         }
       }
       .more-action-btn{
-        @apply  flex m-2;
+        @apply flex;
         &:hover {
           color: black;
         }
@@ -28,7 +28,10 @@
 
 
     .more-action-btn{
-      @apply hidden text-gray-500	;
+      @apply hidden text-gray-500  m-2;
+      /* > .icon-img {
+        @apply w-4 h-auto dark:text-gray-300;
+      } */
       &:hover {
         & + .more-action-btns-wrapper {
           display: flex;
@@ -37,7 +40,7 @@
     }
         
     .icon-cover{
-      @apply w-32 h-32 ml-auto mr-auto mt-3;
+      @apply w-32 h-32 ml-auto mr-auto;
     }
 
 
@@ -50,7 +53,7 @@
     }
 
     .btns-container{
-      @apply w-full flex flex-row justify-between  h-1; // the h-1 is must, making the checkbox and more don't move when hover
+      @apply w-full flex flex-row justify-between items-center relative h-7; // the h-1 is must, making the checkbox and more don't move when hover
       > .more-action-btns-wrapper {
         @apply hidden flex-col justify-start items-center absolute top-2 -right-4 flex-nowrap hover:flex p-3;
 
@@ -81,7 +84,7 @@
           > .btn {
             @apply w-full text-sm leading-6 py-1 px-3 rounded justify-start cursor-pointer dark:text-gray-300;
 
-            &.archive-btn {
+            &.delete-btn {
               @apply text-orange-600;
             }
           }

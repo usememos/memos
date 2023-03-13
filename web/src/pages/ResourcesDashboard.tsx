@@ -14,7 +14,6 @@ import FileCard from "../components/FileCard";
 import { showCommonDialog } from "../components/Dialog/CommonDialog";
 import showPreviewImageDialog from "../components/PreviewImageDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
-import showChangeResourceFilenameDialog from "../components/ChangeResourceFilenameDialog";
 import MobileHeader from "../components/MobileHeader";
 
 const ResourcesDashboard = () => {
@@ -62,10 +61,6 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handleRenameBtnClick = (resource: Resource) => {
-    showChangeResourceFilenameDialog(resource.id, resource.filename);
-  };
-
   const handleCopyResourceLinkBtnClick = (resource: Resource) => {
     const url = getResourceUrl(resource);
     copy(url);
@@ -94,23 +89,6 @@ const ResourcesDashboard = () => {
         for (const resource of unusedResources) {
           await resourceStore.deleteResourceById(resource.id);
         }
-      },
-    });
-  };
-
-  const handleDeleteResourceBtnClick = (resource: Resource) => {
-    let warningText = t("resources.warning-text");
-    if (resource.linkedMemoAmount > 0) {
-      warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
-    }
-
-    showCommonDialog({
-      title: t("resources.delete-resource"),
-      content: warningText,
-      style: "warning",
-      dialogName: "delete-resource-dialog",
-      onConfirm: async () => {
-        await resourceStore.deleteResourceById(resource.id);
       },
     });
   };
@@ -177,8 +155,6 @@ const ResourcesDashboard = () => {
                     resouce={resource}
                     select={() => handleSelectBtnClick(resource)}
                     unselect={() => handleUNSelectBtnClick(resource)}
-                    rename={handleRenameBtnClick}
-                    deleteHandle={handleDeleteResourceBtnClick}
                   ></FileCard>
                 ))
               )}

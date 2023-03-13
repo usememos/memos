@@ -2,6 +2,10 @@ import dayjs from "dayjs";
 import { ReactElement, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Icon from "../components/Icon";
+import { useResourceStore } from "../store/module";
+
+import { showCommonDialog } from "../components/Dialog/CommonDialog";
+import showChangeResourceFilenameDialog from "../components/ChangeResourceFilenameDialog";
 
 import "../less/file-card.less";
 
@@ -9,8 +13,6 @@ interface FileProps {
   resouce: Resource;
   select: any;
   unselect: any;
-  rename: any;
-  deleteHandle: any;
 }
 
 function getFileCover(filename: string): ReactElement {
@@ -30,12 +32,34 @@ function getFileCover(filename: string): ReactElement {
   }
 }
 
-const FileCard = ({ resouce, select, unselect, rename, deleteHandle }: FileProps) => {
+const FileCard = ({ resouce, select, unselect }: FileProps) => {
   const locale = "en";
 
   const [beSelect, setBeSelect] = useState(false);
+  const resourceStore = useResourceStore();
   const cover = getFileCover(resouce.filename);
-  const { t, _ } = useTranslation();
+  const { t } = useTranslation();
+
+  const handleRenameBtnClick = (resource: Resource) => {
+    showChangeResourceFilenameDialog(resource.id, resource.filename);
+  };
+
+  const handleDeleteResourceBtnClick = (resource: Resource) => {
+    let warningText = t("resources.warning-text");
+    if (resource.linkedMemoAmount > 0) {
+      warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
+    }
+
+    showCommonDialog({
+      title: t("resources.delete-resource"),
+      content: warningText,
+      style: "warning",
+      dialogName: "delete-resource-dialog",
+      onConfirm: async () => {
+        await resourceStore.deleteResourceById(resource.id);
+      },
+    });
+  };
 
   return (
     <div className="resource-card">
@@ -61,18 +85,18 @@ const FileCard = ({ resouce, select, unselect, rename, deleteHandle }: FileProps
             <span
               className="btn"
               onClick={() => {
-                rename(resouce);
+                handleRenameBtnClick(resouce);
               }}
             >
-              {t("resources.rename")}
+              <span className="tip-text">{t("resources.rename")}</span>
             </span>
             <span
-              className="btn"
+              className="btn delete-btn"
               onClick={() => {
-                deleteHandle(resouce);
+                handleDeleteResourceBtnClick(resouce);
               }}
             >
-              {t("common.delete")}
+              <span className="tip-text">{t("common.delete")}</span>
             </span>
           </div>
         </div>
