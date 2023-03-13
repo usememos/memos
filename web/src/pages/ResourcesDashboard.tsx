@@ -115,7 +115,7 @@ const ResourcesDashboard = () => {
               <p className="w-full text-center text-base my-6 mt-8">{t("resources.fetching-data")}</p>
             </div>
           ) : (
-            <div className="w-full h-full grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 ">
+            <div className="w-full h-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 ">
               {resources.length === 0 ? (
                 <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
               ) : (
