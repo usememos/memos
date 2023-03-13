@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useLayoutStore, useUserStore } from "../store/module";
 import { resolution } from "../utils/layout";
 import Icon from "./Icon";
-import showResourcesDialog from "../pages/ResourcesDashboard";
 import showSettingDialog from "./SettingDialog";
 import showAskAIDialog from "./AskAIDialog";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
