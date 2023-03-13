@@ -36,11 +36,7 @@ const ResourcesDashboard = () => {
   };
 
   const handleUncheckBtnClick = (resourceId: ResourceId) => {
-    setSelectList(
-      remove(selectList, (resId) => {
-        resId == resourceId;
-      })
-    );
+    setSelectList(selectList.filter((resId) => resId !== resourceId));
   };
 
   const handleDeleteUnusedResourcesBtnClick = () => {
