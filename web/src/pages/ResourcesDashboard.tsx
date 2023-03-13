@@ -76,7 +76,7 @@ const ResourcesDashboard = () => {
         style: "warning",
         dialogName: "delete-resource-dialog",
         onConfirm: async () => {
-          selectList.map(async (resourceId: ResourceId) => {
+          selectedList.map(async (resourceId: ResourceId) => {
             await resourceStore.deleteResourceById(resourceId);
           });
         },
