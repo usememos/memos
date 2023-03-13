@@ -1,5 +1,6 @@
 import React from "react";
 import Icon from "./Icon";
+import "../less/resource-cover.less";
 
 interface ResourceCoverProps {
   resource: Resource;
@@ -8,23 +9,23 @@ interface ResourceCoverProps {
 const ResourceCover = ({ resource }: ResourceCoverProps) => {
   switch (resource.type) {
     case "image/*":
-      return <Icon.FileImage className="w-full h-full ml-auto mr-auto mt-5" />;
+      return <Icon.FileImage className="resource-cover" />;
     case "video/*":
-      return <Icon.FileVideo2 className="w-full h-full ml-auto mr-auto mt-5" />;
+      return <Icon.FileVideo2 className="resource-cover" />;
     case "audio/*":
-      return <Icon.FileAudio className="w-full h-full ml-auto mr-auto mt-5" />;
+      return <Icon.FileAudio className="resource-cover" />;
     case "text/*":
-      return <Icon.FileText className="w-full h-full ml-auto mr-auto mt-5" />;
+      return <Icon.FileText className="resource-cover" />;
     case "application/epub+zip":
-      return <Icon.Book className="w-full h-full ml-auto mr-auto mt-5" />;
+      return <Icon.Book className="resource-cover" />;
     case "application/pdf":
-      return <Icon.Book className="w-full h-full ml-auto mr-auto mt-5" />;
+      return <Icon.Book className="resource-cover" />;
     case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      return <Icon.FileEdit className="w-full h-full ml-auto mr-auto mt-5" />;
+      return <Icon.FileEdit className="resource-cover" />;
     case "application/msword":
-      return <Icon.FileEdit className="w-full h-full ml-auto mr-auto mt-5" />;
+      return <Icon.FileEdit className="resource-cover" />;
     default:
-      return <Icon.File className="w-full h-full ml-auto mr-auto mt-5" />;
+      return <Icon.File className="resource-cover" />;
   }
 };
 
