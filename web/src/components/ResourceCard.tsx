@@ -16,8 +16,8 @@ import "../less/resource-card.less";
 
 interface ResourceProps {
   resource: Resource;
-  handlecheckClick: any;
-  handleUncheckClick: any;
+  handlecheckClick: () => void;
+  handleUncheckClick: () => void;
 }
 
 const ResourceCard = ({ resource, handlecheckClick, handleUncheckClick }: ResourceProps) => {
