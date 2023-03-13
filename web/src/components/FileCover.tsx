@@ -1,3 +1,4 @@
+import React from "react";
 import Icon from "../components/Icon";
 
 // todo optimize by useMemo.
@@ -6,6 +7,8 @@ interface FileCoverProps {
 }
 
 const FileCover = ({ resource }: FileCoverProps) => {
+  console.log("Skinny Jack");
+
   switch (resource.type) {
     case "image/*":
       return <Icon.FileImage className="w-32 h-32 ml-auto mr-auto" />;
@@ -28,4 +31,4 @@ const FileCover = ({ resource }: FileCoverProps) => {
   }
 };
 
-export default FileCover;
+export default React.memo(FileCover);
