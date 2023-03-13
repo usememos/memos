@@ -3,24 +3,29 @@
 
     &:hover {
       .resource-checkbox {
-        display: flex;
-
+        @apply flex m-2 text-gray-500;
+        &:hover {
+          color: black;
+        }
       }
       .more-action-btn{
-        display: flex;
+        @apply  flex m-2;
+        &:hover {
+          color: black;
+        }
       }
     }
     .resource-checkbox-selected{
-      /* position: absolute; */
+      @apply m-2 text-gray-500;
     }
 
     .resource-checkbox{
-      @apply hidden hover:flex;
+      @apply hidden hover:flex ;
     }
 
 
     .more-action-btn{
-      @apply hidden;
+      @apply hidden text-gray-500	;
       &:hover {
         & + .more-action-btns-wrapper {
           display: flex;
