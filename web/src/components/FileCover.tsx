@@ -7,8 +7,6 @@ interface FileCoverProps {
 }
 
 const FileCover = ({ resource }: FileCoverProps) => {
-  console.log("Skinny Jack");
-
   switch (resource.type) {
     case "image/*":
       return <Icon.FileImage className="w-32 h-32 ml-auto mr-auto" />;
