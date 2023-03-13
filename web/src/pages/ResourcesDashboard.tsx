@@ -66,8 +66,7 @@ const ResourcesDashboard = () => {
   };
 
   const handleDeleteSelectedBtnClick = () => {
-    console.log(selectList);
-    if (selectList.length == 0) {
+    if (selectedList.length == 0) {
       toast.error(t("resources.no-files-selected"));
     } else {
       const warningText = t("resources.warning-text");
