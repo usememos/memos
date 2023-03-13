@@ -1,108 +1,22 @@
 import { Button } from "@mui/joy";
 import copy from "copy-to-clipboard";
-import { ReactElement, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
 import { useResourceStore } from "../store/module";
 import { getResourceUrl } from "../utils/resource";
-import Icon from "./Icon";
-import Dropdown from "./base/Dropdown";
+import Icon from "../components/Icon";
+import Dropdown from "../components/base/Dropdown";
 import { remove } from "lodash-es";
+import FileCard from "../components/FileCard";
 
-import { generateDialog } from "./Dialog";
-import { showCommonDialog } from "./Dialog/CommonDialog";
-import showPreviewImageDialog from "./PreviewImageDialog";
-import showCreateResourceDialog from "./CreateResourceDialog";
-import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
-import "../less/resources-dialog.less";
-import dayjs from "dayjs";
+import { showCommonDialog } from "../components/Dialog/CommonDialog";
+import showPreviewImageDialog from "../components/PreviewImageDialog";
+import showCreateResourceDialog from "../components/CreateResourceDialog";
+import showChangeResourceFilenameDialog from "../components/ChangeResourceFilenameDialog";
 
-type Props = DialogProps;
-
-interface FileProps {
-  resouce: Resource;
-  select: any;
-  unselect: any;
-  rename: any;
-  deleteHandle: any;
-}
-
-function getFileCover(filename: string): ReactElement {
-  switch (filename.split(".").pop()) {
-    case "png":
-      return <Icon.FileImage className="icon-cover" />;
-    case "jpge":
-      return <Icon.FileImage className="icon-cover" />;
-    case "docx":
-      return <Icon.FileText className="icon-cover" />;
-    case "pdf":
-      return <Icon.FileType2 className="icon-cover" />;
-    case "doc":
-      return <Icon.FileText className="icon-cover" />;
-    default:
-      return <Icon.FileImage className="icon-cover" />;
-  }
-}
-
-const File = ({ resouce, select, unselect, rename, deleteHandle }: FileProps) => {
-  const locale = "en";
-
-  const [beSelect, setBeSelect] = useState(false);
-  const cover = getFileCover(resouce.filename);
-  const { t, _ } = useTranslation();
-
-  return (
-    <div
-      className="resource-card"
-      onClick={() => {
-        if (beSelect) {
-          unselect();
-        } else {
-          select();
-        }
-
-        setBeSelect(!beSelect);
-      }}
-    >
-      <div className="btns-container">
-        <span className="btn more-action-btn">
-          <Icon.MoreHorizontal className="icon-img" />
-        </span>
-        <div className="more-action-btns-wrapper">
-          <div className="more-action-btns-container">
-            <span
-              className="btn"
-              onClick={() => {
-                rename(resouce);
-              }}
-            >
-              {"rename"}
-            </span>
-            <span
-              className="btn"
-              onClick={() => {
-                deleteHandle(resouce);
-              }}
-            >
-              {"delete"}
-            </span>
-          </div>
-        </div>
-
-        {beSelect ? <Icon.CheckCircle2 className="resource-checkbox-selected" /> : <Icon.Circle className="resource-checkbox" />}
-      </div>
-      {cover}
-      <div>
-        <div className="resource-title">{resouce.filename}</div>
-        <div className="resource-time">{dayjs(resouce.createdTs).locale(locale).format("YYYY/MM/DD HH:mm:ss")}</div>
-      </div>
-    </div>
-  );
-};
-
-const ResourcesDialog: React.FC<Props> = (props: Props) => {
-  const { destroy } = props;
+const ResourcesDashboard = () => {
   const { t } = useTranslation();
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
@@ -222,13 +136,10 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <div className="dialog-header-container">
+      <div className=" flex flex-col justify-start items-start w-full">
         <p className="title-text">{t("common.resources")}</p>
-        <button className="btn close-btn" onClick={destroy}>
-          <Icon.X className="icon-img" />
-        </button>
       </div>
-      <div className="dialog-content-container">
+      <div className=" flex flex-col justify-start items-start w-full">
         <div className="w-full flex flex-row justify-between items-center">
           <div className="flex flex-row justify-start items-center space-x-2">
             <Button onClick={() => showCreateResourceDialog({})} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
@@ -246,23 +157,23 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
           </div>
         </div>
         {loadingState.isLoading ? (
-          <div className="loading-text-container">
-            <p className="tip-text">{t("resources.fetching-data")}</p>
+          <div className="flex flex-col justify-center items-center w-full h-32">
+            <p className="w-full text-center text-base my-6 mt-8">{t("resources.fetching-data")}</p>
           </div>
         ) : (
-          <div className="resource-table-container">
+          <div className="flex  w-full h-full flex-wrap justify-start">
             {resources.length === 0 ? (
-              <p className="tip-text">{t("resources.no-resources")}</p>
+              <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
             ) : (
               resources.map((resource) => (
-                <File
+                <FileCard
                   key={resource.id}
                   resouce={resource}
                   select={() => handleSelectBtnClick(resource)}
                   unselect={() => handleUNSelectBtnClick(resource)}
                   rename={handleRenameBtnClick}
                   deleteHandle={handleDeleteResourceBtnClick}
-                ></File>
+                ></FileCard>
               ))
             )}
           </div>
@@ -272,13 +183,4 @@ const ResourcesDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default function showResourcesDialog() {
-  generateDialog(
-    {
-      className: "resources-dialog",
-      dialogName: "resources-dialog",
-    },
-    ResourcesDialog,
-    {}
-  );
-}
+export default ResourcesDashboard;
