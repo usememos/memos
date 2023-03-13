@@ -5,16 +5,12 @@ import { Button, Divider, Input, Switch, Textarea } from "@mui/joy";
 import { useGlobalStore } from "../../store/module";
 import * as api from "../../helpers/api";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
-import { useAppDispatch } from "../../store";
-import { setGlobalState } from "../../store/reducer/global";
 import "@/less/settings/system-section.less";
 
 interface State {
   dbSize: number;
   allowSignUp: boolean;
   disablePublicMemos: boolean;
-  openAIApiKey: string;
-  openAIApiHost: string;
   additionalStyle: string;
   additionalScript: string;
 }
@@ -36,13 +32,13 @@ const SystemSection = () => {
     dbSize: systemStatus.dbSize,
     allowSignUp: systemStatus.allowSignUp,
     additionalStyle: systemStatus.additionalStyle,
-    openAIApiKey: "",
-    openAIApiHost: systemStatus.openAIApiHost,
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
   });
-
-  const dispatch = useAppDispatch();
+  const [openAIConfig, setOpenAIConfig] = useState<OpenAIConfig>({
+    key: "",
+    host: "",
+  });
 
   useEffect(() => {
     globalStore.fetchSystemStatus();
@@ -50,15 +46,23 @@ const SystemSection = () => {
 
   useEffect(() => {
     setState({
+      ...state,
       dbSize: systemStatus.dbSize,
       allowSignUp: systemStatus.allowSignUp,
       additionalStyle: systemStatus.additionalStyle,
-      openAIApiKey: "",
-      openAIApiHost: systemStatus.openAIApiHost,
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
     });
   }, [systemStatus]);
+
+  useEffect(() => {
+    api.getSystemSetting().then(({ data: { data: systemSettings } }) => {
+      const openAIConfigSetting = systemSettings.find((setting) => setting.name === "openAIConfig");
+      if (openAIConfigSetting) {
+        setOpenAIConfig(JSON.parse(openAIConfigSetting.value));
+      }
+    });
+  }, []);
 
   const handleAllowSignUpChanged = async (value: boolean) => {
     setState({
@@ -86,44 +90,31 @@ const SystemSection = () => {
     toast.success(t("message.succeed-vacuum-database"));
   };
 
-  const handleOpenAIApiKeyChanged = (value: string) => {
-    setState({
-      ...state,
-      openAIApiKey: value,
+  const handleOpenAIConfigKeyChanged = (value: string) => {
+    setOpenAIConfig({
+      ...openAIConfig,
+      key: value,
     });
   };
 
-  const handleSaveOpenAIApiKey = async () => {
+  const handleSaveOpenAIConfig = async () => {
     try {
       await api.upsertSystemSetting({
-        name: "openAIApiKey",
-        value: JSON.stringify(state.openAIApiKey),
+        name: "openAIConfig",
+        value: JSON.stringify(openAIConfig),
       });
     } catch (error) {
       console.error(error);
       return;
     }
-    toast.success("OpenAI Api Key updated");
+    toast.success("OpenAI Config updated");
   };
 
-  const handleOpenAIApiHostChanged = (value: string) => {
-    setState({
-      ...state,
-      openAIApiHost: value,
+  const handleOpenAIConfigHostChanged = (value: string) => {
+    setOpenAIConfig({
+      ...openAIConfig,
+      host: value,
     });
-  };
-
-  const handleSaveOpenAIApiHost = async () => {
-    try {
-      await api.upsertSystemSetting({
-        name: "openAIApiHost",
-        value: JSON.stringify(state.openAIApiHost),
-      });
-    } catch (error) {
-      console.error(error);
-      return;
-    }
-    toast.success("OpenAI Api Host updated");
   };
 
   const handleAdditionalStyleChanged = (value: string) => {
@@ -171,8 +162,7 @@ const SystemSection = () => {
       ...state,
       disablePublicMemos: value,
     });
-    // Update global store immediately as MemoEditor/Selector is dependent on this value.
-    dispatch(setGlobalState({ systemStatus: { ...systemStatus, disablePublicMemos: value } }));
+    globalStore.setSystemStatus({ disablePublicMemos: value });
     await api.upsertSystemSetting({
       name: "disablePublicMemos",
       value: JSON.stringify(value),
@@ -206,7 +196,7 @@ const SystemSection = () => {
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <span className="normal-text">OpenAI API Key</span>
-        <Button onClick={handleSaveOpenAIApiKey}>{t("common.save")}</Button>
+        <Button onClick={handleSaveOpenAIConfig}>{t("common.save")}</Button>
       </div>
       <Input
         className="w-full"
@@ -215,12 +205,11 @@ const SystemSection = () => {
           fontSize: "14px",
         }}
         placeholder="Write only"
-        value={state.openAIApiKey}
-        onChange={(event) => handleOpenAIApiKeyChanged(event.target.value)}
+        value={openAIConfig.key}
+        onChange={(event) => handleOpenAIConfigKeyChanged(event.target.value)}
       />
       <div className="form-label mt-2">
         <span className="normal-text">OpenAI API Host</span>
-        <Button onClick={handleSaveOpenAIApiHost}>{t("common.save")}</Button>
       </div>
       <Input
         className="w-full"
@@ -229,8 +218,8 @@ const SystemSection = () => {
           fontSize: "14px",
         }}
         placeholder="OpenAI Host. Default: https://api.openai.com"
-        value={state.openAIApiHost}
-        onChange={(event) => handleOpenAIApiHostChanged(event.target.value)}
+        value={openAIConfig.host}
+        onChange={(event) => handleOpenAIConfigHostChanged(event.target.value)}
       />
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">

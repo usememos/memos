@@ -10,6 +10,10 @@ export function getSystemStatus() {
   return axios.get<ResponseObject<SystemStatus>>("/api/status");
 }
 
+export function getSystemSetting() {
+  return axios.get<ResponseObject<SystemSetting[]>>("/api/system/setting");
+}
+
 export function upsertSystemSetting(systemSetting: SystemSetting) {
   return axios.post<ResponseObject<SystemSetting>>("/api/system/setting", systemSetting);
 }

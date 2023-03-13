@@ -12,6 +12,11 @@ interface CustomizedProfile {
   externalUrl: string;
 }
 
+interface OpenAIConfig {
+  key: string;
+  host: string;
+}
+
 interface SystemStatus {
   host?: User;
   profile: Profile;
@@ -23,7 +28,6 @@ interface SystemStatus {
   additionalScript: string;
   customizedProfile: CustomizedProfile;
   storageServiceId: number;
-  openAIApiHost: string;
 }
 
 interface SystemSetting {
