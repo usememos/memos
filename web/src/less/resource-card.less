@@ -1,15 +1,15 @@
 .resource-card{
-    @apply flex flex-col relative justify-start hover:bg-slate-200 w-48 m-4 rounded-md	;
+    @apply flex flex-col relative justify-start hover:bg-slate-200 w-full m-4 rounded-md;
 
     &:hover {
       .resource-checkbox {
-        @apply flex m-2 text-gray-500;
+        @apply flex m-2 text-gray-500 absolute top-1;
         &:hover {
           color: black;
         }
       }
       .more-action-btn{
-        @apply flex;
+        @apply flex absolute right-0 top-1;
       }
     }
 
@@ -18,7 +18,7 @@
     }
 
     .more-action-btn{
-      @apply hidden  m-2;
+      @apply hidden m-2;
       &:hover {
         & + .more-action-btns-wrapper {
           display: flex;
@@ -27,7 +27,7 @@
     }
 
     .btns-container{
-      @apply w-full flex flex-row justify-between items-center relative h-7; 
+      @apply w-full flex flex-row justify-between items-center relative h-1; 
       > .more-action-btns-wrapper {
         @apply hidden flex-col justify-start items-center absolute top-2 -right-4 flex-nowrap hover:flex p-3;
 
