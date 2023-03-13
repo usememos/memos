@@ -62,7 +62,7 @@ const FileCard = ({ resouce, select, unselect, rename, deleteHandle }: FileProps
                 rename(resouce);
               }}
             >
-              {"rename"}
+              {t("resources.rename")}
             </span>
             <span
               className="btn"
@@ -70,7 +70,7 @@ const FileCard = ({ resouce, select, unselect, rename, deleteHandle }: FileProps
                 deleteHandle(resouce);
               }}
             >
-              {"delete"}
+              {t("common.delete")}
             </span>
           </div>
         </div>
