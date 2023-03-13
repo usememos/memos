@@ -1,18 +1,14 @@
 import { Button } from "@mui/joy";
-import copy from "copy-to-clipboard";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
 import { useResourceStore } from "../store/module";
-import { getResourceUrl } from "../utils/resource";
 import Icon from "../components/Icon";
-import Dropdown from "../components/base/Dropdown";
 import { remove } from "lodash-es";
 import FileCard from "../components/FileCard";
 
 import { showCommonDialog } from "../components/Dialog/CommonDialog";
-import showPreviewImageDialog from "../components/PreviewImageDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
 import MobileHeader from "../components/MobileHeader";
 
@@ -40,31 +36,13 @@ const ResourcesDashboard = () => {
     setSelectList([...selectList, resource]);
   };
 
-  const handleUNSelectBtnClick = (resource: Resource) => {
+  const handleUnSelectBtnClick = (resource: Resource) => {
     // first click and second click?
     setSelectList(
       remove(selectList, (res) => {
         res == resource;
       })
     );
-  };
-
-  const handlePreviewBtnClick = (resource: Resource) => {
-    const resourceUrl = getResourceUrl(resource);
-    if (resource.type.startsWith("image")) {
-      showPreviewImageDialog(
-        resources.filter((r) => r.type.startsWith("image")).map((r) => getResourceUrl(r)),
-        resources.findIndex((r) => r.id === resource.id)
-      );
-    } else {
-      window.open(resourceUrl);
-    }
-  };
-
-  const handleCopyResourceLinkBtnClick = (resource: Resource) => {
-    const url = getResourceUrl(resource);
-    copy(url);
-    toast.success(t("message.succeed-copy-resource-link"));
   };
 
   const handleDeleteUnusedResourcesBtnClick = () => {
@@ -93,9 +71,9 @@ const ResourcesDashboard = () => {
     });
   };
 
-  const handleUnSelectBtnClick = () => {
-    setSelectList([]);
-  };
+  // const handleUnSelectBtnClick = () => {
+  //   setSelectList([]);
+  // };
 
   const handleDeleteSelectedBtnClick = () => {
     const warningText = t("resources.warning-text");
@@ -152,9 +130,9 @@ const ResourcesDashboard = () => {
                 resources.map((resource) => (
                   <FileCard
                     key={resource.id}
-                    resouce={resource}
+                    resource={resource}
                     select={() => handleSelectBtnClick(resource)}
-                    unselect={() => handleUNSelectBtnClick(resource)}
+                    unselect={() => handleUnSelectBtnClick(resource)}
                   ></FileCard>
                 ))
               )}
