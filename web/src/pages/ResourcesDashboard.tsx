@@ -109,7 +109,7 @@ const ResourcesDashboard = () => {
               </Button>
 
               <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger" startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
-                {"删除所选资源"}
+                {t("resources.delete-selected-resources")}
               </Button>
             </div>
             <div className="flex flex-row justify-end items-center">
