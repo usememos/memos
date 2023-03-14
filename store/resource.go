@@ -385,7 +385,7 @@ func vacuumResource(ctx context.Context, tx *sql.Tx) error {
 	return nil
 }
 
-func (s *Store) findResourceListLinkedMemoAmountImpl(ctx context.Context, tx *sql.Tx, find []int) ([]*memoAmountRaw, error) {
+func findResourceListLinkedMemoAmountImpl(ctx context.Context, tx *sql.Tx, find []int) ([]*memoAmountRaw, error) {
 	stmt := fmt.Sprintf(`
  	 SELECT resource_id, COUNT(*) AS count
 	 FROM memo_resource
@@ -408,12 +408,20 @@ func (s *Store) findResourceListLinkedMemoAmountImpl(ctx context.Context, tx *sq
 	return rsp, nil
 }
 
-func (s *Store) FindResourceListLinkedMemoAmount(ctx context.Context, find []int) ([]*memoAmountRaw, error) {
+func (s *Store) FindResourceListLinkedMemoAmount(ctx context.Context, find []int) (*api.MemoResourceLinkedMemoAmountMap, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
 	}
 	defer tx.Rollback()
-	list, err := s.findResourceListLinkedMemoAmountImpl(ctx, tx, find)
-	return list, err
+
+	list, err := findResourceListLinkedMemoAmountImpl(ctx, tx, find)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	m := make(api.MemoResourceLinkedMemoAmountMap)
+	for _, item := range list {
+		m[item.ResourceID] = item.Count
+	}
+	return &m, nil
 }

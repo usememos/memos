@@ -249,17 +249,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			ids = append(ids, resource.ID)
 		}
 		if len(ids) > 0 {
-			amountList, err := s.Store.FindResourceListLinkedMemoAmount(ctx, ids)
+			m, err := s.Store.FindResourceListLinkedMemoAmount(ctx, ids)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo resource list linked memo amount").SetInternal(err)
 			}
 			for _, resource := range list {
-				for _, amount := range amountList {
-					if resource.ID == amount.ResourceID {
-						resource.LinkedMemoAmount = amount.Count
-						break
-					}
-				}
+				resource.LinkedMemoAmount = (*m)[resource.ID]
 			}
 		}
 		return c.JSON(http.StatusOK, composeResponse(list))

@@ -22,3 +22,5 @@ type MemoResourceDelete struct {
 	MemoID     *int
 	ResourceID *int
 }
+
+type MemoResourceLinkedMemoAmountMap map[int]int
