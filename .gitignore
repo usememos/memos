@@ -9,6 +9,8 @@ web/dist
 
 # build folder
 build
+memos
+memos_demo.db
 
 .DS_Store
 
