@@ -1,9 +1,7 @@
 import { useEffect, useState, useRef } from "react";
-import useDebounce from "../hooks/useDebounce";
 import { useFilterStore, useDialogStore, useLayoutStore } from "../store/module";
 import { resolution } from "../utils/layout";
 import Search from "./base/Search";
-import Icon from "./Icon";
 
 const SearchBar = () => {
   const filterStore = useFilterStore();
@@ -46,20 +44,24 @@ const SearchBar = () => {
     }
   }, [layoutStore.state.showHomeSidebar]);
 
-  useDebounce(
-    () => {
-      filterStore.setTextFilter(queryText.length === 0 ? undefined : queryText);
-    },
-    200,
-    [queryText]
-  );
+  const queryFunction = () => {
+    filterStore.setTextFilter(queryText.length === 0 ? undefined : queryText);
+  };
 
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;
     setQueryText(text);
   };
 
-  return <Search placeholder="Search memos" inputRef={inputRef} queryText={queryText} handleTextQueryInput={handleTextQueryInput}></Search>;
+  return (
+    <Search
+      placeholder="Search memos"
+      inputRef={inputRef}
+      queryText={queryText}
+      queryFunction={queryFunction}
+      handleTextQueryInput={handleTextQueryInput}
+    ></Search>
+  );
 };
 
 export default SearchBar;

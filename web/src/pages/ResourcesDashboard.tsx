@@ -101,17 +101,6 @@ const ResourcesDashboard = () => {
           <p className="px-2 py-1 flex flex-row justify-start items-center select-none rounded">
             <Icon.Paperclip className="w-5 h-auto mr-1" /> {t("common.resources")}
           </p>
-          <div className="w-full h-9 flex flex-row justify-start items-center py-2 px-3 rounded-md bg-gray-200 dark:bg-zinc-700">
-            <Icon.Search className="w-4 h-auto opacity-30 dark:text-gray-200" />
-            <input
-              className="flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200"
-              type="text"
-              placeholder="Search memos"
-              // ref={inputRef}
-              // value={queryText}
-              // onChange={handleTextQueryInput}
-            />
-          </div>
         </div>
 
         <div className=" flex flex-col justify-start items-start w-full">
