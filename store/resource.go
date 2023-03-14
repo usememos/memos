@@ -22,12 +22,13 @@ type resourceRaw struct {
 	UpdatedTs int64
 
 	// Domain specific fields
-	Filename     string
-	Blob         []byte
-	ExternalLink string
-	Type         string
-	Size         int64
-	Visibility   api.Visibility
+	Filename         string
+	Blob             []byte
+	ExternalLink     string
+	Type             string
+	Size             int64
+	Visibility       api.Visibility
+	LinkedMemoAmount int
 }
 
 func (raw *resourceRaw) toResource() *api.Resource {
@@ -40,12 +41,13 @@ func (raw *resourceRaw) toResource() *api.Resource {
 		UpdatedTs: raw.UpdatedTs,
 
 		// Domain specific fields
-		Filename:     raw.Filename,
-		Blob:         raw.Blob,
-		ExternalLink: raw.ExternalLink,
-		Type:         raw.Type,
-		Size:         raw.Size,
-		Visibility:   raw.Visibility,
+		Filename:         raw.Filename,
+		Blob:             raw.Blob,
+		ExternalLink:     raw.ExternalLink,
+		Type:             raw.Type,
+		Size:             raw.Size,
+		Visibility:       raw.Visibility,
+		LinkedMemoAmount: raw.LinkedMemoAmount,
 	}
 }
 
@@ -278,32 +280,35 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 	where, args := []string{"1 = 1"}, []interface{}{}
 
 	if v := find.ID; v != nil {
-		where, args = append(where, "id = ?"), append(args, *v)
+		where, args = append(where, "resource.id = ?"), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
-		where, args = append(where, "creator_id = ?"), append(args, *v)
+		where, args = append(where, "resource.creator_id = ?"), append(args, *v)
 	}
 	if v := find.Filename; v != nil {
-		where, args = append(where, "filename = ?"), append(args, *v)
+		where, args = append(where, "resource.filename = ?"), append(args, *v)
 	}
 	if v := find.MemoID; v != nil {
-		where, args = append(where, "id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
+		where, args = append(where, "resource.id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
 	}
 
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
+	fields := []string{"resource.id", "resource.filename", "resource.external_link", "resource.type", "resource.size", "resource.creator_id", "resource.created_ts", "resource.updated_ts"}
 	if find.GetBlob {
-		fields = append(fields, "blob")
+		fields = append(fields, "resource.blob")
 	}
 	if s.profile.IsDev() {
-		fields = append(fields, "visibility")
+		fields = append(fields, "resource.visibility")
 	}
 
 	query := fmt.Sprintf(`
 		SELECT
+		  COUNT(DISTINCT memo_resource.memo_id) AS linked_memo_amount,
 			%s
 		FROM resource
+		LEFT JOIN memo_resource ON resource.id = memo_resource.resource_id
 		WHERE %s
-		ORDER BY id DESC
+		GROUP BY resource.id
+		ORDER BY resource.id DESC
 	`, strings.Join(fields, ", "), strings.Join(where, " AND "))
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -315,6 +320,7 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 	for rows.Next() {
 		var resourceRaw resourceRaw
 		dests := []interface{}{
+			&resourceRaw.LinkedMemoAmount,
 			&resourceRaw.ID,
 			&resourceRaw.Filename,
 			&resourceRaw.ExternalLink,
@@ -333,7 +339,6 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 		if err := rows.Scan(dests...); err != nil {
 			return nil, FormatError(err)
 		}
-
 		resourceRawList = append(resourceRawList, &resourceRaw)
 	}
 

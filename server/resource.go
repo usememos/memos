@@ -244,16 +244,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
 		}
-
-		for _, resource := range list {
-			memoResourceList, err := s.Store.FindMemoResourceList(ctx, &api.MemoResourceFind{
-				ResourceID: &resource.ID,
-			})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo resource list").SetInternal(err)
-			}
-			resource.LinkedMemoAmount = len(memoResourceList)
-		}
 		return c.JSON(http.StatusOK, composeResponse(list))
 	})
 
