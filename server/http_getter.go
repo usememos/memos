@@ -6,7 +6,7 @@ import (
 	"net/url"
 
 	"github.com/labstack/echo/v4"
-	getter "github.com/usememos/memos/plugin/http_getter"
+	getter "github.com/usememos/memos/plugin/http-getter"
 )
 
 func registerGetterPublicRoutes(g *echo.Group) {
