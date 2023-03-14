@@ -49,6 +49,11 @@ func (raw *resourceRaw) toResource() *api.Resource {
 	}
 }
 
+type memoAmountRaw struct {
+	ResourceID int
+	Count      int
+}
+
 func (s *Store) ComposeMemoResourceList(ctx context.Context, memo *api.Memo) error {
 	resourceList, err := s.FindResourceList(ctx, &api.ResourceFind{
 		MemoID: &memo.ID,
@@ -378,4 +383,37 @@ func vacuumResource(ctx context.Context, tx *sql.Tx) error {
 	}
 
 	return nil
+}
+
+func (s *Store) findResourceListLinkedMemoAmountImpl(ctx context.Context, tx *sql.Tx, find []int) ([]*memoAmountRaw, error) {
+	stmt := fmt.Sprintf(`
+ 	 SELECT resource_id, COUNT(*) AS count
+	 FROM memo_resource
+     WHERE resource_id IN (%s) GROUP BY resource_id
+`, strings.Trim(strings.Join(strings.Fields(fmt.Sprint(find)), ","), "[]"))
+
+	rows, err := tx.QueryContext(ctx, stmt)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer rows.Close()
+	rsp := make([]*memoAmountRaw, 0)
+	for rows.Next() {
+		var mRaw memoAmountRaw
+		if err := rows.Scan(&mRaw.ResourceID, &mRaw.Count); err != nil {
+			return nil, FormatError(err)
+		}
+		rsp = append(rsp, &mRaw)
+	}
+	return rsp, nil
+}
+
+func (s *Store) FindResourceListLinkedMemoAmount(ctx context.Context, find []int) ([]*memoAmountRaw, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+	list, err := s.findResourceListLinkedMemoAmountImpl(ctx, tx, find)
+	return list, err
 }
