@@ -6,7 +6,7 @@ import useLoading from "../hooks/useLoading";
 import { useResourceStore } from "../store/module";
 import Icon from "../components/Icon";
 import ResourceCard from "../components/ResourceCard";
-
+import ResourceSearchBar from "../components/ResourceSearchBar";
 import { showCommonDialog } from "../components/Dialog/CommonDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
 import MobileHeader from "../components/MobileHeader";
@@ -101,8 +101,8 @@ const ResourcesDashboard = () => {
           <p className="px-2 py-1 flex flex-row justify-start items-center select-none rounded">
             <Icon.Paperclip className="w-5 h-auto mr-1" /> {t("common.resources")}
           </p>
+          <ResourceSearchBar />
         </div>
-
         <div className=" flex flex-col justify-start items-start w-full">
           <div className="w-full flex flex-row  justify-end items-center">
             <div className="flex flex-row justify-start items-center space-x-2"></div>
