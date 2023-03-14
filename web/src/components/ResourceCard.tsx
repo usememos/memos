@@ -11,7 +11,6 @@ import Dropdown from "./base/Dropdown";
 import ResourceCover from "./ResourceCover";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
-
 import "../less/resource-card.less";
 
 interface ResourceProps {
