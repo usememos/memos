@@ -107,14 +107,19 @@ const ResourcesDashboard = () => {
           <div className="w-full flex flex-row  justify-end items-center">
             <div className="flex flex-row justify-start items-center space-x-2"></div>
             <div className="flex flex-row justify-end items-center"></div>
-            <Button onClick={() => showCreateResourceDialog({})} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
-              {t("common.create")}
-            </Button>
+            <Button
+              onClick={() => showCreateResourceDialog({})}
+              title={t("common.create")}
+              startDecorator={<Icon.Plus className="w-5 h-auto" />}
+            ></Button>
 
             {isVisiable && (
-              <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger" startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
-                {t("resources.delete-selected-resources")}
-              </Button>
+              <Button
+                onClick={() => handleDeleteSelectedBtnClick()}
+                color="danger"
+                title={t("resources.delete-selected-resources")}
+                startDecorator={<Icon.Trash2 className="w-4 h-auto" />}
+              ></Button>
             )}
             <Dropdown
               actionsClassName="!w-28"
