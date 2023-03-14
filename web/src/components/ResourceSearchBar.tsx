@@ -2,11 +2,16 @@ import { useState, useRef } from "react";
 import { useFilterStore, useDialogStore, useLayoutStore } from "../store/module";
 import Search from "./base/Search";
 
-const ResourceSearchBar = () => {
+interface ResourceSearchBarProps{
+  setQuery: (arg0: string) => void;
+}
+const ResourceSearchBar = ({ setQuery }: ResourceSearchBarProps) => {
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const queryFunction = () => {};
+  const queryFunction = () => {
+    setQuery(queryText);
+  };
 
   const handleTextQueryInput = (event: React.FormEvent<HTMLInputElement>) => {
     const text = event.currentTarget.value;

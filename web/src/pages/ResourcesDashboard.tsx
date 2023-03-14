@@ -11,6 +11,7 @@ import { showCommonDialog } from "../components/Dialog/CommonDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
 import MobileHeader from "../components/MobileHeader";
 import Dropdown from "../components/base/Dropdown";
+import resource from "../store/reducer/resource";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -19,6 +20,7 @@ const ResourcesDashboard = () => {
   const resources = resourceStore.state.resources;
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
   const [isVisiable, setIsVisiable] = useState<boolean>(false);
+  const [queryText, setQueryText] = useState<string>("");
 
   useEffect(() => {
     resourceStore
@@ -93,6 +95,29 @@ const ResourcesDashboard = () => {
     }
   };
 
+  let resourceList;
+  if (queryText === "") {
+    resourceList = resources.map((resource) => (
+      <ResourceCard
+        key={resource.id}
+        resource={resource}
+        handlecheckClick={() => handleCheckBtnClick(resource.id)}
+        handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+      ></ResourceCard>
+    ));
+  } else {
+    resourceList = resources
+      .filter((res: Resource) => res.filename.includes(queryText))
+      .map((resource) => (
+        <ResourceCard
+          key={resource.id}
+          resource={resource}
+          handlecheckClick={() => handleCheckBtnClick(resource.id)}
+          handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+        ></ResourceCard>
+      ));
+  }
+
   return (
     <section className="w-full min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
@@ -101,7 +126,7 @@ const ResourcesDashboard = () => {
           <p className="px-2 py-1 flex flex-row justify-start items-center select-none rounded">
             <Icon.Paperclip className="w-5 h-auto mr-1" /> {t("common.resources")}
           </p>
-          <ResourceSearchBar />
+          <ResourceSearchBar setQuery={setQueryText} />
         </div>
         <div className=" flex flex-col justify-start items-start w-full">
           <div className="w-full flex flex-row  justify-end items-center">
@@ -145,14 +170,7 @@ const ResourcesDashboard = () => {
               {resources.length === 0 ? (
                 <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
               ) : (
-                resources.map((resource) => (
-                  <ResourceCard
-                    key={resource.id}
-                    resource={resource}
-                    handlecheckClick={() => handleCheckBtnClick(resource.id)}
-                    handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-                  ></ResourceCard>
-                ))
+                resourceList
               )}
             </div>
           )}
