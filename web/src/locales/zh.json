@@ -195,7 +195,7 @@
       "additional-script-placeholder": "自定义 JavaScript 代码",
       "disable-public-memos": "禁用公共memos"
     },
-    "apperance-option": {
+    "appearance-option": {
       "system": "跟随系统",
       "light": "总是浅色",
       "dark": "总是深色"

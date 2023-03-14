@@ -196,7 +196,7 @@
       "additional-style-placeholder": "Additional CSS code",
       "additional-script-placeholder": "Additional JavaScript code"
     },
-    "apperance-option": {
+    "appearance-option": {
       "system": "Follow system",
       "light": "Always light",
       "dark": "Always dark"

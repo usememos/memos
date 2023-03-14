@@ -101,7 +101,7 @@ const PreferencesSection = () => {
   const handleDeleteUserClick = (user: User) => {
     showCommonDialog({
       title: `Delete Member`,
-      content: `Are you sure to delete ${user.username}? THIS ACTION IS IRREVERSIABLE.❗️`,
+      content: `Are you sure to delete ${user.username}? THIS ACTION IS IRREVERSIBLE.❗️`,
       style: "warning",
       dialogName: "delete-user-dialog",
       onConfirm: async () => {
