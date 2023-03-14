@@ -16,7 +16,7 @@
     "save": "Save",
     "close": "Close",
     "cancel": "Cancel",
-    "create": "Create",
+    "create": "➕",
     "change": "Change",
     "confirm": "Confirm",
     "reset": "Reset",
@@ -78,7 +78,7 @@
     "warning-text-unused": "Are you sure to delete these unused resources? THIS ACTION IS IRREVERSIBLE❗",
     "no-unused-resources": "No unused resources",
     "name": "Name",
-    "delete-selected-resources": "Delete Selected Resources",
+    "delete-selected-resources": "🚮",
     "no-files-selected": "No files selected❗"
   },
   "archived": {

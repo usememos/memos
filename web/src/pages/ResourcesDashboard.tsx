@@ -10,6 +10,7 @@ import ResourceCard from "../components/ResourceCard";
 import { showCommonDialog } from "../components/Dialog/CommonDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
 import MobileHeader from "../components/MobileHeader";
+import Dropdown from "../components/base/Dropdown";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -17,6 +18,7 @@ const ResourcesDashboard = () => {
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
+  const [isVisiable, setIsVisiable] = useState<boolean>(false);
 
   useEffect(() => {
     resourceStore
@@ -29,6 +31,14 @@ const ResourcesDashboard = () => {
         loadingState.setFinish();
       });
   }, []);
+
+  useEffect(() => {
+    if (selectedList.length === 0) {
+      setIsVisiable(false);
+    } else {
+      setIsVisiable(true);
+    }
+  }, [selectedList]);
 
   const handleCheckBtnClick = (resourceId: ResourceId) => {
     setSelectedList([...selectedList, resourceId]);
@@ -94,21 +104,32 @@ const ResourcesDashboard = () => {
         </div>
 
         <div className=" flex flex-col justify-start items-start w-full">
-          <div className="w-full flex flex-row justify-between items-center">
-            <div className="flex flex-row justify-start items-center space-x-2">
-              <Button onClick={() => showCreateResourceDialog({})} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
-                {t("common.create")}
-              </Button>
+          <div className="w-full flex flex-row  justify-end items-center">
+            <div className="flex flex-row justify-start items-center space-x-2"></div>
+            <div className="flex flex-row justify-end items-center"></div>
+            <Button onClick={() => showCreateResourceDialog({})} startDecorator={<Icon.Plus className="w-5 h-auto" />}>
+              {t("common.create")}
+            </Button>
 
+            {isVisiable && (
               <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger" startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
                 {t("resources.delete-selected-resources")}
               </Button>
-            </div>
-            <div className="flex flex-row justify-end items-center">
-              <Button color="danger" onClick={handleDeleteUnusedResourcesBtnClick} startDecorator={<Icon.Trash2 className="w-4 h-auto" />}>
-                <span>{t("resources.clear")}</span>
-              </Button>
-            </div>
+            )}
+            <Dropdown
+              actionsClassName="!w-28"
+              actions={
+                <>
+                  <Button
+                    color="danger"
+                    onClick={handleDeleteUnusedResourcesBtnClick}
+                    startDecorator={<Icon.Trash2 className="w-4 h-auto" />}
+                  >
+                    <span>{t("resources.clear")}</span>
+                  </Button>
+                </>
+              }
+            />
           </div>
           {loadingState.isLoading ? (
             <div className="flex flex-col justify-center items-center w-full h-32">
