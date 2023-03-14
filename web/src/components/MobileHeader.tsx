@@ -28,7 +28,7 @@ const MobileHeader = (props: Props) => {
   }, [filter, shortcuts]);
 
   return (
-    <div className="sticky top-0 pt-4 pb-1 mb-1 backdrop-blur-sm flex sm:hidden flex-row justify-between items-center w-full h-auto flex-nowrap shrink-0 z-1">
+    <div className="sticky top-0 pt-4 pb-1 mb-1 backdrop-blur-sm flex sm:hidden flex-row justify-between items-center w-full h-auto flex-nowrap shrink-0 z-2">
       <div className="flex flex-row justify-start items-center mr-2 shrink-0 overflow-hidden">
         <div
           className="flex sm:hidden flex-row justify-center items-center w-6 h-6 mr-1 shrink-0 bg-transparent"
