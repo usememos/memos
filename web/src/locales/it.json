@@ -1,271 +1,271 @@
 {
-    "common": {
-        "about": "Informazioni",
-        "email": "Email",
-        "password": "Password",
-        "repeat-password-short": "Ripeti",
-        "repeat-password": "Ripeti la password",
-        "new-password": "Nuova password",
-        "repeat-new-password": "Ripeti la nuova password",
-        "username": "Nome utente",
-        "nickname": "Soprannome",
-        "save": "Salva",
-        "close": "Chiudi",
-        "cancel": "Cancella",
-        "create": "Crea",
-        "change": "Cambia",
-        "confirm": "Conferma",
-        "reset": "Ripristina",
-        "language": "Lingua",
-        "version": "Versione",
-        "pin": "Attacca",
-        "unpin": "Stacca",
-        "edit": "Modifica",
-        "restore": "Ripristina",
-        "delete": "Rimuovi",
-        "null": "Null",
-        "share": "Condividi",
-        "archive": "Archivia",
-        "basic": "Base",
-        "admin": "Amministratore",
-        "explore": "Esplora",
-        "sign-in": "Accedi",
-        "sign-up": "Registrati",
-        "sign-out": "Esci",
-        "back-to-home": "Ritorna alla Home",
-        "type": "Tipo",
-        "shortcuts": "Scorciatoie",
-        "title": "Titolo",
-        "filter": "Filtro",
-        "tags": "Etichette",
-        "yourself": "Te stesso",
-        "archived-at": "Archiviato il",
-        "changed": "cambiato",
-        "update-on": "Aggiornato il",
-        "fold": "Piega",
-        "expand": "Espandi",
-        "image": "Immagine",
-        "link": "Link",
-        "vacuum": "Pulisci",
-        "select": "Seleziona",
-        "avatar": "Avatar",
-        "database": "Database"
-    },
-    "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
-    "auth": {
-        "signup-as-host": "Registrati come Host",
-        "host-tip": "Ti stai registrando come Host del sito.",
-        "not-host-tip": "Se non hai un account, contatta l'host del sito."
-    },
-    "sidebar": {
-        "daily-review": "Oggi",
-        "resources": "Risorse",
-        "setting": "Impostazioni",
-        "archived": "Archiviati"
-    },
-    "daily-review": {
-        "oops-nothing": "Oops, non c'è niente."
-    },
-    "resources": {
-        "description": "Visualizza le tue risorse statiche nei memo. es: immagini",
-        "no-resources": "Nessuna risorsa.",
-        "fetching-data": "recupero i dati...",
-        "upload": "Carica",
-        "preview": "Anteprima",
-        "copy-link": "Copia link",
-        "delete-resource": "Cancella risorsa",
-        "warning-text": "Sei sicuro di voler eliminare questa risorsa? QUESTA AZIONE È IRREVERSIBILE❗",
-        "linked-amount": "Linked memo amount",
-        "rename": "Rinomina",
-        "warning-text-unused": "Sei sicuro di voler eliminare queste risorse? QUESTA AZIONE È IRREVERSIBILE❗",
-        "no-unused-resources": "Nessuna risorsa inutilizzata",
-        "name": "Nome",
-        "clear": "Clear"
-    },
-    "archived": {
-        "archived-memos": "Memo archiviati",
-        "no-archived-memos": "Nessun memo archiviato.",
-        "fetching-data": "recupero i dati..."
-    },
-    "editor": {
-        "editing": "Modifica in corso...",
-        "cancel-edit": "Annulla modifica",
-        "save": "Salva",
-        "placeholder": "Idee...",
-        "only-image-supported": "Solo file immagine supportati.",
-        "cant-empty": "Il contenuto non può essere vuoto",
-        "local": "Locale",
-        "resources": "Risorse"
-    },
-    "memo": {
-        "view-detail": "Vedi dettagli",
-        "copy": "Copia",
-        "visibility": {
-            "private": "Visibile solo a te",
-            "protected": "Visibile ai membri",
-            "public": "Visibile a tutti",
-            "disabled": "Public memos are disabled"
-        }
-    },
-    "memo-list": {
-        "fetching-data": "recupero i dati...",
-        "fetch-more": "Clicca per caricare più dati"
-    },
-    "shortcut-list": {
-        "shortcut-title": "titolo Scorciatoia",
-        "create-shortcut": "Crea Scorciatoia",
-        "edit-shortcut": "Modifica Scorciatoia",
-        "eligible-memo": "eligible memo",
-        "fill-previous": "Compila il valore del filtro precedente",
-        "title-required": "Il titolo è obbligatorio",
-        "value-required": "Il valore del filtro è obbligatorio"
-    },
-    "filter": {
-        "new-filter": "Nuovo Filtro",
-        "type": {
-            "tag": "Etichetta",
-            "type": "Tipo",
-            "text": "Testo",
-            "display-time": "Data",
-            "visibility": "Visibilità"
-        },
-        "operator": {
-            "contains": "Contiene",
-            "not-contains": "Non contiene",
-            "is": "È",
-            "is-not": "Non è",
-            "before": "Prima",
-            "after": "Dopo"
-        },
-        "value": {
-            "not-tagged": "senza etichetta",
-            "linked": "con link"
-        },
-        "text-placeholder": "Inizia con ^ per usare le regex"
-    },
-    "tag-list": {
-        "tip-text": "Scrivi `#tag` per crearla"
-    },
-    "search": {
-        "quickly-filter": "Filtro rapido"
-    },
-    "setting": {
-        "my-account": "Il mio account",
-        "preference": "Preferenze",
-        "member": "Membri",
-        "member-list": "Lista membri",
-        "system": "Sistema",
-        "account-section": {
-            "title": "Informazioni account",
-            "update-information": "Aggiorna informazioni",
-            "change-password": "Cambia password"
-        },
-        "preference-section": {
-            "theme": "Tema",
-            "default-memo-visibility": "Visibilità predefinita memo",
-            "enable-folding-memo": "Enable folding memo",
-            "editor-font-style": "Editor font style",
-            "mobile-editor-style": "Mobile editor style",
-            "default-memo-sort-option": "Ordine visualizzazione memo",
-            "created_ts": "Data di creazione",
-            "updated_ts": "Ultima modifica",
-            "enable-double-click": "Enable double-click to edit"
-        },
-        "member-section": {
-            "create-a-member": "Crea un membro"
-        },
-        "system-section": {
-            "server-name": "Nome server",
-            "customize-server": {
-                "title": "Personalizza Server",
-                "default": "Predefinito: memos",
-                "icon-url": "URL Icona"
-            },
-            "database-file-size": "Dimensione file database",
-            "allow-user-signup": "Consenti registrazione utenti",
-            "additional-style": "Stile aggiuntivo",
-            "additional-script": "Script aggiuntivo",
-            "additional-style-placeholder": "Codice CSS aggiuntivo",
-            "additional-script-placeholder": "Codice JavaScript aggiuntivo",
-            "disable-public-memos": "Disable public memos"
-        },
-        "apperance-option": {
-            "system": "Sistema",
-            "light": "Chiaro",
-            "dark": "Scuro"
-        },
-        "sso": "SSO",
-        "storage": "Storage",
-        "storage-section": {
-            "storage-services-list": "Storage service list",
-            "create-a-service": "Create a service",
-            "update-a-service": "Update a service",
-            "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIABLE❗",
-            "delete-storage": "Delete Storage"
-        }
-    },
-    "amount-text": {
-        "memo_one": "MEMO",
-        "tag_one": "TAG",
-        "day_one": "GIORNO",
-        "memo_other": "MEMOS",
-        "tag_other": "TAGS",
-        "day_other": "DAYS"
-    },
-    "message": {
-        "no-memos": "nessun memo 🌃",
-        "memos-ready": "Tutti i memo sono stati caricati 🎉",
-        "restored-successfully": "Ripristinato con successo",
-        "memo-updated-datetime": "La data di creazione del Memo è stata modificata.",
-        "invalid-created-datetime": "Data di creazione non valida.",
-        "change-memo-created-time": "Cambia la data di creazione del Memo",
-        "memo-not-found": "Memo non trovato.",
-        "fill-all": "Compila tutti i campi.",
-        "password-not-match": "Le passwords non corrispondono.",
-        "new-password-not-match": "Le nuove password non corrispondono.",
-        "image-load-failed": "Caricamento dell'immagine non riuscito",
-        "fill-form": "Compila questo modulo",
-        "login-failed": "Accesso fallito",
-        "signup-failed": "Registrazione fallita",
-        "user-not-found": "Utente non trovato",
-        "password-changed": "Password cambiata",
-        "private-only": "Questo memo è solo privato.",
-        "copied": "Copiato",
-        "succeed-copy-content": "Contenuto copiato negli appunti.",
-        "succeed-copy-link": "Link copiato negli appunti.",
-        "change-resource-filename": "Modifica il nome del file della risorsa",
-        "resource-filename-updated": "Nome file risorsa modificato.",
-        "invalid-resource-filename": "Nome del file non valido.",
-        "click-to-save-the-image": "Clicca per salvare l'immagine",
-        "generating-the-screenshot": "Generazione dello screenshot...",
-        "count-selected-resources": "Totale selezionati",
-        "too-short": "Troppo corto",
-        "too-long": "Troppo lungo",
-        "not-allow-space": "Non permettere spazi",
-        "not-allow-chinese": "Non permettere cinese",
-        "succeed-vacuum-database": "Database pulito con successo",
-        "succeed-update-additional-style": "Stile aggiuntivo aggiornato con successo",
-        "succeed-copy-resource-link": "Link della risorsa copiato con successo",
-        "succeed-update-customized-profile": "Profilo aggiornato con successo",
-        "succeed-update-additional-script": "Script aggiuntivo aggiornato con successo",
-        "update-succeed": "Aggiornamento riuscito",
-        "succeed-copy-code": "Succeed to copy code to clipboard.",
-        "page-not-found": "404 - Page Not Found 😥"
-    },
-    "days": {
-        "monday": "Lunedì",
-        "mon": "Lun",
-        "tuesday": "Martedì",
-        "tue": "Mar",
-        "wednesday": "Mercoledì",
-        "wed": "Mer",
-        "thursday": "Giovedì",
-        "thu": "Gio",
-        "friday": "Venerdì",
-        "fri": "Ven",
-        "saturday": "Sabato",
-        "sat": "Sab",
-        "sunday": "Domenica",
-        "sun": "Dom"
+  "common": {
+    "about": "Informazioni",
+    "email": "Email",
+    "password": "Password",
+    "repeat-password-short": "Ripeti",
+    "repeat-password": "Ripeti la password",
+    "new-password": "Nuova password",
+    "repeat-new-password": "Ripeti la nuova password",
+    "username": "Nome utente",
+    "nickname": "Soprannome",
+    "save": "Salva",
+    "close": "Chiudi",
+    "cancel": "Cancella",
+    "create": "Crea",
+    "change": "Cambia",
+    "confirm": "Conferma",
+    "reset": "Ripristina",
+    "language": "Lingua",
+    "version": "Versione",
+    "pin": "Attacca",
+    "unpin": "Stacca",
+    "edit": "Modifica",
+    "restore": "Ripristina",
+    "delete": "Rimuovi",
+    "null": "Null",
+    "share": "Condividi",
+    "archive": "Archivia",
+    "basic": "Base",
+    "admin": "Amministratore",
+    "explore": "Esplora",
+    "sign-in": "Accedi",
+    "sign-up": "Registrati",
+    "sign-out": "Esci",
+    "back-to-home": "Ritorna alla Home",
+    "type": "Tipo",
+    "shortcuts": "Scorciatoie",
+    "title": "Titolo",
+    "filter": "Filtro",
+    "tags": "Etichette",
+    "yourself": "Te stesso",
+    "archived-at": "Archiviato il",
+    "changed": "cambiato",
+    "update-on": "Aggiornato il",
+    "fold": "Piega",
+    "expand": "Espandi",
+    "image": "Immagine",
+    "link": "Link",
+    "vacuum": "Pulisci",
+    "select": "Seleziona",
+    "avatar": "Avatar",
+    "database": "Database"
+  },
+  "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
+  "auth": {
+    "signup-as-host": "Registrati come Host",
+    "host-tip": "Ti stai registrando come Host del sito.",
+    "not-host-tip": "Se non hai un account, contatta l'host del sito."
+  },
+  "sidebar": {
+    "daily-review": "Oggi",
+    "resources": "Risorse",
+    "setting": "Impostazioni",
+    "archived": "Archiviati"
+  },
+  "daily-review": {
+    "oops-nothing": "Oops, non c'è niente."
+  },
+  "resources": {
+    "description": "Visualizza le tue risorse statiche nei memo. es: immagini",
+    "no-resources": "Nessuna risorsa.",
+    "fetching-data": "recupero i dati...",
+    "upload": "Carica",
+    "preview": "Anteprima",
+    "copy-link": "Copia link",
+    "delete-resource": "Cancella risorsa",
+    "warning-text": "Sei sicuro di voler eliminare questa risorsa? QUESTA AZIONE È IRREVERSIBILE❗",
+    "linked-amount": "Linked memo amount",
+    "rename": "Rinomina",
+    "warning-text-unused": "Sei sicuro di voler eliminare queste risorse? QUESTA AZIONE È IRREVERSIBILE❗",
+    "no-unused-resources": "Nessuna risorsa inutilizzata",
+    "name": "Nome",
+    "clear": "Clear"
+  },
+  "archived": {
+    "archived-memos": "Memo archiviati",
+    "no-archived-memos": "Nessun memo archiviato.",
+    "fetching-data": "recupero i dati..."
+  },
+  "editor": {
+    "editing": "Modifica in corso...",
+    "cancel-edit": "Annulla modifica",
+    "save": "Salva",
+    "placeholder": "Idee...",
+    "only-image-supported": "Solo file immagine supportati.",
+    "cant-empty": "Il contenuto non può essere vuoto",
+    "local": "Locale",
+    "resources": "Risorse"
+  },
+  "memo": {
+    "view-detail": "Vedi dettagli",
+    "copy": "Copia",
+    "visibility": {
+      "private": "Visibile solo a te",
+      "protected": "Visibile ai membri",
+      "public": "Visibile a tutti",
+      "disabled": "Public memos are disabled"
     }
+  },
+  "memo-list": {
+    "fetching-data": "recupero i dati...",
+    "fetch-more": "Clicca per caricare più dati"
+  },
+  "shortcut-list": {
+    "shortcut-title": "titolo Scorciatoia",
+    "create-shortcut": "Crea Scorciatoia",
+    "edit-shortcut": "Modifica Scorciatoia",
+    "eligible-memo": "eligible memo",
+    "fill-previous": "Compila il valore del filtro precedente",
+    "title-required": "Il titolo è obbligatorio",
+    "value-required": "Il valore del filtro è obbligatorio"
+  },
+  "filter": {
+    "new-filter": "Nuovo Filtro",
+    "type": {
+      "tag": "Etichetta",
+      "type": "Tipo",
+      "text": "Testo",
+      "display-time": "Data",
+      "visibility": "Visibilità"
+    },
+    "operator": {
+      "contains": "Contiene",
+      "not-contains": "Non contiene",
+      "is": "È",
+      "is-not": "Non è",
+      "before": "Prima",
+      "after": "Dopo"
+    },
+    "value": {
+      "not-tagged": "senza etichetta",
+      "linked": "con link"
+    },
+    "text-placeholder": "Inizia con ^ per usare le regex"
+  },
+  "tag-list": {
+    "tip-text": "Scrivi `#tag` per crearla"
+  },
+  "search": {
+    "quickly-filter": "Filtro rapido"
+  },
+  "setting": {
+    "my-account": "Il mio account",
+    "preference": "Preferenze",
+    "member": "Membri",
+    "member-list": "Lista membri",
+    "system": "Sistema",
+    "account-section": {
+      "title": "Informazioni account",
+      "update-information": "Aggiorna informazioni",
+      "change-password": "Cambia password"
+    },
+    "preference-section": {
+      "theme": "Tema",
+      "default-memo-visibility": "Visibilità predefinita memo",
+      "enable-folding-memo": "Enable folding memo",
+      "editor-font-style": "Editor font style",
+      "mobile-editor-style": "Mobile editor style",
+      "default-memo-sort-option": "Ordine visualizzazione memo",
+      "created_ts": "Data di creazione",
+      "updated_ts": "Ultima modifica",
+      "enable-double-click": "Enable double-click to edit"
+    },
+    "member-section": {
+      "create-a-member": "Crea un membro"
+    },
+    "system-section": {
+      "server-name": "Nome server",
+      "customize-server": {
+        "title": "Personalizza Server",
+        "default": "Predefinito: memos",
+        "icon-url": "URL Icona"
+      },
+      "database-file-size": "Dimensione file database",
+      "allow-user-signup": "Consenti registrazione utenti",
+      "additional-style": "Stile aggiuntivo",
+      "additional-script": "Script aggiuntivo",
+      "additional-style-placeholder": "Codice CSS aggiuntivo",
+      "additional-script-placeholder": "Codice JavaScript aggiuntivo",
+      "disable-public-memos": "Disable public memos"
+    },
+    "appearance-option": {
+      "system": "Sistema",
+      "light": "Chiaro",
+      "dark": "Scuro"
+    },
+    "sso": "SSO",
+    "storage": "Storage",
+    "storage-section": {
+      "storage-services-list": "Storage service list",
+      "create-a-service": "Create a service",
+      "update-a-service": "Update a service",
+      "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIBLE❗",
+      "delete-storage": "Delete Storage"
+    }
+  },
+  "amount-text": {
+    "memo_one": "MEMO",
+    "tag_one": "TAG",
+    "day_one": "GIORNO",
+    "memo_other": "MEMOS",
+    "tag_other": "TAGS",
+    "day_other": "DAYS"
+  },
+  "message": {
+    "no-memos": "nessun memo 🌃",
+    "memos-ready": "Tutti i memo sono stati caricati 🎉",
+    "restored-successfully": "Ripristinato con successo",
+    "memo-updated-datetime": "La data di creazione del Memo è stata modificata.",
+    "invalid-created-datetime": "Data di creazione non valida.",
+    "change-memo-created-time": "Cambia la data di creazione del Memo",
+    "memo-not-found": "Memo non trovato.",
+    "fill-all": "Compila tutti i campi.",
+    "password-not-match": "Le passwords non corrispondono.",
+    "new-password-not-match": "Le nuove password non corrispondono.",
+    "image-load-failed": "Caricamento dell'immagine non riuscito",
+    "fill-form": "Compila questo modulo",
+    "login-failed": "Accesso fallito",
+    "signup-failed": "Registrazione fallita",
+    "user-not-found": "Utente non trovato",
+    "password-changed": "Password cambiata",
+    "private-only": "Questo memo è solo privato.",
+    "copied": "Copiato",
+    "succeed-copy-content": "Contenuto copiato negli appunti.",
+    "succeed-copy-link": "Link copiato negli appunti.",
+    "change-resource-filename": "Modifica il nome del file della risorsa",
+    "resource-filename-updated": "Nome file risorsa modificato.",
+    "invalid-resource-filename": "Nome del file non valido.",
+    "click-to-save-the-image": "Clicca per salvare l'immagine",
+    "generating-the-screenshot": "Generazione dello screenshot...",
+    "count-selected-resources": "Totale selezionati",
+    "too-short": "Troppo corto",
+    "too-long": "Troppo lungo",
+    "not-allow-space": "Non permettere spazi",
+    "not-allow-chinese": "Non permettere cinese",
+    "succeed-vacuum-database": "Database pulito con successo",
+    "succeed-update-additional-style": "Stile aggiuntivo aggiornato con successo",
+    "succeed-copy-resource-link": "Link della risorsa copiato con successo",
+    "succeed-update-customized-profile": "Profilo aggiornato con successo",
+    "succeed-update-additional-script": "Script aggiuntivo aggiornato con successo",
+    "update-succeed": "Aggiornamento riuscito",
+    "succeed-copy-code": "Succeed to copy code to clipboard.",
+    "page-not-found": "404 - Page Not Found 😥"
+  },
+  "days": {
+    "monday": "Lunedì",
+    "mon": "Lun",
+    "tuesday": "Martedì",
+    "tue": "Mar",
+    "wednesday": "Mercoledì",
+    "wed": "Mer",
+    "thursday": "Giovedì",
+    "thu": "Gio",
+    "friday": "Venerdì",
+    "fri": "Ven",
+    "saturday": "Sabato",
+    "sat": "Sab",
+    "sunday": "Domenica",
+    "sun": "Dom"
+  }
 }

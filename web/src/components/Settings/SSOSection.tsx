@@ -24,7 +24,7 @@ const SSOSection = () => {
   const handleDeleteIdentityProvider = async (identityProvider: IdentityProvider) => {
     showCommonDialog({
       title: "Confirm delete",
-      content: "Are you sure to delete this SSO? THIS ACTION IS IRREVERSIABLE❗",
+      content: "Are you sure to delete this SSO? THIS ACTION IS IRREVERSIBLE❗",
       style: "warning",
       dialogName: "delete-identity-provider-dialog",
       onConfirm: async () => {

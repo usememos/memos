@@ -195,7 +195,7 @@
       "additional-script-placeholder": "自定義 JavaScript 代碼",
       "disable-public-memos": "禁用公共memos"
     },
-    "apperance-option": {
+    "appearance-option": {
       "system": "跟隨系統",
       "light": "總是淺色",
       "dark": "總是深色"
