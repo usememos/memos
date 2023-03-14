@@ -3,7 +3,7 @@ import Icon from "./Icon";
 import useDebounce from "../hooks/useDebounce";
 
 interface ResourceSearchBarProps {
-  setQuery: (arg0: string) => void;
+  setQuery: (queryText: string) => void;
 }
 const ResourceSearchBar = ({ setQuery }: ResourceSearchBarProps) => {
   const [queryText, setQueryText] = useState("");
