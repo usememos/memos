@@ -1,25 +1,25 @@
-.resource-card{
-  @apply flex flex-col relative justify-start hover:bg-slate-200 dark:hover:bg-slate-600 w-full m-4 rounded-md;
+.resource-card {
+  @apply w-full p-2 relative flex flex-col justify-start hover:shadow hover:bg-slate-200 dark:hover:bg-slate-600 rounded-md;
 
   &:hover {
     .resource-checkbox {
-      @apply flex m-2 text-gray-500 absolute top-1 hover:text-black;
+      @apply flex hover:text-black;
     }
-    .more-action-btn{
-      @apply flex absolute right-0 top-1;
+    .more-action-btn {
+      @apply flex;
     }
   }
 
-  .resource-checkbox{
-    @apply hidden hover:flex ;
+  .resource-checkbox {
+    @apply hidden w-4 h-auto cursor-pointer hover:flex;
   }
 
-  .more-action-btn{
-    @apply hidden m-2;
+  .more-action-btn {
+    @apply hidden;
     &:hover {
       & + .more-action-btns-wrapper {
         display: flex;
       }
-    }  
+    }
   }
 }
