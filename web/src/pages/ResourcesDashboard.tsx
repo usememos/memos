@@ -123,7 +123,8 @@ const ResourcesDashboard = () => {
 
             <Dropdown
               className="drop-shadow-none m-2 "
-              actionsClassName="!w-28 rounded-lg drop-shadow-md	dark:bg-zinc-800 mt-2"
+              actionsClassName="!w-28 rounded-lg drop-shadow-md	dark:bg-zinc-800"
+              positionClassName="mt-2 top-full right-0"
               actions={
                 <>
                   <button
