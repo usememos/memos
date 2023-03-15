@@ -107,32 +107,31 @@ const ResourcesDashboard = () => {
         <div className=" flex flex-col justify-start items-start w-full">
           <div className="w-full flex flex-row  justify-end items-center">
             <div className="flex flex-row justify-start items-center space-x-2"></div>
-            <div className="flex flex-row justify-end items-center"></div>
-            <Button
-              onClick={() => showCreateResourceDialog({})}
-              title={t("common.create")}
-              startDecorator={<Icon.Plus className="w-5 h-auto" />}
-            />
+            <div className="m-2">
+              {isVisiable && (
+                <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger" title={t("resources.delete-selected-resources")}>
+                  <Icon.Trash2 className="w-4 h-auto" />
+                </Button>
+              )}
+            </div>
 
-            {isVisiable && (
-              <Button
-                onClick={() => handleDeleteSelectedBtnClick()}
-                color="danger"
-                title={t("resources.delete-selected-resources")}
-                startDecorator={<Icon.Trash2 className="w-4 h-auto" />}
-              />
-            )}
+            <div className="m-2">
+              <Button onClick={() => showCreateResourceDialog({})} title={t("common.create")}>
+                <Icon.Plus className="w-4 h-auto" />
+              </Button>
+            </div>
+
             <Dropdown
-              actionsClassName="!w-28"
+              className="drop-shadow-none m-2 "
+              actionsClassName="!w-28 rounded-lg drop-shadow-md	dark:bg-zinc-800 mt-2"
               actions={
                 <>
-                  <Button
-                    color="danger"
+                  <button
+                    className="w-full content-center text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
                     onClick={handleDeleteUnusedResourcesBtnClick}
-                    startDecorator={<Icon.Trash2 className="w-4 h-auto" />}
                   >
-                    <span>{t("resources.clear")}</span>
-                  </Button>
+                    {t("resources.clear")}
+                  </button>
                 </>
               }
             />
