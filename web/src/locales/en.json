@@ -142,7 +142,10 @@
     "text-placeholder": "Starts with ^ to use regex"
   },
   "tag-list": {
-    "tip-text": "Input `#tag` to create"
+    "tip-text": "Input `#tag` to create",
+    "create-tag": "Create Tag",
+    "all-tags": "All Tags",
+    "tag-name": "TAG_NAME"
   },
   "search": {
     "quickly-filter": "Quickly filter"

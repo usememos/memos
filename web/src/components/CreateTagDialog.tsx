@@ -1,6 +1,7 @@
 import { Input } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import { useTagStore } from "../store/module";
 import { getTagSuggestionList } from "../helpers/api";
 import { matcher } from "../labs/marked/matcher";
@@ -21,6 +22,7 @@ const validateTagName = (tagName: string): boolean => {
 const CreateTagDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const tagStore = useTagStore();
+  const { t } = useTranslation();
   const [tagName, setTagName] = useState<string>("");
   const [suggestTagNameList, setSuggestTagNameList] = useState<string[]>([]);
   const [showTagSuggestions, setShowTagSuggestions] = useState<boolean>(false);
@@ -82,7 +84,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">Create Tag</p>
+        <p className="title-text">{t("tag-list.create-tag")}</p>
         <button className="btn close-btn" onClick={() => destroy()}>
           <Icon.X />
         </button>
@@ -91,7 +93,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
         <Input
           className="mb-2"
           size="md"
-          placeholder="TAG_NAME"
+          placeholder={t("tag-list.tag-name")}
           value={tagName}
           onChange={handleTagNameChanged}
           onKeyDown={handleTagNameInputKeyDown}
@@ -101,7 +103,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
         />
         {tagNameList.length > 0 && (
           <>
-            <p className="w-full mt-2 mb-1 text-sm text-gray-400">All tags</p>
+            <p className="w-full mt-2 mb-1 text-sm text-gray-400">{t("tag-list.all-tags")}</p>
             <div className="w-full flex flex-row justify-start items-start flex-wrap">
               {Array.from(tagNameList)
                 .sort()
