@@ -142,7 +142,10 @@
     "text-placeholder": "以 ^ 开头使用正则表达式"
   },
   "tag-list": {
-    "tip-text": "输入`#tag `来创建标签"
+    "tip-text": "输入`#tag `来创建标签",
+    "create-tag": "创建标签",
+    "all-tags": "全部标签",
+    "tag-name": "标签名称"
   },
   "search": {
     "quickly-filter": "快速过滤"
