@@ -75,18 +75,15 @@ const ResourceCard = ({ resource, handlecheckClick, handleUncheckClick }: Resour
 
   return (
     <div className="resource-card">
-      <div className="btns-container">
+      <div className="w-full p-2 flex flex-row justify-between items-center absolute top-0 left-0">
         <div onClick={() => handleSelectBtnClick()}>
-          {isSelected ? (
-            <Icon.CheckCircle2 className="m-2 text-gray-500 hover:text-black absolute top-1" />
-          ) : (
-            <Icon.Circle className="resource-checkbox" />
-          )}
+          {isSelected ? <Icon.CheckCircle2 className="resource-checkbox !flex" /> : <Icon.Circle className="resource-checkbox" />}
         </div>
 
         <Dropdown
           className="more-action-btn"
           actionsClassName="!w-28"
+          trigger={<Icon.MoreVertical className="w-4 h-auto hover:opacity-80 cursor-pointer" />}
           actions={
             <>
               <button
@@ -117,12 +114,12 @@ const ResourceCard = ({ resource, handlecheckClick, handleUncheckClick }: Resour
           }
         />
       </div>
-      <div className="p-5">
+      <div className="w-full flex flex-row justify-center items-center pb-2 pt-4 px-2">
         <ResourceCover resource={resource} />
       </div>
-      <div>
-        <div className="text-base overflow-x-auto whitespace-nowrap text-center">{resource.filename}</div>
-        <div className="text-sm text-gray-400 text-center">{dayjs(resource.createdTs).locale("en").format("YYYY/MM/DD HH:mm:ss")}</div>
+      <div className="w-full flex flex-col justify-start items-center px-1 select-none">
+        <div className="w-full text-base overflow-x-auto whitespace-nowrap text-center text-ellipsis truncate">{resource.filename}</div>
+        <div className="text-xs text-gray-400 text-center">{dayjs(resource.createdTs).locale("en").format("YYYY/MM/DD HH:mm:ss")}</div>
       </div>
     </div>
   );

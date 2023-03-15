@@ -95,54 +95,53 @@ const ResourcesDashboard = () => {
   };
 
   return (
-    <section className="w-full min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
+    <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       <div className="w-full flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
         <div className="relative w-full flex flex-row justify-between items-center">
-          <p className="px-2 py-1 flex flex-row justify-start items-center select-none rounded">
+          <p className="flex flex-row justify-start items-center select-none rounded">
             <Icon.Paperclip className="w-5 h-auto mr-1" /> {t("common.resources")}
           </p>
           <ResourceSearchBar setQuery={setQueryText} />
         </div>
-        <div className=" flex flex-col justify-start items-start w-full">
-          <div className="w-full flex flex-row  justify-end items-center">
-            <div className="flex flex-row justify-start items-center space-x-2"></div>
-            <div className="m-2">
-              {isVisiable && (
-                <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger" title={t("resources.delete-selected-resources")}>
-                  <Icon.Trash2 className="w-4 h-auto" />
-                </Button>
-              )}
-            </div>
-
-            <div className="m-2">
-              <Button onClick={() => showCreateResourceDialog({})} title={t("common.create")}>
-                <Icon.Plus className="w-4 h-auto" />
+        <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3">
+          {isVisiable && (
+            <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger">
+              <Icon.Trash2 className="w-4 h-auto" />
+            </Button>
+          )}
+          <Button onClick={() => showCreateResourceDialog({})}>
+            <Icon.Plus className="w-4 h-auto" />
+          </Button>
+          <Dropdown
+            className="drop-shadow-none"
+            actionsClassName="!w-28 rounded-lg drop-shadow-md	dark:bg-zinc-800"
+            positionClassName="mt-2 top-full right-0"
+            trigger={
+              <Button variant="outlined">
+                <Icon.MoreVertical className="w-4 h-auto" />
               </Button>
-            </div>
-
-            <Dropdown
-              className="drop-shadow-none m-2 "
-              actionsClassName="!w-28 rounded-lg drop-shadow-md	dark:bg-zinc-800"
-              positionClassName="mt-2 top-full right-0"
-              actions={
-                <>
-                  <button
-                    className="w-full content-center text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                    onClick={handleDeleteUnusedResourcesBtnClick}
-                  >
-                    {t("resources.clear")}
-                  </button>
-                </>
-              }
-            />
-          </div>
+            }
+            actions={
+              <>
+                <button
+                  className="w-full flex flex-row justify-start items-center content-center text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+                  onClick={handleDeleteUnusedResourcesBtnClick}
+                >
+                  <Icon.Trash2 className="w-4 h-auto mr-2" />
+                  {t("resources.clear")}
+                </button>
+              </>
+            }
+          />
+        </div>
+        <div className="w-full flex flex-col justify-start items-start mt-4 mb-6">
           {loadingState.isLoading ? (
-            <div className="flex flex-col justify-center items-center w-full h-32">
+            <div className="w-full h-32 flex flex-col justify-center items-center">
               <p className="w-full text-center text-base my-6 mt-8">{t("resources.fetching-data")}</p>
             </div>
           ) : (
-            <div className="w-full h-full grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-4">
+            <div className="w-full h-full grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6">
               {resources.length === 0 ? (
                 <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
               ) : (

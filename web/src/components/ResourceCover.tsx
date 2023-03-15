@@ -6,8 +6,31 @@ interface ResourceCoverProps {
   resource: Resource;
 }
 
+const getResourceType = (resource: Resource) => {
+  if (resource.type.startsWith("image")) {
+    return "image/*";
+  } else if (resource.type.startsWith("video")) {
+    return "video/*";
+  } else if (resource.type.startsWith("audio")) {
+    return "audio/*";
+  } else if (resource.type.startsWith("text")) {
+    return "text/*";
+  } else if (resource.type.startsWith("application/epub+zip")) {
+    return "application/epub+zip";
+  } else if (resource.type.startsWith("application/pdf")) {
+    return "application/pdf";
+  } else if (resource.type.startsWith("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
+    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  } else if (resource.type.startsWith("application/msword")) {
+    return "application/msword";
+  } else {
+    return "application/octet-stream";
+  }
+};
+
 const ResourceCover = ({ resource }: ResourceCoverProps) => {
-  switch (resource.type) {
+  const resourceType = getResourceType(resource);
+  switch (resourceType) {
     case "image/*":
       return <Icon.FileImage className="resource-cover" />;
     case "video/*":
