@@ -4,6 +4,7 @@ import { isNullorUndefined } from "../helpers/utils";
 import store from "../store";
 import { initialGlobalState, initialUserState } from "../store/module";
 import DailyReview from "../pages/DailyReview";
+import ResourcesDashboard from "../pages/ResourcesDashboard";
 
 const Root = lazy(() => import("../layouts/Root"));
 const Auth = lazy(() => import("../pages/Auth"));
@@ -109,6 +110,25 @@ const router = createBrowserRouter([
       {
         path: "review",
         element: <DailyReview />,
+        loader: async () => {
+          await initialGlobalStateLoader();
+
+          try {
+            await initialUserState();
+          } catch (error) {
+            // do nth
+          }
+
+          const { host } = store.getState().user;
+          if (isNullorUndefined(host)) {
+            return redirect("/auth");
+          }
+          return null;
+        },
+      },
+      {
+        path: "resources",
+        element: <ResourcesDashboard />,
         loader: async () => {
           await initialGlobalStateLoader();
 

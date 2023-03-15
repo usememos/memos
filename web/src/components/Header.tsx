@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { useLayoutStore, useUserStore } from "../store/module";
 import { resolution } from "../utils/layout";
 import Icon from "./Icon";
-import showResourcesDialog from "./ResourcesDialog";
 import showSettingDialog from "./SettingDialog";
 import showAskAIDialog from "./AskAIDialog";
 import showArchivedMemoDialog from "./ArchivedMemoDialog";
@@ -76,6 +75,18 @@ const Header = () => {
                   <Icon.Calendar className="mr-4 w-6 h-auto opacity-80" /> {t("common.daily-review")}
                 </>
               </NavLink>
+              <NavLink
+                to="/resources"
+                className={({ isActive }) =>
+                  `${
+                    isActive && "bg-white dark:bg-zinc-700 shadow"
+                  } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                }
+              >
+                <>
+                  <Icon.Paperclip className="mr-4 w-6 h-auto opacity-80" /> {t("common.resources")}
+                </>
+              </NavLink>
             </>
           )}
           <NavLink
@@ -97,12 +108,6 @@ const Header = () => {
                 onClick={() => showAskAIDialog()}
               >
                 <Icon.Bot className="mr-4 w-6 h-auto opacity-80" /> Ask AI
-              </button>
-              <button
-                className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-                onClick={() => showResourcesDialog()}
-              >
-                <Icon.Paperclip className="mr-4 w-6 h-auto opacity-80" /> {t("common.resources")}
               </button>
               <button
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
