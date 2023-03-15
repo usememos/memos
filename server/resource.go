@@ -66,6 +66,15 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				resourceCreate.Visibility = api.Private
 			}
 		}
+		// append timestamp to resource filename to prevent conflict
+		{
+			dot := strings.LastIndex(resourceCreate.Filename, ".")
+			if dot == -1 {
+				resourceCreate.Filename = fmt.Sprintf("%s_%d", resourceCreate.Filename, time.Now().Unix())
+			} else {
+				resourceCreate.Filename = fmt.Sprintf("%s_%d%s", resourceCreate.Filename[:dot], time.Now().Unix(), resourceCreate.Filename[dot:])
+			}
+		}
 
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
