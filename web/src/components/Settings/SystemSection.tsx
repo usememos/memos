@@ -204,7 +204,7 @@ const SystemSection = () => {
           fontFamily: "monospace",
           fontSize: "14px",
         }}
-        placeholder="Write only"
+        placeholder="OpenAI API Key"
         value={openAIConfig.key}
         onChange={(event) => handleOpenAIConfigKeyChanged(event.target.value)}
       />
@@ -217,7 +217,7 @@ const SystemSection = () => {
           fontFamily: "monospace",
           fontSize: "14px",
         }}
-        placeholder="OpenAI Host. Default: https://api.openai.com"
+        placeholder="OpenAI API Host. Default: https://api.openai.com"
         value={openAIConfig.host}
         onChange={(event) => handleOpenAIConfigHostChanged(event.target.value)}
       />

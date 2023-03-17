@@ -20,6 +20,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
   const fetchingState = useLoading(false);
   const [historyList, setHistoryList] = useState<History[]>([]);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
+  const [isInIME, setIsInIME] = useState(false);
   const [question, setQuestion] = useState<string>("");
 
   useEffect(() => {
@@ -36,6 +37,13 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
 
   const handleQuestionTextareaChange = async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
     setQuestion(event.currentTarget.value);
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" && !event.shiftKey && !isInIME) {
+      event.preventDefault();
+      handleSendQuestionButtonClick();
+    }
   };
 
   const handleSendQuestionButtonClick = async () => {
@@ -80,7 +88,15 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container !w-112 max-w-full">
         <div className="w-full relative">
-          <Textarea className="w-full" placeholder="Ask anything…" value={question} onChange={handleQuestionTextareaChange} />
+          <Textarea
+            className="w-full"
+            placeholder="Ask anything…"
+            value={question}
+            onChange={handleQuestionTextareaChange}
+            onCompositionStart={() => setIsInIME(true)}
+            onCompositionEnd={() => setIsInIME(false)}
+            onKeyDown={handleKeyDown}
+          />
           <Icon.Send
             className="cursor-pointer w-7 p-1 h-auto rounded-md bg-gray-100 dark:bg-zinc-800 absolute right-2 bottom-1.5 shadow hover:opacity-80"
             onClick={handleSendQuestionButtonClick}
