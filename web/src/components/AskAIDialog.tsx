@@ -48,13 +48,13 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
 
   const handleSendQuestionButtonClick = async () => {
     fetchingState.setLoading();
+    setQuestion("");
     try {
       await askQuestion(question);
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.error);
     }
-    setQuestion("");
     fetchingState.setFinish();
   };
 
@@ -92,6 +92,8 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
             className="w-full"
             placeholder="Ask anything…"
             value={question}
+            minRows={1}
+            maxRows={5}
             onChange={handleQuestionTextareaChange}
             onCompositionStart={() => setIsInIME(true)}
             onCompositionEnd={() => setIsInIME(false)}
