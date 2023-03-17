@@ -118,7 +118,7 @@ const ResourceCard = ({ resource, handlecheckClick, handleUncheckClick }: Resour
         <ResourceCover resource={resource} />
       </div>
       <div className="w-full flex flex-col justify-start items-center px-1 select-none">
-        <div className="w-full text-base overflow-x-auto whitespace-nowrap text-center text-ellipsis truncate">{resource.filename}</div>
+        <div className="w-full text-base text-center text-ellipsis overflow-hidden">{resource.filename}</div>
         <div className="text-xs text-gray-400 text-center">{dayjs(resource.createdTs).locale("en").format("YYYY/MM/DD HH:mm:ss")}</div>
       </div>
     </div>
