@@ -52,6 +52,7 @@ const MemoEditor = () => {
     isRequesting: false,
   });
   const [allowSave, setAllowSave] = useState<boolean>(false);
+  const [isInIME, setIsInIME] = useState(false);
   const editorState = editorStore.state;
   const prevEditorStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
@@ -113,7 +114,7 @@ const MemoEditor = () => {
         return;
       }
     }
-    if (event.key === "Enter") {
+    if (event.key === "Enter" && !isInIME) {
       const cursorPosition = editorRef.current.getCursorPosition();
       const contentBeforeCursor = editorRef.current.getContent().slice(0, cursorPosition);
       const rowValue = last(contentBeforeCursor.split("\n"));
@@ -394,6 +395,8 @@ const MemoEditor = () => {
       onDrop={handleDropEvent}
       onFocus={handleEditorFocus}
       onBlur={handleEditorBlur}
+      onCompositionStart={() => setIsInIME(true)}
+      onCompositionEnd={() => setIsInIME(false)}
     >
       <Editor ref={editorRef} {...editorConfig} />
       <div className="common-tools-wrapper">
