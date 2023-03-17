@@ -1,7 +1,11 @@
 import { matcher } from "./matcher";
 import { blockElementParserList, inlineElementParserList } from "./parser";
 
-type Parser = typeof blockElementParserList[0];
+type Parser = {
+  name: string;
+  regexp: RegExp;
+  renderer: (rawStr: string) => JSX.Element | string;
+};
 
 const findMatchingParser = (parsers: Parser[], markdownStr: string): Parser | undefined => {
   let matchedParser = undefined;
