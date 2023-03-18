@@ -8,7 +8,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 
 ## Tech Stack
 
-![tech-stack](https://raw.githubusercontent.com/usememos/memos/main/resources/tech-stack.png)
+![tech-stack](https://raw.githubusercontent.com/usememos/memos/main/assets/tech-stack.png)
 
 ## Prerequisites
 
