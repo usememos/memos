@@ -2,9 +2,13 @@
 FROM node:18.12.1-alpine3.16 AS frontend
 WORKDIR /frontend-build
 
+COPY ./web/package.json ./web/yarn.lock ./
+
+RUN yarn
+
 COPY ./web/ .
 
-RUN yarn && yarn build
+RUN yarn build
 
 # Build backend exec file.
 FROM golang:1.19.3-alpine3.16 AS backend
