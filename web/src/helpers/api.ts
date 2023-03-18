@@ -250,16 +250,8 @@ export function deleteIdentityProvider(id: IdentityProviderId) {
   return axios.delete(`/api/idp/${id}`);
 }
 
-export function postChatCompletion(prompt: string) {
-  return axios.post<ResponseObject<string>>(`/api/openai/chat-completion`, {
-    prompt,
-  });
-}
-
-export function postTextCompletion(prompt: string) {
-  return axios.post<ResponseObject<string>>(`/api/openai/text-completion`, {
-    prompt,
-  });
+export function postChatCompletion(messages: any[]) {
+  return axios.post<ResponseObject<string>>(`/api/openai/chat-completion`, messages);
 }
 
 export function checkOpenAIEnabled() {

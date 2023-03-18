@@ -29,7 +29,8 @@
     "react-router-dom": "^6.8.2",
     "react-use": "^17.4.0",
     "semver": "^7.3.8",
-    "tailwindcss": "^3.2.4"
+    "tailwindcss": "^3.2.4",
+    "zustand": "^4.3.6"
   },
   "devDependencies": {
     "@types/lodash-es": "^4.17.5",
