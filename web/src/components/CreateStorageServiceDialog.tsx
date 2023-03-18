@@ -4,6 +4,7 @@ import { Button, Input, Typography } from "@mui/joy";
 import * as api from "../helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
+import RequiredBadge from "./RequiredBadge";
 
 interface Props extends DialogProps {
   storage?: ObjectStorage;
@@ -48,7 +49,13 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       return false;
     }
     if (type === "S3") {
-      if (s3Config.endPoint === "" || s3Config.region === "" || s3Config.accessKey === "" || s3Config.bucket === "") {
+      if (
+        s3Config.endPoint === "" ||
+        s3Config.region === "" ||
+        s3Config.accessKey === "" ||
+        s3Config.secretKey === "" ||
+        s3Config.bucket === ""
+      ) {
         return false;
       }
     }
@@ -113,6 +120,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container">
         <Typography className="!mb-1" level="body2">
           Name
+          <RequiredBadge />
         </Typography>
         <Input
           className="mb-2"
@@ -128,6 +136,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         />
         <Typography className="!mb-1" level="body2">
           EndPoint
+          <RequiredBadge />
           <span className="text-sm text-gray-400 ml-1">(S3-compatible server URL)</span>
         </Typography>
         <Input
@@ -139,6 +148,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         />
         <Typography className="!mb-1" level="body2">
           Region
+          <RequiredBadge />
           <span className="text-sm text-gray-400 ml-1">(Region name)</span>
         </Typography>
         <Input
@@ -150,6 +160,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         />
         <Typography className="!mb-1" level="body2">
           AccessKey
+          <RequiredBadge />
           <span className="text-sm text-gray-400 ml-1">(Access Key / Access ID)</span>
         </Typography>
         <Input
@@ -161,6 +172,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         />
         <Typography className="!mb-1" level="body2">
           SecretKey
+          <RequiredBadge />
           <span className="text-sm text-gray-400 ml-1">(Secret Key / Secret Access Key)</span>
         </Typography>
         <Input
@@ -172,6 +184,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         />
         <Typography className="!mb-1" level="body2">
           Bucket
+          <RequiredBadge />
           <span className="text-sm text-gray-400 ml-1">(Bucket name)</span>
         </Typography>
         <Input
@@ -187,8 +200,8 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         </Typography>
         <Typography className="!mb-1" level="body2">
           <p className="text-sm text-gray-400 ml-1">{"You can use {year}, {month}, {day}, {hour}, {minute}, {second},"}</p>
-          <p className="text-sm text-gray-400 ml-1">{"{filetype}, {filename}, {timestamp} and any other words."}</p>
-          <p className="text-sm text-gray-400 ml-1">{"e.g., {year}/{month}/{day}/your/path/{filename}.{filetype}"}</p>
+          <p className="text-sm text-gray-400 ml-1">{"{filename}, {timestamp} and any other words."}</p>
+          <p className="text-sm text-gray-400 ml-1">{"e.g., {year}/{month}/{day}/your/path/{filename}"}</p>
         </Typography>
         <Input
           className="mb-2"

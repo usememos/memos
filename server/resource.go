@@ -147,8 +147,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 						switch s {
 						case "{filename}":
 							return filename
-						case "{filetype}":
-							return filetype
 						case "{timestamp}":
 							return fmt.Sprintf("%d", t.Unix())
 						case "{year}":
