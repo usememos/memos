@@ -104,7 +104,7 @@ func upsertTag(ctx context.Context, tx *sql.Tx, upsert *api.TagUpsert) (*tagRaw,
 }
 
 func findTagList(ctx context.Context, tx *sql.Tx, find *api.TagFind) ([]*tagRaw, error) {
-	where, args := []string{"creator_id = ?"}, []interface{}{find.CreatorID}
+	where, args := []string{"creator_id = ?"}, []any{find.CreatorID}
 
 	query := `
 		SELECT
@@ -141,7 +141,7 @@ func findTagList(ctx context.Context, tx *sql.Tx, find *api.TagFind) ([]*tagRaw,
 }
 
 func deleteTag(ctx context.Context, tx *sql.Tx, delete *api.TagDelete) error {
-	where, args := []string{"name = ?", "creator_id = ?"}, []interface{}{delete.Name, delete.CreatorID}
+	where, args := []string{"name = ?", "creator_id = ?"}, []any{delete.Name, delete.CreatorID}
 
 	stmt := `DELETE FROM tag WHERE ` + strings.Join(where, " AND ")
 	result, err := tx.ExecContext(ctx, stmt, args...)

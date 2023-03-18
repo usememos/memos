@@ -192,7 +192,7 @@ func (s *Store) PatchResource(ctx context.Context, patch *api.ResourcePatch) (*a
 
 func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate) (*resourceRaw, error) {
 	fields := []string{"filename", "blob", "external_link", "type", "size", "creator_id"}
-	values := []interface{}{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID}
+	values := []any{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID}
 	placeholders := []string{"?", "?", "?", "?", "?", "?"}
 	if s.profile.IsDev() {
 		fields = append(fields, "visibility")
@@ -208,7 +208,7 @@ func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.
 		RETURNING id, ` + strings.Join(fields, ",") + `, created_ts, updated_ts
 	`
 	var resourceRaw resourceRaw
-	dests := []interface{}{
+	dests := []any{
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
 		&resourceRaw.Blob,
@@ -220,7 +220,7 @@ func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.
 	if s.profile.IsDev() {
 		dests = append(dests, &resourceRaw.Visibility)
 	}
-	dests = append(dests, []interface{}{&resourceRaw.CreatedTs, &resourceRaw.UpdatedTs}...)
+	dests = append(dests, []any{&resourceRaw.CreatedTs, &resourceRaw.UpdatedTs}...)
 	if err := tx.QueryRowContext(ctx, query, values...).Scan(dests...); err != nil {
 		return nil, FormatError(err)
 	}
@@ -229,7 +229,7 @@ func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.
 }
 
 func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*resourceRaw, error) {
-	set, args := []string{}, []interface{}{}
+	set, args := []string{}, []any{}
 
 	if v := patch.UpdatedTs; v != nil {
 		set, args = append(set, "updated_ts = ?"), append(args, *v)
@@ -256,7 +256,7 @@ func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.Re
 		WHERE id = ?
 		RETURNING ` + strings.Join(fields, ", ")
 	var resourceRaw resourceRaw
-	dests := []interface{}{
+	dests := []any{
 		&resourceRaw.ID,
 		&resourceRaw.Filename,
 		&resourceRaw.ExternalLink,
@@ -277,7 +277,7 @@ func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.Re
 }
 
 func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) ([]*resourceRaw, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
 		where, args = append(where, "resource.id = ?"), append(args, *v)
@@ -319,7 +319,7 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 	resourceRawList := make([]*resourceRaw, 0)
 	for rows.Next() {
 		var resourceRaw resourceRaw
-		dests := []interface{}{
+		dests := []any{
 			&resourceRaw.LinkedMemoAmount,
 			&resourceRaw.ID,
 			&resourceRaw.Filename,
@@ -350,7 +350,7 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 }
 
 func deleteResource(ctx context.Context, tx *sql.Tx, delete *api.ResourceDelete) error {
-	where, args := []string{"id = ?"}, []interface{}{delete.ID}
+	where, args := []string{"id = ?"}, []any{delete.ID}
 
 	stmt := `DELETE FROM resource WHERE ` + strings.Join(where, " AND ")
 	result, err := tx.ExecContext(ctx, stmt, args...)

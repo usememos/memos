@@ -180,7 +180,7 @@ func createShortcut(ctx context.Context, tx *sql.Tx, create *api.ShortcutCreate)
 }
 
 func patchShortcut(ctx context.Context, tx *sql.Tx, patch *api.ShortcutPatch) (*shortcutRaw, error) {
-	set, args := []string{}, []interface{}{}
+	set, args := []string{}, []any{}
 
 	if v := patch.UpdatedTs; v != nil {
 		set, args = append(set, "updated_ts = ?"), append(args, *v)
@@ -220,7 +220,7 @@ func patchShortcut(ctx context.Context, tx *sql.Tx, patch *api.ShortcutPatch) (*
 }
 
 func findShortcutList(ctx context.Context, tx *sql.Tx, find *api.ShortcutFind) ([]*shortcutRaw, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)
@@ -277,7 +277,7 @@ func findShortcutList(ctx context.Context, tx *sql.Tx, find *api.ShortcutFind) (
 }
 
 func deleteShortcut(ctx context.Context, tx *sql.Tx, delete *api.ShortcutDelete) error {
-	where, args := []string{}, []interface{}{}
+	where, args := []string{}, []any{}
 
 	if v := delete.ID; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)

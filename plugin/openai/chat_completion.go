@@ -19,7 +19,7 @@ type ChatCompletionChoice struct {
 }
 
 type ChatCompletionResponse struct {
-	Error   interface{}            `json:"error"`
+	Error   any                    `json:"error"`
 	Model   string                 `json:"model"`
 	Choices []ChatCompletionChoice `json:"choices"`
 }
@@ -33,7 +33,7 @@ func PostChatCompletion(messages []ChatCompletionMessage, apiKey string, apiHost
 		return "", err
 	}
 
-	values := map[string]interface{}{
+	values := map[string]any{
 		"model":             "gpt-3.5-turbo",
 		"messages":          messages,
 		"max_tokens":        2000,
