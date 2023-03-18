@@ -83,7 +83,7 @@ const MemoDetail = () => {
                   </a>
                 </div>
               </div>
-              <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
+              <MemoContent className="memo-content" content={state.memo.content} showFull={true} onMemoContentClick={() => undefined} />
               <MemoResources resourceList={state.memo.resourceList} />
             </div>
           </main>
