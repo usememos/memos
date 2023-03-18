@@ -261,6 +261,9 @@ func listIdentityProviders(ctx context.Context, tx *sql.Tx, find *FindIdentityPr
 	if err != nil {
 		return nil, FormatError(err)
 	}
+	if rows.Err() != nil {
+		return nil, FormatError(rows.Err())
+	}
 	defer rows.Close()
 
 	var identityProviderMessages []*IdentityProviderMessage
