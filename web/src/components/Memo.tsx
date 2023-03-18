@@ -171,8 +171,11 @@ const Memo: React.FC<Props> = (props: Props) => {
     editorStore.setEditMemoWithId(memo.id);
   };
 
-  const handleMemoCreatedTimeClick = () => {
-    showChangeMemoCreatedTsDialog(memo.id);
+  const handleMemoCreatedTimeClick = (e: React.MouseEvent) => {
+    if (e.altKey) {
+      e.preventDefault();
+      showChangeMemoCreatedTsDialog(memo.id);
+    }
   };
 
   const handleMemoVisibilityClick = (visibility: Visibility) => {
@@ -189,9 +192,9 @@ const Memo: React.FC<Props> = (props: Props) => {
       {memo.pinned && <div className="corner-container"></div>}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
-          <span className="time-text" onDoubleClick={handleMemoCreatedTimeClick}>
+          <Link className="time-text" to={`/m/${memo.id}`} onClick={handleMemoCreatedTimeClick}>
             {createdTimeStr}
-          </span>
+          </Link>
           {isVisitorMode && (
             <Link className="name-text" to={`/u/${memo.creatorId}`}>
               @{memo.creatorName}
