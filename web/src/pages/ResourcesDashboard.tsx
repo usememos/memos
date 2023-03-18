@@ -104,7 +104,7 @@ const ResourcesDashboard = () => {
           </p>
           <ResourceSearchBar setQuery={setQueryText} />
         </div>
-        <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3">
+        <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
           {isVisiable && (
             <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger">
               <Icon.Trash2 className="w-4 h-auto" />
