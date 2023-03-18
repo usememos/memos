@@ -28,7 +28,7 @@ type Client struct {
 }
 
 func NewClient(ctx context.Context, config *Config) (*Client, error) {
-	resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
+	resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...any) (aws.Endpoint, error) {
 		return aws.Endpoint{
 			URL:           config.EndPoint,
 			SigningRegion: config.Region,

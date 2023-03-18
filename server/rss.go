@@ -135,14 +135,14 @@ func getSystemCustomizedProfile(ctx context.Context, s *Server) (api.CustomizedP
 			continue
 		}
 
-		var value interface{}
+		var value any
 		err := json.Unmarshal([]byte(systemSetting.Value), &value)
 		if err != nil {
 			return api.CustomizedProfile{}, err
 		}
 
 		if systemSetting.Name == api.SystemSettingCustomizedProfileName {
-			valueMap := value.(map[string]interface{})
+			valueMap := value.(map[string]any)
 			systemStatus.CustomizedProfile = api.CustomizedProfile{}
 			if v := valueMap["name"]; v != nil {
 				systemStatus.CustomizedProfile.Name = v.(string)

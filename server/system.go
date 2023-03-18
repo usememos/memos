@@ -63,7 +63,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				continue
 			}
 
-			var baseValue interface{}
+			var baseValue any
 			err := json.Unmarshal([]byte(systemSetting.Value), &baseValue)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
