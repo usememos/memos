@@ -53,12 +53,12 @@ const Header = () => {
             <>
               <NavLink
                 to="/"
+                id="header-home"
                 className={({ isActive }) =>
                   `${
                     isActive && "bg-white dark:bg-zinc-700 shadow"
                   } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
                 }
-                id="header-home"
               >
                 <>
                   <Icon.Home className="mr-4 w-6 h-auto opacity-80" /> {t("common.home")}
@@ -66,12 +66,12 @@ const Header = () => {
               </NavLink>
               <NavLink
                 to="/review"
+                id="header-review"
                 className={({ isActive }) =>
                   `${
                     isActive && "bg-white dark:bg-zinc-700 shadow"
                   } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
                 }
-                id="header-review"
               >
                 <>
                   <Icon.Calendar className="mr-4 w-6 h-auto opacity-80" /> {t("common.daily-review")}
@@ -79,12 +79,12 @@ const Header = () => {
               </NavLink>
               <NavLink
                 to="/resources"
+                id="header-resources"
                 className={({ isActive }) =>
                   `${
                     isActive && "bg-white dark:bg-zinc-700 shadow"
                   } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
                 }
-                id="header-resources"
               >
                 <>
                   <Icon.Paperclip className="mr-4 w-6 h-auto opacity-80" /> {t("common.resources")}
@@ -94,12 +94,12 @@ const Header = () => {
           )}
           <NavLink
             to="/explore"
+            id="header-explore"
             className={({ isActive }) =>
               `${
                 isActive && "bg-white dark:bg-zinc-700 shadow"
               } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
             }
-            id="header-explore"
           >
             <>
               <Icon.Hash className="mr-4 w-6 h-auto opacity-80" /> {t("common.explore")}
@@ -108,23 +108,23 @@ const Header = () => {
           {!isVisitorMode && (
             <>
               <button
+                id="header-ask-ai"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={() => showAskAIDialog()}
-                id="header-ask-ai"
               >
                 <Icon.Bot className="mr-4 w-6 h-auto opacity-80" /> Ask AI
               </button>
               <button
+                id="header-archived-memo"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={() => showArchivedMemoDialog()}
-                id="header-archived-memo"
               >
                 <Icon.Archive className="mr-4 w-6 h-auto opacity-80" /> {t("common.archived")}
               </button>
               <button
+                id="header-settings"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={() => showSettingDialog()}
-                id="header-settings"
               >
                 <Icon.Settings className="mr-4 w-6 h-auto opacity-80" /> {t("common.settings")}
               </button>
@@ -134,21 +134,21 @@ const Header = () => {
             <>
               <NavLink
                 to="/auth"
+                id="header-auth"
                 className={({ isActive }) =>
                   `${
                     isActive && "bg-white dark:bg-zinc-700 shadow"
                   } px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
                 }
-                id="header-auth"
               >
                 <>
                   <Icon.LogIn className="mr-4 w-6 h-auto opacity-80" /> {t("common.sign-in")}
                 </>
               </NavLink>
               <button
+                id="header-about"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={() => showAboutSiteDialog()}
-                id="header-about"
               >
                 <Icon.CupSoda className="mr-4 w-6 h-auto opacity-80" /> {t("common.about")}
               </button>
