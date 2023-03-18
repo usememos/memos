@@ -53,6 +53,7 @@ const Header = () => {
             <>
               <NavLink
                 to="/"
+                id="header-home"
                 className={({ isActive }) =>
                   `${
                     isActive && "bg-white dark:bg-zinc-700 shadow"
@@ -65,6 +66,7 @@ const Header = () => {
               </NavLink>
               <NavLink
                 to="/review"
+                id="header-review"
                 className={({ isActive }) =>
                   `${
                     isActive && "bg-white dark:bg-zinc-700 shadow"
@@ -77,6 +79,7 @@ const Header = () => {
               </NavLink>
               <NavLink
                 to="/resources"
+                id="header-resources"
                 className={({ isActive }) =>
                   `${
                     isActive && "bg-white dark:bg-zinc-700 shadow"
@@ -91,6 +94,7 @@ const Header = () => {
           )}
           <NavLink
             to="/explore"
+            id="header-explore"
             className={({ isActive }) =>
               `${
                 isActive && "bg-white dark:bg-zinc-700 shadow"
@@ -104,18 +108,21 @@ const Header = () => {
           {!isVisitorMode && (
             <>
               <button
+                id="header-ask-ai"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={() => showAskAIDialog()}
               >
                 <Icon.Bot className="mr-4 w-6 h-auto opacity-80" /> Ask AI
               </button>
               <button
+                id="header-archived-memo"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={() => showArchivedMemoDialog()}
               >
                 <Icon.Archive className="mr-4 w-6 h-auto opacity-80" /> {t("common.archived")}
               </button>
               <button
+                id="header-settings"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={() => showSettingDialog()}
               >
@@ -127,6 +134,7 @@ const Header = () => {
             <>
               <NavLink
                 to="/auth"
+                id="header-auth"
                 className={({ isActive }) =>
                   `${
                     isActive && "bg-white dark:bg-zinc-700 shadow"
@@ -138,6 +146,7 @@ const Header = () => {
                 </>
               </NavLink>
               <button
+                id="header-about"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg dark:text-gray-200 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                 onClick={() => showAboutSiteDialog()}
               >
