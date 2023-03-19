@@ -27,6 +27,8 @@ const (
 	SystemSettingCustomizedProfileName SystemSettingName = "customizedProfile"
 	// SystemSettingStorageServiceIDName is the key type of storage service ID.
 	SystemSettingStorageServiceIDName SystemSettingName = "storageServiceId"
+	// SystemSettingLocalStoragePathName is the key type of local storage path.
+	SystemSettingLocalStoragePathName SystemSettingName = "localStoragePath"
 	// SystemSettingOpenAIConfigName is the key type of OpenAI config.
 	SystemSettingOpenAIConfigName SystemSettingName = "openAIConfig"
 )
@@ -70,6 +72,8 @@ func (key SystemSettingName) String() string {
 		return "customizedProfile"
 	case SystemSettingStorageServiceIDName:
 		return "storageServiceId"
+	case SystemSettingLocalStoragePathName:
+		return "localStoragePath"
 	case SystemSettingOpenAIConfigName:
 		return "openAIConfig"
 	}
@@ -142,6 +146,12 @@ func (upsert SystemSettingUpsert) Validate() error {
 			return fmt.Errorf("failed to unmarshal system setting storage service id value")
 		}
 		return nil
+	} else if upsert.Name == SystemSettingLocalStoragePathName {
+		value := ""
+		err := json.Unmarshal([]byte(upsert.Value), &value)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal system setting local storage path value")
+		}
 	} else if upsert.Name == SystemSettingOpenAIConfigName {
 		value := OpenAIConfig{}
 		err := json.Unmarshal([]byte(upsert.Value), &value)

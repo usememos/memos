@@ -18,5 +18,8 @@ type SystemStatus struct {
 	AdditionalScript string `json:"additionalScript"`
 	// Customized server profile, including server name and external url.
 	CustomizedProfile CustomizedProfile `json:"customizedProfile"`
-	StorageServiceID  int               `json:"storageServiceId"`
+	// Storage service ID.
+	StorageServiceID int `json:"storageServiceId"`
+	// Local storage path
+	LocalStoragePath string `json:"localStoragePath"`
 }
