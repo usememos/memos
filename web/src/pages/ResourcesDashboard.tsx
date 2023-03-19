@@ -18,7 +18,7 @@ const ResourcesDashboard = () => {
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
-  const [isVisiable, setIsVisiable] = useState<boolean>(false);
+  const [isVisible, setIsVisible] = useState<boolean>(false);
   const [queryText, setQueryText] = useState<string>("");
 
   useEffect(() => {
@@ -35,9 +35,9 @@ const ResourcesDashboard = () => {
 
   useEffect(() => {
     if (selectedList.length === 0) {
-      setIsVisiable(false);
+      setIsVisible(false);
     } else {
-      setIsVisiable(true);
+      setIsVisible(true);
     }
   }, [selectedList]);
 
@@ -105,7 +105,7 @@ const ResourcesDashboard = () => {
           <ResourceSearchBar setQuery={setQueryText} />
         </div>
         <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
-          {isVisiable && (
+          {isVisible && (
             <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger">
               <Icon.Trash2 className="w-4 h-auto" />
             </Button>
