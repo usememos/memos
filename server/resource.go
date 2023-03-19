@@ -146,9 +146,9 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
 				}
 			}
-			filePath := ""
-			if !strings.Contains(localStoragePath, "{filename}") {
-				filePath = path.Join(localStoragePath, "{filename}")
+			filePath := localStoragePath
+			if !strings.Contains(filePath, "{filename}") {
+				filePath = path.Join(filePath, "{filename}")
 			}
 			filePath = path.Join(s.Profile.Data, replacePathTemplate(filePath, filename))
 			dirPath := filepath.Dir(filePath)
