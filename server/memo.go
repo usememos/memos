@@ -202,7 +202,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
 			memoFind.Offset = &offset
 		}
-		
 		list, err := s.Store.FindMemoList(ctx, memoFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
