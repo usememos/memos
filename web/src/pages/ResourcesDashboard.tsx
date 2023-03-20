@@ -20,7 +20,10 @@ const ResourcesDashboard = () => {
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
   const [isVisiable, setIsVisiable] = useState<boolean>(false);
   const [queryText, setQueryText] = useState<string>("");
-  const [ondrag, SetDrag] = useState<boolean>(false);
+
+  const [dragActive, setDragActive] = useState(false);
+  // ref
+  const inputRef = useRef(null);
 
   useEffect(() => {
     resourceStore
@@ -95,25 +98,52 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const onDragEnter = () => {
-    console.log("enter");
-    SetDrag(true);
-  };
-  const onDragLeave = () => {
-    console.log("leave");
-    SetDrag(false);
+  const handleDrag = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
   };
 
-  const onDrop = (event) => {    console.log(event);
+  // triggers when file is dropped
+  const handleDrop = function (e) {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      // handleFiles(e.dataTransfer.files);
+      console.log(e.dataTransfer.files);
+    }
+  };
 
-    event.preventDefault();
-    event.stopPropagation();
-  }
+  // triggers when file is selected with click
+  const handleChange = function (e) {
+    e.preventDefault();
+    if (e.target.files && e.target.files[0]) {
+      // handleFiles(e.target.files);
+    }
+  };
+
+  // triggers the input when the button is clicked
+  const onButtonClick = () => {
+    inputRef.current.click();
+  };
 
   return (
     <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
-      <div className={ondrag ? " bg-black z-50 " : "bg-amber-100"}  onDrop={onDrop}>
+      <div className="relative" onDragEnter={handleDrag}>
+        <input ref={inputRef} type="file" className="hidden" multiple={true} onChange={handleChange} />
+        <div></div>
+        {dragActive && (
+          <div id="absolute h-full w-full" onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}>
+            <p>Drag and drop your file here to upload file</p>
+          </div>
+        )}
+
         <div className="w-full flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
           <div className="relative w-full flex flex-row justify-between items-center">
             <p className="flex flex-row justify-start items-center select-none rounded">
