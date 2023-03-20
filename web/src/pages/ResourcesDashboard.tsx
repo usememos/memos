@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
@@ -98,7 +98,7 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handleDrag = function (e) {
+  const handleDrag = function (e: React.DragEvent<HTMLDivElement>) {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -108,33 +108,25 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handleDrop = async (e) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      // handleFiles(e.dataTransfer.files);
       console.log(e.dataTransfer.files);
       for (const file of e.dataTransfer.files) {
         await resourceStore.createResourceWithBlob(file);
       }
       toast.success("文件上传成功!");
+      console.log(resources);
     }
   };
-
-  const handleChange = function (e) {
-    e.preventDefault();
-    if (e.target.files && e.target.files[0]) {
-      // handleFiles(e.target.files);
-    }
-  };
+  console.log(resources);
 
   return (
     <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       <div className="relative" onDragEnter={handleDrag}>
-        <input ref={inputRef} type="file" className="hidden" multiple={true} onChange={handleChange} />
-        <div></div>
         {dragActive && (
           <div
             className="absolute h-full w-full bg-white opacity-40 "
