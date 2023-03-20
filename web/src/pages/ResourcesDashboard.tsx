@@ -106,8 +106,20 @@ const ResourcesDashboard = () => {
           <ResourceSearchBar setQuery={setQueryText} />
         </div>
         <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
-          <button>list</button>
-          <button>block</button>
+          <Button
+            onClick={() => {
+              setListStyle(true);
+            }}
+          >
+            list
+          </Button>
+          <Button
+            onClick={() => {
+              setListStyle(false);
+            }}
+          >
+            block
+          </Button>
           {isVisiable && (
             <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger">
               <Icon.Trash2 className="w-4 h-auto" />
@@ -144,7 +156,18 @@ const ResourcesDashboard = () => {
               <p className="w-full text-center text-base my-6 mt-8">{t("resources.fetching-data")}</p>
             </div>
           ) : (
-            <div className="w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6">
+            <div
+              className={
+                listStyle ? "w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6" : "flex flex-col justify-start items-start w-full"
+              }
+            >
+              {listStyle || (
+                <div className="fields-container">
+                  <span className="field-text id-text">ID</span>
+                  <span className="field-text name-text">{t("resources.name")}</span>
+                  <span></span>
+                </div>
+              )}
               {resources.length === 0 ? (
                 <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
               ) : (
