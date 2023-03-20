@@ -20,7 +20,6 @@ const ResourcesDashboard = () => {
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [queryText, setQueryText] = useState<string>("");
-
   const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
