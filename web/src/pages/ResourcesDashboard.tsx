@@ -20,6 +20,7 @@ const ResourcesDashboard = () => {
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
   const [isVisiable, setIsVisiable] = useState<boolean>(false);
   const [queryText, setQueryText] = useState<string>("");
+  const [listStyle, setListStyle] = useState<boolean>(true);
 
   useEffect(() => {
     resourceStore
@@ -105,6 +106,8 @@ const ResourcesDashboard = () => {
           <ResourceSearchBar setQuery={setQueryText} />
         </div>
         <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
+          <button>list</button>
+          <button>block</button>
           {isVisiable && (
             <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger">
               <Icon.Trash2 className="w-4 h-auto" />
