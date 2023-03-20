@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
@@ -139,8 +139,16 @@ const ResourcesDashboard = () => {
         <input ref={inputRef} type="file" className="hidden" multiple={true} onChange={handleChange} />
         <div></div>
         {dragActive && (
-          <div id="absolute h-full w-full" onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}>
-            <p>Drag and drop your file here to upload file</p>
+          <div
+            className="absolute h-full w-full bg-white opacity-40 "
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
+          >
+            <div className="flex h-full w-full">
+              <div className="m-auto">Drag and drop your file here to upload file</div>
+            </div>
           </div>
         )}
 
