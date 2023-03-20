@@ -115,7 +115,6 @@ const ResourcesDashboard = () => {
       toast.success(t("resources.file-uploaded"));
     }
   };
-  console.log(resources);
 
   return (
     <section className="w-full max-w-2xl min-h-full flex`` flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
@@ -123,14 +122,14 @@ const ResourcesDashboard = () => {
       <div className="relative" onDragEnter={handleDrag}>
         {dragActive && (
           <div
-            className="absolute h-full w-full bg-white opacity-40 "
+            className="absolute h-full w-full bg-zinc-800 dark:bg-white opacity-40"
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
             <div className="flex h-full w-full">
-              <div className="m-auto">Drag and drop your file here to upload file</div>
+              <div className="m-auto text-lg text-white dark:text-black">{t("resources.file-drag-drop-prompt")}</div>
             </div>
           </div>
         )}
