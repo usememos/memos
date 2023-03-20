@@ -95,7 +95,7 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handleDrag = function (e: React.DragEvent<HTMLDivElement>) {
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
