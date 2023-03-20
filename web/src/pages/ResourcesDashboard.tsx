@@ -172,9 +172,7 @@ const ResourcesDashboard = () => {
             />
           </div>
           <div className="w-full flex flex-col justify-start items-start mt-4 mb-6">
-            {ondrag ? (
-              <div className="w-full h-32 flex flex-col justify-center items-center">drop to upload</div>
-            ) : loadingState.isLoading ? (
+            {loadingState.isLoading ? (
               <div className="w-full h-32 flex flex-col justify-center items-center">
                 <p className="w-full text-center text-base my-6 mt-8">{t("resources.fetching-data")}</p>
               </div>
