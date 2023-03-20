@@ -108,28 +108,25 @@ const ResourcesDashboard = () => {
     }
   };
 
-  // triggers when file is dropped
-  const handleDrop = function (e) {
+  const handleDrop = async (e) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       // handleFiles(e.dataTransfer.files);
       console.log(e.dataTransfer.files);
+      for (const file of e.dataTransfer.files) {
+        await resourceStore.createResourceWithBlob(file);
+      }
+      toast.success("文件上传成功!");
     }
   };
 
-  // triggers when file is selected with click
   const handleChange = function (e) {
     e.preventDefault();
     if (e.target.files && e.target.files[0]) {
       // handleFiles(e.target.files);
     }
-  };
-
-  // triggers the input when the button is clicked
-  const onButtonClick = () => {
-    inputRef.current.click();
   };
 
   return (
