@@ -74,6 +74,7 @@ CREATE TABLE resource (
   updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
   filename TEXT NOT NULL DEFAULT '',
   blob BLOB DEFAULT NULL,
+  internal_path TEXT NOT NULL DEFAULT '',
   external_link TEXT NOT NULL DEFAULT '',
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,

@@ -19,12 +19,12 @@ type ChatCompletionChoice struct {
 }
 
 type ChatCompletionResponse struct {
-	Error   interface{}            `json:"error"`
+	Error   any                    `json:"error"`
 	Model   string                 `json:"model"`
 	Choices []ChatCompletionChoice `json:"choices"`
 }
 
-func PostChatCompletion(prompt string, apiKey string, apiHost string) (string, error) {
+func PostChatCompletion(messages []ChatCompletionMessage, apiKey string, apiHost string) (string, error) {
 	if apiHost == "" {
 		apiHost = "https://api.openai.com"
 	}
@@ -33,9 +33,13 @@ func PostChatCompletion(prompt string, apiKey string, apiHost string) (string, e
 		return "", err
 	}
 
-	values := map[string]interface{}{
-		"model":    "gpt-3.5-turbo",
-		"messages": []map[string]string{{"role": "user", "content": prompt}},
+	values := map[string]any{
+		"model":             "gpt-3.5-turbo",
+		"messages":          messages,
+		"max_tokens":        2000,
+		"temperature":       0,
+		"frequency_penalty": 0.0,
+		"presence_penalty":  0.0,
 	}
 	jsonValue, err := json.Marshal(values)
 	if err != nil {

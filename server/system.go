@@ -52,6 +52,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				ExternalURL: "",
 			},
 			StorageServiceID: 0,
+			LocalStoragePath: "",
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -63,7 +64,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				continue
 			}
 
-			var baseValue interface{}
+			var baseValue any
 			err := json.Unmarshal([]byte(systemSetting.Value), &baseValue)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
@@ -86,6 +87,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				systemStatus.CustomizedProfile = customizedProfile
 			} else if systemSetting.Name == api.SystemSettingStorageServiceIDName {
 				systemStatus.StorageServiceID = int(baseValue.(float64))
+			} else if systemSetting.Name == api.SystemSettingLocalStoragePathName {
+				systemStatus.LocalStoragePath = baseValue.(string)
 			}
 		}
 

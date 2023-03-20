@@ -125,7 +125,7 @@ func (s *Store) DeleteStorage(ctx context.Context, delete *api.StorageDelete) er
 
 func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate) (*storageRaw, error) {
 	set := []string{"name", "type", "config"}
-	args := []interface{}{create.Name, create.Type}
+	args := []any{create.Name, create.Type}
 	placeholder := []string{"?", "?", "?"}
 
 	var configBytes []byte
@@ -162,7 +162,7 @@ func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate
 }
 
 func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (*storageRaw, error) {
-	set, args := []string{}, []interface{}{}
+	set, args := []string{}, []any{}
 	if v := patch.Name; v != nil {
 		set, args = append(set, "name = ?"), append(args, *v)
 	}
@@ -213,7 +213,7 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 }
 
 func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) ([]*storageRaw, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
 		where, args = append(where, "id = ?"), append(args, *v)
@@ -269,7 +269,7 @@ func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) 
 }
 
 func deleteStorage(ctx context.Context, tx *sql.Tx, delete *api.StorageDelete) error {
-	where, args := []string{"id = ?"}, []interface{}{delete.ID}
+	where, args := []string{"id = ?"}, []any{delete.ID}
 
 	stmt := `DELETE FROM storage WHERE ` + strings.Join(where, " AND ")
 	result, err := tx.ExecContext(ctx, stmt, args...)

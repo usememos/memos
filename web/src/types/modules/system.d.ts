@@ -28,6 +28,7 @@ interface SystemStatus {
   additionalScript: string;
   customizedProfile: CustomizedProfile;
   storageServiceId: number;
+  localStoragePath: string;
 }
 
 interface SystemSetting {

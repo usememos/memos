@@ -54,7 +54,7 @@ func (db *DB) UpsertMigrationHistory(ctx context.Context, upsert *MigrationHisto
 }
 
 func findMigrationHistoryList(ctx context.Context, tx *sql.Tx, find *MigrationHistoryFind) ([]*MigrationHistory, error) {
-	where, args := []string{"1 = 1"}, []interface{}{}
+	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.Version; v != nil {
 		where, args = append(where, "version = ?"), append(args, *v)
