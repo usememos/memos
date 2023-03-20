@@ -79,7 +79,8 @@
     "no-unused-resources": "无可删除的资源",
     "name": "资源名称",
     "delete-selected-resources": "删除选中资源",
-    "no-files-selected": "没有文件被选中❗"
+    "no-files-selected": "没有文件被选中❗",
+    "file-uploaded": "文件上传成功"
   },
   "archived": {
     "archived-memos": "已归档的 Memo",

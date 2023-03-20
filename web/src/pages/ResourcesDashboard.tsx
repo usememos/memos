@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
@@ -22,8 +22,6 @@ const ResourcesDashboard = () => {
   const [queryText, setQueryText] = useState<string>("");
 
   const [dragActive, setDragActive] = useState(false);
-  // ref
-  const inputRef = useRef(null);
 
   useEffect(() => {
     resourceStore
@@ -113,18 +111,14 @@ const ResourcesDashboard = () => {
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      console.log(e.dataTransfer.files);
-      for (const file of e.dataTransfer.files) {
-        await resourceStore.createResourceWithBlob(file);
-      }
-      toast.success("文件上传成功!");
-      console.log(resources);
+      await resourceStore.createResourcesWithBlob(e.dataTransfer.files);
+      toast.success(t("resources.file-uploaded"));
     }
   };
   console.log(resources);
 
   return (
-    <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
+    <section className="w-full max-w-2xl min-h-full flex`` flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       <div className="relative" onDragEnter={handleDrag}>
         {dragActive && (
