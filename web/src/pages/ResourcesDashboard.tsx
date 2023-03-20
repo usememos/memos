@@ -11,6 +11,7 @@ import { showCommonDialog } from "../components/Dialog/CommonDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
 import MobileHeader from "../components/MobileHeader";
 import Dropdown from "../components/base/Dropdown";
+import ResourceItem from "../components/ResourceItem";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -162,7 +163,8 @@ const ResourcesDashboard = () => {
               }
             >
               {listStyle || (
-                <div className="fields-container">
+                <div className="px-2 py-2 w-full grid grid-cols-7 border-b dark:border-b-zinc-600">
+                  <span>选择</span>
                   <span className="field-text id-text">ID</span>
                   <span className="field-text name-text">{t("resources.name")}</span>
                   <span></span>
@@ -173,14 +175,23 @@ const ResourcesDashboard = () => {
               ) : (
                 resources
                   .filter((res: Resource) => (queryText === "" ? true : res.filename.toLowerCase().includes(queryText.toLowerCase())))
-                  .map((resource) => (
-                    <ResourceCard
-                      key={resource.id}
-                      resource={resource}
-                      handlecheckClick={() => handleCheckBtnClick(resource.id)}
-                      handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-                    ></ResourceCard>
-                  ))
+                  .map((resource) =>
+                    listStyle ? (
+                      <ResourceCard
+                        key={resource.id}
+                        resource={resource}
+                        handlecheckClick={() => handleCheckBtnClick(resource.id)}
+                        handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+                      ></ResourceCard>
+                    ) : (
+                      <ResourceItem
+                        key={resource.id}
+                        resource={resource}
+                        handlecheckClick={() => handleCheckBtnClick(resource.id)}
+                        handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+                      ></ResourceItem>
+                    )
+                  )
               )}
             </div>
           )}
