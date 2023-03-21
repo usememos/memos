@@ -129,14 +129,14 @@ const ResourcesDashboard = () => {
       <div className="relative" onDragEnter={handleDrag}>
         {dragActive && (
           <div
-            className="absolute h-full w-full rounded-xl bg-zinc-800 dark:bg-white opacity-40 z-10"
+            className="absolute h-full w-full rounded-xl bg-zinc-800 dark:bg-white opacity-60 z-10"
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
             onDrop={handleDrop}
           >
             <div className="flex h-full w-full">
-              <div className="m-auto text-lg text-white dark:text-black">{t("resources.file-drag-drop-prompt")}</div>
+              <p className="m-auto text-2xl text-white dark:text-black">{t("resources.file-drag-drop-prompt")}</p>
             </div>
           </div>
         )}
