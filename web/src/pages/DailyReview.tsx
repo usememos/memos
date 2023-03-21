@@ -119,7 +119,10 @@ const DailyReview = () => {
             handleDateStampChange={handleDataPickerChange}
           />
         </div>
-        <div className="w-full h-auto flex flex-col justify-start items-start px-2 sm:px-12 pt-14 pb-8" ref={memosElRef}>
+        <div
+          className="w-full h-auto flex flex-col justify-start items-start px-2 sm:px-12 pt-14 pb-8 bg-white dark:bg-zinc-700"
+          ref={memosElRef}
+        >
           <div className="flex flex-col justify-center items-center mx-auto pb-10 select-none">
             <div className="mx-auto font-bold text-gray-600 dark:text-gray-300 text-center leading-6 mb-2">{currentDate.getFullYear()}</div>
             <div className="flex flex-col justify-center items-center m-auto w-24 h-24 shadow rounded-3xl dark:bg-zinc-800">
