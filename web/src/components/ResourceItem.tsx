@@ -1,6 +1,5 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
-import Dropdown from "./base/Dropdown";
+import ResourceItemDropdown from "./ResourceItemDropdown";
 
 const ResourceItem = ({
   resource,
@@ -12,7 +11,6 @@ const ResourceItem = ({
   handleDeleteResourceBtnClick,
 }: ResourceType) => {
   const [isSelected, setIsSelected] = useState<boolean>(false);
-  const { t } = useTranslation();
 
   const handleSelectBtnClick = () => {
     if (isSelected) {
@@ -33,30 +31,12 @@ const ResourceItem = ({
         {resource.filename}
       </span>
       <div className="w-full flex flex-row justify-between items-center mb-2">
-        <Dropdown
-          actionsClassName="!w-28"
-          actions={
-            <>
-              <button
-                className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                onClick={() => handlePreviewBtnClick(resource)}
-              >
-                {t("resources.preview")}
-              </button>
-              <button
-                className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                onClick={() => handleCopyResourceLinkBtnClick(resource)}
-              >
-                {t("resources.copy-link")}
-              </button>
-              <button
-                className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
-                onClick={() => handleDeleteResourceBtnClick(resource)}
-              >
-                {t("common.delete")}
-              </button>
-            </>
-          }
+        <ResourceItemDropdown
+          resource={resource}
+          handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
+          handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
+          handlePreviewBtnClick={handlePreviewBtnClick}
+          handleRenameBtnClick={handleRenameBtnClick}
         />
       </div>
     </div>
