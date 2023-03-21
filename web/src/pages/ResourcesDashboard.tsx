@@ -113,7 +113,7 @@ const ResourcesDashboard = () => {
       await resourceStore.createResourcesWithBlob(e.dataTransfer.files).then(
         (res) => {
           for (const resource of res) {
-            toast.success(`${resource.filename} ${t("resources.file-uploaded")}`);
+            toast.success(`${resource.filename} ${t("resources.upload-successfully")}`);
           }
         },
         (reason) => {
