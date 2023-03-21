@@ -3,20 +3,20 @@ import ResourceItemDropdown from "./ResourceItemDropdown";
 
 const ResourceItem = ({
   resource,
-  handlecheckClick,
+  handleCheckClick,
   handleUncheckClick,
   handlePreviewBtnClick,
   handleCopyResourceLinkBtnClick,
   handleRenameBtnClick,
   handleDeleteResourceBtnClick,
-}: ResourceType) => {
+}: ResourceItemType) => {
   const [isSelected, setIsSelected] = useState<boolean>(false);
 
   const handleSelectBtnClick = () => {
     if (isSelected) {
       handleUncheckClick();
     } else {
-      handlecheckClick();
+      handleCheckClick();
     }
     setIsSelected(!isSelected);
   };

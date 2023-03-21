@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
@@ -152,7 +152,7 @@ const ResourcesDashboard = () => {
             <ResourceItem
               key={resource.id}
               resource={resource}
-              handlecheckClick={() => handleCheckBtnClick(resource.id)}
+              handleCheckClick={() => handleCheckBtnClick(resource.id)}
               handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
               handleRenameBtnClick={handleRenameBtnClick}
               handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
@@ -163,7 +163,7 @@ const ResourcesDashboard = () => {
             <ResourceCard
               key={resource.id}
               resource={resource}
-              handlecheckClick={() => handleCheckBtnClick(resource.id)}
+              handleCheckClick={() => handleCheckBtnClick(resource.id)}
               handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
               handleRenameBtnClick={handleRenameBtnClick}
               handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}

@@ -1,6 +1,6 @@
 interface ResourceProps {
   resource: Resource;
-  handlecheckClick: () => void;
+  handleCheckClick: () => void;
   handleUncheckClick: () => void;
   handleRenameBtnClick: (resource: Resource) => void;
   handleDeleteResourceBtnClick: (resource: Resource) => void;
@@ -8,4 +8,4 @@ interface ResourceProps {
   handleCopyResourceLinkBtnClick: (resource: Resource) => void;
 }
 
-type ResourceType = ResourceProps;
+type ResourceItemType = ResourceProps;

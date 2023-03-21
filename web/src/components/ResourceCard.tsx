@@ -13,7 +13,7 @@ const ResourceCard = ({
   handleCopyResourceLinkBtnClick,
   handleRenameBtnClick,
   handleDeleteResourceBtnClick,
-}: ResourceType) => {
+}: ResourceItemType) => {
   const [isSelected, setIsSelected] = useState<boolean>(false);
 
   const handleSelectBtnClick = () => {
