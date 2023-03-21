@@ -1,68 +1,22 @@
 import dayjs from "dayjs";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "react-hot-toast";
-import { useResourceStore } from "../store/module";
 import Icon from "./Icon";
-import copy from "copy-to-clipboard";
-import { getResourceUrl } from "../utils/resource";
-import showPreviewImageDialog from "./PreviewImageDialog";
 import Dropdown from "./base/Dropdown";
 import ResourceCover from "./ResourceCover";
-import { showCommonDialog } from "./Dialog/CommonDialog";
-import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
 import "../less/resource-card.less";
 
-interface ResourceProps {
-  resource: Resource;
-  handlecheckClick: () => void;
-  handleUncheckClick: () => void;
-}
-
-const ResourceCard = ({ resource, handlecheckClick, handleUncheckClick }: ResourceProps) => {
+const ResourceCard = ({
+  resource,
+  handlecheckClick,
+  handleUncheckClick,
+  handlePreviewBtnClick,
+  handleCopyResourceLinkBtnClick,
+  handleRenameBtnClick,
+  handleDeleteResourceBtnClick,
+}: ResourceType) => {
   const [isSelected, setIsSelected] = useState<boolean>(false);
-  const resourceStore = useResourceStore();
-  const resources = resourceStore.state.resources;
   const { t } = useTranslation();
-
-  const handleRenameBtnClick = (resource: Resource) => {
-    showChangeResourceFilenameDialog(resource.id, resource.filename);
-  };
-
-  const handleDeleteResourceBtnClick = (resource: Resource) => {
-    let warningText = t("resources.warning-text");
-    if (resource.linkedMemoAmount > 0) {
-      warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
-    }
-
-    showCommonDialog({
-      title: t("resources.delete-resource"),
-      content: warningText,
-      style: "warning",
-      dialogName: "delete-resource-dialog",
-      onConfirm: async () => {
-        await resourceStore.deleteResourceById(resource.id);
-      },
-    });
-  };
-
-  const handlePreviewBtnClick = (resource: Resource) => {
-    const resourceUrl = getResourceUrl(resource);
-    if (resource.type.startsWith("image")) {
-      showPreviewImageDialog(
-        resources.filter((r) => r.type.startsWith("image")).map((r) => getResourceUrl(r)),
-        resources.findIndex((r) => r.id === resource.id)
-      );
-    } else {
-      window.open(resourceUrl);
-    }
-  };
-
-  const handleCopyResourceLinkBtnClick = (resource: Resource) => {
-    const url = getResourceUrl(resource);
-    copy(url);
-    toast.success(t("message.succeed-copy-resource-link"));
-  };
 
   const handleSelectBtnClick = () => {
     if (isSelected) {

@@ -7,11 +7,15 @@ import { useResourceStore } from "../store/module";
 import Icon from "../components/Icon";
 import ResourceCard from "../components/ResourceCard";
 import ResourceSearchBar from "../components/ResourceSearchBar";
-import { showCommonDialog } from "../components/Dialog/CommonDialog";
-import showCreateResourceDialog from "../components/CreateResourceDialog";
 import MobileHeader from "../components/MobileHeader";
 import Dropdown from "../components/base/Dropdown";
 import ResourceItem from "../components/ResourceItem";
+import { showCommonDialog } from "../components/Dialog/CommonDialog";
+import showChangeResourceFilenameDialog from "../components/ChangeResourceFilenameDialog";
+import copy from "copy-to-clipboard";
+import { getResourceUrl } from "../utils/resource";
+import showPreviewImageDialog from "../components/PreviewImageDialog";
+import showCreateResourceDialog from "../components/CreateResourceDialog";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -101,6 +105,45 @@ const ResourcesDashboard = () => {
     setSelectedList([]);
   };
 
+  const handleRenameBtnClick = (resource: Resource) => {
+    showChangeResourceFilenameDialog(resource.id, resource.filename);
+  };
+
+  const handleDeleteResourceBtnClick = (resource: Resource) => {
+    let warningText = t("resources.warning-text");
+    if (resource.linkedMemoAmount > 0) {
+      warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
+    }
+
+    showCommonDialog({
+      title: t("resources.delete-resource"),
+      content: warningText,
+      style: "warning",
+      dialogName: "delete-resource-dialog",
+      onConfirm: async () => {
+        await resourceStore.deleteResourceById(resource.id);
+      },
+    });
+  };
+
+  const handlePreviewBtnClick = (resource: Resource) => {
+    const resourceUrl = getResourceUrl(resource);
+    if (resource.type.startsWith("image")) {
+      showPreviewImageDialog(
+        resources.filter((r) => r.type.startsWith("image")).map((r) => getResourceUrl(r)),
+        resources.findIndex((r) => r.id === resource.id)
+      );
+    } else {
+      window.open(resourceUrl);
+    }
+  };
+
+  const handleCopyResourceLinkBtnClick = (resource: Resource) => {
+    const url = getResourceUrl(resource);
+    copy(url);
+    toast.success(t("message.succeed-copy-resource-link"));
+  };
+
   return (
     <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
@@ -121,20 +164,10 @@ const ResourcesDashboard = () => {
             <Icon.Plus className="w-4 h-auto" />
           </Button>
           <div className="flex">
-            <div
-              className={`rounded-l-lg p-2 ${listStyle ? "bg-gray-200" : "bg-white"}`}
-              onClick={() => {
-                handleStyleChangeBtnClick(true);
-              }}
-            >
+            <div className={`rounded-l-lg p-2 ${listStyle ? "bg-gray-200" : "bg-white"}`} onClick={() => handleStyleChangeBtnClick(true)}>
               <Icon.List />
             </div>
-            <div
-              className={`rounded-r-lg p-2 ${listStyle ? "bg-white" : "bg-gray-200"}`}
-              onClick={() => {
-                handleStyleChangeBtnClick(false);
-              }}
-            >
+            <div className={`rounded-r-lg p-2 ${listStyle ? "bg-white" : "bg-gray-200"}`} onClick={() => handleStyleChangeBtnClick(false)}>
               <Icon.Grid />
             </div>
           </div>
@@ -191,6 +224,10 @@ const ResourcesDashboard = () => {
                         resource={resource}
                         handlecheckClick={() => handleCheckBtnClick(resource.id)}
                         handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+                        handleRenameBtnClick={handleRenameBtnClick}
+                        handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
+                        handlePreviewBtnClick={handlePreviewBtnClick}
+                        handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
                       ></ResourceItem>
                     ) : (
                       <ResourceCard
@@ -198,6 +235,10 @@ const ResourcesDashboard = () => {
                         resource={resource}
                         handlecheckClick={() => handleCheckBtnClick(resource.id)}
                         handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+                        handleRenameBtnClick={handleRenameBtnClick}
+                        handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
+                        handlePreviewBtnClick={handlePreviewBtnClick}
+                        handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
                       ></ResourceCard>
                     )
                   )
