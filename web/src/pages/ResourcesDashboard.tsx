@@ -107,20 +107,24 @@ const ResourcesDashboard = () => {
           <ResourceSearchBar setQuery={setQueryText} />
         </div>
         <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
-          <Button
-            onClick={() => {
-              setListStyle(true);
-            }}
-          >
-            list
-          </Button>
-          <Button
-            onClick={() => {
-              setListStyle(false);
-            }}
-          >
-            block
-          </Button>
+          <div>
+            <div
+              className={listStyle ? "bg-white" : "bg-zinc-100"}
+              onClick={() => {
+                setListStyle(true);
+              }}
+            >
+              list
+            </div>
+            <div
+              className={listStyle ? "bg-zinc-100" : "bg-white"}
+              onClick={() => {
+                setListStyle(false);
+              }}
+            >
+              block
+            </div>
+          </div>
           {isVisiable && (
             <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger">
               <Icon.Trash2 className="w-4 h-auto" />
