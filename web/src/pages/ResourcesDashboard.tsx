@@ -110,13 +110,16 @@ const ResourcesDashboard = () => {
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      await resourceStore.createResourcesWithBlob(e.dataTransfer.files).then((res) => {
-        for(const resource of res){
-          toast.success(`${resource.filename} ${t("resources.file-uploaded")}`);
+      await resourceStore.createResourcesWithBlob(e.dataTransfer.files).then(
+        (res) => {
+          for (const resource of res) {
+            toast.success(`${resource.filename} ${t("resources.file-uploaded")}`);
+          }
+        },
+        (reason) => {
+          toast.error(reason);
         }
-      },(reason)=>{
-        toast.error(reason);
-      });
+      );
     }
   };
 
