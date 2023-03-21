@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
@@ -26,7 +26,6 @@ const ResourcesDashboard = () => {
   const [isVisiable, setIsVisiable] = useState<boolean>(false);
   const [queryText, setQueryText] = useState<string>("");
   const [listStyle, setListStyle] = useState<boolean>(true);
-
   useEffect(() => {
     resourceStore
       .fetchResourceList()
@@ -144,6 +143,38 @@ const ResourcesDashboard = () => {
     toast.success(t("message.succeed-copy-resource-link"));
   };
 
+  const resourceList = useMemo(
+    () =>
+      resources
+        .filter((res: Resource) => (queryText === "" ? true : res.filename.toLowerCase().includes(queryText.toLowerCase())))
+        .map((resource) =>
+          listStyle ? (
+            <ResourceItem
+              key={resource.id}
+              resource={resource}
+              handlecheckClick={() => handleCheckBtnClick(resource.id)}
+              handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+              handleRenameBtnClick={handleRenameBtnClick}
+              handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
+              handlePreviewBtnClick={handlePreviewBtnClick}
+              handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
+            ></ResourceItem>
+          ) : (
+            <ResourceCard
+              key={resource.id}
+              resource={resource}
+              handlecheckClick={() => handleCheckBtnClick(resource.id)}
+              handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+              handleRenameBtnClick={handleRenameBtnClick}
+              handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
+              handlePreviewBtnClick={handlePreviewBtnClick}
+              handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
+            ></ResourceCard>
+          )
+        ),
+    [resources, queryText, listStyle]
+  );
+
   return (
     <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
@@ -215,33 +246,7 @@ const ResourcesDashboard = () => {
               {resources.length === 0 ? (
                 <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
               ) : (
-                resources
-                  .filter((res: Resource) => (queryText === "" ? true : res.filename.toLowerCase().includes(queryText.toLowerCase())))
-                  .map((resource) =>
-                    listStyle ? (
-                      <ResourceItem
-                        key={resource.id}
-                        resource={resource}
-                        handlecheckClick={() => handleCheckBtnClick(resource.id)}
-                        handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-                        handleRenameBtnClick={handleRenameBtnClick}
-                        handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
-                        handlePreviewBtnClick={handlePreviewBtnClick}
-                        handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
-                      ></ResourceItem>
-                    ) : (
-                      <ResourceCard
-                        key={resource.id}
-                        resource={resource}
-                        handlecheckClick={() => handleCheckBtnClick(resource.id)}
-                        handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-                        handleRenameBtnClick={handleRenameBtnClick}
-                        handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
-                        handlePreviewBtnClick={handlePreviewBtnClick}
-                        handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
-                      ></ResourceCard>
-                    )
-                  )
+                resourceList
               )}
             </div>
           )}
