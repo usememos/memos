@@ -96,6 +96,11 @@ const ResourcesDashboard = () => {
     }
   };
 
+  const handleStyleChangeBtnClick = (listStyleValue: boolean) => {
+    setListStyle(listStyleValue);
+    setSelectedList([]);
+  };
+
   return (
     <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
@@ -107,24 +112,6 @@ const ResourcesDashboard = () => {
           <ResourceSearchBar setQuery={setQueryText} />
         </div>
         <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
-          <div>
-            <div
-              className={listStyle ? "bg-white" : "bg-zinc-100"}
-              onClick={() => {
-                setListStyle(true);
-              }}
-            >
-              list
-            </div>
-            <div
-              className={listStyle ? "bg-zinc-100" : "bg-white"}
-              onClick={() => {
-                setListStyle(false);
-              }}
-            >
-              block
-            </div>
-          </div>
           {isVisiable && (
             <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger">
               <Icon.Trash2 className="w-4 h-auto" />
@@ -133,6 +120,24 @@ const ResourcesDashboard = () => {
           <Button onClick={() => showCreateResourceDialog({})}>
             <Icon.Plus className="w-4 h-auto" />
           </Button>
+          <div className="flex">
+            <div
+              className={`rounded-l-lg p-2 ${listStyle ? "bg-gray-200" : "bg-white"}`}
+              onClick={() => {
+                handleStyleChangeBtnClick(true);
+              }}
+            >
+              <Icon.List />
+            </div>
+            <div
+              className={`rounded-r-lg p-2 ${listStyle ? "bg-white" : "bg-gray-200"}`}
+              onClick={() => {
+                handleStyleChangeBtnClick(false);
+              }}
+            >
+              <Icon.Grid />
+            </div>
+          </div>
           <Dropdown
             className="drop-shadow-none"
             actionsClassName="!w-28 rounded-lg drop-shadow-md	dark:bg-zinc-800"
@@ -163,10 +168,10 @@ const ResourcesDashboard = () => {
           ) : (
             <div
               className={
-                listStyle ? "w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6" : "flex flex-col justify-start items-start w-full"
+                listStyle ? "flex flex-col justify-start items-start w-full" : "w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6"
               }
             >
-              {listStyle || (
+              {listStyle && (
                 <div className="px-2 py-2 w-full grid grid-cols-7 border-b dark:border-b-zinc-600">
                   <span>选择</span>
                   <span className="field-text id-text">ID</span>
@@ -181,19 +186,19 @@ const ResourcesDashboard = () => {
                   .filter((res: Resource) => (queryText === "" ? true : res.filename.toLowerCase().includes(queryText.toLowerCase())))
                   .map((resource) =>
                     listStyle ? (
-                      <ResourceCard
-                        key={resource.id}
-                        resource={resource}
-                        handlecheckClick={() => handleCheckBtnClick(resource.id)}
-                        handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-                      ></ResourceCard>
-                    ) : (
                       <ResourceItem
                         key={resource.id}
                         resource={resource}
                         handlecheckClick={() => handleCheckBtnClick(resource.id)}
                         handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
                       ></ResourceItem>
+                    ) : (
+                      <ResourceCard
+                        key={resource.id}
+                        resource={resource}
+                        handlecheckClick={() => handleCheckBtnClick(resource.id)}
+                        handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+                      ></ResourceCard>
                     )
                   )
               )}

@@ -1,17 +1,13 @@
-import dayjs from "dayjs";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 import { useResourceStore } from "../store/module";
-import Icon from "./Icon";
 import copy from "copy-to-clipboard";
 import { getResourceUrl } from "../utils/resource";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import Dropdown from "./base/Dropdown";
-import ResourceCover from "./ResourceCover";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
-import "../less/resource-card.less";
 
 interface ResourceProps {
   resource: Resource;
@@ -75,11 +71,11 @@ const ResourceItem = ({ resource, handlecheckClick, handleUncheckClick }: Resour
 
   return (
     <div key={resource.id} className="px-2 py-2 w-full grid grid-cols-7">
-      <span className="w-full truncate text-base pr-2 last:pr-0 col-span-1 flex justify-center">
+      <span className="w-full m-auto truncate col-span-1  justify-center">
         <input type="checkbox" onClick={handleSelectBtnClick}></input>
       </span>
-      <span className="w-full truncate text-base pr-2 last:pr-0 col-span-1">{resource.id}</span>
-      <span className="w-full truncate text-base pr-2 last:pr-0 col-span-4" onClick={() => handleRenameBtnClick(resource)}>
+      <span className="w-full m-auto truncate text-base pr-2 last:pr-0 col-span-1">{resource.id}</span>
+      <span className="w-full m-auto truncate text-base pr-2 last:pr-0 col-span-4" onClick={() => handleRenameBtnClick(resource)}>
         {resource.filename}
       </span>
       <div className="w-full flex flex-row justify-between items-center mb-2">
