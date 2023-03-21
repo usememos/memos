@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useEffect, useState, DragEvent } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
@@ -95,7 +95,7 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handleDrag = (e: DragEvent<HTMLDivElement>) => {
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     if (e.type === "dragenter" || e.type === "dragover") {
@@ -105,7 +105,7 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handleDrop = async (e: DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
