@@ -126,7 +126,7 @@ const ResourcesDashboard = () => {
       <div className="relative" onDragEnter={handleDrag}>
         {dragActive && (
           <div
-            className="absolute h-full w-full rounded-xl bg-zinc-800 dark:bg-white opacity-40"
+            className="absolute h-full w-full rounded-xl bg-zinc-800 dark:bg-white opacity-40 z-10"
             onDragEnter={handleDrag}
             onDragLeave={handleDrag}
             onDragOver={handleDrag}
