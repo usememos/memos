@@ -1,10 +1,10 @@
+import React from "react";
 import { useTranslation } from "react-i18next";
 import Dropdown from "./base/Dropdown";
 import Icon from "./Icon";
 
 interface ResourceItemDropdown {
   resource: Resource;
-
   handleRenameBtnClick: (resource: Resource) => void;
   handleDeleteResourceBtnClick: (resource: Resource) => void;
   handlePreviewBtnClick: (resource: Resource) => void;
@@ -56,4 +56,4 @@ const ResourceItemDropdown = ({
   );
 };
 
-export default ResourceItemDropdown;
+export default React.memo(ResourceItemDropdown);
