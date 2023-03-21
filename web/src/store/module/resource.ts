@@ -48,12 +48,11 @@ export const useResourceStore = () => {
       return resource;
     },
     async createResourcesWithBlob(files: FileList): Promise<Array<Resource>> {
-      const resourceList = state.resources;
       let newResourceList: Array<Resource> = [];
       for (const file of files) {
         const { name: filename, size } = file;
         if (size > MAX_FILE_SIZE) {
-          return Promise.reject("overload max size: 32MB");
+          return Promise.reject(`${filename} overload max size: 32MB`);
         }
 
         const formData = new FormData();
@@ -62,6 +61,7 @@ export const useResourceStore = () => {
         const resource = convertResponseModelResource(data);
         newResourceList = [resource, ...newResourceList];
       }
+      const resourceList = state.resources;
       store.dispatch(setResources([...newResourceList, ...resourceList]));
       return newResourceList;
     },
