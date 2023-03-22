@@ -286,7 +286,6 @@ const ResourcesDashboard = () => {
                 <p className="w-full text-center text-base my-6 mt-8">{t("resources.fetching-data")}</p>
               </div>
             ) : (
-<<<<<<< HEAD
               <div
                 className={
                   listStyle
@@ -306,22 +305,6 @@ const ResourcesDashboard = () => {
                   <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
                 ) : (
                   resourceList
-=======
-              <div className="w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6">
-                {resources.length === 0 ? (
-                  <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
-                ) : (
-                  resources
-                    .filter((res: Resource) => (queryText === "" ? true : res.filename.toLowerCase().includes(queryText.toLowerCase())))
-                    .map((resource) => (
-                      <ResourceCard
-                        key={resource.id}
-                        resource={resource}
-                        handlecheckClick={() => handleCheckBtnClick(resource.id)}
-                        handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-                      ></ResourceCard>
-                    ))
->>>>>>> upsteam/main
                 )}
               </div>
             )}
