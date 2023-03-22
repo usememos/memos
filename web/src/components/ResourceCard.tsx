@@ -7,7 +7,7 @@ import ResourceItemDropdown from "./ResourceItemDropdown";
 
 const ResourceCard = ({
   resource,
-  handlecheckClick,
+  handleCheckClick,
   handleUncheckClick,
   handlePreviewBtnClick,
   handleCopyResourceLinkBtnClick,
@@ -20,7 +20,7 @@ const ResourceCard = ({
     if (isSelected) {
       handleUncheckClick();
     } else {
-      handlecheckClick();
+      handleCheckClick();
     }
     setIsSelected(!isSelected);
   };

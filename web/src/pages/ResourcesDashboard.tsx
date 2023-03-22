@@ -16,6 +16,7 @@ import copy from "copy-to-clipboard";
 import { getResourceUrl } from "../utils/resource";
 import showPreviewImageDialog from "../components/PreviewImageDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
+import useListStyle from "../hooks/useListStyle";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -25,7 +26,7 @@ const ResourcesDashboard = () => {
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [queryText, setQueryText] = useState<string>("");
-  const [listStyle, setListStyle] = useState<boolean>(true);
+  const { listStyle, setToListStyle, setToTableStyle } = useListStyle();
   const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
@@ -102,7 +103,11 @@ const ResourcesDashboard = () => {
   };
 
   const handleStyleChangeBtnClick = (listStyleValue: boolean) => {
-    setListStyle(listStyleValue);
+    if (listStyleValue) {
+      setToListStyle();
+    } else {
+      setToTableStyle();
+    }
     setSelectedList([]);
   };
 
