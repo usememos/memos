@@ -5,6 +5,7 @@ import Dropdown from "./base/Dropdown";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import UserAvatar from "./UserAvatar";
 import showSettingDialog from "./SettingDialog";
+import Icon from "./Icon";
 
 const UserBanner = () => {
   const { t } = useTranslation();
@@ -51,25 +52,32 @@ const UserBanner = () => {
             {!userStore.isVisitorMode() && (
               <>
                 <button
-                  className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                  className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                   onClick={handleMyAccountClick}
                 >
-                  <span className="mr-1">🤠</span> {t("setting.my-account")}
+                  <Icon.User className="w-5 h-auto mr-2 opacity-80" /> {t("setting.my-account")}
                 </button>
+                <a
+                  className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                  href={`/u/${user?.id}/rss.xml`}
+                  target="_blank"
+                >
+                  <Icon.Rss className="w-5 h-auto mr-2 opacity-80" /> RSS
+                </a>
               </>
             )}
             <button
-              className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+              className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
               onClick={handleAboutBtnClick}
             >
-              <span className="mr-1">🏂</span> {t("common.about")}
+              <Icon.Info className="w-5 h-auto mr-2 opacity-80" /> {t("common.about")}
             </button>
             {!userStore.isVisitorMode() && (
               <button
-                className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
+                className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                 onClick={handleSignOutBtnClick}
               >
-                <span className="mr-1">👋</span> {t("common.sign-out")}
+                <Icon.LogOut className="w-5 h-auto mr-2 opacity-80" /> {t("common.sign-out")}
               </button>
             )}
           </>
