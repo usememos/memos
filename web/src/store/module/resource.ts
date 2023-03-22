@@ -47,6 +47,24 @@ export const useResourceStore = () => {
       store.dispatch(setResources([resource, ...resourceList]));
       return resource;
     },
+    async createResourcesWithBlob(files: FileList): Promise<Array<Resource>> {
+      let newResourceList: Array<Resource> = [];
+      for (const file of files) {
+        const { name: filename, size } = file;
+        if (size > MAX_FILE_SIZE) {
+          return Promise.reject(`${filename} overload max size: 32MB`);
+        }
+
+        const formData = new FormData();
+        formData.append("file", file, filename);
+        const { data } = (await api.createResourceWithBlob(formData)).data;
+        const resource = convertResponseModelResource(data);
+        newResourceList = [resource, ...newResourceList];
+      }
+      const resourceList = state.resources;
+      store.dispatch(setResources([...newResourceList, ...resourceList]));
+      return newResourceList;
+    },
     async deleteResourceById(id: ResourceId) {
       await api.deleteResourceById(id);
       store.dispatch(deleteResource(id));

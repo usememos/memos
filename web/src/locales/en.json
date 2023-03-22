@@ -79,7 +79,9 @@
     "no-unused-resources": "No unused resources",
     "name": "Name",
     "delete-selected-resources": "Delete Selected Resources",
-    "no-files-selected": "No files selected❗"
+    "no-files-selected": "No files selected❗",
+    "upload-successfully": "Upload successfully",
+    "file-drag-drop-prompt": "Drag and drop your file here to upload file"
   },
   "archived": {
     "archived-memos": "Archived Memos",
