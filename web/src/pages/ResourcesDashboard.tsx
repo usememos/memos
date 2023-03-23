@@ -245,7 +245,10 @@ const ResourcesDashboard = () => {
               <Icon.Plus className="w-4 h-auto" />
             </Button>
             <div className="flex">
-              <div className={`rounded-l-lg p-2 ${listStyle ? "bg-gray-200 dark:bg-zinc-800" : "bg-white bg-zinc-700"}`} onClick={() => handleStyleChangeBtnClick(true)}>
+              <div
+                className={`rounded-l-lg p-2 ${listStyle ? "bg-gray-200 dark:bg-zinc-800" : "bg-white bg-zinc-700"}`}
+                onClick={() => handleStyleChangeBtnClick(true)}
+              >
                 <Icon.List />
               </div>
               <div
