@@ -26,10 +26,7 @@ const ResourcesDashboard = () => {
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [queryText, setQueryText] = useState<string>("");
-<<<<<<< HEAD
   const { listStyle, setToListStyle, setToTableStyle } = useListStyle();
-=======
->>>>>>> upsteam/main
   const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
