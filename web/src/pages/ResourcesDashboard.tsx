@@ -292,7 +292,7 @@ const ResourcesDashboard = () => {
               >
                 {listStyle && (
                   <div className="px-2 py-2 w-full grid grid-cols-7 border-b dark:border-b-zinc-600">
-                    <span>选择</span>
+                    <span>{t("resources.select")}</span>
                     <span className="field-text id-text">ID</span>
                     <span className="field-text name-text">{t("resources.name")}</span>
                     <span></span>
