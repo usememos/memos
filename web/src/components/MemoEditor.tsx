@@ -7,6 +7,7 @@ import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
 import { useEditorStore, useGlobalStore, useFilterStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "../store/module";
 import * as storage from "../helpers/storage";
+import * as api from "../helpers/api";
 import Icon from "./Icon";
 import Selector from "./base/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
@@ -46,6 +47,7 @@ const MemoEditor = () => {
     state: { systemStatus },
   } = useGlobalStore();
 
+  const [isAIWriting, setIsAIWriting] = useState<boolean>(false);
   const [state, setState] = useState<State>({
     fullscreen: false,
     isUploadingResource: false,
@@ -387,6 +389,39 @@ const MemoEditor = () => {
     [state.fullscreen, i18n.language]
   );
 
+  const handleContinueWritingButtonClick = async () => {
+    const currentContent = editorRef.current?.getContent() ?? "";
+    if (currentContent === "") {
+      toast.error("Please write something first");
+      return;
+    }
+
+    setIsAIWriting(true);
+    try {
+      const {
+        data: { data: answer },
+      } = await api.postChatCompletion([
+        {
+          role: "system",
+          content:
+            "You are a continuation writing robot, the user will send a piece of content, you need to continue to write this content, and then reply to your continuation content. Be careful not to write more than 50 characters, users will get impatient.",
+        },
+        { role: "user", content: currentContent },
+      ]);
+
+      if (answer) {
+        setIsAIWriting(false);
+        editorRef.current?.insertText(answer);
+      } else {
+        toast.error("AI writing error");
+        setIsAIWriting(false);
+      }
+    } catch (error) {
+      toast.error("AI writing error");
+      setIsAIWriting(false);
+    }
+  };
+
   return (
     <div
       className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
@@ -441,6 +476,15 @@ const MemoEditor = () => {
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>
+          {isAIWriting ? (
+            <div className="action-btn">
+              <Icon.Loader className="icon-img animate-spin" />
+            </div>
+          ) : (
+            <button className="action-btn" onClick={handleContinueWritingButtonClick}>
+              <Icon.Bot className="icon-img" />
+            </button>
+          )}
         </div>
       </div>
       {editorState.resourceList && editorState.resourceList.length > 0 && (
