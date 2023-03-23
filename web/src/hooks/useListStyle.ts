@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 const useListStyle = () => {
-  const initialState = localStorage.getItem("listStyle") === "true" ? true : false;
+  const initialState = localStorage.getItem("listStyle") === "true";
   const [listStyle, setListStyle] = useState(initialState);
 
   useEffect(() => {
