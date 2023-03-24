@@ -2,7 +2,7 @@
 
 written by [AJ](https://memos.ajstephens.website/) (also a noob)
 
-<img height="64px" src="https://raw.githubusercontent.com/usememos/memos/main/assets/logo-full.webp" alt="✍️ memos" />
+<img height="64px" src="https://usememos.com/logo-full.png" alt="✍️ memos" />
 
 [Live Demo](https://demo.usememos.com) • [Official Website](https://usememos.com) • [Source Code](https://github.com/usememos/memos)
 
