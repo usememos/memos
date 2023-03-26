@@ -244,20 +244,6 @@ const ResourcesDashboard = () => {
             <Button onClick={() => showCreateResourceDialog({})}>
               <Icon.Plus className="w-4 h-auto" />
             </Button>
-            <div className="flex">
-              <div
-                className={`rounded-l-lg p-2 ${listStyle ? "bg-gray-200 dark:bg-zinc-800" : "bg-white bg-zinc-700"}`}
-                onClick={() => handleStyleChangeBtnClick(true)}
-              >
-                <Icon.List />
-              </div>
-              <div
-                className={`rounded-r-lg p-2 ${listStyle ? "bg-white bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800"}`}
-                onClick={() => handleStyleChangeBtnClick(false)}
-              >
-                <Icon.Grid />
-              </div>
-            </div>
             <Dropdown
               className="drop-shadow-none"
               actionsClassName="!w-28 rounded-lg drop-shadow-md	dark:bg-zinc-800"
@@ -279,6 +265,24 @@ const ResourcesDashboard = () => {
                 </>
               }
             />
+            <div className="flex rounded-lg cursor-pointer h-8 overflow-clip border dark:border-zinc-600">
+              <div
+                className={`flex justify-center items-center px-3 ${
+                  !listStyle ? "bg-white dark:bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800 opacity-60"
+                }`}
+                onClick={() => handleStyleChangeBtnClick(false)}
+              >
+                <Icon.Grid className="w-4 h-auto opacity-80" />
+              </div>
+              <div
+                className={`flex justify-center items-center px-3 ${
+                  listStyle ? "bg-white dark:bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800 opacity-60"
+                }`}
+                onClick={() => handleStyleChangeBtnClick(true)}
+              >
+                <Icon.List className="w-4 h-auto opacity-80" />
+              </div>
+            </div>
           </div>
           <div className="w-full flex flex-col justify-start items-start mt-4 mb-6">
             {loadingState.isLoading ? (
