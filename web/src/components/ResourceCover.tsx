@@ -7,7 +7,6 @@ interface ResourceCoverProps {
 }
 
 const getResourceType = (resource: Resource) => {
-  console.log(resource.type);
   if (resource.type.startsWith("image")) {
     return "image/*";
   } else if (resource.type.startsWith("video")) {
