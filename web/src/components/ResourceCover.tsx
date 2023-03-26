@@ -19,10 +19,14 @@ const getResourceType = (resource: Resource) => {
     return "application/epub+zip";
   } else if (resource.type.startsWith("application/pdf")) {
     return "application/pdf";
-  } else if (resource.type.startsWith("application/vnd.openxmlformats-officedocument.wordprocessingml.document")) {
-    return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-  } else if (resource.type.startsWith("application/msword")) {
+  } else if (resource.type.includes("word")) {
     return "application/msword";
+  } else if (resource.type.includes("excel")) {
+    return "application/msexcel";
+  } else if (resource.type.startsWith("application/zip")) {
+    return "application/zip";
+  } else if (resource.type.startsWith("application/x-java-archive")) {
+    return "application/x-java-archive";
   } else {
     return "application/octet-stream";
   }
@@ -43,10 +47,14 @@ const ResourceCover = ({ resource }: ResourceCoverProps) => {
       return <Icon.Book className="resource-cover" />;
     case "application/pdf":
       return <Icon.Book className="resource-cover" />;
-    case "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-      return <Icon.FileEdit className="resource-cover" />;
     case "application/msword":
       return <Icon.FileEdit className="resource-cover" />;
+    case "application/msexcel":
+      return <Icon.SheetIcon className="resource-cover" />;
+    case "application/zip":
+      return <Icon.FileArchiveIcon className="resource-cover" />;
+    case "application/x-java-archive":
+      return <Icon.BinaryIcon className="resource-cover" />;
     default:
       return <Icon.File className="resource-cover" />;
   }
