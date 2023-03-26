@@ -26,7 +26,7 @@ const ResourcesDashboard = () => {
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [queryText, setQueryText] = useState<string>("");
-  const { listStyle, setToListStyle, setToTableStyle } = useListStyle();
+  const { listStyle, setToTableStyle, setToGridStyle } = useListStyle();
   const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
@@ -104,9 +104,9 @@ const ResourcesDashboard = () => {
 
   const handleStyleChangeBtnClick = (listStyleValue: boolean) => {
     if (listStyleValue) {
-      setToListStyle();
-    } else {
       setToTableStyle();
+    } else {
+      setToGridStyle();
     }
     setSelectedList([]);
   };
