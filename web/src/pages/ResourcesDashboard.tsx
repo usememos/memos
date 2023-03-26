@@ -305,7 +305,7 @@ const ResourcesDashboard = () => {
                     <span></span>
                   </div>
                 )}
-                {resources.length === 0 ? (
+                {resourceList.length === 0 ? (
                   <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
                 ) : (
                   resourceList
