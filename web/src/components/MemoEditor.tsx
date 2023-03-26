@@ -474,8 +474,8 @@ const MemoEditor = () => {
             disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource || state.isRequesting}
             onClick={handleSaveBtnClick}
           >
+            <img className="w-5 -ml-0.5 mr-0.5 h-auto" src="/logo.png" />
             {t("editor.save")}
-            <img className="icon-img w-4 h-auto" src="/logo.png" />
           </button>
         </div>
       </div>
