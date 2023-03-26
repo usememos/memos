@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "../hooks/useLoading";
@@ -7,10 +7,16 @@ import { useResourceStore } from "../store/module";
 import Icon from "../components/Icon";
 import ResourceCard from "../components/ResourceCard";
 import ResourceSearchBar from "../components/ResourceSearchBar";
-import { showCommonDialog } from "../components/Dialog/CommonDialog";
-import showCreateResourceDialog from "../components/CreateResourceDialog";
 import MobileHeader from "../components/MobileHeader";
 import Dropdown from "../components/base/Dropdown";
+import ResourceItem from "../components/ResourceItem";
+import { showCommonDialog } from "../components/Dialog/CommonDialog";
+import showChangeResourceFilenameDialog from "../components/ChangeResourceFilenameDialog";
+import copy from "copy-to-clipboard";
+import { getResourceUrl } from "../utils/resource";
+import showPreviewImageDialog from "../components/PreviewImageDialog";
+import showCreateResourceDialog from "../components/CreateResourceDialog";
+import useListStyle from "../hooks/useListStyle";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -20,6 +26,7 @@ const ResourcesDashboard = () => {
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
   const [isVisible, setIsVisible] = useState<boolean>(false);
   const [queryText, setQueryText] = useState<string>("");
+  const { listStyle, setToTableStyle, setToGridStyle } = useListStyle();
   const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
@@ -95,6 +102,86 @@ const ResourcesDashboard = () => {
     }
   };
 
+  const handleStyleChangeBtnClick = (listStyleValue: boolean) => {
+    if (listStyleValue) {
+      setToTableStyle();
+    } else {
+      setToGridStyle();
+    }
+    setSelectedList([]);
+  };
+
+  const handleRenameBtnClick = (resource: Resource) => {
+    showChangeResourceFilenameDialog(resource.id, resource.filename);
+  };
+
+  const handleDeleteResourceBtnClick = (resource: Resource) => {
+    let warningText = t("resources.warning-text");
+    if (resource.linkedMemoAmount > 0) {
+      warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
+    }
+
+    showCommonDialog({
+      title: t("resources.delete-resource"),
+      content: warningText,
+      style: "warning",
+      dialogName: "delete-resource-dialog",
+      onConfirm: async () => {
+        await resourceStore.deleteResourceById(resource.id);
+      },
+    });
+  };
+
+  const handlePreviewBtnClick = (resource: Resource) => {
+    const resourceUrl = getResourceUrl(resource);
+    if (resource.type.startsWith("image")) {
+      showPreviewImageDialog(
+        resources.filter((r) => r.type.startsWith("image")).map((r) => getResourceUrl(r)),
+        resources.findIndex((r) => r.id === resource.id)
+      );
+    } else {
+      window.open(resourceUrl);
+    }
+  };
+
+  const handleCopyResourceLinkBtnClick = (resource: Resource) => {
+    const url = getResourceUrl(resource);
+    copy(url);
+    toast.success(t("message.succeed-copy-resource-link"));
+  };
+
+  const resourceList = useMemo(
+    () =>
+      resources
+        .filter((res: Resource) => (queryText === "" ? true : res.filename.toLowerCase().includes(queryText.toLowerCase())))
+        .map((resource) =>
+          listStyle ? (
+            <ResourceItem
+              key={resource.id}
+              resource={resource}
+              handleCheckClick={() => handleCheckBtnClick(resource.id)}
+              handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+              handleRenameBtnClick={handleRenameBtnClick}
+              handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
+              handlePreviewBtnClick={handlePreviewBtnClick}
+              handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
+            ></ResourceItem>
+          ) : (
+            <ResourceCard
+              key={resource.id}
+              resource={resource}
+              handleCheckClick={() => handleCheckBtnClick(resource.id)}
+              handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
+              handleRenameBtnClick={handleRenameBtnClick}
+              handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
+              handlePreviewBtnClick={handlePreviewBtnClick}
+              handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
+            ></ResourceCard>
+          )
+        ),
+    [resources, queryText, listStyle]
+  );
+
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.stopPropagation();
@@ -157,6 +244,20 @@ const ResourcesDashboard = () => {
             <Button onClick={() => showCreateResourceDialog({})}>
               <Icon.Plus className="w-4 h-auto" />
             </Button>
+            <div className="flex">
+              <div
+                className={`rounded-l-lg p-2 ${listStyle ? "bg-gray-200 dark:bg-zinc-800" : "bg-white bg-zinc-700"}`}
+                onClick={() => handleStyleChangeBtnClick(true)}
+              >
+                <Icon.List />
+              </div>
+              <div
+                className={`rounded-r-lg p-2 ${listStyle ? "bg-white bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800"}`}
+                onClick={() => handleStyleChangeBtnClick(false)}
+              >
+                <Icon.Grid />
+              </div>
+            </div>
             <Dropdown
               className="drop-shadow-none"
               actionsClassName="!w-28 rounded-lg drop-shadow-md	dark:bg-zinc-800"
@@ -185,20 +286,25 @@ const ResourcesDashboard = () => {
                 <p className="w-full text-center text-base my-6 mt-8">{t("resources.fetching-data")}</p>
               </div>
             ) : (
-              <div className="w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6">
+              <div
+                className={
+                  listStyle
+                    ? "flex flex-col justify-start items-start w-full"
+                    : "w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6"
+                }
+              >
+                {listStyle && (
+                  <div className="px-2 py-2 w-full grid grid-cols-7 border-b dark:border-b-zinc-600">
+                    <span>{t("resources.select")}</span>
+                    <span className="field-text id-text">ID</span>
+                    <span className="field-text name-text">{t("resources.name")}</span>
+                    <span></span>
+                  </div>
+                )}
                 {resources.length === 0 ? (
                   <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
                 ) : (
-                  resources
-                    .filter((res: Resource) => (queryText === "" ? true : res.filename.toLowerCase().includes(queryText.toLowerCase())))
-                    .map((resource) => (
-                      <ResourceCard
-                        key={resource.id}
-                        resource={resource}
-                        handlecheckClick={() => handleCheckBtnClick(resource.id)}
-                        handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-                      ></ResourceCard>
-                    ))
+                  resourceList
                 )}
               </div>
             )}
