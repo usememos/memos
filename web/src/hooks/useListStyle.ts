@@ -1,19 +1,15 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const useListStyle = () => {
-  const initialState = localStorage.getItem("listStyle") === "true";
-  const [listStyle, setListStyle] = useState(initialState);
+  // true is Table Style, false is Grid Style
+  const [listStyle, setListStyle] = useState(false);
 
-  useEffect(() => {
-    // storing input name
-    localStorage.setItem("listStyle", JSON.stringify(listStyle));
-  }, [listStyle]);
   return {
-    listStyle,
-    setToListStyle: () => {
+    listStyle: listStyle,
+    setToTableStyle: () => {
       setListStyle(true);
     },
-    setToTableStyle: () => {
+    setToGridStyle: () => {
       setListStyle(false);
     },
   };
