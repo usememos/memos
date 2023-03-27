@@ -7,12 +7,16 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/setup"
+	"github.com/usememos/memos/store"
+	"github.com/usememos/memos/store/db"
 )
 
 const (
@@ -69,6 +73,40 @@ var (
 			<-ctx.Done()
 		},
 	}
+
+	setupCmd = &cobra.Command{
+		Use:   "setup",
+		Short: "Make initial setup for memos",
+		Run: func(cmd *cobra.Command, _ []string) {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+
+			hostUsername, err := cmd.Flags().GetString(setupCmdFlagHostUsername)
+			if err != nil {
+				fmt.Printf("failed to get owner username, error: %+v\n", err)
+				return
+			}
+
+			hostPassword, err := cmd.Flags().GetString(setupCmdFlagHostPassword)
+			if err != nil {
+				fmt.Printf("failed to get owner password, error: %+v\n", err)
+				return
+			}
+
+			db := db.NewDB(profile)
+			if err := db.Open(ctx); err != nil {
+				fmt.Printf("failed to open db, error: %+v\n", err)
+				return
+			}
+
+			st := store.New(db.DBInstance, profile)
+
+			if err := setup.Execute(ctx, st, hostUsername, hostPassword); err != nil {
+				fmt.Printf("failed to setup, error: %+v\n", err)
+				return
+			}
+		},
+	}
 )
 
 func Execute() error {
@@ -98,6 +136,11 @@ func init() {
 	viper.SetDefault("mode", "demo")
 	viper.SetDefault("port", 8081)
 	viper.SetEnvPrefix("memos")
+
+	setupCmd.Flags().String(setupCmdFlagHostUsername, "", "Owner username")
+	setupCmd.Flags().String(setupCmdFlagHostPassword, "", "Owner password")
+
+	rootCmd.AddCommand(setupCmd)
 }
 
 func initConfig() {
@@ -117,3 +160,8 @@ func initConfig() {
 	println("version:", profile.Version)
 	println("---")
 }
+
+const (
+	setupCmdFlagHostUsername = "host-username"
+	setupCmdFlagHostPassword = "host-password"
+)
