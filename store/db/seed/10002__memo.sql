@@ -36,7 +36,10 @@ INSERT INTO
 VALUES
   (
     1003,
-    "**[star-history.com](https://star-history.com/)**: The missing GitHub star history graph of GitHub repos.
+    "**[SQL Chat](https://www.sqlchat.ai)**: Chat-based SQL Client
+![](https://www.sqlchat.ai/chat-logo-and-text.webp)
+
+**[star-history.com](https://star-history.com)**: The missing GitHub star history graph of GitHub repos.
 ![](https://api.star-history.com/svg?repos=usememos/memos&type=Date)",
     101,
     'PUBLIC'
