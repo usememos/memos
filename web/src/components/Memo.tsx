@@ -205,7 +205,7 @@ const Memo: React.FC<Props> = (props: Props) => {
               className={`status-text ${memo.visibility.toLocaleLowerCase()}`}
               onClick={() => handleMemoVisibilityClick(memo.visibility)}
             >
-              {memo.visibility}
+              {t(`visibility.${memo.visibility}`)}
             </span>
           )}
         </div>
@@ -237,7 +237,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                   {t("memo.view-detail")}
                 </span>
                 <span className="btn" onClick={handleShowEmbedMemoDialog}>
-                  Embed memo
+                  {t("memo.embed")}
                 </span>
                 <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
                   {t("common.archive")}

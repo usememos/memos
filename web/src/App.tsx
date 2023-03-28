@@ -8,6 +8,7 @@ import { useGlobalStore } from "./store/module";
 import * as storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import Loading from "./pages/Loading";
+import dayjs from "dayjs";
 
 const App = () => {
   const { i18n } = useTranslation();
@@ -58,6 +59,7 @@ const App = () => {
   useEffect(() => {
     document.documentElement.setAttribute("lang", locale);
     i18n.changeLanguage(locale);
+    dayjs.locale(locale);
     storage.set({
       locale: locale,
     });
