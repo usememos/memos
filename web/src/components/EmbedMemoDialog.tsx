@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import copy from "copy-to-clipboard";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 interface Props extends DialogProps {
   memoId: MemoId;

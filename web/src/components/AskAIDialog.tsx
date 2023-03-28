@@ -8,7 +8,7 @@ import { useMessageStore } from "../store/zustand/message";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import showSettingDialog from "./SettingDialog";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 type Props = DialogProps;
 

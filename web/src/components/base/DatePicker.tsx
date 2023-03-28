@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { DAILY_TIMESTAMP } from "../../helpers/consts";
 import Icon from "../Icon";
 import "../../less/common/date-picker.less";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 interface DatePickerProps {
   className?: string;

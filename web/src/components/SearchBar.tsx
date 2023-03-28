@@ -3,7 +3,7 @@ import useDebounce from "../hooks/useDebounce";
 import { useFilterStore, useDialogStore, useLayoutStore } from "../store/module";
 import { resolution } from "../utils/layout";
 import Icon from "./Icon";
-import { useTranslation } from 'react-i18next';
+import { useTranslation } from "react-i18next";
 
 const SearchBar = () => {
   const { t } = useTranslation();
