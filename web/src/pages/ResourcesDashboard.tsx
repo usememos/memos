@@ -17,6 +17,7 @@ import { getResourceUrl } from "../utils/resource";
 import showPreviewImageDialog from "../components/PreviewImageDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
 import useListStyle from "../hooks/useListStyle";
+import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -28,10 +29,11 @@ const ResourcesDashboard = () => {
   const [queryText, setQueryText] = useState<string>("");
   const { listStyle, setToTableStyle, setToGridStyle } = useListStyle();
   const [dragActive, setDragActive] = useState(false);
+  const [isComplete, setIsComplete] = useState<boolean>(false);
 
   useEffect(() => {
     resourceStore
-      .fetchResourceList()
+      .fetchResourceListWithLimit(DEFAULT_MEMO_LIMIT)
       .catch((error) => {
         console.error(error);
         toast.error(error.response.data.message);
@@ -150,6 +152,43 @@ const ResourcesDashboard = () => {
     toast.success(t("message.succeed-copy-resource-link"));
   };
 
+  const handleMoreResourceBtnClick = async () => {
+    try {
+      const fetchedResource = await resourceStore.fetchResourceListWithLimit(DEFAULT_MEMO_LIMIT, resources.length);
+      if (fetchedResource.length < DEFAULT_MEMO_LIMIT) {
+        setIsComplete(true);
+      } else {
+        setIsComplete(false);
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleSearchResourceInputChange = (query: string) => {
+    // to prevent first tiger when page is loaded
+    if (query === queryText) return;
+    if (!isComplete) {
+      loadingState.setLoading();
+      resourceStore
+        .fetchResourceList()
+        .catch((error) => {
+          console.error(error);
+          toast.error(error.response.data.message);
+        })
+        .finally(() => {
+          loadingState.setFinish();
+          setIsComplete(true);
+          setQueryText(query);
+          setSelectedList([]);
+        });
+    } else {
+      setQueryText(query);
+      setSelectedList([]);
+    }
+  };
+
   const resourceList = useMemo(
     () =>
       resources
@@ -233,7 +272,7 @@ const ResourcesDashboard = () => {
             <p className="flex flex-row justify-start items-center select-none rounded">
               <Icon.Paperclip className="w-5 h-auto mr-1" /> {t("common.resources")}
             </p>
-            <ResourceSearchBar setQuery={setQueryText} />
+            <ResourceSearchBar setQuery={handleSearchResourceInputChange} />
           </div>
           <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
             {isVisible && (
@@ -312,6 +351,23 @@ const ResourcesDashboard = () => {
                 )}
               </div>
             )}
+          </div>
+          <div className="flex flex-col justify-start items-center w-full my-6">
+            <p className="text-sm text-gray-400 italic">
+              {isComplete ? (
+                resources.length === 0 ? (
+                  t("message.no-memos")
+                ) : (
+                  t("message.memos-ready")
+                )
+              ) : (
+                <>
+                  <span className="cursor-pointer hover:text-green-600" onClick={handleMoreResourceBtnClick}>
+                    {t("memo-list.fetch-more")}
+                  </span>
+                </>
+              )}
+            </p>
           </div>
         </div>
       </div>

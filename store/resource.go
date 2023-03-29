@@ -318,7 +318,6 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 			query = fmt.Sprintf("%s OFFSET %d", query, *find.Offset)
 		}
 	}
-	fmt.Printf(query)
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
