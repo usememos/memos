@@ -17,6 +17,8 @@ import { getResourceUrl } from "../utils/resource";
 import showPreviewImageDialog from "../components/PreviewImageDialog";
 import showCreateResourceDialog from "../components/CreateResourceDialog";
 import useListStyle from "../hooks/useListStyle";
+import {DEFAULT_MEMO_LIMIT} from "../helpers/consts";
+import resource from "../store/reducer/resource";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -28,10 +30,11 @@ const ResourcesDashboard = () => {
   const [queryText, setQueryText] = useState<string>("");
   const { listStyle, setToTableStyle, setToGridStyle } = useListStyle();
   const [dragActive, setDragActive] = useState(false);
+  const [isComplete, setIsComplete] = useState<boolean>(false);
 
   useEffect(() => {
     resourceStore
-      .fetchResourceList()
+      .fetchResourceListWithLimit(DEFAULT_MEMO_LIMIT)
       .catch((error) => {
         console.error(error);
         toast.error(error.response.data.message);
@@ -148,6 +151,20 @@ const ResourcesDashboard = () => {
     const url = getResourceUrl(resource);
     copy(url);
     toast.success(t("message.succeed-copy-resource-link"));
+  };
+
+  const handleMoreResourceBtnClick = async () => {
+    try {
+      const fetchedResource = await resourceStore.fetchResourceListWithLimit(DEFAULT_MEMO_LIMIT, resources.length);
+      if (fetchedResource.length < DEFAULT_MEMO_LIMIT) {
+        setIsComplete(true);
+      } else {
+        setIsComplete(false);
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
+    }
   };
 
   const resourceList = useMemo(
@@ -312,6 +329,11 @@ const ResourcesDashboard = () => {
                 )}
               </div>
             )}
+          </div>
+          <div>
+            <span className="cursor-pointer hover:text-green-600" onClick={handleMoreResourceBtnClick}>
+              {t("memo-list.fetch-more")}
+            </span>
           </div>
         </div>
       </div>

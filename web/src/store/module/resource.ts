@@ -1,6 +1,7 @@
 import store, { useAppSelector } from "../";
-import { patchResource, setResources, deleteResource } from "../reducer/resource";
+import {patchResource, setResources, deleteResource, upsertResources} from "../reducer/resource";
 import * as api from "../../helpers/api";
+import {DEFAULT_MEMO_LIMIT} from "../../helpers/consts";
 
 const MAX_FILE_SIZE = 32 << 20;
 
@@ -21,9 +22,19 @@ export const useResourceStore = () => {
       return store.getState().resource;
     },
     async fetchResourceList(): Promise<Resource[]> {
-      const { data } = (await api.getResourceListWithLimit({ limit: 1, offset: 1 })).data;
+      const { data } = (await api.getResourceList()).data;
       const resourceList = data.map((m) => convertResponseModelResource(m));
       store.dispatch(setResources(resourceList));
+      return resourceList;
+    },
+    async fetchResourceListWithLimit(limit = DEFAULT_MEMO_LIMIT, offset?: number): Promise<Resource[]> {
+      const resourceFind: ResourceFind = {
+        limit,
+        offset,
+      };
+      const { data } = (await api.getResourceListWithLimit(resourceFind)).data;
+      const resourceList = data.map((m) => convertResponseModelResource(m));
+      store.dispatch(upsertResources(resourceList));
       return resourceList;
     },
     async createResource(resourceCreate: ResourceCreate): Promise<Resource> {
