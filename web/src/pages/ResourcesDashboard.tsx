@@ -150,6 +150,11 @@ const ResourcesDashboard = () => {
     toast.success(t("message.succeed-copy-resource-link"));
   };
 
+  const handleSearchResourceInputChange = (query: string) => {
+    setQueryText(query);
+    setSelectedList([]);
+  };
+
   const resourceList = useMemo(
     () =>
       resources
@@ -233,7 +238,7 @@ const ResourcesDashboard = () => {
             <p className="flex flex-row justify-start items-center select-none rounded">
               <Icon.Paperclip className="w-5 h-auto mr-1" /> {t("common.resources")}
             </p>
-            <ResourceSearchBar setQuery={setQueryText} />
+            <ResourceSearchBar setQuery={handleSearchResourceInputChange} />
           </div>
           <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
             {isVisible && (
