@@ -153,7 +153,7 @@ const ResourcesDashboard = () => {
   const handleSearchResourceInputChange = (query: string) => {
     setQueryText(query);
     setSelectedList([]);
-  }
+  };
 
   const resourceList = useMemo(
     () =>
