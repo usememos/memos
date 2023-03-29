@@ -352,10 +352,22 @@ const ResourcesDashboard = () => {
               </div>
             )}
           </div>
-          <div>
-            <span className="cursor-pointer hover:text-green-600" onClick={handleMoreResourceBtnClick}>
-              {t("memo-list.fetch-more")}
-            </span>
+          <div className="flex flex-col justify-start items-center w-full my-6">
+            <p className="text-sm text-gray-400 italic">
+              {isComplete ? (
+                resources.length === 0 ? (
+                  t("message.no-memos")
+                ) : (
+                  t("message.memos-ready")
+                )
+              ) : (
+                <>
+                  <span className="cursor-pointer hover:text-green-600" onClick={handleMoreResourceBtnClick}>
+                    {t("memo-list.fetch-more")}
+                  </span>
+                </>
+              )}
+            </p>
           </div>
         </div>
       </div>
