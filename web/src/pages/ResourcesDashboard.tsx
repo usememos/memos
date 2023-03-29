@@ -167,18 +167,26 @@ const ResourcesDashboard = () => {
   };
 
   const handleSearchResourceInputChange = (query: string) => {
-    loadingState.setLoading();
+    // to prevent first tiger when page is loaded
+    if (query === queryText) return;
     if (!isComplete) {
-      resourceStore.fetchResourceList()
-      .catch((error) => {
-        console.error(error);
-        toast.error(error.response.data.message);
-      }).finally(() => {
-        loadingState.setFinish();
-        setIsComplete(true);
-        setQueryText(query);
-        setSelectedList([]);
-      });
+      loadingState.setLoading();
+      resourceStore
+        .fetchResourceList()
+        .catch((error) => {
+          console.error(error);
+          toast.error(error.response.data.message);
+        })
+        .finally(() => {
+          loadingState.setFinish();
+          setIsComplete(true);
+          setQueryText(query);
+          setSelectedList([]);
+        });
+    } else {
+      setQueryText(query);
+      setSelectedList([]);
+    }
   };
 
   const resourceList = useMemo(
