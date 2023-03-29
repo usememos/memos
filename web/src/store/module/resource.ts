@@ -21,7 +21,7 @@ export const useResourceStore = () => {
       return store.getState().resource;
     },
     async fetchResourceList(): Promise<Resource[]> {
-      const { data } = (await api.getResourceListWithLimit({offset:1})).data;
+      const { data } = (await api.getResourceListWithLimit({ limit: 1, offset: 1 })).data;
       const resourceList = data.map((m) => convertResponseModelResource(m));
       store.dispatch(setResources(resourceList));
       return resourceList;
