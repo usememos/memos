@@ -25,7 +25,6 @@ interface ResourcePatch {
   filename?: string;
 }
 
-
 interface ResourceFind {
   offset?: number;
   limit?: number;
