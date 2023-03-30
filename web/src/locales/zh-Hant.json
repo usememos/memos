@@ -218,6 +218,8 @@
   "message": {
     "no-memos": "沒有 Memo 了 🌃",
     "memos-ready": "所有 Memo 已就緒 🎉",
+    "no-resource": "沒有 Resource 了 🌃",
+    "memos-resource": "所有 Resource 已就緒 🎉",
     "restored-successfully": "還原成功",
     "memo-updated-datetime": "Memo 建立日期時間已更改。",
     "invalid-created-datetime": "建立的日期時間無效。",

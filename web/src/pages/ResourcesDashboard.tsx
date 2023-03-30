@@ -363,9 +363,9 @@ const ResourcesDashboard = () => {
             <p className="text-sm text-gray-400 italic">
               {isComplete ? (
                 resources.length === 0 ? (
-                  t("message.no-memos")
+                  t("message.no-resource")
                 ) : (
-                  t("message.memos-ready")
+                  t("message.resource-ready")
                 )
               ) : (
                 <>
