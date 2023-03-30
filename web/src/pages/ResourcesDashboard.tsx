@@ -154,7 +154,7 @@ const ResourcesDashboard = () => {
     toast.success(t("message.succeed-copy-resource-link"));
   };
 
-  const handleMoreResourceBtnClick = async () => {
+  const handleFetchMoreResourceBtnClick = async () => {
     try {
       const fetchedResource = await resourceStore.fetchResourceListWithLimit(DEFAULT_MEMO_LIMIT, resources.length);
       if (fetchedResource.length < DEFAULT_MEMO_LIMIT) {
@@ -369,7 +369,7 @@ const ResourcesDashboard = () => {
                 )
               ) : (
                 <>
-                  <span className="cursor-pointer hover:text-green-600" onClick={handleMoreResourceBtnClick}>
+                  <span className="cursor-pointer hover:text-green-600" onClick={handleFetchMoreResourceBtnClick}>
                     {t("memo-list.fetch-more")}
                   </span>
                 </>
