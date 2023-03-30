@@ -228,7 +228,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
         </Typography>
         <Input
             className="mb-2"
-            placeholder="URLPrefix"
+            placeholder="URLSuffix"
             value={s3Config.urlSuffix}
             onChange={(e) => setPartialS3Config({ urlSuffix: e.target.value })}
             fullWidth
