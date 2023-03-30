@@ -168,7 +168,7 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const loadAllResources = async (succeed: () => void) => {
+  const loadAllResources = async (resolve: () => void) => {
     if (!isComplete) {
       loadingState.setLoading();
       resourceStore
@@ -180,10 +180,10 @@ const ResourcesDashboard = () => {
         .finally(() => {
           loadingState.setFinish();
           setIsComplete(true);
-          succeed();
+          resolve();
         });
     } else {
-      succeed();
+      resolve();
     }
   };
 
