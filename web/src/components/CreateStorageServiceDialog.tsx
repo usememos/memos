@@ -227,11 +227,11 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           <span className="text-sm text-gray-400 ml-1">(Custom URL suffix; Optional)</span>
         </Typography>
         <Input
-            className="mb-2"
-            placeholder="URLSuffix"
-            value={s3Config.urlSuffix}
-            onChange={(e) => setPartialS3Config({ urlSuffix: e.target.value })}
-            fullWidth
+          className="mb-2"
+          placeholder="URLSuffix"
+          value={s3Config.urlSuffix}
+          onChange={(e) => setPartialS3Config({ urlSuffix: e.target.value })}
+          fullWidth
         />
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
