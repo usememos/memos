@@ -1,3 +1,4 @@
+import dayjs from "dayjs";
 import { useColorScheme } from "@mui/joy";
 import { useEffect, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
@@ -8,7 +9,6 @@ import { useGlobalStore } from "./store/module";
 import * as storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import Loading from "./pages/Loading";
-import dayjs from "dayjs";
 
 const App = () => {
   const { i18n } = useTranslation();
