@@ -61,27 +61,29 @@ const ResourcesDashboard = () => {
 
   const handleDeleteUnusedResourcesBtnClick = () => {
     let warningText = t("resources.warning-text-unused");
-    const unusedResources = resources.filter((resource) => {
-      if (resource.linkedMemoAmount === 0) {
-        warningText = warningText + `\n- ${resource.filename}`;
-        return true;
-      }
-      return false;
-    });
-    if (unusedResources.length === 0) {
-      toast.success(t("resources.no-unused-resources"));
-      return;
-    }
-    showCommonDialog({
-      title: t("resources.delete-resource"),
-      content: warningText,
-      style: "warning",
-      dialogName: "delete-unused-resources",
-      onConfirm: async () => {
-        for (const resource of unusedResources) {
-          await resourceStore.deleteResourceById(resource.id);
+    loadAllResources(() => {
+      const unusedResources = resources.filter((resource) => {
+        if (resource.linkedMemoAmount === 0) {
+          warningText = warningText + `\n- ${resource.filename}`;
+          return true;
         }
-      },
+        return false;
+      });
+      if (unusedResources.length === 0) {
+        toast.success(t("resources.no-unused-resources"));
+        return;
+      }
+      showCommonDialog({
+        title: t("resources.delete-resource"),
+        content: warningText,
+        style: "warning",
+        dialogName: "delete-unused-resources",
+        onConfirm: async () => {
+          for (const resource of unusedResources) {
+            await resourceStore.deleteResourceById(resource.id);
+          }
+        },
+      });
     });
   };
 
@@ -166,9 +168,7 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handleSearchResourceInputChange = (query: string) => {
-    // to prevent first tiger when page is loaded
-    if (query === queryText) return;
+  const loadAllResources = async (succeed: () => void) => {
     if (!isComplete) {
       loadingState.setLoading();
       resourceStore
@@ -180,13 +180,20 @@ const ResourcesDashboard = () => {
         .finally(() => {
           loadingState.setFinish();
           setIsComplete(true);
-          setQueryText(query);
-          setSelectedList([]);
+          succeed();
         });
     } else {
+      succeed();
+    }
+  };
+
+  const handleSearchResourceInputChange = (query: string) => {
+    // to prevent first tiger when page is loaded
+    if (query === queryText) return;
+    loadAllResources(() => {
       setQueryText(query);
       setSelectedList([]);
-    }
+    });
   };
 
   const resourceList = useMemo(
