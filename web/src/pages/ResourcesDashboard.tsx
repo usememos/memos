@@ -39,6 +39,9 @@ const ResourcesDashboard = () => {
         toast.error(error.response.data.message);
       })
       .finally(() => {
+        if (resources.length < DEFAULT_MEMO_LIMIT) {
+          setIsComplete(true);
+        }
         loadingState.setFinish();
       });
   }, []);
