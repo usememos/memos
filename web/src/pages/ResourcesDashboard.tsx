@@ -64,8 +64,8 @@ const ResourcesDashboard = () => {
 
   const handleDeleteUnusedResourcesBtnClick = async () => {
     let warningText = t("resources.warning-text-unused");
-    await loadAllResources(() => {
-      const unusedResources = resources.filter((resource) => {
+    await loadAllResources((allResource: Resource[]) => {
+      const unusedResources = allResource.filter((resource) => {
         if (resource.linkedMemoAmount === 0) {
           warningText = warningText + `\n- ${resource.filename}`;
           return true;
@@ -171,22 +171,21 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const loadAllResources = async (resolve: () => void) => {
+  const loadAllResources = async (resolve: (allResource: Resource[]) => void) => {
     if (!isComplete) {
       loadingState.setLoading();
-      await resourceStore
-        .fetchResourceList()
-        .then(() => {
+      try {
+        await resourceStore.fetchResourceList().then((allResource) => {
           loadingState.setFinish();
           setIsComplete(true);
-          resolve();
-        })
-        .catch((error) => {
-          console.error(error);
-          toast.error(error.response.data.message);
+          resolve(allResource);
         });
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.response.data.message);
+      }
     } else {
-      resolve();
+      resolve(resources);
     }
   };
 
