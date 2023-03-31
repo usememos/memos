@@ -174,13 +174,17 @@ const ResourcesDashboard = () => {
   const loadAllResources = async (resolve: () => void) => {
     if (!isComplete) {
       loadingState.setLoading();
-      await resourceStore.fetchResourceList().catch((error) => {
-        console.error(error);
-        toast.error(error.response.data.message);
-      });
-      loadingState.setFinish();
-      setIsComplete(true);
-      resolve();
+      await resourceStore
+        .fetchResourceList()
+        .then(() => {
+          loadingState.setFinish();
+          setIsComplete(true);
+          resolve();
+        })
+        .catch((error) => {
+          console.error(error);
+          toast.error(error.response.data.message);
+        });
     } else {
       resolve();
     }
