@@ -62,9 +62,9 @@ const ResourcesDashboard = () => {
     setSelectedList(selectedList.filter((resId) => resId !== resourceId));
   };
 
-  const handleDeleteUnusedResourcesBtnClick = () => {
+  const handleDeleteUnusedResourcesBtnClick = async () => {
     let warningText = t("resources.warning-text-unused");
-    loadAllResources(() => {
+    await loadAllResources(() => {
       const unusedResources = resources.filter((resource) => {
         if (resource.linkedMemoAmount === 0) {
           warningText = warningText + `\n- ${resource.filename}`;
@@ -190,10 +190,10 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handleSearchResourceInputChange = (query: string) => {
+  const handleSearchResourceInputChange = async (query: string) => {
     // to prevent first tiger when page is loaded
     if (query === queryText) return;
-    loadAllResources(() => {
+    await loadAllResources(() => {
       setQueryText(query);
       setSelectedList([]);
     });
