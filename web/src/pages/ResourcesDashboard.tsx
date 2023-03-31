@@ -34,15 +34,15 @@ const ResourcesDashboard = () => {
   useEffect(() => {
     resourceStore
       .fetchResourceListWithLimit(DEFAULT_MEMO_LIMIT)
-      .catch((error) => {
-        console.error(error);
-        toast.error(error.response.data.message);
-      })
-      .finally(() => {
-        if (resources.length < DEFAULT_MEMO_LIMIT) {
+      .then((fetchedResource) => {
+        if (fetchedResource.length < DEFAULT_MEMO_LIMIT) {
           setIsComplete(true);
         }
         loadingState.setFinish();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(error.response.data.message);
       });
   }, []);
 
@@ -174,17 +174,13 @@ const ResourcesDashboard = () => {
   const loadAllResources = async (resolve: () => void) => {
     if (!isComplete) {
       loadingState.setLoading();
-      resourceStore
-        .fetchResourceList()
-        .catch((error) => {
-          console.error(error);
-          toast.error(error.response.data.message);
-        })
-        .finally(() => {
-          loadingState.setFinish();
-          setIsComplete(true);
-          resolve();
-        });
+      await resourceStore.fetchResourceList().catch((error) => {
+        console.error(error);
+        toast.error(error.response.data.message);
+      });
+      loadingState.setFinish();
+      setIsComplete(true);
+      resolve();
     } else {
       resolve();
     }
