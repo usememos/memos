@@ -1,7 +1,7 @@
+import { Button, Input, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Button, Input, Typography } from "@mui/joy";
-import * as api from "../helpers/api";
+import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import RequiredBadge from "./RequiredBadge";
@@ -25,6 +25,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     path: "",
     bucket: "",
     urlPrefix: "",
+    urlSuffix: "",
   });
   const isCreating = storage === undefined;
 
@@ -219,6 +220,17 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           placeholder="URLPrefix"
           value={s3Config.urlPrefix}
           onChange={(e) => setPartialS3Config({ urlPrefix: e.target.value })}
+          fullWidth
+        />
+        <Typography className="!mb-1" level="body2">
+          URLSuffix
+          <span className="text-sm text-gray-400 ml-1">(Custom URL suffix; Optional)</span>
+        </Typography>
+        <Input
+          className="mb-2"
+          placeholder="URLSuffix"
+          value={s3Config.urlSuffix}
+          onChange={(e) => setPartialS3Config({ urlSuffix: e.target.value })}
           fullWidth
         />
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">

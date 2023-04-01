@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import * as api from "../helpers/api";
+import * as api from "@/helpers/api";
 import Icon from "./Icon";
 
 const GitHubBadge = () => {

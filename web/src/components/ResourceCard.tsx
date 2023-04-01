@@ -2,8 +2,8 @@ import dayjs from "dayjs";
 import { useState } from "react";
 import Icon from "./Icon";
 import ResourceCover from "./ResourceCover";
-import "../less/resource-card.less";
 import ResourceItemDropdown from "./ResourceItemDropdown";
+import "@/less/resource-card.less";
 
 const ResourceCard = ({
   resource,

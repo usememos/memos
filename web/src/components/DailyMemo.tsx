@@ -1,7 +1,7 @@
-import * as utils from "../helpers/utils";
+import * as utils from "@/helpers/utils";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
-import "../less/daily-memo.less";
+import "@/less/daily-memo.less";
 
 interface Props {
   memo: Memo;

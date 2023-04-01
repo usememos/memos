@@ -1,11 +1,11 @@
 import { Select, Switch, Option } from "@mui/joy";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useGlobalStore, useUserStore } from "../../store/module";
-import { VISIBILITY_SELECTOR_ITEMS } from "../../helpers/consts";
+import { useGlobalStore, useUserStore } from "@/store/module";
+import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
-import "../../less/settings/preferences-section.less";
+import "@/less/settings/preferences-section.less";
 
 const PreferencesSection = () => {
   const { t } = useTranslation();
@@ -79,7 +79,7 @@ const PreferencesSection = () => {
         </Select>
       </div>
       <div className="form-label selector">
-        <span className="normal-text">Default resource visibility</span>
+        <span className="normal-text">{t("setting.preference-section.default-resource-visibility")}</span>
         <Select
           className="!min-w-[10rem] w-auto text-sm"
           value={setting.resourceVisibility}
@@ -98,7 +98,7 @@ const PreferencesSection = () => {
       </div>
 
       <div className="form-label selector">
-        <span className="normal-text">Daily Review Time Offset</span>
+        <span className="normal-text">{t("setting.preference-section.daily-review-time-offset")}</span>
         <span className="w-auto inline-flex">
           <Select
             placeholder="hh"

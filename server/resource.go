@@ -194,6 +194,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					Region:    s3Config.Region,
 					Bucket:    s3Config.Bucket,
 					URLPrefix: s3Config.URLPrefix,
+					URLSuffix: s3Config.URLSuffix,
 				})
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)

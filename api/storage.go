@@ -18,6 +18,7 @@ type StorageS3Config struct {
 	SecretKey string `json:"secretKey"`
 	Bucket    string `json:"bucket"`
 	URLPrefix string `json:"urlPrefix"`
+	URLSuffix string `json:"urlSuffix"`
 }
 
 type Storage struct {

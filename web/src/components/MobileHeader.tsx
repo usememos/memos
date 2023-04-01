@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLayoutStore, useFilterStore, useShortcutStore } from "../store/module";
+import { useLayoutStore, useFilterStore, useShortcutStore } from "@/store/module";
 import Icon from "./Icon";
 
 interface Props {

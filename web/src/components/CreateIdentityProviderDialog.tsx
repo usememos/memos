@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Button, Divider, Input, Radio, RadioGroup, Typography } from "@mui/joy";
-import * as api from "../helpers/api";
-import { UNKNOWN_ID } from "../helpers/consts";
-import { absolutifyLink } from "../helpers/utils";
+import * as api from "@/helpers/api";
+import { UNKNOWN_ID } from "@/helpers/consts";
+import { absolutifyLink } from "@/helpers/utils";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 

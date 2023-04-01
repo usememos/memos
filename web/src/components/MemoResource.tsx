@@ -1,4 +1,4 @@
-import { getResourceUrl } from "../utils/resource";
+import { getResourceUrl } from "@/utils/resource";
 import Icon from "./Icon";
 
 interface Props {

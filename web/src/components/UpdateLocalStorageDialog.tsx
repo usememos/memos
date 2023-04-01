@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { Button, Input, Typography } from "@mui/joy";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
-import * as api from "../helpers/api";
+import { useGlobalStore } from "@/store/module";
+import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import { useGlobalStore } from "../store/module";
 
 interface Props extends DialogProps {
   localStoragePath?: string;
