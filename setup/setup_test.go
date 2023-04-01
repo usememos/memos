@@ -11,7 +11,7 @@ import (
 	"github.com/usememos/memos/api"
 )
 
-func TestSetupService_makeSureHostUserNotExists(t *testing.T) {
+func TestSetupServiceMakeSureHostUserNotExists(t *testing.T) {
 	cc := map[string]struct {
 		setupStore  func(*storeMock)
 		expectedErr string
@@ -71,7 +71,7 @@ func TestSetupService_makeSureHostUserNotExists(t *testing.T) {
 	}
 }
 
-func TestSetupService_createUser(t *testing.T) {
+func TestSetupServiceCreateUser(t *testing.T) {
 	expectedCreated := &api.UserCreate{
 		Username: "demohero",
 		Role:     api.Host,
@@ -150,13 +150,13 @@ type storeMock struct {
 func (m *storeMock) FindUserList(ctx context.Context, find *api.UserFind) ([]*api.User, error) {
 	ret := m.Called(ctx, find)
 
-	var uu []*api.User
+	var u []*api.User
 	ret1 := ret.Get(0)
 	if ret1 != nil {
-		uu = ret1.([]*api.User)
+		u = ret1.([]*api.User)
 	}
 
-	return uu, ret.Error(1)
+	return u, ret.Error(1)
 }
 
 func (m *storeMock) CreateUser(ctx context.Context, create *api.UserCreate) (*api.User, error) {
