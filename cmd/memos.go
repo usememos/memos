@@ -99,9 +99,8 @@ var (
 				return
 			}
 
-			st := store.New(db.DBInstance, profile)
-
-			if err := setup.Execute(ctx, st, hostUsername, hostPassword); err != nil {
+			store := store.New(db.DBInstance, profile)
+			if err := setup.Execute(ctx, store, hostUsername, hostPassword); err != nil {
 				fmt.Printf("failed to setup, error: %+v\n", err)
 				return
 			}
