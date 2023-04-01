@@ -20,6 +20,7 @@ type Config struct {
 	EndPoint  string
 	Region    string
 	URLPrefix string
+	URLSuffix string
 }
 
 type Client struct {
@@ -67,7 +68,7 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 	link := uploadOutput.Location
 	// If url prefix is set, use it as the file link.
 	if client.Config.URLPrefix != "" {
-		link = fmt.Sprintf("%s/%s", client.Config.URLPrefix, filename)
+		link = fmt.Sprintf("%s/%s%s", client.Config.URLPrefix, filename, client.Config.URLSuffix)
 	}
 	if link == "" {
 		return "", fmt.Errorf("failed to get file link")
