@@ -2,14 +2,14 @@ import { Button, Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useGlobalStore, useUserStore } from "../store/module";
-import * as api from "../helpers/api";
-import { absolutifyLink } from "../helpers/utils";
-import useLoading from "../hooks/useLoading";
-import Icon from "../components/Icon";
-import AppearanceSelect from "../components/AppearanceSelect";
-import LocaleSelect from "../components/LocaleSelect";
-import "../less/auth.less";
+import { useGlobalStore, useUserStore } from "@/store/module";
+import * as api from "@/helpers/api";
+import { absolutifyLink } from "@/helpers/utils";
+import useLoading from "@/hooks/useLoading";
+import Icon from "@/components/Icon";
+import AppearanceSelect from "@/components/AppearanceSelect";
+import LocaleSelect from "@/components/LocaleSelect";
+import "@/less/auth.less";
 
 const Auth = () => {
   const { t } = useTranslation();

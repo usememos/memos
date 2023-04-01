@@ -1,18 +1,18 @@
+import dayjs from "dayjs";
 import { last } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMemoStore, useUserStore } from "../store/module";
-import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "../helpers/consts";
-import * as utils from "../helpers/utils";
-import MobileHeader from "../components/MobileHeader";
-import useToggle from "../hooks/useToggle";
-import toImage from "../labs/html2image";
-import showPreviewImageDialog from "../components/PreviewImageDialog";
-import Icon from "../components/Icon";
-import DatePicker from "../components/base/DatePicker";
-import DailyMemo from "../components/DailyMemo";
-import dayjs from "dayjs";
+import { useMemoStore, useUserStore } from "@/store/module";
+import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
+import * as utils from "@/helpers/utils";
+import MobileHeader from "@/components/MobileHeader";
+import useToggle from "@/hooks/useToggle";
+import toImage from "@/labs/html2image";
+import showPreviewImageDialog from "@/components/PreviewImageDialog";
+import Icon from "@/components/Icon";
+import DatePicker from "@/components/base/DatePicker";
+import DailyMemo from "@/components/DailyMemo";
 
 const DailyReview = () => {
   const { t } = useTranslation();

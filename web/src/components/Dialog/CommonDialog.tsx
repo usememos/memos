@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import Icon from "../Icon";
 import { generateDialog } from "./BaseDialog";
-import "../../less/common-dialog.less";
+import "@/less/common-dialog.less";
 
 type DialogStyle = "info" | "warning";
 

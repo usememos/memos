@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useGlobalStore } from "../store/module";
+import { useGlobalStore } from "@/store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import GitHubBadge from "./GitHubBadge";

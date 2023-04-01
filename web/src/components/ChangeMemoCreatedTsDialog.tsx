@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMemoStore } from "../store/module";
+import { useMemoStore } from "@/store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 

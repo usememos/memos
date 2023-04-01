@@ -1,14 +1,14 @@
 import { Button, Textarea } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import * as api from "../helpers/api";
-import useLoading from "../hooks/useLoading";
-import { marked } from "../labs/marked";
-import { useMessageStore } from "../store/zustand/message";
+import { useTranslation } from "react-i18next";
+import * as api from "@/helpers/api";
+import useLoading from "@/hooks/useLoading";
+import { marked } from "@/labs/marked";
+import { useMessageStore } from "@/store/zustand/message";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import showSettingDialog from "./SettingDialog";
-import { useTranslation } from "react-i18next";
 
 type Props = DialogProps;
 

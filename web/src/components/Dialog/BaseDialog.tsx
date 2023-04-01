@@ -1,12 +1,12 @@
+import { CssVarsProvider } from "@mui/joy";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import { ANIMATION_DURATION } from "../../helpers/consts";
-import store from "../../store";
-import { useDialogStore } from "../../store/module";
-import { CssVarsProvider } from "@mui/joy";
-import theme from "../../theme";
-import "../../less/base-dialog.less";
+import { ANIMATION_DURATION } from "@/helpers/consts";
+import store from "@/store";
+import { useDialogStore } from "@/store/module";
+import theme from "@/theme";
+import "@/less/base-dialog.less";
 
 interface DialogConfig {
   dialogName: string;

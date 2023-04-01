@@ -5,17 +5,17 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import copy from "copy-to-clipboard";
 import { toLower } from "lodash-es";
-import toImage from "../labs/html2image";
-import { useGlobalStore, useMemoStore, useUserStore } from "../store/module";
-import { VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import * as utils from "../helpers/utils";
-import { getMemoStats } from "../helpers/api";
-import useLoading from "../hooks/useLoading";
+import toImage from "@/labs/html2image";
+import { useGlobalStore, useMemoStore, useUserStore } from "@/store/module";
+import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
+import * as utils from "@/helpers/utils";
+import { getMemoStats } from "@/helpers/api";
+import useLoading from "@/hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
-import "../less/share-memo-dialog.less";
+import "@/less/share-memo-dialog.less";
 
 interface Props extends DialogProps {
   memo: Memo;

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import * as utils from "../helpers/utils";
+import * as utils from "@/helpers/utils";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import "../less/preview-image-dialog.less";
+import "@/less/preview-image-dialog.less";
 
 const MIN_SCALE = 0.5;
 const MAX_SCALE = 5;

@@ -1,5 +1,5 @@
 import showPreviewImageDialog from "./PreviewImageDialog";
-import "../less/image.less";
+import "@/less/image.less";
 
 interface Props {
   imgUrls: string[];

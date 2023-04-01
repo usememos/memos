@@ -8,13 +8,14 @@ import App from "./App";
 import theme from "./theme";
 import "./helpers/polyfill";
 import "./i18n";
+import "./less/code-highlight.less";
+import "./css/global.css";
+import "./css/tailwind.css";
+
 import "dayjs/locale/zh";
 import "dayjs/locale/fr";
 import "dayjs/locale/vi";
 import "dayjs/locale/ru";
-import "./less/code-highlight.less";
-import "./css/global.css";
-import "./css/tailwind.css";
 
 dayjs.extend(relativeTime);
 

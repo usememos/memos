@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
-import { useGlobalStore } from "../store/module";
-import * as api from "../helpers/api";
+import { useGlobalStore } from "@/store/module";
+import * as api from "@/helpers/api";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import LocaleSelect from "./LocaleSelect";

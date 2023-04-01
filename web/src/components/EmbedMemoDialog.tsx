@@ -1,9 +1,9 @@
+import copy from "copy-to-clipboard";
 import React from "react";
 import { toast } from "react-hot-toast";
-import copy from "copy-to-clipboard";
+import { useTranslation } from "react-i18next";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import { useTranslation } from "react-i18next";
 
 interface Props extends DialogProps {
   memoId: MemoId;

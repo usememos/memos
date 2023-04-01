@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useFilterStore, useShortcutStore } from "../store/module";
-import * as utils from "../helpers/utils";
-import useToggle from "../hooks/useToggle";
-import useLoading from "../hooks/useLoading";
+import { useFilterStore, useShortcutStore } from "@/store/module";
+import * as utils from "@/helpers/utils";
+import useToggle from "@/hooks/useToggle";
+import useLoading from "@/hooks/useLoading";
 import Icon from "./Icon";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
 

@@ -1,9 +1,9 @@
+import { Tooltip } from "@mui/joy";
 import { memo, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import useToggle from "../../hooks/useToggle";
+import useToggle from "@/hooks/useToggle";
 import Icon from "../Icon";
-import { Tooltip } from "@mui/joy";
-import "../../less/common/selector.less";
+import "@/less/common/selector.less";
 
 interface SelectorItem {
   text: string;

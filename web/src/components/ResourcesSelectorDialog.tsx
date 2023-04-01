@@ -2,13 +2,13 @@ import { Button, Checkbox } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import useLoading from "../hooks/useLoading";
-import { useEditorStore, useResourceStore } from "../store/module";
-import { getResourceUrl } from "../utils/resource";
+import useLoading from "@/hooks/useLoading";
+import { useEditorStore, useResourceStore } from "@/store/module";
+import { getResourceUrl } from "@/utils/resource";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
-import "../less/resources-selector-dialog.less";
+import "@/less/resources-selector-dialog.less";
 
 type Props = DialogProps;
 

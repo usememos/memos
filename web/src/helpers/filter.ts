@@ -1,5 +1,5 @@
-import { TAG_REG, LINK_REG } from "../labs/marked/parser";
 import dayjs from "dayjs";
+import { TAG_REG, LINK_REG } from "@/labs/marked/parser";
 
 export const relationConsts = [
   { text: "And", value: "AND" },

@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import "../less/not-found.less";
+import "@/less/not-found.less";
 
 const NotFound = () => {
   const { t } = useTranslation();

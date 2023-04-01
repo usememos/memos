@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
-import { useUserStore } from "../../store/module";
+import { useUserStore } from "@/store/module";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangePasswordDialog from "../ChangePasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
-import "../../less/settings/my-account-section.less";
+import "@/less/settings/my-account-section.less";
 
 const MyAccountSection = () => {
   const { t } = useTranslation();

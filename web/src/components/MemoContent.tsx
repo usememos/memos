@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { marked } from "../labs/marked";
+import { marked } from "@/labs/marked";
 import Icon from "./Icon";
-import "../less/memo-content.less";
+import "@/less/memo-content.less";
 
 const MAX_EXPAND_HEIGHT = 384;
 

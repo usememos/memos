@@ -1,22 +1,22 @@
 import { Button } from "@mui/joy";
+import copy from "copy-to-clipboard";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import useLoading from "../hooks/useLoading";
-import { useResourceStore } from "../store/module";
-import Icon from "../components/Icon";
-import ResourceCard from "../components/ResourceCard";
-import ResourceSearchBar from "../components/ResourceSearchBar";
-import MobileHeader from "../components/MobileHeader";
-import Dropdown from "../components/base/Dropdown";
-import ResourceItem from "../components/ResourceItem";
-import { showCommonDialog } from "../components/Dialog/CommonDialog";
-import showChangeResourceFilenameDialog from "../components/ChangeResourceFilenameDialog";
-import copy from "copy-to-clipboard";
-import { getResourceUrl } from "../utils/resource";
-import showPreviewImageDialog from "../components/PreviewImageDialog";
-import showCreateResourceDialog from "../components/CreateResourceDialog";
-import useListStyle from "../hooks/useListStyle";
+import useLoading from "@/hooks/useLoading";
+import useListStyle from "@/hooks/useListStyle";
+import { useResourceStore } from "@/store/module";
+import { getResourceUrl } from "@/utils/resource";
+import Icon from "@/components/Icon";
+import ResourceCard from "@/components/ResourceCard";
+import ResourceSearchBar from "@/components/ResourceSearchBar";
+import MobileHeader from "@/components/MobileHeader";
+import Dropdown from "@/components/base/Dropdown";
+import ResourceItem from "@/components/ResourceItem";
+import { showCommonDialog } from "@/components/Dialog/CommonDialog";
+import showChangeResourceFilenameDialog from "@/components/ChangeResourceFilenameDialog";
+import showPreviewImageDialog from "@/components/PreviewImageDialog";
+import showCreateResourceDialog from "@/components/CreateResourceDialog";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();

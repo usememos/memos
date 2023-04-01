@@ -1,11 +1,11 @@
 import { Select, Switch, Option } from "@mui/joy";
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { useGlobalStore, useUserStore } from "../../store/module";
-import { VISIBILITY_SELECTOR_ITEMS } from "../../helpers/consts";
+import { useGlobalStore, useUserStore } from "@/store/module";
+import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
-import "../../less/settings/preferences-section.less";
+import "@/less/settings/preferences-section.less";
 
 const PreferencesSection = () => {
   const { t } = useTranslation();

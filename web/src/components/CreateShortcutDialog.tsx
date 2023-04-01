@@ -2,13 +2,13 @@ import dayjs from "dayjs";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useShortcutStore, useTagStore } from "../store/module";
-import { filterConsts, getDefaultFilter, relationConsts } from "../helpers/filter";
-import useLoading from "../hooks/useLoading";
+import { useShortcutStore, useTagStore } from "@/store/module";
+import { filterConsts, getDefaultFilter, relationConsts } from "@/helpers/filter";
+import useLoading from "@/hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import Selector from "./base/Selector";
-import "../less/create-shortcut-dialog.less";
+import "@/less/create-shortcut-dialog.less";
 
 interface Props extends DialogProps {
   shortcutId?: ShortcutId;

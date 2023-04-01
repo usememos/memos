@@ -1,7 +1,7 @@
+import { Button, Input, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Button, Input, Typography } from "@mui/joy";
-import * as api from "../helpers/api";
+import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import RequiredBadge from "./RequiredBadge";

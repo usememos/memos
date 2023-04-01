@@ -1,9 +1,9 @@
-import { absolutifyLink } from "../helpers/utils";
-import { getResourceUrl } from "../utils/resource";
+import { absolutifyLink } from "@/helpers/utils";
+import { getResourceUrl } from "@/utils/resource";
 import SquareDiv from "./base/SquareDiv";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import MemoResource from "./MemoResource";
-import "../less/memo-resources.less";
+import "@/less/memo-resources.less";
 
 interface Props {
   resourceList: Resource[];
