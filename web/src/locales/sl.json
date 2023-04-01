@@ -1,0 +1,318 @@
+{
+  "common": {
+    "about": "O programu",
+    "home": "Domov",
+    "resources": "Viri",
+    "settings": "Nastavirve",
+    "daily-review": "Dnevni pregled",
+    "ask-ai": "Vprašaj AI",
+    "archived": "Arhivirani",
+    "email": "Email",
+    "password": "Geslo",
+    "avatar": "Avatar",
+    "username": "Uporabnik",
+    "nickname": "Nadimek",
+    "new-password": "Novo geslo",
+    "repeat-new-password": "Ponovi novo geslo",
+    "save": "Shrani",
+    "close": "Zapri",
+    "cancel": "Prekliči",
+    "create": "Ustvari",
+    "change": "Spremeni",
+    "confirm": "Potrdi",
+    "reset": "Ponastavi",
+    "language": "Jezik",
+    "version": "Verzija",
+    "pin": "Pripni",
+    "unpin": "Odpni",
+    "edit": "Uredi",
+    "restore": "Obnovi",
+    "delete": "Izbriši",
+    "null": "Nič",
+    "share": "Deli",
+    "archive": "Arhiv",
+    "basic": "Osnovni",
+    "admin": "Admini",
+    "explore": "Razišči",
+    "sign-in": "Prijavi se",
+    "sign-up": "Registriraj",
+    "sign-out": "Odjavi se",
+    "back-to-home": "Nazaj domov",
+    "type": "Tip",
+    "shortcuts": "Bližnjice",
+    "title": "Naslov",
+    "filter": "Filter",
+    "tags": "Značke",
+    "yourself": "Sam",
+    "archived-at": "Arhiviran ob",
+    "changed": "spremenjen",
+    "update-on": "Posodobljen ob",
+    "fold": "Zloži",
+    "expand": "Razširi",
+    "image": "Slika",
+    "link": "Povezava",
+    "vacuum": "Skrči",
+    "select": "Izberi",
+    "database": "Baza"
+  },
+  "slogan": "Odprtokodno, samo-gostovano vozlišče beležk z nadzorom znanja in socialne mreže.",
+  "auth": {
+    "signup-as-host": "Prijavite se kot gostitelj",
+    "host-tip": "Registrirani ste kot gostitelj strani.",
+    "not-host-tip": "Če nimate računa, prosim kontaktirajte gostitelja strani."
+  },
+  "daily-review": {
+    "oops-nothing": "Ups, tu ni še ničesar."
+  },
+  "resources": {
+    "description": "Poglejte svoje statične vire v beležkah npr. slike",
+    "no-resources": "Ni virov.",
+    "fetching-data": "pridobivam podatke..."
+    "upload": "Naloži",
+    "preview": "Predogled",
+    "copy-link": "Kopiraj povezavo",
+    "delete-resource": "Izbriši vir",
+    "warning-text": "Ali ste prepričani, da želite izbrisati ta vir? TA AKCIJA JE NEPOVRATNA❗",
+    "linked-amount": "Povezana količina beležk",
+    "rename": "Preimenuj",
+    "clear": "Počisti",
+    "warning-text-unused": "Ali ste prepričani, da želite izbrisati neuporabljene vire? TA AKCIJA JE NEPOVRATNA❗",
+    "no-unused-resources": "Ni neuporabljenih virov",
+    "name": "Naziv",
+    "delete-selected-resources": "Izbrišite izbrane vire",
+    "no-files-selected": "Nobena datoteka ni označena❗",
+    "upload-successfully": "Nalaganje uspešno",
+    "file-drag-drop-prompt": "Za nalaganje, tu povlecite in spusite vaše datoteke",
+    "select": "Izberite",
+    "search-bar-placeholder": "Iskanje virov",
+    "create-dialog": {
+      "title": "Izdelaj vir",
+      "upload-method": "Metoda nalaganja",
+      "local-file": {
+        "option": "Lokalna datoteka",
+        "choose": "Izberite datoteko..."
+      },
+      "external-link": {
+        "option": "Zunanja povezava",
+        "link": "Povezava",
+        "file-name": "Ime datoteke",
+        "file-name-placeholder": "Ime datoteke",
+        "type": "Tip",
+        "type-placeholder": "Tip datoteke"
+      }
+    }
+  },
+  "archived": {
+    "archived-memos": "Arhivirane beležke",
+    "no-archived-memos": "Ni arhiviranih beležk.",
+    "fetching-data": "pridobivam podatke..."
+  },
+  "editor": {
+    "editing": "Urejanje...",
+    "cancel-edit": "Prekliči urejanje",
+    "save": "Shrani",
+    "placeholder": "Kakšne misli...",
+    "only-image-supported": "Podprta je samo slikovna datoteka.",
+    "cant-empty": "Vsebina ne more biti prazna",
+    "local": "Lokalno",
+    "resources": "Viri"
+  },
+  "memo": {
+    "view-detail": "Poglej podrobosti",
+    "copy": "Kopiraj",
+    "embed": "Vdelaj beležko",
+    "visibility": {
+      "private": "Vidno samo za vas",
+      "protected": "Vidno članom",
+      "public": "Vsi lahko vidijo",
+      "disabled": "Javne beležke so onemogočene"
+    }
+  },
+  "memo-list": {
+    "fetching-data": "pridobivam podatke..."
+    "fetch-more": "Kliknite tu da pridobite še več"
+  },
+  "shortcut-list": {
+    "shortcut-title": "naslov bližnjice",
+    "create-shortcut": "Kreiraj bližnjico",
+    "edit-shortcut": "Uredi bližnjico",
+    "eligible-memo": "upravičene beležke",
+    "fill-previous": "Prosim izpolnite prejšnje vrednosti filtra",
+    "title-required": "Naslov je obvezen",
+    "value-required": "Vrednost filtra je obvezna"
+  },
+  "filter": {
+    "new-filter": "Nov filter",
+    "type": {
+      "tag": "Značka",
+      "type": "Tip",
+      "text": "Tekst",
+      "display-time": "Prikazan čas",
+      "visibility": "Vidnost"
+    },
+    "operator": {
+      "contains": "Vsebuje",
+      "not-contains": "Ne vsebuje",
+      "is": "Je",
+      "is-not": "Ni",
+      "before": "Pred",
+      "after": "Po"
+    },
+    "value": {
+      "not-tagged": "Ni značka",
+      "linked": "Ima povezave",
+      "has-attachment": "Ima priponke"
+    },
+    "text-placeholder": "Začnite s ^ za uporabo regex"
+  },
+  "tag-list": {
+    "tip-text": "Vnesite `#značka` za izdalavo",
+    "create-tag": "Kreiraj značko",
+    "all-tags": "Vse značke",
+    "tag-name": "IME_ZNAČKE"
+  },
+  "search": {
+    "quickly-filter": "Hitro filtriraj"
+  },
+  "search-bar": {
+    "input-placeholder": "Iskanje beležk"
+  },
+  "setting": {
+    "my-account": "Moj račun",
+    "preference": "Nastavitve",
+    "member": "Član",
+    "member-list": "Seznam članov",
+    "system": "Sistem",
+    "storage": "Shramba",
+    "sso": "SSO",
+    "account-section": {
+      "title": "Podatki o računu",
+      "update-information": "Posodobi informacije",
+      "change-password": "Zamenjaj geslo"
+    },
+    "preference-section": {
+      "theme": "Tema",
+      "default-memo-visibility": "Privzeta vidnost beležke",
+      "default-resource-visibility": "Privzeta vidnost vira",
+      "enable-folding-memo": "Omogoči zložljivo beležko",
+      "enable-double-click": "Omogoči dvojni klik za urejanje",
+      "editor-font-style": "Tip pisave urejevalnika",
+      "mobile-editor-style": "Stil mobilnega urejevalnika",
+      "default-memo-sort-option": "Čas prikaza beležke",
+      "created_ts": "Čas ustvarjanja",
+      "updated_ts": "Čas posodobitve",
+      "daily-review-time-offset": "Časovni odmik dnevnega pregleda"
+    },
+    "storage-section": {
+      "storage-services-list": "Seznam storitev shramb",
+      "create-a-service": "Kreiraj storitev",
+      "update-a-service": "Posodobi storitev",
+      "warning-text": "Ali ste prepričani, da želite izbrisati storitev shrambe? TA AKCIJA JE NEPOVRATNA❗",
+      "delete-storage": "Izbriši shrambo"
+    },
+    "member-section": {
+      "create-a-member": "Ustvari novega člana"
+    },
+    "system-section": {
+      "server-name": "Ime strežnika",
+      "customize-server": {
+        "title": "Prilagodi strežnik",
+        "default": "Prvizeto je memos",
+        "icon-url": "URL ikone"
+      },
+      "database-file-size": "Velikost podatkovne baze",
+      "allow-user-signup": "Omogoče kreiranje novih uporabnikov",
+      "disable-public-memos": "Onemogoči javne beležke",
+      "additional-style": "Dodatni stili",
+      "additional-script": "Dodatne skripte",
+      "additional-style-placeholder": "Dodatna CSS koda",
+      "additional-script-placeholder": "Dodatna JavaScript koda"
+    },
+    "appearance-option": {
+      "system": "Sledi sistemu",
+      "light": "Vedno svetla",
+      "dark": "Vedno temna"
+    }
+  },
+  "amount-text": {
+    "memo_one": "BELEŽKA",
+    "memo_other": "BELEŽKE",
+    "tag_one": "ZNAČKA",
+    "tag_other": "ZNAČKE",
+    "day_one": "DAN",
+    "day_other": "DNI"
+  },
+  "message": {
+    "no-memos": "ni beležk 🌃",
+    "memos-ready": "vse beležke so pripravljene 🎉",
+    "restored-successfully": "Uspešno obnovljeno",
+    "memo-updated-datetime": "Spremenjena čas ustvarjene beležke.",
+    "invalid-created-datetime": "Neveljavno ustvarjen čas.",
+    "change-memo-created-time": "Spremeni čas izdelave beležke",
+    "memo-not-found": "Ne najdem beležke.",
+    "fill-all": "Prosim izpolnite vsa polja.",
+    "password-not-match": "Gesli se ne ujemata.",
+    "new-password-not-match": "Novi gesli se ne ujemata.",
+    "image-load-failed": "Napaka pri nalaganju slike",
+    "fill-form": "Prosim izpolnite ta obrazec",
+    "login-failed": "Napak pri prijavi",
+    "signup-failed": "Napaka pri registraciji",
+    "user-not-found": "Ne najdem uporabnika",
+    "password-changed": "Geslo je spremenjeno",
+    "private-only": "Ta beležka je zasebna.",
+    "copied": "Skopirano",
+    "succeed-copy-content": "Vsebina je uspešno skopirana.",
+    "succeed-copy-code": "Koda je uspešno skopirana.",
+    "succeed-copy-link": "Povezava je uspešno skopirana.",
+    "change-resource-filename": "Spremeni ime vira",
+    "resource-filename-updated": "Ime vira je spremenjeno.",
+    "invalid-resource-filename": "Neveljavno ime datoteke.",
+    "click-to-save-the-image": "Kliknite za shranjevanje slike",
+    "generating-the-screenshot": "Generiram zajem zaslona...",
+    "count-selected-resources": "Skupaj izbrano",
+    "too-short": "Prekratko",
+    "too-long": "Predolgo",
+    "not-allow-space": "Ne dovoli presledkov",
+    "not-allow-chinese": "Ne dovoli kitajščine",
+    "succeed-vacuum-database": "Baza je uspešno skrčena",
+    "succeed-update-additional-style": "Dodatni stili so uspešno posodobljeni.",
+    "succeed-copy-resource-link": "Povezava do vira je uspešno skopirana.",
+    "succeed-update-customized-profile": "Provil je uspešno prilagojen.",
+    "succeed-update-additional-script": "Dodatne skripte so uspešno posodobljene.",
+    "update-succeed": "Posodobite je uspešna",
+    "page-not-found": "404 - Ne najdem strani 😥"
+  },
+  "days": {
+    "monday": "Ponedeljek",
+    "mon": "Pon",
+    "tuesday": "Torek",
+    "tue": "Tor",
+    "wednesday": "Sreda",
+    "wed": "Sre",
+    "thursday": "Četrtek",
+    "thu": "Čet",
+    "friday": "Petek",
+    "fri": "Pet",
+    "saturday": "Sobota",
+    "sat": "Sob",
+    "sunday": "Nedelja",
+    "sun": "Ned"
+  },
+  "ask-ai": {
+    "title": "Vprašaj AI",
+    "not-enabled": "Niste še nastavili vašega OpenAI API ključa.",
+    "go-to-settings": "Pojdite na nastavitve",
+    "placeholder": "Vprašajte karkoli…"
+  },
+  "embed-memo": {
+    "title": "Vdelaj beležko",
+    "text": "Kopirajte in prilepite spodnjo kodo v vaš blog ali spletno stran.",
+    "only-public-supported": "* Podprte so samo javne beležke.",
+    "copy": "Kopiraj"
+  },
+  "visibility": {
+    "PUBLIC": "JAVNO",
+    "PROTECTED": "ZAŠČITENO",
+    "PRIVATE": "ZASEBNO"
+  }
+}
