@@ -4,7 +4,7 @@ import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
-import { useEditorStore, useFilterStore, useMemoStore, useUserStore } from "../store/module";
+import { useEditorStore, useFilterStore, useMemoStore, useUserStore } from "@/store/module";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
@@ -12,7 +12,7 @@ import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import showEmbedMemoDialog from "./EmbedMemoDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
-import "../less/memo.less";
+import "@/less/memo.less";
 
 interface Props {
   memo: Memo;

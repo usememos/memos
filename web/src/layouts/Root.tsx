@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
-import UpdateVersionBanner from "../components/UpdateVersionBanner";
-import Header from "../components/Header";
+import Header from "@/components/Header";
+import UpdateVersionBanner from "@/components/UpdateVersionBanner";
 
 function Root() {
   return (

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useFilterStore, useTagStore } from "../store/module";
-import useToggle from "../hooks/useToggle";
+import { useFilterStore, useTagStore } from "@/store/module";
+import useToggle from "@/hooks/useToggle";
 import Icon from "./Icon";
 import showCreateTagDialog from "./CreateTagDialog";
 

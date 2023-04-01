@@ -1,7 +1,7 @@
 import { useState, useRef } from "react";
-import Icon from "./Icon";
-import useDebounce from "../hooks/useDebounce";
 import { useTranslation } from "react-i18next";
+import Icon from "./Icon";
+import useDebounce from "@/hooks/useDebounce";
 
 interface ResourceSearchBarProps {
   setQuery: (queryText: string) => void;

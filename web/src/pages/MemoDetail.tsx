@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { UNKNOWN_ID } from "../helpers/consts";
-import { useGlobalStore, useMemoStore, useUserStore } from "../store/module";
-import useLoading from "../hooks/useLoading";
-import MemoContent from "../components/MemoContent";
-import MemoResources from "../components/MemoResources";
-import "../less/memo-detail.less";
+import { UNKNOWN_ID } from "@/helpers/consts";
+import { useGlobalStore, useMemoStore, useUserStore } from "@/store/module";
+import useLoading from "@/hooks/useLoading";
+import MemoContent from "@/components/MemoContent";
+import MemoResources from "@/components/MemoResources";
+import "@/less/memo-detail.less";
 
 interface State {
   memo: Memo;

@@ -1,9 +1,9 @@
 import { useEffect, useState, useRef } from "react";
-import useDebounce from "../hooks/useDebounce";
-import { useFilterStore, useDialogStore, useLayoutStore } from "../store/module";
-import { resolution } from "../utils/layout";
-import Icon from "./Icon";
 import { useTranslation } from "react-i18next";
+import useDebounce from "@/hooks/useDebounce";
+import { useFilterStore, useDialogStore, useLayoutStore } from "@/store/module";
+import { resolution } from "@/utils/layout";
+import Icon from "./Icon";
 
 const SearchBar = () => {
   const { t } = useTranslation();

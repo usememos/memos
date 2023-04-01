@@ -1,6 +1,6 @@
 import React from "react";
 import Icon from "./Icon";
-import "../less/resource-cover.less";
+import "@/less/resource-cover.less";
 
 interface ResourceCoverProps {
   resource: Resource;

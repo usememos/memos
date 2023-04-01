@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Button, Divider, Input, Switch, Textarea } from "@mui/joy";
-import { useGlobalStore } from "../../store/module";
-import * as api from "../../helpers/api";
+import { useGlobalStore } from "@/store/module";
+import * as api from "@/helpers/api";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 import "@/less/settings/system-section.less";
 

@@ -1,7 +1,7 @@
 import { Option, Select } from "@mui/joy";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useUserStore } from "../store/module";
+import { useUserStore } from "@/store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import BetaBadge from "./BetaBadge";
@@ -11,7 +11,7 @@ import MemberSection from "./Settings/MemberSection";
 import SystemSection from "./Settings/SystemSection";
 import StorageSection from "./Settings/StorageSection";
 import SSOSection from "./Settings/SSOSection";
-import "../less/setting-dialog.less";
+import "@/less/setting-dialog.less";
 
 type SettingSection = "my-account" | "preference" | "member" | "system" | "storage" | "sso";
 

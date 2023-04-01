@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useUserStore } from "../store/module";
+import { useUserStore } from "@/store/module";
 import Dropdown from "./base/Dropdown";
-import showAboutSiteDialog from "./AboutSiteDialog";
-import UserAvatar from "./UserAvatar";
-import showSettingDialog from "./SettingDialog";
 import Icon from "./Icon";
+import UserAvatar from "./UserAvatar";
+import showAboutSiteDialog from "./AboutSiteDialog";
+import showSettingDialog from "./SettingDialog";
 
 const UserBanner = () => {
   const { t } = useTranslation();

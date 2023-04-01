@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import * as api from "../../helpers/api";
+import * as api from "@/helpers/api";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import Dropdown from "../base/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";

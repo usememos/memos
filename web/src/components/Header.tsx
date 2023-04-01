@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useLayoutStore, useUserStore } from "../store/module";
-import { resolution } from "../utils/layout";
+import { useLayoutStore, useUserStore } from "@/store/module";
+import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
 import showSettingDialog from "./SettingDialog";
 import showAskAIDialog from "./AskAIDialog";

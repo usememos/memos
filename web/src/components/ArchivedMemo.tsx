@@ -1,11 +1,11 @@
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useMemoStore } from "../store/module";
-import * as utils from "../helpers/utils";
-import useToggle from "../hooks/useToggle";
+import { useMemoStore } from "@/store/module";
+import * as utils from "@/helpers/utils";
+import useToggle from "@/hooks/useToggle";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
-import "../less/memo.less";
+import "@/less/memo.less";
 
 interface Props {
   memo: Memo;
