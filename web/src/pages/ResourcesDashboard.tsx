@@ -175,11 +175,10 @@ const ResourcesDashboard = () => {
     if (!isComplete) {
       loadingState.setLoading();
       try {
-        await resourceStore.fetchResourceList().then((allResources) => {
-          loadingState.setFinish();
-          setIsComplete(true);
-          resolve(allResources);
-        });
+        const allResources = await resourceStore.fetchResourceList();
+        loadingState.setFinish();
+        setIsComplete(true);
+        resolve(allResources);
       } catch (error: any) {
         console.error(error);
         toast.error(error.response.data.message);
