@@ -3,8 +3,8 @@
     "about": "O programu",
     "home": "Domov",
     "resources": "Viri",
-    "settings": "Nastavirve",
-    "daily-review": "Dnevni pregled",
+    "settings": "Nastavitve",
+    "daily-review": "Dnevno",
     "ask-ai": "Vprašaj AI",
     "archived": "Arhivirani",
     "email": "Email",
@@ -17,7 +17,7 @@
     "save": "Shrani",
     "close": "Zapri",
     "cancel": "Prekliči",
-    "create": "Ustvari",
+    "create": "Dodaj",
     "change": "Spremeni",
     "confirm": "Potrdi",
     "reset": "Ponastavi",
@@ -26,13 +26,13 @@
     "pin": "Pripni",
     "unpin": "Odpni",
     "edit": "Uredi",
-    "restore": "Obnovi",
+    "restore": "Privzeto",
     "delete": "Izbriši",
     "null": "Nič",
     "share": "Deli",
     "archive": "Arhiv",
     "basic": "Osnovni",
-    "admin": "Admini",
+    "admin": "Admin",
     "explore": "Razišči",
     "sign-in": "Prijavi se",
     "sign-up": "Registriraj",
@@ -43,7 +43,7 @@
     "title": "Naslov",
     "filter": "Filter",
     "tags": "Značke",
-    "yourself": "Sam",
+    "yourself": "Ti",
     "archived-at": "Arhiviran ob",
     "changed": "spremenjen",
     "update-on": "Posodobljen ob",
@@ -82,11 +82,11 @@
     "delete-selected-resources": "Izbrišite izbrane vire",
     "no-files-selected": "Nobena datoteka ni označena❗",
     "upload-successfully": "Nalaganje uspešno",
-    "file-drag-drop-prompt": "Za nalaganje, tu povlecite in spusite vaše datoteke",
+    "file-drag-drop-prompt": "Za nalaganje, tu povlecite in spustite vaše datoteke",
     "select": "Izberite",
     "search-bar-placeholder": "Iskanje virov",
     "create-dialog": {
-      "title": "Izdelaj vir",
+      "title": "Dodaj vir",
       "upload-method": "Metoda nalaganja",
       "local-file": {
         "option": "Lokalna datoteka",
@@ -118,13 +118,13 @@
     "resources": "Viri"
   },
   "memo": {
-    "view-detail": "Poglej podrobosti",
+    "view-detail": "Poglej podrobnosti",
     "copy": "Kopiraj",
     "embed": "Vdelaj beležko",
     "visibility": {
       "private": "Vidno samo za vas",
-      "protected": "Vidno članom",
-      "public": "Vsi lahko vidijo",
+      "protected": "Vidno uporabnikom",
+      "public": "Vidno vsem",
       "disabled": "Javne beležke so onemogočene"
     }
   },
@@ -159,8 +159,8 @@
       "after": "Po"
     },
     "value": {
-      "not-tagged": "Ni značka",
-      "linked": "Ima povezave",
+      "not-tagged": "Ni značk",
+      "linked": "Ima povezavo",
       "has-attachment": "Ima priponke"
     },
     "text-placeholder": "Začnite s ^ za uporabo regex"
@@ -180,8 +180,8 @@
   "setting": {
     "my-account": "Moj račun",
     "preference": "Nastavitve",
-    "member": "Član",
-    "member-list": "Seznam članov",
+    "member": "Uporabnik",
+    "member-list": "Seznam uporabnikov",
     "system": "Sistem",
     "storage": "Shramba",
     "sso": "SSO",
@@ -211,18 +211,18 @@
       "delete-storage": "Izbriši shrambo"
     },
     "member-section": {
-      "create-a-member": "Ustvari novega člana"
+      "create-a-member": "Dodaj novega uporabnika"
     },
     "system-section": {
       "server-name": "Ime strežnika",
       "customize-server": {
         "title": "Prilagodi strežnik",
-        "default": "Prvizeto je memos",
+        "default": "Privzeto je memos",
         "icon-url": "URL ikone"
       },
       "database-file-size": "Velikost podatkovne baze",
-      "allow-user-signup": "Omogoče kreiranje novih uporabnikov",
-      "disable-public-memos": "Onemogoči javne beležke",
+      "allow-user-signup": "Omogočite kreiranje novih uporabnikov",
+      "disable-public-memos": "Onemogočite javne beležke",
       "additional-style": "Dodatni stili",
       "additional-script": "Dodatne skripte",
       "additional-style-placeholder": "Dodatna CSS koda",
@@ -246,7 +246,7 @@
     "no-memos": "ni beležk 🌃",
     "memos-ready": "vse beležke so pripravljene 🎉",
     "restored-successfully": "Uspešno obnovljeno",
-    "memo-updated-datetime": "Spremenjena čas ustvarjene beležke.",
+    "memo-updated-datetime": "Spremenjen čas ustvarjene beležke.",
     "invalid-created-datetime": "Neveljavno ustvarjen čas.",
     "change-memo-created-time": "Spremeni čas izdelave beležke",
     "memo-not-found": "Ne najdem beležke.",
@@ -255,7 +255,7 @@
     "new-password-not-match": "Novi gesli se ne ujemata.",
     "image-load-failed": "Napaka pri nalaganju slike",
     "fill-form": "Prosim izpolnite ta obrazec",
-    "login-failed": "Napak pri prijavi",
+    "login-failed": "Napaka pri prijavi",
     "signup-failed": "Napaka pri registraciji",
     "user-not-found": "Ne najdem uporabnika",
     "password-changed": "Geslo je spremenjeno",
@@ -264,7 +264,7 @@
     "succeed-copy-content": "Vsebina je uspešno skopirana.",
     "succeed-copy-code": "Koda je uspešno skopirana.",
     "succeed-copy-link": "Povezava je uspešno skopirana.",
-    "change-resource-filename": "Spremeni ime vira",
+    "change-resource-filename": "Spremenite ime vira",
     "resource-filename-updated": "Ime vira je spremenjeno.",
     "invalid-resource-filename": "Neveljavno ime datoteke.",
     "click-to-save-the-image": "Kliknite za shranjevanje slike",
@@ -277,9 +277,9 @@
     "succeed-vacuum-database": "Baza je uspešno skrčena",
     "succeed-update-additional-style": "Dodatni stili so uspešno posodobljeni.",
     "succeed-copy-resource-link": "Povezava do vira je uspešno skopirana.",
-    "succeed-update-customized-profile": "Provil je uspešno prilagojen.",
+    "succeed-update-customized-profile": "Profil je uspešno prilagojen.",
     "succeed-update-additional-script": "Dodatne skripte so uspešno posodobljene.",
-    "update-succeed": "Posodobite je uspešna",
+    "update-succeed": "Posodobitev je uspešna",
     "page-not-found": "404 - Ne najdem strani 😥"
   },
   "days": {
