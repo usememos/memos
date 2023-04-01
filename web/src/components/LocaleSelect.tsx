@@ -36,6 +36,7 @@ const LocaleSelect: FC<Props> = (props: Props) => {
       <Option value="hant">繁體中文</Option>
       <Option value="tr">Turkish</Option>
       <Option value="ko">한국어</Option>
+      <Option value="sl">Slovenian</Option>
     </Select>
   );
 };

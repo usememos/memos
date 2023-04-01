@@ -67,7 +67,7 @@
   "resources": {
     "description": "Poglejte svoje statične vire v beležkah npr. slike",
     "no-resources": "Ni virov.",
-    "fetching-data": "pridobivam podatke..."
+    "fetching-data": "pridobivam podatke...",
     "upload": "Naloži",
     "preview": "Predogled",
     "copy-link": "Kopiraj povezavo",
@@ -129,7 +129,7 @@
     }
   },
   "memo-list": {
-    "fetching-data": "pridobivam podatke..."
+    "fetching-data": "pridobivam podatke...",
     "fetch-more": "Kliknite tu da pridobite še več"
   },
   "shortcut-list": {
