@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLoading from "@/hooks/useLoading";
-import useListStyle from "@/hooks/useListStyle";
 import { useResourceStore } from "@/store/module";
 import { getResourceUrl } from "@/utils/resource";
 import Icon from "@/components/Icon";
@@ -24,9 +23,8 @@ const ResourcesDashboard = () => {
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
-  const [isVisible, setIsVisible] = useState<boolean>(false);
+  const [listStyle, setListStyle] = useState<"GRID" | "TABLE">("GRID");
   const [queryText, setQueryText] = useState<string>("");
-  const { listStyle, setToTableStyle, setToGridStyle } = useListStyle();
   const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
@@ -40,14 +38,6 @@ const ResourcesDashboard = () => {
         loadingState.setFinish();
       });
   }, []);
-
-  useEffect(() => {
-    if (selectedList.length === 0) {
-      setIsVisible(false);
-    } else {
-      setIsVisible(true);
-    }
-  }, [selectedList]);
 
   const handleCheckBtnClick = (resourceId: ResourceId) => {
     setSelectedList([...selectedList, resourceId]);
@@ -102,12 +92,8 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handleStyleChangeBtnClick = (listStyleValue: boolean) => {
-    if (listStyleValue) {
-      setToTableStyle();
-    } else {
-      setToGridStyle();
-    }
+  const handleStyleChangeBtnClick = (listStyle: "GRID" | "TABLE") => {
+    setListStyle(listStyle);
     setSelectedList([]);
   };
 
@@ -160,7 +146,7 @@ const ResourcesDashboard = () => {
       resources
         .filter((res: Resource) => (queryText === "" ? true : res.filename.toLowerCase().includes(queryText.toLowerCase())))
         .map((resource) =>
-          listStyle ? (
+          listStyle === "TABLE" ? (
             <ResourceItem
               key={resource.id}
               resource={resource}
@@ -241,7 +227,7 @@ const ResourcesDashboard = () => {
             <ResourceSearchBar setQuery={handleSearchResourceInputChange} />
           </div>
           <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
-            {isVisible && (
+            {selectedList.length > 0 && (
               <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger">
                 <Icon.Trash2 className="w-4 h-auto" />
               </Button>
@@ -273,17 +259,17 @@ const ResourcesDashboard = () => {
             <div className="flex rounded-lg cursor-pointer h-8 overflow-clip border dark:border-zinc-600">
               <div
                 className={`flex justify-center items-center px-3 ${
-                  !listStyle ? "bg-white dark:bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800 opacity-60"
+                  listStyle === "GRID" ? "bg-white dark:bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800 opacity-60"
                 }`}
-                onClick={() => handleStyleChangeBtnClick(false)}
+                onClick={() => handleStyleChangeBtnClick("GRID")}
               >
                 <Icon.Grid className="w-4 h-auto opacity-80" />
               </div>
               <div
                 className={`flex justify-center items-center px-3 ${
-                  listStyle ? "bg-white dark:bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800 opacity-60"
+                  listStyle === "TABLE" ? "bg-white dark:bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800 opacity-60"
                 }`}
-                onClick={() => handleStyleChangeBtnClick(true)}
+                onClick={() => handleStyleChangeBtnClick("TABLE")}
               >
                 <Icon.List className="w-4 h-auto opacity-80" />
               </div>
@@ -297,16 +283,16 @@ const ResourcesDashboard = () => {
             ) : (
               <div
                 className={
-                  listStyle
+                  listStyle === "TABLE"
                     ? "flex flex-col justify-start items-start w-full"
                     : "w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6"
                 }
               >
-                {listStyle && (
-                  <div className="px-2 py-2 w-full grid grid-cols-7 border-b dark:border-b-zinc-600">
-                    <span>{t("resources.select")}</span>
-                    <span className="field-text id-text">ID</span>
-                    <span className="field-text name-text">{t("resources.name")}</span>
+                {listStyle === "TABLE" && (
+                  <div className="px-2 py-2 w-full grid grid-cols-10 border-b dark:border-b-zinc-600">
+                    <span></span>
+                    <span className="col-span-2">ID</span>
+                    <span className="col-span-6">{t("resources.name")}</span>
                     <span></span>
                   </div>
                 )}
