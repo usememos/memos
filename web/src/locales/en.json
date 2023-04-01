@@ -245,6 +245,8 @@
   "message": {
     "no-memos": "no memos 🌃",
     "memos-ready": "all memos are ready 🎉",
+    "no-resource": "no resource 🌃",
+    "resource-ready": "all resource are ready 🎉",
     "restored-successfully": "Restored successfully",
     "memo-updated-datetime": "Memo created datetime changed.",
     "invalid-created-datetime": "Invalid created datetime.",

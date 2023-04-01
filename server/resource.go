@@ -256,6 +256,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		resourceFind := &api.ResourceFind{
 			CreatorID: &userID,
 		}
+		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
+			resourceFind.Limit = &limit
+		}
+		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
+			resourceFind.Offset = &offset
+		}
+
 		list, err := s.Store.FindResourceList(ctx, resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)

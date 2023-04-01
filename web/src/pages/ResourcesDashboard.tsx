@@ -16,6 +16,7 @@ import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import showChangeResourceFilenameDialog from "@/components/ChangeResourceFilenameDialog";
 import showPreviewImageDialog from "@/components/PreviewImageDialog";
 import showCreateResourceDialog from "@/components/CreateResourceDialog";
+import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -26,16 +27,20 @@ const ResourcesDashboard = () => {
   const [listStyle, setListStyle] = useState<"GRID" | "TABLE">("GRID");
   const [queryText, setQueryText] = useState<string>("");
   const [dragActive, setDragActive] = useState(false);
+  const [isComplete, setIsComplete] = useState<boolean>(false);
 
   useEffect(() => {
     resourceStore
-      .fetchResourceList()
+      .fetchResourceListWithLimit(DEFAULT_MEMO_LIMIT)
+      .then((fetchedResource) => {
+        if (fetchedResource.length < DEFAULT_MEMO_LIMIT) {
+          setIsComplete(true);
+        }
+        loadingState.setFinish();
+      })
       .catch((error) => {
         console.error(error);
         toast.error(error.response.data.message);
-      })
-      .finally(() => {
-        loadingState.setFinish();
       });
   }, []);
 
@@ -47,29 +52,31 @@ const ResourcesDashboard = () => {
     setSelectedList(selectedList.filter((resId) => resId !== resourceId));
   };
 
-  const handleDeleteUnusedResourcesBtnClick = () => {
+  const handleDeleteUnusedResourcesBtnClick = async () => {
     let warningText = t("resources.warning-text-unused");
-    const unusedResources = resources.filter((resource) => {
-      if (resource.linkedMemoAmount === 0) {
-        warningText = warningText + `\n- ${resource.filename}`;
-        return true;
-      }
-      return false;
-    });
-    if (unusedResources.length === 0) {
-      toast.success(t("resources.no-unused-resources"));
-      return;
-    }
-    showCommonDialog({
-      title: t("resources.delete-resource"),
-      content: warningText,
-      style: "warning",
-      dialogName: "delete-unused-resources",
-      onConfirm: async () => {
-        for (const resource of unusedResources) {
-          await resourceStore.deleteResourceById(resource.id);
+    await loadAllResources((allResources: Resource[]) => {
+      const unusedResources = allResources.filter((resource) => {
+        if (resource.linkedMemoAmount === 0) {
+          warningText = warningText + `\n- ${resource.filename}`;
+          return true;
         }
-      },
+        return false;
+      });
+      if (unusedResources.length === 0) {
+        toast.success(t("resources.no-unused-resources"));
+        return;
+      }
+      showCommonDialog({
+        title: t("resources.delete-resource"),
+        content: warningText,
+        style: "warning",
+        dialogName: "delete-unused-resources",
+        onConfirm: async () => {
+          for (const resource of unusedResources) {
+            await resourceStore.deleteResourceById(resource.id);
+          }
+        },
+      });
     });
   };
 
@@ -136,9 +143,44 @@ const ResourcesDashboard = () => {
     toast.success(t("message.succeed-copy-resource-link"));
   };
 
-  const handleSearchResourceInputChange = (query: string) => {
-    setQueryText(query);
-    setSelectedList([]);
+  const handleFetchMoreResourceBtnClick = async () => {
+    try {
+      const fetchedResource = await resourceStore.fetchResourceListWithLimit(DEFAULT_MEMO_LIMIT, resources.length);
+      if (fetchedResource.length < DEFAULT_MEMO_LIMIT) {
+        setIsComplete(true);
+      } else {
+        setIsComplete(false);
+      }
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const loadAllResources = async (resolve: (allResources: Resource[]) => void) => {
+    if (!isComplete) {
+      loadingState.setLoading();
+      try {
+        const allResources = await resourceStore.fetchResourceList();
+        loadingState.setFinish();
+        setIsComplete(true);
+        resolve(allResources);
+      } catch (error: any) {
+        console.error(error);
+        toast.error(error.response.data.message);
+      }
+    } else {
+      resolve(resources);
+    }
+  };
+
+  const handleSearchResourceInputChange = async (query: string) => {
+    // to prevent first tiger when page is loaded
+    if (query === queryText) return;
+    await loadAllResources(() => {
+      setQueryText(query);
+      setSelectedList([]);
+    });
   };
 
   const resourceList = useMemo(
@@ -303,6 +345,23 @@ const ResourcesDashboard = () => {
                 )}
               </div>
             )}
+          </div>
+          <div className="flex flex-col justify-start items-center w-full my-6">
+            <p className="text-sm text-gray-400 italic">
+              {isComplete ? (
+                resources.length === 0 ? (
+                  t("message.no-resource")
+                ) : (
+                  t("message.resource-ready")
+                )
+              ) : (
+                <>
+                  <span className="cursor-pointer hover:text-green-600" onClick={handleFetchMoreResourceBtnClick}>
+                    {t("memo-list.fetch-more")}
+                  </span>
+                </>
+              )}
+            </p>
           </div>
         </div>
       </div>

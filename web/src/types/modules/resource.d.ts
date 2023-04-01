@@ -24,3 +24,8 @@ interface ResourcePatch {
   id: ResourceId;
   filename?: string;
 }
+
+interface ResourceFind {
+  offset?: number;
+  limit?: number;
+}
