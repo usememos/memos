@@ -17,6 +17,7 @@ import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import showChangeResourceFilenameDialog from "@/components/ChangeResourceFilenameDialog";
 import showPreviewImageDialog from "@/components/PreviewImageDialog";
 import showCreateResourceDialog from "@/components/CreateResourceDialog";
+import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
