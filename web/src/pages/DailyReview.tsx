@@ -12,9 +12,7 @@ import showPreviewImageDialog from "../components/PreviewImageDialog";
 import Icon from "../components/Icon";
 import DatePicker from "../components/base/DatePicker";
 import DailyMemo from "../components/DailyMemo";
-
-const monthChineseStrArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
-const weekdayChineseStrArray = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+import dayjs from "dayjs";
 
 const DailyReview = () => {
   const { t } = useTranslation();
@@ -80,6 +78,9 @@ const DailyReview = () => {
     toggleShowDatePicker(false);
   };
 
+  const currentMonth = dayjs().format("MMM");
+  const currentDayOfWeek = dayjs().format("ddd");
+
   return (
     <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
@@ -127,11 +128,11 @@ const DailyReview = () => {
             <div className="mx-auto font-bold text-gray-600 dark:text-gray-300 text-center leading-6 mb-2">{currentDate.getFullYear()}</div>
             <div className="flex flex-col justify-center items-center m-auto w-24 h-24 shadow rounded-3xl dark:bg-zinc-800">
               <div className="text-center w-full leading-6 text-sm text-white bg-blue-700 rounded-t-3xl">
-                {monthChineseStrArray[currentDate.getMonth()]}
+                {currentMonth[0].toUpperCase() + currentMonth.substring(1)}
               </div>
               <div className="text-black dark:text-white text-4xl font-medium leading-12">{currentDate.getDate()}</div>
               <div className="dark:text-gray-300 text-center w-full leading-6 -mt-2 text-xs">
-                {weekdayChineseStrArray[currentDate.getDay()]}
+                {currentDayOfWeek[0].toUpperCase() + currentDayOfWeek.substring(1)}
               </div>
             </div>
           </div>

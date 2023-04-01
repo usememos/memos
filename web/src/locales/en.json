@@ -5,6 +5,7 @@
     "resources": "Resources",
     "settings": "Settings",
     "daily-review": "Daily Review",
+    "ask-ai": "Ask AI",
     "archived": "Archived",
     "email": "Email",
     "password": "Password",
@@ -82,7 +83,24 @@
     "no-files-selected": "No files selected❗",
     "upload-successfully": "Upload successfully",
     "file-drag-drop-prompt": "Drag and drop your file here to upload file",
-    "select": "Select"
+    "select": "Select",
+    "search-bar-placeholder": "Search resource",
+    "create-dialog": {
+      "title": "Create Resource",
+      "upload-method": "Upload method",
+      "local-file": {
+        "option": "Local file",
+        "choose": "Choose a file..."
+      },
+      "external-link": {
+        "option": "External link",
+        "link": "Link",
+        "file-name": "File name",
+        "file-name-placeholder": "File name",
+        "type": "Type",
+        "type-placeholder": "File type"
+      }
+    }
   },
   "archived": {
     "archived-memos": "Archived Memos",
@@ -102,6 +120,7 @@
   "memo": {
     "view-detail": "View Detail",
     "copy": "Copy",
+    "embed": "Embed memo",
     "visibility": {
       "private": "Only visible to you",
       "protected": "Visible to members",
@@ -155,6 +174,9 @@
   "search": {
     "quickly-filter": "Quickly filter"
   },
+  "search-bar": {
+    "input-placeholder": "Search memos"
+  },
   "setting": {
     "my-account": "My Account",
     "preference": "Preferences",
@@ -171,13 +193,15 @@
     "preference-section": {
       "theme": "Theme",
       "default-memo-visibility": "Default memo visibility",
+      "default-resource-visibility": "Default resource visibility",
       "enable-folding-memo": "Enable folding memo",
       "enable-double-click": "Enable double-click to edit",
       "editor-font-style": "Editor font style",
       "mobile-editor-style": "Mobile editor style",
       "default-memo-sort-option": "Memo display time",
       "created_ts": "Created Time",
-      "updated_ts": "Updated Time"
+      "updated_ts": "Updated Time",
+      "daily-review-time-offset": "Daily Review Time Offset"
     },
     "storage-section": {
       "storage-services-list": "Storage service list",
@@ -273,5 +297,22 @@
     "sat": "Sat",
     "sunday": "Sunday",
     "sun": "Sun"
+  },
+  "ask-ai": {
+    "title": "Ask AI",
+    "not-enabled": "You have not set up your OpenAI API key.",
+    "go-to-settings": "Go to settings",
+    "placeholder": "Ask anything…"
+  },
+  "embed-memo": {
+    "title": "Embed Memo",
+    "text": "Copy and paste the below codes into your blog or website.",
+    "only-public-supported": "* Only the public memo supports.",
+    "copy": "Copy"
+  },
+  "visibility": {
+    "PUBLIC": "PUBLIC",
+    "PROTECTED": "PROTECTED",
+    "PRIVATE": "PRIVATE"
   }
 }

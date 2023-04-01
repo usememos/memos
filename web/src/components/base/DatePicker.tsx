@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { DAILY_TIMESTAMP } from "../../helpers/consts";
 import Icon from "../Icon";
 import "../../less/common/date-picker.less";
+import { useTranslation } from "react-i18next";
 
 interface DatePickerProps {
   className?: string;
@@ -10,6 +11,7 @@ interface DatePickerProps {
 }
 
 const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
+  const { t } = useTranslation();
   const { className, datestamp, handleDateStampChange } = props;
   const [currentDateStamp, setCurrentDateStamp] = useState<DateStamp>(getMonthFirstDayDateStamp(datestamp));
 
@@ -67,13 +69,13 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
       </div>
       <div className="date-picker-day-container">
         <div className="date-picker-day-header">
-          <span className="day-item">Mon</span>
-          <span className="day-item">Tue</span>
-          <span className="day-item">Wed</span>
-          <span className="day-item">Thu</span>
-          <span className="day-item">Fri</span>
-          <span className="day-item">Sat</span>
-          <span className="day-item">Sun</span>
+          <span className="day-item">{t("days.mon")}</span>
+          <span className="day-item">{t("days.tue")}</span>
+          <span className="day-item">{t("days.wed")}</span>
+          <span className="day-item">{t("days.thu")}</span>
+          <span className="day-item">{t("days.fri")}</span>
+          <span className="day-item">{t("days.sat")}</span>
+          <span className="day-item">{t("days.sun")}</span>
         </div>
 
         {dayList.map((d) => {

@@ -1,11 +1,13 @@
 import { useState, useRef } from "react";
 import Icon from "./Icon";
 import useDebounce from "../hooks/useDebounce";
+import { useTranslation } from "react-i18next";
 
 interface ResourceSearchBarProps {
   setQuery: (queryText: string) => void;
 }
 const ResourceSearchBar = ({ setQuery }: ResourceSearchBarProps) => {
+  const { t } = useTranslation();
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -29,7 +31,7 @@ const ResourceSearchBar = ({ setQuery }: ResourceSearchBarProps) => {
         <input
           className="flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200"
           type="text"
-          placeholder="Search resource "
+          placeholder={t("resources.search-bar-placeholder")}
           ref={inputRef}
           value={queryText}
           onChange={handleTextQueryInput}

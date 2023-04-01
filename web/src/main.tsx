@@ -11,6 +11,7 @@ import "./i18n";
 import "dayjs/locale/zh";
 import "dayjs/locale/fr";
 import "dayjs/locale/vi";
+import "dayjs/locale/ru";
 import "./less/code-highlight.less";
 import "./css/global.css";
 import "./css/tailwind.css";

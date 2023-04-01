@@ -3,12 +3,14 @@ import { toast } from "react-hot-toast";
 import copy from "copy-to-clipboard";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
+import { useTranslation } from "react-i18next";
 
 interface Props extends DialogProps {
   memoId: MemoId;
 }
 
 const EmbedMemoDialog: React.FC<Props> = (props: Props) => {
+  const { t } = useTranslation();
   const { memoId, destroy } = props;
 
   const memoEmbeddedCode = () => {
@@ -23,20 +25,20 @@ const EmbedMemoDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">Embed Memo</p>
+        <p className="title-text">{t("embed-memo.title")}</p>
         <button className="btn close-btn" onClick={() => destroy()}>
           <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container !w-80">
-        <p className="text-base leading-6 mb-2">Copy and paste the below codes into your blog or website.</p>
+        <p className="text-base leading-6 mb-2">{t("embed-memo.text")}</p>
         <pre className="w-full font-mono text-sm p-3 border rounded-lg">
           <code className="w-full break-all whitespace-pre-wrap">{memoEmbeddedCode()}</code>
         </pre>
         <p className="w-full text-sm leading-6 flex flex-row justify-between items-center mt-2">
-          <span className="italic opacity-80">* Only the public memo supports.</span>
+          <span className="italic opacity-80">{t("embed-memo.only-public-supported")}</span>
           <span className="btn-primary" onClick={handleCopyCode}>
-            Copy
+            {t("embed-memo.copy")}
           </span>
         </p>
       </div>

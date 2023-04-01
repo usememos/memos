@@ -8,10 +8,12 @@ import { useMessageStore } from "../store/zustand/message";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import showSettingDialog from "./SettingDialog";
+import { useTranslation } from "react-i18next";
 
 type Props = DialogProps;
 
 const AskAIDialog: React.FC<Props> = (props: Props) => {
+  const { t } = useTranslation();
   const { destroy, hide } = props;
   const fetchingState = useLoading(false);
   const messageStore = useMessageStore();
@@ -79,7 +81,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text flex flex-row items-center">
           <Icon.Bot className="mr-1 w-5 h-auto opacity-80" />
-          Ask AI
+          {t("ask-ai.title")}
         </p>
         <button className="btn close-btn" onClick={() => hide()}>
           <Icon.X />
@@ -111,14 +113,14 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
         )}
         {!isEnabled && (
           <div className="w-full flex flex-col justify-center items-center mt-4 space-y-2">
-            <p>You have not set up your OpenAI API key.</p>
-            <Button onClick={() => handleGotoSystemSetting()}>Go to settings</Button>
+            <p>{t("ask-ai.not_enabled")}</p>
+            <Button onClick={() => handleGotoSystemSetting()}>{t("ask-ai.go-to-settings")}</Button>
           </div>
         )}
         <div className="w-full relative mt-4">
           <Textarea
             className="w-full"
-            placeholder="Ask anything…"
+            placeholder={t("ask-ai.placeholder")}
             value={question}
             minRows={1}
             maxRows={5}
