@@ -113,7 +113,7 @@ const Auth = () => {
         <div className="auth-form-wrapper">
           <div className="page-header-container">
             <div className="title-container">
-              <img className="logo-img" src={systemStatus.customizedProfile.logoUrl} alt="" />
+              <img className="h-12 w-auto rounded-lg mr-1" src={systemStatus.customizedProfile.logoUrl} alt="" />
               <p className="logo-text">{systemStatus.customizedProfile.name}</p>
             </div>
             <p className="slogan-text">{systemStatus.customizedProfile.description || t("slogan")}</p>

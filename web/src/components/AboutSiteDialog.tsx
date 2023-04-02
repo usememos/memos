@@ -31,8 +31,8 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <div className="mt-4 w-full flex flex-row text-sm justify-start items-center">
           <div className="flex flex-row justify-start items-center mr-2">
             Powered by
-            <a href="https://usememos.com" target="_blank" className="flex flex-row justify-start items-center mr-1 hover:underline">
-              <img className="w-6 h-auto" src="/logo.png" alt="" />
+            <a href="https://usememos.com" target="_blank" className="flex flex-row justify-start items-center mx-1 hover:underline">
+              <img className="w-6 h-auto rounded-full mr-1" src="/logo.webp" alt="" />
               memos
             </a>
             <span>v{profile.version}</span>
