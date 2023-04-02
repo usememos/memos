@@ -1,6 +1,6 @@
 # memos
 
-<img height="56px" src="https://usememos.com/logo.webp" alt="✍️ memos" align="right" />
+<img height="72px" src="https://usememos.com/logo.webp" alt="✍️ memos" align="right" />
 
 A lightweight, self-hosted memo hub. Open Source and Free forever.
 
