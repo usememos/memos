@@ -10,8 +10,6 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.3
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/feeds v1.1.1
-	github.com/gorilla/sessions v1.2.1
-	github.com/labstack/echo-contrib v0.13.0
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/mattn/go-sqlite3 v1.14.9
 	github.com/pkg/errors v0.9.1
@@ -44,9 +42,8 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
+	github.com/golang-jwt/jwt/v4 v4.5.0
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/gorilla/context v1.1.1 // indirect
-	github.com/gorilla/securecookie v1.1.1 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
