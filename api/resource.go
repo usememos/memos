@@ -9,13 +9,12 @@ type Resource struct {
 	UpdatedTs int64 `json:"updatedTs"`
 
 	// Domain specific fields
-	Filename     string     `json:"filename"`
-	Blob         []byte     `json:"-"`
-	InternalPath string     `json:"internalPath"`
-	ExternalLink string     `json:"externalLink"`
-	Type         string     `json:"type"`
-	Size         int64      `json:"size"`
-	Visibility   Visibility `json:"visibility"`
+	Filename     string `json:"filename"`
+	Blob         []byte `json:"-"`
+	InternalPath string `json:"internalPath"`
+	ExternalLink string `json:"externalLink"`
+	Type         string `json:"type"`
+	Size         int64  `json:"size"`
 
 	// Related fields
 	LinkedMemoAmount int `json:"linkedMemoAmount"`
@@ -26,13 +25,12 @@ type ResourceCreate struct {
 	CreatorID int `json:"-"`
 
 	// Domain specific fields
-	Filename     string     `json:"filename"`
-	Blob         []byte     `json:"-"`
-	InternalPath string     `json:"internalPath"`
-	ExternalLink string     `json:"externalLink"`
-	Type         string     `json:"type"`
-	Size         int64      `json:"-"`
-	Visibility   Visibility `json:"visibility"`
+	Filename     string `json:"filename"`
+	Blob         []byte `json:"-"`
+	InternalPath string `json:"internalPath"`
+	ExternalLink string `json:"externalLink"`
+	Type         string `json:"type"`
+	Size         int64  `json:"-"`
 }
 
 type ResourceFind struct {
@@ -58,8 +56,7 @@ type ResourcePatch struct {
 	UpdatedTs *int64
 
 	// Domain specific fields
-	Filename   *string     `json:"filename"`
-	Visibility *Visibility `json:"visibility"`
+	Filename *string `json:"filename"`
 }
 
 type ResourceDelete struct {
