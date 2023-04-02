@@ -81,7 +81,8 @@
     "delete-selected-resources": "刪除選中資源",
     "no-files-selected": "沒有文件被選中❗",
     "upload-successfully": "上傳成功",
-    "file-drag-drop-prompt": "將您的文件拖放到此處以上傳文件"
+    "file-drag-drop-prompt": "將您的文件拖放到此處以上傳文件",
+    "select": "選擇"
   },
   "archived": {
     "archived-memos": "已封存的 Memo",
@@ -217,6 +218,8 @@
   "message": {
     "no-memos": "沒有 Memo 了 🌃",
     "memos-ready": "所有 Memo 已就緒 🎉",
+    "no-resource": "沒有 Resource 了 🌃",
+    "memos-resource": "所有 Resource 已就緒 🎉",
     "restored-successfully": "還原成功",
     "memo-updated-datetime": "Memo 建立日期時間已更改。",
     "invalid-created-datetime": "建立的日期時間無效。",

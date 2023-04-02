@@ -312,6 +312,13 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 		GROUP BY resource.id
 		ORDER BY resource.id DESC
 	`, strings.Join(fields, ", "), strings.Join(where, " AND "))
+	if find.Limit != nil {
+		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
+		if find.Offset != nil {
+			query = fmt.Sprintf("%s OFFSET %d", query, *find.Offset)
+		}
+	}
+
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, FormatError(err)

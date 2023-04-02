@@ -2,14 +2,14 @@ import { Button, Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useGlobalStore, useUserStore } from "../store/module";
-import * as api from "../helpers/api";
-import { absolutifyLink } from "../helpers/utils";
-import useLoading from "../hooks/useLoading";
-import Icon from "../components/Icon";
-import AppearanceSelect from "../components/AppearanceSelect";
-import LocaleSelect from "../components/LocaleSelect";
-import "../less/auth.less";
+import { useGlobalStore, useUserStore } from "@/store/module";
+import * as api from "@/helpers/api";
+import { absolutifyLink } from "@/helpers/utils";
+import useLoading from "@/hooks/useLoading";
+import Icon from "@/components/Icon";
+import AppearanceSelect from "@/components/AppearanceSelect";
+import LocaleSelect from "@/components/LocaleSelect";
+import "@/less/auth.less";
 
 const Auth = () => {
   const { t } = useTranslation();
@@ -113,7 +113,7 @@ const Auth = () => {
         <div className="auth-form-wrapper">
           <div className="page-header-container">
             <div className="title-container">
-              <img className="logo-img" src={systemStatus.customizedProfile.logoUrl} alt="" />
+              <img className="h-12 w-auto rounded-lg mr-1" src={systemStatus.customizedProfile.logoUrl} alt="" />
               <p className="logo-text">{systemStatus.customizedProfile.name}</p>
             </div>
             <p className="slogan-text">{systemStatus.customizedProfile.description || t("slogan")}</p>

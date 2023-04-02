@@ -3,12 +3,12 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { UNKNOWN_ID } from "../helpers/consts";
-import { useGlobalStore, useMemoStore, useUserStore } from "../store/module";
-import useLoading from "../hooks/useLoading";
-import MemoContent from "../components/MemoContent";
-import MemoResources from "../components/MemoResources";
-import "../less/memo-detail.less";
+import { UNKNOWN_ID } from "@/helpers/consts";
+import { useGlobalStore, useMemoStore, useUserStore } from "@/store/module";
+import useLoading from "@/hooks/useLoading";
+import MemoContent from "@/components/MemoContent";
+import MemoResources from "@/components/MemoResources";
+import "@/less/memo-detail.less";
 
 interface State {
   memo: Memo;
@@ -53,7 +53,7 @@ const MemoDetail = () => {
       <div className="page-container">
         <div className="page-header">
           <div className="title-container">
-            <img className="logo-img" src={customizedProfile.logoUrl} alt="" />
+            <img className="h-10 w-auto rounded-lg mr-2" src={customizedProfile.logoUrl} alt="" />
             <p className="logo-text">{customizedProfile.name}</p>
           </div>
           <div className="action-button-container">

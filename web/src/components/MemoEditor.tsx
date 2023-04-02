@@ -2,19 +2,19 @@ import { isNumber, last, toLower, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { getMatchedNodes } from "../labs/marked";
-import { deleteMemoResource, upsertMemoResource } from "../helpers/api";
-import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import { useEditorStore, useGlobalStore, useFilterStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "../store/module";
-import * as storage from "../helpers/storage";
-import * as api from "../helpers/api";
+import { getMatchedNodes } from "@/labs/marked";
+import * as api from "@/helpers/api";
+import { deleteMemoResource, upsertMemoResource } from "@/helpers/api";
+import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
+import { useEditorStore, useGlobalStore, useFilterStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
+import * as storage from "@/helpers/storage";
 import Icon from "./Icon";
 import Selector from "./base/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import showCreateResourceDialog from "./CreateResourceDialog";
-import "../less/memo-editor.less";
+import "@/less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
@@ -519,7 +519,6 @@ const MemoEditor = () => {
             onClick={handleSaveBtnClick}
           >
             {t("editor.save")}
-            <img className="icon-img w-4 h-auto" src="/logo.png" />
           </button>
         </div>
       </div>

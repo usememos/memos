@@ -10,6 +10,7 @@ interface StorageS3Config {
   path: string;
   bucket: string;
   urlPrefix: string;
+  urlSuffix: string;
 }
 
 interface StorageConfig {

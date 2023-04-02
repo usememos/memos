@@ -1,19 +1,19 @@
 import { createBrowserRouter, redirect } from "react-router-dom";
 import { lazy } from "react";
-import { isNullorUndefined } from "../helpers/utils";
-import store from "../store";
-import { initialGlobalState, initialUserState } from "../store/module";
-import DailyReview from "../pages/DailyReview";
-import ResourcesDashboard from "../pages/ResourcesDashboard";
+import { isNullorUndefined } from "@/helpers/utils";
+import store from "@/store";
+import { initialGlobalState, initialUserState } from "@/store/module";
+import DailyReview from "@/pages/DailyReview";
+import ResourcesDashboard from "@/pages/ResourcesDashboard";
 
-const Root = lazy(() => import("../layouts/Root"));
-const Auth = lazy(() => import("../pages/Auth"));
-const AuthCallback = lazy(() => import("../pages/AuthCallback"));
-const Explore = lazy(() => import("../pages/Explore"));
-const Home = lazy(() => import("../pages/Home"));
-const MemoDetail = lazy(() => import("../pages/MemoDetail"));
-const EmbedMemo = lazy(() => import("../pages/EmbedMemo"));
-const NotFound = lazy(() => import("../pages/NotFound"));
+const Root = lazy(() => import("@/layouts/Root"));
+const Auth = lazy(() => import("@/pages/Auth"));
+const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
+const Explore = lazy(() => import("@/pages/Explore"));
+const Home = lazy(() => import("@/pages/Home"));
+const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
+const EmbedMemo = lazy(() => import("@/pages/EmbedMemo"));
+const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const initialGlobalStateLoader = (() => {
   let done = false;

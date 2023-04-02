@@ -5,17 +5,17 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import copy from "copy-to-clipboard";
 import { toLower } from "lodash-es";
-import toImage from "../labs/html2image";
-import { useGlobalStore, useMemoStore, useUserStore } from "../store/module";
-import { VISIBILITY_SELECTOR_ITEMS } from "../helpers/consts";
-import * as utils from "../helpers/utils";
-import { getMemoStats } from "../helpers/api";
-import useLoading from "../hooks/useLoading";
+import toImage from "@/labs/html2image";
+import { useGlobalStore, useMemoStore, useUserStore } from "@/store/module";
+import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
+import * as utils from "@/helpers/utils";
+import { getMemoStats } from "@/helpers/api";
+import useLoading from "@/hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
-import "../less/share-memo-dialog.less";
+import "@/less/share-memo-dialog.less";
 
 interface Props extends DialogProps {
   memo: Memo;
@@ -131,7 +131,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
           </div>
           <div className="watermark-container">
             <div className="logo-container">
-              <img className="logo-img" src={`${systemStatus.customizedProfile.logoUrl || "/logo.png"}`} alt="" />
+              <img className="h-10 w-auto rounded-lg" src={`${systemStatus.customizedProfile.logoUrl || "/logo.webp"}`} alt="" />
             </div>
             <div className="userinfo-container">
               <span className="name-text">{user.nickname || user.username}</span>
@@ -141,10 +141,9 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             </div>
             <QRCodeSVG
               value={`${window.location.origin}/m/${memo.id}`}
-              size={64}
+              size={40}
               bgColor={"#F3F4F6"}
               fgColor={"#4B5563"}
-              level={"L"}
               includeMargin={false}
             />
           </div>
@@ -166,17 +165,17 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             ))}
           </Select>
           <div className="flex flex-row justify-end items-center">
-            <button disabled={createLoadingState.isLoading} className="btn-normal mr-2" onClick={handleDownloadBtnClick}>
+            <button disabled={createLoadingState.isLoading} className="btn-normal h-8 mr-2" onClick={handleDownloadBtnClick}>
               {createLoadingState.isLoading ? (
-                <Icon.Loader className="w-4 h-auto mr-1 animate-spin" />
+                <Icon.Loader className="w-4 h-auto sm:mr-1 animate-spin" />
               ) : (
-                <Icon.Download className="w-4 h-auto mr-1" />
+                <Icon.Download className="w-4 h-auto sm:mr-1" />
               )}
-              <span>{t("common.image")}</span>
+              <span className="hidden sm:block">{t("common.image")}</span>
             </button>
-            <button className="btn-normal" onClick={handleCopyLinkBtnClick}>
-              <Icon.Link className="w-4 h-auto mr-1" />
-              <span>{t("common.link")}</span>
+            <button className="btn-normal h-8" onClick={handleCopyLinkBtnClick}>
+              <Icon.Link className="w-4 h-auto sm:mr-1" />
+              <span className="hidden sm:block">{t("common.link")}</span>
             </button>
           </div>
         </div>

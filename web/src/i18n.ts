@@ -15,6 +15,7 @@ import itLocale from "./locales/it.json";
 import hantLocale from "./locales/zh-Hant.json";
 import trLocale from "./locales/tr.json";
 import koLocale from "./locales/ko.json";
+import slLocale from "./locales/sl.json";
 
 const DETECTION_OPTIONS = {
   order: ["navigator"],
@@ -67,6 +68,9 @@ i18n
       },
       ko: {
         translation: koLocale,
+      },
+      sl: {
+        translation: slLocale,
       },
     },
     fallbackLng: "en",

@@ -1,12 +1,12 @@
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
-import { useGlobalStore, useUserStore } from "../store/module";
-import MemoEditor from "../components/MemoEditor";
-import MemoFilter from "../components/MemoFilter";
-import MemoList from "../components/MemoList";
-import MobileHeader from "../components/MobileHeader";
-import HomeSidebar from "../components/HomeSidebar";
+import { useTranslation } from "react-i18next";
+import { useGlobalStore, useUserStore } from "@/store/module";
+import MemoEditor from "@/components/MemoEditor";
+import MemoFilter from "@/components/MemoFilter";
+import MemoList from "@/components/MemoList";
+import MobileHeader from "@/components/MobileHeader";
+import HomeSidebar from "@/components/HomeSidebar";
 
 function Home() {
   const { t } = useTranslation();

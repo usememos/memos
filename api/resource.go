@@ -45,6 +45,10 @@ type ResourceFind struct {
 	Filename *string `json:"filename"`
 	MemoID   *int
 	GetBlob  bool
+
+	// Pagination
+	Limit  *int
+	Offset *int
 }
 
 type ResourcePatch struct {

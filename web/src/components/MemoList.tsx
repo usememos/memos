@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "../store/module";
-import { TAG_REG, LINK_REG } from "../labs/marked/parser";
-import * as utils from "../helpers/utils";
-import { DEFAULT_MEMO_LIMIT } from "../helpers/consts";
-import { checkShouldShowMemoWithFilters } from "../helpers/filter";
+import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "@/store/module";
+import { TAG_REG, LINK_REG } from "@/labs/marked/parser";
+import * as utils from "@/helpers/utils";
+import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
+import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
 import Memo from "./Memo";
-import "../less/memo-list.less";
+import "@/less/memo-list.less";
 
 const MemoList = () => {
   const { t } = useTranslation();

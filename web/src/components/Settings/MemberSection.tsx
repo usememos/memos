@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { useUserStore } from "../../store/module";
-import * as api from "../../helpers/api";
+import { useUserStore } from "@/store/module";
+import * as api from "@/helpers/api";
 import Dropdown from "../base/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
-import "../../less/settings/member-section.less";
+import "@/less/settings/member-section.less";
 
 interface State {
   createUserUsername: string;

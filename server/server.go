@@ -13,8 +13,6 @@ import (
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 
-	"github.com/gorilla/sessions"
-	"github.com/labstack/echo-contrib/session"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -88,7 +86,6 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 			return nil, err
 		}
 	}
-	e.Use(session.Middleware(sessions.NewCookieStore([]byte(secretSessionName))))
 
 	embedFrontend(e)
 
@@ -101,10 +98,10 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return aclMiddleware(s, next)
+		return JWTMiddleware(s, next, secretSessionName)
 	})
 	s.registerSystemRoutes(apiGroup)
-	s.registerAuthRoutes(apiGroup)
+	s.registerAuthRoutes(apiGroup, secretSessionName)
 	s.registerUserRoutes(apiGroup)
 	s.registerMemoRoutes(apiGroup)
 	s.registerShortcutRoutes(apiGroup)

@@ -1,10 +1,12 @@
 import { useEffect, useState, useRef } from "react";
-import useDebounce from "../hooks/useDebounce";
-import { useFilterStore, useDialogStore, useLayoutStore } from "../store/module";
-import { resolution } from "../utils/layout";
+import { useTranslation } from "react-i18next";
+import useDebounce from "@/hooks/useDebounce";
+import { useFilterStore, useDialogStore, useLayoutStore } from "@/store/module";
+import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
 
 const SearchBar = () => {
+  const { t } = useTranslation();
   const filterStore = useFilterStore();
   const dialogStore = useDialogStore();
   const layoutStore = useLayoutStore();
@@ -64,7 +66,7 @@ const SearchBar = () => {
       <input
         className="flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200"
         type="text"
-        placeholder="Search memos"
+        placeholder={t("search-bar.input-placeholder")}
         ref={inputRef}
         value={queryText}
         onChange={handleTextQueryInput}

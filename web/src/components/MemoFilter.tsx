@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
-import { useFilterStore, useShortcutStore } from "../store/module";
-import * as utils from "../helpers/utils";
-import { getTextWithMemoType } from "../helpers/filter";
+import { useFilterStore, useShortcutStore } from "@/store/module";
+import * as utils from "@/helpers/utils";
+import { getTextWithMemoType } from "@/helpers/filter";
 import Icon from "./Icon";
-import "../less/memo-filter.less";
+import "@/less/memo-filter.less";
 
 const MemoFilter = () => {
   const { t } = useTranslation();
