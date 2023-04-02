@@ -346,20 +346,12 @@ const ResourcesDashboard = () => {
               </div>
             )}
           </div>
-          <div className="flex flex-col justify-start items-center w-full my-6">
+          <div className="flex flex-col justify-start items-center w-full">
             <p className="text-sm text-gray-400 italic">
-              {isComplete ? (
-                resources.length === 0 ? (
-                  t("message.no-resource")
-                ) : (
-                  t("message.resource-ready")
-                )
-              ) : (
-                <>
-                  <span className="cursor-pointer hover:text-green-600" onClick={handleFetchMoreResourceBtnClick}>
-                    {t("memo-list.fetch-more")}
-                  </span>
-                </>
+              {!isComplete && (
+                <span className="cursor-pointer my-6 hover:text-green-600" onClick={handleFetchMoreResourceBtnClick}>
+                  {t("memo-list.fetch-more")}
+                </span>
               )}
             </p>
           </div>

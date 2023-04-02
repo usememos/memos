@@ -36,7 +36,7 @@ const ShortcutList = () => {
   }, []);
 
   return (
-    <div className="flex flex-col justify-start items-start w-full py-0 px-1 mt-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
+    <div className="flex flex-col justify-start items-start w-full mt-2 h-auto shrink-0 flex-nowrap hide-scrollbar">
       <div className="flex flex-row justify-start items-center w-full px-4">
         <span className="text-sm leading-6 font-mono text-gray-400">{t("common.shortcuts")}</span>
         <button

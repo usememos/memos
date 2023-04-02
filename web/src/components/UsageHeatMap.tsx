@@ -38,13 +38,23 @@ const UsageHeatMap = () => {
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
   const beginDayTimestamp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
   const memos = memoStore.state.memos;
+  const [memoAmount, setMemoAmount] = useState(0);
+  const [createdDays, setCreatedDays] = useState(0);
   const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestamp));
   const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
   const containerElRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!userStore.state.user) {
+      return;
+    }
+    setCreatedDays(Math.ceil((Date.now() - utils.getTimeStampByDate(userStore.state.user.createdTs)) / 1000 / 3600 / 24));
+  }, [userStore.state.user]);
+
+  useEffect(() => {
     getMemoStats(userStore.getCurrentUserId())
       .then(({ data: { data } }) => {
+        setMemoAmount(data.length);
         const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestamp);
         for (const record of data) {
           const index = (utils.getDateStampByDate(record * 1000) - beginDayTimestamp) / (1000 * 3600 * 24) - 1;
@@ -97,53 +107,59 @@ const UsageHeatMap = () => {
   }, []);
 
   return (
-    <div className="usage-heat-map-wrapper" ref={containerElRef}>
-      <div className="usage-heat-map">
-        {allStat.map((v, i) => {
-          const count = v.count;
-          const colorLevel =
-            count <= 0
-              ? ""
-              : count <= 1
-              ? "stat-day-l1-bg"
-              : count <= 2
-              ? "stat-day-l2-bg"
-              : count <= 4
-              ? "stat-day-l3-bg"
-              : "stat-day-l4-bg";
+    <>
+      <div className="usage-heat-map-wrapper" ref={containerElRef}>
+        <div className="usage-heat-map">
+          {allStat.map((v, i) => {
+            const count = v.count;
+            const colorLevel =
+              count <= 0
+                ? ""
+                : count <= 1
+                ? "stat-day-l1-bg"
+                : count <= 2
+                ? "stat-day-l2-bg"
+                : count <= 4
+                ? "stat-day-l3-bg"
+                : "stat-day-l4-bg";
 
-          return (
-            <div
-              className="stat-wrapper"
-              key={i}
-              onMouseEnter={(e) => handleUsageStatItemMouseEnter(e, v)}
-              onMouseLeave={handleUsageStatItemMouseLeave}
-              onClick={() => handleUsageStatItemClick(v)}
-            >
-              <span
-                className={`stat-container ${colorLevel} ${currentStat === v ? "current" : ""} ${
-                  todayTimeStamp === v.timestamp ? "today" : ""
-                }`}
-              ></span>
+            return (
+              <div
+                className="stat-wrapper"
+                key={i}
+                onMouseEnter={(e) => handleUsageStatItemMouseEnter(e, v)}
+                onMouseLeave={handleUsageStatItemMouseLeave}
+                onClick={() => handleUsageStatItemClick(v)}
+              >
+                <span
+                  className={`stat-container ${colorLevel} ${currentStat === v ? "current" : ""} ${
+                    todayTimeStamp === v.timestamp ? "today" : ""
+                  }`}
+                ></span>
+              </div>
+            );
+          })}
+          {nullCell.map((_, i) => (
+            <div className="stat-wrapper" key={i}>
+              <span className="stat-container null"></span>
             </div>
-          );
-        })}
-        {nullCell.map((_, i) => (
-          <div className="stat-wrapper" key={i}>
-            <span className="stat-container null"></span>
-          </div>
-        ))}
+          ))}
+        </div>
+        <div className="day-tip-text-container">
+          <span className="tip-text">{t("days.sun")}</span>
+          <span className="tip-text"></span>
+          <span className="tip-text">{t("days.tue")}</span>
+          <span className="tip-text"></span>
+          <span className="tip-text">{t("days.thu")}</span>
+          <span className="tip-text"></span>
+          <span className="tip-text">{t("days.sat")}</span>
+        </div>
       </div>
-      <div className="day-tip-text-container">
-        <span className="tip-text">{t("days.sun")}</span>
-        <span className="tip-text"></span>
-        <span className="tip-text">{t("days.tue")}</span>
-        <span className="tip-text"></span>
-        <span className="tip-text">{t("days.thu")}</span>
-        <span className="tip-text"></span>
-        <span className="tip-text">{t("days.sat")}</span>
-      </div>
-    </div>
+      <p className="w-full pl-4 text-xs -mt-2 mb-3 text-gray-400 dark:text-zinc-400">
+        <span className="font-medium text-gray-500 dark:text-zinc-300">{memoAmount}</span> memos in{" "}
+        <span className="font-medium text-gray-500 dark:text-zinc-300">{createdDays}</span> days
+      </p>
+    </>
   );
 };
 
