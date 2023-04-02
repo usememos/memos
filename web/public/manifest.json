@@ -4,8 +4,8 @@
   "description": "usememos/memos",
   "icons": [
     {
-      "src": "/logo.png",
-      "type": "image/png",
+      "src": "/logo.webp",
+      "type": "image/webp",
       "sizes": "520x520"
     }
   ],

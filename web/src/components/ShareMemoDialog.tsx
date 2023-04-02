@@ -131,7 +131,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
           </div>
           <div className="watermark-container">
             <div className="logo-container">
-              <img className="logo-img" src={`${systemStatus.customizedProfile.logoUrl || "/logo.png"}`} alt="" />
+              <img className="logo-img" src={`${systemStatus.customizedProfile.logoUrl || "/logo.webp"}`} alt="" />
             </div>
             <div className="userinfo-container">
               <span className="name-text">{user.nickname || user.username}</span>

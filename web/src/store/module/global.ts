@@ -16,7 +16,7 @@ export const initialGlobalState = async () => {
       additionalScript: "",
       customizedProfile: {
         name: "memos",
-        logoUrl: "/logo.png",
+        logoUrl: "/logo.webp",
         description: "",
         locale: "en",
         appearance: "system",
@@ -41,7 +41,7 @@ export const initialGlobalState = async () => {
         ...data,
         customizedProfile: {
           name: customizedProfile.name || "memos",
-          logoUrl: customizedProfile.logoUrl || "/logo.png",
+          logoUrl: customizedProfile.logoUrl || "/logo.webp",
           description: customizedProfile.description,
           locale: customizedProfile.locale || "en",
           appearance: customizedProfile.appearance || "system",
