@@ -474,7 +474,6 @@ const MemoEditor = () => {
             disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource || state.isRequesting}
             onClick={handleSaveBtnClick}
           >
-            <img className="w-5 -ml-0.5 mr-0.5 h-auto" src="/logo.webp" />
             {t("editor.save")}
           </button>
         </div>

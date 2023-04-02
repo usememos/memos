@@ -53,7 +53,7 @@ const MemoDetail = () => {
       <div className="page-container">
         <div className="page-header">
           <div className="title-container">
-            <img className="logo-img" src={customizedProfile.logoUrl} alt="" />
+            <img className="h-10 w-auto rounded-lg mr-2" src={customizedProfile.logoUrl} alt="" />
             <p className="logo-text">{customizedProfile.name}</p>
           </div>
           <div className="action-button-container">
