@@ -9,7 +9,6 @@ import useLoading from "@/hooks/useLoading";
 import Icon from "@/components/Icon";
 import AppearanceSelect from "@/components/AppearanceSelect";
 import LocaleSelect from "@/components/LocaleSelect";
-import "@/less/auth.less";
 
 const Auth = () => {
   const { t } = useTranslation();
@@ -51,7 +50,20 @@ const Auth = () => {
     globalStore.setAppearance(appearance);
   };
 
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (systemStatus?.host) {
+      handleSignInBtnClick();
+    } else {
+      handleSignUpBtnsClick();
+    }
+  };
+
   const handleSignInBtnClick = async () => {
+    if (username === "" || password === "") {
+      return;
+    }
+
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -73,6 +85,10 @@ const Auth = () => {
   };
 
   const handleSignUpBtnsClick = async () => {
+    if (username === "" || password === "") {
+      return;
+    }
+
     if (actionBtnLoadingState.isLoading) {
       return;
     }
@@ -108,50 +124,88 @@ const Auth = () => {
   };
 
   return (
-    <div className="page-wrapper auth">
-      <div className="page-container">
-        <div className="auth-form-wrapper">
-          <div className="page-header-container">
-            <div className="title-container">
+    <div className="flex flex-row justify-center items-center w-full h-full dark:bg-zinc-800">
+      <div className="w-80 max-w-full h-full py-4 flex flex-col justify-start items-center">
+        <div className="w-full py-4 grow flex flex-col justify-center items-center">
+          <div className="flex flex-col justify-start items-start w-full mb-4">
+            <div className="w-full flex flex-row justify-start items-center mb-2">
               <img className="h-12 w-auto rounded-lg mr-1" src={systemStatus.customizedProfile.logoUrl} alt="" />
-              <p className="logo-text">{systemStatus.customizedProfile.name}</p>
+              <p className="text-6xl tracking-wide text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
             </div>
-            <p className="slogan-text">{systemStatus.customizedProfile.description || t("slogan")}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">{systemStatus.customizedProfile.description || t("slogan")}</p>
           </div>
-          <div className={`page-content-container ${actionBtnLoadingState.isLoading ? "requesting" : ""}`}>
-            <div className="form-item-container input-form-container">
-              <span className={`normal-text ${username ? "not-null" : ""}`}>{t("common.username")}</span>
-              <input className="input-text" type="text" value={username} onChange={handleUsernameInputChanged} required />
+          <form className="w-full" onSubmit={handleFormSubmit}>
+            <div className={`flex flex-col justify-start items-start w-full ${actionBtnLoadingState.isLoading && "opacity-80"}`}>
+              <div className="flex flex-col justify-start items-start relative w-full text-base mt-2 py-2">
+                <span
+                  className={`absolute top-3 left-3 px-1 leading-10 flex-shrink-0 text-base cursor-text text-gray-400 transition-all select-none pointer-events-none ${
+                    username ? "!text-sm !top-0 !z-10 !leading-4 bg-white dark:bg-zinc-800 rounded" : ""
+                  }`}
+                >
+                  {t("common.username")}
+                </span>
+                <input
+                  className="input-text w-full py-3 px-3 text-base rounded-lg dark:bg-zinc-800"
+                  type="text"
+                  value={username}
+                  onChange={handleUsernameInputChanged}
+                  required
+                />
+              </div>
+              <div className="flex flex-col justify-start items-start relative w-full text-base mt-2 py-2">
+                <span
+                  className={`absolute top-3 left-3 px-1 leading-10 flex-shrink-0 text-base cursor-text text-gray-400 transition-all select-none pointer-events-none ${
+                    password ? "!text-sm !top-0 !z-10 !leading-4 bg-white dark:bg-zinc-800 rounded" : ""
+                  }`}
+                >
+                  {t("common.password")}
+                </span>
+                <input
+                  className="input-text w-full py-3 px-3 text-base rounded-lg dark:bg-zinc-800"
+                  type="password"
+                  value={password}
+                  onChange={handlePasswordInputChanged}
+                  required
+                />
+              </div>
             </div>
-            <div className="form-item-container input-form-container">
-              <span className={`normal-text ${password ? "not-null" : ""}`}>{t("common.password")}</span>
-              <input className="input-text" type="password" value={password} onChange={handlePasswordInputChanged} required />
+            <div className="flex flex-row justify-end items-center w-full mt-2">
+              {systemStatus?.host ? (
+                <>
+                  {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
+                  {systemStatus?.allowSignUp && (
+                    <>
+                      <button
+                        type="button"
+                        className={`btn-text ${actionBtnLoadingState.isLoading ? "cursor-wait opacity-80" : ""}`}
+                        onClick={handleSignUpBtnsClick}
+                      >
+                        {t("common.sign-up")}
+                      </button>
+                      <span className="mr-2 font-mono text-gray-200">/</span>
+                    </>
+                  )}
+                  <button
+                    type="submit"
+                    className={`btn-primary ${actionBtnLoadingState.isLoading ? "cursor-wait opacity-80" : ""}`}
+                    onClick={handleSignInBtnClick}
+                  >
+                    {t("common.sign-in")}
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    type="submit"
+                    className={`btn-primary ${actionBtnLoadingState.isLoading ? "cursor-wait opacity-80" : ""}`}
+                    onClick={handleSignUpBtnsClick}
+                  >
+                    {t("auth.signup-as-host")}
+                  </button>
+                </>
+              )}
             </div>
-          </div>
-          <div className="action-btns-container">
-            {systemStatus?.host ? (
-              <>
-                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
-                {systemStatus?.allowSignUp && (
-                  <>
-                    <button className={`btn-text ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSignUpBtnsClick}>
-                      {t("common.sign-up")}
-                    </button>
-                    <span className="mr-2 font-mono text-gray-200">/</span>
-                  </>
-                )}
-                <button className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSignInBtnClick}>
-                  {t("common.sign-in")}
-                </button>
-              </>
-            ) : (
-              <>
-                <button className={`btn-primary ${actionBtnLoadingState.isLoading ? "requesting" : ""}`} onClick={handleSignUpBtnsClick}>
-                  {t("auth.signup-as-host")}
-                </button>
-              </>
-            )}
-          </div>
+          </form>
           {identityProviderList.length > 0 && (
             <>
               <Divider className="!my-4">or</Divider>
@@ -171,7 +225,11 @@ const Auth = () => {
               </div>
             </>
           )}
-          {!systemStatus?.host && <p className="tip-text">{t("auth.host-tip")}</p>}
+          {!systemStatus?.host && (
+            <p className="w-full inline-block float-right text-sm mt-4 text-gray-500 text-right whitespace-pre-wrap">
+              {t("auth.host-tip")}
+            </p>
+          )}
         </div>
         <div className="flex flex-row items-center justify-center w-full gap-2">
           <LocaleSelect value={locale} onChange={handleLocaleSelectChange} />
