@@ -28,7 +28,6 @@ type resourceRaw struct {
 	ExternalLink     string
 	Type             string
 	Size             int64
-	Visibility       api.Visibility
 	LinkedMemoAmount int
 }
 
@@ -48,7 +47,6 @@ func (raw *resourceRaw) toResource() *api.Resource {
 		ExternalLink:     raw.ExternalLink,
 		Type:             raw.Type,
 		Size:             raw.Size,
-		Visibility:       raw.Visibility,
 		LinkedMemoAmount: raw.LinkedMemoAmount,
 	}
 }
@@ -197,9 +195,9 @@ func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.
 	values := []any{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID}
 	placeholders := []string{"?", "?", "?", "?", "?", "?"}
 	if s.profile.IsDev() {
-		fields = append(fields, "visibility", "internal_path")
-		values = append(values, create.Visibility, create.InternalPath)
-		placeholders = append(placeholders, "?", "?")
+		fields = append(fields, "internal_path")
+		values = append(values, create.InternalPath)
+		placeholders = append(placeholders, "?")
 	}
 
 	query := `
@@ -220,7 +218,7 @@ func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.
 		&resourceRaw.CreatorID,
 	}
 	if s.profile.IsDev() {
-		dests = append(dests, &resourceRaw.Visibility, &resourceRaw.InternalPath)
+		dests = append(dests, &resourceRaw.InternalPath)
 	}
 	dests = append(dests, []any{&resourceRaw.CreatedTs, &resourceRaw.UpdatedTs}...)
 	if err := tx.QueryRowContext(ctx, query, values...).Scan(dests...); err != nil {
@@ -239,17 +237,12 @@ func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.Re
 	if v := patch.Filename; v != nil {
 		set, args = append(set, "filename = ?"), append(args, *v)
 	}
-	if s.profile.IsDev() {
-		if v := patch.Visibility; v != nil {
-			set, args = append(set, "visibility = ?"), append(args, *v)
-		}
-	}
 
 	args = append(args, patch.ID)
 
 	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts"}
 	if s.profile.IsDev() {
-		fields = append(fields, "visibility", "internal_path")
+		fields = append(fields, "internal_path")
 	}
 
 	query := `
@@ -269,7 +262,7 @@ func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.Re
 		&resourceRaw.UpdatedTs,
 	}
 	if s.profile.IsDev() {
-		dests = append(dests, &resourceRaw.Visibility, &resourceRaw.InternalPath)
+		dests = append(dests, &resourceRaw.InternalPath)
 	}
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(dests...); err != nil {
 		return nil, FormatError(err)
@@ -299,7 +292,7 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 		fields = append(fields, "resource.blob")
 	}
 	if s.profile.IsDev() {
-		fields = append(fields, "visibility", "internal_path")
+		fields = append(fields, "internal_path")
 	}
 
 	query := fmt.Sprintf(`
@@ -343,7 +336,7 @@ func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.
 			dests = append(dests, &resourceRaw.Blob)
 		}
 		if s.profile.IsDev() {
-			dests = append(dests, &resourceRaw.Visibility, &resourceRaw.InternalPath)
+			dests = append(dests, &resourceRaw.InternalPath)
 		}
 		if err := rows.Scan(dests...); err != nil {
 			return nil, FormatError(err)
