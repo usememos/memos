@@ -19,7 +19,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/plugin/storage/s3"
+	"go.uber.org/zap"
 )
 
 const (
@@ -292,6 +294,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		if resource.CreatorID != userID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		if resource.InternalPath != "" {
+			err := os.Remove(resource.InternalPath)
+			if err != nil {
+				log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
+			}
 		}
 
 		resourceDelete := &api.ResourceDelete{
