@@ -194,6 +194,11 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
+		if s.Profile.IsDev() {
+			publicID := common.GenUUID()
+			resourceCreate.PublicID = publicID
+		}
+
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
@@ -227,52 +232,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(list))
 	})
 
-	g.GET("/resource/:resourceId", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		resourceID, err := strconv.Atoi(c.Param("resourceId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
-		}
-
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-		resourceFind := &api.ResourceFind{
-			ID:        &resourceID,
-			CreatorID: &userID,
-			GetBlob:   true,
-		}
-		resource, err := s.Store.FindResource(ctx, resourceFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, composeResponse(resource))
-	})
-
-	g.GET("/resource/:resourceId/blob", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		resourceID, err := strconv.Atoi(c.Param("resourceId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
-		}
-
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-		resourceFind := &api.ResourceFind{
-			ID:        &resourceID,
-			CreatorID: &userID,
-			GetBlob:   true,
-		}
-		resource, err := s.Store.FindResource(ctx, resourceFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
-		}
-		return c.Stream(http.StatusOK, resource.Type, bytes.NewReader(resource.Blob))
-	})
-
 	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
@@ -302,6 +261,11 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(resourcePatch); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch resource request").SetInternal(err)
+		}
+
+		if resourcePatch.ResetPublicID != nil && *resourcePatch.ResetPublicID {
+			publicID := common.GenUUID()
+			resourcePatch.PublicID = &publicID
 		}
 
 		resourcePatch.ID = resourceID
@@ -349,24 +313,28 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 }
 
 func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
-	g.GET("/r/:resourceId/:filename", func(c echo.Context) error {
+	g.GET("/r/:resourceId/:publicId", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		resourceID, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
-		filename, err := url.QueryUnescape(c.Param("filename"))
+		publicID, err := url.QueryUnescape(c.Param("publicId"))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("filename is invalid: %s", c.Param("filename"))).SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("publicID is invalid: %s", c.Param("publicId"))).SetInternal(err)
 		}
 		resourceFind := &api.ResourceFind{
 			ID:       &resourceID,
-			Filename: &filename,
+			PublicID: &publicID,
 			GetBlob:  true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
+		}
+
+		if resource.ExternalLink != "" {
+			return c.Redirect(http.StatusSeeOther, resource.ExternalLink)
 		}
 
 		blob := resource.Blob
