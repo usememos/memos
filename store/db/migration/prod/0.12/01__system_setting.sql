@@ -1,69 +1,69 @@
 UPDATE
   system_setting
 SET
-  key = 'server-id'
+  name = 'server-id'
 WHERE
-  key = 'serverId';
+  name = 'serverId';
 
 UPDATE
   system_setting
 SET
-  key = 'secret-session'
+  name = 'secret-session'
 WHERE
-  key = 'secretSessionName';
+  name = 'secretSessionName';
 
 UPDATE
   system_setting
 SET
-  key = 'allow-signup'
+  name = 'allow-signup'
 WHERE
-  key = 'allowSignUp';
+  name = 'allowSignUp';
 
 UPDATE
   system_setting
 SET
-  key = 'disable-public-memos'
+  name = 'disable-public-memos'
 WHERE
-  key = 'disablePublicMemos';
+  name = 'disablePublicMemos';
 
 UPDATE
   system_setting
 SET
-  key = 'additional-style'
+  name = 'additional-style'
 WHERE
-  key = 'additionalStyle';
+  name = 'additionalStyle';
 
 UPDATE
   system_setting
 SET
-  key = 'additional-script'
+  name = 'additional-script'
 WHERE
-  key = 'additionalScript';
+  name = 'additionalScript';
 
 UPDATE
   system_setting
 SET
-  key = 'customized-profile'
+  name = 'customized-profile'
 WHERE
-  key = 'customizedProfile';
+  name = 'customizedProfile';
 
 UPDATE
   system_setting
 SET
-  key = 'storage-service-id'
+  name = 'storage-service-id'
 WHERE
-  key = 'storageServiceId';
+  name = 'storageServiceId';
 
 UPDATE
   system_setting
 SET
-  key = 'local-storage-path'
+  name = 'local-storage-path'
 WHERE
-  key = 'localStoragePath';
+  name = 'localStoragePath';
 
 UPDATE
   system_setting
 SET
-  key = 'openai-config'
+  name = 'openai-config'
 WHERE
-  key = 'openAIConfig';
+  name = 'openAIConfig';
