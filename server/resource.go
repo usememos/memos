@@ -79,7 +79,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Upload file not found").SetInternal(err)
 		}
 
-		filename := file.Filename
 		filetype := file.Header.Get("Content-Type")
 		size := file.Size
 		sourceFile, err := file.Open()
@@ -88,6 +87,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		defer sourceFile.Close()
 
+		var resourceCreate *api.ResourceCreate
 		systemSettingStorageServiceID, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingStorageServiceIDName})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
@@ -99,23 +99,19 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
 			}
 		}
-
-		var resourceCreate *api.ResourceCreate
 		if storageServiceID == api.DatabaseStorage {
-			// Database storage.
 			fileBytes, err := io.ReadAll(sourceFile)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
 			}
 			resourceCreate = &api.ResourceCreate{
 				CreatorID: userID,
-				Filename:  filename,
+				Filename:  file.Filename,
 				Type:      filetype,
 				Size:      size,
 				Blob:      fileBytes,
 			}
 		} else if storageServiceID == api.LocalStorage {
-			// Local storage.
 			systemSettingLocalStoragePath, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingLocalStoragePathName})
 			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
@@ -131,9 +127,9 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if !strings.Contains(filePath, "{filename}") {
 				filePath = path.Join(filePath, "{filename}")
 			}
-			filePath = path.Join(s.Profile.Data, replacePathTemplate(filePath, filename))
-			dirPath := filepath.Dir(filePath)
-			if err = os.MkdirAll(dirPath, os.ModePerm); err != nil {
+			filePath = path.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
+			dir, filename := filepath.Split(filePath)
+			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
 			}
 			dst, err := os.Create(filePath)
@@ -161,12 +157,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 			if storage.Type == api.StorageS3 {
 				s3Config := storage.Config.S3Config
-				var s3FileKey string
-				if !strings.Contains(s3Config.Path, "{filename}") {
-					s3FileKey = path.Join(s3Config.Path, "{filename}")
-				}
-				s3FileKey = replacePathTemplate(s3FileKey, filename)
-				s3client, err := s3.NewClient(ctx, &s3.Config{
+				s3Client, err := s3.NewClient(ctx, &s3.Config{
 					AccessKey: s3Config.AccessKey,
 					SecretKey: s3Config.SecretKey,
 					EndPoint:  s3Config.EndPoint,
@@ -179,7 +170,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
 				}
 
-				link, err := s3client.UploadFile(ctx, s3FileKey, filetype, sourceFile)
+				filePath := s3Config.Path
+				if !strings.Contains(filePath, "{filename}") {
+					filePath = path.Join(filePath, "{filename}")
+				}
+				filePath = replacePathTemplate(filePath, file.Filename)
+				_, filename := filepath.Split(filePath)
+				link, err := s3Client.UploadFile(ctx, filePath, filetype, sourceFile)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
 				}
