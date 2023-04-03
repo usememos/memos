@@ -129,7 +129,7 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
 		if systemSetting != nil {
-			storageServiceID := 0
+			storageServiceID := api.DatabaseStorage
 			err = json.Unmarshal([]byte(systemSetting.Value), &storageServiceID)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)

@@ -140,7 +140,7 @@ func (upsert SystemSettingUpsert) Validate() error {
 			return fmt.Errorf("invalid appearance value")
 		}
 	} else if upsert.Name == SystemSettingStorageServiceIDName {
-		value := 0
+		value := DatabaseStorage
 		err := json.Unmarshal([]byte(upsert.Value), &value)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal system setting storage service id value")

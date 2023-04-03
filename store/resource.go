@@ -94,7 +94,7 @@ func (s *Store) CreateResource(ctx context.Context, create *api.ResourceCreate) 
 	}
 	defer tx.Rollback()
 
-	resourceRaw, err := s.createResourceImpl(ctx, tx, create)
+	resourceRaw, err := createResourceImpl(ctx, tx, create)
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func (s *Store) FindResourceList(ctx context.Context, find *api.ResourceFind) ([
 	}
 	defer tx.Rollback()
 
-	resourceRawList, err := s.findResourceListImpl(ctx, tx, find)
+	resourceRawList, err := findResourceListImpl(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -135,7 +135,7 @@ func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.
 	}
 	defer tx.Rollback()
 
-	list, err := s.findResourceListImpl(ctx, tx, find)
+	list, err := findResourceListImpl(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -178,7 +178,7 @@ func (s *Store) PatchResource(ctx context.Context, patch *api.ResourcePatch) (*a
 	}
 	defer tx.Rollback()
 
-	resourceRaw, err := s.patchResourceImpl(ctx, tx, patch)
+	resourceRaw, err := patchResourceImpl(ctx, tx, patch)
 	if err != nil {
 		return nil, err
 	}
@@ -192,7 +192,7 @@ func (s *Store) PatchResource(ctx context.Context, patch *api.ResourcePatch) (*a
 	return resource, nil
 }
 
-func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate) (*resourceRaw, error) {
+func createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate) (*resourceRaw, error) {
 	fields := []string{"filename", "blob", "external_link", "type", "size", "creator_id", "internal_path", "public_id"}
 	values := []any{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.PublicID}
 	placeholders := []string{"?", "?", "?", "?", "?", "?", "?", "?"}
@@ -223,7 +223,7 @@ func (s *Store) createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.
 	return &resourceRaw, nil
 }
 
-func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*resourceRaw, error) {
+func patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.ResourcePatch) (*resourceRaw, error) {
 	set, args := []string{}, []any{}
 
 	if v := patch.UpdatedTs; v != nil {
@@ -263,7 +263,7 @@ func (s *Store) patchResourceImpl(ctx context.Context, tx *sql.Tx, patch *api.Re
 	return &resourceRaw, nil
 }
 
-func (s *Store) findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) ([]*resourceRaw, error) {
+func findResourceListImpl(ctx context.Context, tx *sql.Tx, find *api.ResourceFind) ([]*resourceRaw, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {

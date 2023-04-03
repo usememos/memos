@@ -48,11 +48,10 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container">
         <div className="py-2">
           <Typography className="!mb-1" level="body2">
-            Local Path
+            Local path
           </Typography>
-          <Typography className="!mb-1" level="body2">
-            <span className="text-sm text-gray-400 ml-1">{"e.g., {year}/{month}/{day}/your/path/{timestamp}_{filename}"}</span>
-          </Typography>
+          <p className="text-sm text-gray-400 break-all">{"It's a relative path to your database file."}</p>
+          <p className="text-sm text-gray-400 mb-2 break-all">{"e.g. assets/{timestamp}_{filename}"}</p>
           <Input className="mb-2" placeholder="Path" value={path} onChange={(e) => setPath(e.target.value)} fullWidth />
         </div>
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
