@@ -1,12 +1,10 @@
 import { Button } from "@mui/joy";
-import copy from "copy-to-clipboard";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import useLoading from "@/hooks/useLoading";
 import { useResourceStore } from "@/store/module";
-import { getResourceUrl } from "@/utils/resource";
 import Icon from "@/components/Icon";
 import ResourceCard from "@/components/ResourceCard";
 import ResourceSearchBar from "@/components/ResourceSearchBar";
@@ -14,8 +12,6 @@ import MobileHeader from "@/components/MobileHeader";
 import Dropdown from "@/components/base/Dropdown";
 import ResourceItem from "@/components/ResourceItem";
 import { showCommonDialog } from "@/components/Dialog/CommonDialog";
-import showChangeResourceFilenameDialog from "@/components/ChangeResourceFilenameDialog";
-import showPreviewImageDialog from "@/components/PreviewImageDialog";
 import showCreateResourceDialog from "@/components/CreateResourceDialog";
 
 const ResourcesDashboard = () => {
@@ -24,7 +20,7 @@ const ResourcesDashboard = () => {
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
-  const [listStyle, setListStyle] = useState<"GRID" | "TABLE">("GRID");
+  const [listStyle, setListStyle] = useState<"GRID" | "TABLE">("TABLE");
   const [queryText, setQueryText] = useState<string>("");
   const [dragActive, setDragActive] = useState(false);
   const [isComplete, setIsComplete] = useState<boolean>(false);
@@ -49,33 +45,12 @@ const ResourcesDashboard = () => {
   };
 
   const handleUncheckBtnClick = (resourceId: ResourceId) => {
-    setSelectedList(selectedList.filter((resId) => resId !== resourceId));
+    setSelectedList(selectedList.filter((id) => id !== resourceId));
   };
 
   const handleStyleChangeBtnClick = (listStyle: "GRID" | "TABLE") => {
     setListStyle(listStyle);
     setSelectedList([]);
-  };
-
-  const handleRenameBtnClick = (resource: Resource) => {
-    showChangeResourceFilenameDialog(resource.id, resource.filename);
-  };
-
-  const handleDeleteResourceBtnClick = (resource: Resource) => {
-    let warningText = t("resources.warning-text");
-    if (resource.linkedMemoAmount > 0) {
-      warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
-    }
-
-    showCommonDialog({
-      title: t("resources.delete-resource"),
-      content: warningText,
-      style: "warning",
-      dialogName: "delete-resource-dialog",
-      onConfirm: async () => {
-        await resourceStore.deleteResourceById(resource.id);
-      },
-    });
   };
 
   const handleDeleteUnusedResourcesBtnClick = async () => {
@@ -125,24 +100,6 @@ const ResourcesDashboard = () => {
     }
   };
 
-  const handlePreviewBtnClick = (resource: Resource) => {
-    const resourceUrl = getResourceUrl(resource);
-    if (resource.type.startsWith("image")) {
-      showPreviewImageDialog(
-        resources.filter((r) => r.type.startsWith("image")).map((r) => getResourceUrl(r)),
-        resources.findIndex((r) => r.id === resource.id)
-      );
-    } else {
-      window.open(resourceUrl);
-    }
-  };
-
-  const handleCopyResourceLinkBtnClick = (resource: Resource) => {
-    const url = getResourceUrl(resource);
-    copy(url);
-    toast.success(t("message.succeed-copy-resource-link"));
-  };
-
   const handleFetchMoreResourceBtnClick = async () => {
     try {
       const fetchedResource = await resourceStore.fetchResourceListWithLimit(DEFAULT_MEMO_LIMIT, resources.length);
@@ -183,6 +140,16 @@ const ResourcesDashboard = () => {
     setSelectedList([]);
   };
 
+  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === "dragenter" || e.type === "dragover") {
+      setDragActive(true);
+    } else if (e.type === "dragleave") {
+      setDragActive(false);
+    }
+  };
+
   const resourceList = useMemo(
     () =>
       resources
@@ -194,10 +161,6 @@ const ResourcesDashboard = () => {
               resource={resource}
               handleCheckClick={() => handleCheckBtnClick(resource.id)}
               handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-              handleRenameBtnClick={handleRenameBtnClick}
-              handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
-              handlePreviewBtnClick={handlePreviewBtnClick}
-              handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
             ></ResourceItem>
           ) : (
             <ResourceCard
@@ -205,25 +168,11 @@ const ResourcesDashboard = () => {
               resource={resource}
               handleCheckClick={() => handleCheckBtnClick(resource.id)}
               handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-              handleRenameBtnClick={handleRenameBtnClick}
-              handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
-              handlePreviewBtnClick={handlePreviewBtnClick}
-              handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
             ></ResourceCard>
           )
         ),
     [resources, queryText, listStyle]
   );
-
-  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
-  };
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
