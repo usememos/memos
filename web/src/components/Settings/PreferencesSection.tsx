@@ -36,10 +36,6 @@ const PreferencesSection = () => {
     await userStore.upsertUserSetting("memoVisibility", value);
   };
 
-  const handleDefaultResourceVisibilityChanged = async (value: string) => {
-    await userStore.upsertUserSetting("resourceVisibility", value);
-  };
-
   const handleDoubleClickEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, enableDoubleClickEditing: event.target.checked });
   };
@@ -78,25 +74,6 @@ const PreferencesSection = () => {
           ))}
         </Select>
       </div>
-      <div className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.default-resource-visibility")}</span>
-        <Select
-          className="!min-w-[10rem] w-auto text-sm"
-          value={setting.resourceVisibility}
-          onChange={(_, visibility) => {
-            if (visibility) {
-              handleDefaultResourceVisibilityChanged(visibility);
-            }
-          }}
-        >
-          {visibilitySelectorItems.map((item) => (
-            <Option key={item.value} value={item.value} className="whitespace-nowrap">
-              {item.text}
-            </Option>
-          ))}
-        </Select>
-      </div>
-
       <div className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.daily-review-time-offset")}</span>
         <span className="w-auto inline-flex">
