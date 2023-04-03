@@ -19,53 +19,47 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
     destroy();
   };
 
-  const handleNameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const setPartialState = (partialState: Partial<CustomizedProfile>) => {
     setState((state) => {
       return {
         ...state,
-        name: e.target.value as string,
+        ...partialState,
       };
+    });
+  };
+
+  const handleNameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPartialState({
+      name: e.target.value as string,
     });
   };
 
   const handleLogoUrlChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState((state) => {
-      return {
-        ...state,
-        logoUrl: e.target.value as string,
-      };
+    setPartialState({
+      logoUrl: e.target.value as string,
     });
   };
 
   const handleDescriptionChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState((state) => {
-      return {
-        ...state,
-        description: e.target.value as string,
-      };
+    setPartialState({
+      description: e.target.value as string,
     });
   };
 
   const handleLocaleSelectChange = (locale: Locale) => {
-    setState((state) => {
-      return {
-        ...state,
-        locale: locale,
-      };
+    setPartialState({
+      locale: locale,
     });
   };
 
   const handleAppearanceSelectChange = (appearance: Appearance) => {
-    setState((state) => {
-      return {
-        ...state,
-        appearance: appearance,
-      };
+    setPartialState({
+      appearance: appearance,
     });
   };
 
   const handleRestoreButtonClick = () => {
-    setState({
+    setPartialState({
       name: "memos",
       logoUrl: "/logo.webp",
       description: "",
@@ -114,9 +108,9 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
         <p className="text-sm mb-1 mt-2">Description</p>
         <input type="text" className="input-text" value={state.description} onChange={handleDescriptionChanged} />
         <p className="text-sm mb-1 mt-2">Server locale</p>
-        <LocaleSelect className="w-full" value={state.locale} onChange={handleLocaleSelectChange} />
+        <LocaleSelect className="!w-full" value={state.locale} onChange={handleLocaleSelectChange} />
         <p className="text-sm mb-1 mt-2">Server appearance</p>
-        <AppearanceSelect className="w-full" value={state.appearance} onChange={handleAppearanceSelectChange} />
+        <AppearanceSelect className="!w-full" value={state.appearance} onChange={handleAppearanceSelectChange} />
         <div className="mt-4 w-full flex flex-row justify-between items-center space-x-2">
           <div className="flex flex-row justify-start items-center">
             <button className="btn-normal" onClick={handleRestoreButtonClick}>
