@@ -194,11 +194,8 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
-		if s.Profile.IsDev() {
-			publicID := common.GenUUID()
-			resourceCreate.PublicID = publicID
-		}
-
+		publicID := common.GenUUID()
+		resourceCreate.PublicID = publicID
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
