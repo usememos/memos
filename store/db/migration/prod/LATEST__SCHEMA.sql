@@ -76,7 +76,10 @@ CREATE TABLE resource (
   blob BLOB DEFAULT NULL,
   external_link TEXT NOT NULL DEFAULT '',
   type TEXT NOT NULL DEFAULT '',
-  size INTEGER NOT NULL DEFAULT 0
+  size INTEGER NOT NULL DEFAULT 0,
+  internal_path TEXT NOT NULL DEFAULT '',
+  public_id TEXT NOT NULL DEFAULT '',
+  UNIQUE(id, public_id)
 );
 
 -- memo_resource

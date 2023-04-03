@@ -80,17 +80,17 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		filename := file.Filename
 		filetype := file.Header.Get("Content-Type")
 		size := file.Size
-		src, err := file.Open()
+		sourceFile, err := file.Open()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open file").SetInternal(err)
 		}
-		defer src.Close()
+		defer sourceFile.Close()
 
 		systemSettingStorageServiceID, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingStorageServiceIDName})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
-		storageServiceID := 0
+		storageServiceID := api.DatabaseStorage
 		if systemSettingStorageServiceID != nil {
 			err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
 			if err != nil {
@@ -99,9 +99,9 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		var resourceCreate *api.ResourceCreate
-		if storageServiceID == 0 {
+		if storageServiceID == api.DatabaseStorage {
 			// Database storage.
-			fileBytes, err := io.ReadAll(src)
+			fileBytes, err := io.ReadAll(sourceFile)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
 			}
@@ -112,17 +112,17 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				Size:      size,
 				Blob:      fileBytes,
 			}
-		} else if storageServiceID == -1 {
+		} else if storageServiceID == api.LocalStorage {
 			// Local storage.
 			systemSettingLocalStoragePath, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingLocalStoragePathName})
 			if err != nil && common.ErrorCode(err) != common.NotFound {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
 			}
 			localStoragePath := ""
 			if systemSettingLocalStoragePath != nil {
 				err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
 				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal local storage path setting").SetInternal(err)
 				}
 			}
 			filePath := localStoragePath
@@ -131,8 +131,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 			filePath = path.Join(s.Profile.Data, replacePathTemplate(filePath, filename))
 			dirPath := filepath.Dir(filePath)
-			err = os.MkdirAll(dirPath, os.ModePerm)
-			if err != nil {
+			if err = os.MkdirAll(dirPath, os.ModePerm); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
 			}
 			dst, err := os.Create(filePath)
@@ -140,8 +139,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create file").SetInternal(err)
 			}
 			defer dst.Close()
-
-			_, err = io.Copy(dst, src)
+			_, err = io.Copy(dst, sourceFile)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to copy file").SetInternal(err)
 			}
@@ -179,7 +177,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
 				}
 
-				link, err := s3client.UploadFile(ctx, s3FileKey, filetype, src)
+				link, err := s3client.UploadFile(ctx, s3FileKey, filetype, sourceFile)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
 				}
@@ -194,11 +192,8 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
-		if s.Profile.IsDev() {
-			publicID := common.GenUUID()
-			resourceCreate.PublicID = publicID
-		}
-
+		publicID := common.GenUUID()
+		resourceCreate.PublicID = publicID
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)

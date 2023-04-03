@@ -51,7 +51,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				Appearance:  "system",
 				ExternalURL: "",
 			},
-			StorageServiceID: 0,
+			StorageServiceID: api.DatabaseStorage,
 			LocalStoragePath: "",
 		}
 
