@@ -26,7 +26,7 @@ func (key UserSettingKey) String() string {
 	case UserSettingAppearanceKey:
 		return "appearance"
 	case UserSettingMemoVisibilityKey:
-		return "memoVisibility"
+		return "memo-visibility"
 	}
 	return ""
 }

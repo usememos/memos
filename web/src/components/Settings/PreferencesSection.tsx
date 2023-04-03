@@ -33,7 +33,7 @@ const PreferencesSection = () => {
   };
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {
-    await userStore.upsertUserSetting("memoVisibility", value);
+    await userStore.upsertUserSetting("memo-visibility", value);
   };
 
   const handleDoubleClickEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
