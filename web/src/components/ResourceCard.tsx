@@ -5,15 +5,7 @@ import ResourceCover from "./ResourceCover";
 import ResourceItemDropdown from "./ResourceItemDropdown";
 import "@/less/resource-card.less";
 
-const ResourceCard = ({
-  resource,
-  handleCheckClick,
-  handleUncheckClick,
-  handlePreviewBtnClick,
-  handleCopyResourceLinkBtnClick,
-  handleRenameBtnClick,
-  handleDeleteResourceBtnClick,
-}: ResourceItemType) => {
+const ResourceCard = ({ resource, handleCheckClick, handleUncheckClick }: ResourceItemType) => {
   const [isSelected, setIsSelected] = useState<boolean>(false);
 
   const handleSelectBtnClick = () => {
@@ -32,13 +24,7 @@ const ResourceCard = ({
           {isSelected ? <Icon.CheckCircle2 className="resource-checkbox !flex" /> : <Icon.Circle className="resource-checkbox" />}
         </div>
         <div className="more-action-btn">
-          <ResourceItemDropdown
-            resource={resource}
-            handleCopyResourceLinkBtnClick={handleCopyResourceLinkBtnClick}
-            handleDeleteResourceBtnClick={handleDeleteResourceBtnClick}
-            handlePreviewBtnClick={handlePreviewBtnClick}
-            handleRenameBtnClick={handleRenameBtnClick}
-          />
+          <ResourceItemDropdown resource={resource} />
         </div>
       </div>
       <div className="w-full flex flex-row justify-center items-center pb-2 pt-4 px-2">

@@ -24,6 +24,7 @@ interface ResourceCreate {
 interface ResourcePatch {
   id: ResourceId;
   filename?: string;
+  resetPublicId?: boolean;
 }
 
 interface ResourceFind {
