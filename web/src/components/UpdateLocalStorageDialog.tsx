@@ -1,10 +1,11 @@
-import { Button, Input, Typography } from "@mui/joy";
+import { Button, Input } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
+import LearnMore from "./LearnMore";
 
 interface Props extends DialogProps {
   localStoragePath?: string;
@@ -45,15 +46,13 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
           <Icon.X />
         </button>
       </div>
-      <div className="dialog-content-container">
-        <div className="py-2">
-          <Typography className="!mb-1" level="body2">
-            Local path
-          </Typography>
-          <p className="text-sm text-gray-400 break-all">{"It's a relative path to your database file."}</p>
-          <p className="text-sm text-gray-400 mb-2 break-all">{"e.g. assets/{timestamp}_{filename}"}</p>
-          <Input className="mb-2" placeholder="Path" value={path} onChange={(e) => setPath(e.target.value)} fullWidth />
-        </div>
+      <div className="dialog-content-container max-w-xs">
+        <p className="text-sm break-words mb-1">
+          {"Local storage path is a relative path to your database file."}
+          <LearnMore className="ml-1" url="https://usememos.com/docs/local-storage" />
+        </p>
+        <p className="text-sm text-gray-400 mb-2 break-all">{"e.g. assets/{timestamp}_{filename}"}</p>
+        <Input className="mb-2" placeholder="Local storage path" fullWidth value={path} onChange={(e) => setPath(e.target.value)} />
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
             Cancel

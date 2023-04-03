@@ -5,6 +5,7 @@ import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import RequiredBadge from "./RequiredBadge";
+import LearnMore from "./LearnMore";
 
 interface Props extends DialogProps {
   storage?: ObjectStorage;
@@ -105,14 +106,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text">
           {isCreating ? "Create storage" : "Update storage"}
-          <a
-            className="ml-2 text-sm text-blue-600 hover:opacity-80 hover:underline"
-            href="https://usememos.com/docs/storage"
-            target="_blank"
-          >
-            Learn more
-            <Icon.ExternalLink className="inline -mt-1 ml-1 w-4 h-auto opacity-80" />
-          </a>
+          <LearnMore className="ml-2" url="https://usememos.com/docs/storage" />
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
