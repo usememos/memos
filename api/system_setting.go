@@ -11,7 +11,7 @@ import (
 type SystemSettingName string
 
 const (
-	// SystemSettingServerID is the name of server id.
+	// SystemSettingServerIDName is the name of server id.
 	SystemSettingServerIDName SystemSettingName = "server-id"
 	// SystemSettingSecretSessionName is the name of secret session.
 	SystemSettingSecretSessionName SystemSettingName = "secret-session"
