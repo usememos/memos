@@ -1,15 +1,6 @@
-INSERT INTO
-  user_setting (user_id, key, value)
-SELECT
-  user_id,
-  'memo-visibility',
-  value
-FROM
+UPDATE
   user_setting
-WHERE
-  key = 'memoVisibility';
-
-DELETE FROM
-  user_setting
+SET
+  key = 'memo-visibility'
 WHERE
   key = 'memoVisibility';

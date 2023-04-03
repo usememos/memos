@@ -35,7 +35,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 		}
 
 		baseURL := c.Scheme() + "://" + c.Request().Host
-		rss, err := generateRSSFromMemoList(memoList, baseURL, &systemCustomizedProfile)
+		rss, err := generateRSSFromMemoList(memoList, baseURL, systemCustomizedProfile)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate rss").SetInternal(err)
 		}
@@ -72,7 +72,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 
 		baseURL := c.Scheme() + "://" + c.Request().Host
 
-		rss, err := generateRSSFromMemoList(memoList, baseURL, &systemCustomizedProfile)
+		rss, err := generateRSSFromMemoList(memoList, baseURL, systemCustomizedProfile)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate rss").SetInternal(err)
 		}
@@ -114,57 +114,27 @@ func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.
 	return rss, nil
 }
 
-func getSystemCustomizedProfile(ctx context.Context, s *Server) (api.CustomizedProfile, error) {
-	systemStatus := api.SystemStatus{
-		CustomizedProfile: api.CustomizedProfile{
-			Name:        "memos",
-			LogoURL:     "",
-			Description: "",
-			Locale:      "en",
-			Appearance:  "system",
-			ExternalURL: "",
-		},
+func getSystemCustomizedProfile(ctx context.Context, s *Server) (*api.CustomizedProfile, error) {
+	customizedProfile := &api.CustomizedProfile{
+		Name:        "memos",
+		LogoURL:     "",
+		Description: "",
+		Locale:      "en",
+		Appearance:  "system",
+		ExternalURL: "",
 	}
-
-	systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
+	systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+		Name: api.SystemSettingCustomizedProfileName,
+	})
 	if err != nil {
-		return api.CustomizedProfile{}, err
+		return customizedProfile, err
 	}
-	for _, systemSetting := range systemSettingList {
-		if systemSetting.Name == api.SystemSettingServerID || systemSetting.Name == api.SystemSettingSecretSessionName {
-			continue
-		}
 
-		var value any
-		err := json.Unmarshal([]byte(systemSetting.Value), &value)
-		if err != nil {
-			return api.CustomizedProfile{}, err
-		}
-
-		if systemSetting.Name == api.SystemSettingCustomizedProfileName {
-			valueMap := value.(map[string]any)
-			systemStatus.CustomizedProfile = api.CustomizedProfile{}
-			if v := valueMap["name"]; v != nil {
-				systemStatus.CustomizedProfile.Name = v.(string)
-			}
-			if v := valueMap["logoUrl"]; v != nil {
-				systemStatus.CustomizedProfile.LogoURL = v.(string)
-			}
-			if v := valueMap["description"]; v != nil {
-				systemStatus.CustomizedProfile.Description = v.(string)
-			}
-			if v := valueMap["locale"]; v != nil {
-				systemStatus.CustomizedProfile.Locale = v.(string)
-			}
-			if v := valueMap["appearance"]; v != nil {
-				systemStatus.CustomizedProfile.Appearance = v.(string)
-			}
-			if v := valueMap["externalUrl"]; v != nil {
-				systemStatus.CustomizedProfile.ExternalURL = v.(string)
-			}
-		}
+	err = json.Unmarshal([]byte(systemSetting.Value), customizedProfile)
+	if err != nil {
+		return customizedProfile, err
 	}
-	return systemStatus.CustomizedProfile, nil
+	return customizedProfile, nil
 }
 
 func min(a, b int) int {

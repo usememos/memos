@@ -60,7 +60,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
 		}
 		for _, systemSetting := range systemSettingList {
-			if systemSetting.Name == api.SystemSettingServerID || systemSetting.Name == api.SystemSettingSecretSessionName || systemSetting.Name == api.SystemSettingOpenAIConfigName {
+			if systemSetting.Name == api.SystemSettingServerIDName || systemSetting.Name == api.SystemSettingSecretSessionName || systemSetting.Name == api.SystemSettingOpenAIConfigName {
 				continue
 			}
 
@@ -194,14 +194,14 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 
 func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
 	serverIDValue, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-		Name: api.SystemSettingServerID,
+		Name: api.SystemSettingServerIDName,
 	})
 	if err != nil && common.ErrorCode(err) != common.NotFound {
 		return "", err
 	}
 	if serverIDValue == nil || serverIDValue.Value == "" {
 		serverIDValue, err = s.Store.UpsertSystemSetting(ctx, &api.SystemSettingUpsert{
-			Name:  api.SystemSettingServerID,
+			Name:  api.SystemSettingServerIDName,
 			Value: uuid.NewString(),
 		})
 		if err != nil {
