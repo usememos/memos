@@ -29,7 +29,7 @@ const StorageSection = () => {
 
   const handleActiveStorageServiceChanged = async (storageId: StorageId) => {
     await api.upsertSystemSetting({
-      name: "storageServiceId",
+      name: "storage-service-id",
       value: JSON.stringify(storageId),
     });
     await globalStore.fetchSystemStatus();

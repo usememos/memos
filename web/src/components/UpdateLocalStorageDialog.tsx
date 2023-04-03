@@ -23,7 +23,7 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
   const handleConfirmBtnClick = async () => {
     try {
       await api.upsertSystemSetting({
-        name: "localStoragePath",
+        name: "local-storage-path",
         value: JSON.stringify(path),
       });
       await globalStore.fetchSystemStatus();

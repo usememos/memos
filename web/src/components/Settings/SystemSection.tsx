@@ -57,7 +57,7 @@ const SystemSection = () => {
 
   useEffect(() => {
     api.getSystemSetting().then(({ data: { data: systemSettings } }) => {
-      const openAIConfigSetting = systemSettings.find((setting) => setting.name === "openAIConfig");
+      const openAIConfigSetting = systemSettings.find((setting) => setting.name === "openai-config");
       if (openAIConfigSetting) {
         setOpenAIConfig(JSON.parse(openAIConfigSetting.value));
       }
@@ -70,7 +70,7 @@ const SystemSection = () => {
       allowSignUp: value,
     });
     await api.upsertSystemSetting({
-      name: "allowSignUp",
+      name: "allow-signup",
       value: JSON.stringify(value),
     });
   };
@@ -100,7 +100,7 @@ const SystemSection = () => {
   const handleSaveOpenAIConfig = async () => {
     try {
       await api.upsertSystemSetting({
-        name: "openAIConfig",
+        name: "openai-config",
         value: JSON.stringify(openAIConfig),
       });
     } catch (error) {
@@ -127,7 +127,7 @@ const SystemSection = () => {
   const handleSaveAdditionalStyle = async () => {
     try {
       await api.upsertSystemSetting({
-        name: "additionalStyle",
+        name: "additional-style",
         value: JSON.stringify(state.additionalStyle),
       });
     } catch (error) {
@@ -147,7 +147,7 @@ const SystemSection = () => {
   const handleSaveAdditionalScript = async () => {
     try {
       await api.upsertSystemSetting({
-        name: "additionalScript",
+        name: "additional-script",
         value: JSON.stringify(state.additionalScript),
       });
     } catch (error) {
@@ -164,7 +164,7 @@ const SystemSection = () => {
     });
     globalStore.setSystemStatus({ disablePublicMemos: value });
     await api.upsertSystemSetting({
-      name: "disablePublicMemos",
+      name: "disable-public-memos",
       value: JSON.stringify(value),
     });
   };

@@ -83,7 +83,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     try {
       await api.upsertSystemSetting({
-        name: "customizedProfile",
+        name: "customized-profile",
         value: JSON.stringify(state),
       });
       await globalStore.fetchSystemStatus();
