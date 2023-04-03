@@ -36,6 +36,15 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     destroy();
   };
 
+  const setPartialState = (partialState: Partial<State>) => {
+    setState((state) => {
+      return {
+        ...state,
+        ...partialState,
+      };
+    });
+  };
+
   const handleAvatarChanged = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (files && files.length > 0) {
@@ -46,11 +55,8 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
       }
       try {
         const base64 = await convertFileToBase64(image);
-        setState((state) => {
-          return {
-            ...state,
-            avatarUrl: base64,
-          };
+        setPartialState({
+          avatarUrl: base64,
         });
       } catch (error) {
         console.error(error);
@@ -60,20 +66,14 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
   };
 
   const handleNicknameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState((state) => {
-      return {
-        ...state,
-        nickname: e.target.value as string,
-      };
+    setPartialState({
+      nickname: e.target.value as string,
     });
   };
 
   const handleUsernameChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setState((state) => {
-      return {
-        ...state,
-        username: e.target.value as string,
-      };
+    setPartialState({
+      username: e.target.value as string,
     });
   };
 
@@ -133,6 +133,16 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
             <UserAvatar className="!w-12 !h-12" avatarUrl={state.avatarUrl} />
             <input type="file" accept="image/*" className="absolute invisible w-full h-full inset-0" onChange={handleAvatarChanged} />
           </label>
+          {state.avatarUrl && (
+            <Icon.X
+              className="w-4 h-auto ml-1 cursor-pointer opacity-60 hover:opacity-80"
+              onClick={() =>
+                setPartialState({
+                  avatarUrl: "",
+                })
+              }
+            />
+          )}
         </div>
         <p className="text-sm">
           {t("common.username")}
