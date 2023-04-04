@@ -2,7 +2,7 @@ import { render, screen } from "@testing-library/react";
 import ResourceCover from "../../src/components/ResourceCover";
 
 describe("ResourceItem", () => {
-  it("renders headline", () => {
+  it("render ResourceCover", () => {
     const resource: Resource = {
       id: 1,
       publicId: "test",
