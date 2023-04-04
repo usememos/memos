@@ -11,9 +11,9 @@ UPDATE
 SET
   public_id = printf (
     '%s-%s-%s-%s-%s',
-    lower(hex(randomblob (4))),
-    lower(hex(randomblob (2))),
-    lower(hex(randomblob (2))),
-    lower(hex(randomblob (2))),
-    lower(hex(randomblob (6)))
+    lower(hex(randomblob(4))),
+    lower(hex(randomblob(2))),
+    lower(hex(randomblob(2))),
+    lower(hex(randomblob(2))),
+    lower(hex(randomblob(6)))
   );
