@@ -1,0 +1,71 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ResourceItemDropdown snapshot > render ResourceItemDropdown 1`] = `
+<div
+  className="relative flex flex-col justify-start items-start select-none "
+  onClick={[Function]}
+>
+  <svg
+    className="w-4 h-auto hover:opacity-80 cursor-pointer"
+    fill="none"
+    height={24}
+    stroke="currentColor"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth={2}
+    viewBox="0 0 24 24"
+    width={24}
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle
+      cx="12"
+      cy="12"
+      r="1"
+    />
+    <circle
+      cx="12"
+      cy="5"
+      r="1"
+    />
+    <circle
+      cx="12"
+      cy="19"
+      r="1"
+    />
+  </svg>
+  <div
+    className="w-auto absolute flex flex-col justify-start items-start bg-white dark:bg-zinc-700 z-10 p-1 rounded-md shadow !hidden !w-28 top-full right-0 mt-1"
+  >
+    <button
+      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+      onClick={[Function]}
+    >
+      Preview
+    </button>
+    <button
+      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+      onClick={[Function]}
+    >
+      Copy Link
+    </button>
+    <button
+      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+      onClick={[Function]}
+    >
+      Reset link
+    </button>
+    <button
+      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+      onClick={[Function]}
+    >
+      Rename
+    </button>
+    <button
+      className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
+      onClick={[Function]}
+    >
+      Delete
+    </button>
+  </div>
+</div>
+`;
