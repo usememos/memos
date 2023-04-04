@@ -34,6 +34,7 @@
   },
   "devDependencies": {
     "@tailwindcss/line-clamp": "^0.4.2",
+    "@testing-library/react": "^14.0.0",
     "@types/jest": "^29.5.0",
     "@types/lodash-es": "^4.17.5",
     "@types/node": "^18.0.3",
