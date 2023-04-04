@@ -7,6 +7,12 @@ const devProxyServer = "http://localhost:8081/";
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
+  test: {
+    environment: "jsdom",
+    setupFiles: ["./tests/setup.ts"],
+    testMatch: ["./tests/**/*.test.tsx"],
+    globals: true,
+  },
   server: {
     host: "0.0.0.0",
     port: 3001,
