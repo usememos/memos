@@ -334,10 +334,6 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
 		}
 
-		if resource.ExternalLink != "" {
-			return c.Redirect(http.StatusSeeOther, resource.ExternalLink)
-		}
-
 		blob := resource.Blob
 		if resource.InternalPath != "" {
 			src, err := os.Open(resource.InternalPath)

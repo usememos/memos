@@ -9,6 +9,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/log"
+	"go.uber.org/zap"
 
 	"github.com/labstack/echo/v4"
 )
@@ -67,7 +69,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			var baseValue any
 			err := json.Unmarshal([]byte(systemSetting.Value), &baseValue)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting value").SetInternal(err)
+				log.Warn("Failed to unmarshal system setting value", zap.String("setting name", systemSetting.Name.String()))
+				continue
 			}
 
 			if systemSetting.Name == api.SystemSettingAllowSignUpName {

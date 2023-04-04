@@ -3,19 +3,17 @@ ALTER TABLE
 ADD
   COLUMN public_id TEXT NOT NULL DEFAULT '';
 
+-- TODO(steven): remove this in next release.
 CREATE UNIQUE INDEX resource_id_public_id_unique_index ON resource (id, public_id);
 
 UPDATE
   resource
 SET
-  public_id = (
-    SELECT
-      printf(
-        '%s-%s-%s-%s-%s',
-        lower(hex(randomblob(4))),
-        lower(hex(randomblob(2))),
-        lower(hex(randomblob(2))),
-        lower(hex(randomblob(2))),
-        lower(hex(randomblob(6)))
-      ) as uuid
+  public_id = printf (
+    '%s-%s-%s-%s-%s',
+    lower(hex(randomblob(4))),
+    lower(hex(randomblob(2))),
+    lower(hex(randomblob(2))),
+    lower(hex(randomblob(2))),
+    lower(hex(randomblob(6)))
   );
