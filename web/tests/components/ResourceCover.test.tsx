@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
 import ResourceCover from "../../src/components/ResourceCover";
+import renderer from "react-test-renderer";
 
-describe("ResourceItem", () => {
+describe("ResourceItem snapshot", () => {
   it("render ResourceCover", () => {
     const resource: Resource = {
       id: 1,
@@ -14,7 +14,7 @@ describe("ResourceItem", () => {
       updatedTs: 0,
       linkedMemoAmount: 0,
     };
-    render(<ResourceCover resource={resource} />);
-    screen.debug();
+    const tree = renderer.create(<ResourceCover resource={resource} />).toJSON();
+    expect(tree).toMatchSnapshot();
   });
 });
