@@ -116,6 +116,7 @@
   "memo": {
     "view-detail": "Poglej podrobnosti",
     "copy": "Kopiraj",
+    "copy-link": "Kopiraj povezavo",
     "embed": "Vdelaj beležko",
     "visibility": {
       "private": "Vidno samo za vas",

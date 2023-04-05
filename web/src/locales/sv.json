@@ -96,6 +96,7 @@
   "memo": {
     "view-detail": "Visa detaljer",
     "copy": "Kopiera",
+    "copy-link": "Kopiera länk",
     "visibility": {
       "private": "Endast synlig för dig",
       "protected": "Synlig för medlemmar",

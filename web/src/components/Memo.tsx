@@ -65,6 +65,11 @@ const Memo: React.FC<Props> = (props: Props) => {
     toast.success(t("message.succeed-copy-content"));
   };
 
+  const handleCopyLink = () => {
+    copy(`${window.location.origin}/m/${memo.id}`);
+    toast.success(t("message.succeed-copy-link"));
+  };
+
   const handleTogglePinMemoBtnClick = async () => {
     try {
       if (memo.pinned) {
@@ -232,6 +237,9 @@ const Memo: React.FC<Props> = (props: Props) => {
                 </div>
                 <span className="btn" onClick={handleCopyContent}>
                   {t("memo.copy")}
+                </span>
+                <span className="btn" onClick={handleCopyLink}>
+                  {t("memo.copy-link")}
                 </span>
                 <span className="btn" onClick={handleViewMemoDetailPage}>
                   {t("memo.view-detail")}

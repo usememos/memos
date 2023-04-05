@@ -76,6 +76,7 @@
   "memo": {
     "view-detail": "View Detail",
     "copy": "Copy",
+    "copy-link":"Copy Link",
     "embed": "Embed memo",
     "archived-memos": "Archived Memos",
     "no-archived-memos": "No archived memos.",

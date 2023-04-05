@@ -65,7 +65,7 @@
     "fetching-data": "请求数据中...",
     "upload": "上传",
     "preview": "预览",
-    "copy-link": "拷贝链接",
+    "copy-link": "复制链接",
     "delete-resource": "删除资源",
     "warning-text": "确定删除这个资源么？此操作不可逆❗",
     "linked-amount": "链接的 Memo 数量",
@@ -98,6 +98,7 @@
   "memo": {
     "view-detail": "查看详情",
     "copy": "复制",
+    "copy-link": "复制链接",
     "visibility": {
       "private": "仅自己可见",
       "protected": "登录用户可见",

@@ -96,6 +96,7 @@
   "memo": {
     "view-detail": "Bekijk Detail",
     "copy": "Kopiëer",
+    "copy-link": "Kopiëer Link",
     "visibility": {
       "private": "Privé",
       "protected": "Zichtbaar voor leden",

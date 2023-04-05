@@ -98,6 +98,7 @@
   "memo": {
     "view-detail": "查看詳情",
     "copy": "複製",
+    "copy-link": "複製連結",
     "visibility": {
       "private": "僅自己可見",
       "protected": "登入使用者可見",

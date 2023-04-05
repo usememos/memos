@@ -96,6 +96,7 @@
   "memo": {
     "view-detail": "Voir le détail",
     "copy": "Copier",
+    "copy-link": "Copier le lien",
     "visibility": {
       "private": "Privé",
       "protected": "Visible par les membres",
