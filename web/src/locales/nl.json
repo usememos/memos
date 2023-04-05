@@ -51,7 +51,6 @@
     "select": "Selecteer",
     "database": "Database"
   },
-  "slogan": "Een open-source, zelf-beheerd memo applicatie voor kennismanagement en collaboratie.",
   "auth": {
     "signup-as-host": "Registreren als Host",
     "host-tip": "Je registreert je als Site Host.",
@@ -63,10 +62,7 @@
     "setting": "Instellingen",
     "archived": "Gearchiveerd"
   },
-  "daily-review": {
-    "oops-nothing": "Oeps, er is niets."
-  },
-  "resources": {
+  "resource": {
     "description": "Bekijk je statische bronnen in memos, zoals foto's.",
     "no-resources": "Geen bronnen.",
     "fetching-data": "data aan het ophalen...",

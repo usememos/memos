@@ -51,7 +51,6 @@
     "select": "Selecionar",
     "database": "Banco de dados"
   },
-  "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
   "auth": {
     "signup-as-host": "Sign up as Host",
     "host-tip": "You are registering as the Site Host.",
@@ -63,10 +62,7 @@
     "setting": "Configurações",
     "archived": "Arquivado"
   },
-  "daily-review": {
-    "oops-nothing": "Oops, não há nada aqui."
-  },
-  "resources": {
+  "resource": {
     "description": "View your static resources in memos. e.g. images",
     "no-resources": "No resources.",
     "fetching-data": "fetching data...",
@@ -204,14 +200,6 @@
       "dark": "Always dark"
     }
   },
-  "amount-text": {
-    "memo_one": "MEMO",
-    "memo_many": "",
-    "tag_one": "TAG",
-    "tag_many": "",
-    "day_one": "DAY",
-    "day_many": ""
-  },
   "message": {
     "no-memos": "no memos 🌃",
     "memos-ready": "all memos are ready 🎉",
@@ -253,19 +241,12 @@
     "page-not-found": "404 - Page Not Found 😥"
   },
   "days": {
-    "monday": "Monday",
     "mon": "Mon",
-    "tuesday": "Tuesday",
     "tue": "Tue",
-    "wednesday": "Wednesday",
     "wed": "Wed",
-    "thursday": "Thursday",
     "thu": "Thu",
-    "friday": "Friday",
     "fri": "Fri",
-    "saturday": "Saturday",
     "sat": "Sat",
-    "sunday": "Sunday",
     "sun": "Sun"
   }
 }

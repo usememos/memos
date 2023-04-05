@@ -54,16 +54,12 @@
     "database": "資料庫",
     "avatar": "頭像"
   },
-  "slogan": "一個可用於知識管理和社交網絡的開源、自托管的備忘錄中心。",
   "auth": {
     "signup-as-host": "註冊為管理員",
     "host-tip": "你正在註冊為管理員帳號。",
     "not-host-tip": "如果你沒有帳號，請聯絡網站管理員。"
   },
-  "daily-review": {
-    "oops-nothing": "啊哦，空空蕩蕩。"
-  },
-  "resources": {
+  "resource": {
     "description": "查看在 Memo 中的靜態資源。例如：圖片",
     "no-resources": "沒有資源",
     "fetching-data": "擷取資料中...",

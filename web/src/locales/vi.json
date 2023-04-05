@@ -51,7 +51,6 @@
     "avatar": "Avatar",
     "database": "Database"
   },
-  "slogan": "Mã nguồn mở ghi chú cho phép quản lý tri thức và chia sẻ cộng đồng.",
   "auth": {
     "signup-as-host": "Đăng ký như chủ nhân",
     "host-tip": "Bạn đang đăng ký với tư cách chủ nhân của trang web này.",
@@ -63,10 +62,7 @@
     "setting": "Cài Đặt",
     "archived": "Lưu Trữ"
   },
-  "daily-review": {
-    "oops-nothing": "Ồ, chẳng có gì ở đây cả."
-  },
-  "resources": {
+  "resource": {
     "description": "Xem toàn bộ tài nguyên của trang web. Ví dụ như các hình ảnh.",
     "no-resources": "Không có tài nguyên.",
     "fetching-data": "đang tải dữ liệu...",
