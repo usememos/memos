@@ -1,4 +1,4 @@
-import { absolutifyLink } from "../../../helpers/utils";
+import { absolutifyLink } from "@/helpers/utils";
 import { matcher } from "../matcher";
 
 export const IMAGE_REG = /!\[.*?\]\((.+?)\)/;

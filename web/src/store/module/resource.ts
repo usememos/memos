@@ -1,7 +1,7 @@
+import * as api from "@/helpers/api";
+import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import store, { useAppSelector } from "../";
 import { patchResource, setResources, deleteResource, upsertResources } from "../reducer/resource";
-import * as api from "../../helpers/api";
-import { DEFAULT_MEMO_LIMIT } from "../../helpers/consts";
 
 const MAX_FILE_SIZE = 32 << 20;
 
