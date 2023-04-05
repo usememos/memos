@@ -51,7 +51,6 @@
     "avatar": "Avatar",
     "database": "Database"
   },
-  "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
   "auth": {
     "signup-as-host": "S'inscrire en tant qu'hôte",
     "host-tip": "Vous vous inscrivez en tant qu'hébergeur du site.",
@@ -63,10 +62,7 @@
     "setting": "Réglage",
     "archived": "Archivé"
   },
-  "daily-review": {
-    "oops-nothing": "Oups, il n'y a rien."
-  },
-  "resources": {
+  "resource": {
     "description": "Visualisez vos ressources statiques dans des mémos, par exemple des images.",
     "no-resources": "Aucune ressource.",
     "fetching-data": "récupération des données...",

@@ -51,7 +51,6 @@
     "database": "Base de datos",
     "avatar": "Avatar"
   },
-  "slogan": "Un código abierto, centro de notas autoalojado con la gestión del conocimiento y la socialización.",
   "auth": {
     "signup-as-host": "Registrarse como Anfitrión",
     "host-tip": "Te estás registrando como Anfitrión del Sitio.",
@@ -63,10 +62,7 @@
     "setting": "Ajustes",
     "archived": "Archivado"
   },
-  "daily-review": {
-    "oops-nothing": "Ups, no hay nada."
-  },
-  "resources": {
+  "resource": {
     "description": "Visualiza tus recursos estáticos en notas. p.ej., imágenes",
     "no-resources": "Sin recursos.",
     "fetching-data": "obteniendo datos...",

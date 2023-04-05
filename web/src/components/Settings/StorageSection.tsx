@@ -63,7 +63,7 @@ const StorageSection = () => {
         className="w-full mb-4"
         value={storageServiceId}
         onChange={(_, storageId) => {
-          handleActiveStorageServiceChanged(storageId || 0);
+          handleActiveStorageServiceChanged(storageId ?? storageServiceId);
         }}
       >
         <Option value={0}>Database</Option>

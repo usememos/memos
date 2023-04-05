@@ -51,7 +51,6 @@
     "select": "Wybierz",
     "database": "Baza danych"
   },
-  "slogan": "Open-source centrum notatek do samodzielnego hostowania z zarządzaniem wiedzą i sieciami społecznościowymi.",
   "auth": {
     "signup-as-host": "Zarejestruj się jako właściciel",
     "host-tip": "Rejestrujesz się jako właściciel.",
@@ -63,10 +62,7 @@
     "setting": "Ustawienia",
     "archived": "Zarchiwizowane"
   },
-  "daily-review": {
-    "oops-nothing": "Ups, nic tu nie ma."
-  },
-  "resources": {
+  "resource": {
     "description": "Zobacz statyczne zasoby w notatkach, na przykład obrazki",
     "no-resources": "Brak zasobów.",
     "fetching-data": "pobieranie danych...",

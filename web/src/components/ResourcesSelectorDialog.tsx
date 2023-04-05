@@ -87,17 +87,17 @@ const ResourcesSelectorDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-content-container">
         {loadingState.isLoading ? (
           <div className="loading-text-container">
-            <p className="tip-text">{t("resources.fetching-data")}</p>
+            <p className="tip-text">{t("resource.fetching-data")}</p>
           </div>
         ) : (
           <div className="resource-table-container">
             <div className="fields-container">
-              <span className="field-text name-text">{t("resources.name")}</span>
+              <span className="field-text name-text">{t("common.name")}</span>
               <span className="field-text type-text">Type</span>
               <span></span>
             </div>
             {resources.length === 0 ? (
-              <p className="tip-text">{t("resources.no-resources")}</p>
+              <p className="tip-text">{t("resource.no-resources")}</p>
             ) : (
               resources.map((resource, index) => (
                 <div key={resource.id} className="resource-container">

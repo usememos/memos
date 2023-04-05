@@ -61,7 +61,7 @@ const MemoDetail = () => {
               <>
                 {user ? (
                   <Link to="/" className="btn">
-                    <span className="icon">🏠</span> {t("common.back-to-home")}
+                    <span className="icon">🏠</span> {t("router.back-to-home")}
                   </Link>
                 ) : (
                   <Link to="/auth" className="btn">

@@ -41,7 +41,6 @@
     "yourself": "Sen",
     "archived-at": "Arşivlendi"
   },
-  "slogan": "Açık kaynaklı bir not ve sosyalleşme platformu olan self-hosted.",
   "auth": {
     "signup-as-host": "Sahip olarak kaydolun",
     "host-tip": "Site sahibi olarak kaydoluyorsunuz.",
@@ -53,10 +52,7 @@
     "setting": "Ayarlar",
     "archived": "Arşivlenmiş"
   },
-  "daily-review": {
-    "oops-nothing": "Oops, burada hiçbir şey yok."
-  },
-  "resources": {
+  "resource": {
     "description": "Memos'taki statik kaynaklarınızı (fotoğraflar) görüntüleyin",
     "no-resources": "Kaynak yok.",
     "fetching-data": "veriler yükleniyor...",

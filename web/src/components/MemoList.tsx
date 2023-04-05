@@ -139,7 +139,7 @@ const MemoList = () => {
       ))}
       {isFetching ? (
         <div className="status-text-container fetching-tip">
-          <p className="status-text">{t("memo-list.fetching-data")}</p>
+          <p className="status-text">{t("memo.fetching-data")}</p>
         </div>
       ) : (
         <div className="status-text-container">
@@ -153,7 +153,7 @@ const MemoList = () => {
             ) : (
               <>
                 <span className="cursor-pointer hover:text-green-600" onClick={handleFetchMoreClick}>
-                  {t("memo-list.fetch-more")}
+                  {t("memo.fetch-more")}
                 </span>
               </>
             )}
