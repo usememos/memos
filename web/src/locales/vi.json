@@ -100,6 +100,7 @@
   "memo": {
     "view-detail": "Xem Chi Tiết",
     "copy": "Sao Chép",
+    "copy-link": "Sao Chép",
     "visibility": {
       "private": "Riêng tư",
       "protected": "Bảo vệ",

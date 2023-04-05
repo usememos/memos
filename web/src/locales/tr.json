@@ -90,6 +90,7 @@
   "memo": {
     "view-detail": "Detayları görüntüle",
     "copy": "Kopyala",
+    "copy-link": "Bağlantıyı kopyala",
     "visibility": {
       "private": "Sadece sizin için görünür",
       "protected": "Sadece kullanıcılara görünür",

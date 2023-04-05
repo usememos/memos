@@ -120,6 +120,7 @@
   "memo": {
     "view-detail": "View Detail",
     "copy": "Copy",
+    "copy-link":"Copy Link",
     "embed": "Embed memo",
     "visibility": {
       "private": "Only visible to you",
