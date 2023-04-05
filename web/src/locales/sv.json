@@ -51,7 +51,6 @@
     "avatar": "Avatar",
     "database": "Databas"
   },
-  "slogan": "En öppen källkod, self-hosted antecknings hubb med kunskapshantering och socialisering",
   "auth": {
     "signup-as-host": "Registera dig som värd",
     "host-tip": "Du registerar dig som webbplatsvärd.",
@@ -63,10 +62,7 @@
     "setting": "Inställningar",
     "archived": "Arkiverade"
   },
-  "daily-review": {
-    "oops-nothing": "Oj, det finns inget här."
-  },
-  "resources": {
+  "resource": {
     "description": "Visa dina statiska resurser i anteckningarn. t.ex bilder.",
     "no-resources": "Inga resurser.",
     "fetching-data": "hämtar data...",

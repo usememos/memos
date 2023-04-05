@@ -4,16 +4,12 @@
     "home": "Home",
     "resources": "Resources",
     "settings": "Settings",
-    "daily-review": "Daily Review",
-    "ask-ai": "Ask AI",
     "archived": "Archived",
     "email": "Email",
     "password": "Password",
     "avatar": "Avatar",
     "username": "Username",
     "nickname": "Nickname",
-    "new-password": "New password",
-    "repeat-new-password": "Repeat the new password",
     "save": "Save",
     "close": "Close",
     "cancel": "Cancel",
@@ -37,53 +33,76 @@
     "sign-in": "Sign in",
     "sign-up": "Sign up",
     "sign-out": "Sign out",
-    "back-to-home": "Back to Home",
     "type": "Type",
     "shortcuts": "Shortcuts",
     "title": "Title",
     "filter": "Filter",
     "tags": "Tags",
     "yourself": "Yourself",
-    "archived-at": "Archived at",
     "changed": "changed",
-    "update-on": "Update on",
     "fold": "Fold",
     "expand": "Expand",
     "image": "Image",
     "link": "Link",
     "vacuum": "Vacuum",
     "select": "Select",
-    "database": "Database"
+    "database": "Database",
+    "upload": "Upload",
+    "preview": "Preview",
+    "rename": "Rename",
+    "clear": "Clear",
+    "name": "Name"
   },
-  "slogan": "An open-source, self-hosted memo hub with knowledge management and social networking.",
+  "router": {
+    "back-to-home": "Back to Home"
+  },
   "auth": {
     "signup-as-host": "Sign up as Host",
     "host-tip": "You are registering as the Site Host.",
-    "not-host-tip": "If you don't have an account, please contact the site host."
+    "not-host-tip": "If you don't have an account, please contact the site host.",
+    "new-password": "New password",
+    "repeat-new-password": "Repeat the new password"
   },
-  "daily-review": {
-    "oops-nothing": "Oops, there is nothing."
+  "editor": {
+    "editing": "Editing...",
+    "cancel-edit": "Cancel edit",
+    "save": "Save",
+    "placeholder": "Any thoughts...",
+    "only-image-supported": "Only image file supported.",
+    "cant-empty": "Content can't be empty",
+    "local": "Local",
+    "resources": "Resources"
   },
-  "resources": {
-    "description": "View your static resources in memos. e.g. images",
+  "memo": {
+    "view-detail": "View Detail",
+    "copy": "Copy",
+    "embed": "Embed memo",
+    "archived-memos": "Archived Memos",
+    "no-archived-memos": "No archived memos.",
+    "fetching-data": "fetching data...",
+    "fetch-more": "Click here to fetch more",
+    "archived-at": "Archived at",
+    "search-placeholder": "Search memos",
+    "visibility": {
+      "private": "Only visible to you",
+      "protected": "Visible to members",
+      "public": "Everyone can see",
+      "disabled": "Public memos are disabled"
+    }
+  },
+  "resource": {
     "no-resources": "No resources.",
     "fetching-data": "fetching data...",
-    "upload": "Upload",
-    "preview": "Preview",
     "copy-link": "Copy Link",
     "delete-resource": "Delete Resource",
     "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIBLE❗",
     "linked-amount": "Linked memo amount",
-    "rename": "Rename",
-    "clear": "Clear",
     "warning-text-unused": "Are you sure to delete these unused resources? THIS ACTION IS IRREVERSIBLE❗",
     "no-unused-resources": "No unused resources",
-    "name": "Name",
     "delete-selected-resources": "Delete Selected Resources",
     "no-files-selected": "No files selected❗",
     "upload-successfully": "Upload successfully",
     "file-drag-drop-prompt": "Drag and drop your file here to upload file",
-    "select": "Select",
     "search-bar-placeholder": "Search resource",
     "create-dialog": {
       "title": "Create Resource",
@@ -102,36 +121,6 @@
       }
     }
   },
-  "archived": {
-    "archived-memos": "Archived Memos",
-    "no-archived-memos": "No archived memos.",
-    "fetching-data": "fetching data..."
-  },
-  "editor": {
-    "editing": "Editing...",
-    "cancel-edit": "Cancel edit",
-    "save": "Save",
-    "placeholder": "Any thoughts...",
-    "only-image-supported": "Only image file supported.",
-    "cant-empty": "Content can't be empty",
-    "local": "Local",
-    "resources": "Resources"
-  },
-  "memo": {
-    "view-detail": "View Detail",
-    "copy": "Copy",
-    "embed": "Embed memo",
-    "visibility": {
-      "private": "Only visible to you",
-      "protected": "Visible to members",
-      "public": "Everyone can see",
-      "disabled": "Public memos are disabled"
-    }
-  },
-  "memo-list": {
-    "fetching-data": "fetching data...",
-    "fetch-more": "Click here to fetch more"
-  },
   "shortcut-list": {
     "shortcut-title": "shortcut title",
     "create-shortcut": "Create Shortcut",
@@ -141,41 +130,14 @@
     "title-required": "Title is required",
     "value-required": "Filter value is required"
   },
-  "filter": {
-    "new-filter": "New Filter",
-    "type": {
-      "tag": "Tag",
-      "type": "Type",
-      "text": "Text",
-      "display-time": "Display Time",
-      "visibility": "Visibility"
-    },
-    "operator": {
-      "contains": "Contains",
-      "not-contains": "Does not contain",
-      "is": "Is",
-      "is-not": "Is Not",
-      "before": "Before",
-      "after": "After"
-    },
-    "value": {
-      "not-tagged": "No tags",
-      "linked": "Has links",
-      "has-attachment": "Has attachments"
-    },
-    "text-placeholder": "Starts with ^ to use regex"
-  },
   "tag-list": {
     "tip-text": "Input `#tag` to create",
     "create-tag": "Create Tag",
     "all-tags": "All Tags",
     "tag-name": "TAG_NAME"
   },
-  "search": {
-    "quickly-filter": "Quickly filter"
-  },
-  "search-bar": {
-    "input-placeholder": "Search memos"
+  "daily-review": {
+    "title": "Daily Review"
   },
   "setting": {
     "my-account": "My Account",
@@ -234,13 +196,29 @@
       "dark": "Always dark"
     }
   },
-  "amount-text": {
-    "memo_one": "MEMO",
-    "memo_other": "MEMOS",
-    "tag_one": "TAG",
-    "tag_other": "TAGS",
-    "day_one": "DAY",
-    "day_other": "DAYS"
+  "filter": {
+    "new-filter": "New Filter",
+    "type": {
+      "tag": "Tag",
+      "type": "Type",
+      "text": "Text",
+      "display-time": "Display Time",
+      "visibility": "Visibility"
+    },
+    "operator": {
+      "contains": "Contains",
+      "not-contains": "Does not contain",
+      "is": "Is",
+      "is-not": "Is Not",
+      "before": "Before",
+      "after": "After"
+    },
+    "value": {
+      "not-tagged": "No tags",
+      "linked": "Has links",
+      "has-attachment": "Has attachments"
+    },
+    "text-placeholder": "Starts with ^ to use regex"
   },
   "message": {
     "no-memos": "no memos 🌃",
@@ -285,19 +263,12 @@
     "page-not-found": "404 - Page Not Found 😥"
   },
   "days": {
-    "monday": "Monday",
     "mon": "Mon",
-    "tuesday": "Tuesday",
     "tue": "Tue",
-    "wednesday": "Wednesday",
     "wed": "Wed",
-    "thursday": "Thursday",
     "thu": "Thu",
-    "friday": "Friday",
     "fri": "Fri",
-    "saturday": "Saturday",
     "sat": "Sat",
-    "sunday": "Sunday",
     "sun": "Sun"
   },
   "ask-ai": {
@@ -311,10 +282,5 @@
     "text": "Copy and paste the below codes into your blog or website.",
     "only-public-supported": "* Only the public memo supports.",
     "copy": "Copy"
-  },
-  "visibility": {
-    "PUBLIC": "PUBLIC",
-    "PROTECTED": "PROTECTED",
-    "PRIVATE": "PRIVATE"
   }
 }

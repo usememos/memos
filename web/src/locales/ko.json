@@ -81,16 +81,12 @@
     "tag_one": "TAG",
     "tag_other": "TAGS"
   },
-  "slogan": "지식 정리와 소셜 네트워킹 기능을 갖춘 자체 호스팅의 오픈 소스 메모 허브입니다.",
   "auth": {
     "signup-as-host": "호스트로서 회원등록",
     "host-tip": "사이트 주인으로서의 계정을 등록합니다.",
     "not-host-tip": "계정이 없다면 사이트 주인에게 문의해 주세요."
   },
-  "daily-review": {
-    "oops-nothing": "앗, 아무것도 없네요."
-  },
-  "resources": {
+  "resource": {
     "clear": "정리",
     "copy-link": "링크 복사",
     "delete-resource": "리소스 삭제",

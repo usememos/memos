@@ -54,7 +54,7 @@ const ResourcesDashboard = () => {
   };
 
   const handleDeleteUnusedResourcesBtnClick = async () => {
-    let warningText = t("resources.warning-text-unused");
+    let warningText = t("resource.warning-text-unused");
     const allResources = await fetchAllResources();
     const unusedResources = allResources.filter((resource) => {
       if (resource.linkedMemoAmount === 0) {
@@ -64,12 +64,12 @@ const ResourcesDashboard = () => {
       return false;
     });
     if (unusedResources.length === 0) {
-      toast.success(t("resources.no-unused-resources"));
+      toast.success(t("resource.no-unused-resources"));
       return;
     }
 
     showCommonDialog({
-      title: t("resources.delete-resource"),
+      title: t("resource.delete-resource"),
       content: warningText,
       style: "warning",
       dialogName: "delete-unused-resources",
@@ -83,11 +83,11 @@ const ResourcesDashboard = () => {
 
   const handleDeleteSelectedBtnClick = () => {
     if (selectedList.length == 0) {
-      toast.error(t("resources.no-files-selected"));
+      toast.error(t("resource.no-files-selected"));
     } else {
-      const warningText = t("resources.warning-text");
+      const warningText = t("resource.warning-text");
       showCommonDialog({
-        title: t("resources.delete-resource"),
+        title: t("resource.delete-resource"),
         content: warningText,
         style: "warning",
         dialogName: "delete-resource-dialog",
@@ -182,7 +182,7 @@ const ResourcesDashboard = () => {
       await resourceStore.createResourcesWithBlob(e.dataTransfer.files).then(
         (res) => {
           for (const resource of res) {
-            toast.success(`${resource.filename} ${t("resources.upload-successfully")}`);
+            toast.success(`${resource.filename} ${t("resource.upload-successfully")}`);
           }
         },
         (reason) => {
@@ -205,7 +205,7 @@ const ResourcesDashboard = () => {
             onDrop={handleDrop}
           >
             <div className="flex h-full w-full">
-              <p className="m-auto text-2xl text-white dark:text-black">{t("resources.file-drag-drop-prompt")}</p>
+              <p className="m-auto text-2xl text-white dark:text-black">{t("resource.file-drag-drop-prompt")}</p>
             </div>
           </div>
         )}
@@ -242,7 +242,7 @@ const ResourcesDashboard = () => {
                     onClick={handleDeleteUnusedResourcesBtnClick}
                   >
                     <Icon.Trash2 className="w-4 h-auto mr-2" />
-                    {t("resources.clear")}
+                    {t("common.clear")}
                   </button>
                 </>
               }
@@ -269,7 +269,7 @@ const ResourcesDashboard = () => {
           <div className="w-full flex flex-col justify-start items-start mt-4 mb-6">
             {loadingState.isLoading ? (
               <div className="w-full h-32 flex flex-col justify-center items-center">
-                <p className="w-full text-center text-base my-6 mt-8">{t("resources.fetching-data")}</p>
+                <p className="w-full text-center text-base my-6 mt-8">{t("resource.fetching-data")}</p>
               </div>
             ) : (
               <div
@@ -283,12 +283,12 @@ const ResourcesDashboard = () => {
                   <div className="px-2 py-2 w-full grid grid-cols-10 border-b dark:border-b-zinc-600">
                     <span></span>
                     <span className="col-span-2">ID</span>
-                    <span className="col-span-6">{t("resources.name")}</span>
+                    <span className="col-span-6">{t("common.name")}</span>
                     <span></span>
                   </div>
                 )}
                 {resourceList.length === 0 ? (
-                  <p className="w-full text-center text-base my-6 mt-8">{t("resources.no-resources")}</p>
+                  <p className="w-full text-center text-base my-6 mt-8">{t("resource.no-resources")}</p>
                 ) : (
                   resourceList
                 )}
@@ -299,7 +299,7 @@ const ResourcesDashboard = () => {
             <p className="text-sm text-gray-400 italic">
               {!isComplete && (
                 <span className="cursor-pointer my-6 hover:text-green-600" onClick={handleFetchMoreResourceBtnClick}>
-                  {t("memo-list.fetch-more")}
+                  {t("memo.fetch-more")}
                 </span>
               )}
             </p>

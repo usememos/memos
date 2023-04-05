@@ -70,19 +70,19 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container">
-        <p className="text-sm mb-1">{t("common.new-password")}</p>
+        <p className="text-sm mb-1">{t("auth.new-password")}</p>
         <input
           type="password"
           className="input-text"
-          placeholder={t("common.repeat-new-password")}
+          placeholder={t("auth.repeat-new-password")}
           value={newPassword}
           onChange={handleNewPasswordChanged}
         />
-        <p className="text-sm mb-1 mt-2">{t("common.repeat-new-password")}</p>
+        <p className="text-sm mb-1 mt-2">{t("auth.repeat-new-password")}</p>
         <input
           type="password"
           className="input-text"
-          placeholder={t("common.repeat-new-password")}
+          placeholder={t("auth.repeat-new-password")}
           value={newPasswordAgain}
           onChange={handleNewPasswordAgainChanged}
         />

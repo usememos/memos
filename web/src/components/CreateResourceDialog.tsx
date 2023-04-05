@@ -146,14 +146,14 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">{t("resources.create-dialog.title")}</p>
+        <p className="title-text">{t("resource.create-dialog.title")}</p>
         <button className="btn close-btn" onClick={handleCloseDialog}>
           <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container !w-80">
         <Typography className="!mb-1" level="body2">
-          {t("resources.create-dialog.upload-method")}
+          {t("resource.create-dialog.upload-method")}
         </Typography>
         <Select
           className="w-full mb-2"
@@ -161,15 +161,15 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
           value={state.selectedMode}
           startDecorator={<Icon.File className="w-4 h-auto" />}
         >
-          <Option value="local-file">{t("resources.create-dialog.local-file.option")}</Option>
-          <Option value="external-link">{t("resources.create-dialog.external-link.option")}</Option>
+          <Option value="local-file">{t("resource.create-dialog.local-file.option")}</Option>
+          <Option value="external-link">{t("resource.create-dialog.external-link.option")}</Option>
         </Select>
 
         {state.selectedMode === "local-file" && (
           <>
             <div className="w-full relative bg-blue-50 dark:bg-zinc-900 rounded-md flex flex-row justify-center items-center py-8">
               <label htmlFor="files" className="p-2 px-4 text-sm text-white cursor-pointer bg-blue-500 block rounded hover:opacity-80">
-                {t("resources.create-dialog.local-file.choose")}
+                {t("resource.create-dialog.local-file.choose")}
               </label>
               <input
                 className="absolute inset-0 w-full h-full opacity-0"
@@ -196,7 +196,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
         {state.selectedMode === "external-link" && (
           <>
             <Typography className="!mb-1" level="body2">
-              {t("resources.create-dialog.external-link.link")}
+              {t("resource.create-dialog.external-link.link")}
             </Typography>
             <Input
               className="mb-2"
@@ -206,22 +206,22 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
               fullWidth
             />
             <Typography className="!mb-1" level="body2">
-              {t("resources.create-dialog.external-link.file-name")}
+              {t("resource.create-dialog.external-link.file-name")}
             </Typography>
             <Input
               className="mb-2"
-              placeholder={t("resources.create-dialog.external-link.file-name-placeholder")}
+              placeholder={t("resource.create-dialog.external-link.file-name-placeholder")}
               value={resourceCreate.filename}
               onChange={handleFileNameChanged}
               fullWidth
             />
             <Typography className="!mb-1" level="body2">
-              {t("resources.create-dialog.external-link.type")}
+              {t("resource.create-dialog.external-link.type")}
             </Typography>
             <Autocomplete
               className="w-full"
               size="sm"
-              placeholder={t("resources.create-dialog.external-link.type-placeholder")}
+              placeholder={t("resource.create-dialog.external-link.type-placeholder")}
               freeSolo={true}
               options={fileTypeAutocompleteOptions}
               onChange={(_, value) => handleFileTypeChanged(value || "")}

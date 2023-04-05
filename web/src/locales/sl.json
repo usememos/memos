@@ -55,16 +55,12 @@
     "select": "Izberi",
     "database": "Baza"
   },
-  "slogan": "Odprtokodno, samo-gostovano vozlišče beležk z nadzorom znanja in socialne mreže.",
   "auth": {
     "signup-as-host": "Prijavite se kot gostitelj",
     "host-tip": "Registrirani ste kot gostitelj strani.",
     "not-host-tip": "Če nimate računa, prosim kontaktirajte gostitelja strani."
   },
-  "daily-review": {
-    "oops-nothing": "Ups, tu ni še ničesar."
-  },
-  "resources": {
+  "resource": {
     "description": "Poglejte svoje statične vire v beležkah npr. slike",
     "no-resources": "Ni virov.",
     "fetching-data": "pridobivam podatke...",

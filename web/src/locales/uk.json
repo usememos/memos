@@ -51,7 +51,6 @@
     "database": "Database",
     "avatar": "Avatar"
   },
-  "slogan": "Self-hosted платформа для записок та соціалізації з відкритим кодом An open-source.",
   "auth": {
     "signup-as-host": "Зареєструватися як власник",
     "host-tip": "Ви реєструєте власника сайту.",
@@ -63,10 +62,7 @@
     "setting": "Налаштування",
     "archived": "Заархівовані"
   },
-  "daily-review": {
-    "oops-nothing": "Ой, тут нічого немає."
-  },
-  "resources": {
+  "resource": {
     "description": "Переглянути ваші статичні ресурси в Memos (світлини)",
     "no-resources": "Немає ресурсів.",
     "fetching-data": "завантаження даних...",

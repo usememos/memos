@@ -57,13 +57,13 @@ const ResourceItemDropdown = ({ resource }: Props) => {
   };
 
   const handleDeleteResourceBtnClick = (resource: Resource) => {
-    let warningText = t("resources.warning-text");
+    let warningText = t("resource.warning-text");
     if (resource.linkedMemoAmount > 0) {
-      warningText = warningText + `\n${t("resources.linked-amount")}: ${resource.linkedMemoAmount}`;
+      warningText = warningText + `\n${t("resource.linked-amount")}: ${resource.linkedMemoAmount}`;
     }
 
     showCommonDialog({
-      title: t("resources.delete-resource"),
+      title: t("resource.delete-resource"),
       content: warningText,
       style: "warning",
       dialogName: "delete-resource-dialog",
@@ -83,13 +83,13 @@ const ResourceItemDropdown = ({ resource }: Props) => {
             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
             onClick={() => handlePreviewBtnClick(resource)}
           >
-            {t("resources.preview")}
+            {t("common.preview")}
           </button>
           <button
             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
             onClick={() => handleCopyResourceLinkBtnClick(resource)}
           >
-            {t("resources.copy-link")}
+            {t("resource.copy-link")}
           </button>
           <button
             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
@@ -101,7 +101,7 @@ const ResourceItemDropdown = ({ resource }: Props) => {
             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
             onClick={() => handleRenameBtnClick(resource)}
           >
-            {t("resources.rename")}
+            {t("common.rename")}
           </button>
           <button
             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
