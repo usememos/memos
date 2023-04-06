@@ -1,4 +1,4 @@
-import ResourceCover from "../../src/components/ResourceCover";
+import ResourceCover from "@/components/ResourceCover";
 import renderer from "react-test-renderer";
 
 describe("ResourceItem", () => {

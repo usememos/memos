@@ -1,5 +1,5 @@
 import { act, renderHook } from "@testing-library/react-hooks";
-import useLoading from "../../src/hooks/useLoading";
+import useLoading from "@/hooks/useLoading";
 import { describe, expect, it } from "vitest";
 
 describe("useLoading", () => {

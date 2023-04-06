@@ -1,7 +1,7 @@
-import ResourceItemDropdown from "../../src/components/ResourceItemDropdown";
+import ResourceItemDropdown from "@/components/ResourceItemDropdown";
 import renderer from "react-test-renderer";
 import { Provider } from "react-redux";
-import store from "../../src/store";
+import store from "@/store";
 
 describe("ResourceItemDropdown", () => {
   it("ResourceItemDropdown snapshot", () => {

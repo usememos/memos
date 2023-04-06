@@ -1,8 +1,8 @@
 import { render, screen } from "@testing-library/react";
-import Memo from "../../src/components/Memo";
+import Memo from "@/components/Memo";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
-import store from "../../src/store";
+import store from "@/store";
 import renderer from "react-test-renderer";
 
 describe("Memo", () => {
