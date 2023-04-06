@@ -9,6 +9,5 @@
   "files.associations": {
     "*.less": "postcss"
   },
-  "i18n-ally.keystyle": "nested",
-  "deepscan.enable": true
+  "i18n-ally.keystyle": "nested"
 }
