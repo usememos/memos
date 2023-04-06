@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/common"
 )
 
 func (s *Server) registerRSSRoutes(g *echo.Group) {
@@ -92,13 +93,10 @@ func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.
 		Created:     time.Now(),
 	}
 
-	var itemCountLimit = min(len(memoList), MaxRSSItemCount)
-
+	var itemCountLimit = common.Min(len(memoList), MaxRSSItemCount)
 	feed.Items = make([]*feeds.Item, itemCountLimit)
-
 	for i := 0; i < itemCountLimit; i++ {
 		memo := memoList[i]
-
 		feed.Items[i] = &feeds.Item{
 			Title:       getRSSItemTitle(memo.Content),
 			Link:        &feeds.Link{Href: baseURL + "/m/" + strconv.Itoa(memo.ID)},
@@ -126,22 +124,13 @@ func getSystemCustomizedProfile(ctx context.Context, s *Server) (*api.Customized
 	systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
 		Name: api.SystemSettingCustomizedProfileName,
 	})
-	if err != nil {
-		return customizedProfile, err
+	if err != nil && common.ErrorCode(err) != common.NotFound {
+		return nil, err
 	}
-
-	err = json.Unmarshal([]byte(systemSetting.Value), customizedProfile)
-	if err != nil {
-		return customizedProfile, err
+	if err := json.Unmarshal([]byte(systemSetting.Value), customizedProfile); err != nil {
+		return nil, err
 	}
 	return customizedProfile, nil
-}
-
-func min(a, b int) int {
-	if a < b {
-		return a
-	}
-	return b
 }
 
 func getRSSItemTitle(content string) string {
@@ -150,7 +139,7 @@ func getRSSItemTitle(content string) string {
 		title = strings.Split(content, "\n")[0][2:]
 	} else {
 		title = strings.Split(content, "\n")[0]
-		var titleLengthLimit = min(len(title), MaxRSSItemTitleLength)
+		var titleLengthLimit = common.Min(len(title), MaxRSSItemTitleLength)
 		if titleLengthLimit < len(title) {
 			title = title[:titleLengthLimit] + "..."
 		}

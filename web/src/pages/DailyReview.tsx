@@ -90,7 +90,7 @@ const DailyReview = () => {
             className="px-2 py-1 flex flex-row justify-start items-center cursor-pointer select-none rounded hover:bg-gray-100 dark:hover:bg-zinc-700"
             onClick={() => toggleShowDatePicker()}
           >
-            <Icon.Calendar className="w-5 h-auto mr-1" /> {t("common.daily-review")}
+            <Icon.Calendar className="w-5 h-auto mr-1" /> {t("daily-review.title")}
           </p>
           <div className="flex flex-row justify-end items-center">
             <button
@@ -138,7 +138,7 @@ const DailyReview = () => {
           </div>
           {dailyMemos.length === 0 ? (
             <div className="mx-auto pt-4 pb-5 px-0">
-              <p className="italic text-gray-400">{t("daily-review.oops-nothing")}</p>
+              <p className="italic text-gray-400">Oops, there is nothing.</p>
             </div>
           ) : (
             <div className="flex flex-col justify-start items-start w-full mt-2">

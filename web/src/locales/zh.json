@@ -54,22 +54,18 @@
     "database": "数据库",
     "avatar": "头像"
   },
-  "slogan": "一个可用于知识管理和社交网络的开源、自托管的备忘录中心。",
   "auth": {
     "signup-as-host": "注册为 Host",
     "host-tip": "你正在注册为 Host 用户账号。",
     "not-host-tip": "如果你没有账号，请联系站点 Host"
   },
-  "daily-review": {
-    "oops-nothing": "啊哦，空空荡荡。"
-  },
-  "resources": {
+  "resource": {
     "description": "查看在 Memo 中的静态资源。例如：图片",
     "no-resources": "没有资源",
     "fetching-data": "请求数据中...",
     "upload": "上传",
     "preview": "预览",
-    "copy-link": "拷贝链接",
+    "copy-link": "复制链接",
     "delete-resource": "删除资源",
     "warning-text": "确定删除这个资源么？此操作不可逆❗",
     "linked-amount": "链接的 Memo 数量",
@@ -102,6 +98,7 @@
   "memo": {
     "view-detail": "查看详情",
     "copy": "复制",
+    "copy-link": "复制链接",
     "visibility": {
       "private": "仅自己可见",
       "protected": "登录用户可见",

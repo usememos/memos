@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import * as api from "@/helpers/api";
+import { slogan } from "@/helpers/site";
 import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import Icon from "@/components/Icon";
@@ -132,7 +133,7 @@ const Auth = () => {
               <img className="h-12 w-auto rounded-lg mr-1" src={systemStatus.customizedProfile.logoUrl} alt="" />
               <p className="text-6xl tracking-wide text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300">{systemStatus.customizedProfile.description || t("slogan")}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">{systemStatus.customizedProfile.description || slogan}</p>
           </div>
           <form className="w-full" onSubmit={handleFormSubmit}>
             <div className={`flex flex-col justify-start items-start w-full ${actionBtnLoadingState.isLoading && "opacity-80"}`}>

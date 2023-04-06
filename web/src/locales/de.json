@@ -51,7 +51,6 @@
     "avatar": "Avatar",
     "database": "Database"
   },
-  "slogan": "Eine quelloffene, selbst gehostete Sammlung an Memos zur Wissensverwaltung und Vernetzung.",
   "auth": {
     "signup-as-host": "Als Host registrieren",
     "host-tip": "Du registrierst dich als Host dieser Seite.",
@@ -63,10 +62,7 @@
     "setting": "Einstellung",
     "archived": "Archiviert"
   },
-  "daily-review": {
-    "oops-nothing": "Ups, hier ist nichts."
-  },
-  "resources": {
+  "resource": {
     "no-resources": "Keine Ressourcen.",
     "fetching-data": "Lade Daten...",
     "upload": "Hochladen",
@@ -100,6 +96,7 @@
   "memo": {
     "view-detail": "Details anzeigen",
     "copy": "Kopieren",
+    "copy-link":"Link Kopieren",
     "visibility": {
       "private": "Nur für dich sichtbar",
       "protected": "Für Mitglieder sichtbar",

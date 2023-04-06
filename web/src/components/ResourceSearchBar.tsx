@@ -31,7 +31,7 @@ const ResourceSearchBar = ({ setQuery }: ResourceSearchBarProps) => {
         <input
           className="flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200"
           type="text"
-          placeholder={t("resources.search-bar-placeholder")}
+          placeholder={t("resource.search-bar-placeholder")}
           ref={inputRef}
           value={queryText}
           onChange={handleTextQueryInput}
