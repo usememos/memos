@@ -1,4 +1,4 @@
-import { convertLanguageCodeToLocale } from "@/utils/convertLanguageCodeToLocale";
+import { convertLanguageCodeToLocale } from "@/utils/i18n";
 
 describe("convertLanguageCodeToLocale", () => {
   it("test zh hant convert to zh-Hant", () => {
