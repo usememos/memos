@@ -1,4 +1,4 @@
-import { convertLanguageCodeToLocale } from "@/utils/convertLanguageCodeToLocale";
+import { convertLanguageCodeToLocale } from "../../src/utils/convertLanguageCodeToLocale";
 import { describe } from "vitest";
 
 describe("convertLanguageCodeToLocale", () => {
