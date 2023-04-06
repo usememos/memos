@@ -23,7 +23,6 @@ describe("useResourceStore", async () => {
         },
       });
 
-      console.log(store.getState());
       const wrapper = ({ children }: any) => <Provider store={store}>{children}</Provider>;
 
       const { result } = renderHook(() => useResourceStore(), { wrapper });
