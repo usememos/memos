@@ -3,8 +3,8 @@ import renderer from "react-test-renderer";
 import { Provider } from "react-redux";
 import store from "../../src/store";
 
-describe("ResourceItemDropdown snapshot", () => {
-  it("render ResourceItemDropdown", () => {
+describe("ResourceItemDropdown", () => {
+  it("ResourceItemDropdown snapshot", () => {
     const resource: Resource = {
       id: 1,
       publicId: "test",

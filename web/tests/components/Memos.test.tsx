@@ -6,7 +6,7 @@ import store from "../../src/store";
 import renderer from "react-test-renderer";
 
 describe("Memo", () => {
-  it("render Memo", () => {
+  it("Memo should render the info of memo", () => {
     const memo: Memo = {
       id: 123,
       creatorId: 1234,

@@ -15,7 +15,7 @@ interface State {
 }
 
 describe("setFilter", () => {
-  it("setFilter", () => {
+  it("setFilter should add filter to state", () => {
     const setFilterOutput = reducer({} as State, setFilter({ tag: "学习" }));
 
     const finalState = {

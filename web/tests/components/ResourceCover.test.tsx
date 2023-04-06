@@ -1,8 +1,8 @@
 import ResourceCover from "../../src/components/ResourceCover";
 import renderer from "react-test-renderer";
 
-describe("ResourceItem snapshot", () => {
-  it("render ResourceCover", () => {
+describe("ResourceItem", () => {
+  it("ResourceCover snapshot", () => {
     const resource: Resource = {
       id: 1,
       publicId: "test",

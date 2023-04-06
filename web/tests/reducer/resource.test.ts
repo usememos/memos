@@ -5,7 +5,7 @@ interface State {
 }
 
 describe("setResources", () => {
-  it("setResources", () => {
+  it("setResources should add resource to state", () => {
     const resources = [] as Resource[];
     const setResourcesOutput = reducer(
       { resources } as State,

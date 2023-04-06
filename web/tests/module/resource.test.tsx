@@ -14,7 +14,7 @@ beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
-describe("Testing module useResourceStore hook", async () => {
+describe("useResourceStore", async () => {
   for (const getResourceData of getResourceDataSet.dataset) {
     it("resource store", async () => {
       const store = configureStore({
@@ -26,7 +26,6 @@ describe("Testing module useResourceStore hook", async () => {
       console.log(store.getState());
       const wrapper = ({ children }: any) => <Provider store={store}>{children}</Provider>;
 
-      // to clean the state of the store
       const { result } = renderHook(() => useResourceStore(), { wrapper });
 
       // there is a but ,the state is not updated
@@ -40,7 +39,7 @@ describe("Testing module useResourceStore hook", async () => {
         })
       );
 
-      act(async () => {
+      await act(async () => {
         expect(await result.current.fetchResourceList()).toStrictEqual(getResourceData.expect);
       });
     });

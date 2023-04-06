@@ -2,8 +2,8 @@ import { act, renderHook } from "@testing-library/react-hooks";
 import useLoading from "../../src/hooks/useLoading";
 import { describe, expect, it } from "vitest";
 
-describe("Testing useLoading hook", () => {
-  it("setLoading", () => {
+describe("useLoading", () => {
+  it("setLoading should set the state to loading", () => {
     const { result } = renderHook(() => useLoading());
     act(() => {
       result.current.setLoading();
@@ -12,7 +12,7 @@ describe("Testing useLoading hook", () => {
     expect(result.current.isFailed).toBe(false);
     expect(result.current.isSucceed).toBe(false);
   });
-  it("setFinish", () => {
+  it("setFailed should set the state to failed", () => {
     const { result } = renderHook(() => useLoading());
     act(() => {
       result.current.setFinish();
@@ -21,7 +21,7 @@ describe("Testing useLoading hook", () => {
     expect(result.current.isFailed).toBe(false);
     expect(result.current.isSucceed).toBe(true);
   });
-  it("setError", () => {
+  it("setError should set the state to error", () => {
     const { result } = renderHook(() => useLoading());
     act(() => {
       result.current.setError();
