@@ -27,11 +27,6 @@ describe("useResourceStore", async () => {
 
       const { result } = renderHook(() => useResourceStore(), { wrapper });
 
-      // there is a but ,the state is not updated
-      // expect(result.current.getState()).toStrictEqual({
-      //   resources: [],
-      // });
-
       await server.use(
         rest.get("/api/resource", (req: any, res: any, ctx: any) => {
           return res(ctx.status(200), ctx.json(getResourceData.data));
