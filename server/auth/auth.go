@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
@@ -13,13 +12,13 @@ const (
 	// Signing key section. For now, this is only used for signing, not for verifying since we only
 	// have 1 version. But it will be used to maintain backward compatibility if we change the signing mechanism.
 	keyID = "v1"
-	// AccessTokenAudienceFmt is the format of the acccess token audience.
-	AccessTokenAudienceFmt = "user.access.%s"
-	// RefreshTokenAudienceFmt is the format of the refresh token audience.
-	RefreshTokenAudienceFmt = "user.refresh.%s"
-	apiTokenDuration        = 2 * time.Hour
-	accessTokenDuration     = 24 * time.Hour
-	refreshTokenDuration    = 7 * 24 * time.Hour
+	// AccessTokenAudienceName is the audience name of the access token.
+	AccessTokenAudienceName = "user.access-token"
+	// RefreshTokenAudienceName is the audience name of the refresh token.
+	RefreshTokenAudienceName = "user.refresh-token"
+	apiTokenDuration         = 2 * time.Hour
+	accessTokenDuration      = 24 * time.Hour
+	refreshTokenDuration     = 7 * 24 * time.Hour
 	// RefreshThresholdDuration is the threshold duration for refreshing token.
 	RefreshThresholdDuration = 1 * time.Hour
 
@@ -43,21 +42,21 @@ type claimsMessage struct {
 }
 
 // GenerateAPIToken generates an API token.
-func GenerateAPIToken(userName string, userID int, mode string, secret string) (string, error) {
+func GenerateAPIToken(userName string, userID int, secret string) (string, error) {
 	expirationTime := time.Now().Add(apiTokenDuration)
-	return generateToken(userName, userID, fmt.Sprintf(AccessTokenAudienceFmt, mode), expirationTime, []byte(secret))
+	return generateToken(userName, userID, AccessTokenAudienceName, expirationTime, []byte(secret))
 }
 
 // GenerateAccessToken generates an access token for web.
-func GenerateAccessToken(userName string, userID int, mode string, secret string) (string, error) {
+func GenerateAccessToken(userName string, userID int, secret string) (string, error) {
 	expirationTime := time.Now().Add(accessTokenDuration)
-	return generateToken(userName, userID, fmt.Sprintf(AccessTokenAudienceFmt, mode), expirationTime, []byte(secret))
+	return generateToken(userName, userID, AccessTokenAudienceName, expirationTime, []byte(secret))
 }
 
 // GenerateRefreshToken generates a refresh token for web.
-func GenerateRefreshToken(userName string, userID int, mode string, secret string) (string, error) {
+func GenerateRefreshToken(userName string, userID int, secret string) (string, error) {
 	expirationTime := time.Now().Add(refreshTokenDuration)
-	return generateToken(userName, userID, fmt.Sprintf(RefreshTokenAudienceFmt, mode), expirationTime, []byte(secret))
+	return generateToken(userName, userID, RefreshTokenAudienceName, expirationTime, []byte(secret))
 }
 
 func generateToken(username string, userID int, aud string, expirationTime time.Time, secret []byte) (string, error) {
