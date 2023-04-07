@@ -75,8 +75,7 @@
   },
   "memo": {
     "view-detail": "View Detail",
-    "copy": "Copy",
-    "copy-link":"Copy Link",
+    "copy-link": "Copy Link",
     "embed": "Embed memo",
     "archived-memos": "Archived Memos",
     "no-archived-memos": "No archived memos.",
@@ -85,9 +84,9 @@
     "archived-at": "Archived at",
     "search-placeholder": "Search memos",
     "visibility": {
-      "private": "Only visible to you",
+      "private": "Private",
       "protected": "Visible to members",
-      "public": "Everyone can see",
+      "public": "Public to everyone",
       "disabled": "Public memos are disabled"
     }
   },

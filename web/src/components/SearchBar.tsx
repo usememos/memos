@@ -1,15 +1,13 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import useDebounce from "@/hooks/useDebounce";
-import { useFilterStore, useDialogStore, useLayoutStore } from "@/store/module";
-import { resolution } from "@/utils/layout";
+import { useFilterStore, useDialogStore } from "@/store/module";
 import Icon from "./Icon";
 
 const SearchBar = () => {
   const { t } = useTranslation();
   const filterStore = useFilterStore();
   const dialogStore = useDialogStore();
-  const layoutStore = useLayoutStore();
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -38,14 +36,6 @@ const SearchBar = () => {
     const text = filterStore.getState().text;
     setQueryText(text === undefined ? "" : text);
   }, [filterStore.state.text]);
-
-  useEffect(() => {
-    if (layoutStore.state.showHomeSidebar) {
-      if (window.innerWidth < resolution.sm) {
-        inputRef.current?.focus();
-      }
-    }
-  }, [layoutStore.state.showHomeSidebar]);
 
   useDebounce(
     () => {
