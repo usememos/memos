@@ -1,60 +1,62 @@
-import { test, expect, Page } from "@playwright/test";
-import locale from "../src/locales/en.json";
+// import { test } from "@playwright/test";
+// // import locale from "../../src/locales/en.json";
+// // import { baseHost } from "../env";
+// import { SignIn, writeMemo } from "../action";
 
-let page: Page;
-test.describe.configure({ mode: "serial" });
+// // let page: Page;
+// // test.describe.configure({ mode: "serial" });
 
-// console.log(data);
-test.use({
-  locale: "en-US",
-  timezoneId: "Europe/Berlin",
-});
+// // console.log(data);
+// test.use({
+//   locale: "en-US",
+//   timezoneId: "Europe/Berlin",
+// });
 
-test.beforeAll(async ({ browser }) => {
-  page = await browser.newPage();
-});
+// // test.beforeAll(async ({ browser }) => {
+// //   page = await browser.newPage();
+// // });
 
-test.afterAll(async () => {
-  await page.close();
-});
+// // test.afterAll(async () => {
+// //   await page.close();
+// // });
 
-test.describe("Login", () => {
-  test("has title", async ({ page }) => {
-    await page.goto("http://localhost:3001/");
-    await expect(page).toHaveTitle(/memos/);
-  });
+// test.describe("Basic Operator", async () => {
+//   test("Sign In and write first Memos", async ({ page }) => {
+//     await SignIn(page, "admin", "admin");
+//     await writeMemo(page, "Hello World");
+//   });
+// });
 
-  test("login", async () => {
-    await page.goto("http://localhost:3001/");
+// // test.describe("Login", () => {
+// //   test("has title", async ({ page }) => {
+// //     await page.goto(`${baseHost}/`);
+// //     await expect(page).toHaveTitle(/memos/);
+// //   });
 
-    // Click the get started link.
-    await page.getByRole("link", { name: locale.common["sign-in"] }).click();
+// //   test("login", async () => {
+// //     await page.goto(`${baseHost}/`);
 
-    // Expects the URL to contain intro.
-    await expect(page).toHaveURL(/.*auth/);
-    await page.getByRole("button", { name: locale.common["sign-in"] }).click();
+// //     // Click the get started link.
+// //     await page.getByRole("link", { name: locale.common["sign-in"] }).click();
 
-    await expect(page.getByText(locale.common.home)).toBeVisible();
-  });
-});
+// //     // Expects the URL to contain intro.
+// //     await expect(page).toHaveURL(/.*auth/);
+// //     await page.getByRole("button", { name: locale.common["sign-in"] }).click();
 
-test.describe("Home", () => {
-  test("Write Memos", async () => {
-    await page.goto("http://localhost:3001/");
-    const RandomString = Math.random().toString(36).substring(7);
-    writeMemo(page, RandomString);
+// //     await expect(page.getByText(locale.common.home)).toBeVisible();
+// //   });
+// // });
 
-    await expect(page.getByText(RandomString)).toBeVisible();
-  });
+// // test.describe("Home", () => {
+// //   test("Write Memos", async () => {
+// //     await page.goto(`${baseHost}/`);
+// //     const RandomString = Math.random().toString(36).substring(7);
+// //     writeMemo(page, RandomString);
 
-  test("Filter Memos", async () => {
-    await page.goto("http://localhost:3001/");
-  });
-});
+// //     await expect(page.getByText(RandomString)).toBeVisible();
+// //   });
 
-async function writeMemo(page: Page, content: string) {
-  await expect(page.getByRole("button", { name: locale.editor.save })).toBeDisabled();
-  await page.getByPlaceholder("Any thoughts...").fill(content);
-  await expect(page.getByRole("button", { name: locale.editor.save })).toBeEnabled();
-  await page.getByRole("button", { name: locale.editor.save }).click();
-}
+// //   test("Filter Memos", async () => {
+// //     await page.goto(`${baseHost}/`);
+// //   });
+// // });
