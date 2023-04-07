@@ -60,11 +60,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     showEmbedMemoDialog(memo.id);
   };
 
-  const handleCopyContent = () => {
-    copy(memo.content);
-    toast.success(t("message.succeed-copy-content"));
-  };
-
   const handleCopyLink = () => {
     copy(`${window.location.origin}/m/${memo.id}`);
     toast.success(t("message.succeed-copy-link"));
@@ -210,7 +205,7 @@ const Memo: React.FC<Props> = (props: Props) => {
               className={`status-text ${memo.visibility.toLocaleLowerCase()}`}
               onClick={() => handleMemoVisibilityClick(memo.visibility)}
             >
-              {t(`visibility.${memo.visibility}`)}
+              {t(`memo.visibility.${memo.visibility.toLowerCase()}`)}
             </span>
           )}
         </div>
@@ -235,9 +230,6 @@ const Memo: React.FC<Props> = (props: Props) => {
                     <span className="tip-text">{t("common.share")}</span>
                   </div>
                 </div>
-                <span className="btn" onClick={handleCopyContent}>
-                  {t("memo.copy")}
-                </span>
                 <span className="btn" onClick={handleCopyLink}>
                   {t("memo.copy-link")}
                 </span>
