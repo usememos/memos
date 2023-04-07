@@ -10,7 +10,7 @@ async function writeMemo(page: Page, content: string) {
 }
 
 async function login(page: Page, username: string, password: string) {
-  page.goto(`${baseHost}/auth`);
+  page.goto(`${baseHost}/`);
   await page.getByRole("link", { name: locale.common["sign-in"] }).click();
   await expect(page).toHaveURL(/.*auth/);
   await page.locator('input[type="text"]').fill(username);

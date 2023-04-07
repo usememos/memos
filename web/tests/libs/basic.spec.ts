@@ -7,5 +7,5 @@ test.beforeEach(async ({ page }) => {
 
 test("basic test", async ({ page }) => {
   await writeMemo(page, "something nice");
-  await expect(page.getByText("something nice"));
+  await expect(page.getByText("something nice")).toBeVisible();
 });
