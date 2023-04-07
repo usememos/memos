@@ -34,8 +34,8 @@ func getUserIDContextKey() string {
 }
 
 // GenerateTokensAndSetCookies generates jwt token and saves it to the http-only cookie.
-func GenerateTokensAndSetCookies(c echo.Context, user *api.User, mode string, secret string) error {
-	accessToken, err := auth.GenerateAccessToken(user.Username, user.ID, mode, secret)
+func GenerateTokensAndSetCookies(c echo.Context, user *api.User, secret string) error {
+	accessToken, err := auth.GenerateAccessToken(user.Username, user.ID, secret)
 	if err != nil {
 		return errors.Wrap(err, "failed to generate access token")
 	}
@@ -44,7 +44,7 @@ func GenerateTokensAndSetCookies(c echo.Context, user *api.User, mode string, se
 	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
 
 	// We generate here a new refresh token and saving it to the cookie.
-	refreshToken, err := auth.GenerateRefreshToken(user.Username, user.ID, mode, secret)
+	refreshToken, err := auth.GenerateRefreshToken(user.Username, user.ID, secret)
 	if err != nil {
 		return errors.Wrap(err, "failed to generate refresh token")
 	}
@@ -108,7 +108,6 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 	return func(c echo.Context) error {
 		path := c.Request().URL.Path
 		method := c.Request().Method
-		mode := server.Profile.Mode
 
 		if server.defaultAuthSkipper(c) {
 			return next(c)
@@ -145,11 +144,11 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 			return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
 		})
 
-		if !audienceContains(claims.Audience, fmt.Sprintf(auth.AccessTokenAudienceFmt, mode)) {
+		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
 			return echo.NewHTTPError(http.StatusUnauthorized,
 				fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q. you may send request to the wrong environment",
 					claims.Audience,
-					fmt.Sprintf(auth.AccessTokenAudienceFmt, mode),
+					auth.AccessTokenAudienceName,
 				))
 		}
 
@@ -218,17 +217,17 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Server error to refresh expired token. User Id %d", userID)).SetInternal(err)
 				}
 
-				if !audienceContains(refreshTokenClaims.Audience, fmt.Sprintf(auth.RefreshTokenAudienceFmt, mode)) {
+				if !audienceContains(refreshTokenClaims.Audience, auth.RefreshTokenAudienceName) {
 					return echo.NewHTTPError(http.StatusUnauthorized,
 						fmt.Sprintf("Invalid refresh token, audience mismatch, got %q, expected %q. you may send request to the wrong environment",
 							refreshTokenClaims.Audience,
-							fmt.Sprintf(auth.RefreshTokenAudienceFmt, mode),
+							auth.RefreshTokenAudienceName,
 						))
 				}
 
 				// If we have a valid refresh token, we will generate new access token and refresh token
 				if refreshToken != nil && refreshToken.Valid {
-					if err := GenerateTokensAndSetCookies(c, user, mode, secret); err != nil {
+					if err := GenerateTokensAndSetCookies(c, user, secret); err != nil {
 						return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Server error to refresh expired token. User Id %d", userID)).SetInternal(err)
 					}
 				}
