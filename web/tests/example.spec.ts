@@ -18,34 +18,43 @@ test.afterAll(async () => {
   await page.close();
 });
 
-test("has title", async ({ page }) => {
-  await page.goto("http://localhost:3001/");
-  await expect(page).toHaveTitle(/memos/);
+test.describe("Login", () => {
+  test("has title", async ({ page }) => {
+    await page.goto("http://localhost:3001/");
+    await expect(page).toHaveTitle(/memos/);
+  });
+
+  test("login", async () => {
+    await page.goto("http://localhost:3001/");
+
+    // Click the get started link.
+    await page.getByRole("link", { name: locale.common["sign-in"] }).click();
+
+    // Expects the URL to contain intro.
+    await expect(page).toHaveURL(/.*auth/);
+    await page.getByRole("button", { name: locale.common["sign-in"] }).click();
+
+    await expect(page.getByText(locale.common.home)).toBeVisible();
+  });
 });
 
-test("login", async () => {
-  await page.goto("http://localhost:3001/");
+test.describe("Home", () => {
+  test("Write Memos", async () => {
+    await page.goto("http://localhost:3001/");
+    const RandomString = Math.random().toString(36).substring(7);
+    writeMemo(page, RandomString);
 
-  // Click the get started link.
-  await page.getByRole("link", { name: locale.common["sign-in"] }).click();
+    await expect(page.getByText(RandomString)).toBeVisible();
+  });
 
-  // Expects the URL to contain intro.
-  await expect(page).toHaveURL(/.*auth/);
-  await page.getByRole("button", { name: locale.common["sign-in"] }).click();
-
-  await expect(page.getByText(locale.common.home)).toBeVisible();
+  test("Filter Memos", async () => {
+    await page.goto("http://localhost:3001/");
+  });
 });
 
-test("Write Memos", async () => {
-  await page.goto("http://localhost:3001/");
-  const RandomString = Math.random().toString(36).substring(7);
+async function writeMemo(page: Page, content: string) {
   await expect(page.getByRole("button", { name: locale.editor.save })).toBeDisabled();
-  await page.getByPlaceholder("Any thoughts...").fill(RandomString);
+  await page.getByPlaceholder("Any thoughts...").fill(content);
   await expect(page.getByRole("button", { name: locale.editor.save })).toBeEnabled();
   await page.getByRole("button", { name: locale.editor.save }).click();
-  await expect(page.getByText(RandomString)).toBeVisible();
-});
-
-test("Filter Memos", async () => {
-  await page.goto("http://localhost:3001/");
-});
+}
