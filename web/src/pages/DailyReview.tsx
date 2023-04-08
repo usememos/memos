@@ -109,7 +109,7 @@ const DailyReview = () => {
               className="w-7 h-7 mr-2 flex justify-center items-center rounded cursor-pointer select-none last:mr-0 hover:bg-gray-200 dark:hover:bg-zinc-700 p-0.5 share"
               onClick={handleShareBtnClick}
             >
-              <Icon.Share2 size={16} />
+              <Icon.Share size={20} />
             </button>
           </div>
           <DatePicker
