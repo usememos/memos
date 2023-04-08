@@ -25,6 +25,9 @@ RUN go build -o memos ./main.go
 FROM alpine:3.16 AS monolithic
 WORKDIR /usr/local/memos
 
+RUN apk add --no-cache tzdata
+ENV TZ="UTC"
+
 COPY --from=backend /backend-build/memos /usr/local/memos/
 
 EXPOSE 5230
