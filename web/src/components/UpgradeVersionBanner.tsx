@@ -10,7 +10,7 @@ interface State {
   show: boolean;
 }
 
-const UpdateVersionBanner: React.FC = () => {
+const UpgradeVersionBanner: React.FC = () => {
   const globalStore = useGlobalStore();
   const profile = globalStore.state.systemStatus.profile;
   const [state, setState] = useState<State>({
@@ -19,6 +19,10 @@ const UpdateVersionBanner: React.FC = () => {
   });
 
   useEffect(() => {
+    if (globalStore.state.systemStatus.ignoreUpgrade) {
+      return;
+    }
+
     api.getRepoLatestTag().then((latestTag) => {
       const { skippedVersion } = storage.get(["skippedVersion"]);
       const latestVersion = latestTag.slice(1) || "0.0.0";
@@ -58,4 +62,4 @@ const UpdateVersionBanner: React.FC = () => {
   );
 };
 
-export default UpdateVersionBanner;
+export default UpgradeVersionBanner;
