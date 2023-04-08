@@ -82,7 +82,7 @@ const StorageSection = () => {
         </button>
       </div>
       <div className="mt-2 w-full flex flex-col">
-        <div className="py-2 w-full border-t last:border-b flex flex-row items-center justify-between">
+        <div className="py-2 w-full border-t dark:border-zinc-700 flex flex-row items-center justify-between">
           <div className="flex flex-row items-center">
             <p className="ml-2">Local</p>
           </div>
@@ -103,7 +103,10 @@ const StorageSection = () => {
           </div>
         </div>
         {storageList.map((storage) => (
-          <div key={storage.id} className="py-2 w-full border-t last:border-b flex flex-row items-center justify-between">
+          <div
+            key={storage.id}
+            className="py-2 w-full border-t last:border-b dark:border-zinc-700 flex flex-row items-center justify-between"
+          >
             <div className="flex flex-row items-center">
               <p className="ml-2">{storage.name}</p>
             </div>

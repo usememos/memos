@@ -201,12 +201,12 @@ const Memo: React.FC<Props> = (props: Props) => {
             </Link>
           )}
           {memo.visibility !== "PRIVATE" && !isVisitorMode && (
-            <span
-              className={`status-text ${memo.visibility.toLocaleLowerCase()}`}
-              onClick={() => handleMemoVisibilityClick(memo.visibility)}
-            >
-              {t(`memo.visibility.${memo.visibility.toLowerCase()}`)}
-            </span>
+            <>
+              <span className="text-xs mx-1 font-mono text-gray-200 dark:text-gray-600">/</span>
+              <span className="text-sm text-gray-400 cursor-pointer" onClick={() => handleMemoVisibilityClick(memo.visibility)}>
+                {t(`memo.visibility.${memo.visibility.toLowerCase()}`)}
+              </span>
+            </>
           )}
         </div>
         {!isVisitorMode && (
