@@ -50,6 +50,8 @@ jobs:
             ghcr.io/usememos/memos
           tags: |
             type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
 
       - name: Build and Push
         id: docker_build
