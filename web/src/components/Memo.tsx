@@ -222,7 +222,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                   {memo.visibility === "PUBLIC" ? (
                     <Icon.Globe2 className="w-4 h-auto cursor-pointer rounded text-green-600" />
                   ) : (
-                    <Icon.Users className="w-4 h-auto cursor-pointer rounded dark:text-gray-400" />
+                    <Icon.Users className="w-4 h-auto cursor-pointer rounded text-gray-500 dark:text-gray-400" />
                   )}
                 </div>
               </Tooltip>
