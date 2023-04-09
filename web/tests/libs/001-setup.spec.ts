@@ -6,7 +6,7 @@ test.use({
   timezoneId: "Europe/Berlin",
 });
 
-test.describe("Basic Operator", async () => {
+test.describe("Sign in", async () => {
   test("Sign In and write first Memos", async ({ page }) => {
     await SignIn(page, "admin", "admin");
     await writeMemo(page, "Hello World");
