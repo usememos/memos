@@ -33,7 +33,7 @@ jobs:
           cache-dependency-path: ./web/yarn.lock
       - name: Install dependencies
         working-directory: web
-        run: npm ci
+        run: yarn
       - name: Install Playwright Browsers
         working-directory: web
         run: npx playwright install --with-deps
