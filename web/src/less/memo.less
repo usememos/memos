@@ -9,16 +9,6 @@
     @apply border-gray-200 dark:border-zinc-600;
   }
 
-  > .corner-container {
-    @apply absolute top-0 right-0 z-1;
-
-    &::after {
-      @apply absolute top-0 right-0 border-transparent border-t-green-600 border-r-green-600 rounded-tr-md;
-      content: "";
-      border-width: 6px;
-    }
-  }
-
   > .memo-top-wrapper {
     @apply flex flex-row justify-between items-center w-full h-6 mb-1;
 
@@ -91,10 +81,10 @@
       }
 
       .btn {
-        @apply flex flex-row justify-center items-center px-2 leading-6 text-sm rounded hover:bg-gray-200 dark:hover:bg-zinc-600;
+        @apply flex flex-row justify-center items-center leading-6 text-sm rounded hover:bg-gray-200 dark:hover:bg-zinc-600;
 
         &.more-action-btn {
-          @apply w-8 -mr-2 opacity-60 cursor-default hover:bg-transparent;
+          @apply w-auto opacity-60 cursor-default hover:bg-transparent;
 
           > .icon-img {
             @apply w-4 h-auto dark:text-gray-300;

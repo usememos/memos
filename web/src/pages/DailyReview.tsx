@@ -11,7 +11,7 @@ import useToggle from "@/hooks/useToggle";
 import toImage from "@/labs/html2image";
 import showPreviewImageDialog from "@/components/PreviewImageDialog";
 import Icon from "@/components/Icon";
-import DatePicker from "@/components/base/DatePicker";
+import DatePicker from "@/components/kit/DatePicker";
 import DailyMemo from "@/components/DailyMemo";
 
 const DailyReview = () => {

@@ -8,7 +8,7 @@ import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helper
 import { useEditorStore, useGlobalStore, useFilterStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
 import * as storage from "@/helpers/storage";
 import Icon from "./Icon";
-import Selector from "./base/Selector";
+import Selector from "./kit/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
