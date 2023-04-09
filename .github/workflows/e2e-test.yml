@@ -23,9 +23,6 @@ jobs:
         run: |
           docker run -d -p 5230:5230 neosmemo/memos:e2e
       
-      - name: Wait for container to start
-        run: sleep 10
-
       - uses: actions/setup-node@v3
         with:
           node-version: 18
