@@ -31,13 +31,13 @@ jobs:
           node-version: 18
           cache: 'npm'
       - name: Install dependencies
-        working-directory: ./web
+        working-directory: web
         run: npm ci
       - name: Install Playwright Browsers
-        working-directory: ./web
+        working-directory: web
         run: npx playwright install --with-deps
       - name: Run Playwright tests
-        working-directory: ./web
+        working-directory: web
         run: npx playwright test
       - uses: actions/upload-artifact@v3
         if: always()
