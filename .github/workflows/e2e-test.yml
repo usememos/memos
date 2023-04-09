@@ -30,12 +30,14 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          context: web
       - name: Install dependencies
+        working-directory: ./web
         run: npm ci
       - name: Install Playwright Browsers
+        working-directory: ./web
         run: npx playwright install --with-deps
       - name: Run Playwright tests
+        working-directory: ./web
         run: npx playwright test
       - uses: actions/upload-artifact@v3
         if: always()
