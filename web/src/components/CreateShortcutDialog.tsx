@@ -7,7 +7,7 @@ import { filterConsts, getDefaultFilter, relationConsts } from "@/helpers/filter
 import useLoading from "@/hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
-import Selector from "./base/Selector";
+import Selector from "./kit/Selector";
 import "@/less/create-shortcut-dialog.less";
 
 interface Props extends DialogProps {

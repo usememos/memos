@@ -6,7 +6,7 @@ import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
 import showUpdateLocalStorageDialog from "../UpdateLocalStorageDialog";
-import Dropdown from "../base/Dropdown";
+import Dropdown from "../kit/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 
 const StorageSection = () => {
