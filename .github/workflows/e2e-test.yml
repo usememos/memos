@@ -34,12 +34,15 @@ jobs:
       - name: Install dependencies
         working-directory: web
         run: yarn
+
       - name: Install Playwright Browsers
         working-directory: web
         run: npx playwright install --with-deps
+
       - name: Run Playwright tests
         working-directory: web
         run: npx playwright test
+        
       - uses: actions/upload-artifact@v3
         if: always()
         with:
