@@ -51,7 +51,8 @@
     "preview": "Preview",
     "rename": "Rename",
     "clear": "Clear",
-    "name": "Name"
+    "name": "Name",
+    "visibility": "Visibility"
   },
   "router": {
     "back-to-home": "Back to Home"
@@ -76,7 +77,7 @@
   "memo": {
     "view-detail": "View Detail",
     "copy-link": "Copy Link",
-    "embed": "Embed memo",
+    "embed": "Embed",
     "archived-memos": "Archived Memos",
     "no-archived-memos": "No archived memos.",
     "fetching-data": "fetching data...",

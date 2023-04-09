@@ -15,6 +15,7 @@ import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
+import showEmbedMemoDialog from "./EmbedMemoDialog";
 import "@/less/share-memo-dialog.less";
 
 interface Props extends DialogProps {
@@ -96,6 +97,10 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       });
   };
 
+  const handleShowEmbedMemoDialog = () => {
+    showEmbedMemoDialog(memo.id);
+  };
+
   const handleCopyLinkBtnClick = () => {
     copy(`${window.location.origin}/m/${memo.id}`);
     toast.success(t("message.succeed-copy-link"));
@@ -121,14 +126,15 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <div className="dialog-header-container py-3 px-4 pl-6 !mb-0 rounded-t-lg">
+      <div className="dialog-header-container py-3 px-4 !mb-0 rounded-t-lg">
         <p className="">{t("common.share")} Memo</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X className="icon-img" />
         </button>
       </div>
       <div className="dialog-content-container w-full flex flex-col justify-start items-start relative">
-        <div className="px-4 pb-3 border-b w-full flex flex-row justify-between items-center">
+        <div className="px-4 pb-3 w-full flex flex-row justify-start items-center">
+          <span className="text-sm mr-2">{t("common.visibility")}:</span>
           <Select
             className="!min-w-[10rem] w-auto text-sm"
             value={state.memoVisibility}
@@ -144,24 +150,28 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
               </Option>
             ))}
           </Select>
-          <div className="flex flex-row justify-end items-center">
-            <button disabled={createLoadingState.isLoading} className="btn-normal h-8 mr-2" onClick={handleDownloadBtnClick}>
-              {createLoadingState.isLoading ? (
-                <Icon.Loader className="w-4 h-auto sm:mr-1 animate-spin" />
-              ) : (
-                <Icon.Download className="w-4 h-auto sm:mr-1" />
-              )}
-              <span className="hidden sm:block">{t("common.image")}</span>
-            </button>
-            <button className="btn-normal h-8" onClick={handleCopyLinkBtnClick}>
-              <Icon.Link className="w-4 h-auto sm:mr-1" />
-              <span className="hidden sm:block">{t("common.link")}</span>
-            </button>
-          </div>
         </div>
-        <div className="w-full rounded-lg overflow-clip">
+        <div className="px-4 pb-3 w-full flex flex-row justify-start items-center space-x-2">
+          <button disabled={createLoadingState.isLoading} className="btn-normal h-8" onClick={handleDownloadBtnClick}>
+            {createLoadingState.isLoading ? (
+              <Icon.Loader className="w-4 h-auto mr-1 animate-spin" />
+            ) : (
+              <Icon.Download className="w-4 h-auto mr-1" />
+            )}
+            {t("common.image")}
+          </button>
+          <button className="btn-normal h-8" onClick={handleShowEmbedMemoDialog}>
+            <Icon.Code className="w-4 h-auto mr-1" />
+            {t("memo.embed")}
+          </button>
+          <button className="btn-normal h-8" onClick={handleCopyLinkBtnClick}>
+            <Icon.Link className="w-4 h-auto mr-1" />
+            {t("common.link")}
+          </button>
+        </div>
+        <div className="w-full rounded-lg border-t overflow-clip">
           <div
-            className="w-96 max-w-full h-auto select-none relative flex flex-col justify-start items-start bg-white dark:bg-zinc-800"
+            className="w-full h-auto select-none relative flex flex-col justify-start items-start bg-white dark:bg-zinc-800"
             ref={memoElRef}
           >
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{memo.createdAtStr}</span>

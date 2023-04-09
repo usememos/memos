@@ -1,4 +1,3 @@
-import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -12,7 +11,6 @@ import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
-import showEmbedMemoDialog from "./EmbedMemoDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "@/less/memo.less";
 
@@ -56,15 +54,6 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   const handleViewMemoDetailPage = () => {
     navigate(`/m/${memo.id}`);
-  };
-
-  const handleShowEmbedMemoDialog = () => {
-    showEmbedMemoDialog(memo.id);
-  };
-
-  const handleCopyLink = () => {
-    copy(`${window.location.origin}/m/${memo.id}`);
-    toast.success(t("message.succeed-copy-link"));
   };
 
   const handleTogglePinMemoBtnClick = async () => {
@@ -253,14 +242,8 @@ const Memo: React.FC<Props> = (props: Props) => {
                     />
                   </Tooltip>
                 </div>
-                <span className="btn" onClick={handleCopyLink}>
-                  {t("memo.copy-link")}
-                </span>
                 <span className="btn" onClick={handleViewMemoDetailPage}>
                   {t("memo.view-detail")}
-                </span>
-                <span className="btn" onClick={handleShowEmbedMemoDialog}>
-                  {t("memo.embed")}
                 </span>
                 <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>
                   {t("common.archive")}
