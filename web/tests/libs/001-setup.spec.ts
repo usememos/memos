@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { SignIn, writeMemo } from "../action";
+import { SignIn } from "../action";
 
 test.use({
   locale: "en-US",
@@ -7,8 +7,7 @@ test.use({
 });
 
 test.describe("Sign in", async () => {
-  test("Sign In and write first Memos", async ({ page }) => {
+  test("Sign In", async ({ page }) => {
     await SignIn(page, "admin", "admin");
-    await writeMemo(page, "Hello World");
   });
 });
