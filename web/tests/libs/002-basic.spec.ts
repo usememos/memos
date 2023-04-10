@@ -1,6 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { Review, login, writeMemo } from "../action";
 
+test.use({
+  locale: "en-US",
+  timezoneId: "Europe/Berlin",
+});
+
 test.beforeEach(async ({ page }) => {
   await login(page, "admin", "admin");
 });
