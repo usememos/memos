@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { SignUp } from "../action";
+import { SignUp } from "./utils";
 
 test.use({
   locale: "en-US",
