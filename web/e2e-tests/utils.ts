@@ -14,11 +14,10 @@ async function writeMemo(page: Page, content: string) {
 }
 
 async function login(page: Page, username: string, password: string) {
-  page.goto(`${baseHost}/`);
-  await screenshot(page, "explore");
+  page.goto(`${baseHost}/auth`);
+  await screenshot(page, "auth");
   await page.getByRole("link", { name: locale.common["sign-in"] }).click();
   await expect(page).toHaveURL(/.*auth/);
-  await screenshot(page, "sign-in");
   await page.locator('input[type="text"]').fill(username);
   await page.locator('input[type="password"]').fill(password);
   await page.getByRole("button", { name: locale.common["sign-in"] }).click();
