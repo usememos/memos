@@ -7,7 +7,7 @@ test.use({
 });
 
 test.describe("Sign up a host account", async () => {
-  test("Sign In", async ({ page }) => {
+  test("Sign Up", async ({ page }) => {
     await SignUp(page, "admin", "admin");
   });
 });
