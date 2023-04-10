@@ -1,13 +1,13 @@
 import { test } from "@playwright/test";
-import { SignIn } from "../action";
+import { SignUp } from "../action";
 
 test.use({
   locale: "en-US",
   timezoneId: "Europe/Berlin",
 });
 
-test.describe("Sign in", async () => {
+test.describe("Sign up a host account", async () => {
   test("Sign In", async ({ page }) => {
-    await SignIn(page, "admin", "admin");
+    await SignUp(page, "admin", "admin");
   });
 });

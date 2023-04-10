@@ -19,7 +19,7 @@ async function login(page: Page, username: string, password: string) {
   await expect(page.getByText(locale.common.home)).toBeVisible();
 }
 
-async function SignIn(page: Page, username: string, password: string) {
+async function SignUp(page: Page, username: string, password: string) {
   await page.goto(`${baseHost}/`);
   await page.locator('input[type="text"]').fill(username);
   await page.locator('input[type="password"]').fill(password);
@@ -31,4 +31,4 @@ async function Review(page: Page) {
   await page.getByRole("link", { name: locale["daily-review"]["title"] }).click();
 }
 
-export { writeMemo, login, SignIn, Review };
+export { writeMemo, login, SignUp, Review };
