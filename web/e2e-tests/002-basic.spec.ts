@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { Review, login, writeMemo } from "./utils";
+import { review, login, writeMemo } from "./utils";
 import randomstring from "randomstring";
 
 test.use({
@@ -31,7 +31,7 @@ test.describe("Daily Review", async () => {
   test("Daily Review", async ({ page }) => {
     const content = randomstring.generate();
     await writeMemo(page, content);
-    await Review(page);
+    await review(page);
     await expect(page.getByText(content)).toBeVisible();
   });
 });

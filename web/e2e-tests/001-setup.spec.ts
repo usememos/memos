@@ -1,5 +1,5 @@
 import { test } from "@playwright/test";
-import { SignUp } from "./utils";
+import { signUp } from "./utils";
 
 test.use({
   locale: "en-US",
@@ -8,6 +8,6 @@ test.use({
 
 test.describe("Sign up a host account", async () => {
   test("Sign Up", async ({ page }) => {
-    await SignUp(page, "admin", "admin");
+    await signUp(page, "admin", "admin");
   });
 });

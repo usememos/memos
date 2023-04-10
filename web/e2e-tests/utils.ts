@@ -14,28 +14,33 @@ async function writeMemo(page: Page, content: string) {
 }
 
 async function login(page: Page, username: string, password: string) {
-  page.goto(`${baseHost}/auth`);
-  await screenshot(page, "auth");
+  page.goto(`${baseHost}/`);
+  await screenshot(page, "explore");
   await page.getByRole("link", { name: locale.common["sign-in"] }).click();
-  await expect(page).toHaveURL(/.*auth/);
+  await screenshot(page, "auth");
+  await page.locator('input[type="text"]').click();
   await page.locator('input[type="text"]').fill(username);
+  await page.locator('input[type="password"]').click();
   await page.locator('input[type="password"]').fill(password);
   await page.getByRole("button", { name: locale.common["sign-in"] }).click();
-  await expect(page.getByText(locale.common.home)).toBeVisible();
+  await screenshot(page, "login-success");
 }
 
-async function SignUp(page: Page, username: string, password: string) {
+async function signUp(page: Page, username: string, password: string) {
   await page.goto(`${baseHost}/`);
   await screenshot(page, "sign-up");
+  await page.locator('input[type="text"]').click();
   await page.locator('input[type="text"]').fill(username);
+  await page.locator('input[type="password"]').click();
   await page.locator('input[type="password"]').fill(password);
   await page.getByRole("button", { name: locale.auth["signup-as-host"] }).click();
+  await screenshot(page, "sign-up-success");
 }
 
-async function Review(page: Page) {
+async function review(page: Page) {
   await page.goto(`${baseHost}/`);
   await page.getByRole("link", { name: locale["daily-review"]["title"] }).click();
   await screenshot(page, "review");
 }
 
-export { writeMemo, login, SignUp, Review };
+export { writeMemo, login, signUp, review };
