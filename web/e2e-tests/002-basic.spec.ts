@@ -1,5 +1,5 @@
 import { test, expect } from "@playwright/test";
-import { Review, login, writeMemo } from "../action";
+import { Review, login, writeMemo } from "./utils";
 
 test.use({
   locale: "en-US",
