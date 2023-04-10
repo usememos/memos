@@ -24,14 +24,14 @@ jobs:
           labels: neosmemo/memos:e2e
 
       - name: Run Docker container
-        run: |
-          docker run -d -p 5230:5230 neosmemo/memos:e2e
+        run: docker run -d -p 5230:5230 neosmemo/memos:e2e
       
       - uses: actions/setup-node@v3
         with:
           node-version: 18
           cache: 'yarn'
           cache-dependency-path: ./web/yarn.lock
+          
       - name: Install dependencies
         working-directory: web
         run: yarn
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: always()
         with:
-          name: playwright-report
+          name: playwright-screenshot
           path: web/playwright-screenshot/
           retention-days: 30
 
