@@ -11,7 +11,9 @@ async function writeMemo(page: Page, content: string) {
 
 async function login(page: Page, username: string, password: string) {
   page.goto(`${baseHost}/`);
+  await page.screenshot({ path: "main.png", fullPage: true });
   await page.getByRole("link", { name: locale.common["sign-in"] }).click();
+  await page.screenshot({ path: "login.png", fullPage: true });
   await expect(page).toHaveURL(/.*auth/);
   await page.locator('input[type="text"]').fill(username);
   await page.locator('input[type="password"]').fill(password);
