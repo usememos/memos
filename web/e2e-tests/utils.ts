@@ -26,6 +26,7 @@ async function login(page: Page, username: string, password: string) {
   await page.locator('input[type="password"]').click();
   await page.locator('input[type="password"]').fill(password);
   await page.getByRole("button", { name: locale.common["sign-in"] }).click();
+  await page.waitForTimeout(1000);
   await screenshot(page, "home-page-login-success");
 }
 
