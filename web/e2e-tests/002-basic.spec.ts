@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { Review, login, writeMemo } from "./utils";
+import randomstring from "randomstring";
 
 test.use({
   locale: "en-US",
@@ -12,14 +13,14 @@ test.beforeEach(async ({ page }) => {
 
 test.describe("Write some memos", async () => {
   test("Write memos", async ({ page }) => {
-    const content = `${Math.random().toString(36).substring(3)} from Write memos`;
+    const content = `${randomstring.generate()} from Write memos`;
     await writeMemo(page, content);
     await expect(page.getByText(content)).toBeVisible();
   });
 
   test("Write memos with Tag", async ({ page }) => {
-    const tag = Math.random().toString(36).substring(3);
-    const content = `#${tag} ${Math.random().toString(36).substring(3)} from Write memos with Tag`;
+    const tag = randomstring.generate(5);
+    const content = `#${tag} ${randomstring.generate()} from Write memos with Tag`;
     await writeMemo(page, content);
     // 1.memo contentg 2.tags list of memos editor 3.tags list
     await expect(page.getByText(tag)).toHaveCount(3);
@@ -28,7 +29,7 @@ test.describe("Write some memos", async () => {
 
 test.describe("Daily Review", async () => {
   test("Daily Review", async ({ page }) => {
-    const content = Math.random().toString(36).substring(7);
+    const content = randomstring.generate();
     await writeMemo(page, content);
     await Review(page);
     await expect(page.getByText(content)).toBeVisible();

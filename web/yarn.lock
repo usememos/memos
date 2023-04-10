@@ -1047,6 +1047,11 @@ array-union@^2.1.0:
   resolved "https://registry.yarnpkg.com/array-union/-/array-union-2.1.0.tgz#b798420adbeb1de828d84acd8a2e23d3efe85e8d"
   integrity sha512-HGyxoOTYUyCM6stUe6EJgnd4EoewAI7zMdfqO+kGjnlZmBDz/cR5pf8r/cR4Wq60sL/p0IkcjUEEPwS3GFrIyw==
 
+array-uniq@1.0.2:
+  version "1.0.2"
+  resolved "https://registry.npmmirror.com/array-uniq/-/array-uniq-1.0.2.tgz#5fcc373920775723cfd64d65c64bef53bf9eba6d"
+  integrity sha512-GVYjmpL05al4dNlKJm53mKE4w9OOLiuVHWorsIA3YVz+Hu0hcn6PtE3Ydl0EqU7v+7ABC4mjjWsnLUxbpno+CA==
+
 array.prototype.flatmap@^1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/array.prototype.flatmap/-/array.prototype.flatmap-1.3.1.tgz#1aae7903c2100433cb8261cd4ed310aab5c4a183"
@@ -2725,6 +2730,19 @@ quick-lru@^5.1.1:
   version "5.1.1"
   resolved "https://registry.yarnpkg.com/quick-lru/-/quick-lru-5.1.1.tgz#366493e6b3e42a3a6885e2e99d18f80fb7a8c932"
   integrity sha512-WuyALRjWPDGtt/wzJiadO5AXY+8hZ80hVpe6MyivgraREW751X3SbhRvG3eLKOYN+8VEvqLcf3wdnt44Z4S4SA==
+
+randombytes@2.0.3:
+  version "2.0.3"
+  resolved "https://registry.npmmirror.com/randombytes/-/randombytes-2.0.3.tgz#674c99760901c3c4112771a31e521dc349cc09ec"
+  integrity sha512-lDVjxQQFoCG1jcrP06LNo2lbWp4QTShEXnhActFBwYuHprllQV6VUpwreApsYqCgD+N1mHoqJ/BI/4eV4R2GYg==
+
+randomstring@^1.2.3:
+  version "1.2.3"
+  resolved "https://registry.npmmirror.com/randomstring/-/randomstring-1.2.3.tgz#49d2bc34ff6bc2bd0f6bb8e7d876e1d4433564c8"
+  integrity sha512-3dEFySepTzp2CvH6W/ASYGguPPveBuz5MpZ7MuoUkoVehmyNl9+F9c9GFVrz2QPbM9NXTIHGcmJDY/3j4677kQ==
+  dependencies:
+    array-uniq "1.0.2"
+    randombytes "2.0.3"
 
 react-dom@^18.2.0:
   version "18.2.0"
