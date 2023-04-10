@@ -1,6 +1,6 @@
 import { expect, Page } from "@playwright/test";
 import locale from "../src/locales/en.json";
-import { baseHost } from "./env";
+import { baseHost } from "./fixtures";
 
 async function writeMemo(page: Page, content: string) {
   await expect(page.getByRole("button", { name: locale.editor.save })).toBeDisabled();
