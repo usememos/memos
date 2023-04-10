@@ -28,7 +28,7 @@ async function SignIn(page: Page, username: string, password: string) {
 
 async function Review(page: Page) {
   await page.goto(`${baseHost}/`);
-  await page.getByRole("link", { name: locale.common["daily-review"] }).click();
+  await page.getByRole("link", { name: locale["daily-review"]["title"] }).click();
 }
 
 export { writeMemo, login, SignIn, Review };
