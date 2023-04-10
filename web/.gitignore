@@ -8,3 +8,4 @@ dist-ssr
 /test-results/
 /playwright-report/
 /playwright/.cache/
+/playwright-screenshot/

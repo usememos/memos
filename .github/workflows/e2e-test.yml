@@ -50,6 +50,13 @@ jobs:
           name: playwright-report
           path: web/playwright-report/
           retention-days: 30
+      
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: web/playwright-screenshot/
+          retention-days: 30
 
       - name: Stop Docker container
         run: docker stop $(docker ps -q)
