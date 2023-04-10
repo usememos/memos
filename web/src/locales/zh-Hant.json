@@ -52,12 +52,20 @@
     "vacuum": "清理",
     "select": "選擇",
     "database": "資料庫",
-    "avatar": "頭像"
+    "avatar": "頭像",
+    "upload": "上傳",
+    "rename": "改名",
+    "name": "姓名",
+    "visibility": "能見度",
+    "clear": "清除",
+    "preview": "預覽"
   },
   "auth": {
     "signup-as-host": "註冊為管理員",
     "host-tip": "你正在註冊為管理員帳號。",
-    "not-host-tip": "如果你沒有帳號，請聯絡網站管理員。"
+    "not-host-tip": "如果你沒有帳號，請聯絡網站管理員。",
+    "new-password": "新密碼",
+    "repeat-new-password": "重複新密碼"
   },
   "resource": {
     "description": "查看在 Memo 中的靜態資源。例如：圖片",
@@ -78,7 +86,24 @@
     "no-files-selected": "沒有文件被選中❗",
     "upload-successfully": "上傳成功",
     "file-drag-drop-prompt": "將您的文件拖放到此處以上傳文件",
-    "select": "選擇"
+    "select": "選擇",
+    "create-dialog": {
+      "upload-method": "上傳方式",
+      "local-file": {
+        "choose": "選擇一個文件...",
+        "option": "本地文件"
+      },
+      "external-link": {
+        "file-name-placeholder": "文件名",
+        "option": "外部鏈接",
+        "type-placeholder": "文件類型",
+        "link": "鏈接",
+        "type": "類型",
+        "file-name": "文件名"
+      },
+      "title": "創建資源"
+    },
+    "search-bar-placeholder": "搜索資源"
   },
   "archived": {
     "archived-memos": "已封存的 Memo",
@@ -104,7 +129,14 @@
       "protected": "登入使用者可見",
       "public": "所有人可見",
       "disabled": "公共memos已禁用"
-    }
+    },
+    "fetching-data": "正在獲取數據...",
+    "archived-memos": "歸檔備忘錄",
+    "archived-at": "存檔於",
+    "fetch-more": "點擊此處獲取更多",
+    "embed": "嵌入",
+    "no-archived-memos": "沒有存檔的備忘錄。",
+    "search-placeholder": "搜索備忘錄"
   },
   "memo-list": {
     "fetching-data": "讀取資料中...",
@@ -144,7 +176,10 @@
     "text-placeholder": "以 ^ 開頭使用正則表達式"
   },
   "tag-list": {
-    "tip-text": "輸入`#tag `來新增標籤"
+    "tip-text": "輸入`#tag `來新增標籤",
+    "create-tag": "創建標籤",
+    "tag-name": "標籤名",
+    "all-tags": "所有標籤"
   },
   "search": {
     "quickly-filter": "快速過濾"
@@ -170,7 +205,9 @@
       "mobile-editor-style": "手機版編輯器樣式",
       "default-memo-sort-option": "Memo 顯示時間",
       "created_ts": "建立時間",
-      "updated_ts": "更新時間"
+      "updated_ts": "更新時間",
+      "daily-review-time-offset": "每日回顧時間偏移",
+      "default-resource-visibility": "默認資源可見性"
     },
     "storage-section": {
       "storage-services-list": "存儲服務列表",
@@ -252,7 +289,8 @@
     "succeed-update-additional-script": "更新附加腳本成功",
     "update-succeed": "更新成功",
     "page-not-found": "404 - 未找到網頁 😥",
-    "succeed-vacuum-database": "清理資料庫成功"
+    "succeed-vacuum-database": "清理資料庫成功",
+    "resource-ready": "所有資源都準備好了"
   },
   "days": {
     "monday": "星期一",
@@ -269,5 +307,23 @@
     "sat": "六",
     "sunday": "星期天",
     "sun": "日"
+  },
+  "router": {
+    "back-to-home": "回到首頁"
+  },
+  "ask-ai": {
+    "not-enabled": "您尚未設置 OpenAI API 密鑰。",
+    "title": "問AI",
+    "placeholder": "隨便問",
+    "go-to-settings": "前往設置"
+  },
+  "embed-memo": {
+    "only-public-supported": "* 僅公開備忘錄支持。",
+    "title": "嵌入備忘錄",
+    "copy": "複製",
+    "text": "將以下代碼複製並粘貼到您的博客或網站中。"
+  },
+  "daily-review": {
+    "title": "每日回顧"
   }
 }

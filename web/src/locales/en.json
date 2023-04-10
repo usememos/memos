@@ -52,7 +52,8 @@
     "preview": "Preview",
     "rename": "Rename",
     "clear": "Clear",
-    "name": "Name"
+    "name": "Name",
+    "visibility": "Visibility"
   },
   "router": {
     "back-to-home": "Back to Home"
@@ -76,9 +77,8 @@
   },
   "memo": {
     "view-detail": "View Detail",
-    "copy": "Copy",
-    "copy-link":"Copy Link",
-    "embed": "Embed memo",
+    "copy-link": "Copy Link",
+    "embed": "Embed",
     "archived-memos": "Archived Memos",
     "no-archived-memos": "No archived memos.",
     "fetching-data": "fetching data...",
@@ -86,9 +86,9 @@
     "archived-at": "Archived at",
     "search-placeholder": "Search memos",
     "visibility": {
-      "private": "Only visible to you",
+      "private": "Private",
       "protected": "Visible to members",
-      "public": "Everyone can see",
+      "public": "Public to everyone",
       "disabled": "Public memos are disabled"
     }
   },

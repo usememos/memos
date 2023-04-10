@@ -17,6 +17,8 @@ const (
 	SystemSettingSecretSessionName SystemSettingName = "secret-session"
 	// SystemSettingAllowSignUpName is the name of allow signup setting.
 	SystemSettingAllowSignUpName SystemSettingName = "allow-signup"
+	// SystemSettingIgnoreUpgradeName is the name of ignore upgrade.
+	SystemSettingIgnoreUpgradeName SystemSettingName = "ignore-upgrade"
 	// SystemSettingDisablePublicMemosName is the name of disable public memos setting.
 	SystemSettingDisablePublicMemosName SystemSettingName = "disable-public-memos"
 	// SystemSettingAdditionalStyleName is the name of additional style.
@@ -62,6 +64,8 @@ func (key SystemSettingName) String() string {
 		return "secret-session"
 	case SystemSettingAllowSignUpName:
 		return "allow-signup"
+	case SystemSettingIgnoreUpgradeName:
+		return "ignore-upgrade"
 	case SystemSettingDisablePublicMemosName:
 		return "disable-public-memos"
 	case SystemSettingAdditionalStyleName:
@@ -101,6 +105,12 @@ func (upsert SystemSettingUpsert) Validate() error {
 		err := json.Unmarshal([]byte(upsert.Value), &value)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal system setting allow signup value")
+		}
+	} else if upsert.Name == SystemSettingIgnoreUpgradeName {
+		value := false
+		err := json.Unmarshal([]byte(upsert.Value), &value)
+		if err != nil {
+			return fmt.Errorf("failed to unmarshal system setting ignore upgrade value")
 		}
 	} else if upsert.Name == SystemSettingDisablePublicMemosName {
 		value := false

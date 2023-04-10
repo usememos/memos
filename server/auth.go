@@ -44,7 +44,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group, secret string) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
 		}
 
-		if err := GenerateTokensAndSetCookies(c, user, s.Profile.Mode, secret); err != nil {
+		if err := GenerateTokensAndSetCookies(c, user, secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createUserAuthSignInActivity(c, user); err != nil {
@@ -128,7 +128,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group, secret string) {
 			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
 		}
 
-		if err := GenerateTokensAndSetCookies(c, user, s.Profile.Mode, secret); err != nil {
+		if err := GenerateTokensAndSetCookies(c, user, secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createUserAuthSignInActivity(c, user); err != nil {
@@ -196,7 +196,7 @@ func (s *Server) registerAuthRoutes(g *echo.Group, secret string) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
-		if err := GenerateTokensAndSetCookies(c, user, s.Profile.Mode, secret); err != nil {
+		if err := GenerateTokensAndSetCookies(c, user, secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createUserAuthSignUpActivity(c, user); err != nil {

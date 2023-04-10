@@ -1,6 +1,6 @@
 import { absolutifyLink } from "@/helpers/utils";
 import { getResourceUrl } from "@/utils/resource";
-import SquareDiv from "./base/SquareDiv";
+import SquareDiv from "./kit/SquareDiv";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import MemoResource from "./MemoResource";
 import "@/less/memo-resources.less";

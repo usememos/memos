@@ -4,7 +4,7 @@ import toast from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useResourceStore } from "@/store/module";
 import { getResourceUrl } from "@/utils/resource";
-import Dropdown from "./base/Dropdown";
+import Dropdown from "./kit/Dropdown";
 import Icon from "./Icon";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";

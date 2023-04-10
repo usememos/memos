@@ -11,6 +11,7 @@ export const initialGlobalState = async () => {
     appearance: "system" as Appearance,
     systemStatus: {
       allowSignUp: false,
+      ignoreUpgrade: false,
       disablePublicMemos: false,
       additionalStyle: "",
       additionalScript: "",
@@ -33,28 +34,23 @@ export const initialGlobalState = async () => {
     defaultGlobalState.appearance = storageAppearance;
   }
 
-  try {
-    const { data } = (await api.getSystemStatus()).data;
-    if (data) {
-      const customizedProfile = data.customizedProfile;
-      defaultGlobalState.systemStatus = {
-        ...data,
-        customizedProfile: {
-          name: customizedProfile.name || "memos",
-          logoUrl: customizedProfile.logoUrl || "/logo.webp",
-          description: customizedProfile.description,
-          locale: customizedProfile.locale || "en",
-          appearance: customizedProfile.appearance || "system",
-          externalUrl: "",
-        },
-      };
-      defaultGlobalState.locale = storageLocale || convertLanguageCodeToLocale(i18n.language);
-      defaultGlobalState.appearance = customizedProfile.appearance;
-    }
-  } catch (error) {
-    // do nth
+  const { data } = (await api.getSystemStatus()).data;
+  if (data) {
+    const customizedProfile = data.customizedProfile;
+    defaultGlobalState.systemStatus = {
+      ...data,
+      customizedProfile: {
+        name: customizedProfile.name || "memos",
+        logoUrl: customizedProfile.logoUrl || "/logo.webp",
+        description: customizedProfile.description,
+        locale: customizedProfile.locale || "en",
+        appearance: customizedProfile.appearance || "system",
+        externalUrl: "",
+      },
+    };
+    defaultGlobalState.locale = storageLocale || convertLanguageCodeToLocale(i18n.language);
+    defaultGlobalState.appearance = customizedProfile.appearance;
   }
-
   store.dispatch(setGlobalState(defaultGlobalState));
 };
 

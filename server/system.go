@@ -42,6 +42,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			Profile:            *s.Profile,
 			DBSize:             0,
 			AllowSignUp:        false,
+			IgnoreUpgrade:      false,
 			DisablePublicMemos: false,
 			AdditionalStyle:    "",
 			AdditionalScript:   "",
@@ -75,6 +76,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 
 			if systemSetting.Name == api.SystemSettingAllowSignUpName {
 				systemStatus.AllowSignUp = baseValue.(bool)
+			} else if systemSetting.Name == api.SystemSettingIgnoreUpgradeName {
+				systemStatus.IgnoreUpgrade = baseValue.(bool)
 			} else if systemSetting.Name == api.SystemSettingDisablePublicMemosName {
 				systemStatus.DisablePublicMemos = baseValue.(bool)
 			} else if systemSetting.Name == api.SystemSettingAdditionalStyleName {
