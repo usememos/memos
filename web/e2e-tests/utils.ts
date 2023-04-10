@@ -15,26 +15,31 @@ async function writeMemo(page: Page, content: string) {
 
 async function login(page: Page, username: string, password: string) {
   page.goto(`${baseHost}/`);
-  await screenshot(page, "explore");
+  await screenshot(page, "explore-page");
+  await page.waitForURL("**/explore");
+  await screenshot(page, "explore-page-after-wait");
   await page.getByRole("link", { name: locale.common["sign-in"] }).click();
-  await screenshot(page, "auth");
+  await screenshot(page, "auth-page");
+  await page.waitForURL("**/auth");
   await page.locator('input[type="text"]').click();
   await page.locator('input[type="text"]').fill(username);
   await page.locator('input[type="password"]').click();
   await page.locator('input[type="password"]').fill(password);
   await page.getByRole("button", { name: locale.common["sign-in"] }).click();
-  await screenshot(page, "login-success");
+  await screenshot(page, "home-page-login-success");
 }
 
 async function signUp(page: Page, username: string, password: string) {
   await page.goto(`${baseHost}/`);
-  await screenshot(page, "sign-up");
+  await page.waitForURL("**/auth");
+  await screenshot(page, "sign-up-page");
   await page.locator('input[type="text"]').click();
   await page.locator('input[type="text"]').fill(username);
   await page.locator('input[type="password"]').click();
   await page.locator('input[type="password"]').fill(password);
   await page.getByRole("button", { name: locale.auth["signup-as-host"] }).click();
-  await screenshot(page, "sign-up-success");
+  await page.waitForTimeout(1000);
+  await screenshot(page, "home-page-sign-up-success");
 }
 
 async function review(page: Page) {
