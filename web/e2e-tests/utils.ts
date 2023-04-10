@@ -3,7 +3,7 @@ import locale from "../src/locales/en.json";
 import { baseHost } from "./fixtures";
 
 async function screenshot(page: Page, name: string) {
-  await page.screenshot({ path: `../playwright-report/screenshot/${name}.png`, fullPage: true });
+  await page.screenshot({ path: `../playwright-report/${name}.png`, fullPage: true });
 }
 
 async function writeMemo(page: Page, content: string) {
