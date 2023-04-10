@@ -25,9 +25,12 @@ test.describe("Write some memos", async () => {
     await expect(page.getByText(tag)).toHaveCount(3);
   });
 });
-test("Daily Review", async ({ page }) => {
-  const content = Math.random().toString(36).substring(7);
-  await writeMemo(page, content);
-  await Review(page);
-  await expect(page.getByText(content)).toBeVisible();
+
+test.describe("Daily Review", async () => {
+  test("Daily Review", async ({ page }) => {
+    const content = Math.random().toString(36).substring(7);
+    await writeMemo(page, content);
+    await Review(page);
+    await expect(page.getByText(content)).toBeVisible();
+  });
 });
