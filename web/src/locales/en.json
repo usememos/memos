@@ -186,6 +186,7 @@
       "database-file-size": "Database File Size",
       "allow-user-signup": "Allow user signup",
       "disable-public-memos": "Disable public memos",
+      "disable-ask-ai": "Disable Ask AI",
       "additional-style": "Additional style",
       "additional-script": "Additional script",
       "additional-style-placeholder": "Additional CSS code",

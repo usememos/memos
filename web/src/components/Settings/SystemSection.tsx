@@ -12,6 +12,7 @@ interface State {
   allowSignUp: boolean;
   ignoreUpgrade: boolean;
   disablePublicMemos: boolean;
+  disableAskAI: boolean;
   additionalStyle: string;
   additionalScript: string;
 }
@@ -36,6 +37,7 @@ const SystemSection = () => {
     additionalStyle: systemStatus.additionalStyle,
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
+    disableAskAI: !systemStatus.showAskAI,
   });
   const [openAIConfig, setOpenAIConfig] = useState<OpenAIConfig>({
     key: "",
@@ -54,6 +56,7 @@ const SystemSection = () => {
       additionalStyle: systemStatus.additionalStyle,
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
+      disableAskAI: !systemStatus.showAskAI,
     });
   }, [systemStatus]);
 
@@ -182,6 +185,19 @@ const SystemSection = () => {
     });
   };
 
+  const handleDisableAskAIChanged = async (value: boolean) => {
+    setState({
+      ...state,
+      disableAskAI: value,
+    });
+    const showAskAI = !value;
+    globalStore.setSystemStatus({ showAskAI: showAskAI });
+    await api.upsertSystemSetting({
+      name: "show-ask-ai",
+      value: JSON.stringify(showAskAI),
+    });
+  };
+
   return (
     <div className="section-container system-section-container">
       <p className="title-text">{t("common.basic")}</p>
@@ -209,6 +225,10 @@ const SystemSection = () => {
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
+      </div>
+      <div className="form-label">
+        <span className="normal-text">{t("setting.system-section.disable-ask-ai")}</span>
+        <Switch checked={state.disableAskAI} onChange={(event) => handleDisableAskAIChanged(event.target.checked)} />
       </div>
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">

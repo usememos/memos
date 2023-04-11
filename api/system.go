@@ -14,6 +14,8 @@ type SystemStatus struct {
 	IgnoreUpgrade bool `json:"ignoreUpgrade"`
 	// Disable public memos.
 	DisablePublicMemos bool `json:"disablePublicMemos"`
+	// Show Ask AI.
+	ShowAskAI bool `json:"showAskAI"`
 	// Additional style.
 	AdditionalStyle string `json:"additionalStyle"`
 	// Additional script.

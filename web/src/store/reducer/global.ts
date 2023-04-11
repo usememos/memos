@@ -21,6 +21,7 @@ const globalSlice = createSlice({
       allowSignUp: false,
       ignoreUpgrade: false,
       disablePublicMemos: false,
+      showAskAI: true,
       additionalStyle: "",
       additionalScript: "",
       customizedProfile: {

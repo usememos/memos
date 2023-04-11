@@ -44,6 +44,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			AllowSignUp:        false,
 			IgnoreUpgrade:      false,
 			DisablePublicMemos: false,
+			ShowAskAI:          true,
 			AdditionalStyle:    "",
 			AdditionalScript:   "",
 			CustomizedProfile: api.CustomizedProfile{
@@ -80,6 +81,8 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				systemStatus.IgnoreUpgrade = baseValue.(bool)
 			} else if systemSetting.Name == api.SystemSettingDisablePublicMemosName {
 				systemStatus.DisablePublicMemos = baseValue.(bool)
+			} else if systemSetting.Name == api.SystemSettingShowAskAIName {
+				systemStatus.ShowAskAI = baseValue.(bool)
 			} else if systemSetting.Name == api.SystemSettingAdditionalStyleName {
 				systemStatus.AdditionalStyle = baseValue.(string)
 			} else if systemSetting.Name == api.SystemSettingAdditionalScriptName {

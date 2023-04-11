@@ -13,6 +13,7 @@ export const initialGlobalState = async () => {
       allowSignUp: false,
       ignoreUpgrade: false,
       disablePublicMemos: false,
+      showAskAI: true,
       additionalStyle: "",
       additionalScript: "",
       customizedProfile: {
