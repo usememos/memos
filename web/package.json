@@ -22,6 +22,7 @@
     "lucide-react": "^0.105.0",
     "qrcode.react": "^3.1.0",
     "qs": "^6.11.0",
+    "randomstring": "^1.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
@@ -34,6 +35,7 @@
     "zustand": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.32.2",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@types/lodash-es": "^4.17.5",
     "@types/node": "^18.0.3",

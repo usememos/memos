@@ -1,0 +1,62 @@
+name: "E2E Test"
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  build:
+    name: Build and Run Memos With E2E Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Docker image
+        id: docker_build
+        uses: docker/build-push-action@v3
+        with:
+          context: ./
+          file: ./Dockerfile
+          platforms: linux/amd64
+          push: false
+          tags: neosmemo/memos:e2e
+          labels: neosmemo/memos:e2e
+
+      - name: Run Docker container
+        run: docker run -d -p 5230:5230 neosmemo/memos:e2e
+      
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'yarn'
+          cache-dependency-path: ./web/yarn.lock
+          
+      - name: Install dependencies
+        working-directory: web
+        run: yarn
+
+      - name: Install Playwright Browsers
+        working-directory: web
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        working-directory: web
+        run: npx playwright test
+        
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-report
+          path: web/playwright-report/
+          retention-days: 30
+      
+      - uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: playwright-screenshot
+          path: web/playwright-screenshot/
+          retention-days: 30
+
+      - name: Stop Docker container
+        run: docker stop $(docker ps -q)
