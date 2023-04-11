@@ -109,7 +109,7 @@ const Header = () => {
           </NavLink>
           {!isVisitorMode && (
             <>
-              {showAskAI &&
+              {showAskAI && (
                 <button
                   id="header-ask-ai"
                   className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
@@ -117,7 +117,7 @@ const Header = () => {
                 >
                   <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("ask-ai.title")}
                 </button>
-              }
+              )}
               <button
                 id="header-archived-memo"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
