@@ -56,7 +56,10 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			},
 			StorageServiceID: api.DatabaseStorage,
 			LocalStoragePath: "",
-			OpenAIConfig: api.OpenAIConfig{},
+			OpenAIConfig: api.OpenAIConfig{
+				Key:  "",
+				Host: "",
+			},
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
