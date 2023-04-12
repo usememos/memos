@@ -36,3 +36,7 @@ jobs:
       - name: Run frontend build
         run: yarn build
         working-directory: web
+      - name: Run frontend test
+        run: yarn test
+        working-directory: web
+
