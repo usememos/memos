@@ -13,7 +13,6 @@ export const initialGlobalState = async () => {
       allowSignUp: false,
       ignoreUpgrade: false,
       disablePublicMemos: false,
-      showAskAI: true,
       additionalStyle: "",
       additionalScript: "",
       customizedProfile: {
@@ -23,6 +22,10 @@ export const initialGlobalState = async () => {
         locale: "en",
         appearance: "system",
         externalUrl: "",
+      },
+      openAIConfig: {
+        key: "",
+        host: "",
       },
     } as SystemStatus,
   };
@@ -65,6 +68,10 @@ export const useGlobalStore = () => {
     },
     isDev: () => {
       return state.systemStatus.profile.mode !== "prod";
+    },
+    showAskAI: () => {
+      const openAIConfig = state.systemStatus.openAIConfig;
+      return Boolean(openAIConfig.key && openAIConfig.host);
     },
     fetchSystemStatus: async () => {
       const { data: systemStatus } = (await api.getSystemStatus()).data;

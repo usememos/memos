@@ -17,7 +17,7 @@ const Header = () => {
   const globalStore = useGlobalStore();
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
-  const showAskAI = globalStore.state.systemStatus.showAskAI;
+  const showAskAI = globalStore.showAskAI();
   const isVisitorMode = userStore.isVisitorMode() && !userStore.state.user;
 
   useEffect(() => {

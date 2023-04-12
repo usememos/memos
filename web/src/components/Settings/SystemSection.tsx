@@ -12,9 +12,9 @@ interface State {
   allowSignUp: boolean;
   ignoreUpgrade: boolean;
   disablePublicMemos: boolean;
-  disableAskAI: boolean;
   additionalStyle: string;
   additionalScript: string;
+  openAIConfig: OpenAIConfig;
 }
 
 const formatBytes = (bytes: number) => {
@@ -37,11 +37,7 @@ const SystemSection = () => {
     additionalStyle: systemStatus.additionalStyle,
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
-    disableAskAI: !systemStatus.showAskAI,
-  });
-  const [openAIConfig, setOpenAIConfig] = useState<OpenAIConfig>({
-    key: "",
-    host: "",
+    openAIConfig: systemStatus.openAIConfig,
   });
 
   useEffect(() => {
@@ -56,18 +52,9 @@ const SystemSection = () => {
       additionalStyle: systemStatus.additionalStyle,
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
-      disableAskAI: !systemStatus.showAskAI,
+      openAIConfig: systemStatus.openAIConfig,
     });
   }, [systemStatus]);
-
-  useEffect(() => {
-    api.getSystemSetting().then(({ data: { data: systemSettings } }) => {
-      const openAIConfigSetting = systemSettings.find((setting) => setting.name === "openai-config");
-      if (openAIConfigSetting) {
-        setOpenAIConfig(JSON.parse(openAIConfigSetting.value));
-      }
-    });
-  }, []);
 
   const handleAllowSignUpChanged = async (value: boolean) => {
     setState({
@@ -107,9 +94,12 @@ const SystemSection = () => {
   };
 
   const handleOpenAIConfigKeyChanged = (value: string) => {
-    setOpenAIConfig({
-      ...openAIConfig,
-      key: value,
+    setState({
+      ...state,
+      openAIConfig: {
+        ...state.openAIConfig,
+        key: value,
+      },
     });
   };
 
@@ -117,8 +107,9 @@ const SystemSection = () => {
     try {
       await api.upsertSystemSetting({
         name: "openai-config",
-        value: JSON.stringify(openAIConfig),
+        value: JSON.stringify(state.openAIConfig),
       });
+      globalStore.setSystemStatus({ openAIConfig: state.openAIConfig });
     } catch (error) {
       console.error(error);
       return;
@@ -127,9 +118,12 @@ const SystemSection = () => {
   };
 
   const handleOpenAIConfigHostChanged = (value: string) => {
-    setOpenAIConfig({
-      ...openAIConfig,
-      host: value,
+    setState({
+      ...state,
+      openAIConfig: {
+        ...state.openAIConfig,
+        host: value,
+      },
     });
   };
 
@@ -185,19 +179,6 @@ const SystemSection = () => {
     });
   };
 
-  const handleDisableAskAIChanged = async (value: boolean) => {
-    setState({
-      ...state,
-      disableAskAI: value,
-    });
-    const showAskAI = !value;
-    globalStore.setSystemStatus({ showAskAI: showAskAI });
-    await api.upsertSystemSetting({
-      name: "show-ask-ai",
-      value: JSON.stringify(showAskAI),
-    });
-  };
-
   return (
     <div className="section-container system-section-container">
       <p className="title-text">{t("common.basic")}</p>
@@ -226,10 +207,6 @@ const SystemSection = () => {
         <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
       </div>
-      <div className="form-label">
-        <span className="normal-text">{t("setting.system-section.disable-ask-ai")}</span>
-        <Switch checked={state.disableAskAI} onChange={(event) => handleDisableAskAIChanged(event.target.checked)} />
-      </div>
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <span className="normal-text">OpenAI API Key</span>
@@ -242,7 +219,7 @@ const SystemSection = () => {
           fontSize: "14px",
         }}
         placeholder="OpenAI API Key"
-        value={openAIConfig.key}
+        value={state.openAIConfig.key}
         onChange={(event) => handleOpenAIConfigKeyChanged(event.target.value)}
       />
       <div className="form-label mt-2">
@@ -255,7 +232,7 @@ const SystemSection = () => {
           fontSize: "14px",
         }}
         placeholder="OpenAI API Host. Default: https://api.openai.com"
-        value={openAIConfig.host}
+        value={state.openAIConfig.host}
         onChange={(event) => handleOpenAIConfigHostChanged(event.target.value)}
       />
       <Divider className="!mt-3 !my-4" />

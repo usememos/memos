@@ -44,7 +44,6 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			AllowSignUp:        false,
 			IgnoreUpgrade:      false,
 			DisablePublicMemos: false,
-			ShowAskAI:          true,
 			AdditionalStyle:    "",
 			AdditionalScript:   "",
 			CustomizedProfile: api.CustomizedProfile{
@@ -57,6 +56,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			},
 			StorageServiceID: api.DatabaseStorage,
 			LocalStoragePath: "",
+			OpenAIConfig: api.OpenAIConfig{},
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -81,8 +81,6 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				systemStatus.IgnoreUpgrade = baseValue.(bool)
 			} else if systemSetting.Name == api.SystemSettingDisablePublicMemosName {
 				systemStatus.DisablePublicMemos = baseValue.(bool)
-			} else if systemSetting.Name == api.SystemSettingShowAskAIName {
-				systemStatus.ShowAskAI = baseValue.(bool)
 			} else if systemSetting.Name == api.SystemSettingAdditionalStyleName {
 				systemStatus.AdditionalStyle = baseValue.(string)
 			} else if systemSetting.Name == api.SystemSettingAdditionalScriptName {
@@ -98,6 +96,13 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				systemStatus.StorageServiceID = int(baseValue.(float64))
 			} else if systemSetting.Name == api.SystemSettingLocalStoragePathName {
 				systemStatus.LocalStoragePath = baseValue.(string)
+			} else if systemSetting.Name == api.SystemSettingOpenAIConfigName {
+				openAIConfig := api.OpenAIConfig{}
+				err := json.Unmarshal([]byte(systemSetting.Value), &openAIConfig)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting open ai config value").SetInternal(err)
+				}
+				systemStatus.OpenAIConfig = openAIConfig
 			}
 		}
 

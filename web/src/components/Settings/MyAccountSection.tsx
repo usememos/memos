@@ -10,7 +10,7 @@ const MyAccountSection = () => {
   const { t } = useTranslation();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
-  const showAskAI = globalStore.state.systemStatus.showAskAI;
+  const showAskAI = globalStore.showAskAI();
   const user = userStore.state.user as User;
   const openAPIRoute = `${window.location.origin}/api/memo?openId=${user.openId}`;
 

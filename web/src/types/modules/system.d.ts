@@ -25,12 +25,12 @@ interface SystemStatus {
   allowSignUp: boolean;
   ignoreUpgrade: boolean;
   disablePublicMemos: boolean;
-  showAskAI: boolean;
   additionalStyle: string;
   additionalScript: string;
   customizedProfile: CustomizedProfile;
   storageServiceId: number;
   localStoragePath: string;
+  openAIConfig: OpenAIConfig;
 }
 
 interface SystemSetting {

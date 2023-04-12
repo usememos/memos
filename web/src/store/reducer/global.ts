@@ -21,7 +21,6 @@ const globalSlice = createSlice({
       allowSignUp: false,
       ignoreUpgrade: false,
       disablePublicMemos: false,
-      showAskAI: true,
       additionalStyle: "",
       additionalScript: "",
       customizedProfile: {
@@ -31,6 +30,10 @@ const globalSlice = createSlice({
         locale: "en",
         appearance: "system",
         externalUrl: "",
+      },
+      openAIConfig: {
+        key: "",
+        host: "",
       },
     },
   } as State,

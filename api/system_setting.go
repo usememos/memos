@@ -21,8 +21,6 @@ const (
 	SystemSettingIgnoreUpgradeName SystemSettingName = "ignore-upgrade"
 	// SystemSettingDisablePublicMemosName is the name of disable public memos setting.
 	SystemSettingDisablePublicMemosName SystemSettingName = "disable-public-memos"
-	// SystemSettingShowAskAIName is the name of show Ask AI setting.
-	SystemSettingShowAskAIName SystemSettingName = "show-ask-ai"
 	// SystemSettingAdditionalStyleName is the name of additional style.
 	SystemSettingAdditionalStyleName SystemSettingName = "additional-style"
 	// SystemSettingAdditionalScriptName is the name of additional script.
@@ -70,8 +68,6 @@ func (key SystemSettingName) String() string {
 		return "ignore-upgrade"
 	case SystemSettingDisablePublicMemosName:
 		return "disable-public-memos"
-	case SystemSettingShowAskAIName:
-		return "show-ask-ai"
 	case SystemSettingAdditionalStyleName:
 		return "additional-style"
 	case SystemSettingAdditionalScriptName:
@@ -121,12 +117,6 @@ func (upsert SystemSettingUpsert) Validate() error {
 		err := json.Unmarshal([]byte(upsert.Value), &value)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal system setting disable public memos value")
-		}
-	} else if upsert.Name == SystemSettingShowAskAIName {
-		value := false
-		err := json.Unmarshal([]byte(upsert.Value), &value)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting show ask ai value")
 		}
 	} else if upsert.Name == SystemSettingAdditionalStyleName {
 		value := ""
