@@ -23,6 +23,7 @@ interface SystemStatus {
   dbSize: number;
   // System settings
   allowSignUp: boolean;
+  ignoreUpgrade: boolean;
   disablePublicMemos: boolean;
   additionalStyle: string;
   additionalScript: string;

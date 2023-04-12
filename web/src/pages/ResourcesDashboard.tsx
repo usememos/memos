@@ -9,7 +9,7 @@ import Icon from "@/components/Icon";
 import ResourceCard from "@/components/ResourceCard";
 import ResourceSearchBar from "@/components/ResourceSearchBar";
 import MobileHeader from "@/components/MobileHeader";
-import Dropdown from "@/components/base/Dropdown";
+import Dropdown from "@/components/kit/Dropdown";
 import ResourceItem from "@/components/ResourceItem";
 import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import showCreateResourceDialog from "@/components/CreateResourceDialog";

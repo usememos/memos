@@ -1,16 +1,16 @@
-import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import { useEditorStore, useFilterStore, useMemoStore, useUserStore } from "@/store/module";
+import Tooltip from "./kit/Tooltip";
+import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
 import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
-import showEmbedMemoDialog from "./EmbedMemoDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import "@/less/memo.less";
 
@@ -56,20 +56,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     navigate(`/m/${memo.id}`);
   };
 
-  const handleShowEmbedMemoDialog = () => {
-    showEmbedMemoDialog(memo.id);
-  };
-
-  const handleCopyContent = () => {
-    copy(memo.content);
-    toast.success(t("message.succeed-copy-content"));
-  };
-
-  const handleCopyLink = () => {
-    copy(`${window.location.origin}/m/${memo.id}`);
-    toast.success(t("message.succeed-copy-link"));
-  };
-
   const handleTogglePinMemoBtnClick = async () => {
     try {
       if (memo.pinned) {
@@ -100,6 +86,18 @@ const Memo: React.FC<Props> = (props: Props) => {
     if (editorStore.getState().editMemoId === memo.id) {
       editorStore.clearEditMemo();
     }
+  };
+
+  const handleDeleteMemoClick = async () => {
+    showCommonDialog({
+      title: "Delete memo",
+      content: "Are you sure to delete this memo?",
+      style: "warning",
+      dialogName: "delete-memo-dialog",
+      onConfirm: async () => {
+        await memoStore.deleteMemoById(memo.id);
+      },
+    });
   };
 
   const handleGenerateMemoImageBtnClick = () => {
@@ -194,7 +192,6 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   return (
     <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned ? "pinned" : ""}`} ref={memoContainerRef}>
-      {memo.pinned && <div className="corner-container"></div>}
       <div className="memo-top-wrapper">
         <div className="status-text-container">
           <Link className="time-text" to={`/m/${memo.id}`} onClick={handleMemoCreatedTimeClick}>
@@ -205,50 +202,54 @@ const Memo: React.FC<Props> = (props: Props) => {
               @{memo.creatorName}
             </Link>
           )}
-          {memo.visibility !== "PRIVATE" && !isVisitorMode && (
-            <span
-              className={`status-text ${memo.visibility.toLocaleLowerCase()}`}
-              onClick={() => handleMemoVisibilityClick(memo.visibility)}
-            >
-              {t(`visibility.${memo.visibility}`)}
-            </span>
-          )}
         </div>
         {!isVisitorMode && (
-          <div className="btns-container">
+          <div className="btns-container space-x-2">
+            {memo.visibility !== "PRIVATE" && (
+              <Tooltip title={t(`memo.visibility.${memo.visibility.toLowerCase()}`)} side="top">
+                <div onClick={() => handleMemoVisibilityClick(memo.visibility)}>
+                  {memo.visibility === "PUBLIC" ? (
+                    <Icon.Globe2 className="w-4 h-auto cursor-pointer rounded text-green-600" />
+                  ) : (
+                    <Icon.Users className="w-4 h-auto cursor-pointer rounded text-gray-500 dark:text-gray-400" />
+                  )}
+                </div>
+              </Tooltip>
+            )}
+            {memo.pinned && <Icon.Bookmark className="w-4 h-auto rounded text-green-600" />}
             <span className="btn more-action-btn">
               <Icon.MoreHorizontal className="icon-img" />
             </span>
             <div className="more-action-btns-wrapper">
               <div className="more-action-btns-container">
-                <div className="btns-container">
-                  <div className="btn" onClick={handleTogglePinMemoBtnClick}>
-                    <Icon.Flag className={`icon-img ${memo.pinned ? "text-green-600" : ""}`} />
-                    <span className="tip-text">{memo.pinned ? t("common.unpin") : t("common.pin")}</span>
-                  </div>
-                  <div className="btn" onClick={handleEditMemoClick}>
-                    <Icon.Edit3 className="icon-img" />
-                    <span className="tip-text">{t("common.edit")}</span>
-                  </div>
-                  <div className="btn" onClick={handleGenerateMemoImageBtnClick}>
-                    <Icon.Share className="icon-img" />
-                    <span className="tip-text">{t("common.share")}</span>
-                  </div>
+                <div className="w-full flex flex-row justify-between px-3 py-2 mb-1 border-b dark:border-zinc-700">
+                  <Tooltip title={memo.pinned ? t("common.unpin") : t("common.pin")} side="top">
+                    <div onClick={handleTogglePinMemoBtnClick}>
+                      {memo.pinned ? (
+                        <Icon.Bookmark className="w-4 h-auto cursor-pointer rounded text-green-600" />
+                      ) : (
+                        <Icon.BookmarkPlus className="w-4 h-auto cursor-pointer rounded dark:text-gray-400" />
+                      )}
+                    </div>
+                  </Tooltip>
+                  <Tooltip title={t("common.edit")} side="top">
+                    <Icon.Edit3 className="w-4 h-auto cursor-pointer rounded dark:text-gray-400" onClick={handleEditMemoClick} />
+                  </Tooltip>
+                  <Tooltip title={t("common.share")} side="top">
+                    <Icon.Share
+                      className="w-4 h-auto cursor-pointer rounded dark:text-gray-400"
+                      onClick={handleGenerateMemoImageBtnClick}
+                    />
+                  </Tooltip>
                 </div>
-                <span className="btn" onClick={handleCopyContent}>
-                  {t("memo.copy")}
-                </span>
-                <span className="btn" onClick={handleCopyLink}>
-                  {t("memo.copy-link")}
-                </span>
                 <span className="btn" onClick={handleViewMemoDetailPage}>
                   {t("memo.view-detail")}
                 </span>
-                <span className="btn" onClick={handleShowEmbedMemoDialog}>
-                  {t("memo.embed")}
-                </span>
-                <span className="btn archive-btn" onClick={handleArchiveMemoClick}>
+                <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>
                   {t("common.archive")}
+                </span>
+                <span className="btn text-red-600" onClick={handleDeleteMemoClick}>
+                  {t("common.delete")}
                 </span>
               </div>
             </div>

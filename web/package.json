@@ -11,6 +11,7 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/joy": "^5.0.0-alpha.67",
+    "@radix-ui/react-tooltip": "^1.0.5",
     "@reduxjs/toolkit": "^1.8.1",
     "axios": "^0.27.2",
     "copy-to-clipboard": "^3.3.2",
@@ -22,6 +23,7 @@
     "lucide-react": "^0.105.0",
     "qrcode.react": "^3.1.0",
     "qs": "^6.11.0",
+    "randomstring": "^1.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
@@ -34,6 +36,7 @@
     "zustand": "^4.3.6"
   },
   "devDependencies": {
+    "@playwright/test": "^1.32.2",
     "@tailwindcss/line-clamp": "^0.4.2",
     "@testing-library/dom": "^9.2.0",
     "@testing-library/jest-dom": "^5.16.5",
