@@ -74,7 +74,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
         <input
           type="password"
           className="input-text"
-          placeholder={t("auth.repeat-new-password")}
+          placeholder={t("auth.new-password")}
           value={newPassword}
           onChange={handleNewPasswordChanged}
         />

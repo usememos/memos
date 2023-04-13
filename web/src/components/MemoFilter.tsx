@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { useFilterStore, useShortcutStore } from "@/store/module";
-import * as utils from "@/helpers/utils";
+import { getDateString } from "@/helpers/datetime";
 import { getTextWithMemoType } from "@/helpers/filter";
 import Icon from "./Icon";
 import "@/less/memo-filter.less";
@@ -63,7 +63,12 @@ const MemoFilter = () => {
             filterStore.setFromAndToFilter();
           }}
         >
-          <Icon.Calendar className="icon-text" /> {utils.getDateString(duration.from)} to {utils.getDateString(duration.to)}
+          <Icon.Calendar className="icon-text" />
+          {t("common.filter-period", {
+            from: getDateString(duration.from),
+            to: getDateString(duration.to),
+            interpolation: { escapeValue: false },
+          })}
         </div>
       ) : null}
       <div

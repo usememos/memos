@@ -71,7 +71,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
 
   const handleSaveButtonClick = async () => {
     if (state.name === "") {
-      toast.error("Please fill server name");
+      toast.error(t("message.fill-server-name"));
       return;
     }
 
@@ -105,11 +105,11 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
         <input type="text" className="input-text" value={state.name} onChange={handleNameChanged} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.icon-url")}</p>
         <input type="text" className="input-text" value={state.logoUrl} onChange={handleLogoUrlChanged} />
-        <p className="text-sm mb-1 mt-2">Description</p>
+        <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.description")}</p>
         <input type="text" className="input-text" value={state.description} onChange={handleDescriptionChanged} />
-        <p className="text-sm mb-1 mt-2">Server locale</p>
+        <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.locale")}</p>
         <LocaleSelect className="!w-full" value={state.locale} onChange={handleLocaleSelectChange} />
-        <p className="text-sm mb-1 mt-2">Server appearance</p>
+        <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.appearance")}</p>
         <AppearanceSelect className="!w-full" value={state.appearance} onChange={handleAppearanceSelectChange} />
         <div className="mt-4 w-full flex flex-row justify-between items-center space-x-2">
           <div className="flex flex-row justify-start items-center">

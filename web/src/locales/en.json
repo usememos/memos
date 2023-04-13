@@ -1,5 +1,6 @@
 {
   "common": {
+    "memos-slogan": "A lightweight, self-hosted memo hub. Open Source and Free forever.",
     "about": "About",
     "home": "Home",
     "resources": "Resources",
@@ -14,6 +15,7 @@
     "close": "Close",
     "cancel": "Cancel",
     "create": "Create",
+    "update": "Update",
     "change": "Change",
     "confirm": "Confirm",
     "reset": "Reset",
@@ -31,12 +33,15 @@
     "admin": "Admin",
     "explore": "Explore",
     "sign-in": "Sign in",
+    "sign-in-with": "Sign in with {{provider}}",
+    "or": "or",
     "sign-up": "Sign up",
     "sign-out": "Sign out",
     "type": "Type",
     "shortcuts": "Shortcuts",
     "title": "Title",
     "filter": "Filter",
+    "filter-period": "{{from}} to {{to}}",
     "tags": "Tags",
     "yourself": "Yourself",
     "changed": "changed",
@@ -52,7 +57,10 @@
     "rename": "Rename",
     "clear": "Clear",
     "name": "Name",
-    "visibility": "Visibility"
+    "visibility": "Visibility",
+    "learn-more": "Learn more",
+    "e.g": "e.g.",
+    "beta": "Beta"
   },
   "router": {
     "back-to-home": "Back to Home"
@@ -89,16 +97,21 @@
       "protected": "Visible to members",
       "public": "Public to everyone",
       "disabled": "Public memos are disabled"
-    }
+    },
+    "delete-memo": "Delete Memo",
+    "delete-confirm": "Are you sure to delete this memo?\n\nTHIS ACTION IS IRREVERSIBLE❗"
   },
   "resource": {
     "no-resources": "No resources.",
     "fetching-data": "fetching data...",
     "copy-link": "Copy Link",
+    "reset-link": "Reset Link",
+    "reset-resource-link": "Reset Resource Link",
+    "reset-link-prompt": "Are you sure to reset the link?\nThis will break all current link usages.\n\nTHIS ACTION IS IRREVERSIBLE❗",
     "delete-resource": "Delete Resource",
-    "warning-text": "Are you sure to delete this resource? THIS ACTION IS IRREVERSIBLE❗",
-    "linked-amount": "Linked memo amount",
-    "warning-text-unused": "Are you sure to delete these unused resources? THIS ACTION IS IRREVERSIBLE❗",
+    "linked-amount": "Linked amount",
+    "warning-text": "Are you sure to delete this resource?\n\nTHIS ACTION IS IRREVERSIBLE❗",    
+    "warning-text-unused": "Are you sure to delete these unused resources?\n\nTHIS ACTION IS IRREVERSIBLE❗",
     "no-unused-resources": "No unused resources",
     "delete-selected-resources": "Delete Selected Resources",
     "no-files-selected": "No files selected❗",
@@ -115,6 +128,7 @@
       "external-link": {
         "option": "External link",
         "link": "Link",
+        "link-placeholder": "https://the.link.to/your/resource",
         "file-name": "File name",
         "file-name-placeholder": "File name",
         "type": "Type",
@@ -138,7 +152,8 @@
     "tag-name": "TAG_NAME"
   },
   "daily-review": {
-    "title": "Daily Review"
+    "title": "Daily Review",
+    "no-memos": "Oops, there is nothing."
   },
   "setting": {
     "my-account": "My Account",
@@ -150,8 +165,16 @@
     "sso": "SSO",
     "account-section": {
       "title": "Account Information",
+      "username-note": "Used to sign in",
+      "nickname-note": "Displayed in the banner",
+      "email-note": "Optional",
       "update-information": "Update Information",
-      "change-password": "Change password"
+      "change-password": "Change password",
+      "reset-api": "Reset API",
+      "openapi-title": "OpenAPI",
+      "openapi-reset": "Reset OpenAPI Key",
+      "openapi-reset-warning": "❗ The existing API will be invalidated and a new one will be generated.\n\nAre you sure you want to reset?",
+      "openapi-sample-post": "Hello #memos from {{url}}"
     },
     "preference-section": {
       "theme": "Theme",
@@ -167,34 +190,93 @@
       "daily-review-time-offset": "Daily Review Time Offset"
     },
     "storage-section": {
+      "current-storage": "Current storage",
+      "type-database": "Database",
+      "type-local": "Local",
       "storage-services-list": "Storage service list",
       "create-a-service": "Create a service",
       "update-a-service": "Update a service",
-      "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIBLE❗",
-      "delete-storage": "Delete Storage"
+      "warning-text": "Are you sure to delete storage service \"{{name}}\"?\n\nTHIS ACTION IS IRREVERSIBLE❗",
+      "delete-storage": "Delete Storage",
+      "local-storage-path": "Local storage path",
+      "update-local-path": "Update Local Storage Path",
+      "update-local-path-description": "Local storage path is a relative path to your database file",
+      "create-storage": "Create Storage",
+      "update-storage": "Update Storage",
+      "endpoint": "Endpoint",
+      "s3-compatible-url": "S3 Compatible URL",
+      "region": "Region",
+      "region-placeholder": "Region name",
+      "accesskey": "Access key",
+      "accesskey-placeholder": "Access key / Access ID",
+      "secretkey": "Secret key",
+      "secretkey-placeholder": "Secret key / Access Key",
+      "bucket": "Bucket",
+      "bucket-placeholder": "Bucket name",
+      "path": "Storage Path",
+      "path-description": "You can use the same dynamic variables from local storage, like {filename}",
+      "path-placeholder": "custom/path",
+      "url-prefix": "URL prefix",
+      "url-prefix-placeholder": "Custom URL prefix, optional",
+      "url-suffix": "URL suffix",
+      "url-suffix-placeholder": "Custom URL suffix, optional"
     },
     "member-section": {
-      "create-a-member": "Create a member"
+      "create-a-member": "Create a member",
+      "archive-member": "Archive member",
+      "archive-warning": "❗ Are you sure to archive {{username}}?",
+      "delete-member": "Delete Member",
+      "delete-warning": "❗ Are you sure to delete {{username}}?\n\nTHIS ACTION IS IRREVERSIBLE❗"
     },
     "system-section": {
       "server-name": "Server Name",
       "customize-server": {
         "title": "Customize Server",
         "default": "Default is memos",
-        "icon-url": "Icon URL"
+        "icon-url": "Icon URL",
+        "description": "Description",
+        "locale": "Server Locale",
+        "appearance": "Server Appearance"
       },
       "database-file-size": "Database File Size",
       "allow-user-signup": "Allow user signup",
+      "ignore-version-upgrade": "Ignore version upgrade",
       "disable-public-memos": "Disable public memos",
       "additional-style": "Additional style",
       "additional-script": "Additional script",
       "additional-style-placeholder": "Additional CSS code",
-      "additional-script-placeholder": "Additional JavaScript code"
+      "additional-script-placeholder": "Additional JavaScript code",
+      "openai-api-key": "OpenAI: API Key",
+      "openai-api-key-description": "Get API key",
+      "openai-api-key-placeholder": "Your OpenAI API Key",
+      "openai-api-host": "OpenAI: API Host",
+      "openai-api-host-placeholder": "Default: https://api.openai.com/"
     },
     "appearance-option": {
       "system": "Follow system",
       "light": "Always light",
       "dark": "Always dark"
+    },
+    "sso-section": {
+      "sso-list": "SSO List",
+      "delete-sso": "Confirm delete",
+      "confirm-delete": "Are you sure to delete \"{{name}}\" SSO configuration?\n\nTHIS ACTION IS IRREVERSIBLE❗",
+      "create-sso": "Create SSO",
+      "update-sso": "Update SSO",
+      "sso-created": "SSO {{name}} created",
+      "sso-updated": "SSO {{name}} updated",
+      "identifier": "Identifier",
+      "display-name": "Display Name",
+      "template": "Template",
+      "custom": "Custom",
+      "identifier-filter": "Identifier Filter",
+      "redirect-url": "Redirect URL",
+      "client-id": "Client ID",
+      "client-secret": "Client secret",
+      "authorization-endpoint": "Authorization endpoint",
+      "token-endpoint": "Token endpoint",
+      "user-endpoint": "User endpoint",
+      "scopes": "Scopes"
     }
   },
   "filter": {
@@ -219,7 +301,9 @@
       "linked": "Has links",
       "has-attachment": "Has attachments"
     },
-    "text-placeholder": "Starts with ^ to use regex"
+    "text-placeholder": "Starts with ^ to use regex",
+    "and": "And",
+    "or": "Or"
   },
   "message": {
     "no-memos": "no memos 🌃",
@@ -230,12 +314,15 @@
     "memo-updated-datetime": "Memo created datetime changed.",
     "invalid-created-datetime": "Invalid created datetime.",
     "change-memo-created-time": "Change memo created time",
+    "change-memo-created-time-warning-1": "THIS IS NOT A NORMAL BEHAVIOR.",
+    "change-memo-created-time-warning-2": "Please make sure you really need it.",
     "memo-not-found": "Memo not found.",
     "fill-all": "Please fill in all fields.",
     "password-not-match": "Passwords do not match.",
     "new-password-not-match": "New passwords do not match.",
     "image-load-failed": "Image load failed",
     "fill-form": "Please fill out this form",
+    "fill-server-name": "Please fill in the server name",
     "login-failed": "Login failed",
     "signup-failed": "Signup failed",
     "user-not-found": "User not found",
@@ -281,7 +368,22 @@
   "embed-memo": {
     "title": "Embed Memo",
     "text": "Copy and paste the below codes into your blog or website.",
-    "only-public-supported": "* Only the public memo supports.",
+    "only-public-supported": "* Only public memos can be embedded.",
     "copy": "Copy"
+  },
+  "heatmap": {
+    "memo-in": "{{amount}} memo in {{period}}",
+    "memos-in": "{{amount}} memos in {{period}}",
+    "memo-on": "{{amount}} memo on {{date}}",
+    "memos-on": "{{amount}} memos on {{date}}",
+    "day": "day",
+    "days": "days"
+  },
+  "about": {
+    "about-memos": "About Memos",
+    "memos-description": "Memos is a web-based note-taking application that you can use to write, organize, and share notes.",
+    "no-server-description": "No description configured for this server.",
+    "powered-by": "Powered by",
+    "other-projects": "Other Projects"
   }
 }

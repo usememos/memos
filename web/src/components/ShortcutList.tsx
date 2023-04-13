@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useFilterStore, useShortcutStore } from "@/store/module";
-import * as utils from "@/helpers/utils";
+import { getTimeStampByDate } from "@/helpers/datetime";
 import useToggle from "@/hooks/useToggle";
 import useLoading from "@/hooks/useLoading";
 import Icon from "./Icon";
@@ -18,10 +18,10 @@ const ShortcutList = () => {
 
   const pinnedShortcuts = shortcuts
     .filter((s) => s.rowStatus === "ARCHIVED")
-    .sort((a, b) => utils.getTimeStampByDate(b.createdTs) - utils.getTimeStampByDate(a.createdTs));
+    .sort((a, b) => getTimeStampByDate(b.createdTs) - getTimeStampByDate(a.createdTs));
   const unpinnedShortcuts = shortcuts
     .filter((s) => s.rowStatus === "NORMAL")
-    .sort((a, b) => utils.getTimeStampByDate(b.createdTs) - utils.getTimeStampByDate(a.createdTs));
+    .sort((a, b) => getTimeStampByDate(b.createdTs) - getTimeStampByDate(a.createdTs));
   const sortedShortcuts = pinnedShortcuts.concat(unpinnedShortcuts);
 
   useEffect(() => {
