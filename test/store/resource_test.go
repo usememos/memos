@@ -13,14 +13,29 @@ func TestResourceStore(t *testing.T) {
 	ctx := context.Background()
 	store := NewTestingStore(ctx, t)
 	_, err := store.CreateResource(ctx, &api.ResourceCreate{
-		CreatorID:    1,
-		Filename:     "test.png",
+		CreatorID:    101,
+		Filename:     "test.epub",
 		Blob:         []byte("test"),
-		InternalPath: "test",
-		ExternalLink: "test",
-		Type:         "test",
-		Size:         1,
-		PublicID:     "test",
+		InternalPath: "",
+		ExternalLink: "",
+		Type:         "application/epub+zip",
+		Size:         637607,
+		PublicID:     "a02748e2-9b56-46b2-8b1f-72d686d52f77",
+	})
+	require.NoError(t, err)
+	correctFilename := "test.epub"
+	invaildFilename := "test.png"
+	res, err := store.FindResource(ctx, &api.ResourceFind{
+		Filename: &correctFilename,
+	})
+	require.NoError(t, err)
+	require.Equal(t, correctFilename, res.Filename)
+	res, err = store.FindResource(ctx, &api.ResourceFind{
+		Filename: &invaildFilename,
+	})
+	require.Error(t, err)
+	err = store.DeleteResource(ctx, &api.ResourceDelete{
+		ID: 1,
 	})
 	require.NoError(t, err)
 }
