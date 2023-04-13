@@ -30,18 +30,18 @@ func TestResourceStore(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, correctFilename, res.Filename)
-	res, err = store.FindResource(ctx, &api.ResourceFind{
+	_, err = store.FindResource(ctx, &api.ResourceFind{
 		Filename: &incorrectFilename,
 	})
 	require.Error(t, err)
 
 	correctCreatorID := 101
 	incorrectCreatorID := 102
-	res, err = store.FindResource(ctx, &api.ResourceFind{
+	_, err = store.FindResource(ctx, &api.ResourceFind{
 		CreatorID: &correctCreatorID,
 	})
 	require.NoError(t, err)
-	res, err = store.FindResource(ctx, &api.ResourceFind{
+	_, err = store.FindResource(ctx, &api.ResourceFind{
 		CreatorID: &incorrectCreatorID,
 	})
 	require.Error(t, err)
