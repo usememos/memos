@@ -24,14 +24,14 @@ func TestResourceStore(t *testing.T) {
 	})
 	require.NoError(t, err)
 	correctFilename := "test.epub"
-	invaildFilename := "test.png"
+	incorrectFilename := "test.png"
 	res, err := store.FindResource(ctx, &api.ResourceFind{
 		Filename: &correctFilename,
 	})
 	require.NoError(t, err)
 	require.Equal(t, correctFilename, res.Filename)
 	res, err = store.FindResource(ctx, &api.ResourceFind{
-		Filename: &invaildFilename,
+		Filename: &incorrectFilename,
 	})
 	require.Error(t, err)
 	err = store.DeleteResource(ctx, &api.ResourceDelete{
