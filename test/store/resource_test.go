@@ -30,6 +30,7 @@ func TestResourceStore(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, correctFilename, res.Filename)
+	require.Equal(t, 1, res.ID)
 	_, err = store.FindResource(ctx, &api.ResourceFind{
 		Filename: &incorrectFilename,
 	})
