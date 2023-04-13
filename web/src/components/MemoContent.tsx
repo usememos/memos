@@ -64,26 +64,26 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const handleKeyDown =  (event: React.KeyboardEvent<HTMLInputElement>)=>{
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     event.preventDefault();
     const rawStr = (event.target as HTMLElement).innerText;
     const code = event.which || event.keyCode;
 
     let charCode = String.fromCharCode(code).toLowerCase();
-    if ((event.ctrlKey || event.metaKey) && charCode === 'c'){
+    if ((event.ctrlKey || event.metaKey) && charCode === "c") {
       const splitString = rawStr.split("\n\n");
       const brList = [];
       for (let i = 0; i < splitString.length; i++) {
-        brList.push(splitString[i])
-        if(i!==splitString.length-1){
-          brList.push("\n")
+        brList.push(splitString[i]);
+        if (i !== splitString.length - 1) {
+          brList.push("\n");
         }
       }
-    const text = brList.join("")
-    copy(text);
+      const text = brList.join("");
+      copy(text);
     }
-  }
-  
+  };
+
   return (
     <div className={`memo-content-wrapper ${className || ""}`}>
       <div
@@ -91,7 +91,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         className={`memo-content-text ${state.expandButtonStatus === 0 ? "max-h-64 overflow-y-hidden" : ""}`}
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
-        onKeyDown={handleKeyDown} 
+        onKeyDown={handleKeyDown}
         tabIndex={0}
       >
         {marked(content)}

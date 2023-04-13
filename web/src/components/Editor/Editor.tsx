@@ -24,7 +24,7 @@ interface Props {
 }
 
 const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<EditorRefActions>) {
-  const { className, initialContent, placeholder, fullscreen, onContentChange: handleContentChangeCallback } = props;
+  const { className, initialContent, placeholder, fullscreen, onPaste, onContentChange: handleContentChangeCallback } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -119,19 +119,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     []
   );
 
-  const handlePaste = (event: React.ClipboardEvent) => {
-    event.preventDefault();
-    const pastedText = event.clipboardData.getData("text");
-    const currentCursorPosition = editorRef.current?.selectionStart ?? 0;
- 
-    if (editorRef.current) {
-      editorRef.current.value = editorRef.current.value.slice(0, currentCursorPosition) + pastedText + editorRef.current.value.slice(editorRef.current.selectionEnd);
-      editorRef.current.selectionStart = editorRef.current.selectionEnd = currentCursorPosition + pastedText.length;
-      handleContentChangeCallback(editorRef.current.value);
-      updateEditorHeight();
-    }
-  };
-
   const handleEditorInput = useCallback(() => {
     handleContentChangeCallback(editorRef.current?.value ?? "");
     updateEditorHeight();
@@ -144,7 +131,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         rows={1}
         placeholder={placeholder}
         ref={editorRef}
-        onPaste={handlePaste}
+        onPaste={onPaste}
         onInput={handleEditorInput}
       ></textarea>
     </div>
