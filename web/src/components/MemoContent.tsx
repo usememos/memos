@@ -69,7 +69,7 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     const rawStr = (event.target as HTMLElement).innerText;
     const code = event.which || event.keyCode;
 
-    let charCode = String.fromCharCode(code).toLowerCase();
+    const charCode = String.fromCharCode(code).toLowerCase();
     if ((event.ctrlKey || event.metaKey) && charCode === "c") {
       const splitString = rawStr.split("\n\n");
       const brList = [];
