@@ -30,8 +30,10 @@ type Client struct {
 func NewClient(ctx context.Context, config *Config) (*Client, error) {
 	resolver := aws.EndpointResolverWithOptionsFunc(func(service, region string, options ...interface{}) (aws.Endpoint, error) {
 		return aws.Endpoint{
-			URL:               config.EndPoint,
-			SigningRegion:     config.Region,
+			URL:           config.EndPoint,
+			SigningRegion: config.Region,
+			//For some s3-compatible object stores, converting the hostname is not required,
+			//and not setting this option will result in not being able to access the corresponding object store address.
 			HostnameImmutable: true,
 		}, nil
 	})
