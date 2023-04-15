@@ -4,7 +4,6 @@ dist
 dist-ssr
 *.local
 
-.yarn/*
 /test-results/
 /playwright-report/
 /playwright/.cache/

@@ -2,13 +2,13 @@
 FROM node:18.12.1-alpine3.16 AS frontend
 WORKDIR /frontend-build
 
-COPY ./web/package.json ./web/yarn.lock ./
+COPY ./web/package.json ./web/pnpm-lock.yaml ./
 
-RUN yarn
+RUN npm install -g pnpm && pnpm i --frozen-lockfile
 
 COPY ./web/ .
 
-RUN yarn build
+RUN pnpm build
 
 # Build backend exec file.
 FROM golang:1.19.3-alpine3.16 AS backend

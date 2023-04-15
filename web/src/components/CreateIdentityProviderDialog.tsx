@@ -197,7 +197,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         toast.success(t("setting.sso-section.sso-created", { name: basicInfo.name }));
       } else {
         await api.patchIdentityProvider({
-          id: identityProvider?.id,
+          id: identityProvider.id,
           type: type,
           ...basicInfo,
           config: {
