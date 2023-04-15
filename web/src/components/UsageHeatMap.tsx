@@ -3,6 +3,7 @@ import { useFilterStore, useMemoStore, useUserStore } from "../store/module";
 import { useTranslation } from "react-i18next";
 import { getMemoStats } from "@/helpers/api";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
+import { getDateStampByDate, getDateString, getTimeStampByDate } from "@/helpers/datetime";
 import * as utils from "@/helpers/utils";
 import "@/less/usage-heat-map.less";
 
@@ -32,7 +33,7 @@ const UsageHeatMap = () => {
   const filterStore = useFilterStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
-  const todayTimeStamp = utils.getDateStampByDate(Date.now());
+  const todayTimeStamp = getDateStampByDate(Date.now());
   const todayDay = new Date(todayTimeStamp).getDay() + 1;
   const nullCell = new Array(7 - todayDay).fill(0);
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
@@ -48,7 +49,7 @@ const UsageHeatMap = () => {
     if (!userStore.state.user) {
       return;
     }
-    setCreatedDays(Math.ceil((Date.now() - utils.getTimeStampByDate(userStore.state.user.createdTs)) / 1000 / 3600 / 24));
+    setCreatedDays(Math.ceil((Date.now() - getTimeStampByDate(userStore.state.user.createdTs)) / 1000 / 3600 / 24));
   }, [userStore.state.user]);
 
   useEffect(() => {
@@ -57,7 +58,7 @@ const UsageHeatMap = () => {
         setMemoAmount(data.length);
         const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestamp);
         for (const record of data) {
-          const index = (utils.getDateStampByDate(record * 1000) - beginDayTimestamp) / (1000 * 3600 * 24) - 1;
+          const index = (getDateStampByDate(record * 1000) - beginDayTimestamp) / (1000 * 3600 * 24) - 1;
           if (index >= 0) {
             // because of dailight savings, some days may be 23 hours long instead of 24 hours long
             // this causes the calculations to yield weird indices such as 40.93333333333
@@ -83,7 +84,8 @@ const UsageHeatMap = () => {
     const bounding = utils.getElementBounding(event.target as HTMLElement);
     tempDiv.style.left = bounding.left + "px";
     tempDiv.style.top = bounding.top - 2 + "px";
-    tempDiv.innerHTML = `${item.count} memos on <span className="date-text">${new Date(item.timestamp as number).toDateString()}</span>`;
+    const tMemoOnOpts = { amount: item.count, date: getDateString(item.timestamp as number) };
+    tempDiv.innerHTML = item.count === 1 ? t("heatmap.memo-on", tMemoOnOpts) : t("heatmap.memos-on", tMemoOnOpts);
     document.body.appendChild(tempDiv);
 
     if (tempDiv.offsetLeft - tempDiv.clientWidth / 2 < 0) {
@@ -105,6 +107,10 @@ const UsageHeatMap = () => {
       setCurrentStat(item);
     }
   }, []);
+
+  // This interpolation is not being used because of the current styling,
+  // but it can improve translation quality by giving it a more meaningful context
+  const tMemoInOpts = { amount: "", period: "", date: "" };
 
   return (
     <>
@@ -156,8 +162,10 @@ const UsageHeatMap = () => {
         </div>
       </div>
       <p className="w-full pl-4 text-xs -mt-2 mb-3 text-gray-400 dark:text-zinc-400">
-        <span className="font-medium text-gray-500 dark:text-zinc-300">{memoAmount}</span> memos in{" "}
-        <span className="font-medium text-gray-500 dark:text-zinc-300">{createdDays}</span> days
+        <span className="font-medium text-gray-500 dark:text-zinc-300 number">{memoAmount} </span>
+        {memoAmount === 1 ? t("heatmap.memo-in", tMemoInOpts) : t("heatmap.memos-in", tMemoInOpts)}{" "}
+        <span className="font-medium text-gray-500 dark:text-zinc-300">{createdDays} </span>
+        {createdDays === 1 ? t("heatmap.day", tMemoInOpts) : t("heatmap.days", tMemoInOpts)}
       </p>
     </>
   );

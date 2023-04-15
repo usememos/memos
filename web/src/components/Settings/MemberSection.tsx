@@ -76,8 +76,8 @@ const PreferencesSection = () => {
 
   const handleArchiveUserClick = (user: User) => {
     showCommonDialog({
-      title: `Archive Member`,
-      content: `❗️Are you sure to archive ${user.username}?`,
+      title: t("setting.member-section.archive-member"),
+      content: t("setting.member-section.archive-warning", { username: user.username }),
       style: "warning",
       dialogName: "archive-user-dialog",
       onConfirm: async () => {
@@ -100,8 +100,8 @@ const PreferencesSection = () => {
 
   const handleDeleteUserClick = (user: User) => {
     showCommonDialog({
-      title: `Delete Member`,
-      content: `Are you sure to delete ${user.username}? THIS ACTION IS IRREVERSIBLE.❗️`,
+      title: t("setting.member-section.delete-member"),
+      content: t("setting.member-section.delete-warning", { username: user.username }),
       style: "warning",
       dialogName: "delete-user-dialog",
       onConfirm: async () => {

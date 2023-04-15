@@ -1,9 +1,9 @@
-import dayjs from "dayjs";
+import { getUnixTimeMillis } from "./datetime";
 import { TAG_REG, LINK_REG } from "@/labs/marked/parser";
 
 export const relationConsts = [
-  { text: "And", value: "AND" },
-  { text: "Or", value: "OR" },
+  { text: "filter.and", value: "AND" },
+  { text: "filter.or", value: "OR" },
 ];
 
 export const filterConsts = {
@@ -203,9 +203,9 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
     }
   } else if (type === "DISPLAY_TIME") {
     if (operator === "BEFORE") {
-      return memo.createdTs < dayjs(value).valueOf();
+      return memo.createdTs < getUnixTimeMillis(value);
     } else {
-      return memo.createdTs >= dayjs(value).valueOf();
+      return memo.createdTs >= getUnixTimeMillis(value);
     }
   } else if (type === "VISIBILITY") {
     let matched = memo.visibility === value;

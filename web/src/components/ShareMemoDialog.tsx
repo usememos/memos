@@ -8,7 +8,7 @@ import { toLower } from "lodash-es";
 import toImage from "@/labs/html2image";
 import { useGlobalStore, useMemoStore, useUserStore } from "@/store/module";
 import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
-import * as utils from "@/helpers/utils";
+import { getDateTimeString, getTimeStampByDate } from "@/helpers/datetime";
 import { getMemoStats } from "@/helpers/api";
 import useLoading from "@/hooks/useLoading";
 import Icon from "./Icon";
@@ -46,9 +46,9 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const memoElRef = useRef<HTMLDivElement>(null);
   const memo = {
     ...propsMemo,
-    createdAtStr: utils.getDateTimeString(propsMemo.createdTs),
+    createdAtStr: getDateTimeString(propsMemo.createdTs),
   };
-  const createdDays = Math.ceil((Date.now() - utils.getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24);
+  const createdDays = Math.ceil((Date.now() - getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24);
 
   useEffect(() => {
     getMemoStats(user.id)
@@ -87,7 +87,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       .then((url) => {
         const a = document.createElement("a");
         a.href = url;
-        a.download = `memos-${utils.getDateTimeString(Date.now())}.png`;
+        a.download = `memos-${getDateTimeString(Date.now())}.png`;
         a.click();
 
         createLoadingState.setFinish();

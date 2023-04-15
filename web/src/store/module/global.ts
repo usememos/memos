@@ -1,7 +1,7 @@
 import * as api from "@/helpers/api";
 import * as storage from "@/helpers/storage";
 import i18n from "@/i18n";
-import { convertLanguageCodeToLocale } from "@/utils/i18n";
+import { findNearestLanguageMatch } from "@/utils/i18n";
 import store, { useAppSelector } from "../";
 import { setAppearance, setGlobalState, setLocale } from "../reducer/global";
 
@@ -48,7 +48,7 @@ export const initialGlobalState = async () => {
         externalUrl: "",
       },
     };
-    defaultGlobalState.locale = storageLocale || convertLanguageCodeToLocale(i18n.language);
+    defaultGlobalState.locale = storageLocale || findNearestLanguageMatch(i18n.language);
     defaultGlobalState.appearance = customizedProfile.appearance;
   }
   store.dispatch(setGlobalState(defaultGlobalState));

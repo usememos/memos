@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import * as utils from "@/helpers/utils";
+import { getDateTimeString } from "@/helpers/datetime";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import "@/less/preview-image-dialog.less";
@@ -38,7 +38,7 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
   const handleDownloadBtnClick = () => {
     const a = document.createElement("a");
     a.href = imgUrls[currentIndex];
-    a.download = `memos-${utils.getDateTimeString(Date.now())}.png`;
+    a.download = `memos-${getDateTimeString(Date.now())}.png`;
     a.click();
   };
 

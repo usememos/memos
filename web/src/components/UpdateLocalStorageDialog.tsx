@@ -6,6 +6,7 @@ import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import LearnMore from "./LearnMore";
+import { useTranslation } from "react-i18next";
 
 interface Props extends DialogProps {
   localStoragePath?: string;
@@ -13,6 +14,7 @@ interface Props extends DialogProps {
 }
 
 const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
+  const { t } = useTranslation();
   const { destroy, localStoragePath, confirmCallback } = props;
   const globalStore = useGlobalStore();
   const [path, setPath] = useState(localStoragePath || "");
@@ -41,23 +43,31 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">Update local storage path</p>
+        <p className="title-text">{t("setting.storage-section.update-local-path")}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container max-w-xs">
         <p className="text-sm break-words mb-1">
-          {"Local storage path is a relative path to your database file."}
+          {t("setting.storage-section.update-local-path-description")}
           <LearnMore className="ml-1" url="https://usememos.com/docs/local-storage" />
         </p>
-        <p className="text-sm text-gray-400 mb-2 break-all">{"e.g. assets/{timestamp}_{filename}"}</p>
-        <Input className="mb-2" placeholder="Local storage path" fullWidth value={path} onChange={(e) => setPath(e.target.value)} />
+        <p className="text-sm text-gray-400 mb-2 break-all">
+          {t("common.e.g")} {"assets/{timestamp}_{filename}"}
+        </p>
+        <Input
+          className="mb-2"
+          placeholder={t("setting.storage-section.local-storage-path")}
+          fullWidth
+          value={path}
+          onChange={(e) => setPath(e.target.value)}
+        />
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
-            Cancel
+            {t("common.cancel")}
           </Button>
-          <Button onClick={handleConfirmBtnClick}>Update</Button>
+          <Button onClick={handleConfirmBtnClick}>{t("common.update")}</Button>
         </div>
       </div>
     </>

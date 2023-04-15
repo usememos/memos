@@ -2,7 +2,7 @@
   @apply px-4;
 
   > .dialog-container {
-    @apply w-128 max-w-full;
+    @apply w-180 max-w-full;
 
     > .dialog-content-container {
       @apply flex flex-col justify-start items-start;
@@ -69,11 +69,11 @@
     }
 
     &.type-selector {
-      @apply w-24;
+      @apply w-1/4;
     }
 
     &.operator-selector {
-      @apply w-20;
+      @apply w-1/5;
     }
 
     &.value-selector {
@@ -92,7 +92,7 @@
     @media only screen and (min-width: 640px) {
       max-width: calc(100% - 152px);
     }
-    @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent hover:bg-gray-50 sm:min-w-0 min-w-full;
+    @apply h-9 px-2 shrink-0 grow mr-1 text-sm rounded border bg-transparent sm:min-w-0 min-w-full;
   }
 
   > .remove-btn {
