@@ -35,7 +35,6 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.32.2",
-    "@tailwindcss/line-clamp": "^0.4.2",
     "@types/lodash-es": "^4.17.5",
     "@types/node": "^18.0.3",
     "@types/qs": "^6.9.7",
