@@ -182,7 +182,7 @@ const MemoEditor = () => {
       resource = await resourceStore.createResourceWithBlob(file);
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message);
+      toast.error(typeof error === "string" ? error : error.response.data.message);
     }
 
     setState((state) => {
