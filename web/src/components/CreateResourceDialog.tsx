@@ -134,7 +134,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
       }
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message);
+      toast.error(typeof error === "string" ? error : error.response.data.message);
     }
 
     if (onConfirm) {
