@@ -11,28 +11,34 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 8.0.0
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
-          cache: yarn
-          cache-dependency-path: "web/yarn.lock"
-      - run: yarn
+          cache: pnpm
+          cache-dependency-path: "web/pnpm-lock.yaml"
+      - run: pnpm install
         working-directory: web
       - name: Run eslint check
-        run: yarn lint
+        run: pnpm lint
         working-directory: web
 
   frontend-build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 8.0.0
       - uses: actions/setup-node@v3
         with:
           node-version: "18"
-          cache: yarn
-          cache-dependency-path: "web/yarn.lock"
-      - run: yarn
+          cache: pnpm
+          cache-dependency-path: "web/pnpm-lock.yaml"
+      - run: pnpm install
         working-directory: web
       - name: Run frontend build
-        run: yarn build
+        run: pnpm build
         working-directory: web
