@@ -24,4 +24,6 @@ type SystemStatus struct {
 	StorageServiceID int `json:"storageServiceId"`
 	// Local storage path
 	LocalStoragePath string `json:"localStoragePath"`
+	// Local storage path
+	OpenAIConfig OpenAIConfig `json:"openAIConfig"`
 }

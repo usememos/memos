@@ -56,6 +56,10 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			},
 			StorageServiceID: api.DatabaseStorage,
 			LocalStoragePath: "",
+			OpenAIConfig: api.OpenAIConfig{
+				Key:  "",
+				Host: "",
+			},
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -95,6 +99,13 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				systemStatus.StorageServiceID = int(baseValue.(float64))
 			} else if systemSetting.Name == api.SystemSettingLocalStoragePathName {
 				systemStatus.LocalStoragePath = baseValue.(string)
+			} else if systemSetting.Name == api.SystemSettingOpenAIConfigName {
+				openAIConfig := api.OpenAIConfig{}
+				err := json.Unmarshal([]byte(systemSetting.Value), &openAIConfig)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting open ai config value").SetInternal(err)
+				}
+				systemStatus.OpenAIConfig = openAIConfig
 			}
 		}
 

@@ -30,6 +30,7 @@ interface SystemStatus {
   customizedProfile: CustomizedProfile;
   storageServiceId: number;
   localStoragePath: string;
+  openAIConfig: OpenAIConfig;
 }
 
 interface SystemSetting {

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useLayoutStore, useUserStore } from "@/store/module";
+import { useGlobalStore, useLayoutStore, useUserStore } from "@/store/module";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
 import showSettingDialog from "./SettingDialog";
@@ -14,8 +14,10 @@ const Header = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const userStore = useUserStore();
+  const globalStore = useGlobalStore();
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
+  const showAskAI = globalStore.showAskAI();
   const isVisitorMode = userStore.isVisitorMode() && !userStore.state.user;
 
   useEffect(() => {
@@ -107,13 +109,15 @@ const Header = () => {
           </NavLink>
           {!isVisitorMode && (
             <>
-              <button
-                id="header-ask-ai"
-                className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-                onClick={() => showAskAIDialog()}
-              >
-                <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("ask-ai.title")}
-              </button>
+              {showAskAI && (
+                <button
+                  id="header-ask-ai"
+                  className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
+                  onClick={() => showAskAIDialog()}
+                >
+                  <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("ask-ai.title")}
+                </button>
+              )}
               <button
                 id="header-archived-memo"
                 className="px-4 pr-5 py-2 rounded-lg flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
