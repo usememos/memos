@@ -4,7 +4,6 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import * as api from "@/helpers/api";
-import { slogan } from "@/helpers/site";
 import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import Icon from "@/components/Icon";
@@ -80,7 +79,7 @@ const Auth = () => {
       }
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.error);
+      toast.error(error.response.data.message || t("message.login-failed"));
     }
     actionBtnLoadingState.setFinish();
   };
@@ -101,11 +100,11 @@ const Auth = () => {
       if (user) {
         window.location.href = "/";
       } else {
-        toast.error(t("common.singup-failed"));
+        toast.error(t("common.signup-failed"));
       }
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.error);
+      toast.error(error.response.data.message || error.message || t("common.signup-failed"));
     }
     actionBtnLoadingState.setFinish();
   };
@@ -133,7 +132,9 @@ const Auth = () => {
               <img className="h-12 w-auto rounded-lg mr-1" src={systemStatus.customizedProfile.logoUrl} alt="" />
               <p className="text-6xl tracking-wide text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
             </div>
-            <p className="text-sm text-gray-700 dark:text-gray-300">{systemStatus.customizedProfile.description || slogan}</p>
+            <p className="text-sm text-gray-700 dark:text-gray-300">
+              {systemStatus.customizedProfile.description || t("common.memos-slogan")}
+            </p>
           </div>
           <form className="w-full" onSubmit={handleFormSubmit}>
             <div className={`flex flex-col justify-start items-start w-full ${actionBtnLoadingState.isLoading && "opacity-80"}`}>
@@ -209,7 +210,7 @@ const Auth = () => {
           </form>
           {identityProviderList.length > 0 && (
             <>
-              <Divider className="!my-4">or</Divider>
+              <Divider className="!my-4">{t("common.or")}</Divider>
               <div className="w-full flex flex-col space-y-2">
                 {identityProviderList.map((identityProvider) => (
                   <Button
@@ -220,7 +221,7 @@ const Auth = () => {
                     size="md"
                     onClick={() => handleSignInWithIdentityProvider(identityProvider)}
                   >
-                    Sign in with {identityProvider.name}
+                    {t("common.sign-in-with", { provider: identityProvider.name })}
                   </Button>
                 ))}
               </div>

@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { useColorScheme } from "@mui/joy";
 import { useEffect, Suspense } from "react";
 import { Toaster } from "react-hot-toast";
@@ -59,7 +58,6 @@ const App = () => {
   useEffect(() => {
     document.documentElement.setAttribute("lang", locale);
     i18n.changeLanguage(locale);
-    dayjs.locale(locale);
     storage.set({
       locale: locale,
     });

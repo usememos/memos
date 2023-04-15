@@ -71,7 +71,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
           type="password"
           autoComplete="new-password"
           className="input-text"
-          placeholder={t("auth.repeat-new-password")}
+          placeholder={t("auth.new-password")}
           value={newPassword}
           onChange={handleNewPasswordChanged}
         />

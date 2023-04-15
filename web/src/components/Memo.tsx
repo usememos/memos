@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import { getRelativeTimeString } from "@/helpers/datetime";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -19,14 +19,6 @@ interface Props {
   readonly?: boolean;
 }
 
-export const getFormatedMemoTimeStr = (time: number, locale = "en"): string => {
-  if (Date.now() - time < 1000 * 60 * 60 * 24) {
-    return dayjs(time).locale(locale).fromNow();
-  } else {
-    return dayjs(time).locale(locale).format("YYYY/MM/DD HH:mm:ss");
-  }
-};
-
 const Memo: React.FC<Props> = (props: Props) => {
   const { memo, readonly } = props;
   const { t, i18n } = useTranslation();
@@ -35,7 +27,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const filterStore = useFilterStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
-  const [createdTimeStr, setCreatedTimeStr] = useState<string>(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
+  const [createdTimeStr, setCreatedTimeStr] = useState<string>(getRelativeTimeString(memo.createdTs));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const isVisitorMode = userStore.isVisitorMode() || readonly;
 
@@ -43,7 +35,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     let intervalFlag: any = -1;
     if (Date.now() - memo.createdTs < 1000 * 60 * 60 * 24) {
       intervalFlag = setInterval(() => {
-        setCreatedTimeStr(getFormatedMemoTimeStr(memo.createdTs, i18n.language));
+        setCreatedTimeStr(getRelativeTimeString(memo.createdTs));
       }, 1000 * 1);
     }
 
@@ -90,8 +82,8 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   const handleDeleteMemoClick = async () => {
     showCommonDialog({
-      title: "Delete memo",
-      content: "Are you sure to delete this memo?",
+      title: t("memo.delete-memo"),
+      content: t("memo.delete-confirm"),
       style: "warning",
       dialogName: "delete-memo-dialog",
       onConfirm: async () => {

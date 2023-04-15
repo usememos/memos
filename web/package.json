@@ -14,7 +14,6 @@
     "@reduxjs/toolkit": "^1.8.1",
     "axios": "^0.27.2",
     "copy-to-clipboard": "^3.3.2",
-    "dayjs": "^1.11.3",
     "highlight.js": "^11.6.0",
     "i18next": "^21.9.2",
     "i18next-browser-languagedetector": "^7.0.1",
@@ -22,6 +21,7 @@
     "lucide-react": "^0.105.0",
     "qrcode.react": "^3.1.0",
     "qs": "^6.11.0",
+    "randomstring": "^1.2.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hot-toast": "^2.4.0",
@@ -34,7 +34,7 @@
     "zustand": "^4.3.6"
   },
   "devDependencies": {
-    "@tailwindcss/line-clamp": "^0.4.2",
+    "@playwright/test": "^1.32.2",
     "@types/lodash-es": "^4.17.5",
     "@types/node": "^18.0.3",
     "@types/qs": "^6.9.7",

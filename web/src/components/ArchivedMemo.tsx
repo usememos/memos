@@ -1,7 +1,7 @@
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMemoStore } from "@/store/module";
-import * as utils from "@/helpers/utils";
+import { getDateTimeString } from "@/helpers/datetime";
 import useToggle from "@/hooks/useToggle";
 import MemoContent from "./MemoContent";
 import MemoResources from "./MemoResources";
@@ -54,7 +54,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
     <div className={`memo-wrapper archived ${"memos-" + memo.id}`} onMouseLeave={handleMouseLeaveMemoWrapper}>
       <div className="memo-top-wrapper">
         <span className="time-text">
-          {t("memo.archived-at")} {utils.getDateTimeString(memo.updatedTs)}
+          {t("memo.archived-at")} {getDateTimeString(memo.updatedTs)}
         </span>
         <div className="btns-container">
           <span className="btn-text" onClick={handleRestoreMemoClick}>

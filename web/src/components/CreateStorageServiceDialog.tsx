@@ -1,6 +1,7 @@
 import { Button, Input, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -13,6 +14,7 @@ interface Props extends DialogProps {
 }
 
 const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
+  const { t } = useTranslation();
   const { destroy, storage, confirmCallback } = props;
   const [basicInfo, setBasicInfo] = useState({
     name: "",
@@ -105,7 +107,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">
-          {isCreating ? "Create storage" : "Update storage"}
+          {t("setting.storage-section." + (isCreating ? "create" : "update") + "-storage")}
           <LearnMore className="ml-2" url="https://usememos.com/docs/storage" />
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
@@ -114,12 +116,12 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container">
         <Typography className="!mb-1" level="body2">
-          Name
+          {t("common.name")}
           <RequiredBadge />
         </Typography>
         <Input
           className="mb-2"
-          placeholder="Name"
+          placeholder={t("common.name")}
           value={basicInfo.name}
           onChange={(e) =>
             setBasicInfo({
@@ -130,109 +132,100 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
-          EndPoint
+          {t("setting.storage-section.endpoint")}
           <RequiredBadge />
-          <span className="text-sm text-gray-400 ml-1">(S3-compatible server URL)</span>
         </Typography>
         <Input
           className="mb-2"
-          placeholder="EndPoint"
+          placeholder={t("setting.storage-section.s3-compatible-url")}
           value={s3Config.endPoint}
           onChange={(e) => setPartialS3Config({ endPoint: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
-          Region
+          {t("setting.storage-section.region")}
           <RequiredBadge />
-          <span className="text-sm text-gray-400 ml-1">(Region name)</span>
         </Typography>
         <Input
           className="mb-2"
-          placeholder="Region"
+          placeholder={t("setting.storage-section.region-placeholder")}
           value={s3Config.region}
           onChange={(e) => setPartialS3Config({ region: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
-          AccessKey
+          {t("setting.storage-section.accesskey")}
           <RequiredBadge />
-          <span className="text-sm text-gray-400 ml-1">(Access Key / Access ID)</span>
         </Typography>
         <Input
           className="mb-2"
-          placeholder="AccessKey"
+          placeholder={t("setting.storage-section.accesskey-placeholder")}
           value={s3Config.accessKey}
           onChange={(e) => setPartialS3Config({ accessKey: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
-          SecretKey
+          {t("setting.storage-section.secretkey")}
           <RequiredBadge />
-          <span className="text-sm text-gray-400 ml-1">(Secret Key / Secret Access Key)</span>
         </Typography>
         <Input
           className="mb-2"
-          placeholder="SecretKey"
+          placeholder={t("setting.storage-section.secretkey-placeholder")}
           value={s3Config.secretKey}
           onChange={(e) => setPartialS3Config({ secretKey: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
-          Bucket
+          {t("setting.storage-section.bucket")}
           <RequiredBadge />
-          <span className="text-sm text-gray-400 ml-1">(Bucket name)</span>
         </Typography>
         <Input
           className="mb-2"
-          placeholder="Bucket"
+          placeholder={t("setting.storage-section.bucket-placeholder")}
           value={s3Config.bucket}
           onChange={(e) => setPartialS3Config({ bucket: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
-          Path
-          <span className="text-sm text-gray-400 ml-1">(Storage Path)</span>
+          {t("setting.storage-section.path")}
         </Typography>
         <Typography className="!mb-1" level="body2">
-          <p className="text-sm text-gray-400 ml-1">{"You can use {year}, {month}, {day}, {hour}, {minute}, {second},"}</p>
-          <p className="text-sm text-gray-400 ml-1">{"{filename}, {timestamp} and any other words."}</p>
-          <p className="text-sm text-gray-400 ml-1">{"e.g., {year}/{month}/{day}/your/path/{filename}"}</p>
+          <p className="text-sm text-gray-400 ml-1">{t("setting.storage-section.path-description")}</p>
+          <LearnMore className="ml-2" url="https://usememos.com/docs/local-storage" />
         </Typography>
         <Input
           className="mb-2"
-          placeholder="Path"
+          placeholder={t("setting.storage-section.path-placeholder") + "/{year}/{month}/{filename}"}
           value={s3Config.path}
           onChange={(e) => setPartialS3Config({ path: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
-          URLPrefix
-          <span className="text-sm text-gray-400 ml-1">(Custom URL prefix; Optional)</span>
+          {t("setting.storage-section.url-prefix")}
         </Typography>
         <Input
           className="mb-2"
-          placeholder="URLPrefix"
+          placeholder={t("setting.storage-section.url-prefix-placeholder")}
           value={s3Config.urlPrefix}
           onChange={(e) => setPartialS3Config({ urlPrefix: e.target.value })}
           fullWidth
         />
         <Typography className="!mb-1" level="body2">
-          URLSuffix
-          <span className="text-sm text-gray-400 ml-1">(Custom URL suffix; Optional)</span>
+          {t("setting.storage-section.url-suffix")}
         </Typography>
         <Input
           className="mb-2"
-          placeholder="URLSuffix"
+          placeholder={t("setting.storage-section.url-suffix-placeholder")}
           value={s3Config.urlSuffix}
           onChange={(e) => setPartialS3Config({ urlSuffix: e.target.value })}
           fullWidth
         />
         <div className="mt-2 w-full flex flex-row justify-end items-center space-x-1">
           <Button variant="plain" color="neutral" onClick={handleCloseBtnClick}>
-            Cancel
+            {t("common.cancel")}
           </Button>
           <Button onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
-            {isCreating ? "Create" : "Update"}
+            {t("common." + (isCreating ? "create" : "update"))}
           </Button>
         </div>
       </div>

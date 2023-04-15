@@ -39,8 +39,8 @@ const ResourceItemDropdown = ({ resource }: Props) => {
 
   const handleResetResourceLinkBtnClick = (resource: Resource) => {
     showCommonDialog({
-      title: "Reset resource link",
-      content: "Are you sure to reset the resource link?",
+      title: t("resource.reset-resource-link"),
+      content: t("resource.reset-link-prompt"),
       style: "warning",
       dialogName: "reset-resource-link-dialog",
       onConfirm: async () => {
@@ -75,7 +75,7 @@ const ResourceItemDropdown = ({ resource }: Props) => {
 
   return (
     <Dropdown
-      actionsClassName="!w-28"
+      actionsClassName="!w-auto min-w-[8rem]"
       trigger={<Icon.MoreVertical className="w-4 h-auto hover:opacity-80 cursor-pointer" />}
       actions={
         <>
@@ -95,7 +95,7 @@ const ResourceItemDropdown = ({ resource }: Props) => {
             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
             onClick={() => handleResetResourceLinkBtnClick(resource)}
           >
-            Reset link
+            {t("resource.reset-link")}
           </button>
           <button
             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
