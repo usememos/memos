@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useGlobalStore, useUserStore } from "@/store/module";
+import { useUserStore } from "@/store/module";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangePasswordDialog from "../ChangePasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
@@ -8,9 +8,7 @@ import "@/less/settings/my-account-section.less";
 
 const MyAccountSection = () => {
   const { t } = useTranslation();
-  const globalStore = useGlobalStore();
   const userStore = useUserStore();
-  const showAskAI = globalStore.showAskAI();
   const user = userStore.state.user as User;
   const openAPIRoute = `${window.location.origin}/api/memo?openId=${user.openId}`;
 
@@ -48,18 +46,16 @@ const MyAccountSection = () => {
           </button>
         </div>
       </div>
-      {showAskAI && (
-        <div className="section-container openapi-section-container">
-          <p className="title-text">Open API</p>
-          <p className="value-text">{openAPIRoute}</p>
-          <span className="btn-danger mt-2" onClick={handleResetOpenIdBtnClick}>
-            {t("common.reset")} API
-          </span>
-          <div className="usage-guide-container">
-            <pre>{`POST ${openAPIRoute}\nContent-type: application/json\n{\n  "content": "Hello #memos from ${window.location.origin}"\n}`}</pre>
-          </div>
+      <div className="section-container openapi-section-container">
+        <p className="title-text">Open API</p>
+        <p className="value-text">{openAPIRoute}</p>
+        <span className="btn-danger mt-2" onClick={handleResetOpenIdBtnClick}>
+          {t("common.reset")} API
+        </span>
+        <div className="usage-guide-container">
+          <pre>{`POST ${openAPIRoute}\nContent-type: application/json\n{\n  "content": "Hello #memos from ${window.location.origin}"\n}`}</pre>
         </div>
-      )}
+      </div>
     </>
   );
 };
