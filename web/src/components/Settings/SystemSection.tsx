@@ -16,7 +16,6 @@ interface State {
   disablePublicMemos: boolean;
   additionalStyle: string;
   additionalScript: string;
-  openAIConfig: OpenAIConfig;
 }
 
 const SystemSection = () => {
@@ -30,11 +29,23 @@ const SystemSection = () => {
     additionalStyle: systemStatus.additionalStyle,
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
-    openAIConfig: systemStatus.openAIConfig,
+  });
+  const [openAIConfig, setOpenAIConfig] = useState<OpenAIConfig>({
+    key: "",
+    host: "",
   });
 
   useEffect(() => {
     globalStore.fetchSystemStatus();
+  }, []);
+
+  useEffect(() => {
+    api.getSystemSetting().then(({ data: { data: systemSettings } }) => {
+      const openAIConfigSetting = systemSettings.find((setting) => setting.name === "openai-config");
+      if (openAIConfigSetting) {
+        setOpenAIConfig(JSON.parse(openAIConfigSetting.value));
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -45,7 +56,6 @@ const SystemSection = () => {
       additionalStyle: systemStatus.additionalStyle,
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
-      openAIConfig: systemStatus.openAIConfig,
     });
   }, [systemStatus]);
 
@@ -87,12 +97,16 @@ const SystemSection = () => {
   };
 
   const handleOpenAIConfigKeyChanged = (value: string) => {
-    setState({
-      ...state,
-      openAIConfig: {
-        ...state.openAIConfig,
-        key: value,
-      },
+    setOpenAIConfig({
+      ...openAIConfig,
+      key: value,
+    });
+  };
+
+  const handleOpenAIConfigHostChanged = (value: string) => {
+    setOpenAIConfig({
+      ...openAIConfig,
+      host: value,
     });
   };
 
@@ -100,24 +114,13 @@ const SystemSection = () => {
     try {
       await api.upsertSystemSetting({
         name: "openai-config",
-        value: JSON.stringify(state.openAIConfig),
+        value: JSON.stringify(openAIConfig),
       });
-      globalStore.setSystemStatus({ openAIConfig: state.openAIConfig });
     } catch (error) {
       console.error(error);
       return;
     }
     toast.success("OpenAI Config updated");
-  };
-
-  const handleOpenAIConfigHostChanged = (value: string) => {
-    setState({
-      ...state,
-      openAIConfig: {
-        ...state.openAIConfig,
-        host: value,
-      },
-    });
   };
 
   const handleAdditionalStyleChanged = (value: string) => {
@@ -222,7 +225,7 @@ const SystemSection = () => {
           fontSize: "14px",
         }}
         placeholder={t("setting.system-section.openai-api-key-placeholder")}
-        value={state.openAIConfig.key}
+        value={openAIConfig.key}
         onChange={(event) => handleOpenAIConfigKeyChanged(event.target.value)}
       />
       <div className="form-label mt-2">
@@ -235,7 +238,7 @@ const SystemSection = () => {
           fontSize: "14px",
         }}
         placeholder={t("setting.system-section.openai-api-host-placeholder")}
-        value={state.openAIConfig.host}
+        value={openAIConfig.host}
         onChange={(event) => handleOpenAIConfigHostChanged(event.target.value)}
       />
       <Divider className="!mt-3 !my-4" />

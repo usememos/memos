@@ -31,10 +31,6 @@ const globalSlice = createSlice({
         appearance: "system",
         externalUrl: "",
       },
-      openAIConfig: {
-        key: "",
-        host: "",
-      },
     },
   } as State,
   reducers: {

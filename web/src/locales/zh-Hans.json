@@ -315,7 +315,7 @@
   },
   "ask-ai": {
     "placeholder": "随便问",
-    "title": "问AI",
+    "title": "Ask AI",
     "not-enabled": "您尚未设置 OpenAI API 密钥。",
     "go-to-settings": "前往设置"
   },
