@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import { resolution } from "../utils/layout";
 import { useLayoutStore, useUserStore } from "../store/module";
 import ShortcutList from "./ShortcutList";
@@ -8,18 +7,28 @@ import SearchBar from "./SearchBar";
 import UsageHeatMap from "./UsageHeatMap";
 
 const HomeSidebar = () => {
-  const location = useLocation();
   const layoutStore = useLayoutStore();
   const userStore = useUserStore();
   const showHomeSidebar = layoutStore.state.showHomeSidebar;
 
   useEffect(() => {
+    let initialized = false;
     let lastStatus = layoutStore.state.showHomeSidebar;
     const handleWindowResize = () => {
-      const nextStatus = window.innerWidth < resolution.md;
+      let nextStatus = window.innerWidth < resolution.md;
       if (lastStatus !== nextStatus) {
+        if (!initialized && nextStatus) {
+          // Don't show sidebar on first load in mobile view.
+          nextStatus = false;
+        }
+
         layoutStore.setHomeSidebarStatus(nextStatus);
         lastStatus = nextStatus;
+      }
+
+      if (!initialized) {
+        initialized = true;
+        return;
       }
     };
 
@@ -29,7 +38,7 @@ const HomeSidebar = () => {
     return () => {
       window.removeEventListener("resize", handleWindowResize);
     };
-  }, [location]);
+  }, []);
 
   return (
     <div
