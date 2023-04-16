@@ -40,7 +40,7 @@ function Home() {
         </div>
         <MemoList />
       </div>
-      {!userStore.isVisitorMode() && <HomeSidebar />}
+      <HomeSidebar />
     </div>
   );
 }
