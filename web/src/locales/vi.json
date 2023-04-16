@@ -166,7 +166,8 @@
       "default-memo-sort-option": "Thời gian hiện ghi chú",
       "created_ts": "Thời gian tạo",
       "updated_ts": "Thời gian cập nhật",
-      "enable-double-click": "Enable double-click to edit"
+      "enable-double-click": "Bật nhấp đúp để chỉnh sửa",
+      "auto-collapse": "Tự động thu gọn"
     },
     "member-section": {
       "create-a-member": "Thêm thành viên"

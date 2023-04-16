@@ -156,7 +156,8 @@
       "default-memo-sort-option": "Yer İşareti Görüntüleme Zamanı",
       "created_ts": "Oluşturulma zamanı",
       "updated_ts": "Güncelleme zamanı",
-      "enable-double-click": "Düzenlemek için çift tıklatmayı etkinleştir"
+      "enable-double-click": "Düzenlemek için çift tıklatmayı etkinleştir",
+      "auto-collapse": "Otomatik Daralt"
     },
     "member-section": {
       "create-a-member": "Kullanıcı oluştur"

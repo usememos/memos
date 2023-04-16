@@ -164,7 +164,8 @@
       "default-memo-sort-option": "메모에 표시할 시각",
       "created_ts": "생성된 시각",
       "updated_ts": "변경된 시각",
-      "daily-review-time-offset": "날마다 돌아보기 기준 시각"       
+      "daily-review-time-offset": "날마다 돌아보기 기준 시각"  ,
+      "auto-collapse": "자동 축소"     
     },
     "storage-section": {
       "storage-services-list": "저장소 서비스 목록",

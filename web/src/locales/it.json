@@ -166,7 +166,8 @@
       "default-memo-sort-option": "Ordine visualizzazione memo",
       "created_ts": "Data di creazione",
       "updated_ts": "Ultima modifica",
-      "enable-double-click": "Enable double-click to edit"
+      "enable-double-click": "Abilita il doppio clic",
+      "auto-collapse": "Comprimi automaticamente"
     },
     "member-section": {
       "create-a-member": "Crea un membro"

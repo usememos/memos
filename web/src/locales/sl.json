@@ -198,7 +198,8 @@
       "default-memo-sort-option": "Čas prikaza beležke",
       "created_ts": "Čas ustvarjanja",
       "updated_ts": "Čas posodobitve",
-      "daily-review-time-offset": "Časovni odmik dnevnega pregleda"
+      "daily-review-time-offset": "Časovni odmik dnevnega pregleda",
+      "auto-collapse":"Samodejno strni"
     },
     "storage-section": {
       "storage-services-list": "Seznam storitev shramb",
