@@ -113,6 +113,13 @@ func generateRSSFromMemoList(memoList []*api.Memo, baseURL string, profile *api.
 }
 
 func getSystemCustomizedProfile(ctx context.Context, s *Server) (*api.CustomizedProfile, error) {
+	systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+		Name: api.SystemSettingCustomizedProfileName,
+	})
+	if err != nil && common.ErrorCode(err) != common.NotFound {
+		return nil, err
+	}
+
 	customizedProfile := &api.CustomizedProfile{
 		Name:        "memos",
 		LogoURL:     "",
@@ -121,14 +128,10 @@ func getSystemCustomizedProfile(ctx context.Context, s *Server) (*api.Customized
 		Appearance:  "system",
 		ExternalURL: "",
 	}
-	systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-		Name: api.SystemSettingCustomizedProfileName,
-	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
-		return nil, err
-	}
-	if err := json.Unmarshal([]byte(systemSetting.Value), customizedProfile); err != nil {
-		return nil, err
+	if systemSetting != nil {
+		if err := json.Unmarshal([]byte(systemSetting.Value), customizedProfile); err != nil {
+			return nil, err
+		}
 	}
 	return customizedProfile, nil
 }

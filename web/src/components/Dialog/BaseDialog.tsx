@@ -25,6 +25,7 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
   const dialogIndex = dialogStore.state.dialogStack.findIndex((item) => item === dialogName);
 
   useEffect(() => {
+    document.body.classList.add("overflow-hidden");
     dialogStore.pushDialogStack(dialogName);
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code === "Escape") {
@@ -39,6 +40,9 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
     return () => {
       document.body.removeEventListener("keydown", handleKeyDown);
       dialogStore.removeDialog(dialogName);
+      if (dialogStore.state.dialogStack.length === 0) {
+        document.body.classList.remove("overflow-hidden");
+      }
     };
   }, []);
 

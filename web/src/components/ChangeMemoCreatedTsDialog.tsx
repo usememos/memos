@@ -1,4 +1,4 @@
-import dayjs from "dayjs";
+import { getNormalizedTimeString, getUnixTime } from "@/helpers/datetime";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -15,12 +15,12 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   const { destroy, memoId } = props;
   const memoStore = useMemoStore();
   const [createdAt, setCreatedAt] = useState("");
-  const maxDatetimeValue = dayjs().format("YYYY-MM-DDTHH:mm");
+  const maxDatetimeValue = getNormalizedTimeString();
 
   useEffect(() => {
     memoStore.getMemoById(memoId).then((memo) => {
       if (memo) {
-        const datetime = dayjs(memo.createdTs).format("YYYY-MM-DDTHH:mm");
+        const datetime = getNormalizedTimeString(memo.createdTs);
         setCreatedAt(datetime);
       } else {
         toast.error(t("message.memo-not-found"));
@@ -39,8 +39,8 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleSaveBtnClick = async () => {
-    const nowTs = dayjs().unix();
-    const createdTs = dayjs(createdAt).unix();
+    const nowTs = getUnixTime();
+    const createdTs = getUnixTime(createdAt);
 
     if (createdTs > nowTs) {
       toast.error(t("message.invalid-created-datetime"));
@@ -69,9 +69,10 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="flex flex-col justify-start items-start !w-72 max-w-full">
-        <p className="w-full bg-yellow-100 border border-yellow-400 rounded p-2 text-xs leading-4">
-          THIS IS NOT A NORMAL BEHAVIOR. PLEASE MAKE SURE YOU REALLY NEED IT.
-        </p>
+        <div className="w-full bg-yellow-100 border border-yellow-400 rounded p-2 text-black">
+          <p className="uppercase">{t("message.change-memo-created-time-warning-1")}</p>
+          <p>{t("message.change-memo-created-time-warning-2")}</p>
+        </div>
         <input
           className="input-text mt-2"
           type="datetime-local"

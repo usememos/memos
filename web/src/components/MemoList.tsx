@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "@/store/module";
 import { TAG_REG, LINK_REG } from "@/labs/marked/parser";
-import * as utils from "@/helpers/utils";
+import { getTimeStampByDate } from "@/helpers/datetime";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
 import Memo from "./Memo";
@@ -54,7 +54,7 @@ const MemoList = () => {
           if (
             duration &&
             duration.from < duration.to &&
-            (utils.getTimeStampByDate(memo.createdTs) < duration.from || utils.getTimeStampByDate(memo.createdTs) > duration.to)
+            (getTimeStampByDate(memo.createdTs) < duration.from || getTimeStampByDate(memo.createdTs) > duration.to)
           ) {
             shouldShow = false;
           }

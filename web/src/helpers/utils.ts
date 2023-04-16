@@ -1,15 +1,6 @@
-export function convertToMillis(localSetting: LocalSetting) {
-  const hoursToMillis = localSetting.dailyReviewTimeOffset * 60 * 60 * 1000;
-  return hoursToMillis;
-}
-
 export const isNullorUndefined = (value: any) => {
   return value === null || value === undefined;
 };
-
-export function getNowTimeStamp(): number {
-  return Date.now();
-}
 
 export function getOSVersion(): "Windows" | "MacOS" | "Linux" | "Unknown" {
   const appVersion = navigator.userAgent;
@@ -24,63 +15,6 @@ export function getOSVersion(): "Windows" | "MacOS" | "Linux" | "Unknown" {
   }
 
   return detectedOS;
-}
-
-export function getTimeStampByDate(t: Date | number | string): number {
-  if (typeof t === "string") {
-    t = t.replaceAll("-", "/");
-  }
-  const d = new Date(t);
-
-  return d.getTime();
-}
-
-export function getDateStampByDate(t: Date | number | string): number {
-  const d = new Date(getTimeStampByDate(t));
-
-  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
-}
-
-export function getDateString(t: Date | number | string): string {
-  const d = new Date(getTimeStampByDate(t));
-
-  const year = d.getFullYear();
-  const month = d.getMonth() + 1;
-  const date = d.getDate();
-
-  return `${year}/${month}/${date}`;
-}
-
-export function getTimeString(t: Date | number | string): string {
-  const d = new Date(getTimeStampByDate(t));
-
-  const hours = d.getHours();
-  const mins = d.getMinutes();
-
-  const hoursStr = hours < 10 ? "0" + hours : hours;
-  const minsStr = mins < 10 ? "0" + mins : mins;
-
-  return `${hoursStr}:${minsStr}`;
-}
-
-// For example: 2021-4-8 17:52:17
-export function getDateTimeString(t: Date | number | string): string {
-  const d = new Date(getTimeStampByDate(t));
-
-  const year = d.getFullYear();
-  const month = d.getMonth() + 1;
-  const date = d.getDate();
-  const hours = d.getHours();
-  const mins = d.getMinutes();
-  const secs = d.getSeconds();
-
-  const monthStr = month < 10 ? "0" + month : month;
-  const dateStr = date < 10 ? "0" + date : date;
-  const hoursStr = hours < 10 ? "0" + hours : hours;
-  const minsStr = mins < 10 ? "0" + mins : mins;
-  const secsStr = secs < 10 ? "0" + secs : secs;
-
-  return `${year}/${monthStr}/${dateStr} ${hoursStr}:${minsStr}:${secsStr}`;
 }
 
 export const getElementBounding = (element: HTMLElement, relativeEl?: HTMLElement) => {
@@ -162,3 +96,12 @@ export function convertFileToBase64(file: File): Promise<string> {
     reader.onerror = (error) => reject(error);
   });
 }
+
+export const formatBytes = (bytes: number) => {
+  if (bytes <= 0) return "0 Bytes";
+  const k = 1024,
+    dm = 2,
+    sizes = ["Bytes", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"],
+    i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+};

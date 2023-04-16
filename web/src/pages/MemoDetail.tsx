@@ -1,4 +1,3 @@
-import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -8,6 +7,7 @@ import { useGlobalStore, useMemoStore, useUserStore } from "@/store/module";
 import useLoading from "@/hooks/useLoading";
 import MemoContent from "@/components/MemoContent";
 import MemoResources from "@/components/MemoResources";
+import { getDateTimeString } from "@/helpers/datetime";
 import "@/less/memo-detail.less";
 
 interface State {
@@ -15,7 +15,7 @@ interface State {
 }
 
 const MemoDetail = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const params = useParams();
   const location = useLocation();
   const globalStore = useGlobalStore();
@@ -77,7 +77,7 @@ const MemoDetail = () => {
             <div className="memo-container">
               <div className="memo-header">
                 <div className="status-container">
-                  <span className="time-text">{dayjs(state.memo.createdTs).locale(i18n.language).format("YYYY/MM/DD HH:mm:ss")}</span>
+                  <span className="time-text">{getDateTimeString(state.memo.createdTs)}</span>
                   <a className="name-text" href={`/u/${state.memo.creatorId}`}>
                     @{state.memo.creatorName}
                   </a>
