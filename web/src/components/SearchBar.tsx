@@ -1,36 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import useDebounce from "@/hooks/useDebounce";
-import { useFilterStore, useDialogStore } from "@/store/module";
+import { useFilterStore } from "@/store/module";
 import Icon from "./Icon";
 
 const SearchBar = () => {
   const { t } = useTranslation();
   const filterStore = useFilterStore();
-  const dialogStore = useDialogStore();
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!inputRef.current) {
-        return;
-      }
-      if (dialogStore.getState().dialogStack.length) {
-        return;
-      }
-      const isMetaKey = event.ctrlKey || event.metaKey;
-      if (isMetaKey && event.key === "f") {
-        event.preventDefault();
-        inputRef.current.focus();
-        return;
-      }
-    };
-    document.body.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.body.removeEventListener("keydown", handleKeyDown);
-    };
-  }, []);
 
   useEffect(() => {
     const text = filterStore.getState().text;
