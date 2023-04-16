@@ -15,7 +15,7 @@ exports[`Memo > memo snapshot 1`] = `
         href="/m/123"
         onClick={[Function]}
       >
-        1970/01/01 08:00:00
+        53 years ago
       </a>
       <a
         className="name-text"
