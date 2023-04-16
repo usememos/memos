@@ -89,7 +89,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
       </div>
       <div className="dialog-content-container !w-112 max-w-full">
         {messageList.map((message, index) => (
-          <div key={index} className="w-full flex flex-col justify-start items-start mt-4 space-y-2">
+          <div key={index} className="w-full flex flex-col justify-start items-start space-y-2">
             {message.role === "user" ? (
               <div className="w-full flex flex-row justify-end items-start pl-6">
                 <span className="word-break shadow rounded-lg rounded-tr-none px-3 py-2 opacity-80 bg-gray-100 dark:bg-zinc-700">
