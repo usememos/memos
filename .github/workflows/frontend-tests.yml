@@ -43,6 +43,6 @@ jobs:
         run: pnpm build
         working-directory: web
       - name: Run frontend test
-        run: yarn test
+        run: pnpm test
         working-directory: web
 
