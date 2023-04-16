@@ -1,27 +1,34 @@
 import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { resolution } from "../utils/layout";
-import { useLayoutStore } from "../store/module";
+import { useLayoutStore, useUserStore } from "../store/module";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
 import SearchBar from "./SearchBar";
 import UsageHeatMap from "./UsageHeatMap";
-import { useLocation } from "react-router-dom";
 
 const HomeSidebar = () => {
   const location = useLocation();
   const layoutStore = useLayoutStore();
+  const userStore = useUserStore();
   const showHomeSidebar = layoutStore.state.showHomeSidebar;
 
   useEffect(() => {
+    let lastStatus = layoutStore.state.showHomeSidebar;
     const handleWindowResize = () => {
-      if (window.innerWidth < resolution.md) {
-        layoutStore.setHomeSidebarStatus(false);
-      } else {
-        layoutStore.setHomeSidebarStatus(true);
+      const nextStatus = window.innerWidth < resolution.md;
+      if (lastStatus !== nextStatus) {
+        layoutStore.setHomeSidebarStatus(nextStatus);
+        lastStatus = nextStatus;
       }
     };
+
     window.addEventListener("resize", handleWindowResize);
     handleWindowResize();
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
   }, [location]);
 
   return (
@@ -45,8 +52,12 @@ const HomeSidebar = () => {
           <SearchBar />
         </div>
         <UsageHeatMap />
-        <ShortcutList />
-        <TagList />
+        {!userStore.isVisitorMode() && (
+          <>
+            <ShortcutList />
+            <TagList />
+          </>
+        )}
       </aside>
     </div>
   );
