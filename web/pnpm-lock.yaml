@@ -16,9 +16,6 @@ dependencies:
   '@reduxjs/toolkit':
     specifier: ^1.8.1
     version: 1.8.1(react-redux@8.0.1)(react@18.2.0)
-  '@types/node':
-    specifier: ^18.15.11
-    version: registry.npmmirror.com/@types/node@18.15.11
   axios:
     specifier: ^0.27.2
     version: 0.27.2
@@ -105,6 +102,9 @@ devDependencies:
   '@types/lodash-es':
     specifier: ^4.17.5
     version: 4.17.5
+  '@types/node':
+    specifier: ^18.15.11
+    version: registry.npmmirror.com/@types/node@18.15.11
   '@types/qs':
     specifier: ^6.9.7
     version: 6.9.7
@@ -4845,6 +4845,7 @@ packages:
     resolution: {integrity: sha512-E5Kwq2n4SbMzQOn6wnmBjuK9ouqlURrcZDVfbo9ftDDTFt3nk7ZKK4GMOzoYgnpQJKcxwQw+lGaBvvlMo0qN/Q==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/node/-/node-18.15.11.tgz}
     name: '@types/node'
     version: 18.15.11
+    dev: true
 
   registry.npmmirror.com/@types/prettier@2.7.2:
     resolution: {integrity: sha512-KufADq8uQqo1pYKVIYzfKbJfBAc0sOeXqGbFaSpv8MRmC/zXgowNZmFcbngndGk922QDmOASEXUZCaY48gs4cg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@types/prettier/-/prettier-2.7.2.tgz}
