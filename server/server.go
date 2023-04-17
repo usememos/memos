@@ -53,11 +53,6 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 
 	e.Use(middleware.Gzip())
 
-	e.Use(middleware.CSRFWithConfig(middleware.CSRFConfig{
-		Skipper:     s.defaultAuthSkipper,
-		TokenLookup: "cookie:_csrf",
-	}))
-
 	e.Use(middleware.CORS())
 
 	e.Use(middleware.SecureWithConfig(middleware.SecureConfig{
@@ -139,6 +134,10 @@ func (s *Server) Shutdown(ctx context.Context) {
 	}
 
 	fmt.Printf("memos stopped properly\n")
+}
+
+func (s *Server) GetEcho() *echo.Echo {
+	return s.e
 }
 
 func (s *Server) createServerStartActivity(ctx context.Context) error {

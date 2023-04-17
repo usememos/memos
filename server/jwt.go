@@ -191,7 +191,6 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 		if generateToken {
 			generateTokenFunc := func() error {
 				rc, err := c.Cookie(auth.RefreshTokenCookieName)
-
 				if err != nil {
 					return echo.NewHTTPError(http.StatusUnauthorized, "Failed to generate access token. Missing refresh token.")
 				}
