@@ -14,5 +14,5 @@ const renderer = (rawStr: string) => {
 export default {
   name: "tag",
   regexp: TAG_REG,
-  renderer,
+  renderer: () => renderer,
 };

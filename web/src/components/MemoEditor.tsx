@@ -12,6 +12,7 @@ import Selector from "./kit/Selector";
 import Editor, { EditorRefActions } from "./Editor/Editor";
 import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
+import showMemosSelectorDialog from "@/components/MemosSelectorDialog";
 import showCreateResourceDialog from "./CreateResourceDialog";
 import "@/less/memo-editor.less";
 
@@ -340,6 +341,15 @@ const MemoEditor = () => {
     });
   };
 
+  const handleSelectMemo = (memoId: number) => {
+    if (!editorRef.current) {
+      return;
+    }
+
+    editorRef.current?.insertText(`m/${memoId} `);
+    editorRef.current?.scrollToCursor();
+  };
+
   const handleFullscreenBtnClick = () => {
     setState((state) => {
       return {
@@ -426,7 +436,7 @@ const MemoEditor = () => {
             <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
           </button>
           <div className="action-btn resource-btn">
-            <Icon.FileText className="icon-img" />
+            <Icon.Paperclip className="icon-img" />
             <div className="resource-action-list">
               <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
                 <Icon.Plus className="icon-img" />
@@ -438,6 +448,9 @@ const MemoEditor = () => {
               </div>
             </div>
           </div>
+          <button className="action-btn" onClick={() => showMemosSelectorDialog({ onSelectMemo: handleSelectMemo })}>
+            <Icon.FileText className="icon-img" />
+          </button>
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>

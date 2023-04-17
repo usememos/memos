@@ -16,5 +16,5 @@ const renderer = (rawStr: string) => {
 export default {
   name: "image",
   regexp: IMAGE_REG,
-  renderer,
+  renderer: () => renderer,
 };

@@ -1,19 +1,21 @@
 import { marked } from "..";
 import { matcher } from "../matcher";
-import Link from "./Link";
-import PlainLink from "./PlainLink";
+import Link, { LinkNonInteractive } from "./Link";
+import PlainLink, { PlainLinkNonInteractive } from "./PlainLink";
 import PlainText from "./PlainText";
+import type { Parser } from "./Parser";
 
 export const HEADING_REG = /^(#+) ([^\n]+)/;
 
-const renderer = (rawStr: string) => {
+// eslint-disable-next-line react/display-name
+const renderer = (inlineParsers: Parser[]) => (rawStr: string) => {
   const matchResult = matcher(rawStr, HEADING_REG);
   if (!matchResult) {
     return rawStr;
   }
 
   const level = matchResult[1].length;
-  const parsedContent = marked(matchResult[2], [], [Link, PlainLink, PlainText]);
+  const parsedContent = marked(matchResult[2], [], inlineParsers);
   if (level === 1) {
     return <h1>{parsedContent}</h1>;
   } else if (level === 2) {
@@ -29,5 +31,11 @@ const renderer = (rawStr: string) => {
 export default {
   name: "heading",
   regexp: HEADING_REG,
-  renderer,
+  renderer: () => renderer([Link, PlainLink, PlainText]),
+};
+
+export const HeadingNonInteractive = {
+  name: "heading non-interactive",
+  regexp: HEADING_REG,
+  renderer: () => renderer([LinkNonInteractive, PlainLinkNonInteractive, PlainText]),
 };

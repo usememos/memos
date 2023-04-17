@@ -7,6 +7,7 @@ import store from "@/store";
 import { useDialogStore } from "@/store/module";
 import theme from "@/theme";
 import "@/less/base-dialog.less";
+import { BrowserRouter } from "react-router-dom";
 
 interface DialogConfig {
   dialogName: string;
@@ -104,11 +105,13 @@ export function generateDialog<T extends DialogProps>(
 
   const Fragment = (
     <Provider store={store}>
-      <CssVarsProvider theme={theme}>
-        <BaseDialog destroy={cbs.destroy} hide={cbs.hide} clickSpaceDestroy={true} {...config}>
-          <DialogComponent {...dialogProps} />
-        </BaseDialog>
-      </CssVarsProvider>
+      <BrowserRouter>
+        <CssVarsProvider theme={theme}>
+          <BaseDialog destroy={cbs.destroy} hide={cbs.hide} clickSpaceDestroy={true} {...config}>
+            <DialogComponent {...dialogProps} />
+          </BaseDialog>
+        </CssVarsProvider>
+      </BrowserRouter>
     </Provider>
   );
 

@@ -1,8 +1,8 @@
-import Emphasis from "./Emphasis";
-import Bold from "./Bold";
+import Emphasis, { EmphasisNonInteractive } from "./Emphasis";
+import Bold, { BoldNonInteractive } from "./Bold";
 import { marked } from "..";
 import InlineCode from "./InlineCode";
-import BoldEmphasis from "./BoldEmphasis";
+import BoldEmphasis, { BoldEmphasisNonInteractive } from "./BoldEmphasis";
 import PlainText from "./PlainText";
 import { matcher } from "../matcher";
 
@@ -21,8 +21,27 @@ const renderer = (rawStr: string) => {
   );
 };
 
+const rendererNonInteractive = (rawStr: string) => {
+  const matchResult = matcher(rawStr, LINK_REG);
+  if (!matchResult) {
+    return rawStr;
+  }
+  const parsedContent = marked(
+    matchResult[1],
+    [],
+    [InlineCode, BoldEmphasisNonInteractive, EmphasisNonInteractive, BoldNonInteractive, PlainText]
+  );
+  return <span className="link">{parsedContent}</span>;
+};
+
 export default {
   name: "link",
   regexp: LINK_REG,
-  renderer,
+  renderer: () => renderer,
+};
+
+export const LinkNonInteractive = {
+  name: "link non-interactive",
+  regexp: LINK_REG,
+  renderer: () => rendererNonInteractive,
 };

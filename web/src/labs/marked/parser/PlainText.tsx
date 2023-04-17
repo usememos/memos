@@ -14,5 +14,5 @@ const renderer = (rawStr: string): string => {
 export default {
   name: "plain text",
   regexp: PLAIN_TEXT_REG,
-  renderer,
+  renderer: () => renderer,
 };

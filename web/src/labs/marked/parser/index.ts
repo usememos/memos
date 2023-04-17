@@ -1,29 +1,31 @@
+import type { Parser } from "./Parser";
 import CodeBlock from "./CodeBlock";
-import TodoList from "./TodoList";
+import TodoList, { TodoListNonInteractive } from "./TodoList";
 import DoneList from "./DoneList";
-import OrderedList from "./OrderedList";
-import UnorderedList from "./UnorderedList";
-import Paragraph from "./Paragraph";
+import OrderedList, { OrderedListNonInteractive } from "./OrderedList";
+import UnorderedList, { UnorderedListNonInteractive } from "./UnorderedList";
+import Paragraph, { ParagraphNonInteractive } from "./Paragraph";
 import Br from "./Br";
 import Tag from "./Tag";
 import Image from "./Image";
-import Link from "./Link";
-import Bold from "./Bold";
-import Emphasis from "./Emphasis";
-import PlainLink from "./PlainLink";
+import Link, { LinkNonInteractive } from "./Link";
+import Bold, { BoldNonInteractive } from "./Bold";
+import Emphasis, { EmphasisNonInteractive } from "./Emphasis";
+import PlainLink, { PlainLinkNonInteractive } from "./PlainLink";
 import InlineCode from "./InlineCode";
 import PlainText from "./PlainText";
-import BoldEmphasis from "./BoldEmphasis";
-import Blockquote from "./Blockquote";
+import BoldEmphasis, { BoldEmphasisNonInteractive } from "./BoldEmphasis";
+import Blockquote, { BlockquoteNonInteractive } from "./Blockquote";
 import HorizontalRules from "./HorizontalRules";
 import Strikethrough from "./Strikethrough";
-import Heading from "./Heading";
+import Heading, { HeadingNonInteractive } from "./Heading";
+import MemoRef, { MemoRefNonInteractive } from "./MemoRef";
 
 export { TAG_REG } from "./Tag";
 export { LINK_REG } from "./Link";
 
 // The order determines the order of execution.
-export const blockElementParserList = [
+export const blockElementParserList: Parser[] = [
   Br,
   CodeBlock,
   Blockquote,
@@ -36,4 +38,42 @@ export const blockElementParserList = [
   Paragraph,
 ];
 
-export const inlineElementParserList = [Image, BoldEmphasis, Bold, Emphasis, Link, InlineCode, PlainLink, Strikethrough, Tag, PlainText];
+export const inlineElementParserList: Parser[] = [
+  Image,
+  BoldEmphasis,
+  Bold,
+  Emphasis,
+  Link,
+  MemoRef,
+  InlineCode,
+  PlainLink,
+  Strikethrough,
+  Tag,
+  PlainText,
+];
+
+export const blockElementParserListNonInteractive: Parser[] = [
+  Br,
+  CodeBlock,
+  BlockquoteNonInteractive,
+  HeadingNonInteractive,
+  TodoListNonInteractive,
+  OrderedListNonInteractive,
+  UnorderedListNonInteractive,
+  HorizontalRules,
+  ParagraphNonInteractive,
+];
+
+export const inlineElementParserListNonInteractive: Parser[] = [
+  Image,
+  BoldEmphasisNonInteractive,
+  BoldNonInteractive,
+  EmphasisNonInteractive,
+  LinkNonInteractive,
+  MemoRefNonInteractive,
+  PlainLinkNonInteractive,
+  InlineCode,
+  Strikethrough,
+  Tag,
+  PlainText,
+];

@@ -187,7 +187,8 @@ const Memo: React.FC<Props> = (props: Props) => {
       <div className="memo-top-wrapper">
         <div className="status-text-container">
           <Link className="time-text" to={`/m/${memo.id}`} onClick={handleMemoCreatedTimeClick}>
-            {createdTimeStr}
+            m/{memo.id}
+            <span className="ml-2 italic">{createdTimeStr}</span>
           </Link>
           {isVisitorMode && (
             <Link className="name-text" to={`/u/${memo.creatorId}`}>

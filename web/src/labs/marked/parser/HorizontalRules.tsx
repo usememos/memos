@@ -8,5 +8,5 @@ export const renderer = (rawStr: string) => {
 export default {
   name: "horizontal rules",
   regexp: HORIZONTAL_RULES_REG,
-  renderer,
+  renderer: () => renderer,
 };

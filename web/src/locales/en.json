@@ -99,7 +99,8 @@
       "disabled": "Public memos are disabled"
     },
     "delete-memo": "Delete Memo",
-    "delete-confirm": "Are you sure to delete this memo?\n\nTHIS ACTION IS IRREVERSIBLE❗"
+    "delete-confirm": "Are you sure to delete this memo?\n\nTHIS ACTION IS IRREVERSIBLE❗",
+    "select": "Select Memo"
   },
   "resource": {
     "no-resources": "No resources.",

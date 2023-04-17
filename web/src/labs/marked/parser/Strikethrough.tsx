@@ -14,5 +14,5 @@ const renderer = (rawStr: string) => {
 export default {
   name: "Strikethrough",
   regexp: STRIKETHROUGH_REG,
-  renderer,
+  renderer: () => renderer,
 };

@@ -25,5 +25,5 @@ const renderer = (rawStr: string) => {
 export default {
   name: "done list",
   regexp: DONE_LIST_REG,
-  renderer,
+  renderer: () => renderer,
 };

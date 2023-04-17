@@ -14,5 +14,5 @@ const renderer = (rawStr: string) => {
 export default {
   name: "inline code",
   regexp: INLINE_CODE_REG,
-  renderer,
+  renderer: () => renderer,
 };

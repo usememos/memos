@@ -1,11 +1,6 @@
 import { matcher } from "./matcher";
 import { blockElementParserList, inlineElementParserList } from "./parser";
-
-type Parser = {
-  name: string;
-  regexp: RegExp;
-  renderer: (rawStr: string) => JSX.Element | string;
-};
+import type { Parser } from "./parser/Parser";
 
 const findMatchingParser = (parsers: Parser[], markdownStr: string): Parser | undefined => {
   let matchedParser = undefined;
@@ -46,17 +41,17 @@ export const marked = (
       if (matchedBlockParser.name === "br") {
         return (
           <>
-            {matchedBlockParser.renderer(matchedStr)}
+            {matchedBlockParser.renderer()(matchedStr)}
             {marked(retainContent, blockParsers, inlineParsers)}
           </>
         );
       } else {
         if (retainContent === "") {
-          return matchedBlockParser.renderer(matchedStr);
+          return matchedBlockParser.renderer()(matchedStr);
         } else if (retainContent.startsWith("\n")) {
           return (
             <>
-              {matchedBlockParser.renderer(matchedStr)}
+              {matchedBlockParser.renderer()(matchedStr)}
               {marked(retainContent.slice(1), blockParsers, inlineParsers)}
             </>
           );
@@ -77,7 +72,7 @@ export const marked = (
       return (
         <>
           {marked(prefixStr, [], inlineParsers)}
-          {matchedInlineParser.renderer(matchedStr)}
+          {matchedInlineParser.renderer()(matchedStr)}
           {marked(suffixStr, [], inlineParsers)}
         </>
       );

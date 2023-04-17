@@ -15,8 +15,23 @@ const renderer = (rawStr: string) => {
   );
 };
 
+const rendererNonInteractive = (rawStr: string) => {
+  const matchResult = matcher(rawStr, PLAIN_LINK_REG);
+  if (!matchResult) {
+    return rawStr;
+  }
+
+  return <span className="link">{matchResult[1]}</span>;
+};
+
 export default {
   name: "plain link",
   regexp: PLAIN_LINK_REG,
-  renderer,
+  renderer: () => renderer,
+};
+
+export const PlainLinkNonInteractive = {
+  name: "plain link non-interactive",
+  regexp: PLAIN_LINK_REG,
+  renderer: () => rendererNonInteractive,
 };

@@ -44,5 +44,5 @@ const renderer = (rawStr: string) => {
 export default {
   name: "code block",
   regexp: CODE_BLOCK_REG,
-  renderer,
+  renderer: () => renderer,
 };
