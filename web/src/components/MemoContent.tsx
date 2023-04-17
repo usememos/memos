@@ -72,8 +72,9 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     <div className={`memo-content-wrapper ${className || ""}`}>
       <div
         ref={memoContentContainerRef}
-        className={`memo-content-text ${localSetting.enableAutoCollapse && state.expandButtonStatus === 0 ? "max-h-64 overflow-y-hidden" : ""
-      }`}
+        className={`memo-content-text ${
+          localSetting.enableAutoCollapse && state.expandButtonStatus === 0 ? "max-h-64 overflow-y-hidden" : ""
+        }`}
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
       >
