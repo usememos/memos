@@ -102,7 +102,6 @@ func (s *TestingServer) request(method, uri string, body io.Reader, params, head
 	}
 
 	for k, v := range header {
-		println("k,v", k, v)
 		req.Header.Set(k, v)
 	}
 
