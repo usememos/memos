@@ -47,7 +47,6 @@ const PreferencesSection = () => {
   //enableAutoCollapse
   const handleAutoCollapseChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, enableAutoCollapse: event.target.checked });
-    
   };
 
   return (
