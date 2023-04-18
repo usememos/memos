@@ -3,7 +3,6 @@ import Memo from "@/components/Memo";
 import { BrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import store from "@/store";
-import renderer from "react-test-renderer";
 
 describe("Memo", () => {
   it("Memo should render the info of memo", () => {
