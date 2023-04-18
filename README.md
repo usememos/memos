@@ -30,7 +30,7 @@ docker run -d --name memos -p 5230:5230 -v ~/.memos/:/var/opt/memos ghcr.io/usem
 
 > The `~/.memos/` directory will be used as the data directory on your local machine, while `/var/opt/memos` is the directory of the volume in Docker and should not be modified.
 
-Learn more about [other installation methods](https://usememos.com/docs/install).
+Learn more about [other installation methods](https://usememos.com/docs#installation).
 
 ## Contribution
 

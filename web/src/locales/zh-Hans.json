@@ -207,7 +207,8 @@
       "created_ts": "创建时间",
       "updated_ts": "更新时间",
       "daily-review-time-offset": "每日回顾时间偏移",
-      "default-resource-visibility": "默认资源可见性"
+      "default-resource-visibility": "默认资源可见性",
+      "auto-collapse": "自动折叠"
     },
     "storage-section": {
       "storage-services-list": "存储服务列表",

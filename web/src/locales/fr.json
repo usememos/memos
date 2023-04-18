@@ -166,7 +166,8 @@
       "default-memo-sort-option": "Memo display time",
       "created_ts": "Heure de création",
       "updated_ts": "Heure de mise à jour",
-      "enable-double-click": "Enable double-click to edit"
+      "enable-double-click": "Activer le double-clic",
+      "auto-collapse": "Réduction automatique"
     },
     "member-section": {
       "create-a-member": "Créer un membre"

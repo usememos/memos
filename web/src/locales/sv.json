@@ -166,7 +166,8 @@
       "default-memo-sort-option": "Anteckning visningstid",
       "created_ts": "Skapade tid",
       "updated_ts": "Upodaterad tid",
-      "enable-double-click": "Aktivera dubbelklick för att redigera"
+      "enable-double-click": "Aktivera dubbelklick för att redigera",
+      "auto-collapse": "Autokollaps"
     },
     "member-section": {
       "create-a-member": "Skapa en medlem"

@@ -166,7 +166,8 @@
       "default-memo-sort-option": "Час відображення закладки",
       "created_ts": "Час створення",
       "updated_ts": "Час оновлення",
-      "enable-double-click": "Enable double-click to edit"
+      "enable-double-click": "Enable double-click to edit",
+      "auto-collapse": "Автоматичне згортання"
     },
     "member-section": {
       "create-a-member": "Створити користувача"

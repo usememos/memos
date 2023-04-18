@@ -166,7 +166,8 @@
       "default-memo-sort-option": "Angezeigter Memo-Zeitpunkt",
       "created_ts": "Erstellungszeitpunkt",
       "updated_ts": "Änderungszeitpunkt",
-      "enable-double-click": "Enable double-click to edit"
+      "enable-double-click": "Doppelklick zum Bearbeiten aktivieren",
+      "auto-collapse": "Automatisch reduzieren"
     },
     "member-section": {
       "create-a-member": "Mitglied hinzufügen"

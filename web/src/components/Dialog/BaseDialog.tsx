@@ -92,6 +92,7 @@ export function generateDialog<T extends DialogProps>(
     hide: () => {
       tempDiv.firstElementChild?.classList.remove("showup");
       tempDiv.firstElementChild?.classList.add("showoff");
+      document.body.classList.remove("overflow-hidden");
     },
   };
 

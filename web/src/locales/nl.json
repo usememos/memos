@@ -166,7 +166,8 @@
       "default-memo-sort-option": "Sorteer op tijd van aanmaken/wijziging",
       "created_ts": "Tijd van aanmaken",
       "updated_ts": "Tijd van wijziging",
-      "enable-double-click": "Dubbelklik voor bewerken aanzetten"
+      "enable-double-click": "Dubbelklik voor bewerken aanzetten",
+      "auto-collapse": "Automatisch samenvouwen"
     },
     "member-section": {
       "create-a-member": "Lid toevoegen"
