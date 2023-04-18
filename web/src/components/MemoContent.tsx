@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { marked } from "@/labs/marked";
+import { useUserStore } from "@/store/module";
 import Icon from "./Icon";
 import "@/less/memo-content.less";
 
@@ -28,6 +29,10 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     expandButtonStatus: -1,
   });
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
+
+  //variable for auto-collapse
+  const userStore = useUserStore();
+  const { localSetting } = userStore.state.user as User;
 
   useEffect(() => {
     if (showFull) {
@@ -67,13 +72,15 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     <div className={`memo-content-wrapper ${className || ""}`}>
       <div
         ref={memoContentContainerRef}
-        className={`memo-content-text ${state.expandButtonStatus === 0 ? "max-h-64 overflow-y-hidden" : ""}`}
+        className={`memo-content-text ${
+          localSetting.enableAutoCollapse && state.expandButtonStatus === 0 ? "max-h-64 overflow-y-hidden" : ""
+        }`}
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
       >
         {marked(content)}
       </div>
-      {state.expandButtonStatus !== -1 && (
+      {localSetting.enableAutoCollapse && state.expandButtonStatus !== -1 && (
         <div className={`expand-btn-container ${state.expandButtonStatus === 0 && "!-mt-7"}`}>
           <div className="absolute top-0 left-0 w-full h-full blur-lg bg-white dark:bg-zinc-700"></div>
           <span className={`btn z-10 ${state.expandButtonStatus === 0 ? "expand-btn" : "fold-btn"}`} onClick={handleExpandBtnClick}>

@@ -44,6 +44,11 @@ const PreferencesSection = () => {
     userStore.upsertLocalSetting({ ...localSetting, dailyReviewTimeOffset: value });
   };
 
+  //enableAutoCollapse
+  const handleAutoCollapseChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    userStore.upsertLocalSetting({ ...localSetting, enableAutoCollapse: event.target.checked });
+  };
+
   return (
     <div className="section-container preferences-section-container">
       <p className="title-text">{t("common.basic")}</p>
@@ -107,6 +112,11 @@ const PreferencesSection = () => {
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.enable-double-click")}</span>
         <Switch className="ml-2" checked={localSetting.enableDoubleClickEditing} onChange={handleDoubleClickEnabledChanged} />
+      </label>
+
+      <label className="form-label selector">
+        <span className="normal-text">{t("setting.preference-section.auto-collapse")}</span>
+        <Switch className="ml-2" checked={localSetting.enableAutoCollapse} onChange={handleAutoCollapseChanged} />
       </label>
     </div>
   );

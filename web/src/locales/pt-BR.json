@@ -187,7 +187,8 @@
       "default-memo-sort-option": "Memo display time",
       "created_ts": "Hora de criação",
       "updated_ts": "Hora de atualização",
-      "daily-review-time-offset": "Compensação de tempo do Resumo Diário"
+      "daily-review-time-offset": "Compensação de tempo do Resumo Diário",
+      "auto-collapse": "Recolher automaticamente"
     },
     "storage-section": {
       "current-storage": "Armazenamento atual",

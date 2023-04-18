@@ -166,7 +166,8 @@
       "default-memo-sort-option": "Hora de visualización de la nota",
       "created_ts": "Hora de Creación",
       "updated_ts": "Hora de Actualización",
-      "enable-double-click": "Habilitar doble clic para editar"
+      "enable-double-click": "Habilitar doble clic para editar",
+      "auto-collapse": "Colapso automático"
     },
     "member-section": {
       "create-a-member": "Crear un miembro"

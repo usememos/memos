@@ -168,7 +168,8 @@
       "mobile-editor-style": "Styl edytora mobilnego",
       "default-memo-sort-option": "Wyświetlana data notatki",
       "created_ts": "Data utworzenia",
-      "updated_ts": "Data aktualizacji"
+      "updated_ts": "Data aktualizacji",
+      "auto-collapse": "Automatyczne zwijanie"
     },
     "storage-section": {
       "storage-services-list": "Lista usług przechowywania",

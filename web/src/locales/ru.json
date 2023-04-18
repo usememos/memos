@@ -196,7 +196,8 @@
       "created_ts": "Время создания",
       "updated_ts": "Время обновления",
       "enable-double-click": "Разрешить двойной клик для редактирования",
-      "daily-review-time-offset": "Смещение времени ежедневного просмотра"
+      "daily-review-time-offset": "Смещение времени ежедневного просмотра",
+      "auto-collapse": "Автоматическое свертывание"
     },
     "member-section": {
       "create-a-member": "Создать пользователя"
