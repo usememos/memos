@@ -552,7 +552,7 @@ packages:
       '@emotion/cache': 11.10.7
       '@emotion/react': 11.10.5(@babel/core@7.21.4)(@types/react@18.0.35)(react@18.2.0)
       '@emotion/styled': 11.10.5(@babel/core@7.21.4)(@emotion/react@11.10.5)(@types/react@18.0.35)(react@18.2.0)
-      csstype: registry.npmmirror.com/csstype@3.1.2
+      csstype: 3.1.2
       prop-types: 15.8.1
       react: 18.2.0
     dev: false
