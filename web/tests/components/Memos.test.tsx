@@ -9,26 +9,26 @@ describe("Memo", () => {
   it("Memo should render the info of memo", () => {
     const user: User = {
       id: 1,
-      createdTs: 0,
-      updatedTs: 0,
-      rowStatus: "NORMAL",
-      username: "hello",
-      role: "HOST",
+      createdTs: 0 as TimeStamp,
+      updatedTs: 0 as TimeStamp,
+      rowStatus: "NORMAL" as RowStatus,
+      username: "test",
+      role: "HOST" as UserRole,
       email: "test@gmail.com",
       nickname: "test user",
-      openId: "12341234",
+      openId: "",
       avatarUrl: "",
       userSettingList: [],
       setting: {
         locale: "en",
         appearance: "system",
         memoVisibility: "PUBLIC" as Visibility,
-      },
+      } as Setting,
       localSetting: {
         enableDoubleClickEditing: true,
         dailyReviewTimeOffset: 1,
         enableAutoCollapse: true,
-      },
+      } as LocalSetting,
     };
     store.dispatch(setUser(user));
     const memo: Memo = {
