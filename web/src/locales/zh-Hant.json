@@ -123,7 +123,7 @@
       "upload-method": "上傳方式",
       "local-file": {
         "option": "本地檔案",
-        "choose": 選擇檔案..."
+        "choose": "選擇檔案..."
       },
       "external-link": {
         "option": "外部連結",
