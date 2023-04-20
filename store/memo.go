@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 
 	"github.com/usememos/memos/api"
@@ -264,6 +265,30 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 	}
 
 	return &memoRaw, nil
+}
+
+func findRelationMemosRawList(ctx context.Context, tx *sql.Tx, memosId int) ([]int, error) {
+	query := `
+		SELECT
+			memo.linked_memo_id,
+		FROM memo
+		WHERE memo_id` + strconv.Itoa(memosId) + `
+		ORDER BY pinned DESC, memo.created_ts DESC
+	`
+	rows, err := tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	linkedMemoIdList := make([]int, 0)
+
+	for rows.Next() {
+		var linkedMemoId int
+		if err := rows.Scan(&linkedMemoId); err != nil {
+			return nil, FormatError(err)
+		}
+		linkedMemoIdList = append(linkedMemoIdList, linkedMemoId)
+	}
+	return linkedMemoIdList, nil
 }
 
 func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*memoRaw, error) {
