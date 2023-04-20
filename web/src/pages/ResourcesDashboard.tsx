@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
@@ -24,6 +24,8 @@ const ResourcesDashboard = () => {
   const [queryText, setQueryText] = useState<string>("");
   const [dragActive, setDragActive] = useState(false);
   const [isComplete, setIsComplete] = useState<boolean>(false);
+  const selectedListRef = useRef(selectedList);
+  selectedListRef.current = selectedList;
 
   useEffect(() => {
     resourceStore
@@ -41,7 +43,7 @@ const ResourcesDashboard = () => {
   }, []);
 
   const handleCheckBtnClick = (resourceId: ResourceId) => {
-    setSelectedList([...selectedList, resourceId]);
+    setSelectedList([...selectedListRef.current, resourceId]);
   };
 
   const handleUncheckBtnClick = (resourceId: ResourceId) => {
@@ -92,6 +94,7 @@ const ResourcesDashboard = () => {
         style: "warning",
         dialogName: "delete-resource-dialog",
         onConfirm: async () => {
+          console.log(selectedList);
           selectedList.map(async (resourceId: ResourceId) => {
             await resourceStore.deleteResourceById(resourceId);
           });
