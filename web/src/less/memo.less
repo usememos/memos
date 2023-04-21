@@ -50,28 +50,8 @@
           @apply w-auto h-auto p-1 z-1 whitespace-nowrap rounded-lg bg-white dark:bg-zinc-800;
           box-shadow: 0 0 8px 0 rgb(0 0 0 / 20%);
 
-          > .btns-container {
-            @apply w-full flex flex-row justify-around items-center border-b border-gray-100 dark:border-zinc-600 p-1 mb-1;
-
-            > .btn {
-              @apply relative w-6 h-6 p-1 text-gray-600 dark:text-gray-300 cursor-pointer select-none;
-
-              &:hover > .tip-text {
-                @apply block;
-              }
-
-              > .icon-img {
-                @apply w-5 h-auto;
-              }
-
-              > .tip-text {
-                @apply hidden absolute top-0 p-1 px-2 rounded text-xs leading-6 -mt-9 bg-black text-white shadow opacity-70;
-              }
-            }
-          }
-
           > .btn {
-            @apply w-full text-sm leading-6 py-1 px-3 rounded justify-start cursor-pointer dark:text-gray-300;
+            @apply w-full text-sm leading-6 py-1 px-3 rounded justify-start cursor-pointer select-none dark:text-gray-300;
 
             &.archive-btn {
               @apply text-orange-600;
