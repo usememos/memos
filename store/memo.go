@@ -266,6 +266,21 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 
 	return &memoRaw, nil
 }
+func createLink(ctx context.Context, tx *sql.Tx, int memosId, int linkedMemosId) error {
+	placeholder := []string{"?", "?", "?"}
+
+	query := `
+		INSERT INTO memo_relation (
+			memo_id,
+			linked_memo_id
+		)
+		VALUES (` + strings.Join(placeholder, ",") + `)
+		RETURNING id
+	`
+	tx.QueryRowContext(ctx, query)
+
+	return nil
+}
 
 func findRelationMemosRawList(ctx context.Context, tx *sql.Tx, memosId int) ([]int, error) {
 	query := `
