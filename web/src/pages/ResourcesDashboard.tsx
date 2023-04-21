@@ -93,7 +93,6 @@ const ResourcesDashboard = () => {
         style: "warning",
         dialogName: "delete-resource-dialog",
         onConfirm: async () => {
-          console.log(selectedList);
           selectedList.map(async (resourceId: ResourceId) => {
             await resourceStore.deleteResourceById(resourceId);
           });
