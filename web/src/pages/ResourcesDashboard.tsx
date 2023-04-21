@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useEffect, useMemo, useState, useRef } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
