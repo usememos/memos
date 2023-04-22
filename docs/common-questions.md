@@ -1,6 +1,6 @@
 # Common questions 🤔
 
-This is a curated list of common questions from the discord sever
+This is a curated list of common questions about memos.
 
 ## Index
 - Usage questions
