@@ -102,6 +102,7 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	s.registerAuthRoutes(apiGroup, secret)
 	s.registerUserRoutes(apiGroup)
 	s.registerMemoRoutes(apiGroup)
+	s.registerMemoResourceRoutes(apiGroup)
 	s.registerShortcutRoutes(apiGroup)
 	s.registerResourceRoutes(apiGroup)
 	s.registerTagRoutes(apiGroup)
