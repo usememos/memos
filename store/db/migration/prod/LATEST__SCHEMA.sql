@@ -46,16 +46,6 @@ CREATE TABLE memo (
   visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE'
 );
 
--- memo relation
-CREATE INDEX memo_relation(
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  memo_id INTEGER,
-  linked_memo_id INTEGER,
-  creator_id INTEGER NOT NULL,
-  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-)
-
 -- memo_organizer
 CREATE TABLE memo_organizer (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -133,4 +123,12 @@ CREATE TABLE idp (
   type TEXT NOT NULL,
   identifier_filter TEXT NOT NULL DEFAULT '',
   config TEXT NOT NULL DEFAULT '{}'
+);
+
+-- memo_relation
+CREATE TABLE memo_relation (
+  memo_id INTEGER NOT NULL,
+  related_memo_id INTEGER NOT NULL,
+  type TEXT NOT NULL,
+  UNIQUE(memo_id, related_memo_id, type)
 );
