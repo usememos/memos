@@ -266,13 +266,14 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 
 	return &memoRaw, nil
 }
-func createLink(ctx context.Context, tx *sql.Tx, int memosId, int linkedMemosId) error {
+func createLink(ctx context.Context, tx *sql.Tx, memosId int, linkedMemosId int, type_ string) error {
 	placeholder := []string{"?", "?", "?"}
 
 	query := `
 		INSERT INTO memo_relation (
 			memo_id,
-			linked_memo_id
+			related_memo_id,
+			type
 		)
 		VALUES (` + strings.Join(placeholder, ",") + `)
 		RETURNING id
@@ -285,11 +286,10 @@ func createLink(ctx context.Context, tx *sql.Tx, int memosId, int linkedMemosId)
 func findRelationMemosRawList(ctx context.Context, tx *sql.Tx, memosId int) ([]int, error) {
 	query := `
 		SELECT
-			memo.linked_memo_id,
+			memo.related_memo_id,
 		FROM memo
-		WHERE memo_id` + strconv.Itoa(memosId) + `
-		ORDER BY pinned DESC, memo.created_ts DESC
-	`
+		WHERE memo_id` + strconv.Itoa(memosId)
+
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
 		return nil, FormatError(err)
@@ -311,9 +311,8 @@ func findBackRelationMemosRawList(ctx context.Context, tx *sql.Tx, memosId int) 
 		SELECT
 			memo.memo_id,
 		FROM memo
-		WHERE linked_memo_id` + strconv.Itoa(memosId) + `
-		ORDER BY pinned DESC, memo.created_ts DESC
-	`
+		WHERE related_memo_id` + strconv.Itoa(memosId)
+
 	rows, err := tx.QueryContext(ctx, query)
 	if err != nil {
 		return nil, FormatError(err)
