@@ -426,6 +426,28 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(list))
 	})
 
+	g.GET("/memo/relation/:memoId", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		memoID, err := strconv.Atoi(c.Param("memoId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		memoIDList, err := s.Store.FindRelationMemos(ctx, memoID)
+		return c.JSON(http.StatusOK, composeResponse(memoIDList))
+	})
+
+	g.GET("/memo/backrelation/:memoId", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		memoID, err := strconv.Atoi(c.Param("memoId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		memoIDList, err := s.Store.FindBackRelationMemos(ctx, memoID)
+		return c.JSON(http.StatusOK, composeResponse(memoIDList))
+	})
+
 	g.DELETE("/memo/:memoId", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
