@@ -53,6 +53,7 @@ Contributions are what make the open-source community such an amazing place to l
 - [Send to memos](https://sharecuts.cn/shortcut/12640) - A shortcut for iOS
 - [Memos Raycast Extension](https://www.raycast.com/JakeYu/memos) - Raycast extension
 - [Memos Desktop](https://github.com/xudaolong/memos-desktop) - Third party client for MacOS and Windows
+- [MemosGallery](https://github.com/BarryYangi/MemosGallery) - A static Gallery rendered with the Memos API
 
 ## Acknowledgements
 
