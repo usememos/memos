@@ -448,6 +448,26 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(memoIDList))
 	})
 
+	g.POST("/memo/relation/:memoId/:memoId2/:type", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		memoID, err := strconv.Atoi(c.Param("memoId"))
+		memoID2, err2 := strconv.Atoi(c.Param("memoId2"))
+		type_ := c.Param("type")
+
+		if err != nil || err2 != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		err = s.Store.CreateMemoRelation(ctx, memoID, memoID2, type_)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Create Fail: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		// check type_ is valid
+
+		return c.JSON(http.StatusOK, composeResponse("success"))
+	})
+
 	g.DELETE("/memo/:memoId", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)

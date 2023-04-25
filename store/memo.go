@@ -200,6 +200,20 @@ func (s *Store) FindBackRelationMemos(ctx context.Context, memoId int) ([]int, e
 	return list, nil
 }
 
+func (s *Store) CreateMemoRelation(ctx context.Context, memoId int, related_memo_id int, type_ string) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return FormatError(err)
+	}
+	defer tx.Rollback()
+
+	err = createLink(ctx, tx, memoId, related_memo_id, type_)
+	if err != nil {
+		return FormatError(err)
+	}
+	return err
+}
+
 func (s *Store) DeleteMemo(ctx context.Context, delete *api.MemoDelete) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
