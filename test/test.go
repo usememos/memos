@@ -25,7 +25,7 @@ func getUnusedPort() int {
 func GetTestingProfile(t *testing.T) *profile.Profile {
 	// Get a temporary directory for the test data.
 	dir := t.TempDir()
-	mode := "prod"
+	mode := "dev"
 	port := getUnusedPort()
 	return &profile.Profile{
 		Mode:    mode,
