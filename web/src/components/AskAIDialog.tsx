@@ -145,6 +145,7 @@ function showAskAIDialog() {
   if (dialogElement) {
     dialogElement.classList.remove("showoff");
     dialogElement.classList.add("showup");
+    document.body.classList.add("overflow-hidden");
   } else {
     generateDialog(
       {
