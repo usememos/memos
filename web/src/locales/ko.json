@@ -1,5 +1,6 @@
 {
   "common": {
+    "memos-slogan": "가볍고 셀프호스팅되는 메모 저장소입니다. 언제나 자유로운 오픈 소스입니다.",
     "about": "정보",
     "home": "홈",
     "resources": "리소스",
@@ -14,6 +15,7 @@
     "close": "닫기",
     "cancel": "취소",
     "create": "생성",
+    "update": "수정",
     "change": "변경",
     "confirm": "확인",
     "reset": "재설정",
@@ -31,12 +33,15 @@
     "admin": "관리",
     "explore": "탐색",
     "sign-in": "로그인",
+    "sign-in-with": "{{provider}}로 로그인",
+    "or": "또는",
     "sign-up": "회원등록",
     "sign-out": "로그아웃",
     "type": "타입",
     "shortcuts": "바로가기",
     "title": "제목",
     "filter": "필터",
+    "filter-period": "{{from}} 부터 {{to}}",
     "tags": "태그",
     "yourself": "자기 자신",
     "changed": "변경됨",
@@ -52,7 +57,10 @@
     "rename": "이름 바꾸기",
     "clear": "정리하기",
     "name": "이름",
-    "visibility": "공개 범위"
+    "visibility": "공개 범위",
+    "learn-more": "더 보기",
+    "e.g": "ex) ",
+    "beta": "베타"
   },
   "router": {
     "back-to-home": "홈으로 돌아가기"
@@ -60,7 +68,7 @@
   "auth": {
     "signup-as-host": "호스트로서 회원등록",
     "host-tip": "사이트 주인으로서의 계정을 등록합니다.",
-    "not-host-tip": "계정이 없다면 사이트 주인에게 문의해 주세요.", 
+    "not-host-tip": "계정이 없다면 사이트 주인에게 문의해 주세요.",
     "new-password": "새 비밀번호",
     "repeat-new-password": "새 비밀번호 재확인"
   },
@@ -89,21 +97,26 @@
       "protected": "멤버들만 볼 수 있음",
       "public": "모두가 볼 수 있음",
       "disabled": "공개 메모는 비활성화됨"
-    }
+    },
+    "delete-memo": "메모 삭제",
+    "delete-confirm": "이 메모를 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다❗"
   },
   "resource": {
     "no-resources": "리소스 없음.",
     "fetching-data": "불러오는 중...",
     "copy-link": "링크 복사",
+    "reset-link": "링크 초기화",
+    "reset-resource-link": "리소스 링크 초기화",
+    "reset-link-prompt": "이 리소스의 링크를 초기화하시겠습니까?\n리소스를 링크 형태로 참조하는 모든 곳에서 문제가 생길 수 있습니다.\n\n이 행동은 되돌릴 수 없습니다❗",
     "delete-resource": "리소스 삭제",
-    "warning-text": "이 리소스를 정말로 삭제합니까? 이 행동은 되돌릴 수 없습니다❗",
     "linked-amount": "연결된 메모 수",
-    "warning-text-unused": "사용된 적 없는 다음 리소스들을 정말로 삭제합니까? 이 행동은 되돌릴 수 없습니다❗",
+    "warning-text": "이 리소스를 완전히 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다❗",
+    "warning-text-unused": "사용된 적 없는 다음 리소스들을 완전히 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다❗",
     "no-unused-resources": "사용되지 않는 리소스 없음",
     "delete-selected-resources": "선택된 리소스 삭제",
     "no-files-selected": "파일을 선택하지 않았습니다❗",
     "upload-successfully": "성공적으로 업로드했습니다",
-    "file-drag-drop-prompt": "업로드할 파일을 여기에 드래그하세요", 
+    "file-drag-drop-prompt": "업로드할 파일을 여기에 드래그하세요",
     "search-bar-placeholder": "리소스 검색하기",
     "create-dialog": {
       "title": "리소스 생성",
@@ -115,6 +128,7 @@
       "external-link": {
         "option": "외부 링크에서",
         "link": "링크",
+        "link-placeholder": "https://the.link.to/your/resource",
         "file-name": "파일 이름",
         "file-name-placeholder": "파일 이름",
         "type": "종류",
@@ -138,7 +152,8 @@
     "tag-name": "TAG_NAME"
   },
   "daily-review": {
-    "title": "날마다 돌아보기"
+    "title": "날마다 돌아보기",
+    "no-memos": "앗, 아무것도 없네요."
   },
   "setting": {
     "my-account": "내 계정",
@@ -150,13 +165,21 @@
     "sso": "SSO",
     "account-section": {
       "title": "계정 정보",
+      "username-note": "로그인하는 데 사용됨",
+      "nickname-note": "배너에 표시됨",
+      "email-note": "선택 사항",
       "update-information": "정보 변경",
-      "change-password": "비밀번호 변경"
+      "change-password": "비밀번호 변경",
+      "reset-api": "API 초기화",
+      "openapi-title": "OpenAPI",
+      "openapi-reset": "OpenAPI 키 초기화",
+      "openapi-reset-warning": "❗현재 API 키가 완전히 파기되고 새로운 키가 생성됩니다.\n\nAPI 키를 초기화할까요?",
+      "openapi-sample-post": "{{url}}의 #메모 들에게 안녕!"
     },
     "preference-section": {
       "theme": "테마",
       "default-memo-visibility": "메모 공개 범위 기본값",
-      "default-resource-visibility": "리소스 공개 범위 기본값",     
+      "default-resource-visibility": "리소스 공개 범위 기본값",
       "enable-folding-memo": "메모 접기 활성화",
       "enable-double-click": "더블클릭시 편집 모드 활성화",
       "editor-font-style": "편집기 글꼴 스타일",
@@ -164,38 +187,97 @@
       "default-memo-sort-option": "메모에 표시할 시각",
       "created_ts": "생성된 시각",
       "updated_ts": "변경된 시각",
-      "daily-review-time-offset": "날마다 돌아보기 기준 시각"  ,
-      "auto-collapse": "자동 축소"     
+      "daily-review-time-offset": "날마다 돌아보기 기준 시각",
+      "auto-collapse": "자동 축소"
     },
     "storage-section": {
+      "current-storage": "사용 중인 저장소",
+      "type-database": "데이터베이스",
+      "type-local": "로컬",
       "storage-services-list": "저장소 서비스 목록",
       "create-a-service": "서비스 생성",
       "update-a-service": "서비스 편집",
-      "warning-text": "이 저장소 서비스를 정말로 삭제합니까? 이 행동은 되돌릴 수 없습니다❗",
-      "delete-storage": "저장소 삭제"
+      "warning-text": "저장소 서비스 \"{{name}}\"을(를) 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다❗",
+      "delete-storage": "저장소 삭제",
+      "local-storage-path": "로컬 저장소 경로",
+      "update-local-path": "로컬 저장소 경로 수정",
+      "update-local-path-description": "로컬 저장소 경로는 DB 파일으로부터의 상대 경로입니다.",
+      "create-storage": "저장소 생성",
+      "update-storage": "저장소 수정",
+      "endpoint": "엔드포인트",
+      "s3-compatible-url": "S3과 호환되는 서비스 URL",
+      "region": "리전",
+      "region-placeholder": "리전 이름",
+      "accesskey": "액세스 키",
+      "accesskey-placeholder": "액세스 키 / 액세스 ID",
+      "secretkey": "비밀 액세스 키",
+      "secretkey-placeholder": "비밀 키 / 비밀 액세스 키",
+      "bucket": "버킷",
+      "bucket-placeholder": "버킷 이름",
+      "path": "저장소 경로",
+      "path-description": "로컬 저장소에서와 같은 변수를 사용할 수 있습니다. 이를테면 {filename} 같은 거요.",
+      "path-placeholder": "custom/path",
+      "url-prefix": "URL 접두사",
+      "url-prefix-placeholder": "URL 앞에 붙을 커스텀 접두사, 선택 사항",
+      "url-suffix": "URL 접미사",
+      "url-suffix-placeholder": "URL 뒤에 붙을 커스텀 접미사, 선택 사항"
     },
     "member-section": {
-      "create-a-member": "새 멤버 등록"
+      "create-a-member": "새 멤버 등록",
+      "archive-member": "멤버 보관처리",
+      "archive-warning": "❗ 멤버 {{username}} 의 계정을 보관처리하시겠습니까?",
+      "delete-member": "멤버 계정 삭제",
+      "delete-warning": "❗ 멤버 {{username}} 의 계정을 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다❗"
     },
     "system-section": {
       "server-name": "서버 이름",
       "customize-server": {
         "title": "서버 커스터마이징",
         "default": "기본값은 memos",
-        "icon-url": "아이콘 URL"
+        "icon-url": "아이콘 URL",
+        "description": "설명",
+        "locale": "서버 언어",
+        "appearance": "서버 테마"
       },
       "database-file-size": "데이터베이스 파일 크기",
       "allow-user-signup": "회원등록 허용",
+      "ignore-version-upgrade": "업그레이드 알림 무시",
       "disable-public-memos": "공개된 메모 금지",
       "additional-style": "추가적인 스타일",
       "additional-script": "추가적인 스크립트",
       "additional-style-placeholder": "추가적인 CSS 코드",
-      "additional-script-placeholder": "추가적인 JavaScript 코드"   
+      "additional-script-placeholder": "추가적인 JavaScript 코드",
+      "openai-api-key": "OpenAI: API 키",
+      "openai-api-key-description": "API 키 받아오기",
+      "openai-api-key-placeholder": "내 OpenAI API 키",
+      "openai-api-host": "OpenAI: API 호스트",
+      "openai-api-host-placeholder": "기본값: https://api.openai.com/"
     },
     "appearance-option": {
       "system": "시스템 설정을 따름",
       "light": "항상 밝게",
       "dark": "항상 어둡게"
+    },
+    "sso-section": {
+      "sso-list": "SSO 목록",
+      "delete-sso": "삭제 확인",
+      "confirm-delete": "SSO 설정 \"{{name}}\"을 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다❗",
+      "create-sso": "SSO 생성",
+      "update-sso": "SSO 수정",
+      "sso-created": "SSO {{name}}이 생성되었습니다",
+      "sso-updated": "SSO {{name}}이 수정되었습니다",
+      "identifier": "식별자",
+      "display-name": "보여줄 이름",
+      "template": "간편 설정",
+      "custom": "사용자 지정",
+      "identifier-filter": "식별자 필터",
+      "redirect-url": "리다이렉트 URL",
+      "client-id": "클라이언트 ID",
+      "client-secret": "클라이언트 비밀키",
+      "authorization-endpoint": "인증 엔드포인트",
+      "token-endpoint": "토큰 엔드포인트",
+      "user-endpoint": "유저 엔드포인트",
+      "scopes": "스코프"
     }
   },
   "filter": {
@@ -220,7 +302,9 @@
       "linked": "링크 있음",
       "has-attachment": "첨부파일 있음"
     },
-    "text-placeholder": "^으로 시작하면 정규식 취급"
+    "text-placeholder": "^으로 시작하면 정규식 취급",
+    "and": "그리고",
+    "or": "또는"
   },
   "message": {
     "no-memos": "메모가 없습니다 🌃",
@@ -228,38 +312,41 @@
     "no-resource": "리소스가 없습니다 🌃",
     "resource-ready": "모든 리소스가 준비되었습니다 🎉",
     "restored-successfully": "성공적으로 복구했습니다",
-    "memo-updated-datetime": "메모 생성 시각이 변경되었습니다.",    
-    "invalid-created-datetime": "생성 시각이 올바르지 않습니다.",   
+    "memo-updated-datetime": "메모 생성 시각이 변경되었습니다.",
+    "invalid-created-datetime": "생성 시각이 올바르지 않습니다.",
     "change-memo-created-time": "메모 생성 시각 변경",
+    "change-memo-created-time-warning-1": "일반적인 작업이 아닙니다!",
+    "change-memo-created-time-warning-2": "진짜 정말로 필요할 때에만 사용해 주세요.",
     "memo-not-found": "메모를 찾을 수 없습니다.",
     "fill-all": "모든 칸을 채워 주세요.",
     "password-not-match": "비밀번호가 맞지 않습니다.",
-    "new-password-not-match": "새 비밀번호가 서로 맞지 않습니다.",  
-    "image-load-failed": "이미지 불러오기 실패",
+    "new-password-not-match": "새 비밀번호가 서로 맞지 않습니다.",
+    "image-load-failed": "이미지를 불러오지 못했습니다",
     "fill-form": "이 칸들을 채워 주세요",
+    "fill-server-name": "서버 이름을 적어주세요",
     "login-failed": "로그인 실패",
     "signup-failed": "회원등록 실패",
-    "user-not-found": "회원을 찾을 수 없음",
-    "password-changed": "비밀번호 변경됨",
+    "user-not-found": "회원을 찾을 수 없습니다",
+    "password-changed": "비밀번호를 변경했습니다",
     "private-only": "이 메모는 비공개 전용입니다.",
-    "copied": "복사됨",
-    "succeed-copy-content": "내용을 클립보드에 복사했습니다.",      
+    "copied": "복사했습니다",
+    "succeed-copy-content": "내용을 클립보드에 복사했습니다.",
     "succeed-copy-code": "코드를 클립보드에 복사했습니다.",
     "succeed-copy-link": "링크를 클립보드에 복사했습니다.",
     "change-resource-filename": "리소스 파일명 변경",
-    "resource-filename-updated": "리소스 파일명을 변경했습니다.",   
-    "invalid-resource-filename": "올바르지 않은 파일명입니다.",     
-    "click-to-save-the-image": "이미지를 저장하려면 클릭하세요",    
-    "generating-the-screenshot": "스크린샷을 생성하는 중...",       
+    "resource-filename-updated": "리소스 파일명을 변경했습니다.",
+    "invalid-resource-filename": "올바르지 않은 파일명입니다.",
+    "click-to-save-the-image": "이미지를 저장하려면 클릭하세요",
+    "generating-the-screenshot": "스크린샷을 생성하는 중...",
     "count-selected-resources": "선택된 항목",
     "too-short": "너무 짧음",
     "too-long": "너무 긺",
     "not-allow-space": "공백 허용하지 않음",
     "not-allow-chinese": "한자 허용하지 않음",
     "succeed-vacuum-database": "데이터베이스 최적화 성공",
-    "succeed-update-additional-style": "추가적인 스타일 적용 성공", 
+    "succeed-update-additional-style": "추가적인 스타일 적용 성공",
     "succeed-copy-resource-link": "리소스 링크 복사 성공",
-    "succeed-update-customized-profile": "프로필 정보 적용 성공",   
+    "succeed-update-customized-profile": "프로필 정보 적용 성공",
     "succeed-update-additional-script": "추가적인 스크립트 적용 성공",
     "update-succeed": "업데이트 성공",
     "page-not-found": "404 - 페이지를 찾을 수 없습니다 😥"
@@ -281,8 +368,23 @@
   },
   "embed-memo": {
     "title": "메모 임베드",
-    "text": "아래 코드를 블로그나 웹사이트에 붙여넣으세요.",        
+    "text": "아래 코드를 블로그나 웹사이트에 붙여넣으세요.",
     "only-public-supported": "* 공개 메모만 지원됩니다.",
     "copy": "복사"
+  },
+  "heatmap": {
+    "memo-in": "{{period}}동안 메모 {{amount}}개 작성",
+    "memos-in": "{{period}}동안 메모 {{amount}}개 작성",
+    "memo-on": "{{date}}에 메모 {{amount}}개 작성",
+    "memos-on": "{{date}}에 메모 {{amount}}개 작성",
+    "day": "일",
+    "days": "일"
+  },
+  "about": {
+    "about-memos": "Memos에 대해서",
+    "memos-description": "Memos는 노트를 쓰고 닦고 공유하는 웹 기반의 노트 기록 플랫폼입니다.",
+    "no-server-description": "서버 설명이 없습니다.",
+    "powered-by": "제공: ",
+    "other-projects": "다른 프로젝트"
   }
 }
