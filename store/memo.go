@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/usememos/memos/api"
@@ -170,50 +169,6 @@ func (s *Store) FindMemo(ctx context.Context, find *api.MemoFind) (*api.Memo, er
 	return memo, nil
 }
 
-func (s *Store) FindRelationMemos(ctx context.Context, memoId int) ([]int, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	list, err := findRelationMemosRawList(ctx, tx, memoId)
-	if err != nil {
-		return nil, err
-	}
-
-	return list, nil
-}
-
-func (s *Store) FindBackRelationMemos(ctx context.Context, memoId int) ([]int, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	list, err := findBackRelationMemosRawList(ctx, tx, memoId)
-	if err != nil {
-		return nil, err
-	}
-
-	return list, nil
-}
-
-func (s *Store) CreateMemoRelation(ctx context.Context, memoId int, related_memo_id int, type_ string) error {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return FormatError(err)
-	}
-	defer tx.Rollback()
-
-	err = createLink(ctx, tx, memoId, related_memo_id, type_)
-	if err != nil {
-		return FormatError(err)
-	}
-	return err
-}
-
 func (s *Store) DeleteMemo(ctx context.Context, delete *api.MemoDelete) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -309,68 +264,6 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 	}
 
 	return &memoRaw, nil
-}
-func createLink(ctx context.Context, tx *sql.Tx, memosId int, linkedMemosId int, type_ string) error {
-	placeholder := []string{"?", "?", "?"}
-
-	query := `
-		INSERT INTO memo_relation (
-			memo_id,
-			related_memo_id,
-			type
-		)
-		VALUES (` + strings.Join(placeholder, ",") + `)
-		RETURNING id
-	`
-	tx.QueryRowContext(ctx, query)
-
-	return nil
-}
-
-func findRelationMemosRawList(ctx context.Context, tx *sql.Tx, memosId int) ([]int, error) {
-	query := `
-		SELECT
-			memo.related_memo_id,
-		FROM memo
-		WHERE memo_id` + strconv.Itoa(memosId)
-
-	rows, err := tx.QueryContext(ctx, query)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	linkedMemoIdList := make([]int, 0)
-
-	for rows.Next() {
-		var linkedMemoId int
-		if err := rows.Scan(&linkedMemoId); err != nil {
-			return nil, FormatError(err)
-		}
-		linkedMemoIdList = append(linkedMemoIdList, linkedMemoId)
-	}
-	return linkedMemoIdList, nil
-}
-
-func findBackRelationMemosRawList(ctx context.Context, tx *sql.Tx, memosId int) ([]int, error) {
-	query := `
-		SELECT
-			memo.memo_id,
-		FROM memo
-		WHERE related_memo_id` + strconv.Itoa(memosId)
-
-	rows, err := tx.QueryContext(ctx, query)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	linkedMemoIdList := make([]int, 0)
-
-	for rows.Next() {
-		var linkedMemoId int
-		if err := rows.Scan(&linkedMemoId); err != nil {
-			return nil, FormatError(err)
-		}
-		linkedMemoIdList = append(linkedMemoIdList, linkedMemoId)
-	}
-	return linkedMemoIdList, nil
 }
 
 func findMemoRawList(ctx context.Context, tx *sql.Tx, find *api.MemoFind) ([]*memoRaw, error) {
