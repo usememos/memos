@@ -14,12 +14,17 @@ import ResourceIcon from "./ResourceIcon";
 import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
 import showCreateResourceDialog from "./CreateResourceDialog";
 import "@/less/memo-editor.less";
+import { clearContentQueryParam, getContentQueryParam } from "@/helpers/utils";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
 
 const getEditorContentCache = (): string => {
   return storage.get(["editorContentCache"]).editorContentCache ?? "";
+};
+
+const getInitialContent = (): string => {
+  return getContentQueryParam() ?? getEditorContentCache();
 };
 
 const setEditorContentCache = (content: string) => {
@@ -286,6 +291,7 @@ const MemoEditor = () => {
     editorStore.clearResourceList();
     setEditorContentCache("");
     editorRef.current?.setContent("");
+    clearContentQueryParam();
   };
 
   const handleCancelEdit = () => {
@@ -378,7 +384,7 @@ const MemoEditor = () => {
   const editorConfig = useMemo(
     () => ({
       className: `memo-editor`,
-      initialContent: getEditorContentCache(),
+      initialContent: getInitialContent(),
       placeholder: t("editor.placeholder"),
       fullscreen: state.fullscreen,
       onContentChange: handleContentChange,
