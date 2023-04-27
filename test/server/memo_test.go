@@ -31,6 +31,9 @@ func TestMemoServer(t *testing.T) {
 	memo, err := s.postMemoCreate(&api.MemoCreate{
 		Content: "test memo",
 	})
+	relationMemo, err := s.postMemoCreate(&api.MemoCreate{
+		Content: "refer memo",
+	})
 	require.NoError(t, err)
 	require.Equal(t, "test memo", memo.Content)
 	memoList, err = s.getMemoList()
@@ -43,6 +46,9 @@ func TestMemoServer(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, updatedContent, memo.Content)
+
+	postMemoRelationCreate()
+
 	err = s.postMemoDelete(&api.MemoDelete{
 		ID: memo.ID,
 	})
@@ -50,6 +56,7 @@ func TestMemoServer(t *testing.T) {
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
 	require.Len(t, memoList, 0)
+
 }
 
 func (s *TestingServer) getMemoList() ([]*api.Memo, error) {
@@ -131,4 +138,31 @@ func (s *TestingServer) patchMemoPatch(memoPatch *api.MemoPatch) (*api.Memo, err
 func (s *TestingServer) postMemoDelete(memoDelete *api.MemoDelete) error {
 	_, err := s.delete(fmt.Sprintf("/api/memo/%d", memoDelete.ID), nil)
 	return err
+}
+
+func (s *TestingServer) postMemoRelationCreate(memoCreate *api.MemoCreate) (*api.Memo, error) {
+	rawData, err := json.Marshal(&memoCreate)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal memo create")
+	}
+	reader := bytes.NewReader(rawData)
+	body, err := s.post("/api/memo/relation/1/2/REFERENCE", reader, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := &bytes.Buffer{}
+	_, err = buf.ReadFrom(body)
+	if err != nil {
+		return nil, errors.Wrap(err, "fail to read response body")
+	}
+
+	type MemoCreateResponse struct {
+		Data *api.Memo `json:"data"`
+	}
+	res := new(MemoCreateResponse)
+	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
+		return nil, errors.Wrap(err, "fail to unmarshal post memo create response")
+	}
+	return res.Data, nil
 }

@@ -6,32 +6,26 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
-)
-
-type MemoRelationType string
-
-const (
-	MemoRelationReference  MemoRelationType = "REFERENCE"
-	MemoRelationAdditional MemoRelationType = "ADDITIONAL"
 )
 
 type MemoRelationMessage struct {
 	MemoID        int
 	RelatedMemoID int
-	Type          MemoRelationType
+	Type          api.MemoRelationType
 }
 
 type FindMemoRelationMessage struct {
 	MemoID        *int
 	RelatedMemoID *int
-	Type          *MemoRelationType
+	Type          *api.MemoRelationType
 }
 
 type DeleteMemoRelationMessage struct {
 	MemoID        *int
 	RelatedMemoID *int
-	Type          *MemoRelationType
+	Type          *api.MemoRelationType
 }
 
 func (s *Store) UpsertMemoRelation(ctx context.Context, create *MemoRelationMessage) (*MemoRelationMessage, error) {

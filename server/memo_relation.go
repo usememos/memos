@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/store"
 )
 
@@ -23,8 +24,11 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(memoIDList))
 	})
 
-	g.POST("/memo/relation/:memoId/:relatedMemoId/:relationType", func(c echo.Context) error {
+	g.POST("/memo/relation/", func(c echo.Context) error {
 		ctx := c.Request().Context()
+
+		memoRelationCreate := &api.MemoRelationCreate{}
+
 		memoID, err := strconv.Atoi(c.Param("memoId"))
 		relatedMemoID, err2 := strconv.Atoi(c.Param("relatedMemoId"))
 		relationType := c.Param("relationType")
@@ -33,14 +37,14 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		if relationType != string(store.MemoRelationReference) && relationType != string(store.MemoRelationAdditional) {
+		if relationType != string(api.MemoRelationReference) && relationType != string(api.MemoRelationAdditional) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid Relation Type: %s", relationType))
 		}
 
 		message, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
 			MemoID:        memoID,
 			RelatedMemoID: relatedMemoID,
-			Type:          store.MemoRelationType(relationType),
+			Type:          api.MemoRelationType(relationType),
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Create Relation Fail: %v %v", memoID, relatedMemoID)).SetInternal(err)

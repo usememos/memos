@@ -33,7 +33,7 @@ func TestMemoRelationStore(t *testing.T) {
 	memoRelationMessage := &store.MemoRelationMessage{
 		MemoID:        memo.ID,
 		RelatedMemoID: memo2.ID,
-		Type:          store.MemoRelationReference,
+		Type:          api.MemoRelationReference,
 	}
 	_, err = ts.UpsertMemoRelation(ctx, memoRelationMessage)
 	require.NoError(t, err)
@@ -44,7 +44,7 @@ func TestMemoRelationStore(t *testing.T) {
 	require.Equal(t, 1, len(memoRelation))
 	require.Equal(t, memo2.ID, memoRelation[0].RelatedMemoID)
 	require.Equal(t, memo.ID, memoRelation[0].MemoID)
-	require.Equal(t, store.MemoRelationReference, memoRelation[0].Type)
+	require.Equal(t, api.MemoRelationReference, memoRelation[0].Type)
 	err = ts.DeleteMemo(ctx, &api.MemoDelete{
 		ID: memo2.ID,
 	})
