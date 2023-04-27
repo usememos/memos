@@ -51,11 +51,11 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))
 		memoID2, err := strconv.Atoi(c.Param("memoId2"))
-		RelationDelete := &store.DeleteMemoRelationMessage{
+		relationDelete := &store.DeleteMemoRelationMessage{
 			MemoID:        &memoID,
 			RelatedMemoID: &memoID2,
 		}
-		err3 := s.Store.DeleteMemoRelation(ctx, RelationDelete)
+		err3 := s.Store.DeleteMemoRelation(ctx, relationDelete)
 		if err3 != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Delete Relation Fail: %s", c.Param("memoId"))).SetInternal(err)
 		}
