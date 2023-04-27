@@ -1,5 +1,18 @@
-import React from "react";
-import useLatestValue from "./useLatestValue";
+import React, { useEffect, useRef, EffectCallback, DependencyList } from "react";
+
+const useIsoMorphicEffect = (effect: EffectCallback, deps?: DependencyList | undefined) => {
+  useEffect(effect, deps);
+};
+
+export default function useLatestValue<T>(value: T) {
+  const cache = useRef(value);
+
+  useIsoMorphicEffect(() => {
+    cache.current = value;
+  }, [value]);
+
+  return cache;
+}
 
 export const useEvent =
   // TODO: Add React.useEvent ?? once the useEvent hook is available
