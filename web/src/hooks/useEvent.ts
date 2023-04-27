@@ -1,5 +1,5 @@
 import React from "react";
-import useLatestValue from "./use-latest-value";
+import useLatestValue from "./useLatestValue";
 
 export const useEvent =
   // TODO: Add React.useEvent ?? once the useEvent hook is available
