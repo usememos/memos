@@ -13,11 +13,12 @@ type Store struct {
 	db      *sql.DB
 	profile *profile.Profile
 
-	userCache        sync.Map // map[int]*userRaw
-	userSettingCache sync.Map // map[string]*userSettingRaw
-	memoCache        sync.Map // map[int]*memoRaw
-	shortcutCache    sync.Map // map[int]*shortcutRaw
-	idpCache         sync.Map // map[int]*identityProviderMessage
+	systemSettingCache sync.Map // map[string]*systemSettingRaw
+	userCache          sync.Map // map[int]*userRaw
+	userSettingCache   sync.Map // map[string]*userSettingRaw
+	memoCache          sync.Map // map[int]*memoRaw
+	shortcutCache      sync.Map // map[int]*shortcutRaw
+	idpCache           sync.Map // map[int]*identityProviderMessage
 }
 
 // New creates a new instance of Store.
