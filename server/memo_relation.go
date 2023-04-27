@@ -23,39 +23,41 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(memoIDList))
 	})
 
-	g.POST("/memo/relation/:memoId/:memoId2/:relationType", func(c echo.Context) error {
+	g.POST("/memo/relation/:memoId/:relatedMemoId/:relationType", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))
-		memoID2, err2 := strconv.Atoi(c.Param("memoId2"))
+		relatedMemoID, err2 := strconv.Atoi(c.Param("relatedMemoId"))
 		relationType := c.Param("relationType")
 
 		if err != nil || err2 != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		// check type_ is valid
+		if relationType != string(store.MemoRelationReference) && relationType != string(store.MemoRelationAdditional) {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid Relation Type: %s", relationType))
+		}
 
 		message, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
 			MemoID:        memoID,
-			RelatedMemoID: memoID2,
+			RelatedMemoID: relatedMemoID,
 			Type:          store.MemoRelationType(relationType),
 		})
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Create Fail: %s", c.Param("memoId"))).SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Create Relation Fail: %v %v", memoID, relatedMemoID)).SetInternal(err)
 		}
 
 		return c.JSON(http.StatusOK, composeResponse(message))
 	})
 
-	g.DELETE("/memo/relation/:memoId/:memoId2", func(c echo.Context) error {
+	g.DELETE("/memo/relation/:memoId/:relatedMemoId", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		relationDelete := &store.DeleteMemoRelationMessage{}
 
 		if memoID, err := strconv.Atoi(c.Param("memoId")); err == nil {
 			relationDelete.MemoID = &memoID
 		}
-		if memoID, err := strconv.Atoi(c.Param("memoId2")); err == nil {
-			relationDelete.RelatedMemoID = &memoID
+		if relatedMemoID, err := strconv.Atoi(c.Param("relatedMemoId")); err == nil {
+			relationDelete.RelatedMemoID = &relatedMemoID
 		}
 		err := s.Store.DeleteMemoRelation(ctx, relationDelete)
 		if err != nil {
