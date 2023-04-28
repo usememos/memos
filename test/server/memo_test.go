@@ -33,6 +33,7 @@ func TestMemoServer(t *testing.T) {
 		Content: "test memo",
 	})
 	require.NoError(t, err)
+	require.Equal(t, "test memo", memo.Content)
 	relationMemo, err := s.postMemoCreate(&api.MemoCreate{
 		Content: "refer memo",
 	})
