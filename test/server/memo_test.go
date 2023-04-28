@@ -40,10 +40,11 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "refer memo", relationMemo.Content)
 
+	relationType := api.MemoRelationType("REFERENCE")
 	relation, err := s.postMemoRelationCreate(&api.MemoRelationCreate{
 		MemoID:         memo.ID,
 		RelationMemoID: relationMemo.ID,
-		Type:           "REFERENCE",
+		Type:           relationType,
 	})
 	require.NoError(t, err)
 	require.Equal(t, relation.MemoID, 1)
@@ -55,6 +56,20 @@ func TestMemoServer(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Len(t, memoRelationList, 1)
+
+	err = s.postMemoRelationDelete(&store.DeleteMemoRelationMessage{
+		MemoID:        &memo.ID,
+		RelatedMemoID: &relation.RelatedMemoID,
+		Type:          &relationType,
+	})
+	require.NoError(t, err)
+
+	memoRelationList, err = s.getMemoRelationList(&store.FindMemoRelationMessage{
+		MemoID: &memo.ID,
+	})
+	require.NoError(t, err)
+	fmt.Println(memoRelationList)
+	require.Len(t, memoRelationList, 0)
 
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
@@ -204,4 +219,9 @@ func (s *TestingServer) getMemoRelationList(find *store.FindMemoRelationMessage)
 		return nil, errors.Wrap(err, "fail to unmarshal get memo list response")
 	}
 	return res.Data, nil
+}
+
+func (s *TestingServer) postMemoRelationDelete(memoRelationDelete *store.DeleteMemoRelationMessage) error {
+	_, err := s.delete(fmt.Sprintf("/api/memo/relation/%d/%d/%s", *memoRelationDelete.MemoID, *memoRelationDelete.RelatedMemoID, *memoRelationDelete.Type), nil)
+	return err
 }

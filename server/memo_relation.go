@@ -49,9 +49,13 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(memoIDList))
 	})
 
-	g.DELETE("/memo/relation/:memoId/:relatedMemoId", func(c echo.Context) error {
+	g.DELETE("/memo/relation/:memoId/:relatedMemoId/:type", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		relationDelete := &store.DeleteMemoRelationMessage{}
+
+		relationType := api.MemoRelationType(c.Param("type"))
+		relationDelete := &store.DeleteMemoRelationMessage{
+			Type: &relationType,
+		}
 
 		if memoID, err := strconv.Atoi(c.Param("memoId")); err == nil {
 			relationDelete.MemoID = &memoID
@@ -59,6 +63,7 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 		if relatedMemoID, err := strconv.Atoi(c.Param("relatedMemoId")); err == nil {
 			relationDelete.RelatedMemoID = &relatedMemoID
 		}
+
 		err := s.Store.DeleteMemoRelation(ctx, relationDelete)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Delete Relation Fail: %s", c.Param("memoId"))).SetInternal(err)
