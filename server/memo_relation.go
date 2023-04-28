@@ -70,4 +70,12 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 		}
 		return c.JSON(http.StatusOK, true)
 	})
+
+	g.DELETE("/memo/relation", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		if err := s.Store.DeleteNullMemoRelation(ctx); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Delete Null Relation Fail").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, true)
+	})
 }

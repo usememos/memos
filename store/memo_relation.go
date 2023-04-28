@@ -172,6 +172,23 @@ func listMemoRelations(ctx context.Context, tx *sql.Tx, find *FindMemoRelationMe
 	return memoRelationMessages, nil
 }
 
+func (s *Store) DeleteNullMemoRelation(ctx context.Context) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return FormatError(err)
+	}
+	defer tx.Rollback()
+
+	if err := vacuumMemoRelations(ctx, tx); err != nil {
+		return FormatError(err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return FormatError(err)
+	}
+	return err
+}
+
 func vacuumMemoRelations(ctx context.Context, tx *sql.Tx) error {
 	if _, err := tx.ExecContext(ctx, `
 		DELETE FROM memo_relation

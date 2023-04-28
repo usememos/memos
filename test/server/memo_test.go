@@ -71,6 +71,17 @@ func TestMemoServer(t *testing.T) {
 	fmt.Println(memoRelationList)
 	require.Len(t, memoRelationList, 0)
 
+	// add relation again
+	relation, err = s.postMemoRelationCreate(&api.MemoRelationCreate{
+		MemoID:         memo.ID,
+		RelationMemoID: relationMemo.ID,
+		Type:           relationType,
+	})
+	require.NoError(t, err)
+	require.Equal(t, relation.MemoID, 1)
+	require.Equal(t, relation.RelatedMemoID, 2)
+	require.Equal(t, relation.Type, api.MemoRelationType("REFERENCE"))
+
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
 	require.Len(t, memoList, 2)
@@ -89,6 +100,15 @@ func TestMemoServer(t *testing.T) {
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
 	require.Len(t, memoList, 1)
+
+	err = s.postNullMemoRelationDelete()
+	require.NoError(t, err)
+	memoRelationList, err = s.getMemoRelationList(&store.FindMemoRelationMessage{
+		MemoID: &relation.RelatedMemoID,
+	})
+	require.NoError(t, err)
+	fmt.Println(memoRelationList)
+	require.Len(t, memoRelationList, 0)
 }
 
 func (s *TestingServer) getMemoList() ([]*api.Memo, error) {
@@ -223,5 +243,10 @@ func (s *TestingServer) getMemoRelationList(find *store.FindMemoRelationMessage)
 
 func (s *TestingServer) postMemoRelationDelete(memoRelationDelete *store.DeleteMemoRelationMessage) error {
 	_, err := s.delete(fmt.Sprintf("/api/memo/relation/%d/%d/%s", *memoRelationDelete.MemoID, *memoRelationDelete.RelatedMemoID, *memoRelationDelete.Type), nil)
+	return err
+}
+
+func (s *TestingServer) postNullMemoRelationDelete() error {
+	_, err := s.delete("/api/memo/relation", nil)
 	return err
 }
