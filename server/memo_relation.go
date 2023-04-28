@@ -20,27 +20,17 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo relation request").SetInternal(err)
 		}
 
-		memoID := memoRelationCreate.MemoID
-		relatedMemoID := memoRelationCreate.RelationMemoID
-		relationType := memoRelationCreate.Type
-
-		// if err != nil || err2 != nil {
-		// 	return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
-		// }
-		fmt.Println(memoID)
-		fmt.Println(relatedMemoID)
-		fmt.Println(relationType)
-		if relationType != api.MemoRelationReference && relationType != api.MemoRelationAdditional {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid Relation Type: %s", relationType))
+		if memoRelationCreate.Type != api.MemoRelationReference && memoRelationCreate.Type != api.MemoRelationAdditional {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid Relation Type: %s", memoRelationCreate.Type))
 		}
 
 		message, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
-			MemoID:        memoID,
-			RelatedMemoID: relatedMemoID,
-			Type:          api.MemoRelationType(relationType),
+			MemoID:        memoRelationCreate.MemoID,
+			RelatedMemoID: memoRelationCreate.RelationMemoID,
+			Type:          api.MemoRelationType(memoRelationCreate.Type),
 		})
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Create Relation Fail: %v %v", memoID, relatedMemoID)).SetInternal(err)
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Create Relation Fail: %v %v", memoRelationCreate.MemoID, memoRelationCreate.RelationMemoID)).SetInternal(err)
 		}
 
 		return c.JSON(http.StatusOK, composeResponse(message))
