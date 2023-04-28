@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/store"
 )
 
 func TestMemoServer(t *testing.T) {
@@ -31,21 +32,26 @@ func TestMemoServer(t *testing.T) {
 	memo, err := s.postMemoCreate(&api.MemoCreate{
 		Content: "test memo",
 	})
+	require.NoError(t, err)
 	relationMemo, err := s.postMemoCreate(&api.MemoCreate{
 		Content: "refer memo",
 	})
 	require.NoError(t, err)
-	require.Equal(t, "test memo", memo.Content)
+	require.Equal(t, "refer memo", relationMemo.Content)
 
-	s.postMemoRelationCreate(&api.MemoRelationCreate{
+	relation, err := s.postMemoRelationCreate(&api.MemoRelationCreate{
 		MemoID:         memo.ID,
 		RelationMemoID: relationMemo.ID,
 		Type:           "REFERENCE",
 	})
+	require.NoError(t, err)
+	require.Equal(t, relation.MemoID, 1)
+	require.Equal(t, relation.RelatedMemoID, 2)
+	require.Equal(t, relation.Type, api.MemoRelationType("REFERENCE"))
 
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
-	require.Len(t, memoList, 1)
+	require.Len(t, memoList, 2)
 	updatedContent := "updated memo"
 	memo, err = s.patchMemoPatch(&api.MemoPatch{
 		ID:      memo.ID,
@@ -60,8 +66,7 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
-	require.Len(t, memoList, 0)
-
+	require.Len(t, memoList, 1)
 }
 
 func (s *TestingServer) getMemoList() ([]*api.Memo, error) {
@@ -145,7 +150,7 @@ func (s *TestingServer) postMemoDelete(memoDelete *api.MemoDelete) error {
 	return err
 }
 
-func (s *TestingServer) postMemoRelationCreate(memoRelationCreate *api.MemoRelationCreate) (*api.Memo, error) {
+func (s *TestingServer) postMemoRelationCreate(memoRelationCreate *api.MemoRelationCreate) (*store.MemoRelationMessage, error) {
 	rawData, err := json.Marshal(&memoRelationCreate)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal memo relation create")
@@ -163,7 +168,7 @@ func (s *TestingServer) postMemoRelationCreate(memoRelationCreate *api.MemoRelat
 	}
 
 	type MemoRelationCreateResponse struct {
-		Data *api.Memo `json:"data"`
+		Data *store.MemoRelationMessage `json:"data"`
 	}
 	res := new(MemoRelationCreateResponse)
 	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
