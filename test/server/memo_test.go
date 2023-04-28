@@ -101,14 +101,25 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, memoList, 1)
 
+	// to clean relation that memo is deleted
 	err = s.postNullMemoRelationDelete()
 	require.NoError(t, err)
+
 	memoRelationList, err = s.getMemoRelationList(&store.FindMemoRelationMessage{
 		MemoID: &relation.RelatedMemoID,
 	})
 	require.NoError(t, err)
 	fmt.Println(memoRelationList)
 	require.Len(t, memoRelationList, 0)
+
+	// invalid reference type
+	relationType = api.MemoRelationType("INVALID")
+	_, err = s.postMemoRelationCreate(&api.MemoRelationCreate{
+		MemoID:         memo.ID,
+		RelationMemoID: relationMemo.ID,
+		Type:           relationType,
+	})
+	require.Error(t, err)
 }
 
 func (s *TestingServer) getMemoList() ([]*api.Memo, error) {

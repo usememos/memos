@@ -59,9 +59,17 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 
 		if memoID, err := strconv.Atoi(c.Param("memoId")); err == nil {
 			relationDelete.MemoID = &memoID
+		} else {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Memo ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 		if relatedMemoID, err := strconv.Atoi(c.Param("relatedMemoId")); err == nil {
 			relationDelete.RelatedMemoID = &relatedMemoID
+		} else {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Relation memo ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		}
+
+		if relationType != api.MemoRelationReference && relationType != api.MemoRelationAdditional {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid Relation Type: %s", relationType))
 		}
 
 		err := s.Store.DeleteMemoRelation(ctx, relationDelete)
