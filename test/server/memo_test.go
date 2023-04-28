@@ -49,6 +49,12 @@ func TestMemoServer(t *testing.T) {
 	require.Equal(t, relation.RelatedMemoID, 2)
 	require.Equal(t, relation.Type, api.MemoRelationType("REFERENCE"))
 
+	memoRelationList, err := s.getMemoRelationList(&store.FindMemoRelationMessage{
+		MemoID: &memo.ID,
+	})
+	require.NoError(t, err)
+	require.Len(t, memoRelationList, 1)
+
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
 	require.Len(t, memoList, 2)
@@ -173,6 +179,28 @@ func (s *TestingServer) postMemoRelationCreate(memoRelationCreate *api.MemoRelat
 	res := new(MemoRelationCreateResponse)
 	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
 		return nil, errors.Wrap(err, "fail to unmarshal post memo create response")
+	}
+	return res.Data, nil
+}
+
+func (s *TestingServer) getMemoRelationList(find *store.FindMemoRelationMessage) ([]*store.MemoRelationMessage, error) {
+	body, err := s.get(fmt.Sprintf("/api/memo/relation/%d", *find.MemoID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := &bytes.Buffer{}
+	_, err = buf.ReadFrom(body)
+	if err != nil {
+		return nil, errors.Wrap(err, "fail to read response body")
+	}
+
+	type MemoRelationResponse struct {
+		Data []*store.MemoRelationMessage `json:"data"`
+	}
+	res := new(MemoRelationResponse)
+	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
+		return nil, errors.Wrap(err, "fail to unmarshal get memo list response")
 	}
 	return res.Data, nil
 }
