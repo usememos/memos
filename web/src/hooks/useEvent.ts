@@ -15,7 +15,7 @@ function useLatestValue<T>(value: T) {
 }
 
 // TODO: Add React.useEvent ?? once the useEvent hook is available
-const useEvent = function useEvent<F extends (...args: any[]) => any, P extends any[] = Parameters<F>, R = ReturnType<F>>(
+function useEvent<F extends (...args: any[]) => any, P extends any[] = Parameters<F>, R = ReturnType<F>>(
   cb: (...args: P) => R
 ) {
   const cache = useLatestValue(cb);
