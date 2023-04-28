@@ -13,6 +13,7 @@ import Dropdown from "@/components/kit/Dropdown";
 import ResourceItem from "@/components/ResourceItem";
 import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import showCreateResourceDialog from "@/components/CreateResourceDialog";
+import useEvent from "@/hooks/useEvent";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
@@ -40,13 +41,13 @@ const ResourcesDashboard = () => {
       });
   }, []);
 
-  const handleCheckBtnClick = (resourceId: ResourceId) => {
+  const handleCheckBtnClick = useEvent((resourceId: ResourceId) => {
     setSelectedList([...selectedList, resourceId]);
-  };
+  });
 
-  const handleUncheckBtnClick = (resourceId: ResourceId) => {
+  const handleUncheckBtnClick = useEvent((resourceId: ResourceId) => {
     setSelectedList(selectedList.filter((id) => id !== resourceId));
-  };
+  });
 
   const handleStyleChangeBtnClick = (listStyle: "GRID" | "TABLE") => {
     setListStyle(listStyle);
