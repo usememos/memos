@@ -9,7 +9,7 @@ const (
 
 type MemoRelationCreate struct {
 	// Standard fields
-	MemoId         int              `json:"memoId"`
-	RelationMemoId int              `json:"RelationMemoId"`
+	MemoID         int              `json:"memoId"`
+	RelationMemoID int              `json:"RelationMemoId"`
 	Type           MemoRelationType `json:"type"`
 }

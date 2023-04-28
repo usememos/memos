@@ -29,15 +29,15 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 
 		memoRelationCreate := &api.MemoRelationCreate{}
 
-		memoID, err := strconv.Atoi(c.Param("memoId"))
-		relatedMemoID, err2 := strconv.Atoi(c.Param("relatedMemoId"))
-		relationType := c.Param("relationType")
+		memoID := memoRelationCreate.MemoID
+		relatedMemoID := memoRelationCreate.RelationMemoID
+		relationType := memoRelationCreate.Type
 
-		if err != nil || err2 != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
-		}
+		// if err != nil || err2 != nil {
+		// 	return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
+		// }
 
-		if relationType != string(api.MemoRelationReference) && relationType != string(api.MemoRelationAdditional) {
+		if relationType != api.MemoRelationReference && relationType != api.MemoRelationAdditional {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid Relation Type: %s", relationType))
 		}
 
