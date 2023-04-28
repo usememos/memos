@@ -13,7 +13,7 @@ import Dropdown from "@/components/kit/Dropdown";
 import ResourceItem from "@/components/ResourceItem";
 import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import showCreateResourceDialog from "@/components/CreateResourceDialog";
-import { useEvent } from "@/hooks/useEvent";
+import useEvent from "@/hooks/useEvent";
 
 const ResourcesDashboard = () => {
   const { t } = useTranslation();
