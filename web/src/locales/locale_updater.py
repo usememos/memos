@@ -101,7 +101,7 @@ def get_code_name(json_filename):
         "uk": "uk",
         "vi": "vi",
         "zh-Hant": "zh-TW",
-        "zh": "zh-CN",
+        "zh-Hans": "zh-CN",
     }
     code_name = lang_map.get(lang_code, "")
 
@@ -163,7 +163,7 @@ if __name__ == "__main__":
             + "\033[0m"
             + " | "
             + "\033[92m"
-            + f"English: {ref_flat[key]}"
+            + f"{ref_codename}: {ref_flat[key]}"
             + "\033[0m"
         )
     print("=============================================")
