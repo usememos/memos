@@ -68,6 +68,7 @@ def google_translate(
     headers = {"Content-type": "application/x-www-form-urlencoded"}
     response = requests.post(url, headers=headers, data=post_content.encode("utf-8"))
     json_value = response.json()
+    print(json_value) # for debug purpose. there might be multiple lines of translations
 
     # Extract translations from JSON
     translations = [item[0] for item in json_value[0]]
