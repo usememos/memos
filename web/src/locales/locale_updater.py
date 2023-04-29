@@ -3,8 +3,8 @@
 # Date: April 9, 2023
 # Description: This script is used to patch missing translations in a locale file.
 
-# The script uses 'en.json' as the reference file to find missing keys in other locale files.
-# It iterates through each field and their entries in 'en.json' and checks if the same field/entry exists in other files.
+# The script by default uses 'en.json' as the reference file to find missing keys in other locale files. You could point other reference file by passing the file path as the first argument.
+# It iterates through each field and their entries in reference locale and checks if the same field/entry exists in other files.
 # If a field/entry is missing, the script prompts the source string, reference Google translation, and asks for confirmation or correction.
 # The resulting file is saved as './*.proposed.json', and you should review it before merging and uploading.
 
