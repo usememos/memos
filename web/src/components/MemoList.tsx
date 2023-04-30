@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "@/store/module";
@@ -86,6 +86,8 @@ const MemoList = () => {
   unpinnedMemos.sort(memoSort);
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
+  const statusRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     memoStore
       .fetchMemos()
@@ -116,7 +118,21 @@ const MemoList = () => {
     if (sortedMemos.length < DEFAULT_MEMO_LIMIT) {
       handleFetchMoreClick();
     }
-  }, [isFetching, isComplete, filter, sortedMemos.length]);
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        handleFetchMoreClick();
+        observer.unobserve(entry.target);
+      }
+    });
+    if (statusRef?.current) {
+      observer.observe(statusRef.current);
+    }
+    return () => {
+      if (statusRef?.current) {
+        observer.unobserve(statusRef.current);
+      }
+    };
+  }, [isFetching, isComplete, filter, sortedMemos.length, statusRef]);
 
   const handleFetchMoreClick = async () => {
     try {
@@ -142,7 +158,7 @@ const MemoList = () => {
           <p className="status-text">{t("memo.fetching-data")}</p>
         </div>
       ) : (
-        <div className="status-text-container">
+        <div ref={statusRef} className="status-text-container">
           <p className="status-text">
             {isComplete ? (
               sortedMemos.length === 0 ? (
