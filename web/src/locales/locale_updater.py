@@ -83,35 +83,43 @@ def __google_translate_core(src_text, src_lang='en', tgt_lang='zh-CN'):
 def machine_translate(
     source_text, source_language="en", target_language="zh-CN", __core_NMT_translate=__google_translate_core
 ):
-    # # if {{anything}} in text, from left to right translate each part, avoid {{anything}}. then concatentate them together with original {{anything}}
-    # if no {{anything}} in text, just translate the whole text
-    # if "{{" in source_text:
-    #     # index all '{{' and '}}' using finditer
-    #     left_bracket_index = [m.start() for m in re.finditer('{{', source_text)]
-    #     right_bracket_index = [m.start() for m in re.finditer('}}', source_text)]
-    #     bracket_index = list(zip(left_bracket_index, right_bracket_index))
-
-    #     # translate parts by avoiding {{anything}}
-    #     parts = []
-    #     for i in range(len(bracket_index)):
-    #         if i == 0:
-    #             parts.append(source_text[:bracket_index[i][0]])
-    #         else:
-    #             parts.append(source_text[bracket_index[i-1][1]+2:bracket_index[i][0]])  # +2 to avoid '}}' and '{{'
-    #     parts.append(source_text[bracket_index[-1][1]+2:])  # +2 to avoid '}}' and '{{'
-
-    #     # translate parts
-    #     translated_parts = [__core_NMT_translate(part, source_language, target_language) for part in parts]
-
-    #     # concatenate parts together with original {{anything}}
-    #     target_text = ""
-    #     for i in range(len(bracket_index)):
-    #         target_text += translated_parts[i] + source_text[bracket_index[i][0]:bracket_index[i][1]+2]
-    #     target_text += translated_parts[-1]
-
-    # else:
     target_text = __core_NMT_translate(source_text, source_language, target_language)
         
+    return target_text
+
+
+def machine_translate_with_chunks(
+    source_text, source_language="en", target_language="zh-CN", __core_NMT_translate=__google_translate_core
+):
+    # if {{anything}} in text, from left to right translate each part, avoid {{anything}}. then concatentate them together with original {{anything}}
+    # if no {{anything}} in text, just translate the whole text
+    if "{{" in source_text:
+        # index all '{{' and '}}' using finditer
+        left_bracket_index = [m.start() for m in re.finditer('{{', source_text)]
+        right_bracket_index = [m.start() for m in re.finditer('}}', source_text)]
+        bracket_index = list(zip(left_bracket_index, right_bracket_index))
+
+        # translate parts by avoiding {{anything}}
+        parts = []
+        for i in range(len(bracket_index)):
+            if i == 0:
+                parts.append(source_text[:bracket_index[i][0]])
+            else:
+                parts.append(source_text[bracket_index[i-1][1]+2:bracket_index[i][0]])  # +2 to avoid '}}' and '{{'
+        parts.append(source_text[bracket_index[-1][1]+2:])  # +2 to avoid '}}' and '{{'
+
+        # translate parts
+        translated_parts = [__core_NMT_translate(part, source_language, target_language) for part in parts]
+
+        # concatenate parts together with original {{anything}}
+        target_text = ""
+        for i in range(len(bracket_index)):
+            target_text += translated_parts[i] + source_text[bracket_index[i][0]:bracket_index[i][1]+2]
+        target_text += translated_parts[-1]
+
+    else:
+        target_text = __core_NMT_translate(source_text, source_language, target_language)
+
     return target_text
 
 
