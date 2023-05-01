@@ -37,19 +37,41 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, memoList, 1)
 	updatedContent := "updated memo"
-	memo, err = s.patchMemoPatch(&api.MemoPatch{
+	memo, err = s.patchMemo(&api.MemoPatch{
 		ID:      memo.ID,
 		Content: &updatedContent,
 	})
 	require.NoError(t, err)
 	require.Equal(t, updatedContent, memo.Content)
-	err = s.postMemoDelete(&api.MemoDelete{
+	err = s.deleteMemo(&api.MemoDelete{
 		ID: memo.ID,
 	})
 	require.NoError(t, err)
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
 	require.Len(t, memoList, 0)
+}
+
+func (s *TestingServer) getMemo(memoID int) (*api.Memo, error) {
+	body, err := s.get(fmt.Sprintf("/api/memo/%d", memoID), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := &bytes.Buffer{}
+	_, err = buf.ReadFrom(body)
+	if err != nil {
+		return nil, errors.Wrap(err, "fail to read response body")
+	}
+
+	type MemoCreateResponse struct {
+		Data *api.Memo `json:"data"`
+	}
+	res := new(MemoCreateResponse)
+	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
+		return nil, errors.Wrap(err, "fail to unmarshal get memo response")
+	}
+	return res.Data, nil
 }
 
 func (s *TestingServer) getMemoList() ([]*api.Memo, error) {
@@ -101,7 +123,7 @@ func (s *TestingServer) postMemoCreate(memoCreate *api.MemoCreate) (*api.Memo, e
 	return res.Data, nil
 }
 
-func (s *TestingServer) patchMemoPatch(memoPatch *api.MemoPatch) (*api.Memo, error) {
+func (s *TestingServer) patchMemo(memoPatch *api.MemoPatch) (*api.Memo, error) {
 	rawData, err := json.Marshal(&memoPatch)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal memo patch")
@@ -128,7 +150,7 @@ func (s *TestingServer) patchMemoPatch(memoPatch *api.MemoPatch) (*api.Memo, err
 	return res.Data, nil
 }
 
-func (s *TestingServer) postMemoDelete(memoDelete *api.MemoDelete) error {
+func (s *TestingServer) deleteMemo(memoDelete *api.MemoDelete) error {
 	_, err := s.delete(fmt.Sprintf("/api/memo/%d", memoDelete.ID), nil)
 	return err
 }

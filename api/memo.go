@@ -42,8 +42,9 @@ type Memo struct {
 	Pinned     bool       `json:"pinned"`
 
 	// Related fields
-	CreatorName  string      `json:"creatorName"`
-	ResourceList []*Resource `json:"resourceList"`
+	CreatorName  string          `json:"creatorName"`
+	ResourceList []*Resource     `json:"resourceList"`
+	RelationList []*MemoRelation `json:"relationList"`
 }
 
 type MemoCreate struct {
@@ -56,7 +57,8 @@ type MemoCreate struct {
 	Content    string     `json:"content"`
 
 	// Related fields
-	ResourceIDList []int `json:"resourceIdList"`
+	ResourceIDList   []int                 `json:"resourceIdList"`
+	MemoRelationList []*MemoRelationUpsert `json:"memoRelationList"`
 }
 
 type MemoPatch struct {
@@ -72,7 +74,8 @@ type MemoPatch struct {
 	Visibility *Visibility `json:"visibility"`
 
 	// Related fields
-	ResourceIDList []int `json:"resourceIdList"`
+	ResourceIDList   []int                 `json:"resourceIdList"`
+	MemoRelationList []*MemoRelationUpsert `json:"memoRelationList"`
 }
 
 type MemoFind struct {
