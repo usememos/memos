@@ -3,8 +3,8 @@
 # Date: April 9, 2023
 # Description: This script is used to patch missing translations in a locale file.
 
-# The script uses 'en.json' as the reference file to find missing keys in other locale files.
-# It iterates through each field and their entries in 'en.json' and checks if the same field/entry exists in other files.
+# The script by default uses 'en.json' as the reference file to find missing keys in other locale files. You could point other reference file by passing the file path as the first argument.
+# It iterates through each field and their entries in reference locale and checks if the same field/entry exists in other files.
 # If a field/entry is missing, the script prompts the source string, reference Google translation, and asks for confirmation or correction.
 # The resulting file is saved as './*.proposed.json', and you should review it before merging and uploading.
 
@@ -13,7 +13,9 @@
 #TODO: add other NMT system for different preference and accuracy
 
 import json
+import re
 import requests
+import urllib
 
 
 def flatten_json(nested_json, parent_key="", sep=":"):
@@ -55,24 +57,68 @@ def sort_nested_json(nested_json):
         return nested_json
 
 
-def google_translate(
-    source_text, source_language="en", target_language="zh-CN"
-):
+def __google_translate_core(src_text, src_lang='en', tgt_lang='zh-CN'):
+    '''
+    try to only translate text with no {{}} in the text
+    '''
+
     # Create post content
-    new_line = "\r\n"
-    post_content = "q=" + source_text.replace(new_line, " ")
+    post_content = {'q': src_text}
 
     # Send post request and get JSON response, using source_language and target_language
     # url = "https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=zh-CN&dt=t"
-    url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl={source_language}&tl={target_language}&dt=t"
-    headers = {"Content-type": "application/x-www-form-urlencoded"}
-    response = requests.post(url, headers=headers, data=post_content.encode("utf-8"))
+    url = f"https://translate.googleapis.com/translate_a/single?client=gtx&sl={src_lang}&tl={tgt_lang}&dt=t"
+    headers = {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'
+    }
+    response = requests.post(url, headers=headers, data=post_content)
     json_value = response.json()
 
-    # Extract translations from JSON
     translations = [item[0] for item in json_value[0]]
-    translations = [t.replace(new_line, "") for t in translations]
-    target_text = translations[0]
+    target_text = ''.join(translations)
+
+    return target_text
+
+
+def machine_translate(
+    source_text, source_language="en", target_language="zh-CN", __core_NMT_translate=__google_translate_core
+):
+    target_text = __core_NMT_translate(source_text, source_language, target_language)
+        
+    return target_text
+
+
+def machine_translate_with_chunks(
+    source_text, source_language="en", target_language="zh-CN", __core_NMT_translate=__google_translate_core
+):
+    # if {{anything}} in text, from left to right translate each part, avoid {{anything}}. then concatentate them together with original {{anything}}
+    # if no {{anything}} in text, just translate the whole text
+    if "{{" in source_text:
+        # index all '{{' and '}}' using finditer
+        left_bracket_index = [m.start() for m in re.finditer('{{', source_text)]
+        right_bracket_index = [m.start() for m in re.finditer('}}', source_text)]
+        bracket_index = list(zip(left_bracket_index, right_bracket_index))
+
+        # translate parts by avoiding {{anything}}
+        parts = []
+        for i in range(len(bracket_index)):
+            if i == 0:
+                parts.append(source_text[:bracket_index[i][0]])
+            else:
+                parts.append(source_text[bracket_index[i-1][1]+2:bracket_index[i][0]])  # +2 to avoid '}}' and '{{'
+        parts.append(source_text[bracket_index[-1][1]+2:])  # +2 to avoid '}}' and '{{'
+
+        # translate parts
+        translated_parts = [__core_NMT_translate(part, source_language, target_language) for part in parts]
+
+        # concatenate parts together with original {{anything}}
+        target_text = ""
+        for i in range(len(bracket_index)):
+            target_text += translated_parts[i] + source_text[bracket_index[i][0]:bracket_index[i][1]+2]
+        target_text += translated_parts[-1]
+
+    else:
+        target_text = __core_NMT_translate(source_text, source_language, target_language)
 
     return target_text
 
@@ -101,7 +147,7 @@ def get_code_name(json_filename):
         "uk": "uk",
         "vi": "vi",
         "zh-Hant": "zh-TW",
-        "zh": "zh-CN",
+        "zh-Hans": "zh-CN",
     }
     code_name = lang_map.get(lang_code, "")
 
@@ -163,7 +209,7 @@ if __name__ == "__main__":
             + "\033[0m"
             + " | "
             + "\033[92m"
-            + f"English: {ref_flat[key]}"
+            + f"{ref_codename}: {ref_flat[key]}"
             + "\033[0m"
         )
     print("=============================================")
@@ -183,7 +229,7 @@ if __name__ == "__main__":
         print("\033[91m" + "Missing key: " + "\033[0m" + key)
         print("\033[92m" + f"{ref_codename}: " + "\033[0m" + ref_flat[key])
         # get reference translation from google translate, print in blue
-        proposal_google = google_translate(ref_flat[key], ref_codename, tgt_codename)
+        proposal_google = machine_translate(ref_flat[key], ref_codename, tgt_codename)
         print("\033[94m" + f"Reference {tgt_codename} translation: " + "\033[0m" + proposal_google)
         # prompt user for translation, or enter to use the reference translation, in green color
         proposal = input("\033[92m" + "Enter translation: " + "\033[0m")
