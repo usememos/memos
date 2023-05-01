@@ -40,8 +40,8 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "refer memo", relationMemo.Content)
 
-	relationType := api.MemoRelationType("REFERENCE")
-	relation, err := s.postMemoRelationCreate(&api.MemoRelationCreate{
+	relationType := store.MemoRelationType("REFERENCE")
+	relation, err := s.postMemoRelationCreate(&store.MemoRelationCreate{
 		MemoID:         memo.ID,
 		RelationMemoID: relationMemo.ID,
 		Type:           relationType,
@@ -49,7 +49,7 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, relation.MemoID, 1)
 	require.Equal(t, relation.RelatedMemoID, 2)
-	require.Equal(t, relation.Type, api.MemoRelationType("REFERENCE"))
+	require.Equal(t, relation.Type, store.MemoRelationType("REFERENCE"))
 
 	memoRelationList, err := s.getMemoRelationList(&store.FindMemoRelationMessage{
 		MemoID: &memo.ID,
@@ -72,7 +72,7 @@ func TestMemoServer(t *testing.T) {
 	require.Len(t, memoRelationList, 0)
 
 	// add relation again
-	relation, err = s.postMemoRelationCreate(&api.MemoRelationCreate{
+	relation, err = s.postMemoRelationCreate(&store.MemoRelationCreate{
 		MemoID:         memo.ID,
 		RelationMemoID: relationMemo.ID,
 		Type:           relationType,
@@ -80,7 +80,7 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, relation.MemoID, 1)
 	require.Equal(t, relation.RelatedMemoID, 2)
-	require.Equal(t, relation.Type, api.MemoRelationType("REFERENCE"))
+	require.Equal(t, relation.Type, store.MemoRelationType("REFERENCE"))
 
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
@@ -113,8 +113,8 @@ func TestMemoServer(t *testing.T) {
 	require.Len(t, memoRelationList, 0)
 
 	// invalid reference type
-	relationType = api.MemoRelationType("INVALID")
-	_, err = s.postMemoRelationCreate(&api.MemoRelationCreate{
+	relationType = store.MemoRelationType("INVALID")
+	_, err = s.postMemoRelationCreate(&store.MemoRelationCreate{
 		MemoID:         memo.ID,
 		RelationMemoID: relationMemo.ID,
 		Type:           relationType,
@@ -203,7 +203,7 @@ func (s *TestingServer) postMemoDelete(memoDelete *api.MemoDelete) error {
 	return err
 }
 
-func (s *TestingServer) postMemoRelationCreate(memoRelationCreate *api.MemoRelationCreate) (*store.MemoRelationMessage, error) {
+func (s *TestingServer) postMemoRelationCreate(memoRelationCreate *store.MemoRelationCreate) (*store.MemoRelationMessage, error) {
 	rawData, err := json.Marshal(&memoRelationCreate)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal memo relation create")
