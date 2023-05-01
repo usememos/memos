@@ -102,13 +102,15 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
-		for _, memoRelationUpsert := range memoCreate.MemoRelationList {
-			if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
-				MemoID:        memo.ID,
-				RelatedMemoID: memoRelationUpsert.RelatedMemoID,
-				Type:          store.MemoRelationType(memoRelationUpsert.Type),
-			}); err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
+		if s.Profile.IsDev() {
+			for _, memoRelationUpsert := range memoCreate.MemoRelationList {
+				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+					MemoID:        memo.ID,
+					RelatedMemoID: memoRelationUpsert.RelatedMemoID,
+					Type:          store.MemoRelationType(memoRelationUpsert.Type),
+				}); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
+				}
 			}
 		}
 
@@ -168,13 +170,15 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
-		for _, memoRelationUpsert := range memoPatch.MemoRelationList {
-			if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
-				MemoID:        memo.ID,
-				RelatedMemoID: memoRelationUpsert.RelatedMemoID,
-				Type:          store.MemoRelationType(memoRelationUpsert.Type),
-			}); err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
+		if s.Profile.IsDev() {
+			for _, memoRelationUpsert := range memoPatch.MemoRelationList {
+				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+					MemoID:        memo.ID,
+					RelatedMemoID: memoRelationUpsert.RelatedMemoID,
+					Type:          store.MemoRelationType(memoRelationUpsert.Type),
+				}); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
+				}
 			}
 		}
 
