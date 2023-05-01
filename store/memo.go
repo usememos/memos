@@ -263,6 +263,20 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 		return nil, FormatError(err)
 	}
 
+	where, args := []string{"TRUE"}, []any{}
+	where, args = append(where, "memo_id = ?"), append(args, patch.ID)
+	
+	if patch. != nil {
+		where, args = append(where, "related_memo_id = ?"), append(args, find.RelatedMemoID)
+	}
+
+	query := `
+		SELECT
+			pinned
+		FROM memo_organizer
+		WHERE user_id id = ?
+	`
+
 	return &memoRaw, nil
 }
 
