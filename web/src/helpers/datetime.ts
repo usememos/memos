@@ -121,6 +121,17 @@ export const getRelativeTimeString = (time: number, locale = i18n.language, form
   const minMillis = secMillis * 60;
   const hourMillis = minMillis * 60;
   const dayMillis = hourMillis * 24;
+  // Show full date if more than 1 day ago.
+  if (pastTimeMillis >= dayMillis) {
+    return new Date(time).toLocaleDateString(locale, {
+      year: "numeric",
+      month: "numeric",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      second: "numeric",
+    });
+  }
 
   // numeric: "auto" provides "yesterday" for 1 day ago, "always" provides "1 day ago"
   const formatOpts = { style: formatStyle, numeric: "auto" } as Intl.RelativeTimeFormatOptions;
