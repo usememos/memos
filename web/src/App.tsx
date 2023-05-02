@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
 import router from "./router";
 import { useGlobalStore } from "./store/module";
-import * as storage from "./helpers/storage";
+import storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import Loading from "./pages/Loading";
 

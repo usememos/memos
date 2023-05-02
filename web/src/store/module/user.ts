@@ -1,6 +1,6 @@
 import { camelCase } from "lodash-es";
 import * as api from "@/helpers/api";
-import * as storage from "@/helpers/storage";
+import storage from "@/helpers/storage";
 import { UNKNOWN_ID } from "@/helpers/consts";
 import { getSystemColorScheme } from "@/helpers/utils";
 import store, { useAppSelector } from "..";
