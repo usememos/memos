@@ -373,8 +373,8 @@
     "copy": "복사"
   },
   "heatmap": {
-    "memo-in": "{{period}}동안 메모 {{amount}}개 작성",
-    "memos-in": "{{period}}동안 메모 {{amount}}개 작성",
+    "memo-in": "동안 메모 {{amount}}개 작성",
+    "memos-in": "동안 메모 {{amount}}개 작성",
     "memo-on": "{{date}}에 메모 {{amount}}개 작성",
     "memos-on": "{{date}}에 메모 {{amount}}개 작성",
     "day": "일",

@@ -110,7 +110,7 @@
     "reset-link-prompt": "Tem certeza de que deseja redefinir o link?\nIsso quebrará todos os vínculos atuais.\n\nESTA AÇÃO É IRREVERSÍVEL❗",
     "delete-resource": "Deletar recurso",
     "linked-amount": "Quantidade de vínculos",
-    "warning-text": "Tem certeza de que deseja deletar este recurso?\n\nESTA AÇÃO É IRREVERSÍVEL❗",    
+    "warning-text": "Tem certeza de que deseja deletar este recurso?\n\nESTA AÇÃO É IRREVERSÍVEL❗",
     "warning-text-unused": "Tem certeza de que deseja deletar este recurso não utilizado?\n\nESTA AÇÃO É IRREVERSÍVEL❗",
     "no-unused-resources": "Nenhum recurso não utilizado",
     "delete-selected-resources": "Deletar recursos selecionados",
@@ -373,8 +373,8 @@
     "copy": "Copiar"
   },
   "heatmap": {
-    "memo-in": "{{amount}} memo em {{period}}",
-    "memos-in": "{{amount}} memos em {{period}}",
+    "memo-in": "memo em {{period}}",
+    "memos-in": "memos em {{period}}",
     "memo-on": "{{amount}} memo em {{date}}",
     "memos-on": "{{amount}} memos em {{date}}",
     "day": "dia",

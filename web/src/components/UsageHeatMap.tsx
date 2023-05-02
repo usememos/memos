@@ -110,7 +110,7 @@ const UsageHeatMap = () => {
 
   // This interpolation is not being used because of the current styling,
   // but it can improve translation quality by giving it a more meaningful context
-  const tMemoInOpts = { amount: "", period: "", date: "" };
+  const tMemoInOpts = { amount: memoAmount, period: "", date: "" };
 
   return (
     <>

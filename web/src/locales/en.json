@@ -110,7 +110,7 @@
     "reset-link-prompt": "Are you sure to reset the link?\nThis will break all current link usages.\n\nTHIS ACTION IS IRREVERSIBLE❗",
     "delete-resource": "Delete Resource",
     "linked-amount": "Linked amount",
-    "warning-text": "Are you sure to delete this resource?\n\nTHIS ACTION IS IRREVERSIBLE❗",    
+    "warning-text": "Are you sure to delete this resource?\n\nTHIS ACTION IS IRREVERSIBLE❗",
     "warning-text-unused": "Are you sure to delete these unused resources?\n\nTHIS ACTION IS IRREVERSIBLE❗",
     "no-unused-resources": "No unused resources",
     "delete-selected-resources": "Delete Selected Resources",
@@ -373,8 +373,8 @@
     "copy": "Copy"
   },
   "heatmap": {
-    "memo-in": "{{amount}} memo in {{period}}",
-    "memos-in": "{{amount}} memos in {{period}}",
+    "memo-in": "memo in {{period}}",
+    "memos-in": "memos in {{period}}",
     "memo-on": "{{amount}} memo on {{date}}",
     "memos-on": "{{amount}} memos on {{date}}",
     "day": "day",
