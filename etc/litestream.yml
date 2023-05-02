@@ -1,0 +1,9 @@
+dbs:
+  - path: /var/opt/memos/memos_prod.db
+    replicas:
+      - type: s3
+        bucket: mymemos
+        path: memos_prod.db
+        access-key-id: <your aws access key>
+        secret-access-key: <your aws access secret>
+        force-path-style: true

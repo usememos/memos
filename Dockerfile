@@ -25,6 +25,13 @@ RUN go build -o memos ./main.go
 FROM alpine:3.16 AS monolithic
 WORKDIR /usr/local/memos
 
+# Install litestream
+ADD https://github.com/benbjohnson/litestream/releases/download/v0.3.9/litestream-v0.3.9-linux-amd64-static.tar.gz /tmp/litestream.tar.gz
+RUN tar -C /usr/local/bin -xzf /tmp/litestream.tar.gz
+
+# Add litestream config
+COPY etc/litestream.yml /etc/litestream.yml
+
 RUN apk add --no-cache tzdata
 ENV TZ="UTC"
 
@@ -35,4 +42,9 @@ EXPOSE 5230
 # Directory to store the data, which can be referenced as the mounting point.
 RUN mkdir -p /var/opt/memos
 
-ENTRYPOINT ["./memos", "--mode", "prod", "--port", "5230"]
+# Copy startup script and make it executable.
+COPY scripts/run.sh ./run.sh
+RUN chmod +x ./run.sh
+
+# Litestream spawns memos as subprocess.
+CMD ["./run.sh"]
