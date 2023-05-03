@@ -265,11 +265,11 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 	}
 
 	pinnedQuery := `
-			SELECT
-				pinned
-			FROM memo_organizer
-			WHERE memo_id = ? AND user_id = ?
-		`
+		SELECT
+			pinned
+		FROM memo_organizer
+		WHERE memo_id = ? AND user_id = ?
+	`
 	row, err := tx.QueryContext(ctx, pinnedQuery, patch.ID, memoRaw.CreatorID)
 	if err != nil {
 		return nil, FormatError(err)
