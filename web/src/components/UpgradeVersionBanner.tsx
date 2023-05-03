@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { compare } from "semver";
 import * as api from "@/helpers/api";
-import * as storage from "@/helpers/storage";
+import storage from "@/helpers/storage";
 import { useGlobalStore } from "@/store/module";
 import Icon from "./Icon";
 

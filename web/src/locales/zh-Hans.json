@@ -98,7 +98,7 @@
     "username": "用户名",
     "vacuum": "清理未使用资源",
     "version": "版本",
-    "visibility": "可见度",
+    "visibility": "可见性",
     "yourself": "你自己"
   },
   "daily-review": {
@@ -155,7 +155,7 @@
       "tag": "标签",
       "text": "文本",
       "type": "类型",
-      "visibility": "可见度"
+      "visibility": "可见性"
     },
     "value": {
       "has-attachment": "包含附件",
@@ -166,9 +166,9 @@
   "heatmap": {
     "day": "天",
     "days": "天",
-    "memo-in": "{{period}} 记了 {{amount}} 条备忘录",
+    "memo-in": " 条 memos",
+    "memos-in": " 条 memos",
     "memo-on": "{{date}} 记了 {{amount}} 条备忘录",
-    "memos-in": "{{period}} 记了 {{amount}} 条备忘录",
     "memos-on": "{{date}} 记了 {{amount}} 条备忘录"
   },
   "memo": {
@@ -324,7 +324,6 @@
       "daily-review-time-offset": "每日回顾时间偏移",
       "default-memo-sort-option": "备忘录显示时间",
       "default-memo-visibility": "默认备忘录可见性",
-      "default-resource-visibility": "默认资源可见度",
       "editor-font-style": "编辑器字体样式",
       "enable-double-click": "开启双击编辑",
       "enable-folding-memo": "开启折叠备忘录",

@@ -109,6 +109,7 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	s.registerStorageRoutes(apiGroup)
 	s.registerIdentityProviderRoutes(apiGroup)
 	s.registerOpenAIRoutes(apiGroup)
+	s.registerMemoRelationRoutes(apiGroup)
 
 	return s, nil
 }

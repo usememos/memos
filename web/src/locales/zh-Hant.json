@@ -110,7 +110,7 @@
     "reset-link-prompt": "您確定要重設連結？\n這將會破壞所有目前的使用中的連結。\n\n此動作為不可逆❗",
     "delete-resource": "刪除資源",
     "linked-amount": "連結的 Memo 數量",
-    "warning-text": "您確定要刪除此資源？\n\n此動作為不可逆❗",    
+    "warning-text": "您確定要刪除此資源？\n\n此動作為不可逆❗",
     "warning-text-unused": "您確定要刪除這些未使用的資源？\n\n此動作為不可逆❗",
     "no-unused-resources": "無未使用的資源",
     "delete-selected-resources": "刪除所選的資源",
@@ -373,8 +373,8 @@
     "copy": "複製"
   },
   "heatmap": {
-    "memo-in": "{{amount}} memo in {{period}}",
-    "memos-in": "{{amount}} memos in {{period}}",
+    "memo-in": "memo in {{period}}",
+    "memos-in": "memos in {{period}}",
     "memo-on": "{{amount}} memo on {{date}}",
     "memos-on": "{{amount}} memos on {{date}}",
     "day": "天",

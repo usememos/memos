@@ -11,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/store"
 
 	"github.com/labstack/echo/v4"
 )
@@ -101,6 +102,18 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
+		if s.Profile.IsDev() {
+			for _, memoRelationUpsert := range memoCreate.MemoRelationList {
+				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+					MemoID:        memo.ID,
+					RelatedMemoID: memoRelationUpsert.RelatedMemoID,
+					Type:          store.MemoRelationType(memoRelationUpsert.Type),
+				}); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
+				}
+			}
+		}
+
 		memo, err = s.Store.ComposeMemo(ctx, memo)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
@@ -154,6 +167,18 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				ResourceID: resourceID,
 			}); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
+			}
+		}
+
+		if s.Profile.IsDev() {
+			for _, memoRelationUpsert := range memoPatch.MemoRelationList {
+				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+					MemoID:        memo.ID,
+					RelatedMemoID: memoRelationUpsert.RelatedMemoID,
+					Type:          store.MemoRelationType(memoRelationUpsert.Type),
+				}); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
+				}
 			}
 		}
 
