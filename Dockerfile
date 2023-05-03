@@ -4,7 +4,7 @@ WORKDIR /frontend-build
 
 COPY ./web/package.json ./web/pnpm-lock.yaml ./
 
-RUN npm install -g pnpm && pnpm i --frozen-lockfile
+RUN corepack enable && pnpm i --frozen-lockfile
 
 COPY ./web/ .
 
