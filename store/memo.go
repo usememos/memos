@@ -277,13 +277,13 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 	defer row.Close()
 
 	if !row.Next() {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
-	}
-
-	if err := row.Scan(
-		&memoRaw.Pinned,
-	); err != nil {
-		return nil, FormatError(err)
+		memoRaw.Pinned = false
+	} else {
+		if err := row.Scan(
+			&memoRaw.Pinned,
+		); err != nil {
+			return nil, FormatError(err)
+		}
 	}
 
 	if err := row.Err(); err != nil {
