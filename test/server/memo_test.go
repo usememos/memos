@@ -43,6 +43,20 @@ func TestMemoServer(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, updatedContent, memo.Content)
+	require.Equal(t, false, memo.Pinned)
+	memo, err = s.postMemosOrganizer(&api.MemoOrganizerUpsert{
+		MemoID: memo.ID,
+		UserID: user.ID,
+		Pinned: true,
+	})
+	require.NoError(t, err)
+	memo, err = s.patchMemoPatch(&api.MemoPatch{
+		ID:      memo.ID,
+		Content: &updatedContent,
+	})
+	require.NoError(t, err)
+	require.Equal(t, updatedContent, memo.Content)
+	require.Equal(t, true, memo.Pinned)
 	err = s.postMemoDelete(&api.MemoDelete{
 		ID: memo.ID,
 	})
@@ -131,4 +145,31 @@ func (s *TestingServer) patchMemoPatch(memoPatch *api.MemoPatch) (*api.Memo, err
 func (s *TestingServer) postMemoDelete(memoDelete *api.MemoDelete) error {
 	_, err := s.delete(fmt.Sprintf("/api/memo/%d", memoDelete.ID), nil)
 	return err
+}
+
+func (s *TestingServer) postMemosOrganizer(memosOrganizer *api.MemoOrganizerUpsert) (*api.Memo, error) {
+	rawData, err := json.Marshal(&memosOrganizer)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to marshal memos organizer")
+	}
+	reader := bytes.NewReader(rawData)
+	body, err := s.post(fmt.Sprintf("/api/memo/%d/organizer", memosOrganizer.MemoID), reader, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	buf := &bytes.Buffer{}
+	_, err = buf.ReadFrom(body)
+	if err != nil {
+		return nil, errors.Wrap(err, "fail to read response body")
+	}
+
+	type MemoOrganizerResponse struct {
+		Data *api.Memo `json:"data"`
+	}
+	res := new(MemoOrganizerResponse)
+	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
+		return nil, errors.Wrap(err, "fail to unmarshal organizer memo create response")
+	}
+	return res.Data, err
 }
