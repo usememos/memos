@@ -266,7 +266,6 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 
 	where, args := []string{"TRUE"}, []any{}
 	where, args = append(where, "memo_id = ?"), append(args, patch.ID)
-
 	where, args = append(where, "user_id = ?"), append(args, memoRaw.CreatorID)
 
 	row, err := tx.QueryContext(ctx, `SELECT
