@@ -1,30 +1,26 @@
-import { isNumber, last, toLower, uniq } from "lodash-es";
+import { isNumber, last, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "@/labs/marked";
-import { deleteMemoResource, upsertMemoResource } from "@/helpers/api";
-import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
-import { useEditorStore, useGlobalStore, useFilterStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
-import * as storage from "@/helpers/storage";
-import Icon from "./Icon";
-import Selector from "./kit/Selector";
-import Editor, { EditorRefActions } from "./Editor/Editor";
-import ResourceIcon from "./ResourceIcon";
-import showResourcesSelectorDialog from "./ResourcesSelectorDialog";
-import showCreateResourceDialog from "./CreateResourceDialog";
-import "@/less/memo-editor.less";
+import { upsertMemoResource } from "@/helpers/api";
+import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
+import { useEditorStore, useFilterStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
+import storage from "@/helpers/storage";
 import { clearContentQueryParam, getContentQueryParam } from "@/helpers/utils";
+import Icon from "../Icon";
+import Editor, { EditorRefActions } from "./Editor";
+import TagSelector from "./ActionButton/TagSelector";
+import ResourceSelector from "./ActionButton/ResourceSelector";
+import MemoVisibilitySelector from "./ActionButton/MemoVisibilitySelector";
+import "@/less/memo-editor.less";
+import ResourceListView from "./ResourceListView";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
 
-const getEditorContentCache = (): string => {
-  return storage.get(["editorContentCache"]).editorContentCache ?? "";
-};
-
 const getInitialContent = (): string => {
-  return getContentQueryParam() ?? getEditorContentCache();
+  return getContentQueryParam() ?? storage.get(["editorContentCache"]).editorContentCache ?? "";
 };
 
 const setEditorContentCache = (content: string) => {
@@ -47,9 +43,6 @@ const MemoEditor = () => {
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
   const resourceStore = useResourceStore();
-  const {
-    state: { systemStatus },
-  } = useGlobalStore();
 
   const [state, setState] = useState<State>({
     fullscreen: false,
@@ -61,22 +54,8 @@ const MemoEditor = () => {
   const editorState = editorStore.state;
   const prevEditorStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
-  const tagSelectorRef = useRef<HTMLDivElement>(null);
   const user = userStore.state.user as User;
   const setting = user.setting;
-  const tags = tagStore.state.tags;
-  const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
-    return {
-      value: item.value,
-      text: t(`memo.visibility.${toLower(item.value)}`),
-    };
-  });
-
-  useEffect(() => {
-    if (systemStatus.disablePublicMemos) {
-      editorStore.setMemoVisibility("PRIVATE");
-    }
-  }, [systemStatus.disablePublicMemos]);
 
   useEffect(() => {
     const { editingMemoIdCache } = storage.get(["editingMemoIdCache"]);
@@ -338,38 +317,18 @@ const MemoEditor = () => {
     editorRef.current?.scrollToCursor();
   };
 
-  const handleUploadFileBtnClick = () => {
-    showCreateResourceDialog({
-      onConfirm: (resourceList) => {
-        editorStore.setResourceList([...editorState.resourceList, ...resourceList]);
-      },
-    });
-  };
-
-  const handleFullscreenBtnClick = () => {
+  const handleFullscreenBtnClick = useCallback(() => {
     setState((state) => {
       return {
         ...state,
         fullscreen: !state.fullscreen,
       };
     });
-  };
+  }, []);
 
   const handleTagSelectorClick = useCallback((tag: string) => {
     editorRef.current?.insertText(`#${tag} `);
   }, []);
-
-  const handleDeleteResource = async (resourceId: ResourceId) => {
-    editorStore.setResourceList(editorState.resourceList.filter((resource) => resource.id !== resourceId));
-    if (editorState.editMemoId) {
-      await deleteMemoResource(editorState.editMemoId, resourceId);
-    }
-  };
-
-  const handleMemoVisibilityOptionChanged = async (value: string) => {
-    const visibilityValue = value as Visibility;
-    editorStore.setMemoVisibility(visibilityValue);
-  };
 
   const handleEditorFocus = () => {
     editorRef.current?.focus();
@@ -407,70 +366,22 @@ const MemoEditor = () => {
       <Editor ref={editorRef} {...editorConfig} />
       <div className="common-tools-wrapper">
         <div className="common-tools-container">
-          <div className="action-btn tag-action">
-            <Icon.Hash className="icon-img" />
-            <div ref={tagSelectorRef} className="tag-list">
-              {tags.length > 0 ? (
-                tags.map((tag) => {
-                  return (
-                    <span className="item-container" onClick={() => handleTagSelectorClick(tag)} key={tag}>
-                      #{tag}
-                    </span>
-                  );
-                })
-              ) : (
-                <p className="tip-text italic" onClick={(e) => e.stopPropagation()}>
-                  No tags found
-                </p>
-              )}
-            </div>
-          </div>
+          <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
           <button className="action-btn">
             <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
           </button>
           <button className="action-btn">
             <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
           </button>
-          <div className="action-btn resource-btn">
-            <Icon.FileText className="icon-img" />
-            <div className="resource-action-list">
-              <div className="resource-action-item" onClick={handleUploadFileBtnClick}>
-                <Icon.Plus className="icon-img" />
-                <span>{t("common.create")}</span>
-              </div>
-              <div className="resource-action-item" onClick={showResourcesSelectorDialog}>
-                <Icon.Database className="icon-img" />
-                <span>{t("editor.resources")}</span>
-              </div>
-            </div>
-          </div>
+          <ResourceSelector />
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>
         </div>
       </div>
-      {editorState.resourceList && editorState.resourceList.length > 0 && (
-        <div className="resource-list-wrapper">
-          {editorState.resourceList.map((resource) => {
-            return (
-              <div key={resource.id} className="resource-container">
-                <ResourceIcon resourceType="resource.type" className="icon-img" />
-                <span className="name-text">{resource.filename}</span>
-                <Icon.X className="close-icon" onClick={() => handleDeleteResource(resource.id)} />
-              </div>
-            );
-          })}
-        </div>
-      )}
+      <ResourceListView />
       <div className="editor-footer-container">
-        <Selector
-          className="visibility-selector"
-          value={editorState.memoVisibility}
-          tooltipTitle={t("memo.visibility.disabled")}
-          dataSource={memoVisibilityOptionSelectorItems}
-          disabled={systemStatus.disablePublicMemos}
-          handleValueChanged={handleMemoVisibilityOptionChanged}
-        />
+        <MemoVisibilitySelector />
         <div className="buttons-container">
           <button className={`action-btn cancel-btn ${isEditing ? "" : "!hidden"}`} onClick={handleCancelEdit}>
             {t("editor.cancel-edit")}

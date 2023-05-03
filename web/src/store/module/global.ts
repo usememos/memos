@@ -1,5 +1,5 @@
 import * as api from "@/helpers/api";
-import * as storage from "@/helpers/storage";
+import storage from "@/helpers/storage";
 import i18n from "@/i18n";
 import { findNearestLanguageMatch } from "@/utils/i18n";
 import store, { useAppSelector } from "../";
