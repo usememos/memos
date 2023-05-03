@@ -36,6 +36,33 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
   const [fileList, setFileList] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const handleReorderFileList = (fileName: string, direction: "up" | "down") => {
+    const fileIndex = fileList.findIndex((file) => file.name === fileName);
+    if (fileIndex === -1) {
+      return;
+    }
+
+    const newFileList = [...fileList];
+
+    if (direction === "up") {
+      if (fileIndex === 0) {
+        return;
+      }
+      const temp = newFileList[fileIndex - 1];
+      newFileList[fileIndex - 1] = newFileList[fileIndex];
+      newFileList[fileIndex] = temp;
+    } else if (direction === "down") {
+      if (fileIndex === fileList.length - 1) {
+        return;
+      }
+      const temp = newFileList[fileIndex + 1];
+      newFileList[fileIndex + 1] = newFileList[fileIndex];
+      newFileList[fileIndex] = temp;
+    }
+
+    setFileList(newFileList);
+  };
+
   const handleCloseDialog = () => {
     if (onCancel) {
       onCancel();
@@ -124,7 +151,12 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
         if (!fileInputRef.current || !fileInputRef.current.files) {
           return;
         }
-        for (const file of fileInputRef.current.files) {
+        const filesOnInput = Array.from(fileInputRef.current.files);
+        for (const file of fileList) {
+          const fileOnInput = filesOnInput.find((fileOnInput) => fileOnInput.name === file.name);
+          if (!fileOnInput) {
+            continue;
+          }
           const resource = await resourceStore.createResourceWithBlob(file);
           createdResourceList.push(resource);
         }
@@ -182,10 +214,30 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
               />
             </div>
             <List size="sm" sx={{ width: "100%" }}>
-              {fileList.map((file) => (
+              {fileList.map((file, index) => (
                 <Tooltip title={file.name} key={file.name} placement="top">
-                  <ListItem>
+                  <ListItem className="flex justify-between">
                     <Typography noWrap>{file.name}</Typography>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => {
+                          handleReorderFileList(file.name, "up");
+                        }}
+                        disabled={index === 0}
+                        className="disabled:opacity-50"
+                      >
+                        <Icon.ArrowUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleReorderFileList(file.name, "down");
+                        }}
+                        disabled={index === fileList.length - 1}
+                        className="disabled:opacity-50"
+                      >
+                        <Icon.ArrowDown className="w-4 h-4" />
+                      </button>
+                    </div>
                   </ListItem>
                 </Tooltip>
               ))}

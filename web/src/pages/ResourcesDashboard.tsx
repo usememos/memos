@@ -224,7 +224,15 @@ const ResourcesDashboard = () => {
                 <Icon.Trash2 className="w-4 h-auto" />
               </Button>
             )}
-            <Button onClick={() => showCreateResourceDialog({})}>
+            <Button
+              onClick={() =>
+                showCreateResourceDialog({
+                  onConfirm: () => {
+                    resourceStore.fetchResourceList();
+                  },
+                })
+              }
+            >
               <Icon.Plus className="w-4 h-auto" />
             </Button>
             <Dropdown
