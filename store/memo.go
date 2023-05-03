@@ -248,7 +248,7 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 		UPDATE memo
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, creator_id, created_ts, updated_ts, row_status, content, visibility
+		RETURNING id, creator_id, created_ts, updated_ts, row_status, content, visibility, creator_id
 	`
 	var memoRaw memoRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
@@ -259,23 +259,37 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 		&memoRaw.RowStatus,
 		&memoRaw.Content,
 		&memoRaw.Visibility,
+		&memoRaw.CreatorID,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
 	where, args := []string{"TRUE"}, []any{}
 	where, args = append(where, "memo_id = ?"), append(args, patch.ID)
-	
-	if patch. != nil {
-		where, args = append(where, "related_memo_id = ?"), append(args, find.RelatedMemoID)
+
+	where, args = append(where, "user_id = ?"), append(args, memoRaw.CreatorID)
+
+	row, err := tx.QueryContext(ctx, `SELECT
+		pinned
+	FROM memo_organizer
+	WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	if err := row.Err(); err != nil {
+		return nil, FormatError(err)
+	}
+	defer row.Close()
+
+	if !row.Next() {
+		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
 	}
 
-	query := `
-		SELECT
-			pinned
-		FROM memo_organizer
-		WHERE user_id id = ?
-	`
+	if err := row.Scan(
+		&memoRaw.Pinned,
+	); err != nil {
+		return nil, FormatError(err)
+	}
 
 	return &memoRaw, nil
 }
