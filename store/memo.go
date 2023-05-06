@@ -253,7 +253,7 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 		UPDATE memo
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, creator_id, created_ts, updated_ts, row_status, content, visibility, creator_id
+		RETURNING id, creator_id, created_ts, updated_ts, row_status, content, visibility
 	`
 	var memoRaw memoRaw
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
@@ -264,7 +264,6 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 		&memoRaw.RowStatus,
 		&memoRaw.Content,
 		&memoRaw.Visibility,
-		&memoRaw.CreatorID,
 	); err != nil {
 		return nil, FormatError(err)
 	}
