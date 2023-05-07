@@ -2,8 +2,7 @@ import * as api from "@/helpers/api";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import store, { useAppSelector } from "../";
 import { patchResource, setResources, deleteResource, upsertResources } from "../reducer/resource";
-
-const MAX_FILE_SIZE = 32 << 20;
+import { useGlobalStore } from "./global";
 
 const convertResponseModelResource = (resource: Resource): Resource => {
   return {
@@ -15,6 +14,8 @@ const convertResponseModelResource = (resource: Resource): Resource => {
 
 export const useResourceStore = () => {
   const state = useAppSelector((state) => state.resource);
+  const globalStore = useGlobalStore();
+  const MAX_FILE_SIZE = globalStore.getMaxFileSize() << 20;
 
   return {
     state,

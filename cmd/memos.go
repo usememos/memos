@@ -31,10 +31,11 @@ const (
 )
 
 var (
-	profile *_profile.Profile
-	mode    string
-	port    int
-	data    string
+	profile     *_profile.Profile
+	mode        string
+	port        int
+	data        string
+	maxFileSize int
 
 	rootCmd = &cobra.Command{
 		Use:   "memos",
@@ -118,6 +119,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "demo", `mode of server, can be "prod" or "dev" or "demo"`)
 	rootCmd.PersistentFlags().IntVarP(&port, "port", "p", 8081, "port of server")
 	rootCmd.PersistentFlags().StringVarP(&data, "data", "d", "", "data directory")
+	rootCmd.PersistentFlags().IntVarP(&maxFileSize, "max-file-size", "s", 32, "max file size in MB")
 
 	err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode"))
 	if err != nil {
@@ -131,9 +133,14 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	err = viper.BindPFlag("max_file_size", rootCmd.PersistentFlags().Lookup("max-file-size"))
+	if err != nil {
+		panic(err)
+	}
 
 	viper.SetDefault("mode", "demo")
 	viper.SetDefault("port", 8081)
+	viper.SetDefault("max_file_size", 200)
 	viper.SetEnvPrefix("memos")
 
 	setupCmd.Flags().String(setupCmdFlagHostUsername, "", "Owner username")
@@ -155,6 +162,7 @@ func initConfig() {
 	println("Server profile")
 	println("dsn:", profile.DSN)
 	println("port:", profile.Port)
+	println("max-file-size (MB):", profile.MaxFileSize)
 	println("mode:", profile.Mode)
 	println("version:", profile.Version)
 	println("---")

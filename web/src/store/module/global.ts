@@ -70,6 +70,9 @@ export const useGlobalStore = () => {
       store.dispatch(setGlobalState({ systemStatus: systemStatus }));
       return systemStatus;
     },
+    getMaxFileSize: () => {
+      return state.systemStatus.profile.maxFileSize;
+    },
     setSystemStatus: (systemStatus: Partial<SystemStatus>) => {
       store.dispatch(
         setGlobalState({

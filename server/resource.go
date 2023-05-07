@@ -24,11 +24,6 @@ import (
 	"go.uber.org/zap"
 )
 
-const (
-	// The max file size is 32MB.
-	maxFileSize = 32 << 20
-)
-
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
 
 func (s *Server) registerResourceRoutes(g *echo.Group) {
@@ -67,7 +62,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		if err := c.Request().ParseMultipartForm(maxFileSize); err != nil {
+		if err := c.Request().ParseMultipartForm(int64(s.Profile.MaxFileSize) << 20); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Upload file overload max size").SetInternal(err)
 		}
 

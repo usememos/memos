@@ -22,6 +22,8 @@ type Profile struct {
 	DSN string `json:"-"`
 	// Version is the current version of server
 	Version string `json:"version"`
+	// MaxFileSize is the max file size in MB
+	MaxFileSize int `json:"maxFileSize" mapstructure:"max_file_size"`
 }
 
 func (p *Profile) IsDev() bool {

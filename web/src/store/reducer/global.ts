@@ -16,6 +16,7 @@ const globalSlice = createSlice({
       profile: {
         mode: "demo",
         version: "",
+        maxFileSize: 32,
       },
       dbSize: 0,
       allowSignUp: false,

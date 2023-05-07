@@ -1,6 +1,7 @@
 interface Profile {
   mode: string;
   version: string;
+  maxFileSize: number;
 }
 
 interface CustomizedProfile {
