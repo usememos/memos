@@ -420,14 +420,23 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 
 		blob := resource.Blob
 		if resource.InternalPath != "" {
-			src, err := os.Open(resource.InternalPath)
+			resourcePath := resource.InternalPath
+			if c.QueryParam("thumbnail") == "1" && (resource.Type == "image/jpeg" || resource.Type == "image/png") {
+				ext := filepath.Ext(resourcePath)
+				thumbnailPath := strings.TrimSuffix(resourcePath, ext) + "-thumbnail" + ext
+				if _, err := os.Stat(thumbnailPath); err == nil {
+					resourcePath = thumbnailPath
+				}
+			}
+
+			src, err := os.Open(resourcePath)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", resource.InternalPath)).SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", resourcePath)).SetInternal(err)
 			}
 			defer src.Close()
 			blob, err = io.ReadAll(src)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", resource.InternalPath)).SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", resourcePath)).SetInternal(err)
 			}
 		}
 
