@@ -157,9 +157,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 
 			fileBytes, err := io.ReadAll(sourceFile)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read resource file").SetInternal(err)
+			}
+
 			err = os.WriteFile(filePath, fileBytes, 0666)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create file").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write resource file").SetInternal(err)
 			}
 
 			if filetype == "image/jpeg" || filetype == "image/png" {

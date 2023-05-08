@@ -57,6 +57,9 @@ func ResizeImageBlob(data []byte, maxSize int, mime string) ([]byte, error) {
 	case "image/png":
 		err = png.Encode(&newBuffer, newImage)
 	}
+	if err != nil {
+		return nil, err
+	}
 
 	return newBuffer.Bytes(), nil
 }
