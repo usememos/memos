@@ -335,6 +335,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if err != nil {
 				log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
 			}
+
+			ext := filepath.Ext(resource.InternalPath)
+			thumbnailPath := strings.TrimSuffix(resource.InternalPath, ext) + "-thumbnail" + ext
+			err = os.Remove(thumbnailPath)
+			if err != nil {
+				log.Warn(fmt.Sprintf("failed to delete local file with path %s", thumbnailPath), zap.Error(err))
+			}
 		}
 
 		resourceDelete := &api.ResourceDelete{
