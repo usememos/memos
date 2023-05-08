@@ -172,7 +172,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate image thumbnail").SetInternal(err)
 				}
 
-				thumbnailPath := filepath.Join(dir, publicID+"-thumbnail"+filepath.Ext(file.Filename))
+				thumbnailPath := filepath.Join(dir, publicID+"-thumbnail"+path.Ext(filePath))
 				err = os.WriteFile(thumbnailPath, thumbnailBytes, 0666)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create thumbnail file").SetInternal(err)
