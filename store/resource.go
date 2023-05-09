@@ -160,7 +160,7 @@ func (s *Store) DeleteResource(ctx context.Context, delete *api.ResourceDelete) 
 	if err := deleteResource(ctx, tx, delete); err != nil {
 		return err
 	}
-	if err := vacuum(ctx, tx); err != nil {
+	if err := s.vacuumImpl(ctx, tx); err != nil {
 		return err
 	}
 

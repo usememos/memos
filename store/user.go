@@ -163,7 +163,7 @@ func (s *Store) DeleteUser(ctx context.Context, delete *api.UserDelete) error {
 	if err := deleteUser(ctx, tx, delete); err != nil {
 		return err
 	}
-	if err := vacuum(ctx, tx); err != nil {
+	if err := s.vacuumImpl(ctx, tx); err != nil {
 		return err
 	}
 
