@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useUserStore } from "@/store/module";
+import { useGlobalStore, useUserStore } from "@/store/module";
 import Dropdown from "./kit/Dropdown";
 import Icon from "./Icon";
 import UserAvatar from "./UserAvatar";
@@ -9,7 +9,9 @@ import showSettingDialog from "./SettingDialog";
 
 const UserBanner = () => {
   const { t } = useTranslation();
+  const globalStore = useGlobalStore();
   const userStore = useUserStore();
+  const { systemStatus } = globalStore.state;
   const { user } = userStore.state;
   const [username, setUsername] = useState("Memos");
 
@@ -39,7 +41,9 @@ const UserBanner = () => {
         trigger={
           <div className="px-3 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-lg hover:shadow hover:bg-white dark:hover:bg-zinc-700">
             <UserAvatar avatarUrl={user?.avatarUrl} />
-            <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{username}</span>
+            <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">
+              {userStore.isVisitorMode() ? systemStatus.customizedProfile.name : username}
+            </span>
             {user?.role === "HOST" ? (
               <span className="text-xs px-1 bg-blue-600 dark:bg-blue-800 rounded text-white dark:text-gray-200 shadow">MOD</span>
             ) : null}
