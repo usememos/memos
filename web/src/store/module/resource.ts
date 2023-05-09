@@ -48,7 +48,7 @@ export const useResourceStore = () => {
     async createResourceWithBlob(file: File): Promise<Resource> {
       const { name: filename, size } = file;
       if (size > MAX_FILE_SIZE) {
-        return Promise.reject("overload max size: 32MB");
+        return Promise.reject(`overload max size: ${MAX_FILE_SIZE}MB`);
       }
 
       const formData = new FormData();
@@ -64,7 +64,7 @@ export const useResourceStore = () => {
       for (const file of files) {
         const { name: filename, size } = file;
         if (size > MAX_FILE_SIZE) {
-          return Promise.reject(`${filename} overload max size: 32MB`);
+          return Promise.reject(`${filename} overload max size: ${MAX_FILE_SIZE}MB`);
         }
 
         const formData = new FormData();
