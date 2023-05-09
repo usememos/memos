@@ -184,6 +184,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					CreatorID:    userID,
 					Filename:     filename,
 					Type:         filetype,
+					Size:         size,
 					ExternalLink: link,
 				}
 			} else {
