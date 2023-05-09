@@ -6,7 +6,7 @@ import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import RequiredBadge from "./RequiredBadge";
-import LearnMore from "./LearnMore";
+import HelpButton from "./kit/HelpButton";
 
 interface Props extends DialogProps {
   storage?: ObjectStorage;
@@ -106,15 +106,12 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">
-          {t("setting.storage-section." + (isCreating ? "create" : "update") + "-storage")}
-          <LearnMore className="ml-2" url="https://usememos.com/docs/storage" />
-        </p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
+        <span className="title-text ml-auto">{t("setting.storage-section." + (isCreating ? "create" : "update") + "-storage")}</span>
+        <button className="btn close-btn ml-auto" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
       </div>
-      <div className="dialog-content-container">
+      <div className="dialog-content-container min-w-[19rem]">
         <Typography className="!mb-1" level="body2">
           {t("common.name")}
           <RequiredBadge />
@@ -186,13 +183,12 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           onChange={(e) => setPartialS3Config({ bucket: e.target.value })}
           fullWidth
         />
-        <Typography className="!mb-1" level="body2">
-          {t("setting.storage-section.path")}
-        </Typography>
-        <Typography className="!mb-1" level="body2">
-          <p className="text-sm text-gray-400 ml-1">{t("setting.storage-section.path-description")}</p>
-          <LearnMore className="ml-2" url="https://usememos.com/docs/local-storage" />
-        </Typography>
+        <div className="flex flex-row">
+          <Typography className="!mb-1" level="body2">
+            {t("setting.storage-section.path")}
+          </Typography>
+          <HelpButton text={t("setting.storage-section.path-description")} url="https://usememos.com/docs/local-storage" />
+        </div>
         <Input
           className="mb-2"
           placeholder={t("setting.storage-section.path-placeholder") + "/{year}/{month}/{filename}"}

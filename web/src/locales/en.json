@@ -60,7 +60,14 @@
     "visibility": "Visibility",
     "learn-more": "Learn more",
     "e.g": "e.g.",
-    "beta": "Beta"
+    "beta": "Beta",
+    "dialog": {
+      "error": "Error",
+      "help": "Help",
+      "info": "Information",
+      "success": "Success",
+      "warning": "Warning"
+    }
   },
   "router": {
     "back-to-home": "Back to Home"
@@ -191,7 +198,7 @@
       "auto-collapse": "Auto Collapse"
     },
     "storage-section": {
-      "current-storage": "Current storage",
+      "current-storage": "Current object storage",
       "type-database": "Database",
       "type-local": "Local",
       "storage-services-list": "Storage service list",
@@ -243,6 +250,8 @@
       "allow-user-signup": "Allow user signup",
       "ignore-version-upgrade": "Ignore version upgrade",
       "disable-public-memos": "Disable public memos",
+      "max-upload-size": "Maximum upload size (MiB)",
+      "max-upload-size-hint": "Recommended value is 32 MiB.",
       "additional-style": "Additional style",
       "additional-script": "Additional script",
       "additional-style-placeholder": "Additional CSS code",
@@ -349,7 +358,9 @@
     "succeed-update-customized-profile": "Profile successfully customized.",
     "succeed-update-additional-script": "Additional script updated successfully.",
     "update-succeed": "Update succeeded",
-    "page-not-found": "404 - Page Not Found 😥"
+    "page-not-found": "404 - Page Not Found 😥",
+    "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
+    "file-exceeds-upload-limit-of": "File {{file}} exceeds upload limit of {{size}} MiB"
   },
   "days": {
     "mon": "Mon",

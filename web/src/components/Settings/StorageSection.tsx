@@ -8,6 +8,7 @@ import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
 import showUpdateLocalStorageDialog from "../UpdateLocalStorageDialog";
 import Dropdown from "../kit/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
+import HelpButton from "../kit/HelpButton";
 
 const StorageSection = () => {
   const { t } = useTranslation();
@@ -77,12 +78,17 @@ const StorageSection = () => {
       <Divider />
       <div className="mt-4 mb-2 w-full flex flex-row justify-start items-center">
         <span className="font-mono text-sm text-gray-400 mr-2">{t("setting.storage-section.storage-services-list")}</span>
+        <HelpButton className="btn" icon="info" url="https://usememos.com/docs/storage" />
         <button className="btn-normal px-2 py-0 leading-7" onClick={() => showCreateStorageServiceDialog(undefined, fetchStorageList)}>
           {t("common.create")}
         </button>
       </div>
       <div className="mt-2 w-full flex flex-col">
-        <div className="py-2 w-full border-t dark:border-zinc-700 flex flex-row items-center justify-between">
+        <div
+          className={
+            storageServiceId !== -1 ? "hidden" : "py-2 w-full border-t dark:border-zinc-700 flex flex-row items-center justify-between"
+          }
+        >
           <div className="flex flex-row items-center">
             <p className="ml-2">{t("setting.storage-section.type-local")}</p>
           </div>

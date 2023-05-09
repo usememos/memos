@@ -44,6 +44,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			AllowSignUp:        false,
 			IgnoreUpgrade:      false,
 			DisablePublicMemos: false,
+			MaxUploadSizeMiB:   32,
 			AdditionalStyle:    "",
 			AdditionalScript:   "",
 			CustomizedProfile: api.CustomizedProfile{
@@ -74,27 +75,40 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				continue
 			}
 
-			if systemSetting.Name == api.SystemSettingAllowSignUpName {
+			switch systemSetting.Name {
+			case api.SystemSettingAllowSignUpName:
 				systemStatus.AllowSignUp = baseValue.(bool)
-			} else if systemSetting.Name == api.SystemSettingIgnoreUpgradeName {
+
+			case api.SystemSettingIgnoreUpgradeName:
 				systemStatus.IgnoreUpgrade = baseValue.(bool)
-			} else if systemSetting.Name == api.SystemSettingDisablePublicMemosName {
+
+			case api.SystemSettingDisablePublicMemosName:
 				systemStatus.DisablePublicMemos = baseValue.(bool)
-			} else if systemSetting.Name == api.SystemSettingAdditionalStyleName {
+
+			case api.SystemSettingMaxUploadSizeMiBName:
+				systemStatus.MaxUploadSizeMiB = int(baseValue.(float64))
+
+			case api.SystemSettingAdditionalStyleName:
 				systemStatus.AdditionalStyle = baseValue.(string)
-			} else if systemSetting.Name == api.SystemSettingAdditionalScriptName {
+
+			case api.SystemSettingAdditionalScriptName:
 				systemStatus.AdditionalScript = baseValue.(string)
-			} else if systemSetting.Name == api.SystemSettingCustomizedProfileName {
+
+			case api.SystemSettingCustomizedProfileName:
 				customizedProfile := api.CustomizedProfile{}
-				err := json.Unmarshal([]byte(systemSetting.Value), &customizedProfile)
-				if err != nil {
+				if err := json.Unmarshal([]byte(systemSetting.Value), &customizedProfile); err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting customized profile value").SetInternal(err)
 				}
 				systemStatus.CustomizedProfile = customizedProfile
-			} else if systemSetting.Name == api.SystemSettingStorageServiceIDName {
+
+			case api.SystemSettingStorageServiceIDName:
 				systemStatus.StorageServiceID = int(baseValue.(float64))
-			} else if systemSetting.Name == api.SystemSettingLocalStoragePathName {
+
+			case api.SystemSettingLocalStoragePathName:
 				systemStatus.LocalStoragePath = baseValue.(string)
+
+			default:
+				log.Warn("Unknown system setting name", zap.String("setting name", systemSetting.Name.String()))
 			}
 		}
 
