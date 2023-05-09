@@ -35,7 +35,7 @@ func (s *Store) Vacuum(ctx context.Context) error {
 	}
 	defer tx.Rollback()
 
-	if err := s.vacuum(ctx, tx); err != nil {
+	if err := s.vacuumImpl(ctx, tx); err != nil {
 		return err
 	}
 
@@ -51,8 +51,7 @@ func (s *Store) Vacuum(ctx context.Context) error {
 	return nil
 }
 
-// Exec vacuum records in a transaction.
-func (s *Store) vacuum(ctx context.Context, tx *sql.Tx) error {
+func (s *Store) vacuumImpl(ctx context.Context, tx *sql.Tx) error {
 	if err := vacuumMemo(ctx, tx); err != nil {
 		return err
 	}

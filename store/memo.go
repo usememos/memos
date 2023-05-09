@@ -184,7 +184,7 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *api.MemoDelete) error {
 	if err := deleteMemo(ctx, tx, delete); err != nil {
 		return FormatError(err)
 	}
-	if err := s.vacuum(ctx, tx); err != nil {
+	if err := s.vacuumImpl(ctx, tx); err != nil {
 		return err
 	}
 
