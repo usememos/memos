@@ -53,7 +53,7 @@ func (s *Store) ComposeMemo(ctx context.Context, memo *api.Memo) (*api.Memo, err
 	if err := s.ComposeMemoResourceList(ctx, memo); err != nil {
 		return nil, err
 	}
-	if s.profile.IsDev() {
+	if s.Profile.IsDev() {
 		if err := s.ComposeMemoRelationList(ctx, memo); err != nil {
 			return nil, err
 		}
@@ -184,7 +184,7 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *api.MemoDelete) error {
 	if err := deleteMemo(ctx, tx, delete); err != nil {
 		return FormatError(err)
 	}
-	if err := vacuum(ctx, tx); err != nil {
+	if err := s.vacuumImpl(ctx, tx); err != nil {
 		return err
 	}
 
