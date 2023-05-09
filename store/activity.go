@@ -38,7 +38,7 @@ func (raw *activityRaw) toActivity() *api.Activity {
 
 // CreateActivity creates an instance of Activity.
 func (s *Store) CreateActivity(ctx context.Context, create *api.ActivityCreate) (*api.Activity, error) {
-	if s.profile.Mode == "prod" {
+	if s.Profile.Mode == "prod" {
 		return nil, nil
 	}
 
