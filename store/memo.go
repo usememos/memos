@@ -268,6 +268,32 @@ func patchMemoRaw(ctx context.Context, tx *sql.Tx, patch *api.MemoPatch) (*memoR
 		return nil, FormatError(err)
 	}
 
+	pinnedQuery := `
+		SELECT
+			pinned
+		FROM memo_organizer
+		WHERE memo_id = ? AND user_id = ?
+	`
+	row, err := tx.QueryContext(ctx, pinnedQuery, patch.ID, memoRaw.CreatorID)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer row.Close()
+
+	if !row.Next() {
+		memoRaw.Pinned = false
+	} else {
+		if err := row.Scan(
+			&memoRaw.Pinned,
+		); err != nil {
+			return nil, FormatError(err)
+		}
+	}
+
+	if err := row.Err(); err != nil {
+		return nil, err
+	}
+
 	return &memoRaw, nil
 }
 
