@@ -112,6 +112,9 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				Blob:      fileBytes,
 			}
 		} else if storageServiceID == api.LocalStorage {
+			// filepath.Join() should be used for local file paths,
+			// as it handles the os-specific path separator automatically.
+			// path.Join() always uses '/' as path separator.
 			systemSettingLocalStoragePath, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingLocalStoragePathName})
 			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
@@ -123,11 +126,11 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal local storage path setting").SetInternal(err)
 				}
 			}
-			filePath := localStoragePath
+			filePath := filepath.FromSlash(localStoragePath)
 			if !strings.Contains(filePath, "{filename}") {
-				filePath = path.Join(filePath, "{filename}")
+				filePath = filepath.Join(filePath, "{filename}")
 			}
-			filePath = path.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
+			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
 			dir, filename := filepath.Split(filePath)
 			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
