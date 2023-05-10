@@ -79,11 +79,27 @@ const MemoList = () => {
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
-  const memoSort = (mi: Memo, mj: Memo) => {
+
+  const sortMemosByCreatedTs = (mi: Memo, mj: Memo) => {
     return mj.createdTs - mi.createdTs;
   };
-  pinnedMemos.sort(memoSort);
-  unpinnedMemos.sort(memoSort);
+
+  const sortMemosByUpdatedTs = (mi: Memo, mj: Memo) => {
+    if (mi.updatedTs === mj.updatedTs) {
+      return sortMemosByCreatedTs(mi, mj);
+    }
+    return mj.updatedTs - mi.updatedTs;
+  };
+
+  const getSortBasedOnLocalSetting = () => {
+    const { localSetting } = userStore.state.user as User;
+    return localSetting.sortMemosByUpdatedTs ? sortMemosByUpdatedTs : sortMemosByCreatedTs;
+  };
+
+  const sortToApply = getSortBasedOnLocalSetting();
+
+  pinnedMemos.sort(sortToApply);
+  unpinnedMemos.sort(sortToApply);
   const sortedMemos = pinnedMemos.concat(unpinnedMemos).filter((m) => m.rowStatus === "NORMAL");
 
   const statusRef = useRef<HTMLDivElement>(null);

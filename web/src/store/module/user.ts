@@ -17,6 +17,7 @@ const defaultLocalSetting: LocalSetting = {
   enableDoubleClickEditing: true,
   dailyReviewTimeOffset: 0,
   enableAutoCollapse: true,
+  sortMemosByUpdatedTs: false,
 };
 
 export const convertResponseModelUser = (user: User): User => {

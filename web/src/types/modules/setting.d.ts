@@ -10,6 +10,7 @@ interface LocalSetting {
   enableDoubleClickEditing: boolean;
   dailyReviewTimeOffset: number;
   enableAutoCollapse: boolean;
+  sortMemosByUpdatedTs: boolean;
 }
 
 interface UserLocaleSetting {

@@ -49,6 +49,11 @@ const PreferencesSection = () => {
     userStore.upsertLocalSetting({ ...localSetting, enableAutoCollapse: event.target.checked });
   };
 
+  //sortMemosByUpdatedTs
+  const handlesortMemosByUpdatedTsChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    userStore.upsertLocalSetting({ ...localSetting, sortMemosByUpdatedTs: event.target.checked });
+  };
+
   return (
     <div className="section-container preferences-section-container">
       <p className="title-text">{t("common.basic")}</p>
@@ -117,6 +122,11 @@ const PreferencesSection = () => {
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.auto-collapse")}</span>
         <Switch className="ml-2" checked={localSetting.enableAutoCollapse} onChange={handleAutoCollapseChanged} />
+      </label>
+
+      <label className="form-label selector">
+        <span className="normal-text">{t("setting.preference-section.sort-memos-by-updated-ts")}</span>
+        <Switch className="ml-2" checked={localSetting.sortMemosByUpdatedTs} onChange={handlesortMemosByUpdatedTsChanged} />
       </label>
     </div>
   );
