@@ -47,7 +47,7 @@ export const getElementBounding = (element: HTMLElement, relativeEl?: HTMLElemen
     }
 
     const position = window.getComputedStyle(element).getPropertyValue("position");
-	if (position === "fixed" || position === "static") {
+    if (position === "fixed" || position === "static") {
       return true;
     }
 
