@@ -126,7 +126,7 @@ const PreferencesSection = () => {
 
       <label className="form-label selector">
         <span className="normal-text">{t("setting.preference-section.sort-memos-by-updated-ts")}</span>
-        <Switch className="ml-2" checked={localSetting.sortMemosByUpdatedTs} onChange={handlesortMemosByUpdatedTsChanged} />
+        <Switch className="ml-2" checked={localSetting.sortMemosByUpdatedTs} onChange={handleSortMemosByUpdatedTsChanged} />
       </label>
     </div>
   );
