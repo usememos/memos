@@ -2,7 +2,6 @@ import { isNumber, last, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { getMatchedNodes } from "@/labs/marked";
 import { upsertMemoResource } from "@/helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
@@ -16,6 +15,7 @@ import MemoVisibilitySelector from "./ActionButton/MemoVisibilitySelector";
 import ResourceListView from "./ResourceListView";
 import RelationListView from "./RelationListView";
 import "@/less/memo-editor.less";
+import { HASH_TAGS } from "@/labs/render";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
@@ -301,8 +301,7 @@ const MemoEditor = (props: Props) => {
     });
 
     // Upsert tag with the content.
-    const matchedNodes = getMatchedNodes(content);
-    const tagNameList = uniq(matchedNodes.filter((node) => node.parserName === "tag").map((node) => node.matchedContent.slice(1)));
+    const tagNameList = uniq((content.match(HASH_TAGS) || []).map((n) => n.replaceAll("#", "")));
     for (const tagName of tagNameList) {
       await tagStore.upsertTag(tagName);
     }

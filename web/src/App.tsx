@@ -8,12 +8,14 @@ import { useGlobalStore } from "./store/module";
 import storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import Loading from "./pages/Loading";
+import mermaid from "mermaid";
 
 const App = () => {
   const { i18n } = useTranslation();
   const globalStore = useGlobalStore();
   const { mode, setMode } = useColorScheme();
   const { appearance, locale, systemStatus } = globalStore.state;
+  mermaid.initialize({ startOnLoad: false });
 
   useEffect(() => {
     const darkMediaQuery = window.matchMedia("(prefers-color-scheme: dark)");

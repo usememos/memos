@@ -19,6 +19,8 @@ import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import "@/less/memo.less";
+import { LINE_BREAK } from "@/labs/render";
+import copy from "copy-to-clipboard";
 
 interface Props {
   memo: Memo;
@@ -123,6 +125,20 @@ const Memo: React.FC<Props> = (props: Props) => {
     showShareMemo(memo);
   };
 
+  const handleMemoCodeClick = (e: React.MouseEvent) => {
+    const targetEl = e.target as HTMLElement;
+    if (
+      targetEl.className ==
+        "text-xs font-mono italic absolute top-0 right-0 px-2 leading-6 border btn-text rounded opacity-0 group-hover:opacity-60" &&
+      targetEl.localName == "button"
+    ) {
+      copy(targetEl.nextSibling?.firstChild?.textContent || "");
+      toast.success("Copy succeed");
+      return true;
+    }
+    return false;
+  };
+
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
@@ -138,33 +154,35 @@ const Memo: React.FC<Props> = (props: Props) => {
       if (isVisitorMode) {
         return;
       }
+      const checkbox = targetEl as HTMLInputElement;
+      const toReplace = checkbox.checked ? "- [X]" : "- [ ]";
+      const toReplaceLowerCase = toReplace.toLowerCase();
+      const toSearch = checkbox.checked ? "- [ ]" : "- [X]";
+      const toSearchLowerCase = toSearch.toLowerCase();
+      const index = checkbox.attributes.getNamedItem("data-memo-todo-id")?.value;
 
-      const status = targetEl.dataset?.value;
-      const todoElementList = [...(memoContainerRef.current?.querySelectorAll(`span.todo-block[data-value=${status}]`) ?? [])];
-      for (const element of todoElementList) {
-        if (element === targetEl) {
-          const index = todoElementList.indexOf(element);
-          const tempList = memo.content.split(status === "DONE" ? /- \[x\] / : /- \[ \] /);
-          let finalContent = "";
-
-          for (let i = 0; i < tempList.length; i++) {
-            if (i === 0) {
-              finalContent += `${tempList[i]}`;
-            } else {
-              if (i === index + 1) {
-                finalContent += status === "DONE" ? "- [ ] " : "- [x] ";
-              } else {
-                finalContent += status === "DONE" ? "- [x] " : "- [ ] ";
-              }
-              finalContent += `${tempList[i]}`;
-            }
+      const lineBreakToReturn = (memo.content.match(LINE_BREAK) || ["\n"])[0];
+      let todoCounter = -1;
+      const updatedContent = memo.content
+        .split(LINE_BREAK)
+        .map((l) => {
+          if (l.includes(toSearch) || l.includes(toSearchLowerCase) || l.includes(toReplace) || l.includes(toReplaceLowerCase)) {
+            todoCounter++;
           }
-          await memoStore.patchMemo({
-            id: memo.id,
-            content: finalContent,
-          });
-        }
-      }
+          if (l.includes(toSearch) && `${todoCounter}` === index) {
+            return l.replace(toSearch, toReplace);
+          }
+          if (l.includes(toSearchLowerCase) && `${todoCounter}` === index) {
+            return l.replace(toSearchLowerCase, toReplaceLowerCase);
+          }
+          return l;
+        })
+        .join(lineBreakToReturn);
+
+      await memoStore.patchMemo({
+        id: memo.id,
+        content: updatedContent,
+      });
     } else if (targetEl.tagName === "IMG") {
       const imgUrl = targetEl.getAttribute("src");
       if (imgUrl) {
@@ -274,6 +292,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         </div>
         <MemoContent
           content={memo.content}
+          onMemoCodeClick={handleMemoCodeClick}
           onMemoContentClick={handleMemoContentClick}
           onMemoContentDoubleClick={handleMemoContentDoubleClick}
         />

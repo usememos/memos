@@ -1,5 +1,5 @@
 import { getUnixTimeMillis } from "./datetime";
-import { TAG_REG, LINK_REG, PLAIN_LINK_REG } from "@/labs/marked/parser";
+import { TAG_REG, LINK_REG, PLAIN_LINK_REG, TAG_REG_GLOBAL } from "@/labs/render";
 
 export const relationConsts = [
   { text: "filter.and", value: "AND" },
@@ -160,7 +160,7 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
   if (type === "TAG") {
     let contained = true;
     const tagsSet = new Set<string>();
-    for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
+    for (const t of Array.from(memo.content.match(TAG_REG_GLOBAL) ?? [])) {
       const tag = t.replace(TAG_REG, "$1").trim();
       const items = tag.split("/");
       let temp = "";

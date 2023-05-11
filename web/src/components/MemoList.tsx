@@ -2,13 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "@/store/module";
-import { TAG_REG, LINK_REG } from "@/labs/marked/parser";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
-import { PLAIN_LINK_REG } from "@/labs/marked/parser";
+import { PLAIN_LINK_REG, LINK_REG, TAG_REG, TAG_REG_GLOBAL } from "@/labs/render";
 import copy from "copy-to-clipboard";
 
 const MemoList = () => {
@@ -39,7 +38,7 @@ const MemoList = () => {
           }
           if (tagQuery) {
             const tagsSet = new Set<string>();
-            for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
+            for (const t of Array.from(memo.content.match(TAG_REG_GLOBAL) ?? [])) {
               const tag = t.replace(TAG_REG, "$1").trim();
               const items = tag.split("/");
               let temp = "";

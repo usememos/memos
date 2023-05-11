@@ -4,13 +4,13 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import * as api from "@/helpers/api";
 import useLoading from "@/hooks/useLoading";
-import { marked } from "@/labs/marked";
 import { useMessageStore } from "@/store/zustand/message";
 import { defaultMessageGroup, MessageGroup, useMessageGroupStore } from "@/store/zustand/message-group";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import showSettingDialog from "./SettingDialog";
 import Selector from "./kit/Selector";
+import { renderMarkdown } from "@/labs/render";
 
 type Props = DialogProps;
 
@@ -182,7 +182,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
                 <div className="w-full flex flex-row justify-start items-start pr-8 space-x-2">
                   <Icon.Bot className="mt-2 shrink-0 mr-1 w-6 h-auto opacity-80" />
                   <div className="memo-content-wrapper !w-auto flex flex-col justify-start items-start shadow rounded-lg rounded-tl-none px-3 py-2 bg-gray-100 dark:bg-zinc-700">
-                    <div className="memo-content-text">{marked(message.content)}</div>
+                    <div className="memo-content-text">{renderMarkdown(message.content)}</div>
                   </div>
                 </div>
               )}

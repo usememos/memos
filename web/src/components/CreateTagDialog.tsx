@@ -4,19 +4,14 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useTagStore } from "@/store/module";
 import { getTagSuggestionList } from "@/helpers/api";
-import { matcher } from "@/labs/marked/matcher";
-import Tag from "@/labs/marked/parser/Tag";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
+import { HASH_TAG } from "@/labs/render";
 
 type Props = DialogProps;
 
 const validateTagName = (tagName: string): boolean => {
-  const matchResult = matcher(`#${tagName}`, Tag.regexp);
-  if (!matchResult || matchResult[1] !== tagName) {
-    return false;
-  }
-  return true;
+  return HASH_TAG.test(`#${tagName}`);
 };
 
 const CreateTagDialog: React.FC<Props> = (props: Props) => {

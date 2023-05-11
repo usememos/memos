@@ -3,7 +3,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router-dom";
 import { useFilterStore, useMemoStore } from "@/store/module";
-import { TAG_REG } from "@/labs/marked/parser";
+import { TAG_REG, TAG_REG_GLOBAL } from "@/labs/render";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import useLoading from "@/hooks/useLoading";
 import MemoFilter from "@/components/MemoFilter";
@@ -47,7 +47,7 @@ const Explore = () => {
 
         if (tagQuery) {
           const tagsSet = new Set<string>();
-          for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
+          for (const t of Array.from(memo.content.match(TAG_REG_GLOBAL) ?? [])) {
             const tag = t.replace(TAG_REG, "$1").trim();
             const items = tag.split("/");
             let temp = "";

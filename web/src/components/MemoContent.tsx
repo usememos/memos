@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { marked } from "@/labs/marked";
 import { useUserStore } from "@/store/module";
 import Icon from "./Icon";
 import "@/less/memo-content.less";
+import { renderMarkdown } from "@/labs/render";
+import mermaid from "mermaid";
 
 const MAX_EXPAND_HEIGHT = 384;
 
@@ -13,6 +14,7 @@ interface Props {
   showFull?: boolean;
   onMemoContentClick?: (e: React.MouseEvent) => void;
   onMemoContentDoubleClick?: (e: React.MouseEvent) => void;
+  onMemoCodeClick?: (e: React.MouseEvent) => boolean;
 }
 
 type ExpandButtonStatus = -1 | 0 | 1;
@@ -22,7 +24,7 @@ interface State {
 }
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, content, showFull, onMemoContentClick, onMemoContentDoubleClick } = props;
+  const { className, content, showFull, onMemoContentClick, onMemoContentDoubleClick, onMemoCodeClick } = props;
   const { t } = useTranslation();
 
   const [state, setState] = useState<State>({
@@ -51,12 +53,18 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   }, []);
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
+    if (onMemoCodeClick && onMemoCodeClick(e)) {
+      return;
+    }
     if (onMemoContentClick) {
       onMemoContentClick(e);
     }
   };
 
   const handleMemoContentDoubleClick = async (e: React.MouseEvent) => {
+    if (onMemoCodeClick && onMemoCodeClick(e)) {
+      return;
+    }
     if (onMemoContentDoubleClick) {
       onMemoContentDoubleClick(e);
     }
@@ -69,6 +77,13 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     });
   };
 
+  useEffect(() => {
+    const mermaidElement = memoContentContainerRef?.current?.querySelector("code.language-mermaid");
+    if (mermaidElement) {
+      mermaid.run({ nodes: [mermaidElement as HTMLElement] }).catch((e) => console.error(e));
+    }
+  }, [content]);
+
   return (
     <div className={`memo-content-wrapper ${className || ""}`}>
       <div
@@ -76,9 +91,8 @@ const MemoContent: React.FC<Props> = (props: Props) => {
         className={`memo-content-text ${autoCollapse && state.expandButtonStatus === 0 ? "max-h-64 overflow-y-hidden" : ""}`}
         onClick={handleMemoContentClick}
         onDoubleClick={handleMemoContentDoubleClick}
-      >
-        {marked(content)}
-      </div>
+        dangerouslySetInnerHTML={{ __html: renderMarkdown(content) }}
+      ></div>
       {autoCollapse && state.expandButtonStatus !== -1 && (
         <div className={`expand-btn-container ${state.expandButtonStatus === 0 && "!-mt-7"}`}>
           <div className="absolute top-0 left-0 w-full h-full blur-lg bg-white dark:bg-zinc-700"></div>
