@@ -189,7 +189,7 @@
       "updated_ts": "Updated Time",
       "daily-review-time-offset": "Daily Review Time Offset",
       "auto-collapse": "Auto Collapse",
-      "sort-memos-by-updated-ts": "Sort memos by updated TS"
+      "sort-memos-by-updated-ts": "Sort memos by update"
     },
     "storage-section": {
       "current-storage": "Current storage",
