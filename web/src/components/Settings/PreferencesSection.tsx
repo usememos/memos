@@ -50,7 +50,7 @@ const PreferencesSection = () => {
   };
 
   //sortMemosByUpdatedTs
-  const handlesortMemosByUpdatedTsChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSortMemosByUpdatedTsChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, sortMemosByUpdatedTs: event.target.checked });
   };
 
