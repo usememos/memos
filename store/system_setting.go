@@ -95,10 +95,10 @@ func (s *Store) FindSystemSetting(ctx context.Context, find *api.SystemSettingFi
 }
 
 func (s *Store) GetSystemSettingValueOrDefault(ctx *context.Context, find api.SystemSettingName, defaultValue string) string {
-	if ss, err := s.FindSystemSetting(*ctx, &api.SystemSettingFind{
+	if setting, err := s.FindSystemSetting(*ctx, &api.SystemSettingFind{
 		Name: find,
 	}); err == nil {
-		return ss.Value
+		return setting.Value
 	}
 	return defaultValue
 }

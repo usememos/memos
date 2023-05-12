@@ -174,8 +174,9 @@ const HelpButton = (props: HelpProps): JSX.Element => {
   const { t } = useTranslation();
   const color = props.color ?? "neutral";
   const variant = props.variant ?? "plain";
-  const className = props.className ?? "!-mt-2";
+  const className = props.className ?? "!-mt-1";
   const hintPlacement = props.hintPlacement ?? "top";
+  const iconButtonSize = "sm";
 
   const dialogAvailable = props.text || props.children;
   const clickActionAvailable = props.url || dialogAvailable;
@@ -242,7 +243,7 @@ const HelpButton = (props: HelpProps): JSX.Element => {
 
   if (!dialogAvailable && !clickActionAvailable && !props.hint) {
     return (
-      <IconButton className={className} color={color} variant={variant} size={props.size}>
+      <IconButton className={className} color={color} variant={variant} size={iconButtonSize}>
         <LucideIcon size={sizePx} />
       </IconButton>
     );
@@ -266,14 +267,14 @@ const HelpButton = (props: HelpProps): JSX.Element => {
     };
     LucideIcon = dialogAvailable || onlyUrlAvailable ? LucideIcon : Icon.ExternalLink;
     return wrapInTooltip(
-      <IconButton className={className} color={color} variant={variant} size={props.size} onClick={clickAction}>
+      <IconButton className={className} color={color} variant={variant} size={iconButtonSize} onClick={clickAction}>
         <LucideIcon size={sizePx} />
       </IconButton>
     );
   }
 
   return wrapInTooltip(
-    <IconButton className={className} color={color} variant={variant} size={props.size}>
+    <IconButton className={className} color={color} variant={variant} size={iconButtonSize}>
       <LucideIcon size={sizePx} />
     </IconButton>
   );
