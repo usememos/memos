@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 
 	"golang.org/x/exp/slices"
@@ -21,6 +20,8 @@ const (
 	SystemSettingIgnoreUpgradeName SystemSettingName = "ignore-upgrade"
 	// SystemSettingDisablePublicMemosName is the name of disable public memos setting.
 	SystemSettingDisablePublicMemosName SystemSettingName = "disable-public-memos"
+	// SystemSettingMaxUploadSizeMiBName is the name of max upload size setting.
+	SystemSettingMaxUploadSizeMiBName SystemSettingName = "max-upload-size-mib"
 	// SystemSettingAdditionalStyleName is the name of additional style.
 	SystemSettingAdditionalStyleName SystemSettingName = "additional-style"
 	// SystemSettingAdditionalScriptName is the name of additional script.
@@ -68,6 +69,8 @@ func (key SystemSettingName) String() string {
 		return "ignore-upgrade"
 	case SystemSettingDisablePublicMemosName:
 		return "disable-public-memos"
+	case SystemSettingMaxUploadSizeMiBName:
+		return "max-upload-size-mib"
 	case SystemSettingAdditionalStyleName:
 		return "additional-style"
 	case SystemSettingAdditionalScriptName:
@@ -97,40 +100,50 @@ type SystemSettingUpsert struct {
 	Description string            `json:"description"`
 }
 
+const systemSettingUnmarshalError = `failed to unmarshal value from system setting "%v"`
+
 func (upsert SystemSettingUpsert) Validate() error {
-	if upsert.Name == SystemSettingServerIDName {
-		return errors.New("update server id is not allowed")
-	} else if upsert.Name == SystemSettingAllowSignUpName {
-		value := false
-		err := json.Unmarshal([]byte(upsert.Value), &value)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting allow signup value")
+	switch settingName := upsert.Name; settingName {
+	case SystemSettingServerIDName:
+		return fmt.Errorf("updating %v is not allowed", settingName)
+
+	case SystemSettingAllowSignUpName:
+		var value bool
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	} else if upsert.Name == SystemSettingIgnoreUpgradeName {
-		value := false
-		err := json.Unmarshal([]byte(upsert.Value), &value)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting ignore upgrade value")
+
+	case SystemSettingIgnoreUpgradeName:
+		var value bool
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	} else if upsert.Name == SystemSettingDisablePublicMemosName {
-		value := false
-		err := json.Unmarshal([]byte(upsert.Value), &value)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting disable public memos value")
+
+	case SystemSettingDisablePublicMemosName:
+		var value bool
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	} else if upsert.Name == SystemSettingAdditionalStyleName {
-		value := ""
-		err := json.Unmarshal([]byte(upsert.Value), &value)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting additional style value")
+
+	case SystemSettingMaxUploadSizeMiBName:
+		var value int
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	} else if upsert.Name == SystemSettingAdditionalScriptName {
-		value := ""
-		err := json.Unmarshal([]byte(upsert.Value), &value)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting additional script value")
+
+	case SystemSettingAdditionalStyleName:
+		var value string
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	} else if upsert.Name == SystemSettingCustomizedProfileName {
+
+	case SystemSettingAdditionalScriptName:
+		var value string
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
+
+	case SystemSettingCustomizedProfileName:
 		customizedProfile := CustomizedProfile{
 			Name:        "memos",
 			LogoURL:     "",
@@ -139,36 +152,37 @@ func (upsert SystemSettingUpsert) Validate() error {
 			Appearance:  "system",
 			ExternalURL: "",
 		}
-		err := json.Unmarshal([]byte(upsert.Value), &customizedProfile)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting customized profile value")
+
+		if err := json.Unmarshal([]byte(upsert.Value), &customizedProfile); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
 		if !slices.Contains(UserSettingLocaleValue, customizedProfile.Locale) {
-			return fmt.Errorf("invalid locale value")
+			return fmt.Errorf(`invalid locale value for system setting "%v"`, settingName)
 		}
 		if !slices.Contains(UserSettingAppearanceValue, customizedProfile.Appearance) {
-			return fmt.Errorf("invalid appearance value")
+			return fmt.Errorf(`invalid appearance value for system setting "%v"`, settingName)
 		}
-	} else if upsert.Name == SystemSettingStorageServiceIDName {
+
+	case SystemSettingStorageServiceIDName:
 		value := DatabaseStorage
-		err := json.Unmarshal([]byte(upsert.Value), &value)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting storage service id value")
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
 		return nil
-	} else if upsert.Name == SystemSettingLocalStoragePathName {
+
+	case SystemSettingLocalStoragePathName:
 		value := ""
-		err := json.Unmarshal([]byte(upsert.Value), &value)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting local storage path value")
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	} else if upsert.Name == SystemSettingOpenAIConfigName {
+
+	case SystemSettingOpenAIConfigName:
 		value := OpenAIConfig{}
-		err := json.Unmarshal([]byte(upsert.Value), &value)
-		if err != nil {
-			return fmt.Errorf("failed to unmarshal system setting openai api config value")
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	} else {
+
+	default:
 		return fmt.Errorf("invalid system setting name")
 	}
 

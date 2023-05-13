@@ -13,6 +13,7 @@ export const initialGlobalState = async () => {
       allowSignUp: false,
       ignoreUpgrade: false,
       disablePublicMemos: false,
+      maxUploadSizeMiB: 0,
       additionalStyle: "",
       additionalScript: "",
       customizedProfile: {
