@@ -231,9 +231,9 @@ const SystemSection = () => {
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
       </div>
       <div className="form-label">
-        <div className="flex flex-row">
-          <span className="normal-text">{t("setting.system-section.max-upload-size")}</span>
-          <HelpButton icon="info" hint={t("setting.system-section.max-upload-size-hint")} hintPlacement="left" />
+        <div className="flex flex-row items-center">
+          <span className="normal-text mr-1">{t("setting.system-section.max-upload-size")}</span>
+          <HelpButton icon="info" hint={t("setting.system-section.max-upload-size-hint")} />
         </div>
         <Input
           className="w-16"
@@ -247,8 +247,8 @@ const SystemSection = () => {
       </div>
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
-        <div className="flex flex-row">
-          <span className="normal-text">{t("setting.system-section.openai-api-key")}</span>
+        <div className="flex flex-row items-center">
+          <span className="normal-text mr-1">{t("setting.system-section.openai-api-key")}</span>
           <HelpButton hint={t("setting.system-section.openai-api-key-description")} url="https://platform.openai.com/account/api-keys" />
         </div>
         <Button onClick={handleSaveOpenAIConfig}>{t("common.save")}</Button>

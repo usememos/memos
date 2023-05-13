@@ -43,11 +43,11 @@ const SSOSection = () => {
 
   return (
     <div className="section-container">
-      <div className="mb-2 w-full flex flex-row justify-start items-center">
-        <span className="font-mono text-sm text-gray-400 mr-2">{t("setting.sso-section.sso-list")}</span>
+      <div className="mb-2 w-full flex flex-row justify-start items-center gap-1">
+        <span className="font-mono text-sm text-gray-400">{t("setting.sso-section.sso-list")}</span>
         <HelpButton icon="help" url="https://usememos.com/docs/keycloak" />
         <button
-          className="btn-normal px-2 py-0 leading-7"
+          className="btn-normal px-2 py-0 ml-1"
           onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}
         >
           {t("common.create")}
