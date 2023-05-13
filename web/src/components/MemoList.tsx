@@ -150,9 +150,9 @@ const MemoList = () => {
   };
 
   useEffect(() => {
-    addEventListener("copy", handleCopy);
+    window.addEventListener("copy", handleCopy);
     return () => {
-      removeEventListener("copy", handleCopy);
+      window.removeEventListener("copy", handleCopy);
     };
   }, []);
 
