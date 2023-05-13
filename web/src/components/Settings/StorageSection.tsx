@@ -76,10 +76,10 @@ const StorageSection = () => {
         ))}
       </Select>
       <Divider />
-      <div className="mt-4 mb-2 w-full flex flex-row justify-start items-center">
-        <span className="font-mono text-sm text-gray-400 mr-2">{t("setting.storage-section.storage-services-list")}</span>
+      <div className="mt-4 mb-2 w-full flex flex-row justify-start items-center gap-1">
+        <span className="font-mono text-sm text-gray-400">{t("setting.storage-section.storage-services-list")}</span>
         <HelpButton className="btn" icon="info" url="https://usememos.com/docs/storage" />
-        <button className="btn-normal px-2 py-0 leading-7" onClick={() => showCreateStorageServiceDialog(undefined, fetchStorageList)}>
+        <button className="btn-normal px-2 py-0 ml-1" onClick={() => showCreateStorageServiceDialog(undefined, fetchStorageList)}>
           {t("common.create")}
         </button>
       </div>

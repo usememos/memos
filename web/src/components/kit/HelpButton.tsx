@@ -174,7 +174,7 @@ const HelpButton = (props: HelpProps): JSX.Element => {
   const { t } = useTranslation();
   const color = props.color ?? "neutral";
   const variant = props.variant ?? "plain";
-  const className = props.className ?? "!-mt-1";
+  const className = props.className ?? "";
   const hintPlacement = props.hintPlacement ?? "top";
   const iconButtonSize = "sm";
 
@@ -232,12 +232,12 @@ const HelpButton = (props: HelpProps): JSX.Element => {
   const sizePx = (() => {
     switch (props.size) {
       case "sm":
-        return 16;
+        return 14;
       case "lg":
-        return 48;
+        return 18;
       case "md":
       default:
-        return 24;
+        return 16;
     }
   })();
 
