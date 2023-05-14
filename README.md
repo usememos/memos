@@ -5,7 +5,6 @@
 A lightweight, self-hosted memo hub. Open Source and Free forever.
 
 <a href="https://usememos.com/docs">Documentation</a> •
-<a href="https://demo.usememos.com/">Live Demo</a> •
 Discuss in <a href="https://discord.gg/tfPJa4UmAv">Discord</a> / <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a>
 
 <p>
