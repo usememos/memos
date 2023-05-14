@@ -1,5 +1,5 @@
 import { getUnixTimeMillis } from "./datetime";
-import { TAG_REG, LINK_REG } from "@/labs/marked/parser";
+import { TAG_REG, LINK_REG, PLAIN_LINK_REG } from "@/labs/marked/parser";
 
 export const relationConsts = [
   { text: "filter.and", value: "AND" },
@@ -181,7 +181,7 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
     let matched = false;
     if (value === "NOT_TAGGED" && memo.content.match(TAG_REG) === null) {
       matched = true;
-    } else if (value === "LINKED" && memo.content.match(LINK_REG) !== null) {
+    } else if (value === "LINKED" && (memo.content.match(LINK_REG) !== null || memo.content.match(PLAIN_LINK_REG)) !== null) {
       matched = true;
     } else if (value === "HAS_ATTACHMENT" && memo.resourceList.length > 0) {
       matched = true;

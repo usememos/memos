@@ -21,6 +21,7 @@ import Heading from "./Heading";
 
 export { TAG_REG } from "./Tag";
 export { LINK_REG } from "./Link";
+export { PLAIN_LINK_REG } from "./PlainLink";
 
 // The order determines the order of execution.
 export const blockElementParserList = [
