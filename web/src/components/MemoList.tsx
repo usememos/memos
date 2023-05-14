@@ -149,21 +149,6 @@ const MemoList = () => {
     }
   };
 
-  useEffect(() => {
-    window.addEventListener("copy", handleCopy);
-    return () => {
-      window.removeEventListener("copy", handleCopy);
-    };
-  }, []);
-
-  const handleCopy = (event: ClipboardEvent) => {
-    event.preventDefault();
-    const rawStr = document.getSelection()?.toString();
-    if (rawStr !== undefined) {
-      copy(rawStr.split("\n\n").join("\n"));
-    }
-  };
-
   return (
     <div className="memo-list-container">
       {sortedMemos.map((memo) => (
