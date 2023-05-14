@@ -8,7 +8,7 @@ import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
-import { PLAIN_LINK_REG } from "@/labs/marked/parser/PlainLink";
+import { PLAIN_LINK_REG } from "@/labs/marked/parser";
 
 const MemoList = () => {
   const { t } = useTranslation();
