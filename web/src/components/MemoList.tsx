@@ -9,6 +9,7 @@ import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
 import copy from "copy-to-clipboard";
+import { PLAIN_LINK_REG } from "@/labs/marked/parser/PlainLink";
 
 const MemoList = () => {
   const { t } = useTranslation();
@@ -62,7 +63,7 @@ const MemoList = () => {
           if (memoType) {
             if (memoType === "NOT_TAGGED" && memo.content.match(TAG_REG) !== null) {
               shouldShow = false;
-            } else if (memoType === "LINKED" && memo.content.match(LINK_REG) === null) {
+            } else if (memoType === "LINKED" && (memo.content.match(LINK_REG) || memo.content.match(PLAIN_LINK_REG))) {
               shouldShow = false;
             }
           }
