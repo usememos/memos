@@ -8,12 +8,12 @@ const (
 )
 
 type MemoRelation struct {
-	MemoID        int
-	RelatedMemoID int
-	Type          MemoRelationType
+	MemoID        int              `json:"memoId"`
+	RelatedMemoID int              `json:"relatedMemoId"`
+	Type          MemoRelationType `json:"type"`
 }
 
 type MemoRelationUpsert struct {
-	RelatedMemoID int
-	Type          MemoRelationType
+	RelatedMemoID int              `json:"relatedMemoId"`
+	Type          MemoRelationType `json:"type"`
 }

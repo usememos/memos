@@ -16,11 +16,13 @@ interface Memo {
 
   creatorName: string;
   resourceList: Resource[];
+  relationList: MemoRelation[];
 }
 
 interface MemoCreate {
   content: string;
   resourceIdList: ResourceId[];
+  relationList: MemoRelationUpsert[];
   visibility?: Visibility;
 }
 
@@ -30,6 +32,7 @@ interface MemoPatch {
   rowStatus?: RowStatus;
   content?: string;
   resourceIdList?: ResourceId[];
+  relationList?: MemoRelationUpsert[];
   visibility?: Visibility;
 }
 

@@ -35,7 +35,7 @@ func TestMemoRelationServer(t *testing.T) {
 	require.Equal(t, "test memo", memo.Content)
 	memo2, err := s.postMemoCreate(&api.MemoCreate{
 		Content: "test memo2",
-		MemoRelationList: []*api.MemoRelationUpsert{
+		RelationList: []*api.MemoRelationUpsert{
 			{
 				RelatedMemoID: memo.ID,
 				Type:          api.MemoRelationReference,
