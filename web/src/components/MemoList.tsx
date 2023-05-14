@@ -8,7 +8,6 @@ import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
-import copy from "copy-to-clipboard";
 import { PLAIN_LINK_REG } from "@/labs/marked/parser/PlainLink";
 
 const MemoList = () => {
