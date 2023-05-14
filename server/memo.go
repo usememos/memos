@@ -103,7 +103,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		if s.Profile.IsDev() {
-			for _, memoRelationUpsert := range memoCreate.MemoRelationList {
+			for _, memoRelationUpsert := range memoCreate.RelationList {
 				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
 					MemoID:        memo.ID,
 					RelatedMemoID: memoRelationUpsert.RelatedMemoID,
@@ -171,7 +171,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		if s.Profile.IsDev() {
-			for _, memoRelationUpsert := range memoPatch.MemoRelationList {
+			for _, memoRelationUpsert := range memoPatch.RelationList {
 				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
 					MemoID:        memo.ID,
 					RelatedMemoID: memoRelationUpsert.RelatedMemoID,

@@ -240,6 +240,7 @@ const MemoEditor = () => {
           content,
           visibility: editorState.memoVisibility,
           resourceIdList: editorState.resourceList.map((resource) => resource.id),
+          relationList: [],
         });
         filterStore.clearFilter();
       }
