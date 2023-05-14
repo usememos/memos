@@ -10,6 +10,37 @@ import (
 	"github.com/usememos/memos/common"
 )
 
+func (s *Store) SeedDataForNewUser(ctx context.Context, user *api.User) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return FormatError(err)
+	}
+	defer tx.Rollback()
+
+	// Create a memo for the user.
+	_, err = createMemoRaw(ctx, tx, &api.MemoCreate{
+		CreatorID:  user.ID,
+		Content:    "#inbox Welcome to Memos!",
+		Visibility: api.Private,
+	})
+	if err != nil {
+		return err
+	}
+	_, err = upsertTag(ctx, tx, &api.TagUpsert{
+		CreatorID: user.ID,
+		Name:      "inbox",
+	})
+	if err != nil {
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return FormatError(err)
+	}
+
+	return nil
+}
+
 // userRaw is the store model for an User.
 // Fields have exactly the same meanings as User.
 type userRaw struct {
@@ -63,6 +94,7 @@ func (s *Store) ComposeMemoCreator(ctx context.Context, memo *api.Memo) error {
 	}
 	return nil
 }
+
 func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.User, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -81,6 +113,11 @@ func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.Us
 
 	s.userCache.Store(userRaw.ID, userRaw)
 	user := userRaw.toUser()
+
+	if err := s.SeedDataForNewUser(ctx, user); err != nil {
+		return nil, err
+	}
+
 	return user, nil
 }
 

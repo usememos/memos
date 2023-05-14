@@ -1,0 +1,86 @@
+name: Memos Build
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        goarch: [amd64, arm64]
+        include:
+          - os: windows-latest
+            goos: windows
+            goarch: amd64
+            cgo_env: CC=x86_64-w64-mingw32-gcc
+
+    env:
+      GOOS: ${{ matrix.goos }}
+      GOARCH: ${{ matrix.goarch }}
+      CGO_ENABLED: 1
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Clone Memos
+      run: git clone https://github.com/usememos/memos.git
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '18.12.1'
+
+    - name: Build frontend (Windows)
+      if: matrix.os == 'windows-latest'
+      shell: pwsh
+      run: |
+        cd memos/web
+        npm install -g pnpm
+        pnpm i --frozen-lockfile
+        pnpm build
+        Remove-Item -Path ../server/dist -Recurse -Force
+        mv dist ../server/
+
+    - name: Build frontend (non-Windows)
+      if: matrix.os != 'windows-latest'
+      run: |
+        cd memos/web
+        npm install -g pnpm
+        pnpm i --frozen-lockfile
+        pnpm build
+        rm -rf ../server/dist
+        mv dist ../server/
+
+    - name: Setup Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.19.3'
+
+    - name: Install mingw-w64 (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        choco install mingw
+        echo ${{ matrix.cgo_env }} >> $GITHUB_ENV
+
+    - name: Install gcc-aarch64-linux-gnu (Ubuntu ARM64)
+      if: matrix.os == 'ubuntu-latest' && matrix.goarch == 'arm64'
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y gcc-aarch64-linux-gnu
+        echo "CC=aarch64-linux-gnu-gcc" >> $GITHUB_ENV
+
+    - name: Build backend
+      run: |
+        cd memos
+        go build -o memos-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.os == 'windows-latest' && '.exe' || '' }} ./main.go
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: memos-binary-${{ matrix.os }}-${{ matrix.goarch }}
+        path: memos/memos-${{ matrix.goos }}-${{ matrix.goarch }}${{ matrix.os == 'windows-latest' && '.exe' || '' }}

@@ -94,6 +94,15 @@ func (s *Store) FindSystemSetting(ctx context.Context, find *api.SystemSettingFi
 	return systemSettingRaw.toSystemSetting(), nil
 }
 
+func (s *Store) GetSystemSettingValueOrDefault(ctx *context.Context, find api.SystemSettingName, defaultValue string) string {
+	if setting, err := s.FindSystemSetting(*ctx, &api.SystemSettingFind{
+		Name: find,
+	}); err == nil {
+		return setting.Value
+	}
+	return defaultValue
+}
+
 func upsertSystemSetting(ctx context.Context, tx *sql.Tx, upsert *api.SystemSettingUpsert) (*systemSettingRaw, error) {
 	query := `
 		INSERT INTO system_setting (
@@ -127,7 +136,7 @@ func findSystemSettingList(ctx context.Context, tx *sql.Tx, find *api.SystemSett
 	query := `
 		SELECT
 			name,
-		  value,
+			value,
 			description
 		FROM system_setting
 		WHERE ` + strings.Join(where, " AND ")

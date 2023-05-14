@@ -2,8 +2,8 @@ import * as api from "@/helpers/api";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import store, { useAppSelector } from "../";
 import { patchResource, setResources, deleteResource, upsertResources } from "../reducer/resource";
-
-const MAX_FILE_SIZE = 32 << 20;
+import { useGlobalStore } from "./global";
+import { useTranslation } from "react-i18next";
 
 const convertResponseModelResource = (resource: Resource): Resource => {
   return {
@@ -15,6 +15,9 @@ const convertResponseModelResource = (resource: Resource): Resource => {
 
 export const useResourceStore = () => {
   const state = useAppSelector((state) => state.resource);
+  const { t } = useTranslation();
+  const globalStore = useGlobalStore();
+  const maxUploadSizeMiB = globalStore.state.systemStatus.maxUploadSizeMiB;
 
   return {
     state,
@@ -46,8 +49,8 @@ export const useResourceStore = () => {
     },
     async createResourceWithBlob(file: File): Promise<Resource> {
       const { name: filename, size } = file;
-      if (size > MAX_FILE_SIZE) {
-        return Promise.reject("overload max size: 32MB");
+      if (size > maxUploadSizeMiB * 1024 * 1024) {
+        return Promise.reject(t("message.maximum-upload-size-is", { size: maxUploadSizeMiB }));
       }
 
       const formData = new FormData();
@@ -62,8 +65,8 @@ export const useResourceStore = () => {
       let newResourceList: Array<Resource> = [];
       for (const file of files) {
         const { name: filename, size } = file;
-        if (size > MAX_FILE_SIZE) {
-          return Promise.reject(`${filename} overload max size: 32MB`);
+        if (size > maxUploadSizeMiB * 1024 * 1024) {
+          return Promise.reject(t("message.file-exceeds-upload-limit-of", { file: filename, size: maxUploadSizeMiB }));
         }
 
         const formData = new FormData();

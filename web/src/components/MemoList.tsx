@@ -9,6 +9,7 @@ import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
 import { PLAIN_LINK_REG } from "@/labs/marked/parser";
+import copy from "copy-to-clipboard";
 
 const MemoList = () => {
   const { t } = useTranslation();
@@ -146,6 +147,21 @@ const MemoList = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("copy", handleCopy);
+    return () => {
+      window.removeEventListener("copy", handleCopy);
+    };
+  }, []);
+
+  const handleCopy = (event: ClipboardEvent) => {
+    event.preventDefault();
+    const rawStr = document.getSelection()?.toString();
+    if (rawStr !== undefined) {
+      copy(rawStr.split("\n\n").join("\n"));
     }
   };
 

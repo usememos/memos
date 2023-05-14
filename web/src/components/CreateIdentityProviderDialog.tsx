@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Button, Divider, Input, Radio, RadioGroup, Typography } from "@mui/joy";
+import { Button, Divider, Input, Option, Select, Typography } from "@mui/joy";
 import * as api from "@/helpers/api";
 import { UNKNOWN_ID } from "@/helpers/consts";
 import { absolutifyLink } from "@/helpers/utils";
@@ -101,6 +101,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
       },
     },
   ];
+  const identityProviderTypes = [...new Set(templateList.map((t) => t.type))];
   const { confirmCallback, destroy, identityProvider } = props;
   const [basicInfo, setBasicInfo] = useState({
     name: "",
@@ -121,7 +122,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     },
   });
   const [oauth2Scopes, setOAuth2Scopes] = useState<string>("");
-  const [seletedTemplate, setSelectedTemplate] = useState<string>("GitHub");
+  const [selectedTemplate, setSelectedTemplate] = useState<string>("GitHub");
   const isCreating = identityProvider === undefined;
 
   useEffect(() => {
@@ -143,7 +144,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    const template = templateList.find((t) => t.name === seletedTemplate);
+    const template = templateList.find((t) => t.name === selectedTemplate);
     if (template) {
       setBasicInfo({
         name: template.name,
@@ -155,7 +156,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
         setOAuth2Scopes(template.config.oauth2Config.scopes.join(" "));
       }
     }
-  }, [seletedTemplate]);
+  }, [selectedTemplate]);
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -229,37 +230,34 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text">{t("setting.sso-section." + (isCreating ? "create" : "update") + "-sso")}</p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
+        <p className="title-text ml-auto">{t("setting.sso-section." + (isCreating ? "create" : "update") + "-sso")}</p>
+        <button className="btn close-btn ml-auto" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
       </div>
-      <div className="dialog-content-container w-full max-w-[24rem] min-w-[25rem]">
+      <div className="dialog-content-container min-w-[19rem]">
         {isCreating && (
           <>
             <Typography className="!mb-1" level="body2">
               {t("common.type")}
             </Typography>
-            <RadioGroup className="mb-2" value={type}>
-              <div className="mt-2 w-full flex flex-row space-x-4">
-                <Radio value="OAUTH2" label="OAuth 2.0" />
-              </div>
-            </RadioGroup>
+            <Select className="w-full mb-4" value={type} onChange={(_, e) => setType(e ?? type)}>
+              {identityProviderTypes.map((kind) => (
+                <Option key={kind} value={kind}>
+                  {kind}
+                </Option>
+              ))}
+            </Select>
             <Typography className="mb-2" level="body2">
               {t("setting.sso-section.template")}
             </Typography>
-            <RadioGroup className="mb-2" value={seletedTemplate}>
-              <div className="mt-2 w-full flex flex-row space-x-4">
-                {templateList.map((template) => (
-                  <Radio
-                    key={template.name}
-                    value={template.name}
-                    label={template.name}
-                    onChange={(e) => setSelectedTemplate(e.target.value)}
-                  />
-                ))}
-              </div>
-            </RadioGroup>
+            <Select className="mb-1 h-auto w-full" value={selectedTemplate} onChange={(_, e) => setSelectedTemplate(e ?? selectedTemplate)}>
+              {templateList.map((template) => (
+                <Option key={template.name} value={template.name}>
+                  {template.name}
+                </Option>
+              ))}
+            </Select>
             <Divider className="!my-2" />
           </>
         )}

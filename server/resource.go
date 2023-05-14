@@ -25,8 +25,11 @@ import (
 )
 
 const (
-	// The max file size is 32MB.
-	maxFileSize = 32 << 20
+	// The upload memory buffer is 32 MiB.
+	// It should be kept low, so RAM usage doesn't get out of control.
+	// This is unrelated to maximum upload size limit, which is now set through system setting.
+	maxUploadBufferSizeBytes = 32 << 20
+	MebiByte                 = 1024 * 1024
 )
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
@@ -67,8 +70,13 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		if err := c.Request().ParseMultipartForm(maxFileSize); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Upload file overload max size").SetInternal(err)
+		maxUploadSetting := s.Store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingMaxUploadSizeMiBName, "0")
+		var settingMaxUploadSizeBytes int
+		if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
+			settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
+		} else {
+			log.Warn("Failed to parse max upload size", zap.Error(err))
+			settingMaxUploadSizeBytes = 0
 		}
 
 		file, err := c.FormFile("file")
@@ -77,6 +85,14 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		if file == nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Upload file not found").SetInternal(err)
+		}
+
+		if file.Size > int64(settingMaxUploadSizeBytes) {
+			message := fmt.Sprintf("File size exceeds allowed limit of %d MiB", settingMaxUploadSizeBytes/MebiByte)
+			return echo.NewHTTPError(http.StatusBadRequest, message).SetInternal(err)
+		}
+		if err := c.Request().ParseMultipartForm(maxUploadBufferSizeBytes); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Failed to parse upload data").SetInternal(err)
 		}
 
 		filetype := file.Header.Get("Content-Type")
