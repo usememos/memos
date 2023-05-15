@@ -115,6 +115,8 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
 			}
 		}
+
+		publicID := common.GenUUID()
 		if storageServiceID == api.DatabaseStorage {
 			fileBytes, err := io.ReadAll(sourceFile)
 			if err != nil {
@@ -146,24 +148,36 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if !strings.Contains(filePath, "{filename}") {
 				filePath = filepath.Join(filePath, "{filename}")
 			}
-			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
-			dir, filename := filepath.Split(filePath)
+
+			hashFilename := publicID + filepath.Ext(file.Filename)
+			filePath = path.Join(s.Profile.Data, replacePathTemplate(filePath, hashFilename))
+			dir, _ := filepath.Split(filePath)
 			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
 			}
-			dst, err := os.Create(filePath)
+
+			fileBytes, err := io.ReadAll(sourceFile)
+			err = os.WriteFile(filePath, fileBytes, 0666)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create file").SetInternal(err)
 			}
-			defer dst.Close()
-			_, err = io.Copy(dst, sourceFile)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to copy file").SetInternal(err)
+
+			if filetype == "image/jpeg" || filetype == "image/png" {
+				thumbnailBytes, err := common.ResizeImageBlob(fileBytes, 302, filetype)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate image thumbnail").SetInternal(err)
+				}
+
+				thumbnailPath := filepath.Join(dir, publicID+"-thumbnail"+filepath.Ext(file.Filename))
+				err = os.WriteFile(thumbnailPath, thumbnailBytes, 0666)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create thumbnail file").SetInternal(err)
+				}
 			}
 
 			resourceCreate = &api.ResourceCreate{
 				CreatorID:    userID,
-				Filename:     filename,
+				Filename:     file.Filename,
 				Type:         filetype,
 				Size:         size,
 				InternalPath: filePath,
@@ -211,7 +225,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
-		publicID := common.GenUUID()
 		resourceCreate.PublicID = publicID
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
