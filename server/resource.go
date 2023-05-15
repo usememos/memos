@@ -115,7 +115,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
 			}
 		}
-
 		publicID := common.GenUUID()
 		if storageServiceID == api.DatabaseStorage {
 			fileBytes, err := io.ReadAll(sourceFile)
@@ -148,40 +147,50 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if !strings.Contains(filePath, "{filename}") {
 				filePath = filepath.Join(filePath, "{filename}")
 			}
-
-			hashFilename := publicID + filepath.Ext(file.Filename)
-			filePath = path.Join(s.Profile.Data, replacePathTemplate(filePath, hashFilename))
-			dir, _ := filepath.Split(filePath)
+			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
+			dir, filename := filepath.Split(filePath)
 			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
 			}
-
-			fileBytes, err := io.ReadAll(sourceFile)
+			dst, err := os.Create(filePath)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read resource file").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create file").SetInternal(err)
 			}
-
-			err = os.WriteFile(filePath, fileBytes, 0666)
+			defer dst.Close()
+			_, err = io.Copy(dst, sourceFile)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write resource file").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to copy file").SetInternal(err)
 			}
 
 			if filetype == "image/jpeg" || filetype == "image/png" {
-				thumbnailBytes, err := common.ResizeImageBlob(fileBytes, 302, filetype)
+				_, err := sourceFile.Seek(0, io.SeekStart)
 				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate image thumbnail").SetInternal(err)
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to seek file").SetInternal(err)
 				}
 
-				thumbnailPath := filepath.Join(dir, publicID+"-thumbnail"+path.Ext(filePath))
-				err = os.WriteFile(thumbnailPath, thumbnailBytes, 0666)
+				fileBytes, err := io.ReadAll(sourceFile)
 				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create thumbnail file").SetInternal(err)
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to load file").SetInternal(err)
+				}
+
+				thumbnailBytes, err := common.ResizeImageBlob(fileBytes, 302, filetype)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate thumbnail").SetInternal(err)
+				}
+
+				dir := filepath.Join(s.Profile.Data, common.ThumbnailPath)
+				if err = os.MkdirAll(dir, os.ModePerm); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
+				}
+				err = os.WriteFile(filepath.Join(dir, publicID), thumbnailBytes, 0666)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create thumbnail").SetInternal(err)
 				}
 			}
 
 			resourceCreate = &api.ResourceCreate{
 				CreatorID:    userID,
-				Filename:     file.Filename,
+				Filename:     filename,
 				Type:         filetype,
 				Size:         size,
 				InternalPath: filePath,
@@ -336,11 +345,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
 			}
 
-			ext := filepath.Ext(resource.InternalPath)
-			thumbnailPath := strings.TrimSuffix(resource.InternalPath, ext) + "-thumbnail" + ext
+			thumbnailPath := filepath.Join(s.Profile.Data, common.ThumbnailPath, resource.PublicID)
 			err = os.Remove(thumbnailPath)
 			if err != nil {
-				log.Warn(fmt.Sprintf("failed to delete local file with path %s", thumbnailPath), zap.Error(err))
+				log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
 			}
 		}
 
@@ -433,8 +441,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		if resource.InternalPath != "" {
 			resourcePath := resource.InternalPath
 			if c.QueryParam("thumbnail") == "1" && (resource.Type == "image/jpeg" || resource.Type == "image/png") {
-				ext := filepath.Ext(resourcePath)
-				thumbnailPath := strings.TrimSuffix(resourcePath, ext) + "-thumbnail" + ext
+				thumbnailPath := filepath.Join(s.Profile.Data, common.ThumbnailPath, resource.PublicID)
 				if _, err := os.Stat(thumbnailPath); err == nil {
 					resourcePath = thumbnailPath
 				}

@@ -9,6 +9,8 @@ import (
 	"image/png"
 )
 
+const ThumbnailPath = ".thumbnail_cache"
+
 func ResizeImageBlob(data []byte, maxSize int, mime string) ([]byte, error) {
 	var err error
 	var oldImage image.Image
