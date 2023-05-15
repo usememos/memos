@@ -44,7 +44,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			AllowSignUp:        false,
 			IgnoreUpgrade:      false,
 			DisablePublicMemos: false,
-			MaxUploadSizeMiB:   32, // this is the frontend default value
+			MaxUploadSizeMiB:   32,
 			AdditionalStyle:    "",
 			AdditionalScript:   "",
 			CustomizedProfile: api.CustomizedProfile{
@@ -56,7 +56,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				ExternalURL: "",
 			},
 			StorageServiceID: api.DatabaseStorage,
-			LocalStoragePath: "",
+			LocalStoragePath: "assets/{timestamp}_{filename}",
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})

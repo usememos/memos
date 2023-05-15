@@ -137,7 +137,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
 			}
-			localStoragePath := ""
+			localStoragePath := "assets/{timestamp}_{filename}"
 			if systemSettingLocalStoragePath != nil {
 				err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
 				if err != nil {
