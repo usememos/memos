@@ -44,7 +44,7 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			AllowSignUp:        false,
 			IgnoreUpgrade:      false,
 			DisablePublicMemos: false,
-			MaxUploadSizeMiB:   32,
+			MaxUploadSizeMiB:   32, // this is the frontend default value
 			AdditionalStyle:    "",
 			AdditionalScript:   "",
 			CustomizedProfile: api.CustomizedProfile{

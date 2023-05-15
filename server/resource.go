@@ -70,7 +70,8 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		maxUploadSetting := s.Store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingMaxUploadSizeMiBName, "0")
+		// This is the backend default max upload size limit.
+		maxUploadSetting := s.Store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingMaxUploadSizeMiBName, "32")
 		var settingMaxUploadSizeBytes int
 		if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
 			settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
