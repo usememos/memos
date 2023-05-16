@@ -37,11 +37,7 @@ const ResourceCover = ({ resource }: ResourceCoverProps) => {
   const resourceType = getResourceType(resource);
   switch (resourceType) {
     case "image/*":
-      return (
-        <div className="resource-cover">
-          <img className="h-20 w-20" src={getResourceUrl(resource) + "?thumbnail=1"}></img>
-        </div>
-      );
+      return <img className="resource-cover h-20 w-20" src={getResourceUrl(resource) + "?thumbnail=1"}></img>;
     case "video/*":
       return <Icon.FileVideo2 className="resource-cover" />;
     case "audio/*":
