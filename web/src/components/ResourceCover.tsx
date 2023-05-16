@@ -36,10 +36,12 @@ const getResourceType = (resource: Resource) => {
 
 const ResourceCover = ({ resource }: ResourceCoverProps) => {
   const resourceType = getResourceType(resource);
+  const resourceUrl = getResourceUrl(resource);
   switch (resourceType) {
     case "image/*":
-      const resourceUrl = getResourceUrl(resource);
-      return <img className="resource-cover h-20 w-20" src={resourceUrl + "?thumbnail=1"} onClick={() => showPreviewImageDialog(resourceUrl)}></img>;
+      return (
+        <img className="resource-cover h-20 w-20" src={resourceUrl + "?thumbnail=1"} onClick={() => showPreviewImageDialog(resourceUrl)} />
+      );
     case "video/*":
       return <Icon.FileVideo2 className="resource-cover" />;
     case "audio/*":
