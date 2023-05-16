@@ -1,6 +1,7 @@
 import React from "react";
 import Icon from "./Icon";
 import { getResourceUrl } from "@/utils/resource";
+import showPreviewImageDialog from "./PreviewImageDialog";
 import "@/less/resource-cover.less";
 
 interface ResourceCoverProps {
@@ -37,7 +38,8 @@ const ResourceCover = ({ resource }: ResourceCoverProps) => {
   const resourceType = getResourceType(resource);
   switch (resourceType) {
     case "image/*":
-      return <img className="resource-cover h-20 w-20" src={getResourceUrl(resource) + "?thumbnail=1"}></img>;
+      const resourceUrl = getResourceUrl(resource);
+      return <img className="resource-cover h-20 w-20" src={resourceUrl + "?thumbnail=1"} onClick={() => showPreviewImageDialog(resourceUrl)}></img>;
     case "video/*":
       return <Icon.FileVideo2 className="resource-cover" />;
     case "audio/*":
