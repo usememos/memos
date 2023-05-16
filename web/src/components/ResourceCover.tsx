@@ -38,7 +38,9 @@ const ResourceCover = ({ resource }: ResourceCoverProps) => {
   switch (resourceType) {
     case "image/*":
       return (
-        <div className="resource-cover"><img src={getResourceUrl(resource) + "?thumbnail=1"}></img></div>
+        <div className="resource-cover">
+          <img src={getResourceUrl(resource) + "?thumbnail=1"}></img>
+        </div>
       );
     case "video/*":
       return <Icon.FileVideo2 className="resource-cover" />;
