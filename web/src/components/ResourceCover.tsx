@@ -39,7 +39,7 @@ const ResourceCover = ({ resource }: ResourceCoverProps) => {
     case "image/*":
       return (
         <div className="resource-cover">
-          <img src={getResourceUrl(resource) + "?thumbnail=1"}></img>
+          <img className="h-20 w-20" src={getResourceUrl(resource) + "?thumbnail=1"}></img>
         </div>
       );
     case "video/*":
