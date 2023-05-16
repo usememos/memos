@@ -1,5 +1,6 @@
 import React from "react";
 import Icon from "./Icon";
+import { getResourceUrl } from "@/utils/resource";
 import "@/less/resource-cover.less";
 
 interface ResourceCoverProps {
@@ -36,7 +37,7 @@ const ResourceCover = ({ resource }: ResourceCoverProps) => {
   const resourceType = getResourceType(resource);
   switch (resourceType) {
     case "image/*":
-      return <Icon.FileImage className="resource-cover" />;
+      return <div className="resource-cover"><img src={getResourceUrl(resource) + "?thumbnail=1"}></img></div>;
     case "video/*":
       return <Icon.FileVideo2 className="resource-cover" />;
     case "audio/*":
