@@ -108,7 +108,7 @@ func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*api.Me
 			if resource.ExternalLink != "" {
 				enclosure.Url = resource.ExternalLink
 			} else {
-				enclosure.Url = baseURL + "/o/r/" + strconv.Itoa(memo.ID) + "/" + resource.PublicID + "/" + resource.Filename
+				enclosure.Url = baseURL + "/o/r/" + strconv.Itoa(resource.ID) + "/" + resource.PublicID + "/" + resource.Filename
 			}
 			enclosure.Length = strconv.Itoa(int(resource.Size))
 			enclosure.Type = resource.Type
