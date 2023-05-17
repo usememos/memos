@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
+import { getMemoStats } from "@/helpers/api";
+import { getDateStampByDate } from "@/helpers/datetime";
+import { useUserStore } from "@/store/module";
 import Icon from "../Icon";
 import "@/less/common/date-picker.less";
 
@@ -14,10 +17,23 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   const { t } = useTranslation();
   const { className, datestamp, handleDateStampChange } = props;
   const [currentDateStamp, setCurrentDateStamp] = useState<DateStamp>(getMonthFirstDayDateStamp(datestamp));
+  const [countByDate, setCountByDate] = useState(new Map());
 
   useEffect(() => {
     setCurrentDateStamp(getMonthFirstDayDateStamp(datestamp));
   }, [datestamp]);
+
+  const currentUserId = useUserStore().getCurrentUserId();
+  useEffect(() => {
+    getMemoStats(currentUserId).then(({ data: { data } }) => {
+      const m = new Map();
+      for (const record of data) {
+        const date = getDateStampByDate(record * 1000);
+        m.set(date, true);
+      }
+      setCountByDate(m);
+    });
+  }, [currentUserId]);
 
   const firstDate = new Date(currentDateStamp);
   const firstDateDay = firstDate.getDay() === 0 ? 7 : firstDate.getDay();
@@ -89,7 +105,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
             return (
               <span
                 key={d.datestamp}
-                className={`day-item ${d.datestamp === datestamp ? "current" : ""}`}
+                className={`day-item ${countByDate.has(d.datestamp) && "font-bold"} ${d.datestamp === datestamp ? "current" : ""}`}
                 onClick={() => handleDateItemClick(d.datestamp)}
               >
                 {d.date}
