@@ -160,8 +160,17 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch memo").SetInternal(err)
 		}
+		memo, err = s.Store.ComposeMemo(ctx, memo)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
+		}
 
-		for _, resourceID := range memoPatch.ResourceIDList {
+		resourceIDList := make([]int, 0)
+		for _, resource := range memo.ResourceList {
+			resourceIDList = append(resourceIDList, resource.ID)
+		}
+		addedResourceIDList, removedResourceIDList := getIDListDiff(resourceIDList, memoPatch.ResourceIDList)
+		for _, resourceID := range addedResourceIDList {
 			if _, err := s.Store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
 				MemoID:     memo.ID,
 				ResourceID: resourceID,
@@ -169,19 +178,47 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
 			}
 		}
+		for _, resourceID := range removedResourceIDList {
+			if err := s.Store.DeleteMemoResource(ctx, &api.MemoResourceDelete{
+				MemoID:     &memo.ID,
+				ResourceID: &resourceID,
+			}); err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete memo resource").SetInternal(err)
+			}
+		}
 
 		if s.Profile.IsDev() {
+			patchMemoRelationList := make([]*api.MemoRelation, 0)
 			for _, memoRelationUpsert := range memoPatch.RelationList {
-				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+				patchMemoRelationList = append(patchMemoRelationList, &api.MemoRelation{
 					MemoID:        memo.ID,
 					RelatedMemoID: memoRelationUpsert.RelatedMemoID,
-					Type:          store.MemoRelationType(memoRelationUpsert.Type),
+					Type:          memoRelationUpsert.Type,
+				})
+			}
+			addedMemoRelationList, removedMemoRelationList := getMemoRelationListDiff(memo.RelationList, patchMemoRelationList)
+			for _, memoRelation := range addedMemoRelationList {
+				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+					MemoID:        memo.ID,
+					RelatedMemoID: memoRelation.RelatedMemoID,
+					Type:          store.MemoRelationType(memoRelation.Type),
 				}); err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
 				}
 			}
+			for _, memoRelation := range removedMemoRelationList {
+				memoRelationType := store.MemoRelationType(memoRelation.Type)
+				if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelationMessage{
+					MemoID:        &memo.ID,
+					RelatedMemoID: &memoRelation.RelatedMemoID,
+					Type:          &memoRelationType,
+				}); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete memo relation").SetInternal(err)
+				}
+			}
 		}
 
+		// After patching memo resources and relations, we need to re-compose it to get the latest data.
 		memo, err = s.Store.ComposeMemo(ctx, memo)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
@@ -451,4 +488,50 @@ func (s *Server) createMemoCreateActivity(c echo.Context, memo *api.Memo) error 
 		return errors.Wrap(err, "failed to create activity")
 	}
 	return err
+}
+
+func getIDListDiff(oldList, newList []int) (addedList, removedList []int) {
+	oldMap := map[int]bool{}
+	for _, id := range oldList {
+		oldMap[id] = true
+	}
+	newMap := map[int]bool{}
+	for _, id := range newList {
+		newMap[id] = true
+	}
+	for id := range oldMap {
+		if !newMap[id] {
+			removedList = append(removedList, id)
+		}
+	}
+	for id := range newMap {
+		if !oldMap[id] {
+			addedList = append(addedList, id)
+		}
+	}
+	return addedList, removedList
+}
+
+func getMemoRelationListDiff(oldList, newList []*api.MemoRelation) (addedList, removedList []*api.MemoRelation) {
+	oldMap := map[string]bool{}
+	for _, relation := range oldList {
+		oldMap[fmt.Sprintf("%d-%s", relation.RelatedMemoID, relation.Type)] = true
+	}
+	newMap := map[string]bool{}
+	for _, relation := range newList {
+		newMap[fmt.Sprintf("%d-%s", relation.RelatedMemoID, relation.Type)] = true
+	}
+	for _, relation := range oldList {
+		key := fmt.Sprintf("%d-%s", relation.RelatedMemoID, relation.Type)
+		if !newMap[key] {
+			removedList = append(removedList, relation)
+		}
+	}
+	for _, relation := range newList {
+		key := fmt.Sprintf("%d-%s", relation.RelatedMemoID, relation.Type)
+		if !oldMap[key] {
+			addedList = append(addedList, relation)
+		}
+	}
+	return addedList, removedList
 }

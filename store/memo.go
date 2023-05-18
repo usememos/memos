@@ -40,9 +40,11 @@ func (raw *memoRaw) toMemo() *api.Memo {
 		UpdatedTs: raw.UpdatedTs,
 
 		// Domain specific fields
-		Content:    raw.Content,
-		Visibility: raw.Visibility,
-		Pinned:     raw.Pinned,
+		Content:      raw.Content,
+		Visibility:   raw.Visibility,
+		Pinned:       raw.Pinned,
+		ResourceList: []*api.Resource{},
+		RelationList: []*api.MemoRelation{},
 	}
 }
 
