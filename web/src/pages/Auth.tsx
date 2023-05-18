@@ -140,7 +140,7 @@ const Auth = () => {
             <div className={`flex flex-col justify-start items-start w-full ${actionBtnLoadingState.isLoading && "opacity-80"}`}>
               <div className="flex flex-col justify-start items-start relative w-full text-base mt-2 py-2">
                 <span
-                  className={`absolute top-3 left-3 px-1 leading-10 flex-shrink-0 text-base cursor-text text-gray-400 transition-all select-none pointer-events-none ${
+                  className={`absolute top-3 left-3 px-1 leading-10 shrink-0 text-base cursor-text text-gray-400 transition-all select-none pointer-events-none ${
                     username ? "!text-sm !top-0 !z-10 !leading-4 bg-white dark:bg-zinc-800 rounded" : ""
                   }`}
                 >
@@ -156,7 +156,7 @@ const Auth = () => {
               </div>
               <div className="flex flex-col justify-start items-start relative w-full text-base mt-2 py-2">
                 <span
-                  className={`absolute top-3 left-3 px-1 leading-10 flex-shrink-0 text-base cursor-text text-gray-400 transition-all select-none pointer-events-none ${
+                  className={`absolute top-3 left-3 px-1 leading-10 shrink-0 text-base cursor-text text-gray-400 transition-all select-none pointer-events-none ${
                     password ? "!text-sm !top-0 !z-10 !leading-4 bg-white dark:bg-zinc-800 rounded" : ""
                   }`}
                 >

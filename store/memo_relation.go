@@ -18,6 +18,7 @@ func (s *Store) ComposeMemoRelationList(ctx context.Context, memo *api.Memo) err
 		return err
 	}
 
+	memo.RelationList = []*api.MemoRelation{}
 	for _, memoRelation := range memoRelationList {
 		memo.RelationList = append(memo.RelationList, &api.MemoRelation{
 			MemoID:        memoRelation.MemoID,

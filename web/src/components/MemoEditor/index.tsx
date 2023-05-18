@@ -13,8 +13,9 @@ import Editor, { EditorRefActions } from "./Editor";
 import TagSelector from "./ActionButton/TagSelector";
 import ResourceSelector from "./ActionButton/ResourceSelector";
 import MemoVisibilitySelector from "./ActionButton/MemoVisibilitySelector";
-import "@/less/memo-editor.less";
 import ResourceListView from "./ResourceListView";
+import RelationListView from "./RelationListView";
+import "@/less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
@@ -73,6 +74,7 @@ const MemoEditor = () => {
           handleEditorFocus();
           editorStore.setMemoVisibility(memo.visibility);
           editorStore.setResourceList(memo.resourceList);
+          editorStore.setRelationList(memo.relationList);
           editorRef.current?.setContent(memo.content ?? "");
         }
       });
@@ -232,6 +234,7 @@ const MemoEditor = () => {
             content,
             visibility: editorState.memoVisibility,
             resourceIdList: editorState.resourceList.map((resource) => resource.id),
+            relationList: editorState.relationList,
           });
         }
         editorStore.clearEditMemo();
@@ -240,7 +243,7 @@ const MemoEditor = () => {
           content,
           visibility: editorState.memoVisibility,
           resourceIdList: editorState.resourceList.map((resource) => resource.id),
-          relationList: [],
+          relationList: editorState.relationList,
         });
         filterStore.clearFilter();
       }
@@ -268,7 +271,8 @@ const MemoEditor = () => {
         fullscreen: false,
       };
     });
-    editorStore.clearResourceList();
+    editorStore.setResourceList([]);
+    editorStore.setRelationList([]);
     setEditorContentCache("");
     editorRef.current?.setContent("");
     clearContentQueryParam();
@@ -277,7 +281,8 @@ const MemoEditor = () => {
   const handleCancelEdit = () => {
     if (editorState.editMemoId) {
       editorStore.clearEditMemo();
-      editorStore.clearResourceList();
+      editorStore.setResourceList([]);
+      editorStore.setRelationList([]);
       editorRef.current?.setContent("");
       setEditorContentCache("");
     }
@@ -381,6 +386,7 @@ const MemoEditor = () => {
         </div>
       </div>
       <ResourceListView />
+      <RelationListView />
       <div className="editor-footer-container">
         <MemoVisibilitySelector />
         <div className="buttons-container">

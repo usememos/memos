@@ -1,5 +1,5 @@
 import store, { useAppSelector } from "..";
-import { setEditMemoId, setMemoVisibility, setResourceList } from "../reducer/editor";
+import { setEditMemoId, setMemoVisibility, setRelationList, setResourceList } from "../reducer/editor";
 
 export const useEditorStore = () => {
   const state = useAppSelector((state) => state.editor);
@@ -21,8 +21,8 @@ export const useEditorStore = () => {
     setResourceList: (resourceList: Resource[]) => {
       store.dispatch(setResourceList(resourceList));
     },
-    clearResourceList: () => {
-      store.dispatch(setResourceList([]));
+    setRelationList: (relationList: MemoRelation[]) => {
+      store.dispatch(setRelationList(relationList));
     },
   };
 };

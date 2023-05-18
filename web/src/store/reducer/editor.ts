@@ -3,6 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 interface State {
   memoVisibility: Visibility;
   resourceList: Resource[];
+  relationList: MemoRelation[];
   editMemoId?: MemoId;
 }
 
@@ -11,6 +12,7 @@ const editorSlice = createSlice({
   initialState: {
     memoVisibility: "PRIVATE",
     resourceList: [],
+    relationList: [],
   } as State,
   reducers: {
     setEditMemoId: (state, action: PayloadAction<Option<MemoId>>) => {
@@ -31,9 +33,15 @@ const editorSlice = createSlice({
         resourceList: action.payload,
       };
     },
+    setRelationList: (state, action: PayloadAction<MemoRelation[]>) => {
+      return {
+        ...state,
+        relationList: action.payload,
+      };
+    },
   },
 });
 
-export const { setEditMemoId, setMemoVisibility, setResourceList } = editorSlice.actions;
+export const { setEditMemoId, setMemoVisibility, setResourceList, setRelationList } = editorSlice.actions;
 
 export default editorSlice.reducer;

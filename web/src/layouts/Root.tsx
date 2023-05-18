@@ -10,7 +10,7 @@ function Root() {
       </div>
       <div className="w-full max-w-6xl mx-auto flex flex-row justify-center items-start">
         <Header />
-        <main className="w-auto flex-grow flex flex-col justify-start items-start">
+        <main className="w-auto max-w-full flex-grow shrink flex flex-col justify-start items-start">
           <Outlet />
         </main>
       </div>

@@ -42,7 +42,7 @@ const HomeSidebar = () => {
 
   return (
     <div
-      className={`fixed md:sticky top-0 left-0 w-full md:w-56 h-full flex-shrink-0 pointer-events-none md:pointer-events-auto z-10 ${
+      className={`fixed md:sticky top-0 left-0 w-full md:w-56 h-full shrink-0 pointer-events-none md:pointer-events-auto z-10 ${
         showHomeSidebar && "pointer-events-auto"
       }`}
     >
