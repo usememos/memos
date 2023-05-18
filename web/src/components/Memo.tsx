@@ -49,7 +49,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     copy(memo.content);
     toast.success(t("message.succeed-copy-content"));
   };
-  
+
   const handleTogglePinMemoBtnClick = async () => {
     try {
       if (memo.pinned) {
