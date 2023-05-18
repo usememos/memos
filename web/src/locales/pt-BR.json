@@ -60,7 +60,14 @@
     "visibility": "Visibilidade",
     "learn-more": "Saiba mais",
     "e.g": "ex.",
-    "beta": "Beta"
+    "beta": "Beta",
+    "dialog": {
+      "error": "Erro",
+      "help": "Ajuda",
+      "info": "Informação",
+      "success": "Sucesso",
+      "warning": "Aviso"
+    }
   },
   "router": {
     "back-to-home": "Voltar ao início"
@@ -191,7 +198,7 @@
       "auto-collapse": "Recolher automaticamente"
     },
     "storage-section": {
-      "current-storage": "Armazenamento atual",
+      "current-storage": "Armazenamento de objetos atual",
       "type-database": "Banco de dados",
       "type-local": "Local",
       "storage-services-list": "Lista de serviços de armazenamento",
@@ -216,7 +223,7 @@
       "bucket-placeholder": "Nome do bucket",
       "path": "Caminho do armazenamento",
       "path-description": "Você pode usar as mesmas variáveis dinâmicas do armazenamento local, como {filename}",
-      "path-placeholder": "caminho/personalizado",
+      "path-placeholder": "caminho",
       "url-prefix": "Prefixo da URL",
       "url-prefix-placeholder": "Prefixo personalizado da URL, opcional",
       "url-suffix": "Sufixo da URL",
@@ -243,6 +250,8 @@
       "allow-user-signup": "Permitir registro de usuário",
       "ignore-version-upgrade": "Ignorar atualização de versão",
       "disable-public-memos": "Desabilitar memos públicos",
+      "max-upload-size": "Tamanho máximo de upload (MiB)",
+      "max-upload-size-hint": "O valor recomendado é 32 MiB.",
       "additional-style": "Estilo adicional",
       "additional-script": "Script adicional",
       "additional-style-placeholder": "Código CSS adicional",
@@ -349,7 +358,9 @@
     "succeed-update-customized-profile": "Perfil personalizado com êxito.",
     "succeed-update-additional-script": "Script adicional atualizado com êxito.",
     "update-succeed": "Atualizado com êxito",
-    "page-not-found": "404 - Página não encontrada 😥"
+    "page-not-found": "404 - Página não encontrada 😥",
+    "maximum-upload-size-is": "O tamanho máximo permitido para upload é {{size}} MiB",
+    "file-exceeds-upload-limit-of": "O arquivo {{file}} excede o limite de upload de {{size}} MiB"
   },
   "days": {
     "mon": "Seg",

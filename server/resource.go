@@ -25,8 +25,11 @@ import (
 )
 
 const (
-	// The max file size is 32MB.
-	maxFileSize = 32 << 20
+	// The upload memory buffer is 32 MiB.
+	// It should be kept low, so RAM usage doesn't get out of control.
+	// This is unrelated to maximum upload size limit, which is now set through system setting.
+	maxUploadBufferSizeBytes = 32 << 20
+	MebiByte                 = 1024 * 1024
 )
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
@@ -67,8 +70,14 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		if err := c.Request().ParseMultipartForm(maxFileSize); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Upload file overload max size").SetInternal(err)
+		// This is the backend default max upload size limit.
+		maxUploadSetting := s.Store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingMaxUploadSizeMiBName, "32")
+		var settingMaxUploadSizeBytes int
+		if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
+			settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
+		} else {
+			log.Warn("Failed to parse max upload size", zap.Error(err))
+			settingMaxUploadSizeBytes = 0
 		}
 
 		file, err := c.FormFile("file")
@@ -77,6 +86,14 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		if file == nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Upload file not found").SetInternal(err)
+		}
+
+		if file.Size > int64(settingMaxUploadSizeBytes) {
+			message := fmt.Sprintf("File size exceeds allowed limit of %d MiB", settingMaxUploadSizeBytes/MebiByte)
+			return echo.NewHTTPError(http.StatusBadRequest, message).SetInternal(err)
+		}
+		if err := c.Request().ParseMultipartForm(maxUploadBufferSizeBytes); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Failed to parse upload data").SetInternal(err)
 		}
 
 		filetype := file.Header.Get("Content-Type")
@@ -99,6 +116,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
 			}
 		}
+		publicID := common.GenUUID()
 		if storageServiceID == api.DatabaseStorage {
 			fileBytes, err := io.ReadAll(sourceFile)
 			if err != nil {
@@ -112,22 +130,25 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				Blob:      fileBytes,
 			}
 		} else if storageServiceID == api.LocalStorage {
+			// filepath.Join() should be used for local file paths,
+			// as it handles the os-specific path separator automatically.
+			// path.Join() always uses '/' as path separator.
 			systemSettingLocalStoragePath, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingLocalStoragePathName})
 			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
 			}
-			localStoragePath := ""
+			localStoragePath := "assets/{timestamp}_{filename}"
 			if systemSettingLocalStoragePath != nil {
 				err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal local storage path setting").SetInternal(err)
 				}
 			}
-			filePath := localStoragePath
+			filePath := filepath.FromSlash(localStoragePath)
 			if !strings.Contains(filePath, "{filename}") {
-				filePath = path.Join(filePath, "{filename}")
+				filePath = filepath.Join(filePath, "{filename}")
 			}
-			filePath = path.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
+			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
 			dir, filename := filepath.Split(filePath)
 			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
@@ -140,6 +161,32 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			_, err = io.Copy(dst, sourceFile)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to copy file").SetInternal(err)
+			}
+
+			if filetype == "image/jpeg" || filetype == "image/png" {
+				_, err := sourceFile.Seek(0, io.SeekStart)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to seek file").SetInternal(err)
+				}
+
+				fileBytes, err := io.ReadAll(sourceFile)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to load file").SetInternal(err)
+				}
+
+				thumbnailBytes, err := common.ResizeImageBlob(fileBytes, 302, filetype)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate thumbnail").SetInternal(err)
+				}
+
+				dir := filepath.Join(s.Profile.Data, common.ThumbnailPath)
+				if err = os.MkdirAll(dir, os.ModePerm); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
+				}
+				err = os.WriteFile(filepath.Join(dir, publicID), thumbnailBytes, 0666)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create thumbnail").SetInternal(err)
+				}
 			}
 
 			resourceCreate = &api.ResourceCreate{
@@ -184,6 +231,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					CreatorID:    userID,
 					Filename:     filename,
 					Type:         filetype,
+					Size:         size,
 					ExternalLink: link,
 				}
 			} else {
@@ -191,7 +239,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
-		publicID := common.GenUUID()
 		resourceCreate.PublicID = publicID
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
 		if err != nil {
@@ -298,6 +345,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if err != nil {
 				log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
 			}
+
+			thumbnailPath := filepath.Join(s.Profile.Data, common.ThumbnailPath, resource.PublicID)
+			err = os.Remove(thumbnailPath)
+			if err != nil {
+				log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
+			}
 		}
 
 		resourceDelete := &api.ResourceDelete{
@@ -387,14 +440,22 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 
 		blob := resource.Blob
 		if resource.InternalPath != "" {
-			src, err := os.Open(resource.InternalPath)
+			resourcePath := resource.InternalPath
+			if c.QueryParam("thumbnail") == "1" && (resource.Type == "image/jpeg" || resource.Type == "image/png") {
+				thumbnailPath := filepath.Join(s.Profile.Data, common.ThumbnailPath, resource.PublicID)
+				if _, err := os.Stat(thumbnailPath); err == nil {
+					resourcePath = thumbnailPath
+				}
+			}
+
+			src, err := os.Open(resourcePath)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", resource.InternalPath)).SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", resourcePath)).SetInternal(err)
 			}
 			defer src.Close()
 			blob, err = io.ReadAll(src)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", resource.InternalPath)).SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", resourcePath)).SetInternal(err)
 			}
 		}
 

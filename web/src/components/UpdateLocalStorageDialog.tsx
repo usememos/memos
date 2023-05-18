@@ -5,7 +5,7 @@ import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import LearnMore from "./LearnMore";
+import HelpButton from "./kit/HelpButton";
 import { useTranslation } from "react-i18next";
 
 interface Props extends DialogProps {
@@ -49,13 +49,13 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container max-w-xs">
-        <p className="text-sm break-words mb-1">
-          {t("setting.storage-section.update-local-path-description")}
-          <LearnMore className="ml-1" url="https://usememos.com/docs/local-storage" />
-        </p>
-        <p className="text-sm text-gray-400 mb-2 break-all">
-          {t("common.e.g")} {"assets/{timestamp}_{filename}"}
-        </p>
+        <p className="text-sm break-words mb-1">{t("setting.storage-section.update-local-path-description")}</p>
+        <div className="flex flex-row">
+          <p className="text-sm text-gray-400 mb-2 break-all">
+            {t("common.e.g")} {"assets/{timestamp}_{filename}"}
+          </p>
+          <HelpButton hint={t("common.learn-more")} url="https://usememos.com/docs/local-storage" />
+        </div>
         <Input
           className="mb-2"
           placeholder={t("setting.storage-section.local-storage-path")}

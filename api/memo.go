@@ -57,8 +57,8 @@ type MemoCreate struct {
 	Content    string     `json:"content"`
 
 	// Related fields
-	ResourceIDList   []int                 `json:"resourceIdList"`
-	MemoRelationList []*MemoRelationUpsert `json:"memoRelationList"`
+	ResourceIDList []int                 `json:"resourceIdList"`
+	RelationList   []*MemoRelationUpsert `json:"relationList"`
 }
 
 type MemoPatch struct {
@@ -74,8 +74,8 @@ type MemoPatch struct {
 	Visibility *Visibility `json:"visibility"`
 
 	// Related fields
-	ResourceIDList   []int                 `json:"resourceIdList"`
-	MemoRelationList []*MemoRelationUpsert `json:"memoRelationList"`
+	ResourceIDList []int                 `json:"resourceIdList"`
+	RelationList   []*MemoRelationUpsert `json:"relationList"`
 }
 
 type MemoFind struct {

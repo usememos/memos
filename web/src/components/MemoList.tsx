@@ -8,6 +8,8 @@ import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
+import { PLAIN_LINK_REG } from "@/labs/marked/parser";
+import copy from "copy-to-clipboard";
 
 const MemoList = () => {
   const { t } = useTranslation();
@@ -61,7 +63,7 @@ const MemoList = () => {
           if (memoType) {
             if (memoType === "NOT_TAGGED" && memo.content.match(TAG_REG) !== null) {
               shouldShow = false;
-            } else if (memoType === "LINKED" && memo.content.match(LINK_REG) === null) {
+            } else if (memoType === "LINKED" && (memo.content.match(LINK_REG) === null || memo.content.match(PLAIN_LINK_REG) === null)) {
               shouldShow = false;
             }
           }
@@ -145,6 +147,21 @@ const MemoList = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener("copy", handleCopy);
+    return () => {
+      window.removeEventListener("copy", handleCopy);
+    };
+  }, []);
+
+  const handleCopy = (event: ClipboardEvent) => {
+    event.preventDefault();
+    const rawStr = document.getSelection()?.toString();
+    if (rawStr !== undefined) {
+      copy(rawStr.split("\n\n").join("\n"));
     }
   };
 

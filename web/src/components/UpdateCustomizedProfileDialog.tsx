@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
+import Textarea from "@mui/joy/Textarea/Textarea";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import LocaleSelect from "./LocaleSelect";
@@ -40,7 +41,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
     });
   };
 
-  const handleDescriptionChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDescriptionChanged = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setPartialState({
       description: e.target.value as string,
     });
@@ -97,7 +98,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
           <Icon.X />
         </button>
       </div>
-      <div className="dialog-content-container !w-80">
+      <div className="dialog-content-container min-w-[16rem]">
         <p className="text-sm mb-1">
           {t("setting.system-section.server-name")}
           <span className="text-sm text-gray-400 ml-1">({t("setting.system-section.customize-server.default")})</span>
@@ -106,7 +107,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.icon-url")}</p>
         <input type="text" className="input-text" value={state.logoUrl} onChange={handleLogoUrlChanged} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.description")}</p>
-        <input type="text" className="input-text" value={state.description} onChange={handleDescriptionChanged} />
+        <Textarea minRows="2" maxRows="4" className="!input-text" value={state.description} onChange={handleDescriptionChanged} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.locale")}</p>
         <LocaleSelect className="!w-full" value={state.locale} onChange={handleLocaleSelectChange} />
         <p className="text-sm mb-1 mt-2">{t("setting.system-section.customize-server.appearance")}</p>

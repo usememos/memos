@@ -1,4 +1,4 @@
-import { Select, Switch, Option } from "@mui/joy";
+import { Switch, Option, Select } from "@mui/joy";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "@/store/module";
@@ -53,18 +53,18 @@ const PreferencesSection = () => {
     <div className="section-container preferences-section-container">
       <p className="title-text">{t("common.basic")}</p>
       <div className="form-label selector">
-        <span className="normal-text">{t("common.language")}</span>
+        <span className="text-sm">{t("common.language")}</span>
         <LocaleSelect value={locale} onChange={handleLocaleSelectChange} />
       </div>
       <div className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.theme")}</span>
+        <span className="text-sm">{t("setting.preference-section.theme")}</span>
         <AppearanceSelect value={appearance} onChange={handleAppearanceSelectChange} />
       </div>
       <p className="title-text">{t("setting.preference")}</p>
       <div className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.default-memo-visibility")}</span>
+        <span className="text-sm break-keep text-ellipsis overflow-hidden">{t("setting.preference-section.default-memo-visibility")}</span>
         <Select
-          className="!min-w-[10rem] w-auto text-sm"
+          className="!min-w-fit"
           value={setting.memoVisibility}
           onChange={(_, visibility) => {
             if (visibility) {
@@ -73,18 +73,18 @@ const PreferencesSection = () => {
           }}
         >
           {visibilitySelectorItems.map((item) => (
-            <Option key={item.value} value={item.value} className="whitespace-nowrap">
+            <Option key={item.value} value={item.value}>
               {item.text}
             </Option>
           ))}
         </Select>
       </div>
       <div className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.daily-review-time-offset")}</span>
+        <span className="text-sm break-keep text-ellipsis overflow-hidden">{t("setting.preference-section.daily-review-time-offset")}</span>
         <span className="w-auto inline-flex">
           <Select
             placeholder="hh"
-            className="!min-w-[4rem] w-auto text-sm"
+            className="!min-w-fit"
             value={localSetting.dailyReviewTimeOffset}
             onChange={(_, value) => {
               if (value !== null) {
@@ -110,7 +110,7 @@ const PreferencesSection = () => {
       </div>
 
       <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.enable-double-click")}</span>
+        <span className="text-sm break-keep">{t("setting.preference-section.enable-double-click")}</span>
         <Switch className="ml-2" checked={localSetting.enableDoubleClickEditing} onChange={handleDoubleClickEnabledChanged} />
       </label>
 
