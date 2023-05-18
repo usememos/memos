@@ -223,7 +223,6 @@ const MemoEditor = () => {
       };
     });
     const content = editorRef.current?.getContent() ?? "";
-    console.log("editorState.relationList", editorState.relationList);
     try {
       const { editMemoId } = editorStore.getState();
       if (editMemoId && editMemoId !== UNKNOWN_ID) {
