@@ -1,3 +1,4 @@
+import copy from "copy-to-clipboard";
 import { getRelativeTimeString } from "@/helpers/datetime";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -44,6 +45,11 @@ const Memo: React.FC<Props> = (props: Props) => {
     };
   }, [i18n.language]);
 
+  const handleCopyContent = () => {
+    copy(memo.content);
+    toast.success(t("message.succeed-copy-content"));
+  };
+  
   const handleTogglePinMemoBtnClick = async () => {
     try {
       if (memo.pinned) {
@@ -223,6 +229,10 @@ const Memo: React.FC<Props> = (props: Props) => {
                   {t("common.share")}
                 </span>
                 <Divider />
+                <span className="btn" onClick={handleCopyContent}>
+                  <Icon.Clipboard className="w-4 h-auto mr-2" />
+                  {t("memo.copy")}
+                </span>
                 <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>
                   <Icon.Archive className="w-4 h-auto mr-2" />
                   {t("common.archive")}
