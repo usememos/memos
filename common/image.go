@@ -15,7 +15,7 @@ import (
 
 const (
 	ThumbnailDir  = ".thumbnail_cache"
-	ThumbnailSize = 302 //Thumbnail size should be defined by frontend
+	ThumbnailSize = 302 // Thumbnail size should be defined by frontend
 )
 
 func ResizeImageFile(dst, src string, mime string) error {
