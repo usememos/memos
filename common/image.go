@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"fmt"
 	"image"
-
 	"image/jpeg"
 	"image/png"
+
+	"github.com/disintegration/imaging"
 )
 
 const ThumbnailPath = ".thumbnail_cache"
@@ -28,29 +29,7 @@ func ResizeImageBlob(data []byte, maxSize int, mime string) ([]byte, error) {
 		return nil, err
 	}
 
-	bounds := oldImage.Bounds()
-	if bounds.Dx() <= maxSize && bounds.Dy() <= maxSize {
-		return data, nil
-	}
-
-	oldBounds := oldImage.Bounds()
-
-	dy := maxSize
-	r := float32(oldBounds.Dy()) / float32(maxSize)
-	dx := int(float32(oldBounds.Dx()) / r)
-	if oldBounds.Dx() > oldBounds.Dy() {
-		dx = maxSize
-		r = float32(oldBounds.Dx()) / float32(maxSize)
-		dy = int(float32(oldBounds.Dy()) / r)
-	}
-
-	newBounds := image.Rect(0, 0, dx, dy)
-	newImage := image.NewRGBA(newBounds)
-	for x := 0; x < newBounds.Dx(); x++ {
-		for y := 0; y < newBounds.Dy(); y++ {
-			newImage.Set(x, y, oldImage.At(int(float32(x)*r), int(float32(y)*r)))
-		}
-	}
+	newImage := imaging.Resize(oldImage, maxSize, 0, imaging.NearestNeighbor)
 
 	var newBuffer bytes.Buffer
 	switch mime {
