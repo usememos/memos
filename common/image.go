@@ -4,18 +4,49 @@ import (
 	"bytes"
 	"fmt"
 	"image"
-
 	"image/jpeg"
 	"image/png"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"github.com/disintegration/imaging"
 )
 
-const ThumbnailPath = ".thumbnail_cache"
+const (
+	ThumbnailDir  = ".thumbnail_cache"
+	ThumbnailSize = 302 // Thumbnail size should be defined by frontend
+)
+
+func ResizeImageFile(dst, src string, mime string) error {
+	srcBytes, err := os.ReadFile(src)
+	if err != nil {
+		return fmt.Errorf("Failed to open %s: %s", src, err)
+	}
+
+	dstBytes, err := ResizeImageBlob(srcBytes, ThumbnailSize, mime)
+	if err != nil {
+		return fmt.Errorf("Failed to resise %s: %s", src, err)
+	}
+
+	err = os.MkdirAll(filepath.Dir(dst), os.ModePerm)
+	if err != nil {
+		return fmt.Errorf("Failed to mkdir for %s: %s", dst, err)
+	}
+
+	err = os.WriteFile(dst, dstBytes, 0666)
+	if err != nil {
+		return fmt.Errorf("Failed to write %s: %s", dst, err)
+	}
+
+	return nil
+}
 
 func ResizeImageBlob(data []byte, maxSize int, mime string) ([]byte, error) {
 	var err error
 	var oldImage image.Image
 
-	switch mime {
+	switch strings.ToLower(mime) {
 	case "image/jpeg":
 		oldImage, err = jpeg.Decode(bytes.NewReader(data))
 	case "image/png":
@@ -28,29 +59,7 @@ func ResizeImageBlob(data []byte, maxSize int, mime string) ([]byte, error) {
 		return nil, err
 	}
 
-	bounds := oldImage.Bounds()
-	if bounds.Dx() <= maxSize && bounds.Dy() <= maxSize {
-		return data, nil
-	}
-
-	oldBounds := oldImage.Bounds()
-
-	dy := maxSize
-	r := float32(oldBounds.Dy()) / float32(maxSize)
-	dx := int(float32(oldBounds.Dx()) / r)
-	if oldBounds.Dx() > oldBounds.Dy() {
-		dx = maxSize
-		r = float32(oldBounds.Dx()) / float32(maxSize)
-		dy = int(float32(oldBounds.Dy()) / r)
-	}
-
-	newBounds := image.Rect(0, 0, dx, dy)
-	newImage := image.NewRGBA(newBounds)
-	for x := 0; x < newBounds.Dx(); x++ {
-		for y := 0; y < newBounds.Dy(); y++ {
-			newImage.Set(x, y, oldImage.At(int(float32(x)*r), int(float32(y)*r)))
-		}
-	}
+	newImage := imaging.Resize(oldImage, maxSize, 0, imaging.NearestNeighbor)
 
 	var newBuffer bytes.Buffer
 	switch mime {
