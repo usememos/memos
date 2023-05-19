@@ -164,28 +164,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 
 			if filetype == "image/jpeg" || filetype == "image/png" {
-				_, err := sourceFile.Seek(0, io.SeekStart)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to seek file").SetInternal(err)
-				}
-
-				fileBytes, err := io.ReadAll(sourceFile)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to load file").SetInternal(err)
-				}
-
-				thumbnailBytes, err := common.ResizeImageBlob(fileBytes, 302, filetype)
+				thumbnailPath := path.Join(s.Profile.Data, common.ThumbnailDir, publicID)
+				err := common.ResizeImageFile(thumbnailPath, filePath, filetype)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate thumbnail").SetInternal(err)
-				}
-
-				dir := filepath.Join(s.Profile.Data, common.ThumbnailPath)
-				if err = os.MkdirAll(dir, os.ModePerm); err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
-				}
-				err = os.WriteFile(filepath.Join(dir, publicID), thumbnailBytes, 0666)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create thumbnail").SetInternal(err)
 				}
 			}
 
@@ -346,7 +328,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
 			}
 
-			thumbnailPath := filepath.Join(s.Profile.Data, common.ThumbnailPath, resource.PublicID)
+			thumbnailPath := path.Join(s.Profile.Data, common.ThumbnailDir, resource.PublicID)
 			err = os.Remove(thumbnailPath)
 			if err != nil {
 				log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
@@ -442,9 +424,18 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		if resource.InternalPath != "" {
 			resourcePath := resource.InternalPath
 			if c.QueryParam("thumbnail") == "1" && (resource.Type == "image/jpeg" || resource.Type == "image/png") {
-				thumbnailPath := filepath.Join(s.Profile.Data, common.ThumbnailPath, resource.PublicID)
+				thumbnailPath := path.Join(s.Profile.Data, common.ThumbnailDir, resource.PublicID)
 				if _, err := os.Stat(thumbnailPath); err == nil {
 					resourcePath = thumbnailPath
+				} else if os.IsNotExist(err) {
+					err := common.ResizeImageFile(thumbnailPath, resourcePath, resource.Type)
+					if err != nil {
+						return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to resize resource: %s", resourcePath)).SetInternal(err)
+					}
+
+					resourcePath = thumbnailPath
+				} else {
+					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to check resource thumbnail stat: %s", thumbnailPath)).SetInternal(err)
 				}
 			}
 
