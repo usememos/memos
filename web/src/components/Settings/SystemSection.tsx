@@ -232,7 +232,7 @@ const SystemSection = () => {
       </div>
       <div className="form-label">
         <div className="flex flex-row items-center">
-          <span className="normal-text mr-1">{t("setting.system-section.max-upload-size")}</span>
+          <span className="text-sm mr-1">{t("setting.system-section.max-upload-size")}</span>
           <HelpButton icon="info" hint={t("setting.system-section.max-upload-size-hint")} />
         </div>
         <Input
@@ -248,7 +248,7 @@ const SystemSection = () => {
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <div className="flex flex-row items-center">
-          <span className="normal-text mr-1">{t("setting.system-section.openai-api-key")}</span>
+          <span className="text-sm mr-1">{t("setting.system-section.openai-api-key")}</span>
           <HelpButton hint={t("setting.system-section.openai-api-key-description")} url="https://platform.openai.com/account/api-keys" />
         </div>
         <Button onClick={handleSaveOpenAIConfig}>{t("common.save")}</Button>

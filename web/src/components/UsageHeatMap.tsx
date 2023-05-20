@@ -44,16 +44,19 @@ const UsageHeatMap = () => {
   const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestamp));
   const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
   const containerElRef = useRef<HTMLDivElement>(null);
+  const currentUserId = userStore.getCurrentUserId();
 
   useEffect(() => {
-    if (!userStore.state.user) {
-      return;
-    }
-    setCreatedDays(Math.ceil((Date.now() - getTimeStampByDate(userStore.state.user.createdTs)) / 1000 / 3600 / 24));
-  }, [userStore.state.user]);
+    userStore.getUserById(currentUserId).then((user) => {
+      if (!user) {
+        return;
+      }
+      setCreatedDays(Math.ceil((Date.now() - getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24));
+    });
+  }, [currentUserId]);
 
   useEffect(() => {
-    getMemoStats(userStore.getCurrentUserId())
+    getMemoStats(currentUserId)
       .then(({ data: { data } }) => {
         setMemoAmount(data.length);
         const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestamp);
@@ -72,11 +75,7 @@ const UsageHeatMap = () => {
       .catch((error) => {
         console.error(error);
       });
-
-    return () => {
-      handleUsageStatItemMouseLeave();
-    };
-  }, [memos.length]);
+  }, [memos.length, currentUserId]);
 
   const handleUsageStatItemMouseEnter = useCallback((event: React.MouseEvent, item: DailyUsageStat) => {
     const tempDiv = document.createElement("div");

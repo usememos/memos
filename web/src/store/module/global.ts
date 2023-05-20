@@ -49,8 +49,9 @@ export const initialGlobalState = async () => {
         externalUrl: "",
       },
     };
-    defaultGlobalState.locale = storageLocale || findNearestLanguageMatch(i18n.language);
-    defaultGlobalState.appearance = customizedProfile.appearance;
+    defaultGlobalState.locale =
+      storageLocale || defaultGlobalState.systemStatus.customizedProfile.locale || findNearestLanguageMatch(i18n.language);
+    defaultGlobalState.appearance = defaultGlobalState.systemStatus.customizedProfile.appearance;
   }
   store.dispatch(setGlobalState(defaultGlobalState));
 };
