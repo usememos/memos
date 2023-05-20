@@ -4,7 +4,7 @@ import { useMemoStore } from "@/store/module";
 import { getDateTimeString } from "@/helpers/datetime";
 import useToggle from "@/hooks/useToggle";
 import MemoContent from "./MemoContent";
-import MemoResources from "./MemoResources";
+import MemoResources from "./MemoResourceListView";
 import "@/less/memo.less";
 
 interface Props {

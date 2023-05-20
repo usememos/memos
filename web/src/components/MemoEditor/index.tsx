@@ -88,6 +88,10 @@ const MemoEditor = () => {
     prevEditorStateRef.current = editorState;
   }, [editorState.editMemoId]);
 
+  useEffect(() => {
+    handleEditorFocus();
+  }, [editorStore.state.relationList]);
+
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (!editorRef.current) {
       return;

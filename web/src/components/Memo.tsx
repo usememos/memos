@@ -12,11 +12,11 @@ import Divider from "./kit/Divider";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
-import MemoResources from "./MemoResources";
+import MemoResourceListView from "./MemoResourceListView";
+import MemoRelationListView from "./MemoRelationListView";
 import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
-import MemoRelationListView from "./MemoRelationListView";
 import "@/less/memo.less";
 
 interface Props {
@@ -39,9 +39,17 @@ const Memo: React.FC<Props> = (props: Props) => {
   const isVisitorMode = userStore.isVisitorMode() || readonly;
 
   useEffect(() => {
-    Promise.all(memo.relationList.map((memoRelation) => memoCacheStore.getOrFetchMemoById(memoRelation.relatedMemoId))).then((memoList) => {
-      setRelatedMemoList(uniqWith(memoList, isEqual));
-    });
+    Promise.allSettled(memo.relationList.map((memoRelation) => memoCacheStore.getOrFetchMemoById(memoRelation.relatedMemoId))).then(
+      (results) => {
+        const memoList = [];
+        for (const result of results) {
+          if (result.status === "fulfilled") {
+            memoList.push(result.value);
+          }
+        }
+        setRelatedMemoList(uniqWith(memoList, isEqual));
+      }
+    );
   }, [memo.relationList]);
 
   useEffect(() => {
@@ -271,13 +279,13 @@ const Memo: React.FC<Props> = (props: Props) => {
           onMemoContentClick={handleMemoContentClick}
           onMemoContentDoubleClick={handleMemoContentDoubleClick}
         />
-        <MemoResources resourceList={memo.resourceList} />
+        <MemoResourceListView resourceList={memo.resourceList} />
         {!showRelatedMemos && <MemoRelationListView relationList={memo.relationList} />}
       </div>
 
       {showRelatedMemos && relatedMemoList.length > 0 && (
         <>
-          <p className="font-mono text-sm mt-4 mb-1 pl-4 opacity-60 flex flex-row items-center">
+          <p className="text-sm mt-4 mb-1 pl-4 opacity-50 flex flex-row items-center">
             <Icon.Link className="w-4 h-auto mr-1" />
             <span>Related memos</span>
           </p>

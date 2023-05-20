@@ -15,6 +15,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/disintegration/imaging"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
@@ -30,6 +31,9 @@ const (
 	// This is unrelated to maximum upload size limit, which is now set through system setting.
 	maxUploadBufferSizeBytes = 32 << 20
 	MebiByte                 = 1024 * 1024
+
+	// thumbnailImagePath is the directory to store image thumbnails.
+	thumbnailImagePath = ".thumbnail_cache"
 )
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
@@ -161,14 +165,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			_, err = io.Copy(dst, sourceFile)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to copy file").SetInternal(err)
-			}
-
-			if filetype == "image/jpeg" || filetype == "image/png" {
-				thumbnailPath := path.Join(s.Profile.Data, common.ThumbnailDir, publicID)
-				err := common.ResizeImageFile(thumbnailPath, filePath, filetype)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate thumbnail").SetInternal(err)
-				}
 			}
 
 			resourceCreate = &api.ResourceCreate{
@@ -323,14 +319,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		if resource.InternalPath != "" {
-			err := os.Remove(resource.InternalPath)
-			if err != nil {
+			if err := os.Remove(resource.InternalPath); err != nil {
 				log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
 			}
 
-			thumbnailPath := path.Join(s.Profile.Data, common.ThumbnailDir, resource.PublicID)
-			err = os.Remove(thumbnailPath)
-			if err != nil {
+			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, resource.PublicID)
+			if err := os.Remove(thumbnailPath); err != nil {
 				log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
 			}
 		}
@@ -423,22 +417,6 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		blob := resource.Blob
 		if resource.InternalPath != "" {
 			resourcePath := resource.InternalPath
-			if c.QueryParam("thumbnail") == "1" && (resource.Type == "image/jpeg" || resource.Type == "image/png") {
-				thumbnailPath := path.Join(s.Profile.Data, common.ThumbnailDir, resource.PublicID)
-				if _, err := os.Stat(thumbnailPath); err == nil {
-					resourcePath = thumbnailPath
-				} else if os.IsNotExist(err) {
-					err := common.ResizeImageFile(thumbnailPath, resourcePath, resource.Type)
-					if err != nil {
-						return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to resize resource: %s", resourcePath)).SetInternal(err)
-					}
-
-					resourcePath = thumbnailPath
-				} else {
-					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to check resource thumbnail stat: %s", thumbnailPath)).SetInternal(err)
-				}
-			}
-
 			src, err := os.Open(resourcePath)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", resourcePath)).SetInternal(err)
@@ -447,6 +425,36 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			blob, err = io.ReadAll(src)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", resourcePath)).SetInternal(err)
+			}
+		}
+
+		if c.QueryParam("thumbnail") == "1" && common.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
+			ext := filepath.Ext(filename)
+			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, resource.PublicID+ext)
+			if _, err := os.Stat(thumbnailPath); err != nil {
+				if !errors.Is(err, os.ErrNotExist) {
+					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to check thumbnail image stat: %s", thumbnailPath)).SetInternal(err)
+				}
+
+				reader := bytes.NewReader(blob)
+				src, err := imaging.Decode(reader)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to decode thumbnail image: %s", thumbnailPath)).SetInternal(err)
+				}
+				thumbnailImage := imaging.Resize(src, 512, 0, imaging.Lanczos)
+				if err := imaging.Save(thumbnailImage, thumbnailPath); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to resize thumbnail image: %s", thumbnailPath)).SetInternal(err)
+				}
+			}
+
+			src, err := os.Open(thumbnailPath)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", thumbnailPath)).SetInternal(err)
+			}
+			defer src.Close()
+			blob, err = io.ReadAll(src)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", thumbnailPath)).SetInternal(err)
 			}
 		}
 

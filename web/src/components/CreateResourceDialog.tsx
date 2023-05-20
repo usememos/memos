@@ -1,4 +1,4 @@
-import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete, Tooltip } from "@mui/joy";
+import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -215,31 +215,29 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
             </div>
             <List size="sm" sx={{ width: "100%" }}>
               {fileList.map((file, index) => (
-                <Tooltip title={file.name} key={file.name} placement="top">
-                  <ListItem className="flex justify-between">
-                    <Typography noWrap>{file.name}</Typography>
-                    <div className="flex gap-1">
-                      <button
-                        onClick={() => {
-                          handleReorderFileList(file.name, "up");
-                        }}
-                        disabled={index === 0}
-                        className="disabled:opacity-50"
-                      >
-                        <Icon.ArrowUp className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => {
-                          handleReorderFileList(file.name, "down");
-                        }}
-                        disabled={index === fileList.length - 1}
-                        className="disabled:opacity-50"
-                      >
-                        <Icon.ArrowDown className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </ListItem>
-                </Tooltip>
+                <ListItem key={file.name} className="flex justify-between">
+                  <Typography noWrap>{file.name}</Typography>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => {
+                        handleReorderFileList(file.name, "up");
+                      }}
+                      disabled={index === 0}
+                      className="disabled:opacity-50"
+                    >
+                      <Icon.ArrowUp className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        handleReorderFileList(file.name, "down");
+                      }}
+                      disabled={index === fileList.length - 1}
+                      className="disabled:opacity-50"
+                    >
+                      <Icon.ArrowDown className="w-4 h-4" />
+                    </button>
+                  </div>
+                </ListItem>
               ))}
             </List>
           </>

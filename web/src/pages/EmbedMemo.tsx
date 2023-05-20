@@ -5,7 +5,7 @@ import { UNKNOWN_ID } from "@/helpers/consts";
 import { useMemoStore } from "@/store/module";
 import useLoading from "@/hooks/useLoading";
 import MemoContent from "@/components/MemoContent";
-import MemoResources from "@/components/MemoResources";
+import MemoResources from "@/components/MemoResourceListView";
 import { getDateTimeString } from "@/helpers/datetime";
 
 interface State {

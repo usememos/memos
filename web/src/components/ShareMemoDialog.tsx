@@ -14,7 +14,7 @@ import useLoading from "@/hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MemoContent from "./MemoContent";
-import MemoResources from "./MemoResources";
+import MemoResources from "./MemoResourceListView";
 import showEmbedMemoDialog from "./EmbedMemoDialog";
 import "@/less/share-memo-dialog.less";
 

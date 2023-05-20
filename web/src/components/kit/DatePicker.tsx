@@ -18,12 +18,12 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   const { className, datestamp, handleDateStampChange } = props;
   const [currentDateStamp, setCurrentDateStamp] = useState<DateStamp>(getMonthFirstDayDateStamp(datestamp));
   const [countByDate, setCountByDate] = useState(new Map());
+  const currentUserId = useUserStore().getCurrentUserId();
 
   useEffect(() => {
     setCurrentDateStamp(getMonthFirstDayDateStamp(datestamp));
   }, [datestamp]);
 
-  const currentUserId = useUserStore().getCurrentUserId();
   useEffect(() => {
     getMemoStats(currentUserId).then(({ data: { data } }) => {
       const m = new Map();

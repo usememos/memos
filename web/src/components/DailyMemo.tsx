@@ -1,6 +1,6 @@
 import { getTimeString } from "@/helpers/datetime";
 import MemoContent from "./MemoContent";
-import MemoResources from "./MemoResources";
+import MemoResources from "./MemoResourceListView";
 import "@/less/daily-memo.less";
 
 interface Props {
