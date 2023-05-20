@@ -17,6 +17,7 @@ require (
 	github.com/spf13/cobra v1.6.1
 	github.com/spf13/viper v1.15.0
 	github.com/stretchr/testify v1.8.1
+	github.com/yuin/goldmark v1.5.4
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.1.0
 	golang.org/x/exp v0.0.0-20230111222715-75897c7a292a
