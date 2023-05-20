@@ -430,7 +430,8 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 
 		if c.QueryParam("thumbnail") == "1" && common.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
 			ext := filepath.Ext(filename)
-			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, resource.PublicID+ext)
+			thumbnailDir := path.Join(s.Profile.Data, thumbnailImagePath)
+			thumbnailPath := path.Join(thumbnailDir, resource.PublicID+ext)
 			if _, err := os.Stat(thumbnailPath); err != nil {
 				if !errors.Is(err, os.ErrNotExist) {
 					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to check thumbnail image stat: %s", thumbnailPath)).SetInternal(err)
@@ -442,6 +443,11 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to decode thumbnail image: %s", thumbnailPath)).SetInternal(err)
 				}
 				thumbnailImage := imaging.Resize(src, 512, 0, imaging.Lanczos)
+
+				if err := os.MkdirAll(thumbnailDir, os.ModePerm); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to create thumbnail dir: %s", thumbnailDir)).SetInternal(err)
+				}
+
 				if err := imaging.Save(thumbnailImage, thumbnailPath); err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to resize thumbnail image: %s", thumbnailPath)).SetInternal(err)
 				}
