@@ -2,6 +2,7 @@ import React from "react";
 import Icon from "./Icon";
 import { getResourceUrl } from "@/utils/resource";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import SquareDiv from "./kit/SquareDiv";
 import "@/less/resource-cover.less";
 
 interface ResourceCoverProps {
@@ -40,7 +41,13 @@ const ResourceCover = ({ resource }: ResourceCoverProps) => {
   switch (resourceType) {
     case "image/*":
       return (
-        <img className="resource-cover h-20 w-20" src={resourceUrl + "?thumbnail=1"} onClick={() => showPreviewImageDialog(resourceUrl)} />
+        <SquareDiv className="h-20 w-20 flex items-center justify-center overflow-clip">
+          <img
+            className="max-w-full max-h-full object-cover shadow"
+            src={resourceUrl + "?thumbnail=1"}
+            onClick={() => showPreviewImageDialog(resourceUrl)}
+          />
+        </SquareDiv>
       );
     case "video/*":
       return <Icon.FileVideo2 className="resource-cover" />;

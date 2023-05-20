@@ -20,6 +20,10 @@ const MemoRelationListView = (props: Props) => {
     fetchRelatedMemoList();
   }, [relationList]);
 
+  const handleGotoMemoDetail = (memo: Memo) => {
+    window.open(`/m/${memo.id}`, "_blank");
+  };
+
   return (
     <>
       {relatedMemoList.length > 0 && (
@@ -29,6 +33,7 @@ const MemoRelationListView = (props: Props) => {
               <div
                 key={memo.id}
                 className="w-auto flex flex-row justify-start items-center hover:bg-gray-100 dark:hover:bg-zinc-800 rounded text-sm p-1 text-gray-500 dark:text-gray-400 cursor-pointer"
+                onClick={() => handleGotoMemoDetail(memo)}
               >
                 <div className="w-5 h-5 flex justify-center items-center shrink-0 bg-gray-100 dark:bg-zinc-800 rounded-full">
                   <Icon.Link className="w-3 h-auto" />

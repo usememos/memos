@@ -1,6 +1,6 @@
 import { getTimeString } from "@/helpers/datetime";
 import MemoContent from "./MemoContent";
-import MemoResources from "./MemoResources";
+import MemoResourceListView from "./MemoResourceListView";
 import "@/less/daily-memo.less";
 
 interface Props {
@@ -18,7 +18,7 @@ const DailyMemo: React.FC<Props> = (props: Props) => {
       </div>
       <div className="memo-container">
         <MemoContent content={memo.content} showFull={true} />
-        <MemoResources resourceList={memo.resourceList} />
+        <MemoResourceListView resourceList={memo.resourceList} />
       </div>
       <div className="split-line"></div>
     </div>

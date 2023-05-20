@@ -17,7 +17,7 @@ const getDefaultProps = (): Props => {
   };
 };
 
-const MemoResources: React.FC<Props> = (props: Props) => {
+const MemoResourceListView: React.FC<Props> = (props: Props) => {
   const { className, resourceList } = {
     ...getDefaultProps(),
     ...props,
@@ -75,4 +75,4 @@ const MemoResources: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default MemoResources;
+export default MemoResourceListView;

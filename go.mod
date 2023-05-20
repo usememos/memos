@@ -20,12 +20,12 @@ require (
 	go.uber.org/zap v1.24.0
 	golang.org/x/crypto v0.1.0
 	golang.org/x/exp v0.0.0-20230111222715-75897c7a292a
-	golang.org/x/mod v0.6.0
+	golang.org/x/mod v0.8.0
 	golang.org/x/net v0.7.0
 	golang.org/x/oauth2 v0.5.0
 )
 
-require golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
+require golang.org/x/image v0.7.0 // indirect
 
 require (
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.10 // indirect
@@ -69,7 +69,7 @@ require (
 	go.uber.org/atomic v1.9.0 // indirect
 	go.uber.org/multierr v1.8.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
-	golang.org/x/text v0.7.0 // indirect
+	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/time v0.1.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/protobuf v1.28.1 // indirect

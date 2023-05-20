@@ -14,7 +14,7 @@ import useLoading from "@/hooks/useLoading";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import MemoContent from "./MemoContent";
-import MemoResources from "./MemoResources";
+import MemoResourceListView from "./MemoResourceListView";
 import showEmbedMemoDialog from "./EmbedMemoDialog";
 import "@/less/share-memo-dialog.less";
 
@@ -177,7 +177,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{memo.createdAtStr}</span>
             <div className="w-full px-6 text-base pb-4">
               <MemoContent content={memo.content} showFull={true} />
-              <MemoResources className="!grid-cols-2" resourceList={memo.resourceList} />
+              <MemoResourceListView className="!grid-cols-2" resourceList={memo.resourceList} />
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-4 px-6">
               <div className="mr-2">

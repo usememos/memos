@@ -5,7 +5,7 @@ import { UNKNOWN_ID } from "@/helpers/consts";
 import { useMemoStore } from "@/store/module";
 import useLoading from "@/hooks/useLoading";
 import MemoContent from "@/components/MemoContent";
-import MemoResources from "@/components/MemoResources";
+import MemoResourceListView from "@/components/MemoResourceListView";
 import { getDateTimeString } from "@/helpers/datetime";
 
 interface State {
@@ -51,7 +51,7 @@ const EmbedMemo = () => {
               </a>
             </div>
             <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
-            <MemoResources resourceList={state.memo.resourceList} />
+            <MemoResourceListView resourceList={state.memo.resourceList} />
           </div>
         </main>
       )}
