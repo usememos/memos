@@ -430,37 +430,12 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 
 		if c.QueryParam("thumbnail") == "1" && common.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
 			ext := filepath.Ext(filename)
-			thumbnailDir := path.Join(s.Profile.Data, thumbnailImagePath)
-			thumbnailPath := path.Join(thumbnailDir, resource.PublicID+ext)
-			if _, err := os.Stat(thumbnailPath); err != nil {
-				if !errors.Is(err, os.ErrNotExist) {
-					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to check thumbnail image stat: %s", thumbnailPath)).SetInternal(err)
-				}
-
-				reader := bytes.NewReader(blob)
-				src, err := imaging.Decode(reader)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to decode thumbnail image: %s", thumbnailPath)).SetInternal(err)
-				}
-				thumbnailImage := imaging.Resize(src, 512, 0, imaging.Lanczos)
-
-				if err := os.MkdirAll(thumbnailDir, os.ModePerm); err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to create thumbnail dir: %s", thumbnailDir)).SetInternal(err)
-				}
-
-				if err := imaging.Save(thumbnailImage, thumbnailPath); err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to resize thumbnail image: %s", thumbnailPath)).SetInternal(err)
-				}
-			}
-
-			src, err := os.Open(thumbnailPath)
+			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, resource.PublicID+ext)
+			thumbnailBlob, err := getOrGenerateThumbnailImage(blob, thumbnailPath)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", thumbnailPath)).SetInternal(err)
-			}
-			defer src.Close()
-			blob, err = io.ReadAll(src)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", thumbnailPath)).SetInternal(err)
+				log.Warn(fmt.Sprintf("failed to get or generate local thumbnail with path %s", thumbnailPath), zap.Error(err))
+			} else {
+				blob = thumbnailBlob
 			}
 		}
 
@@ -524,4 +499,39 @@ func replacePathTemplate(path string, filename string) string {
 		return s
 	})
 	return path
+}
+
+func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error) {
+	if _, err := os.Stat(dstPath); err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			return nil, errors.Wrap(err, "failed to check thumbnail image stat")
+		}
+
+		reader := bytes.NewReader(srcBlob)
+		src, err := imaging.Decode(reader)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to decode thumbnail image")
+		}
+		thumbnailImage := imaging.Resize(src, 512, 0, imaging.Lanczos)
+
+		dstDir := path.Dir(dstPath)
+		if err := os.MkdirAll(dstDir, os.ModePerm); err != nil {
+			return nil, errors.Wrap(err, "failed to create thumbnail dir")
+		}
+
+		if err := imaging.Save(thumbnailImage, dstPath); err != nil {
+			return nil, errors.Wrap(err, "failed to resize thumbnail image")
+		}
+	}
+
+	dstFile, err := os.Open(dstPath)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to open the local resource")
+	}
+	defer dstFile.Close()
+	dstBlob, err := io.ReadAll(dstFile)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to read the local resource")
+	}
+	return dstBlob, nil
 }
