@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	"github.com/yuin/goldmark"
 )
 
 func (s *Server) registerRSSRoutes(g *echo.Group) {
@@ -169,7 +171,13 @@ func getRSSItemDescription(content string) string {
 	} else {
 		description = content
 	}
-	return description
+
+	// TODO: use our `./plugin/gomark` parser to handle markdown-like content.
+	var buf bytes.Buffer
+	if err := goldmark.Convert([]byte(description), &buf); err != nil {
+		panic(err)
+	}
+	return buf.String()
 }
 
 func isTitleDefined(content string) bool {
