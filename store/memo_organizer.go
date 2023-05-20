@@ -13,8 +13,6 @@ import (
 // memoOrganizerRaw is the store model for an MemoOrganizer.
 // Fields have exactly the same meanings as MemoOrganizer.
 type memoOrganizerRaw struct {
-	ID int
-
 	// Domain specific fields
 	MemoID int
 	UserID int
@@ -23,8 +21,6 @@ type memoOrganizerRaw struct {
 
 func (raw *memoOrganizerRaw) toMemoOrganizer() *api.MemoOrganizer {
 	return &api.MemoOrganizer{
-		ID: raw.ID,
-
 		MemoID: raw.MemoID,
 		UserID: raw.UserID,
 		Pinned: raw.Pinned,
@@ -87,7 +83,6 @@ func (s *Store) DeleteMemoOrganizer(ctx context.Context, delete *api.MemoOrganiz
 func findMemoOrganizer(ctx context.Context, tx *sql.Tx, find *api.MemoOrganizerFind) (*memoOrganizerRaw, error) {
 	query := `
 		SELECT
-			id,
 			memo_id,
 			user_id,
 			pinned
@@ -106,7 +101,6 @@ func findMemoOrganizer(ctx context.Context, tx *sql.Tx, find *api.MemoOrganizerF
 
 	var memoOrganizerRaw memoOrganizerRaw
 	if err := row.Scan(
-		&memoOrganizerRaw.ID,
 		&memoOrganizerRaw.MemoID,
 		&memoOrganizerRaw.UserID,
 		&memoOrganizerRaw.Pinned,
@@ -132,11 +126,10 @@ func upsertMemoOrganizer(ctx context.Context, tx *sql.Tx, upsert *api.MemoOrgani
 		ON CONFLICT(memo_id, user_id) DO UPDATE 
 		SET
 			pinned = EXCLUDED.pinned
-		RETURNING id, memo_id, user_id, pinned
+		RETURNING memo_id, user_id, pinned
 	`
 	var memoOrganizer api.MemoOrganizer
 	if err := tx.QueryRowContext(ctx, query, upsert.MemoID, upsert.UserID, upsert.Pinned).Scan(
-		&memoOrganizer.ID,
 		&memoOrganizer.MemoID,
 		&memoOrganizer.UserID,
 		&memoOrganizer.Pinned,

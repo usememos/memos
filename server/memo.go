@@ -102,15 +102,13 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
-		if s.Profile.IsDev() {
-			for _, memoRelationUpsert := range memoCreate.RelationList {
-				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
-					MemoID:        memo.ID,
-					RelatedMemoID: memoRelationUpsert.RelatedMemoID,
-					Type:          store.MemoRelationType(memoRelationUpsert.Type),
-				}); err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
-				}
+		for _, memoRelationUpsert := range memoCreate.RelationList {
+			if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+				MemoID:        memo.ID,
+				RelatedMemoID: memoRelationUpsert.RelatedMemoID,
+				Type:          store.MemoRelationType(memoRelationUpsert.Type),
+			}); err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
 			}
 		}
 
@@ -187,34 +185,32 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
-		if s.Profile.IsDev() {
-			patchMemoRelationList := make([]*api.MemoRelation, 0)
-			for _, memoRelationUpsert := range memoPatch.RelationList {
-				patchMemoRelationList = append(patchMemoRelationList, &api.MemoRelation{
-					MemoID:        memo.ID,
-					RelatedMemoID: memoRelationUpsert.RelatedMemoID,
-					Type:          memoRelationUpsert.Type,
-				})
+		patchMemoRelationList := make([]*api.MemoRelation, 0)
+		for _, memoRelationUpsert := range memoPatch.RelationList {
+			patchMemoRelationList = append(patchMemoRelationList, &api.MemoRelation{
+				MemoID:        memo.ID,
+				RelatedMemoID: memoRelationUpsert.RelatedMemoID,
+				Type:          memoRelationUpsert.Type,
+			})
+		}
+		addedMemoRelationList, removedMemoRelationList := getMemoRelationListDiff(memo.RelationList, patchMemoRelationList)
+		for _, memoRelation := range addedMemoRelationList {
+			if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+				MemoID:        memo.ID,
+				RelatedMemoID: memoRelation.RelatedMemoID,
+				Type:          store.MemoRelationType(memoRelation.Type),
+			}); err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
 			}
-			addedMemoRelationList, removedMemoRelationList := getMemoRelationListDiff(memo.RelationList, patchMemoRelationList)
-			for _, memoRelation := range addedMemoRelationList {
-				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
-					MemoID:        memo.ID,
-					RelatedMemoID: memoRelation.RelatedMemoID,
-					Type:          store.MemoRelationType(memoRelation.Type),
-				}); err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
-				}
-			}
-			for _, memoRelation := range removedMemoRelationList {
-				memoRelationType := store.MemoRelationType(memoRelation.Type)
-				if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelationMessage{
-					MemoID:        &memo.ID,
-					RelatedMemoID: &memoRelation.RelatedMemoID,
-					Type:          &memoRelationType,
-				}); err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete memo relation").SetInternal(err)
-				}
+		}
+		for _, memoRelation := range removedMemoRelationList {
+			memoRelationType := store.MemoRelationType(memoRelation.Type)
+			if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelationMessage{
+				MemoID:        &memo.ID,
+				RelatedMemoID: &memoRelation.RelatedMemoID,
+				Type:          &memoRelationType,
+			}); err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete memo relation").SetInternal(err)
 			}
 		}
 

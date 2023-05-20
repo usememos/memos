@@ -1,8 +1,6 @@
 package api
 
 type MemoOrganizer struct {
-	ID int
-
 	// Domain specific fields
 	MemoID int
 	UserID int
