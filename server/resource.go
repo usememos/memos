@@ -442,6 +442,11 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to decode thumbnail image: %s", thumbnailPath)).SetInternal(err)
 				}
 				thumbnailImage := imaging.Resize(src, 512, 0, imaging.Lanczos)
+
+				if err := os.MkdirAll(path.Dir(thumbnailPath), os.ModePerm); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to create thumbnail dir for: %s", thumbnailPath)).SetInternal(err)
+				}
+
 				if err := imaging.Save(thumbnailImage, thumbnailPath); err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to resize thumbnail image: %s", thumbnailPath)).SetInternal(err)
 				}
