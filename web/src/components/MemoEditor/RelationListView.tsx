@@ -41,7 +41,7 @@ const RelationListView = () => {
             return (
               <div
                 key={memoRelation.relatedMemoId}
-                className="w-auto max-w-[50%] overflow-hidden flex flex-row justify-start items-center bg-gray-100 hover:bg-gray-200 rounded text-sm p-1 px-2 text-gray-500 cursor-pointer"
+                className="w-auto max-w-[50%] overflow-hidden flex flex-row justify-start items-center bg-gray-100 dark:bg-zinc-800 hover:opacity-80 rounded text-sm p-1 px-2 text-gray-500 cursor-pointer"
               >
                 <Icon.Link className="w-4 h-auto shrink-0" />
                 <span className="mx-1 max-w-full text-ellipsis font-mono whitespace-nowrap overflow-hidden">

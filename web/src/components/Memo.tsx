@@ -210,10 +210,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <div
-        className={`memo-wrapper ${"memos-" + memo.id} ${relatedMemoList.length > 0 && "pinned"} ${memo.pinned ? "pinned" : ""}`}
-        ref={memoContainerRef}
-      >
+      <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned && !readonly ? "pinned" : ""}`} ref={memoContainerRef}>
         <div className="memo-top-wrapper">
           <div className="status-text-container">
             <Link className="time-text" to={`/m/${memo.id}`} onClick={handleMemoCreatedTimeClick}>
