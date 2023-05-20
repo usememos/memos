@@ -1,12 +1,13 @@
-name: Memos Build
+name: build-artifacts
 
 on:
   push:
     branches:
-      - main
+      # Run on pushing branches like `release/1.0.0`
+      - "release/*.*.*"
 
 jobs:
-  build:
+  build-artifacts:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:

@@ -55,10 +55,8 @@ func (s *Store) ComposeMemo(ctx context.Context, memo *api.Memo) (*api.Memo, err
 	if err := s.ComposeMemoResourceList(ctx, memo); err != nil {
 		return nil, err
 	}
-	if s.Profile.IsDev() {
-		if err := s.ComposeMemoRelationList(ctx, memo); err != nil {
-			return nil, err
-		}
+	if err := s.ComposeMemoRelationList(ctx, memo); err != nil {
+		return nil, err
 	}
 
 	return memo, nil

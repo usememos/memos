@@ -48,7 +48,6 @@ CREATE TABLE memo (
 
 -- memo_organizer
 CREATE TABLE memo_organizer (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
   memo_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,

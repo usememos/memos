@@ -48,7 +48,6 @@ CREATE TABLE memo (
 
 -- memo_organizer
 CREATE TABLE memo_organizer (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
   memo_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
   pinned INTEGER NOT NULL CHECK (pinned IN (0, 1)) DEFAULT 0,
@@ -123,4 +122,12 @@ CREATE TABLE idp (
   type TEXT NOT NULL,
   identifier_filter TEXT NOT NULL DEFAULT '',
   config TEXT NOT NULL DEFAULT '{}'
+);
+
+-- memo_relation
+CREATE TABLE memo_relation (
+  memo_id INTEGER NOT NULL,
+  related_memo_id INTEGER NOT NULL,
+  type TEXT NOT NULL,
+  UNIQUE(memo_id, related_memo_id, type)
 );
