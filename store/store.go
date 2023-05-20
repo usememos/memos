@@ -51,7 +51,7 @@ func (s *Store) Vacuum(ctx context.Context) error {
 	return nil
 }
 
-func (s *Store) vacuumImpl(ctx context.Context, tx *sql.Tx) error {
+func (*Store) vacuumImpl(ctx context.Context, tx *sql.Tx) error {
 	if err := vacuumMemo(ctx, tx); err != nil {
 		return err
 	}
