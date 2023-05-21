@@ -32,7 +32,7 @@ const Header = () => {
 
   return (
     <div
-      className={`fixed sm:sticky top-0 left-0 w-full sm:w-56 h-full shrink-0 pointer-events-none sm:pointer-events-auto z-20 ${
+      className={`fixed sm:sticky top-0 left-0 w-full sm:w-56 h-full shrink-0 pointer-events-none sm:pointer-events-auto z-10 ${
         showHeader && "pointer-events-auto"
       }`}
     >
