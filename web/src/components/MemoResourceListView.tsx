@@ -1,4 +1,4 @@
-import { absolutifyLink, addQueryParam } from "@/helpers/utils";
+import { absolutifyLink } from "@/helpers/utils";
 import { getResourceUrl } from "@/utils/resource";
 import SquareDiv from "./kit/SquareDiv";
 import showPreviewImageDialog from "./PreviewImageDialog";
@@ -47,7 +47,7 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
                 return (
                   <SquareDiv key={resource.id} className="memo-resource">
                     <img
-                      src={addQueryParam(absolutifyLink(url), "thumbnail", "1")}
+                      src={resource.externalLink ? url : url + "?thumbnail=1"}
                       onClick={() => handleImageClick(url)}
                       decoding="async"
                       loading="lazy"
