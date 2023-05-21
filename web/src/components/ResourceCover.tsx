@@ -44,7 +44,7 @@ const ResourceCover = ({ resource }: ResourceCoverProps) => {
         <SquareDiv className="h-20 w-20 flex items-center justify-center overflow-clip">
           <img
             className="max-w-full max-h-full object-cover shadow"
-            src={resourceUrl + "?thumbnail=1"}
+            src={resource.externalLink ? resourceUrl : resourceUrl + "?thumbnail=1"}
             onClick={() => showPreviewImageDialog(resourceUrl)}
           />
         </SquareDiv>
