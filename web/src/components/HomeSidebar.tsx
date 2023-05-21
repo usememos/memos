@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { resolution } from "../utils/layout";
 import { useLayoutStore, useUserStore } from "../store/module";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
