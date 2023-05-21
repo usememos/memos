@@ -501,11 +501,21 @@ func replacePathTemplate(path string, filename string) string {
 	return path
 }
 
+var availableGeneratorAmount = 32
+
 func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error) {
 	if _, err := os.Stat(dstPath); err != nil {
 		if !errors.Is(err, os.ErrNotExist) {
 			return nil, errors.Wrap(err, "failed to check thumbnail image stat")
 		}
+
+		if availableGeneratorAmount <= 0 {
+			return nil, errors.New("not enough available generator amount")
+		}
+		availableGeneratorAmount--
+		defer func() {
+			availableGeneratorAmount++
+		}()
 
 		reader := bytes.NewReader(srcBlob)
 		src, err := imaging.Decode(reader)
