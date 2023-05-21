@@ -11,35 +11,6 @@ const HomeSidebar = () => {
   const userStore = useUserStore();
   const showHomeSidebar = layoutStore.state.showHomeSidebar;
 
-  useEffect(() => {
-    let initialized = false;
-    let lastStatus = layoutStore.state.showHomeSidebar;
-    const handleWindowResize = () => {
-      let nextStatus = window.innerWidth < resolution.md;
-      if (lastStatus !== nextStatus) {
-        if (!initialized && nextStatus) {
-          // Don't show sidebar on first load in mobile view.
-          nextStatus = false;
-        }
-
-        layoutStore.setHomeSidebarStatus(nextStatus);
-        lastStatus = nextStatus;
-      }
-
-      if (!initialized) {
-        initialized = true;
-        return;
-      }
-    };
-
-    window.addEventListener("resize", handleWindowResize);
-    handleWindowResize();
-
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  }, []);
-
   return (
     <div
       className={`fixed md:sticky top-0 left-0 w-full md:w-56 h-full shrink-0 pointer-events-none md:pointer-events-auto z-10 ${
