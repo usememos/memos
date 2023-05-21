@@ -1,5 +1,3 @@
-import { useEffect } from "react";
-import { resolution } from "../utils/layout";
 import { useLayoutStore, useUserStore } from "../store/module";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
@@ -10,35 +8,6 @@ const HomeSidebar = () => {
   const layoutStore = useLayoutStore();
   const userStore = useUserStore();
   const showHomeSidebar = layoutStore.state.showHomeSidebar;
-
-  useEffect(() => {
-    let initialized = false;
-    let lastStatus = layoutStore.state.showHomeSidebar;
-    const handleWindowResize = () => {
-      let nextStatus = window.innerWidth < resolution.md;
-      if (lastStatus !== nextStatus) {
-        if (!initialized && nextStatus) {
-          // Don't show sidebar on first load in mobile view.
-          nextStatus = false;
-        }
-
-        layoutStore.setHomeSidebarStatus(nextStatus);
-        lastStatus = nextStatus;
-      }
-
-      if (!initialized) {
-        initialized = true;
-        return;
-      }
-    };
-
-    window.addEventListener("resize", handleWindowResize);
-    handleWindowResize();
-
-    return () => {
-      window.removeEventListener("resize", handleWindowResize);
-    };
-  }, []);
 
   return (
     <div
