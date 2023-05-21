@@ -1,5 +1,6 @@
 import React from "react";
 import Icon from "./Icon";
+import { addQueryParam } from "@/helpers/utils";
 import { getResourceUrl } from "@/utils/resource";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
@@ -44,7 +45,7 @@ const ResourceCover = ({ resource }: ResourceCoverProps) => {
         <SquareDiv className="h-20 w-20 flex items-center justify-center overflow-clip">
           <img
             className="max-w-full max-h-full object-cover shadow"
-            src={resourceUrl + "?thumbnail=1"}
+            src={addQueryParam(resourceUrl, "thumbnail", "1")}
             onClick={() => showPreviewImageDialog(resourceUrl)}
           />
         </SquareDiv>

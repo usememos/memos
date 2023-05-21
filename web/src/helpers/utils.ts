@@ -121,3 +121,10 @@ export const clearContentQueryParam = () => {
   }
   window.history.replaceState({}, "", url);
 };
+
+export const addQueryParam = (urlStr: string, key: string, value: string) => {
+  const url = new URL(urlStr);
+  const searchParams = new URLSearchParams(url.search);
+  searchParams.append(key, value);
+  return `${url.origin}${url.pathname}?${searchParams.toString()}`;
+};
