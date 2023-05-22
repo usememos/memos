@@ -178,9 +178,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
                 <Button onClick={handleCancel} style={{ marginRight: "10px" }}>
                   {t("common.cancel")}
                 </Button>
-                <Button onClick={handleConfirm} appearance="primary">
-                  {t("common.confirm")}
-                </Button>
+                <Button onClick={handleConfirm}>{t("common.confirm")}</Button>
               </Typography>
             </Stack>
           </ModalDialog>
