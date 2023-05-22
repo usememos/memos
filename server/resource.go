@@ -13,6 +13,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"github.com/disintegration/imaging"
@@ -501,7 +502,7 @@ func replacePathTemplate(path string, filename string) string {
 	return path
 }
 
-var availableGeneratorAmount = 32
+var availableGeneratorAmount int32 = 32
 
 func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error) {
 	if _, err := os.Stat(dstPath); err != nil {
@@ -509,12 +510,12 @@ func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error)
 			return nil, errors.Wrap(err, "failed to check thumbnail image stat")
 		}
 
-		if availableGeneratorAmount <= 0 {
+		if atomic.LoadInt32(&availableGeneratorAmount) <= 0 {
 			return nil, errors.New("not enough available generator amount")
 		}
-		availableGeneratorAmount--
+		atomic.AddInt32(&availableGeneratorAmount, -1)
 		defer func() {
-			availableGeneratorAmount++
+			atomic.AddInt32(&availableGeneratorAmount, 1)
 		}()
 
 		reader := bytes.NewReader(srcBlob)
