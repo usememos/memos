@@ -94,7 +94,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const [anchorEl, setAnchorEl] = useState(null) as React.BaseSyntheticEvent | null;
+  const [anchorEl, setAnchorEl] = useState<null | (EventTarget & Element)>(null);
   const handleMenuOpen = (event: React.SyntheticEvent) => {
     setAnchorEl(event.currentTarget);
   };
@@ -106,8 +106,8 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
     setAnchorEl(null);
   };
 
-  const [isOpen, setIsOpen] = useState(false);
-  const [groupName, setGroupName] = useState("");
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [groupName, setGroupName] = useState<string>("");
 
   const messageGroupStore = useMessageGroupStore();
   const messageGroupList = messageGroupStore.groupList;
