@@ -94,19 +94,14 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  // const [selectedOption, setSelectedOption] = useState(defaultMessageGroup); // 保存选中的选项值
-
-  const handleMenuOpen = (event) => {
+  const [anchorEl, setAnchorEl] = useState(null) as React.BaseSyntheticEvent | null;
+  const handleMenuOpen = (event: React.SyntheticEvent) => {
     setAnchorEl(event.currentTarget);
   };
-
   const handleMenuClose = () => {
     setAnchorEl(null);
   };
-
   const handleOptionSelect = (option: MessageGroup) => {
-    console.log("option", option);
     setMessageGroup(option);
     setAnchorEl(null);
   };
