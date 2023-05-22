@@ -153,8 +153,8 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if !strings.Contains(filePath, "{filename}") {
 				filePath = filepath.Join(filePath, "{filename}")
 			}
-			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
 			dir, filename := filepath.Split(filePath)
+			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename, publicID))
 			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
 			}
@@ -200,7 +200,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				if !strings.Contains(filePath, "{filename}") {
 					filePath = path.Join(filePath, "{filename}")
 				}
-				filePath = replacePathTemplate(filePath, file.Filename)
+				filePath = replacePathTemplate(filePath, file.Filename, publicID)
 				_, filename := filepath.Split(filePath)
 				link, err := s3Client.UploadFile(ctx, filePath, filetype, sourceFile)
 				if err != nil {
@@ -476,10 +476,12 @@ func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Reso
 	return err
 }
 
-func replacePathTemplate(path string, filename string) string {
+func replacePathTemplate(path, filename, publicID string) string {
 	t := time.Now()
 	path = fileKeyPattern.ReplaceAllStringFunc(path, func(s string) string {
 		switch s {
+		case "{publicid}":
+			return publicID
 		case "{filename}":
 			return filename
 		case "{timestamp}":
