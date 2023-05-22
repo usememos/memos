@@ -23,7 +23,7 @@ const MemoVisibilitySelector = () => {
     if (systemStatus.disablePublicMemos) {
       editorStore.setMemoVisibility("PRIVATE");
     }
-  }, [systemStatus.disablePublicMemos]);
+  }, [systemStatus.disablePublicMemos, editorState.memoVisibility]);
 
   const handleMemoVisibilityOptionChanged = async (value: string) => {
     const visibilityValue = value as Visibility;
