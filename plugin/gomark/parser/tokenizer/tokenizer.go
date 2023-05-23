@@ -1,6 +1,32 @@
 package tokenizer
 
-func tokenize(text string) []*Token {
+type TokenType = string
+
+const (
+	Underline TokenType = "_"
+	Star      TokenType = "*"
+	Hash      TokenType = "#"
+	Newline   TokenType = "\n"
+	Space     TokenType = " "
+)
+
+const (
+	Text TokenType = ""
+)
+
+type Token struct {
+	Type  TokenType
+	Value string
+}
+
+func NewToken(tp, text string) *Token {
+	return &Token{
+		Type:  tp,
+		Value: text,
+	}
+}
+
+func Tokenize(text string) []*Token {
 	tokens := []*Token{}
 	for _, c := range text {
 		switch c {
@@ -8,6 +34,8 @@ func tokenize(text string) []*Token {
 			tokens = append(tokens, NewToken(Underline, "_"))
 		case '*':
 			tokens = append(tokens, NewToken(Star, "*"))
+		case '#':
+			tokens = append(tokens, NewToken(Hash, "#"))
 		case '\n':
 			tokens = append(tokens, NewToken(Newline, "\n"))
 		case ' ':
