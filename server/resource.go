@@ -157,7 +157,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if !strings.Contains(filePath, "{publicid}") {
 				filePath = filepath.Join(filePath, "{publicid}")
 			}
-			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename, publicID))
+			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename, publicID+filepath.Ext(file.Filename)))
 
 			dir := filepath.Dir(filePath)
 			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
@@ -205,7 +205,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				if !strings.Contains(filePath, "{publicid}") {
 					filePath = path.Join(filePath, "{publicid}")
 				}
-				filePath = replacePathTemplate(filePath, file.Filename, publicID)
+				filePath = replacePathTemplate(filePath, file.Filename, publicID+filepath.Ext(file.Filename))
 				_, filename := filepath.Split(filePath)
 				link, err := s3Client.UploadFile(ctx, filePath, filetype, sourceFile)
 				if err != nil {
