@@ -142,19 +142,20 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
 			}
-			localStoragePath := "assets/{timestamp}_{filename}"
-			if systemSettingLocalStoragePath != nil {
+			localStoragePath := "assets/{publicid}"
+			if systemSettingLocalStoragePath != nil && systemSettingLocalStoragePath.Value != "" {
 				err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal local storage path setting").SetInternal(err)
 				}
 			}
 			filePath := filepath.FromSlash(localStoragePath)
-			if !strings.Contains(filePath, "{filename}") {
-				filePath = filepath.Join(filePath, "{filename}")
+			if !strings.Contains(filePath, "{publicid}") {
+				filePath = filepath.Join(filePath, "{publicid}")
 			}
-			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
-			dir, filename := filepath.Split(filePath)
+			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename, publicID+filepath.Ext(file.Filename)))
+
+			dir := filepath.Dir(filePath)
 			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
 			}
@@ -170,7 +171,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 			resourceCreate = &api.ResourceCreate{
 				CreatorID:    userID,
-				Filename:     filename,
+				Filename:     file.Filename,
 				Type:         filetype,
 				Size:         size,
 				InternalPath: filePath,
@@ -197,10 +198,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				}
 
 				filePath := s3Config.Path
-				if !strings.Contains(filePath, "{filename}") {
-					filePath = path.Join(filePath, "{filename}")
+				if !strings.Contains(filePath, "{publicid}") {
+					filePath = path.Join(filePath, "{publicid}")
 				}
-				filePath = replacePathTemplate(filePath, file.Filename)
+				filePath = replacePathTemplate(filePath, file.Filename, publicID+filepath.Ext(file.Filename))
 				_, filename := filepath.Split(filePath)
 				link, err := s3Client.UploadFile(ctx, filePath, filetype, sourceFile)
 				if err != nil {
@@ -476,10 +477,12 @@ func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Reso
 	return err
 }
 
-func replacePathTemplate(path string, filename string) string {
+func replacePathTemplate(path, filename, publicID string) string {
 	t := time.Now()
 	path = fileKeyPattern.ReplaceAllStringFunc(path, func(s string) string {
 		switch s {
+		case "{publicid}":
+			return publicID
 		case "{filename}":
 			return filename
 		case "{timestamp}":
