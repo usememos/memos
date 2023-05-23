@@ -32,9 +32,44 @@ func TestTokenize(t *testing.T) {
 				},
 			},
 		},
+		{
+			text: `# hello 
+ world`,
+			tokens: []*Token{
+				{
+					Type:  Hash,
+					Value: "#",
+				},
+				{
+					Type:  Space,
+					Value: " ",
+				},
+				{
+					Type:  Text,
+					Value: "hello",
+				},
+				{
+					Type:  Space,
+					Value: " ",
+				},
+				{
+					Type:  Newline,
+					Value: "\n",
+				},
+				{
+					Type:  Space,
+					Value: " ",
+				},
+				{
+					Type:  Text,
+					Value: "world",
+				},
+			},
+		},
 	}
+
 	for _, test := range tests {
-		result := tokenize(test.text)
+		result := Tokenize(test.text)
 		require.Equal(t, test.tokens, result)
 	}
 }

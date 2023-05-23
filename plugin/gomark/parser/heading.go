@@ -1,41 +1,52 @@
 package parser
 
 import (
-	"strings"
-
-	"github.com/usememos/memos/plugin/gomark/ast"
+	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
 
 type HeadingTokenizer struct {
+	Level         int
+	ContentTokens []*tokenizer.Token
 }
 
 func NewHeadingTokenizer() *HeadingTokenizer {
 	return &HeadingTokenizer{}
 }
 
-func (*HeadingTokenizer) Trigger() []byte {
-	return []byte{'#'}
-}
-
-func (*HeadingTokenizer) Parse(parent *ast.Node, block string) *ast.Node {
-	line := block
-	level := 0
-	for _, c := range line {
-		if c == '#' {
-			level++
-		} else if c == ' ' {
-			break
+func (*HeadingTokenizer) Match(tokens []*tokenizer.Token) *HeadingTokenizer {
+	cursor := 0
+	for _, token := range tokens {
+		if token.Type == tokenizer.Hash {
+			cursor++
 		} else {
-			return nil
+			break
 		}
 	}
+	if len(tokens) <= cursor+1 {
+		return nil
+	}
+	if tokens[cursor].Type != tokenizer.Space {
+		return nil
+	}
+	level := cursor
 	if level == 0 || level > 6 {
 		return nil
 	}
-	text := strings.TrimSpace(line[level+1:])
-	node := ast.NewNode("h1", text)
-	if parent != nil {
-		parent.AddChild(node)
+
+	cursor++
+	contentTokens := []*tokenizer.Token{}
+	for _, token := range tokens[cursor:] {
+		if token.Type == tokenizer.Newline {
+			break
+		}
+		contentTokens = append(contentTokens, token)
 	}
-	return node
+	if len(contentTokens) == 0 {
+		return nil
+	}
+
+	return &HeadingTokenizer{
+		Level:         level,
+		ContentTokens: contentTokens,
+	}
 }
