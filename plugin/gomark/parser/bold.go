@@ -18,25 +18,28 @@ func (*BoldParser) Match(tokens []*tokenizer.Token) *BoldParser {
 	}
 
 	prefixTokens := tokens[:2]
-	if len(prefixTokens) != 2 || prefixTokens[0].Type != prefixTokens[1].Type {
+	if prefixTokens[0].Type != prefixTokens[1].Type {
 		return nil
 	}
 	prefixTokenType := prefixTokens[0].Type
+	if prefixTokenType != tokenizer.Star && prefixTokenType != tokenizer.Underline {
+		return nil
+	}
 
 	contentTokens := []*tokenizer.Token{}
-	cursor := 2
+	cursor, matched := 2, false
 	for ; cursor < len(tokens)-1; cursor++ {
 		token, nextToken := tokens[cursor], tokens[cursor+1]
-
 		if token.Type == tokenizer.Newline || nextToken.Type == tokenizer.Newline {
-			break
+			return nil
 		}
 		if token.Type == prefixTokenType && nextToken.Type == prefixTokenType {
+			matched = true
 			break
 		}
 		contentTokens = append(contentTokens, token)
 	}
-	if cursor != len(tokens)-2 {
+	if !matched {
 		return nil
 	}
 
