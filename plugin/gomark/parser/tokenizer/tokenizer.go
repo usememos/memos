@@ -6,6 +6,7 @@ const (
 	Underline TokenType = "_"
 	Star      TokenType = "*"
 	Hash      TokenType = "#"
+	Backtick  TokenType = "`"
 	Newline   TokenType = "\n"
 	Space     TokenType = " "
 )
@@ -38,6 +39,8 @@ func Tokenize(text string) []*Token {
 			tokens = append(tokens, NewToken(Hash, "#"))
 		case '\n':
 			tokens = append(tokens, NewToken(Newline, "\n"))
+		case '`':
+			tokens = append(tokens, NewToken(Backtick, "`"))
 		case ' ':
 			tokens = append(tokens, NewToken(Space, " "))
 		default:
