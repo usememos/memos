@@ -4,16 +4,16 @@ import (
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
 
-type HeadingTokenizer struct {
+type HeadingParser struct {
 	Level         int
 	ContentTokens []*tokenizer.Token
 }
 
-func NewHeadingTokenizer() *HeadingTokenizer {
-	return &HeadingTokenizer{}
+func NewHeadingParser() *HeadingParser {
+	return &HeadingParser{}
 }
 
-func (*HeadingTokenizer) Match(tokens []*tokenizer.Token) *HeadingTokenizer {
+func (*HeadingParser) Match(tokens []*tokenizer.Token) *HeadingParser {
 	cursor := 0
 	for _, token := range tokens {
 		if token.Type == tokenizer.Hash {
@@ -40,12 +40,13 @@ func (*HeadingTokenizer) Match(tokens []*tokenizer.Token) *HeadingTokenizer {
 			break
 		}
 		contentTokens = append(contentTokens, token)
+		cursor++
 	}
 	if len(contentTokens) == 0 {
 		return nil
 	}
 
-	return &HeadingTokenizer{
+	return &HeadingParser{
 		Level:         level,
 		ContentTokens: contentTokens,
 	}

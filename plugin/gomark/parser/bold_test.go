@@ -7,44 +7,30 @@ import (
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
 
-func TestHeadingParser(t *testing.T) {
+func TestBoldParser(t *testing.T) {
 	tests := []struct {
-		text    string
-		heading *HeadingParser
+		text string
+		bold *BoldParser
 	}{
 		{
-			text:    "*Hello world!",
-			heading: nil,
+			text: "*Hello world!",
+			bold: nil,
 		},
 		{
-			text: "## Hello World!",
-			heading: &HeadingParser{
-				Level: 2,
+			text: "**Hello**",
+			bold: &BoldParser{
 				ContentTokens: []*tokenizer.Token{
 					{
 						Type:  tokenizer.Text,
 						Value: "Hello",
 					},
-					{
-						Type:  tokenizer.Space,
-						Value: " ",
-					},
-					{
-						Type:  tokenizer.Text,
-						Value: "World!",
-					},
 				},
 			},
 		},
 		{
-			text: "# # Hello World",
-			heading: &HeadingParser{
-				Level: 1,
+			text: "** Hello **",
+			bold: &BoldParser{
 				ContentTokens: []*tokenizer.Token{
-					{
-						Type:  tokenizer.Hash,
-						Value: "#",
-					},
 					{
 						Type:  tokenizer.Space,
 						Value: " ",
@@ -57,30 +43,37 @@ func TestHeadingParser(t *testing.T) {
 						Type:  tokenizer.Space,
 						Value: " ",
 					},
-					{
-						Type:  tokenizer.Text,
-						Value: "World",
-					},
 				},
 			},
 		},
 		{
-			text:    " # 123123 Hello World!",
-			heading: nil,
+			text: "** Hello * *",
+			bold: nil,
 		},
 		{
-			text: `# 123 
-Hello World!`,
-			heading: &HeadingParser{
-				Level: 1,
+			text: "* * Hello **",
+			bold: nil,
+		},
+		{
+			text: `** Hello 
+**`,
+			bold: nil,
+		},
+		{
+			text: `**Hello \n**`,
+			bold: &BoldParser{
 				ContentTokens: []*tokenizer.Token{
 					{
 						Type:  tokenizer.Text,
-						Value: "123",
+						Value: "Hello",
 					},
 					{
 						Type:  tokenizer.Space,
 						Value: " ",
+					},
+					{
+						Type:  tokenizer.Text,
+						Value: `\n`,
 					},
 				},
 			},
@@ -89,7 +82,7 @@ Hello World!`,
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		heading := NewHeadingParser()
-		require.Equal(t, test.heading, heading.Match(tokens))
+		bold := NewBoldParser()
+		require.Equal(t, test.bold, bold.Match(tokens))
 	}
 }
