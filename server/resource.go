@@ -143,14 +143,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
 			}
 			localStoragePath := "assets/{publicid}"
-			if systemSettingLocalStoragePath != nil {
-				var s string
-				err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &s)
+			if systemSettingLocalStoragePath != nil && systemSettingLocalStoragePath.Value != "" {
+				err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal local storage path setting").SetInternal(err)
-				}
-				if s != "" {
-					localStoragePath = s
 				}
 			}
 			filePath := filepath.FromSlash(localStoragePath)
