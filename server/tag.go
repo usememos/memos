@@ -137,7 +137,8 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 	})
 }
 
-var tagRegexp = regexp.MustCompile(`#([^\s#]+)`)
+// Same regex as in 'web/src/labs/render.ts'.
+var tagRegexp = regexp.MustCompile(`(?:^|\s)#(([\p{L}_][\p{L}\p{N}_]*)|(\p{N}+\p{L}[\p{L}\p{N}_]*))`)
 
 func findTagListFromMemoContent(memoContent string) []string {
 	tagMapSet := make(map[string]bool)

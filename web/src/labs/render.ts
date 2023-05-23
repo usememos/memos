@@ -1,15 +1,18 @@
 import { marked } from "marked";
 import DOMPurify from "dompurify";
 
-export const HASH_TAGS = /(^\s)?(#[\w-]+)/gm;
-export const HASH_TAG = /^#[\w-]+$/;
+// Same regex as in 'server/tag.go'.
+const TAG_REG_BASE = "(?<=^|\\p{White_Space})#(([\\p{L}_][\\p{L}\\p{N}_]*)|(\\p{N}+\\p{L}[\\p{L}\\p{N}_]*))";
+
+export const TAG_REG = new RegExp(TAG_REG_BASE, "u");
+export const TAG_REG_GLOBAL = new RegExp(TAG_REG_BASE, "ug");
+export const HASH_TAG = new RegExp(`^${TAG_REG_BASE}$`, "u");
+
 export const LINK_REG = /\[([^\]]+)]\(([^)]+)\)/;
-export const TAG_REG = /#([^\s#]+)/;
-export const TAG_REG_GLOBAL = /#([^\s#]+)/g;
-export const LINE_BREAK = /\n|\r|\r\n/g;
+export const LINE_BREAK_REG = /\r\n|\n|\r/g;
 export const PLAIN_LINK_REG = /((?:https?|chrome|edge):\/\/[^ ]+)/;
 
-const endsOneOrMoreWhitespace = /\s+$/;
+const ENDS_WHITESPACE_REG = /\p{White_Space}+$/u;
 
 const renderer = {
   paragraph,
@@ -59,22 +62,12 @@ function link(href: string | null, title: string | null, text: string): string {
   return originalRender.link(href, title, text).replace("<a", `<a class="link" target="_blank"`);
 }
 
-function mapHashToHtml(hash: string): { tag: string; html: string } {
-  const html = `<span class="tag-span">${hash}</span>`;
-  return { tag: hash, html };
-}
-
 function paragraph(rawText: string): string {
-  let paragraph = rawText;
-  const keyValues = (rawText.match(HASH_TAGS) || []).map((h) => mapHashToHtml(h));
-  for (const keyValue of keyValues) {
-    paragraph = paragraph.replaceAll(keyValue.tag, keyValue.html);
-  }
-  paragraph = paragraph
-    .split(LINE_BREAK)
-    .map((p) => (endsOneOrMoreWhitespace.test(p) ? `<p>${p}</p><br>` : `<p>${p}</p>`))
+  return rawText
+    .replaceAll(TAG_REG_GLOBAL, '<span class="tag-span">$&</span>')
+    .split(LINE_BREAK_REG)
+    .map((p) => (ENDS_WHITESPACE_REG.test(p) ? `<p>${p}</p><br>` : `<p>${p}</p>`))
     .join("");
-  return paragraph;
 }
 
 export function renderMarkdown(md: string): string {

@@ -15,7 +15,7 @@ import MemoVisibilitySelector from "./ActionButton/MemoVisibilitySelector";
 import ResourceListView from "./ResourceListView";
 import RelationListView from "./RelationListView";
 import "@/less/memo-editor.less";
-import { HASH_TAGS } from "@/labs/render";
+import { TAG_REG_GLOBAL } from "@/labs/render";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
@@ -301,7 +301,7 @@ const MemoEditor = (props: Props) => {
     });
 
     // Upsert tag with the content.
-    const tagNameList = uniq((content.match(HASH_TAGS) || []).map((n) => n.replaceAll("#", "")));
+    const tagNameList = uniq((content.match(TAG_REG_GLOBAL) || []).map((n) => n.replaceAll("#", "")));
     for (const tagName of tagNameList) {
       await tagStore.upsertTag(tagName);
     }

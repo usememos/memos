@@ -19,7 +19,7 @@ import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import "@/less/memo.less";
-import { LINE_BREAK } from "@/labs/render";
+import { LINE_BREAK_REG } from "@/labs/render";
 import copy from "copy-to-clipboard";
 
 interface Props {
@@ -161,10 +161,10 @@ const Memo: React.FC<Props> = (props: Props) => {
       const toSearchLowerCase = toSearch.toLowerCase();
       const index = checkbox.attributes.getNamedItem("data-memo-todo-id")?.value;
 
-      const lineBreakToReturn = (memo.content.match(LINE_BREAK) || ["\n"])[0];
+      const lineBreakToReturn = (memo.content.match(LINE_BREAK_REG) || ["\n"])[0];
       let todoCounter = -1;
       const updatedContent = memo.content
-        .split(LINE_BREAK)
+        .split(LINE_BREAK_REG)
         .map((l) => {
           if (l.includes(toSearch) || l.includes(toSearchLowerCase) || l.includes(toReplace) || l.includes(toReplaceLowerCase)) {
             todoCounter++;
