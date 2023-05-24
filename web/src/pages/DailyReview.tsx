@@ -39,9 +39,11 @@ const DailyReview = () => {
     .sort((a, b) => getTimeStampByDate(a.createdTs) - getTimeStampByDate(b.createdTs));
 
   useEffect(() => {
+    let offset = 0;
     const fetchMoreMemos = async () => {
       try {
-        const fetchedMemos = await memoStore.fetchMemos();
+        const fetchedMemos = await memoStore.fetchMemos(DEFAULT_MEMO_LIMIT, offset);
+        offset += fetchedMemos.length;
         if (fetchedMemos.length === DEFAULT_MEMO_LIMIT) {
           const lastMemo = last(fetchedMemos);
           if (lastMemo && lastMemo.createdTs > currentDateStamp) {
