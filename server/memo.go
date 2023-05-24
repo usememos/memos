@@ -279,8 +279,8 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			contentSearch = append(contentSearch, "#"+tag)
 		}
 		contentSlice := c.QueryParams()["content"]
-		for _, content := range contentSlice {
-			contentSearch = append(contentSearch, content)
+		if len(contentSlice) > 0 {
+			contentSearch = append(contentSearch, contentSlice...)
 		}
 		findMemoMessage.ContentSearch = contentSearch
 
@@ -445,8 +445,8 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			contentSearch = append(contentSearch, "#"+tag+" ")
 		}
 		contentSlice := c.QueryParams()["content"]
-		for _, content := range contentSlice {
-			contentSearch = append(contentSearch, content)
+		if len(contentSlice) > 0 {
+			contentSearch = append(contentSearch, contentSlice...)
 		}
 		findMemoMessage.ContentSearch = contentSearch
 
