@@ -22,8 +22,8 @@ import { useMessageStore } from "@/store/zustand/message";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import showSettingDialog from "./SettingDialog";
-import { MessageGroup, useMessageGroupStore } from "@/store/zustand/message-group";
-import { PlusIcon } from "lucide-react";
+import { defaultMessageGroup, MessageGroup, useMessageGroupStore } from "@/store/zustand/message-group";
+import { PlusIcon, Trash2Icon } from "lucide-react";
 
 type Props = DialogProps;
 
@@ -31,10 +31,6 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const { destroy, hide } = props;
   const fetchingState = useLoading(false);
-  const defaultMessageGroup: MessageGroup = {
-    name: t("ask-ai.default-message-group-title"),
-    messageStorageId: "message-storage",
-  };
   const [messageGroup, setMessageGroup] = useState<MessageGroup>(defaultMessageGroup);
   const messageStore = useMessageStore(messageGroup)();
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
@@ -108,22 +104,26 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
     setAnchorEl(null);
   };
 
-  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [isAddMessageGroupDlgOpen, setIsAddMessageGroupDlgOpen] = useState<boolean>(false);
   const [groupName, setGroupName] = useState<string>("");
 
   const messageGroupStore = useMessageGroupStore();
   const messageGroupList = messageGroupStore.groupList;
 
   const handleOpenDialog = () => {
-    setIsOpen(true);
+    setIsAddMessageGroupDlgOpen(true);
+  };
+
+  const handleRemoveDialog = () => {
+    setMessageGroup(messageGroupStore.removeGroup(messageGroup));
   };
 
   const handleCloseDialog = () => {
-    setIsOpen(false);
+    setIsAddMessageGroupDlgOpen(false);
     setGroupName("");
   };
 
-  const handleConfirm = () => {
+  const handleAddMessageGroupDlgConfirm = () => {
     const newMessageGroup: MessageGroup = {
       name: groupName,
       messageStorageId: "message-storage-" + groupName,
@@ -147,8 +147,11 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
             <Button color={"primary"} onClick={handleMenuOpen}>
               <div className="button-len-max-150">{messageGroup.name}</div>
             </Button>
-            <Button onClick={handleOpenDialog}>
+            <Button color={"success"} onClick={handleOpenDialog}>
               <PlusIcon size={"13px"} />
+            </Button>
+            <Button color={"danger"} onClick={handleRemoveDialog}>
+              <Trash2Icon size={"13px"} />
             </Button>
           </span>
         </p>
@@ -161,7 +164,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
             </MenuItem>
           ))}
         </Menu>
-        <Modal open={isOpen} onClose={handleCloseDialog}>
+        <Modal open={isAddMessageGroupDlgOpen} onClose={handleCloseDialog}>
           <ModalDialog aria-labelledby="basic-modal-dialog-title" sx={{ maxWidth: 500 }}>
             <ModalClose />
             <Typography id="basic-modal-dialog-title" component="h2">
@@ -180,7 +183,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
                 <Button onClick={handleCancel} style={{ marginRight: "10px" }}>
                   {t("common.cancel")}
                 </Button>
-                <Button onClick={handleConfirm}>{t("common.confirm")}</Button>
+                <Button onClick={handleAddMessageGroupDlgConfirm}>{t("common.confirm")}</Button>
               </Typography>
             </Stack>
           </ModalDialog>
