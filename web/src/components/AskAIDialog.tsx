@@ -32,7 +32,10 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const { destroy, hide } = props;
   const fetchingState = useLoading(false);
-  const defaultMessageGroup: MessageGroup = { name: t("ask-ai.default-message-group-title"), messageStorageId: "message-storage" };
+  const defaultMessageGroup: MessageGroup = {
+    name: t("ask-ai.default-message-group-title"),
+    messageStorageId: "message-storage",
+  };
   const [messageGroup, setMessageGroup] = useState<MessageGroup>(defaultMessageGroup);
   const messageStore = useMessageStore(messageGroup)();
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
@@ -122,7 +125,12 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleConfirm = () => {
-    messageGroupStore.addGroup({ name: groupName, messageStorageId: "message-storage-" + groupName });
+    const newMessageGroup: MessageGroup = {
+      name: groupName,
+      messageStorageId: "message-storage-" + groupName,
+    };
+    messageGroupStore.addGroup(newMessageGroup);
+    setMessageGroup(newMessageGroup);
     handleCloseDialog();
   };
 
