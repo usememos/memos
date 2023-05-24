@@ -36,4 +36,7 @@ EXPOSE 5230
 RUN mkdir -p /var/opt/memos
 VOLUME /var/opt/memos
 
-ENTRYPOINT ["./memos", "--mode", "prod", "--port", "5230"]
+ENV MEMOS_MODE="prod"
+ENV MEMOS_PORT="5230"
+
+ENTRYPOINT ["./memos"]
