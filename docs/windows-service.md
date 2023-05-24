@@ -24,7 +24,7 @@ nssm install memos "C:\path\to\memos.exe" --mode prod --port 5230
 nssm set memos DisplayName "memos service"
 
 # Configure extra service parameters
-nssm set memos Description "A lightweight, self-hosted memo hub. https://usememos.com/"
+nssm set memos Description "A lightweight, self-hosted memo hub. https://usememos.com/" 
 
 # Delay auto start
 nssm set memos Start SERVICE_DELAYED_AUTO_START
@@ -54,7 +54,7 @@ Now, in the same directory, create the service configuration file `memos-service
     <executable>%BASE%\memos.exe</executable>
     <arguments>--mode prod --port 5230</arguments>
     <delayedAutoStart>true</delayedAutoStart>
-    <log mode="none" />
+    <log mode="none" />   
 </service>
 ```
 
@@ -86,12 +86,12 @@ Also, by using one of the provided methods, the service will appear in the Windo
 
 - On Windows, memos store its data in the following directory:
 
-  ```powershell
-  $env:ProgramData\memos
-  # Typically, this will resolve to C:\ProgramData\memos
-  ```
+    ```powershell
+    $env:ProgramData\memos
+    # Typically, this will resolve to C:\ProgramData\memos
+    ```
 
-  You may specify a custom directory by appending `--data <path>` to the service command line.
+    You may specify a custom directory by appending `--data <path>` to the service command line.
 
 - If the service fails to start, you should inspect the Windows Event Viewer `eventvwr.msc`.
 
