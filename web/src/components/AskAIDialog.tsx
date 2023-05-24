@@ -24,7 +24,6 @@ import { generateDialog } from "./Dialog";
 import showSettingDialog from "./SettingDialog";
 import { MessageGroup, useMessageGroupStore } from "@/store/zustand/message-group";
 import { PlusIcon } from "lucide-react";
-// import { useMessageGroupStore } from "@/store/zustand/message-group";
 
 type Props = DialogProps;
 
