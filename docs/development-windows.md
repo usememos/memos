@@ -8,7 +8,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 
 ## Tech Stack
 
-| Frontend                                 | Backend                           |
+|                 Frontend                 |              Backend              |
 | ---------------------------------------- | --------------------------------- |
 | [React](https://react.dev/)              | [Go](https://go.dev/)             |
 | [Tailwind CSS](https://tailwindcss.com/) | [SQLite](https://www.sqlite.org/) |
@@ -75,16 +75,16 @@ go build -o ./build/memos.exe ./main.go
 ## ❕ Notes
 
 - Start development servers easier by running the provided `start.ps1` script.
-  This will start both backend and frontend in detached PowerShell windows:
+This will start both backend and frontend in detached PowerShell windows:
 
-  ```powershell
-  .\scripts\start.ps1
-  ```
+   ```powershell
+   .\scripts\start.ps1
+   ```
 
 - Produce a local build easier using the provided `build.ps1` script to build both frontend and backend:
 
-  ```powershell
-  .\scripts\build.ps1
-  ```
+   ```powershell
+   .\scripts\build.ps1
+   ```
 
-  This will produce a memos.exe file in the ./build directory.
+   This will produce a memos.exe file in the ./build directory.
