@@ -50,19 +50,19 @@ func (r *Robot) Start(ctx context.Context) {
 
 			message := *update.Message
 
-			reply, err := r.SendReplyMessage(message.Chat.Id, message.MessageID, "Working on send your memo...")
+			reply, err := r.SendReplyMessage(ctx, message.Chat.Id, message.MessageID, "Working on send your memo...")
 			if reply == nil || err != nil {
 				log.Warn("fail to telegram.SendMessage", zap.Error(err))
 				continue
 			}
 
 			result := "Success!"
-			err = r.MessageHandle(message)
+			err = r.MessageHandle(ctx, message)
 			if err != nil {
 				result = fmt.Sprintf("fail to send memo: `%s`", err)
 			}
 
-			_, err = r.EditMessage(reply.Chat.Id, reply.MessageID, result)
+			_, err = r.EditMessage(ctx, reply.Chat.Id, reply.MessageID, result)
 			if err != nil {
 				log.Warn("fail to telegram.EditMessage", zap.Error(err))
 			}

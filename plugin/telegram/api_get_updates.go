@@ -14,7 +14,7 @@ func (r *Robot) GetUpdates(ctx context.Context, offset int) ([]Update, error) {
 	}
 
 	var result []Update
-	err := r.postForm("/getUpdates", formData, &result)
+	err := r.postForm(ctx, "/getUpdates", formData, &result)
 	if err != nil {
 		return nil, err
 	}

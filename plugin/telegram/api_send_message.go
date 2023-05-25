@@ -1,12 +1,13 @@
 package telegram
 
 import (
+	"context"
 	"net/url"
 	"strconv"
 )
 
 // SendReplyMessage make a sendMessage api request
-func (r *Robot) SendReplyMessage(chatID, replyId int, text string) (*Message, error) {
+func (r *Robot) SendReplyMessage(ctx context.Context, chatID, replyId int, text string) (*Message, error) {
 	formData := url.Values{
 		"reply_to_message_id": {strconv.Itoa(replyId)},
 		"chat_id":             {strconv.Itoa(chatID)},
@@ -14,7 +15,7 @@ func (r *Robot) SendReplyMessage(chatID, replyId int, text string) (*Message, er
 	}
 
 	var result Message
-	err := r.postForm("/sendMessage", formData, &result)
+	err := r.postForm(ctx, "/sendMessage", formData, &result)
 	if err != nil {
 		return nil, err
 	}
