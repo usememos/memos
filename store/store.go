@@ -17,6 +17,7 @@ type Store struct {
 	userSettingCache   sync.Map // map[string]*userSettingRaw
 	shortcutCache      sync.Map // map[int]*shortcutRaw
 	idpCache           sync.Map // map[int]*identityProviderMessage
+	resourceCache      sync.Map // map[int]*resourceRaw
 }
 
 // New creates a new instance of Store.

@@ -39,10 +39,9 @@ type MemoResponse struct {
 	Pinned     bool       `json:"pinned"`
 
 	// Related fields
-	CreatorName    string `json:"creatorName"`
-	ResourceIDList []int
-	ResourceList   []*Resource     `json:"resourceList"`
-	RelationList   []*MemoRelation `json:"relationList"`
+	CreatorName  string          `json:"creatorName"`
+	ResourceList []*Resource     `json:"resourceList"`
+	RelationList []*MemoRelation `json:"relationList"`
 }
 
 type CreateMemoRequest struct {
