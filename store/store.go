@@ -15,7 +15,6 @@ type Store struct {
 	systemSettingCache sync.Map // map[string]*systemSettingRaw
 	userCache          sync.Map // map[int]*userRaw
 	userSettingCache   sync.Map // map[string]*userSettingRaw
-	memoCache          sync.Map // map[int]*memoRaw
 	shortcutCache      sync.Map // map[int]*shortcutRaw
 	idpCache           sync.Map // map[int]*identityProviderMessage
 }

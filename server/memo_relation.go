@@ -74,3 +74,11 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, true)
 	})
 }
+
+func convertMemoRelationMessageToMemoRelation(memoRelation *store.MemoRelationMessage) *api.MemoRelation {
+	return &api.MemoRelation{
+		MemoID:        memoRelation.MemoID,
+		RelatedMemoID: memoRelation.RelatedMemoID,
+		Type:          api.MemoRelationType(memoRelation.Type),
+	}
+}

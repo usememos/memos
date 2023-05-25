@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/store"
 
 	"github.com/labstack/echo/v4"
 )
@@ -82,7 +83,7 @@ func (s *Server) registerMemoResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Resource ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		memo, err := s.Store.FindMemo(ctx, &api.MemoFind{
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemoMessage{
 			ID: &memoID,
 		})
 		if err != nil {

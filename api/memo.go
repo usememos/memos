@@ -1,8 +1,5 @@
 package api
 
-// MaxContentLength means the max memo content bytes is 1MB.
-const MaxContentLength = 1 << 30
-
 // Visibility is the type of a visibility.
 type Visibility string
 
@@ -15,8 +12,8 @@ const (
 	Private Visibility = "PRIVATE"
 )
 
-func (e Visibility) String() string {
-	switch e {
+func (v Visibility) String() string {
+	switch v {
 	case Public:
 		return "PUBLIC"
 	case Protected:
@@ -27,7 +24,7 @@ func (e Visibility) String() string {
 	return "PRIVATE"
 }
 
-type Memo struct {
+type MemoResponse struct {
 	ID int `json:"id"`
 
 	// Standard fields
@@ -42,12 +39,13 @@ type Memo struct {
 	Pinned     bool       `json:"pinned"`
 
 	// Related fields
-	CreatorName  string          `json:"creatorName"`
-	ResourceList []*Resource     `json:"resourceList"`
-	RelationList []*MemoRelation `json:"relationList"`
+	CreatorName    string `json:"creatorName"`
+	ResourceIDList []int
+	ResourceList   []*Resource     `json:"resourceList"`
+	RelationList   []*MemoRelation `json:"relationList"`
 }
 
-type MemoCreate struct {
+type CreateMemoRequest struct {
 	// Standard fields
 	CreatorID int    `json:"-"`
 	CreatedTs *int64 `json:"createdTs"`
@@ -61,7 +59,7 @@ type MemoCreate struct {
 	RelationList   []*MemoRelationUpsert `json:"relationList"`
 }
 
-type MemoPatch struct {
+type PatchMemoRequest struct {
 	ID int `json:"-"`
 
 	// Standard fields
@@ -78,7 +76,7 @@ type MemoPatch struct {
 	RelationList   []*MemoRelationUpsert `json:"relationList"`
 }
 
-type MemoFind struct {
+type FindMemoRequest struct {
 	ID *int
 
 	// Standard fields
@@ -93,8 +91,4 @@ type MemoFind struct {
 	// Pagination
 	Limit  *int
 	Offset *int
-}
-
-type MemoDelete struct {
-	ID int
 }

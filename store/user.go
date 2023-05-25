@@ -11,34 +11,20 @@ import (
 )
 
 func (s *Store) SeedDataForNewUser(ctx context.Context, user *api.User) error {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return FormatError(err)
-	}
-	defer tx.Rollback()
-
 	// Create a memo for the user.
-	_, err = createMemoRaw(ctx, tx, &api.MemoCreate{
+	_, err := s.CreateMemo(ctx, &MemoMessage{
 		CreatorID:  user.ID,
 		Content:    "#inbox Welcome to Memos!",
-		Visibility: api.Private,
+		Visibility: Private,
 	})
 	if err != nil {
 		return err
 	}
-	_, err = upsertTag(ctx, tx, &api.TagUpsert{
+	_, err = s.UpsertTag(ctx, &api.TagUpsert{
 		CreatorID: user.ID,
 		Name:      "inbox",
 	})
-	if err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return FormatError(err)
-	}
-
-	return nil
+	return err
 }
 
 // userRaw is the store model for an User.
@@ -77,22 +63,6 @@ func (raw *userRaw) toUser() *api.User {
 		OpenID:       raw.OpenID,
 		AvatarURL:    raw.AvatarURL,
 	}
-}
-
-func (s *Store) ComposeMemoCreator(ctx context.Context, memo *api.Memo) error {
-	user, err := s.FindUser(ctx, &api.UserFind{
-		ID: &memo.CreatorID,
-	})
-	if err != nil {
-		return err
-	}
-
-	if user.Nickname != "" {
-		memo.CreatorName = user.Nickname
-	} else {
-		memo.CreatorName = user.Username
-	}
-	return nil
 }
 
 func (s *Store) CreateUser(ctx context.Context, create *api.UserCreate) (*api.User, error) {
