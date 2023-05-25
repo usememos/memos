@@ -2,14 +2,14 @@ root = "."
 tmp_dir = ".air"
 
 [build]
-  bin = "./.air/memos"
-  cmd = "go build -o ./.air/memos ./main.go"
-  delay = 1000
-  exclude_dir = [".air", "web", "build"]
-  exclude_file = []
-  exclude_regex = []
-  exclude_unchanged = false
-  follow_symlink = false
-  full_bin = ""
-  send_interrupt = true
-  kill_delay = 2000
+bin = "./.air/memos --mode dev"
+cmd = "go build -o ./.air/memos ./main.go"
+delay = 1000
+exclude_dir = [".air", "web", "build"]
+exclude_file = []
+exclude_regex = []
+exclude_unchanged = false
+follow_symlink = false
+full_bin = ""
+send_interrupt = true
+kill_delay = 2000
