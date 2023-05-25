@@ -34,6 +34,8 @@ const (
 	SystemSettingLocalStoragePathName SystemSettingName = "local-storage-path"
 	// SystemSettingOpenAIConfigName is the name of OpenAI config.
 	SystemSettingOpenAIConfigName SystemSettingName = "openai-config"
+	// SystemSettingTelegramRobotToken is the name of Telegram Robot Token.
+	SystemSettingTelegramRobotTokenName SystemSettingName = "telegram-robot-token"
 )
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
@@ -83,6 +85,8 @@ func (key SystemSettingName) String() string {
 		return "local-storage-path"
 	case SystemSettingOpenAIConfigName:
 		return "openai-config"
+	case SystemSettingTelegramRobotTokenName:
+		return "telegram-robot-token"
 	}
 	return ""
 }
