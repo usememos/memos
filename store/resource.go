@@ -73,6 +73,28 @@ func (s *Store) CreateResource(ctx context.Context, create *api.ResourceCreate) 
 	return resource, nil
 }
 
+func (s *Store) PatchResource(ctx context.Context, patch *api.ResourcePatch) (*api.Resource, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	resourceRaw, err := patchResourceImpl(ctx, tx, patch)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, FormatError(err)
+	}
+
+	s.resourceCache.Store(resourceRaw.ID, resourceRaw)
+	resource := resourceRaw.toResource()
+
+	return resource, nil
+}
+
 func (s *Store) FindResourceList(ctx context.Context, find *api.ResourceFind) ([]*api.Resource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
@@ -87,6 +109,9 @@ func (s *Store) FindResourceList(ctx context.Context, find *api.ResourceFind) ([
 
 	resourceList := []*api.Resource{}
 	for _, raw := range resourceRawList {
+		if !find.GetBlob {
+			s.resourceCache.Store(raw.ID, raw)
+		}
 		resourceList = append(resourceList, raw.toResource())
 	}
 
@@ -94,6 +119,11 @@ func (s *Store) FindResourceList(ctx context.Context, find *api.ResourceFind) ([
 }
 
 func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.Resource, error) {
+	if !find.GetBlob && find.ID != nil {
+		if raw, ok := s.resourceCache.Load(find.ID); ok {
+			return raw.(*resourceRaw).toResource(), nil
+		}
+	}
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -110,6 +140,9 @@ func (s *Store) FindResource(ctx context.Context, find *api.ResourceFind) (*api.
 	}
 
 	resourceRaw := list[0]
+	if !find.GetBlob {
+		s.resourceCache.Store(resourceRaw.ID, resourceRaw)
+	}
 	resource := resourceRaw.toResource()
 
 	return resource, nil
@@ -132,29 +165,9 @@ func (s *Store) DeleteResource(ctx context.Context, delete *api.ResourceDelete) 
 	if err := tx.Commit(); err != nil {
 		return FormatError(err)
 	}
+	s.resourceCache.Delete(delete.ID)
 
 	return nil
-}
-
-func (s *Store) PatchResource(ctx context.Context, patch *api.ResourcePatch) (*api.Resource, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	resourceRaw, err := patchResourceImpl(ctx, tx, patch)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
-	}
-
-	resource := resourceRaw.toResource()
-
-	return resource, nil
 }
 
 func createResourceImpl(ctx context.Context, tx *sql.Tx, create *api.ResourceCreate) (*resourceRaw, error) {
