@@ -3,9 +3,11 @@ package server
 import (
 	"context"
 	"fmt"
+	"path"
 	"strconv"
 
 	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/store"
 )
@@ -22,11 +24,7 @@ func (t *telegramHandler) RobotToken(ctx context.Context) string {
 	return t.store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingTelegramRobotTokenName, "")
 }
 
-func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Message) error {
-	if message.Text == "" {
-		return fmt.Errorf("Empty telegram message")
-	}
-
+func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Message, blobs map[string][]byte) error {
 	var creatorId int
 	userSettingList, err := t.store.FindUserSettingList(ctx, &api.UserSettingFind{
 		Key: api.UserSettingTelegramUseridKey,
@@ -44,10 +42,17 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Me
 		return fmt.Errorf("Please set your telegram userid %d in UserSetting of Memos", message.From.Id)
 	}
 
+	// create memo
 	memoCreate := api.CreateMemoRequest{
-		Content:    message.Text,
 		CreatorID:  creatorId,
 		Visibility: api.Private,
+	}
+
+	if message.Text != nil {
+		memoCreate.Content = *message.Text
+	}
+	if blobs != nil && message.Caption != nil {
+		memoCreate.Content = *message.Caption
 	}
 
 	memoMessage, err := t.store.CreateMemo(ctx, convertCreateMemoRequestToMemoMessage(&memoCreate))
@@ -59,5 +64,39 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Me
 		return fmt.Errorf("failed to createMemoCreateActivity: %s", err)
 	}
 
+	// create resources
+	for filename, blob := range blobs {
+		//TODO support more
+		mime := "application/octet-stream"
+		switch path.Ext(filename) {
+		case ".jpg":
+			mime = "image/jpeg"
+		case ".png":
+			mime = "image/png"
+		}
+		resourceCreate := api.ResourceCreate{
+			CreatorID: creatorId,
+			Filename:  filename,
+			Type:      mime,
+			Size:      int64(len(blob)),
+			Blob:      blob,
+			PublicID:  common.GenUUID(),
+		}
+		resource, err := t.store.CreateResource(ctx, &resourceCreate)
+		if err != nil {
+			return fmt.Errorf("failed to CreateResource: %s", err)
+		}
+		if err := createResourceCreateActivity(ctx, t.store, resource); err != nil {
+			return fmt.Errorf("failed to createResourceCreateActivity: %s", err)
+		}
+
+		_, err = t.store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
+			MemoID:     memoMessage.ID,
+			ResourceID: resource.ID,
+		})
+		if err != nil {
+			return fmt.Errorf("failed to UpsertMemoResource: %s", err)
+		}
+	}
 	return nil
 }

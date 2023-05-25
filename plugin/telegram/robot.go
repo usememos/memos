@@ -11,7 +11,7 @@ import (
 
 type Handler interface {
 	RobotToken(ctx context.Context) string
-	MessageHandle(ctx context.Context, message Message) error
+	MessageHandle(ctx context.Context, message Message, blobs map[string][]byte) error
 }
 
 type Robot struct {
@@ -40,30 +40,40 @@ func (r *Robot) Start(ctx context.Context) {
 			continue
 		}
 
+		groupMessages := make([]Message, 0, len(updates))
+
 		for _, update := range updates {
 			offset = update.UpdateID + 1
 			if update.Message == nil {
 				continue
 			}
-
 			message := *update.Message
 
-			reply, err := r.SendReplyMessage(ctx, message.Chat.Id, message.MessageID, "Working on send your memo...")
-			if reply == nil || err != nil {
-				log.Warn("fail to telegram.SendMessage", zap.Error(err))
+			// skip message other than text or photo
+			if message.Text == nil && message.Photo == nil {
+				_, err := r.SendReplyMessage(ctx, message.Chat.Id, message.MessageId, "Only text or photo message be supported")
+				if err != nil {
+					log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageId=%d", message.MessageId), zap.Error(err))
+				}
 				continue
 			}
 
-			result := "Success!"
-			err = r.handler.MessageHandle(ctx, message)
-			if err != nil {
-				result = fmt.Sprintf("fail to send memo: `%s`", err)
+			// Group message need do more
+			if message.MediaGroupId != nil {
+				groupMessages = append(groupMessages, message)
+				continue
 			}
 
-			_, err = r.EditMessage(ctx, reply.Chat.Id, reply.MessageID, result)
+			err = r.handleSingleMessage(ctx, message)
 			if err != nil {
-				log.Warn("fail to telegram.EditMessage", zap.Error(err))
+				log.Error(fmt.Sprintf("fail to handleSingleMessage for messageId=%d", message.MessageId), zap.Error(err))
+				continue
 			}
+		}
+
+		err = r.handleGroupMessages(ctx, groupMessages)
+		if err != nil {
+			log.Error("fail to handle plain text message", zap.Error(err))
 		}
 	}
 }

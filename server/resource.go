@@ -2,6 +2,7 @@ package server
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -23,6 +24,7 @@ import (
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/plugin/storage/s3"
+	"github.com/usememos/memos/store"
 	"go.uber.org/zap"
 )
 
@@ -62,7 +64,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
-		if err := s.createResourceCreateActivity(c, resource); err != nil {
+		if err := createResourceCreateActivity(c.Request().Context(), s.Store, resource); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(resource))
@@ -224,7 +226,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
-		if err := s.createResourceCreateActivity(c, resource); err != nil {
+		if err := createResourceCreateActivity(c.Request().Context(), s.Store, resource); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(resource))
@@ -454,8 +456,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 	})
 }
 
-func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Resource) error {
-	ctx := c.Request().Context()
+func createResourceCreateActivity(ctx context.Context, store *store.Store, resource *api.Resource) error {
 	payload := api.ActivityResourceCreatePayload{
 		Filename: resource.Filename,
 		Type:     resource.Type,
@@ -465,7 +466,7 @@ func (s *Server) createResourceCreateActivity(c echo.Context, resource *api.Reso
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := store.CreateActivity(ctx, &api.ActivityCreate{
 		CreatorID: resource.CreatorID,
 		Type:      api.ActivityResourceCreate,
 		Level:     api.ActivityInfo,
