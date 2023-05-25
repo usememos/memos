@@ -28,12 +28,12 @@ func TestMemoRelationServer(t *testing.T) {
 	memoList, err := s.getMemoList()
 	require.NoError(t, err)
 	require.Len(t, memoList, 1)
-	memo, err := s.postMemoCreate(&api.MemoCreate{
+	memo, err := s.postMemoCreate(&api.CreateMemoRequest{
 		Content: "test memo",
 	})
 	require.NoError(t, err)
 	require.Equal(t, "test memo", memo.Content)
-	memo2, err := s.postMemoCreate(&api.MemoCreate{
+	memo2, err := s.postMemoCreate(&api.CreateMemoRequest{
 		Content: "test memo2",
 		RelationList: []*api.MemoRelationUpsert{
 			{

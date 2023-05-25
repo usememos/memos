@@ -6,29 +6,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 )
-
-func (s *Store) ComposeMemoRelationList(ctx context.Context, memo *api.Memo) error {
-	memoRelationList, err := s.ListMemoRelations(ctx, &FindMemoRelationMessage{
-		MemoID: &memo.ID,
-	})
-	if err != nil {
-		return err
-	}
-
-	memo.RelationList = []*api.MemoRelation{}
-	for _, memoRelation := range memoRelationList {
-		memo.RelationList = append(memo.RelationList, &api.MemoRelation{
-			MemoID:        memoRelation.MemoID,
-			RelatedMemoID: memoRelation.RelatedMemoID,
-			Type:          api.MemoRelationType(memoRelation.Type),
-		})
-	}
-
-	return nil
-}
 
 type MemoRelationType string
 

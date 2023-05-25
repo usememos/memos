@@ -28,7 +28,7 @@ func TestMemoServer(t *testing.T) {
 	memoList, err := s.getMemoList()
 	require.NoError(t, err)
 	require.Len(t, memoList, 1)
-	memo, err := s.postMemoCreate(&api.MemoCreate{
+	memo, err := s.postMemoCreate(&api.CreateMemoRequest{
 		Content: "test memo",
 	})
 	require.NoError(t, err)
@@ -37,7 +37,7 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, memoList, 2)
 	updatedContent := "updated memo"
-	memo, err = s.patchMemo(&api.MemoPatch{
+	memo, err = s.patchMemo(&api.PatchMemoRequest{
 		ID:      memo.ID,
 		Content: &updatedContent,
 	})
@@ -50,23 +50,21 @@ func TestMemoServer(t *testing.T) {
 		Pinned: true,
 	})
 	require.NoError(t, err)
-	memo, err = s.patchMemo(&api.MemoPatch{
+	memo, err = s.patchMemo(&api.PatchMemoRequest{
 		ID:      memo.ID,
 		Content: &updatedContent,
 	})
 	require.NoError(t, err)
 	require.Equal(t, updatedContent, memo.Content)
 	require.Equal(t, true, memo.Pinned)
-	err = s.deleteMemo(&api.MemoDelete{
-		ID: memo.ID,
-	})
+	err = s.deleteMemo(memo.ID)
 	require.NoError(t, err)
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
 	require.Len(t, memoList, 1)
 }
 
-func (s *TestingServer) getMemo(memoID int) (*api.Memo, error) {
+func (s *TestingServer) getMemo(memoID int) (*api.MemoResponse, error) {
 	body, err := s.get(fmt.Sprintf("/api/memo/%d", memoID), nil)
 	if err != nil {
 		return nil, err
@@ -79,7 +77,7 @@ func (s *TestingServer) getMemo(memoID int) (*api.Memo, error) {
 	}
 
 	type MemoCreateResponse struct {
-		Data *api.Memo `json:"data"`
+		Data *api.MemoResponse `json:"data"`
 	}
 	res := new(MemoCreateResponse)
 	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
@@ -88,7 +86,7 @@ func (s *TestingServer) getMemo(memoID int) (*api.Memo, error) {
 	return res.Data, nil
 }
 
-func (s *TestingServer) getMemoList() ([]*api.Memo, error) {
+func (s *TestingServer) getMemoList() ([]*api.MemoResponse, error) {
 	body, err := s.get("/api/memo", nil)
 	if err != nil {
 		return nil, err
@@ -101,7 +99,7 @@ func (s *TestingServer) getMemoList() ([]*api.Memo, error) {
 	}
 
 	type MemoCreateResponse struct {
-		Data []*api.Memo `json:"data"`
+		Data []*api.MemoResponse `json:"data"`
 	}
 	res := new(MemoCreateResponse)
 	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
@@ -110,7 +108,7 @@ func (s *TestingServer) getMemoList() ([]*api.Memo, error) {
 	return res.Data, nil
 }
 
-func (s *TestingServer) postMemoCreate(memoCreate *api.MemoCreate) (*api.Memo, error) {
+func (s *TestingServer) postMemoCreate(memoCreate *api.CreateMemoRequest) (*api.MemoResponse, error) {
 	rawData, err := json.Marshal(&memoCreate)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal memo create")
@@ -128,7 +126,7 @@ func (s *TestingServer) postMemoCreate(memoCreate *api.MemoCreate) (*api.Memo, e
 	}
 
 	type MemoCreateResponse struct {
-		Data *api.Memo `json:"data"`
+		Data *api.MemoResponse `json:"data"`
 	}
 	res := new(MemoCreateResponse)
 	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
@@ -137,7 +135,7 @@ func (s *TestingServer) postMemoCreate(memoCreate *api.MemoCreate) (*api.Memo, e
 	return res.Data, nil
 }
 
-func (s *TestingServer) patchMemo(memoPatch *api.MemoPatch) (*api.Memo, error) {
+func (s *TestingServer) patchMemo(memoPatch *api.PatchMemoRequest) (*api.MemoResponse, error) {
 	rawData, err := json.Marshal(&memoPatch)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal memo patch")
@@ -155,7 +153,7 @@ func (s *TestingServer) patchMemo(memoPatch *api.MemoPatch) (*api.Memo, error) {
 	}
 
 	type MemoPatchResponse struct {
-		Data *api.Memo `json:"data"`
+		Data *api.MemoResponse `json:"data"`
 	}
 	res := new(MemoPatchResponse)
 	if err = json.Unmarshal(buf.Bytes(), res); err != nil {
@@ -164,12 +162,12 @@ func (s *TestingServer) patchMemo(memoPatch *api.MemoPatch) (*api.Memo, error) {
 	return res.Data, nil
 }
 
-func (s *TestingServer) deleteMemo(memoDelete *api.MemoDelete) error {
-	_, err := s.delete(fmt.Sprintf("/api/memo/%d", memoDelete.ID), nil)
+func (s *TestingServer) deleteMemo(memoID int) error {
+	_, err := s.delete(fmt.Sprintf("/api/memo/%d", memoID), nil)
 	return err
 }
 
-func (s *TestingServer) postMemosOrganizer(memosOrganizer *api.MemoOrganizerUpsert) (*api.Memo, error) {
+func (s *TestingServer) postMemosOrganizer(memosOrganizer *api.MemoOrganizerUpsert) (*api.MemoResponse, error) {
 	rawData, err := json.Marshal(&memosOrganizer)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal memos organizer")
@@ -187,7 +185,7 @@ func (s *TestingServer) postMemosOrganizer(memosOrganizer *api.MemoOrganizerUpse
 	}
 
 	type MemoOrganizerResponse struct {
-		Data *api.Memo `json:"data"`
+		Data *api.MemoResponse `json:"data"`
 	}
 	res := new(MemoOrganizerResponse)
 	if err = json.Unmarshal(buf.Bytes(), res); err != nil {

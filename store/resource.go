@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"sort"
 	"strings"
 
 	"github.com/usememos/memos/api"
@@ -51,40 +50,6 @@ func (raw *resourceRaw) toResource() *api.Resource {
 		PublicID:         raw.PublicID,
 		LinkedMemoAmount: raw.LinkedMemoAmount,
 	}
-}
-
-func (s *Store) ComposeMemoResourceList(ctx context.Context, memo *api.Memo) error {
-	resourceList, err := s.FindResourceList(ctx, &api.ResourceFind{
-		MemoID: &memo.ID,
-	})
-	if err != nil {
-		return err
-	}
-
-	for _, resource := range resourceList {
-		memoResource, err := s.FindMemoResource(ctx, &api.MemoResourceFind{
-			MemoID:     &memo.ID,
-			ResourceID: &resource.ID,
-		})
-		if err != nil {
-			return err
-		}
-
-		resource.CreatedTs = memoResource.CreatedTs
-		resource.UpdatedTs = memoResource.UpdatedTs
-	}
-
-	sort.Slice(resourceList, func(i, j int) bool {
-		if resourceList[i].CreatedTs != resourceList[j].CreatedTs {
-			return resourceList[i].CreatedTs < resourceList[j].CreatedTs
-		}
-
-		return resourceList[i].ID < resourceList[j].ID
-	})
-
-	memo.ResourceList = resourceList
-
-	return nil
 }
 
 func (s *Store) CreateResource(ctx context.Context, create *api.ResourceCreate) (*api.Resource, error) {

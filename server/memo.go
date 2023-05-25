@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -16,6 +17,9 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// maxContentLength means the max memo content bytes is 1MB.
+const maxContentLength = 1 << 30
+
 func (s *Server) registerMemoRoutes(g *echo.Group) {
 	g.POST("/memo", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -24,12 +28,15 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		memoCreate := &api.MemoCreate{}
-		if err := json.NewDecoder(c.Request().Body).Decode(memoCreate); err != nil {
+		createMemoRequest := &api.CreateMemoRequest{}
+		if err := json.NewDecoder(c.Request().Body).Decode(createMemoRequest); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo request").SetInternal(err)
 		}
+		if len(createMemoRequest.Content) > maxContentLength {
+			return echo.NewHTTPError(http.StatusBadRequest, "Content size overflow, up to 1MB")
+		}
 
-		if memoCreate.Visibility == "" {
+		if createMemoRequest.Visibility == "" {
 			userMemoVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
 				UserID: userID,
 				Key:    api.UserSettingMemoVisibilityKey,
@@ -44,14 +51,14 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal user setting value").SetInternal(err)
 				}
-				memoCreate.Visibility = memoVisibility
+				createMemoRequest.Visibility = memoVisibility
 			} else {
 				// Private is the default memo visibility.
-				memoCreate.Visibility = api.Private
+				createMemoRequest.Visibility = api.Private
 			}
 		}
 
-		// Find system settings
+		// Find disable public memos system setting.
 		disablePublicMemosSystemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
 			Name: api.SystemSettingDisablePublicMemosName,
 		})
@@ -65,46 +72,40 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
 			}
 			if disablePublicMemos {
-				// Allow if the user is an admin.
 				user, err := s.Store.FindUser(ctx, &api.UserFind{
 					ID: &userID,
 				})
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 				}
-				// Only enforce private if you're a regular user.
-				// Admins should know what they're doing.
+				// Enforce normal user to create private memo if public memos are disabled.
 				if user.Role == "USER" {
-					memoCreate.Visibility = api.Private
+					createMemoRequest.Visibility = api.Private
 				}
 			}
 		}
 
-		if len(memoCreate.Content) > api.MaxContentLength {
-			return echo.NewHTTPError(http.StatusBadRequest, "Content size overflow, up to 1MB").SetInternal(err)
-		}
-
-		memoCreate.CreatorID = userID
-		memo, err := s.Store.CreateMemo(ctx, memoCreate)
+		createMemoRequest.CreatorID = userID
+		memoMessage, err := s.Store.CreateMemo(ctx, convertCreateMemoRequestToMemoMessage(createMemoRequest))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 		}
-		if err := s.createMemoCreateActivity(c, memo); err != nil {
+		if err := s.createMemoCreateActivity(c, memoMessage); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 
-		for _, resourceID := range memoCreate.ResourceIDList {
+		for _, resourceID := range createMemoRequest.ResourceIDList {
 			if _, err := s.Store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
-				MemoID:     memo.ID,
+				MemoID:     memoMessage.ID,
 				ResourceID: resourceID,
 			}); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
 			}
 		}
 
-		for _, memoRelationUpsert := range memoCreate.RelationList {
+		for _, memoRelationUpsert := range createMemoRequest.RelationList {
 			if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
-				MemoID:        memo.ID,
+				MemoID:        memoMessage.ID,
 				RelatedMemoID: memoRelationUpsert.RelatedMemoID,
 				Type:          store.MemoRelationType(memoRelationUpsert.Type),
 			}); err != nil {
@@ -112,11 +113,17 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
-		memo, err = s.Store.ComposeMemo(ctx, memo)
+		memoMessage, err = s.Store.GetMemo(ctx, &store.FindMemoMessage{
+			ID: &memoMessage.ID,
+		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(memo))
+		memoResponse, err := s.ComposeMemoResponse(ctx, convertMemoMessageToMemoResponse(memoMessage))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, composeResponse(memoResponse))
 	})
 
 	g.PATCH("/memo/:memoId", func(c echo.Context) error {
@@ -131,47 +138,58 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		memo, err := s.Store.FindMemo(ctx, &api.MemoFind{
+		memoMessage, err := s.Store.GetMemo(ctx, &store.FindMemoMessage{
 			ID: &memoID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
 		}
-		if memo.CreatorID != userID {
+		if memoMessage.CreatorID != userID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
 		currentTs := time.Now().Unix()
-		memoPatch := &api.MemoPatch{
+		patchMemoRequest := &api.PatchMemoRequest{
 			ID:        memoID,
 			UpdatedTs: &currentTs,
 		}
-		if err := json.NewDecoder(c.Request().Body).Decode(memoPatch); err != nil {
+		if err := json.NewDecoder(c.Request().Body).Decode(patchMemoRequest); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch memo request").SetInternal(err)
 		}
 
-		if memoPatch.Content != nil && len(*memoPatch.Content) > api.MaxContentLength {
+		if patchMemoRequest.Content != nil && len(*patchMemoRequest.Content) > maxContentLength {
 			return echo.NewHTTPError(http.StatusBadRequest, "Content size overflow, up to 1MB").SetInternal(err)
 		}
 
-		memo, err = s.Store.PatchMemo(ctx, memoPatch)
+		updateMemoMessage := &store.UpdateMemoMessage{
+			ID:        memoID,
+			CreatedTs: patchMemoRequest.CreatedTs,
+			UpdatedTs: patchMemoRequest.UpdatedTs,
+			Content:   patchMemoRequest.Content,
+		}
+		if patchMemoRequest.RowStatus != nil {
+			rowStatus := store.RowStatus(patchMemoRequest.RowStatus.String())
+			updateMemoMessage.RowStatus = &rowStatus
+		}
+		if patchMemoRequest.Visibility != nil {
+			visibility := store.Visibility(patchMemoRequest.Visibility.String())
+			updateMemoMessage.Visibility = &visibility
+		}
+
+		err = s.Store.UpdateMemo(ctx, updateMemoMessage)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch memo").SetInternal(err)
 		}
-		memo, err = s.Store.ComposeMemo(ctx, memo)
+		memoMessage, err = s.Store.GetMemo(ctx, &store.FindMemoMessage{ID: &memoID})
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
 		}
 
-		if memoPatch.ResourceIDList != nil {
-			resourceIDList := make([]int, 0)
-			for _, resource := range memo.ResourceList {
-				resourceIDList = append(resourceIDList, resource.ID)
-			}
-			addedResourceIDList, removedResourceIDList := getIDListDiff(resourceIDList, memoPatch.ResourceIDList)
+		if patchMemoRequest.ResourceIDList != nil {
+			addedResourceIDList, removedResourceIDList := getIDListDiff(memoMessage.ResourceIDList, patchMemoRequest.ResourceIDList)
 			for _, resourceID := range addedResourceIDList {
 				if _, err := s.Store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
-					MemoID:     memo.ID,
+					MemoID:     memoMessage.ID,
 					ResourceID: resourceID,
 				}); err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
@@ -179,7 +197,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 			for _, resourceID := range removedResourceIDList {
 				if err := s.Store.DeleteMemoResource(ctx, &api.MemoResourceDelete{
-					MemoID:     &memo.ID,
+					MemoID:     &memoMessage.ID,
 					ResourceID: &resourceID,
 				}); err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete memo resource").SetInternal(err)
@@ -187,100 +205,106 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
-		if memoPatch.RelationList != nil {
-			patchMemoRelationList := make([]*api.MemoRelation, 0)
-			for _, memoRelationUpsert := range memoPatch.RelationList {
-				patchMemoRelationList = append(patchMemoRelationList, &api.MemoRelation{
-					MemoID:        memo.ID,
-					RelatedMemoID: memoRelationUpsert.RelatedMemoID,
-					Type:          memoRelationUpsert.Type,
-				})
-			}
-			addedMemoRelationList, removedMemoRelationList := getMemoRelationListDiff(memo.RelationList, patchMemoRelationList)
-			for _, memoRelation := range addedMemoRelationList {
-				if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
-					MemoID:        memo.ID,
+		if patchMemoRequest.RelationList != nil {
+			patchMemoRelationList := make([]*store.MemoRelationMessage, 0)
+			for _, memoRelation := range patchMemoRequest.RelationList {
+				patchMemoRelationList = append(patchMemoRelationList, &store.MemoRelationMessage{
+					MemoID:        memoMessage.ID,
 					RelatedMemoID: memoRelation.RelatedMemoID,
 					Type:          store.MemoRelationType(memoRelation.Type),
-				}); err != nil {
+				})
+			}
+			addedMemoRelationList, removedMemoRelationList := getMemoRelationListDiff(memoMessage.RelationList, patchMemoRelationList)
+			for _, memoRelation := range addedMemoRelationList {
+				if _, err := s.Store.UpsertMemoRelation(ctx, memoRelation); err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
 				}
 			}
 			for _, memoRelation := range removedMemoRelationList {
-				memoRelationType := store.MemoRelationType(memoRelation.Type)
 				if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelationMessage{
-					MemoID:        &memo.ID,
+					MemoID:        &memoMessage.ID,
 					RelatedMemoID: &memoRelation.RelatedMemoID,
-					Type:          &memoRelationType,
+					Type:          &memoRelation.Type,
 				}); err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete memo relation").SetInternal(err)
 				}
 			}
 		}
 
-		// After patching memo resources and relations, we need to re-compose it to get the latest data.
-		memo, err = s.Store.ComposeMemo(ctx, memo)
+		memoMessage, err = s.Store.GetMemo(ctx, &store.FindMemoMessage{ID: &memoID})
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(memo))
+		memoResponse, err := s.ComposeMemoResponse(ctx, convertMemoMessageToMemoResponse(memoMessage))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, composeResponse(memoResponse))
 	})
 
 	g.GET("/memo", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		memoFind := &api.MemoFind{}
+		findMemoMessage := &store.FindMemoMessage{}
 		if userID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
-			memoFind.CreatorID = &userID
+			findMemoMessage.CreatorID = &userID
 		}
 
 		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
-			if memoFind.CreatorID == nil {
+			if findMemoMessage.CreatorID == nil {
 				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
 			}
-			memoFind.VisibilityList = []api.Visibility{api.Public}
+			findMemoMessage.VisibilityList = []store.Visibility{store.Public}
 		} else {
-			if memoFind.CreatorID == nil {
-				memoFind.CreatorID = &currentUserID
+			if findMemoMessage.CreatorID == nil {
+				findMemoMessage.CreatorID = &currentUserID
 			} else {
-				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
+				findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected}
 			}
 		}
 
-		rowStatus := api.RowStatus(c.QueryParam("rowStatus"))
+		rowStatus := store.RowStatus(c.QueryParam("rowStatus"))
 		if rowStatus != "" {
-			memoFind.RowStatus = &rowStatus
+			findMemoMessage.RowStatus = &rowStatus
 		}
 		pinnedStr := c.QueryParam("pinned")
 		if pinnedStr != "" {
 			pinned := pinnedStr == "true"
-			memoFind.Pinned = &pinned
+			findMemoMessage.Pinned = &pinned
 		}
 		tag := c.QueryParam("tag")
 		if tag != "" {
 			contentSearch := "#" + tag
-			memoFind.ContentSearch = &contentSearch
+			findMemoMessage.ContentSearch = &contentSearch
 		}
 		visibilityListStr := c.QueryParam("visibility")
 		if visibilityListStr != "" {
-			visibilityList := []api.Visibility{}
+			visibilityList := []store.Visibility{}
 			for _, visibility := range strings.Split(visibilityListStr, ",") {
-				visibilityList = append(visibilityList, api.Visibility(visibility))
+				visibilityList = append(visibilityList, store.Visibility(visibility))
 			}
-			memoFind.VisibilityList = visibilityList
+			findMemoMessage.VisibilityList = visibilityList
 		}
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-			memoFind.Limit = &limit
+			findMemoMessage.Limit = &limit
 		}
 		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-			memoFind.Offset = &offset
+			findMemoMessage.Offset = &offset
 		}
 
-		list, err := s.Store.FindMemoList(ctx, memoFind)
+		memoMessageList, err := s.Store.ListMemos(ctx, findMemoMessage)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(list))
+		memoResponseList := []*api.MemoResponse{}
+		for _, memoMessage := range memoMessageList {
+			memoResponse, err := s.ComposeMemoResponse(ctx, convertMemoMessageToMemoResponse(memoMessage))
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
+			}
+			memoResponseList = append(memoResponseList, memoResponse)
+		}
+		return c.JSON(http.StatusOK, composeResponse(memoResponseList))
 	})
 
 	g.GET("/memo/:memoId", func(c echo.Context) error {
@@ -290,29 +314,31 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		memoFind := &api.MemoFind{
+		memoMessage, err := s.Store.GetMemo(ctx, &store.FindMemoMessage{
 			ID: &memoID,
-		}
-		memo, err := s.Store.FindMemo(ctx, memoFind)
+		})
 		if err != nil {
 			if common.ErrorCode(err) == common.NotFound {
 				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)
 			}
-
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", memoID)).SetInternal(err)
 		}
 
 		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if memo.Visibility == api.Private {
-			if !ok || memo.CreatorID != userID {
+		if memoMessage.Visibility == store.Private {
+			if !ok || memoMessage.CreatorID != userID {
 				return echo.NewHTTPError(http.StatusForbidden, "this memo is private only")
 			}
-		} else if memo.Visibility == api.Protected {
+		} else if memoMessage.Visibility == store.Protected {
 			if !ok {
 				return echo.NewHTTPError(http.StatusForbidden, "this memo is protected, missing user in session")
 			}
 		}
-		return c.JSON(http.StatusOK, composeResponse(memo))
+		memoResponse, err := s.ComposeMemoResponse(ctx, convertMemoMessageToMemoResponse(memoMessage))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, composeResponse(memoResponse))
 	})
 
 	g.POST("/memo/:memoId/organizer", func(c echo.Context) error {
@@ -338,46 +364,49 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo organizer").SetInternal(err)
 		}
 
-		memo, err := s.Store.FindMemo(ctx, &api.MemoFind{
+		memoMessage, err := s.Store.GetMemo(ctx, &store.FindMemoMessage{
 			ID: &memoID,
 		})
 		if err != nil {
 			if common.ErrorCode(err) == common.NotFound {
 				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)
 			}
-
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", memoID)).SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(memo))
+		memoResponse, err := s.ComposeMemoResponse(ctx, convertMemoMessageToMemoResponse(memoMessage))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, composeResponse(memoResponse))
 	})
 
 	g.GET("/memo/stats", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		normalStatus := api.Normal
-		memoFind := &api.MemoFind{
+		normalStatus := store.Normal
+		findMemoMessage := &store.FindMemoMessage{
 			RowStatus: &normalStatus,
 		}
 		if creatorID, err := strconv.Atoi(c.QueryParam("creatorId")); err == nil {
-			memoFind.CreatorID = &creatorID
+			findMemoMessage.CreatorID = &creatorID
 		}
-		if memoFind.CreatorID == nil {
+		if findMemoMessage.CreatorID == nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
 		}
 
 		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
-			memoFind.VisibilityList = []api.Visibility{api.Public}
+			findMemoMessage.VisibilityList = []store.Visibility{store.Public}
 		} else {
-			if *memoFind.CreatorID != currentUserID {
-				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
+			if *findMemoMessage.CreatorID != currentUserID {
+				findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected}
 			} else {
-				memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected, api.Private}
+				findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected, store.Private}
 			}
 		}
 
-		list, err := s.Store.FindMemoList(ctx, memoFind)
+		list, err := s.Store.ListMemos(ctx, findMemoMessage)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}
 
 		createdTsList := []int64{}
@@ -389,49 +418,56 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 	g.GET("/memo/all", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		memoFind := &api.MemoFind{}
-
+		findMemoMessage := &store.FindMemoMessage{}
 		_, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
-			memoFind.VisibilityList = []api.Visibility{api.Public}
+			findMemoMessage.VisibilityList = []store.Visibility{store.Public}
 		} else {
-			memoFind.VisibilityList = []api.Visibility{api.Public, api.Protected}
+			findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected}
 		}
 
 		pinnedStr := c.QueryParam("pinned")
 		if pinnedStr != "" {
 			pinned := pinnedStr == "true"
-			memoFind.Pinned = &pinned
+			findMemoMessage.Pinned = &pinned
 		}
 		tag := c.QueryParam("tag")
 		if tag != "" {
 			contentSearch := "#" + tag + " "
-			memoFind.ContentSearch = &contentSearch
+			findMemoMessage.ContentSearch = &contentSearch
 		}
 		visibilityListStr := c.QueryParam("visibility")
 		if visibilityListStr != "" {
-			visibilityList := []api.Visibility{}
+			visibilityList := []store.Visibility{}
 			for _, visibility := range strings.Split(visibilityListStr, ",") {
-				visibilityList = append(visibilityList, api.Visibility(visibility))
+				visibilityList = append(visibilityList, store.Visibility(visibility))
 			}
-			memoFind.VisibilityList = visibilityList
+			findMemoMessage.VisibilityList = visibilityList
 		}
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-			memoFind.Limit = &limit
+			findMemoMessage.Limit = &limit
 		}
 		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-			memoFind.Offset = &offset
+			findMemoMessage.Offset = &offset
 		}
 
 		// Only fetch normal status memos.
-		normalStatus := api.Normal
-		memoFind.RowStatus = &normalStatus
+		normalStatus := store.Normal
+		findMemoMessage.RowStatus = &normalStatus
 
-		list, err := s.Store.FindMemoList(ctx, memoFind)
+		memoMessageList, err := s.Store.ListMemos(ctx, findMemoMessage)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch all memo list").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(list))
+		memoResponseList := []*api.MemoResponse{}
+		for _, memoMessage := range memoMessageList {
+			memoResponse, err := s.ComposeMemoResponse(ctx, convertMemoMessageToMemoResponse(memoMessage))
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
+			}
+			memoResponseList = append(memoResponseList, memoResponse)
+		}
+		return c.JSON(http.StatusOK, composeResponse(memoResponseList))
 	})
 
 	g.DELETE("/memo/:memoId", func(c echo.Context) error {
@@ -445,7 +481,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		memo, err := s.Store.FindMemo(ctx, &api.MemoFind{
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemoMessage{
 			ID: &memoID,
 		})
 		if err != nil {
@@ -455,10 +491,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
-		memoDelete := &api.MemoDelete{
+		if err := s.Store.DeleteMemo(ctx, &store.DeleteMemoMessage{
 			ID: memoID,
-		}
-		if err := s.Store.DeleteMemo(ctx, memoDelete); err != nil {
+		}); err != nil {
 			if common.ErrorCode(err) == common.NotFound {
 				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID))
 			}
@@ -468,7 +503,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 }
 
-func (s *Server) createMemoCreateActivity(c echo.Context, memo *api.Memo) error {
+func (s *Server) createMemoCreateActivity(c echo.Context, memo *store.MemoMessage) error {
 	ctx := c.Request().Context()
 	payload := api.ActivityMemoCreatePayload{
 		Content:    memo.Content,
@@ -512,7 +547,7 @@ func getIDListDiff(oldList, newList []int) (addedList, removedList []int) {
 	return addedList, removedList
 }
 
-func getMemoRelationListDiff(oldList, newList []*api.MemoRelation) (addedList, removedList []*api.MemoRelation) {
+func getMemoRelationListDiff(oldList, newList []*store.MemoRelationMessage) (addedList, removedList []*store.MemoRelationMessage) {
 	oldMap := map[string]bool{}
 	for _, relation := range oldList {
 		oldMap[fmt.Sprintf("%d-%s", relation.RelatedMemoID, relation.Type)] = true
@@ -534,4 +569,65 @@ func getMemoRelationListDiff(oldList, newList []*api.MemoRelation) (addedList, r
 		}
 	}
 	return addedList, removedList
+}
+
+func convertCreateMemoRequestToMemoMessage(memoCreate *api.CreateMemoRequest) *store.MemoMessage {
+	createdTs := time.Now().Unix()
+	if memoCreate.CreatedTs != nil {
+		createdTs = *memoCreate.CreatedTs
+	}
+	return &store.MemoMessage{
+		CreatorID:  memoCreate.CreatorID,
+		CreatedTs:  createdTs,
+		Content:    memoCreate.Content,
+		Visibility: store.Visibility(memoCreate.Visibility),
+	}
+}
+
+func convertMemoMessageToMemoResponse(memoMessage *store.MemoMessage) *api.MemoResponse {
+	relationList := []*api.MemoRelation{}
+	for _, relation := range memoMessage.RelationList {
+		relationList = append(relationList, convertMemoRelationMessageToMemoRelation(relation))
+	}
+
+	return &api.MemoResponse{
+		ID:             memoMessage.ID,
+		RowStatus:      api.RowStatus(memoMessage.RowStatus.String()),
+		CreatorID:      memoMessage.CreatorID,
+		CreatedTs:      memoMessage.CreatedTs,
+		UpdatedTs:      memoMessage.UpdatedTs,
+		Content:        memoMessage.Content,
+		Visibility:     api.Visibility(memoMessage.Visibility.String()),
+		Pinned:         memoMessage.Pinned,
+		ResourceIDList: memoMessage.ResourceIDList,
+		RelationList:   relationList,
+	}
+}
+
+func (s *Server) ComposeMemoResponse(ctx context.Context, memoResponse *api.MemoResponse) (*api.MemoResponse, error) {
+	user, err := s.Store.FindUser(ctx, &api.UserFind{
+		ID: &memoResponse.CreatorID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if user.Nickname != "" {
+		memoResponse.CreatorName = user.Nickname
+	} else {
+		memoResponse.CreatorName = user.Username
+	}
+
+	memoResponse.ResourceList = []*api.Resource{}
+	for _, resourceID := range memoResponse.ResourceIDList {
+		resource, err := s.Store.FindResource(ctx, &api.ResourceFind{
+			ID: &resourceID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		memoResponse.ResourceList = append(memoResponse.ResourceList, resource)
+	}
+
+	return memoResponse, nil
 }
