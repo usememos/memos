@@ -38,7 +38,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		if createMemoRequest.Visibility == "" {
 			userMemoVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
-				UserID: userID,
+				UserID: &userID,
 				Key:    api.UserSettingMemoVisibilityKey,
 			})
 			if err != nil {

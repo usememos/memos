@@ -117,7 +117,7 @@ func (upsert UserSettingUpsert) Validate() error {
 }
 
 type UserSettingFind struct {
-	UserID int
+	UserID *int
 
 	Key UserSettingKey `json:"key"`
 }
