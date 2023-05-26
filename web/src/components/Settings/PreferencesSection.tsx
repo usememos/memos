@@ -25,12 +25,18 @@ const PreferencesSection = () => {
   });
 
   useEffect(() => {
-    getMyselfUser().then(({ data: { data: user } }) => {
-      const telegramUserIdSetting = user.userSettingList.find((setting) => setting.key === "telegram-user-id");
-      if (telegramUserIdSetting) {
-        setTelegramUserId(setting.telegramUserId);
+    getMyselfUser().then(
+      ({
+        data: {
+          data: { userSettingList: userSettingList },
+        },
+      }) => {
+        const telegramUserIdSetting = userSettingList.find((setting: any) => setting.key === "telegram-user-id");
+        if (telegramUserIdSetting) {
+          setTelegramUserId(JSON.parse(telegramUserIdSetting.value));
+        }
       }
-    });
+    );
   }, []);
 
   const dailyReviewTimeOffsetOptions: number[] = [...Array(24).keys()];
