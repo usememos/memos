@@ -71,11 +71,10 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 		if !ok {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user session")
 		}
-		contentSearch := "#"
 		normalRowStatus := store.Normal
 		memoFind := &store.FindMemoMessage{
 			CreatorID:     &userID,
-			ContentSearch: &contentSearch,
+			ContentSearch: []string{"#"},
 			RowStatus:     &normalRowStatus,
 		}
 

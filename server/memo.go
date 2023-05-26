@@ -274,8 +274,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 		tag := c.QueryParam("tag")
 		if tag != "" {
-			contentSearch := "#" + tag
-			findMemoMessage.ContentSearch = &contentSearch
+			findMemoMessage.ContentSearch = []string{"#" + tag}
 		}
 		visibilityListStr := c.QueryParam("visibility")
 		if visibilityListStr != "" {
@@ -433,8 +432,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 		tag := c.QueryParam("tag")
 		if tag != "" {
-			contentSearch := "#" + tag + " "
-			findMemoMessage.ContentSearch = &contentSearch
+			findMemoMessage.ContentSearch = []string{"#" + tag + " "}
 		}
 		visibilityListStr := c.QueryParam("visibility")
 		if visibilityListStr != "" {
