@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"path"
 	"strconv"
@@ -33,7 +34,12 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Me
 		return fmt.Errorf("Fail to find memo user: %s", err)
 	}
 	for _, userSetting := range userSettingList {
-		if userSetting.Value == strconv.Itoa(message.From.ID) {
+		var value string
+		if err := json.Unmarshal([]byte(userSetting.Value), &value); err != nil {
+			continue
+		}
+
+		if value == strconv.Itoa(message.From.ID) {
 			creatorID = userSetting.UserID
 		}
 	}

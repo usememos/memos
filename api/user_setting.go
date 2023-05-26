@@ -102,9 +102,17 @@ func (upsert UserSettingUpsert) Validate() error {
 			return fmt.Errorf("invalid user setting memo visibility value")
 		}
 	} else if upsert.Key == UserSettingTelegramUserIDKey {
-		_, err := strconv.Atoi(upsert.Value)
+		var s string
+		err := json.Unmarshal([]byte(upsert.Value), &s)
 		if err != nil {
-			return fmt.Errorf("invalid user setting telegram userid value")
+			return fmt.Errorf("invalid user setting telegram user id value")
+		}
+
+		if s == "" {
+			return nil
+		}
+		if _, err := strconv.Atoi(s); err != nil {
+			return fmt.Errorf("invalid user setting telegram user id value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")
