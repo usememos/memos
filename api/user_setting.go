@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 
 	"golang.org/x/exp/slices"
 )
@@ -101,12 +102,8 @@ func (upsert UserSettingUpsert) Validate() error {
 			return fmt.Errorf("invalid user setting memo visibility value")
 		}
 	} else if upsert.Key == UserSettingTelegramUserIDKey {
-		telegramUserID := 0
-		err := json.Unmarshal([]byte(upsert.Value), &telegramUserID)
+		_, err := strconv.Atoi(upsert.Value)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting telegram userid value")
-		}
-		if telegramUserID <= 0 {
 			return fmt.Errorf("invalid user setting telegram userid value")
 		}
 	} else {
