@@ -59,7 +59,6 @@ const PreferencesSection = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
-      return;
     }
   };
 
