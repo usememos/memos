@@ -8,6 +8,93 @@ import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import { useTranslation } from "react-i18next";
 
+const templateList: IdentityProvider[] = [
+  {
+    id: UNKNOWN_ID,
+    name: "GitHub",
+    type: "OAUTH2",
+    identifierFilter: "",
+    config: {
+      oauth2Config: {
+        clientId: "",
+        clientSecret: "",
+        authUrl: "https://github.com/login/oauth/authorize",
+        tokenUrl: "https://github.com/login/oauth/access_token",
+        userInfoUrl: "https://api.github.com/user",
+        scopes: ["user"],
+        fieldMapping: {
+          identifier: "login",
+          displayName: "name",
+          email: "email",
+        },
+      },
+    },
+  },
+  {
+    id: UNKNOWN_ID,
+    name: "GitLab",
+    type: "OAUTH2",
+    identifierFilter: "",
+    config: {
+      oauth2Config: {
+        clientId: "",
+        clientSecret: "",
+        authUrl: "https://gitlab.com/oauth/authorize",
+        tokenUrl: "https://gitlab.com/oauth/token",
+        userInfoUrl: "https://gitlab.com/oauth/userinfo",
+        scopes: ["openid"],
+        fieldMapping: {
+          identifier: "name",
+          displayName: "name",
+          email: "email",
+        },
+      },
+    },
+  },
+  {
+    id: UNKNOWN_ID,
+    name: "Google",
+    type: "OAUTH2",
+    identifierFilter: "",
+    config: {
+      oauth2Config: {
+        clientId: "",
+        clientSecret: "",
+        authUrl: "https://accounts.google.com/o/oauth2/v2/auth",
+        tokenUrl: "https://oauth2.googleapis.com/token",
+        userInfoUrl: "https://www.googleapis.com/oauth2/v2/userinfo",
+        scopes: ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"],
+        fieldMapping: {
+          identifier: "email",
+          displayName: "name",
+          email: "email",
+        },
+      },
+    },
+  },
+  {
+    id: UNKNOWN_ID,
+    name: "Custom",
+    type: "OAUTH2",
+    identifierFilter: "",
+    config: {
+      oauth2Config: {
+        clientId: "",
+        clientSecret: "",
+        authUrl: "",
+        tokenUrl: "",
+        userInfoUrl: "",
+        scopes: [],
+        fieldMapping: {
+          identifier: "",
+          displayName: "",
+          email: "",
+        },
+      },
+    },
+  },
+];
+
 interface Props extends DialogProps {
   identityProvider?: IdentityProvider;
   confirmCallback?: () => void;
@@ -15,92 +102,6 @@ interface Props extends DialogProps {
 
 const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
-  const templateList: IdentityProvider[] = [
-    {
-      id: UNKNOWN_ID,
-      name: "GitHub",
-      type: "OAUTH2",
-      identifierFilter: "",
-      config: {
-        oauth2Config: {
-          clientId: "",
-          clientSecret: "",
-          authUrl: "https://github.com/login/oauth/authorize",
-          tokenUrl: "https://github.com/login/oauth/access_token",
-          userInfoUrl: "https://api.github.com/user",
-          scopes: ["user"],
-          fieldMapping: {
-            identifier: t("setting.sso-section.identifier"),
-            displayName: "",
-            email: "",
-          },
-        },
-      },
-    },
-    {
-      id: UNKNOWN_ID,
-      name: "GitLab",
-      type: "OAUTH2",
-      identifierFilter: "",
-      config: {
-        oauth2Config: {
-          clientId: "",
-          clientSecret: "",
-          authUrl: "https://gitlab.com/oauth/authorize",
-          tokenUrl: "https://gitlab.com/oauth/token",
-          userInfoUrl: "https://gitlab.com/oauth/userinfo",
-          scopes: ["openid"],
-          fieldMapping: {
-            identifier: t("setting.sso-section.identifier"),
-            displayName: "",
-            email: "",
-          },
-        },
-      },
-    },
-    {
-      id: UNKNOWN_ID,
-      name: "Google",
-      type: "OAUTH2",
-      identifierFilter: "",
-      config: {
-        oauth2Config: {
-          clientId: "",
-          clientSecret: "",
-          authUrl: "https://accounts.google.com/o/oauth2/v2/auth",
-          tokenUrl: "https://oauth2.googleapis.com/token",
-          userInfoUrl: "https://www.googleapis.com/oauth2/v2/userinfo",
-          scopes: ["https://www.googleapis.com/auth/userinfo.email", "https://www.googleapis.com/auth/userinfo.profile"],
-          fieldMapping: {
-            identifier: t("setting.sso-section.identifier"),
-            displayName: "",
-            email: "",
-          },
-        },
-      },
-    },
-    {
-      id: UNKNOWN_ID,
-      name: t("setting.sso-section.custom"),
-      type: "OAUTH2",
-      identifierFilter: "",
-      config: {
-        oauth2Config: {
-          clientId: "",
-          clientSecret: "",
-          authUrl: "",
-          tokenUrl: "",
-          userInfoUrl: "",
-          scopes: [],
-          fieldMapping: {
-            identifier: "",
-            displayName: "",
-            email: "",
-          },
-        },
-      },
-    },
-  ];
   const identityProviderTypes = [...new Set(templateList.map((t) => t.type))];
   const { confirmCallback, destroy, identityProvider } = props;
   const [basicInfo, setBasicInfo] = useState({
