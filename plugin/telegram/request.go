@@ -13,11 +13,7 @@ import (
 var ErrNoToken = errors.New("token is empty")
 
 func (r *Robot) postForm(ctx context.Context, apiPath string, formData url.Values, result any) error {
-	if r.FetchToken == nil {
-		return ErrNoToken
-	}
-
-	token := r.FetchToken()
+	token := r.handler.RobotToken(ctx)
 	if token == "" {
 		return ErrNoToken
 	}

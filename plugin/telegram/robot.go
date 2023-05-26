@@ -9,20 +9,18 @@ import (
 	"go.uber.org/zap"
 )
 
-type TokenFetchFunc func() string
-type MessageHandleFunc func(Message) error
-
-type Robot struct {
-	FetchToken    TokenFetchFunc
-	MessageHandle MessageHandleFunc
+type Handler interface {
+	RobotToken(ctx context.Context) string
+	MessageHandle(ctx context.Context, message Message) error
 }
 
-// NewDynamicRobot create a robot with TokenFetchFunc and MessageHandleFunc
-func NewDynamicRobot(f1 TokenFetchFunc, f2 MessageHandleFunc) *Robot {
-	return &Robot{
-		FetchToken:    f1,
-		MessageHandle: f2,
-	}
+type Robot struct {
+	handler Handler
+}
+
+// NewRobotWithHandler create a telegram robot with specified handler
+func NewRobotWithHandler(h Handler) *Robot {
+	return &Robot{handler: h}
 }
 
 const noTokenWait = 30 * time.Second
@@ -57,7 +55,7 @@ func (r *Robot) Start(ctx context.Context) {
 			}
 
 			result := "Success!"
-			err = r.MessageHandle(ctx, message)
+			err = r.handler.MessageHandle(ctx, message)
 			if err != nil {
 				result = fmt.Sprintf("fail to send memo: `%s`", err)
 			}
