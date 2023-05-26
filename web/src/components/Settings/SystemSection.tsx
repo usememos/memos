@@ -142,9 +142,9 @@ const SystemSection = () => {
         name: "telegram-robot-token",
         value: telegramRobotToken,
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      toast.error(t("common.dialog.error"));
+      toast.error(error.response.data.message);
       return;
     }
     toast.success("OpenAI Config updated");
