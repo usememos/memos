@@ -13,11 +13,11 @@ func TestHeadingParser(t *testing.T) {
 		heading *HeadingParser
 	}{
 		{
-			text:    "*Hello world!",
+			text:    "*Hello world",
 			heading: nil,
 		},
 		{
-			text: "## Hello World!",
+			text: "## Hello World",
 			heading: &HeadingParser{
 				Level: 2,
 				ContentTokens: []*tokenizer.Token{
@@ -31,7 +31,7 @@ func TestHeadingParser(t *testing.T) {
 					},
 					{
 						Type:  tokenizer.Text,
-						Value: "World!",
+						Value: "World",
 					},
 				},
 			},
@@ -65,12 +65,12 @@ func TestHeadingParser(t *testing.T) {
 			},
 		},
 		{
-			text:    " # 123123 Hello World!",
+			text:    " # 123123 Hello World",
 			heading: nil,
 		},
 		{
 			text: `# 123 
-Hello World!`,
+Hello World`,
 			heading: &HeadingParser{
 				Level: 1,
 				ContentTokens: []*tokenizer.Token{

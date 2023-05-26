@@ -28,7 +28,11 @@ func TestTokenize(t *testing.T) {
 				},
 				{
 					Type:  Text,
-					Value: "world!",
+					Value: "world",
+				},
+				{
+					Type:  ExclamationMark,
+					Value: "!",
 				},
 			},
 		},
