@@ -272,11 +272,18 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			pinned := pinnedStr == "true"
 			findMemoMessage.Pinned = &pinned
 		}
+
+		contentSearch := []string{}
 		tag := c.QueryParam("tag")
 		if tag != "" {
-			contentSearch := "#" + tag
-			findMemoMessage.ContentSearch = &contentSearch
+			contentSearch = append(contentSearch, "#"+tag)
 		}
+		contentSlice := c.QueryParams()["content"]
+		if len(contentSlice) > 0 {
+			contentSearch = append(contentSearch, contentSlice...)
+		}
+		findMemoMessage.ContentSearch = contentSearch
+
 		visibilityListStr := c.QueryParam("visibility")
 		if visibilityListStr != "" {
 			visibilityList := []store.Visibility{}
@@ -431,11 +438,18 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			pinned := pinnedStr == "true"
 			findMemoMessage.Pinned = &pinned
 		}
+
+		contentSearch := []string{}
 		tag := c.QueryParam("tag")
 		if tag != "" {
-			contentSearch := "#" + tag + " "
-			findMemoMessage.ContentSearch = &contentSearch
+			contentSearch = append(contentSearch, "#"+tag+" ")
 		}
+		contentSlice := c.QueryParams()["content"]
+		if len(contentSlice) > 0 {
+			contentSearch = append(contentSearch, contentSlice...)
+		}
+		findMemoMessage.ContentSearch = contentSearch
+
 		visibilityListStr := c.QueryParam("visibility")
 		if visibilityListStr != "" {
 			visibilityList := []store.Visibility{}

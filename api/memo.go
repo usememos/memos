@@ -84,7 +84,7 @@ type FindMemoRequest struct {
 
 	// Domain specific fields
 	Pinned         *bool
-	ContentSearch  *string
+	ContentSearch  []string
 	VisibilityList []Visibility
 
 	// Pagination

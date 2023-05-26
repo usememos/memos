@@ -62,7 +62,7 @@ type FindMemoMessage struct {
 
 	// Domain specific fields
 	Pinned         *bool
-	ContentSearch  *string
+	ContentSearch  []string
 	VisibilityList []Visibility
 
 	// Pagination
@@ -233,8 +233,10 @@ func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoM
 	if v := find.Pinned; v != nil {
 		where = append(where, "memo_organizer.pinned = 1")
 	}
-	if v := find.ContentSearch; v != nil {
-		where, args = append(where, "memo.content LIKE ?"), append(args, "%"+*v+"%")
+	if v := find.ContentSearch; len(v) != 0 {
+		for _, s := range v {
+			where, args = append(where, "memo.content LIKE ?"), append(args, "%"+s+"%")
+		}
 	}
 	if v := find.VisibilityList; len(v) != 0 {
 		list := []string{}
