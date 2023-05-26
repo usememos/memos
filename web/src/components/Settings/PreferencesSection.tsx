@@ -1,13 +1,13 @@
 import { Input, Button, Divider, Switch, Option, Select } from "@mui/joy";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { getMyselfUser } from "@/helpers/api";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
+import HelpButton from "../kit/HelpButton";
 import "@/less/settings/preferences-section.less";
 
 const PreferencesSection = () => {
@@ -16,28 +16,13 @@ const PreferencesSection = () => {
   const userStore = useUserStore();
   const { appearance, locale } = globalStore.state;
   const { setting, localSetting } = userStore.state.user as User;
-  const [telegramUserId, setTelegramUserId] = useState<string>("");
+  const [telegramUserId, setTelegramUserId] = useState<string>(setting.telegramUserId);
   const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
       text: t(`memo.visibility.${item.text.toLowerCase()}`),
     };
   });
-
-  useEffect(() => {
-    getMyselfUser().then(
-      ({
-        data: {
-          data: { userSettingList: userSettingList },
-        },
-      }) => {
-        const telegramUserIdSetting = userSettingList.find((setting: any) => setting.key === "telegram-user-id");
-        if (telegramUserIdSetting) {
-          setTelegramUserId(JSON.parse(telegramUserIdSetting.value));
-        }
-      }
-    );
-  }, []);
 
   const dailyReviewTimeOffsetOptions: number[] = [...Array(24).keys()];
 
@@ -63,7 +48,6 @@ const PreferencesSection = () => {
     userStore.upsertLocalSetting({ ...localSetting, dailyReviewTimeOffset: value });
   };
 
-  //enableAutoCollapse
   const handleAutoCollapseChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, enableAutoCollapse: event.target.checked });
   };
@@ -75,7 +59,6 @@ const PreferencesSection = () => {
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
-      return;
     }
   };
 
@@ -155,9 +138,10 @@ const PreferencesSection = () => {
 
       <Divider className="!mt-3 !my-4" />
 
-      <div className="form-label">
-        <div className="flex flex-row items-center">
+      <div className="mb-2 w-full flex flex-row justify-between items-center">
+        <div className="w-auto flex items-center">
           <span className="text-sm mr-1">{t("setting.preference-section.telegram-user-id")}</span>
+          <HelpButton icon="help" url="https://usememos.com/docs/integration/telegram-bot" />
         </div>
         <Button onClick={handleSaveTelegramUserId}>{t("common.save")}</Button>
       </div>

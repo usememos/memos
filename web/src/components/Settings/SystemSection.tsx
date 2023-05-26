@@ -272,11 +272,10 @@ const SystemSection = () => {
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <div className="flex flex-row items-center">
-          <span className="text-sm mr-1">{t("setting.system-section.telegram-robot-token")}</span>
-          <HelpButton
-            hint={t("setting.system-section.telegram-robot-token-description")}
-            url="https://core.telegram.org/bots#how-do-i-create-a-bot"
-          />
+          <div className="w-auto flex items-center">
+            <span className="text-sm mr-1">{t("setting.system-section.telegram-robot-token")}</span>
+            <HelpButton icon="help" url="https://usememos.com/docs/integration/telegram-bot" />
+          </div>
         </div>
         <Button onClick={handleSaveTelegramRobotToken}>{t("common.save")}</Button>
       </div>

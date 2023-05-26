@@ -333,7 +333,7 @@
       "theme": "主题",
       "updated_ts": "更新时间"
     },
-    "sso": "单点登陆（SSO）",
+    "sso": "SSO",
     "sso-section": {
       "authorization-endpoint": "授权端点（Authorization Endpoint）",
       "client-id": "客户端ID（Client ID）",
