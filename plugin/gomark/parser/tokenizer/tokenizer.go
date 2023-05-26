@@ -3,12 +3,17 @@ package tokenizer
 type TokenType = string
 
 const (
-	Underline TokenType = "_"
-	Star      TokenType = "*"
-	Hash      TokenType = "#"
-	Backtick  TokenType = "`"
-	Newline   TokenType = "\n"
-	Space     TokenType = " "
+	Underline          TokenType = "_"
+	Star               TokenType = "*"
+	Hash               TokenType = "#"
+	Backtick           TokenType = "`"
+	LeftSquareBracket  TokenType = "["
+	RightSquareBracket TokenType = "]"
+	LeftParenthesis    TokenType = "("
+	RightParenthesis   TokenType = ")"
+	ExclamationMark    TokenType = "!"
+	Newline            TokenType = "\n"
+	Space              TokenType = " "
 )
 
 const (
@@ -37,10 +42,20 @@ func Tokenize(text string) []*Token {
 			tokens = append(tokens, NewToken(Star, "*"))
 		case '#':
 			tokens = append(tokens, NewToken(Hash, "#"))
-		case '\n':
-			tokens = append(tokens, NewToken(Newline, "\n"))
 		case '`':
 			tokens = append(tokens, NewToken(Backtick, "`"))
+		case '[':
+			tokens = append(tokens, NewToken(LeftSquareBracket, "["))
+		case ']':
+			tokens = append(tokens, NewToken(RightSquareBracket, "]"))
+		case '(':
+			tokens = append(tokens, NewToken(LeftParenthesis, "("))
+		case ')':
+			tokens = append(tokens, NewToken(RightParenthesis, ")"))
+		case '!':
+			tokens = append(tokens, NewToken(ExclamationMark, "!"))
+		case '\n':
+			tokens = append(tokens, NewToken(Newline, "\n"))
 		case ' ':
 			tokens = append(tokens, NewToken(Space, " "))
 		default:
