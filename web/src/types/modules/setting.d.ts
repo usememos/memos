@@ -4,7 +4,6 @@ interface Setting {
   locale: Locale;
   appearance: Appearance;
   memoVisibility: Visibility;
-  telegramUserId: string;
 }
 
 interface LocalSetting {

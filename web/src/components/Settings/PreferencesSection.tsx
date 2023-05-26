@@ -1,6 +1,7 @@
 import { Input, Button, Divider, Switch, Option, Select } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { getMyselfUser } from "@/helpers/api";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "@/store/module";
@@ -24,8 +25,14 @@ const PreferencesSection = () => {
   });
 
   useEffect(() => {
-    setTelegramUserId(setting.telegramUserId);
-  }, [setting]);
+    getMyselfUser().then(({ data: { data: user } }) => {
+      const telegramUserIdSetting = user.userSettingList.find((setting) => setting.key === "telegram-user-id");
+      if (telegramUserIdSetting) {
+        setTelegramUserId(setting.telegramUserId);
+      }
+    });
+  }, []);
+
   const dailyReviewTimeOffsetOptions: number[] = [...Array(24).keys()];
 
   const handleLocaleSelectChange = async (locale: Locale) => {

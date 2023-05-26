@@ -11,7 +11,6 @@ const defaultSetting: Setting = {
   locale: "en",
   appearance: getSystemColorScheme(),
   memoVisibility: "PRIVATE",
-  telegramUserId: "",
 };
 
 const defaultLocalSetting: LocalSetting = {
