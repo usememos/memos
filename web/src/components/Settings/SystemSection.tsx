@@ -32,6 +32,7 @@ const SystemSection = () => {
     disablePublicMemos: systemStatus.disablePublicMemos,
     maxUploadSizeMiB: systemStatus.maxUploadSizeMiB,
   });
+  const [telegramRobotToken, setTelegramRobotToken] = useState<string>("");
   const [openAIConfig, setOpenAIConfig] = useState<OpenAIConfig>({
     key: "",
     host: "",
@@ -46,6 +47,11 @@ const SystemSection = () => {
       const openAIConfigSetting = systemSettings.find((setting) => setting.name === "openai-config");
       if (openAIConfigSetting) {
         setOpenAIConfig(JSON.parse(openAIConfigSetting.value));
+      }
+
+      const telegramRobotSetting = systemSettings.find((setting) => setting.name === "telegram-robot-token");
+      if (telegramRobotSetting) {
+        setTelegramRobotToken(telegramRobotSetting.value);
       }
     });
   }, []);
@@ -121,6 +127,24 @@ const SystemSection = () => {
       });
     } catch (error) {
       console.error(error);
+      return;
+    }
+    toast.success("OpenAI Config updated");
+  };
+
+  const handleTelegramRobotTokenChanged = (value: string) => {
+    setTelegramRobotToken(value);
+  };
+
+  const handleSaveTelegramRobotToken = async () => {
+    try {
+      await api.upsertSystemSetting({
+        name: "telegram-robot-token",
+        value: telegramRobotToken,
+      });
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
       return;
     }
     toast.success("OpenAI Config updated");
@@ -245,6 +269,27 @@ const SystemSection = () => {
           onChange={handleMaxUploadSizeChanged}
         />
       </div>
+      <Divider className="!mt-3 !my-4" />
+      <div className="form-label">
+        <div className="flex flex-row items-center">
+          <span className="text-sm mr-1">{t("setting.system-section.telegram-robot-token")}</span>
+          <HelpButton
+            hint={t("setting.system-section.telegram-robot-token-description")}
+            url="https://core.telegram.org/bots#how-do-i-create-a-bot"
+          />
+        </div>
+        <Button onClick={handleSaveTelegramRobotToken}>{t("common.save")}</Button>
+      </div>
+      <Input
+        className="w-full"
+        sx={{
+          fontFamily: "monospace",
+          fontSize: "14px",
+        }}
+        placeholder={t("setting.system-section.telegram-robot-token-placeholder")}
+        value={telegramRobotToken}
+        onChange={(event) => handleTelegramRobotTokenChanged(event.target.value)}
+      />
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <div className="flex flex-row items-center">

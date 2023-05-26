@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"golang.org/x/exp/slices"
 )
@@ -183,6 +184,15 @@ func (upsert SystemSettingUpsert) Validate() error {
 	case SystemSettingOpenAIConfigName:
 		value := OpenAIConfig{}
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
+
+	case SystemSettingTelegramRobotTokenName:
+		if upsert.Value == "" {
+			return nil
+		}
+		fragments := strings.Split(upsert.Value, ":")
+		if len(fragments) != 2 {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
 

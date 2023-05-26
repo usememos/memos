@@ -1,4 +1,7 @@
-import { Switch, Option, Select } from "@mui/joy";
+import { Input, Button, Divider, Switch, Option, Select } from "@mui/joy";
+import { useEffect, useState } from "react";
+import { toast } from "react-hot-toast";
+import { getMyselfUser } from "@/helpers/api";
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { useGlobalStore, useUserStore } from "@/store/module";
@@ -13,12 +16,28 @@ const PreferencesSection = () => {
   const userStore = useUserStore();
   const { appearance, locale } = globalStore.state;
   const { setting, localSetting } = userStore.state.user as User;
+  const [telegramUserId, setTelegramUserId] = useState<string>("");
   const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
       text: t(`memo.visibility.${item.text.toLowerCase()}`),
     };
   });
+
+  useEffect(() => {
+    getMyselfUser().then(
+      ({
+        data: {
+          data: { userSettingList: userSettingList },
+        },
+      }) => {
+        const telegramUserIdSetting = userSettingList.find((setting: any) => setting.key === "telegram-user-id");
+        if (telegramUserIdSetting) {
+          setTelegramUserId(JSON.parse(telegramUserIdSetting.value));
+        }
+      }
+    );
+  }, []);
 
   const dailyReviewTimeOffsetOptions: number[] = [...Array(24).keys()];
 
@@ -47,6 +66,21 @@ const PreferencesSection = () => {
   //enableAutoCollapse
   const handleAutoCollapseChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, enableAutoCollapse: event.target.checked });
+  };
+
+  const handleSaveTelegramUserId = async () => {
+    try {
+      await userStore.upsertUserSetting("telegram-user-id", telegramUserId);
+      toast.success(t("common.dialog.success"));
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
+      return;
+    }
+  };
+
+  const handleTelegramUserIdChanged = async (value: string) => {
+    setTelegramUserId(value);
   };
 
   return (
@@ -118,6 +152,25 @@ const PreferencesSection = () => {
         <span className="normal-text">{t("setting.preference-section.auto-collapse")}</span>
         <Switch className="ml-2" checked={localSetting.enableAutoCollapse} onChange={handleAutoCollapseChanged} />
       </label>
+
+      <Divider className="!mt-3 !my-4" />
+
+      <div className="form-label">
+        <div className="flex flex-row items-center">
+          <span className="text-sm mr-1">{t("setting.preference-section.telegram-user-id")}</span>
+        </div>
+        <Button onClick={handleSaveTelegramUserId}>{t("common.save")}</Button>
+      </div>
+      <Input
+        className="w-full"
+        sx={{
+          fontFamily: "monospace",
+          fontSize: "14px",
+        }}
+        value={telegramUserId}
+        onChange={(event) => handleTelegramUserIdChanged(event.target.value)}
+        placeholder={t("setting.preference-section.telegram-user-id-placeholder")}
+      />
     </div>
   );
 };

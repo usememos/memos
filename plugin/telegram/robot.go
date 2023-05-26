@@ -24,6 +24,7 @@ func NewRobotWithHandler(h Handler) *Robot {
 }
 
 const noTokenWait = 30 * time.Second
+const errRetryWait = 10 * time.Second
 
 // Start start an infinity call of getUpdates from Telegram, call r.MessageHandle while get new message updates.
 func (r *Robot) Start(ctx context.Context) {
@@ -37,6 +38,7 @@ func (r *Robot) Start(ctx context.Context) {
 		}
 		if err != nil {
 			log.Warn("fail to telegram.GetUpdates", zap.Error(err))
+			time.Sleep(errRetryWait)
 			continue
 		}
 

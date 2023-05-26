@@ -328,6 +328,8 @@
       "enable-double-click": "开启双击编辑",
       "enable-folding-memo": "开启折叠备忘录",
       "mobile-editor-style": "移动端编辑器样式",
+      "telegram-user-id": "Telegram UserID",
+      "telegram-user-id-placeholder": "向Telegram机器人发送任意消息以获取",
       "theme": "主题",
       "updated_ts": "更新时间"
     },
@@ -404,6 +406,9 @@
       "database-file-size": "数据库文件大小",
       "disable-public-memos": "禁用公共备忘录",
       "ignore-version-upgrade": "忽略版本升级",
+      "telegram-robot-token": "Telegram 机器人 Token",
+      "telegram-robot-token-description": "从 Telegram 的 @BotFather 处获取",
+      "telegram-robot-token-placeholder": "Telegram 的机器人 Token",
       "openai-api-host": "OpenAI：API Host",
       "openai-api-host-placeholder": "默认：https://api.openai.com/",
       "openai-api-key": "OpenAI：API 密钥",
