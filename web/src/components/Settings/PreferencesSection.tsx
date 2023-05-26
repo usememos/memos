@@ -61,7 +61,7 @@ const PreferencesSection = () => {
       toast.success(t("common.dialog.success"));
     } catch (error) {
       console.error(error);
-      toast.error(error.response.data.message);
+      toast.error(t("common.dialog.error"));
       return;
     }
   };
