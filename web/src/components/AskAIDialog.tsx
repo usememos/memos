@@ -1,5 +1,18 @@
-import { Button, Textarea } from "@mui/joy";
-import { useEffect, useState } from "react";
+import {
+  Button,
+  FormControl,
+  FormLabel,
+  Input,
+  Menu,
+  MenuItem,
+  Modal,
+  ModalClose,
+  ModalDialog,
+  Stack,
+  Textarea,
+  Typography,
+} from "@mui/joy";
+import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import * as api from "@/helpers/api";
@@ -9,6 +22,8 @@ import { useMessageStore } from "@/store/zustand/message";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import showSettingDialog from "./SettingDialog";
+import { defaultMessageGroup, MessageGroup, useMessageGroupStore } from "@/store/zustand/message-group";
+import { PlusIcon, Trash2Icon } from "lucide-react";
 
 type Props = DialogProps;
 
@@ -16,7 +31,8 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
   const { t } = useTranslation();
   const { destroy, hide } = props;
   const fetchingState = useLoading(false);
-  const messageStore = useMessageStore();
+  const [messageGroup, setMessageGroup] = useState<MessageGroup>(defaultMessageGroup);
+  const messageStore = useMessageStore(messageGroup)();
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [isInIME, setIsInIME] = useState(false);
   const [question, setQuestion] = useState<string>("");
@@ -41,7 +57,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (event.key === "Enter" && !event.shiftKey && !isInIME) {
       event.preventDefault();
-      handleSendQuestionButtonClick();
+      handleSendQuestionButtonClick().then();
     }
   };
 
@@ -76,36 +92,127 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
     });
   };
 
+  const [anchorEl, setAnchorEl] = useState<null | (EventTarget & Element)>(null);
+  const handleMenuOpen = (event: React.SyntheticEvent) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+  const handleOptionSelect = (option: MessageGroup) => {
+    setMessageGroup(option);
+    setAnchorEl(null);
+  };
+
+  const [isAddMessageGroupDlgOpen, setIsAddMessageGroupDlgOpen] = useState<boolean>(false);
+  const [groupName, setGroupName] = useState<string>("");
+
+  const messageGroupStore = useMessageGroupStore();
+  const messageGroupList = messageGroupStore.groupList;
+
+  const handleOpenDialog = () => {
+    setIsAddMessageGroupDlgOpen(true);
+  };
+
+  const handleRemoveDialog = () => {
+    setMessageGroup(messageGroupStore.removeGroup(messageGroup));
+  };
+
+  const handleCloseDialog = () => {
+    setIsAddMessageGroupDlgOpen(false);
+    setGroupName("");
+  };
+
+  const handleAddMessageGroupDlgConfirm = () => {
+    const newMessageGroup: MessageGroup = {
+      name: groupName,
+      messageStorageId: "message-storage-" + groupName,
+    };
+    messageGroupStore.addGroup(newMessageGroup);
+    setMessageGroup(newMessageGroup);
+    handleCloseDialog();
+  };
+
+  const handleCancel = () => {
+    handleCloseDialog();
+  };
+
   return (
     <>
       <div className="dialog-header-container">
         <p className="title-text flex flex-row items-center">
           <Icon.Bot className="mr-1 w-5 h-auto opacity-80" />
           {t("ask-ai.title")}
+          <span className="button-group" style={{ marginLeft: "10px" }}>
+            <Button color={"primary"} onClick={handleMenuOpen}>
+              <div className="button-len-max-150">{messageGroup.name}</div>
+            </Button>
+            <Button color={"success"} onClick={handleOpenDialog}>
+              <PlusIcon size={"13px"} />
+            </Button>
+            <Button color={"danger"} onClick={handleRemoveDialog}>
+              <Trash2Icon size={"13px"} />
+            </Button>
+          </span>
         </p>
+
+        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
+          <MenuItem onClick={() => handleOptionSelect(defaultMessageGroup)}>{defaultMessageGroup.name}</MenuItem>
+          {messageGroupList.map((messageGroup, index) => (
+            <MenuItem key={index} onClick={() => handleOptionSelect(messageGroup)}>
+              {messageGroup.name}
+            </MenuItem>
+          ))}
+        </Menu>
+        <Modal open={isAddMessageGroupDlgOpen} onClose={handleCloseDialog}>
+          <ModalDialog aria-labelledby="basic-modal-dialog-title" sx={{ maxWidth: 500 }}>
+            <ModalClose />
+            <Typography id="basic-modal-dialog-title" component="h2">
+              {t("ask-ai.create-message-group-title")}
+            </Typography>
+            <Stack spacing={2}>
+              <FormControl>
+                <FormLabel>{t("ask-ai.label-message-group-name-title")}</FormLabel>
+                <Input
+                  value={groupName}
+                  onChange={(e) => setGroupName(e.target.value)}
+                  placeholder={t("ask-ai.label-message-group-name-title")}
+                />
+              </FormControl>
+              <Typography>
+                <Button onClick={handleCancel} style={{ marginRight: "10px" }}>
+                  {t("common.cancel")}
+                </Button>
+                <Button onClick={handleAddMessageGroupDlgConfirm}>{t("common.confirm")}</Button>
+              </Typography>
+            </Stack>
+          </ModalDialog>
+        </Modal>
         <button className="btn close-btn" onClick={() => hide()}>
           <Icon.X />
         </button>
       </div>
       <div className="dialog-content-container !w-112 max-w-full">
-        {messageList.map((message, index) => (
-          <div key={index} className="w-full flex flex-col justify-start items-start space-y-2">
-            {message.role === "user" ? (
-              <div className="w-full flex flex-row justify-end items-start pl-6">
-                <span className="word-break shadow rounded-lg rounded-tr-none px-3 py-2 opacity-80 bg-gray-100 dark:bg-zinc-700">
-                  {message.content}
-                </span>
-              </div>
-            ) : (
-              <div className="w-full flex flex-row justify-start items-start pr-8 space-x-2">
-                <Icon.Bot className="mt-2 shrink-0 mr-1 w-6 h-auto opacity-80" />
-                <div className="memo-content-wrapper !w-auto flex flex-col justify-start items-start shadow rounded-lg rounded-tl-none px-3 py-2 bg-gray-100 dark:bg-zinc-700">
-                  <div className="memo-content-text">{marked(message.content)}</div>
+        <Stack spacing={2} style={{ width: "100%" }}>
+          {messageList.map((message, index) => (
+            <div key={index} className="w-full flex flex-col justify-start items-start space-y-2">
+              {message.role === "user" ? (
+                <div className="w-full flex flex-row justify-end items-start pl-6">
+                  <span className="word-break shadow rounded-lg rounded-tr-none px-3 py-2 opacity-80 bg-gray-100 dark:bg-zinc-700">
+                    {message.content}
+                  </span>
                 </div>
-              </div>
-            )}
-          </div>
-        ))}
+              ) : (
+                <div className="w-full flex flex-row justify-start items-start pr-8 space-x-2">
+                  <Icon.Bot className="mt-2 shrink-0 mr-1 w-6 h-auto opacity-80" />
+                  <div className="memo-content-wrapper !w-auto flex flex-col justify-start items-start shadow rounded-lg rounded-tl-none px-3 py-2 bg-gray-100 dark:bg-zinc-700">
+                    <div className="memo-content-text">{marked(message.content)}</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </Stack>
         {fetchingState.isLoading && (
           <p className="w-full py-2 mt-4 flex flex-row justify-center items-center">
             <Icon.Loader className="w-5 h-auto animate-spin" />

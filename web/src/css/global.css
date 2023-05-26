@@ -9,3 +9,30 @@ body {
 #root {
   @apply w-full h-full;
 }
+
+.button-group {
+  display: flex;
+  gap: 0; /* 按钮之间的间距 */
+}
+
+.button-group>button:not(:first-child):not(:last-child) {
+  border-radius: 0;
+}
+
+.button-group>button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.button-group>button:last-child {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+}
+
+
+.button-len-max-150 {
+  max-width: 150px; /* 按钮的最大宽度 */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
