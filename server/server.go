@@ -9,6 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
@@ -24,6 +25,8 @@ type Server struct {
 	ID      string
 	Profile *profile.Profile
 	Store   *store.Store
+
+	telegramRobot *telegram.Robot
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
@@ -44,6 +47,9 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	}
 	storeInstance := store.New(db.DBInstance, profile)
 	s.Store = storeInstance
+
+	telegramRobotHandler := newTelegramHandler(storeInstance)
+	s.telegramRobot = telegram.NewRobotWithHandler(telegramRobotHandler)
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339}",` +
@@ -118,6 +124,9 @@ func (s *Server) Start(ctx context.Context) error {
 	if err := s.createServerStartActivity(ctx); err != nil {
 		return errors.Wrap(err, "failed to create activity")
 	}
+
+	go s.telegramRobot.Start(ctx)
+
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }
 

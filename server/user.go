@@ -116,7 +116,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 
 		userSettingList, err := s.Store.FindUserSettingList(ctx, &api.UserSettingFind{
-			UserID: userID,
+			UserID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
@@ -203,7 +203,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 
 		userSettingList, err := s.Store.FindUserSettingList(ctx, &api.UserSettingFind{
-			UserID: userID,
+			UserID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
