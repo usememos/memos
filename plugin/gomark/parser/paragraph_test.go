@@ -17,7 +17,7 @@ func TestParagraphParser(t *testing.T) {
 			paragraph: nil,
 		},
 		{
-			text: "Hello world!",
+			text: "Hello world",
 			paragraph: &ParagraphParser{
 				ContentTokens: []*tokenizer.Token{
 					{
@@ -30,14 +30,14 @@ func TestParagraphParser(t *testing.T) {
 					},
 					{
 						Type:  tokenizer.Text,
-						Value: "world!",
+						Value: "world",
 					},
 				},
 			},
 		},
 		{
 			text: `Hello 
-world!`,
+world`,
 			paragraph: &ParagraphParser{
 				ContentTokens: []*tokenizer.Token{
 					{
@@ -53,7 +53,7 @@ world!`,
 		},
 		{
 			text: `Hello \n 
-world!`,
+world`,
 			paragraph: &ParagraphParser{
 				ContentTokens: []*tokenizer.Token{
 					{
