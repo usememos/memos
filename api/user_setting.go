@@ -16,8 +16,8 @@ const (
 	UserSettingAppearanceKey UserSettingKey = "appearance"
 	// UserSettingMemoVisibilityKey is the key type for user preference memo default visibility.
 	UserSettingMemoVisibilityKey UserSettingKey = "memo-visibility"
-	// UserSettingTelegramUserid is the key type for telegram userid of memos user
-	UserSettingTelegramUseridKey UserSettingKey = "telegram-userid"
+	// UserSettingTelegramUserID is the key type for telegram UserID of memos user.
+	UserSettingTelegramUserIDKey UserSettingKey = "telegram-user-id"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -29,8 +29,8 @@ func (key UserSettingKey) String() string {
 		return "appearance"
 	case UserSettingMemoVisibilityKey:
 		return "memo-visibility"
-	case UserSettingTelegramUseridKey:
-		return "telegram-userid"
+	case UserSettingTelegramUserIDKey:
+		return "telegram-user-id"
 	}
 	return ""
 }
@@ -100,13 +100,13 @@ func (upsert UserSettingUpsert) Validate() error {
 		if !slices.Contains(UserSettingMemoVisibilityValue, memoVisibilityValue) {
 			return fmt.Errorf("invalid user setting memo visibility value")
 		}
-	} else if upsert.Key == UserSettingTelegramUseridKey {
-		telegramUserid := 0
-		err := json.Unmarshal([]byte(upsert.Value), &telegramUserid)
+	} else if upsert.Key == UserSettingTelegramUserIDKey {
+		telegramUserID := 0
+		err := json.Unmarshal([]byte(upsert.Value), &telegramUserID)
 		if err != nil {
 			return fmt.Errorf("failed to unmarshal user setting telegram userid value")
 		}
-		if telegramUserid <= 0 {
+		if telegramUserID <= 0 {
 			return fmt.Errorf("invalid user setting telegram userid value")
 		}
 	} else {

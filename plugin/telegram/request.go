@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/url"
 )
@@ -21,13 +21,13 @@ func (r *Robot) postForm(ctx context.Context, apiPath string, formData url.Value
 	uri := "https://api.telegram.org/bot" + token + apiPath
 	resp, err := http.PostForm(uri, formData)
 	if err != nil {
-		return fmt.Errorf("fail to http.PostForm: %", err)
+		return fmt.Errorf("fail to http.PostForm: %s", err)
 	}
 	defer resp.Body.Close()
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return fmt.Errorf("fail to ioutil.ReadAll: %", err)
+		return fmt.Errorf("fail to ioutil.ReadAll: %s", err)
 	}
 
 	var respInfo struct {
@@ -41,7 +41,7 @@ func (r *Robot) postForm(ctx context.Context, apiPath string, formData url.Value
 
 	err = json.Unmarshal(body, &respInfo)
 	if err != nil {
-		return fmt.Errorf("fail to json.Unmarshal: %", err)
+		return fmt.Errorf("fail to json.Unmarshal: %s", err)
 	}
 
 	if !respInfo.Ok {

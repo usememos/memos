@@ -6,11 +6,11 @@ import (
 	"strconv"
 )
 
-// EditMessage make an editMessageText api request
-func (r *Robot) EditMessage(ctx context.Context, chatId, messageId int, text string) (*Message, error) {
+// EditMessage make an editMessageText api request.
+func (r *Robot) EditMessage(ctx context.Context, chatID, messageID int, text string) (*Message, error) {
 	formData := url.Values{
-		"message_id": {strconv.Itoa(messageId)},
-		"chat_id":    {strconv.Itoa(chatId)},
+		"message_id": {strconv.Itoa(messageID)},
+		"chat_id":    {strconv.Itoa(chatID)},
 		"text":       {text},
 	}
 

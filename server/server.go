@@ -48,7 +48,7 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	storeInstance := store.New(db.DBInstance, profile)
 	s.Store = storeInstance
 
-	telegramRobotHandler := NewTelegramHandler(storeInstance)
+	telegramRobotHandler := newTelegramHandler(storeInstance)
 	s.telegramRobot = telegram.NewRobotWithHandler(telegramRobotHandler)
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{

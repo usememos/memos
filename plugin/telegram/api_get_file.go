@@ -5,10 +5,10 @@ import (
 	"net/url"
 )
 
-// GetFile get download info of File by FileId from Telegram
-func (r *Robot) GetFile(ctx context.Context, fileId string) (*File, error) {
+// GetFile get download info of File by fileID from Telegram.
+func (r *Robot) GetFile(ctx context.Context, fileID string) (*File, error) {
 	formData := url.Values{
-		"file_id": {fileId},
+		"file_id": {fileID},
 	}
 
 	var result File

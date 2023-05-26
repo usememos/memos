@@ -1,5 +1,5 @@
 package telegram
 
 type User struct {
-	Id int `json:"id"`
+	ID int `json:"id"`
 }

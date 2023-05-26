@@ -16,7 +16,7 @@ type telegramHandler struct {
 	store *store.Store
 }
 
-func NewTelegramHandler(store *store.Store) *telegramHandler {
+func newTelegramHandler(store *store.Store) *telegramHandler {
 	return &telegramHandler{store: store}
 }
 
@@ -25,26 +25,26 @@ func (t *telegramHandler) RobotToken(ctx context.Context) string {
 }
 
 func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Message, blobs map[string][]byte) error {
-	var creatorId int
+	var creatorID int
 	userSettingList, err := t.store.FindUserSettingList(ctx, &api.UserSettingFind{
-		Key: api.UserSettingTelegramUseridKey,
+		Key: api.UserSettingTelegramUserIDKey,
 	})
 	if err != nil {
 		return fmt.Errorf("Fail to find memo user: %s", err)
 	}
 	for _, userSetting := range userSettingList {
-		if userSetting.Value == strconv.Itoa(message.From.Id) {
-			creatorId = userSetting.UserID
+		if userSetting.Value == strconv.Itoa(message.From.ID) {
+			creatorID = userSetting.UserID
 		}
 	}
 
-	if creatorId == 0 {
-		return fmt.Errorf("Please set your telegram userid %d in UserSetting of Memos", message.From.Id)
+	if creatorID == 0 {
+		return fmt.Errorf("Please set your telegram userid %d in UserSetting of Memos", message.From.ID)
 	}
 
 	// create memo
 	memoCreate := api.CreateMemoRequest{
-		CreatorID:  creatorId,
+		CreatorID:  creatorID,
 		Visibility: api.Private,
 	}
 
@@ -66,7 +66,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Me
 
 	// create resources
 	for filename, blob := range blobs {
-		//TODO support more
+		// TODO support more
 		mime := "application/octet-stream"
 		switch path.Ext(filename) {
 		case ".jpg":
@@ -75,7 +75,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Me
 			mime = "image/png"
 		}
 		resourceCreate := api.ResourceCreate{
-			CreatorID: creatorId,
+			CreatorID: creatorID,
 			Filename:  filename,
 			Type:      mime,
 			Size:      int64(len(blob)),

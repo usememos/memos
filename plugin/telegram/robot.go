@@ -18,14 +18,14 @@ type Robot struct {
 	handler Handler
 }
 
-// NewRobotWithHandler create a telegram robot with specified handler
+// NewRobotWithHandler create a telegram robot with specified handler.
 func NewRobotWithHandler(h Handler) *Robot {
 	return &Robot{handler: h}
 }
 
 const noTokenWait = 30 * time.Second
 
-// Start start an infinity call of getUpdates from Telegram, call r.MessageHandle while get new message updates
+// Start start an infinity call of getUpdates from Telegram, call r.MessageHandle while get new message updates.
 func (r *Robot) Start(ctx context.Context) {
 	var offset int
 
@@ -51,22 +51,22 @@ func (r *Robot) Start(ctx context.Context) {
 
 			// skip message other than text or photo
 			if message.Text == nil && message.Photo == nil {
-				_, err := r.SendReplyMessage(ctx, message.Chat.Id, message.MessageId, "Only text or photo message be supported")
+				_, err := r.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Only text or photo message be supported")
 				if err != nil {
-					log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageId=%d", message.MessageId), zap.Error(err))
+					log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
 				}
 				continue
 			}
 
 			// Group message need do more
-			if message.MediaGroupId != nil {
+			if message.MediaGroupID != nil {
 				groupMessages = append(groupMessages, message)
 				continue
 			}
 
 			err = r.handleSingleMessage(ctx, message)
 			if err != nil {
-				log.Error(fmt.Sprintf("fail to handleSingleMessage for messageId=%d", message.MessageId), zap.Error(err))
+				log.Error(fmt.Sprintf("fail to handleSingleMessage for messageID=%d", message.MessageID), zap.Error(err))
 				continue
 			}
 		}

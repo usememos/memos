@@ -6,10 +6,10 @@ import (
 	"strconv"
 )
 
-// SendReplyMessage make a sendMessage api request
-func (r *Robot) SendReplyMessage(ctx context.Context, chatID, replyId int, text string) (*Message, error) {
+// SendReplyMessage make a sendMessage api request.
+func (r *Robot) SendReplyMessage(ctx context.Context, chatID, replyID int, text string) (*Message, error) {
 	formData := url.Values{
-		"reply_to_message_id": {strconv.Itoa(replyId)},
+		"reply_to_message_id": {strconv.Itoa(replyID)},
 		"chat_id":             {strconv.Itoa(chatID)},
 		"text":                {text},
 	}

@@ -1,17 +1,17 @@
 package telegram
 
 type Message struct {
-	MessageId    int         `json:"message_id"`
+	MessageID    int         `json:"message_id"`
 	From         User        `json:"from"`
 	Date         int         `json:"date"`
 	Text         *string     `json:"text"`
 	Chat         *Chat       `json:"chat"`
-	MediaGroupId *string     `json:"media_group_id"`
+	MediaGroupID *string     `json:"media_group_id"`
 	Photo        []PhotoSize `json:"photo"`
 	Caption      *string     `json:"caption"`
 }
 
-func (m Message) GetMaxPhotoFileId() string {
+func (m Message) GetMaxPhotoFileID() string {
 	var fileSize int64
 	var photoSize PhotoSize
 	for _, p := range m.Photo {
@@ -20,5 +20,5 @@ func (m Message) GetMaxPhotoFileId() string {
 		}
 	}
 
-	return photoSize.FileId
+	return photoSize.FileID
 }
