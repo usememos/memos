@@ -290,6 +290,7 @@ const SystemSection = () => {
         value={telegramRobotToken}
         onChange={(event) => handleTelegramRobotTokenChanged(event.target.value)}
       />
+      <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <div className="flex flex-row items-center">
           <span className="text-sm mr-1">{t("setting.system-section.openai-api-key")}</span>
