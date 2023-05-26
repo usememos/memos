@@ -188,6 +188,9 @@ func (upsert SystemSettingUpsert) Validate() error {
 		}
 
 	case SystemSettingTelegramRobotTokenName:
+		if upsert.Value == "" {
+			return nil
+		}
 		fragments := strings.Split(upsert.Value, ":")
 		if len(fragments) != 2 {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
