@@ -3,7 +3,6 @@ ALTER TABLE
 ADD
   COLUMN public_id TEXT NOT NULL DEFAULT '';
 
--- TODO(steven): remove this in next release.
 CREATE UNIQUE INDEX resource_id_public_id_unique_index ON resource (id, public_id);
 
 UPDATE

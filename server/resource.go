@@ -123,6 +123,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
 			}
 		}
+
 		publicID := common.GenUUID()
 		if storageServiceID == api.DatabaseStorage {
 			fileBytes, err := io.ReadAll(sourceFile)
@@ -326,11 +327,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if err := os.Remove(resource.InternalPath); err != nil {
 				log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
 			}
+		}
 
-			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, resource.PublicID)
-			if err := os.Remove(thumbnailPath); err != nil {
-				log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
-			}
+		ext := filepath.Ext(resource.Filename)
+		thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d-%s%s", resource.ID, resource.PublicID, ext))
+		if err := os.Remove(thumbnailPath); err != nil {
+			log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
 		}
 
 		resourceDelete := &api.ResourceDelete{
@@ -434,7 +436,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 
 		if c.QueryParam("thumbnail") == "1" && common.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
 			ext := filepath.Ext(filename)
-			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, resource.PublicID+ext)
+			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d-%s%s", resource.ID, resource.PublicID, ext))
 			thumbnailBlob, err := getOrGenerateThumbnailImage(blob, thumbnailPath)
 			if err != nil {
 				log.Warn(fmt.Sprintf("failed to get or generate local thumbnail with path %s", thumbnailPath), zap.Error(err))

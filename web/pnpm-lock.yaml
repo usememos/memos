@@ -78,9 +78,6 @@ dependencies:
     version: 4.3.6(react@18.2.0)
 
 devDependencies:
-  '@playwright/test':
-    specifier: ^1.32.2
-    version: 1.32.2
   '@types/lodash-es':
     specifier: ^4.17.5
     version: 4.17.5
@@ -783,17 +780,6 @@ packages:
     dependencies:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.15.0
-
-  /@playwright/test@1.32.2:
-    resolution: {integrity: sha512-nhaTSDpEdTTttdkDE8Z6K3icuG1DVRxrl98Qq0Lfc63SS9a2sjc9+x8ezysh7MzCKz6Y+nArml3/mmt+gqRmQQ==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dependencies:
-      '@types/node': 18.0.3
-      playwright-core: 1.32.2
-    optionalDependencies:
-      fsevents: 2.3.2
-    dev: true
 
   /@popperjs/core@2.11.7:
     resolution: {integrity: sha512-Cr4OjIkipTtcXKjAsm8agyleBuDHvxzeBoa1v543lbv1YaIwQjESsVcmjiWiPEbC1FIeHOG/Op9kdCmAmiS3Kw==}
@@ -2943,12 +2929,6 @@ packages:
     engines: {node: '>=6'}
     dev: true
     optional: true
-
-  /playwright-core@1.32.2:
-    resolution: {integrity: sha512-zD7aonO+07kOTthsrCR3YCVnDcqSHIJpdFUtZEMOb6//1Rc7/6mZDRdw+nlzcQiQltOOsiqI3rrSyn/SlyjnJQ==}
-    engines: {node: '>=14'}
-    hasBin: true
-    dev: true
 
   /postcss-import@14.1.0(postcss@8.4.21):
     resolution: {integrity: sha512-flwI+Vgm4SElObFVPpTIT7SU7R3qk2L7PyduMcokiaVKuWv9d/U+Gm/QAd8NDLuykTWTkcrjOeD2Pp1rMeBTGw==}

@@ -1,38 +1,11 @@
 html,
 body {
   @apply text-base w-full h-full dark:bg-zinc-800;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Noto Sans", "Noto Sans CJK SC",
-    "Microsoft YaHei UI", "Microsoft YaHei", "WenQuanYi Micro Hei", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji",
-    sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "PingFang SC", "Noto Sans",
+    "Noto Sans CJK SC", "Microsoft YaHei UI", "Microsoft YaHei", "WenQuanYi Micro Hei", "Apple Color Emoji", "Segoe UI Emoji",
+    "Segoe UI Symbol", "Noto Color Emoji", sans-serif;
 }
 
 #root {
   @apply w-full h-full;
-}
-
-.button-group {
-  display: flex;
-  gap: 0; /* 按钮之间的间距 */
-}
-
-.button-group>button:not(:first-child):not(:last-child) {
-  border-radius: 0;
-}
-
-.button-group>button:first-child {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.button-group>button:last-child {
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
-}
-
-
-.button-len-max-150 {
-  max-width: 150px; /* 按钮的最大宽度 */
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
