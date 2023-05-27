@@ -1,17 +1,4 @@
-import {
-  Button,
-  FormControl,
-  FormLabel,
-  Input,
-  Menu,
-  MenuItem,
-  Modal,
-  ModalClose,
-  ModalDialog,
-  Stack,
-  Textarea,
-  Typography,
-} from "@mui/joy";
+import { Button, FormControl, Input, Modal, ModalClose, ModalDialog, Stack, Textarea, Typography } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -19,11 +6,11 @@ import * as api from "@/helpers/api";
 import useLoading from "@/hooks/useLoading";
 import { marked } from "@/labs/marked";
 import { useMessageStore } from "@/store/zustand/message";
+import { defaultMessageGroup, MessageGroup, useMessageGroupStore } from "@/store/zustand/message-group";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import showSettingDialog from "./SettingDialog";
-import { defaultMessageGroup, MessageGroup, useMessageGroupStore } from "@/store/zustand/message-group";
-import { PlusIcon, Trash2Icon } from "lucide-react";
+import Selector from "./kit/Selector";
 
 type Props = DialogProps;
 
@@ -92,26 +79,21 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
     });
   };
 
-  const [anchorEl, setAnchorEl] = useState<null | (EventTarget & Element)>(null);
-  const handleMenuOpen = (event: React.SyntheticEvent) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-  const handleOptionSelect = (option: MessageGroup) => {
-    setMessageGroup(option);
-    setAnchorEl(null);
+  const handleMessageGroupSelect = (value: string) => {
+    const messageGroup = messageGroupList.find((group) => group.messageStorageId === value);
+    if (messageGroup) {
+      setMessageGroup(messageGroup);
+    }
   };
 
-  const [isAddMessageGroupDlgOpen, setIsAddMessageGroupDlgOpen] = useState<boolean>(false);
+  const [isAddMessageGroupDialogOpen, setIsAddMessageGroupDialogOpen] = useState<boolean>(false);
   const [groupName, setGroupName] = useState<string>("");
 
   const messageGroupStore = useMessageGroupStore();
   const messageGroupList = messageGroupStore.groupList;
 
   const handleOpenDialog = () => {
-    setIsAddMessageGroupDlgOpen(true);
+    setIsAddMessageGroupDialogOpen(true);
   };
 
   const handleRemoveDialog = () => {
@@ -119,7 +101,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
   };
 
   const handleCloseDialog = () => {
-    setIsAddMessageGroupDlgOpen(false);
+    setIsAddMessageGroupDialogOpen(false);
     setGroupName("");
   };
 
@@ -142,29 +124,24 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
       <div className="dialog-header-container">
         <p className="title-text flex flex-row items-center">
           <Icon.Bot className="mr-1 w-5 h-auto opacity-80" />
-          {t("ask-ai.title")}
-          <span className="button-group" style={{ marginLeft: "10px" }}>
-            <Button color={"primary"} onClick={handleMenuOpen}>
-              <div className="button-len-max-150">{messageGroup.name}</div>
-            </Button>
-            <Button color={"success"} onClick={handleOpenDialog}>
-              <PlusIcon size={"13px"} />
-            </Button>
-            <Button color={"danger"} onClick={handleRemoveDialog}>
-              <Trash2Icon size={"13px"} />
-            </Button>
+          <span className="mr-4">{t("ask-ai.title")}</span>
+          <span className="flex flex-row justify-start items-center">
+            <Selector
+              className="w-32"
+              dataSource={messageGroupList.map((item) => ({ text: item.name, value: item.messageStorageId }))}
+              value={messageGroup.messageStorageId}
+              handleValueChanged={handleMessageGroupSelect}
+            />
+            <button className="btn-text px-1 ml-1" onClick={handleOpenDialog}>
+              <Icon.Plus className="w-4 h-auto" />
+            </button>
+            <button className="btn-text px-1" onClick={handleRemoveDialog}>
+              <Icon.Trash2 className="w-4 h-auto" />
+            </button>
           </span>
         </p>
 
-        <Menu anchorEl={anchorEl} open={Boolean(anchorEl)} onClose={handleMenuClose}>
-          <MenuItem onClick={() => handleOptionSelect(defaultMessageGroup)}>{defaultMessageGroup.name}</MenuItem>
-          {messageGroupList.map((messageGroup, index) => (
-            <MenuItem key={index} onClick={() => handleOptionSelect(messageGroup)}>
-              {messageGroup.name}
-            </MenuItem>
-          ))}
-        </Menu>
-        <Modal open={isAddMessageGroupDlgOpen} onClose={handleCloseDialog}>
+        <Modal open={isAddMessageGroupDialogOpen} onClose={handleCloseDialog}>
           <ModalDialog aria-labelledby="basic-modal-dialog-title" sx={{ maxWidth: 500 }}>
             <ModalClose />
             <Typography id="basic-modal-dialog-title" component="h2">
@@ -172,19 +149,18 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
             </Typography>
             <Stack spacing={2}>
               <FormControl>
-                <FormLabel>{t("ask-ai.label-message-group-name-title")}</FormLabel>
                 <Input
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
                   placeholder={t("ask-ai.label-message-group-name-title")}
                 />
               </FormControl>
-              <Typography>
-                <Button onClick={handleCancel} style={{ marginRight: "10px" }}>
+              <div className="w-full flex justify-end gap-x-2">
+                <Button variant="plain" onClick={handleCancel}>
                   {t("common.cancel")}
                 </Button>
                 <Button onClick={handleAddMessageGroupDlgConfirm}>{t("common.confirm")}</Button>
-              </Typography>
+              </div>
             </Stack>
           </ModalDialog>
         </Modal>

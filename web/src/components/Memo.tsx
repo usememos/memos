@@ -282,7 +282,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 
       {showRelatedMemos && relatedMemoList.length > 0 && (
         <>
-          <p className="text-sm mt-4 mb-1 pl-4 opacity-50 flex flex-row items-center">
+          <p className="text-sm dark:text-gray-300 mt-4 mb-1 pl-4 opacity-50 flex flex-row items-center">
             <Icon.Link className="w-4 h-auto mr-1" />
             <span>Related memos</span>
           </p>

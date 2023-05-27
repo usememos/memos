@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/usememos/memos/common"
 )
@@ -89,6 +90,10 @@ func (s *Store) CreateMemo(ctx context.Context, create *MemoMessage) (*MemoMessa
 		return nil, FormatError(err)
 	}
 	defer tx.Rollback()
+
+	if create.CreatedTs == 0 {
+		create.CreatedTs = time.Now().Unix()
+	}
 
 	query := `
 		INSERT INTO memo (
