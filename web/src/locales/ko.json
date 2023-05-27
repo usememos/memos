@@ -373,12 +373,12 @@
     "copy": "복사"
   },
   "heatmap": {
-    "memo-in": "동안 메모 {{amount}}개 작성",
-    "memos-in": "동안 메모 {{amount}}개 작성",
-    "memo-on": "{{date}}에 메모 {{amount}}개 작성",
-    "memos-on": "{{date}}에 메모 {{amount}}개 작성",
-    "day": "일",
-    "days": "일"
+    "memo-in": "개 메모를",
+    "memos-in": "개 메모를",
+    "memo-on": "{{date}} - 메모 {{amount}}개",
+    "memos-on": "{{date}} - 메모 {{amount}}개",
+    "day": "일간 작성",
+    "days": "일간 작성"
   },
   "about": {
     "about-memos": "Memos에 대해서",
