@@ -33,7 +33,7 @@
     "admin": "관리",
     "explore": "탐색",
     "sign-in": "로그인",
-    "sign-in-with": "{{provider}}로 로그인",
+    "sign-in-with": "{{provider}}(으)로 로그인",
     "or": "또는",
     "sign-up": "회원등록",
     "sign-out": "로그아웃",
@@ -254,9 +254,9 @@
       "openai-api-host-placeholder": "기본값: https://api.openai.com/"
     },
     "appearance-option": {
-      "system": "시스템 설정을 따름",
-      "light": "항상 밝게",
-      "dark": "항상 어둡게"
+      "system": "기본값 사용",
+      "light": "밝은 테마",
+      "dark": "어두운 테마"
     },
     "sso-section": {
       "sso-list": "SSO 목록",
