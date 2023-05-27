@@ -175,6 +175,9 @@ func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemoMessage) error
 	if v := update.UpdatedTs; v != nil {
 		set, args = append(set, "updated_ts = ?"), append(args, *v)
 	}
+	if v := update.RowStatus; v != nil {
+		set, args = append(set, "row_status = ?"), append(args, *v)
+	}
 	if v := update.Content; v != nil {
 		set, args = append(set, "content = ?"), append(args, *v)
 	}
