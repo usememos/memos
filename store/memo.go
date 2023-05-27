@@ -67,8 +67,9 @@ type FindMemoMessage struct {
 	VisibilityList []Visibility
 
 	// Pagination
-	Limit  *int
-	Offset *int
+	Limit            *int
+	Offset           *int
+	OrderByUpdatedTs bool
 }
 
 type UpdateMemoMessage struct {
@@ -254,6 +255,12 @@ func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoM
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(list, ",")))
 	}
+	orders := []string{"pinned DESC"}
+	if find.OrderByUpdatedTs {
+		orders = append(orders, "updated_ts DESC")
+	} else {
+		orders = append(orders, "created_ts DESC")
+	}
 
 	query := `
 	SELECT
@@ -284,7 +291,7 @@ func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoM
 		memo_resource ON memo.id = memo_resource.memo_id
 	WHERE ` + strings.Join(where, " AND ") + `
 	GROUP BY memo.id
-	ORDER BY pinned DESC, memo.created_ts DESC
+	ORDER BY ` + strings.Join(orders, ", ") + `
 	`
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
