@@ -299,6 +299,14 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			findMemoMessage.Offset = &offset
 		}
 
+		memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
+		}
+		if memoDisplayWithUpdatedTs {
+			findMemoMessage.OrderByUpdatedTs = true
+		}
+
 		memoMessageList, err := s.Store.ListMemos(ctx, findMemoMessage)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
@@ -411,16 +419,32 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
-		list, err := s.Store.ListMemos(ctx, findMemoMessage)
+		memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
+		}
+		if memoDisplayWithUpdatedTs {
+			findMemoMessage.OrderByUpdatedTs = true
+		}
+
+		memoMessageList, err := s.Store.ListMemos(ctx, findMemoMessage)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}
-
-		createdTsList := []int64{}
-		for _, memo := range list {
-			createdTsList = append(createdTsList, memo.CreatedTs)
+		memoResponseList := []*api.MemoResponse{}
+		for _, memoMessage := range memoMessageList {
+			memoResponse, err := s.composeMemoMessageToMemoResponse(ctx, memoMessage)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
+			}
+			memoResponseList = append(memoResponseList, memoResponse)
 		}
-		return c.JSON(http.StatusOK, composeResponse(createdTsList))
+
+		displayTsList := []int64{}
+		for _, memo := range memoResponseList {
+			displayTsList = append(displayTsList, memo.DisplayTs)
+		}
+		return c.JSON(http.StatusOK, composeResponse(displayTsList))
 	})
 
 	g.GET("/memo/all", func(c echo.Context) error {
@@ -468,6 +492,14 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		// Only fetch normal status memos.
 		normalStatus := store.Normal
 		findMemoMessage.RowStatus = &normalStatus
+
+		memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
+		}
+		if memoDisplayWithUpdatedTs {
+			findMemoMessage.OrderByUpdatedTs = true
+		}
 
 		memoMessageList, err := s.Store.ListMemos(ctx, findMemoMessage)
 		if err != nil {
@@ -625,21 +657,12 @@ func (s *Server) composeMemoMessageToMemoResponse(ctx context.Context, memoMessa
 	// Compose display ts.
 	memoResponse.DisplayTs = memoResponse.CreatedTs
 	// Find memo display with updated ts setting.
-	memoDisplayWithUpdatedTsSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-		Name: api.SystemSettingMemoDisplayWithUpdatedTsName,
-	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
-		return nil, errors.Wrap(err, "failed to find system setting")
+	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	if err != nil {
+		return nil, err
 	}
-	if memoDisplayWithUpdatedTsSetting != nil {
-		memoDisplayWithUpdatedTs := false
-		err = json.Unmarshal([]byte(memoDisplayWithUpdatedTsSetting.Value), &memoDisplayWithUpdatedTs)
-		if err != nil {
-			return nil, errors.Wrap(err, "failed to unmarshal system setting value")
-		}
-		if memoDisplayWithUpdatedTs {
-			memoResponse.DisplayTs = memoResponse.UpdatedTs
-		}
+	if memoDisplayWithUpdatedTs {
+		memoResponse.DisplayTs = memoResponse.UpdatedTs
 	}
 
 	relationList := []*api.MemoRelation{}
@@ -661,4 +684,21 @@ func (s *Server) composeMemoMessageToMemoResponse(ctx context.Context, memoMessa
 	memoResponse.ResourceList = resourceList
 
 	return memoResponse, nil
+}
+
+func (s *Server) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (bool, error) {
+	memoDisplayWithUpdatedTsSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+		Name: api.SystemSettingMemoDisplayWithUpdatedTsName,
+	})
+	if err != nil && common.ErrorCode(err) != common.NotFound {
+		return false, errors.Wrap(err, "failed to find system setting")
+	}
+	memoDisplayWithUpdatedTs := false
+	if memoDisplayWithUpdatedTsSetting != nil {
+		err = json.Unmarshal([]byte(memoDisplayWithUpdatedTsSetting.Value), &memoDisplayWithUpdatedTs)
+		if err != nil {
+			return false, errors.Wrap(err, "failed to unmarshal system setting value")
+		}
+	}
+	return memoDisplayWithUpdatedTs, nil
 }
