@@ -33,7 +33,7 @@
     "admin": "관리",
     "explore": "탐색",
     "sign-in": "로그인",
-    "sign-in-with": "{{provider}}로 로그인",
+    "sign-in-with": "{{provider}}(으)로 로그인",
     "or": "또는",
     "sign-up": "회원등록",
     "sign-out": "로그아웃",
@@ -60,7 +60,14 @@
     "visibility": "공개 범위",
     "learn-more": "더 보기",
     "e.g": "ex) ",
-    "beta": "베타"
+    "beta": "베타",
+    "dialog": {
+      "error": "오류",
+      "help": "도움말",
+      "info": "정보",
+      "success": "성공",
+      "warning": "경고"
+    }
   },
   "router": {
     "back-to-home": "홈으로 돌아가기"
@@ -185,6 +192,8 @@
       "editor-font-style": "편집기 글꼴 스타일",
       "mobile-editor-style": "모바일 편집기 스타일",
       "default-memo-sort-option": "메모에 표시할 시각",
+      "telegram-user-id": "텔레그램 유저 ID",
+      "telegram-user-id-placeholder": "서버의 텔레그램 봇에 아무 메세지나 보내서 받을 수 있습니다",
       "created_ts": "생성된 시각",
       "updated_ts": "변경된 시각",
       "daily-review-time-offset": "날마다 돌아보기 기준 시각",
@@ -197,7 +206,7 @@
       "storage-services-list": "저장소 서비스 목록",
       "create-a-service": "서비스 생성",
       "update-a-service": "서비스 편집",
-      "warning-text": "저장소 서비스 \"{{name}}\"을(를) 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다❗",
+      "warning-text": "저장소 서비스 \"{{name}}\"을(를) 삭제 하시겠습니까? 이 행동은 되돌릴 수 없습니다❗",
       "delete-storage": "저장소 삭제",
       "local-storage-path": "로컬 저장소 경로",
       "update-local-path": "로컬 저장소 경로 수정",
@@ -215,7 +224,7 @@
       "bucket": "버킷",
       "bucket-placeholder": "버킷 이름",
       "path": "저장소 경로",
-      "path-description": "로컬 저장소에서와 같은 변수를 사용할 수 있습니다. 이를테면 {filename} 같은 거요.",
+      "path-description": "{filename} 등 로컬 저장소에서와 같은 변수를 사용할 수 있습니다.",
       "path-placeholder": "custom/path",
       "url-prefix": "URL 접두사",
       "url-prefix-placeholder": "URL 앞에 붙을 커스텀 접두사, 선택 사항",
@@ -243,10 +252,15 @@
       "allow-user-signup": "회원등록 허용",
       "ignore-version-upgrade": "업그레이드 알림 무시",
       "disable-public-memos": "공개된 메모 금지",
+      "max-upload-size": "최대 업로드 크기 (MiB)",
+      "max-upload-size-hint": "권장값은 32 MiB입니다.",
       "additional-style": "추가적인 스타일",
       "additional-script": "추가적인 스크립트",
       "additional-style-placeholder": "추가적인 CSS 코드",
       "additional-script-placeholder": "추가적인 JavaScript 코드",
+      "telegram-robot-token": "텔레그램 봇 연동",
+      "telegram-robot-token-description": "텔레그램 @BotFather 에서 얻을 수 있습니다",
+      "telegram-robot-token-placeholder": "서버의 텔레그램 봇 토큰",
       "openai-api-key": "OpenAI: API 키",
       "openai-api-key-description": "API 키 받아오기",
       "openai-api-key-placeholder": "내 OpenAI API 키",
@@ -254,9 +268,9 @@
       "openai-api-host-placeholder": "기본값: https://api.openai.com/"
     },
     "appearance-option": {
-      "system": "시스템 설정을 따름",
-      "light": "항상 밝게",
-      "dark": "항상 어둡게"
+      "system": "기본값 사용",
+      "light": "밝은 테마",
+      "dark": "어두운 테마"
     },
     "sso-section": {
       "sso-list": "SSO 목록",
@@ -349,7 +363,9 @@
     "succeed-update-customized-profile": "프로필 정보 적용 성공",
     "succeed-update-additional-script": "추가적인 스크립트 적용 성공",
     "update-succeed": "업데이트 성공",
-    "page-not-found": "404 - 페이지를 찾을 수 없습니다 😥"
+    "page-not-found": "404 - 페이지를 찾을 수 없습니다 😥",
+    "maximum-upload-size-is": "업로드 최대 크기는 {{size}} MiB입니다",
+    "file-exceeds-upload-limit-of": "파일 {{file}}의 크기가 최대 크기인 {{size}} MiB를 넘습니다"
   },
   "days": {
     "mon": "월",
@@ -364,7 +380,10 @@
     "title": "AI에게 물어보기",
     "not-enabled": "OpenAI API 키를 넣지 않았습니다.",
     "go-to-settings": "설정으로 이동",
-    "placeholder": "무엇이든 물어보세요..."
+    "placeholder": "무엇이든 물어보세요...",
+    "default-message-group-title": "기본 세션",
+    "create-message-group-title": "세션 생성",
+    "label-message-group-name-title": "세션 이름"
   },
   "embed-memo": {
     "title": "메모 임베드",
@@ -373,16 +392,16 @@
     "copy": "복사"
   },
   "heatmap": {
-    "memo-in": "동안 메모 {{amount}}개 작성",
-    "memos-in": "동안 메모 {{amount}}개 작성",
-    "memo-on": "{{date}}에 메모 {{amount}}개 작성",
-    "memos-on": "{{date}}에 메모 {{amount}}개 작성",
-    "day": "일",
-    "days": "일"
+    "memo-in": "개 메모를",
+    "memos-in": "개 메모를",
+    "memo-on": "{{date}} - 메모 {{amount}}개",
+    "memos-on": "{{date}} - 메모 {{amount}}개",
+    "day": "일간 작성",
+    "days": "일간 작성"
   },
   "about": {
     "about-memos": "Memos에 대해서",
-    "memos-description": "Memos는 노트를 쓰고 닦고 공유하는 웹 기반의 노트 기록 플랫폼입니다.",
+    "memos-description": "Memos는 노트를 쓰고 공유하는 웹 기반의 노트 기록 플랫폼입니다.",
     "no-server-description": "서버 설명이 없습니다.",
     "powered-by": "제공: ",
     "other-projects": "다른 프로젝트"
