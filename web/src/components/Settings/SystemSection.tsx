@@ -17,6 +17,7 @@ interface State {
   additionalStyle: string;
   additionalScript: string;
   maxUploadSizeMiB: number;
+  memoDisplayWithUpdatedTs: boolean;
 }
 
 const SystemSection = () => {
@@ -31,6 +32,7 @@ const SystemSection = () => {
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
     maxUploadSizeMiB: systemStatus.maxUploadSizeMiB,
+    memoDisplayWithUpdatedTs: systemStatus.memoDisplayWithUpdatedTs,
   });
   const [telegramRobotToken, setTelegramRobotToken] = useState<string>("");
   const [openAIConfig, setOpenAIConfig] = useState<OpenAIConfig>({
@@ -65,6 +67,7 @@ const SystemSection = () => {
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
       maxUploadSizeMiB: systemStatus.maxUploadSizeMiB,
+      memoDisplayWithUpdatedTs: systemStatus.memoDisplayWithUpdatedTs,
     });
   }, [systemStatus]);
 
@@ -202,6 +205,18 @@ const SystemSection = () => {
     });
   };
 
+  const handleMemoDisplayWithUpdatedTs = async (value: boolean) => {
+    setState({
+      ...state,
+      memoDisplayWithUpdatedTs: value,
+    });
+    globalStore.setSystemStatus({ disablePublicMemos: value });
+    await api.upsertSystemSetting({
+      name: "memo-display-with-updated-ts",
+      value: JSON.stringify(value),
+    });
+  };
+
   const handleMaxUploadSizeChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
     // fixes cursor skipping position on mobile
     event.target.selectionEnd = event.target.value.length;
@@ -253,6 +268,10 @@ const SystemSection = () => {
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
+      </div>
+      <div className="form-label">
+        <span className="normal-text">Display with updated time</span>
+        <Switch checked={state.memoDisplayWithUpdatedTs} onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)} />
       </div>
       <div className="form-label">
         <div className="flex flex-row items-center">

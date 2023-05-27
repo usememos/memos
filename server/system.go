@@ -55,8 +55,9 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 				Appearance:  "system",
 				ExternalURL: "",
 			},
-			StorageServiceID: api.DatabaseStorage,
-			LocalStoragePath: "assets/{timestamp}_{filename}",
+			StorageServiceID:         api.DatabaseStorage,
+			LocalStoragePath:         "assets/{timestamp}_{filename}",
+			MemoDisplayWithUpdatedTs: false,
 		}
 
 		systemSettingList, err := s.Store.FindSystemSettingList(ctx, &api.SystemSettingFind{})
@@ -78,35 +79,28 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			switch systemSetting.Name {
 			case api.SystemSettingAllowSignUpName:
 				systemStatus.AllowSignUp = baseValue.(bool)
-
 			case api.SystemSettingIgnoreUpgradeName:
 				systemStatus.IgnoreUpgrade = baseValue.(bool)
-
 			case api.SystemSettingDisablePublicMemosName:
 				systemStatus.DisablePublicMemos = baseValue.(bool)
-
 			case api.SystemSettingMaxUploadSizeMiBName:
 				systemStatus.MaxUploadSizeMiB = int(baseValue.(float64))
-
 			case api.SystemSettingAdditionalStyleName:
 				systemStatus.AdditionalStyle = baseValue.(string)
-
 			case api.SystemSettingAdditionalScriptName:
 				systemStatus.AdditionalScript = baseValue.(string)
-
 			case api.SystemSettingCustomizedProfileName:
 				customizedProfile := api.CustomizedProfile{}
 				if err := json.Unmarshal([]byte(systemSetting.Value), &customizedProfile); err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting customized profile value").SetInternal(err)
 				}
 				systemStatus.CustomizedProfile = customizedProfile
-
 			case api.SystemSettingStorageServiceIDName:
 				systemStatus.StorageServiceID = int(baseValue.(float64))
-
 			case api.SystemSettingLocalStoragePathName:
 				systemStatus.LocalStoragePath = baseValue.(string)
-
+			case api.SystemSettingMemoDisplayWithUpdatedTsName:
+				systemStatus.MemoDisplayWithUpdatedTs = baseValue.(bool)
 			default:
 				log.Warn("Unknown system setting name", zap.String("setting name", systemSetting.Name.String()))
 			}

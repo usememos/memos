@@ -28,15 +28,15 @@ const DailyReview = () => {
   const currentDate = new Date(currentDateStamp);
   const dailyMemos = memos
     .filter((m) => {
-      const createdTimestamp = getTimeStampByDate(m.createdTs);
+      const displayTimestamp = getTimeStampByDate(m.displayTs);
       const currentDateStampWithOffset = currentDateStamp + convertToMillis(localSetting);
       return (
         m.rowStatus === "NORMAL" &&
-        createdTimestamp >= currentDateStampWithOffset &&
-        createdTimestamp < currentDateStampWithOffset + DAILY_TIMESTAMP
+        displayTimestamp >= currentDateStampWithOffset &&
+        displayTimestamp < currentDateStampWithOffset + DAILY_TIMESTAMP
       );
     })
-    .sort((a, b) => getTimeStampByDate(a.createdTs) - getTimeStampByDate(b.createdTs));
+    .sort((a, b) => getTimeStampByDate(a.displayTs) - getTimeStampByDate(b.displayTs));
 
   useEffect(() => {
     let offset = 0;
@@ -46,7 +46,7 @@ const DailyReview = () => {
         offset += fetchedMemos.length;
         if (fetchedMemos.length === DEFAULT_MEMO_LIMIT) {
           const lastMemo = last(fetchedMemos);
-          if (lastMemo && lastMemo.createdTs > currentDateStamp) {
+          if (lastMemo && lastMemo.displayTs > currentDateStamp) {
             await fetchMoreMemos();
           }
         }

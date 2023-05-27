@@ -36,7 +36,8 @@ const (
 	// SystemSettingOpenAIConfigName is the name of OpenAI config.
 	SystemSettingOpenAIConfigName SystemSettingName = "openai-config"
 	// SystemSettingTelegramRobotToken is the name of Telegram Robot Token.
-	SystemSettingTelegramRobotTokenName SystemSettingName = "telegram-robot-token"
+	SystemSettingTelegramRobotTokenName       SystemSettingName = "telegram-robot-token"
+	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
 )
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
@@ -88,6 +89,8 @@ func (key SystemSettingName) String() string {
 		return "openai-config"
 	case SystemSettingTelegramRobotTokenName:
 		return "telegram-robot-token"
+	case SystemSettingMemoDisplayWithUpdatedTsName:
+		return "memo-display-with-updated-ts"
 	}
 	return ""
 }
@@ -111,43 +114,36 @@ func (upsert SystemSettingUpsert) Validate() error {
 	switch settingName := upsert.Name; settingName {
 	case SystemSettingServerIDName:
 		return fmt.Errorf("updating %v is not allowed", settingName)
-
 	case SystemSettingAllowSignUpName:
 		var value bool
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-
 	case SystemSettingIgnoreUpgradeName:
 		var value bool
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-
 	case SystemSettingDisablePublicMemosName:
 		var value bool
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-
 	case SystemSettingMaxUploadSizeMiBName:
 		var value int
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-
 	case SystemSettingAdditionalStyleName:
 		var value string
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-
 	case SystemSettingAdditionalScriptName:
 		var value string
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-
 	case SystemSettingCustomizedProfileName:
 		customizedProfile := CustomizedProfile{
 			Name:        "memos",
@@ -157,7 +153,6 @@ func (upsert SystemSettingUpsert) Validate() error {
 			Appearance:  "system",
 			ExternalURL: "",
 		}
-
 		if err := json.Unmarshal([]byte(upsert.Value), &customizedProfile); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
@@ -167,26 +162,22 @@ func (upsert SystemSettingUpsert) Validate() error {
 		if !slices.Contains(UserSettingAppearanceValue, customizedProfile.Appearance) {
 			return fmt.Errorf(`invalid appearance value for system setting "%v"`, settingName)
 		}
-
 	case SystemSettingStorageServiceIDName:
 		value := DatabaseStorage
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
 		return nil
-
 	case SystemSettingLocalStoragePathName:
 		value := ""
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-
 	case SystemSettingOpenAIConfigName:
 		value := OpenAIConfig{}
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-
 	case SystemSettingTelegramRobotTokenName:
 		if upsert.Value == "" {
 			return nil
@@ -195,11 +186,14 @@ func (upsert SystemSettingUpsert) Validate() error {
 		if len(fragments) != 2 {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-
+	case SystemSettingMemoDisplayWithUpdatedTsName:
+		var value bool
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
 	default:
 		return fmt.Errorf("invalid system setting name")
 	}
-
 	return nil
 }
 

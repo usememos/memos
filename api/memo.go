@@ -34,6 +34,7 @@ type MemoResponse struct {
 	UpdatedTs int64     `json:"updatedTs"`
 
 	// Domain specific fields
+	DisplayTs  int64      `json:"displayTs"`
 	Content    string     `json:"content"`
 	Visibility Visibility `json:"visibility"`
 	Pinned     bool       `json:"pinned"`

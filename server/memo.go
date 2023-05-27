@@ -609,17 +609,37 @@ func (s *Server) composeMemoMessageToMemoResponse(ctx context.Context, memoMessa
 		Pinned:     memoMessage.Pinned,
 	}
 
+	// Compose creator name.
 	user, err := s.Store.FindUser(ctx, &api.UserFind{
 		ID: &memoResponse.CreatorID,
 	})
 	if err != nil {
 		return nil, err
 	}
-
 	if user.Nickname != "" {
 		memoResponse.CreatorName = user.Nickname
 	} else {
 		memoResponse.CreatorName = user.Username
+	}
+
+	// Compose display ts.
+	memoResponse.DisplayTs = memoResponse.CreatedTs
+	// Find memo display with updated ts setting.
+	memoDisplayWithUpdatedTsSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
+		Name: api.SystemSettingMemoDisplayWithUpdatedTsName,
+	})
+	if err != nil && common.ErrorCode(err) != common.NotFound {
+		return nil, errors.Wrap(err, "failed to find system setting")
+	}
+	if memoDisplayWithUpdatedTsSetting != nil {
+		memoDisplayWithUpdatedTs := false
+		err = json.Unmarshal([]byte(memoDisplayWithUpdatedTsSetting.Value), &memoDisplayWithUpdatedTs)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to unmarshal system setting value")
+		}
+		if memoDisplayWithUpdatedTs {
+			memoResponse.DisplayTs = memoResponse.UpdatedTs
+		}
 	}
 
 	relationList := []*api.MemoRelation{}

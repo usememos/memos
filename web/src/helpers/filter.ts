@@ -203,9 +203,9 @@ export const checkShouldShowMemo = (memo: Memo, filter: Filter) => {
     }
   } else if (type === "DISPLAY_TIME") {
     if (operator === "BEFORE") {
-      return memo.createdTs < getUnixTimeMillis(value);
+      return memo.displayTs < getUnixTimeMillis(value);
     } else {
-      return memo.createdTs >= getUnixTimeMillis(value);
+      return memo.displayTs >= getUnixTimeMillis(value);
     }
   } else if (type === "VISIBILITY") {
     let matched = memo.visibility === value;

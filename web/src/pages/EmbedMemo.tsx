@@ -45,7 +45,7 @@ const EmbedMemo = () => {
         <main className="w-full max-w-lg mx-auto my-auto shadow px-4 py-4 rounded-lg">
           <div className="w-full flex flex-col justify-start items-start">
             <div className="w-full mb-2 flex flex-row justify-start items-center text-sm text-gray-400 dark:text-gray-300">
-              <span>{getDateTimeString(state.memo.createdTs)}</span>
+              <span>{getDateTimeString(state.memo.displayTs)}</span>
               <a className="ml-2 hover:underline hover:text-green-600" href={`/u/${state.memo.creatorId}`}>
                 @{state.memo.creatorName}
               </a>
