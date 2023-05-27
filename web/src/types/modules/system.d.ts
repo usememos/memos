@@ -31,6 +31,7 @@ interface SystemStatus {
   customizedProfile: CustomizedProfile;
   storageServiceId: number;
   localStoragePath: string;
+  memoDisplayWithUpdatedTs: boolean;
 }
 
 interface SystemSetting {

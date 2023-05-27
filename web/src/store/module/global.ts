@@ -16,6 +16,7 @@ export const initialGlobalState = async () => {
       maxUploadSizeMiB: 0,
       additionalStyle: "",
       additionalScript: "",
+      memoDisplayWithUpdatedTs: false,
       customizedProfile: {
         name: "memos",
         logoUrl: "/logo.webp",

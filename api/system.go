@@ -24,6 +24,8 @@ type SystemStatus struct {
 	CustomizedProfile CustomizedProfile `json:"customizedProfile"`
 	// Storage service ID.
 	StorageServiceID int `json:"storageServiceId"`
-	// Local storage path
+	// Local storage path.
 	LocalStoragePath string `json:"localStoragePath"`
+	// Memo display with updated timestamp.
+	MemoDisplayWithUpdatedTs bool `json:"memoDisplayWithUpdatedTs"`
 }

@@ -10,6 +10,7 @@ interface Memo {
   updatedTs: TimeStamp;
   rowStatus: RowStatus;
 
+  displayTs: TimeStamp;
   content: string;
   visibility: Visibility;
   pinned: boolean;

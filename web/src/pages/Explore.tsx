@@ -90,7 +90,7 @@ const Explore = () => {
         <main className="relative w-full h-auto flex flex-col justify-start items-start -mt-2">
           <MemoFilter />
           {sortedMemos.map((memo) => {
-            return <Memo key={`${memo.id}-${memo.createdTs}`} memo={memo} readonly={true} />;
+            return <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} readonly={true} />;
           })}
           {isComplete ? (
             state.memos.length === 0 ? (

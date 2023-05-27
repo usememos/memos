@@ -9,12 +9,12 @@ interface Props {
 
 const DailyMemo: React.FC<Props> = (props: Props) => {
   const { memo } = props;
-  const createdTimeStr = getTimeString(memo.createdTs);
+  const displayTimeStr = getTimeString(memo.displayTs);
 
   return (
     <div className="daily-memo-wrapper">
       <div className="time-wrapper">
-        <span className="normal-text">{createdTimeStr}</span>
+        <span className="normal-text">{displayTimeStr}</span>
       </div>
       <div className="memo-container">
         <MemoContent content={memo.content} showFull={true} />
