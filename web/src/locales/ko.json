@@ -223,6 +223,7 @@
       "secretkey-placeholder": "비밀 키 / 비밀 액세스 키",
       "bucket": "버킷",
       "bucket-placeholder": "버킷 이름",
+      "bucket-private": "프라이빗",
       "path": "저장소 경로",
       "path-description": "{filename} 등 로컬 저장소에서와 같은 변수를 사용할 수 있습니다.",
       "path-placeholder": "custom/path",

@@ -1,15 +1,113 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"strconv"
+	"sync"
 
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	pluginStorage "github.com/usememos/memos/plugin/storage"
+	"github.com/usememos/memos/store"
 )
+
+type storageHandler struct {
+	store     *store.Store
+	clientMap sync.Map
+}
+
+type StorageServicer interface {
+	GetPathTemplate() string
+	StoreFile(ctx context.Context, path, fileType string, reader io.Reader) (externalLink string, err error)
+	TrySignLink(ctx context.Context, link string) (string, error)
+}
+
+func newStorageHandler(ctx context.Context, store *store.Store) (*storageHandler, error) {
+	hdl := storageHandler{
+		store: store,
+	}
+
+	storages, err := hdl.store.FindStorageList(ctx, &api.StorageFind{})
+	if err != nil {
+		return nil, err
+	}
+
+	for _, v := range storages {
+		if _, err = hdl.LoadService(ctx, v); err != nil {
+			return nil, err
+		}
+	}
+
+	return &hdl, nil
+}
+
+func (hdl *storageHandler) CheckoutService(ctx context.Context, id int) (StorageServicer, error) {
+	ret, ok := hdl.clientMap.Load(id)
+	if ok {
+		return ret.(StorageServicer), nil
+	}
+
+	stg, err := hdl.store.FindStorage(ctx, &api.StorageFind{ID: &id})
+	if err != nil {
+		return nil, err
+	}
+
+	srv, err := hdl.LoadService(ctx, stg)
+	if err != nil {
+		return nil, err
+	}
+
+	return srv, nil
+}
+
+func (hdl *storageHandler) LoadService(ctx context.Context, storage *api.Storage) (StorageServicer, error) {
+	var srv StorageServicer
+
+	switch storage.Type {
+	case api.StorageS3:
+		var s3Cfg pluginStorage.S3Config
+		err := json.Unmarshal(storage.Config.S3Config, &s3Cfg)
+		if err != nil {
+			return nil, fmt.Errorf("malformed s3 config: %w", err)
+		}
+		srv, err = pluginStorage.NewS3Client(ctx, &s3Cfg)
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, fmt.Errorf("unsupported storage: %s", storage.Type)
+	}
+
+	hdl.clientMap.Store(storage.ID, srv)
+
+	return srv, nil
+}
+
+func (hdl *storageHandler) UnloadService(id int) {
+	hdl.clientMap.Delete(id)
+}
+
+func (hdl *storageHandler) MaybeShouldSignExternalLink(ctx context.Context, link string) string {
+	var (
+		newLink string
+		err     error
+	)
+	hdl.clientMap.Range(func(_, value any) bool {
+		newLink, err = value.(StorageServicer).TrySignLink(ctx, link)
+		return err != nil || newLink == link
+	})
+
+	if newLink != "" {
+		link = newLink
+	}
+
+	return link
+}
 
 func (s *Server) registerStorageRoutes(g *echo.Group) {
 	g.POST("/storage", func(c echo.Context) error {
@@ -37,6 +135,10 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 		storage, err := s.Store.CreateStorage(ctx, storageCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create storage").SetInternal(err)
+		}
+		_, err = s.storageHandler.LoadService(ctx, storage)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to load storage").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(storage))
 	})
@@ -73,6 +175,10 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 		storage, err := s.Store.PatchStorage(ctx, storagePatch)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch storage").SetInternal(err)
+		}
+		_, err = s.storageHandler.LoadService(ctx, storage)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to load storage").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(storage))
 	})
@@ -145,6 +251,7 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			}
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete storage").SetInternal(err)
 		}
+		s.storageHandler.UnloadService(storageID)
 		return c.JSON(http.StatusOK, true)
 	})
 }

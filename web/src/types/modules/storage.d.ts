@@ -9,6 +9,7 @@ interface StorageS3Config {
   secretKey: string;
   path: string;
   bucket: string;
+  isPrivate: boolean;
   urlPrefix: string;
   urlSuffix: string;
 }

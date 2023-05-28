@@ -1,5 +1,9 @@
 package api
 
+import (
+	"encoding/json"
+)
+
 const (
 	// LocalStorage means the storage service is local file system.
 	LocalStorage = -1
@@ -14,18 +18,7 @@ const (
 )
 
 type StorageConfig struct {
-	S3Config *StorageS3Config `json:"s3Config"`
-}
-
-type StorageS3Config struct {
-	EndPoint  string `json:"endPoint"`
-	Path      string `json:"path"`
-	Region    string `json:"region"`
-	AccessKey string `json:"accessKey"`
-	SecretKey string `json:"secretKey"`
-	Bucket    string `json:"bucket"`
-	URLPrefix string `json:"urlPrefix"`
-	URLSuffix string `json:"urlSuffix"`
+	S3Config json.RawMessage `json:"s3Config"`
 }
 
 type Storage struct {

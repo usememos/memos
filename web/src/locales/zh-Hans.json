@@ -365,6 +365,7 @@
       "accesskey-placeholder": "Access key / Access ID",
       "bucket": "储存桶（Bucket）",
       "bucket-placeholder": "储存桶名",
+      "bucket-private": "私有",
       "create-a-service": "新建服务",
       "create-storage": "创建存储",
       "current-storage": "当前存储",

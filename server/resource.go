@@ -23,7 +23,6 @@ import (
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/common/log"
-	"github.com/usememos/memos/plugin/storage/s3"
 	"github.com/usememos/memos/store"
 	"go.uber.org/zap"
 )
@@ -152,11 +151,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal local storage path setting").SetInternal(err)
 				}
 			}
-			filePath := filepath.FromSlash(localStoragePath)
-			if !strings.Contains(filePath, "{publicid}") {
-				filePath = filepath.Join(filePath, "{publicid}")
-			}
-			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename, publicID+filepath.Ext(file.Filename)))
+			filePath := filepath.Join(s.Profile.Data, makeFilePath(publicID, file.Filename, filepath.FromSlash(localStoragePath)))
 
 			dir := filepath.Dir(filePath)
 			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
@@ -180,45 +175,27 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				InternalPath: filePath,
 			}
 		} else {
-			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageServiceID})
+			srv, err := s.storageHandler.CheckoutService(ctx, storageServiceID)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 			}
 
-			if storage.Type == api.StorageS3 {
-				s3Config := storage.Config.S3Config
-				s3Client, err := s3.NewClient(ctx, &s3.Config{
-					AccessKey: s3Config.AccessKey,
-					SecretKey: s3Config.SecretKey,
-					EndPoint:  s3Config.EndPoint,
-					Region:    s3Config.Region,
-					Bucket:    s3Config.Bucket,
-					URLPrefix: s3Config.URLPrefix,
-					URLSuffix: s3Config.URLSuffix,
-				})
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
-				}
+			var (
+				filePath    = makeFilePath(publicID, file.Filename, srv.GetPathTemplate())
+				_, filename = filepath.Split(filePath)
+			)
 
-				filePath := s3Config.Path
-				if !strings.Contains(filePath, "{publicid}") {
-					filePath = path.Join(filePath, "{publicid}")
-				}
-				filePath = replacePathTemplate(filePath, file.Filename, publicID+filepath.Ext(file.Filename))
-				_, filename := filepath.Split(filePath)
-				link, err := s3Client.UploadFile(ctx, filePath, filetype, sourceFile)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
-				}
-				resourceCreate = &api.ResourceCreate{
-					CreatorID:    userID,
-					Filename:     filename,
-					Type:         filetype,
-					Size:         size,
-					ExternalLink: link,
-				}
-			} else {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Unsupported storage type")
+			link, err := srv.StoreFile(ctx, filePath, filetype, sourceFile)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
+			}
+
+			resourceCreate = &api.ResourceCreate{
+				CreatorID:    userID,
+				Filename:     filename,
+				Type:         filetype,
+				Size:         size,
+				ExternalLink: link,
 			}
 		}
 
@@ -252,6 +229,9 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		list, err := s.Store.FindResourceList(ctx, resourceFind)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
+		}
+		for k := range list {
+			list[k] = s.maybeShouldSignResourceExternalLink(ctx, list[k])
 		}
 		return c.JSON(http.StatusOK, composeResponse(list))
 	})
@@ -297,7 +277,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(resource))
+		return c.JSON(http.StatusOK, composeResponse(s.maybeShouldSignResourceExternalLink(ctx, resource)))
 	})
 
 	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
@@ -458,6 +438,16 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 	})
 }
 
+func (s *Server) maybeShouldSignResourceExternalLink(ctx context.Context, res *api.Resource) *api.Resource {
+	if res == nil || res.ExternalLink == "" {
+		return res
+	}
+
+	res.ExternalLink = s.storageHandler.MaybeShouldSignExternalLink(ctx, res.ExternalLink)
+
+	return res
+}
+
 func createResourceCreateActivity(ctx context.Context, store *store.Store, resource *api.Resource) error {
 	payload := api.ActivityResourceCreatePayload{
 		Filename: resource.Filename,
@@ -506,6 +496,13 @@ func replacePathTemplate(path, filename, publicID string) string {
 		return s
 	})
 	return path
+}
+
+func makeFilePath(publicID, filename, tpl string) string {
+	if !strings.Contains(tpl, "{publicid}") {
+		tpl = path.Join(tpl, "{publicid}")
+	}
+	return replacePathTemplate(tpl, filename, publicID+filepath.Ext(filename))
 }
 
 var availableGeneratorAmount int32 = 32

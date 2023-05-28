@@ -679,7 +679,7 @@ func (s *Server) composeMemoMessageToMemoResponse(ctx context.Context, memoMessa
 		if err != nil {
 			return nil, err
 		}
-		resourceList = append(resourceList, resource)
+		resourceList = append(resourceList, s.maybeShouldSignResourceExternalLink(ctx, resource))
 	}
 	memoResponse.ResourceList = resourceList
 

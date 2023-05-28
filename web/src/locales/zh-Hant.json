@@ -214,6 +214,7 @@
       "secretkey-placeholder": "Secret key / Access Key",
       "bucket": "Bucket",
       "bucket-placeholder": "Bucket name",
+      "bucket-private": "私有",
       "path": "存儲空間路徑",
       "path-description": "You can use the same dynamic variables from local storage, like {filename}",
       "path-placeholder": "custom/path",

@@ -26,7 +26,8 @@ type Server struct {
 	Profile *profile.Profile
 	Store   *store.Store
 
-	telegramRobot *telegram.Robot
+	telegramRobot  *telegram.Robot
+	storageHandler *storageHandler
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
@@ -36,7 +37,8 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	e.HidePort = true
 
 	db := db.NewDB(profile)
-	if err := db.Open(ctx); err != nil {
+	err := db.Open(ctx)
+	if err != nil {
 		return nil, errors.Wrap(err, "cannot open db")
 	}
 
@@ -50,6 +52,11 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 
 	telegramRobotHandler := newTelegramHandler(storeInstance)
 	s.telegramRobot = telegram.NewRobotWithHandler(telegramRobotHandler)
+
+	s.storageHandler, err = newStorageHandler(ctx, storeInstance)
+	if err != nil {
+		return nil, fmt.Errorf("new storage handler: %w", err)
+	}
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339}",` +

@@ -15,16 +15,56 @@ type storageRaw struct {
 	ID     int
 	Name   string
 	Type   api.StorageType
-	Config *api.StorageConfig
+	Config string
 }
 
 func (raw *storageRaw) toStorage() *api.Storage {
-	return &api.Storage{
+	s := api.Storage{
 		ID:     raw.ID,
 		Name:   raw.Name,
 		Type:   raw.Type,
-		Config: raw.Config,
+		Config: &api.StorageConfig{},
 	}
+
+	switch s.Type {
+	case api.StorageS3:
+		s.Config.S3Config = json.RawMessage(raw.Config)
+	}
+
+	return &s
+}
+
+func (*storageRaw) fromStorage(s any) *storageRaw {
+	checkoutConfig := func(t api.StorageType, cfg *api.StorageConfig) string {
+		switch t {
+		case api.StorageS3:
+			return string(cfg.S3Config)
+		}
+		return ""
+	}
+
+	var raw storageRaw
+
+	switch st := s.(type) {
+	case *api.StorageCreate:
+		raw = storageRaw{
+			Name:   st.Name,
+			Type:   st.Type,
+			Config: checkoutConfig(st.Type, st.Config),
+		}
+	case *api.StoragePatch:
+		raw = storageRaw{
+			ID:     st.ID,
+			Name:   "",
+			Type:   st.Type,
+			Config: checkoutConfig(st.Type, st.Config),
+		}
+		if st.Name != nil {
+			raw.Name = *st.Name
+		}
+	}
+
+	return &raw
 }
 
 func (s *Store) CreateStorage(ctx context.Context, create *api.StorageCreate) (*api.Storage, error) {
@@ -125,60 +165,39 @@ func (s *Store) DeleteStorage(ctx context.Context, delete *api.StorageDelete) er
 
 func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate) (*storageRaw, error) {
 	set := []string{"name", "type", "config"}
-	args := []any{create.Name, create.Type}
-	placeholder := []string{"?", "?", "?"}
-
-	var configBytes []byte
-	var err error
-	if create.Type == api.StorageS3 {
-		configBytes, err = json.Marshal(create.Config.S3Config)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		return nil, fmt.Errorf("unsupported storage type %s", string(create.Type))
-	}
-	args = append(args, string(configBytes))
 
 	query := `
 		INSERT INTO storage (
 			` + strings.Join(set, ", ") + `
 		)
-		VALUES (` + strings.Join(placeholder, ",") + `)
+		VALUES (` + strings.TrimSuffix(strings.Repeat("?,", len(set)), ",") + `)
 		RETURNING id
 	`
-	storageRaw := storageRaw{
-		Name:   create.Name,
-		Type:   create.Type,
-		Config: create.Config,
-	}
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(
+
+	storageRaw := (&storageRaw{}).fromStorage(create)
+
+	if err := tx.QueryRowContext(ctx, query, storageRaw.Name, storageRaw.Type, storageRaw.Config).Scan(
 		&storageRaw.ID,
 	); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return &storageRaw, nil
+	return storageRaw, nil
 }
 
 func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (*storageRaw, error) {
-	set, args := []string{}, []any{}
-	if v := patch.Name; v != nil {
-		set, args = append(set, "name = ?"), append(args, *v)
+	var (
+		storageRaw = (&storageRaw{}).fromStorage(patch)
+		set, args  = []string{}, []any{}
+	)
+
+	if storageRaw.Name != "" {
+		set, args = append(set, "name = ?"), append(args, storageRaw.Name)
 	}
-	if v := patch.Config; v != nil {
-		var configBytes []byte
-		var err error
-		if patch.Type == api.StorageS3 {
-			configBytes, err = json.Marshal(patch.Config.S3Config)
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			return nil, fmt.Errorf("unsupported storage type %s", string(patch.Type))
-		}
-		set, args = append(set, "config = ?"), append(args, string(configBytes))
+	if storageRaw.Config != "" {
+		set, args = append(set, "config = ?"), append(args, storageRaw.Config)
 	}
+
 	args = append(args, patch.ID)
 
 	query := `
@@ -187,29 +206,17 @@ func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (
 		WHERE id = ?
 		RETURNING id, name, type, config
 	`
-	var storageRaw storageRaw
-	var storageConfig string
+
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
 		&storageRaw.ID,
 		&storageRaw.Name,
 		&storageRaw.Type,
-		&storageConfig,
+		&storageRaw.Config,
 	); err != nil {
 		return nil, FormatError(err)
 	}
-	if storageRaw.Type == api.StorageS3 {
-		s3Config := &api.StorageS3Config{}
-		if err := json.Unmarshal([]byte(storageConfig), s3Config); err != nil {
-			return nil, err
-		}
-		storageRaw.Config = &api.StorageConfig{
-			S3Config: s3Config,
-		}
-	} else {
-		return nil, fmt.Errorf("unsupported storage type %s", string(storageRaw.Type))
-	}
 
-	return &storageRaw, nil
+	return storageRaw, nil
 }
 
 func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) ([]*storageRaw, error) {
@@ -238,26 +245,16 @@ func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) 
 	storageRawList := make([]*storageRaw, 0)
 	for rows.Next() {
 		var storageRaw storageRaw
-		var storageConfig string
+
 		if err := rows.Scan(
 			&storageRaw.ID,
 			&storageRaw.Name,
 			&storageRaw.Type,
-			&storageConfig,
+			&storageRaw.Config,
 		); err != nil {
 			return nil, FormatError(err)
 		}
-		if storageRaw.Type == api.StorageS3 {
-			s3Config := &api.StorageS3Config{}
-			if err := json.Unmarshal([]byte(storageConfig), s3Config); err != nil {
-				return nil, err
-			}
-			storageRaw.Config = &api.StorageConfig{
-				S3Config: s3Config,
-			}
-		} else {
-			return nil, fmt.Errorf("unsupported storage type %s", string(storageRaw.Type))
-		}
+
 		storageRawList = append(storageRawList, &storageRaw)
 	}
 

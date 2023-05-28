@@ -1,4 +1,4 @@
-import { Button, Input, Typography } from "@mui/joy";
+import { Button, Checkbox, Input, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -27,6 +27,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
     secretKey: "",
     path: "",
     bucket: "",
+    isPrivate: true,
     urlPrefix: "",
     urlSuffix: "",
   });
@@ -176,15 +177,22 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           {t("setting.storage-section.bucket")}
           <RequiredBadge />
         </Typography>
-        <Input
-          className="mb-2"
-          placeholder={t("setting.storage-section.bucket-placeholder")}
-          value={s3Config.bucket}
-          onChange={(e) => setPartialS3Config({ bucket: e.target.value })}
-          fullWidth
-        />
-        <div className="flex flex-row">
-          <Typography className="!mb-1" level="body2">
+        <div className="!mb-1 w-full flex flex-row items-center justify-between space-x-1">
+          <Input
+            className="!w-2/3"
+            placeholder={t("setting.storage-section.bucket-placeholder")}
+            value={s3Config.bucket}
+            onChange={(e) => setPartialS3Config({ bucket: e.target.value })}
+            fullWidth
+          />
+          <Checkbox
+            label={t("setting.storage-section.bucket-private")}
+            checked={!!s3Config.isPrivate}
+            onChange={(e) => setPartialS3Config({ isPrivate: e.target.checked })}
+          />
+        </div>
+        <div className="flex flex-row items-center">
+          <Typography level="body2">
             {t("setting.storage-section.path")}
           </Typography>
           <HelpButton text={t("setting.storage-section.path-description")} url="https://usememos.com/docs/local-storage" />

@@ -223,6 +223,7 @@
       "secretkey-placeholder": "Secret key / Access Key",
       "bucket": "Bucket",
       "bucket-placeholder": "Bucket name",
+      "bucket-private": "Private",
       "path": "Storage Path",
       "path-description": "You can use the same dynamic variables from local storage, like {filename}",
       "path-placeholder": "custom/path",
