@@ -26,8 +26,7 @@ func (raw *storageRaw) toStorage() *api.Storage {
 		Config: &api.StorageConfig{},
 	}
 
-	switch s.Type {
-	case api.StorageS3:
+	if s.Type == api.StorageS3 {
 		s.Config.S3Config = json.RawMessage(raw.Config)
 	}
 
@@ -36,8 +35,7 @@ func (raw *storageRaw) toStorage() *api.Storage {
 
 func (*storageRaw) fromStorage(s any) *storageRaw {
 	checkoutConfig := func(t api.StorageType, cfg *api.StorageConfig) string {
-		switch t {
-		case api.StorageS3:
+		if t == api.StorageS3 {
 			return string(cfg.S3Config)
 		}
 		return ""

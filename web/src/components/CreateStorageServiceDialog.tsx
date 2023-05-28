@@ -192,9 +192,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           />
         </div>
         <div className="flex flex-row items-center">
-          <Typography level="body2">
-            {t("setting.storage-section.path")}
-          </Typography>
+          <Typography level="body2">{t("setting.storage-section.path")}</Typography>
           <HelpButton text={t("setting.storage-section.path-description")} url="https://usememos.com/docs/local-storage" />
         </div>
         <Input
