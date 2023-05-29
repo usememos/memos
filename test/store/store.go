@@ -9,8 +9,8 @@ import (
 	"github.com/usememos/memos/store/db"
 	"github.com/usememos/memos/test"
 
-	// sqlite3 driver.
-	_ "github.com/mattn/go-sqlite3"
+	// sqlite driver.
+	_ "modernc.org/sqlite"
 )
 
 func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
