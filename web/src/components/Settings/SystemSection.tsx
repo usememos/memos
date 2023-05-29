@@ -34,7 +34,7 @@ const SystemSection = () => {
     maxUploadSizeMiB: systemStatus.maxUploadSizeMiB,
     memoDisplayWithUpdatedTs: systemStatus.memoDisplayWithUpdatedTs,
   });
-  const [telegramRobotToken, setTelegramRobotToken] = useState<string>("");
+  const [telegramBotToken, setTelegramBotToken] = useState<string>("");
   const [openAIConfig, setOpenAIConfig] = useState<OpenAIConfig>({
     key: "",
     host: "",
@@ -51,9 +51,9 @@ const SystemSection = () => {
         setOpenAIConfig(JSON.parse(openAIConfigSetting.value));
       }
 
-      const telegramRobotSetting = systemSettings.find((setting) => setting.name === "telegram-robot-token");
-      if (telegramRobotSetting) {
-        setTelegramRobotToken(telegramRobotSetting.value);
+      const telegramBotSetting = systemSettings.find((setting) => setting.name === "telegram-bot-token");
+      if (telegramBotSetting) {
+        setTelegramBotToken(telegramBotSetting.value);
       }
     });
   }, []);
@@ -135,22 +135,22 @@ const SystemSection = () => {
     toast.success("OpenAI Config updated");
   };
 
-  const handleTelegramRobotTokenChanged = (value: string) => {
-    setTelegramRobotToken(value);
+  const handleTelegramBotTokenChanged = (value: string) => {
+    setTelegramBotToken(value);
   };
 
-  const handleSaveTelegramRobotToken = async () => {
+  const handleSaveTelegramBotToken = async () => {
     try {
       await api.upsertSystemSetting({
-        name: "telegram-robot-token",
-        value: telegramRobotToken,
+        name: "telegram-bot-token",
+        value: telegramBotToken,
       });
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
       return;
     }
-    toast.success("OpenAI Config updated");
+    toast.success("Telegram Bot Token updated");
   };
 
   const handleAdditionalStyleChanged = (value: string) => {
@@ -292,14 +292,14 @@ const SystemSection = () => {
       <div className="form-label">
         <div className="flex flex-row items-center">
           <div className="w-auto flex items-center">
-            <span className="text-sm mr-1">{t("setting.system-section.telegram-robot-token")}</span>
+            <span className="text-sm mr-1">{t("setting.system-section.telegram-bot-token")}</span>
             <HelpButton
-              hint={t("setting.system-section.telegram-robot-token-description")}
+              hint={t("setting.system-section.telegram-bot-token-description")}
               url="https://usememos.com/docs/integration/telegram-bot"
             />
           </div>
         </div>
-        <Button onClick={handleSaveTelegramRobotToken}>{t("common.save")}</Button>
+        <Button onClick={handleSaveTelegramBotToken}>{t("common.save")}</Button>
       </div>
       <Input
         className="w-full"
@@ -307,9 +307,9 @@ const SystemSection = () => {
           fontFamily: "monospace",
           fontSize: "14px",
         }}
-        placeholder={t("setting.system-section.telegram-robot-token-placeholder")}
-        value={telegramRobotToken}
-        onChange={(event) => handleTelegramRobotTokenChanged(event.target.value)}
+        placeholder={t("setting.system-section.telegram-bot-token-placeholder")}
+        value={telegramBotToken}
+        onChange={(event) => handleTelegramBotTokenChanged(event.target.value)}
       />
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">

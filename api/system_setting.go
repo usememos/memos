@@ -35,8 +35,8 @@ const (
 	SystemSettingLocalStoragePathName SystemSettingName = "local-storage-path"
 	// SystemSettingOpenAIConfigName is the name of OpenAI config.
 	SystemSettingOpenAIConfigName SystemSettingName = "openai-config"
-	// SystemSettingTelegramRobotToken is the name of Telegram Robot Token.
-	SystemSettingTelegramRobotTokenName       SystemSettingName = "telegram-robot-token"
+	// SystemSettingTelegramBotToken is the name of Telegram Bot Token.
+	SystemSettingTelegramBotTokenName         SystemSettingName = "telegram-bot-token"
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
 )
 
@@ -87,8 +87,8 @@ func (key SystemSettingName) String() string {
 		return "local-storage-path"
 	case SystemSettingOpenAIConfigName:
 		return "openai-config"
-	case SystemSettingTelegramRobotTokenName:
-		return "telegram-robot-token"
+	case SystemSettingTelegramBotTokenName:
+		return "telegram-bot-token"
 	case SystemSettingMemoDisplayWithUpdatedTsName:
 		return "memo-display-with-updated-ts"
 	}
@@ -178,11 +178,11 @@ func (upsert SystemSettingUpsert) Validate() error {
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	case SystemSettingTelegramRobotTokenName:
+	case SystemSettingTelegramBotTokenName:
 		if upsert.Value == "" {
 			return nil
 		}
-		// Robot Token with Reverse Proxy shoule like `http.../bot<token>`
+		// Bot Token with Reverse Proxy shoule like `http.../bot<token>`
 		if strings.HasPrefix(upsert.Value, "http") {
 			slashIndex := strings.LastIndexAny(upsert.Value, "/")
 			if strings.HasPrefix(upsert.Value[slashIndex:], "/bot") {

@@ -9,12 +9,12 @@ import (
 )
 
 // downloadFileId download file with fileID, return the filepath and blob.
-func (r *Robot) downloadFileID(ctx context.Context, fileID string) (string, []byte, error) {
-	file, err := r.GetFile(ctx, fileID)
+func (b *Bot) downloadFileID(ctx context.Context, fileID string) (string, []byte, error) {
+	file, err := b.GetFile(ctx, fileID)
 	if err != nil {
 		return "", nil, err
 	}
-	blob, err := r.downloadFilepath(ctx, file.FilePath)
+	blob, err := b.downloadFilepath(ctx, file.FilePath)
 	if err != nil {
 		return "", nil, err
 	}
@@ -23,8 +23,8 @@ func (r *Robot) downloadFileID(ctx context.Context, fileID string) (string, []by
 }
 
 // downloadFilepath download file with filepath, you can get filepath by calling GetFile.
-func (r *Robot) downloadFilepath(ctx context.Context, filePath string) ([]byte, error) {
-	apiURL, err := r.apiURL(ctx)
+func (b *Bot) downloadFilepath(ctx context.Context, filePath string) ([]byte, error) {
+	apiURL, err := b.apiURL(ctx)
 	if err != nil {
 		return nil, err
 	}

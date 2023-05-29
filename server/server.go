@@ -26,7 +26,7 @@ type Server struct {
 	Profile *profile.Profile
 	Store   *store.Store
 
-	telegramRobot *telegram.Robot
+	telegramBot *telegram.Bot
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
@@ -48,8 +48,8 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	storeInstance := store.New(db.DBInstance, profile)
 	s.Store = storeInstance
 
-	telegramRobotHandler := newTelegramHandler(storeInstance)
-	s.telegramRobot = telegram.NewRobotWithHandler(telegramRobotHandler)
+	telegramBotHandler := newTelegramHandler(storeInstance)
+	s.telegramBot = telegram.NewBotWithHandler(telegramBotHandler)
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339}",` +
@@ -125,7 +125,7 @@ func (s *Server) Start(ctx context.Context) error {
 		return errors.Wrap(err, "failed to create activity")
 	}
 
-	go s.telegramRobot.Start(ctx)
+	go s.telegramBot.Start(ctx)
 
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }
