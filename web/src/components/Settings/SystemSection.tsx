@@ -150,7 +150,7 @@ const SystemSection = () => {
       toast.error(error.response.data.message);
       return;
     }
-    toast.success("OpenAI Config updated");
+    toast.success("Telegram Bot Token updated");
   };
 
   const handleAdditionalStyleChanged = (value: string) => {
