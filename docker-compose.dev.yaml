@@ -1,0 +1,28 @@
+# 1.Prepare your workspace by:
+#     docker compose run api go install github.com/cosmtrek/air@latest
+#     docker compose run web npm install
+#
+# 2. Start you work by:
+#     docker compose up -d
+#
+# 3. Check logs by:
+#     docker compose logs -f
+#
+services:
+  api:
+    image: golang:1.19.3-alpine3.16
+    working_dir: /work
+    command: air -c ./scripts/.air.toml
+    volumes:
+      - .:/work/
+      - ./.air/go/:/go/ # Cache for go mod database
+  web:
+    image: node:18.12.1-alpine3.16
+    working_dir: /work
+    depends_on: ["api"]
+    ports: ["3001:3001"]
+    environment: ["DEV_PROXY_SERVER=http://api:8081/"]
+    command: npm run dev
+    volumes:
+      - ./web:/work
+      - ./.air/node_modules/:/work/node_modules/ # Cache for Node Modules
