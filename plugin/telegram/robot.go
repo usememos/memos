@@ -2,7 +2,9 @@ package telegram
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/usememos/memos/common/log"
@@ -78,4 +80,19 @@ func (r *Robot) Start(ctx context.Context) {
 			log.Error("fail to handle plain text message", zap.Error(err))
 		}
 	}
+}
+
+var ErrNoToken = errors.New("token is empty")
+
+func (r *Robot) apiURL(ctx context.Context) (string, error) {
+	token := r.handler.RobotToken(ctx)
+	if token == "" {
+		return "", ErrNoToken
+	}
+
+	if strings.HasPrefix(token, "http") {
+		return token, nil
+	}
+
+	return "https://api.telegram.org/bot" + token, nil
 }

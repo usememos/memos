@@ -3,23 +3,19 @@ package telegram
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 )
 
-var ErrNoToken = errors.New("token is empty")
-
 func (r *Robot) postForm(ctx context.Context, apiPath string, formData url.Values, result any) error {
-	token := r.handler.RobotToken(ctx)
-	if token == "" {
-		return ErrNoToken
+	apiURL, err := r.apiURL(ctx)
+	if err != nil {
+		return err
 	}
 
-	uri := "https://api.telegram.org/bot" + token + apiPath
-	resp, err := http.PostForm(uri, formData)
+	resp, err := http.PostForm(apiURL+apiPath, formData)
 	if err != nil {
 		return fmt.Errorf("fail to http.PostForm: %s", err)
 	}
