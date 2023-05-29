@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strings"
 )
 
 // downloadFileId download file with fileID, return the filepath and blob.
@@ -23,13 +24,19 @@ func (r *Robot) downloadFileID(ctx context.Context, fileID string) (string, []by
 
 // downloadFilepath download file with filepath, you can get filepath by calling GetFile.
 func (r *Robot) downloadFilepath(ctx context.Context, filePath string) ([]byte, error) {
-	token := r.handler.RobotToken(ctx)
-	if token == "" {
-		return nil, ErrNoToken
+	apiURL, err := r.apiURL(ctx)
+	if err != nil {
+		return nil, err
 	}
 
-	uri := "https://api.telegram.org/file/bot" + token + "/" + filePath
-	resp, err := http.Get(uri)
+	idx := strings.LastIndex(apiURL, "/bot")
+	if idx < 0 {
+		return nil, ErrInvalidToken
+	}
+
+	fileURL := apiURL[:idx] + "/file" + apiURL[idx:]
+
+	resp, err := http.Get(fileURL + "/" + filePath)
 	if err != nil {
 		return nil, fmt.Errorf("fail to http.Get: %s", err)
 	}

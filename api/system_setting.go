@@ -182,6 +182,14 @@ func (upsert SystemSettingUpsert) Validate() error {
 		if upsert.Value == "" {
 			return nil
 		}
+		// Robot Token with Reverse Proxy shoule like `http.../bot<token>`
+		if strings.HasPrefix(upsert.Value, "http") {
+			slashIndex := strings.LastIndexAny(upsert.Value, "/")
+			if strings.HasPrefix(upsert.Value[slashIndex:], "/bot") {
+				return nil
+			}
+			return fmt.Errorf("token start with `http` must end with `/bot<token>`")
+		}
 		fragments := strings.Split(upsert.Value, ":")
 		if len(fragments) != 2 {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)

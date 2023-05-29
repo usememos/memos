@@ -293,7 +293,10 @@ const SystemSection = () => {
         <div className="flex flex-row items-center">
           <div className="w-auto flex items-center">
             <span className="text-sm mr-1">{t("setting.system-section.telegram-robot-token")}</span>
-            <HelpButton icon="help" url="https://usememos.com/docs/integration/telegram-bot" />
+            <HelpButton
+              hint={t("setting.system-section.telegram-robot-token-description")}
+              url="https://usememos.com/docs/integration/telegram-bot"
+            />
           </div>
         </div>
         <Button onClick={handleSaveTelegramRobotToken}>{t("common.save")}</Button>
