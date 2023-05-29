@@ -29,11 +29,11 @@ const noTokenWait = 30 * time.Second
 const errRetryWait = 10 * time.Second
 
 // Start start an infinity call of getUpdates from Telegram, call r.MessageHandle while get new message updates.
-func (r *Bot) Start(ctx context.Context) {
+func (b *Bot) Start(ctx context.Context) {
 	var offset int
 
 	for {
-		updates, err := r.GetUpdates(ctx, offset)
+		updates, err := b.GetUpdates(ctx, offset)
 		if err == ErrInvalidToken {
 			time.Sleep(noTokenWait)
 			continue
@@ -55,7 +55,7 @@ func (r *Bot) Start(ctx context.Context) {
 
 			// skip message other than text or photo
 			if message.Text == nil && message.Photo == nil {
-				_, err := r.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Only text or photo message be supported")
+				_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Only text or photo message be supported")
 				if err != nil {
 					log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
 				}
@@ -68,14 +68,14 @@ func (r *Bot) Start(ctx context.Context) {
 				continue
 			}
 
-			err = r.handleSingleMessage(ctx, message)
+			err = b.handleSingleMessage(ctx, message)
 			if err != nil {
 				log.Error(fmt.Sprintf("fail to handleSingleMessage for messageID=%d", message.MessageID), zap.Error(err))
 				continue
 			}
 		}
 
-		err = r.handleGroupMessages(ctx, groupMessages)
+		err = b.handleGroupMessages(ctx, groupMessages)
 		if err != nil {
 			log.Error("fail to handle plain text message", zap.Error(err))
 		}
@@ -84,8 +84,8 @@ func (r *Bot) Start(ctx context.Context) {
 
 var ErrInvalidToken = errors.New("token is invalid")
 
-func (r *Bot) apiURL(ctx context.Context) (string, error) {
-	token := r.handler.BotToken(ctx)
+func (b *Bot) apiURL(ctx context.Context) (string, error) {
+	token := b.handler.BotToken(ctx)
 	if token == "" {
 		return "", ErrInvalidToken
 	}
