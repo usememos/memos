@@ -20,7 +20,7 @@ type Bot struct {
 	handler Handler
 }
 
-// NewBotWithHandler create a telegram robot with specified handler.
+// NewBotWithHandler create a telegram bot with specified handler.
 func NewBotWithHandler(h Handler) *Bot {
 	return &Bot{handler: h}
 }
