@@ -31,7 +31,7 @@ func (r *Robot) downloadFilepath(ctx context.Context, filePath string) ([]byte, 
 
 	idx := strings.LastIndex(apiURL, "/bot")
 	if idx < 0 {
-		return nil, ErrNoToken
+		return nil, ErrInvalidToken
 	}
 
 	fileURL := apiURL[:idx] + "/file" + apiURL[idx:]

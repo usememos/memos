@@ -259,7 +259,7 @@
       "additional-style-placeholder": "Additional CSS code",
       "additional-script-placeholder": "Additional JavaScript code",
       "telegram-robot-token": "Telegram Robot Token",
-      "telegram-robot-token-description": "Get from @BotFather of Telegram",
+      "telegram-robot-token-description": "Telegram Robot Token or API Proxy like `http.../bot<token>`",
       "telegram-robot-token-placeholder": "Your Telegram Robot token",
       "openai-api-key": "OpenAI: API Key",
       "openai-api-key-description": "Get API key",

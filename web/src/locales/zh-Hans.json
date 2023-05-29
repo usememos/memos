@@ -412,6 +412,7 @@
       "ignore-version-upgrade": "忽略版本升级",
       "telegram-robot-token": "Telegram 机器人 Token",
       "telegram-robot-token-description": "从 Telegram 的 @BotFather 处获取",
+      "telegram-robot-token-description": "Telegram 机器人Token或`http.../bot<token>`格式的代理地址",
       "telegram-robot-token-placeholder": "Telegram 的机器人 Token",
       "openai-api-host": "OpenAI：API Host",
       "openai-api-host-placeholder": "默认：https://api.openai.com/",

@@ -34,7 +34,7 @@ func (r *Robot) Start(ctx context.Context) {
 
 	for {
 		updates, err := r.GetUpdates(ctx, offset)
-		if err == ErrNoToken {
+		if err == ErrInvalidToken {
 			time.Sleep(noTokenWait)
 			continue
 		}
@@ -82,12 +82,12 @@ func (r *Robot) Start(ctx context.Context) {
 	}
 }
 
-var ErrNoToken = errors.New("token is empty")
+var ErrInvalidToken = errors.New("token is invalid")
 
 func (r *Robot) apiURL(ctx context.Context) (string, error) {
 	token := r.handler.RobotToken(ctx)
 	if token == "" {
-		return "", ErrNoToken
+		return "", ErrInvalidToken
 	}
 
 	if strings.HasPrefix(token, "http") {
