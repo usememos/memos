@@ -1,17 +1,20 @@
 import { useEffect, useState } from "react";
-import { useEditorStore } from "@/store/module";
 import { useMemoCacheStore } from "@/store/zustand";
 import Icon from "../Icon";
+
+interface Props {
+  relationList: MemoRelation[];
+  setRelationList: (relationList: MemoRelation[]) => void;
+}
 
 interface FormatedMemoRelation extends MemoRelation {
   relatedMemo: Memo;
 }
 
-const RelationListView = () => {
-  const editorStore = useEditorStore();
+const RelationListView = (props: Props) => {
+  const { relationList, setRelationList } = props;
   const memoCacheStore = useMemoCacheStore();
   const [formatedMemoRelationList, setFormatedMemoRelationList] = useState<FormatedMemoRelation[]>([]);
-  const relationList = editorStore.state.relationList;
 
   useEffect(() => {
     const fetchRelatedMemoList = async () => {
@@ -30,7 +33,7 @@ const RelationListView = () => {
 
   const handleDeleteRelation = async (memoRelation: FormatedMemoRelation) => {
     const newRelationList = relationList.filter((relation) => relation.relatedMemoId !== memoRelation.relatedMemoId);
-    editorStore.setRelationList(newRelationList);
+    setRelationList(newRelationList);
   };
 
   return (
