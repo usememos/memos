@@ -12,24 +12,24 @@ import (
 )
 
 type Handler interface {
-	RobotToken(ctx context.Context) string
+	BotToken(ctx context.Context) string
 	MessageHandle(ctx context.Context, message Message, blobs map[string][]byte) error
 }
 
-type Robot struct {
+type Bot struct {
 	handler Handler
 }
 
-// NewRobotWithHandler create a telegram robot with specified handler.
-func NewRobotWithHandler(h Handler) *Robot {
-	return &Robot{handler: h}
+// NewBotWithHandler create a telegram robot with specified handler.
+func NewBotWithHandler(h Handler) *Bot {
+	return &Bot{handler: h}
 }
 
 const noTokenWait = 30 * time.Second
 const errRetryWait = 10 * time.Second
 
 // Start start an infinity call of getUpdates from Telegram, call r.MessageHandle while get new message updates.
-func (r *Robot) Start(ctx context.Context) {
+func (r *Bot) Start(ctx context.Context) {
 	var offset int
 
 	for {
@@ -84,8 +84,8 @@ func (r *Robot) Start(ctx context.Context) {
 
 var ErrInvalidToken = errors.New("token is invalid")
 
-func (r *Robot) apiURL(ctx context.Context) (string, error) {
-	token := r.handler.RobotToken(ctx)
+func (r *Bot) apiURL(ctx context.Context) (string, error) {
+	token := r.handler.BotToken(ctx)
 	if token == "" {
 		return "", ErrInvalidToken
 	}

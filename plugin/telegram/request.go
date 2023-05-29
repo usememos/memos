@@ -9,7 +9,7 @@ import (
 	"net/url"
 )
 
-func (r *Robot) postForm(ctx context.Context, apiPath string, formData url.Values, result any) error {
+func (r *Bot) postForm(ctx context.Context, apiPath string, formData url.Values, result any) error {
 	apiURL, err := r.apiURL(ctx)
 	if err != nil {
 		return err

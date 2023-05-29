@@ -15,7 +15,7 @@ const (
 )
 
 // handleSingleMessage handle a message not belongs to group.
-func (r *Robot) handleSingleMessage(ctx context.Context, message Message) error {
+func (r *Bot) handleSingleMessage(ctx context.Context, message Message) error {
 	reply, err := r.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
 	if err != nil {
 		return fmt.Errorf("fail to SendReplyMessage: %s", err)
@@ -53,7 +53,7 @@ func (r *Robot) handleSingleMessage(ctx context.Context, message Message) error 
 }
 
 // handleGroupMessages handle a message belongs to group.
-func (r *Robot) handleGroupMessages(ctx context.Context, groupMessages []Message) error {
+func (r *Bot) handleGroupMessages(ctx context.Context, groupMessages []Message) error {
 	captions := make(map[string]string, len(groupMessages))
 	messages := make(map[string]Message, len(groupMessages))
 	blobs := make(map[string]map[string][]byte, len(groupMessages))

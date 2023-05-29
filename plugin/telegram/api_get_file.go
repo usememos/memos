@@ -6,7 +6,7 @@ import (
 )
 
 // GetFile get download info of File by fileID from Telegram.
-func (r *Robot) GetFile(ctx context.Context, fileID string) (*File, error) {
+func (r *Bot) GetFile(ctx context.Context, fileID string) (*File, error) {
 	formData := url.Values{
 		"file_id": {fileID},
 	}

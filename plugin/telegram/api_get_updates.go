@@ -7,7 +7,7 @@ import (
 )
 
 // GetUpdates make a getUpdates api request.
-func (r *Robot) GetUpdates(ctx context.Context, offset int) ([]Update, error) {
+func (r *Bot) GetUpdates(ctx context.Context, offset int) ([]Update, error) {
 	formData := url.Values{
 		"timeout": {"60"},
 		"offset":  {strconv.Itoa(offset)},

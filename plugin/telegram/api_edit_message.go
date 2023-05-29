@@ -7,7 +7,7 @@ import (
 )
 
 // EditMessage make an editMessageText api request.
-func (r *Robot) EditMessage(ctx context.Context, chatID, messageID int, text string) (*Message, error) {
+func (r *Bot) EditMessage(ctx context.Context, chatID, messageID int, text string) (*Message, error) {
 	formData := url.Values{
 		"message_id": {strconv.Itoa(messageID)},
 		"chat_id":    {strconv.Itoa(chatID)},

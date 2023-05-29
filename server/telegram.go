@@ -21,8 +21,8 @@ func newTelegramHandler(store *store.Store) *telegramHandler {
 	return &telegramHandler{store: store}
 }
 
-func (t *telegramHandler) RobotToken(ctx context.Context) string {
-	return t.store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingTelegramRobotTokenName, "")
+func (t *telegramHandler) BotToken(ctx context.Context) string {
+	return t.store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingTelegramBotTokenName, "")
 }
 
 func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Message, blobs map[string][]byte) error {
