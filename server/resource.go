@@ -552,3 +552,48 @@ func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error)
 	}
 	return dstBlob, nil
 }
+
+func CheckResourceVisibility(ctx context.Context, s *store.Store, resourceID int) (store.Visibility, error) {
+	memoResourceFind := &api.MemoResourceFind{
+		ResourceID: &resourceID,
+	}
+
+	memoResources, err := s.FindMemoResourceList(ctx, memoResourceFind)
+	if err != nil {
+		return store.Private, err
+	}
+
+	// If resource is belongs to no memo, it'll always PRIVATE
+	if len(memoResources) == 0 {
+		return store.Private, nil
+	}
+
+	memoIDs := make([]int, 0, len(memoResources))
+	for _, memoResource := range memoResources {
+		memoIDs = append(memoIDs, memoResource.MemoID)
+	}
+	visibilityList, err := s.FindMemosVisibilityList(ctx, memoIDs)
+	if err != nil {
+		return store.Private, err
+	}
+
+	var isProtected bool
+	for _, visibility := range visibilityList {
+		// If any memo is PUBLIC, resource do
+		if visibility == store.Public {
+			return store.Public, nil
+		}
+
+		if visibility == store.Protected {
+			isProtected = true
+		}
+	}
+
+	// If no memo is PUBLIC, but any memo is PROTECTED, resource do
+	if isProtected {
+		return store.Protected, nil
+	}
+
+	// If all memo is PRIVATE, the resource do
+	return store.Private, nil
+}
