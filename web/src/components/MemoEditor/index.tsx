@@ -5,13 +5,13 @@ import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "@/labs/marked";
 import { upsertMemoResource } from "@/helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
-import { useEditorStore, useFilterStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
+import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
 import storage from "@/helpers/storage";
 import { clearContentQueryParam, getContentQueryParam } from "@/helpers/utils";
 import Icon from "../Icon";
 import Editor, { EditorRefActions } from "./Editor";
+import showCreateResourceDialog from "../CreateResourceDialog";
 import TagSelector from "./ActionButton/TagSelector";
-import ResourceSelector from "./ActionButton/ResourceSelector";
 import MemoVisibilitySelector from "./ActionButton/MemoVisibilitySelector";
 import ResourceListView from "./ResourceListView";
 import RelationListView from "./RelationListView";
@@ -24,73 +24,75 @@ const getInitialContent = (): string => {
   return getContentQueryParam() ?? storage.get(["editorContentCache"]).editorContentCache ?? "";
 };
 
-const setEditorContentCache = (content: string) => {
-  storage.set({
-    editorContentCache: content,
-  });
-};
+interface Props {
+  className?: string;
+  memoId?: MemoId;
+  relationList?: MemoRelation[];
+  onConfirm?: () => void;
+}
 
 interface State {
+  memoVisibility: Visibility;
+  resourceList: Resource[];
+  relationList: MemoRelation[];
   fullscreen: boolean;
   isUploadingResource: boolean;
   isRequesting: boolean;
 }
 
-const MemoEditor = () => {
+const MemoEditor = (props: Props) => {
+  const { className, memoId, onConfirm } = props;
   const { t, i18n } = useTranslation();
+  const {
+    state: { systemStatus },
+  } = useGlobalStore();
   const userStore = useUserStore();
-  const editorStore = useEditorStore();
   const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
   const resourceStore = useResourceStore();
 
   const [state, setState] = useState<State>({
+    memoVisibility: "PRIVATE",
+    resourceList: [],
+    relationList: props.relationList ?? [],
     fullscreen: false,
     isUploadingResource: false,
     isRequesting: false,
   });
-  const [allowSave, setAllowSave] = useState<boolean>(false);
+  const [hasContent, setHasContent] = useState<boolean>(false);
   const [isInIME, setIsInIME] = useState(false);
-  const editorState = editorStore.state;
-  const prevEditorStateRef = useRef(editorState);
   const editorRef = useRef<EditorRefActions>(null);
   const user = userStore.state.user as User;
   const setting = user.setting;
 
   useEffect(() => {
-    const { editingMemoIdCache } = storage.get(["editingMemoIdCache"]);
-    if (editingMemoIdCache) {
-      editorStore.setEditMemoWithId(editingMemoIdCache);
-    } else {
-      editorStore.setMemoVisibility(setting.memoVisibility);
+    let visibility = setting.memoVisibility;
+    if (systemStatus.disablePublicMemos && visibility === "PUBLIC") {
+      visibility = "PRIVATE";
     }
-  }, []);
+    setState((prevState) => ({
+      ...prevState,
+      memoVisibility: visibility,
+    }));
+  }, [setting.memoVisibility, systemStatus.disablePublicMemos]);
 
   useEffect(() => {
-    if (editorState.editMemoId) {
-      memoStore.getMemoById(editorState.editMemoId ?? UNKNOWN_ID).then((memo) => {
+    if (memoId) {
+      memoStore.getMemoById(memoId ?? UNKNOWN_ID).then((memo) => {
         if (memo) {
           handleEditorFocus();
-          editorStore.setMemoVisibility(memo.visibility);
-          editorStore.setResourceList(memo.resourceList);
-          editorStore.setRelationList(memo.relationList);
+          setState((prevState) => ({
+            ...prevState,
+            memoVisibility: memo.visibility,
+            resourceList: memo.resourceList,
+            relationList: memo.relationList,
+          }));
           editorRef.current?.setContent(memo.content ?? "");
         }
       });
-      storage.set({
-        editingMemoIdCache: editorState.editMemoId,
-      });
-    } else {
-      storage.remove(["editingMemoIdCache"]);
     }
-
-    prevEditorStateRef.current = editorState;
-  }, [editorState.editMemoId]);
-
-  useEffect(() => {
-    handleEditorFocus();
-  }, [editorStore.state.relationList]);
+  }, [memoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
     if (!editorRef.current) {
@@ -159,6 +161,38 @@ const MemoEditor = () => {
     }
   };
 
+  const handleMemoVisibilityChange = (visibility: Visibility) => {
+    setState((prevState) => ({
+      ...prevState,
+      memoVisibility: visibility,
+    }));
+  };
+
+  const handleUploadFileBtnClick = () => {
+    showCreateResourceDialog({
+      onConfirm: (resourceList) => {
+        setState((prevState) => ({
+          ...prevState,
+          resourceList: [...prevState.resourceList, ...resourceList],
+        }));
+      },
+    });
+  };
+
+  const handleSetResourceList = (resourceList: Resource[]) => {
+    setState((prevState) => ({
+      ...prevState,
+      resourceList,
+    }));
+  };
+
+  const handleSetRelationList = (relationList: MemoRelation[]) => {
+    setState((prevState) => ({
+      ...prevState,
+      relationList,
+    }));
+  };
+
   const handleUploadResource = async (file: File) => {
     setState((state) => {
       return {
@@ -190,14 +224,16 @@ const MemoEditor = () => {
       const resource = await handleUploadResource(file);
       if (resource) {
         uploadedResourceList.push(resource);
-        if (editorState.editMemoId) {
-          await upsertMemoResource(editorState.editMemoId, resource.id);
+        if (memoId) {
+          await upsertMemoResource(memoId, resource.id);
         }
       }
     }
     if (uploadedResourceList.length > 0) {
-      const resourceList = editorStore.getState().resourceList;
-      editorStore.setResourceList([...resourceList, ...uploadedResourceList]);
+      setState((prevState) => ({
+        ...prevState,
+        resourceList: [...prevState.resourceList, ...uploadedResourceList],
+      }));
     }
   };
 
@@ -215,6 +251,10 @@ const MemoEditor = () => {
     }
   };
 
+  const handleContentChange = (content: string) => {
+    setHasContent(content !== "");
+  };
+
   const handleSaveBtnClick = async () => {
     if (state.isRequesting) {
       return;
@@ -228,26 +268,24 @@ const MemoEditor = () => {
     });
     const content = editorRef.current?.getContent() ?? "";
     try {
-      const { editMemoId } = editorStore.getState();
-      if (editMemoId && editMemoId !== UNKNOWN_ID) {
-        const prevMemo = await memoStore.getMemoById(editMemoId ?? UNKNOWN_ID);
+      if (memoId && memoId !== UNKNOWN_ID) {
+        const prevMemo = await memoStore.getMemoById(memoId ?? UNKNOWN_ID);
 
         if (prevMemo) {
           await memoStore.patchMemo({
             id: prevMemo.id,
             content,
-            visibility: editorState.memoVisibility,
-            resourceIdList: editorState.resourceList.map((resource) => resource.id),
-            relationList: editorState.relationList,
+            visibility: state.memoVisibility,
+            resourceIdList: state.resourceList.map((resource) => resource.id),
+            relationList: state.relationList,
           });
         }
-        editorStore.clearEditMemo();
       } else {
         await memoStore.createMemo({
           content,
-          visibility: editorState.memoVisibility,
-          resourceIdList: editorState.resourceList.map((resource) => resource.id),
-          relationList: editorState.relationList,
+          visibility: state.memoVisibility,
+          resourceIdList: state.resourceList.map((resource) => resource.id),
+          relationList: state.relationList,
         });
         filterStore.clearFilter();
       }
@@ -275,26 +313,16 @@ const MemoEditor = () => {
         fullscreen: false,
       };
     });
-    editorStore.setResourceList([]);
-    editorStore.setRelationList([]);
-    setEditorContentCache("");
+    setState((prevState) => ({
+      ...prevState,
+      resourceList: [],
+      relationList: [],
+    }));
     editorRef.current?.setContent("");
     clearContentQueryParam();
-  };
-
-  const handleCancelEdit = () => {
-    if (editorState.editMemoId) {
-      editorStore.clearEditMemo();
-      editorStore.setResourceList([]);
-      editorStore.setRelationList([]);
-      editorRef.current?.setContent("");
-      setEditorContentCache("");
+    if (onConfirm) {
+      onConfirm();
     }
-  };
-
-  const handleContentChange = (content: string) => {
-    setAllowSave(content !== "");
-    setEditorContentCache(content);
   };
 
   const handleCheckBoxBtnClick = () => {
@@ -344,12 +372,6 @@ const MemoEditor = () => {
     editorRef.current?.focus();
   };
 
-  const handleEditorBlur = () => {
-    // do nothing
-  };
-
-  const isEditing = Boolean(editorState.editMemoId && editorState.editMemoId !== UNKNOWN_ID);
-
   const editorConfig = useMemo(
     () => ({
       className: `memo-editor`,
@@ -362,14 +384,15 @@ const MemoEditor = () => {
     [state.fullscreen, i18n.language]
   );
 
+  const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
+
   return (
     <div
-      className={`memo-editor-container ${isEditing ? "edit-ing" : ""} ${state.fullscreen ? "fullscreen" : ""}`}
+      className={`${className} memo-editor-container ${state.fullscreen ? "fullscreen" : ""}`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
       onFocus={handleEditorFocus}
-      onBlur={handleEditorBlur}
       onCompositionStart={() => setIsInIME(true)}
       onCompositionEnd={() => setIsInIME(false)}
     >
@@ -383,25 +406,20 @@ const MemoEditor = () => {
           <button className="action-btn">
             <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
           </button>
-          <ResourceSelector />
+          <button className="action-btn">
+            <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
+          </button>
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>
         </div>
       </div>
-      <ResourceListView />
-      <RelationListView />
+      <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
+      <RelationListView relationList={state.relationList} setRelationList={handleSetRelationList} />
       <div className="editor-footer-container">
-        <MemoVisibilitySelector />
+        <MemoVisibilitySelector value={state.memoVisibility} onChange={handleMemoVisibilityChange} />
         <div className="buttons-container">
-          <button className={`action-btn cancel-btn ${isEditing ? "" : "!hidden"}`} onClick={handleCancelEdit}>
-            {t("editor.cancel-edit")}
-          </button>
-          <button
-            className="action-btn confirm-btn"
-            disabled={!(allowSave || editorState.resourceList.length > 0) || state.isUploadingResource || state.isRequesting}
-            onClick={handleSaveBtnClick}
-          >
+          <button className="action-btn confirm-btn" disabled={!allowSave} onClick={handleSaveBtnClick}>
             {t("editor.save")}
           </button>
         </div>

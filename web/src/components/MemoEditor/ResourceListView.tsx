@@ -1,20 +1,23 @@
-import { useEditorStore } from "@/store/module";
 import Icon from "../Icon";
 import ResourceIcon from "../ResourceIcon";
 
-const ResourceListView = () => {
-  const editorStore = useEditorStore();
-  const editorState = editorStore.state;
+interface Props {
+  resourceList: Resource[];
+  setResourceList: (resourceList: Resource[]) => void;
+}
+
+const ResourceListView = (props: Props) => {
+  const { resourceList, setResourceList } = props;
 
   const handleDeleteResource = async (resourceId: ResourceId) => {
-    editorStore.setResourceList(editorState.resourceList.filter((resource) => resource.id !== resourceId));
+    setResourceList(resourceList.filter((resource) => resource.id !== resourceId));
   };
 
   return (
     <>
-      {editorState.resourceList && editorState.resourceList.length > 0 && (
+      {resourceList.length > 0 && (
         <div className="w-full flex flex-row justify-start flex-wrap gap-2 mt-2">
-          {editorState.resourceList.map((resource) => {
+          {resourceList.map((resource) => {
             return (
               <div
                 key={resource.id}

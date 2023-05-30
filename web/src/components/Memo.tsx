@@ -3,9 +3,9 @@ import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { useEditorStore, useFilterStore, useMemoStore, useUserStore } from "@/store/module";
-import { getRelativeTimeString } from "@/helpers/datetime";
+import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
 import { UNKNOWN_ID } from "@/helpers/consts";
+import { getRelativeTimeString } from "@/helpers/datetime";
 import { useMemoCacheStore } from "@/store/zustand";
 import Tooltip from "./kit/Tooltip";
 import Divider from "./kit/Divider";
@@ -17,6 +17,7 @@ import MemoRelationListView from "./MemoRelationListView";
 import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
+import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import "@/less/memo.less";
 
 interface Props {
@@ -28,7 +29,6 @@ interface Props {
 const Memo: React.FC<Props> = (props: Props) => {
   const { memo, readonly, showRelatedMemos } = props;
   const { t, i18n } = useTranslation();
-  const editorStore = useEditorStore();
   const filterStore = useFilterStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
@@ -78,7 +78,21 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleEditMemoClick = () => {
-    editorStore.setEditMemoWithId(memo.id);
+    showMemoEditorDialog({
+      memoId: memo.id,
+    });
+  };
+
+  const handleMarkMemoClick = () => {
+    showMemoEditorDialog({
+      relationList: [
+        {
+          memoId: UNKNOWN_ID,
+          relatedMemoId: memo.id,
+          type: "REFERENCE",
+        },
+      ],
+    });
   };
 
   const handleArchiveMemoClick = async () => {
@@ -90,10 +104,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
-    }
-
-    if (editorStore.getState().editMemoId === memo.id) {
-      editorStore.clearEditMemo();
     }
   };
 
@@ -180,7 +190,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    editorStore.setEditMemoWithId(memo.id);
+    handleEditMemoClick();
   };
 
   const handleMemoCreatedTimeClick = (e: React.MouseEvent) => {
@@ -197,15 +207,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     } else {
       filterStore.setMemoVisibilityFilter(visibility);
     }
-  };
-
-  const handleMarkMemo = () => {
-    const relation: MemoRelation = {
-      memoId: UNKNOWN_ID,
-      relatedMemoId: memo.id,
-      type: "REFERENCE",
-    };
-    editorStore.setRelationList(uniqWith([...editorStore.state.relationList, relation], isEqual));
   };
 
   return (
@@ -253,7 +254,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                     <Icon.Share className="w-4 h-auto mr-2" />
                     {t("common.share")}
                   </span>
-                  <span className="btn" onClick={handleMarkMemo}>
+                  <span className="btn" onClick={handleMarkMemoClick}>
                     <Icon.Link className="w-4 h-auto mr-2" />
                     Mark
                   </span>
