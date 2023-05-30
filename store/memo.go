@@ -227,6 +227,46 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemoMessage) error
 	return err
 }
 
+func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int) ([]Visibility, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	args := make([]any, 0, len(memoIDs))
+	list := make([]string, 0, len(memoIDs))
+	for _, memoID := range memoIDs {
+		args = append(args, memoID)
+		list = append(list, "?")
+	}
+
+	where := fmt.Sprintf("id in (%s)", strings.Join(list, ","))
+
+	query := `SELECT DISTINCT(visibility) FROM memo WHERE ` + where
+
+	rows, err := tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer rows.Close()
+
+	visibilityList := make([]Visibility, 0)
+	for rows.Next() {
+		var visibility Visibility
+		if err := rows.Scan(&visibility); err != nil {
+			return nil, FormatError(err)
+		}
+		visibilityList = append(visibilityList, visibility)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, FormatError(err)
+	}
+
+	return visibilityList, nil
+}
+
 func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoMessage, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
