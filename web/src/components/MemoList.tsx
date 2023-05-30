@@ -119,6 +119,7 @@ const MemoList = () => {
     }
     if (sortedMemos.length < DEFAULT_MEMO_LIMIT) {
       handleFetchMoreClick();
+      return;
     }
     const observer = new IntersectionObserver(([entry]) => {
       if (entry.isIntersecting) {
