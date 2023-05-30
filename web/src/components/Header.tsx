@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useLayoutStore, useUserStore } from "@/store/module";
+import { useGlobalStore, useLayoutStore, useUserStore } from "@/store/module";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
 import UserBanner from "./UserBanner";
@@ -13,6 +13,7 @@ import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 
 const Header = () => {
   const { t } = useTranslation();
+  const globalStore = useGlobalStore();
   const location = useLocation();
   const userStore = useUserStore();
   const layoutStore = useLayoutStore();
@@ -129,14 +130,16 @@ const Header = () => {
               >
                 <Icon.Settings className="mr-3 w-6 h-auto opacity-70" /> {t("common.settings")}
               </button>
-              <div className="pr-3 pl-1 w-full">
-                <button
-                  className="mt-2 w-full py-3 rounded-full flex flex-row justify-center items-center bg-green-600 font-medium text-white dark:opacity-80 hover:shadow hover:opacity-90"
-                  onClick={() => showMemoEditorDialog()}
-                >
-                  <Icon.Edit3 className="w-5 h-auto mr-1" /> New
-                </button>
-              </div>
+              {globalStore.isDev() && (
+                <div className="pr-3 pl-1 w-full">
+                  <button
+                    className="mt-2 w-full py-3 rounded-full flex flex-row justify-center items-center bg-green-600 font-medium text-white dark:opacity-80 hover:shadow hover:opacity-90"
+                    onClick={() => showMemoEditorDialog()}
+                  >
+                    <Icon.Edit3 className="w-4 h-auto mr-1" /> New
+                  </button>
+                </div>
+              )}
             </>
           )}
           {isVisitorMode && (
