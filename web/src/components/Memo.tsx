@@ -4,6 +4,7 @@ import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
+import { UNKNOWN_ID } from "@/helpers/consts";
 import { getRelativeTimeString } from "@/helpers/datetime";
 import { useMemoCacheStore } from "@/store/zustand";
 import Tooltip from "./kit/Tooltip";
@@ -16,8 +17,8 @@ import MemoRelationListView from "./MemoRelationListView";
 import showShareMemo from "./ShareMemoDialog";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
-import "@/less/memo.less";
 import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
+import "@/less/memo.less";
 
 interface Props {
   memo: Memo;
@@ -77,7 +78,21 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleEditMemoClick = () => {
-    showMemoEditorDialog(memo.id);
+    showMemoEditorDialog({
+      memoId: memo.id,
+    });
+  };
+
+  const handleMarkMemoClick = () => {
+    showMemoEditorDialog({
+      relationList: [
+        {
+          memoId: UNKNOWN_ID,
+          relatedMemoId: memo.id,
+          type: "REFERENCE",
+        },
+      ],
+    });
   };
 
   const handleArchiveMemoClick = async () => {
@@ -238,6 +253,10 @@ const Memo: React.FC<Props> = (props: Props) => {
                   <span className="btn" onClick={handleGenerateMemoImageBtnClick}>
                     <Icon.Share className="w-4 h-auto mr-2" />
                     {t("common.share")}
+                  </span>
+                  <span className="btn" onClick={handleMarkMemoClick}>
+                    <Icon.Link className="w-4 h-auto mr-2" />
+                    Mark
                   </span>
                   <Divider />
                   <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>

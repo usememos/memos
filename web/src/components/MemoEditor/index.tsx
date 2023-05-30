@@ -25,7 +25,9 @@ const getInitialContent = (): string => {
 };
 
 interface Props {
+  className?: string;
   memoId?: MemoId;
+  relationList?: MemoRelation[];
   onConfirm?: () => void;
 }
 
@@ -39,7 +41,7 @@ interface State {
 }
 
 const MemoEditor = (props: Props) => {
-  const { memoId, onConfirm } = props;
+  const { className, memoId, onConfirm } = props;
   const { t, i18n } = useTranslation();
   const {
     state: { systemStatus },
@@ -53,7 +55,7 @@ const MemoEditor = (props: Props) => {
   const [state, setState] = useState<State>({
     memoVisibility: "PRIVATE",
     resourceList: [],
-    relationList: [],
+    relationList: props.relationList ?? [],
     fullscreen: false,
     isUploadingResource: false,
     isRequesting: false,
@@ -386,7 +388,7 @@ const MemoEditor = (props: Props) => {
 
   return (
     <div
-      className={`memo-editor-container ${state.fullscreen ? "fullscreen" : ""}`}
+      className={`${className} memo-editor-container ${state.fullscreen ? "fullscreen" : ""}`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
@@ -405,7 +407,7 @@ const MemoEditor = (props: Props) => {
             <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
           </button>
           <button className="action-btn">
-            <Icon.File className="icon-img" onClick={handleUploadFileBtnClick} />
+            <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
           </button>
           <button className="action-btn" onClick={handleFullscreenBtnClick}>
             {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}

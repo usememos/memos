@@ -4,9 +4,10 @@ import MemoEditor from ".";
 
 interface Props extends DialogProps {
   memoId?: MemoId;
+  relationList?: MemoRelation[];
 }
 
-const MemoEditorDialog: React.FC<Props> = ({ memoId, destroy }: Props) => {
+const MemoEditorDialog: React.FC<Props> = ({ memoId, relationList, destroy }: Props) => {
   const handleCloseBtnClick = () => {
     destroy();
   };
@@ -20,19 +21,19 @@ const MemoEditorDialog: React.FC<Props> = ({ memoId, destroy }: Props) => {
         </button>
       </div>
       <div className="flex flex-col justify-start items-start max-w-full w-[36rem]">
-        <MemoEditor memoId={memoId} onConfirm={handleCloseBtnClick} />
+        <MemoEditor memoId={memoId} relationList={relationList} onConfirm={handleCloseBtnClick} />
       </div>
     </>
   );
 };
 
-export default function showMemoEditorDialog(memoId?: MemoId): void {
+export default function showMemoEditorDialog(props: Pick<Props, "memoId" | "relationList"> = {}): void {
   generateDialog(
     {
       className: "memo-editor-dialog",
       dialogName: "memo-editor-dialog",
     },
     MemoEditorDialog,
-    { memoId }
+    props
   );
 }
