@@ -162,7 +162,18 @@ const MemoList = () => {
     event.preventDefault();
     const rawStr = document.getSelection()?.toString();
     if (rawStr !== undefined) {
-      copy(rawStr.split("\n\n").join("\n"));
+      let hacked = false;
+      if (typeof window.clipboardData === "undefined") {
+        window.clipboardData = event.clipboardData;
+        hacked = true;
+      }
+      try {
+        copy(rawStr.split("\n\n").join("\n"));
+      } finally {
+        if (hacked) {
+          window.clipboardData = undefined;
+        }
+      }
     }
   };
 
