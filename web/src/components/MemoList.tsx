@@ -11,6 +11,12 @@ import "@/less/memo-list.less";
 import { PLAIN_LINK_REG } from "@/labs/marked/parser";
 import copy from "copy-to-clipboard";
 
+declare global {
+  interface Window {
+    clipboardData: any;
+  }
+}
+
 const MemoList = () => {
   const { t } = useTranslation();
   const memoStore = useMemoStore();
