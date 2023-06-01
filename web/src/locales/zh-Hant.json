@@ -60,7 +60,14 @@
     "visibility": "可見度",
     "learn-more": "了解",
     "e.g": "e.g.",
-    "beta": "Beta"
+    "beta": "Beta",
+    "dialog": {
+      "error": "錯誤",
+      "help": "幫助",
+      "info": "資訊",
+      "success": "成功",
+      "warning": "警告"
+    }
   },
   "router": {
     "back-to-home": "回到首頁"
@@ -185,6 +192,8 @@
       "editor-font-style": "編輯器字體樣式",
       "mobile-editor-style": "行動版編輯器樣式",
       "default-memo-sort-option": "Memo 顯示時間",
+      "telegram-user-id": "Telegram UserID",
+      "telegram-user-id-placeholder": "向 Telegram 機器人傳送任意訊息以獲取",      
       "created_ts": "建立時間",
       "updated_ts": "更新時間",
       "daily-review-time-offset": "每日回顧時間偏移",
@@ -243,10 +252,15 @@
       "allow-user-signup": "允許使用者註冊",
       "ignore-version-upgrade": "忽略版本更新提示",
       "disable-public-memos": "禁用公共memos",
+      "max-upload-size": "最大上傳檔案大小 (MiB)",
+      "max-upload-size-hint": "建議值為 32 MiB.",
       "additional-style": "自定義樣式",
       "additional-script": "自定義腳本",
       "additional-style-placeholder": "自定義 CSS 代碼",
       "additional-script-placeholder": "自定義 JavaScript 代碼",
+      "telegram-bot-token": "Telegram Bot Token",
+      "telegram-bot-token-description": "Telegram Bot Token or API Proxy like `http.../bot<token>`",
+      "telegram-bot-token-placeholder": "Your Telegram Bot token",
       "openai-api-key": "OpenAI: API Key",
       "openai-api-key-description": "取得 API key",
       "openai-api-key-placeholder": "您的 OpenAI API Key",
@@ -349,7 +363,9 @@
     "succeed-update-customized-profile": "更新自訂配置文件成功。",
     "succeed-update-additional-script": "更新附加腳本成功。",
     "update-succeed": "更新成功",
-    "page-not-found": "404 - 網頁無法顯示 😥"
+    "page-not-found": "404 - 網頁無法顯示 😥",
+    "maximum-upload-size-is": "最大允許檔案上傳大小 {{size}} MiB",
+    "file-exceeds-upload-limit-of": "檔案 {{file}} 超過上傳限制 {{size}} MiB"
   },
   "days": {
     "mon": "一",
@@ -364,7 +380,10 @@
     "title": "問 AI",
     "not-enabled": "您尚未設置 OpenAI API 密鑰。",
     "go-to-settings": "前往設定",
-    "placeholder": "凡事皆可問…"
+    "placeholder": "凡事皆可問…",
+    "default-message-group-title": "預設會話",
+    "create-message-group-title": "新建對話",
+    "label-message-group-name-title": "對話名稱"
   },
   "embed-memo": {
     "title": "嵌入 Memo",
