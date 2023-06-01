@@ -14,8 +14,6 @@ RUN pnpm build
 FROM golang:1.19.3-alpine3.16 AS backend
 WORKDIR /backend-build
 
-RUN apk update && apk add --no-cache gcc musl-dev
-
 COPY . .
 COPY --from=frontend /frontend-build/dist ./server/dist
 
