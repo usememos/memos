@@ -1,0 +1,3 @@
+Install:
+
+    $ go get modernc.org/libc

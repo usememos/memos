@@ -1,0 +1,91 @@
+= Design Notes
+
+== Problems:
+
+Translating C to Go is harder than it looks.
+
+Jan says: It's impossible in the general case to turn C char* into Go
+[]byte.  It's possible to do it probably often for concrete C code
+cases - based also on author's C coding style. The first problem this
+runs into is that Go does not guarantee that the backing array will
+keep its address stable due to Go movable stacks. C expects the
+opposite, a pointer never magically modifies itself, so some code will
+fail.
+
+INSERT CODE EXAMPLES ILLUSTRATING THE PROBLEM HERE
+
+== How the parser works
+
+There are no comment nodes in the C AST. Instead every cc.Token has a
+Sep field: https://godoc.org/modernc.org/cc/v3#Token
+
+It captures, when configured to do so, all white space preceding the
+token, combined, including comments, if any. So we have all white
+space/comments information for every token in the AST. A final white
+space/comment, preceding EOF, is available as field TrailingSeperator
+in the AST: https://godoc.org/modernc.org/cc/v3#AST.
+
+To get the lexically first white space/comment for any node, use
+tokenSeparator():
+https://gitlab.com/cznic/ccgo/-/blob/6551e2544a758fdc265c8fac71fb2587fb3e1042/v3/go.go#L1476
+
+The same with a default value is comment():
+https://gitlab.com/cznic/ccgo/-/blob/6551e2544a758fdc265c8fac71fb2587fb3e1042/v3/go.go#L1467
+
+== Looking forward
+
+Eric says: In my visualization of how the translator would work, the
+output of a ccgo translation of a module at any given time is a file
+of pseudo-Go code in which some sections may be enclosed by a Unicode
+bracketing character (presently using the guillemot quotes U+ab and
+U+bb) meaning "this is not Go yet" that intentionally makes the Go
+compiler barf. This expresses a color on the AST nodes.
+
+So, for example, if I'm translating hello.c with a ruleset that does not
+include print -> fmt.Printf, this:
+
+---------------------------------------------------------
+#include <stdio>
+
+/* an example comment */
+
+int main(int argc, char *argv[])
+{
+    printf("Hello, World")
+}
+---------------------------------------------------------
+
+becomes this without any explicit rules at all:
+
+---------------------------------------------------------
+«#include <stdio>»
+
+/* an example comment */
+
+func main
+{
+	«printf(»"Hello, World"!\n"«)»
+}
+---------------------------------------------------------
+
+Then, when the rule print -> fmt.Printf is added, it becomes
+
+---------------------------------------------------------
+import (
+        "fmt"
+)
+
+/* an example comment */
+
+func main
+{
+	fmt.Printf("Hello, World"!\n")
+}
+---------------------------------------------------------
+
+because with that rule the AST node corresponding to the printf
+call can be translated and colored "Go".  This implies an import
+of fmt.  We observe that there are no longer C-colored spans
+and drop the #includes.
+
+// end

@@ -1,0 +1,20 @@
+# Automatically normalize line endings for all text-based files
+# http://git-scm.com/docs/gitattributes#_end_of_line_conversion
+* text=auto
+
+# For the following file types, normalize line endings to LF on checking and
+# prevent conversion to CRLF when they are checked out (this is required in
+# order to prevent newline related issues)
+.*      text eol=lf
+*.go    text eol=lf
+*.yml   text eol=lf
+*.html  text eol=lf
+*.css   text eol=lf
+*.js    text eol=lf
+*.json  text eol=lf
+LICENSE text eol=lf
+
+# Exclude `website` and `cookbook` from GitHub's language statistics
+# https://github.com/github/linguist#using-gitattributes
+cookbook/* linguist-documentation
+website/* linguist-documentation

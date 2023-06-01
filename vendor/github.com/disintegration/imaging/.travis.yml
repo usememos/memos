@@ -1,0 +1,12 @@
+language: go
+go:
+  - "1.10.x"
+  - "1.11.x"
+  - "1.12.x"
+
+before_install:
+  - go get github.com/mattn/goveralls
+
+script:
+  - go test -v -race -cover
+  - $GOPATH/bin/goveralls -service=travis-ci

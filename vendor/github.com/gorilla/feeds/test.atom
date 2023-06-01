@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feed xmlns:atom="http://www.w3.org/2005/Atom">
+        <title><![CDATA[Lorem ipsum feed for an interval of 1 minutes]]></title>
+        <description><![CDATA[This is a constantly updating lorem ipsum feed]]></description>
+        <link>http://example.com/</link>
+        <generator>RSS for Node</generator>
+        <lastBuildDate>Tue, 30 Oct 2018 23:22:37 GMT</lastBuildDate>
+        <author><![CDATA[John Smith]]></author>
+        <pubDate>Tue, 30 Oct 2018 23:22:00 GMT</pubDate>
+        <copyright><![CDATA[Michael Bertolacci, licensed under a Creative Commons Attribution 3.0 Unported License.]]></copyright>
+        <ttl>60</ttl>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:22:00+00:00]]></title>
+            <description><![CDATA[Exercitation ut Lorem sint proident.]]></description>
+            <link>http://example.com/test/1540941720</link>
+            <guid isPermaLink="true">http://example.com/test/1540941720</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:22:00 GMT</pubDate>
+        </entry>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:21:00+00:00]]></title>
+            <description><![CDATA[Ea est do quis fugiat exercitation.]]></description>
+            <link>http://example.com/test/1540941660</link>
+            <guid isPermaLink="true">http://example.com/test/1540941660</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:21:00 GMT</pubDate>
+        </entry>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:20:00+00:00]]></title>
+            <description><![CDATA[Ipsum velit cillum ad laborum sit nulla exercitation consequat sint veniam culpa veniam voluptate incididunt.]]></description>
+            <link>http://example.com/test/1540941600</link>
+            <guid isPermaLink="true">http://example.com/test/1540941600</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:20:00 GMT</pubDate>
+        </entry>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:19:00+00:00]]></title>
+            <description><![CDATA[Ullamco pariatur aliqua consequat ea veniam id qui incididunt laborum.]]></description>
+            <link>http://example.com/test/1540941540</link>
+            <guid isPermaLink="true">http://example.com/test/1540941540</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:19:00 GMT</pubDate>
+        </entry>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:18:00+00:00]]></title>
+            <description><![CDATA[Velit proident aliquip aliquip anim mollit voluptate laboris voluptate et occaecat occaecat laboris ea nulla.]]></description>
+            <link>http://example.com/test/1540941480</link>
+            <guid isPermaLink="true">http://example.com/test/1540941480</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:18:00 GMT</pubDate>
+        </entry>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:17:00+00:00]]></title>
+            <description><![CDATA[Do in quis mollit consequat id in minim laborum sint exercitation laborum elit officia.]]></description>
+            <link>http://example.com/test/1540941420</link>
+            <guid isPermaLink="true">http://example.com/test/1540941420</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:17:00 GMT</pubDate>
+        </entry>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:16:00+00:00]]></title>
+            <description><![CDATA[Irure id sint ullamco Lorem magna consectetur officia adipisicing duis incididunt.]]></description>
+            <link>http://example.com/test/1540941360</link>
+            <guid isPermaLink="true">http://example.com/test/1540941360</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:16:00 GMT</pubDate>
+        </entry>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:15:00+00:00]]></title>
+            <description><![CDATA[Sunt anim excepteur esse nisi commodo culpa laborum exercitation ad anim ex elit.]]></description>
+            <link>http://example.com/test/1540941300</link>
+            <guid isPermaLink="true">http://example.com/test/1540941300</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:15:00 GMT</pubDate>
+        </entry>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:14:00+00:00]]></title>
+            <description><![CDATA[Excepteur aliquip fugiat ex labore nisi.]]></description>
+            <link>http://example.com/test/1540941240</link>
+            <guid isPermaLink="true">http://example.com/test/1540941240</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:14:00 GMT</pubDate>
+        </entry>
+        <entry>
+            <title><![CDATA[Lorem ipsum 2018-10-30T23:13:00+00:00]]></title>
+            <description><![CDATA[Id proident adipisicing proident pariatur aute pariatur pariatur dolor dolor in voluptate dolor.]]></description>
+            <link>http://example.com/test/1540941180</link>
+            <guid isPermaLink="true">http://example.com/test/1540941180</guid>
+            <dc:creator><![CDATA[John Smith]]></dc:creator>
+            <pubDate>Tue, 30 Oct 2018 23:13:00 GMT</pubDate>
+        </entry>
+</feed>
