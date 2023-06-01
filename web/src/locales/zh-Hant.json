@@ -60,7 +60,7 @@
     "visibility": "可見度",
     "learn-more": "了解",
     "e.g": "e.g.",
-    "beta": "Beta"
+    "beta": "Beta",
     "dialog": {
       "error": "錯誤",
       "help": "幫助",
@@ -363,7 +363,7 @@
     "succeed-update-customized-profile": "更新自訂配置文件成功。",
     "succeed-update-additional-script": "更新附加腳本成功。",
     "update-succeed": "更新成功",
-    "page-not-found": "404 - 網頁無法顯示 😥"
+    "page-not-found": "404 - 網頁無法顯示 😥",
     "maximum-upload-size-is": "最大允許檔案上傳大小 {{size}} MiB",
     "file-exceeds-upload-limit-of": "檔案 {{file}} 超過上傳限制 {{size}} MiB"
   },
@@ -380,7 +380,7 @@
     "title": "問 AI",
     "not-enabled": "您尚未設置 OpenAI API 密鑰。",
     "go-to-settings": "前往設定",
-    "placeholder": "凡事皆可問…"
+    "placeholder": "凡事皆可問…",
     "default-message-group-title": "預設會話",
     "create-message-group-title": "新建對話",
     "label-message-group-name-title": "對話名稱"
