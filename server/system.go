@@ -42,7 +42,6 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			Profile:            *s.Profile,
 			DBSize:             0,
 			AllowSignUp:        false,
-			IgnoreUpgrade:      false,
 			DisablePublicMemos: false,
 			MaxUploadSizeMiB:   32,
 			AdditionalStyle:    "",
@@ -79,8 +78,6 @@ func (s *Server) registerSystemRoutes(g *echo.Group) {
 			switch systemSetting.Name {
 			case api.SystemSettingAllowSignUpName:
 				systemStatus.AllowSignUp = baseValue.(bool)
-			case api.SystemSettingIgnoreUpgradeName:
-				systemStatus.IgnoreUpgrade = baseValue.(bool)
 			case api.SystemSettingDisablePublicMemosName:
 				systemStatus.DisablePublicMemos = baseValue.(bool)
 			case api.SystemSettingMaxUploadSizeMiBName:
