@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import Dropdown from "./kit/Dropdown";
 import Icon from "./Icon";
 import UserAvatar from "./UserAvatar";
 import showAboutSiteDialog from "./AboutSiteDialog";
-import showSettingDialog from "./SettingDialog";
 
 const UserBanner = () => {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const { systemStatus } = globalStore.state;
@@ -22,7 +23,7 @@ const UserBanner = () => {
   }, [user]);
 
   const handleMyAccountClick = () => {
-    showSettingDialog("my-account");
+    navigate("/setting");
   };
 
   const handleAboutBtnClick = () => {

@@ -46,27 +46,4 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 
 		return c.JSON(http.StatusOK, composeResponse(result))
 	})
-
-	g.GET("/openai/enabled", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		openAIConfigSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: api.SystemSettingOpenAIConfigName,
-		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find openai key").SetInternal(err)
-		}
-
-		openAIConfig := api.OpenAIConfig{}
-		if openAIConfigSetting != nil {
-			err = json.Unmarshal([]byte(openAIConfigSetting.Value), &openAIConfig)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal openai system setting value").SetInternal(err)
-			}
-		}
-		if openAIConfig.Key == "" {
-			return echo.NewHTTPError(http.StatusBadRequest, "OpenAI API key not set")
-		}
-
-		return c.JSON(http.StatusOK, composeResponse(openAIConfig.Key != ""))
-	})
 }
