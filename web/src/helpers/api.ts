@@ -261,14 +261,6 @@ export function deleteIdentityProvider(id: IdentityProviderId) {
   return axios.delete(`/api/idp/${id}`);
 }
 
-export function postChatCompletion(messages: any[]) {
-  return axios.post<ResponseObject<string>>(`/api/openai/chat-completion`, messages);
-}
-
-export function checkOpenAIEnabled() {
-  return axios.get<ResponseObject<boolean>>(`/api/openai/enabled`);
-}
-
 export async function getRepoStarCount() {
   const { data } = await axios.get(`https://api.github.com/repos/usememos/memos`, {
     headers: {

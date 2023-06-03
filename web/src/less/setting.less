@@ -1,0 +1,47 @@
+.setting-page-wrapper {
+  @apply flex flex-row justify-start items-start relative w-full h-full p-4 rounded-lg bg-white dark:bg-zinc-700 dark:text-gray-200 sm:gap-x-4;
+
+  > .section-selector-container {
+    @apply hidden sm:flex flex-col justify-start items-start sm:w-40 h-auto sm:h-full shrink-0;
+
+    > .section-title {
+      @apply text-sm mt-2 sm:mt-4 first:mt-2 mb-1 font-mono text-gray-400;
+    }
+
+    > .section-items-container {
+      @apply w-full h-auto flex flex-row sm:flex-col justify-start items-start;
+
+      > .section-item {
+        @apply flex flex-row justify-start items-center text-base select-none mr-3 sm:mr-0 mt-0 sm:mt-2 text-gray-700 dark:text-gray-300 cursor-pointer hover:opacity-80;
+
+        &.selected {
+          @apply font-bold hover:opacity-100;
+        }
+
+        > .icon-text {
+          @apply text-base mr-2;
+        }
+      }
+    }
+  }
+
+  > .section-content-container {
+    @apply w-full sm:w-auto grow flex flex-col justify-start items-start h-full sm:h-128 overflow-y-scroll hide-scrollbar;
+
+    > .section-container {
+      @apply flex flex-col justify-start items-start w-full;
+
+      .title-text {
+        @apply text-sm mt-4 first:mt-2 mb-3 font-mono text-gray-500;
+      }
+
+      > .form-label {
+        @apply flex flex-row items-center w-full mb-2;
+
+        > .normal-text {
+          @apply shrink-0 select-text;
+        }
+      }
+    }
+  }
+}
