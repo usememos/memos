@@ -7,6 +7,7 @@ import Icon from "./Icon";
 import UserBanner from "./UserBanner";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
+import UpgradeVersionView from "./UpgradeVersionBanner";
 
 const Header = () => {
   const { t } = useTranslation();
@@ -139,6 +140,7 @@ const Header = () => {
                   <Icon.Edit3 className="w-4 h-auto mr-1" /> New
                 </button>
               </div>
+              <UpgradeVersionView />
             </>
           )}
           {isVisitorMode && (

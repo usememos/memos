@@ -10,8 +10,6 @@ type SystemStatus struct {
 	// System settings
 	// Allow sign up.
 	AllowSignUp bool `json:"allowSignUp"`
-	// Ignore upgrade
-	IgnoreUpgrade bool `json:"ignoreUpgrade"`
 	// Disable public memos.
 	DisablePublicMemos bool `json:"disablePublicMemos"`
 	// Max upload size.

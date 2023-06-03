@@ -17,8 +17,6 @@ const (
 	SystemSettingSecretSessionName SystemSettingName = "secret-session"
 	// SystemSettingAllowSignUpName is the name of allow signup setting.
 	SystemSettingAllowSignUpName SystemSettingName = "allow-signup"
-	// SystemSettingIgnoreUpgradeName is the name of ignore upgrade.
-	SystemSettingIgnoreUpgradeName SystemSettingName = "ignore-upgrade"
 	// SystemSettingDisablePublicMemosName is the name of disable public memos setting.
 	SystemSettingDisablePublicMemosName SystemSettingName = "disable-public-memos"
 	// SystemSettingMaxUploadSizeMiBName is the name of max upload size setting.
@@ -69,8 +67,6 @@ func (key SystemSettingName) String() string {
 		return "secret-session"
 	case SystemSettingAllowSignUpName:
 		return "allow-signup"
-	case SystemSettingIgnoreUpgradeName:
-		return "ignore-upgrade"
 	case SystemSettingDisablePublicMemosName:
 		return "disable-public-memos"
 	case SystemSettingMaxUploadSizeMiBName:
@@ -115,11 +111,6 @@ func (upsert SystemSettingUpsert) Validate() error {
 	case SystemSettingServerIDName:
 		return fmt.Errorf("updating %v is not allowed", settingName)
 	case SystemSettingAllowSignUpName:
-		var value bool
-		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
-			return fmt.Errorf(systemSettingUnmarshalError, settingName)
-		}
-	case SystemSettingIgnoreUpgradeName:
 		var value bool
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)

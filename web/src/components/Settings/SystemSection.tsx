@@ -12,7 +12,6 @@ import "@/less/settings/system-section.less";
 interface State {
   dbSize: number;
   allowSignUp: boolean;
-  ignoreUpgrade: boolean;
   disablePublicMemos: boolean;
   additionalStyle: string;
   additionalScript: string;
@@ -27,7 +26,6 @@ const SystemSection = () => {
   const [state, setState] = useState<State>({
     dbSize: systemStatus.dbSize,
     allowSignUp: systemStatus.allowSignUp,
-    ignoreUpgrade: systemStatus.ignoreUpgrade,
     additionalStyle: systemStatus.additionalStyle,
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
@@ -78,17 +76,6 @@ const SystemSection = () => {
     });
     await api.upsertSystemSetting({
       name: "allow-signup",
-      value: JSON.stringify(value),
-    });
-  };
-
-  const handleIgnoreUpgradeChanged = async (value: boolean) => {
-    setState({
-      ...state,
-      ignoreUpgrade: value,
-    });
-    await api.upsertSystemSetting({
-      name: "ignore-upgrade",
       value: JSON.stringify(value),
     });
   };
@@ -260,10 +247,6 @@ const SystemSection = () => {
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
         <Switch checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
-      </div>
-      <div className="form-label">
-        <span className="normal-text">{t("setting.system-section.ignore-version-upgrade")}</span>
-        <Switch checked={state.ignoreUpgrade} onChange={(event) => handleIgnoreUpgradeChanged(event.target.checked)} />
       </div>
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>

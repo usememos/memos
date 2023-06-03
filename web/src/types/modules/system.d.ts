@@ -23,7 +23,6 @@ interface SystemStatus {
   dbSize: number;
   // System settings
   allowSignUp: boolean;
-  ignoreUpgrade: boolean;
   disablePublicMemos: boolean;
   maxUploadSizeMiB: number;
   additionalStyle: string;
