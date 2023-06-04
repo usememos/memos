@@ -9,6 +9,10 @@ import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import Selector from "./kit/Selector";
 import "@/less/create-shortcut-dialog.less";
+import shortcut from "@/store/reducer/shortcut";
+import ShortcutList from "./ShortcutList";
+
+let isClicked = false;
 
 interface Props extends DialogProps {
   shortcutId?: ShortcutId;
@@ -98,6 +102,8 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
     });
   }, []);
 
+  shortcutId ? isClicked=true : isClicked=false;
+
   return (
     <>
       <div className="dialog-header-container">
@@ -181,11 +187,18 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
 
   useEffect(() => {
     if (type === "DISPLAY_TIME") {
-      const nowDatetimeValue = getNormalizedTimeString();
-      handleValueChange(nowDatetimeValue);
+      if(isClicked){
+        const nowDatetimeValue = filter.value.value;
+        handleValueChange(nowDatetimeValue);
+      }
+      else {
+        const nowDatetimeValue = getNormalizedTimeString();
+        handleValueChange(nowDatetimeValue);
+      }
     } else {
       setValue(filter.value.value);
     }
+    isClicked = false;
   }, [type]);
 
   const handleRelationChange = (value: string) => {
