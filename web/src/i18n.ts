@@ -9,6 +9,7 @@ export const availableLocales = [
   "es",
   "fr",
   "it",
+  "ja",
   "ko",
   "nl",
   "pl",
