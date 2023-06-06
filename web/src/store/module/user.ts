@@ -21,8 +21,15 @@ const defaultLocalSetting: LocalSetting = {
 };
 
 export const convertResponseModelUser = (user: User): User => {
+  // user default 'Basic Setting' should follow server's setting
+  // 'Basic Setting' fields: locale, appearance
+  const { systemStatus } = store.getState().global;
+  const { locale, appearance } = systemStatus.customizedProfile;
+  const systemSetting = { locale, appearance };
+
   const setting: Setting = {
     ...defaultSetting,
+    ...systemSetting,
   };
   const { localSetting: storageLocalSetting } = storage.get(["localSetting"]);
   const localSetting: LocalSetting = {

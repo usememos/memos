@@ -1,5 +1,9 @@
 type Appearance = "system" | "light" | "dark";
 
+interface BasicSetting {
+  locale: Locale;
+  appearance: Appearance;
+}
 interface Setting {
   locale: Locale;
   appearance: Appearance;
