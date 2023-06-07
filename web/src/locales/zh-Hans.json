@@ -327,6 +327,7 @@
     "preference": "偏好设置",
     "preference-section": {
       "auto-collapse": "自动折叠",
+      "public-in-days": "公开Memo可见天数",
       "created_ts": "创建时间",
       "daily-review-time-offset": "每日回顾时间偏移",
       "default-memo-sort-option": "备忘录显示时间",

@@ -9,6 +9,7 @@ interface Setting {
   appearance: Appearance;
   memoVisibility: Visibility;
   telegramUserId: string;
+  publicInDays: string;
 }
 
 interface LocalSetting {

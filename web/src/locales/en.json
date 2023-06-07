@@ -188,6 +188,7 @@
     },
     "preference-section": {
       "theme": "Theme",
+      "public-in-days": "Visible days of Public Memo",
       "default-memo-visibility": "Default memo visibility",
       "default-resource-visibility": "Default resource visibility",
       "enable-folding-memo": "Enable folding memo",

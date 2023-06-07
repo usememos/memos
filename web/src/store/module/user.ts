@@ -12,6 +12,7 @@ const defaultSetting: Setting = {
   appearance: getSystemColorScheme(),
   memoVisibility: "PRIVATE",
   telegramUserId: "",
+  publicInDays: "",
 };
 
 const defaultLocalSetting: LocalSetting = {

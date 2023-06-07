@@ -17,6 +17,7 @@ const PreferencesSection = () => {
   const { appearance, locale } = globalStore.state;
   const { setting, localSetting } = userStore.state.user as User;
   const [telegramUserId, setTelegramUserId] = useState<string>(setting.telegramUserId);
+  const [publicInDays, setPublicInDays] = useState<string>(setting.publicInDays);
   const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
@@ -66,6 +67,17 @@ const PreferencesSection = () => {
     setTelegramUserId(value);
   };
 
+  const handlePublicInDaysChanged = async (value: string) => {
+    try {
+      await userStore.upsertUserSetting("public-in-days", value);
+      setPublicInDays(value);
+      toast.success(t("common.dialog.success"));
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
   return (
     <div className="section-container preferences-section-container">
       <p className="title-text">{t("common.basic")}</p>
@@ -96,6 +108,10 @@ const PreferencesSection = () => {
           ))}
         </Select>
       </div>
+      <label className="form-label selector">
+        <span className="text-sm">{t("setting.preference-section.public-in-days")}</span>
+        <Input className="w-16" type="number" value={publicInDays} onChange={(event) => handlePublicInDaysChanged(event.target.value)} />
+      </label>
       <div className="form-label selector">
         <span className="text-sm break-keep text-ellipsis overflow-hidden">{t("setting.preference-section.daily-review-time-offset")}</span>
         <span className="w-auto inline-flex">

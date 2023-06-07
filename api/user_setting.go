@@ -19,6 +19,8 @@ const (
 	UserSettingMemoVisibilityKey UserSettingKey = "memo-visibility"
 	// UserSettingTelegramUserID is the key type for telegram UserID of memos user.
 	UserSettingTelegramUserIDKey UserSettingKey = "telegram-user-id"
+	// UserSettingPublicInDays is the key type for visiable days of public memo.
+	UserSettingPublicInDays UserSettingKey = "public-in-days"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -32,6 +34,8 @@ func (key UserSettingKey) String() string {
 		return "memo-visibility"
 	case UserSettingTelegramUserIDKey:
 		return "telegram-user-id"
+	case UserSettingPublicInDays:
+		return "public-in-days"
 	}
 	return ""
 }
@@ -115,6 +119,16 @@ func (upsert UserSettingUpsert) Validate() error {
 		}
 		if _, err := strconv.Atoi(s); err != nil {
 			return fmt.Errorf("invalid user setting telegram user id value")
+		}
+	} else if upsert.Key == UserSettingPublicInDays {
+		var s string
+		err := json.Unmarshal([]byte(upsert.Value), &s)
+		if err != nil {
+			return fmt.Errorf("invalid user setting public in days value")
+		}
+
+		if v, err := strconv.Atoi(s); err != nil || v < 0 {
+			return fmt.Errorf("invalid user setting public in days value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")
