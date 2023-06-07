@@ -101,7 +101,7 @@ func TestSetupServiceCreateUser(t *testing.T) {
 		},
 		`username != "", password == ""`: {
 			hostUsername: expectedCreated.Username,
-			expectedErr:  "validate: password is too short, minimum length is 6",
+			expectedErr:  "validate: password is too short, minimum length is 3",
 		},
 		"failed to create": {
 			setupStore: func(m *storeMock) {
