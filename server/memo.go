@@ -507,7 +507,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		if !userLogined {
-			memoMessageList, err = FilterPublicMemosByDays(ctx, s.Store, memoMessageList)
+			memoMessageList, err = filterPublicMemosByDays(ctx, s.Store, memoMessageList)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to filter by public-in-days %s", err)).SetInternal(err)
 			}
@@ -711,8 +711,8 @@ func (s *Server) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (b
 	return memoDisplayWithUpdatedTs, nil
 }
 
-// FilterPublicMemosByDays filter public MemoMessages by creator's public-in-days setting.
-func FilterPublicMemosByDays(ctx context.Context, s *store.Store, list []*store.MemoMessage) ([]*store.MemoMessage, error) {
+// filterPublicMemosByDays filter public MemoMessages by creator's public-in-days setting.
+func filterPublicMemosByDays(ctx context.Context, s *store.Store, list []*store.MemoMessage) ([]*store.MemoMessage, error) {
 	settings, err := s.FindUserSettingList(ctx, &api.UserSettingFind{Key: api.UserSettingPublicInDays})
 	if err != nil {
 		return nil, fmt.Errorf("Failed to fetch public-in-days setting")

@@ -36,7 +36,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}
 
-		memoList, err = FilterPublicMemosByDays(ctx, s.Store, memoList)
+		memoList, err = filterPublicMemosByDays(ctx, s.Store, memoList)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to filter by public-in-days %s", err)).SetInternal(err)
 		}
@@ -73,7 +73,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}
 
-		memoList, err = FilterPublicMemosByDays(ctx, s.Store, memoList)
+		memoList, err = filterPublicMemosByDays(ctx, s.Store, memoList)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to filter by public-in-days %s", err)).SetInternal(err)
 		}
