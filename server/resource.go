@@ -57,18 +57,17 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 
 		resourceCreate.CreatorID = userID
 		if resourceCreate.ExternalLink != "" {
-			// Only allow those external links with http prefix.
-			linkUrl, err := url.Parse(resourceCreate.ExternalLink)
+			// Only allow those external links scheme with http/https
+			linkURL, err := url.Parse(resourceCreate.ExternalLink)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link").SetInternal(err)
 			}
-			if linkUrl.Scheme != "http" && linkUrl.Scheme != "https" {
+			if linkURL.Scheme != "http" && linkURL.Scheme != "https" {
 				return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link scheme")
 			}
 
 			if resourceCreate.DownloadToLocal {
-				// Construct a new link to avoid CodeQL check failed
-				resp, err := http.Get(linkUrl.String())
+				resp, err := http.Get(linkURL.String())
 				if err != nil {
 					return echo.NewHTTPError(http.StatusBadRequest, "Failed to request "+resourceCreate.ExternalLink)
 				}
@@ -86,9 +85,10 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				}
 				resourceCreate.Type = mediaType
 
-				filename := path.Base(linkUrl.Path)
+				filename := path.Base(linkURL.Path)
 				if path.Ext(filename) == "" {
-					if extensions, _ := mime.ExtensionsByType(mediaType); len(extensions) > 0 {
+					extensions, _ := mime.ExtensionsByType(mediaType)
+					if len(extensions) > 0 {
 						filename += extensions[0]
 					}
 				}
