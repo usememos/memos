@@ -68,7 +68,7 @@ func (create UserCreate) Validate() error {
 		return fmt.Errorf("username is too long, maximum length is 32")
 	}
 	if len(create.Password) < 3 {
-		return fmt.Errorf("password is too short, minimum length is 6")
+		return fmt.Errorf("password is too short, minimum length is 3")
 	}
 	if len(create.Password) > 512 {
 		return fmt.Errorf("password is too long, maximum length is 512")
@@ -114,7 +114,7 @@ func (patch UserPatch) Validate() error {
 		return fmt.Errorf("username is too long, maximum length is 32")
 	}
 	if patch.Password != nil && len(*patch.Password) < 3 {
-		return fmt.Errorf("password is too short, minimum length is 6")
+		return fmt.Errorf("password is too short, minimum length is 3")
 	}
 	if patch.Password != nil && len(*patch.Password) > 512 {
 		return fmt.Errorf("password is too long, maximum length is 512")
