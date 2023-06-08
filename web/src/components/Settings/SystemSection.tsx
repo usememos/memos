@@ -74,6 +74,7 @@ const SystemSection = () => {
       ...state,
       allowSignUp: value,
     });
+    globalStore.setSystemStatus({ allowSignUp: value });
     await api.upsertSystemSetting({
       name: "allow-signup",
       value: JSON.stringify(value),
@@ -197,7 +198,7 @@ const SystemSection = () => {
       ...state,
       memoDisplayWithUpdatedTs: value,
     });
-    globalStore.setSystemStatus({ disablePublicMemos: value });
+    globalStore.setSystemStatus({ memoDisplayWithUpdatedTs: value });
     await api.upsertSystemSetting({
       name: "memo-display-with-updated-ts",
       value: JSON.stringify(value),
