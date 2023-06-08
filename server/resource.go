@@ -93,7 +93,6 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 					}
 				}
 				resourceCreate.Filename = filename
-
 				resourceCreate.PublicID = common.GenUUID()
 				resourceCreate.ExternalLink = ""
 			}
