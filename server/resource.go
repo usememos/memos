@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"mime"
 	"net/http"
 	"net/url"
 	"os"
@@ -55,9 +56,46 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		resourceCreate.CreatorID = userID
-		// Only allow those external links with http prefix.
-		if resourceCreate.ExternalLink != "" && !strings.HasPrefix(resourceCreate.ExternalLink, "http") {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link")
+		if resourceCreate.ExternalLink != "" {
+			// Only allow those external links scheme with http/https
+			linkURL, err := url.Parse(resourceCreate.ExternalLink)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link").SetInternal(err)
+			}
+			if linkURL.Scheme != "http" && linkURL.Scheme != "https" {
+				return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link scheme")
+			}
+
+			if resourceCreate.DownloadToLocal {
+				resp, err := http.Get(linkURL.String())
+				if err != nil {
+					return echo.NewHTTPError(http.StatusBadRequest, "Failed to request "+resourceCreate.ExternalLink)
+				}
+				defer resp.Body.Close()
+
+				blob, err := io.ReadAll(resp.Body)
+				if err != nil {
+					return echo.NewHTTPError(http.StatusBadRequest, "Failed to read "+resourceCreate.ExternalLink)
+				}
+				resourceCreate.Blob = blob
+
+				mediaType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+				if err != nil {
+					return echo.NewHTTPError(http.StatusBadRequest, "Failed to read mime from "+resourceCreate.ExternalLink)
+				}
+				resourceCreate.Type = mediaType
+
+				filename := path.Base(linkURL.Path)
+				if path.Ext(filename) == "" {
+					extensions, _ := mime.ExtensionsByType(mediaType)
+					if len(extensions) > 0 {
+						filename += extensions[0]
+					}
+				}
+				resourceCreate.Filename = filename
+				resourceCreate.PublicID = common.GenUUID()
+				resourceCreate.ExternalLink = ""
+			}
 		}
 
 		resource, err := s.Store.CreateResource(ctx, resourceCreate)
