@@ -186,7 +186,7 @@ const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterIn
   const maxDatetimeValue = getNormalizedTimeString("9999-12-31T23:59");
 
   useEffect(() => {
-    if (type === "DISPLAY_TIME") {
+    if (type === "DISPLAY_TIME" && filter.value.value === "") {
       if(isClicked){
         const nowDatetimeValue = filter.value.value;
         handleValueChange(nowDatetimeValue);
