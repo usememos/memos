@@ -37,7 +37,7 @@ func (b *Bot) handleSingleMessage(ctx context.Context, message Message) error {
 		blobs = map[string][]byte{filepath: blob}
 	}
 
-	err = b.handler.MessageHandle(ctx, message, blobs)
+	err = b.handler.MessageHandle(ctx, b, message, blobs)
 	if err != nil {
 		if _, err := b.EditMessage(ctx, message.Chat.ID, reply.MessageID, err.Error()); err != nil {
 			return fmt.Errorf("fail to EditMessage: %s", err)
@@ -88,7 +88,7 @@ func (b *Bot) handleGroupMessages(ctx context.Context, groupMessages []Message) 
 		// replace Caption with all Caption in the group
 		caption := captions[groupID]
 		message.Caption = &caption
-		if err := b.handler.MessageHandle(ctx, message, blobs[groupID]); err != nil {
+		if err := b.handler.MessageHandle(ctx, b, message, blobs[groupID]); err != nil {
 			if _, err = b.EditMessage(ctx, message.Chat.ID, reply.MessageID, err.Error()); err != nil {
 				return fmt.Errorf("fail to EditMessage: %s", err)
 			}

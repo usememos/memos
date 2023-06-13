@@ -25,7 +25,7 @@ func (t *telegramHandler) BotToken(ctx context.Context) string {
 	return t.store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingTelegramBotTokenName, "")
 }
 
-func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Message, blobs map[string][]byte) error {
+func (t *telegramHandler) MessageHandle(ctx context.Context, _ *telegram.Bot, message telegram.Message, blobs map[string][]byte) error {
 	var creatorID int
 	userSettingList, err := t.store.FindUserSettingList(ctx, &api.UserSettingFind{
 		Key: api.UserSettingTelegramUserIDKey,

@@ -13,7 +13,7 @@ import (
 
 type Handler interface {
 	BotToken(ctx context.Context) string
-	MessageHandle(ctx context.Context, message Message, blobs map[string][]byte) error
+	MessageHandle(ctx context.Context, bot *Bot, message Message, blobs map[string][]byte) error
 }
 
 type Bot struct {
