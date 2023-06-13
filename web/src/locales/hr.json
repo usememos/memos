@@ -1,9 +1,9 @@
 {
   "common": {
-    "memos-slogan": "A lightweight, self-hosted memo hub. Slobodnog Koda i besplatno zauvijek.",
+    "memos-slogan": "Perolaki memo hub. Otvorenog kôda i besplatno zauvijek.",
     "about": "O aplikaciji",
     "home": "Kući",
-    "resources": "Resursi",
+    "resources": "Privitci",
     "settings": "Postavke",
     "archived": "Arhivirano",
     "email": "Email",
@@ -22,7 +22,7 @@
     "language": "Jezik",
     "version": "Verzija",
     "pin": "Pinaj",
-    "unpin": "Unpin",
+    "unpin": "Makni pin",
     "edit": "Uredi",
     "restore": "Restore",
     "delete": "Obriši",
@@ -32,11 +32,11 @@
     "basic": "Basic",
     "admin": "Admin",
     "explore": "Istraži",
-    "sign-in": "Ulogiraj se",
+    "sign-in": "Prijavi se",
     "sign-in-with": "Ulogiraj se sa {{provider}}",
     "or": "ili",
     "sign-up": "Registriraj se",
-    "sign-out": "Odlogiraj se",
+    "sign-out": "Odjavi se",
     "type": "Tip",
     "shortcuts": "Prečaci",
     "title": "Naslov",
@@ -70,7 +70,7 @@
     }
   },
   "router": {
-    "back-to-home": "Natrag Kući"
+    "back-to-home": "Natrag kući"
   },
   "auth": {
     "signup-as-host": "Registriraj se kao Host",
