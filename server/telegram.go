@@ -41,7 +41,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		Key: api.UserSettingTelegramUserIDKey,
 	})
 	if err != nil {
-		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Fail to find memo user: %s", err))
+		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Fail to find memo user: %s", err), nil)
 		return err
 	}
 	for _, userSetting := range userSettingList {
@@ -56,7 +56,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	}
 
 	if creatorID == 0 {
-		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Please set your telegram userid %d in UserSetting of Memos", message.From.ID))
+		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Please set your telegram userid %d in UserSetting of Memos", message.From.ID), nil)
 		return err
 	}
 
@@ -75,12 +75,12 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 
 	memoMessage, err := t.store.CreateMemo(ctx, convertCreateMemoRequestToMemoMessage(&memoCreate))
 	if err != nil {
-		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateMemo: %s", err))
+		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateMemo: %s", err), nil)
 		return err
 	}
 
 	if err := createMemoCreateActivity(ctx, t.store, memoMessage); err != nil {
-		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to createMemoCreateActivity: %s", err))
+		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to createMemoCreateActivity: %s", err), nil)
 		return err
 	}
 
@@ -104,11 +104,11 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		}
 		resource, err := t.store.CreateResource(ctx, &resourceCreate)
 		if err != nil {
-			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err))
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err), nil)
 			return err
 		}
 		if err := createResourceCreateActivity(ctx, t.store, resource); err != nil {
-			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to createResourceCreateActivity: %s", err))
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to createResourceCreateActivity: %s", err), nil)
 			return err
 		}
 
@@ -117,11 +117,26 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 			ResourceID: resource.ID,
 		})
 		if err != nil {
-			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to UpsertMemoResource: %s", err))
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to UpsertMemoResource: %s", err), nil)
 			return err
 		}
 	}
 
-	_, err = bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, successMessage)
+	allVisibility := []store.Visibility{
+		store.Public,
+		store.Protected,
+		store.Private,
+	}
+	buttons := make([]telegram.InlineKeyboardButton, 0, len(allVisibility))
+	for _, v := range allVisibility {
+		button := telegram.InlineKeyboardButton{
+			Text:         v.String(),
+			CallbackData: fmt.Sprintf("%s %d", v, memoMessage.ID),
+		}
+		buttons = append(buttons, button)
+	}
+	keyboard := [][]telegram.InlineKeyboardButton{buttons}
+
+	_, err = bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, successMessage, keyboard)
 	return err
 }
