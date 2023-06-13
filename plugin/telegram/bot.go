@@ -49,27 +49,39 @@ func (b *Bot) Start(ctx context.Context) {
 
 		for _, update := range updates {
 			offset = update.UpdateID + 1
-			if update.Message == nil {
-				continue
-			}
-			message := *update.Message
 
-			// skip message other than text or photo
-			if message.Text == nil && message.Photo == nil {
-				_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Only text or photo message be supported")
+			// handle CallbackQuery update
+			if update.CallbackQuery != nil {
+				err := b.AnswerCallbackQuery(ctx, update.CallbackQuery.ID, "success")
 				if err != nil {
-					log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
+					log.Error(fmt.Sprintf("fail to telegram.AnswerCallbackQuery for callbackQueryID=%s", update.CallbackQuery.ID), zap.Error(err))
 				}
+
 				continue
 			}
 
-			// Group message need do more
-			if message.MediaGroupID != nil {
-				groupMessages = append(groupMessages, message)
+			// handle Message update
+			if update.Message != nil {
+				message := *update.Message
+
+				// skip message other than text or photo
+				if message.Text == nil && message.Photo == nil {
+					_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Only text or photo message be supported")
+					if err != nil {
+						log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
+					}
+					continue
+				}
+
+				// Group message need do more
+				if message.MediaGroupID != nil {
+					groupMessages = append(groupMessages, message)
+					continue
+				}
+
+				singleMessages = append(singleMessages, message)
 				continue
 			}
-
-			singleMessages = append(singleMessages, message)
 		}
 
 		err = b.handleSingleMessages(ctx, singleMessages)
