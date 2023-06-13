@@ -14,39 +14,41 @@ const (
 	successMessage = "Success"
 )
 
-// handleSingleMessage handle a message not belongs to group.
-func (b *Bot) handleSingleMessage(ctx context.Context, message Message) error {
-	reply, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
-	if err != nil {
-		return fmt.Errorf("fail to SendReplyMessage: %s", err)
-	}
-
-	var blobs map[string][]byte
-
-	// download blob if need
-	if len(message.Photo) > 0 {
-		filepath, blob, err := b.downloadFileID(ctx, message.GetMaxPhotoFileID())
+// handleSingleMessages handle single messages not belongs to group.
+func (b *Bot) handleSingleMessages(ctx context.Context, messages []Message) error {
+	for _, message := range messages {
+		reply, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
 		if err != nil {
-			log.Error("fail to downloadFileID", zap.Error(err))
-			_, err = b.EditMessage(ctx, message.Chat.ID, reply.MessageID, err.Error())
+			return fmt.Errorf("fail to SendReplyMessage: %s", err)
+		}
+
+		var blobs map[string][]byte
+
+		// download blob if need
+		if len(message.Photo) > 0 {
+			filepath, blob, err := b.downloadFileID(ctx, message.GetMaxPhotoFileID())
 			if err != nil {
+				log.Error("fail to downloadFileID", zap.Error(err))
+				_, err = b.EditMessage(ctx, message.Chat.ID, reply.MessageID, err.Error())
+				if err != nil {
+					return fmt.Errorf("fail to EditMessage: %s", err)
+				}
+				return fmt.Errorf("fail to downloadFileID: %s", err)
+			}
+			blobs = map[string][]byte{filepath: blob}
+		}
+
+		err = b.handler.MessageHandle(ctx, b, message, blobs)
+		if err != nil {
+			if _, err := b.EditMessage(ctx, message.Chat.ID, reply.MessageID, err.Error()); err != nil {
 				return fmt.Errorf("fail to EditMessage: %s", err)
 			}
-			return fmt.Errorf("fail to downloadFileID: %s", err)
+			return fmt.Errorf("fail to MessageHandle: %s", err)
 		}
-		blobs = map[string][]byte{filepath: blob}
-	}
 
-	err = b.handler.MessageHandle(ctx, b, message, blobs)
-	if err != nil {
-		if _, err := b.EditMessage(ctx, message.Chat.ID, reply.MessageID, err.Error()); err != nil {
+		if _, err := b.EditMessage(ctx, message.Chat.ID, reply.MessageID, successMessage); err != nil {
 			return fmt.Errorf("fail to EditMessage: %s", err)
 		}
-		return fmt.Errorf("fail to MessageHandle: %s", err)
-	}
-
-	if _, err := b.EditMessage(ctx, message.Chat.ID, reply.MessageID, successMessage); err != nil {
-		return fmt.Errorf("fail to EditMessage: %s", err)
 	}
 
 	return nil

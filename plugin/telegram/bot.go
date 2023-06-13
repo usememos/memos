@@ -44,6 +44,7 @@ func (b *Bot) Start(ctx context.Context) {
 			continue
 		}
 
+		singleMessages := make([]Message, 0, len(updates))
 		groupMessages := make([]Message, 0, len(updates))
 
 		for _, update := range updates {
@@ -68,11 +69,12 @@ func (b *Bot) Start(ctx context.Context) {
 				continue
 			}
 
-			err = b.handleSingleMessage(ctx, message)
-			if err != nil {
-				log.Error(fmt.Sprintf("fail to handleSingleMessage for messageID=%d", message.MessageID), zap.Error(err))
-				continue
-			}
+			singleMessages = append(singleMessages, message)
+		}
+
+		err = b.handleSingleMessages(ctx, singleMessages)
+		if err != nil {
+			log.Error("fail to handle singleMessage", zap.Error(err))
 		}
 
 		err = b.handleGroupMessages(ctx, groupMessages)
