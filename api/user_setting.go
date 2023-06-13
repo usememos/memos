@@ -42,6 +42,7 @@ var (
 		"en",
 		"es",
 		"fr",
+		"hr",
 		"it",
 		"ja",
 		"ko",
