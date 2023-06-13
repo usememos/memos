@@ -8,32 +8,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 )
-
-// Visibility is the type of a visibility.
-type Visibility string
-
-const (
-	// Public is the PUBLIC visibility.
-	Public Visibility = "PUBLIC"
-	// Protected is the PROTECTED visibility.
-	Protected Visibility = "PROTECTED"
-	// Private is the PRIVATE visibility.
-	Private Visibility = "PRIVATE"
-)
-
-func (v Visibility) String() string {
-	switch v {
-	case Public:
-		return "PUBLIC"
-	case Protected:
-		return "PROTECTED"
-	case Private:
-		return "PRIVATE"
-	}
-	return "PRIVATE"
-}
 
 type MemoMessage struct {
 	ID int
@@ -46,7 +23,7 @@ type MemoMessage struct {
 
 	// Domain specific fields
 	Content    string
-	Visibility Visibility
+	Visibility api.Visibility
 
 	// Composed fields
 	Pinned         bool
@@ -64,7 +41,7 @@ type FindMemoMessage struct {
 	// Domain specific fields
 	Pinned         *bool
 	ContentSearch  []string
-	VisibilityList []Visibility
+	VisibilityList []api.Visibility
 
 	// Pagination
 	Limit            *int
@@ -78,7 +55,7 @@ type UpdateMemoMessage struct {
 	UpdatedTs  *int64
 	RowStatus  *RowStatus
 	Content    *string
-	Visibility *Visibility
+	Visibility *api.Visibility
 }
 
 type DeleteMemoMessage struct {
@@ -227,7 +204,7 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemoMessage) error
 	return err
 }
 
-func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int) ([]Visibility, error) {
+func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int) ([]api.Visibility, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -251,9 +228,9 @@ func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int) ([]V
 	}
 	defer rows.Close()
 
-	visibilityList := make([]Visibility, 0)
+	visibilityList := make([]api.Visibility, 0)
 	for rows.Next() {
-		var visibility Visibility
+		var visibility api.Visibility
 		if err := rows.Scan(&visibility); err != nil {
 			return nil, FormatError(err)
 		}

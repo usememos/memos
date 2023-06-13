@@ -402,7 +402,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 
 		// Protected resource require a logined user
 		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if resourceVisibility == store.Protected && (!ok || userID <= 0) {
+		if resourceVisibility == api.Protected && (!ok || userID <= 0) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
 		}
 
@@ -421,7 +421,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		}
 
 		// Private resource require logined user is the creator
-		if resourceVisibility == store.Private && (!ok || userID != resource.CreatorID) {
+		if resourceVisibility == api.Private && (!ok || userID != resource.CreatorID) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
 		}
 
@@ -464,7 +464,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 
 		// Protected resource require a logined user
 		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if resourceVisibility == store.Protected && (!ok || userID <= 0) {
+		if resourceVisibility == api.Protected && (!ok || userID <= 0) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
 		}
 
@@ -488,7 +488,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		}
 
 		// Private resource require logined user is the creator
-		if resourceVisibility == store.Private && (!ok || userID != resource.CreatorID) {
+		if resourceVisibility == api.Private && (!ok || userID != resource.CreatorID) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
 		}
 
@@ -625,19 +625,19 @@ func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error)
 	return dstBlob, nil
 }
 
-func CheckResourceVisibility(ctx context.Context, s *store.Store, resourceID int) (store.Visibility, error) {
+func CheckResourceVisibility(ctx context.Context, s *store.Store, resourceID int) (api.Visibility, error) {
 	memoResourceFind := &api.MemoResourceFind{
 		ResourceID: &resourceID,
 	}
 
 	memoResources, err := s.FindMemoResourceList(ctx, memoResourceFind)
 	if err != nil {
-		return store.Private, err
+		return api.Private, err
 	}
 
 	// If resource is belongs to no memo, it'll always PRIVATE
 	if len(memoResources) == 0 {
-		return store.Private, nil
+		return api.Private, nil
 	}
 
 	memoIDs := make([]int, 0, len(memoResources))
@@ -646,26 +646,26 @@ func CheckResourceVisibility(ctx context.Context, s *store.Store, resourceID int
 	}
 	visibilityList, err := s.FindMemosVisibilityList(ctx, memoIDs)
 	if err != nil {
-		return store.Private, err
+		return api.Private, err
 	}
 
 	var isProtected bool
 	for _, visibility := range visibilityList {
 		// If any memo is PUBLIC, resource do
-		if visibility == store.Public {
-			return store.Public, nil
+		if visibility == api.Public {
+			return api.Public, nil
 		}
 
-		if visibility == store.Protected {
+		if visibility == api.Protected {
 			isProtected = true
 		}
 	}
 
 	// If no memo is PUBLIC, but any memo is PROTECTED, resource do
 	if isProtected {
-		return store.Protected, nil
+		return api.Protected, nil
 	}
 
 	// If all memo is PRIVATE, the resource do
-	return store.Private, nil
+	return api.Private, nil
 }

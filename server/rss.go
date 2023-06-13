@@ -28,7 +28,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 		normalStatus := store.Normal
 		memoFind := store.FindMemoMessage{
 			RowStatus:      &normalStatus,
-			VisibilityList: []store.Visibility{store.Public},
+			VisibilityList: []api.Visibility{api.Public},
 		}
 		memoList, err := s.Store.ListMemos(ctx, &memoFind)
 		if err != nil {
@@ -60,7 +60,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 		memoFind := store.FindMemoMessage{
 			CreatorID:      &id,
 			RowStatus:      &normalStatus,
-			VisibilityList: []store.Visibility{store.Public},
+			VisibilityList: []api.Visibility{api.Public},
 		}
 		memoList, err := s.Store.ListMemos(ctx, &memoFind)
 		if err != nil {

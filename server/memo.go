@@ -172,7 +172,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			updateMemoMessage.RowStatus = &rowStatus
 		}
 		if patchMemoRequest.Visibility != nil {
-			visibility := store.Visibility(patchMemoRequest.Visibility.String())
+			visibility := api.Visibility(patchMemoRequest.Visibility.String())
 			updateMemoMessage.Visibility = &visibility
 		}
 
@@ -254,12 +254,12 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			if findMemoMessage.CreatorID == nil {
 				return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
 			}
-			findMemoMessage.VisibilityList = []store.Visibility{store.Public}
+			findMemoMessage.VisibilityList = []api.Visibility{api.Public}
 		} else {
 			if findMemoMessage.CreatorID == nil {
 				findMemoMessage.CreatorID = &currentUserID
 			} else {
-				findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected}
+				findMemoMessage.VisibilityList = []api.Visibility{api.Public, api.Protected}
 			}
 		}
 
@@ -286,9 +286,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		visibilityListStr := c.QueryParam("visibility")
 		if visibilityListStr != "" {
-			visibilityList := []store.Visibility{}
+			visibilityList := []api.Visibility{}
 			for _, visibility := range strings.Split(visibilityListStr, ",") {
-				visibilityList = append(visibilityList, store.Visibility(visibility))
+				visibilityList = append(visibilityList, api.Visibility(visibility))
 			}
 			findMemoMessage.VisibilityList = visibilityList
 		}
@@ -340,11 +340,11 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if memoMessage.Visibility == store.Private {
+		if memoMessage.Visibility == api.Private {
 			if !ok || memoMessage.CreatorID != userID {
 				return echo.NewHTTPError(http.StatusForbidden, "this memo is private only")
 			}
-		} else if memoMessage.Visibility == store.Protected {
+		} else if memoMessage.Visibility == api.Protected {
 			if !ok {
 				return echo.NewHTTPError(http.StatusForbidden, "this memo is protected, missing user in session")
 			}
@@ -410,12 +410,12 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
-			findMemoMessage.VisibilityList = []store.Visibility{store.Public}
+			findMemoMessage.VisibilityList = []api.Visibility{api.Public}
 		} else {
 			if *findMemoMessage.CreatorID != currentUserID {
-				findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected}
+				findMemoMessage.VisibilityList = []api.Visibility{api.Public, api.Protected}
 			} else {
-				findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected, store.Private}
+				findMemoMessage.VisibilityList = []api.Visibility{api.Public, api.Protected, api.Private}
 			}
 		}
 
@@ -452,9 +452,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		findMemoMessage := &store.FindMemoMessage{}
 		_, ok := c.Get(getUserIDContextKey()).(int)
 		if !ok {
-			findMemoMessage.VisibilityList = []store.Visibility{store.Public}
+			findMemoMessage.VisibilityList = []api.Visibility{api.Public}
 		} else {
-			findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected}
+			findMemoMessage.VisibilityList = []api.Visibility{api.Public, api.Protected}
 		}
 
 		pinnedStr := c.QueryParam("pinned")
@@ -476,9 +476,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 
 		visibilityListStr := c.QueryParam("visibility")
 		if visibilityListStr != "" {
-			visibilityList := []store.Visibility{}
+			visibilityList := []api.Visibility{}
 			for _, visibility := range strings.Split(visibilityListStr, ",") {
-				visibilityList = append(visibilityList, store.Visibility(visibility))
+				visibilityList = append(visibilityList, api.Visibility(visibility))
 			}
 			findMemoMessage.VisibilityList = visibilityList
 		}
@@ -625,7 +625,7 @@ func convertCreateMemoRequestToMemoMessage(memoCreate *api.CreateMemoRequest) *s
 		CreatorID:  memoCreate.CreatorID,
 		CreatedTs:  createdTs,
 		Content:    memoCreate.Content,
-		Visibility: store.Visibility(memoCreate.Visibility),
+		Visibility: api.Visibility(memoCreate.Visibility),
 	}
 }
 

@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/store"
 )
 
@@ -16,7 +17,7 @@ func TestMemoRelationStore(t *testing.T) {
 	memoCreate := &store.MemoMessage{
 		CreatorID:  user.ID,
 		Content:    "test_content",
-		Visibility: store.Public,
+		Visibility: api.Public,
 	}
 	memo, err := ts.CreateMemo(ctx, memoCreate)
 	require.NoError(t, err)
@@ -24,7 +25,7 @@ func TestMemoRelationStore(t *testing.T) {
 	memo2Create := &store.MemoMessage{
 		CreatorID:  user.ID,
 		Content:    "test_content_2",
-		Visibility: store.Public,
+		Visibility: api.Public,
 	}
 	memo2, err := ts.CreateMemo(ctx, memo2Create)
 	require.NoError(t, err)
