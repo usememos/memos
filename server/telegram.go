@@ -122,36 +122,17 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		}
 	}
 
-	allVisibility := []store.Visibility{
-		store.Public,
-		store.Protected,
-		store.Private,
-	}
-	buttons := make([]telegram.InlineKeyboardButton, 0, len(allVisibility))
-	for _, v := range allVisibility {
-		button := telegram.InlineKeyboardButton{
-			Text:         v.String(),
-			CallbackData: fmt.Sprintf("%s %d", v, memoMessage.ID),
-		}
-		buttons = append(buttons, button)
-	}
-	keyboard := [][]telegram.InlineKeyboardButton{buttons}
-
-	_, err = bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, successMessage, keyboard)
+	keyboard := generateKeyboardForMemoID(memoMessage.ID)
+	_, err = bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Saved as %s Memo %d", memoMessage.Visibility, memoMessage.ID), keyboard)
 	return err
 }
 
 func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram.Bot, callbackQuery telegram.CallbackQuery) error {
-	err := bot.AnswerCallbackQuery(ctx, callbackQuery.ID, successMessage)
-	if err != nil {
-		return fmt.Errorf("fail to telegram.AnswerCallbackQuery for callbackQueryID=%s", callbackQuery.ID)
-	}
-
 	var memoID int
 	var visibility store.Visibility
 	n, err := fmt.Sscanf(callbackQuery.Data, "%s %d", &visibility, &memoID)
 	if err != nil || n != 2 {
-		return fmt.Errorf("fail to parse callbackQuery.Data %s", callbackQuery.Data)
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to parse callbackQuery.Data %s", callbackQuery.Data))
 	}
 
 	update := store.UpdateMemoMessage{
@@ -160,8 +141,33 @@ func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 	}
 	err = t.store.UpdateMemo(ctx, &update)
 	if err != nil {
-		return fmt.Errorf("fail to call UpdateMemo %s", err)
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to call UpdateMemo %s", err))
 	}
 
-	return nil
+	keyboard := generateKeyboardForMemoID(memoID)
+	_, err = bot.EditMessage(ctx, callbackQuery.Message.Chat.ID, callbackQuery.Message.MessageID, fmt.Sprintf("Saved as %s Memo %d", visibility, memoID), keyboard)
+	if err != nil {
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to EditMessage %s", err))
+	}
+
+	return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Success change Memo %d to %s", memoID, visibility))
+}
+
+func generateKeyboardForMemoID(id int) [][]telegram.InlineKeyboardButton {
+	allVisibility := []store.Visibility{
+		store.Public,
+		store.Protected,
+		store.Private,
+	}
+
+	buttons := make([]telegram.InlineKeyboardButton, 0, len(allVisibility))
+	for _, v := range allVisibility {
+		button := telegram.InlineKeyboardButton{
+			Text:         v.String(),
+			CallbackData: fmt.Sprintf("%s %d", v, id),
+		}
+		buttons = append(buttons, button)
+	}
+
+	return [][]telegram.InlineKeyboardButton{buttons}
 }
