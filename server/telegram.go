@@ -140,3 +140,28 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	_, err = bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, successMessage, keyboard)
 	return err
 }
+
+func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram.Bot, callbackQuery telegram.CallbackQuery) error {
+	err := bot.AnswerCallbackQuery(ctx, callbackQuery.ID, successMessage)
+	if err != nil {
+		return fmt.Errorf("fail to telegram.AnswerCallbackQuery for callbackQueryID=%s", callbackQuery.ID)
+	}
+
+	var memoID int
+	var visibility store.Visibility
+	n, err := fmt.Sscanf(callbackQuery.Data, "%s %d", &visibility, &memoID)
+	if err != nil || n != 2 {
+		return fmt.Errorf("fail to parse callbackQuery.Data %s", callbackQuery.Data)
+	}
+
+	update := store.UpdateMemoMessage{
+		ID:         memoID,
+		Visibility: &visibility,
+	}
+	err = t.store.UpdateMemo(ctx, &update)
+	if err != nil {
+		return fmt.Errorf("fail to call UpdateMemo %s", err)
+	}
+
+	return nil
+}

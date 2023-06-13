@@ -14,6 +14,7 @@ import (
 type Handler interface {
 	BotToken(ctx context.Context) string
 	MessageHandle(ctx context.Context, bot *Bot, message Message, blobs map[string][]byte) error
+	CallbackQueryHandle(ctx context.Context, bot *Bot, callbackQuery CallbackQuery) error
 }
 
 type Bot struct {
@@ -52,9 +53,9 @@ func (b *Bot) Start(ctx context.Context) {
 
 			// handle CallbackQuery update
 			if update.CallbackQuery != nil {
-				err := b.AnswerCallbackQuery(ctx, update.CallbackQuery.ID, "success")
+				err := b.handler.CallbackQueryHandle(ctx, b, *update.CallbackQuery)
 				if err != nil {
-					log.Error(fmt.Sprintf("fail to telegram.AnswerCallbackQuery for callbackQueryID=%s", update.CallbackQuery.ID), zap.Error(err))
+					log.Error("fail to handle CallbackQuery", zap.Error(err))
 				}
 
 				continue
