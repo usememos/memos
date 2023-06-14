@@ -44,7 +44,7 @@ const MobileHeader = (props: Props) => {
       </div>
       <div className="w-full h-auto flex items-center justify-end" onClick={() => location.reload()}>
         <div className="w-full h-auto flex justify-center text-gray-200">{t("router.tap-to-reload")}</div>
-        <Icon.RotateCw className="" />
+        <Icon.RotateCw />
       </div>
       <div className={`${showSearch ? "flex" : "hidden"} flex-row justify-end items-center pr-1`}>
         <Icon.Search className="w-5 h-auto dark:text-gray-200" onClick={() => layoutStore.setHomeSidebarStatus(true)} />
