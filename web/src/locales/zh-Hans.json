@@ -290,7 +290,6 @@
     "warning-text-unused": "确定删除这些无用资源么？\n\n此操作不可逆❗"
   },
   "router": {
-    "tap-to-reload": "轻点刷新",
     "back-to-home": "回到首页"
   },
   "search": {
