@@ -48,9 +48,9 @@ const MemoDetail = () => {
     <section className="relative top-0 w-full h-full overflow-y-auto overflow-x-hidden bg-zinc-100 dark:bg-zinc-800">
       <div className="relative w-full min-h-full mx-auto flex flex-col justify-start items-center pb-6">
         <div className="max-w-2xl w-full flex flex-row justify-center items-center px-4 py-2 mt-2 bg-zinc-100 dark:bg-zinc-800">
-          <div className="flex flex-row justify-start items-center">
-            <img className="h-10 w-auto rounded-lg mr-2" src={customizedProfile.logoUrl} alt="" />
-            <p className="text-4xl tracking-wide text-black dark:text-white">{customizedProfile.name}</p>
+          <div className="detail-header flex flex-row justify-start items-center">
+            <img className="detail-logo h-10 w-auto rounded-lg mr-2" src={customizedProfile.logoUrl} alt="" />
+            <p className="detail-name text-4xl tracking-wide text-black dark:text-white">{customizedProfile.name}</p>
           </div>
         </div>
         {!loadingState.isLoading && (
