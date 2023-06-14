@@ -70,6 +70,7 @@
     }
   },
   "router": {
+    "tap-to-reload": "Tap to reload",
     "back-to-home": "Back to Home"
   },
   "auth": {

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useLayoutStore, useFilterStore, useShortcutStore } from "@/store/module";
 import Icon from "./Icon";
 
@@ -7,6 +8,7 @@ interface Props {
 }
 
 const MobileHeader = (props: Props) => {
+  const { t } = useTranslation();
   const { showSearch = true } = props;
   const filterStore = useFilterStore();
   const shortcutStore = useShortcutStore();
@@ -39,6 +41,10 @@ const MobileHeader = (props: Props) => {
         <span className="font-bold text-lg leading-10 mr-1 text-ellipsis shrink-0 cursor-pointer overflow-hidden text-gray-700 dark:text-gray-200">
           {titleText}
         </span>
+      </div>
+      <div className="w-full h-auto flex items-center justify-end" onClick={() => location.reload()}>
+        <div className="w-full h-auto flex justify-center text-gray-200">{t("router.tap-to-reload")}</div>
+        <Icon.RotateCw className="" />
       </div>
       <div className={`${showSearch ? "flex" : "hidden"} flex-row justify-end items-center pr-1`}>
         <Icon.Search className="w-5 h-auto dark:text-gray-200" onClick={() => layoutStore.setHomeSidebarStatus(true)} />
