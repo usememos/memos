@@ -3,50 +3,26 @@ package telegram
 import (
 	"context"
 	"fmt"
-
-	"github.com/usememos/memos/common/log"
-	"go.uber.org/zap"
 )
 
-// notice message send to telegram.
-const (
-	workingMessage = "Working on send your memo..."
-	successMessage = "Success"
-)
+// handleSingleMessages handle single messages not belongs to group.
+func (b *Bot) handleSingleMessages(ctx context.Context, messages []Message) error {
+	for _, message := range messages {
+		var blobs map[string][]byte
 
-// handleSingleMessage handle a message not belongs to group.
-func (b *Bot) handleSingleMessage(ctx context.Context, message Message) error {
-	reply, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
-	if err != nil {
-		return fmt.Errorf("fail to SendReplyMessage: %s", err)
-	}
-
-	var blobs map[string][]byte
-
-	// download blob if need
-	if len(message.Photo) > 0 {
-		filepath, blob, err := b.downloadFileID(ctx, message.GetMaxPhotoFileID())
-		if err != nil {
-			log.Error("fail to downloadFileID", zap.Error(err))
-			_, err = b.EditMessage(ctx, message.Chat.ID, reply.MessageID, err.Error())
+		// download blob if provided
+		if len(message.Photo) > 0 {
+			filepath, blob, err := b.downloadFileID(ctx, message.GetMaxPhotoFileID())
 			if err != nil {
-				return fmt.Errorf("fail to EditMessage: %s", err)
+				return err
 			}
-			return fmt.Errorf("fail to downloadFileID: %s", err)
+			blobs = map[string][]byte{filepath: blob}
 		}
-		blobs = map[string][]byte{filepath: blob}
-	}
 
-	err = b.handler.MessageHandle(ctx, message, blobs)
-	if err != nil {
-		if _, err := b.EditMessage(ctx, message.Chat.ID, reply.MessageID, err.Error()); err != nil {
-			return fmt.Errorf("fail to EditMessage: %s", err)
+		err := b.handler.MessageHandle(ctx, b, message, blobs)
+		if err != nil {
+			return err
 		}
-		return fmt.Errorf("fail to MessageHandle: %s", err)
-	}
-
-	if _, err := b.EditMessage(ctx, message.Chat.ID, reply.MessageID, successMessage); err != nil {
-		return fmt.Errorf("fail to EditMessage: %s", err)
 	}
 
 	return nil
@@ -80,23 +56,12 @@ func (b *Bot) handleGroupMessages(ctx context.Context, groupMessages []Message) 
 
 	// Handle each group message
 	for groupID, message := range messages {
-		reply, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
-		if err != nil {
-			return fmt.Errorf("fail to SendReplyMessage: %s", err)
-		}
-
 		// replace Caption with all Caption in the group
 		caption := captions[groupID]
 		message.Caption = &caption
-		if err := b.handler.MessageHandle(ctx, message, blobs[groupID]); err != nil {
-			if _, err = b.EditMessage(ctx, message.Chat.ID, reply.MessageID, err.Error()); err != nil {
-				return fmt.Errorf("fail to EditMessage: %s", err)
-			}
-			return fmt.Errorf("fail to MessageHandle: %s", err)
-		}
-
-		if _, err := b.EditMessage(ctx, message.Chat.ID, reply.MessageID, successMessage); err != nil {
-			return fmt.Errorf("fail to EditMessage: %s", err)
+		err := b.handler.MessageHandle(ctx, b, message, blobs[groupID])
+		if err != nil {
+			return err
 		}
 	}
 

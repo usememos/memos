@@ -25,13 +25,24 @@ func (t *telegramHandler) BotToken(ctx context.Context) string {
 	return t.store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingTelegramBotTokenName, "")
 }
 
-func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Message, blobs map[string][]byte) error {
+const (
+	workingMessage = "Working on send your memo..."
+	successMessage = "Success"
+)
+
+func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, message telegram.Message, blobs map[string][]byte) error {
+	reply, err := bot.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
+	if err != nil {
+		return fmt.Errorf("fail to SendReplyMessage: %s", err)
+	}
+
 	var creatorID int
 	userSettingList, err := t.store.FindUserSettingList(ctx, &api.UserSettingFind{
 		Key: api.UserSettingTelegramUserIDKey,
 	})
 	if err != nil {
-		return fmt.Errorf("Fail to find memo user: %s", err)
+		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Fail to find memo user: %s", err), nil)
+		return err
 	}
 	for _, userSetting := range userSettingList {
 		var value string
@@ -45,7 +56,8 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Me
 	}
 
 	if creatorID == 0 {
-		return fmt.Errorf("Please set your telegram userid %d in UserSetting of Memos", message.From.ID)
+		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Please set your telegram userid %d in UserSetting of Memos", message.From.ID), nil)
+		return err
 	}
 
 	// create memo
@@ -63,11 +75,13 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Me
 
 	memoMessage, err := t.store.CreateMemo(ctx, convertCreateMemoRequestToMemoMessage(&memoCreate))
 	if err != nil {
-		return fmt.Errorf("failed to CreateMemo: %s", err)
+		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateMemo: %s", err), nil)
+		return err
 	}
 
 	if err := createMemoCreateActivity(ctx, t.store, memoMessage); err != nil {
-		return fmt.Errorf("failed to createMemoCreateActivity: %s", err)
+		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to createMemoCreateActivity: %s", err), nil)
+		return err
 	}
 
 	// create resources
@@ -90,10 +104,12 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Me
 		}
 		resource, err := t.store.CreateResource(ctx, &resourceCreate)
 		if err != nil {
-			return fmt.Errorf("failed to CreateResource: %s", err)
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err), nil)
+			return err
 		}
 		if err := createResourceCreateActivity(ctx, t.store, resource); err != nil {
-			return fmt.Errorf("failed to createResourceCreateActivity: %s", err)
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to createResourceCreateActivity: %s", err), nil)
+			return err
 		}
 
 		_, err = t.store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
@@ -101,8 +117,57 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, message telegram.Me
 			ResourceID: resource.ID,
 		})
 		if err != nil {
-			return fmt.Errorf("failed to UpsertMemoResource: %s", err)
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to UpsertMemoResource: %s", err), nil)
+			return err
 		}
 	}
-	return nil
+
+	keyboard := generateKeyboardForMemoID(memoMessage.ID)
+	_, err = bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Saved as %s Memo %d", memoMessage.Visibility, memoMessage.ID), keyboard)
+	return err
+}
+
+func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram.Bot, callbackQuery telegram.CallbackQuery) error {
+	var memoID int
+	var visibility store.Visibility
+	n, err := fmt.Sscanf(callbackQuery.Data, "%s %d", &visibility, &memoID)
+	if err != nil || n != 2 {
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to parse callbackQuery.Data %s", callbackQuery.Data))
+	}
+
+	update := store.UpdateMemoMessage{
+		ID:         memoID,
+		Visibility: &visibility,
+	}
+	err = t.store.UpdateMemo(ctx, &update)
+	if err != nil {
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to call UpdateMemo %s", err))
+	}
+
+	keyboard := generateKeyboardForMemoID(memoID)
+	_, err = bot.EditMessage(ctx, callbackQuery.Message.Chat.ID, callbackQuery.Message.MessageID, fmt.Sprintf("Saved as %s Memo %d", visibility, memoID), keyboard)
+	if err != nil {
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to EditMessage %s", err))
+	}
+
+	return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Success change Memo %d to %s", memoID, visibility))
+}
+
+func generateKeyboardForMemoID(id int) [][]telegram.InlineKeyboardButton {
+	allVisibility := []store.Visibility{
+		store.Public,
+		store.Protected,
+		store.Private,
+	}
+
+	buttons := make([]telegram.InlineKeyboardButton, 0, len(allVisibility))
+	for _, v := range allVisibility {
+		button := telegram.InlineKeyboardButton{
+			Text:         v.String(),
+			CallbackData: fmt.Sprintf("%s %d", v, id),
+		}
+		buttons = append(buttons, button)
+	}
+
+	return [][]telegram.InlineKeyboardButton{buttons}
 }

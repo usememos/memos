@@ -13,7 +13,8 @@ import (
 
 type Handler interface {
 	BotToken(ctx context.Context) string
-	MessageHandle(ctx context.Context, message Message, blobs map[string][]byte) error
+	MessageHandle(ctx context.Context, bot *Bot, message Message, blobs map[string][]byte) error
+	CallbackQueryHandle(ctx context.Context, bot *Bot, callbackQuery CallbackQuery) error
 }
 
 type Bot struct {
@@ -44,35 +45,49 @@ func (b *Bot) Start(ctx context.Context) {
 			continue
 		}
 
+		singleMessages := make([]Message, 0, len(updates))
 		groupMessages := make([]Message, 0, len(updates))
 
 		for _, update := range updates {
 			offset = update.UpdateID + 1
-			if update.Message == nil {
-				continue
-			}
-			message := *update.Message
 
-			// skip message other than text or photo
-			if message.Text == nil && message.Photo == nil {
-				_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Only text or photo message be supported")
+			// handle CallbackQuery update
+			if update.CallbackQuery != nil {
+				err := b.handler.CallbackQueryHandle(ctx, b, *update.CallbackQuery)
 				if err != nil {
-					log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
+					log.Error("fail to handle CallbackQuery", zap.Error(err))
 				}
+
 				continue
 			}
 
-			// Group message need do more
-			if message.MediaGroupID != nil {
-				groupMessages = append(groupMessages, message)
-				continue
-			}
+			// handle Message update
+			if update.Message != nil {
+				message := *update.Message
 
-			err = b.handleSingleMessage(ctx, message)
-			if err != nil {
-				log.Error(fmt.Sprintf("fail to handleSingleMessage for messageID=%d", message.MessageID), zap.Error(err))
+				// skip message other than text or photo
+				if message.Text == nil && message.Photo == nil {
+					_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Only text or photo message be supported")
+					if err != nil {
+						log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
+					}
+					continue
+				}
+
+				// Group message need do more
+				if message.MediaGroupID != nil {
+					groupMessages = append(groupMessages, message)
+					continue
+				}
+
+				singleMessages = append(singleMessages, message)
 				continue
 			}
+		}
+
+		err = b.handleSingleMessages(ctx, singleMessages)
+		if err != nil {
+			log.Error("fail to handle singleMessage", zap.Error(err))
 		}
 
 		err = b.handleGroupMessages(ctx, groupMessages)
