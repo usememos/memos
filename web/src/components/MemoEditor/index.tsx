@@ -388,7 +388,7 @@ const MemoEditor = (props: Props) => {
 
   return (
     <div
-      className={`${className} memo-editor-container ${state.fullscreen ? "fullscreen" : ""}`}
+      className={`${className ?? ""} memo-editor-container ${state.fullscreen ? "fullscreen" : ""}`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
