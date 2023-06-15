@@ -742,15 +742,18 @@ func filterPublicMemosByDays(ctx context.Context, s *store.Store, list []*store.
 	for _, m := range list {
 		if m.Visibility != store.Public {
 			newList = append(newList, m)
+			continue
 		}
 
 		since, ok := sinceMap[m.CreatorID]
 		if !ok {
 			newList = append(newList, m)
+			continue
 		}
 
 		if since == 0 || m.CreatedTs > since {
 			newList = append(newList, m)
+			continue
 		}
 	}
 
