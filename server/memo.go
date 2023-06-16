@@ -501,16 +501,14 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 			findMemoMessage.OrderByUpdatedTs = true
 		}
 
-		memoMessageList, err := s.Store.ListMemos(ctx, findMemoMessage)
+		var memoMessageList []*store.MemoMessage
+		if userLogined {
+			memoMessageList, err = s.Store.ListMemos(ctx, findMemoMessage)
+		} else {
+			memoMessageList, err = s.Store.ListMemosPublicInDays(ctx, findMemoMessage)
+		}
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch all memo list").SetInternal(err)
-		}
-
-		if !userLogined {
-			memoMessageList, err = filterPublicMemosByDays(ctx, s.Store, memoMessageList)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to filter by public-in-days %s", err)).SetInternal(err)
-			}
 		}
 
 		memoResponseList := []*api.MemoResponse{}
@@ -709,53 +707,4 @@ func (s *Server) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (b
 		}
 	}
 	return memoDisplayWithUpdatedTs, nil
-}
-
-// filterPublicMemosByDays filter public MemoMessages by creator's public-in-days setting.
-func filterPublicMemosByDays(ctx context.Context, s *store.Store, list []*store.MemoMessage) ([]*store.MemoMessage, error) {
-	settings, err := s.FindUserSettingList(ctx, &api.UserSettingFind{Key: api.UserSettingPublicInDays})
-	if err != nil {
-		return nil, fmt.Errorf("Failed to fetch public-in-days setting")
-	}
-
-	if len(settings) == 0 {
-		return list, nil
-	}
-
-	now := time.Now()
-	sinceMap := make(map[int]int64, len(settings))
-	for _, s := range settings {
-		var val string
-		if err := json.Unmarshal([]byte(s.Value), &val); err != nil {
-			return nil, fmt.Errorf("Fail to parse public-in-days %s %s", s.Value, err)
-		}
-
-		days, err := strconv.Atoi(val)
-		if err != nil {
-			return nil, fmt.Errorf("Fail to parse public-in-days %s %s", s.Value, err)
-		}
-
-		sinceMap[s.UserID] = now.AddDate(0, 0, -1*days).Unix()
-	}
-
-	newList := make([]*store.MemoMessage, 0, len(list))
-	for _, m := range list {
-		if m.Visibility != store.Public {
-			newList = append(newList, m)
-			continue
-		}
-
-		since, ok := sinceMap[m.CreatorID]
-		if !ok {
-			newList = append(newList, m)
-			continue
-		}
-
-		if since == 0 || m.CreatedTs > since {
-			newList = append(newList, m)
-			continue
-		}
-	}
-
-	return newList, nil
 }

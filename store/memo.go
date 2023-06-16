@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 )
 
@@ -136,6 +137,21 @@ func (s *Store) ListMemos(ctx context.Context, find *FindMemoMessage) ([]*MemoMe
 	defer tx.Rollback()
 
 	list, err := listMemos(ctx, tx, find)
+	if err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+func (s *Store) ListMemosPublicInDays(ctx context.Context, find *FindMemoMessage) ([]*MemoMessage, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	list, err := listMemosPublicInDays(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -362,6 +378,154 @@ func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoM
 			&memoMessage.Pinned,
 			&memoResourceIDList,
 			&memoRelationList,
+		); err != nil {
+			return nil, FormatError(err)
+		}
+
+		if memoResourceIDList.Valid {
+			idStringList := strings.Split(memoResourceIDList.String, ",")
+			memoMessage.ResourceIDList = make([]int, 0, len(idStringList))
+			for _, idString := range idStringList {
+				id, err := strconv.Atoi(idString)
+				if err != nil {
+					return nil, FormatError(err)
+				}
+				memoMessage.ResourceIDList = append(memoMessage.ResourceIDList, id)
+			}
+		}
+		if memoRelationList.Valid {
+			memoMessage.RelationList = make([]*MemoRelationMessage, 0)
+			relatedMemoTypeList := strings.Split(memoRelationList.String, ",")
+			for _, relatedMemoType := range relatedMemoTypeList {
+				relatedMemoTypeList := strings.Split(relatedMemoType, ":")
+				if len(relatedMemoTypeList) != 2 {
+					return nil, &common.Error{Code: common.Invalid, Err: fmt.Errorf("invalid relation format")}
+				}
+				relatedMemoID, err := strconv.Atoi(relatedMemoTypeList[0])
+				if err != nil {
+					return nil, FormatError(err)
+				}
+				memoMessage.RelationList = append(memoMessage.RelationList, &MemoRelationMessage{
+					MemoID:        memoMessage.ID,
+					RelatedMemoID: relatedMemoID,
+					Type:          MemoRelationType(relatedMemoTypeList[1]),
+				})
+			}
+		}
+		memoMessageList = append(memoMessageList, &memoMessage)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, FormatError(err)
+	}
+
+	return memoMessageList, nil
+}
+
+func listMemosPublicInDays(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoMessage, error) {
+	where, args := []string{"1 = 1"}, []any{}
+
+	timeField := "memo.created_ts"
+	if find.OrderByUpdatedTs {
+		timeField = "memo.updated_ts"
+	}
+
+	// `publicInDays` defined in `SELECT` below
+	conditions := []string{
+		"COALESCE(public_in_days,'') = ''", // empty string or NULL means no limit
+		"public_in_days = '0'",             // value 0 means no limit
+		timeField + " > UNIXEPOCH('NOW', '-' || public_in_days || ' DAYS')",
+	}
+	where = append(where, "( "+strings.Join(conditions, " OR ")+" )")
+
+	// Always filter `Public` memos
+	where, args = append(where, "memo.visibility = ?"), append(args, Public)
+
+	if v := find.ID; v != nil {
+		where, args = append(where, "memo.id = ?"), append(args, *v)
+	}
+	if v := find.CreatorID; v != nil {
+		where, args = append(where, "memo.creator_id = ?"), append(args, *v)
+	}
+	if v := find.RowStatus; v != nil {
+		where, args = append(where, "memo.row_status = ?"), append(args, *v)
+	}
+	if v := find.Pinned; v != nil {
+		where = append(where, "memo_organizer.pinned = 1")
+	}
+	if v := find.ContentSearch; len(v) != 0 {
+		for _, s := range v {
+			where, args = append(where, "memo.content LIKE ?"), append(args, "%"+s+"%")
+		}
+	}
+
+	orders := []string{"pinned DESC", timeField + " DESC"}
+
+	query := `
+	SELECT
+		memo.id AS id,
+		memo.creator_id AS creator_id,
+		memo.created_ts AS created_ts,
+		memo.updated_ts AS updated_ts,
+		memo.row_status AS row_status,
+		memo.content AS content,
+		memo.visibility AS visibility,
+		CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END AS pinned,
+		GROUP_CONCAT(memo_resource.resource_id) AS resource_id_list,
+		(
+				SELECT
+						GROUP_CONCAT(related_memo_id || ':' || type)
+				FROM
+						memo_relation
+				WHERE
+						memo_relation.memo_id = memo.id
+				GROUP BY
+						memo_relation.memo_id
+		) AS relation_list,
+        JSON_EXTRACT(user_setting.value, '$') AS public_in_days
+	FROM
+		memo
+	LEFT JOIN
+		memo_organizer ON memo.id = memo_organizer.memo_id
+	LEFT JOIN
+		user_setting ON memo.creator_id = user_setting.user_id and user_setting.key='` + api.UserSettingPublicInDays.String() + `'
+	LEFT JOIN
+		memo_resource ON memo.id = memo_resource.memo_id
+	WHERE ` + strings.Join(where, " AND ") + `
+	GROUP BY memo.id
+	ORDER BY ` + strings.Join(orders, ", ") + `
+	`
+	if find.Limit != nil {
+		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
+		if find.Offset != nil {
+			query = fmt.Sprintf("%s OFFSET %d", query, *find.Offset)
+		}
+	}
+
+	rows, err := tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer rows.Close()
+
+	memoMessageList := make([]*MemoMessage, 0)
+	for rows.Next() {
+		var memoMessage MemoMessage
+		var memoResourceIDList sql.NullString
+		var memoRelationList sql.NullString
+		var publicInDays any
+		if err := rows.Scan(
+			&memoMessage.ID,
+			&memoMessage.CreatorID,
+			&memoMessage.CreatedTs,
+			&memoMessage.UpdatedTs,
+			&memoMessage.RowStatus,
+			&memoMessage.Content,
+			&memoMessage.Visibility,
+			&memoMessage.Pinned,
+			&memoResourceIDList,
+			&memoRelationList,
+			&publicInDays,
 		); err != nil {
 			return nil, FormatError(err)
 		}
