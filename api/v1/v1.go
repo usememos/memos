@@ -6,6 +6,17 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+const (
+	// Context section
+	// The key name used to store user id in the context
+	// user id is extracted from the jwt token subject field.
+	userIDContextKey = "user-id"
+)
+
+func getUserIDContextKey() string {
+	return userIDContextKey
+}
+
 type APIV1Service struct {
 	Secret  string
 	Profile *profile.Profile
@@ -20,8 +31,8 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 	}
 }
 
-func (s *APIV1Service) Register(e *echo.Echo) {
-	apiV1Group := e.Group("/api/v1")
+func (s *APIV1Service) Register(apiV1Group *echo.Group) {
 	s.registerTestRoutes(apiV1Group)
 	s.registerAuthRoutes(apiV1Group, s.Secret)
+	s.registerIdentityProviderRoutes(apiV1Group)
 }

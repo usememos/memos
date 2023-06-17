@@ -27,6 +27,211 @@ func (s *Store) SeedDataForNewUser(ctx context.Context, user *api.User) error {
 	return err
 }
 
+// Role is the type of a role.
+type Role string
+
+const (
+	// Host is the HOST role.
+	Host Role = "HOST"
+	// Admin is the ADMIN role.
+	Admin Role = "ADMIN"
+	// NormalUser is the USER role.
+	NormalUser Role = "USER"
+)
+
+func (e Role) String() string {
+	switch e {
+	case Host:
+		return "HOST"
+	case Admin:
+		return "ADMIN"
+	case NormalUser:
+		return "USER"
+	}
+	return "USER"
+}
+
+type UserMessage struct {
+	ID int
+
+	// Standard fields
+	RowStatus RowStatus
+	CreatedTs int64
+	UpdatedTs int64
+
+	// Domain specific fields
+	Username     string
+	Role         Role
+	Email        string
+	Nickname     string
+	PasswordHash string
+	OpenID       string
+	AvatarURL    string
+}
+
+type FindUserMessage struct {
+	ID *int
+
+	// Standard fields
+	RowStatus *RowStatus
+
+	// Domain specific fields
+	Username *string
+	Role     *Role
+	Email    *string
+	Nickname *string
+	OpenID   *string
+}
+
+func (s *Store) CreateUserV1(ctx context.Context, create *UserMessage) (*UserMessage, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	query := `
+		INSERT INTO user (
+			username,
+			role,
+			email,
+			nickname,
+			password_hash,
+			open_id
+		)
+		VALUES (?, ?, ?, ?, ?, ?)
+		RETURNING id, avatar_url, created_ts, updated_ts, row_status
+	`
+	if err := tx.QueryRowContext(ctx, query,
+		create.Username,
+		create.Role,
+		create.Email,
+		create.Nickname,
+		create.PasswordHash,
+		create.OpenID,
+	).Scan(
+		&create.ID,
+		&create.AvatarURL,
+		&create.CreatedTs,
+		&create.UpdatedTs,
+		&create.RowStatus,
+	); err != nil {
+		return nil, FormatError(err)
+	}
+	if err := tx.Commit(); err != nil {
+		return nil, FormatError(err)
+	}
+	userMessage := create
+	return userMessage, nil
+}
+
+func (s *Store) ListUsers(ctx context.Context, find *FindUserMessage) ([]*UserMessage, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	list, err := listUsers(ctx, tx, find)
+	if err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+func (s *Store) GetUser(ctx context.Context, find *FindUserMessage) (*UserMessage, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	list, err := listUsers(ctx, tx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("user not found")}
+	}
+
+	memoMessage := list[0]
+	return memoMessage, nil
+}
+
+func listUsers(ctx context.Context, tx *sql.Tx, find *FindUserMessage) ([]*UserMessage, error) {
+	where, args := []string{"1 = 1"}, []any{}
+
+	if v := find.ID; v != nil {
+		where, args = append(where, "id = ?"), append(args, *v)
+	}
+	if v := find.Username; v != nil {
+		where, args = append(where, "username = ?"), append(args, *v)
+	}
+	if v := find.Role; v != nil {
+		where, args = append(where, "role = ?"), append(args, *v)
+	}
+	if v := find.Email; v != nil {
+		where, args = append(where, "email = ?"), append(args, *v)
+	}
+	if v := find.Nickname; v != nil {
+		where, args = append(where, "nickname = ?"), append(args, *v)
+	}
+	if v := find.OpenID; v != nil {
+		where, args = append(where, "open_id = ?"), append(args, *v)
+	}
+
+	query := `
+		SELECT 
+			id,
+			username,
+			role,
+			email,
+			nickname,
+			password_hash,
+			open_id,
+			avatar_url,
+			created_ts,
+			updated_ts,
+			row_status
+		FROM user
+		WHERE ` + strings.Join(where, " AND ") + `
+		ORDER BY created_ts DESC, row_status DESC
+	`
+	rows, err := tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer rows.Close()
+
+	userMessageList := make([]*UserMessage, 0)
+	for rows.Next() {
+		var userMessage UserMessage
+		if err := rows.Scan(
+			&userMessage.ID,
+			&userMessage.Username,
+			&userMessage.Role,
+			&userMessage.Email,
+			&userMessage.Nickname,
+			&userMessage.PasswordHash,
+			&userMessage.OpenID,
+			&userMessage.AvatarURL,
+			&userMessage.CreatedTs,
+			&userMessage.UpdatedTs,
+			&userMessage.RowStatus,
+		); err != nil {
+			return nil, FormatError(err)
+		}
+		userMessageList = append(userMessageList, &userMessage)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, FormatError(err)
+	}
+
+	return userMessageList, nil
+}
+
 // userRaw is the store model for an User.
 // Fields have exactly the same meanings as User.
 type userRaw struct {
