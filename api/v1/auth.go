@@ -36,7 +36,7 @@ type SignUp struct {
 func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 	g.POST("/auth/signin", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		signin := &api.SignIn{}
+		signin := &SignIn{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
 		}
@@ -63,7 +63,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 		if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
-		if err := s.createUserAuthSignInActivity(c, user); err != nil {
+		if err := s.createAuthSignInActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, user)
@@ -71,7 +71,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 
 	g.POST("/auth/signin/sso", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		signin := &api.SSOSignIn{}
+		signin := &SSOSignIn{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
 		}
@@ -147,7 +147,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 		if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
-		if err := s.createUserAuthSignInActivity(c, user); err != nil {
+		if err := s.createAuthSignInActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, user)
@@ -155,7 +155,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 
 	g.POST("/auth/signup", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		signup := &api.SignUp{}
+		signup := &SignUp{}
 		if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
 		}
@@ -215,7 +215,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 		if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
-		if err := s.createUserAuthSignUpActivity(c, user); err != nil {
+		if err := s.createAuthSignUpActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 
@@ -228,7 +228,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 	})
 }
 
-func (s *APIV1Service) createUserAuthSignInActivity(c echo.Context, user *api.User) error {
+func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *api.User) error {
 	ctx := c.Request().Context()
 	payload := api.ActivityUserAuthSignInPayload{
 		UserID: user.ID,
@@ -250,7 +250,7 @@ func (s *APIV1Service) createUserAuthSignInActivity(c echo.Context, user *api.Us
 	return err
 }
 
-func (s *APIV1Service) createUserAuthSignUpActivity(c echo.Context, user *api.User) error {
+func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *api.User) error {
 	ctx := c.Request().Context()
 	payload := api.ActivityUserAuthSignUpPayload{
 		Username: user.Username,
