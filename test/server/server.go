@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 	"github.com/usememos/memos/test"
 
@@ -34,7 +35,8 @@ func NewTestingServer(ctx context.Context, t *testing.T) (*TestingServer, error)
 		return nil, errors.Wrap(err, "failed to open db")
 	}
 
-	server, err := server.NewServer(ctx, profile)
+	store := store.New(db.DBInstance, profile)
+	server, err := server.NewServer(ctx, profile, store)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create server")
 	}

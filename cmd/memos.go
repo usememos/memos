@@ -41,7 +41,15 @@ var (
 		Short: `An open-source, self-hosted memo hub with knowledge management and social networking.`,
 		Run: func(_cmd *cobra.Command, _args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
-			s, err := server.NewServer(ctx, profile)
+			db := db.NewDB(profile)
+			if err := db.Open(ctx); err != nil {
+				cancel()
+				fmt.Printf("failed to open db, error: %+v\n", err)
+				return
+			}
+
+			store := store.New(db.DBInstance, profile)
+			s, err := server.NewServer(ctx, profile, store)
 			if err != nil {
 				cancel()
 				fmt.Printf("failed to create server, error: %+v\n", err)
