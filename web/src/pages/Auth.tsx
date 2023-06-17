@@ -24,9 +24,7 @@ const Auth = () => {
   useEffect(() => {
     userStore.doSignOut().catch();
     const fetchIdentityProviderList = async () => {
-      const {
-        data: { data: identityProviderList },
-      } = await api.getIdentityProviderList();
+      const { data: identityProviderList } = await api.getIdentityProviderList();
       setIdentityProviderList(identityProviderList);
     };
     fetchIdentityProviderList();

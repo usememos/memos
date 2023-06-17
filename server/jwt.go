@@ -22,15 +22,15 @@ const (
 	userIDContextKey = "user-id"
 )
 
+func getUserIDContextKey() string {
+	return userIDContextKey
+}
+
 // Claims creates a struct that will be encoded to a JWT.
 // We add jwt.RegisteredClaims as an embedded type, to provide fields such as name.
 type Claims struct {
 	Name string `json:"name"`
 	jwt.RegisteredClaims
-}
-
-func getUserIDContextKey() string {
-	return userIDContextKey
 }
 
 func extractTokenFromHeader(c echo.Context) (string, error) {
@@ -82,7 +82,7 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 		}
 
 		// Skip validation for server status endpoints.
-		if common.HasPrefixes(path, "/api/ping", "/api/idp", "/api/user/:id") && method == http.MethodGet {
+		if common.HasPrefixes(path, "/api/ping", "/api/v1/idp", "/api/user/:id") && method == http.MethodGet {
 			return next(c)
 		}
 
@@ -111,15 +111,9 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 			}
 			return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
 		})
-
 		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
-			return echo.NewHTTPError(http.StatusUnauthorized,
-				fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q. you may send request to the wrong environment",
-					claims.Audience,
-					auth.AccessTokenAudienceName,
-				))
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q.", claims.Audience, auth.AccessTokenAudienceName))
 		}
-
 		generateToken := time.Until(claims.ExpiresAt.Time) < auth.RefreshThresholdDuration
 		if err != nil {
 			var ve *jwt.ValidationError
@@ -130,11 +124,7 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 					generateToken = true
 				}
 			} else {
-				return &echo.HTTPError{
-					Code:     http.StatusUnauthorized,
-					Message:  "Invalid or expired access token",
-					Internal: err,
-				}
+				return echo.NewHTTPError(http.StatusUnauthorized, errors.Wrap(err, "Invalid or expired access token"))
 			}
 		}
 

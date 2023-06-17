@@ -246,19 +246,19 @@ export function deleteStorage(storageId: StorageId) {
 }
 
 export function getIdentityProviderList() {
-  return axios.get<ResponseObject<IdentityProvider[]>>(`/api/idp`);
+  return axios.get<IdentityProvider[]>(`/api/v1/idp`);
 }
 
 export function createIdentityProvider(identityProviderCreate: IdentityProviderCreate) {
-  return axios.post<ResponseObject<IdentityProvider>>(`/api/idp`, identityProviderCreate);
+  return axios.post<IdentityProvider>(`/api/v1/idp`, identityProviderCreate);
 }
 
 export function patchIdentityProvider(identityProviderPatch: IdentityProviderPatch) {
-  return axios.patch<ResponseObject<IdentityProvider>>(`/api/idp/${identityProviderPatch.id}`, identityProviderPatch);
+  return axios.patch<IdentityProvider>(`/api/v1/idp/${identityProviderPatch.id}`, identityProviderPatch);
 }
 
 export function deleteIdentityProvider(id: IdentityProviderId) {
-  return axios.delete(`/api/idp/${id}`);
+  return axios.delete(`/api/v1/idp/${id}`);
 }
 
 export async function getRepoStarCount() {
