@@ -1,4 +1,4 @@
-package server
+package v1
 
 import (
 	"encoding/json"
@@ -6,18 +6,34 @@ import (
 	"net/http"
 	"regexp"
 
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
+	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
-
-	"github.com/labstack/echo/v4"
 	"golang.org/x/crypto/bcrypt"
 )
 
-func (s *Server) registerAuthRoutes(g *echo.Group, secret string) {
+type SignIn struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type SSOSignIn struct {
+	IdentityProviderID int    `json:"identityProviderId"`
+	Code               string `json:"code"`
+	RedirectURI        string `json:"redirectUri"`
+}
+
+type SignUp struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 	g.POST("/auth/signin", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		signin := &api.SignIn{}
@@ -44,13 +60,13 @@ func (s *Server) registerAuthRoutes(g *echo.Group, secret string) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
 		}
 
-		if err := GenerateTokensAndSetCookies(c, user, secret); err != nil {
+		if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createUserAuthSignInActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(user))
+		return c.JSON(http.StatusOK, user)
 	})
 
 	g.POST("/auth/signin/sso", func(c echo.Context) error {
@@ -128,13 +144,13 @@ func (s *Server) registerAuthRoutes(g *echo.Group, secret string) {
 			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
 		}
 
-		if err := GenerateTokensAndSetCookies(c, user, secret); err != nil {
+		if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createUserAuthSignInActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(user))
+		return c.JSON(http.StatusOK, user)
 	})
 
 	g.POST("/auth/signup", func(c echo.Context) error {
@@ -196,23 +212,23 @@ func (s *Server) registerAuthRoutes(g *echo.Group, secret string) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
-		if err := GenerateTokensAndSetCookies(c, user, secret); err != nil {
+		if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createUserAuthSignUpActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 
-		return c.JSON(http.StatusOK, composeResponse(user))
+		return c.JSON(http.StatusOK, user)
 	})
 
 	g.POST("/auth/signout", func(c echo.Context) error {
-		RemoveTokensAndCookies(c)
+		auth.RemoveTokensAndCookies(c)
 		return c.JSON(http.StatusOK, true)
 	})
 }
 
-func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) error {
+func (s *APIV1Service) createUserAuthSignInActivity(c echo.Context, user *api.User) error {
 	ctx := c.Request().Context()
 	payload := api.ActivityUserAuthSignInPayload{
 		UserID: user.ID,
@@ -234,7 +250,7 @@ func (s *Server) createUserAuthSignInActivity(c echo.Context, user *api.User) er
 	return err
 }
 
-func (s *Server) createUserAuthSignUpActivity(c echo.Context, user *api.User) error {
+func (s *APIV1Service) createUserAuthSignUpActivity(c echo.Context, user *api.User) error {
 	ctx := c.Request().Context()
 	payload := api.ActivityUserAuthSignUpPayload{
 		Username: user.Username,

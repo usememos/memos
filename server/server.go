@@ -21,6 +21,7 @@ type Server struct {
 	e *echo.Echo
 
 	ID      string
+	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
 
@@ -80,23 +81,23 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 			return nil, err
 		}
 	}
+	s.Secret = secret
 
 	rootGroup := e.Group("")
 	s.registerRSSRoutes(rootGroup)
 
 	publicGroup := e.Group("/o")
 	publicGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s, next, secret)
+		return JWTMiddleware(s, next, s.Secret)
 	})
 	registerGetterPublicRoutes(publicGroup)
 	s.registerResourcePublicRoutes(publicGroup)
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s, next, secret)
+		return JWTMiddleware(s, next, s.Secret)
 	})
 	s.registerSystemRoutes(apiGroup)
-	s.registerAuthRoutes(apiGroup, secret)
 	s.registerUserRoutes(apiGroup)
 	s.registerMemoRoutes(apiGroup)
 	s.registerMemoResourceRoutes(apiGroup)
@@ -108,7 +109,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.registerOpenAIRoutes(apiGroup)
 	s.registerMemoRelationRoutes(apiGroup)
 
-	apiV1Service := apiV1.NewAPIV1Service(profile, store)
+	apiV1Service := apiV1.NewAPIV1Service(s.Secret, profile, store)
 	apiV1Service.Register(e)
 
 	return s, nil
