@@ -28,6 +28,10 @@ func New(db *sql.DB, profile *profile.Profile) *Store {
 	}
 }
 
+func (s *Store) GetDB() *sql.DB {
+	return s.db
+}
+
 func (s *Store) Vacuum(ctx context.Context) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {

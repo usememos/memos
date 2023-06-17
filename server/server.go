@@ -2,53 +2,45 @@ package server
 
 import (
 	"context"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
+	apiV1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
 type Server struct {
-	e  *echo.Echo
-	db *sql.DB
+	e *echo.Echo
 
 	ID      string
+	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
 
 	telegramBot *telegram.Bot
 }
 
-func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
+func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
 	e := echo.New()
 	e.Debug = true
 	e.HideBanner = true
 	e.HidePort = true
 
-	db := db.NewDB(profile)
-	if err := db.Open(ctx); err != nil {
-		return nil, errors.Wrap(err, "cannot open db")
-	}
-
 	s := &Server{
 		e:       e,
-		db:      db.DBInstance,
+		Store:   store,
 		Profile: profile,
 	}
-	storeInstance := store.New(db.DBInstance, profile)
-	s.Store = storeInstance
 
-	telegramBotHandler := newTelegramHandler(storeInstance)
+	telegramBotHandler := newTelegramHandler(store)
 	s.telegramBot = telegram.NewBotWithHandler(telegramBotHandler)
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -89,23 +81,23 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 			return nil, err
 		}
 	}
+	s.Secret = secret
 
 	rootGroup := e.Group("")
 	s.registerRSSRoutes(rootGroup)
 
 	publicGroup := e.Group("/o")
 	publicGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s, next, secret)
+		return JWTMiddleware(s, next, s.Secret)
 	})
 	registerGetterPublicRoutes(publicGroup)
 	s.registerResourcePublicRoutes(publicGroup)
 
 	apiGroup := e.Group("/api")
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s, next, secret)
+		return JWTMiddleware(s, next, s.Secret)
 	})
 	s.registerSystemRoutes(apiGroup)
-	s.registerAuthRoutes(apiGroup, secret)
 	s.registerUserRoutes(apiGroup)
 	s.registerMemoRoutes(apiGroup)
 	s.registerMemoResourceRoutes(apiGroup)
@@ -116,6 +108,9 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	s.registerIdentityProviderRoutes(apiGroup)
 	s.registerOpenAIRoutes(apiGroup)
 	s.registerMemoRelationRoutes(apiGroup)
+
+	apiV1Service := apiV1.NewAPIV1Service(s.Secret, profile, store)
+	apiV1Service.Register(e)
 
 	return s, nil
 }
@@ -140,7 +135,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 	}
 
 	// Close database connection
-	if err := s.db.Close(); err != nil {
+	if err := s.Store.GetDB().Close(); err != nil {
 		fmt.Printf("failed to close database, error: %v\n", err)
 	}
 

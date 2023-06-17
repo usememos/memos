@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
 	"github.com/usememos/memos/api"
+	apiv1 "github.com/usememos/memos/api/v1"
 )
 
 func TestMemoServer(t *testing.T) {
@@ -18,7 +19,7 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	defer s.Shutdown(ctx)
 
-	signup := &api.SignUp{
+	signup := &apiv1.SignUp{
 		Username: "testuser",
 		Password: "testpassword",
 	}

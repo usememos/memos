@@ -1,10 +1,14 @@
 package auth
 
 import (
+	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
+	"github.com/usememos/memos/api"
 )
 
 const (
@@ -59,6 +63,48 @@ func GenerateRefreshToken(userName string, userID int, secret string) (string, e
 	return generateToken(userName, userID, RefreshTokenAudienceName, expirationTime, []byte(secret))
 }
 
+// GenerateTokensAndSetCookies generates jwt token and saves it to the http-only cookie.
+func GenerateTokensAndSetCookies(c echo.Context, user *api.User, secret string) error {
+	accessToken, err := GenerateAccessToken(user.Username, user.ID, secret)
+	if err != nil {
+		return errors.Wrap(err, "failed to generate access token")
+	}
+
+	cookieExp := time.Now().Add(CookieExpDuration)
+	setTokenCookie(c, AccessTokenCookieName, accessToken, cookieExp)
+
+	// We generate here a new refresh token and saving it to the cookie.
+	refreshToken, err := GenerateRefreshToken(user.Username, user.ID, secret)
+	if err != nil {
+		return errors.Wrap(err, "failed to generate refresh token")
+	}
+	setTokenCookie(c, RefreshTokenCookieName, refreshToken, cookieExp)
+
+	return nil
+}
+
+// RemoveTokensAndCookies removes the jwt token and refresh token from the cookies.
+func RemoveTokensAndCookies(c echo.Context) {
+	// We set the expiration time to the past, so that the cookie will be removed.
+	cookieExp := time.Now().Add(-1 * time.Hour)
+	setTokenCookie(c, AccessTokenCookieName, "", cookieExp)
+	setTokenCookie(c, RefreshTokenCookieName, "", cookieExp)
+}
+
+// setTokenCookie sets the token to the cookie.
+func setTokenCookie(c echo.Context, name, token string, expiration time.Time) {
+	cookie := new(http.Cookie)
+	cookie.Name = name
+	cookie.Value = token
+	cookie.Expires = expiration
+	cookie.Path = "/"
+	// Http-only helps mitigate the risk of client side script accessing the protected cookie.
+	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteStrictMode
+	c.SetCookie(cookie)
+}
+
+// generateToken generates a jwt token.
 func generateToken(username string, userID int, aud string, expirationTime time.Time, secret []byte) (string, error) {
 	// Create the JWT claims, which includes the username and expiry time.
 	claims := &claimsMessage{

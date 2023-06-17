@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 	"github.com/usememos/memos/test"
 
@@ -34,12 +35,11 @@ func NewTestingServer(ctx context.Context, t *testing.T) (*TestingServer, error)
 		return nil, errors.Wrap(err, "failed to open db")
 	}
 
-	server, err := server.NewServer(ctx, profile)
+	store := store.New(db.DBInstance, profile)
+	server, err := server.NewServer(ctx, profile, store)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create server")
 	}
-
-	errChan := make(chan error, 1)
 
 	s := &TestingServer{
 		server:  server,
@@ -47,6 +47,7 @@ func NewTestingServer(ctx context.Context, t *testing.T) (*TestingServer, error)
 		profile: profile,
 		cookie:  "",
 	}
+	errChan := make(chan error, 1)
 
 	go func() {
 		if err := s.server.Start(ctx); err != nil {
@@ -126,7 +127,7 @@ func (s *TestingServer) request(method, uri string, body io.Reader, params, head
 	}
 
 	if method == "POST" {
-		if strings.Contains(uri, "/api/auth/login") || strings.Contains(uri, "/api/auth/signup") {
+		if strings.Contains(uri, "/api/v1/auth/login") || strings.Contains(uri, "/api/v1/auth/signup") {
 			cookie := ""
 			h := resp.Header.Get("Set-Cookie")
 			parts := strings.Split(h, "; ")
@@ -140,7 +141,7 @@ func (s *TestingServer) request(method, uri string, body io.Reader, params, head
 				return nil, errors.Errorf("unable to find access token in the login response headers")
 			}
 			s.cookie = cookie
-		} else if strings.Contains(uri, "/api/auth/logout") {
+		} else if strings.Contains(uri, "/api/v1/auth/logout") {
 			s.cookie = ""
 		}
 	}

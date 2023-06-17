@@ -27,12 +27,12 @@ func defaultAPIRequestSkipper(c echo.Context) bool {
 	return common.HasPrefixes(path, "/api")
 }
 
-func (server *Server) defaultAuthSkipper(c echo.Context) bool {
+func (s *Server) defaultAuthSkipper(c echo.Context) bool {
 	ctx := c.Request().Context()
 	path := c.Path()
 
 	// Skip auth.
-	if common.HasPrefixes(path, "/api/auth") {
+	if common.HasPrefixes(path, "/api/v1/auth") {
 		return true
 	}
 
@@ -42,7 +42,7 @@ func (server *Server) defaultAuthSkipper(c echo.Context) bool {
 		userFind := &api.UserFind{
 			OpenID: &openID,
 		}
-		user, err := server.Store.FindUser(ctx, userFind)
+		user, err := s.Store.FindUser(ctx, userFind)
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return false
 		}

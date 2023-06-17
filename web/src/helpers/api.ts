@@ -23,14 +23,14 @@ export function vacuumDatabase() {
 }
 
 export function signin(username: string, password: string) {
-  return axios.post<ResponseObject<User>>("/api/auth/signin", {
+  return axios.post("/api/v1/auth/signin", {
     username,
     password,
   });
 }
 
 export function signinWithSSO(identityProviderId: IdentityProviderId, code: string, redirectUri: string) {
-  return axios.post<ResponseObject<User>>("/api/auth/signin/sso", {
+  return axios.post("/api/v1/auth/signin/sso", {
     identityProviderId,
     code,
     redirectUri,
@@ -38,14 +38,14 @@ export function signinWithSSO(identityProviderId: IdentityProviderId, code: stri
 }
 
 export function signup(username: string, password: string) {
-  return axios.post<ResponseObject<User>>("/api/auth/signup", {
+  return axios.post("/api/v1/auth/signup", {
     username,
     password,
   });
 }
 
 export function signout() {
-  return axios.post("/api/auth/signout");
+  return axios.post("/api/v1/auth/signout");
 }
 
 export function createUser(userCreate: UserCreate) {
