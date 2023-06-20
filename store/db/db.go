@@ -50,9 +50,9 @@ func (db *DB) Open(ctx context.Context) (err error) {
 	db.DBInstance = sqliteDB
 
 	if db.profile.Mode == "prod" {
-		// If db file not exists, we should create a new one with latest schema.
 		_, err := os.Stat(db.profile.DSN)
 		if err != nil {
+			// If db file not exists, we should create a new one with latest schema.
 			if errors.Is(err, os.ErrNotExist) {
 				if err := db.applyLatestSchema(ctx); err != nil {
 					return fmt.Errorf("failed to apply latest schema, err: %w", err)
