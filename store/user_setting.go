@@ -4,33 +4,35 @@ import (
 	"context"
 	"database/sql"
 	"strings"
-
-	"github.com/usememos/memos/api"
 )
 
-type userSettingRaw struct {
+type UserSettingMessage struct {
 	UserID int
-	Key    api.UserSettingKey
+	Key    string
 	Value  string
 }
 
-func (raw *userSettingRaw) toUserSetting() *api.UserSetting {
-	return &api.UserSetting{
-		UserID: raw.UserID,
-		Key:    raw.Key,
-		Value:  raw.Value,
-	}
+type FindUserSettingMessage struct {
+	UserID *int
+	Key    string
 }
 
-func (s *Store) UpsertUserSetting(ctx context.Context, upsert *api.UserSettingUpsert) (*api.UserSetting, error) {
+func (s *Store) UpsertUserSettingV1(ctx context.Context, upsert *UserSettingMessage) (*UserSettingMessage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
 	}
 	defer tx.Rollback()
 
-	userSettingRaw, err := upsertUserSetting(ctx, tx, upsert)
-	if err != nil {
+	query := `
+		INSERT INTO user_setting (
+			user_id, key, value
+		)
+		VALUES (?, ?, ?)
+		ON CONFLICT(user_id, key) DO UPDATE 
+		SET value = EXCLUDED.value
+	`
+	if _, err := tx.ExecContext(ctx, query, upsert.UserID, upsert.Key, upsert.Value); err != nil {
 		return nil, err
 	}
 
@@ -38,39 +40,34 @@ func (s *Store) UpsertUserSetting(ctx context.Context, upsert *api.UserSettingUp
 		return nil, err
 	}
 
-	s.userSettingCache.Store(getUserSettingCacheKey(*userSettingRaw), userSettingRaw)
-	userSetting := userSettingRaw.toUserSetting()
-
-	return userSetting, nil
+	userSettingMessage := upsert
+	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSettingMessage.UserID, userSettingMessage.Key), userSettingMessage)
+	return userSettingMessage, nil
 }
 
-func (s *Store) FindUserSettingList(ctx context.Context, find *api.UserSettingFind) ([]*api.UserSetting, error) {
+func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSettingMessage) ([]*UserSettingMessage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
 	}
 	defer tx.Rollback()
 
-	userSettingRawList, err := findUserSettingList(ctx, tx, find)
+	userSettingList, err := listUserSettings(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
 
-	list := []*api.UserSetting{}
-	for _, raw := range userSettingRawList {
-		s.userSettingCache.Store(getUserSettingCacheKey(*raw), raw)
-		list = append(list, raw.toUserSetting())
+	for _, userSetting := range userSettingList {
+		s.userSettingCache.Store(getUserSettingCacheKeyV1(userSetting.UserID, userSetting.Key), userSetting)
 	}
-
-	return list, nil
+	return userSettingList, nil
 }
 
-func (s *Store) FindUserSetting(ctx context.Context, find *api.UserSettingFind) (*api.UserSetting, error) {
-	if userSetting, ok := s.userSettingCache.Load(getUserSettingFindCacheKey(find)); ok {
-		if userSetting == nil {
-			return nil, nil
+func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSettingMessage) (*UserSettingMessage, error) {
+	if find.UserID != nil {
+		if cache, ok := s.userSettingCache.Load(getUserSettingCacheKeyV1(*find.UserID, find.Key)); ok {
+			return cache.(*UserSettingMessage), nil
 		}
-		return userSetting.(*userSettingRaw).toUserSetting(), nil
 	}
 
 	tx, err := s.db.BeginTx(ctx, nil)
@@ -79,51 +76,25 @@ func (s *Store) FindUserSetting(ctx context.Context, find *api.UserSettingFind) 
 	}
 	defer tx.Rollback()
 
-	list, err := findUserSettingList(ctx, tx, find)
+	list, err := listUserSettings(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
 
 	if len(list) == 0 {
-		s.userSettingCache.Store(getUserSettingFindCacheKey(find), nil)
 		return nil, nil
 	}
-
-	userSettingRaw := list[0]
-	s.userSettingCache.Store(getUserSettingCacheKey(*userSettingRaw), userSettingRaw)
-	return userSettingRaw.toUserSetting(), nil
+	userSettingMessage := list[0]
+	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSettingMessage.UserID, userSettingMessage.Key), userSettingMessage)
+	return userSettingMessage, nil
 }
 
-func upsertUserSetting(ctx context.Context, tx *sql.Tx, upsert *api.UserSettingUpsert) (*userSettingRaw, error) {
-	query := `
-		INSERT INTO user_setting (
-			user_id, key, value
-		)
-		VALUES (?, ?, ?)
-		ON CONFLICT(user_id, key) DO UPDATE 
-		SET
-			value = EXCLUDED.value
-		RETURNING user_id, key, value
-	`
-	var userSettingRaw userSettingRaw
-	if err := tx.QueryRowContext(ctx, query, upsert.UserID, upsert.Key, upsert.Value).Scan(
-		&userSettingRaw.UserID,
-		&userSettingRaw.Key,
-		&userSettingRaw.Value,
-	); err != nil {
-		return nil, FormatError(err)
-	}
-
-	return &userSettingRaw, nil
-}
-
-func findUserSettingList(ctx context.Context, tx *sql.Tx, find *api.UserSettingFind) ([]*userSettingRaw, error) {
+func listUserSettings(ctx context.Context, tx *sql.Tx, find *FindUserSettingMessage) ([]*UserSettingMessage, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
-	if v := find.Key.String(); v != "" {
+	if v := find.Key; v != "" {
 		where, args = append(where, "key = ?"), append(args, v)
 	}
-
 	if v := find.UserID; v != nil {
 		where, args = append(where, "user_id = ?"), append(args, *find.UserID)
 	}
@@ -141,25 +112,24 @@ func findUserSettingList(ctx context.Context, tx *sql.Tx, find *api.UserSettingF
 	}
 	defer rows.Close()
 
-	userSettingRawList := make([]*userSettingRaw, 0)
+	userSettingMessageList := make([]*UserSettingMessage, 0)
 	for rows.Next() {
-		var userSettingRaw userSettingRaw
+		var userSettingMessage UserSettingMessage
 		if err := rows.Scan(
-			&userSettingRaw.UserID,
-			&userSettingRaw.Key,
-			&userSettingRaw.Value,
+			&userSettingMessage.UserID,
+			&userSettingMessage.Key,
+			&userSettingMessage.Value,
 		); err != nil {
 			return nil, FormatError(err)
 		}
-
-		userSettingRawList = append(userSettingRawList, &userSettingRaw)
+		userSettingMessageList = append(userSettingMessageList, &userSettingMessage)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return userSettingRawList, nil
+	return userSettingMessageList, nil
 }
 
 func vacuumUserSetting(ctx context.Context, tx *sql.Tx) error {

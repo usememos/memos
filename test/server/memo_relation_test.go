@@ -26,9 +26,6 @@ func TestMemoRelationServer(t *testing.T) {
 	user, err := s.postAuthSignup(signup)
 	require.NoError(t, err)
 	require.Equal(t, signup.Username, user.Username)
-	memoList, err := s.getMemoList()
-	require.NoError(t, err)
-	require.Len(t, memoList, 1)
 	memo, err := s.postMemoCreate(&api.CreateMemoRequest{
 		Content: "test memo",
 	})
@@ -45,9 +42,9 @@ func TestMemoRelationServer(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, "test memo2", memo2.Content)
-	memoList, err = s.getMemoList()
+	memoList, err := s.getMemoList()
 	require.NoError(t, err)
-	require.Len(t, memoList, 3)
+	require.Len(t, memoList, 2)
 	require.Len(t, memo2.RelationList, 1)
 	err = s.deleteMemoRelation(memo2.ID, memo.ID, api.MemoRelationReference)
 	require.NoError(t, err)

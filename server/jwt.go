@@ -10,9 +10,9 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/server/auth"
+	"github.com/usememos/memos/store"
 )
 
 const (
@@ -136,7 +136,7 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 		}
 
 		// Even if there is no error, we still need to make sure the user still exists.
-		user, err := server.Store.FindUser(ctx, &api.UserFind{
+		user, err := server.Store.GetUser(ctx, &store.FindUserMessage{
 			ID: &userID,
 		})
 		if err != nil {

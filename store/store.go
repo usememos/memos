@@ -14,9 +14,9 @@ type Store struct {
 	db                 *sql.DB
 	systemSettingCache sync.Map // map[string]*systemSettingRaw
 	userCache          sync.Map // map[int]*userRaw
-	userSettingCache   sync.Map // map[string]*userSettingRaw
+	userSettingCache   sync.Map // map[string]*UserSettingMessage
 	shortcutCache      sync.Map // map[int]*shortcutRaw
-	idpCache           sync.Map // map[int]*identityProviderMessage
+	idpCache           sync.Map // map[int]*IdentityProviderMessage
 	resourceCache      sync.Map // map[int]*resourceRaw
 }
 
