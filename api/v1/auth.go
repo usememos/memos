@@ -74,16 +74,19 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
 		}
 
-		identityProviderMessage, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProviderMessage{
+		identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
 			ID: &signin.IdentityProviderID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider").SetInternal(err)
 		}
+		if identityProvider == nil {
+			return echo.NewHTTPError(http.StatusNotFound, "Identity provider not found")
+		}
 
 		var userInfo *idp.IdentityProviderUserInfo
-		if identityProviderMessage.Type == store.IdentityProviderOAuth2 {
-			oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProviderMessage.Config.OAuth2Config)
+		if identityProvider.Type == store.IdentityProviderOAuth2 {
+			oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.OAuth2Config)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider instance").SetInternal(err)
 			}
@@ -97,7 +100,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 			}
 		}
 
-		identifierFilter := identityProviderMessage.IdentifierFilter
+		identifierFilter := identityProvider.IdentifierFilter
 		if identifierFilter != "" {
 			identifierFilterRegex, err := regexp.Compile(identifierFilter)
 			if err != nil {

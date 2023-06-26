@@ -6,8 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
-
-	"github.com/usememos/memos/common"
 )
 
 type IdentityProviderType string
@@ -36,7 +34,7 @@ type FieldMapping struct {
 	Email       string `json:"email"`
 }
 
-type IdentityProviderMessage struct {
+type IdentityProvider struct {
 	ID               int
 	Name             string
 	Type             IdentityProviderType
@@ -44,11 +42,11 @@ type IdentityProviderMessage struct {
 	Config           *IdentityProviderConfig
 }
 
-type FindIdentityProviderMessage struct {
+type FindIdentityProvider struct {
 	ID *int
 }
 
-type UpdateIdentityProviderMessage struct {
+type UpdateIdentityProvider struct {
 	ID               int
 	Type             IdentityProviderType
 	Name             *string
@@ -56,14 +54,14 @@ type UpdateIdentityProviderMessage struct {
 	Config           *IdentityProviderConfig
 }
 
-type DeleteIdentityProviderMessage struct {
+type DeleteIdentityProvider struct {
 	ID int
 }
 
-func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProviderMessage) (*IdentityProviderMessage, error) {
+func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProvider) (*IdentityProvider, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -76,6 +74,7 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProv
 	} else {
 		return nil, fmt.Errorf("unsupported idp type %s", string(create.Type))
 	}
+
 	query := `
 		INSERT INTO idp (
 			name,
@@ -96,20 +95,22 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProv
 	).Scan(
 		&create.ID,
 	); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
+
 	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
-	identityProviderMessage := create
-	s.idpCache.Store(identityProviderMessage.ID, identityProviderMessage)
-	return identityProviderMessage, nil
+
+	identityProvider := create
+	s.idpCache.Store(identityProvider.ID, identityProvider)
+	return identityProvider, nil
 }
 
-func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityProviderMessage) ([]*IdentityProviderMessage, error) {
+func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityProvider) ([]*IdentityProvider, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -124,16 +125,16 @@ func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityPro
 	return list, nil
 }
 
-func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProviderMessage) (*IdentityProviderMessage, error) {
+func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProvider) (*IdentityProvider, error) {
 	if find.ID != nil {
 		if cache, ok := s.idpCache.Load(*find.ID); ok {
-			return cache.(*IdentityProviderMessage), nil
+			return cache.(*IdentityProvider), nil
 		}
 	}
 
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -142,18 +143,18 @@ func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProvi
 		return nil, err
 	}
 	if len(list) == 0 {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+		return nil, nil
 	}
 
-	identityProviderMessage := list[0]
-	s.idpCache.Store(identityProviderMessage.ID, identityProviderMessage)
-	return identityProviderMessage, nil
+	identityProvider := list[0]
+	s.idpCache.Store(identityProvider.ID, identityProvider)
+	return identityProvider, nil
 }
 
-func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProviderMessage) (*IdentityProviderMessage, error) {
+func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProvider) (*IdentityProvider, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -184,39 +185,42 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 		WHERE id = ?
 		RETURNING id, name, type, identifier_filter, config
 	`
-	var identityProviderMessage IdentityProviderMessage
+	var identityProvider IdentityProvider
 	var identityProviderConfig string
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
-		&identityProviderMessage.ID,
-		&identityProviderMessage.Name,
-		&identityProviderMessage.Type,
-		&identityProviderMessage.IdentifierFilter,
+		&identityProvider.ID,
+		&identityProvider.Name,
+		&identityProvider.Type,
+		&identityProvider.IdentifierFilter,
 		&identityProviderConfig,
 	); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
-	if identityProviderMessage.Type == IdentityProviderOAuth2 {
+
+	if identityProvider.Type == IdentityProviderOAuth2 {
 		oauth2Config := &IdentityProviderOAuth2Config{}
 		if err := json.Unmarshal([]byte(identityProviderConfig), oauth2Config); err != nil {
 			return nil, err
 		}
-		identityProviderMessage.Config = &IdentityProviderConfig{
+		identityProvider.Config = &IdentityProviderConfig{
 			OAuth2Config: oauth2Config,
 		}
 	} else {
-		return nil, fmt.Errorf("unsupported idp type %s", string(identityProviderMessage.Type))
+		return nil, fmt.Errorf("unsupported idp type %s", string(identityProvider.Type))
 	}
+
 	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
-	s.idpCache.Store(identityProviderMessage.ID, identityProviderMessage)
-	return &identityProviderMessage, nil
+
+	s.idpCache.Store(identityProvider.ID, identityProvider)
+	return &identityProvider, nil
 }
 
-func (s *Store) DeleteIdentityProvider(ctx context.Context, delete *DeleteIdentityProviderMessage) error {
+func (s *Store) DeleteIdentityProvider(ctx context.Context, delete *DeleteIdentityProvider) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -224,24 +228,22 @@ func (s *Store) DeleteIdentityProvider(ctx context.Context, delete *DeleteIdenti
 	stmt := `DELETE FROM idp WHERE ` + strings.Join(where, " AND ")
 	result, err := tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
-		return FormatError(err)
-	}
-
-	rows, err := result.RowsAffected()
-	if err != nil {
 		return err
 	}
-	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("idp not found")}
+
+	if _, err = result.RowsAffected(); err != nil {
+		return err
 	}
+
 	if err := tx.Commit(); err != nil {
 		return err
 	}
+
 	s.idpCache.Delete(delete.ID)
 	return nil
 }
 
-func listIdentityProviders(ctx context.Context, tx *sql.Tx, find *FindIdentityProviderMessage) ([]*IdentityProviderMessage, error) {
+func listIdentityProviders(ctx context.Context, tx *sql.Tx, find *FindIdentityProvider) ([]*IdentityProvider, error) {
 	where, args := []string{"TRUE"}, []any{}
 	if v := find.ID; v != nil {
 		where, args = append(where, fmt.Sprintf("id = $%d", len(args)+1)), append(args, *v)
@@ -259,40 +261,41 @@ func listIdentityProviders(ctx context.Context, tx *sql.Tx, find *FindIdentityPr
 		args...,
 	)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
-	var identityProviderMessages []*IdentityProviderMessage
+	var identityProviders []*IdentityProvider
 	for rows.Next() {
-		var identityProviderMessage IdentityProviderMessage
+		var identityProvider IdentityProvider
 		var identityProviderConfig string
 		if err := rows.Scan(
-			&identityProviderMessage.ID,
-			&identityProviderMessage.Name,
-			&identityProviderMessage.Type,
-			&identityProviderMessage.IdentifierFilter,
+			&identityProvider.ID,
+			&identityProvider.Name,
+			&identityProvider.Type,
+			&identityProvider.IdentifierFilter,
 			&identityProviderConfig,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
-		if identityProviderMessage.Type == IdentityProviderOAuth2 {
+
+		if identityProvider.Type == IdentityProviderOAuth2 {
 			oauth2Config := &IdentityProviderOAuth2Config{}
 			if err := json.Unmarshal([]byte(identityProviderConfig), oauth2Config); err != nil {
 				return nil, err
 			}
-			identityProviderMessage.Config = &IdentityProviderConfig{
+			identityProvider.Config = &IdentityProviderConfig{
 				OAuth2Config: oauth2Config,
 			}
 		} else {
-			return nil, fmt.Errorf("unsupported idp type %s", string(identityProviderMessage.Type))
+			return nil, fmt.Errorf("unsupported idp type %s", string(identityProvider.Type))
 		}
-		identityProviderMessages = append(identityProviderMessages, &identityProviderMessage)
+		identityProviders = append(identityProviders, &identityProvider)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return identityProviderMessages, nil
+	return identityProviders, nil
 }

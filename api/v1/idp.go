@@ -83,7 +83,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post identity provider request").SetInternal(err)
 		}
 
-		identityProviderMessage, err := s.Store.CreateIdentityProvider(ctx, &store.IdentityProviderMessage{
+		identityProvider, err := s.Store.CreateIdentityProvider(ctx, &store.IdentityProvider{
 			Name:             identityProviderCreate.Name,
 			Type:             store.IdentityProviderType(identityProviderCreate.Type),
 			IdentifierFilter: identityProviderCreate.IdentifierFilter,
@@ -92,7 +92,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProviderMessage))
+		return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
 	})
 
 	g.PATCH("/idp/:idpId", func(c echo.Context) error {
@@ -124,7 +124,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch identity provider request").SetInternal(err)
 		}
 
-		identityProviderMessage, err := s.Store.UpdateIdentityProvider(ctx, &store.UpdateIdentityProviderMessage{
+		identityProvider, err := s.Store.UpdateIdentityProvider(ctx, &store.UpdateIdentityProvider{
 			ID:               identityProviderPatch.ID,
 			Type:             store.IdentityProviderType(identityProviderPatch.Type),
 			Name:             identityProviderPatch.Name,
@@ -134,12 +134,12 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch identity provider").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProviderMessage))
+		return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
 	})
 
 	g.GET("/idp", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		identityProviderMessageList, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProviderMessage{})
+		list, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider list").SetInternal(err)
 		}
@@ -159,8 +159,8 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		}
 
 		identityProviderList := []*IdentityProvider{}
-		for _, identityProviderMessage := range identityProviderMessageList {
-			identityProvider := convertIdentityProviderFromStore(identityProviderMessage)
+		for _, item := range list {
+			identityProvider := convertIdentityProviderFromStore(item)
 			// data desensitize
 			if !isHostUser {
 				identityProvider.Config.OAuth2Config.ClientSecret = ""
@@ -191,13 +191,17 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
 		}
-		identityProviderMessage, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProviderMessage{
+		identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
 			ID: &identityProviderID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get identity provider").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProviderMessage))
+		if identityProvider == nil {
+			return echo.NewHTTPError(http.StatusNotFound, "Identity provider not found")
+		}
+
+		return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
 	})
 
 	g.DELETE("/idp/:idpId", func(c echo.Context) error {
@@ -222,7 +226,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
 		}
 
-		if err = s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProviderMessage{ID: identityProviderID}); err != nil {
+		if err = s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProvider{ID: identityProviderID}); err != nil {
 			if common.ErrorCode(err) == common.NotFound {
 				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Identity provider ID not found: %d", identityProviderID))
 			}
@@ -232,13 +236,13 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 	})
 }
 
-func convertIdentityProviderFromStore(identityProviderMessage *store.IdentityProviderMessage) *IdentityProvider {
+func convertIdentityProviderFromStore(identityProvider *store.IdentityProvider) *IdentityProvider {
 	return &IdentityProvider{
-		ID:               identityProviderMessage.ID,
-		Name:             identityProviderMessage.Name,
-		Type:             IdentityProviderType(identityProviderMessage.Type),
-		IdentifierFilter: identityProviderMessage.IdentifierFilter,
-		Config:           convertIdentityProviderConfigFromStore(identityProviderMessage.Config),
+		ID:               identityProvider.ID,
+		Name:             identityProvider.Name,
+		Type:             IdentityProviderType(identityProvider.Type),
+		IdentifierFilter: identityProvider.IdentifierFilter,
+		Config:           convertIdentityProviderConfigFromStore(identityProvider.Config),
 	}
 }
 
