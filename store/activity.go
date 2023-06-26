@@ -7,6 +7,51 @@ import (
 	"github.com/usememos/memos/api"
 )
 
+type ActivityMessage struct {
+	ID int
+
+	// Standard fields
+	CreatorID int
+	CreatedTs int64
+
+	// Domain specific fields
+	Type    string
+	Level   string
+	Payload string
+}
+
+// CreateActivityV1 creates an instance of Activity.
+func (s *Store) CreateActivityV1(ctx context.Context, create *ActivityMessage) (*ActivityMessage, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	query := `
+		INSERT INTO activity (
+			creator_id, 
+			type, 
+			level, 
+			payload
+		)
+		VALUES (?, ?, ?, ?)
+		RETURNING id, created_ts
+	`
+	if err := tx.QueryRowContext(ctx, query, create.CreatorID, create.Type, create.Level, create.Payload).Scan(
+		&create.ID,
+		&create.CreatedTs,
+	); err != nil {
+		return nil, FormatError(err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, FormatError(err)
+	}
+	activityMessage := create
+	return activityMessage, nil
+}
+
 // activityRaw is the store model for an Activity.
 // Fields have exactly the same meanings as Activity.
 type activityRaw struct {
@@ -38,10 +83,6 @@ func (raw *activityRaw) toActivity() *api.Activity {
 
 // CreateActivity creates an instance of Activity.
 func (s *Store) CreateActivity(ctx context.Context, create *api.ActivityCreate) (*api.Activity, error) {
-	if s.Profile.Mode == "prod" {
-		return nil, nil
-	}
-
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)

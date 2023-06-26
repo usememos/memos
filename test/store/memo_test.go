@@ -36,8 +36,8 @@ func TestMemoStore(t *testing.T) {
 		CreatorID: &user.ID,
 	})
 	require.NoError(t, err)
-	require.Equal(t, 2, len(memoList))
-	require.Equal(t, memo, memoList[1])
+	require.Equal(t, 1, len(memoList))
+	require.Equal(t, memo, memoList[0])
 	err = ts.DeleteMemo(ctx, &store.DeleteMemoMessage{
 		ID: memo.ID,
 	})

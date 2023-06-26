@@ -291,7 +291,7 @@ func listIdentityProviders(ctx context.Context, tx *sql.Tx, find *FindIdentityPr
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return identityProviderMessages, nil

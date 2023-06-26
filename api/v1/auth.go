@@ -8,7 +8,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
@@ -41,16 +40,15 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
 		}
 
-		userFind := &api.UserFind{
+		user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
 			Username: &signin.Username,
-		}
-		user, err := s.Store.FindUser(ctx, userFind)
+		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 		}
 		if user == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
-		} else if user.RowStatus == api.Archived {
+		} else if user.RowStatus == store.Archived {
 			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", signin.Username))
 		}
 
@@ -110,20 +108,19 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 			}
 		}
 
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
+		user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
 			Username: &userInfo.Identifier,
 		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 		}
 		if user == nil {
-			userCreate := &api.UserCreate{
+			userCreate := &store.UserMessage{
 				Username: userInfo.Identifier,
 				// The new signup user should be normal user by default.
-				Role:     api.NormalUser,
+				Role:     store.NormalUser,
 				Nickname: userInfo.DisplayName,
 				Email:    userInfo.Email,
-				Password: userInfo.Email,
 				OpenID:   common.GenUUID(),
 			}
 			password, err := common.RandomString(20)
@@ -135,12 +132,12 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
 			}
 			userCreate.PasswordHash = string(passwordHash)
-			user, err = s.Store.CreateUser(ctx, userCreate)
+			user, err = s.Store.CreateUserV1(ctx, userCreate)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 			}
 		}
-		if user.RowStatus == api.Archived {
+		if user.RowStatus == store.Archived {
 			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
 		}
 
@@ -160,27 +157,27 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
 		}
 
-		userCreate := &api.UserCreate{
-			Username: signup.Username,
-			// The new signup user should be normal user by default.
-			Role:     api.NormalUser,
-			Nickname: signup.Username,
-			Password: signup.Password,
-			OpenID:   common.GenUUID(),
-		}
-		hostUserType := api.Host
-		existedHostUsers, err := s.Store.FindUserList(ctx, &api.UserFind{
+		hostUserType := store.Host
+		existedHostUsers, err := s.Store.ListUsers(ctx, &store.FindUserMessage{
 			Role: &hostUserType,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Failed to find users").SetInternal(err)
 		}
+
+		userCreate := &store.UserMessage{
+			Username: signup.Username,
+			// The new signup user should be normal user by default.
+			Role:     store.NormalUser,
+			Nickname: signup.Username,
+			OpenID:   common.GenUUID(),
+		}
 		if len(existedHostUsers) == 0 {
 			// Change the default role to host if there is no host user.
-			userCreate.Role = api.Host
+			userCreate.Role = store.Host
 		} else {
-			allowSignUpSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-				Name: api.SystemSettingAllowSignUpName,
+			allowSignUpSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSettingMessage{
+				Name: SystemSettingAllowSignUpName.String(),
 			})
 			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
@@ -198,17 +195,13 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 			}
 		}
 
-		if err := userCreate.Validate(); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format").SetInternal(err)
-		}
-
 		passwordHash, err := bcrypt.GenerateFromPassword([]byte(signup.Password), bcrypt.DefaultCost)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
 		}
 
 		userCreate.PasswordHash = string(passwordHash)
-		user, err := s.Store.CreateUser(ctx, userCreate)
+		user, err := s.Store.CreateUserV1(ctx, userCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
@@ -228,9 +221,9 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 	})
 }
 
-func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *api.User) error {
+func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.UserMessage) error {
 	ctx := c.Request().Context()
-	payload := api.ActivityUserAuthSignInPayload{
+	payload := ActivityUserAuthSignInPayload{
 		UserID: user.ID,
 		IP:     echo.ExtractIPFromRealIPHeader()(c.Request()),
 	}
@@ -238,10 +231,10 @@ func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *api.User) 
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivityV1(ctx, &store.ActivityMessage{
 		CreatorID: user.ID,
-		Type:      api.ActivityUserAuthSignIn,
-		Level:     api.ActivityInfo,
+		Type:      string(ActivityUserAuthSignIn),
+		Level:     string(ActivityInfo),
 		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
@@ -250,9 +243,9 @@ func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *api.User) 
 	return err
 }
 
-func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *api.User) error {
+func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *store.UserMessage) error {
 	ctx := c.Request().Context()
-	payload := api.ActivityUserAuthSignUpPayload{
+	payload := ActivityUserAuthSignUpPayload{
 		Username: user.Username,
 		IP:       echo.ExtractIPFromRealIPHeader()(c.Request()),
 	}
@@ -260,10 +253,10 @@ func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *api.User) 
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivityV1(ctx, &store.ActivityMessage{
 		CreatorID: user.ID,
-		Type:      api.ActivityUserAuthSignUp,
-		Level:     api.ActivityInfo,
+		Type:      string(ActivityUserAuthSignUp),
+		Level:     string(ActivityInfo),
 		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {

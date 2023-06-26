@@ -7,7 +7,9 @@ import (
 	"path"
 	"strconv"
 
+	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
+	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/store"
@@ -37,14 +39,13 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	}
 
 	var creatorID int
-	userSettingList, err := t.store.FindUserSettingList(ctx, &api.UserSettingFind{
-		Key: api.UserSettingTelegramUserIDKey,
+	userSettingMessageList, err := t.store.ListUserSettings(ctx, &store.FindUserSettingMessage{
+		Key: apiv1.UserSettingTelegramUserIDKey.String(),
 	})
 	if err != nil {
-		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Fail to find memo user: %s", err), nil)
-		return err
+		return errors.Wrap(err, "Failed to find userSettingList")
 	}
-	for _, userSetting := range userSettingList {
+	for _, userSetting := range userSettingMessageList {
 		var value string
 		if err := json.Unmarshal([]byte(userSetting.Value), &value); err != nil {
 			continue

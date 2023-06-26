@@ -11,6 +11,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
+	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/store"
 
@@ -37,9 +38,9 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		if createMemoRequest.Visibility == "" {
-			userMemoVisibilitySetting, err := s.Store.FindUserSetting(ctx, &api.UserSettingFind{
+			userMemoVisibilitySetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSettingMessage{
 				UserID: &userID,
-				Key:    api.UserSettingMemoVisibilityKey,
+				Key:    apiv1.UserSettingMemoVisibilityKey.String(),
 			})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user setting").SetInternal(err)

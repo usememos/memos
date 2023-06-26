@@ -26,17 +26,14 @@ func TestMemoServer(t *testing.T) {
 	user, err := s.postAuthSignup(signup)
 	require.NoError(t, err)
 	require.Equal(t, signup.Username, user.Username)
-	memoList, err := s.getMemoList()
-	require.NoError(t, err)
-	require.Len(t, memoList, 1)
 	memo, err := s.postMemoCreate(&api.CreateMemoRequest{
 		Content: "test memo",
 	})
 	require.NoError(t, err)
 	require.Equal(t, "test memo", memo.Content)
-	memoList, err = s.getMemoList()
+	memoList, err := s.getMemoList()
 	require.NoError(t, err)
-	require.Len(t, memoList, 2)
+	require.Len(t, memoList, 1)
 	updatedContent := "updated memo"
 	memo, err = s.patchMemo(&api.PatchMemoRequest{
 		ID:      memo.ID,
@@ -62,7 +59,7 @@ func TestMemoServer(t *testing.T) {
 	require.NoError(t, err)
 	memoList, err = s.getMemoList()
 	require.NoError(t, err)
-	require.Len(t, memoList, 1)
+	require.Len(t, memoList, 0)
 }
 
 func (s *TestingServer) getMemo(memoID int) (*api.MemoResponse, error) {
