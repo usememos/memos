@@ -179,7 +179,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 			// Change the default role to host if there is no host user.
 			userCreate.Role = store.Host
 		} else {
-			allowSignUpSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSettingMessage{
+			allowSignUpSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
 				Name: SystemSettingAllowSignUpName.String(),
 			})
 			if err != nil && common.ErrorCode(err) != common.NotFound {

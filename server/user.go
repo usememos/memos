@@ -94,7 +94,7 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		}
 
 		userSettingUpsert.UserID = userID
-		userSettingMessage, err := s.Store.UpsertUserSettingV1(ctx, &store.UserSettingMessage{
+		userSetting, err := s.Store.UpsertUserSetting(ctx, &store.UserSetting{
 			UserID: userID,
 			Key:    userSettingUpsert.Key.String(),
 			Value:  userSettingUpsert.Value,
@@ -102,8 +102,8 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert user setting").SetInternal(err)
 		}
-		userSetting := convertUserSettingFromStore(userSettingMessage)
-		return c.JSON(http.StatusOK, composeResponse(userSetting))
+		userSettingMessage := convertUserSettingFromStore(userSetting)
+		return c.JSON(http.StatusOK, composeResponse(userSettingMessage))
 	})
 
 	// GET /api/user/me is used to check if the user is logged in.
@@ -122,19 +122,19 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
 
-		userSettingMessageList, err := s.Store.ListUserSettings(ctx, &store.FindUserSettingMessage{
+		list, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
 			UserID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
 		}
 		userSettingList := []*api.UserSetting{}
-		for _, userSettingMessage := range userSettingMessageList {
-			userSettingV1 := convertUserSettingFromStore(userSettingMessage)
+		for _, item := range list {
+			userSetting := convertUserSettingFromStore(item)
 			userSettingList = append(userSettingList, &api.UserSetting{
-				UserID: userSettingV1.UserID,
-				Key:    api.UserSettingKey(userSettingV1.Key),
-				Value:  userSettingV1.Value,
+				UserID: userSetting.UserID,
+				Key:    api.UserSettingKey(userSetting.Key),
+				Value:  userSetting.Value,
 			})
 		}
 		user.UserSettingList = userSettingList
@@ -218,19 +218,19 @@ func (s *Server) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch user").SetInternal(err)
 		}
 
-		userSettingMessageList, err := s.Store.ListUserSettings(ctx, &store.FindUserSettingMessage{
+		list, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
 			UserID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
 		}
 		userSettingList := []*api.UserSetting{}
-		for _, userSettingMessage := range userSettingMessageList {
-			userSettingV1 := convertUserSettingFromStore(userSettingMessage)
+		for _, item := range list {
+			userSetting := convertUserSettingFromStore(item)
 			userSettingList = append(userSettingList, &api.UserSetting{
-				UserID: userSettingV1.UserID,
-				Key:    api.UserSettingKey(userSettingV1.Key),
-				Value:  userSettingV1.Value,
+				UserID: userSetting.UserID,
+				Key:    api.UserSettingKey(userSetting.Key),
+				Value:  userSetting.Value,
 			})
 		}
 		user.UserSettingList = userSettingList
@@ -297,7 +297,7 @@ func (s *Server) createUserCreateActivity(c echo.Context, user *api.User) error 
 	return err
 }
 
-func convertUserSettingFromStore(userSetting *store.UserSettingMessage) *apiv1.UserSetting {
+func convertUserSettingFromStore(userSetting *store.UserSetting) *apiv1.UserSetting {
 	return &apiv1.UserSetting{
 		UserID: userSetting.UserID,
 		Key:    apiv1.UserSettingKey(userSetting.Key),

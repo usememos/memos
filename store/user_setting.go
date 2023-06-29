@@ -6,18 +6,18 @@ import (
 	"strings"
 )
 
-type UserSettingMessage struct {
+type UserSetting struct {
 	UserID int
 	Key    string
 	Value  string
 }
 
-type FindUserSettingMessage struct {
+type FindUserSetting struct {
 	UserID *int
 	Key    string
 }
 
-func (s *Store) UpsertUserSettingV1(ctx context.Context, upsert *UserSettingMessage) (*UserSettingMessage, error) {
+func (s *Store) UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*UserSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -40,12 +40,12 @@ func (s *Store) UpsertUserSettingV1(ctx context.Context, upsert *UserSettingMess
 		return nil, err
 	}
 
-	userSettingMessage := upsert
-	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSettingMessage.UserID, userSettingMessage.Key), userSettingMessage)
-	return userSettingMessage, nil
+	userSetting := upsert
+	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSetting.UserID, userSetting.Key), userSetting)
+	return userSetting, nil
 }
 
-func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSettingMessage) ([]*UserSettingMessage, error) {
+func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*UserSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -63,10 +63,10 @@ func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSettingMessa
 	return userSettingList, nil
 }
 
-func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSettingMessage) (*UserSettingMessage, error) {
+func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*UserSetting, error) {
 	if find.UserID != nil {
 		if cache, ok := s.userSettingCache.Load(getUserSettingCacheKeyV1(*find.UserID, find.Key)); ok {
-			return cache.(*UserSettingMessage), nil
+			return cache.(*UserSetting), nil
 		}
 	}
 
@@ -84,12 +84,12 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSettingMessage
 	if len(list) == 0 {
 		return nil, nil
 	}
-	userSettingMessage := list[0]
-	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSettingMessage.UserID, userSettingMessage.Key), userSettingMessage)
-	return userSettingMessage, nil
+	userSetting := list[0]
+	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSetting.UserID, userSetting.Key), userSetting)
+	return userSetting, nil
 }
 
-func listUserSettings(ctx context.Context, tx *sql.Tx, find *FindUserSettingMessage) ([]*UserSettingMessage, error) {
+func listUserSettings(ctx context.Context, tx *sql.Tx, find *FindUserSetting) ([]*UserSetting, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.Key; v != "" {
@@ -112,24 +112,24 @@ func listUserSettings(ctx context.Context, tx *sql.Tx, find *FindUserSettingMess
 	}
 	defer rows.Close()
 
-	userSettingMessageList := make([]*UserSettingMessage, 0)
+	userSettingList := make([]*UserSetting, 0)
 	for rows.Next() {
-		var userSettingMessage UserSettingMessage
+		var userSetting UserSetting
 		if err := rows.Scan(
-			&userSettingMessage.UserID,
-			&userSettingMessage.Key,
-			&userSettingMessage.Value,
+			&userSetting.UserID,
+			&userSetting.Key,
+			&userSetting.Value,
 		); err != nil {
 			return nil, FormatError(err)
 		}
-		userSettingMessageList = append(userSettingMessageList, &userSettingMessage)
+		userSettingList = append(userSettingList, &userSetting)
 	}
 
 	if err := rows.Err(); err != nil {
 		return nil, FormatError(err)
 	}
 
-	return userSettingMessageList, nil
+	return userSettingList, nil
 }
 
 func vacuumUserSetting(ctx context.Context, tx *sql.Tx) error {
