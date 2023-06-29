@@ -38,7 +38,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		if createMemoRequest.Visibility == "" {
-			userMemoVisibilitySetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSettingMessage{
+			userMemoVisibilitySetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 				UserID: &userID,
 				Key:    apiv1.UserSettingMemoVisibilityKey.String(),
 			})

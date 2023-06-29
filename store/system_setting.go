@@ -10,17 +10,17 @@ import (
 	"github.com/usememos/memos/common"
 )
 
-type SystemSettingMessage struct {
+type SystemSetting struct {
 	Name        string
 	Value       string
 	Description string
 }
 
-type FindSystemSettingMessage struct {
+type FindSystemSetting struct {
 	Name string
 }
 
-func (s *Store) ListSystemSettings(ctx context.Context, find *FindSystemSettingMessage) ([]*SystemSettingMessage, error) {
+func (s *Store) ListSystemSettings(ctx context.Context, find *FindSystemSetting) ([]*SystemSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -38,10 +38,10 @@ func (s *Store) ListSystemSettings(ctx context.Context, find *FindSystemSettingM
 	return list, nil
 }
 
-func (s *Store) GetSystemSetting(ctx context.Context, find *FindSystemSettingMessage) (*SystemSettingMessage, error) {
+func (s *Store) GetSystemSetting(ctx context.Context, find *FindSystemSetting) (*SystemSetting, error) {
 	if find.Name != "" {
 		if cache, ok := s.systemSettingCache.Load(find.Name); ok {
-			return cache.(*SystemSettingMessage), nil
+			return cache.(*SystemSetting), nil
 		}
 	}
 
@@ -65,7 +65,7 @@ func (s *Store) GetSystemSetting(ctx context.Context, find *FindSystemSettingMes
 	return systemSettingMessage, nil
 }
 
-func listSystemSettings(ctx context.Context, tx *sql.Tx, find *FindSystemSettingMessage) ([]*SystemSettingMessage, error) {
+func listSystemSettings(ctx context.Context, tx *sql.Tx, find *FindSystemSetting) ([]*SystemSetting, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.Name != "" {
 		where, args = append(where, "name = ?"), append(args, find.Name)
@@ -85,9 +85,9 @@ func listSystemSettings(ctx context.Context, tx *sql.Tx, find *FindSystemSetting
 	}
 	defer rows.Close()
 
-	list := []*SystemSettingMessage{}
+	list := []*SystemSetting{}
 	for rows.Next() {
-		systemSettingMessage := &SystemSettingMessage{}
+		systemSettingMessage := &SystemSetting{}
 		if err := rows.Scan(
 			&systemSettingMessage.Name,
 			&systemSettingMessage.Value,

@@ -39,13 +39,13 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	}
 
 	var creatorID int
-	userSettingMessageList, err := t.store.ListUserSettings(ctx, &store.FindUserSettingMessage{
+	userSettingList, err := t.store.ListUserSettings(ctx, &store.FindUserSetting{
 		Key: apiv1.UserSettingTelegramUserIDKey.String(),
 	})
 	if err != nil {
 		return errors.Wrap(err, "Failed to find userSettingList")
 	}
-	for _, userSetting := range userSettingMessageList {
+	for _, userSetting := range userSettingList {
 		var value string
 		if err := json.Unmarshal([]byte(userSetting.Value), &value); err != nil {
 			continue
