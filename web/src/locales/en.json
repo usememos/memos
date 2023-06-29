@@ -59,8 +59,8 @@
     "name": "Name",
     "visibility": "Visibility",
     "learn-more": "Learn more",
-    "e.g": "e.g.",
     "beta": "Beta",
+    "new": "New",
     "dialog": {
       "error": "Error",
       "help": "Help",

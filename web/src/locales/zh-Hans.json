@@ -1,41 +1,4 @@
 {
-  "about": {
-    "about-memos": "关于Memos",
-    "memos-description": "Memos是一个基于网页的笔记应用程序，您可以使用它来编写、组织和共享笔记",
-    "no-server-description": "没有为此服务器配置描述。",
-    "other-projects": "其他的项目",
-    "powered-by": "Powered by"
-  },
-  "amount-text": {
-    "day_one": "DAY",
-    "day_other": "DAYS",
-    "memo_one": "MEMO",
-    "memo_other": "MEMOS",
-    "tag_one": "TAG",
-    "tag_other": "TAGS"
-  },
-  "archived": {
-    "archived-memos": "已归档的备忘录",
-    "fetching-data": "请求数据中...",
-    "no-archived-memos": "没有归档的备忘录"
-  },
-  "ask-ai": {
-    "go-to-settings": "前往设置",
-    "not-enabled": "您尚未设置 OpenAI API 密钥。",
-    "placeholder": "随便问",
-    "title": "问 AI",
-    "default-message-group-title": "默认会话",
-    "create-message-group-title": "新建会话",
-    "label-message-group-name-title": "会话名称"
-
-  },
-  "auth": {
-    "host-tip": "你正在注册为管理员用户账号。",
-    "new-password": "新密码",
-    "not-host-tip": "如果你没有账号，请联系站点管理员",
-    "repeat-new-password": "重复新密码",
-    "signup-as-host": "注册为管理员"
-  },
   "common": {
     "about": "关于",
     "admin": "管理",
@@ -56,7 +19,6 @@
     "daily-review": "每日回顾",
     "database": "数据库",
     "delete": "删除",
-    "e.g": "例如",
     "edit": "编辑",
     "email": "邮箱",
     "expand": "展开",
@@ -103,7 +65,44 @@
     "vacuum": "清理未使用资源",
     "version": "版本",
     "visibility": "可见性",
-    "yourself": "你自己"
+    "yourself": "你自己",
+    "new": "新建"
+  },
+  "about": {
+    "about-memos": "关于Memos",
+    "memos-description": "Memos是一个基于网页的笔记应用程序，您可以使用它来编写、组织和共享笔记",
+    "no-server-description": "没有为此服务器配置描述。",
+    "other-projects": "其他的项目",
+    "powered-by": "Powered by"
+  },
+  "amount-text": {
+    "day_one": "DAY",
+    "day_other": "DAYS",
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "TAG",
+    "tag_other": "TAGS"
+  },
+  "archived": {
+    "archived-memos": "已归档的备忘录",
+    "fetching-data": "请求数据中...",
+    "no-archived-memos": "没有归档的备忘录"
+  },
+  "ask-ai": {
+    "go-to-settings": "前往设置",
+    "not-enabled": "您尚未设置 OpenAI API 密钥。",
+    "placeholder": "随便问",
+    "title": "问 AI",
+    "default-message-group-title": "默认会话",
+    "create-message-group-title": "新建会话",
+    "label-message-group-name-title": "会话名称"
+  },
+  "auth": {
+    "host-tip": "你正在注册为管理员用户账号。",
+    "new-password": "新密码",
+    "not-host-tip": "如果你没有账号，请联系站点管理员",
+    "repeat-new-password": "重复新密码",
+    "signup-as-host": "注册为管理员"
   },
   "daily-review": {
     "no-memos": "哎呀，空无一物。",
