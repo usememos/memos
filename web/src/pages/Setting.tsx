@@ -96,7 +96,7 @@ const Setting = () => {
         </div>
         <div className="section-content-container">
           <Select
-            className="block sm:!hidden"
+            className="block mb-2 sm:!hidden"
             value={state.selectedSection}
             onChange={(_, value) => handleSectionSelectorItemClick(value as SettingSection)}
           >

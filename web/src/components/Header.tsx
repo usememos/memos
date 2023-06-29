@@ -137,7 +137,8 @@ const Header = () => {
                   className="mt-2 w-full py-3 rounded-full flex flex-row justify-center items-center bg-green-600 font-medium text-white dark:opacity-80 hover:shadow hover:opacity-90"
                   onClick={() => showMemoEditorDialog()}
                 >
-                  <Icon.Edit3 className="w-4 h-auto mr-1" /> New
+                  <Icon.Edit3 className="w-4 h-auto mr-1" />
+                  {t("common.new")}
                 </button>
               </div>
               <UpgradeVersionView />
