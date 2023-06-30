@@ -35,16 +35,16 @@ const MyAccountSection = () => {
         <div className="flex flex-row justify-start items-center">
           <UserAvatar className="mr-2" avatarUrl={user.avatarUrl} />
           <span className="text-2xl leading-10 font-medium">{user.nickname}</span>
-          <span className="text-base ml-1 text-gray-500 leading-10">({user.username})</span>
+          <span className="text-base ml-1 text-gray-500 leading-10 dark:text-gray-400">({user.username})</span>
         </div>
         <div className="flex flex-row justify-start items-center text-base text-gray-600">{user.email}</div>
         <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
-          <button className="btn-normal" onClick={showUpdateAccountDialog}>
+          <Button variant="outlined" onClick={showUpdateAccountDialog}>
             {t("common.edit")}
-          </button>
-          <button className="btn-normal" onClick={showChangePasswordDialog}>
+          </Button>
+          <Button variant="outlined" onClick={showChangePasswordDialog}>
             {t("setting.account-section.change-password")}
-          </button>
+          </Button>
         </div>
       </div>
       <div className="section-container openapi-section-container mt-6">

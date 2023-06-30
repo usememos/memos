@@ -6,7 +6,7 @@
       @apply w-full mb-3 flex flex-row justify-start items-center;
 
       > .field-text {
-        @apply text-sm text-gray-600 w-20 text-right pr-2;
+        @apply text-sm text-gray-600 dark:text-gray-400 w-20 text-right pr-2;
       }
 
       > input {
@@ -16,40 +16,6 @@
 
     > .btns-container {
       @apply w-full mb-6 pl-20 flex flex-row justify-start items-center;
-    }
-  }
-
-  > .field-container {
-    > .field-text {
-      @apply text-gray-400 text-sm;
-
-      &.username-field {
-        @apply col-span-2 w-full;
-      }
-    }
-  }
-
-  > .member-container {
-    @apply w-full grid grid-cols-4 border-b dark:border-b-zinc-700 py-2;
-
-    > .field-text {
-      @apply text-base pl-2 mr-4 w-16 truncate;
-
-      &.id-text {
-        @apply font-mono text-gray-400;
-      }
-
-      &.username-text {
-        @apply w-auto col-span-2;
-      }
-    }
-
-    > .buttons-container {
-      @apply col-span-1 flex flex-row justify-end items-center;
-
-      > .tip-text {
-        @apply text-gray-400;
-      }
     }
   }
 }
