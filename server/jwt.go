@@ -113,7 +113,7 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 		})
 
 		if !accessToken.Valid {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Invalid access token. access token was modified without authorization."))
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid access token. access token was modified without authorization.")
 		}
 
 		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
