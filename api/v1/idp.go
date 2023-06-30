@@ -45,14 +45,14 @@ type IdentityProvider struct {
 	Config           *IdentityProviderConfig `json:"config"`
 }
 
-type IdentityProviderCreate struct {
+type CreateIdentityProviderRequest struct {
 	Name             string                  `json:"name"`
 	Type             IdentityProviderType    `json:"type"`
 	IdentifierFilter string                  `json:"identifierFilter"`
 	Config           *IdentityProviderConfig `json:"config"`
 }
 
-type IdentityProviderPatch struct {
+type UpdateIdentityProviderRequest struct {
 	ID               int
 	Type             IdentityProviderType    `json:"type"`
 	Name             *string                 `json:"name"`
@@ -78,7 +78,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
-		identityProviderCreate := &IdentityProviderCreate{}
+		identityProviderCreate := &CreateIdentityProviderRequest{}
 		if err := json.NewDecoder(c.Request().Body).Decode(identityProviderCreate); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post identity provider request").SetInternal(err)
 		}
@@ -117,7 +117,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
 		}
 
-		identityProviderPatch := &IdentityProviderPatch{
+		identityProviderPatch := &UpdateIdentityProviderRequest{
 			ID: identityProviderID,
 		}
 		if err := json.NewDecoder(c.Request().Body).Decode(identityProviderPatch); err != nil {

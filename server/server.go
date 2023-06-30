@@ -108,12 +108,8 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.registerOpenAIRoutes(apiGroup)
 	s.registerMemoRelationRoutes(apiGroup)
 
-	apiV1Group := e.Group("/api/v1")
-	apiV1Group.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s, next, s.Secret)
-	})
 	apiV1Service := apiV1.NewAPIV1Service(s.Secret, profile, store)
-	apiV1Service.Register(apiV1Group)
+	apiV1Service.Register(rootGroup)
 
 	return s, nil
 }
