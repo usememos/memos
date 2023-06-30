@@ -301,6 +301,7 @@ func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoM
 	} else {
 		orders = append(orders, "created_ts DESC")
 	}
+	orders = append(orders, "id DESC")
 
 	query := `
 	SELECT
