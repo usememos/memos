@@ -111,6 +111,11 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 			}
 			return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
 		})
+
+		if !accessToken.Valid {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid access token.")
+		}
+
 		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q.", claims.Audience, auth.AccessTokenAudienceName))
 		}
