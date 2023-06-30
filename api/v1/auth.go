@@ -32,7 +32,7 @@ type SignUp struct {
 	Password string `json:"password"`
 }
 
-func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
+func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 	g.POST("/auth/signin", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		signin := &SignIn{}
@@ -58,7 +58,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
 		}
 
-		if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
+		if err := auth.GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createAuthSignInActivity(c, user); err != nil {
@@ -144,7 +144,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
 		}
 
-		if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
+		if err := auth.GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createAuthSignInActivity(c, user); err != nil {
@@ -208,7 +208,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group, secret string) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
-		if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
+		if err := auth.GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createAuthSignUpActivity(c, user); err != nil {
