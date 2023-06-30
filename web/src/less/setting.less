@@ -12,10 +12,10 @@
       @apply w-full h-auto flex flex-row sm:flex-col justify-start items-start;
 
       > .section-item {
-        @apply flex flex-row justify-start items-center text-base select-none mr-3 sm:mr-0 mt-0 sm:mt-2 text-gray-700 dark:text-gray-300 cursor-pointer hover:opacity-80;
+        @apply flex flex-row justify-start items-center text-base select-none mr-3 sm:mr-0 mt-0 sm:mt-2 text-gray-700 dark:text-gray-400 cursor-pointer hover:opacity-80;
 
         &.selected {
-          @apply font-bold hover:opacity-100;
+          @apply font-bold dark:text-gray-300 hover:opacity-100;
         }
 
         > .icon-text {
@@ -32,7 +32,7 @@
       @apply flex flex-col justify-start items-start w-full;
 
       .title-text {
-        @apply text-sm mt-4 first:mt-2 mb-3 font-mono text-gray-500;
+        @apply text-sm mt-4 first:mt-2 mb-3 font-mono text-gray-500 dark:text-gray-400;
       }
 
       > .form-label {

@@ -117,7 +117,7 @@ const DailyReview = () => {
             </button>
           </div>
           <DatePicker
-            className={`absolute top-8 mt-2 z-20 mx-auto border bg-white dark:border-zinc-800 rounded-lg mb-6 ${
+            className={`absolute top-8 mt-2 z-20 mx-auto border bg-white dark:bg-zinc-800 dark:border-zinc-800 rounded-lg mb-6 ${
               showDatePicker ? "" : "!hidden"
             }`}
             datestamp={currentDateStamp}

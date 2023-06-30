@@ -134,7 +134,7 @@ const Header = () => {
               </NavLink>
               <div className="pr-3 pl-1 w-full">
                 <button
-                  className="mt-2 w-full py-3 rounded-full flex flex-row justify-center items-center bg-green-600 text-white dark:opacity-80 hover:shadow hover:opacity-90"
+                  className="mt-2 w-full py-3 rounded-full flex flex-row justify-center items-center bg-green-600 text-white hover:shadow hover:opacity-80"
                   onClick={() => showMemoEditorDialog()}
                 >
                   <Icon.Edit3 className="w-4 h-auto mr-1" />

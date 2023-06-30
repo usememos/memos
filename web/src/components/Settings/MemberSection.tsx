@@ -1,3 +1,4 @@
+import { Table } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -146,58 +147,64 @@ const PreferencesSection = () => {
       <div className="w-full flex flex-row justify-between items-center">
         <div className="title-text">{t("setting.member-list")}</div>
       </div>
-      <div className="member-container field-container">
-        <span className="field-text">ID</span>
-        <span className="field-text username-field">{t("common.username")}</span>
-        <span></span>
-      </div>
-      {userList.map((user) => (
-        <div key={user.id} className={`member-container ${user.rowStatus === "ARCHIVED" ? "archived" : ""}`}>
-          <span className="field-text id-text">{user.id}</span>
-          <span className="field-text username-text">{user.username}</span>
-          <div className="buttons-container">
-            {currentUser?.id === user.id ? (
-              <span className="tip-text">{t("common.yourself")}</span>
-            ) : (
-              <Dropdown
-                actions={
-                  <>
-                    <button
-                      className="w-full text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                      onClick={() => handleChangePasswordClick(user)}
-                    >
-                      {t("setting.account-section.change-password")}
-                    </button>
-                    {user.rowStatus === "NORMAL" ? (
-                      <button
-                        className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                        onClick={() => handleArchiveUserClick(user)}
-                      >
-                        {t("common.archive")}
-                      </button>
-                    ) : (
+      <Table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>{t("common.username")}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {userList.map((user) => (
+            <tr key={user.id}>
+              <td className="field-text id-text">{user.id}</td>
+              <td className="field-text username-text">{user.username}</td>
+              <td className="flex flex-row justify-end items-center">
+                {currentUser?.id === user.id ? (
+                  <span className="tip-text">{t("common.yourself")}</span>
+                ) : (
+                  <Dropdown
+                    actions={
                       <>
                         <button
-                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                          onClick={() => handleRestoreUserClick(user)}
+                          className="w-full text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+                          onClick={() => handleChangePasswordClick(user)}
                         >
-                          {t("common.restore")}
+                          {t("setting.account-section.change-password")}
                         </button>
-                        <button
-                          className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
-                          onClick={() => handleDeleteUserClick(user)}
-                        >
-                          {t("common.delete")}
-                        </button>
+                        {user.rowStatus === "NORMAL" ? (
+                          <button
+                            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+                            onClick={() => handleArchiveUserClick(user)}
+                          >
+                            {t("common.archive")}
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+                              onClick={() => handleRestoreUserClick(user)}
+                            >
+                              {t("common.restore")}
+                            </button>
+                            <button
+                              className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
+                              onClick={() => handleDeleteUserClick(user)}
+                            >
+                              {t("common.delete")}
+                            </button>
+                          </>
+                        )}
                       </>
-                    )}
-                  </>
-                }
-              />
-            )}
-          </div>
-        </div>
-      ))}
+                    }
+                  />
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
     </div>
   );
 };
