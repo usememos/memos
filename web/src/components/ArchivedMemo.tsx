@@ -1,9 +1,9 @@
+import { Tooltip } from "@mui/joy";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useMemoStore } from "@/store/module";
 import { getDateTimeString } from "@/helpers/datetime";
 import useToggle from "@/hooks/useToggle";
-import Tooltip from "./kit/Tooltip";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import MemoResourceListView from "./MemoResourceListView";
@@ -59,12 +59,12 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
           <span className="time-text">{getDateTimeString(memo.updatedTs)}</span>
         </div>
         <div className="flex flex-row justify-end items-center gap-x-2">
-          <Tooltip title={t("common.restore")} side="top">
+          <Tooltip title={t("common.restore")} placement="top">
             <button onClick={handleRestoreMemoClick}>
               <Icon.ArchiveRestore className="w-4 h-auto cursor-pointer text-gray-500 dark:text-gray-400" />
             </button>
           </Tooltip>
-          <Tooltip title={t("common.delete")} side="top">
+          <Tooltip title={t("common.delete")} placement="top">
             <button
               onClick={handleDeleteMemoClick}
               className={`text-gray-500 dark:text-gray-400 ${showConfirmDeleteBtn ? "text-red-600" : ""}`}

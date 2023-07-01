@@ -37,7 +37,7 @@ const MyAccountSection = () => {
           <span className="text-2xl leading-10 font-medium">{user.nickname}</span>
           <span className="text-base ml-1 text-gray-500 leading-10 dark:text-gray-400">({user.username})</span>
         </div>
-        <div className="flex flex-row justify-start items-center text-base text-gray-600">{user.email}</div>
+        <div className="flex flex-row justify-start items-center text-base text-gray-600 dark:text-gray-400">{user.email}</div>
         <div className="w-full flex flex-row justify-start items-center mt-2 space-x-2">
           <Button variant="outlined" onClick={showUpdateAccountDialog}>
             {t("common.edit")}

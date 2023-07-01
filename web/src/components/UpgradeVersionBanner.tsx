@@ -4,7 +4,6 @@ import * as api from "@/helpers/api";
 import storage from "@/helpers/storage";
 import { useGlobalStore } from "@/store/module";
 import Icon from "./Icon";
-import Tooltip from "./kit/Tooltip";
 
 interface State {
   latestVersion: string;
@@ -51,11 +50,9 @@ const UpgradeVersionView: React.FC = () => {
       >
         ✨ New version: v{state.latestVersion}
       </a>
-      <Tooltip title="Ignore upgrade" side="top">
-        <button className="ml-1 opacity-60 text-gray-600 hover:opacity-100" onClick={onSkip}>
-          <Icon.X className="w-4 h-auto" />
-        </button>
-      </Tooltip>
+      <button className="ml-1 opacity-60 text-gray-600 hover:opacity-100" onClick={onSkip}>
+        <Icon.X className="w-4 h-auto" />
+      </button>
     </div>
   );
 };
