@@ -368,6 +368,17 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
+
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemoMessage{
+			ID: &memoID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
+		}
+		if memo.CreatorID != userID {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
 		memoOrganizerUpsert := &api.MemoOrganizerUpsert{}
 		if err := json.NewDecoder(c.Request().Body).Decode(memoOrganizerUpsert); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo organizer request").SetInternal(err)
