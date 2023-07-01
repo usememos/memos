@@ -1,3 +1,4 @@
+import { Divider, Tooltip } from "@mui/joy";
 import { isEqual, uniqWith } from "lodash-es";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -7,8 +8,6 @@ import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
 import { UNKNOWN_ID } from "@/helpers/consts";
 import { getRelativeTimeString } from "@/helpers/datetime";
 import { useMemoCacheStore } from "@/store/zustand";
-import Tooltip from "./kit/Tooltip";
-import Divider from "./kit/Divider";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
@@ -226,7 +225,7 @@ const Memo: React.FC<Props> = (props: Props) => {
           {!isVisitorMode && (
             <div className="btns-container space-x-2">
               {memo.visibility !== "PRIVATE" && (
-                <Tooltip title={t(`memo.visibility.${memo.visibility.toLowerCase()}`)} side="top">
+                <Tooltip title={t(`memo.visibility.${memo.visibility.toLowerCase()}`)} placement="top">
                   <div onClick={() => handleMemoVisibilityClick(memo.visibility)}>
                     {memo.visibility === "PUBLIC" ? (
                       <Icon.Globe2 className="w-4 h-auto cursor-pointer rounded text-green-600" />
@@ -258,7 +257,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                     <Icon.Link className="w-4 h-auto mr-2" />
                     Mark
                   </span>
-                  <Divider />
+                  <Divider className="!my-1" />
                   <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>
                     <Icon.Archive className="w-4 h-auto mr-2" />
                     {t("common.archive")}
