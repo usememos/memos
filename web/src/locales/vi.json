@@ -49,15 +49,15 @@
     "vacuum": "Dọn dẹp",
     "select": "Chọn",
     "avatar": "Avatar",
-    "database": "Database"
+    "database": "Cơ sở dữ liệu"
   },
   "auth": {
-    "signup-as-host": "Đăng ký như chủ nhân",
-    "host-tip": "Bạn đang đăng ký với tư cách chủ nhân của trang web này.",
-    "not-host-tip": "Nếu chưa có tài khoản, bạn cần phải liên hệ chủ nhân của trang web."
+    "signup-as-host": "Đăng ký tài khoản quản trị viên",
+    "host-tip": "Bạn đang đăng ký với tư cách quản trị viên của trang web này.",
+    "not-host-tip": "Nếu chưa có tài khoản, bạn cần phải liên hệ quản trị viên của trang web."
   },
   "sidebar": {
-    "daily-review": "Hàng Ngày",
+    "daily-review": "Đánh giá hàng ngày",
     "resources": "Tài Nguyên",
     "setting": "Cài Đặt",
     "archived": "Lưu Trữ"
@@ -75,8 +75,8 @@
     "rename": "Đổi tên",
     "warning-text-unused": "Bạn có chắc chắn xóa những tài nguyên không sử dụng này không? HÀNH ĐỘNG KHÔNG THỂ KHÔI PHỤC❗",
     "no-unused-resources": "Không có tài nguyên không sử dụng",
-    "clear": "Clear",
-    "name": "Name"
+    "clear": "Xóa tất cả",
+    "name": "Tên"
   },
   "archived": {
     "archived-memos": "Ghi chú đã lưu trữ",
@@ -101,12 +101,12 @@
       "private": "Riêng tư",
       "protected": "Bảo vệ",
       "public": "Công khai",
-      "disabled": "Public memos are disabled"
+      "disabled": "Ghi chú công khai đã bị vô hiệu hóa"
     }
   },
   "memo-list": {
     "fetching-data": "đang tải dữ liệu...",
-    "fetch-more": "Nhấp vào đây để tìm nạp thêm"
+    "fetch-more": "Nhấp vào đây để tải thêm dữ liệu"
   },
   "shortcut-list": {
     "shortcut-title": "Tên lối tắt",
@@ -138,7 +138,7 @@
       "not-tagged": "Không có thẻ",
       "linked": "Có liên kết"
     },
-    "text-placeholder": "Starts with ^ to use regex"
+    "text-placeholder": "Bắt đầu với ^ để sử dụng biểu thức chính quy"
   },
   "tag-list": {
     "tip-text": "Nhập `#tag` để tạo mới"
@@ -185,19 +185,19 @@
       "additional-script": "Mã lệnh bổ sung",
       "additional-style-placeholder": "Mã CSS bổ sung",
       "additional-script-placeholder": "Mã JavaScript bổ sung",
-      "disable-public-memos": "Disable public memos"
+      "disable-public-memos": "Vô hiệu hóa ghi chú công khai"
     },
-    "storage": "Storage",
+    "storage": "Kho lưu trữ",
     "sso": "SSO",
     "storage-section": {
-      "storage-services-list": "Storage service list",
-      "create-a-service": "Create a service",
-      "update-a-service": "Update a service",
-      "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIBLE❗",
-      "delete-storage": "Delete Storage"
+      "storage-services-list": "Danh sách dịch vụ kho lưu trữ",
+      "create-a-service": "Thêm dịch vụ kho lưu trữ",
+      "update-a-service": "Cập nhật dịch vụ kho lưu trữ",
+      "warning-text": "Bạn có chắc chắn xóa tài nguyên này không? HÀNH ĐỘNG NÀY KHÔNG THỂ KHÔI PHỤC❗",
+      "delete-storage": "Xóa kho lưu trữ"
     },
     "appearance-option": {
-      "system": "Follow system",
+      "system": "Theo hệ thống",
       "light": "Always light",
       "dark": "Always dark"
     }
@@ -247,8 +247,8 @@
     "succeed-update-customized-profile": "Đã cập nhật hồ sơ tùy chỉnh",
     "succeed-update-additional-script": "Đã cập nhật mã lệnh bổ sung thành công",
     "update-succeed": "Đã cập nhật thành công",
-    "succeed-copy-code": "Succeed to copy code to clipboard.",
-    "page-not-found": "404 - Page Not Found 😥"
+    "succeed-copy-code": "Đã sao chép mã thành công",
+    "page-not-found": "404 - Trang không tìm thấy 😥"
   },
   "days": {
     "monday": "Thứ hai",
