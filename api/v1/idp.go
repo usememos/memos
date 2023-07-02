@@ -14,8 +14,12 @@ import (
 type IdentityProviderType string
 
 const (
-	IdentityProviderOAuth2 IdentityProviderType = "OAUTH2"
+	IdentityProviderOAuth2Type IdentityProviderType = "OAUTH2"
 )
+
+func (t IdentityProviderType) String() string {
+	return string(t)
+}
 
 type IdentityProviderConfig struct {
 	OAuth2Config *IdentityProviderOAuth2Config `json:"oauth2Config"`
@@ -53,7 +57,7 @@ type CreateIdentityProviderRequest struct {
 }
 
 type UpdateIdentityProviderRequest struct {
-	ID               int
+	ID               int                     `json:"-"`
 	Type             IdentityProviderType    `json:"type"`
 	Name             *string                 `json:"name"`
 	IdentifierFilter *string                 `json:"identifierFilter"`
@@ -74,7 +78,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
-		if user == nil || user.Role != store.Host {
+		if user == nil || user.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
@@ -108,7 +112,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
-		if user == nil || user.Role != store.Host {
+		if user == nil || user.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
@@ -153,7 +157,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 			}
-			if user == nil || user.Role == store.Host {
+			if user == nil || user.Role == store.RoleHost {
 				isHostUser = true
 			}
 		}
@@ -183,7 +187,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
-		if user == nil || user.Role != store.Host {
+		if user == nil || user.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
@@ -217,7 +221,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
-		if user == nil || user.Role != store.Host {
+		if user == nil || user.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 

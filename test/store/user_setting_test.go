@@ -13,15 +13,21 @@ func TestUserSettingStore(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	_, err = ts.UpsertUserSetting(ctx, &store.UserSetting{
+	testSetting, err := ts.UpsertUserSetting(ctx, &store.UserSetting{
 		UserID: user.ID,
 		Key:    "test_key",
 		Value:  "test_value",
 	})
 	require.NoError(t, err)
+	localeSetting, err := ts.UpsertUserSetting(ctx, &store.UserSetting{
+		UserID: user.ID,
+		Key:    "locale",
+		Value:  "zh",
+	})
+	require.NoError(t, err)
 	list, err := ts.ListUserSettings(ctx, &store.FindUserSetting{})
 	require.NoError(t, err)
-	require.Equal(t, 1, len(list))
-	require.Equal(t, "test_key", list[0].Key)
-	require.Equal(t, "test_value", list[0].Value)
+	require.Equal(t, 2, len(list))
+	require.Equal(t, testSetting, list[0])
+	require.Equal(t, localeSetting, list[1])
 }

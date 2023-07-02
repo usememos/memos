@@ -24,7 +24,7 @@ func newTelegramHandler(store *store.Store) *telegramHandler {
 }
 
 func (t *telegramHandler) BotToken(ctx context.Context) string {
-	return t.store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingTelegramBotTokenName, "")
+	return t.store.GetSystemSettingValueWithDefault(&ctx, apiv1.SystemSettingTelegramBotTokenName.String(), "")
 }
 
 const (
@@ -80,11 +80,6 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		return err
 	}
 
-	if err := createMemoCreateActivity(ctx, t.store, memoMessage); err != nil {
-		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to createMemoCreateActivity: %s", err), nil)
-		return err
-	}
-
 	// create resources
 	for filename, blob := range blobs {
 		// TODO support more
@@ -106,10 +101,6 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		resource, err := t.store.CreateResource(ctx, &resourceCreate)
 		if err != nil {
 			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err), nil)
-			return err
-		}
-		if err := createResourceCreateActivity(ctx, t.store, resource); err != nil {
-			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to createResourceCreateActivity: %s", err), nil)
 			return err
 		}
 

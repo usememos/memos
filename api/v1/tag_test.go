@@ -1,4 +1,4 @@
-package server
+package v1
 
 import (
 	"testing"

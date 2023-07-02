@@ -60,10 +60,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		// Find disable public memos system setting.
-		disablePublicMemosSystemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: api.SystemSettingDisablePublicMemosName,
+		disablePublicMemosSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+			Name: apiv1.SystemSettingDisablePublicMemosName.String(),
 		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 		}
 		if disablePublicMemosSystemSetting != nil {
@@ -73,14 +73,14 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
 			}
 			if disablePublicMemos {
-				user, err := s.Store.FindUser(ctx, &api.UserFind{
+				user, err := s.Store.GetUser(ctx, &store.FindUser{
 					ID: &userID,
 				})
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 				}
 				// Enforce normal user to create private memo if public memos are disabled.
-				if user.Role == "USER" {
+				if user.Role == store.RoleUser {
 					createMemoRequest.Visibility = api.Private
 				}
 			}
@@ -91,7 +91,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 		}
-		if err := createMemoCreateActivity(c.Request().Context(), s.Store, memoMessage); err != nil {
+		if err := s.createMemoCreateActivity(ctx, memoMessage); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 
@@ -561,8 +561,8 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 }
 
-func createMemoCreateActivity(ctx context.Context, store *store.Store, memo *store.MemoMessage) error {
-	payload := api.ActivityMemoCreatePayload{
+func (s *Server) createMemoCreateActivity(ctx context.Context, memo *store.MemoMessage) error {
+	payload := apiv1.ActivityMemoCreatePayload{
 		Content:    memo.Content,
 		Visibility: memo.Visibility.String(),
 	}
@@ -570,10 +570,10 @@ func createMemoCreateActivity(ctx context.Context, store *store.Store, memo *sto
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
 		CreatorID: memo.CreatorID,
-		Type:      api.ActivityMemoCreate,
-		Level:     api.ActivityInfo,
+		Type:      apiv1.ActivityMemoCreate.String(),
+		Level:     apiv1.ActivityInfo.String(),
 		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
@@ -654,7 +654,7 @@ func (s *Server) composeMemoMessageToMemoResponse(ctx context.Context, memoMessa
 	}
 
 	// Compose creator name.
-	user, err := s.Store.FindUser(ctx, &api.UserFind{
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
 		ID: &memoResponse.CreatorID,
 	})
 	if err != nil {
@@ -699,10 +699,10 @@ func (s *Server) composeMemoMessageToMemoResponse(ctx context.Context, memoMessa
 }
 
 func (s *Server) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (bool, error) {
-	memoDisplayWithUpdatedTsSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-		Name: api.SystemSettingMemoDisplayWithUpdatedTsName,
+	memoDisplayWithUpdatedTsSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+		Name: apiv1.SystemSettingMemoDisplayWithUpdatedTsName.String(),
 	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
+	if err != nil {
 		return false, errors.Wrap(err, "failed to find system setting")
 	}
 	memoDisplayWithUpdatedTs := false

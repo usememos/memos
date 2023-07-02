@@ -7,19 +7,19 @@ type ResponseObject<T> = {
 };
 
 export function getSystemStatus() {
-  return axios.get<ResponseObject<SystemStatus>>("/api/status");
+  return axios.get<SystemStatus>("/api/v1/status");
 }
 
 export function getSystemSetting() {
-  return axios.get<ResponseObject<SystemSetting[]>>("/api/system/setting");
+  return axios.get<SystemSetting[]>("/api/v1/system/setting");
 }
 
 export function upsertSystemSetting(systemSetting: SystemSetting) {
-  return axios.post<ResponseObject<SystemSetting>>("/api/system/setting", systemSetting);
+  return axios.post<SystemSetting>("/api/v1/system/setting", systemSetting);
 }
 
 export function vacuumDatabase() {
-  return axios.post("/api/system/vacuum");
+  return axios.post("/api/v1/system/vacuum");
 }
 
 export function signin(username: string, password: string) {
@@ -49,31 +49,31 @@ export function signout() {
 }
 
 export function createUser(userCreate: UserCreate) {
-  return axios.post<ResponseObject<User>>("/api/user", userCreate);
+  return axios.post<User>("/api/v1/user", userCreate);
 }
 
 export function getMyselfUser() {
-  return axios.get<ResponseObject<User>>("/api/user/me");
+  return axios.get<User>("/api/v1/user/me");
 }
 
 export function getUserList() {
-  return axios.get<ResponseObject<User[]>>("/api/user");
+  return axios.get<User[]>("/api/v1/user");
 }
 
 export function getUserById(id: number) {
-  return axios.get<ResponseObject<User>>(`/api/user/${id}`);
+  return axios.get<User>(`/api/v1/user/${id}`);
 }
 
 export function upsertUserSetting(upsert: UserSettingUpsert) {
-  return axios.post<ResponseObject<UserSetting>>(`/api/user/setting`, upsert);
+  return axios.post<UserSetting>(`/api/v1/user/setting`, upsert);
 }
 
 export function patchUser(userPatch: UserPatch) {
-  return axios.patch<ResponseObject<User>>(`/api/user/${userPatch.id}`, userPatch);
+  return axios.patch<User>(`/api/v1/user/${userPatch.id}`, userPatch);
 }
 
 export function deleteUser(userDelete: UserDelete) {
-  return axios.delete(`/api/user/${userDelete.id}`);
+  return axios.delete(`/api/v1/user/${userDelete.id}`);
 }
 
 export function getAllMemos(memoFind?: MemoFind) {
@@ -145,19 +145,19 @@ export function getShortcutList(shortcutFind?: ShortcutFind) {
   if (shortcutFind?.creatorId) {
     queryList.push(`creatorId=${shortcutFind.creatorId}`);
   }
-  return axios.get<ResponseObject<Shortcut[]>>(`/api/shortcut?${queryList.join("&")}`);
+  return axios.get<Shortcut[]>(`/api/v1/shortcut?${queryList.join("&")}`);
 }
 
 export function createShortcut(shortcutCreate: ShortcutCreate) {
-  return axios.post<ResponseObject<Shortcut>>("/api/shortcut", shortcutCreate);
+  return axios.post<Shortcut>("/api/v1/shortcut", shortcutCreate);
 }
 
 export function patchShortcut(shortcutPatch: ShortcutPatch) {
-  return axios.patch<ResponseObject<Shortcut>>(`/api/shortcut/${shortcutPatch.id}`, shortcutPatch);
+  return axios.patch<Shortcut>(`/api/v1/shortcut/${shortcutPatch.id}`, shortcutPatch);
 }
 
 export function deleteShortcutById(shortcutId: ShortcutId) {
-  return axios.delete(`/api/shortcut/${shortcutId}`);
+  return axios.delete(`/api/v1/shortcut/${shortcutId}`);
 }
 
 export function getResourceList() {
@@ -210,21 +210,21 @@ export function getTagList(tagFind?: TagFind) {
   if (tagFind?.creatorId) {
     queryList.push(`creatorId=${tagFind.creatorId}`);
   }
-  return axios.get<ResponseObject<string[]>>(`/api/tag?${queryList.join("&")}`);
+  return axios.get<string[]>(`/api/v1/tag?${queryList.join("&")}`);
 }
 
 export function getTagSuggestionList() {
-  return axios.get<ResponseObject<string[]>>(`/api/tag/suggestion`);
+  return axios.get<string[]>(`/api/v1/tag/suggestion`);
 }
 
 export function upsertTag(tagName: string) {
-  return axios.post<ResponseObject<string>>(`/api/tag`, {
+  return axios.post<string>(`/api/v1/tag`, {
     name: tagName,
   });
 }
 
 export function deleteTag(tagName: string) {
-  return axios.post<ResponseObject<boolean>>(`/api/tag/delete`, {
+  return axios.post(`/api/v1/tag/delete`, {
     name: tagName,
   });
 }

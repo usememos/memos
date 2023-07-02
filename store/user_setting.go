@@ -20,7 +20,7 @@ type FindUserSetting struct {
 func (s *Store) UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*UserSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -41,14 +41,14 @@ func (s *Store) UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*Us
 	}
 
 	userSetting := upsert
-	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSetting.UserID, userSetting.Key), userSetting)
+	s.userSettingCache.Store(getUserSettingCacheKey(userSetting.UserID, userSetting.Key), userSetting)
 	return userSetting, nil
 }
 
 func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*UserSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -58,21 +58,21 @@ func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]
 	}
 
 	for _, userSetting := range userSettingList {
-		s.userSettingCache.Store(getUserSettingCacheKeyV1(userSetting.UserID, userSetting.Key), userSetting)
+		s.userSettingCache.Store(getUserSettingCacheKey(userSetting.UserID, userSetting.Key), userSetting)
 	}
 	return userSettingList, nil
 }
 
 func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*UserSetting, error) {
 	if find.UserID != nil {
-		if cache, ok := s.userSettingCache.Load(getUserSettingCacheKeyV1(*find.UserID, find.Key)); ok {
+		if cache, ok := s.userSettingCache.Load(getUserSettingCacheKey(*find.UserID, find.Key)); ok {
 			return cache.(*UserSetting), nil
 		}
 	}
 
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -84,8 +84,9 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*Use
 	if len(list) == 0 {
 		return nil, nil
 	}
+
 	userSetting := list[0]
-	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSetting.UserID, userSetting.Key), userSetting)
+	s.userSettingCache.Store(getUserSettingCacheKey(userSetting.UserID, userSetting.Key), userSetting)
 	return userSetting, nil
 }
 
@@ -108,7 +109,7 @@ func listUserSettings(ctx context.Context, tx *sql.Tx, find *FindUserSetting) ([
 		WHERE ` + strings.Join(where, " AND ")
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -120,13 +121,13 @@ func listUserSettings(ctx context.Context, tx *sql.Tx, find *FindUserSetting) ([
 			&userSetting.Key,
 			&userSetting.Value,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 		userSettingList = append(userSettingList, &userSetting)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return userSettingList, nil
@@ -145,7 +146,7 @@ func vacuumUserSetting(ctx context.Context, tx *sql.Tx) error {
 		)`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	return nil

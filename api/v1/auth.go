@@ -85,7 +85,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		}
 
 		var userInfo *idp.IdentityProviderUserInfo
-		if identityProvider.Type == store.IdentityProviderOAuth2 {
+		if identityProvider.Type == store.IdentityProviderOAuth2Type {
 			oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.OAuth2Config)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider instance").SetInternal(err)
@@ -121,7 +121,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			userCreate := &store.User{
 				Username: userInfo.Identifier,
 				// The new signup user should be normal user by default.
-				Role:     store.NormalUser,
+				Role:     store.RoleUser,
 				Nickname: userInfo.DisplayName,
 				Email:    userInfo.Email,
 				OpenID:   common.GenUUID(),
@@ -135,7 +135,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
 			}
 			userCreate.PasswordHash = string(passwordHash)
-			user, err = s.Store.CreateUserV1(ctx, userCreate)
+			user, err = s.Store.CreateUser(ctx, userCreate)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 			}
@@ -160,7 +160,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
 		}
 
-		hostUserType := store.Host
+		hostUserType := store.RoleHost
 		existedHostUsers, err := s.Store.ListUsers(ctx, &store.FindUser{
 			Role: &hostUserType,
 		})
@@ -171,13 +171,13 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		userCreate := &store.User{
 			Username: signup.Username,
 			// The new signup user should be normal user by default.
-			Role:     store.NormalUser,
+			Role:     store.RoleUser,
 			Nickname: signup.Username,
 			OpenID:   common.GenUUID(),
 		}
 		if len(existedHostUsers) == 0 {
 			// Change the default role to host if there is no host user.
-			userCreate.Role = store.Host
+			userCreate.Role = store.RoleHost
 		} else {
 			allowSignUpSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
 				Name: SystemSettingAllowSignUpName.String(),
@@ -204,7 +204,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		}
 
 		userCreate.PasswordHash = string(passwordHash)
-		user, err := s.Store.CreateUserV1(ctx, userCreate)
+		user, err := s.Store.CreateUser(ctx, userCreate)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
@@ -234,7 +234,7 @@ func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.User
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivityV1(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
 		CreatorID: user.ID,
 		Type:      string(ActivityUserAuthSignIn),
 		Level:     string(ActivityInfo),
@@ -256,7 +256,7 @@ func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *store.User
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivityV1(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
 		CreatorID: user.ID,
 		Type:      string(ActivityUserAuthSignUp),
 		Level:     string(ActivityInfo),

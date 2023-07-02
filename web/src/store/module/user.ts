@@ -59,7 +59,7 @@ export const initialUserState = async () => {
     store.dispatch(setHost(convertResponseModelUser(systemStatus.host)));
   }
 
-  const { data } = (await api.getMyselfUser()).data;
+  const { data } = await api.getMyselfUser();
   if (data) {
     const user = convertResponseModelUser(data);
     store.dispatch(setUser(user));
@@ -83,7 +83,7 @@ const getUserIdFromPath = () => {
 };
 
 const doSignIn = async () => {
-  const { data: user } = (await api.getMyselfUser()).data;
+  const { data: user } = await api.getMyselfUser();
   if (user) {
     store.dispatch(setUser(convertResponseModelUser(user)));
   } else {
@@ -120,7 +120,7 @@ export const useUserStore = () => {
       }
     },
     getUserById: async (userId: UserId) => {
-      const { data } = (await api.getUserById(userId)).data;
+      const { data } = await api.getUserById(userId);
       if (data) {
         const user = convertResponseModelUser(data);
         store.dispatch(setUserById(user));
@@ -141,7 +141,7 @@ export const useUserStore = () => {
       store.dispatch(patchUser({ localSetting }));
     },
     patchUser: async (userPatch: UserPatch): Promise<void> => {
-      const { data } = (await api.patchUser(userPatch)).data;
+      const { data } = await api.patchUser(userPatch);
       if (userPatch.id === store.getState().user.user?.id) {
         const user = convertResponseModelUser(data);
         store.dispatch(patchUser(user));

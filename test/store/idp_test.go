@@ -14,7 +14,7 @@ func TestIdentityProviderStore(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 	createdIDP, err := ts.CreateIdentityProvider(ctx, &store.IdentityProvider{
 		Name:             "GitHub OAuth",
-		Type:             store.IdentityProviderOAuth2,
+		Type:             store.IdentityProviderOAuth2Type,
 		IdentifierFilter: "",
 		Config: &store.IdentityProviderConfig{
 			OAuth2Config: &store.IdentityProviderOAuth2Config{

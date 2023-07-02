@@ -59,6 +59,10 @@ const (
 	ActivityServerStart ActivityType = "server.start"
 )
 
+func (t ActivityType) String() string {
+	return string(t)
+}
+
 // ActivityLevel is the level of activities.
 type ActivityLevel string
 
@@ -70,6 +74,10 @@ const (
 	// ActivityError is the ERROR level of activities.
 	ActivityError ActivityLevel = "ERROR"
 )
+
+func (l ActivityLevel) String() string {
+	return string(l)
+}
 
 type ActivityUserCreatePayload struct {
 	UserID   int    `json:"userId"`

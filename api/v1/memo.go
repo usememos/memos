@@ -13,13 +13,5 @@ const (
 )
 
 func (v Visibility) String() string {
-	switch v {
-	case Public:
-		return "PUBLIC"
-	case Protected:
-		return "PROTECTED"
-	case Private:
-		return "PRIVATE"
-	}
-	return "PRIVATE"
+	return string(v)
 }

@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api"
-	apiV1 "github.com/usememos/memos/api/v1"
+	apiv1 "github.com/usememos/memos/api/v1"
+	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -97,18 +98,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return JWTMiddleware(s, next, s.Secret)
 	})
-	s.registerSystemRoutes(apiGroup)
-	s.registerUserRoutes(apiGroup)
 	s.registerMemoRoutes(apiGroup)
 	s.registerMemoResourceRoutes(apiGroup)
-	s.registerShortcutRoutes(apiGroup)
 	s.registerResourceRoutes(apiGroup)
-	s.registerTagRoutes(apiGroup)
 	s.registerStorageRoutes(apiGroup)
-	s.registerOpenAIRoutes(apiGroup)
 	s.registerMemoRelationRoutes(apiGroup)
 
-	apiV1Service := apiV1.NewAPIV1Service(s.Secret, profile, store)
+	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 	apiV1Service.Register(rootGroup)
 
 	return s, nil
@@ -145,8 +141,46 @@ func (s *Server) GetEcho() *echo.Echo {
 	return s.e
 }
 
+func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
+	serverIDSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+		Name: apiv1.SystemSettingServerIDName.String(),
+	})
+	if err != nil && common.ErrorCode(err) != common.NotFound {
+		return "", err
+	}
+	if serverIDSetting == nil || serverIDSetting.Value == "" {
+		serverIDSetting, err = s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+			Name:  apiv1.SystemSettingServerIDName.String(),
+			Value: uuid.NewString(),
+		})
+		if err != nil {
+			return "", err
+		}
+	}
+	return serverIDSetting.Value, nil
+}
+
+func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error) {
+	secretSessionNameValue, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+		Name: apiv1.SystemSettingSecretSessionName.String(),
+	})
+	if err != nil && common.ErrorCode(err) != common.NotFound {
+		return "", err
+	}
+	if secretSessionNameValue == nil || secretSessionNameValue.Value == "" {
+		secretSessionNameValue, err = s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+			Name:  apiv1.SystemSettingSecretSessionName.String(),
+			Value: uuid.NewString(),
+		})
+		if err != nil {
+			return "", err
+		}
+	}
+	return secretSessionNameValue.Value, nil
+}
+
 func (s *Server) createServerStartActivity(ctx context.Context) error {
-	payload := api.ActivityServerStartPayload{
+	payload := apiv1.ActivityServerStartPayload{
 		ServerID: s.ID,
 		Profile:  s.Profile,
 	}
@@ -154,10 +188,10 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
-		CreatorID: api.UnknownID,
-		Type:      api.ActivityServerStart,
-		Level:     api.ActivityInfo,
+	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+		CreatorID: apiv1.UnknownID,
+		Type:      apiv1.ActivityServerStart.String(),
+		Level:     apiv1.ActivityInfo.String(),
 		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {

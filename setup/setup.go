@@ -7,7 +7,6 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/store"
 )
@@ -33,10 +32,8 @@ func (s setupService) Setup(ctx context.Context, hostUsername, hostPassword stri
 }
 
 func (s setupService) makeSureHostUserNotExists(ctx context.Context) error {
-	hostUserType := api.Host
-	existedHostUsers, err := s.store.FindUserList(ctx, &api.UserFind{
-		Role: &hostUserType,
-	})
+	hostUserType := store.RoleHost
+	existedHostUsers, err := s.store.ListUsers(ctx, &store.FindUser{Role: &hostUserType})
 	if err != nil {
 		return fmt.Errorf("find user list: %w", err)
 	}
@@ -52,7 +49,7 @@ func (s setupService) createUser(ctx context.Context, hostUsername, hostPassword
 	userCreate := &store.User{
 		Username: hostUsername,
 		// The new signup user should be normal user by default.
-		Role:     store.Host,
+		Role:     store.RoleHost,
 		Nickname: hostUsername,
 		OpenID:   common.GenUUID(),
 	}
@@ -87,7 +84,7 @@ func (s setupService) createUser(ctx context.Context, hostUsername, hostPassword
 	}
 
 	userCreate.PasswordHash = string(passwordHash)
-	if _, err := s.store.CreateUserV1(ctx, userCreate); err != nil {
+	if _, err := s.store.CreateUser(ctx, userCreate); err != nil {
 		return fmt.Errorf("failed to create user: %w", err)
 	}
 

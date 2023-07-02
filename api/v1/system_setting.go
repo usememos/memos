@@ -3,7 +3,11 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
+
+	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/store"
 )
 
 type SystemSettingName string
@@ -29,10 +33,9 @@ const (
 	SystemSettingStorageServiceIDName SystemSettingName = "storage-service-id"
 	// SystemSettingLocalStoragePathName is the name of local storage path.
 	SystemSettingLocalStoragePathName SystemSettingName = "local-storage-path"
-	// SystemSettingOpenAIConfigName is the name of OpenAI config.
-	SystemSettingOpenAIConfigName SystemSettingName = "openai-config"
 	// SystemSettingTelegramBotToken is the name of Telegram Bot Token.
-	SystemSettingTelegramBotTokenName         SystemSettingName = "telegram-bot-token"
+	SystemSettingTelegramBotTokenName SystemSettingName = "telegram-bot-token"
+	// SystemSettingMemoDisplayWithUpdatedTsName is the name of memo display with updated ts.
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
 )
 
@@ -52,41 +55,8 @@ type CustomizedProfile struct {
 	ExternalURL string `json:"externalUrl"`
 }
 
-type OpenAIConfig struct {
-	Key  string `json:"key"`
-	Host string `json:"host"`
-}
-
 func (key SystemSettingName) String() string {
-	switch key {
-	case SystemSettingServerIDName:
-		return "server-id"
-	case SystemSettingSecretSessionName:
-		return "secret-session"
-	case SystemSettingAllowSignUpName:
-		return "allow-signup"
-	case SystemSettingDisablePublicMemosName:
-		return "disable-public-memos"
-	case SystemSettingMaxUploadSizeMiBName:
-		return "max-upload-size-mib"
-	case SystemSettingAdditionalStyleName:
-		return "additional-style"
-	case SystemSettingAdditionalScriptName:
-		return "additional-script"
-	case SystemSettingCustomizedProfileName:
-		return "customized-profile"
-	case SystemSettingStorageServiceIDName:
-		return "storage-service-id"
-	case SystemSettingLocalStoragePathName:
-		return "local-storage-path"
-	case SystemSettingOpenAIConfigName:
-		return "openai-config"
-	case SystemSettingTelegramBotTokenName:
-		return "telegram-bot-token"
-	case SystemSettingMemoDisplayWithUpdatedTsName:
-		return "memo-display-with-updated-ts"
-	}
-	return ""
+	return string(key)
 }
 
 type SystemSetting struct {
@@ -96,7 +66,7 @@ type SystemSetting struct {
 	Description string `json:"description"`
 }
 
-type SystemSettingUpsert struct {
+type UpsertSystemSettingRequest struct {
 	Name        SystemSettingName `json:"name"`
 	Value       string            `json:"value"`
 	Description string            `json:"description"`
@@ -104,7 +74,7 @@ type SystemSettingUpsert struct {
 
 const systemSettingUnmarshalError = `failed to unmarshal value from system setting "%v"`
 
-func (upsert SystemSettingUpsert) Validate() error {
+func (upsert UpsertSystemSettingRequest) Validate() error {
 	switch settingName := upsert.Name; settingName {
 	case SystemSettingServerIDName:
 		return fmt.Errorf("updating %v is not allowed", settingName)
@@ -157,11 +127,6 @@ func (upsert SystemSettingUpsert) Validate() error {
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-	case SystemSettingOpenAIConfigName:
-		value := OpenAIConfig{}
-		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
-			return fmt.Errorf(systemSettingUnmarshalError, settingName)
-		}
 	case SystemSettingTelegramBotTokenName:
 		if upsert.Value == "" {
 			return nil
@@ -189,6 +154,77 @@ func (upsert SystemSettingUpsert) Validate() error {
 	return nil
 }
 
-type SystemSettingFind struct {
-	Name SystemSettingName `json:"name"`
+func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
+	g.POST("/system/setting", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil || user.Role != store.RoleHost {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		systemSettingUpsert := &UpsertSystemSettingRequest{}
+		if err := json.NewDecoder(c.Request().Body).Decode(systemSettingUpsert); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post system setting request").SetInternal(err)
+		}
+		if err := systemSettingUpsert.Validate(); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
+		}
+
+		systemSetting, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+			Name:        systemSettingUpsert.Name.String(),
+			Value:       systemSettingUpsert.Value,
+			Description: systemSettingUpsert.Description,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, convertSystemSettingFromStore(systemSetting))
+	})
+
+	g.GET("/system/setting", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil || user.Role != store.RoleHost {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		list, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
+		}
+
+		systemSettingList := make([]*SystemSetting, 0, len(list))
+		for _, systemSetting := range list {
+			systemSettingList = append(systemSettingList, convertSystemSettingFromStore(systemSetting))
+		}
+		return c.JSON(http.StatusOK, systemSettingList)
+	})
+}
+
+func convertSystemSettingFromStore(systemSetting *store.SystemSetting) *SystemSetting {
+	return &SystemSetting{
+		Name:        SystemSettingName(systemSetting.Name),
+		Value:       systemSetting.Value,
+		Description: systemSetting.Description,
+	}
 }

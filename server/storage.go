@@ -8,7 +8,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
+	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/store"
 )
 
 func (s *Server) registerStorageRoutes(g *echo.Group) {
@@ -19,13 +21,13 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
-		if user == nil || user.Role != api.Host {
+		if user == nil || user.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
@@ -48,13 +50,13 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
-		if user == nil || user.Role != api.Host {
+		if user == nil || user.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
@@ -84,14 +86,14 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
 		// We should only show storage list to host user.
-		if user == nil || user.Role != api.Host {
+		if user == nil || user.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
@@ -109,13 +111,13 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		user, err := s.Store.FindUser(ctx, &api.UserFind{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
-		if user == nil || user.Role != api.Host {
+		if user == nil || user.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
@@ -124,8 +126,8 @@ func (s *Server) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("storageId"))).SetInternal(err)
 		}
 
-		systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingStorageServiceIDName})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
+		systemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: apiv1.SystemSettingStorageServiceIDName.String()})
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
 		if systemSetting != nil {

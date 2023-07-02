@@ -12,9 +12,8 @@ import (
 type Store struct {
 	Profile            *profile.Profile
 	db                 *sql.DB
-	systemSettingCache sync.Map // map[string]*systemSettingRaw
-	userCache          sync.Map // map[int]*userRaw
-	userV1Cache        sync.Map // map[string]*User
+	systemSettingCache sync.Map // map[string]*SystemSetting
+	userCache          sync.Map // map[int]*User
 	userSettingCache   sync.Map // map[string]*UserSetting
 	shortcutCache      sync.Map // map[int]*shortcutRaw
 	idpCache           sync.Map // map[int]*IdentityProvider
@@ -36,7 +35,7 @@ func (s *Store) GetDB() *sql.DB {
 func (s *Store) Vacuum(ctx context.Context) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -45,7 +44,7 @@ func (s *Store) Vacuum(ctx context.Context) error {
 	}
 
 	if err := tx.Commit(); err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	// Vacuum sqlite database file size after deleting resource.
