@@ -40,7 +40,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
 		}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			Username: &signin.Username,
 		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
@@ -111,14 +111,14 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			}
 		}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			Username: &userInfo.Identifier,
 		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 		}
 		if user == nil {
-			userCreate := &store.UserMessage{
+			userCreate := &store.User{
 				Username: userInfo.Identifier,
 				// The new signup user should be normal user by default.
 				Role:     store.NormalUser,
@@ -161,14 +161,14 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		}
 
 		hostUserType := store.Host
-		existedHostUsers, err := s.Store.ListUsers(ctx, &store.FindUserMessage{
+		existedHostUsers, err := s.Store.ListUsers(ctx, &store.FindUser{
 			Role: &hostUserType,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Failed to find users").SetInternal(err)
 		}
 
-		userCreate := &store.UserMessage{
+		userCreate := &store.User{
 			Username: signup.Username,
 			// The new signup user should be normal user by default.
 			Role:     store.NormalUser,
@@ -224,7 +224,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 	})
 }
 
-func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.UserMessage) error {
+func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.User) error {
 	ctx := c.Request().Context()
 	payload := ActivityUserAuthSignInPayload{
 		UserID: user.ID,
@@ -246,7 +246,7 @@ func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.User
 	return err
 }
 
-func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *store.UserMessage) error {
+func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *store.User) error {
 	ctx := c.Request().Context()
 	payload := ActivityUserAuthSignUpPayload{
 		Username: user.Username,

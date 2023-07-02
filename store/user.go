@@ -34,7 +34,7 @@ func (e Role) String() string {
 	return "USER"
 }
 
-type UserMessage struct {
+type User struct {
 	ID int
 
 	// Standard fields
@@ -52,7 +52,22 @@ type UserMessage struct {
 	AvatarURL    string
 }
 
-type FindUserMessage struct {
+type UpdateUser struct {
+	ID int
+
+	UpdatedTs    *int64
+	RowStatus    *RowStatus
+	Username     *string `json:"username"`
+	Email        *string `json:"email"`
+	Nickname     *string `json:"nickname"`
+	Password     *string `json:"password"`
+	ResetOpenID  *bool   `json:"resetOpenId"`
+	AvatarURL    *string `json:"avatarUrl"`
+	PasswordHash *string
+	OpenID       *string
+}
+
+type FindUser struct {
 	ID *int
 
 	// Standard fields
@@ -66,10 +81,10 @@ type FindUserMessage struct {
 	OpenID   *string
 }
 
-func (s *Store) CreateUserV1(ctx context.Context, create *UserMessage) (*UserMessage, error) {
+func (s *Store) CreateUserV1(ctx context.Context, create *User) (*User, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -99,19 +114,85 @@ func (s *Store) CreateUserV1(ctx context.Context, create *UserMessage) (*UserMes
 		&create.UpdatedTs,
 		&create.RowStatus,
 	); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
-	userMessage := create
-	return userMessage, nil
+	user := create
+	s.userV1Cache.Store(user.ID, user)
+	return user, nil
 }
 
-func (s *Store) ListUsers(ctx context.Context, find *FindUserMessage) ([]*UserMessage, error) {
+func (s *Store) UpdateUser(ctx context.Context, update *UpdateUser) (*User, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	set, args := []string{}, []any{}
+	if v := update.UpdatedTs; v != nil {
+		set, args = append(set, "updated_ts = ?"), append(args, *v)
+	}
+	if v := update.RowStatus; v != nil {
+		set, args = append(set, "row_status = ?"), append(args, *v)
+	}
+	if v := update.Username; v != nil {
+		set, args = append(set, "username = ?"), append(args, *v)
+	}
+	if v := update.Email; v != nil {
+		set, args = append(set, "email = ?"), append(args, *v)
+	}
+	if v := update.Nickname; v != nil {
+		set, args = append(set, "nickname = ?"), append(args, *v)
+	}
+	if v := update.AvatarURL; v != nil {
+		set, args = append(set, "avatar_url = ?"), append(args, *v)
+	}
+	if v := update.PasswordHash; v != nil {
+		set, args = append(set, "password_hash = ?"), append(args, *v)
+	}
+	if v := update.OpenID; v != nil {
+		set, args = append(set, "open_id = ?"), append(args, *v)
+	}
+	args = append(args, update.ID)
+
+	query := `
+		UPDATE user
+		SET ` + strings.Join(set, ", ") + `
+		WHERE id = ?
+		RETURNING id, username, role, email, nickname, password_hash, open_id, avatar_url, created_ts, updated_ts, row_status
+	`
+	user := &User{}
+	if err := tx.QueryRowContext(ctx, query, args...).Scan(
+		&user.ID,
+		&user.Username,
+		&user.Role,
+		&user.Email,
+		&user.Nickname,
+		&user.PasswordHash,
+		&user.OpenID,
+		&user.AvatarURL,
+		&user.CreatedTs,
+		&user.UpdatedTs,
+		&user.RowStatus,
+	); err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	s.userV1Cache.Store(user.ID, user)
+	return user, nil
+}
+
+func (s *Store) ListUsers(ctx context.Context, find *FindUser) ([]*User, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -120,13 +201,22 @@ func (s *Store) ListUsers(ctx context.Context, find *FindUserMessage) ([]*UserMe
 		return nil, err
 	}
 
+	for _, user := range list {
+		s.userV1Cache.Store(user.ID, user)
+	}
 	return list, nil
 }
 
-func (s *Store) GetUser(ctx context.Context, find *FindUserMessage) (*UserMessage, error) {
+func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
+	if find.ID != nil {
+		if user, ok := s.userV1Cache.Load(*find.ID); ok {
+			return user.(*User), nil
+		}
+	}
+
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -135,14 +225,14 @@ func (s *Store) GetUser(ctx context.Context, find *FindUserMessage) (*UserMessag
 		return nil, err
 	}
 	if len(list) == 0 {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("user not found")}
+		return nil, nil
 	}
-
-	memoMessage := list[0]
-	return memoMessage, nil
+	user := list[0]
+	s.userV1Cache.Store(user.ID, user)
+	return user, nil
 }
 
-func listUsers(ctx context.Context, tx *sql.Tx, find *FindUserMessage) ([]*UserMessage, error) {
+func listUsers(ctx context.Context, tx *sql.Tx, find *FindUser) ([]*User, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
@@ -183,36 +273,36 @@ func listUsers(ctx context.Context, tx *sql.Tx, find *FindUserMessage) ([]*UserM
 	`
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
-	userMessageList := make([]*UserMessage, 0)
+	list := make([]*User, 0)
 	for rows.Next() {
-		var userMessage UserMessage
+		var user User
 		if err := rows.Scan(
-			&userMessage.ID,
-			&userMessage.Username,
-			&userMessage.Role,
-			&userMessage.Email,
-			&userMessage.Nickname,
-			&userMessage.PasswordHash,
-			&userMessage.OpenID,
-			&userMessage.AvatarURL,
-			&userMessage.CreatedTs,
-			&userMessage.UpdatedTs,
-			&userMessage.RowStatus,
+			&user.ID,
+			&user.Username,
+			&user.Role,
+			&user.Email,
+			&user.Nickname,
+			&user.PasswordHash,
+			&user.OpenID,
+			&user.AvatarURL,
+			&user.CreatedTs,
+			&user.UpdatedTs,
+			&user.RowStatus,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
-		userMessageList = append(userMessageList, &userMessage)
+		list = append(list, &user)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
-	return userMessageList, nil
+	return list, nil
 }
 
 // userRaw is the store model for an User.

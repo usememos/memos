@@ -68,7 +68,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {
@@ -102,7 +102,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {
@@ -147,7 +147,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		userID, ok := c.Get(getUserIDContextKey()).(int)
 		isHostUser := false
 		if ok {
-			user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
+			user, err := s.Store.GetUser(ctx, &store.FindUser{
 				ID: &userID,
 			})
 			if err != nil {
@@ -177,7 +177,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {
@@ -211,7 +211,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {

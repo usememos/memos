@@ -64,7 +64,7 @@ func GenerateRefreshToken(userName string, userID int, secret string) (string, e
 }
 
 // GenerateTokensAndSetCookies generates jwt token and saves it to the http-only cookie.
-func GenerateTokensAndSetCookies(c echo.Context, user *store.UserMessage, secret string) error {
+func GenerateTokensAndSetCookies(c echo.Context, user *store.User, secret string) error {
 	accessToken, err := GenerateAccessToken(user.Username, user.ID, secret)
 	if err != nil {
 		return errors.Wrap(err, "failed to generate access token")
