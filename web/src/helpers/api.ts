@@ -15,7 +15,7 @@ export function getSystemSetting() {
 }
 
 export function upsertSystemSetting(systemSetting: SystemSetting) {
-  return axios.post<SystemSetting>("/api/system/setting", systemSetting);
+  return axios.post<SystemSetting>("/api/v1/system/setting", systemSetting);
 }
 
 export function vacuumDatabase() {
