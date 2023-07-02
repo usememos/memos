@@ -31,4 +31,5 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 	s.registerIdentityProviderRoutes(apiV1Group)
 	s.registerUserRoutes(apiV1Group)
 	s.registerUserSettingRoutes(apiV1Group)
+	s.registerTagRoutes(apiV1Group)
 }

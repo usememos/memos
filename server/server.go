@@ -103,7 +103,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.registerMemoResourceRoutes(apiGroup)
 	s.registerShortcutRoutes(apiGroup)
 	s.registerResourceRoutes(apiGroup)
-	s.registerTagRoutes(apiGroup)
 	s.registerStorageRoutes(apiGroup)
 	s.registerMemoRelationRoutes(apiGroup)
 

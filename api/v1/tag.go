@@ -1,4 +1,4 @@
-package server
+package v1
 
 import (
 	"encoding/json"
@@ -7,16 +7,27 @@ import (
 	"regexp"
 	"sort"
 
+	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
-	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/store"
 	"golang.org/x/exp/slices"
-
-	"github.com/labstack/echo/v4"
 )
 
-func (s *Server) registerTagRoutes(g *echo.Group) {
+type Tag struct {
+	Name      string
+	CreatorID int
+}
+
+type UpsertTagRequest struct {
+	Name string `json:"name"`
+}
+
+type DeleteTagRequest struct {
+	Name string `json:"name"`
+}
+
+func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 	g.POST("/tag", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
@@ -24,7 +35,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		tagUpsert := &api.TagUpsert{}
+		tagUpsert := &UpsertTagRequest{}
 		if err := json.NewDecoder(c.Request().Body).Decode(tagUpsert); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
 		}
@@ -32,15 +43,18 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
 		}
 
-		tagUpsert.CreatorID = userID
-		tag, err := s.Store.UpsertTag(ctx, tagUpsert)
+		tag, err := s.Store.UpsertTagV1(ctx, &store.Tag{
+			Name:      tagUpsert.Name,
+			CreatorID: userID,
+		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert tag").SetInternal(err)
 		}
-		if err := s.createTagCreateActivity(c, tag); err != nil {
+		tagMessage := convertTagFromStore(tag)
+		if err := s.createTagCreateActivity(c, tagMessage); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(tag.Name))
+		return c.JSON(http.StatusOK, tagMessage.Name)
 	})
 
 	g.GET("/tag", func(c echo.Context) error {
@@ -50,19 +64,18 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
 		}
 
-		tagFind := &api.TagFind{
+		list, err := s.Store.ListTags(ctx, &store.FindTag{
 			CreatorID: userID,
-		}
-		tagList, err := s.Store.FindTagList(ctx, tagFind)
+		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find tag list").SetInternal(err)
 		}
 
 		tagNameList := []string{}
-		for _, tag := range tagList {
+		for _, tag := range list {
 			tagNameList = append(tagNameList, tag.Name)
 		}
-		return c.JSON(http.StatusOK, composeResponse(tagNameList))
+		return c.JSON(http.StatusOK, tagNameList)
 	})
 
 	g.GET("/tag/suggestion", func(c echo.Context) error {
@@ -83,15 +96,14 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 		}
 
-		tagFind := &api.TagFind{
+		list, err := s.Store.ListTags(ctx, &store.FindTag{
 			CreatorID: userID,
-		}
-		existTagList, err := s.Store.FindTagList(ctx, tagFind)
+		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find tag list").SetInternal(err)
 		}
 		tagNameList := []string{}
-		for _, tag := range existTagList {
+		for _, tag := range list {
 			tagNameList = append(tagNameList, tag.Name)
 		}
 
@@ -108,7 +120,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			tagList = append(tagList, tag)
 		}
 		sort.Strings(tagList)
-		return c.JSON(http.StatusOK, composeResponse(tagList))
+		return c.JSON(http.StatusOK, tagList)
 	})
 
 	g.POST("/tag/delete", func(c echo.Context) error {
@@ -118,7 +130,7 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		tagDelete := &api.TagDelete{}
+		tagDelete := &DeleteTagRequest{}
 		if err := json.NewDecoder(c.Request().Body).Decode(tagDelete); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
 		}
@@ -126,36 +138,18 @@ func (s *Server) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
 		}
 
-		tagDelete.CreatorID = userID
-		if err := s.Store.DeleteTag(ctx, tagDelete); err != nil {
-			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Tag name not found: %s", tagDelete.Name))
-			}
+		err := s.Store.DeleteTag(ctx, &store.DeleteTag{
+			Name:      tagDelete.Name,
+			CreatorID: userID,
+		})
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete tag name: %v", tagDelete.Name)).SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)
 	})
 }
 
-var tagRegexp = regexp.MustCompile(`#([^\s#]+)`)
-
-func findTagListFromMemoContent(memoContent string) []string {
-	tagMapSet := make(map[string]bool)
-	matches := tagRegexp.FindAllStringSubmatch(memoContent, -1)
-	for _, v := range matches {
-		tagName := v[1]
-		tagMapSet[tagName] = true
-	}
-
-	tagList := []string{}
-	for tag := range tagMapSet {
-		tagList = append(tagList, tag)
-	}
-	sort.Strings(tagList)
-	return tagList
-}
-
-func (s *Server) createTagCreateActivity(c echo.Context, tag *api.Tag) error {
+func (s *APIV1Service) createTagCreateActivity(c echo.Context, tag *Tag) error {
 	ctx := c.Request().Context()
 	payload := api.ActivityTagCreatePayload{
 		TagName: tag.Name,
@@ -174,4 +168,29 @@ func (s *Server) createTagCreateActivity(c echo.Context, tag *api.Tag) error {
 		return errors.Wrap(err, "failed to create activity")
 	}
 	return err
+}
+
+func convertTagFromStore(tag *store.Tag) *Tag {
+	return &Tag{
+		Name:      tag.Name,
+		CreatorID: tag.CreatorID,
+	}
+}
+
+var tagRegexp = regexp.MustCompile(`#([^\s#]+)`)
+
+func findTagListFromMemoContent(memoContent string) []string {
+	tagMapSet := make(map[string]bool)
+	matches := tagRegexp.FindAllStringSubmatch(memoContent, -1)
+	for _, v := range matches {
+		tagName := v[1]
+		tagMapSet[tagName] = true
+	}
+
+	tagList := []string{}
+	for tag := range tagMapSet {
+		tagList = append(tagList, tag)
+	}
+	sort.Strings(tagList)
+	return tagList
 }

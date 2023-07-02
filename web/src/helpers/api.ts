@@ -210,21 +210,21 @@ export function getTagList(tagFind?: TagFind) {
   if (tagFind?.creatorId) {
     queryList.push(`creatorId=${tagFind.creatorId}`);
   }
-  return axios.get<ResponseObject<string[]>>(`/api/tag?${queryList.join("&")}`);
+  return axios.get<string[]>(`/api/v1/tag?${queryList.join("&")}`);
 }
 
 export function getTagSuggestionList() {
-  return axios.get<ResponseObject<string[]>>(`/api/tag/suggestion`);
+  return axios.get<string[]>(`/api/v1/tag/suggestion`);
 }
 
 export function upsertTag(tagName: string) {
-  return axios.post<ResponseObject<string>>(`/api/tag`, {
+  return axios.post<string>(`/api/v1/tag`, {
     name: tagName,
   });
 }
 
 export function deleteTag(tagName: string) {
-  return axios.post<ResponseObject<boolean>>(`/api/tag/delete`, {
+  return axios.post(`/api/v1/tag/delete`, {
     name: tagName,
   });
 }

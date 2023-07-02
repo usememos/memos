@@ -31,7 +31,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     getTagSuggestionList().then(({ data }) => {
-      setSuggestTagNameList(data.data.filter((tag) => validateTagName(tag)));
+      setSuggestTagNameList(data.filter((tag) => validateTagName(tag)));
     });
   }, [tagNameList]);
 
