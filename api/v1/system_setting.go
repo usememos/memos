@@ -180,7 +180,7 @@ func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
 		}
 
-		systemSetting, err := s.Store.UpsertSystemSettingV1(ctx, &store.SystemSetting{
+		systemSetting, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 			Name:        systemSettingUpsert.Name.String(),
 			Value:       systemSettingUpsert.Value,
 			Description: systemSettingUpsert.Description,

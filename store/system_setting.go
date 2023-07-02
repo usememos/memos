@@ -20,7 +20,7 @@ type FindSystemSetting struct {
 	Name string
 }
 
-func (s *Store) UpsertSystemSettingV1(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error) {
+func (s *Store) UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)

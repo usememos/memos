@@ -152,7 +152,7 @@ func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
 		return "", err
 	}
 	if serverIDSetting == nil || serverIDSetting.Value == "" {
-		serverIDSetting, err = s.Store.UpsertSystemSettingV1(ctx, &store.SystemSetting{
+		serverIDSetting, err = s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 			Name:  apiv1.SystemSettingServerIDName.String(),
 			Value: uuid.NewString(),
 		})
@@ -171,7 +171,7 @@ func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error)
 		return "", err
 	}
 	if secretSessionNameValue == nil || secretSessionNameValue.Value == "" {
-		secretSessionNameValue, err = s.Store.UpsertSystemSettingV1(ctx, &store.SystemSetting{
+		secretSessionNameValue, err = s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 			Name:  apiv1.SystemSettingSecretSessionName.String(),
 			Value: uuid.NewString(),
 		})
