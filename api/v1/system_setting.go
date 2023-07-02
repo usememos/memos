@@ -55,11 +55,6 @@ type CustomizedProfile struct {
 	ExternalURL string `json:"externalUrl"`
 }
 
-type OpenAIConfig struct {
-	Key  string `json:"key"`
-	Host string `json:"host"`
-}
-
 func (key SystemSettingName) String() string {
 	return string(key)
 }
