@@ -9,7 +9,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/store"
 	"golang.org/x/exp/slices"
 )
@@ -151,7 +150,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 
 func (s *APIV1Service) createTagCreateActivity(c echo.Context, tag *Tag) error {
 	ctx := c.Request().Context()
-	payload := api.ActivityTagCreatePayload{
+	payload := ActivityTagCreatePayload{
 		TagName: tag.Name,
 	}
 	payloadBytes, err := json.Marshal(payload)

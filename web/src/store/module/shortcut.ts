@@ -18,7 +18,7 @@ export const useShortcutStore = () => {
       return store.getState().shortcut;
     },
     getMyAllShortcuts: async () => {
-      const { data } = (await api.getShortcutList()).data;
+      const { data } = await api.getShortcutList();
       const shortcuts = data.map((s) => convertResponseModelShortcut(s));
       store.dispatch(setShortcuts(shortcuts));
     },
@@ -32,12 +32,12 @@ export const useShortcutStore = () => {
       return null;
     },
     createShortcut: async (shortcutCreate: ShortcutCreate) => {
-      const { data } = (await api.createShortcut(shortcutCreate)).data;
+      const { data } = await api.createShortcut(shortcutCreate);
       const shortcut = convertResponseModelShortcut(data);
       store.dispatch(createShortcut(shortcut));
     },
     patchShortcut: async (shortcutPatch: ShortcutPatch) => {
-      const { data } = (await api.patchShortcut(shortcutPatch)).data;
+      const { data } = await api.patchShortcut(shortcutPatch);
       const shortcut = convertResponseModelShortcut(data);
       store.dispatch(patchShortcut(shortcut));
     },

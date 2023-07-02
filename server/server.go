@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api"
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/telegram"
@@ -101,7 +100,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	})
 	s.registerMemoRoutes(apiGroup)
 	s.registerMemoResourceRoutes(apiGroup)
-	s.registerShortcutRoutes(apiGroup)
 	s.registerResourceRoutes(apiGroup)
 	s.registerStorageRoutes(apiGroup)
 	s.registerMemoRelationRoutes(apiGroup)
@@ -182,7 +180,7 @@ func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error)
 }
 
 func (s *Server) createServerStartActivity(ctx context.Context) error {
-	payload := api.ActivityServerStartPayload{
+	payload := apiv1.ActivityServerStartPayload{
 		ServerID: s.ID,
 		Profile:  s.Profile,
 	}

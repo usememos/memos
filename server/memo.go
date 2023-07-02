@@ -562,7 +562,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 }
 
 func (s *Server) createMemoCreateActivity(ctx context.Context, memo *store.MemoMessage) error {
-	payload := api.ActivityMemoCreatePayload{
+	payload := apiv1.ActivityMemoCreatePayload{
 		Content:    memo.Content,
 		Visibility: memo.Visibility.String(),
 	}

@@ -532,7 +532,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 }
 
 func (s *Server) createResourceCreateActivity(ctx context.Context, resource *api.Resource) error {
-	payload := api.ActivityResourceCreatePayload{
+	payload := apiv1.ActivityResourceCreatePayload{
 		Filename: resource.Filename,
 		Type:     resource.Type,
 		Size:     resource.Size,

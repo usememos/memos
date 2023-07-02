@@ -145,19 +145,19 @@ export function getShortcutList(shortcutFind?: ShortcutFind) {
   if (shortcutFind?.creatorId) {
     queryList.push(`creatorId=${shortcutFind.creatorId}`);
   }
-  return axios.get<ResponseObject<Shortcut[]>>(`/api/shortcut?${queryList.join("&")}`);
+  return axios.get<Shortcut[]>(`/api/v1/shortcut?${queryList.join("&")}`);
 }
 
 export function createShortcut(shortcutCreate: ShortcutCreate) {
-  return axios.post<ResponseObject<Shortcut>>("/api/shortcut", shortcutCreate);
+  return axios.post<Shortcut>("/api/v1/shortcut", shortcutCreate);
 }
 
 export function patchShortcut(shortcutPatch: ShortcutPatch) {
-  return axios.patch<ResponseObject<Shortcut>>(`/api/shortcut/${shortcutPatch.id}`, shortcutPatch);
+  return axios.patch<Shortcut>(`/api/v1/shortcut/${shortcutPatch.id}`, shortcutPatch);
 }
 
 export function deleteShortcutById(shortcutId: ShortcutId) {
-  return axios.delete(`/api/shortcut/${shortcutId}`);
+  return axios.delete(`/api/v1/shortcut/${shortcutId}`);
 }
 
 export function getResourceList() {
