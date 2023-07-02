@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
+	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/store"
 	"github.com/yuin/goldmark"
@@ -80,7 +81,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 const MaxRSSItemCount = 100
 const MaxRSSItemTitleLength = 100
 
-func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.MemoMessage, baseURL string, profile *api.CustomizedProfile) (string, error) {
+func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.MemoMessage, baseURL string, profile *apiv1.CustomizedProfile) (string, error) {
 	feed := &feeds.Feed{
 		Title:       profile.Name,
 		Link:        &feeds.Link{Href: baseURL},
@@ -126,15 +127,14 @@ func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.
 	return rss, nil
 }
 
-func (s *Server) getSystemCustomizedProfile(ctx context.Context) (*api.CustomizedProfile, error) {
-	systemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-		Name: api.SystemSettingCustomizedProfileName,
+func (s *Server) getSystemCustomizedProfile(ctx context.Context) (*apiv1.CustomizedProfile, error) {
+	systemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+		Name: apiv1.SystemSettingCustomizedProfileName.String(),
 	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
+	if err != nil {
 		return nil, err
 	}
-
-	customizedProfile := &api.CustomizedProfile{
+	customizedProfile := &apiv1.CustomizedProfile{
 		Name:        "memos",
 		LogoURL:     "",
 		Description: "",

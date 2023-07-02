@@ -60,10 +60,10 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		// Find disable public memos system setting.
-		disablePublicMemosSystemSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-			Name: api.SystemSettingDisablePublicMemosName,
+		disablePublicMemosSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+			Name: apiv1.SystemSettingDisablePublicMemosName.String(),
 		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 		}
 		if disablePublicMemosSystemSetting != nil {
@@ -699,10 +699,10 @@ func (s *Server) composeMemoMessageToMemoResponse(ctx context.Context, memoMessa
 }
 
 func (s *Server) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (bool, error) {
-	memoDisplayWithUpdatedTsSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
-		Name: api.SystemSettingMemoDisplayWithUpdatedTsName,
+	memoDisplayWithUpdatedTsSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+		Name: apiv1.SystemSettingMemoDisplayWithUpdatedTsName.String(),
 	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
+	if err != nil {
 		return false, errors.Wrap(err, "failed to find system setting")
 	}
 	memoDisplayWithUpdatedTs := false

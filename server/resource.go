@@ -22,6 +22,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
+	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/plugin/storage/s3"
@@ -116,7 +117,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		// This is the backend default max upload size limit.
-		maxUploadSetting := s.Store.GetSystemSettingValueOrDefault(&ctx, api.SystemSettingMaxUploadSizeMiBName, "32")
+		maxUploadSetting := s.Store.GetSystemSettingValueWithDefault(&ctx, apiv1.SystemSettingMaxUploadSizeMiBName.String(), "32")
 		var settingMaxUploadSizeBytes int
 		if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
 			settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
@@ -150,8 +151,8 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		defer sourceFile.Close()
 
 		var resourceCreate *api.ResourceCreate
-		systemSettingStorageServiceID, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingStorageServiceIDName})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
+		systemSettingStorageServiceID, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: apiv1.SystemSettingStorageServiceIDName.String()})
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
 		storageServiceID := api.DatabaseStorage
@@ -179,7 +180,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			// filepath.Join() should be used for local file paths,
 			// as it handles the os-specific path separator automatically.
 			// path.Join() always uses '/' as path separator.
-			systemSettingLocalStoragePath, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{Name: api.SystemSettingLocalStoragePathName})
+			systemSettingLocalStoragePath, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: apiv1.SystemSettingLocalStoragePathName.String()})
 			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
 			}
