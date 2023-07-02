@@ -36,11 +36,11 @@ INSERT INTO
 VALUES
   (
     1003,
-    "**[SQL Chat](https://www.sqlchat.ai)**: Chat-based SQL Client
-![](https://www.sqlchat.ai/chat-logo-and-text.webp)
+    "**[Shortify](https://github.com/boojack/shortify)**: A bookmarking and short link service that allows you to save and share links easily.
+![](https://github.com/boojack/shortify/raw/main/resources/demo.gif)
 
-**[star-history.com](https://star-history.com)**: The missing GitHub star history graph of GitHub repos.
-![](https://api.star-history.com/svg?repos=usememos/memos&type=Date)",
+**[SQL Chat](https://www.sqlchat.ai)**: Chat-based SQL Client
+![](https://www.sqlchat.ai/chat-logo-and-text.webp)",
     101,
     'PUBLIC'
   );
