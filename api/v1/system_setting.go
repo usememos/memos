@@ -29,10 +29,9 @@ const (
 	SystemSettingStorageServiceIDName SystemSettingName = "storage-service-id"
 	// SystemSettingLocalStoragePathName is the name of local storage path.
 	SystemSettingLocalStoragePathName SystemSettingName = "local-storage-path"
-	// SystemSettingOpenAIConfigName is the name of OpenAI config.
-	SystemSettingOpenAIConfigName SystemSettingName = "openai-config"
 	// SystemSettingTelegramBotToken is the name of Telegram Bot Token.
-	SystemSettingTelegramBotTokenName         SystemSettingName = "telegram-bot-token"
+	SystemSettingTelegramBotTokenName SystemSettingName = "telegram-bot-token"
+	// SystemSettingMemoDisplayWithUpdatedTsName is the name of memo display with updated ts.
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
 )
 
@@ -58,35 +57,7 @@ type OpenAIConfig struct {
 }
 
 func (key SystemSettingName) String() string {
-	switch key {
-	case SystemSettingServerIDName:
-		return "server-id"
-	case SystemSettingSecretSessionName:
-		return "secret-session"
-	case SystemSettingAllowSignUpName:
-		return "allow-signup"
-	case SystemSettingDisablePublicMemosName:
-		return "disable-public-memos"
-	case SystemSettingMaxUploadSizeMiBName:
-		return "max-upload-size-mib"
-	case SystemSettingAdditionalStyleName:
-		return "additional-style"
-	case SystemSettingAdditionalScriptName:
-		return "additional-script"
-	case SystemSettingCustomizedProfileName:
-		return "customized-profile"
-	case SystemSettingStorageServiceIDName:
-		return "storage-service-id"
-	case SystemSettingLocalStoragePathName:
-		return "local-storage-path"
-	case SystemSettingOpenAIConfigName:
-		return "openai-config"
-	case SystemSettingTelegramBotTokenName:
-		return "telegram-bot-token"
-	case SystemSettingMemoDisplayWithUpdatedTsName:
-		return "memo-display-with-updated-ts"
-	}
-	return ""
+	return string(key)
 }
 
 type SystemSetting struct {
@@ -154,11 +125,6 @@ func (upsert SystemSettingUpsert) Validate() error {
 		return nil
 	case SystemSettingLocalStoragePathName:
 		value := ""
-		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
-			return fmt.Errorf(systemSettingUnmarshalError, settingName)
-		}
-	case SystemSettingOpenAIConfigName:
-		value := OpenAIConfig{}
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}

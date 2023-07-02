@@ -73,14 +73,14 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
 			}
 			if disablePublicMemos {
-				user, err := s.Store.FindUser(ctx, &api.UserFind{
+				user, err := s.Store.GetUser(ctx, &store.FindUser{
 					ID: &userID,
 				})
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 				}
 				// Enforce normal user to create private memo if public memos are disabled.
-				if user.Role == "USER" {
+				if user.Role == store.RoleUser {
 					createMemoRequest.Visibility = api.Private
 				}
 			}
@@ -654,7 +654,7 @@ func (s *Server) composeMemoMessageToMemoResponse(ctx context.Context, memoMessa
 	}
 
 	// Compose creator name.
-	user, err := s.Store.FindUser(ctx, &api.UserFind{
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
 		ID: &memoResponse.CreatorID,
 	})
 	if err != nil {

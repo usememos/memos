@@ -98,7 +98,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		return JWTMiddleware(s, next, s.Secret)
 	})
 	s.registerSystemRoutes(apiGroup)
-	s.registerUserRoutes(apiGroup)
 	s.registerMemoRoutes(apiGroup)
 	s.registerMemoResourceRoutes(apiGroup)
 	s.registerShortcutRoutes(apiGroup)

@@ -29,7 +29,7 @@ const PreferencesSection = () => {
   }, []);
 
   const fetchUserList = async () => {
-    const { data } = (await api.getUserList()).data;
+    const { data } = await api.getUserList();
     setUserList(data);
   };
 

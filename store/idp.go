@@ -11,8 +11,12 @@ import (
 type IdentityProviderType string
 
 const (
-	IdentityProviderOAuth2 IdentityProviderType = "OAUTH2"
+	IdentityProviderOAuth2Type IdentityProviderType = "OAUTH2"
 )
+
+func (t IdentityProviderType) String() string {
+	return string(t)
+}
 
 type IdentityProviderConfig struct {
 	OAuth2Config *IdentityProviderOAuth2Config
@@ -66,7 +70,7 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProv
 	defer tx.Rollback()
 
 	var configBytes []byte
-	if create.Type == IdentityProviderOAuth2 {
+	if create.Type == IdentityProviderOAuth2Type {
 		configBytes, err = json.Marshal(create.Config.OAuth2Config)
 		if err != nil {
 			return nil, err
@@ -167,7 +171,7 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 	}
 	if v := update.Config; v != nil {
 		var configBytes []byte
-		if update.Type == IdentityProviderOAuth2 {
+		if update.Type == IdentityProviderOAuth2Type {
 			configBytes, err = json.Marshal(update.Config.OAuth2Config)
 			if err != nil {
 				return nil, err
@@ -197,7 +201,7 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 		return nil, err
 	}
 
-	if identityProvider.Type == IdentityProviderOAuth2 {
+	if identityProvider.Type == IdentityProviderOAuth2Type {
 		oauth2Config := &IdentityProviderOAuth2Config{}
 		if err := json.Unmarshal([]byte(identityProviderConfig), oauth2Config); err != nil {
 			return nil, err
@@ -279,7 +283,7 @@ func listIdentityProviders(ctx context.Context, tx *sql.Tx, find *FindIdentityPr
 			return nil, err
 		}
 
-		if identityProvider.Type == IdentityProviderOAuth2 {
+		if identityProvider.Type == IdentityProviderOAuth2Type {
 			oauth2Config := &IdentityProviderOAuth2Config{}
 			if err := json.Unmarshal([]byte(identityProviderConfig), oauth2Config); err != nil {
 				return nil, err

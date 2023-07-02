@@ -13,12 +13,6 @@ const (
 	Archived RowStatus = "ARCHIVED"
 )
 
-func (e RowStatus) String() string {
-	switch e {
-	case Normal:
-		return "NORMAL"
-	case Archived:
-		return "ARCHIVED"
-	}
-	return ""
+func (r RowStatus) String() string {
+	return string(r)
 }

@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/store"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -18,7 +17,7 @@ func TestUserStore(t *testing.T) {
 	users, err := ts.ListUsers(ctx, &store.FindUser{})
 	require.NoError(t, err)
 	require.Equal(t, 1, len(users))
-	require.Equal(t, store.Host, users[0].Role)
+	require.Equal(t, store.RoleHost, users[0].Role)
 	require.Equal(t, user, users[0])
 	userPatchNickname := "test_nickname_2"
 	userPatch := &store.UpdateUser{
@@ -28,7 +27,7 @@ func TestUserStore(t *testing.T) {
 	user, err = ts.UpdateUser(ctx, userPatch)
 	require.NoError(t, err)
 	require.Equal(t, userPatchNickname, user.Nickname)
-	err = ts.DeleteUser(ctx, &api.UserDelete{
+	err = ts.DeleteUser(ctx, &store.DeleteUser{
 		ID: user.ID,
 	})
 	require.NoError(t, err)
@@ -40,7 +39,7 @@ func TestUserStore(t *testing.T) {
 func createTestingHostUser(ctx context.Context, ts *store.Store) (*store.User, error) {
 	userCreate := &store.User{
 		Username: "test",
-		Role:     store.Host,
+		Role:     store.RoleHost,
 		Email:    "test@test.com",
 		Nickname: "test_nickname",
 		OpenID:   "test_open_id",
@@ -50,6 +49,6 @@ func createTestingHostUser(ctx context.Context, ts *store.Store) (*store.User, e
 		return nil, err
 	}
 	userCreate.PasswordHash = string(passwordHash)
-	user, err := ts.CreateUserV1(ctx, userCreate)
+	user, err := ts.CreateUser(ctx, userCreate)
 	return user, err
 }

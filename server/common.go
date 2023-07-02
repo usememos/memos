@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/store"
 )
 
 type response struct {
@@ -39,10 +39,9 @@ func (s *Server) defaultAuthSkipper(c echo.Context) bool {
 	// If there is openId in query string and related user is found, then skip auth.
 	openID := c.QueryParam("openId")
 	if openID != "" {
-		userFind := &api.UserFind{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			OpenID: &openID,
-		}
-		user, err := s.Store.FindUser(ctx, userFind)
+		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
 			return false
 		}

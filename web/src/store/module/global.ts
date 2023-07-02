@@ -35,7 +35,7 @@ export const initialGlobalState = async () => {
     defaultGlobalState.appearance = storageAppearance;
   }
 
-  const { data } = (await api.getSystemStatus()).data;
+  const { data } = await api.getSystemStatus();
   if (data) {
     const customizedProfile = data.customizedProfile;
     defaultGlobalState.systemStatus = {
@@ -68,7 +68,7 @@ export const useGlobalStore = () => {
       return state.systemStatus.profile.mode !== "prod";
     },
     fetchSystemStatus: async () => {
-      const { data: systemStatus } = (await api.getSystemStatus()).data;
+      const { data: systemStatus } = await api.getSystemStatus();
       store.dispatch(setGlobalState({ systemStatus: systemStatus }));
       return systemStatus;
     },

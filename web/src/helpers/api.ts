@@ -7,7 +7,7 @@ type ResponseObject<T> = {
 };
 
 export function getSystemStatus() {
-  return axios.get<ResponseObject<SystemStatus>>("/api/status");
+  return axios.get<SystemStatus>("/api/v1/status");
 }
 
 export function getSystemSetting() {
@@ -19,7 +19,7 @@ export function upsertSystemSetting(systemSetting: SystemSetting) {
 }
 
 export function vacuumDatabase() {
-  return axios.post("/api/system/vacuum");
+  return axios.post("/api/v1/system/vacuum");
 }
 
 export function signin(username: string, password: string) {
@@ -49,31 +49,31 @@ export function signout() {
 }
 
 export function createUser(userCreate: UserCreate) {
-  return axios.post<ResponseObject<User>>("/api/user", userCreate);
+  return axios.post<User>("/api/v1/user", userCreate);
 }
 
 export function getMyselfUser() {
-  return axios.get<ResponseObject<User>>("/api/user/me");
+  return axios.get<User>("/api/v1/user/me");
 }
 
 export function getUserList() {
-  return axios.get<ResponseObject<User[]>>("/api/user");
+  return axios.get<User[]>("/api/v1/user");
 }
 
 export function getUserById(id: number) {
-  return axios.get<ResponseObject<User>>(`/api/user/${id}`);
+  return axios.get<User>(`/api/v1/user/${id}`);
 }
 
 export function upsertUserSetting(upsert: UserSettingUpsert) {
-  return axios.post<ResponseObject<UserSetting>>(`/api/user/setting`, upsert);
+  return axios.post<UserSetting>(`/api/v1/user/setting`, upsert);
 }
 
 export function patchUser(userPatch: UserPatch) {
-  return axios.patch<ResponseObject<User>>(`/api/user/${userPatch.id}`, userPatch);
+  return axios.patch<User>(`/api/v1/user/${userPatch.id}`, userPatch);
 }
 
 export function deleteUser(userDelete: UserDelete) {
-  return axios.delete(`/api/user/${userDelete.id}`);
+  return axios.delete(`/api/v1/user/${userDelete.id}`);
 }
 
 export function getAllMemos(memoFind?: MemoFind) {

@@ -36,7 +36,7 @@ func (s *Store) GetDB() *sql.DB {
 func (s *Store) Vacuum(ctx context.Context) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -45,7 +45,7 @@ func (s *Store) Vacuum(ctx context.Context) error {
 	}
 
 	if err := tx.Commit(); err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	// Vacuum sqlite database file size after deleting resource.

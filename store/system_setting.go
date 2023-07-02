@@ -20,6 +20,35 @@ type FindSystemSetting struct {
 	Name string
 }
 
+func (s *Store) UpsertSystemSettingV1(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer tx.Rollback()
+
+	query := `
+		INSERT INTO system_setting (
+			name, value, description
+		)
+		VALUES (?, ?, ?)
+		ON CONFLICT(name) DO UPDATE 
+		SET
+			value = EXCLUDED.value,
+			description = EXCLUDED.description
+	`
+	if _, err := tx.ExecContext(ctx, query, upsert.Name, upsert.Value, upsert.Description); err != nil {
+		return nil, FormatError(err)
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	systemSetting := upsert
+	return systemSetting, nil
+}
+
 func (s *Store) ListSystemSettings(ctx context.Context, find *FindSystemSetting) ([]*SystemSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {

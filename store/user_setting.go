@@ -41,7 +41,7 @@ func (s *Store) UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*Us
 	}
 
 	userSetting := upsert
-	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSetting.UserID, userSetting.Key), userSetting)
+	s.userSettingCache.Store(getUserSettingCacheKey(userSetting.UserID, userSetting.Key), userSetting)
 	return userSetting, nil
 }
 
@@ -58,14 +58,14 @@ func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]
 	}
 
 	for _, userSetting := range userSettingList {
-		s.userSettingCache.Store(getUserSettingCacheKeyV1(userSetting.UserID, userSetting.Key), userSetting)
+		s.userSettingCache.Store(getUserSettingCacheKey(userSetting.UserID, userSetting.Key), userSetting)
 	}
 	return userSettingList, nil
 }
 
 func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*UserSetting, error) {
 	if find.UserID != nil {
-		if cache, ok := s.userSettingCache.Load(getUserSettingCacheKeyV1(*find.UserID, find.Key)); ok {
+		if cache, ok := s.userSettingCache.Load(getUserSettingCacheKey(*find.UserID, find.Key)); ok {
 			return cache.(*UserSetting), nil
 		}
 	}
@@ -84,8 +84,9 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*Use
 	if len(list) == 0 {
 		return nil, nil
 	}
+
 	userSetting := list[0]
-	s.userSettingCache.Store(getUserSettingCacheKeyV1(userSetting.UserID, userSetting.Key), userSetting)
+	s.userSettingCache.Store(getUserSettingCacheKey(userSetting.UserID, userSetting.Key), userSetting)
 	return userSetting, nil
 }
 
