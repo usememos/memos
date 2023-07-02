@@ -20,7 +20,7 @@ type FindUserSetting struct {
 func (s *Store) UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*UserSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -48,7 +48,7 @@ func (s *Store) UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*Us
 func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*UserSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -72,7 +72,7 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*Use
 
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -109,7 +109,7 @@ func listUserSettings(ctx context.Context, tx *sql.Tx, find *FindUserSetting) ([
 		WHERE ` + strings.Join(where, " AND ")
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -121,13 +121,13 @@ func listUserSettings(ctx context.Context, tx *sql.Tx, find *FindUserSetting) ([
 			&userSetting.Key,
 			&userSetting.Value,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 		userSettingList = append(userSettingList, &userSetting)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return userSettingList, nil
@@ -146,7 +146,7 @@ func vacuumUserSetting(ctx context.Context, tx *sql.Tx) error {
 		)`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	return nil

@@ -236,7 +236,7 @@ func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -244,7 +244,7 @@ func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) error {
 		DELETE FROM user WHERE id = ?
 	`, delete.ID)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	rows, err := result.RowsAffected()

@@ -19,7 +19,7 @@ type FindSystemSetting struct {
 func (s *Store) UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -34,7 +34,7 @@ func (s *Store) UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) 
 			description = EXCLUDED.description
 	`
 	if _, err := tx.ExecContext(ctx, query, upsert.Name, upsert.Value, upsert.Description); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -48,7 +48,7 @@ func (s *Store) UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) 
 func (s *Store) ListSystemSettings(ctx context.Context, find *FindSystemSetting) ([]*SystemSetting, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -72,7 +72,7 @@ func (s *Store) GetSystemSetting(ctx context.Context, find *FindSystemSetting) (
 
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -115,7 +115,7 @@ func listSystemSettings(ctx context.Context, tx *sql.Tx, find *FindSystemSetting
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -127,7 +127,7 @@ func listSystemSettings(ctx context.Context, tx *sql.Tx, find *FindSystemSetting
 			&systemSettingMessage.Value,
 			&systemSettingMessage.Description,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 		list = append(list, systemSettingMessage)
 	}
