@@ -141,7 +141,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		}
 
 		// Even if there is no error, we still need to make sure the user still exists.
-		user, err := server.Store.GetUser(ctx, &store.FindUserMessage{
+		user, err := server.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {
@@ -222,7 +222,7 @@ func (s *APIV1Service) defaultAuthSkipper(c echo.Context) bool {
 	// If there is openId in query string and related user is found, then skip auth.
 	openID := c.QueryParam("openId")
 	if openID != "" {
-		user, err := s.Store.GetUser(ctx, &store.FindUserMessage{
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			OpenID: &openID,
 		})
 		if err != nil && common.ErrorCode(err) != common.NotFound {
