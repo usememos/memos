@@ -12,9 +12,8 @@ import (
 type Store struct {
 	Profile            *profile.Profile
 	db                 *sql.DB
-	systemSettingCache sync.Map // map[string]*systemSettingRaw
-	userCache          sync.Map // map[int]*userRaw
-	userV1Cache        sync.Map // map[string]*User
+	systemSettingCache sync.Map // map[string]*SystemSetting
+	userCache          sync.Map // map[int]*User
 	userSettingCache   sync.Map // map[string]*UserSetting
 	shortcutCache      sync.Map // map[int]*shortcutRaw
 	idpCache           sync.Map // map[int]*IdentityProvider

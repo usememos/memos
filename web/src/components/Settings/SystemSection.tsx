@@ -39,7 +39,7 @@ const SystemSection = () => {
   }, []);
 
   useEffect(() => {
-    api.getSystemSetting().then(({ data: { data: systemSettings } }) => {
+    api.getSystemSetting().then(({ data: systemSettings }) => {
       const telegramBotSetting = systemSettings.find((setting) => setting.name === "telegram-bot-token");
       if (telegramBotSetting) {
         setTelegramBotToken(telegramBotSetting.value);

@@ -4,11 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 	"strings"
-
-	"github.com/usememos/memos/api"
-	"github.com/usememos/memos/common"
 )
 
 // Role is the type of a role.
@@ -125,7 +121,7 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 		return nil, err
 	}
 	user := create
-	s.userV1Cache.Store(user.ID, user)
+	s.userCache.Store(user.ID, user)
 	return user, nil
 }
 
@@ -190,7 +186,7 @@ func (s *Store) UpdateUser(ctx context.Context, update *UpdateUser) (*User, erro
 		return nil, err
 	}
 
-	s.userV1Cache.Store(user.ID, user)
+	s.userCache.Store(user.ID, user)
 	return user, nil
 }
 
@@ -207,15 +203,15 @@ func (s *Store) ListUsers(ctx context.Context, find *FindUser) ([]*User, error) 
 	}
 
 	for _, user := range list {
-		s.userV1Cache.Store(user.ID, user)
+		s.userCache.Store(user.ID, user)
 	}
 	return list, nil
 }
 
 func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 	if find.ID != nil {
-		if user, ok := s.userV1Cache.Load(*find.ID); ok {
-			return user.(*User), nil
+		if cache, ok := s.userCache.Load(*find.ID); ok {
+			return cache.(*User), nil
 		}
 	}
 
@@ -233,7 +229,7 @@ func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 		return nil, nil
 	}
 	user := list[0]
-	s.userV1Cache.Store(user.ID, user)
+	s.userCache.Store(user.ID, user)
 	return user, nil
 }
 
@@ -341,143 +337,4 @@ func listUsers(ctx context.Context, tx *sql.Tx, find *FindUser) ([]*User, error)
 	}
 
 	return list, nil
-}
-
-// userRaw is the store model for an User.
-// Fields have exactly the same meanings as User.
-type userRaw struct {
-	ID int
-
-	// Standard fields
-	RowStatus api.RowStatus
-	CreatedTs int64
-	UpdatedTs int64
-
-	// Domain specific fields
-	Username     string
-	Role         api.Role
-	Email        string
-	Nickname     string
-	PasswordHash string
-	OpenID       string
-	AvatarURL    string
-}
-
-func (raw *userRaw) toUser() *api.User {
-	return &api.User{
-		ID: raw.ID,
-
-		RowStatus: raw.RowStatus,
-		CreatedTs: raw.CreatedTs,
-		UpdatedTs: raw.UpdatedTs,
-
-		Username:     raw.Username,
-		Role:         raw.Role,
-		Email:        raw.Email,
-		Nickname:     raw.Nickname,
-		PasswordHash: raw.PasswordHash,
-		OpenID:       raw.OpenID,
-		AvatarURL:    raw.AvatarURL,
-	}
-}
-
-func (s *Store) FindUser(ctx context.Context, find *api.UserFind) (*api.User, error) {
-	if find.ID != nil {
-		if user, ok := s.userCache.Load(*find.ID); ok {
-			return user.(*userRaw).toUser(), nil
-		}
-	}
-
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	list, err := findUserList(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(list) == 0 {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found user with filter %+v", find)}
-	}
-
-	userRaw := list[0]
-	s.userCache.Store(userRaw.ID, userRaw)
-	user := userRaw.toUser()
-	return user, nil
-}
-
-func findUserList(ctx context.Context, tx *sql.Tx, find *api.UserFind) ([]*userRaw, error) {
-	where, args := []string{"1 = 1"}, []any{}
-
-	if v := find.ID; v != nil {
-		where, args = append(where, "id = ?"), append(args, *v)
-	}
-	if v := find.Username; v != nil {
-		where, args = append(where, "username = ?"), append(args, *v)
-	}
-	if v := find.Role; v != nil {
-		where, args = append(where, "role = ?"), append(args, *v)
-	}
-	if v := find.Email; v != nil {
-		where, args = append(where, "email = ?"), append(args, *v)
-	}
-	if v := find.Nickname; v != nil {
-		where, args = append(where, "nickname = ?"), append(args, *v)
-	}
-	if v := find.OpenID; v != nil {
-		where, args = append(where, "open_id = ?"), append(args, *v)
-	}
-
-	query := `
-		SELECT 
-			id,
-			username,
-			role,
-			email,
-			nickname,
-			password_hash,
-			open_id,
-			avatar_url,
-			created_ts,
-			updated_ts,
-			row_status
-		FROM user
-		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY created_ts DESC, row_status DESC
-	`
-	rows, err := tx.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer rows.Close()
-
-	userRawList := make([]*userRaw, 0)
-	for rows.Next() {
-		var userRaw userRaw
-		if err := rows.Scan(
-			&userRaw.ID,
-			&userRaw.Username,
-			&userRaw.Role,
-			&userRaw.Email,
-			&userRaw.Nickname,
-			&userRaw.PasswordHash,
-			&userRaw.OpenID,
-			&userRaw.AvatarURL,
-			&userRaw.CreatedTs,
-			&userRaw.UpdatedTs,
-			&userRaw.RowStatus,
-		); err != nil {
-			return nil, FormatError(err)
-		}
-		userRawList = append(userRawList, &userRaw)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
-	}
-
-	return userRawList, nil
 }

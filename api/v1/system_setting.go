@@ -3,7 +3,11 @@ package v1
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
+
+	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/store"
 )
 
 type SystemSettingName string
@@ -67,7 +71,7 @@ type SystemSetting struct {
 	Description string `json:"description"`
 }
 
-type SystemSettingUpsert struct {
+type UpsertSystemSettingRequest struct {
 	Name        SystemSettingName `json:"name"`
 	Value       string            `json:"value"`
 	Description string            `json:"description"`
@@ -75,7 +79,7 @@ type SystemSettingUpsert struct {
 
 const systemSettingUnmarshalError = `failed to unmarshal value from system setting "%v"`
 
-func (upsert SystemSettingUpsert) Validate() error {
+func (upsert UpsertSystemSettingRequest) Validate() error {
 	switch settingName := upsert.Name; settingName {
 	case SystemSettingServerIDName:
 		return fmt.Errorf("updating %v is not allowed", settingName)
@@ -155,6 +159,77 @@ func (upsert SystemSettingUpsert) Validate() error {
 	return nil
 }
 
-type SystemSettingFind struct {
-	Name SystemSettingName `json:"name"`
+func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
+	g.POST("/system/setting", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil || user.Role != store.RoleHost {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		systemSettingUpsert := &UpsertSystemSettingRequest{}
+		if err := json.NewDecoder(c.Request().Body).Decode(systemSettingUpsert); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post system setting request").SetInternal(err)
+		}
+		if err := systemSettingUpsert.Validate(); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
+		}
+
+		systemSetting, err := s.Store.UpsertSystemSettingV1(ctx, &store.SystemSetting{
+			Name:        systemSettingUpsert.Name.String(),
+			Value:       systemSettingUpsert.Value,
+			Description: systemSettingUpsert.Description,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
+		}
+		return c.JSON(http.StatusOK, convertSystemSettingFromStore(systemSetting))
+	})
+
+	g.GET("/system/setting", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		userID, ok := c.Get(getUserIDContextKey()).(int)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+		}
+
+		user, err := s.Store.GetUser(ctx, &store.FindUser{
+			ID: &userID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil || user.Role != store.RoleHost {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		}
+
+		list, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
+		}
+
+		systemSettingList := make([]*SystemSetting, 0, len(list))
+		for _, systemSetting := range list {
+			systemSettingList = append(systemSettingList, convertSystemSettingFromStore(systemSetting))
+		}
+		return c.JSON(http.StatusOK, systemSettingList)
+	})
+}
+
+func convertSystemSettingFromStore(systemSetting *store.SystemSetting) *SystemSetting {
+	return &SystemSetting{
+		Name:        SystemSettingName(systemSetting.Name),
+		Value:       systemSetting.Value,
+		Description: systemSetting.Description,
+	}
 }

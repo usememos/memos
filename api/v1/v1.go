@@ -26,6 +26,7 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 		return JWTMiddleware(s, next, s.Secret)
 	})
 	s.registerSystemRoutes(apiV1Group)
+	s.registerSystemSettingRoutes(apiV1Group)
 	s.registerAuthRoutes(apiV1Group)
 	s.registerIdentityProviderRoutes(apiV1Group)
 	s.registerUserRoutes(apiV1Group)

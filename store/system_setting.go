@@ -148,51 +148,6 @@ func (raw *systemSettingRaw) toSystemSetting() *api.SystemSetting {
 	}
 }
 
-func (s *Store) UpsertSystemSetting(ctx context.Context, upsert *api.SystemSettingUpsert) (*api.SystemSetting, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	systemSettingRaw, err := upsertSystemSetting(ctx, tx, upsert)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	systemSetting := systemSettingRaw.toSystemSetting()
-	s.systemSettingCache.Store(systemSettingRaw.Name, systemSettingRaw)
-	return systemSetting, nil
-}
-
-func (s *Store) FindSystemSettingList(ctx context.Context, find *api.SystemSettingFind) ([]*api.SystemSetting, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	systemSettingRawList, err := findSystemSettingList(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	list := []*api.SystemSetting{}
-	for _, raw := range systemSettingRawList {
-		s.systemSettingCache.Store(raw.Name, raw)
-		list = append(list, raw.toSystemSetting())
-	}
-	return list, nil
-}
-
 func (s *Store) FindSystemSetting(ctx context.Context, find *api.SystemSettingFind) (*api.SystemSetting, error) {
 	if systemSetting, ok := s.systemSettingCache.Load(find.Name); ok {
 		systemSettingRaw := systemSetting.(*systemSettingRaw)
@@ -225,30 +180,6 @@ func (s *Store) GetSystemSettingValueOrDefault(ctx *context.Context, find api.Sy
 		return setting.Value
 	}
 	return defaultValue
-}
-
-func upsertSystemSetting(ctx context.Context, tx *sql.Tx, upsert *api.SystemSettingUpsert) (*systemSettingRaw, error) {
-	query := `
-		INSERT INTO system_setting (
-			name, value, description
-		)
-		VALUES (?, ?, ?)
-		ON CONFLICT(name) DO UPDATE 
-		SET
-			value = EXCLUDED.value,
-			description = EXCLUDED.description
-		RETURNING name, value, description
-	`
-	var systemSettingRaw systemSettingRaw
-	if err := tx.QueryRowContext(ctx, query, upsert.Name, upsert.Value, upsert.Description).Scan(
-		&systemSettingRaw.Name,
-		&systemSettingRaw.Value,
-		&systemSettingRaw.Description,
-	); err != nil {
-		return nil, FormatError(err)
-	}
-
-	return &systemSettingRaw, nil
 }
 
 func findSystemSettingList(ctx context.Context, tx *sql.Tx, find *api.SystemSettingFind) ([]*systemSettingRaw, error) {

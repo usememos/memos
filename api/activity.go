@@ -74,7 +74,7 @@ const (
 type ActivityUserCreatePayload struct {
 	UserID   int    `json:"userId"`
 	Username string `json:"username"`
-	Role     Role   `json:"role"`
+	Role     string `json:"role"`
 }
 
 type ActivityUserAuthSignInPayload struct {

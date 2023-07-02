@@ -11,11 +11,11 @@ export function getSystemStatus() {
 }
 
 export function getSystemSetting() {
-  return axios.get<ResponseObject<SystemSetting[]>>("/api/system/setting");
+  return axios.get<SystemSetting[]>("/api/v1/system/setting");
 }
 
 export function upsertSystemSetting(systemSetting: SystemSetting) {
-  return axios.post<ResponseObject<SystemSetting>>("/api/system/setting", systemSetting);
+  return axios.post<SystemSetting>("/api/system/setting", systemSetting);
 }
 
 export function vacuumDatabase() {
