@@ -91,7 +91,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 		}
-		if err := createMemoCreateActivity(c.Request().Context(), s.Store, memoMessage); err != nil {
+		if err := s.createMemoCreateActivity(ctx, memoMessage); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 
@@ -561,7 +561,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 	})
 }
 
-func createMemoCreateActivity(ctx context.Context, store *store.Store, memo *store.MemoMessage) error {
+func (s *Server) createMemoCreateActivity(ctx context.Context, memo *store.MemoMessage) error {
 	payload := api.ActivityMemoCreatePayload{
 		Content:    memo.Content,
 		Visibility: memo.Visibility.String(),
@@ -570,10 +570,10 @@ func createMemoCreateActivity(ctx context.Context, store *store.Store, memo *sto
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
 		CreatorID: memo.CreatorID,
-		Type:      api.ActivityMemoCreate,
-		Level:     api.ActivityInfo,
+		Type:      apiv1.ActivityMemoCreate.String(),
+		Level:     apiv1.ActivityInfo.String(),
 		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {

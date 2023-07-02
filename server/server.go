@@ -190,10 +190,10 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
-		CreatorID: api.UnknownID,
-		Type:      api.ActivityServerStart,
-		Level:     api.ActivityInfo,
+	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+		CreatorID: apiv1.UnknownID,
+		Type:      apiv1.ActivityServerStart.String(),
+		Level:     apiv1.ActivityInfo.String(),
 		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {

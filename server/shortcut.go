@@ -9,7 +9,9 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api"
+	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/store"
 
 	"github.com/labstack/echo/v4"
 )
@@ -154,10 +156,10 @@ func (s *Server) createShortcutCreateActivity(c echo.Context, shortcut *api.Shor
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
 		CreatorID: shortcut.CreatorID,
-		Type:      api.ActivityShortcutCreate,
-		Level:     api.ActivityInfo,
+		Type:      apiv1.ActivityShortcutCreate.String(),
+		Level:     apiv1.ActivityInfo.String(),
 		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {

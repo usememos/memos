@@ -103,7 +103,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
-		if err := createResourceCreateActivity(c.Request().Context(), s.Store, resource); err != nil {
+		if err := s.createResourceCreateActivity(ctx, resource); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(resource))
@@ -266,7 +266,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
-		if err := createResourceCreateActivity(c.Request().Context(), s.Store, resource); err != nil {
+		if err := s.createResourceCreateActivity(ctx, resource); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, composeResponse(resource))
@@ -531,7 +531,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 	})
 }
 
-func createResourceCreateActivity(ctx context.Context, store *store.Store, resource *api.Resource) error {
+func (s *Server) createResourceCreateActivity(ctx context.Context, resource *api.Resource) error {
 	payload := api.ActivityResourceCreatePayload{
 		Filename: resource.Filename,
 		Type:     resource.Type,
@@ -541,10 +541,10 @@ func createResourceCreateActivity(ctx context.Context, store *store.Store, resou
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := store.CreateActivity(ctx, &api.ActivityCreate{
+	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
 		CreatorID: resource.CreatorID,
-		Type:      api.ActivityResourceCreate,
-		Level:     api.ActivityInfo,
+		Type:      apiv1.ActivityResourceCreate.String(),
+		Level:     apiv1.ActivityInfo.String(),
 		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
