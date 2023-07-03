@@ -155,7 +155,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
-		storageServiceID := api.DatabaseStorage
+		storageServiceID := apiv1.DatabaseStorage
 		if systemSettingStorageServiceID != nil {
 			err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
 			if err != nil {
@@ -164,7 +164,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		publicID := common.GenUUID()
-		if storageServiceID == api.DatabaseStorage {
+		if storageServiceID == apiv1.DatabaseStorage {
 			fileBytes, err := io.ReadAll(sourceFile)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
@@ -176,7 +176,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				Size:      size,
 				Blob:      fileBytes,
 			}
-		} else if storageServiceID == api.LocalStorage {
+		} else if storageServiceID == apiv1.LocalStorage {
 			// filepath.Join() should be used for local file paths,
 			// as it handles the os-specific path separator automatically.
 			// path.Join() always uses '/' as path separator.
