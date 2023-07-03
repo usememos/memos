@@ -74,10 +74,10 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
 		if hostUser != nil {
-			// data desensitize
-			hostUser.OpenID = ""
-			hostUser.Email = ""
 			systemStatus.Host = converUserFromStore(hostUser)
+			// data desensitize
+			systemStatus.Host.OpenID = ""
+			systemStatus.Host.Email = ""
 		}
 
 		systemSettingList, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})
