@@ -194,5 +194,9 @@ func listStorages(ctx context.Context, tx *sql.Tx, find *FindStorage) ([]*Storag
 		list = append(list, storage)
 	}
 
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return list, nil
 }
