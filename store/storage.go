@@ -97,7 +97,7 @@ func (s *Store) UpdateStorage(ctx context.Context, update *UpdateStorage) (*Stor
 	}
 	defer tx.Rollback()
 
-	set, args := []string{}, []interface{}{}
+	set, args := []string{}, []any{}
 	if update.Name != nil {
 		set = append(set, "name = ?")
 		args = append(args, *update.Name)
