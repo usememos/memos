@@ -21,7 +21,7 @@ type ActivityMessage struct {
 func (s *Store) CreateActivity(ctx context.Context, create *ActivityMessage) (*ActivityMessage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -39,11 +39,11 @@ func (s *Store) CreateActivity(ctx context.Context, create *ActivityMessage) (*A
 		&create.ID,
 		&create.CreatedTs,
 	); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	activityMessage := create
 	return activityMessage, nil

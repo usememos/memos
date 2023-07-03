@@ -219,13 +219,17 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				InternalPath: filePath,
 			}
 		} else {
-			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageServiceID})
+			storage, err := s.Store.GetStorage(ctx, &store.FindStorage{ID: &storageServiceID})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 			}
+			storageMessage, err := apiv1.ConvertStorageFromStore(storage)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to convert storage").SetInternal(err)
+			}
 
-			if storage.Type == api.StorageS3 {
-				s3Config := storage.Config.S3Config
+			if storageMessage.Type == apiv1.StorageS3 {
+				s3Config := storageMessage.Config.S3Config
 				s3Client, err := s3.NewClient(ctx, &s3.Config{
 					AccessKey: s3Config.AccessKey,
 					SecretKey: s3Config.SecretKey,

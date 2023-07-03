@@ -230,19 +230,19 @@ export function deleteTag(tagName: string) {
 }
 
 export function getStorageList() {
-  return axios.get<ResponseObject<ObjectStorage[]>>(`/api/storage`);
+  return axios.get<ObjectStorage[]>(`/api/v1/storage`);
 }
 
 export function createStorage(storageCreate: StorageCreate) {
-  return axios.post<ResponseObject<ObjectStorage>>(`/api/storage`, storageCreate);
+  return axios.post<ObjectStorage>(`/api/v1/storage`, storageCreate);
 }
 
 export function patchStorage(storagePatch: StoragePatch) {
-  return axios.patch<ResponseObject<ObjectStorage>>(`/api/storage/${storagePatch.id}`, storagePatch);
+  return axios.patch<ObjectStorage>(`/api/v1/storage/${storagePatch.id}`, storagePatch);
 }
 
 export function deleteStorage(storageId: StorageId) {
-  return axios.delete(`/api/storage/${storageId}`);
+  return axios.delete(`/api/v1/storage/${storageId}`);
 }
 
 export function getIdentityProviderList() {

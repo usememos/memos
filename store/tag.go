@@ -21,10 +21,10 @@ type DeleteTag struct {
 	CreatorID int
 }
 
-func (s *Store) UpsertTagV1(ctx context.Context, upsert *Tag) (*Tag, error) {
+func (s *Store) UpsertTag(ctx context.Context, upsert *Tag) (*Tag, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -52,7 +52,7 @@ func (s *Store) UpsertTagV1(ctx context.Context, upsert *Tag) (*Tag, error) {
 func (s *Store) ListTags(ctx context.Context, find *FindTag) ([]*Tag, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -67,7 +67,7 @@ func (s *Store) ListTags(ctx context.Context, find *FindTag) ([]*Tag, error) {
 	`
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -78,14 +78,14 @@ func (s *Store) ListTags(ctx context.Context, find *FindTag) ([]*Tag, error) {
 			&tag.Name,
 			&tag.CreatorID,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 
 		list = append(list, tag)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return list, nil
@@ -94,7 +94,7 @@ func (s *Store) ListTags(ctx context.Context, find *FindTag) ([]*Tag, error) {
 func (s *Store) DeleteTag(ctx context.Context, delete *DeleteTag) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -102,7 +102,7 @@ func (s *Store) DeleteTag(ctx context.Context, delete *DeleteTag) error {
 	query := `DELETE FROM tag WHERE ` + strings.Join(where, " AND ")
 	result, err := tx.ExecContext(ctx, query, args...)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	rows, _ := result.RowsAffected()
@@ -131,7 +131,7 @@ func vacuumTag(ctx context.Context, tx *sql.Tx) error {
 		)`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	return nil
