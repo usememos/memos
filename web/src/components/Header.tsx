@@ -108,7 +108,7 @@ const Header = () => {
             <>
               <NavLink
                 to="/archived"
-                id="header-setting"
+                id="header-archived"
                 className={({ isActive }) =>
                   `${
                     isActive && "bg-white dark:bg-zinc-700 shadow"
