@@ -598,7 +598,7 @@ func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error)
 		}()
 
 		reader := bytes.NewReader(srcBlob)
-		src, err := imaging.Decode(reader)
+		src, err := imaging.Decode(reader, imaging.AutoOrientation(true))
 		if err != nil {
 			return nil, errors.Wrap(err, "failed to decode thumbnail image")
 		}
