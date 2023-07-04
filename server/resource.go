@@ -155,7 +155,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
-		storageServiceID := api.DatabaseStorage
+		storageServiceID := apiv1.DatabaseStorage
 		if systemSettingStorageServiceID != nil {
 			err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
 			if err != nil {
@@ -164,7 +164,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		publicID := common.GenUUID()
-		if storageServiceID == api.DatabaseStorage {
+		if storageServiceID == apiv1.DatabaseStorage {
 			fileBytes, err := io.ReadAll(sourceFile)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
@@ -176,7 +176,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				Size:      size,
 				Blob:      fileBytes,
 			}
-		} else if storageServiceID == api.LocalStorage {
+		} else if storageServiceID == apiv1.LocalStorage {
 			// filepath.Join() should be used for local file paths,
 			// as it handles the os-specific path separator automatically.
 			// path.Join() always uses '/' as path separator.
@@ -219,13 +219,17 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				InternalPath: filePath,
 			}
 		} else {
-			storage, err := s.Store.FindStorage(ctx, &api.StorageFind{ID: &storageServiceID})
+			storage, err := s.Store.GetStorage(ctx, &store.FindStorage{ID: &storageServiceID})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 			}
+			storageMessage, err := apiv1.ConvertStorageFromStore(storage)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to convert storage").SetInternal(err)
+			}
 
-			if storage.Type == api.StorageS3 {
-				s3Config := storage.Config.S3Config
+			if storageMessage.Type == apiv1.StorageS3 {
+				s3Config := storageMessage.Config.S3Config
 				s3Client, err := s3.NewClient(ctx, &s3.Config{
 					AccessKey: s3Config.AccessKey,
 					SecretKey: s3Config.SecretKey,

@@ -101,7 +101,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.registerMemoRoutes(apiGroup)
 	s.registerMemoResourceRoutes(apiGroup)
 	s.registerResourceRoutes(apiGroup)
-	s.registerStorageRoutes(apiGroup)
 	s.registerMemoRelationRoutes(apiGroup)
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)

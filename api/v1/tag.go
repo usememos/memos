@@ -42,7 +42,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
 		}
 
-		tag, err := s.Store.UpsertTagV1(ctx, &store.Tag{
+		tag, err := s.Store.UpsertTag(ctx, &store.Tag{
 			Name:      tagUpsert.Name,
 			CreatorID: userID,
 		})

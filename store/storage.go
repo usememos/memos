@@ -3,284 +3,200 @@ package store
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
-	"fmt"
 	"strings"
-
-	"github.com/usememos/memos/api"
-	"github.com/usememos/memos/common"
 )
 
-type storageRaw struct {
+type Storage struct {
 	ID     int
 	Name   string
-	Type   api.StorageType
-	Config *api.StorageConfig
+	Type   string
+	Config string
 }
 
-func (raw *storageRaw) toStorage() *api.Storage {
-	return &api.Storage{
-		ID:     raw.ID,
-		Name:   raw.Name,
-		Type:   raw.Type,
-		Config: raw.Config,
-	}
+type FindStorage struct {
+	ID *int
 }
 
-func (s *Store) CreateStorage(ctx context.Context, create *api.StorageCreate) (*api.Storage, error) {
+type UpdateStorage struct {
+	ID     int
+	Name   *string
+	Config *string
+}
+
+type DeleteStorage struct {
+	ID int
+}
+
+func (s *Store) CreateStorage(ctx context.Context, create *Storage) (*Storage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
-	storageRaw, err := createStorageRaw(ctx, tx, create)
-	if err != nil {
+	query := `
+		INSERT INTO storage (
+			name,
+			type,
+			config
+		)
+		VALUES (?, ?, ?)
+		RETURNING id
+	`
+	if err := tx.QueryRowContext(ctx, query, create.Name, create.Type, create.Config).Scan(
+		&create.ID,
+	); err != nil {
 		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
-	}
-
-	return storageRaw.toStorage(), nil
-}
-
-func (s *Store) PatchStorage(ctx context.Context, patch *api.StoragePatch) (*api.Storage, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	storageRaw, err := patchStorageRaw(ctx, tx, patch)
-	if err != nil {
 		return nil, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
-	}
-
-	return storageRaw.toStorage(), nil
+	storage := create
+	return storage, nil
 }
 
-func (s *Store) FindStorageList(ctx context.Context, find *api.StorageFind) ([]*api.Storage, error) {
+func (s *Store) ListStorages(ctx context.Context, find *FindStorage) ([]*Storage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	storageRawList, err := findStorageRawList(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
-	list := []*api.Storage{}
-	for _, raw := range storageRawList {
-		list = append(list, raw.toStorage())
+	list, err := listStorages(ctx, tx, find)
+	if err != nil {
+		return nil, err
 	}
 
 	return list, nil
 }
 
-func (s *Store) FindStorage(ctx context.Context, find *api.StorageFind) (*api.Storage, error) {
+func (s *Store) GetStorage(ctx context.Context, find *FindStorage) (*Storage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	list, err := findStorageRawList(ctx, tx, find)
 	if err != nil {
 		return nil, err
 	}
+	defer tx.Rollback()
 
+	list, err := listStorages(ctx, tx, find)
+	if err != nil {
+		return nil, err
+	}
 	if len(list) == 0 {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+		return nil, nil
 	}
 
-	storageRaw := list[0]
-	return storageRaw.toStorage(), nil
+	return list[0], nil
 }
 
-func (s *Store) DeleteStorage(ctx context.Context, delete *api.StorageDelete) error {
+func (s *Store) UpdateStorage(ctx context.Context, update *UpdateStorage) (*Storage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
-	if err := deleteStorage(ctx, tx, delete); err != nil {
-		return FormatError(err)
-	}
-
-	if err := tx.Commit(); err != nil {
-		return FormatError(err)
-	}
-
-	return nil
-}
-
-func createStorageRaw(ctx context.Context, tx *sql.Tx, create *api.StorageCreate) (*storageRaw, error) {
-	set := []string{"name", "type", "config"}
-	args := []any{create.Name, create.Type}
-	placeholder := []string{"?", "?", "?"}
-
-	var configBytes []byte
-	var err error
-	if create.Type == api.StorageS3 {
-		configBytes, err = json.Marshal(create.Config.S3Config)
-		if err != nil {
-			return nil, err
-		}
-	} else {
-		return nil, fmt.Errorf("unsupported storage type %s", string(create.Type))
-	}
-	args = append(args, string(configBytes))
-
-	query := `
-		INSERT INTO storage (
-			` + strings.Join(set, ", ") + `
-		)
-		VALUES (` + strings.Join(placeholder, ",") + `)
-		RETURNING id
-	`
-	storageRaw := storageRaw{
-		Name:   create.Name,
-		Type:   create.Type,
-		Config: create.Config,
-	}
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(
-		&storageRaw.ID,
-	); err != nil {
-		return nil, FormatError(err)
-	}
-
-	return &storageRaw, nil
-}
-
-func patchStorageRaw(ctx context.Context, tx *sql.Tx, patch *api.StoragePatch) (*storageRaw, error) {
 	set, args := []string{}, []any{}
-	if v := patch.Name; v != nil {
-		set, args = append(set, "name = ?"), append(args, *v)
+	if update.Name != nil {
+		set = append(set, "name = ?")
+		args = append(args, *update.Name)
 	}
-	if v := patch.Config; v != nil {
-		var configBytes []byte
-		var err error
-		if patch.Type == api.StorageS3 {
-			configBytes, err = json.Marshal(patch.Config.S3Config)
-			if err != nil {
-				return nil, err
-			}
-		} else {
-			return nil, fmt.Errorf("unsupported storage type %s", string(patch.Type))
-		}
-		set, args = append(set, "config = ?"), append(args, string(configBytes))
+	if update.Config != nil {
+		set = append(set, "config = ?")
+		args = append(args, *update.Config)
 	}
-	args = append(args, patch.ID)
+	args = append(args, update.ID)
 
 	query := `
 		UPDATE storage
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, name, type, config
+		RETURNING
+			id,
+			name,
+			type,
+			config
 	`
-	var storageRaw storageRaw
-	var storageConfig string
+	storage := &Storage{}
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(
-		&storageRaw.ID,
-		&storageRaw.Name,
-		&storageRaw.Type,
-		&storageConfig,
+		&storage.ID,
+		&storage.Name,
+		&storage.Type,
+		&storage.Config,
 	); err != nil {
-		return nil, FormatError(err)
-	}
-	if storageRaw.Type == api.StorageS3 {
-		s3Config := &api.StorageS3Config{}
-		if err := json.Unmarshal([]byte(storageConfig), s3Config); err != nil {
-			return nil, err
-		}
-		storageRaw.Config = &api.StorageConfig{
-			S3Config: s3Config,
-		}
-	} else {
-		return nil, fmt.Errorf("unsupported storage type %s", string(storageRaw.Type))
+		return nil, err
 	}
 
-	return &storageRaw, nil
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return storage, nil
 }
 
-func findStorageRawList(ctx context.Context, tx *sql.Tx, find *api.StorageFind) ([]*storageRaw, error) {
-	where, args := []string{"1 = 1"}, []any{}
-
-	if v := find.ID; v != nil {
-		where, args = append(where, "id = ?"), append(args, *v)
+func (s *Store) DeleteStorage(ctx context.Context, delete *DeleteStorage) error {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
 	}
+	defer tx.Rollback()
 
 	query := `
-		SELECT
-			id, 
-			name, 
-			type, 
-			config
-		FROM storage
-		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY id DESC
+		DELETE FROM storage
+		WHERE id = ?
 	`
-	rows, err := tx.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer rows.Close()
-
-	storageRawList := make([]*storageRaw, 0)
-	for rows.Next() {
-		var storageRaw storageRaw
-		var storageConfig string
-		if err := rows.Scan(
-			&storageRaw.ID,
-			&storageRaw.Name,
-			&storageRaw.Type,
-			&storageConfig,
-		); err != nil {
-			return nil, FormatError(err)
-		}
-		if storageRaw.Type == api.StorageS3 {
-			s3Config := &api.StorageS3Config{}
-			if err := json.Unmarshal([]byte(storageConfig), s3Config); err != nil {
-				return nil, err
-			}
-			storageRaw.Config = &api.StorageConfig{
-				S3Config: s3Config,
-			}
-		} else {
-			return nil, fmt.Errorf("unsupported storage type %s", string(storageRaw.Type))
-		}
-		storageRawList = append(storageRawList, &storageRaw)
+	if _, err := tx.ExecContext(ctx, query, delete.ID); err != nil {
+		return err
 	}
 
-	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
-	}
-
-	return storageRawList, nil
-}
-
-func deleteStorage(ctx context.Context, tx *sql.Tx, delete *api.StorageDelete) error {
-	where, args := []string{"id = ?"}, []any{delete.ID}
-
-	stmt := `DELETE FROM storage WHERE ` + strings.Join(where, " AND ")
-	result, err := tx.ExecContext(ctx, stmt, args...)
-	if err != nil {
-		return FormatError(err)
-	}
-
-	rows, _ := result.RowsAffected()
-	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("storage not found")}
+	if err := tx.Commit(); err != nil {
+		// Prevent linter warning.
+		return err
 	}
 
 	return nil
+}
+
+func listStorages(ctx context.Context, tx *sql.Tx, find *FindStorage) ([]*Storage, error) {
+	where, args := []string{"1 = 1"}, []any{}
+	if find.ID != nil {
+		where, args = append(where, "id = ?"), append(args, *find.ID)
+	}
+
+	rows, err := tx.QueryContext(ctx, `
+		SELECT
+			id,
+			name,
+			type,
+			config
+		FROM storage
+		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY id DESC`,
+		args...,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	list := []*Storage{}
+	for rows.Next() {
+		storage := &Storage{}
+		if err := rows.Scan(
+			&storage.ID,
+			&storage.Name,
+			&storage.Type,
+			&storage.Config,
+		); err != nil {
+			return nil, err
+		}
+		list = append(list, storage)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }

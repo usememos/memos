@@ -22,9 +22,7 @@ const StorageSection = () => {
   }, []);
 
   const fetchStorageList = async () => {
-    const {
-      data: { data: storageList },
-    } = await api.getStorageList();
+    const { data: storageList } = await api.getStorageList();
     setStorageList(storageList);
   };
 

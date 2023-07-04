@@ -212,7 +212,7 @@ func listShortcuts(ctx context.Context, tx *sql.Tx, find *FindShortcut) ([]*Shor
 		args...,
 	)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -228,13 +228,13 @@ func listShortcuts(ctx context.Context, tx *sql.Tx, find *FindShortcut) ([]*Shor
 			&shortcut.UpdatedTs,
 			&shortcut.RowStatus,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 		list = append(list, &shortcut)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return list, nil
@@ -253,7 +253,7 @@ func vacuumShortcut(ctx context.Context, tx *sql.Tx) error {
 		)`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	return nil

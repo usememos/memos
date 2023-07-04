@@ -11,11 +11,5 @@ const (
 )
 
 func (r RowStatus) String() string {
-	switch r {
-	case Normal:
-		return "NORMAL"
-	case Archived:
-		return "ARCHIVED"
-	}
-	return ""
+	return string(r)
 }
