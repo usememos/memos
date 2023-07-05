@@ -3,7 +3,6 @@ package v1
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/common/log"
@@ -124,23 +123,6 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 			}
 		}
 
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		// Get database size for host user.
-		if ok {
-			user, err := s.Store.GetUser(ctx, &store.FindUser{
-				ID: &userID,
-			})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-			}
-			if user != nil && user.Role == store.RoleHost {
-				fi, err := os.Stat(s.Profile.DSN)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read database fileinfo").SetInternal(err)
-				}
-				systemStatus.DBSize = fi.Size()
-			}
-		}
 		return c.JSON(http.StatusOK, systemStatus)
 	})
 
