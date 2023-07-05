@@ -4,13 +4,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/store"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 func (s *Server) registerMemoCommentRoutes(g *echo.Group) {
@@ -22,7 +23,7 @@ func (s *Server) registerMemoCommentRoutes(g *echo.Group) {
 		}
 
 		memoCommentsMessage, err := s.Store.GetMemoComments(ctx, &store.FindMemoCommentMessage{
-			MemoId: &memoID,
+			MemoID: &memoID,
 		})
 		if err != nil {
 			if common.ErrorCode(err) == common.NotFound {
@@ -112,13 +113,13 @@ func (s *Server) registerMemoCommentRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("commentId"))).SetInternal(err)
 		}
-		memoId, err := strconv.Atoi(c.Param("memoId"))
+		memoID, err := strconv.Atoi(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
 		memo, err := s.Store.GetMemo(ctx, &store.FindMemoMessage{
-			ID: &memoId,
+			ID: &memoID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo comment").SetInternal(err)
@@ -129,10 +130,10 @@ func (s *Server) registerMemoCommentRoutes(g *echo.Group) {
 
 		if err := s.Store.DeleteMemoComment(ctx, &store.DeleteMemoCommentMessage{
 			ID:     memoCommentID,
-			MemoID: memoId,
+			MemoID: memoID,
 		}); err != nil {
 			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo Or Comment ID not found"))
+				return echo.NewHTTPError(http.StatusNotFound, "Memo Or Comment ID not found")
 			}
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo comment ID: %v",
 				memoCommentID)).SetInternal(err)

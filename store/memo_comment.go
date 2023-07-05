@@ -4,20 +4,20 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/usememos/memos/common"
 	"strings"
 	"time"
+
+	"github.com/usememos/memos/common"
 )
 
 type FindMemoCommentMessage struct {
-	ID     int
-	MemoId *int
+	ID int
 
 	// Domain specific fields
 	ContentSearch  []string
 	VisibilityList []Visibility
 
-	MemoID int
+	MemoID *int
 
 	// Pagination
 	Limit            *int
@@ -146,7 +146,7 @@ func (s *Store) GetMemoComments(ctx context.Context, find *FindMemoCommentMessag
 func listMemoComments(ctx context.Context, tx *sql.Tx, find *FindMemoCommentMessage) ([]*MemoCommentMessage, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
-	if v := find.MemoId; v != nil {
+	if v := find.MemoID; v != nil {
 		where, args = append(where, "memo_comment.memo_id = ?"), append(args, *v)
 	}
 
@@ -163,13 +163,6 @@ func listMemoComments(ctx context.Context, tx *sql.Tx, find *FindMemoCommentMess
 		}
 		where = append(where, fmt.Sprintf("memo_comment.visibility in (%s)", strings.Join(list, ",")))
 	}
-	var orders []string
-	if find.OrderByUpdatedTs {
-		orders = append(orders, "updated_ts DESC")
-	} else {
-		orders = append(orders, "created_ts DESC")
-	}
-	orders = append(orders, "id DESC")
 
 	query := `
 	SELECT
