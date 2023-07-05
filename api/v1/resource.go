@@ -1,4 +1,4 @@
-package server
+package v1
 
 import (
 	"bytes"
@@ -21,14 +21,54 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api"
-	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/plugin/storage/s3"
 	"github.com/usememos/memos/store"
 	"go.uber.org/zap"
 )
+
+type Resource struct {
+	ID int `json:"id"`
+
+	// Standard fields
+	CreatorID int   `json:"creatorId"`
+	CreatedTs int64 `json:"createdTs"`
+	UpdatedTs int64 `json:"updatedTs"`
+
+	// Domain specific fields
+	Filename     string `json:"filename"`
+	Blob         []byte `json:"-"`
+	InternalPath string `json:"-"`
+	ExternalLink string `json:"externalLink"`
+	Type         string `json:"type"`
+	Size         int64  `json:"size"`
+	PublicID     string `json:"publicId"`
+
+	// Related fields
+	LinkedMemoAmount int `json:"linkedMemoAmount"`
+}
+
+type CreateResourceRequest struct {
+	Filename        string `json:"filename"`
+	InternalPath    string `json:"internalPath"`
+	ExternalLink    string `json:"externalLink"`
+	Type            string `json:"type"`
+	PublicID        string `json:"publicId"`
+	DownloadToLocal bool   `json:"downloadToLocal"`
+}
+
+type FindResourceRequest struct {
+	ID        *int    `json:"id"`
+	CreatorID *int    `json:"creatorId"`
+	Filename  *string `json:"filename"`
+	PublicID  *string `json:"publicId"`
+}
+
+type UpdateResourceRequest struct {
+	Filename      *string `json:"filename"`
+	ResetPublicID *bool   `json:"resetPublicId"`
+}
 
 const (
 	// The upload memory buffer is 32 MiB.
@@ -43,7 +83,7 @@ const (
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
 
-func (s *Server) registerResourceRoutes(g *echo.Group) {
+func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
@@ -51,15 +91,21 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		resourceCreate := &api.ResourceCreate{}
-		if err := json.NewDecoder(c.Request().Body).Decode(resourceCreate); err != nil {
+		request := &CreateResourceRequest{}
+		if err := json.NewDecoder(c.Request().Body).Decode(request); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post resource request").SetInternal(err)
 		}
 
-		resourceCreate.CreatorID = userID
-		if resourceCreate.ExternalLink != "" {
+		create := &store.Resource{
+			CreatorID:    userID,
+			Filename:     request.Filename,
+			ExternalLink: request.ExternalLink,
+			Type:         request.Type,
+			PublicID:     common.GenUUID(),
+		}
+		if request.ExternalLink != "" {
 			// Only allow those external links scheme with http/https
-			linkURL, err := url.Parse(resourceCreate.ExternalLink)
+			linkURL, err := url.Parse(request.ExternalLink)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link").SetInternal(err)
 			}
@@ -67,24 +113,24 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link scheme")
 			}
 
-			if resourceCreate.DownloadToLocal {
+			if request.DownloadToLocal {
 				resp, err := http.Get(linkURL.String())
 				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, "Failed to request "+resourceCreate.ExternalLink)
+					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to request %s", request.ExternalLink))
 				}
 				defer resp.Body.Close()
 
 				blob, err := io.ReadAll(resp.Body)
 				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, "Failed to read "+resourceCreate.ExternalLink)
+					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read %s", request.ExternalLink))
 				}
-				resourceCreate.Blob = blob
+				create.Blob = blob
 
 				mediaType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, "Failed to read mime from "+resourceCreate.ExternalLink)
+					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read mime from %s", request.ExternalLink))
 				}
-				resourceCreate.Type = mediaType
+				create.Type = mediaType
 
 				filename := path.Base(linkURL.Path)
 				if path.Ext(filename) == "" {
@@ -93,20 +139,19 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 						filename += extensions[0]
 					}
 				}
-				resourceCreate.Filename = filename
-				resourceCreate.PublicID = common.GenUUID()
-				resourceCreate.ExternalLink = ""
+				create.Filename = filename
+				create.ExternalLink = ""
 			}
 		}
 
-		resource, err := s.Store.CreateResource(ctx, resourceCreate)
+		resource, err := s.Store.CreateResourceV1(ctx, create)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
 		if err := s.createResourceCreateActivity(ctx, resource); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(resource))
+		return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 	})
 
 	g.POST("/resource/blob", func(c echo.Context) error {
@@ -117,7 +162,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		// This is the backend default max upload size limit.
-		maxUploadSetting := s.Store.GetSystemSettingValueWithDefault(&ctx, apiv1.SystemSettingMaxUploadSizeMiBName.String(), "32")
+		maxUploadSetting := s.Store.GetSystemSettingValueWithDefault(&ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
 		var settingMaxUploadSizeBytes int
 		if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
 			settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
@@ -150,12 +195,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 		defer sourceFile.Close()
 
-		var resourceCreate *api.ResourceCreate
-		systemSettingStorageServiceID, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: apiv1.SystemSettingStorageServiceIDName.String()})
+		create := &store.Resource{}
+		systemSettingStorageServiceID, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 		}
-		storageServiceID := apiv1.DatabaseStorage
+		storageServiceID := DatabaseStorage
 		if systemSettingStorageServiceID != nil {
 			err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
 			if err != nil {
@@ -164,23 +209,23 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		}
 
 		publicID := common.GenUUID()
-		if storageServiceID == apiv1.DatabaseStorage {
+		if storageServiceID == DatabaseStorage {
 			fileBytes, err := io.ReadAll(sourceFile)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
 			}
-			resourceCreate = &api.ResourceCreate{
+			create = &store.Resource{
 				CreatorID: userID,
 				Filename:  file.Filename,
 				Type:      filetype,
 				Size:      size,
 				Blob:      fileBytes,
 			}
-		} else if storageServiceID == apiv1.LocalStorage {
+		} else if storageServiceID == LocalStorage {
 			// filepath.Join() should be used for local file paths,
 			// as it handles the os-specific path separator automatically.
 			// path.Join() always uses '/' as path separator.
-			systemSettingLocalStoragePath, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: apiv1.SystemSettingLocalStoragePathName.String()})
+			systemSettingLocalStoragePath, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingLocalStoragePathName.String()})
 			if err != nil && common.ErrorCode(err) != common.NotFound {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
 			}
@@ -211,7 +256,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to copy file").SetInternal(err)
 			}
 
-			resourceCreate = &api.ResourceCreate{
+			create = &store.Resource{
 				CreatorID:    userID,
 				Filename:     file.Filename,
 				Type:         filetype,
@@ -223,12 +268,12 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 			}
-			storageMessage, err := apiv1.ConvertStorageFromStore(storage)
+			storageMessage, err := ConvertStorageFromStore(storage)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to convert storage").SetInternal(err)
 			}
 
-			if storageMessage.Type == apiv1.StorageS3 {
+			if storageMessage.Type == StorageS3 {
 				s3Config := storageMessage.Config.S3Config
 				s3Client, err := s3.NewClient(ctx, &s3.Config{
 					AccessKey: s3Config.AccessKey,
@@ -253,7 +298,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
 				}
-				resourceCreate = &api.ResourceCreate{
+				create = &store.Resource{
 					CreatorID:    userID,
 					Filename:     filename,
 					Type:         filetype,
@@ -265,15 +310,15 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
-		resourceCreate.PublicID = publicID
-		resource, err := s.Store.CreateResource(ctx, resourceCreate)
+		create.PublicID = publicID
+		resource, err := s.Store.CreateResourceV1(ctx, create)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
 		if err := s.createResourceCreateActivity(ctx, resource); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(resource))
+		return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 	})
 
 	g.GET("/resource", func(c echo.Context) error {
@@ -282,21 +327,25 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
-		resourceFind := &api.ResourceFind{
+		find := &store.FindResource{
 			CreatorID: &userID,
 		}
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-			resourceFind.Limit = &limit
+			find.Limit = &limit
 		}
 		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-			resourceFind.Offset = &offset
+			find.Offset = &offset
 		}
 
-		list, err := s.Store.FindResourceList(ctx, resourceFind)
+		list, err := s.Store.ListResources(ctx, find)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(list))
+		resourceMessageList := []*Resource{}
+		for _, resource := range list {
+			resourceMessageList = append(resourceMessageList, convertResourceFromStore(resource))
+		}
+		return c.JSON(http.StatusOK, resourceMessageList)
 	})
 
 	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
@@ -311,10 +360,9 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		resourceFind := &api.ResourceFind{
+		resource, err := s.Store.GetResource(ctx, &store.FindResource{
 			ID: &resourceID,
-		}
-		resource, err := s.Store.FindResource(ctx, resourceFind)
+		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
 		}
@@ -322,25 +370,29 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
-		currentTs := time.Now().Unix()
-		resourcePatch := &api.ResourcePatch{
-			UpdatedTs: &currentTs,
-		}
-		if err := json.NewDecoder(c.Request().Body).Decode(resourcePatch); err != nil {
+		request := &UpdateResourceRequest{}
+		if err := json.NewDecoder(c.Request().Body).Decode(request); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch resource request").SetInternal(err)
 		}
 
-		if resourcePatch.ResetPublicID != nil && *resourcePatch.ResetPublicID {
+		currentTs := time.Now().Unix()
+		update := &store.UpdateResource{
+			ID:        resourceID,
+			UpdatedTs: &currentTs,
+		}
+		if request.Filename != nil && *request.Filename != "" {
+			update.Filename = request.Filename
+		}
+		if request.ResetPublicID != nil && *request.ResetPublicID {
 			publicID := common.GenUUID()
-			resourcePatch.PublicID = &publicID
+			update.PublicID = &publicID
 		}
 
-		resourcePatch.ID = resourceID
-		resource, err = s.Store.PatchResource(ctx, resourcePatch)
+		resource, err = s.Store.UpdateResource(ctx, update)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(resource))
+		return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 	})
 
 	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
@@ -355,15 +407,15 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		resource, err := s.Store.FindResource(ctx, &api.ResourceFind{
+		resource, err := s.Store.GetResource(ctx, &store.FindResource{
 			ID:        &resourceID,
 			CreatorID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
 		}
-		if resource.CreatorID != userID {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		if resource == nil {
+			return echo.NewHTTPError(http.StatusNotFound, "Resource not found")
 		}
 
 		if resource.InternalPath != "" {
@@ -378,20 +430,16 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 			log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
 		}
 
-		resourceDelete := &api.ResourceDelete{
+		if err := s.Store.DeleteResourceV1(ctx, &store.DeleteResource{
 			ID: resourceID,
-		}
-		if err := s.Store.DeleteResource(ctx, resourceDelete); err != nil {
-			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource ID not found: %d", resourceID))
-			}
+		}); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)
 	})
 }
 
-func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
+func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 	f := func(c echo.Context) error {
 		ctx := c.Request().Context()
 		resourceID, err := strconv.Atoi(c.Param("resourceId"))
@@ -399,7 +447,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		resourceVisibility, err := CheckResourceVisibility(ctx, s.Store, resourceID)
+		resourceVisibility, err := checkResourceVisibility(ctx, s.Store, resourceID)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Failed to get resource visibility").SetInternal(err)
 		}
@@ -410,11 +458,10 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
 		}
 
-		resourceFind := &api.ResourceFind{
+		resource, err := s.Store.GetResource(ctx, &store.FindResource{
 			ID:      &resourceID,
 			GetBlob: true,
-		}
-		resource, err := s.Store.FindResource(ctx, resourceFind)
+		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
 		}
@@ -465,8 +512,8 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 	g.GET("/r/:resourceId/*", f)
 }
 
-func (s *Server) createResourceCreateActivity(ctx context.Context, resource *api.Resource) error {
-	payload := apiv1.ActivityResourceCreatePayload{
+func (s *APIV1Service) createResourceCreateActivity(ctx context.Context, resource *store.Resource) error {
+	payload := ActivityResourceCreatePayload{
 		Filename: resource.Filename,
 		Type:     resource.Type,
 		Size:     resource.Size,
@@ -477,8 +524,8 @@ func (s *Server) createResourceCreateActivity(ctx context.Context, resource *api
 	}
 	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
 		CreatorID: resource.CreatorID,
-		Type:      apiv1.ActivityResourceCreate.String(),
-		Level:     apiv1.ActivityInfo.String(),
+		Type:      ActivityResourceCreate.String(),
+		Level:     ActivityInfo.String(),
 		Payload:   string(payloadBytes),
 	})
 	if err != nil || activity == nil {
@@ -560,12 +607,10 @@ func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error)
 	return dstBlob, nil
 }
 
-func CheckResourceVisibility(ctx context.Context, s *store.Store, resourceID int) (store.Visibility, error) {
-	memoResourceFind := &api.MemoResourceFind{
+func checkResourceVisibility(ctx context.Context, s *store.Store, resourceID int) (store.Visibility, error) {
+	memoResources, err := s.ListMemoResources(ctx, &store.FindMemoResource{
 		ResourceID: &resourceID,
-	}
-
-	memoResources, err := s.FindMemoResourceList(ctx, memoResourceFind)
+	})
 	if err != nil {
 		return store.Private, err
 	}
@@ -603,4 +648,21 @@ func CheckResourceVisibility(ctx context.Context, s *store.Store, resourceID int
 
 	// If all memo is PRIVATE, the resource do
 	return store.Private, nil
+}
+
+func convertResourceFromStore(resource *store.Resource) *Resource {
+	return &Resource{
+		ID:               resource.ID,
+		CreatorID:        resource.CreatorID,
+		CreatedTs:        resource.CreatedTs,
+		UpdatedTs:        resource.UpdatedTs,
+		Filename:         resource.Filename,
+		Blob:             resource.Blob,
+		InternalPath:     resource.InternalPath,
+		ExternalLink:     resource.ExternalLink,
+		Type:             resource.Type,
+		Size:             resource.Size,
+		PublicID:         resource.PublicID,
+		LinkedMemoAmount: resource.LinkedMemoAmount,
+	}
 }

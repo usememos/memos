@@ -5,13 +5,13 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/usememos/memos/api"
+	"github.com/usememos/memos/store"
 )
 
 func TestResourceStore(t *testing.T) {
 	ctx := context.Background()
-	store := NewTestingStore(ctx, t)
-	_, err := store.CreateResource(ctx, &api.ResourceCreate{
+	ts := NewTestingStore(ctx, t)
+	_, err := ts.CreateResourceV1(ctx, &store.Resource{
 		CreatorID:    101,
 		Filename:     "test.epub",
 		Blob:         []byte("test"),
@@ -25,34 +25,36 @@ func TestResourceStore(t *testing.T) {
 
 	correctFilename := "test.epub"
 	incorrectFilename := "test.png"
-	res, err := store.FindResource(ctx, &api.ResourceFind{
+	res, err := ts.GetResource(ctx, &store.FindResource{
 		Filename: &correctFilename,
 	})
 	require.NoError(t, err)
 	require.Equal(t, correctFilename, res.Filename)
 	require.Equal(t, 1, res.ID)
-	_, err = store.FindResource(ctx, &api.ResourceFind{
+	notFoundResource, err := ts.GetResource(ctx, &store.FindResource{
 		Filename: &incorrectFilename,
 	})
-	require.Error(t, err)
+	require.NoError(t, err)
+	require.Nil(t, notFoundResource)
 
 	correctCreatorID := 101
 	incorrectCreatorID := 102
-	_, err = store.FindResource(ctx, &api.ResourceFind{
+	_, err = ts.GetResource(ctx, &store.FindResource{
 		CreatorID: &correctCreatorID,
 	})
 	require.NoError(t, err)
-	_, err = store.FindResource(ctx, &api.ResourceFind{
+	notFoundResource, err = ts.GetResource(ctx, &store.FindResource{
 		CreatorID: &incorrectCreatorID,
 	})
-	require.Error(t, err)
+	require.NoError(t, err)
+	require.Nil(t, notFoundResource)
 
-	err = store.DeleteResource(ctx, &api.ResourceDelete{
+	err = ts.DeleteResourceV1(ctx, &store.DeleteResource{
 		ID: 1,
 	})
 	require.NoError(t, err)
-	err = store.DeleteResource(ctx, &api.ResourceDelete{
+	err = ts.DeleteResourceV1(ctx, &store.DeleteResource{
 		ID: 2,
 	})
-	require.Error(t, err)
+	require.NoError(t, err)
 }

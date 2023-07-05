@@ -161,7 +161,7 @@ export function deleteShortcutById(shortcutId: ShortcutId) {
 }
 
 export function getResourceList() {
-  return axios.get<ResponseObject<Resource[]>>("/api/resource");
+  return axios.get<Resource[]>("/api/v1/resource");
 }
 
 export function getResourceListWithLimit(resourceFind?: ResourceFind) {
@@ -172,23 +172,23 @@ export function getResourceListWithLimit(resourceFind?: ResourceFind) {
   if (resourceFind?.limit) {
     queryList.push(`limit=${resourceFind.limit}`);
   }
-  return axios.get<ResponseObject<Resource[]>>(`/api/resource?${queryList.join("&")}`);
+  return axios.get<Resource[]>(`/api/v1/resource?${queryList.join("&")}`);
 }
 
 export function createResource(resourceCreate: ResourceCreate) {
-  return axios.post<ResponseObject<Resource>>("/api/resource", resourceCreate);
+  return axios.post<Resource>("/api/v1/resource", resourceCreate);
 }
 
 export function createResourceWithBlob(formData: FormData) {
-  return axios.post<ResponseObject<Resource>>("/api/resource/blob", formData);
-}
-
-export function deleteResourceById(id: ResourceId) {
-  return axios.delete(`/api/resource/${id}`);
+  return axios.post<Resource>("/api/v1/resource/blob", formData);
 }
 
 export function patchResource(resourcePatch: ResourcePatch) {
-  return axios.patch<ResponseObject<Resource>>(`/api/resource/${resourcePatch.id}`, resourcePatch);
+  return axios.patch<Resource>(`/api/v1/resource/${resourcePatch.id}`, resourcePatch);
+}
+
+export function deleteResourceById(id: ResourceId) {
+  return axios.delete(`/api/v1/resource/${id}`);
 }
 
 export function getMemoResourceList(memoId: MemoId) {
@@ -196,7 +196,7 @@ export function getMemoResourceList(memoId: MemoId) {
 }
 
 export function upsertMemoResource(memoId: MemoId, resourceId: ResourceId) {
-  return axios.post<ResponseObject<Resource>>(`/api/memo/${memoId}/resource`, {
+  return axios.post(`/api/memo/${memoId}/resource`, {
     resourceId,
   });
 }

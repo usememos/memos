@@ -11,7 +11,6 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/api"
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/store"
@@ -102,7 +101,7 @@ func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.
 		}
 		if len(memo.ResourceIDList) > 0 {
 			resourceID := memo.ResourceIDList[0]
-			resource, err := s.Store.FindResource(ctx, &api.ResourceFind{
+			resource, err := s.Store.GetResource(ctx, &store.FindResource{
 				ID: &resourceID,
 			})
 			if err != nil {
