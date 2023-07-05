@@ -90,15 +90,14 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		case ".png":
 			mime = "image/png"
 		}
-		resourceCreate := api.ResourceCreate{
+		resource, err := t.store.CreateResourceV1(ctx, &store.Resource{
 			CreatorID: creatorID,
 			Filename:  filename,
 			Type:      mime,
 			Size:      int64(len(blob)),
 			Blob:      blob,
 			PublicID:  common.GenUUID(),
-		}
-		resource, err := t.store.CreateResource(ctx, &resourceCreate)
+		})
 		if err != nil {
 			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err), nil)
 			return err

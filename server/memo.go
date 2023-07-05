@@ -685,13 +685,15 @@ func (s *Server) composeMemoMessageToMemoResponse(ctx context.Context, memoMessa
 
 	resourceList := []*api.Resource{}
 	for _, resourceID := range memoMessage.ResourceIDList {
-		resource, err := s.Store.FindResource(ctx, &api.ResourceFind{
+		resource, err := s.Store.GetResource(ctx, &store.FindResource{
 			ID: &resourceID,
 		})
 		if err != nil {
 			return nil, err
 		}
-		resourceList = append(resourceList, resource)
+		if resource != nil {
+			resourceList = append(resourceList, convertResourceFromStore(resource))
+		}
 	}
 	memoResponse.ResourceList = resourceList
 
@@ -713,4 +715,21 @@ func (s *Server) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Context) (b
 		}
 	}
 	return memoDisplayWithUpdatedTs, nil
+}
+
+func convertResourceFromStore(resource *store.Resource) *api.Resource {
+	return &api.Resource{
+		ID:               resource.ID,
+		CreatorID:        resource.CreatorID,
+		CreatedTs:        resource.CreatedTs,
+		UpdatedTs:        resource.UpdatedTs,
+		Filename:         resource.Filename,
+		Blob:             resource.Blob,
+		InternalPath:     resource.InternalPath,
+		ExternalLink:     resource.ExternalLink,
+		Type:             resource.Type,
+		Size:             resource.Size,
+		PublicID:         resource.PublicID,
+		LinkedMemoAmount: resource.LinkedMemoAmount,
+	}
 }
