@@ -1,4 +1,6 @@
-package api
+package v1
+
+import "github.com/usememos/memos/api"
 
 type CreateMemoCommentRequest struct {
 	// Standard fields
@@ -23,9 +25,9 @@ type MemoCommentResponse struct {
 	UpdatedTs int64 `json:"updatedTs"`
 
 	// Domain specific fields
-	DisplayTs  int64      `json:"displayTs"`
-	Content    string     `json:"content"`
-	Visibility Visibility `json:"visibility"`
+	DisplayTs  int64          `json:"displayTs"`
+	Content    string         `json:"content"`
+	Visibility api.Visibility `json:"visibility"`
 
 	// Related fields
 	CreatorName string `json:"creatorName"`
