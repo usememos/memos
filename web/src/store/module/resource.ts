@@ -25,7 +25,7 @@ export const useResourceStore = () => {
       return store.getState().resource;
     },
     async fetchResourceList(): Promise<Resource[]> {
-      const { data } = (await api.getResourceList()).data;
+      const { data } = await api.getResourceList();
       const resourceList = data.map((m) => convertResponseModelResource(m));
       store.dispatch(setResources(resourceList));
       return resourceList;
@@ -35,13 +35,13 @@ export const useResourceStore = () => {
         limit,
         offset,
       };
-      const { data } = (await api.getResourceListWithLimit(resourceFind)).data;
+      const { data } = await api.getResourceListWithLimit(resourceFind);
       const resourceList = data.map((m) => convertResponseModelResource(m));
       store.dispatch(upsertResources(resourceList));
       return resourceList;
     },
     async createResource(resourceCreate: ResourceCreate): Promise<Resource> {
-      const { data } = (await api.createResource(resourceCreate)).data;
+      const { data } = await api.createResource(resourceCreate);
       const resource = convertResponseModelResource(data);
       const resourceList = state.resources;
       store.dispatch(setResources([resource, ...resourceList]));
@@ -55,7 +55,7 @@ export const useResourceStore = () => {
 
       const formData = new FormData();
       formData.append("file", file, filename);
-      const { data } = (await api.createResourceWithBlob(formData)).data;
+      const { data } = await api.createResourceWithBlob(formData);
       const resource = convertResponseModelResource(data);
       const resourceList = state.resources;
       store.dispatch(setResources([resource, ...resourceList]));
@@ -71,7 +71,7 @@ export const useResourceStore = () => {
 
         const formData = new FormData();
         formData.append("file", file, filename);
-        const { data } = (await api.createResourceWithBlob(formData)).data;
+        const { data } = await api.createResourceWithBlob(formData);
         const resource = convertResponseModelResource(data);
         newResourceList = [resource, ...newResourceList];
       }
@@ -84,7 +84,7 @@ export const useResourceStore = () => {
       store.dispatch(deleteResource(id));
     },
     async patchResource(resourcePatch: ResourcePatch): Promise<Resource> {
-      const { data } = (await api.patchResource(resourcePatch)).data;
+      const { data } = await api.patchResource(resourcePatch);
       const resource = convertResponseModelResource(data);
       store.dispatch(patchResource(resource));
       return resource;

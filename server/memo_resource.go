@@ -29,10 +29,9 @@ func (s *Server) registerMemoResourceRoutes(g *echo.Group) {
 		if err := json.NewDecoder(c.Request().Body).Decode(memoResourceUpsert); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo resource request").SetInternal(err)
 		}
-		resourceFind := &api.ResourceFind{
+		resource, err := s.Store.GetResource(ctx, &store.FindResource{
 			ID: &memoResourceUpsert.ResourceID,
-		}
-		resource, err := s.Store.FindResource(ctx, resourceFind)
+		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource").SetInternal(err)
 		}
@@ -48,7 +47,7 @@ func (s *Server) registerMemoResourceRoutes(g *echo.Group) {
 		if _, err := s.Store.UpsertMemoResource(ctx, memoResourceUpsert); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(resource))
+		return c.JSON(http.StatusOK, true)
 	})
 
 	g.GET("/memo/:memoId/resource", func(c echo.Context) error {
@@ -58,12 +57,15 @@ func (s *Server) registerMemoResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		resourceFind := &api.ResourceFind{
+		list, err := s.Store.ListResources(ctx, &store.FindResource{
 			MemoID: &memoID,
-		}
-		resourceList, err := s.Store.FindResourceList(ctx, resourceFind)
+		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
+		}
+		resourceList := []*api.Resource{}
+		for _, resource := range list {
+			resourceList = append(resourceList, convertResourceFromStore(resource))
 		}
 		return c.JSON(http.StatusOK, composeResponse(resourceList))
 	})

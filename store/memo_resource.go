@@ -10,6 +10,85 @@ import (
 	"github.com/usememos/memos/common"
 )
 
+type MemoResource struct {
+	MemoID     int
+	ResourceID int
+	CreatedTs  int64
+	UpdatedTs  int64
+}
+
+type FindMemoResource struct {
+	MemoID     *int
+	ResourceID *int
+}
+
+func (s *Store) ListMemoResources(ctx context.Context, find *FindMemoResource) ([]*MemoResource, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	list, err := listMemoResources(ctx, tx, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
+func listMemoResources(ctx context.Context, tx *sql.Tx, find *FindMemoResource) ([]*MemoResource, error) {
+	where, args := []string{"1 = 1"}, []any{}
+
+	if v := find.MemoID; v != nil {
+		where, args = append(where, "memo_id = ?"), append(args, *v)
+	}
+	if v := find.ResourceID; v != nil {
+		where, args = append(where, "resource_id = ?"), append(args, *v)
+	}
+
+	query := `
+		SELECT
+			memo_id,
+			resource_id,
+			created_ts,
+			updated_ts
+		FROM memo_resource
+		WHERE ` + strings.Join(where, " AND ") + `
+		ORDER BY updated_ts DESC
+	`
+	rows, err := tx.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, FormatError(err)
+	}
+	defer rows.Close()
+
+	list := make([]*MemoResource, 0)
+	for rows.Next() {
+		var memoResource MemoResource
+		if err := rows.Scan(
+			&memoResource.MemoID,
+			&memoResource.ResourceID,
+			&memoResource.CreatedTs,
+			&memoResource.UpdatedTs,
+		); err != nil {
+			return nil, FormatError(err)
+		}
+
+		list = append(list, &memoResource)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return list, nil
+}
+
 // memoResourceRaw is the store model for an MemoResource.
 // Fields have exactly the same meanings as MemoResource.
 type memoResourceRaw struct {
