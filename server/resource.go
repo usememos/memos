@@ -392,8 +392,7 @@ func (s *Server) registerResourceRoutes(g *echo.Group) {
 }
 
 func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
-	// (DEPRECATED) use /r/:resourceId/:publicId/:filename instead.
-	g.GET("/r/:resourceId/:publicId", func(c echo.Context) error {
+	f := func(c echo.Context) error {
 		ctx := c.Request().Context()
 		resourceID, err := strconv.Atoi(c.Param("resourceId"))
 		if err != nil {
@@ -411,81 +410,9 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
 		}
 
-		publicID, err := url.QueryUnescape(c.Param("publicId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("publicID is invalid: %s", c.Param("publicId"))).SetInternal(err)
-		}
 		resourceFind := &api.ResourceFind{
-			ID:       &resourceID,
-			PublicID: &publicID,
-			GetBlob:  true,
-		}
-		resource, err := s.Store.FindResource(ctx, resourceFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
-		}
-
-		// Private resource require logined user is the creator
-		if resourceVisibility == store.Private && (!ok || userID != resource.CreatorID) {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
-		}
-
-		blob := resource.Blob
-		if resource.InternalPath != "" {
-			src, err := os.Open(resource.InternalPath)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", resource.InternalPath)).SetInternal(err)
-			}
-			defer src.Close()
-			blob, err = io.ReadAll(src)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", resource.InternalPath)).SetInternal(err)
-			}
-		}
-
-		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
-		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
-		resourceType := strings.ToLower(resource.Type)
-		if strings.HasPrefix(resourceType, "text") {
-			resourceType = echo.MIMETextPlainCharsetUTF8
-		} else if strings.HasPrefix(resourceType, "video") || strings.HasPrefix(resourceType, "audio") {
-			http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(blob))
-			return nil
-		}
-		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(blob))
-	})
-
-	g.GET("/r/:resourceId/:publicId/:filename", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		resourceID, err := strconv.Atoi(c.Param("resourceId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
-		}
-
-		resourceVisibility, err := CheckResourceVisibility(ctx, s.Store, resourceID)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Failed to get resource visibility").SetInternal(err)
-		}
-
-		// Protected resource require a logined user
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if resourceVisibility == store.Protected && (!ok || userID <= 0) {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
-		}
-
-		publicID, err := url.QueryUnescape(c.Param("publicId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("publicID is invalid: %s", c.Param("publicId"))).SetInternal(err)
-		}
-		filename, err := url.QueryUnescape(c.Param("filename"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("filename is invalid: %s", c.Param("filename"))).SetInternal(err)
-		}
-		resourceFind := &api.ResourceFind{
-			ID:       &resourceID,
-			PublicID: &publicID,
-			Filename: &filename,
-			GetBlob:  true,
+			ID:      &resourceID,
+			GetBlob: true,
 		}
 		resource, err := s.Store.FindResource(ctx, resourceFind)
 		if err != nil {
@@ -512,7 +439,7 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 		}
 
 		if c.QueryParam("thumbnail") == "1" && common.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
-			ext := filepath.Ext(filename)
+			ext := filepath.Ext(resource.Filename)
 			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d-%s%s", resource.ID, resource.PublicID, ext))
 			thumbnailBlob, err := getOrGenerateThumbnailImage(blob, thumbnailPath)
 			if err != nil {
@@ -532,7 +459,10 @@ func (s *Server) registerResourcePublicRoutes(g *echo.Group) {
 			return nil
 		}
 		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(blob))
-	})
+	}
+	g.GET("/r/:resourceId", f)
+	g.GET("/r/:resourceId/", f)
+	g.GET("/r/:resourceId/*", f)
 }
 
 func (s *Server) createResourceCreateActivity(ctx context.Context, resource *api.Resource) error {
