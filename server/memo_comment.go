@@ -10,7 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api"
-	"github.com/usememos/memos/api/v1"
+	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/store"
 )
@@ -35,7 +35,7 @@ func (s *Server) registerMemoCommentRoutes(g *echo.Group) {
 
 		// userID, ok := c.Get(getUserIDContextKey()).(int)
 		// the map key is parent id , value is parent's reply, 0 is parent
-		mapComments := make(map[int][]*v1.MemoCommentResponse)
+		mapComments := make(map[int][]*apiv1.MemoCommentResponse)
 		for i, message := range memoCommentsMessage {
 			if message.Visibility == store.Private {
 				continue
@@ -45,7 +45,7 @@ func (s *Server) registerMemoCommentRoutes(g *echo.Group) {
 			memoCommentResponse, err := s.composeMemoCommentMessageToMemoCommentResponse(ctx, message)
 			if err == nil {
 				if mapComments[memoCommentResponse.ParentID] == nil {
-					mapComments[memoCommentResponse.ParentID] = []*v1.MemoCommentResponse{
+					mapComments[memoCommentResponse.ParentID] = []*apiv1.MemoCommentResponse{
 						0: memoCommentResponse,
 					}
 				} else {
@@ -69,7 +69,7 @@ func (s *Server) registerMemoCommentRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		createMemoCommentRequest := &v1.CreateMemoCommentRequest{}
+		createMemoCommentRequest := &apiv1.CreateMemoCommentRequest{}
 		if err := json.NewDecoder(c.Request().Body).Decode(createMemoCommentRequest); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo comment request").SetInternal(err)
 		}
@@ -143,7 +143,7 @@ func (s *Server) registerMemoCommentRoutes(g *echo.Group) {
 	})
 }
 
-func convertCreateMemoCommentRequestToMemoCommentMessage(memoCreate *v1.CreateMemoCommentRequest) *store.
+func convertCreateMemoCommentRequestToMemoCommentMessage(memoCreate *apiv1.CreateMemoCommentRequest) *store.
 	MemoCommentMessage {
 	createdTs := time.Now().Unix()
 	if memoCreate.CreatedTs != nil {
@@ -161,8 +161,8 @@ func convertCreateMemoCommentRequestToMemoCommentMessage(memoCreate *v1.CreateMe
 }
 
 func (s *Server) composeMemoCommentMessageToMemoCommentResponse(ctx context.Context,
-	memoCommentMessage *store.MemoCommentMessage) (*v1.MemoCommentResponse, error) {
-	memoCommentResponse := &v1.MemoCommentResponse{
+	memoCommentMessage *store.MemoCommentMessage) (*apiv1.MemoCommentResponse, error) {
+	memoCommentResponse := &apiv1.MemoCommentResponse{
 		ID:         memoCommentMessage.ID,
 		CreatedTs:  memoCommentMessage.CreatedTs,
 		UpdatedTs:  memoCommentMessage.UpdatedTs,
