@@ -19,7 +19,6 @@ type CreateMemoCommentRequest struct {
 type MemoCommentResponse struct {
 	ID int `json:"id"`
 
-	//CreatorID int       `json:"creatorId"`
 	CreatedTs int64 `json:"createdTs"`
 	UpdatedTs int64 `json:"updatedTs"`
 

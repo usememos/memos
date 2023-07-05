@@ -13,9 +13,6 @@ type FindMemoCommentMessage struct {
 	ID     int
 	MemoId *int
 
-	// Standard fields
-	CreatorID *int
-
 	// Domain specific fields
 	ContentSearch  []string
 	VisibilityList []Visibility
