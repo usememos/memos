@@ -140,7 +140,6 @@ func (s *Server) registerMemoCommentRoutes(g *echo.Group) {
 		}
 		return c.JSON(http.StatusOK, true)
 	})
-
 }
 
 func convertCreateMemoCommentRequestToMemoCommentMessage(memoCreate *api.CreateMemoCommentRequest) *store.
