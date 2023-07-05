@@ -91,6 +91,9 @@ func JWTMiddleware(server *Server, next echo.HandlerFunc, secret string) echo.Ha
 			if common.HasPrefixes(path, "/api/memo") && method == http.MethodGet {
 				return next(c)
 			}
+			if common.HasPrefixes(path, "/api/memo/comment") && method == http.MethodPost {
+				return next(c)
+			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing access token")
 		}
 

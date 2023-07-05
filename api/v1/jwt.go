@@ -86,6 +86,10 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return next(c)
 		}
 
+		if common.HasPrefixes(path, "/api/memo/comment") && method == http.MethodPost {
+			return next(c)
+		}
+
 		token := findAccessToken(c)
 		if token == "" {
 			// Allow the user to access the public endpoints.
