@@ -65,17 +65,13 @@ type UpdateUser struct {
 }
 
 type FindUser struct {
-	ID *int
-
-	// Standard fields
+	ID        *int
 	RowStatus *RowStatus
-
-	// Domain specific fields
-	Username *string
-	Role     *Role
-	Email    *string
-	Nickname *string
-	OpenID   *string
+	Username  *string
+	Role      *Role
+	Email     *string
+	Nickname  *string
+	OpenID    *string
 }
 
 type DeleteUser struct {

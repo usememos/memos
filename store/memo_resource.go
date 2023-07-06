@@ -33,7 +33,7 @@ type DeleteMemoResource struct {
 func (s *Store) UpsertMemoResource(ctx context.Context, upsert *UpsertMemoResource) (*MemoResource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -62,11 +62,11 @@ func (s *Store) UpsertMemoResource(ctx context.Context, upsert *UpsertMemoResour
 		&memoResource.CreatedTs,
 		&memoResource.UpdatedTs,
 	); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return memoResource, nil
@@ -117,7 +117,7 @@ func (s *Store) GetMemoResource(ctx context.Context, find *FindMemoResource) (*M
 func (s *Store) DeleteMemoResource(ctx context.Context, delete *DeleteMemoResource) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -133,11 +133,12 @@ func (s *Store) DeleteMemoResource(ctx context.Context, delete *DeleteMemoResour
 	stmt := `DELETE FROM memo_resource WHERE ` + strings.Join(where, " AND ")
 	_, err = tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return FormatError(err)
+		// Prevent linter warning.
+		return err
 	}
 
 	return nil
@@ -165,7 +166,7 @@ func listMemoResources(ctx context.Context, tx *sql.Tx, find *FindMemoResource) 
 	`
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -178,7 +179,7 @@ func listMemoResources(ctx context.Context, tx *sql.Tx, find *FindMemoResource) 
 			&memoResource.CreatedTs,
 			&memoResource.UpdatedTs,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 
 		list = append(list, &memoResource)
@@ -210,7 +211,7 @@ func vacuumMemoResource(ctx context.Context, tx *sql.Tx) error {
 		)`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	return nil

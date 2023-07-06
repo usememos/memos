@@ -37,6 +37,7 @@ func TestIdentityProviderStore(t *testing.T) {
 		ID: &createdIDP.ID,
 	})
 	require.NoError(t, err)
+	require.NotNil(t, idp)
 	require.Equal(t, createdIDP, idp)
 	newName := "My GitHub OAuth"
 	updatedIdp, err := ts.UpdateIdentityProvider(ctx, &store.UpdateIdentityProvider{

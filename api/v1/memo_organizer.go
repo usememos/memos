@@ -39,6 +39,9 @@ func (s *APIV1Service) registerMemoOrganizerRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
 		}
+		if memo == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %v", memoID))
+		}
 		if memo.CreatorID != userID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
@@ -53,7 +56,7 @@ func (s *APIV1Service) registerMemoOrganizerRoutes(g *echo.Group) {
 			UserID: userID,
 			Pinned: request.Pinned,
 		}
-		_, err = s.Store.UpsertMemoOrganizerV1(ctx, upsert)
+		_, err = s.Store.UpsertMemoOrganizer(ctx, upsert)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo organizer").SetInternal(err)
 		}
@@ -63,6 +66,9 @@ func (s *APIV1Service) registerMemoOrganizerRoutes(g *echo.Group) {
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", memoID)).SetInternal(err)
+		}
+		if memo == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %v", memoID))
 		}
 
 		memoResponse, err := s.convertMemoFromStore(ctx, memo)

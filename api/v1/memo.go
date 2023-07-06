@@ -11,7 +11,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/store"
 )
 
@@ -135,7 +134,6 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user setting").SetInternal(err)
 			}
-
 			if userMemoVisibilitySetting != nil {
 				memoVisibility := Private
 				err := json.Unmarshal([]byte(userMemoVisibilitySetting.Value), &memoVisibility)
@@ -168,6 +166,9 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 				})
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+				}
+				if user == nil {
+					return echo.NewHTTPError(http.StatusNotFound, "User not found")
 				}
 				// Enforce normal user to create private memo if public memos are disabled.
 				if user.Role == store.RoleUser {
@@ -210,6 +211,10 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
 		}
+		if memo == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %d", memo.ID))
+		}
+
 		memoResponse, err := s.convertMemoFromStore(ctx, memo)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
@@ -234,6 +239,9 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
+		}
+		if memo == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %d", memoID))
 		}
 		if memo.CreatorID != userID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
@@ -274,6 +282,9 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 		memo, err = s.Store.GetMemo(ctx, &store.FindMemo{ID: &memoID})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
+		}
+		if memo == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %d", memoID))
 		}
 
 		if patchMemoRequest.ResourceIDList != nil {
@@ -326,6 +337,10 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
 		}
+		if memo == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %d", memoID))
+		}
+
 		memoResponse, err := s.convertMemoFromStore(ctx, memo)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
@@ -424,10 +439,10 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 			ID: &memoID,
 		})
 		if err != nil {
-			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)
-			}
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", memoID)).SetInternal(err)
+		}
+		if memo == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %d", memoID))
 		}
 
 		userID, ok := c.Get(getUserIDContextKey()).(int)
@@ -585,6 +600,9 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
 		}
+		if memo == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %d", memoID))
+		}
 		if memo.CreatorID != userID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
@@ -592,9 +610,6 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 		if err := s.Store.DeleteMemo(ctx, &store.DeleteMemo{
 			ID: memoID,
 		}); err != nil {
-			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID))
-			}
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete memo ID: %v", memoID)).SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)

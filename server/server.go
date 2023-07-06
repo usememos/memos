@@ -10,7 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	apiv1 "github.com/usememos/memos/api/v1"
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -86,8 +86,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.Secret = secret
 
 	rootGroup := e.Group("")
-	s.registerRSSRoutes(rootGroup)
-
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 	apiV1Service.Register(rootGroup)
 
@@ -129,7 +127,7 @@ func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
 	serverIDSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
 		Name: apiv1.SystemSettingServerIDName.String(),
 	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
+	if err != nil {
 		return "", err
 	}
 	if serverIDSetting == nil || serverIDSetting.Value == "" {
@@ -148,7 +146,7 @@ func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error)
 	secretSessionNameValue, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
 		Name: apiv1.SystemSettingSecretSessionName.String(),
 	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
+	if err != nil {
 		return "", err
 	}
 	if secretSessionNameValue == nil || secretSessionNameValue.Value == "" {
@@ -190,5 +188,5 @@ func defaultGetRequestSkipper(c echo.Context) bool {
 
 func defaultAPIRequestSkipper(c echo.Context) bool {
 	path := c.Path()
-	return common.HasPrefixes(path, "/api", "/api/v1")
+	return util.HasPrefixes(path, "/api", "/api/v1")
 }
