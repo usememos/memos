@@ -96,7 +96,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		}
 
 		for _, resourceID := range createMemoRequest.ResourceIDList {
-			if _, err := s.Store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
+			if _, err := s.Store.UpsertMemoResource(ctx, &store.UpsertMemoResource{
 				MemoID:     memoMessage.ID,
 				ResourceID: resourceID,
 			}); err != nil {
@@ -189,7 +189,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		if patchMemoRequest.ResourceIDList != nil {
 			addedResourceIDList, removedResourceIDList := getIDListDiff(memoMessage.ResourceIDList, patchMemoRequest.ResourceIDList)
 			for _, resourceID := range addedResourceIDList {
-				if _, err := s.Store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
+				if _, err := s.Store.UpsertMemoResource(ctx, &store.UpsertMemoResource{
 					MemoID:     memoMessage.ID,
 					ResourceID: resourceID,
 				}); err != nil {
@@ -197,7 +197,7 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 				}
 			}
 			for _, resourceID := range removedResourceIDList {
-				if err := s.Store.DeleteMemoResource(ctx, &api.MemoResourceDelete{
+				if err := s.Store.DeleteMemoResource(ctx, &store.DeleteMemoResource{
 					MemoID:     &memoMessage.ID,
 					ResourceID: &resourceID,
 				}); err != nil {

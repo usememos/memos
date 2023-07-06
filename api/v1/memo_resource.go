@@ -69,7 +69,7 @@ func (s *APIV1Service) registerMemoResourceRoutes(g *echo.Group) {
 		if request.UpdatedTs != nil {
 			upsert.UpdatedTs = request.UpdatedTs
 		}
-		if _, err := s.Store.UpsertMemoResourceV1(ctx, upsert); err != nil {
+		if _, err := s.Store.UpsertMemoResource(ctx, upsert); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)
@@ -120,7 +120,7 @@ func (s *APIV1Service) registerMemoResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
-		if err := s.Store.DeleteMemoResourceV1(ctx, &store.DeleteMemoResource{
+		if err := s.Store.DeleteMemoResource(ctx, &store.DeleteMemoResource{
 			MemoID:     &memoID,
 			ResourceID: &resourceID,
 		}); err != nil {

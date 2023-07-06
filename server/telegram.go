@@ -103,7 +103,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 			return err
 		}
 
-		_, err = t.store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
+		_, err = t.store.UpsertMemoResource(ctx, &store.UpsertMemoResource{
 			MemoID:     memoMessage.ID,
 			ResourceID: resource.ID,
 		})

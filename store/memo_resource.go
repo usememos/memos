@@ -3,11 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strings"
-
-	"github.com/usememos/memos/api"
-	"github.com/usememos/memos/common"
 )
 
 type MemoResource struct {
@@ -34,7 +30,7 @@ type DeleteMemoResource struct {
 	ResourceID *int
 }
 
-func (s *Store) UpsertMemoResourceV1(ctx context.Context, upsert *UpsertMemoResource) (*MemoResource, error) {
+func (s *Store) UpsertMemoResource(ctx context.Context, upsert *UpsertMemoResource) (*MemoResource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -118,7 +114,7 @@ func (s *Store) GetMemoResource(ctx context.Context, find *FindMemoResource) (*M
 	return memoResource, nil
 }
 
-func (s *Store) DeleteMemoResourceV1(ctx context.Context, delete *DeleteMemoResource) error {
+func (s *Store) DeleteMemoResource(ctx context.Context, delete *DeleteMemoResource) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return FormatError(err)
@@ -193,117 +189,6 @@ func listMemoResources(ctx context.Context, tx *sql.Tx, find *FindMemoResource) 
 	}
 
 	return list, nil
-}
-
-// memoResourceRaw is the store model for an MemoResource.
-// Fields have exactly the same meanings as MemoResource.
-type memoResourceRaw struct {
-	MemoID     int
-	ResourceID int
-	CreatedTs  int64
-	UpdatedTs  int64
-}
-
-func (raw *memoResourceRaw) toMemoResource() *api.MemoResource {
-	return &api.MemoResource{
-		MemoID:     raw.MemoID,
-		ResourceID: raw.ResourceID,
-		CreatedTs:  raw.CreatedTs,
-		UpdatedTs:  raw.UpdatedTs,
-	}
-}
-
-func (s *Store) UpsertMemoResource(ctx context.Context, upsert *api.MemoResourceUpsert) (*api.MemoResource, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	memoResourceRaw, err := upsertMemoResource(ctx, tx, upsert)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
-	}
-
-	return memoResourceRaw.toMemoResource(), nil
-}
-
-func (s *Store) DeleteMemoResource(ctx context.Context, delete *api.MemoResourceDelete) error {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return FormatError(err)
-	}
-	defer tx.Rollback()
-
-	if err := deleteMemoResource(ctx, tx, delete); err != nil {
-		return FormatError(err)
-	}
-
-	if err := tx.Commit(); err != nil {
-		return FormatError(err)
-	}
-
-	return nil
-}
-
-func upsertMemoResource(ctx context.Context, tx *sql.Tx, upsert *api.MemoResourceUpsert) (*memoResourceRaw, error) {
-	set := []string{"memo_id", "resource_id"}
-	args := []any{upsert.MemoID, upsert.ResourceID}
-	placeholder := []string{"?", "?"}
-
-	if v := upsert.UpdatedTs; v != nil {
-		set, args, placeholder = append(set, "updated_ts"), append(args, v), append(placeholder, "?")
-	}
-
-	query := `
-		INSERT INTO memo_resource (
-			` + strings.Join(set, ", ") + `
-		)
-		VALUES (` + strings.Join(placeholder, ",") + `)
-		ON CONFLICT(memo_id, resource_id) DO UPDATE 
-		SET
-			updated_ts = EXCLUDED.updated_ts
-		RETURNING memo_id, resource_id, created_ts, updated_ts
-	`
-	var memoResourceRaw memoResourceRaw
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(
-		&memoResourceRaw.MemoID,
-		&memoResourceRaw.ResourceID,
-		&memoResourceRaw.CreatedTs,
-		&memoResourceRaw.UpdatedTs,
-	); err != nil {
-		return nil, FormatError(err)
-	}
-
-	return &memoResourceRaw, nil
-}
-
-func deleteMemoResource(ctx context.Context, tx *sql.Tx, delete *api.MemoResourceDelete) error {
-	where, args := []string{}, []any{}
-
-	if v := delete.MemoID; v != nil {
-		where, args = append(where, "memo_id = ?"), append(args, *v)
-	}
-	if v := delete.ResourceID; v != nil {
-		where, args = append(where, "resource_id = ?"), append(args, *v)
-	}
-
-	stmt := `DELETE FROM memo_resource WHERE ` + strings.Join(where, " AND ")
-	result, err := tx.ExecContext(ctx, stmt, args...)
-	if err != nil {
-		return FormatError(err)
-	}
-
-	rows, _ := result.RowsAffected()
-	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo resource not found")}
-	}
-
-	return nil
 }
 
 func vacuumMemoResource(ctx context.Context, tx *sql.Tx) error {
