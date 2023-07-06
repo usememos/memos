@@ -357,56 +357,6 @@ func (s *Server) registerMemoRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, composeResponse(memoResponse))
 	})
 
-	g.POST("/memo/:memoId/organizer", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		memoID, err := strconv.Atoi(c.Param("memoId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
-		}
-
-		userID, ok := c.Get(getUserIDContextKey()).(int)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-			ID: &memoID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
-		}
-		if memo.CreatorID != userID {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
-
-		memoOrganizerUpsert := &api.MemoOrganizerUpsert{}
-		if err := json.NewDecoder(c.Request().Body).Decode(memoOrganizerUpsert); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo organizer request").SetInternal(err)
-		}
-		memoOrganizerUpsert.MemoID = memoID
-		memoOrganizerUpsert.UserID = userID
-
-		err = s.Store.UpsertMemoOrganizer(ctx, memoOrganizerUpsert)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo organizer").SetInternal(err)
-		}
-
-		memoMessage, err := s.Store.GetMemo(ctx, &store.FindMemo{
-			ID: &memoID,
-		})
-		if err != nil {
-			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo ID not found: %d", memoID)).SetInternal(err)
-			}
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", memoID)).SetInternal(err)
-		}
-		memoResponse, err := s.composeMemoMessageToMemoResponse(ctx, memoMessage)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, composeResponse(memoResponse))
-	})
-
 	g.GET("/memo/stats", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		normalStatus := store.Normal
