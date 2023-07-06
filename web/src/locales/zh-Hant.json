@@ -67,7 +67,14 @@
       "info": "資訊",
       "success": "成功",
       "warning": "警告"
-    }
+    },
+    "new": "新建",
+    "back-to-home": "回到主頁",
+    "archived-at": "歸檔於",
+    "daily-review": "每日回顧",
+    "update-on": "更新於",
+    "repeat-new-password": "重複新密碼",
+    "new-password": "新密碼"
   },
   "router": {
     "back-to-home": "回到首頁"
@@ -106,7 +113,8 @@
       "disabled": "公開 memos 為禁用的"
     },
     "delete-memo": "刪除 Memo",
-    "delete-confirm": "您確定要刪除此memo？\n\n此動作為不可逆❗"
+    "delete-confirm": "您確定要刪除此memo？\n\n此動作為不可逆❗",
+    "copy": "複製"
   },
   "resource": {
     "no-resources": "沒有資源。",
@@ -140,8 +148,18 @@
         "file-name-placeholder": "檔案名稱",
         "type": "類型",
         "type-placeholder": "檔案類型"
+      },
+      "download-link": {
+        "option": "從外部鏈接下載"
       }
-    }
+    },
+    "name": "資源名稱",
+    "description": "查看在備忘錄中的靜態資源。例如：圖片",
+    "upload": "上傳",
+    "preview": "預覽",
+    "select": "選擇",
+    "rename": "重命名",
+    "clear": "清除"
   },
   "shortcut-list": {
     "shortcut-title": "捷徑標題",
@@ -193,7 +211,7 @@
       "mobile-editor-style": "行動版編輯器樣式",
       "default-memo-sort-option": "Memo 顯示時間",
       "telegram-user-id": "Telegram UserID",
-      "telegram-user-id-placeholder": "向 Telegram 機器人傳送任意訊息以獲取",      
+      "telegram-user-id-placeholder": "向 Telegram 機器人傳送任意訊息以獲取",
       "created_ts": "建立時間",
       "updated_ts": "更新時間",
       "daily-review-time-offset": "每日回顧時間偏移",
@@ -374,7 +392,14 @@
     "thu": "四",
     "fri": "五",
     "sat": "六",
-    "sun": "日"
+    "sun": "日",
+    "tuesday": "星期二",
+    "sunday": "星期天",
+    "monday": "星期一",
+    "thursday": "星期四",
+    "saturday": "星期六",
+    "friday": "星期五",
+    "wednesday": "星期三"
   },
   "ask-ai": {
     "title": "問 AI",
@@ -405,5 +430,25 @@
     "no-server-description": "此伺服器未設置說明。",
     "powered-by": "威力本源",
     "other-projects": "其他專案"
+  },
+  "amount-text": {
+    "tag_other": "TAGS",
+    "day_other": "DAYS",
+    "memo_one": "MEMO",
+    "tag_one": "TAG",
+    "day_one": "DAY",
+    "memo_other": "MEMOS"
+  },
+  "memo-list": {
+    "fetch-more": "點擊加載更多",
+    "fetching-data": "請求數據中..."
+  },
+  "archived": {
+    "no-archived-memos": "沒有歸檔的備忘錄",
+    "fetching-data": "請求數據中...",
+    "archived-memos": "已歸檔的備忘錄"
+  },
+  "search": {
+    "quickly-filter": "快速過濾"
   }
 }
