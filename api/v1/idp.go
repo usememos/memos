@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/store"
 )
 
@@ -231,9 +230,6 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 		}
 
 		if err = s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProvider{ID: identityProviderID}); err != nil {
-			if common.ErrorCode(err) == common.NotFound {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Identity provider ID not found: %d", identityProviderID))
-			}
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete identity provider").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, true)

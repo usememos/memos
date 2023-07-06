@@ -23,7 +23,7 @@ type DeleteMemoOrganizer struct {
 	UserID *int
 }
 
-func (s *Store) UpsertMemoOrganizerV1(ctx context.Context, upsert *MemoOrganizer) (*MemoOrganizer, error) {
+func (s *Store) UpsertMemoOrganizer(ctx context.Context, upsert *MemoOrganizer) (*MemoOrganizer, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (s *Store) UpsertMemoOrganizerV1(ctx context.Context, upsert *MemoOrganizer
 	return memoOrganizer, nil
 }
 
-func (s *Store) GetMemoOrganizerV1(ctx context.Context, find *FindMemoOrganizer) (*MemoOrganizer, error) {
+func (s *Store) GetMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) (*MemoOrganizer, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -69,6 +69,7 @@ func (s *Store) GetMemoOrganizerV1(ctx context.Context, find *FindMemoOrganizer)
 		where = append(where, "user_id = ?")
 		args = append(args, find.UserID)
 	}
+
 	query := fmt.Sprintf(`
 		SELECT
 			memo_id,
@@ -78,6 +79,12 @@ func (s *Store) GetMemoOrganizerV1(ctx context.Context, find *FindMemoOrganizer)
 		WHERE %s
 	`, strings.Join(where, " AND "))
 	row := tx.QueryRowContext(ctx, query, args...)
+	if err := row.Err(); err != nil {
+		return nil, err
+	}
+	if row == nil {
+		return nil, nil
+	}
 
 	memoOrganizer := &MemoOrganizer{}
 	if err := row.Scan(
@@ -88,13 +95,17 @@ func (s *Store) GetMemoOrganizerV1(ctx context.Context, find *FindMemoOrganizer)
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return memoOrganizer, nil
 }
 
-func (s *Store) DeleteMemoOrganizerV1(ctx context.Context, delete *DeleteMemoOrganizer) error {
+func (s *Store) DeleteMemoOrganizer(ctx context.Context, delete *DeleteMemoOrganizer) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -110,11 +121,12 @@ func (s *Store) DeleteMemoOrganizerV1(ctx context.Context, delete *DeleteMemoOrg
 	stmt := `DELETE FROM memo_organizer WHERE ` + strings.Join(where, " AND ")
 	_, err = tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return FormatError(err)
+		// Prevent linter warning.
+		return err
 	}
 
 	return nil
@@ -139,7 +151,7 @@ func vacuumMemoOrganizer(ctx context.Context, tx *sql.Tx) error {
 		)`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	return nil

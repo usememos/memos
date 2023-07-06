@@ -10,7 +10,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 )
@@ -82,18 +82,18 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		}
 
 		// Skip validation for server status endpoints.
-		if common.HasPrefixes(path, "/api/v1/ping", "/api/v1/idp", "/api/v1/status", "/api/v1/user/:id") && method == http.MethodGet {
+		if util.HasPrefixes(path, "/api/v1/ping", "/api/v1/idp", "/api/v1/status", "/api/v1/user/:id") && method == http.MethodGet {
 			return next(c)
 		}
 
 		token := findAccessToken(c)
 		if token == "" {
 			// Allow the user to access the public endpoints.
-			if common.HasPrefixes(path, "/o") {
+			if util.HasPrefixes(path, "/o") {
 				return next(c)
 			}
 			// When the request is not authenticated, we allow the user to access the memo endpoints for those public memos.
-			if common.HasPrefixes(path, "/api/v1/memo") && method == http.MethodGet {
+			if util.HasPrefixes(path, "/api/v1/memo") && method == http.MethodGet {
 				return next(c)
 			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing access token")
@@ -215,7 +215,7 @@ func (s *APIV1Service) defaultAuthSkipper(c echo.Context) bool {
 	path := c.Path()
 
 	// Skip auth.
-	if common.HasPrefixes(path, "/api/v1/auth") {
+	if util.HasPrefixes(path, "/api/v1/auth") {
 		return true
 	}
 
@@ -225,7 +225,7 @@ func (s *APIV1Service) defaultAuthSkipper(c echo.Context) bool {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			OpenID: &openID,
 		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
+		if err != nil {
 			return false
 		}
 		if user != nil {

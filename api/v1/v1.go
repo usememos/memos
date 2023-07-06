@@ -21,6 +21,10 @@ func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store
 }
 
 func (s *APIV1Service) Register(rootGroup *echo.Group) {
+	// Register RSS routes.
+	s.registerRSSRoutes(rootGroup)
+
+	// Register API v1 routes.
 	apiV1Group := rootGroup.Group("/api/v1")
 	apiV1Group.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return JWTMiddleware(s, next, s.Secret)
@@ -40,6 +44,7 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 	s.registerMemoResourceRoutes(apiV1Group)
 	s.registerMemoRelationRoutes(apiV1Group)
 
+	// Register public routes.
 	publicGroup := rootGroup.Group("/o")
 	publicGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return JWTMiddleware(s, next, s.Secret)

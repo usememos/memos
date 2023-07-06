@@ -116,6 +116,9 @@ func (s *APIV1Service) registerMemoResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo").SetInternal(err)
 		}
+		if memo == nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Memo not found")
+		}
 		if memo.CreatorID != userID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}

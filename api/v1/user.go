@@ -9,7 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -77,7 +77,7 @@ func (create CreateUserRequest) Validate() error {
 		if len(create.Email) > 256 {
 			return fmt.Errorf("email is too long, maximum length is 256")
 		}
-		if !common.ValidateEmail(create.Email) {
+		if !util.ValidateEmail(create.Email) {
 			return fmt.Errorf("invalid email format")
 		}
 	}
@@ -120,7 +120,7 @@ func (update UpdateUserRequest) Validate() error {
 		if len(*update.Email) > 256 {
 			return fmt.Errorf("email is too long, maximum length is 256")
 		}
-		if !common.ValidateEmail(*update.Email) {
+		if !util.ValidateEmail(*update.Email) {
 			return fmt.Errorf("invalid email format")
 		}
 	}
@@ -140,6 +140,9 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by id").SetInternal(err)
+		}
+		if currentUser == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 		}
 		if currentUser.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized to create user")
@@ -168,7 +171,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 			Email:        userCreate.Email,
 			Nickname:     userCreate.Nickname,
 			PasswordHash: string(passwordHash),
-			OpenID:       common.GenUUID(),
+			OpenID:       util.GenUUID(),
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
@@ -210,6 +213,9 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 		}
 
 		list, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
@@ -306,7 +312,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 			userUpdate.PasswordHash = &passwordHashStr
 		}
 		if request.ResetOpenID != nil && *request.ResetOpenID {
-			openID := common.GenUUID()
+			openID := util.GenUUID()
 			userUpdate.OpenID = &openID
 		}
 		if request.AvatarURL != nil {

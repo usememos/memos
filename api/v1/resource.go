@@ -21,8 +21,8 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/common/log"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/storage/s3"
 	"github.com/usememos/memos/store"
 	"go.uber.org/zap"
@@ -101,7 +101,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			Filename:     request.Filename,
 			ExternalLink: request.ExternalLink,
 			Type:         request.Type,
-			PublicID:     common.GenUUID(),
+			PublicID:     util.GenUUID(),
 		}
 		if request.ExternalLink != "" {
 			// Only allow those external links scheme with http/https
@@ -208,7 +208,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
-		publicID := common.GenUUID()
+		publicID := util.GenUUID()
 		if storageServiceID == DatabaseStorage {
 			fileBytes, err := io.ReadAll(sourceFile)
 			if err != nil {
@@ -226,7 +226,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			// as it handles the os-specific path separator automatically.
 			// path.Join() always uses '/' as path separator.
 			systemSettingLocalStoragePath, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingLocalStoragePathName.String()})
-			if err != nil && common.ErrorCode(err) != common.NotFound {
+			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
 			}
 			localStoragePath := "assets/{publicid}"
@@ -267,6 +267,9 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			storage, err := s.Store.GetStorage(ctx, &store.FindStorage{ID: &storageServiceID})
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
+			}
+			if storage == nil {
+				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Storage %d not found", storageServiceID))
 			}
 			storageMessage, err := ConvertStorageFromStore(storage)
 			if err != nil {
@@ -366,6 +369,9 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
 		}
+		if resource == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
+		}
 		if resource.CreatorID != userID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
@@ -384,7 +390,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			update.Filename = request.Filename
 		}
 		if request.ResetPublicID != nil && *request.ResetPublicID {
-			publicID := common.GenUUID()
+			publicID := util.GenUUID()
 			update.PublicID = &publicID
 		}
 
@@ -415,7 +421,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
 		}
 		if resource == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "Resource not found")
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
 		}
 
 		if resource.InternalPath != "" {
@@ -465,6 +471,9 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
 		}
+		if resource == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
+		}
 
 		// Private resource require logined user is the creator
 		if resourceVisibility == store.Private && (!ok || userID != resource.CreatorID) {
@@ -485,7 +494,7 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 			}
 		}
 
-		if c.QueryParam("thumbnail") == "1" && common.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
+		if c.QueryParam("thumbnail") == "1" && util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
 			ext := filepath.Ext(resource.Filename)
 			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d-%s%s", resource.ID, resource.PublicID, ext))
 			thumbnailBlob, err := getOrGenerateThumbnailImage(blob, thumbnailPath)

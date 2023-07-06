@@ -99,6 +99,9 @@ func (s *APIV1Service) registerShortcutRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find shortcut").SetInternal(err)
 		}
+		if shortcut == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Shortcut not found: %d", shortcutID))
+		}
 		if shortcut.CreatorID != userID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
@@ -165,7 +168,7 @@ func (s *APIV1Service) registerShortcutRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to fetch shortcut by ID %d", shortcutID)).SetInternal(err)
 		}
 		if shortcut == nil {
-			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Shortcut by ID %d not found", shortcutID))
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Shortcut not found: %d", shortcutID))
 		}
 		return c.JSON(http.StatusOK, convertShortcutFromStore(shortcut))
 	})
@@ -186,6 +189,9 @@ func (s *APIV1Service) registerShortcutRoutes(g *echo.Group) {
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find shortcut").SetInternal(err)
+		}
+		if shortcut == nil {
+			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Shortcut not found: %d", shortcutID))
 		}
 		if shortcut.CreatorID != userID {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")

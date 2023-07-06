@@ -9,7 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 	apiv1 "github.com/usememos/memos/api/v1"
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/store"
 )
@@ -94,7 +94,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 			Type:      mime,
 			Size:      int64(len(blob)),
 			Blob:      blob,
-			PublicID:  common.GenUUID(),
+			PublicID:  util.GenUUID(),
 		})
 		if err != nil {
 			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err), nil)

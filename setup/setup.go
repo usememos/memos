@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
 
@@ -51,7 +51,7 @@ func (s setupService) createUser(ctx context.Context, hostUsername, hostPassword
 		// The new signup user should be normal user by default.
 		Role:     store.RoleHost,
 		Nickname: hostUsername,
-		OpenID:   common.GenUUID(),
+		OpenID:   util.GenUUID(),
 	}
 
 	if len(userCreate.Username) < 3 {
@@ -73,7 +73,7 @@ func (s setupService) createUser(ctx context.Context, hostUsername, hostPassword
 		if len(userCreate.Email) > 256 {
 			return fmt.Errorf("email is too long, maximum length is 256")
 		}
-		if !common.ValidateEmail(userCreate.Email) {
+		if !util.ValidateEmail(userCreate.Email) {
 			return fmt.Errorf("invalid email format")
 		}
 	}

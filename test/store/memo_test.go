@@ -32,6 +32,7 @@ func TestMemoStore(t *testing.T) {
 		ID: &memo.ID,
 	})
 	require.NoError(t, err)
+	require.NotNil(t, memo)
 	memoList, err := ts.ListMemos(ctx, &store.FindMemo{
 		CreatorID: &user.ID,
 	})

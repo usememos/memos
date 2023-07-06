@@ -49,7 +49,7 @@ func (s *Store) UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*
 			type = EXCLUDED.type
 		RETURNING memo_id, related_memo_id, type
 	`
-	memoRelationMessage := &MemoRelation{}
+	memoRelation := &MemoRelation{}
 	if err := tx.QueryRowContext(
 		ctx,
 		query,
@@ -57,16 +57,18 @@ func (s *Store) UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*
 		create.RelatedMemoID,
 		create.Type,
 	).Scan(
-		&memoRelationMessage.MemoID,
-		&memoRelationMessage.RelatedMemoID,
-		&memoRelationMessage.Type,
+		&memoRelation.MemoID,
+		&memoRelation.RelatedMemoID,
+		&memoRelation.Type,
 	); err != nil {
 		return nil, err
 	}
+
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
-	return memoRelationMessage, nil
+
+	return memoRelation, nil
 }
 
 func (s *Store) ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error) {

@@ -17,7 +17,6 @@ type Activity struct {
 	Payload string
 }
 
-// CreateActivity creates an instance of Activity.
 func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {

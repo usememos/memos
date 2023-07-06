@@ -51,7 +51,7 @@ type DeleteResource struct {
 func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -85,7 +85,7 @@ func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource
 func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -108,7 +108,7 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -131,7 +131,7 @@ func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource,
 func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Resource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -168,7 +168,7 @@ func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Re
 		&resource.PublicID,
 	}
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(dests...); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -181,7 +181,7 @@ func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Re
 func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -243,7 +243,7 @@ func listResources(ctx context.Context, tx *sql.Tx, find *FindResource) ([]*Reso
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -267,13 +267,13 @@ func listResources(ctx context.Context, tx *sql.Tx, find *FindResource) ([]*Reso
 			dests = append(dests, &resource.Blob)
 		}
 		if err := rows.Scan(dests...); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 		list = append(list, &resource)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return list, nil
@@ -292,7 +292,7 @@ func vacuumResource(ctx context.Context, tx *sql.Tx) error {
 		)`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	return nil

@@ -8,7 +8,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
 	"github.com/usememos/memos/server/auth"
@@ -43,7 +43,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			Username: &signin.Username,
 		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 		}
 		if user == nil {
@@ -114,7 +114,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			Username: &userInfo.Identifier,
 		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 		}
 		if user == nil {
@@ -124,9 +124,9 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 				Role:     store.RoleUser,
 				Nickname: userInfo.DisplayName,
 				Email:    userInfo.Email,
-				OpenID:   common.GenUUID(),
+				OpenID:   util.GenUUID(),
 			}
-			password, err := common.RandomString(20)
+			password, err := util.RandomString(20)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate random password").SetInternal(err)
 			}
@@ -173,7 +173,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			// The new signup user should be normal user by default.
 			Role:     store.RoleUser,
 			Nickname: signup.Username,
-			OpenID:   common.GenUUID(),
+			OpenID:   util.GenUUID(),
 		}
 		if len(existedHostUsers) == 0 {
 			// Change the default role to host if there is no host user.
@@ -182,7 +182,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			allowSignUpSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
 				Name: SystemSettingAllowSignUpName.String(),
 			})
-			if err != nil && common.ErrorCode(err) != common.NotFound {
+			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 			}
 

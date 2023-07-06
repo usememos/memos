@@ -1,9 +1,10 @@
-package server
+package v1
 
 import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -11,13 +12,15 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
-	apiv1 "github.com/usememos/memos/api/v1"
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 	"github.com/yuin/goldmark"
 )
 
-func (s *Server) registerRSSRoutes(g *echo.Group) {
+const maxRSSItemCount = 100
+const maxRSSItemTitleLength = 100
+
+func (s *APIV1Service) registerRSSRoutes(g *echo.Group) {
 	g.GET("/explore/rss.xml", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		systemCustomizedProfile, err := s.getSystemCustomizedProfile(ctx)
@@ -77,10 +80,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 	})
 }
 
-const MaxRSSItemCount = 100
-const MaxRSSItemTitleLength = 100
-
-func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.Memo, baseURL string, profile *apiv1.CustomizedProfile) (string, error) {
+func (s *APIV1Service) generateRSSFromMemoList(ctx context.Context, memoList []*store.Memo, baseURL string, profile *CustomizedProfile) (string, error) {
 	feed := &feeds.Feed{
 		Title:       profile.Name,
 		Link:        &feeds.Link{Href: baseURL},
@@ -88,7 +88,7 @@ func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.
 		Created:     time.Now(),
 	}
 
-	var itemCountLimit = common.Min(len(memoList), MaxRSSItemCount)
+	var itemCountLimit = util.Min(len(memoList), maxRSSItemCount)
 	feed.Items = make([]*feeds.Item, itemCountLimit)
 	for i := 0; i < itemCountLimit; i++ {
 		memo := memoList[i]
@@ -106,6 +106,9 @@ func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.
 			})
 			if err != nil {
 				return "", err
+			}
+			if resource == nil {
+				return "", fmt.Errorf("Resource not found: %d", resourceID)
 			}
 			enclosure := feeds.Enclosure{}
 			if resource.ExternalLink != "" {
@@ -126,14 +129,14 @@ func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.
 	return rss, nil
 }
 
-func (s *Server) getSystemCustomizedProfile(ctx context.Context) (*apiv1.CustomizedProfile, error) {
+func (s *APIV1Service) getSystemCustomizedProfile(ctx context.Context) (*CustomizedProfile, error) {
 	systemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
-		Name: apiv1.SystemSettingCustomizedProfileName.String(),
+		Name: SystemSettingCustomizedProfileName.String(),
 	})
 	if err != nil {
 		return nil, err
 	}
-	customizedProfile := &apiv1.CustomizedProfile{
+	customizedProfile := &CustomizedProfile{
 		Name:        "memos",
 		LogoURL:     "",
 		Description: "",
@@ -155,7 +158,7 @@ func getRSSItemTitle(content string) string {
 		title = strings.Split(content, "\n")[0][2:]
 	} else {
 		title = strings.Split(content, "\n")[0]
-		var titleLengthLimit = common.Min(len(title), MaxRSSItemTitleLength)
+		var titleLengthLimit = util.Min(len(title), maxRSSItemTitleLength)
 		if titleLengthLimit < len(title) {
 			title = title[:titleLengthLimit] + "..."
 		}

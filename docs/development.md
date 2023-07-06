@@ -6,10 +6,6 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 2. It requires zero config.
 3. 1 command to start backend and 1 command to start frontend, both with live reload support.
 
-## Tech Stack
-
-![tech-stack](https://raw.githubusercontent.com/usememos/memos/main/assets/tech-stack.png)
-
 ## Prerequisites
 
 - [Go](https://golang.org/doc/install)
