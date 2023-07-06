@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
@@ -86,19 +87,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	rootGroup := e.Group("")
 	s.registerRSSRoutes(rootGroup)
-
-	publicGroup := e.Group("/o")
-	publicGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s, next, s.Secret)
-	})
-	registerGetterPublicRoutes(publicGroup)
-
-	apiGroup := e.Group("/api")
-	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s, next, s.Secret)
-	})
-	s.registerMemoRoutes(apiGroup)
-	s.registerMemoRelationRoutes(apiGroup)
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 	apiV1Service.Register(rootGroup)
@@ -194,4 +182,13 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 		return errors.Wrap(err, "failed to create activity")
 	}
 	return err
+}
+
+func defaultGetRequestSkipper(c echo.Context) bool {
+	return c.Request().Method == http.MethodGet
+}
+
+func defaultAPIRequestSkipper(c echo.Context) bool {
+	path := c.Path()
+	return common.HasPrefixes(path, "/api", "/api/v1")
 }

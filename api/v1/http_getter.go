@@ -1,4 +1,4 @@
-package server
+package v1
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	getter "github.com/usememos/memos/plugin/http-getter"
 )
 
-func registerGetterPublicRoutes(g *echo.Group) {
+func (*APIV1Service) registerGetterPublicRoutes(g *echo.Group) {
 	g.GET("/get/httpmeta", func(c echo.Context) error {
 		urlStr := c.QueryParam("url")
 		if urlStr == "" {
@@ -23,7 +23,7 @@ func registerGetterPublicRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusNotAcceptable, fmt.Sprintf("Failed to get website meta with url: %s", urlStr)).SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(htmlMeta))
+		return c.JSON(http.StatusOK, htmlMeta)
 	})
 
 	g.GET("/get/image", func(c echo.Context) error {

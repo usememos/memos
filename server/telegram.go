@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api"
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/telegram"
@@ -61,20 +60,19 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		return err
 	}
 
-	// create memo
-	memoCreate := api.CreateMemoRequest{
+	create := &store.Memo{
 		CreatorID:  creatorID,
-		Visibility: api.Private,
+		Visibility: store.Private,
 	}
 
 	if message.Text != nil {
-		memoCreate.Content = *message.Text
+		create.Content = *message.Text
 	}
 	if blobs != nil && message.Caption != nil {
-		memoCreate.Content = *message.Caption
+		create.Content = *message.Caption
 	}
 
-	memoMessage, err := t.store.CreateMemo(ctx, convertCreateMemoRequestToMemoMessage(&memoCreate))
+	memoMessage, err := t.store.CreateMemo(ctx, create)
 	if err != nil {
 		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateMemo: %s", err), nil)
 		return err
