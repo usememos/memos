@@ -60,7 +60,7 @@ func (s *Store) GetMemoOrganizerV1(ctx context.Context, find *FindMemoOrganizer)
 	}
 	defer tx.Rollback()
 
-	where, args := []string{}, []interface{}{}
+	where, args := []string{}, []any{}
 	if find.MemoID != 0 {
 		where = append(where, "memo_id = ?")
 		args = append(args, find.MemoID)

@@ -11,16 +11,16 @@ import (
 )
 
 type MemoOrganizer struct {
-	MemoID int
-	UserID int
-	Pinned bool
+	MemoID int  `json:"memoId"`
+	UserID int  `json:"userId"`
+	Pinned bool `json:"pinned"`
 }
 
 type UpsertMemoOrganizerRequest struct {
 	Pinned bool `json:"pinned"`
 }
 
-func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
+func (s *APIV1Service) registerMemoOrganizerRoutes(g *echo.Group) {
 	g.POST("/memo/:memoId/organizer", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))

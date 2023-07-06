@@ -98,7 +98,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		return JWTMiddleware(s, next, s.Secret)
 	})
 	s.registerMemoRoutes(apiGroup)
-	s.registerMemoResourceRoutes(apiGroup)
 	s.registerMemoRelationRoutes(apiGroup)
 
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
