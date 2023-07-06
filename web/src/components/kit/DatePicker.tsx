@@ -26,7 +26,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   }, [datestamp]);
 
   useEffect(() => {
-    getMemoStats(currentUserId).then(({ data: { data } }) => {
+    getMemoStats(currentUserId).then(({ data }) => {
       const m = new Map();
       for (const record of data) {
         const date = getDateStampByDate(record * 1000);

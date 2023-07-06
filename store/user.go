@@ -120,6 +120,7 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
+
 	user := create
 	s.userCache.Store(user.ID, user)
 	return user, nil
@@ -202,6 +203,10 @@ func (s *Store) ListUsers(ctx context.Context, find *FindUser) ([]*User, error) 
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	for _, user := range list {
 		s.userCache.Store(user.ID, user)
 	}
@@ -228,6 +233,11 @@ func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
 	if len(list) == 0 {
 		return nil, nil
 	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	user := list[0]
 	s.userCache.Store(user.ID, user)
 	return user, nil

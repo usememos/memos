@@ -377,7 +377,7 @@ func (s *APIV1Service) createUserCreateActivity(c echo.Context, user *User) erro
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: user.ID,
 		Type:      ActivityUserCreate.String(),
 		Level:     ActivityInfo.String(),

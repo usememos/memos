@@ -88,6 +88,10 @@ func (s *Store) ListTags(ctx context.Context, find *FindTag) ([]*Tag, error) {
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return list, nil
 }
 

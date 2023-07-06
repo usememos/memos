@@ -1,4 +1,4 @@
-package server
+package v1
 
 import (
 	"encoding/json"
@@ -6,13 +6,29 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/usememos/memos/api"
-	"github.com/usememos/memos/store"
-
 	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/store"
 )
 
-func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
+type MemoRelationType string
+
+const (
+	MemoRelationReference  MemoRelationType = "REFERENCE"
+	MemoRelationAdditional MemoRelationType = "ADDITIONAL"
+)
+
+type MemoRelation struct {
+	MemoID        int              `json:"memoId"`
+	RelatedMemoID int              `json:"relatedMemoId"`
+	Type          MemoRelationType `json:"type"`
+}
+
+type UpsertMemoRelationRequest struct {
+	RelatedMemoID int              `json:"relatedMemoId"`
+	Type          MemoRelationType `json:"type"`
+}
+
+func (s *APIV1Service) registerMemoRelationRoutes(g *echo.Group) {
 	g.POST("/memo/:memoId/relation", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))
@@ -20,20 +36,20 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		memoRelationUpsert := &api.MemoRelationUpsert{}
-		if err := json.NewDecoder(c.Request().Body).Decode(memoRelationUpsert); err != nil {
+		request := &UpsertMemoRelationRequest{}
+		if err := json.NewDecoder(c.Request().Body).Decode(request); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo relation request").SetInternal(err)
 		}
 
-		memoRelation, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+		memoRelation, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
 			MemoID:        memoID,
-			RelatedMemoID: memoRelationUpsert.RelatedMemoID,
-			Type:          store.MemoRelationType(memoRelationUpsert.Type),
+			RelatedMemoID: request.RelatedMemoID,
+			Type:          store.MemoRelationType(request.Type),
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(memoRelation))
+		return c.JSON(http.StatusOK, memoRelation)
 	})
 
 	g.GET("/memo/:memoId/relation", func(c echo.Context) error {
@@ -43,13 +59,13 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		memoRelationList, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelationMessage{
+		memoRelationList, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
 			MemoID: &memoID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to list memo relations").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, composeResponse(memoRelationList))
+		return c.JSON(http.StatusOK, memoRelationList)
 	})
 
 	g.DELETE("/memo/:memoId/relation/:relatedMemoId/type/:relationType", func(c echo.Context) error {
@@ -64,7 +80,7 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 		}
 		relationType := store.MemoRelationType(c.Param("relationType"))
 
-		if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelationMessage{
+		if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{
 			MemoID:        &memoID,
 			RelatedMemoID: &relatedMemoID,
 			Type:          &relationType,
@@ -75,10 +91,10 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 	})
 }
 
-func convertMemoRelationMessageToMemoRelation(memoRelation *store.MemoRelationMessage) *api.MemoRelation {
-	return &api.MemoRelation{
+func convertMemoRelationFromStore(memoRelation *store.MemoRelation) *MemoRelation {
+	return &MemoRelation{
 		MemoID:        memoRelation.MemoID,
 		RelatedMemoID: memoRelation.RelatedMemoID,
-		Type:          api.MemoRelationType(memoRelation.Type),
+		Type:          MemoRelationType(memoRelation.Type),
 	}
 }

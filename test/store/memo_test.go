@@ -13,7 +13,7 @@ func TestMemoStore(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memoCreate := &store.MemoMessage{
+	memoCreate := &store.Memo{
 		CreatorID:  user.ID,
 		Content:    "test_content",
 		Visibility: store.Public,
@@ -22,23 +22,23 @@ func TestMemoStore(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, memoCreate.Content, memo.Content)
 	memoPatchContent := "test_content_2"
-	memoPatch := &store.UpdateMemoMessage{
+	memoPatch := &store.UpdateMemo{
 		ID:      memo.ID,
 		Content: &memoPatchContent,
 	}
 	err = ts.UpdateMemo(ctx, memoPatch)
 	require.NoError(t, err)
-	memo, err = ts.GetMemo(ctx, &store.FindMemoMessage{
+	memo, err = ts.GetMemo(ctx, &store.FindMemo{
 		ID: &memo.ID,
 	})
 	require.NoError(t, err)
-	memoList, err := ts.ListMemos(ctx, &store.FindMemoMessage{
+	memoList, err := ts.ListMemos(ctx, &store.FindMemo{
 		CreatorID: &user.ID,
 	})
 	require.NoError(t, err)
 	require.Equal(t, 1, len(memoList))
 	require.Equal(t, memo, memoList[0])
-	err = ts.DeleteMemo(ctx, &store.DeleteMemoMessage{
+	err = ts.DeleteMemo(ctx, &store.DeleteMemo{
 		ID: memo.ID,
 	})
 	require.NoError(t, err)

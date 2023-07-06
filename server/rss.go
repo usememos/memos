@@ -26,7 +26,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 		}
 
 		normalStatus := store.Normal
-		memoFind := store.FindMemoMessage{
+		memoFind := store.FindMemo{
 			RowStatus:      &normalStatus,
 			VisibilityList: []store.Visibility{store.Public},
 		}
@@ -57,7 +57,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 		}
 
 		normalStatus := store.Normal
-		memoFind := store.FindMemoMessage{
+		memoFind := store.FindMemo{
 			CreatorID:      &id,
 			RowStatus:      &normalStatus,
 			VisibilityList: []store.Visibility{store.Public},
@@ -80,7 +80,7 @@ func (s *Server) registerRSSRoutes(g *echo.Group) {
 const MaxRSSItemCount = 100
 const MaxRSSItemTitleLength = 100
 
-func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.MemoMessage, baseURL string, profile *apiv1.CustomizedProfile) (string, error) {
+func (s *Server) generateRSSFromMemoList(ctx context.Context, memoList []*store.Memo, baseURL string, profile *apiv1.CustomizedProfile) (string, error) {
 	feed := &feeds.Feed{
 		Title:       profile.Name,
 		Link:        &feeds.Link{Href: baseURL},

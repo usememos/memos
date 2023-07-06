@@ -52,7 +52,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
 
   useEffect(() => {
     getMemoStats(user.id)
-      .then(({ data: { data } }) => {
+      .then(({ data }) => {
         setPartialState({
           memoAmount: data.length,
         });

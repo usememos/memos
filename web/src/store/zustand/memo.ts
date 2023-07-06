@@ -12,7 +12,7 @@ export const useMemoCacheStore = create(
         return memo;
       }
 
-      const { data } = (await api.getMemoById(memoId)).data;
+      const { data } = await api.getMemoById(memoId);
       const formatedMemo = convertResponseModelMemo(data);
 
       set((state) => {

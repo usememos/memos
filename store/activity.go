@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-type ActivityMessage struct {
+type Activity struct {
 	ID int
 
 	// Standard fields
@@ -18,7 +18,7 @@ type ActivityMessage struct {
 }
 
 // CreateActivity creates an instance of Activity.
-func (s *Store) CreateActivity(ctx context.Context, create *ActivityMessage) (*ActivityMessage, error) {
+func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -45,6 +45,7 @@ func (s *Store) CreateActivity(ctx context.Context, create *ActivityMessage) (*A
 	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
-	activityMessage := create
-	return activityMessage, nil
+
+	activity := create
+	return activity, nil
 }

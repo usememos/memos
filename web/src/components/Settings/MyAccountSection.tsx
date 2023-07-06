@@ -11,7 +11,7 @@ const MyAccountSection = () => {
   const { t } = useTranslation();
   const userStore = useUserStore();
   const user = userStore.state.user as User;
-  const openAPIRoute = `${window.location.origin}/api/memo?openId=${user.openId}`;
+  const openAPIRoute = `${window.location.origin}/api/v1/memo?openId=${user.openId}`;
 
   const handleResetOpenIdBtnClick = async () => {
     showCommonDialog({

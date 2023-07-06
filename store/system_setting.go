@@ -57,6 +57,10 @@ func (s *Store) ListSystemSettings(ctx context.Context, find *FindSystemSetting)
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	for _, systemSettingMessage := range list {
 		s.systemSettingCache.Store(systemSettingMessage.Name, systemSettingMessage)
 	}
@@ -83,6 +87,10 @@ func (s *Store) GetSystemSetting(ctx context.Context, find *FindSystemSetting) (
 
 	if len(list) == 0 {
 		return nil, nil
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
 	}
 
 	systemSettingMessage := list[0]

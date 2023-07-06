@@ -57,6 +57,10 @@ func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	for _, userSetting := range userSettingList {
 		s.userSettingCache.Store(getUserSettingCacheKey(userSetting.UserID, userSetting.Key), userSetting)
 	}
@@ -83,6 +87,10 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*Use
 
 	if len(list) == 0 {
 		return nil, nil
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
 	}
 
 	userSetting := list[0]

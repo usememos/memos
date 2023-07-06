@@ -3,10 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strings"
-
-	"github.com/usememos/memos/common"
 )
 
 type MemoRelationType string
@@ -16,28 +13,28 @@ const (
 	MemoRelationAdditional MemoRelationType = "ADDITIONAL"
 )
 
-type MemoRelationMessage struct {
+type MemoRelation struct {
 	MemoID        int
 	RelatedMemoID int
 	Type          MemoRelationType
 }
 
-type FindMemoRelationMessage struct {
+type FindMemoRelation struct {
 	MemoID        *int
 	RelatedMemoID *int
 	Type          *MemoRelationType
 }
 
-type DeleteMemoRelationMessage struct {
+type DeleteMemoRelation struct {
 	MemoID        *int
 	RelatedMemoID *int
 	Type          *MemoRelationType
 }
 
-func (s *Store) UpsertMemoRelation(ctx context.Context, create *MemoRelationMessage) (*MemoRelationMessage, error) {
+func (s *Store) UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -52,7 +49,7 @@ func (s *Store) UpsertMemoRelation(ctx context.Context, create *MemoRelationMess
 			type = EXCLUDED.type
 		RETURNING memo_id, related_memo_id, type
 	`
-	memoRelationMessage := &MemoRelationMessage{}
+	memoRelationMessage := &MemoRelation{}
 	if err := tx.QueryRowContext(
 		ctx,
 		query,
@@ -64,18 +61,18 @@ func (s *Store) UpsertMemoRelation(ctx context.Context, create *MemoRelationMess
 		&memoRelationMessage.RelatedMemoID,
 		&memoRelationMessage.Type,
 	); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	return memoRelationMessage, nil
 }
 
-func (s *Store) ListMemoRelations(ctx context.Context, find *FindMemoRelationMessage) ([]*MemoRelationMessage, error) {
+func (s *Store) ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -84,13 +81,17 @@ func (s *Store) ListMemoRelations(ctx context.Context, find *FindMemoRelationMes
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return list, nil
 }
 
-func (s *Store) GetMemoRelation(ctx context.Context, find *FindMemoRelationMessage) (*MemoRelationMessage, error) {
+func (s *Store) GetMemoRelation(ctx context.Context, find *FindMemoRelation) (*MemoRelation, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -100,15 +101,20 @@ func (s *Store) GetMemoRelation(ctx context.Context, find *FindMemoRelationMessa
 	}
 
 	if len(list) == 0 {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+		return nil, nil
 	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return list[0], nil
 }
 
-func (s *Store) DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelationMessage) error {
+func (s *Store) DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -127,16 +133,17 @@ func (s *Store) DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelati
 		DELETE FROM memo_relation
 		WHERE ` + strings.Join(where, " AND ")
 	if _, err := tx.ExecContext(ctx, query, args...); err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	if err := tx.Commit(); err != nil {
-		return FormatError(err)
+		// Prevent lint warning.
+		return err
 	}
 	return nil
 }
 
-func listMemoRelations(ctx context.Context, tx *sql.Tx, find *FindMemoRelationMessage) ([]*MemoRelationMessage, error) {
+func listMemoRelations(ctx context.Context, tx *sql.Tx, find *FindMemoRelation) ([]*MemoRelation, error) {
 	where, args := []string{"TRUE"}, []any{}
 	if find.MemoID != nil {
 		where, args = append(where, "memo_id = ?"), append(args, find.MemoID)
@@ -156,24 +163,24 @@ func listMemoRelations(ctx context.Context, tx *sql.Tx, find *FindMemoRelationMe
 		FROM memo_relation
 		WHERE `+strings.Join(where, " AND "), args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
-	memoRelationMessages := []*MemoRelationMessage{}
+	memoRelationMessages := []*MemoRelation{}
 	for rows.Next() {
-		memoRelationMessage := &MemoRelationMessage{}
+		memoRelationMessage := &MemoRelation{}
 		if err := rows.Scan(
 			&memoRelationMessage.MemoID,
 			&memoRelationMessage.RelatedMemoID,
 			&memoRelationMessage.Type,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 		memoRelationMessages = append(memoRelationMessages, memoRelationMessage)
 	}
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	return memoRelationMessages, nil
 }
@@ -183,7 +190,7 @@ func vacuumMemoRelations(ctx context.Context, tx *sql.Tx) error {
 		DELETE FROM memo_relation
 		WHERE memo_id NOT IN (SELECT id FROM memo) OR related_memo_id NOT IN (SELECT id FROM memo)
 	`); err != nil {
-		return FormatError(err)
+		return err
 	}
 	return nil
 }

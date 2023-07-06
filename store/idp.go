@@ -123,6 +123,10 @@ func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityPro
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	for _, item := range list {
 		s.idpCache.Store(item.ID, item)
 	}
@@ -148,6 +152,10 @@ func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProvi
 	}
 	if len(list) == 0 {
 		return nil, nil
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
 	}
 
 	identityProvider := list[0]

@@ -144,7 +144,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
-		resource, err := s.Store.CreateResourceV1(ctx, create)
+		resource, err := s.Store.CreateResource(ctx, create)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
@@ -311,7 +311,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 		}
 
 		create.PublicID = publicID
-		resource, err := s.Store.CreateResourceV1(ctx, create)
+		resource, err := s.Store.CreateResource(ctx, create)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 		}
@@ -430,7 +430,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
 		}
 
-		if err := s.Store.DeleteResourceV1(ctx, &store.DeleteResource{
+		if err := s.Store.DeleteResource(ctx, &store.DeleteResource{
 			ID: resourceID,
 		}); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
@@ -522,7 +522,7 @@ func (s *APIV1Service) createResourceCreateActivity(ctx context.Context, resourc
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: resource.CreatorID,
 		Type:      ActivityResourceCreate.String(),
 		Level:     ActivityInfo.String(),

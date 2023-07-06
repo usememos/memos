@@ -57,7 +57,7 @@ const UsageHeatMap = () => {
 
   useEffect(() => {
     getMemoStats(currentUserId)
-      .then(({ data: { data } }) => {
+      .then(({ data }) => {
         setMemoAmount(data.length);
         const newStat: DailyUsageStat[] = getInitialUsageStat(usedDaysAmount, beginDayTimestamp);
         for (const record of data) {

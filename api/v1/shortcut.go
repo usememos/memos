@@ -210,7 +210,7 @@ func (s *APIV1Service) createShortcutCreateActivity(c echo.Context, shortcut *Sh
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: shortcut.CreatorID,
 		Type:      ActivityShortcutCreate.String(),
 		Level:     ActivityInfo.String(),

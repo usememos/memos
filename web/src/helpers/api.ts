@@ -1,11 +1,5 @@
 import axios from "axios";
 
-type ResponseObject<T> = {
-  data: T;
-  error?: string;
-  message?: string;
-};
-
 export function getSystemStatus() {
   return axios.get<SystemStatus>("/api/v1/status");
 }
@@ -85,7 +79,7 @@ export function getAllMemos(memoFind?: MemoFind) {
     queryList.push(`limit=${memoFind.limit}`);
   }
 
-  return axios.get<ResponseObject<Memo[]>>(`/api/memo/all?${queryList.join("&")}`);
+  return axios.get<Memo[]>(`/api/v1/memo/all?${queryList.join("&")}`);
 }
 
 export function getMemoList(memoFind?: MemoFind) {
@@ -105,39 +99,39 @@ export function getMemoList(memoFind?: MemoFind) {
   if (memoFind?.limit) {
     queryList.push(`limit=${memoFind.limit}`);
   }
-  return axios.get<ResponseObject<Memo[]>>(`/api/memo?${queryList.join("&")}`);
+  return axios.get<Memo[]>(`/api/v1/memo?${queryList.join("&")}`);
 }
 
 export function getMemoStats(userId: UserId) {
-  return axios.get<ResponseObject<number[]>>(`/api/memo/stats?creatorId=${userId}`);
+  return axios.get<number[]>(`/api/v1/memo/stats?creatorId=${userId}`);
 }
 
 export function getMemoById(id: MemoId) {
-  return axios.get<ResponseObject<Memo>>(`/api/memo/${id}`);
+  return axios.get<Memo>(`/api/v1/memo/${id}`);
 }
 
 export function createMemo(memoCreate: MemoCreate) {
-  return axios.post<ResponseObject<Memo>>("/api/memo", memoCreate);
+  return axios.post<Memo>("/api/v1/memo", memoCreate);
 }
 
 export function patchMemo(memoPatch: MemoPatch) {
-  return axios.patch<ResponseObject<Memo>>(`/api/memo/${memoPatch.id}`, memoPatch);
+  return axios.patch<Memo>(`/api/v1/memo/${memoPatch.id}`, memoPatch);
 }
 
 export function pinMemo(memoId: MemoId) {
-  return axios.post(`/api/memo/${memoId}/organizer`, {
+  return axios.post(`/api/v1/memo/${memoId}/organizer`, {
     pinned: true,
   });
 }
 
 export function unpinMemo(memoId: MemoId) {
-  return axios.post(`/api/memo/${memoId}/organizer`, {
+  return axios.post(`/api/v1/memo/${memoId}/organizer`, {
     pinned: false,
   });
 }
 
 export function deleteMemo(memoId: MemoId) {
-  return axios.delete(`/api/memo/${memoId}`);
+  return axios.delete(`/api/v1/memo/${memoId}`);
 }
 
 export function getShortcutList(shortcutFind?: ShortcutFind) {
@@ -192,17 +186,17 @@ export function deleteResourceById(id: ResourceId) {
 }
 
 export function getMemoResourceList(memoId: MemoId) {
-  return axios.get<ResponseObject<Resource[]>>(`/api/memo/${memoId}/resource`);
+  return axios.get<Resource[]>(`/api/v1/memo/${memoId}/resource`);
 }
 
 export function upsertMemoResource(memoId: MemoId, resourceId: ResourceId) {
-  return axios.post(`/api/memo/${memoId}/resource`, {
+  return axios.post(`/api/v1/memo/${memoId}/resource`, {
     resourceId,
   });
 }
 
 export function deleteMemoResource(memoId: MemoId, resourceId: ResourceId) {
-  return axios.delete(`/api/memo/${memoId}/resource/${resourceId}`);
+  return axios.delete(`/api/v1/memo/${memoId}/resource/${resourceId}`);
 }
 
 export function getTagList(tagFind?: TagFind) {

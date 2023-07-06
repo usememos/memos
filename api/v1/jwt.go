@@ -82,7 +82,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		}
 
 		// Skip validation for server status endpoints.
-		if common.HasPrefixes(path, "/api/v1/ping", "/api/v1/idp", "/api/v1/status", "/api/user/:id") && method == http.MethodGet {
+		if common.HasPrefixes(path, "/api/v1/ping", "/api/v1/idp", "/api/v1/status", "/api/v1/user/:id") && method == http.MethodGet {
 			return next(c)
 		}
 
@@ -93,7 +93,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 				return next(c)
 			}
 			// When the request is not authenticated, we allow the user to access the memo endpoints for those public memos.
-			if common.HasPrefixes(path, "/api/memo") && method == http.MethodGet {
+			if common.HasPrefixes(path, "/api/v1/memo") && method == http.MethodGet {
 				return next(c)
 			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing access token")
