@@ -35,7 +35,7 @@ func (v Visibility) String() string {
 	return "PRIVATE"
 }
 
-type MemoMessage struct {
+type Memo struct {
 	ID int
 
 	// Standard fields
@@ -51,10 +51,10 @@ type MemoMessage struct {
 	// Composed fields
 	Pinned         bool
 	ResourceIDList []int
-	RelationList   []*MemoRelationMessage
+	RelationList   []*MemoRelation
 }
 
-type FindMemoMessage struct {
+type FindMemo struct {
 	ID *int
 
 	// Standard fields
@@ -72,7 +72,7 @@ type FindMemoMessage struct {
 	OrderByUpdatedTs bool
 }
 
-type UpdateMemoMessage struct {
+type UpdateMemo struct {
 	ID         int
 	CreatedTs  *int64
 	UpdatedTs  *int64
@@ -81,14 +81,14 @@ type UpdateMemoMessage struct {
 	Visibility *Visibility
 }
 
-type DeleteMemoMessage struct {
+type DeleteMemo struct {
 	ID int
 }
 
-func (s *Store) CreateMemo(ctx context.Context, create *MemoMessage) (*MemoMessage, error) {
+func (s *Store) CreateMemo(ctx context.Context, create *Memo) (*Memo, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -119,19 +119,20 @@ func (s *Store) CreateMemo(ctx context.Context, create *MemoMessage) (*MemoMessa
 		&create.UpdatedTs,
 		&create.RowStatus,
 	); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
-	memoMessage := create
-	return memoMessage, nil
+
+	memo := create
+	return memo, nil
 }
 
-func (s *Store) ListMemos(ctx context.Context, find *FindMemoMessage) ([]*MemoMessage, error) {
+func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -140,13 +141,17 @@ func (s *Store) ListMemos(ctx context.Context, find *FindMemoMessage) ([]*MemoMe
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return list, nil
 }
 
-func (s *Store) GetMemo(ctx context.Context, find *FindMemoMessage) (*MemoMessage, error) {
+func (s *Store) GetMemo(ctx context.Context, find *FindMemo) (*Memo, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -158,11 +163,15 @@ func (s *Store) GetMemo(ctx context.Context, find *FindMemoMessage) (*MemoMessag
 		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo not found")}
 	}
 
-	memoMessage := list[0]
-	return memoMessage, nil
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	memo := list[0]
+	return memo, nil
 }
 
-func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemoMessage) error {
+func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
@@ -199,10 +208,10 @@ func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemoMessage) error
 	return err
 }
 
-func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemoMessage) error {
+func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemo) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -210,7 +219,7 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemoMessage) error
 	stmt := `DELETE FROM memo WHERE ` + strings.Join(where, " AND ")
 	result, err := tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	rows, err := result.RowsAffected()
@@ -230,7 +239,7 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemoMessage) error
 func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int) ([]Visibility, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -247,7 +256,7 @@ func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int) ([]V
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -255,19 +264,19 @@ func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int) ([]V
 	for rows.Next() {
 		var visibility Visibility
 		if err := rows.Scan(&visibility); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 		visibilityList = append(visibilityList, visibility)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return visibilityList, nil
 }
 
-func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoMessage, error) {
+func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemo) ([]*Memo, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
@@ -343,43 +352,43 @@ func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoM
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
-	memoMessageList := make([]*MemoMessage, 0)
+	list := make([]*Memo, 0)
 	for rows.Next() {
-		var memoMessage MemoMessage
+		var memo Memo
 		var memoResourceIDList sql.NullString
 		var memoRelationList sql.NullString
 		if err := rows.Scan(
-			&memoMessage.ID,
-			&memoMessage.CreatorID,
-			&memoMessage.CreatedTs,
-			&memoMessage.UpdatedTs,
-			&memoMessage.RowStatus,
-			&memoMessage.Content,
-			&memoMessage.Visibility,
-			&memoMessage.Pinned,
+			&memo.ID,
+			&memo.CreatorID,
+			&memo.CreatedTs,
+			&memo.UpdatedTs,
+			&memo.RowStatus,
+			&memo.Content,
+			&memo.Visibility,
+			&memo.Pinned,
 			&memoResourceIDList,
 			&memoRelationList,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 
 		if memoResourceIDList.Valid {
 			idStringList := strings.Split(memoResourceIDList.String, ",")
-			memoMessage.ResourceIDList = make([]int, 0, len(idStringList))
+			memo.ResourceIDList = make([]int, 0, len(idStringList))
 			for _, idString := range idStringList {
 				id, err := strconv.Atoi(idString)
 				if err != nil {
-					return nil, FormatError(err)
+					return nil, err
 				}
-				memoMessage.ResourceIDList = append(memoMessage.ResourceIDList, id)
+				memo.ResourceIDList = append(memo.ResourceIDList, id)
 			}
 		}
 		if memoRelationList.Valid {
-			memoMessage.RelationList = make([]*MemoRelationMessage, 0)
+			memo.RelationList = make([]*MemoRelation, 0)
 			relatedMemoTypeList := strings.Split(memoRelationList.String, ",")
 			for _, relatedMemoType := range relatedMemoTypeList {
 				relatedMemoTypeList := strings.Split(relatedMemoType, ":")
@@ -388,23 +397,23 @@ func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemoMessage) ([]*MemoM
 				}
 				relatedMemoID, err := strconv.Atoi(relatedMemoTypeList[0])
 				if err != nil {
-					return nil, FormatError(err)
+					return nil, err
 				}
-				memoMessage.RelationList = append(memoMessage.RelationList, &MemoRelationMessage{
-					MemoID:        memoMessage.ID,
+				memo.RelationList = append(memo.RelationList, &MemoRelation{
+					MemoID:        memo.ID,
 					RelatedMemoID: relatedMemoID,
 					Type:          MemoRelationType(relatedMemoTypeList[1]),
 				})
 			}
 		}
-		memoMessageList = append(memoMessageList, &memoMessage)
+		list = append(list, &memo)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
-	return memoMessageList, nil
+	return list, nil
 }
 
 func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
@@ -420,7 +429,7 @@ func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
 		)`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	return nil

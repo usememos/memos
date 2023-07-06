@@ -25,7 +25,7 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo relation request").SetInternal(err)
 		}
 
-		memoRelation, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelationMessage{
+		memoRelation, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
 			MemoID:        memoID,
 			RelatedMemoID: memoRelationUpsert.RelatedMemoID,
 			Type:          store.MemoRelationType(memoRelationUpsert.Type),
@@ -43,7 +43,7 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		memoRelationList, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelationMessage{
+		memoRelationList, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
 			MemoID: &memoID,
 		})
 		if err != nil {
@@ -64,7 +64,7 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 		}
 		relationType := store.MemoRelationType(c.Param("relationType"))
 
-		if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelationMessage{
+		if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{
 			MemoID:        &memoID,
 			RelatedMemoID: &relatedMemoID,
 			Type:          &relationType,
@@ -75,7 +75,7 @@ func (s *Server) registerMemoRelationRoutes(g *echo.Group) {
 	})
 }
 
-func convertMemoRelationMessageToMemoRelation(memoRelation *store.MemoRelationMessage) *api.MemoRelation {
+func convertMemoRelationMessageToMemoRelation(memoRelation *store.MemoRelation) *api.MemoRelation {
 	return &api.MemoRelation{
 		MemoID:        memoRelation.MemoID,
 		RelatedMemoID: memoRelation.RelatedMemoID,

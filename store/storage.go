@@ -69,6 +69,10 @@ func (s *Store) ListStorages(ctx context.Context, find *FindStorage) ([]*Storage
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return list, nil
 }
 
@@ -85,6 +89,10 @@ func (s *Store) GetStorage(ctx context.Context, find *FindStorage) (*Storage, er
 	}
 	if len(list) == 0 {
 		return nil, nil
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
 	}
 
 	return list[0], nil

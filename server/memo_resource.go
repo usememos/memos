@@ -85,7 +85,7 @@ func (s *Server) registerMemoResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Resource ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
 
-		memo, err := s.Store.GetMemo(ctx, &store.FindMemoMessage{
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 			ID: &memoID,
 		})
 		if err != nil {

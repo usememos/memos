@@ -41,6 +41,29 @@ func (s *Store) ListMemoResources(ctx context.Context, find *FindMemoResource) (
 	return list, nil
 }
 
+func (s *Store) GetMemoResource(ctx context.Context, find *FindMemoResource) (*MemoResource, error) {
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return nil, err
+	}
+	defer tx.Rollback()
+
+	list, err := listMemoResources(ctx, tx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, nil
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
+	memoResource := list[0]
+	return memoResource, nil
+}
+
 func listMemoResources(ctx context.Context, tx *sql.Tx, find *FindMemoResource) ([]*MemoResource, error) {
 	where, args := []string{"1 = 1"}, []any{}
 

@@ -85,6 +85,10 @@ func (s *Store) ListShortcuts(ctx context.Context, find *FindShortcut) ([]*Short
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return list, nil
 }
 
@@ -102,6 +106,10 @@ func (s *Store) GetShortcut(ctx context.Context, find *FindShortcut) (*Shortcut,
 
 	if len(list) == 0 {
 		return nil, nil
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
 	}
 
 	shortcut := list[0]

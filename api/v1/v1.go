@@ -35,6 +35,7 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 	s.registerShortcutRoutes(apiV1Group)
 	s.registerStorageRoutes(apiV1Group)
 	s.registerResourceRoutes(apiV1Group)
+	s.registerMemoRoutes(apiV1Group)
 
 	publicGroup := rootGroup.Group("/o")
 	publicGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {

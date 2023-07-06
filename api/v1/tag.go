@@ -84,7 +84,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user session")
 		}
 		normalRowStatus := store.Normal
-		memoFind := &store.FindMemoMessage{
+		memoFind := &store.FindMemo{
 			CreatorID:     &userID,
 			ContentSearch: []string{"#"},
 			RowStatus:     &normalRowStatus,
@@ -157,7 +157,7 @@ func (s *APIV1Service) createTagCreateActivity(c echo.Context, tag *Tag) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: tag.CreatorID,
 		Type:      ActivityTagCreate.String(),
 		Level:     ActivityInfo.String(),

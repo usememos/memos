@@ -125,13 +125,13 @@ export function patchMemo(memoPatch: MemoPatch) {
 }
 
 export function pinMemo(memoId: MemoId) {
-  return axios.post(`/api/memo/${memoId}/organizer`, {
+  return axios.post(`/api/v1/memo/${memoId}/organizer`, {
     pinned: true,
   });
 }
 
 export function unpinMemo(memoId: MemoId) {
-  return axios.post(`/api/memo/${memoId}/organizer`, {
+  return axios.post(`/api/v1/memo/${memoId}/organizer`, {
     pinned: false,
   });
 }

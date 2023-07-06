@@ -90,7 +90,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		case ".png":
 			mime = "image/png"
 		}
-		resource, err := t.store.CreateResourceV1(ctx, &store.Resource{
+		resource, err := t.store.CreateResource(ctx, &store.Resource{
 			CreatorID: creatorID,
 			Filename:  filename,
 			Type:      mime,
@@ -126,7 +126,7 @@ func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to parse callbackQuery.Data %s", callbackQuery.Data))
 	}
 
-	update := store.UpdateMemoMessage{
+	update := store.UpdateMemo{
 		ID:         memoID,
 		Visibility: &visibility,
 	}

@@ -234,7 +234,7 @@ func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.User
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: user.ID,
 		Type:      string(ActivityUserAuthSignIn),
 		Level:     string(ActivityInfo),
@@ -256,7 +256,7 @@ func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *store.User
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: user.ID,
 		Type:      string(ActivityUserAuthSignUp),
 		Level:     string(ActivityInfo),

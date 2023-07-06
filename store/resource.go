@@ -48,7 +48,7 @@ type DeleteResource struct {
 	ID int
 }
 
-func (s *Store) CreateResourceV1(ctx context.Context, create *Resource) (*Resource, error) {
+func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return nil, FormatError(err)
@@ -98,6 +98,10 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 		return nil, err
 	}
 
+	if err := tx.Commit(); err != nil {
+		return nil, err
+	}
+
 	return resources, nil
 }
 
@@ -113,12 +117,12 @@ func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource,
 		return nil, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
 	if len(resources) == 0 {
 		return nil, nil
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, err
 	}
 
 	return resources[0], nil
@@ -174,7 +178,7 @@ func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Re
 	return &resource, nil
 }
 
-func (s *Store) DeleteResourceV1(ctx context.Context, delete *DeleteResource) error {
+func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
 		return FormatError(err)
