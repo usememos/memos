@@ -3,10 +3,7 @@ package store
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strings"
-
-	"github.com/usememos/memos/common"
 )
 
 type MemoRelationType string
@@ -104,7 +101,7 @@ func (s *Store) GetMemoRelation(ctx context.Context, find *FindMemoRelation) (*M
 	}
 
 	if len(list) == 0 {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+		return nil, nil
 	}
 
 	if err := tx.Commit(); err != nil {

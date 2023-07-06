@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	"github.com/usememos/memos/common"
 )
 
 // Visibility is the type of a visibility.
@@ -160,7 +158,7 @@ func (s *Store) GetMemo(ctx context.Context, find *FindMemo) (*Memo, error) {
 		return nil, err
 	}
 	if len(list) == 0 {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo not found")}
+		return nil, nil
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -217,18 +215,11 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemo) error {
 
 	where, args := []string{"id = ?"}, []any{delete.ID}
 	stmt := `DELETE FROM memo WHERE ` + strings.Join(where, " AND ")
-	result, err := tx.ExecContext(ctx, stmt, args...)
+	_, err = tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
 	}
 
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("idp not found")}
-	}
 	if err := s.vacuumImpl(ctx, tx); err != nil {
 		return err
 	}
@@ -393,7 +384,7 @@ func listMemos(ctx context.Context, tx *sql.Tx, find *FindMemo) ([]*Memo, error)
 			for _, relatedMemoType := range relatedMemoTypeList {
 				relatedMemoTypeList := strings.Split(relatedMemoType, ":")
 				if len(relatedMemoTypeList) != 2 {
-					return nil, &common.Error{Code: common.Invalid, Err: fmt.Errorf("invalid relation format")}
+					return nil, fmt.Errorf("invalid relation format")
 				}
 				relatedMemoID, err := strconv.Atoi(relatedMemoTypeList[0])
 				if err != nil {
