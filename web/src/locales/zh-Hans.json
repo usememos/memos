@@ -66,7 +66,14 @@
     "version": "版本",
     "visibility": "可见性",
     "yourself": "你自己",
-    "new": "新建"
+    "new": "新建",
+    "dialog": {
+      "help": "帮助",
+      "info": "信息",
+      "error": "错误",
+      "warning": "警告",
+      "success": "成功"
+    }
   },
   "about": {
     "about-memos": "关于Memos",
@@ -167,10 +174,10 @@
     }
   },
   "heatmap": {
-    "day": "天",
-    "days": "天",
-    "memo-in": " 条 memos",
-    "memos-in": " 条 memos",
+    "day": "天中",
+    "days": "天中",
+    "memo-in": " 条备忘录，在过去的",
+    "memos-in": " 条备忘录，在过去的",
     "memo-on": "{{date}} 记了 {{amount}} 条备忘录",
     "memos-on": "{{date}} 记了 {{amount}} 条备忘录"
   },
@@ -241,7 +248,9 @@
     "too-long": "过长",
     "too-short": "过短",
     "update-succeed": "更新成功",
-    "user-not-found": "未找到该用户"
+    "user-not-found": "未找到该用户",
+    "maximum-upload-size-is": "允许的最大上传大小为 {{size}} MiB",
+    "file-exceeds-upload-limit-of": "文件 {{file}} 超出了 {{size}} MiB 的上传限制"
   },
   "resource": {
     "clear": "清除",
@@ -337,7 +346,8 @@
       "telegram-user-id": "Telegram UserID",
       "telegram-user-id-placeholder": "向Telegram机器人发送任意消息以获取",
       "theme": "主题",
-      "updated_ts": "更新时间"
+      "updated_ts": "更新时间",
+      "default-resource-visibility": "默认资源可见性"
     },
     "sso": "SSO",
     "sso-section": {
@@ -413,7 +423,6 @@
       "disable-public-memos": "禁用公共备忘录",
       "ignore-version-upgrade": "忽略版本升级",
       "telegram-bot-token": "Telegram 机器人 Token",
-      "telegram-bot-token-description": "从 Telegram 的 @BotFather 处获取",
       "telegram-bot-token-description": "Telegram 机器人Token或`http.../bot<token>`格式的代理地址",
       "telegram-bot-token-placeholder": "Telegram 的机器人 Token",
       "openai-api-host": "OpenAI：API Host",
@@ -421,7 +430,9 @@
       "openai-api-key": "OpenAI：API 密钥",
       "openai-api-key-description": "获取 API Key",
       "openai-api-key-placeholder": "您的 OpenAI API Key",
-      "server-name": "服务名称"
+      "server-name": "服务名称",
+      "max-upload-size-hint": "建议值为 32 MiB。",
+      "max-upload-size": "最大上传大小 (MiB)"
     }
   },
   "shortcut-list": {
