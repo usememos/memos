@@ -1,12 +1,12 @@
+import { Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import * as api from "@/helpers/api";
-import { Divider } from "@mui/joy";
 import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
 import Dropdown from "../kit/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
-import HelpButton from "../kit/HelpButton";
+import LearnMore from "../LearnMore";
 
 const SSOSection = () => {
   const { t } = useTranslation();
@@ -43,7 +43,7 @@ const SSOSection = () => {
     <div className="section-container">
       <div className="mb-2 w-full flex flex-row justify-start items-center gap-1">
         <span className="font-mono text-sm text-gray-400">{t("setting.sso-section.sso-list")}</span>
-        <HelpButton icon="help" url="https://usememos.com/docs/keycloak" />
+        <LearnMore url="https://usememos.com/docs/keycloak" />
         <button
           className="btn-normal px-2 py-0 ml-1"
           onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}
@@ -57,7 +57,7 @@ const SSOSection = () => {
       {identityProviderList.map((identityProvider) => (
         <div
           key={identityProvider.id}
-          className="py-2 w-full border-t last:border-b dark:border-zinc-700 flex flex-row items-center justify-between"
+          className="py-2 w-full border-b last:border-b dark:border-zinc-700 flex flex-row items-center justify-between"
         >
           <div className="flex flex-row items-center">
             <p className="ml-2">

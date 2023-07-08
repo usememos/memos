@@ -339,9 +339,8 @@
     "or": "或"
   },
   "message": {
-    "no-memos": "沒有 Memo 了 🌃",
+    "no-data": "或許尋覓虛空，或者改換選擇之軌跡。",
     "memos-ready": "所有 Memo 已就緒 🎉",
-    "no-resource": "沒有 Resource 了 🌃",
     "resource-ready": "所有 Resource 已就緒 🎉",
     "restored-successfully": "還原成功",
     "memo-updated-datetime": "Memo 建立日期時間已變更。",

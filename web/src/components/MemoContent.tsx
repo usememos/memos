@@ -24,14 +24,11 @@ interface State {
 const MemoContent: React.FC<Props> = (props: Props) => {
   const { className, content, showFull, onMemoContentClick, onMemoContentDoubleClick } = props;
   const { t } = useTranslation();
-
+  const userStore = useUserStore();
   const [state, setState] = useState<State>({
     expandButtonStatus: -1,
   });
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
-
-  //variable for auto-collapse
-  const userStore = useUserStore();
   const isVisitorMode = userStore.isVisitorMode();
   const autoCollapse: boolean = isVisitorMode ? true : (userStore.state.user as User).localSetting.enableAutoCollapse;
 

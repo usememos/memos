@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
-import { Button, Divider, Input, Switch, Textarea } from "@mui/joy";
+import { Button, Divider, Input, Switch, Textarea, Tooltip } from "@mui/joy";
 import { formatBytes } from "@/helpers/utils";
 import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
-import HelpButton from "../kit/HelpButton";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
+import Icon from "../Icon";
+import LearnMore from "../LearnMore";
 import "@/less/settings/system-section.less";
 
 interface State {
@@ -224,7 +225,9 @@ const SystemSection = () => {
       <div className="form-label">
         <div className="flex flex-row items-center">
           <span className="text-sm mr-1">{t("setting.system-section.max-upload-size")}</span>
-          <HelpButton icon="info" hint={t("setting.system-section.max-upload-size-hint")} />
+          <Tooltip title={t("setting.system-section.max-upload-size-hint")} placement="top">
+            <Icon.HelpCircle className="w-4 h-auto" />
+          </Tooltip>
         </div>
         <Input
           className="w-16"
@@ -241,9 +244,9 @@ const SystemSection = () => {
         <div className="flex flex-row items-center">
           <div className="w-auto flex items-center">
             <span className="text-sm mr-1">{t("setting.system-section.telegram-bot-token")}</span>
-            <HelpButton
-              hint={t("setting.system-section.telegram-bot-token-description")}
+            <LearnMore
               url="https://usememos.com/docs/integration/telegram-bot"
+              title={t("setting.system-section.telegram-bot-token-description")}
             />
           </div>
         </div>
