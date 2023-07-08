@@ -214,7 +214,7 @@ const ResourcesDashboard = () => {
         <div className="w-full flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
           <div className="relative w-full flex flex-row justify-between items-center">
             <p className="flex flex-row justify-start items-center select-none rounded">
-              <Icon.Paperclip className="w-5 h-auto mr-1" /> {t("common.resources")}
+              <Icon.Paperclip className="w-5 h-auto mr-1 ml-2" /> {t("common.resources")}
             </p>
             <ResourceSearchBar setQuery={handleSearchResourceInputChange} />
           </div>

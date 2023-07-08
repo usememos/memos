@@ -8,10 +8,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"github.com/usememos/memos/api/v1/auth"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
-	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 	"golang.org/x/crypto/bcrypt"
 )
