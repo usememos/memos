@@ -14,6 +14,7 @@ import DailyMemo from "@/components/DailyMemo";
 import i18n from "@/i18n";
 import { findNearestLanguageMatch } from "@/utils/i18n";
 import { convertToMillis, getDateStampByDate, getNormalizedDateString, getTimeStampByDate } from "@/helpers/datetime";
+import Empty from "@/components/Empty";
 
 const DailyReview = () => {
   const { t } = useTranslation();
@@ -117,7 +118,7 @@ const DailyReview = () => {
             </button>
           </div>
           <DatePicker
-            className={`absolute top-8 mt-2 z-20 mx-auto border bg-white dark:bg-zinc-800 dark:border-zinc-800 rounded-lg mb-6 ${
+            className={`absolute top-8 mt-2 z-20 mx-auto border bg-white shadow dark:bg-zinc-800 dark:border-zinc-800 rounded-lg mb-6 ${
               showDatePicker ? "" : "!hidden"
             }`}
             datestamp={currentDateStamp}
@@ -141,8 +142,9 @@ const DailyReview = () => {
             </div>
           </div>
           {dailyMemos.length === 0 ? (
-            <div className="mx-auto pt-4 pb-5 px-0">
-              <p className="italic text-gray-400">{t("daily-review.no-memos")}</p>
+            <div className="w-full mt-4 mb-8 flex flex-col justify-center items-center italic">
+              <Empty />
+              <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
             </div>
           ) : (
             <div className="flex flex-col justify-start items-start w-full mt-2">

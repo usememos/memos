@@ -9,6 +9,7 @@ import useLoading from "@/hooks/useLoading";
 import MemoFilter from "@/components/MemoFilter";
 import Memo from "@/components/Memo";
 import MobileHeader from "@/components/MobileHeader";
+import Empty from "@/components/Empty";
 
 interface State {
   memos: Memo[];
@@ -66,6 +67,7 @@ const Explore = () => {
     : state.memos;
 
   const sortedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL");
+
   const handleFetchMoreClick = async () => {
     try {
       const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length);
@@ -87,15 +89,18 @@ const Explore = () => {
     <section className="w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       {!loadingState.isLoading && (
-        <main className="relative w-full h-auto flex flex-col justify-start items-start -mt-2">
+        <main className="relative w-full h-auto flex flex-col justify-start items-start">
           <MemoFilter />
           {sortedMemos.map((memo) => {
-            return <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} readonly={true} />;
+            return <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} showCreator />;
           })}
           {isComplete ? (
-            state.memos.length === 0 ? (
-              <p className="w-full text-center mt-12 text-gray-600">{t("message.no-memos")}</p>
-            ) : null
+            state.memos.length === 0 && (
+              <div className="w-full mt-16 mb-8 flex flex-col justify-center items-center italic">
+                <Empty />
+                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+              </div>
+            )
           ) : (
             <p className="m-auto text-center mt-4 italic cursor-pointer text-gray-500 hover:text-green-600" onClick={handleFetchMoreClick}>
               {t("memo.fetch-more")}

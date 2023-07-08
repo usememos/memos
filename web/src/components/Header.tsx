@@ -132,12 +132,12 @@ const Header = () => {
                   <Icon.Settings className="mr-3 w-6 h-auto opacity-70" /> {t("common.settings")}
                 </>
               </NavLink>
-              <div className="pr-3 pl-1 w-full">
+              <div id="header-memo">
                 <button
-                  className="mt-2 w-full py-3 rounded-full flex flex-row justify-center items-center bg-green-600 text-white hover:shadow hover:opacity-80"
+                  className="px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 bg-gray-50/100 dark:bg-zinc-700/20 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
                   onClick={() => showMemoEditorDialog()}
                 >
-                  <Icon.Edit3 className="w-4 h-auto mr-1" />
+                  <Icon.Feather className="mr-3 w-6 h-auto opacity-70" />
                   {t("common.new")}
                 </button>
               </div>

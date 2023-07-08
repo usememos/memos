@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "@/store/module";
-import { TAG_REG, LINK_REG } from "@/labs/marked/parser";
+import { TAG_REG, LINK_REG, PLAIN_LINK_REG } from "@/labs/marked/parser";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
+import Empty from "./Empty";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
-import { PLAIN_LINK_REG } from "@/labs/marked/parser";
 
 const MemoList = () => {
   const { t } = useTranslation();
@@ -153,7 +153,7 @@ const MemoList = () => {
   return (
     <div className="memo-list-container">
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} />
+        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} showVisibility />
       ))}
       {isFetching ? (
         <div className="status-text-container fetching-tip">
@@ -163,10 +163,11 @@ const MemoList = () => {
         <div ref={statusRef} className="status-text-container">
           <p className="status-text">
             {isComplete ? (
-              sortedMemos.length === 0 ? (
-                t("message.no-memos")
-              ) : (
-                t("message.memos-ready")
+              sortedMemos.length === 0 && (
+                <div className="w-full mt-4 mb-8 flex flex-col justify-center items-center italic">
+                  <Empty />
+                  <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+                </div>
               )
             ) : (
               <>

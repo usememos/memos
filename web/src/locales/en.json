@@ -324,9 +324,8 @@
     "or": "Or"
   },
   "message": {
-    "no-memos": "no memos 🌃",
+    "no-data": "Maybe no data was found, maybe it should be another option.",
     "memos-ready": "all memos are ready 🎉",
-    "no-resource": "no resource 🌃",
     "resource-ready": "all resource are ready 🎉",
     "restored-successfully": "Restored successfully",
     "memo-updated-datetime": "Memo created datetime changed.",

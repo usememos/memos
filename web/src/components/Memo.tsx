@@ -21,12 +21,13 @@ import "@/less/memo.less";
 
 interface Props {
   memo: Memo;
-  readonly?: boolean;
+  showCreator?: boolean;
+  showVisibility?: boolean;
   showRelatedMemos?: boolean;
 }
 
 const Memo: React.FC<Props> = (props: Props) => {
-  const { memo, readonly, showRelatedMemos } = props;
+  const { memo, showCreator, showVisibility, showRelatedMemos } = props;
   const { t, i18n } = useTranslation();
   const filterStore = useFilterStore();
   const userStore = useUserStore();
@@ -35,7 +36,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const [createdTimeStr, setCreatedTimeStr] = useState<string>(getRelativeTimeString(memo.displayTs));
   const [relatedMemoList, setRelatedMemoList] = useState<Memo[]>([]);
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const isVisitorMode = userStore.isVisitorMode() || readonly;
+  const readonly = userStore.isVisitorMode() || userStore.getCurrentUserId() !== memo.creatorId;
 
   useEffect(() => {
     Promise.allSettled(memo.relationList.map((memoRelation) => memoCacheStore.getOrFetchMemoById(memoRelation.relatedMemoId))).then(
@@ -134,7 +135,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         filterStore.setTagFilter(tagName);
       }
     } else if (targetEl.classList.contains("todo-block")) {
-      if (isVisitorMode) {
+      if (readonly) {
         return;
       }
 
@@ -173,7 +174,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
-    if (isVisitorMode) {
+    if (readonly) {
       return;
     }
 
@@ -216,60 +217,62 @@ const Memo: React.FC<Props> = (props: Props) => {
             <Link className="time-text" to={`/m/${memo.id}`} onClick={handleMemoCreatedTimeClick}>
               {createdTimeStr}
             </Link>
-            {isVisitorMode && (
+            {showCreator && (
               <Link className="name-text" to={`/u/${memo.creatorId}`}>
                 @{memo.creatorName}
               </Link>
             )}
           </div>
-          {!isVisitorMode && (
-            <div className="btns-container space-x-2">
-              {memo.visibility !== "PRIVATE" && (
-                <Tooltip title={t(`memo.visibility.${memo.visibility.toLowerCase()}`)} placement="top">
-                  <div onClick={() => handleMemoVisibilityClick(memo.visibility)}>
-                    {memo.visibility === "PUBLIC" ? (
-                      <Icon.Globe2 className="w-4 h-auto cursor-pointer rounded text-green-600" />
-                    ) : (
-                      <Icon.Users className="w-4 h-auto cursor-pointer rounded text-gray-500 dark:text-gray-400" />
-                    )}
-                  </div>
-                </Tooltip>
-              )}
-              {memo.pinned && <Icon.Bookmark className="w-4 h-auto rounded text-green-600" />}
-              <span className="btn more-action-btn">
-                <Icon.MoreHorizontal className="icon-img" />
-              </span>
-              <div className="more-action-btns-wrapper">
-                <div className="more-action-btns-container min-w-[6em]">
-                  <span className="btn" onClick={handleTogglePinMemoBtnClick}>
-                    {memo.pinned ? <Icon.BookmarkMinus className="w-4 h-auto mr-2" /> : <Icon.BookmarkPlus className="w-4 h-auto mr-2" />}
-                    {memo.pinned ? t("common.unpin") : t("common.pin")}
-                  </span>
-                  <span className="btn" onClick={handleEditMemoClick}>
-                    <Icon.Edit3 className="w-4 h-auto mr-2" />
-                    {t("common.edit")}
-                  </span>
-                  <span className="btn" onClick={handleGenerateMemoImageBtnClick}>
-                    <Icon.Share className="w-4 h-auto mr-2" />
-                    {t("common.share")}
-                  </span>
-                  <span className="btn" onClick={handleMarkMemoClick}>
-                    <Icon.Link className="w-4 h-auto mr-2" />
-                    Mark
-                  </span>
-                  <Divider className="!my-1" />
-                  <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>
-                    <Icon.Archive className="w-4 h-auto mr-2" />
-                    {t("common.archive")}
-                  </span>
-                  <span className="btn text-red-600" onClick={handleDeleteMemoClick}>
-                    <Icon.Trash className="w-4 h-auto mr-2" />
-                    {t("common.delete")}
-                  </span>
+          <div className="btns-container space-x-2">
+            {showVisibility && memo.visibility !== "PRIVATE" && (
+              <Tooltip title={t(`memo.visibility.${memo.visibility.toLowerCase()}`)} placement="top">
+                <div onClick={() => handleMemoVisibilityClick(memo.visibility)}>
+                  {memo.visibility === "PUBLIC" ? (
+                    <Icon.Globe2 className="w-4 h-auto cursor-pointer rounded text-green-600" />
+                  ) : (
+                    <Icon.Users className="w-4 h-auto cursor-pointer rounded text-gray-500 dark:text-gray-400" />
+                  )}
                 </div>
-              </div>
-            </div>
-          )}
+              </Tooltip>
+            )}
+            {memo.pinned && <Icon.Bookmark className="w-4 h-auto rounded text-green-600" />}
+            {!readonly && (
+              <>
+                <span className="btn more-action-btn">
+                  <Icon.MoreHorizontal className="icon-img" />
+                </span>
+                <div className="more-action-btns-wrapper">
+                  <div className="more-action-btns-container min-w-[6em]">
+                    <span className="btn" onClick={handleTogglePinMemoBtnClick}>
+                      {memo.pinned ? <Icon.BookmarkMinus className="w-4 h-auto mr-2" /> : <Icon.BookmarkPlus className="w-4 h-auto mr-2" />}
+                      {memo.pinned ? t("common.unpin") : t("common.pin")}
+                    </span>
+                    <span className="btn" onClick={handleEditMemoClick}>
+                      <Icon.Edit3 className="w-4 h-auto mr-2" />
+                      {t("common.edit")}
+                    </span>
+                    <span className="btn" onClick={handleGenerateMemoImageBtnClick}>
+                      <Icon.Share className="w-4 h-auto mr-2" />
+                      {t("common.share")}
+                    </span>
+                    <span className="btn" onClick={handleMarkMemoClick}>
+                      <Icon.Link className="w-4 h-auto mr-2" />
+                      Mark
+                    </span>
+                    <Divider className="!my-1" />
+                    <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>
+                      <Icon.Archive className="w-4 h-auto mr-2" />
+                      {t("common.archive")}
+                    </span>
+                    <span className="btn text-red-600" onClick={handleDeleteMemoClick}>
+                      <Icon.Trash className="w-4 h-auto mr-2" />
+                      {t("common.delete")}
+                    </span>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
         <MemoContent
           content={memo.content}
@@ -282,14 +285,14 @@ const Memo: React.FC<Props> = (props: Props) => {
 
       {showRelatedMemos && relatedMemoList.length > 0 && (
         <>
-          <p className="text-sm dark:text-gray-300 mt-4 mb-1 pl-4 opacity-50 flex flex-row items-center">
+          <p className="text-sm dark:text-gray-300 my-2 pl-4 opacity-50 flex flex-row items-center">
             <Icon.Link className="w-4 h-auto mr-1" />
             <span>Related memos</span>
           </p>
           {relatedMemoList.map((relatedMemo) => {
             return (
               <div key={relatedMemo.id} className="w-full">
-                <Memo memo={relatedMemo} readonly={readonly} />
+                <Memo memo={relatedMemo} showCreator />
               </div>
             );
           })}

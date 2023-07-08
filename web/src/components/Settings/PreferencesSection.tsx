@@ -7,7 +7,7 @@ import { useGlobalStore, useUserStore } from "@/store/module";
 import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import AppearanceSelect from "../AppearanceSelect";
 import LocaleSelect from "../LocaleSelect";
-import HelpButton from "../kit/HelpButton";
+import LearnMore from "../LearnMore";
 import "@/less/settings/preferences-section.less";
 
 const PreferencesSection = () => {
@@ -141,7 +141,7 @@ const PreferencesSection = () => {
       <div className="mb-2 w-full flex flex-row justify-between items-center">
         <div className="w-auto flex items-center">
           <span className="text-sm mr-1">{t("setting.preference-section.telegram-user-id")}</span>
-          <HelpButton icon="help" url="https://usememos.com/docs/integration/telegram-bot" />
+          <LearnMore url="https://usememos.com/docs/integration/telegram-bot" />
         </div>
         <Button onClick={handleSaveTelegramUserId}>{t("common.save")}</Button>
       </div>

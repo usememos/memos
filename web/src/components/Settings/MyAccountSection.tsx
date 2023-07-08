@@ -28,6 +28,8 @@ const MyAccountSection = () => {
     });
   };
 
+  const exampleWithCurl = `curl '${openAPIRoute}' -H 'Content-Type: application/json' --data-raw '{"content":"Hello world!"}'`;
+
   return (
     <>
       <div className="section-container account-section-container">
@@ -48,22 +50,15 @@ const MyAccountSection = () => {
         </div>
       </div>
       <div className="section-container openapi-section-container mt-6">
-        <p className="title-text">{t("setting.account-section.openapi-title")}</p>
-        <Input className="w-full mb-3" value={openAPIRoute} readOnly />
-        <Button color="warning" className="mb-4" onClick={handleResetOpenIdBtnClick}>
-          {t("setting.account-section.reset-api")} <Icon.RefreshCw className="ml-2 h-4 w-4" />
-        </Button>
-        <Textarea
-          className="w-full !font-mono !text-sm mt-4"
-          value={`POST ${openAPIRoute}\nContent-type: application/json\n{\n  "content": "${t(
-            "setting.account-section.openapi-sample-post",
-            {
-              url: window.location.origin,
-              interpolation: { escapeValue: false },
-            }
-          )}"\n}`}
-          readOnly
-        />
+        <p className="title-text">Open ID</p>
+        <div className="w-full flex flex-row justify-start items-center">
+          <Input className="grow mr-2" value={user.openId} readOnly />
+          <Button className="shrink-0" color="warning" onClick={handleResetOpenIdBtnClick}>
+            <Icon.RefreshCw className="h-4 w-4" />
+          </Button>
+        </div>
+        <p className="title-text">Open API Example with cURL</p>
+        <Textarea className="w-full !font-mono !text-sm whitespace-pre" value={exampleWithCurl} readOnly />
       </div>
     </>
   );

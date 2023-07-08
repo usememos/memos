@@ -6,7 +6,7 @@ import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import RequiredBadge from "./RequiredBadge";
-import HelpButton from "./kit/HelpButton";
+import LearnMore from "./LearnMore";
 
 interface Props extends DialogProps {
   storage?: ObjectStorage;
@@ -183,11 +183,9 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           onChange={(e) => setPartialS3Config({ bucket: e.target.value })}
           fullWidth
         />
-        <div className="flex flex-row">
-          <Typography className="!mb-1" level="body2">
-            {t("setting.storage-section.path")}
-          </Typography>
-          <HelpButton text={t("setting.storage-section.path-description")} url="https://usememos.com/docs/local-storage" />
+        <div className="flex flex-row items-center mb-1">
+          <Typography level="body2">{t("setting.storage-section.path")}</Typography>
+          <LearnMore className="ml-1" title={t("setting.storage-section.path-description")} url="https://usememos.com/docs/local-storage" />
         </div>
         <Input
           className="mb-2"
