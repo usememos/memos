@@ -43,7 +43,6 @@ type Resource struct {
 	ExternalLink string `json:"externalLink"`
 	Type         string `json:"type"`
 	Size         int64  `json:"size"`
-	PublicID     string `json:"publicId"`
 
 	// Related fields
 	LinkedMemoAmount int `json:"linkedMemoAmount"`
@@ -54,7 +53,6 @@ type CreateResourceRequest struct {
 	InternalPath    string `json:"internalPath"`
 	ExternalLink    string `json:"externalLink"`
 	Type            string `json:"type"`
-	PublicID        string `json:"publicId"`
 	DownloadToLocal bool   `json:"downloadToLocal"`
 }
 
@@ -62,12 +60,10 @@ type FindResourceRequest struct {
 	ID        *int    `json:"id"`
 	CreatorID *int    `json:"creatorId"`
 	Filename  *string `json:"filename"`
-	PublicID  *string `json:"publicId"`
 }
 
 type UpdateResourceRequest struct {
-	Filename      *string `json:"filename"`
-	ResetPublicID *bool   `json:"resetPublicId"`
+	Filename *string `json:"filename"`
 }
 
 const (
@@ -101,7 +97,6 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			Filename:     request.Filename,
 			ExternalLink: request.ExternalLink,
 			Type:         request.Type,
-			PublicID:     util.GenUUID(),
 		}
 		if request.ExternalLink != "" {
 			// Only allow those external links scheme with http/https
@@ -195,7 +190,6 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 		}
 		defer sourceFile.Close()
 
-		create := &store.Resource{}
 		systemSettingStorageServiceID, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
@@ -208,7 +202,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
-		publicID := util.GenUUID()
+		var create *store.Resource
 		if storageServiceID == DatabaseStorage {
 			fileBytes, err := io.ReadAll(sourceFile)
 			if err != nil {
@@ -229,7 +223,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
 			}
-			localStoragePath := "assets/{publicid}"
+			localStoragePath := "assets/{filename}"
 			if systemSettingLocalStoragePath != nil && systemSettingLocalStoragePath.Value != "" {
 				err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
 				if err != nil {
@@ -237,10 +231,10 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 				}
 			}
 			filePath := filepath.FromSlash(localStoragePath)
-			if !strings.Contains(filePath, "{publicid}") {
-				filePath = filepath.Join(filePath, "{publicid}")
+			if !strings.Contains(filePath, "{filename}") {
+				filePath = filepath.Join(filePath, "{filename}")
 			}
-			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename, publicID+filepath.Ext(file.Filename)))
+			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
 
 			dir := filepath.Dir(filePath)
 			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
@@ -292,10 +286,10 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 				}
 
 				filePath := s3Config.Path
-				if !strings.Contains(filePath, "{publicid}") {
-					filePath = path.Join(filePath, "{publicid}")
+				if !strings.Contains(filePath, "{filename}") {
+					filePath = path.Join(filePath, "{filename}")
 				}
-				filePath = replacePathTemplate(filePath, file.Filename, publicID+filepath.Ext(file.Filename))
+				filePath = replacePathTemplate(filePath, file.Filename)
 				_, filename := filepath.Split(filePath)
 				link, err := s3Client.UploadFile(ctx, filePath, filetype, sourceFile)
 				if err != nil {
@@ -313,7 +307,6 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			}
 		}
 
-		create.PublicID = publicID
 		resource, err := s.Store.CreateResource(ctx, create)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
@@ -389,10 +382,6 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 		if request.Filename != nil && *request.Filename != "" {
 			update.Filename = request.Filename
 		}
-		if request.ResetPublicID != nil && *request.ResetPublicID {
-			publicID := util.GenUUID()
-			update.PublicID = &publicID
-		}
 
 		resource, err = s.Store.UpdateResource(ctx, update)
 		if err != nil {
@@ -431,7 +420,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 		}
 
 		ext := filepath.Ext(resource.Filename)
-		thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d-%s%s", resource.ID, resource.PublicID, ext))
+		thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
 		if err := os.Remove(thumbnailPath); err != nil {
 			log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
 		}
@@ -496,7 +485,7 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 
 		if c.QueryParam("thumbnail") == "1" && util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
 			ext := filepath.Ext(resource.Filename)
-			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d-%s%s", resource.ID, resource.PublicID, ext))
+			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
 			thumbnailBlob, err := getOrGenerateThumbnailImage(blob, thumbnailPath)
 			if err != nil {
 				log.Warn(fmt.Sprintf("failed to get or generate local thumbnail with path %s", thumbnailPath), zap.Error(err))
@@ -516,8 +505,8 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 		}
 		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(blob))
 	}
+
 	g.GET("/r/:resourceId", f)
-	g.GET("/r/:resourceId/", f)
 	g.GET("/r/:resourceId/*", f)
 }
 
@@ -543,12 +532,10 @@ func (s *APIV1Service) createResourceCreateActivity(ctx context.Context, resourc
 	return err
 }
 
-func replacePathTemplate(path, filename, publicID string) string {
+func replacePathTemplate(path, filename string) string {
 	t := time.Now()
 	path = fileKeyPattern.ReplaceAllStringFunc(path, func(s string) string {
 		switch s {
-		case "{publicid}":
-			return publicID
 		case "{filename}":
 			return filename
 		case "{timestamp}":
@@ -624,7 +611,7 @@ func checkResourceVisibility(ctx context.Context, s *store.Store, resourceID int
 		return store.Private, err
 	}
 
-	// If resource is belongs to no memo, it'll always PRIVATE
+	// If resource is belongs to no memo, it'll always PRIVATE.
 	if len(memoResources) == 0 {
 		return store.Private, nil
 	}
@@ -640,7 +627,7 @@ func checkResourceVisibility(ctx context.Context, s *store.Store, resourceID int
 
 	var isProtected bool
 	for _, visibility := range visibilityList {
-		// If any memo is PUBLIC, resource do
+		// If any memo is PUBLIC, resource should be PUBLIC too.
 		if visibility == store.Public {
 			return store.Public, nil
 		}
@@ -650,12 +637,10 @@ func checkResourceVisibility(ctx context.Context, s *store.Store, resourceID int
 		}
 	}
 
-	// If no memo is PUBLIC, but any memo is PROTECTED, resource do
 	if isProtected {
 		return store.Protected, nil
 	}
 
-	// If all memo is PRIVATE, the resource do
 	return store.Private, nil
 }
 
@@ -671,7 +656,6 @@ func convertResourceFromStore(resource *store.Resource) *Resource {
 		ExternalLink:     resource.ExternalLink,
 		Type:             resource.Type,
 		Size:             resource.Size,
-		PublicID:         resource.PublicID,
 		LinkedMemoAmount: resource.LinkedMemoAmount,
 	}
 }

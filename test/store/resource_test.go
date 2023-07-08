@@ -19,7 +19,6 @@ func TestResourceStore(t *testing.T) {
 		ExternalLink: "",
 		Type:         "application/epub+zip",
 		Size:         637607,
-		PublicID:     "a02748e2-9b56-46b2-8b1f-72d686d52f77",
 	})
 	require.NoError(t, err)
 

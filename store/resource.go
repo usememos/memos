@@ -22,7 +22,6 @@ type Resource struct {
 	ExternalLink     string
 	Type             string
 	Size             int64
-	PublicID         string
 	LinkedMemoAmount int
 }
 
@@ -32,7 +31,6 @@ type FindResource struct {
 	CreatorID *int
 	Filename  *string
 	MemoID    *int
-	PublicID  *string
 	Limit     *int
 	Offset    *int
 }
@@ -41,7 +39,6 @@ type UpdateResource struct {
 	ID        int
 	UpdatedTs *int64
 	Filename  *string
-	PublicID  *string
 }
 
 type DeleteResource struct {
@@ -63,13 +60,12 @@ func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource
 			type,
 			size,
 			creator_id,
-			internal_path,
-			public_id
+			internal_path
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
 		RETURNING id, created_ts, updated_ts
 	`,
-		create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.PublicID,
+		create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath,
 	).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
 		return nil, err
 	}
@@ -91,10 +87,6 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 
 	resources, err := listResources(ctx, tx, find)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
@@ -143,12 +135,9 @@ func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Re
 	if v := update.Filename; v != nil {
 		set, args = append(set, "filename = ?"), append(args, *v)
 	}
-	if v := update.PublicID; v != nil {
-		set, args = append(set, "public_id = ?"), append(args, *v)
-	}
 
 	args = append(args, update.ID)
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path", "public_id"}
+	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path"}
 	query := `
 		UPDATE resource
 		SET ` + strings.Join(set, ", ") + `
@@ -165,7 +154,6 @@ func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Re
 		&resource.CreatedTs,
 		&resource.UpdatedTs,
 		&resource.InternalPath,
-		&resource.PublicID,
 	}
 	if err := tx.QueryRowContext(ctx, query, args...).Scan(dests...); err != nil {
 		return nil, err
@@ -215,11 +203,8 @@ func listResources(ctx context.Context, tx *sql.Tx, find *FindResource) ([]*Reso
 	if v := find.MemoID; v != nil {
 		where, args = append(where, "resource.id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
 	}
-	if v := find.PublicID; v != nil {
-		where, args = append(where, "resource.public_id = ?"), append(args, *v)
-	}
 
-	fields := []string{"resource.id", "resource.filename", "resource.external_link", "resource.type", "resource.size", "resource.creator_id", "resource.created_ts", "resource.updated_ts", "internal_path", "public_id"}
+	fields := []string{"resource.id", "resource.filename", "resource.external_link", "resource.type", "resource.size", "resource.creator_id", "resource.created_ts", "resource.updated_ts", "internal_path"}
 	if find.GetBlob {
 		fields = append(fields, "resource.blob")
 	}
@@ -261,7 +246,6 @@ func listResources(ctx context.Context, tx *sql.Tx, find *FindResource) ([]*Reso
 			&resource.CreatedTs,
 			&resource.UpdatedTs,
 			&resource.InternalPath,
-			&resource.PublicID,
 		}
 		if find.GetBlob {
 			dests = append(dests, &resource.Blob)
