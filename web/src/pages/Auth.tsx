@@ -17,8 +17,8 @@ const Auth = () => {
   const actionBtnLoadingState = useLoading(false);
   const { appearance, locale, systemStatus } = globalStore.state;
   const mode = systemStatus.profile.mode;
-  const [username, setUsername] = useState(mode === "demo" ? "demohero" : "");
-  const [password, setPassword] = useState(mode === "demo" ? "secret" : "");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
@@ -29,6 +29,13 @@ const Auth = () => {
     };
     fetchIdentityProviderList();
   }, []);
+
+  useEffect(() => {
+    if (mode === "demo") {
+      setUsername("demohero");
+      setPassword("secret");
+    }
+  }, [mode]);
 
   const handleUsernameInputChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
@@ -51,13 +58,13 @@ const Auth = () => {
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (systemStatus?.host) {
-      handleSignInBtnClick();
+      handleSignInButtonClick();
     } else {
-      handleSignUpBtnsClick();
+      handleSignUpButtonClick();
     }
   };
 
-  const handleSignInBtnClick = async () => {
+  const handleSignInButtonClick = async () => {
     if (username === "" || password === "") {
       return;
     }
@@ -82,7 +89,7 @@ const Auth = () => {
     actionBtnLoadingState.setFinish();
   };
 
-  const handleSignUpBtnsClick = async () => {
+  const handleSignUpButtonClick = async () => {
     if (username === "" || password === "") {
       return;
     }
@@ -170,40 +177,26 @@ const Auth = () => {
               </div>
             </div>
             <div className="flex flex-row justify-end items-center w-full mt-2">
-              {systemStatus?.host ? (
-                <>
-                  {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
-                  {systemStatus?.allowSignUp && (
-                    <>
-                      <button
-                        type="button"
-                        className={`btn-text ${actionBtnLoadingState.isLoading ? "cursor-wait opacity-80" : ""}`}
-                        onClick={handleSignUpBtnsClick}
-                      >
-                        {t("common.sign-up")}
-                      </button>
-                      <span className="mr-2 font-mono text-gray-200">/</span>
-                    </>
-                  )}
-                  <button
-                    type="submit"
-                    className={`btn-primary ${actionBtnLoadingState.isLoading ? "cursor-wait opacity-80" : ""}`}
-                    onClick={handleSignInBtnClick}
-                  >
-                    {t("common.sign-in")}
-                  </button>
-                </>
-              ) : (
+              {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
+              {systemStatus?.allowSignUp && (
                 <>
                   <button
-                    type="submit"
-                    className={`btn-primary ${actionBtnLoadingState.isLoading ? "cursor-wait opacity-80" : ""}`}
-                    onClick={handleSignUpBtnsClick}
+                    type="button"
+                    className={`btn-text ${actionBtnLoadingState.isLoading ? "cursor-wait opacity-80" : ""}`}
+                    onClick={handleSignUpButtonClick}
                   >
-                    {t("auth.signup-as-host")}
+                    {t("common.sign-up")}
                   </button>
+                  <span className="mr-2 font-mono text-gray-200">/</span>
                 </>
               )}
+              <button
+                type="submit"
+                className={`btn-primary ${actionBtnLoadingState.isLoading ? "cursor-wait opacity-80" : ""}`}
+                onClick={handleSignInButtonClick}
+              >
+                {t("common.sign-in")}
+              </button>
             </div>
           </form>
           {identityProviderList.length > 0 && (
