@@ -177,7 +177,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
 
-		userMessage := converUserFromStore(user)
+		userMessage := convertUserFromStore(user)
 		if err := s.createUserCreateActivity(c, userMessage); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
@@ -193,7 +193,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 
 		userMessageList := make([]*User, 0, len(list))
 		for _, user := range list {
-			userMessage := converUserFromStore(user)
+			userMessage := convertUserFromStore(user)
 			// data desensitize
 			userMessage.OpenID = ""
 			userMessage.Email = ""
@@ -228,7 +228,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		for _, userSetting := range list {
 			userSettingList = append(userSettingList, convertUserSettingFromStore(userSetting))
 		}
-		userMessage := converUserFromStore(user)
+		userMessage := convertUserFromStore(user)
 		userMessage.UserSettingList = userSettingList
 		return c.JSON(http.StatusOK, userMessage)
 	})
@@ -248,7 +248,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		}
 
-		userMessage := converUserFromStore(user)
+		userMessage := convertUserFromStore(user)
 		// data desensitize
 		userMessage.OpenID = ""
 		userMessage.Email = ""
@@ -334,7 +334,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		for _, userSetting := range list {
 			userSettingList = append(userSettingList, convertUserSettingFromStore(userSetting))
 		}
-		userMessage := converUserFromStore(user)
+		userMessage := convertUserFromStore(user)
 		userMessage.UserSettingList = userSettingList
 		return c.JSON(http.StatusOK, userMessage)
 	})
@@ -395,7 +395,7 @@ func (s *APIV1Service) createUserCreateActivity(c echo.Context, user *User) erro
 	return err
 }
 
-func converUserFromStore(user *store.User) *User {
+func convertUserFromStore(user *store.User) *User {
 	return &User{
 		ID:           user.ID,
 		RowStatus:    RowStatus(user.RowStatus),

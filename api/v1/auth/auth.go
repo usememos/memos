@@ -33,11 +33,9 @@ const (
 	// 2. The access token has already expired, we refresh the token so that the ongoing request can pass through.
 	CookieExpDuration = refreshTokenDuration - 1*time.Minute
 	// AccessTokenCookieName is the cookie name of access token.
-	AccessTokenCookieName = "access-token"
+	AccessTokenCookieName = "memos.access-token"
 	// RefreshTokenCookieName is the cookie name of refresh token.
-	RefreshTokenCookieName = "refresh-token"
-	// UserIDCookieName is the cookie name of user ID.
-	UserIDCookieName = "user"
+	RefreshTokenCookieName = "memos.refresh-token"
 )
 
 type claimsMessage struct {
