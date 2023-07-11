@@ -36,8 +36,8 @@ INSERT INTO
 VALUES
   (
     1003,
-    "**[Shortify](https://github.com/boojack/shortify)**: A bookmarking and short link service that allows you to save and share links easily.
-![](https://github.com/boojack/shortify/raw/main/resources/demo.gif)
+    "**[Slash](https://github.com/boojack/slash)**: A bookmarking and url shortener, save and share your links very easily.
+![](https://github.com/boojack/slash/raw/main/resources/demo.gif)
 
 **[SQL Chat](https://www.sqlchat.ai)**: Chat-based SQL Client
 ![](https://www.sqlchat.ai/chat-logo-and-text.webp)",
