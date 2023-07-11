@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"path"
 	"strconv"
+	"unicode/utf16"
 
 	"github.com/pkg/errors"
 	apiv1 "github.com/usememos/memos/api/v1"
@@ -66,9 +67,26 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 
 	if message.Text != nil {
 		create.Content = *message.Text
+
+		for i := len(message.Entities) - 1; i >= 0; i-- {
+			entity := message.Entities[i]
+
+			create.Content = formatMessage(create.Content, entity)
+		}
 	}
-	if blobs != nil && message.Caption != nil {
+
+	if message.Caption != nil {
 		create.Content = *message.Caption
+
+		for i := len(message.CaptionEntities) - 1; i >= 0; i-- {
+			entity := message.CaptionEntities[i]
+
+			create.Content = formatMessage(create.Content, entity)
+		}
+	}
+
+	if message.IsForwardMessage() {
+		create.Content += fmt.Sprintf("\n\n[Message link](%s)", message.GetMessageLink())
 	}
 
 	memoMessage, err := t.store.CreateMemo(ctx, create)
@@ -86,6 +104,8 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 			mime = "image/jpeg"
 		case ".png":
 			mime = "image/png"
+		case ".pdf":
+			mime = "application/pdf"
 		}
 		resource, err := t.store.CreateResource(ctx, &store.Resource{
 			CreatorID: creatorID,
@@ -157,4 +177,32 @@ func generateKeyboardForMemoID(id int) [][]telegram.InlineKeyboardButton {
 	}
 
 	return [][]telegram.InlineKeyboardButton{buttons}
+}
+
+func formatMessage(body string, entity telegram.MessageEntity) string {
+	if entity.IsTextLink() {
+		// some telegram channels put hidden links in spaces and dots
+		if entity.Length == 1 {
+			return body
+		}
+
+		bytes := utf16.Encode([]rune(body))
+		content := string(utf16.Decode(bytes[:entity.Offset]))
+		content += "[" + string(utf16.Decode(bytes[entity.Offset:entity.Offset+entity.Length])) + "]"
+		content += "(" + entity.URL + ")"
+		content += string(utf16.Decode(bytes[entity.Offset+entity.Length:]))
+
+		return content
+	}
+
+	if entity.IsCode() {
+		bytes := utf16.Encode([]rune(body))
+		content := string(utf16.Decode(bytes[:entity.Offset]))
+		content += "`" + string(utf16.Decode(bytes[entity.Offset:entity.Offset+entity.Length])) + "`"
+		content += string(utf16.Decode(bytes[entity.Offset+entity.Length:]))
+
+		return content
+	}
+
+	return body
 }

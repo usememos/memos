@@ -3,7 +3,6 @@ package telegram
 import (
 	"context"
 	"errors"
-	"fmt"
 	"strings"
 	"time"
 
@@ -64,15 +63,6 @@ func (b *Bot) Start(ctx context.Context) {
 			// handle Message update
 			if update.Message != nil {
 				message := *update.Message
-
-				// skip message other than text or photo
-				if message.Text == nil && message.Photo == nil {
-					_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Only text or photo message be supported")
-					if err != nil {
-						log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
-					}
-					continue
-				}
 
 				// Group message need do more
 				if message.MediaGroupID != nil {

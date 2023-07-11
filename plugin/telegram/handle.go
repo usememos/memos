@@ -19,6 +19,15 @@ func (b *Bot) handleSingleMessages(ctx context.Context, messages []Message) erro
 			blobs = map[string][]byte{filepath: blob}
 		}
 
+		// download blob if provided
+		if message.Document != nil {
+			filepath, blob, err := b.downloadFileID(ctx, message.Document.FileID)
+			if err != nil {
+				return err
+			}
+			blobs = map[string][]byte{filepath: blob}
+		}
+
 		err := b.handler.MessageHandle(ctx, b, message, blobs)
 		if err != nil {
 			return err
