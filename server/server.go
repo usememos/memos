@@ -70,6 +70,13 @@ func NewServer(ctx context.Context, profile *profile.Profile) (*Server, error) {
 	}))
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
+		Skipper: func(c echo.Context) bool {
+			if c.Request().URL.Path == "/api/openai/chat-streaming" {
+				return true
+			} else {
+				return false
+			}
+		},
 		ErrorMessage: "Request timeout",
 		Timeout:      30 * time.Second,
 	}))

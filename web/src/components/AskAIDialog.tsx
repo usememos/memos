@@ -11,6 +11,8 @@ import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 import showSettingDialog from "./SettingDialog";
 import Selector from "./kit/Selector";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { generateUUID } from "@/utils/uuid";
 
 type Props = DialogProps;
 
@@ -24,6 +26,8 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
   const [isInIME, setIsInIME] = useState(false);
   const [question, setQuestion] = useState<string>("");
   const messageList = messageStore.messageList;
+
+  const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
     api.checkOpenAIEnabled().then(({ data }) => {
@@ -56,11 +60,19 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
     fetchingState.setLoading();
     setQuestion("");
     messageStore.addMessage({
+      id: generateUUID(),
       role: "user",
       content: question,
     });
+
+    const messageId = generateUUID();
+    messageStore.addMessage({
+      id: messageId,
+      role: "assistant",
+      content: "",
+    });
     try {
-      await fetchChatCompletion();
+      fetchChatStreaming(messageId);
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.error);
@@ -68,16 +80,58 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
     fetchingState.setFinish();
   };
 
-  const fetchChatCompletion = async () => {
+  const fetchChatStreaming = async (messageId: string) => {
+    console.log("requesting...");
     const messageList = messageStore.getState().messageList;
-    const {
-      data: { data: answer },
-    } = await api.postChatCompletion(messageList);
-    messageStore.addMessage({
-      role: "assistant",
-      content: answer.replace(/^\n\n/, ""),
+    // const {
+    //   data: { data: answer },
+    // } = await api.postChatStreaming(messageList);
+    // messageStore.addMessage({
+    //   role: "assistant",
+    //   content: answer.replace(/^\n\n/, ""),
+    // });
+
+    let finished = false;
+
+    const finish = () => {
+      if (!finished) {
+        finished = true;
+      }
+    };
+
+    await fetchEventSource("/api/openai/chat-streaming", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(messageList),
+      async onopen() {
+        console.log("open");
+      },
+      onmessage(ev) {
+        messageStore.updateMessage(messageId, ev.data);
+        setMessage(message + ev.data);
+      },
+      onclose() {
+        console.log("close");
+        finish();
+      },
+      onerror(error) {
+        console.log("error", error);
+      },
     });
   };
+
+  // const fetchChatCompletion = async () => {
+  //   const messageList = messageStore.getState().messageList;
+  //   const {
+  //     data: { data: answer },
+  //   } = await api.postChatCompletion(messageList);
+  //   messageStore.addMessage({
+  //     role: "assistant",
+  //     content: answer.replace(/^\n\n/, ""),
+  //   });
+  // };
 
   const handleMessageGroupSelect = (value: string) => {
     const messageGroup = messageGroupList.find((group) => group.messageStorageId === value);

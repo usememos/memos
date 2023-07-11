@@ -92,6 +92,20 @@ const Header = () => {
                   <Icon.Paperclip className="mr-3 w-6 h-auto opacity-70" /> {t("common.resources")}
                 </>
               </NavLink>
+              <NavLink
+                to="/ask-ai"
+                id="header-ask-ai"
+                className={({ isActive }) =>
+                  `${
+                    isActive && "bg-white dark:bg-zinc-700 shadow"
+                  } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                }
+              >
+                <>
+                  <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("ask-ai.title")}
+                </>
+              </NavLink>
+
             </>
           )}
           <NavLink
@@ -109,13 +123,6 @@ const Header = () => {
           </NavLink>
           {!isVisitorMode && (
             <>
-              <button
-                id="header-ask-ai"
-                className="px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-                onClick={() => showAskAIDialog()}
-              >
-                <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("ask-ai.title")}
-              </button>
               <button
                 id="header-archived-memo"
                 className="px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700"

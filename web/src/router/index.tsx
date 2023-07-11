@@ -11,6 +11,7 @@ const Auth = lazy(() => import("@/pages/Auth"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
 const Explore = lazy(() => import("@/pages/Explore"));
 const Home = lazy(() => import("@/pages/Home"));
+const AskAI = lazy(() => import("@/pages/AskAI"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
 const EmbedMemo = lazy(() => import("@/pages/EmbedMemo"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
@@ -72,6 +73,25 @@ const router = createBrowserRouter([
       {
         path: "/u/:userId",
         element: <Home />,
+        loader: async () => {
+          await initialGlobalStateLoader();
+
+          try {
+            await initialUserState();
+          } catch (error) {
+            // do nth
+          }
+
+          const { host } = store.getState().user;
+          if (isNullorUndefined(host)) {
+            return redirect("/auth");
+          }
+          return null;
+        },
+      },
+      {
+        path: "ask-ai",
+        element: <AskAI />,
         loader: async () => {
           await initialGlobalStateLoader();
 

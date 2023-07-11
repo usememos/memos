@@ -10,6 +10,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@mui/joy": "^5.0.0-alpha.75",
     "@radix-ui/react-tooltip": "^1.0.5",
     "@reduxjs/toolkit": "^1.8.1",
@@ -32,6 +33,7 @@
     "react-use": "^17.4.0",
     "semver": "^7.3.8",
     "tailwindcss": "^3.2.4",
+    "uuid": "^9.0.0",
     "zustand": "^4.3.6"
   },
   "devDependencies": {

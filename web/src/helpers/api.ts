@@ -265,6 +265,10 @@ export function postChatCompletion(messages: any[]) {
   return axios.post<ResponseObject<string>>(`/api/openai/chat-completion`, messages);
 }
 
+export function postChatStreaming(messages: any[]) {
+  return axios.post<ResponseObject<string>>(`/api/openai/chat-streaming`, messages);
+}
+
 export function checkOpenAIEnabled() {
   return axios.get<ResponseObject<boolean>>(`/api/openai/enabled`);
 }
