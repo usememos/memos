@@ -51,7 +51,7 @@ func (m Message) IsForwardMessage() bool {
 }
 
 func (m Message) GetMessageLink() string {
-	if m.IsForwardMessage() == false {
+	if !m.IsForwardMessage() {
 		return ""
 	}
 
