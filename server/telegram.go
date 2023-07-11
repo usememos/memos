@@ -66,23 +66,11 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	}
 
 	if message.Text != nil {
-		create.Content = *message.Text
-
-		for i := len(message.Entities) - 1; i >= 0; i-- {
-			entity := message.Entities[i]
-
-			create.Content = formatMessage(create.Content, entity)
-		}
+		create.Content = ConvertToMarkdown(*message.Text, message.CaptionEntities)
 	}
 
 	if message.Caption != nil {
-		create.Content = *message.Caption
-
-		for i := len(message.CaptionEntities) - 1; i >= 0; i-- {
-			entity := message.CaptionEntities[i]
-
-			create.Content = formatMessage(create.Content, entity)
-		}
+		create.Content = ConvertToMarkdown(*message.Caption, message.CaptionEntities)
 	}
 
 	if message.IsForwardMessage() {
@@ -179,30 +167,48 @@ func generateKeyboardForMemoID(id int) [][]telegram.InlineKeyboardButton {
 	return [][]telegram.InlineKeyboardButton{buttons}
 }
 
-func formatMessage(body string, entity telegram.MessageEntity) string {
-	if entity.IsTextLink() {
-		// some telegram channels put hidden links in spaces and dots
-		if entity.Length == 1 {
-			return body
+func ConvertToMarkdown(text string, messageEntities []telegram.MessageEntity) string {
+	insertions := make(map[int]string)
+
+	for _, e := range messageEntities {
+		var before, after string
+
+		if e.IsBold() {
+			before = "**"
+			after = "**"
+		} else if e.IsItalic() {
+			before = "*"
+			after = "*"
+		} else if e.IsStrikethrough() {
+			before = "~~"
+			after = "~~"
+		} else if e.IsCode() {
+			before = "`"
+			after = "`"
+		} else if e.IsPre() {
+			before = "```" + e.Language
+			after = "```"
+		} else if e.IsTextLink() {
+			before = "["
+			after = fmt.Sprintf(`](%s)`, e.URL)
 		}
 
-		bytes := utf16.Encode([]rune(body))
-		content := string(utf16.Decode(bytes[:entity.Offset]))
-		content += "[" + string(utf16.Decode(bytes[entity.Offset:entity.Offset+entity.Length])) + "]"
-		content += "(" + entity.URL + ")"
-		content += string(utf16.Decode(bytes[entity.Offset+entity.Length:]))
-
-		return content
+		if before != "" {
+			insertions[e.Offset] += before
+			insertions[e.Offset+e.Length] = after + insertions[e.Offset+e.Length]
+		}
 	}
 
-	if entity.IsCode() {
-		bytes := utf16.Encode([]rune(body))
-		content := string(utf16.Decode(bytes[:entity.Offset]))
-		content += "`" + string(utf16.Decode(bytes[entity.Offset:entity.Offset+entity.Length])) + "`"
-		content += string(utf16.Decode(bytes[entity.Offset+entity.Length:]))
+	input := []rune(text)
+	var output []rune
+	utf16pos := 0
 
-		return content
+	for i := 0; i < len(input); i++ {
+		output = append(output, []rune(insertions[utf16pos])...)
+		output = append(output, input[i])
+		utf16pos += len(utf16.Encode([]rune{input[i]}))
 	}
+	output = append(output, []rune(insertions[utf16pos])...)
 
-	return body
+	return string(output)
 }

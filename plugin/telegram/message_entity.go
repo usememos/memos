@@ -42,6 +42,16 @@ func (e MessageEntity) IsItalic() bool {
 	return e.Type == "italic"
 }
 
+// IsUnderline returns true if the type of the message entity is "underline".
+func (e MessageEntity) IsUnderline() bool {
+	return e.Type == "underline"
+}
+
+// IsStrikethrough returns true if the type of the message entity is "strikethrough".
+func (e MessageEntity) IsStrikethrough() bool {
+	return e.Type == "strikethrough"
+}
+
 // IsCode returns true if the type of the message entity is "code" (monowidth string).
 func (e MessageEntity) IsCode() bool {
 	return e.Type == "code"
@@ -55,4 +65,9 @@ func (e MessageEntity) IsPre() bool {
 // IsTextLink returns true if the type of the message entity is "text_link" (clickable text URL).
 func (e MessageEntity) IsTextLink() bool {
 	return e.Type == "text_link"
+}
+
+// IsURL returns true if the type of the message entity is "url".
+func (e MessageEntity) IsURL() bool {
+	return e.Type == "url"
 }
