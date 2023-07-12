@@ -1,6 +1,5 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { MessageGroup } from "@/store/zustand/message-group";
 
 export interface Message {
   id: string;
@@ -15,7 +14,7 @@ interface MessageState {
   updateMessage: (id: string, appendContent: string) => void;
 }
 
-export const useMessageStore = (options: MessageGroup) => {
+export const useMessageStore = (messageStorageId: string) => {
   return create<MessageState>()(
     persist(
       (set, get) => ({
@@ -31,7 +30,7 @@ export const useMessageStore = (options: MessageGroup) => {
           })),
       }),
       {
-        name: options.messageStorageId,
+        name: messageStorageId,
       }
     )
   );
