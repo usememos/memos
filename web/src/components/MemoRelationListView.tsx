@@ -11,14 +11,16 @@ const MemoRelationListView = (props: Props) => {
   const [relatedMemoList, setRelatedMemoList] = useState<Memo[]>([]);
   const relationList = props.relationList;
 
-  useEffect(() => {
-    const fetchRelatedMemoList = async () => {
-      const requests = relationList.map((relation) => memoCacheStore.getOrFetchMemoById(relation.relatedMemoId));
-      const memoList = await Promise.all(requests);
-      setRelatedMemoList(memoList);
-    };
-    fetchRelatedMemoList();
-  }, [relationList]);
+ useEffect(() => {
+  const fetchRelatedMemoList = async () => {
+    const memoList = await Promise.all(
+      relationList.map((relation) => memoCacheStore.getOrFetchMemoById(relation.relatedMemoId))
+    );
+    setRelatedMemoList(memoList);
+  };
+
+  fetchRelatedMemoList();
+}, [relationList]);
 
   const handleGotoMemoDetail = (memo: Memo) => {
     window.open(`/m/${memo.id}`, "_blank");
