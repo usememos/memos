@@ -81,16 +81,7 @@ const AskAIDialog: React.FC<Props> = (props: Props) => {
   };
 
   const fetchChatStreaming = async (messageId: string) => {
-    console.log("requesting...");
     const messageList = messageStore.getState().messageList;
-    // const {
-    //   data: { data: answer },
-    // } = await api.postChatStreaming(messageList);
-    // messageStore.addMessage({
-    //   role: "assistant",
-    //   content: answer.replace(/^\n\n/, ""),
-    // });
-
     let finished = false;
 
     const finish = () => {
