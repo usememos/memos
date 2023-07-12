@@ -16,5 +16,3 @@ build
 .idea
 
 bin/air
-
-vendor

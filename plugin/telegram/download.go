@@ -8,18 +8,24 @@ import (
 	"strings"
 )
 
-// downloadFileId download file with fileID, return the filepath and blob.
-func (b *Bot) downloadFileID(ctx context.Context, fileID string) (string, []byte, error) {
+// downloadFileId download file with fileID, return Blob struct.
+func (b *Bot) downloadFileID(ctx context.Context, fileID string) (*Blob, error) {
 	file, err := b.GetFile(ctx, fileID)
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
-	blob, err := b.downloadFilepath(ctx, file.FilePath)
+	data, err := b.downloadFilepath(ctx, file.FilePath)
 	if err != nil {
-		return "", nil, err
+		return nil, err
 	}
 
-	return file.FilePath, blob, nil
+	blob := &Blob{
+		FileName: file.FilePath,
+		Data:     data,
+		FileSize: file.FileSize,
+	}
+
+	return blob, nil
 }
 
 // downloadFilepath download file with filepath, you can get filepath by calling GetFile.
