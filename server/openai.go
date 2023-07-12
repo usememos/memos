@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
@@ -61,8 +60,6 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "No messages provided")
 		}
 
-		sse := echosse.NewSSEClint(c)
-
 		ctx := c.Request().Context()
 		openAIConfigSetting, err := s.Store.FindSystemSetting(ctx, &api.SystemSettingFind{
 			Name: api.SystemSettingOpenAIConfigName,
@@ -82,8 +79,12 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "OpenAI API key not set")
 		}
 
-		client := gpt3.NewClient(openAIConfig.Key)
+		sse := echosse.NewSSEClint(c)
 
+		// to do these things in server may not elegant.
+		// But move it to openai plugin will break the simple. Because it is a streaming. We must use a channel to do it.
+		// And we can think it is a forward proxy. So it in here is not a bad idea.
+		client := gpt3.NewClient(openAIConfig.Key)
 		err = client.ChatCompletionStream(ctx, gpt3.ChatCompletionRequest{
 			Model:    gpt3.GPT3Dot5Turbo,
 			Messages: messages,
@@ -93,10 +94,12 @@ func (s *Server) registerOpenAIRoutes(g *echo.Group) {
 				sse.SendEvent(resp.Choices[0].Delta.Content)
 				//to delay 0.5 s
 				time.Sleep(50 * time.Millisecond)
+				// the delay is a very good way to make the chatbot more comfortable
+				// otherwise the chatbot will reply too fast. Believe me it is not good.🤔
 			})
 
 		if err != nil {
-			log.Fatalln(err)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to chat with OpenAI").SetInternal(err)
 		}
 
 		return nil
