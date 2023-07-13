@@ -119,7 +119,6 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 				if err != nil {
 					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read %s", request.ExternalLink))
 				}
-				create.Blob = blob
 
 				mediaType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 				if err != nil {
@@ -136,6 +135,12 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 				}
 				create.Filename = filename
 				create.ExternalLink = ""
+				create.Size = int64(len(blob))
+
+				err = SaveResourceBlob(ctx, s.Store, create, bytes.NewReader(blob))
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to save resource").SetInternal(err)
+				}
 			}
 		}
 
