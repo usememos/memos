@@ -2,6 +2,8 @@ import { Message } from "@/store/zustand/message";
 import { marked } from "@/labs/marked";
 import Icon from "@/components/Icon";
 import Dropdown from "../kit/Dropdown";
+import { useMemoStore } from "@/store/module";
+import toast from "react-hot-toast";
 
 interface MessageProps {
   index: number;
@@ -9,6 +11,18 @@ interface MessageProps {
 }
 
 const MemosChatMessage = ({ index, message }: MessageProps) => {
+  const memoStore = useMemoStore();
+
+  const handelSaveAsMemos = async () => {
+    await memoStore.createMemo({
+      content: message.content,
+      visibility: "PRIVATE",
+      resourceIdList: [],
+      relationList: [],
+    });
+    toast.success("save as memos success");
+  };
+
   return (
     <div key={index} className="w-full flex flex-col justify-start items-start space-y-2">
       {message.role === "user" ? (
@@ -27,8 +41,8 @@ const MemosChatMessage = ({ index, message }: MessageProps) => {
             actions={
               <>
                 <button
-                  className="w-full text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                  onClick={() => console.log("save as memos")}
+                  className="w-full m-auto text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
+                  onClick={() => handelSaveAsMemos()}
                 >
                   {"save as memos"}
                 </button>
