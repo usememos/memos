@@ -50,7 +50,6 @@ func (s *APIV1Service) registerOpenAIRoutes(g *echo.Group) {
 	})
 
 	g.POST("/openai/chat-streaming", func(c echo.Context) error {
-
 		messages := []gpt3.ChatCompletionRequestMessage{}
 		if err := json.NewDecoder(c.Request().Body).Decode(&messages); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post chat completion request").SetInternal(err)
@@ -90,8 +89,10 @@ func (s *APIV1Service) registerOpenAIRoutes(g *echo.Group) {
 			Stream:   true,
 		},
 			func(resp *gpt3.ChatCompletionStreamResponse) {
-				sse.SendEvent(resp.Choices[0].Delta.Content)
-				//to delay 0.5 s
+				// _ is for to pass the golangci-lint check
+				_ = sse.SendEvent(resp.Choices[0].Delta.Content)
+
+				// to delay 0.5 s
 				time.Sleep(50 * time.Millisecond)
 				// the delay is a very good way to make the chatbot more comfortable
 				// otherwise the chatbot will reply too fast. Believe me it is not good.🤔

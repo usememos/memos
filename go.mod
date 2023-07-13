@@ -3,6 +3,8 @@ module github.com/usememos/memos
 go 1.19
 
 require (
+	github.com/CorrectRoadH/echo-sse v0.1.4
+	github.com/PullRequestInc/go-gpt3 v1.1.15
 	github.com/aws/aws-sdk-go-v2 v1.17.4
 	github.com/aws/aws-sdk-go-v2/config v1.18.12
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.12
@@ -27,8 +29,6 @@ require (
 )
 
 require (
-	github.com/CorrectRoadH/echo-sse v0.1.4 // indirect
-	github.com/PullRequestInc/go-gpt3 v1.1.15 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
