@@ -10,7 +10,7 @@ interface ConversationTabProps {
 const ConversationTab = ({ item, selectedConversationId, setSelectedConversationId, closeConversation }: ConversationTabProps) => {
   return (
     <div
-      className={`flex rounded-lg h-8 px-3 border dark:border-zinc-600 ${
+      className={`flex rounded-lgg h-8 px-3 border dark:border-zinc-600 ${
         selectedConversationId === item.messageStorageId ? "bg-white dark:bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800 opacity-60"
       }`}
       key={item.messageStorageId}
