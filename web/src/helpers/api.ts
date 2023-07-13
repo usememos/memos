@@ -133,6 +133,9 @@ export function unpinMemo(memoId: MemoId) {
 export function deleteMemo(memoId: MemoId) {
   return axios.delete(`/api/v1/memo/${memoId}`);
 }
+export function checkOpenAIEnabled() {
+  return axios.get<boolean>(`/api/openai/enabled`);
+}
 
 export function getShortcutList(shortcutFind?: ShortcutFind) {
   const queryList = [];

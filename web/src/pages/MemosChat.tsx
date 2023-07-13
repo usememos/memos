@@ -7,7 +7,7 @@ import useLoading from "@/hooks/useLoading";
 import { useMessageStore } from "@/store/zustand/message";
 import { Conversation, useConversationStore } from "@/store/zustand/conversation";
 import Icon from "@/components/Icon";
-import showSettingDialog from "../components/SettingDialog";
+import showSettingDialog from "@/components/SettingDialog";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { generateUUID } from "@/utils/uuid";
 import MobileHeader from "@/components/MobileHeader";
@@ -33,8 +33,7 @@ const MemosChat = () => {
 
   useEffect(() => {
     api.checkOpenAIEnabled().then(({ data }) => {
-      const { data: enabled } = data;
-      setIsEnabled(enabled);
+      setIsEnabled(data);
     });
   }, []);
 
