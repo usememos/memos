@@ -50,7 +50,6 @@ func (s *APIV1Service) registerOpenAIRoutes(g *echo.Group) {
 	})
 
 	g.POST("/openai/chat-streaming", func(c echo.Context) error {
-
 		messages := []gpt3.ChatCompletionRequestMessage{}
 		if err := json.NewDecoder(c.Request().Body).Decode(&messages); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post chat completion request").SetInternal(err)
