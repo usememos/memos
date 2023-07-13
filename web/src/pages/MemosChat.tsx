@@ -7,7 +7,6 @@ import useLoading from "@/hooks/useLoading";
 import { useMessageStore } from "@/store/zustand/message";
 import { Conversation, useConversationStore } from "@/store/zustand/conversation";
 import Icon from "@/components/Icon";
-import showSettingDialog from "@/components/SettingDialog";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { generateUUID } from "@/utils/uuid";
 import MobileHeader from "@/components/MobileHeader";
@@ -50,7 +49,7 @@ const MemosChat = () => {
   }, [conversationList]);
 
   const handleGotoSystemSetting = () => {
-    showSettingDialog("system");
+    window.open(`/setting`);
   };
 
   const handleQuestionTextareaChange = async (event: React.ChangeEvent<HTMLTextAreaElement>) => {
