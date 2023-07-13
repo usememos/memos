@@ -10,6 +10,11 @@ if (process.env.DEV_PROXY_SERVER && process.env.DEV_PROXY_SERVER.length > 0) {
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  build: {
+    rollupOptions: {
+      external: ["uuid"],
+    },
+  },
   plugins: [react()],
   server: {
     host: "0.0.0.0",
