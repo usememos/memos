@@ -1,6 +1,11 @@
 package telegram
 
-import "path"
+import (
+	"path"
+
+	"github.com/usememos/memos/common/log"
+	"go.uber.org/zap"
+)
 
 type Attachment struct {
 	FileName string
@@ -12,7 +17,8 @@ type Attachment struct {
 var mimeTypes = map[string]string{
 	".jpg": "image/jpeg",
 	".png": "image/png",
-	".mp4": "video/mp4",
+	".mp4": "video/mp4", // for video note
+	".oga": "audio/ogg", // for voice
 }
 
 func (b Attachment) GetMimeType() string {
@@ -23,7 +29,8 @@ func (b Attachment) GetMimeType() string {
 	mime, ok := mimeTypes[path.Ext(b.FileName)]
 	if !ok {
 		// Handle unknown file extension
-		// This could be logging an error, returning a default mime type, etc.
+		log.Warn("Unknown file type for ", zap.String("filename", b.FileName))
+
 		return "application/octet-stream"
 	}
 
