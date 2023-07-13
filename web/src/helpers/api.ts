@@ -1,5 +1,6 @@
 import axios from "axios";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { Message } from "@/store/zustand/message";
 
 export function getSystemStatus() {
   return axios.get<SystemStatus>("/api/v1/status");
@@ -138,7 +139,7 @@ export function checkOpenAIEnabled() {
   return axios.get<boolean>(`/api/openai/enabled`);
 }
 
-export async function chatStreaming(messageList: any, onmessage: any, onclose: any) {
+export async function chatStreaming(messageList: Array<Message>, onmessage: any, onclose: any) {
   await fetchEventSource("/api/v1/openai/chat-streaming", {
     method: "POST",
     headers: {
@@ -148,8 +149,8 @@ export async function chatStreaming(messageList: any, onmessage: any, onclose: a
     async onopen() {
       // to do nth
     },
-    onmessage(ev: any) {
-      onmessage(ev);
+    onmessage(event: any) {
+      onmessage(event);
     },
     onclose() {
       onclose();

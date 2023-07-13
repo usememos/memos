@@ -13,6 +13,7 @@ import MemosChatMessage from "@/components/MemosChat/MemosChatMessage";
 import MemosChatInput from "@/components/MemosChat/MemosChatInput";
 import head from "lodash-es/head";
 import ConversationTab from "@/components/MemosChat/ConversationTab";
+import Empty from "@/components/Empty";
 
 const MemosChat = () => {
   const { t } = useTranslation();
@@ -162,7 +163,12 @@ const MemosChat = () => {
 
         <div className="dialog-content-container w-full">
           <Stack spacing={2} style={{ width: "100%" }}>
-            {messageList.length == 0 && <div className="flex m-auto text-gray-500">Nothing here</div>}
+            {messageList.length == 0 && (
+              <div className="w-full mt-8 mb-8 flex flex-col justify-center items-center italic">
+                <Empty />
+                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+              </div>
+            )}
             {messageList.map((message, index) => (
               <MemosChatMessage key={index} message={message} index={index} />
             ))}
