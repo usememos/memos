@@ -166,7 +166,7 @@ const MemosChat = () => {
             {messageList.length == 0 && (
               <div className="w-full mt-8 mb-8 flex flex-col justify-center items-center italic">
                 <Empty />
-                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("memos-chat.no-message")}</p>
               </div>
             )}
             {messageList.map((message, index) => (

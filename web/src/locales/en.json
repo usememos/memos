@@ -383,6 +383,7 @@
     "not-enabled": "You have not set up your OpenAI API key.",
     "go-to-settings": "Go to settings",
     "placeholder": "Ask anything…",
+    "no-message": "No Message",
     "default-message-group-title": "Default Session",
     "create-message-group-title": "Create Session",
     "label-message-group-name-title": "Session Name"
