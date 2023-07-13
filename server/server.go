@@ -64,6 +64,11 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}))
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
+		Skipper: func(c echo.Context) bool {
+			// this is a hack to skip timeout for openai chat streaming
+			// because streaming require to flush response. But the timeout middleware will break it.
+			return c.Request().URL.Path == "/api/openai/chat-streaming"
+		},
 		ErrorMessage: "Request timeout",
 		Timeout:      30 * time.Second,
 	}))

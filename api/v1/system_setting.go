@@ -37,6 +37,8 @@ const (
 	SystemSettingTelegramBotTokenName SystemSettingName = "telegram-bot-token"
 	// SystemSettingMemoDisplayWithUpdatedTsName is the name of memo display with updated ts.
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
+	// SystemSettingOpenAIConfigName is the name of OpenAI config.
+	SystemSettingOpenAIConfigName SystemSettingName = "openai-config"
 )
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
@@ -64,6 +66,11 @@ type SystemSetting struct {
 	// Value is a JSON string with basic value.
 	Value       string `json:"value"`
 	Description string `json:"description"`
+}
+
+type OpenAIConfig struct {
+	Key  string `json:"key"`
+	Host string `json:"host"`
 }
 
 type UpsertSystemSettingRequest struct {
@@ -124,6 +131,11 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 		return nil
 	case SystemSettingLocalStoragePathName:
 		value := ""
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
+	case SystemSettingOpenAIConfigName:
+		value := OpenAIConfig{}
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
