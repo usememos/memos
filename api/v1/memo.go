@@ -541,14 +541,6 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 		}
 		findMemoMessage.ContentSearch = contentSearch
 
-		visibilityListStr := c.QueryParam("visibility")
-		if visibilityListStr != "" {
-			visibilityList := []store.Visibility{}
-			for _, visibility := range strings.Split(visibilityListStr, ",") {
-				visibilityList = append(visibilityList, store.Visibility(visibility))
-			}
-			findMemoMessage.VisibilityList = visibilityList
-		}
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
 			findMemoMessage.Limit = &limit
 		}
