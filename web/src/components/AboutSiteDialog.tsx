@@ -40,8 +40,12 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
           </div>
           <GitHubBadge />
         </div>
-        <div className="border-t w-full mt-3 pt-2 text-sm flex flex-row justify-start items-center space-x-2">
+        <div className="border-t w-full mt-3 pt-2 text-sm flex flex-row justify-start items-center space-x-4">
           <span className="text-gray-500">{t("about.other-projects")}:</span>
+          <a href="https://github.com/boojack/slash" target="_blank" className="flex items-center underline text-blue-600 hover:opacity-80">
+            <img className="w-4 h-auto mr-1" src="https://github.com/boojack/slash/raw/main/resources/logo.png" alt="" />
+            <span>Slash</span>
+          </a>
           <a
             href="https://github.com/boojack/sticky-notes"
             target="_blank"
@@ -53,10 +57,6 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
               alt=""
             />
             <span>Sticky notes</span>
-          </a>
-          <a href="https://star-history.com" target="_blank" className="flex items-center underline text-blue-600 hover:opacity-80">
-            <img className="w-4 h-auto mr-1" src="https://star-history.com/icon.png" alt="" />
-            <span>Star history</span>
           </a>
         </div>
       </div>
