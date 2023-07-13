@@ -7,12 +7,12 @@ import useLoading from "@/hooks/useLoading";
 import { useMessageStore } from "@/store/zustand/message";
 import { Conversation, useConversationStore } from "@/store/zustand/conversation";
 import Icon from "@/components/Icon";
-import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { generateUUID } from "@/utils/uuid";
 import MobileHeader from "@/components/MobileHeader";
 import MemosChatMessage from "@/components/MemosChat/MemosChatMessage";
 import MemosChatInput from "@/components/MemosChat/MemosChatInput";
 import head from "lodash-es/head";
+import ConversationTab from "@/components/MemosChat/ConversationTab";
 
 const MemosChat = () => {
   const { t } = useTranslation();
@@ -28,6 +28,7 @@ const MemosChat = () => {
   const messageStore = useMessageStore(selectedConversationId)();
   const messageList = messageStore.messageList;
 
+  // the state didn't show in component, just for trigger re-render
   const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
@@ -92,36 +93,17 @@ const MemosChat = () => {
 
   const fetchChatStreaming = async (messageId: string) => {
     const messageList = messageStore.getState().messageList;
-
-    let finished = false;
-
-    const finish = () => {
-      if (!finished) {
-        finished = true;
+    await api.chatStreaming(
+      messageList,
+      async (event: any) => {
+        messageStore.updateMessage(messageId, event.data);
+        // to trigger re-render
+        setMessage(message + event.data);
+      },
+      async () => {
         fetchingState.setFinish();
       }
-    };
-
-    await fetchEventSource("/api/openai/chat-streaming", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(messageList),
-      async onopen() {
-        // to process somethings. But I didn't think of anything to do.
-      },
-      onmessage(ev) {
-        messageStore.updateMessage(messageId, ev.data);
-        setMessage(message + ev.data);
-      },
-      onclose() {
-        finish();
-      },
-      onerror(error) {
-        console.log("error", error);
-      },
-    });
+    );
   };
 
   const newConversation = () => {
@@ -145,33 +127,25 @@ const MemosChat = () => {
         <div className="flex space-x-2">
           <div className="w-full flex flex-row justify-between items-center">
             <p className="flex flex-row justify-start items-center select-none rounded">
-              <Icon.Bot className="w-5 h-auto mr-1" /> {t("ask-ai.title")}
+              <Icon.Bot className="w-5 h-auto mr-1" /> {t("memos-chat.title")}
             </p>
           </div>
 
           <span className="flex flex-row w-full justify-start items-center">
             <div className="flex space-x-2 max-w-md overflow-scroll">
               {conversationList.map((item: Conversation) => (
-                <div
-                  className={`flex bg-zinc-100 dark:bg-zinc-800 rounded-md p-2 ${
-                    selectedConversationId === item.messageStorageId ? "border-2 dark:border-zinc-600" : ""
-                  }`}
+                <ConversationTab
                   key={item.messageStorageId}
-                  onClick={() => {
-                    setSelectedConversationId(item.messageStorageId);
+                  item={item}
+                  selectedConversationId={selectedConversationId}
+                  setSelectedConversationId={setSelectedConversationId}
+                  closeConversation={(e) => {
+                    // this is very important. otherwise, the select event also be clicked.
+                    e.stopPropagation();
+                    conversationStore.removeConversation(item);
+                    toast.success("Remove successfully");
                   }}
-                >
-                  <div className="truncate">{item.name}</div>
-                  <Icon.X
-                    className="w-4 h-auto ml-1 cursor-pointer"
-                    onClick={(e: any) => {
-                      // this is very important. otherwise, the select event also be clicked.
-                      e.stopPropagation();
-                      conversationStore.removeConversation(item);
-                      toast.success("Remove successfully");
-                    }}
-                  />
-                </div>
+                />
               ))}
             </div>
 
@@ -200,8 +174,8 @@ const MemosChat = () => {
           )}
           {!isEnabled && (
             <div className="w-full flex flex-col justify-center items-center mt-4 space-y-2">
-              <p>{t("ask-ai.not_enabled")}</p>
-              <Button onClick={() => handleGotoSystemSetting()}>{t("ask-ai.go-to-settings")}</Button>
+              <p>{t("memos-chat.not_enabled")}</p>
+              <Button onClick={() => handleGotoSystemSetting()}>{t("memos-chat.go-to-settings")}</Button>
             </div>
           )}
 

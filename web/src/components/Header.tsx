@@ -114,7 +114,7 @@ const Header = () => {
             }
           >
             <>
-              <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("ask-ai.title")}
+              <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("memos-chat.title")}
             </>
           </NavLink>
 

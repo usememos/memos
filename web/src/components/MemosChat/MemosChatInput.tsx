@@ -22,7 +22,7 @@ const MemosChatInput = ({
     <div className="w-full relative mt-4">
       <Textarea
         className="w-full"
-        placeholder={t("ask-ai.placeholder")}
+        placeholder={t("memos-chat.placeholder")}
         value={question}
         minRows={1}
         maxRows={5}
