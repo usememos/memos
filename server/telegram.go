@@ -30,7 +30,7 @@ const (
 	successMessage = "Success"
 )
 
-func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, message telegram.Message, blobs []telegram.Blob) error {
+func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, message telegram.Message, attachments []telegram.Attachment) error {
 	reply, err := bot.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
 	if err != nil {
 		return fmt.Errorf("fail to SendReplyMessage: %s", err)
@@ -83,13 +83,13 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	}
 
 	// create resources
-	for _, blob := range blobs {
+	for _, attachment := range attachments {
 		resource, err := t.store.CreateResource(ctx, &store.Resource{
 			CreatorID: creatorID,
-			Filename:  blob.FileName,
-			Type:      blob.GetMimeType(),
-			Size:      blob.FileSize,
-			Blob:      blob.Data,
+			Filename:  attachment.FileName,
+			Type:      attachment.GetMimeType(),
+			Size:      attachment.FileSize,
+			Blob:      attachment.Data,
 		})
 		if err != nil {
 			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err), nil)

@@ -8,8 +8,56 @@ import (
 	"strings"
 )
 
+func (b *Bot) downloadAttachment(ctx context.Context, message *Message) (*Attachment, error) {
+	var fileID, fileName, mimeType string
+	switch {
+	case len(message.Photo) > 0:
+		fileID = message.GetMaxPhotoFileID()
+	case message.Animation != nil:
+		fileID = message.Animation.FileID
+		fileName = message.Animation.FileName
+		mimeType = message.Animation.MimeType
+	case message.Audio != nil:
+		fileID = message.Audio.FileID
+		fileName = message.Audio.FileName
+		mimeType = message.Audio.MimeType
+	case message.Document != nil:
+		fileID = message.Document.FileID
+		fileName = message.Document.FileName
+		mimeType = message.Document.MimeType
+	case message.Video != nil:
+		fileID = message.Video.FileID
+		fileName = message.Video.FileName
+		mimeType = message.Video.MimeType
+	case message.VideoNote != nil:
+		fileID = message.VideoNote.FileID
+	case message.Voice != nil:
+		fileID = message.Voice.FileID
+		mimeType = message.Voice.MimeType
+	}
+
+	if fileID == "" {
+		return nil, nil
+	}
+
+	attachment, err := b.downloadFileID(ctx, fileID)
+	if err != nil {
+		return nil, err
+	}
+
+	if fileName != "" {
+		attachment.FileName = fileName
+	}
+
+	if mimeType != "" {
+		attachment.MimeType = mimeType
+	}
+
+	return attachment, nil
+}
+
 // downloadFileId download file with fileID, return Blob struct.
-func (b *Bot) downloadFileID(ctx context.Context, fileID string) (*Blob, error) {
+func (b *Bot) downloadFileID(ctx context.Context, fileID string) (*Attachment, error) {
 	file, err := b.GetFile(ctx, fileID)
 	if err != nil {
 		return nil, err
@@ -19,7 +67,7 @@ func (b *Bot) downloadFileID(ctx context.Context, fileID string) (*Blob, error) 
 		return nil, err
 	}
 
-	blob := &Blob{
+	blob := &Attachment{
 		FileName: file.FilePath,
 		Data:     data,
 		FileSize: file.FileSize,

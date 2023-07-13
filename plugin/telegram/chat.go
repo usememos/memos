@@ -3,10 +3,10 @@ package telegram
 type ChatType string
 
 const (
-	Private    ChatType = "private"
-	Group      ChatType = "group"
-	SuperGroup ChatType = "supergroup"
-	Channel    ChatType = "channel"
+	Private    = "private"
+	Group      = "group"
+	SuperGroup = "supergroup"
+	Channel    = "channel"
 )
 
 type Chat struct {
