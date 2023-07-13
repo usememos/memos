@@ -90,8 +90,10 @@ func (s *APIV1Service) registerOpenAIRoutes(g *echo.Group) {
 			Stream:   true,
 		},
 			func(resp *gpt3.ChatCompletionStreamResponse) {
-				sse.SendEvent(resp.Choices[0].Delta.Content)
-				//to delay 0.5 s
+				// _ is for to pass the golangci-lint check
+				_ = sse.SendEvent(resp.Choices[0].Delta.Content)
+
+				// to delay 0.5 s
 				time.Sleep(50 * time.Millisecond)
 				// the delay is a very good way to make the chatbot more comfortable
 				// otherwise the chatbot will reply too fast. Believe me it is not good.🤔
