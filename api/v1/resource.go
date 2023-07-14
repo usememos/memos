@@ -562,7 +562,7 @@ func convertResourceFromStore(resource *store.Resource) *Resource {
 // Depend on the storage config, some fields of *store.ResourceCreate will be changed:
 // 1. *DatabaseStorage*: `create.Blob`.
 // 2. *LocalStorage*: `create.InternalPath`.
-// 3. Others( extern service): `create.ExternalLink`.
+// 3. Others( external service): `create.ExternalLink`.
 func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resource, r io.Reader) error {
 	systemSettingStorageServiceID, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
 	if err != nil {
@@ -624,7 +624,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		return nil
 	}
 
-	// Others: store blob into extern service, such as S3
+	// Others: store blob into external service, such as S3
 	storage, err := s.GetStorage(ctx, &store.FindStorage{ID: &storageServiceID})
 	if err != nil {
 		return fmt.Errorf("Failed to find StorageServiceID: %s", err)
