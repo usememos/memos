@@ -103,6 +103,7 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 
 	go s.telegramBot.Start(ctx)
+	go autoBackup(ctx, s.Store)
 
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }
