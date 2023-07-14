@@ -283,7 +283,8 @@
       "openai-api-key-description": "取得 API key",
       "openai-api-key-placeholder": "您的 OpenAI API Key",
       "openai-api-host": "OpenAI: API 主機",
-      "openai-api-host-placeholder": "預設: https://api.openai.com/"
+      "openai-api-host-placeholder": "預設: https://api.openai.com/",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "跟隨系統",

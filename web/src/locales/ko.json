@@ -265,7 +265,8 @@
       "openai-api-key-description": "API 키 받아오기",
       "openai-api-key-placeholder": "내 OpenAI API 키",
       "openai-api-host": "OpenAI: API 호스트",
-      "openai-api-host-placeholder": "기본값: https://api.openai.com/"
+      "openai-api-host-placeholder": "기본값: https://api.openai.com/",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "기본값 사용",

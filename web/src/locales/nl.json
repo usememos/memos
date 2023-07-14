@@ -185,7 +185,8 @@
       "additional-script": "Optionele scripts",
       "additional-style-placeholder": "Optionele CSS code",
       "additional-script-placeholder": "Optionele JavaScript code",
-      "disable-public-memos": "Openbare memos uitzetten"
+      "disable-public-memos": "Openbare memos uitzetten",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "light": "Altijd licht",

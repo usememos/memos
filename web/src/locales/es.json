@@ -185,7 +185,8 @@
       "additional-script": "Scripts adicionales",
       "additional-style-placeholder": "Código CSS adicional",
       "additional-script-placeholder": "Código JavaScript adicional",
-      "disable-public-memos": "Deshabilitar notas públicas"
+      "disable-public-memos": "Deshabilitar notas públicas",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Según el sistema",

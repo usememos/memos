@@ -185,7 +185,8 @@
       "additional-script": "Script aggiuntivo",
       "additional-style-placeholder": "Codice CSS aggiuntivo",
       "additional-script-placeholder": "Codice JavaScript aggiuntivo",
-      "disable-public-memos": "Disable public memos"
+      "disable-public-memos": "Disable public memos",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Sistema",

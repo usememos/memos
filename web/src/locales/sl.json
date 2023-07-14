@@ -224,7 +224,8 @@
       "additional-style": "Dodatni stili",
       "additional-script": "Dodatne skripte",
       "additional-style-placeholder": "Dodatna CSS koda",
-      "additional-script-placeholder": "Dodatna JavaScript koda"
+      "additional-script-placeholder": "Dodatna JavaScript koda",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Sledi sistemu",

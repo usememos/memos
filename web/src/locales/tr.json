@@ -175,7 +175,8 @@
       "additional-script": "Özel Scriptler",
       "additional-style-placeholder": "Ek CSS",
       "additional-script-placeholder": "Ek JavaScript",
-      "disable-public-memos": "Halka açık notları devre dışı bırak"
+      "disable-public-memos": "Halka açık notları devre dışı bırak",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Otomatik",
