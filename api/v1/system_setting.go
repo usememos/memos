@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -39,6 +40,8 @@ const (
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
 	// SystemSettingOpenAIConfigName is the name of OpenAI config.
 	SystemSettingOpenAIConfigName SystemSettingName = "openai-config"
+	// SystemSettingAutoBackupIntervalName is the name of auto backup interval as seconds.
+	SystemSettingAutoBackupIntervalName SystemSettingName = "auto-backup-interval"
 )
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
@@ -138,6 +141,20 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 		value := OpenAIConfig{}
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
+	case SystemSettingAutoBackupIntervalName:
+		var value string
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
+		if value != "" {
+			v, err := strconv.Atoi(value)
+			if err != nil {
+				return fmt.Errorf(systemSettingUnmarshalError, settingName)
+			}
+			if v < 0 {
+				return fmt.Errorf("backup interval should > 0")
+			}
 		}
 	case SystemSettingTelegramBotTokenName:
 		if upsert.Value == "" {
