@@ -105,8 +105,8 @@ const Header = () => {
             </>
           </NavLink>
           <NavLink
-            to="/memos-chat"
-            id="header-memos-chat"
+            to="/memo-chat"
+            id="header-memo-chat"
             className={({ isActive }) =>
               `${
                 isActive && "bg-white dark:bg-zinc-700 shadow"
@@ -114,7 +114,7 @@ const Header = () => {
             }
           >
             <>
-              <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("memos-chat.title")}
+              <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("memo-chat.title")}
             </>
           </NavLink>
 

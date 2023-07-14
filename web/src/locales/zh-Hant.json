@@ -400,7 +400,7 @@
     "friday": "星期五",
     "wednesday": "星期三"
   },
-  "memos-chat": {
+  "memo-chat": {
     "title": "問 AI",
     "not-enabled": "您尚未設置 OpenAI API 密鑰。",
     "go-to-settings": "前往設定",

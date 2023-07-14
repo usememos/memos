@@ -128,7 +128,7 @@ const MemosChat = () => {
         <div className="flex space-x-2">
           <div className="w-full flex flex-row justify-between items-center">
             <p className="flex flex-row justify-start items-center select-none rounded">
-              <Icon.Bot className="w-5 h-auto mr-1" /> {t("memos-chat.title")}
+              <Icon.Bot className="w-5 h-auto mr-1" /> {t("memo-chat.title")}
             </p>
           </div>
 
@@ -166,7 +166,7 @@ const MemosChat = () => {
             {messageList.length == 0 && (
               <div className="w-full mt-8 mb-8 flex flex-col justify-center items-center italic">
                 <Empty />
-                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("memos-chat.no-message")}</p>
+                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("memo-chat.no-message")}</p>
               </div>
             )}
             {messageList.map((message, index) => (
@@ -180,8 +180,8 @@ const MemosChat = () => {
           )}
           {!isEnabled && (
             <div className="w-full flex flex-col justify-center items-center mt-4 space-y-2">
-              <p>{t("memos-chat.not_enabled")}</p>
-              <Button onClick={() => handleGotoSystemSetting()}>{t("memos-chat.go-to-settings")}</Button>
+              <p>{t("memo-chat.not_enabled")}</p>
+              <Button onClick={() => handleGotoSystemSetting()}>{t("memo-chat.go-to-settings")}</Button>
             </div>
           )}
 

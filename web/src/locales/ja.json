@@ -376,7 +376,7 @@
     "sat": "土",
     "sun": "日"
   },
-  "memos-chat": {
+  "memo-chat": {
     "title": "AIに尋ねる",
     "not-enabled": "OpenAIのAPI keyが設定されていません",
     "go-to-settings": "設定へ",

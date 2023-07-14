@@ -378,8 +378,8 @@
     "sat": "Sat",
     "sun": "Sun"
   },
-  "memos-chat": {
-    "title": "Memos Chat",
+  "memo-chat": {
+    "title": "Memo Chat",
     "not-enabled": "You have not set up your OpenAI API key.",
     "go-to-settings": "Go to settings",
     "placeholder": "Ask anything…",
