@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import Dropdown from "./kit/Dropdown";
@@ -8,7 +8,7 @@ import UserAvatar from "./UserAvatar";
 import showAboutSiteDialog from "./AboutSiteDialog";
 
 const UserBanner = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const navigate = useNavigate();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();

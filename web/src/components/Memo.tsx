@@ -2,6 +2,7 @@ import { Divider, Tooltip } from "@mui/joy";
 import { isEqual, uniqWith } from "lodash-es";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import { useTranslate } from "@/utils/i18n";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
@@ -28,7 +29,8 @@ interface Props {
 
 const Memo: React.FC<Props> = (props: Props) => {
   const { memo, showCreator, showVisibility, showRelatedMemos } = props;
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
+  const t = useTranslate();
   const filterStore = useFilterStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
@@ -225,7 +227,7 @@ const Memo: React.FC<Props> = (props: Props) => {
           </div>
           <div className="btns-container space-x-2">
             {showVisibility && memo.visibility !== "PRIVATE" && (
-              <Tooltip title={t(`memo.visibility.${memo.visibility.toLowerCase()}`)} placement="top">
+              <Tooltip title={t(`memo.visibility.${memo.visibility.toLowerCase() as Lowercase<typeof memo.visibility>}`)} placement="top">
                 <div onClick={() => handleMemoVisibilityClick(memo.visibility)}>
                   {memo.visibility === "PUBLIC" ? (
                     <Icon.Globe2 className="w-4 h-auto cursor-pointer rounded text-green-600" />

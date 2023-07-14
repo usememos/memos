@@ -1,5 +1,5 @@
 import { Button, Input, Textarea } from "@mui/joy";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useUserStore } from "@/store/module";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import showChangePasswordDialog from "../ChangePasswordDialog";
@@ -8,7 +8,7 @@ import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
 
 const MyAccountSection = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const userStore = useUserStore();
   const user = userStore.state.user as User;
   const openAPIRoute = `${window.location.origin}/api/v1/memo?openId=${user.openId}`;

@@ -1,7 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import Icon from "./Icon";
-import { useTranslation } from "react-i18next";
-
+import { useTranslate } from "@/utils/i18n";
 interface Props {
   className?: string;
   url: string;
@@ -10,7 +9,7 @@ interface Props {
 
 const LearnMore: React.FC<Props> = (props: Props) => {
   const { className, url, title } = props;
-  const { t } = useTranslation();
+  const t = useTranslate();
 
   return (
     <>

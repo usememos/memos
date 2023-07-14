@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import toast from "react-hot-toast";
 import { useMemoStore } from "@/store/module";
 import useLoading from "@/hooks/useLoading";
@@ -9,7 +9,7 @@ import Empty from "@/components/Empty";
 import "@/less/archived.less";
 
 const Archived = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const memoStore = useMemoStore();
   const loadingState = useLoading();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);

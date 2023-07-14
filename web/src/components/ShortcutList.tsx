@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useFilterStore, useShortcutStore } from "@/store/module";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useToggle from "@/hooks/useToggle";
@@ -9,7 +9,7 @@ import Icon from "./Icon";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
 
 const ShortcutList = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const filterStore = useFilterStore();
   const shortcutStore = useShortcutStore();
   const filter = filterStore.state;
@@ -62,7 +62,7 @@ interface ShortcutContainerProps {
 
 const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
   const { shortcut, isActive } = props;
-  const { t } = useTranslation();
+  const t = useTranslate();
   const filterStore = useFilterStore();
   const shortcutStore = useShortcutStore();
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);

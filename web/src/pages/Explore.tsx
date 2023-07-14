@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useLocation } from "react-router-dom";
 import { useFilterStore, useMemoStore } from "@/store/module";
 import { TAG_REG } from "@/labs/marked/parser";
@@ -16,7 +16,7 @@ interface State {
 }
 
 const Explore = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const location = useLocation();
   const filterStore = useFilterStore();
   const memoStore = useMemoStore();

@@ -1,6 +1,6 @@
 import { Button, Input } from "@mui/joy";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { toast } from "react-hot-toast";
 import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
@@ -14,7 +14,7 @@ interface Props extends DialogProps {
 }
 
 const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const { destroy, localStoragePath, confirmCallback } = props;
   const globalStore = useGlobalStore();
   const [path, setPath] = useState(localStoragePath || "");

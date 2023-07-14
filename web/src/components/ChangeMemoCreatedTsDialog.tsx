@@ -1,7 +1,7 @@
 import { getNormalizedTimeString, getUnixTime } from "@/helpers/datetime";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useMemoStore } from "@/store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
@@ -11,7 +11,7 @@ interface Props extends DialogProps {
 }
 
 const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const { destroy, memoId } = props;
   const memoStore = useMemoStore();
   const [createdAt, setCreatedAt] = useState("");

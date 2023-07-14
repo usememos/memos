@@ -11,7 +11,7 @@ export const VISIBILITY_SELECTOR_ITEMS = [
   { text: "PRIVATE", value: "PRIVATE" },
   { text: "PROTECTED", value: "PROTECTED" },
   { text: "PUBLIC", value: "PUBLIC" },
-];
+] as const;
 
 // space width for tab action in editor
 export const TAB_SPACE_WIDTH = 2;

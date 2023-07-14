@@ -1,7 +1,7 @@
 import { last } from "lodash-es";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useSearchParams } from "react-router-dom";
 import * as api from "@/helpers/api";
 import { absolutifyLink } from "@/helpers/utils";
@@ -14,7 +14,7 @@ interface State {
 }
 
 const AuthCallback = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const [searchParams] = useSearchParams();
   const userStore = useUserStore();
   const [state, setState] = useState<State>({

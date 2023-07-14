@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useLayoutStore, useUserStore } from "@/store/module";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
@@ -9,7 +9,7 @@ import showAboutSiteDialog from "./AboutSiteDialog";
 import UpgradeVersionView from "./UpgradeVersionBanner";
 
 const Header = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const location = useLocation();
   const userStore = useUserStore();
   const layoutStore = useLayoutStore();

@@ -1,6 +1,6 @@
 import { Tooltip } from "@mui/joy";
 import { memo, useEffect, useRef } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import useToggle from "@/hooks/useToggle";
 import Icon from "../Icon";
 import "@/less/common/selector.less";
@@ -20,13 +20,13 @@ interface Props {
 }
 
 const nullItem = {
-  text: "common.select",
+  text: "common.select" as const,
   value: "",
 };
 
 const Selector: React.FC<Props> = (props: Props) => {
   const { className, dataSource, handleValueChanged, value, disabled, tooltipTitle } = props;
-  const { t } = useTranslation();
+  const t = useTranslate();
   const [showSelector, toggleSelectorStatus] = useToggle(false);
 
   const selectorElRef = useRef<HTMLDivElement>(null);
