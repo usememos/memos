@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -84,13 +85,21 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 
 	// create resources
 	for _, attachment := range attachments {
-		resource, err := t.store.CreateResource(ctx, &store.Resource{
+		// Fill the common field of create
+		create := store.Resource{
 			CreatorID: creatorID,
 			Filename:  attachment.FileName,
 			Type:      attachment.GetMimeType(),
 			Size:      attachment.FileSize,
-			Blob:      attachment.Data,
-		})
+		}
+
+		err := apiv1.SaveResourceBlob(ctx, t.store, &create, bytes.NewReader(attachment.Data))
+		if err != nil {
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to SaveResourceBlob: %s", err), nil)
+			return err
+		}
+
+		resource, err := t.store.CreateResource(ctx, &create)
 		if err != nil {
 			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err), nil)
 			return err

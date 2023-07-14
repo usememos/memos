@@ -119,7 +119,6 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 				if err != nil {
 					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read %s", request.ExternalLink))
 				}
-				create.Blob = blob
 
 				mediaType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 				if err != nil {
@@ -136,6 +135,12 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 				}
 				create.Filename = filename
 				create.ExternalLink = ""
+				create.Size = int64(len(blob))
+
+				err = SaveResourceBlob(ctx, s.Store, create, bytes.NewReader(blob))
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to save resource").SetInternal(err)
+				}
 			}
 		}
 
@@ -182,129 +187,21 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Failed to parse upload data").SetInternal(err)
 		}
 
-		filetype := file.Header.Get("Content-Type")
-		size := file.Size
 		sourceFile, err := file.Open()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open file").SetInternal(err)
 		}
 		defer sourceFile.Close()
 
-		systemSettingStorageServiceID, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
+		create := &store.Resource{
+			CreatorID: userID,
+			Filename:  file.Filename,
+			Type:      file.Header.Get("Content-Type"),
+			Size:      file.Size,
+		}
+		err = SaveResourceBlob(ctx, s.Store, create, sourceFile)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
-		}
-		storageServiceID := DatabaseStorage
-		if systemSettingStorageServiceID != nil {
-			err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)
-			}
-		}
-
-		var create *store.Resource
-		if storageServiceID == DatabaseStorage {
-			fileBytes, err := io.ReadAll(sourceFile)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to read file").SetInternal(err)
-			}
-			create = &store.Resource{
-				CreatorID: userID,
-				Filename:  file.Filename,
-				Type:      filetype,
-				Size:      size,
-				Blob:      fileBytes,
-			}
-		} else if storageServiceID == LocalStorage {
-			// filepath.Join() should be used for local file paths,
-			// as it handles the os-specific path separator automatically.
-			// path.Join() always uses '/' as path separator.
-			systemSettingLocalStoragePath, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingLocalStoragePathName.String()})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find local storage path setting").SetInternal(err)
-			}
-			localStoragePath := "assets/{filename}"
-			if systemSettingLocalStoragePath != nil && systemSettingLocalStoragePath.Value != "" {
-				err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal local storage path setting").SetInternal(err)
-				}
-			}
-			filePath := filepath.FromSlash(localStoragePath)
-			if !strings.Contains(filePath, "{filename}") {
-				filePath = filepath.Join(filePath, "{filename}")
-			}
-			filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, file.Filename))
-
-			dir := filepath.Dir(filePath)
-			if err = os.MkdirAll(dir, os.ModePerm); err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create directory").SetInternal(err)
-			}
-			dst, err := os.Create(filePath)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create file").SetInternal(err)
-			}
-			defer dst.Close()
-			_, err = io.Copy(dst, sourceFile)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to copy file").SetInternal(err)
-			}
-
-			create = &store.Resource{
-				CreatorID:    userID,
-				Filename:     file.Filename,
-				Type:         filetype,
-				Size:         size,
-				InternalPath: filePath,
-			}
-		} else {
-			storage, err := s.Store.GetStorage(ctx, &store.FindStorage{ID: &storageServiceID})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
-			}
-			if storage == nil {
-				return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Storage %d not found", storageServiceID))
-			}
-			storageMessage, err := ConvertStorageFromStore(storage)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to convert storage").SetInternal(err)
-			}
-
-			if storageMessage.Type == StorageS3 {
-				s3Config := storageMessage.Config.S3Config
-				s3Client, err := s3.NewClient(ctx, &s3.Config{
-					AccessKey: s3Config.AccessKey,
-					SecretKey: s3Config.SecretKey,
-					EndPoint:  s3Config.EndPoint,
-					Region:    s3Config.Region,
-					Bucket:    s3Config.Bucket,
-					URLPrefix: s3Config.URLPrefix,
-					URLSuffix: s3Config.URLSuffix,
-				})
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to new s3 client").SetInternal(err)
-				}
-
-				filePath := s3Config.Path
-				if !strings.Contains(filePath, "{filename}") {
-					filePath = path.Join(filePath, "{filename}")
-				}
-				filePath = replacePathTemplate(filePath, file.Filename)
-				_, filename := filepath.Split(filePath)
-				link, err := s3Client.UploadFile(ctx, filePath, filetype, sourceFile)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upload via s3 client").SetInternal(err)
-				}
-				create = &store.Resource{
-					CreatorID:    userID,
-					Filename:     filename,
-					Type:         filetype,
-					Size:         size,
-					ExternalLink: link,
-				}
-			} else {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Unsupported storage type")
-			}
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to save resource").SetInternal(err)
 		}
 
 		resource, err := s.Store.CreateResource(ctx, create)
@@ -420,7 +317,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 		}
 
 		ext := filepath.Ext(resource.Filename)
-		thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
+		thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
 		if err := os.Remove(thumbnailPath); err != nil {
 			log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
 		}
@@ -485,7 +382,7 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 
 		if c.QueryParam("thumbnail") == "1" && util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
 			ext := filepath.Ext(resource.Filename)
-			thumbnailPath := path.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
+			thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
 			thumbnailBlob, err := getOrGenerateThumbnailImage(blob, thumbnailPath)
 			if err != nil {
 				log.Warn(fmt.Sprintf("failed to get or generate local thumbnail with path %s", thumbnailPath), zap.Error(err))
@@ -658,4 +555,117 @@ func convertResourceFromStore(resource *store.Resource) *Resource {
 		Size:             resource.Size,
 		LinkedMemoAmount: resource.LinkedMemoAmount,
 	}
+}
+
+// SaveResourceBlob save the blob of resource based on the storage config
+//
+// Depend on the storage config, some fields of *store.ResourceCreate will be changed:
+// 1. *DatabaseStorage*: `create.Blob`.
+// 2. *LocalStorage*: `create.InternalPath`.
+// 3. Others( external service): `create.ExternalLink`.
+func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resource, r io.Reader) error {
+	systemSettingStorageServiceID, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
+	if err != nil {
+		return fmt.Errorf("Failed to find SystemSettingStorageServiceIDName: %s", err)
+	}
+
+	storageServiceID := DatabaseStorage
+	if systemSettingStorageServiceID != nil {
+		err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
+		if err != nil {
+			return fmt.Errorf("Failed to unmarshal storage service id: %s", err)
+		}
+	}
+
+	// `DatabaseStorage` means store blob into database
+	if storageServiceID == DatabaseStorage {
+		fileBytes, err := io.ReadAll(r)
+		if err != nil {
+			return fmt.Errorf("Failed to read file: %s", err)
+		}
+		create.Blob = fileBytes
+		return nil
+	}
+
+	// `LocalStorage` means save blob into local disk
+	if storageServiceID == LocalStorage {
+		systemSettingLocalStoragePath, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingLocalStoragePathName.String()})
+		if err != nil {
+			return fmt.Errorf("Failed to find SystemSettingLocalStoragePathName: %s", err)
+		}
+		localStoragePath := "assets/{filename}"
+		if systemSettingLocalStoragePath != nil && systemSettingLocalStoragePath.Value != "" {
+			err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
+			if err != nil {
+				return fmt.Errorf("Failed to unmarshal SystemSettingLocalStoragePathName: %s", err)
+			}
+		}
+		filePath := filepath.FromSlash(localStoragePath)
+		if !strings.Contains(filePath, "{filename}") {
+			filePath = filepath.Join(filePath, "{filename}")
+		}
+		filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, create.Filename))
+
+		dir := filepath.Dir(filePath)
+		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
+			return fmt.Errorf("Failed to create directory: %s", err)
+		}
+		dst, err := os.Create(filePath)
+		if err != nil {
+			return fmt.Errorf("Failed to create file: %s", err)
+		}
+		defer dst.Close()
+		_, err = io.Copy(dst, r)
+		if err != nil {
+			return fmt.Errorf("Failed to copy file: %s", err)
+		}
+
+		create.InternalPath = filePath
+		return nil
+	}
+
+	// Others: store blob into external service, such as S3
+	storage, err := s.GetStorage(ctx, &store.FindStorage{ID: &storageServiceID})
+	if err != nil {
+		return fmt.Errorf("Failed to find StorageServiceID: %s", err)
+	}
+	if storage == nil {
+		return fmt.Errorf("Storage %d not found", storageServiceID)
+	}
+	storageMessage, err := ConvertStorageFromStore(storage)
+	if err != nil {
+		return fmt.Errorf("Failed to ConvertStorageFromStore: %s", err)
+	}
+
+	if storageMessage.Type != StorageS3 {
+		return fmt.Errorf("Unsupported storage type: %s", storageMessage.Type)
+	}
+
+	s3Config := storageMessage.Config.S3Config
+	s3Client, err := s3.NewClient(ctx, &s3.Config{
+		AccessKey: s3Config.AccessKey,
+		SecretKey: s3Config.SecretKey,
+		EndPoint:  s3Config.EndPoint,
+		Region:    s3Config.Region,
+		Bucket:    s3Config.Bucket,
+		URLPrefix: s3Config.URLPrefix,
+		URLSuffix: s3Config.URLSuffix,
+	})
+	if err != nil {
+		return fmt.Errorf("Failed to create s3 client: %s", err)
+	}
+
+	filePath := s3Config.Path
+	if !strings.Contains(filePath, "{filename}") {
+		filePath = filepath.Join(filePath, "{filename}")
+	}
+	filePath = replacePathTemplate(filePath, create.Filename)
+
+	link, err := s3Client.UploadFile(ctx, filePath, create.Type, r)
+	if err != nil {
+		return fmt.Errorf("Failed to upload via s3 client: %s", err)
+	}
+
+	create.ExternalLink = link
+	return nil
 }
