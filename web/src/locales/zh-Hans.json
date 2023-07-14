@@ -95,7 +95,7 @@
     "fetching-data": "请求数据中...",
     "no-archived-memos": "没有归档的备忘录"
   },
-  "ask-ai": {
+  "memo-chat": {
     "go-to-settings": "前往设置",
     "not-enabled": "您尚未设置 OpenAI API 密钥。",
     "placeholder": "随便问",

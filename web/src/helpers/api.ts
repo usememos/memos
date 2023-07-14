@@ -1,4 +1,6 @@
 import axios from "axios";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { Message } from "@/store/zustand/message";
 
 export function getSystemStatus() {
   return axios.get<SystemStatus>("/api/v1/status");
@@ -132,6 +134,31 @@ export function unpinMemo(memoId: MemoId) {
 
 export function deleteMemo(memoId: MemoId) {
   return axios.delete(`/api/v1/memo/${memoId}`);
+}
+export function checkOpenAIEnabled() {
+  return axios.get<boolean>(`/api/openai/enabled`);
+}
+
+export async function chatStreaming(messageList: Array<Message>, onmessage: any, onclose: any) {
+  await fetchEventSource("/api/v1/openai/chat-streaming", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(messageList),
+    async onopen() {
+      // to do nth
+    },
+    onmessage(event: any) {
+      onmessage(event);
+    },
+    onclose() {
+      onclose();
+    },
+    onerror(error: any) {
+      console.log("error", error);
+    },
+  });
 }
 
 export function getShortcutList(shortcutFind?: ShortcutFind) {

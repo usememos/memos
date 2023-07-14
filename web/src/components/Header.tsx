@@ -103,8 +103,22 @@ const Header = () => {
               <Icon.Hash className="mr-3 w-6 h-auto opacity-70" /> {t("common.explore")}
             </>
           </NavLink>
+
           {!isVisitorMode && (
             <>
+              <NavLink
+                to="/memo-chat"
+                id="header-memo-chat"
+                className={({ isActive }) =>
+                  `${
+                    isActive && "bg-white dark:bg-zinc-700 shadow"
+                  } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                }
+              >
+                <>
+                  <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("memo-chat.title")}
+                </>
+              </NavLink>
               <NavLink
                 to="/archived"
                 id="header-archived"

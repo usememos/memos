@@ -400,7 +400,7 @@
     "friday": "星期五",
     "wednesday": "星期三"
   },
-  "ask-ai": {
+  "memo-chat": {
     "title": "問 AI",
     "not-enabled": "您尚未設置 OpenAI API 密鑰。",
     "go-to-settings": "前往設定",
@@ -409,6 +409,7 @@
     "create-message-group-title": "新建對話",
     "label-message-group-name-title": "對話名稱"
   },
+
   "embed-memo": {
     "title": "嵌入 Memo",
     "text": "將以下代碼複製並貼上到您的網誌或網站中。",
