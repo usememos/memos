@@ -149,7 +149,7 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "memos-chat",
+        path: "memo-chat",
         element: <MemosChat />,
         loader: async () => {
           await initialGlobalStateLoader();

@@ -2,24 +2,23 @@ package telegram
 
 import (
 	"context"
-	"fmt"
 )
 
 // handleSingleMessages handle single messages not belongs to group.
 func (b *Bot) handleSingleMessages(ctx context.Context, messages []Message) error {
-	for _, message := range messages {
-		var blobs map[string][]byte
+	var attachments []Attachment
 
-		// download blob if provided
-		if len(message.Photo) > 0 {
-			filepath, blob, err := b.downloadFileID(ctx, message.GetMaxPhotoFileID())
-			if err != nil {
-				return err
-			}
-			blobs = map[string][]byte{filepath: blob}
+	for _, message := range messages {
+		attachment, err := b.downloadAttachment(ctx, &message)
+		if err != nil {
+			return err
 		}
 
-		err := b.handler.MessageHandle(ctx, b, message, blobs)
+		if attachment != nil {
+			attachments = append(attachments, *attachment)
+		}
+
+		err = b.handler.MessageHandle(ctx, b, message, attachments)
 		if err != nil {
 			return err
 		}
@@ -32,7 +31,7 @@ func (b *Bot) handleSingleMessages(ctx context.Context, messages []Message) erro
 func (b *Bot) handleGroupMessages(ctx context.Context, groupMessages []Message) error {
 	captions := make(map[string]string, len(groupMessages))
 	messages := make(map[string]Message, len(groupMessages))
-	blobs := make(map[string]map[string][]byte, len(groupMessages))
+	attachments := make(map[string][]Attachment, len(groupMessages))
 
 	// Group all captions, blobs and messages
 	for _, message := range groupMessages {
@@ -44,14 +43,14 @@ func (b *Bot) handleGroupMessages(ctx context.Context, groupMessages []Message) 
 			captions[groupID] += *message.Caption
 		}
 
-		filepath, blob, err := b.downloadFileID(ctx, message.GetMaxPhotoFileID())
+		attachment, err := b.downloadAttachment(ctx, &message)
 		if err != nil {
-			return fmt.Errorf("fail to downloadFileID")
+			return err
 		}
-		if _, found := blobs[groupID]; !found {
-			blobs[groupID] = make(map[string][]byte)
+
+		if attachment != nil {
+			attachments[groupID] = append(attachments[groupID], *attachment)
 		}
-		blobs[groupID][filepath] = blob
 	}
 
 	// Handle each group message
@@ -59,7 +58,7 @@ func (b *Bot) handleGroupMessages(ctx context.Context, groupMessages []Message) 
 		// replace Caption with all Caption in the group
 		caption := captions[groupID]
 		message.Caption = &caption
-		err := b.handler.MessageHandle(ctx, b, message, blobs[groupID])
+		err := b.handler.MessageHandle(ctx, b, message, attachments[groupID])
 		if err != nil {
 			return err
 		}
