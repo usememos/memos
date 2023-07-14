@@ -236,7 +236,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-      <p className="title-text ml-auto">{t( isCreating ? "setting.sso-section.create-sso" : "setting.sso-section.update-sso")}</p>
+      <p className="title-text ml-auto">{t(isCreating ? "setting.sso-section.create-sso" : "setting.sso-section.update-sso")}</p>
         <button className="btn close-btn ml-auto" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
