@@ -7,6 +7,7 @@ interface ConversationTabProps {
   setSelectedConversationId: (id: string) => void;
   closeConversation: (e: any) => void;
 }
+
 const ConversationTab = ({ item, selectedConversationId, setSelectedConversationId, closeConversation }: ConversationTabProps) => {
   return (
     <div
