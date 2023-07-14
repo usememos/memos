@@ -49,7 +49,8 @@
     "link": "Link",
     "vacuum": "Vacuum",
     "select": "Wybierz",
-    "database": "Baza danych"
+    "database": "Baza danych",
+    "mark": "Mark"
   },
   "auth": {
     "signup-as-host": "Zarejestruj się jako właściciel",

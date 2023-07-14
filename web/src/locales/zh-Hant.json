@@ -74,7 +74,8 @@
     "daily-review": "每日回顧",
     "update-on": "更新於",
     "repeat-new-password": "重複新密碼",
-    "new-password": "新密碼"
+    "new-password": "新密碼",
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "回到首頁"

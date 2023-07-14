@@ -67,7 +67,8 @@
       "info": "info",
       "success": "成功",
       "warning": "警告"
-    }
+    },
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "ホームに戻る"

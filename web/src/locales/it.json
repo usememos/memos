@@ -49,7 +49,8 @@
     "vacuum": "Pulisci",
     "select": "Seleziona",
     "avatar": "Avatar",
-    "database": "Database"
+    "database": "Database",
+    "mark": "Mark"
   },
   "auth": {
     "signup-as-host": "Registrati come Host",

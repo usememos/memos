@@ -67,7 +67,8 @@
       "info": "Information",
       "success": "Success",
       "warning": "Warning"
-    }
+    },
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "Back to Home"

@@ -67,7 +67,8 @@
       "info": "정보",
       "success": "성공",
       "warning": "경고"
-    }
+    },
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "홈으로 돌아가기"

@@ -73,7 +73,8 @@
       "error": "错误",
       "warning": "警告",
       "success": "成功"
-    }
+    },
+    "mark": "Mark"
   },
   "about": {
     "about-memos": "关于Memos",

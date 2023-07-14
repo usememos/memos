@@ -53,7 +53,8 @@
     "link": "Povezava",
     "vacuum": "Skrči",
     "select": "Izberi",
-    "database": "Baza"
+    "database": "Baza",
+    "mark": "Mark"
   },
   "auth": {
     "signup-as-host": "Prijavite se kot gostitelj",

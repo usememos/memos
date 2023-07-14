@@ -35,7 +35,7 @@
     "archive": "Архивировать",
     "basic": "Базовые",
     "admin": "Администратор",
-    "explore": "Исследовать",
+    "explore": "Обзор",
     "sign-in": "Войти",
     "sign-in-with": "Войти через {{provider}}",
     "or": "или",
@@ -43,7 +43,7 @@
     "sign-out": "Выйти",
     "back-to-home": "Вернуться на главную",
     "type": "Тип",
-    "shortcuts": "Ярлыки",
+    "shortcuts": "Фильтры",
     "title": "Заголовок",
     "filter": "Фильтр",
     "filter-period": "{{from}} по {{to}}",
@@ -76,7 +76,8 @@
       "success": "Успешно",
       "warning": "Предупреждение"
     },
-    "beta": "Beta"
+    "beta": "Beta",
+    "mark": "Связать"
   },
   "router": {
     "back-to-home": "Вернуться на главную"
@@ -179,9 +180,9 @@
     "fetch-more": "Загрузить больше"
   },
   "shortcut-list": {
-    "shortcut-title": "название ярлыка",
-    "create-shortcut": "Создать ярлык",
-    "edit-shortcut": "Редактировать ярлык",
+    "shortcut-title": "Название фильтра",
+    "create-shortcut": "Создать фильтр",
+    "edit-shortcut": "Редактировать фильтр",
     "eligible-memo": "связанные записи",
     "fill-previous": "Пожалуйста, заполните значение фильтра",
     "title-required": "Название обязательно",

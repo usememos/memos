@@ -67,7 +67,8 @@
       "info": "Informação",
       "success": "Sucesso",
       "warning": "Aviso"
-    }
+    },
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "Voltar ao início"
