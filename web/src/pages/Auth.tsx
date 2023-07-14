@@ -104,11 +104,11 @@ const Auth = () => {
       if (user) {
         window.location.href = "/";
       } else {
-        toast.error(t("common.signup-failed"));
+        toast.error(t("message.signup-failed"));
       }
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message || error.message || t("common.signup-failed"));
+      toast.error(error.response.data.message || error.message || t("message.signup-failed"));
     }
     actionBtnLoadingState.setFinish();
   };
