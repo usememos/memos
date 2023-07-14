@@ -18,7 +18,7 @@ const MemoVisibilitySelector = (props: Props) => {
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
-      text: t(`memo.visibility.${item.value.toLowerCase() as Lowercase<typeof item.value>}`),
+      text: t(`memo.visibility.${toLower(item.value) as Lowercase<typeof item.value>}`),
     };
   });
 

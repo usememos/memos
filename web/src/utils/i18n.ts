@@ -1,7 +1,6 @@
 import i18n, { TLocale, availableLocales } from "@/i18n";
 import { FallbackLngObjList } from "i18next";
 import { useTranslation } from "react-i18next";
-import { useCallback } from "react";
 import locales from "@/locales/en.json";
 import type { NestedKeyOf } from "@/types/utils/nestedKeyOf.types";
 
@@ -45,10 +44,6 @@ type Translations = NestedKeyOf<typeof locales>;
 type TypedT = (key: Translations, params?: Record<string, any>) => string;
 
 export const useTranslate = (): TypedT => {
-  // The translation function provided by the useTranslation hook.
-  const { t } = useTranslation<Translations>()
-
-  // A memoized version of the translation function with proper types.
-  const typedT = useCallback<TypedT>((key, params) => t(key, params), [t]);
-  return typedT
-}
+  const { t } = useTranslation<Translations>();
+  return t;
+};
