@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useLayoutStore, useUserStore } from "@/store/module";
+import { useLayoutStore, useUserStore, useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
@@ -16,6 +16,9 @@ const Header = () => {
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
   const isVisitorMode = userStore.isVisitorMode() && !userStore.state.user;
+  const {
+    state: { systemStatus },
+  } = useGlobalStore();
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -94,20 +97,24 @@ const Header = () => {
               </NavLink>
             </>
           )}
-          <NavLink
-            to="/explore"
-            id="header-explore"
-            className={({ isActive }) =>
-              classNames(
-                "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
-                isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
-              )
-            }
-          >
+          {!systemStatus.disablePublicMemos && isVisitorMode && (
             <>
-              <Icon.Hash className="mr-3 w-6 h-auto opacity-70" /> {t("common.explore")}
+              <NavLink
+                to="/explore"
+                id="header-explore"
+                className={({ isActive }) =>
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
+                }
+              >
+                <>
+                  <Icon.Hash className="mr-3 w-6 h-auto opacity-70" /> {t("common.explore")}
+                </>
+              </NavLink>
             </>
-          </NavLink>
+          )}
 
           {!isVisitorMode && (
             <>
