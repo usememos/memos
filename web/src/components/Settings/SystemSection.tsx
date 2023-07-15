@@ -219,7 +219,7 @@ const SystemSection = () => {
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
       </div>
       <div className="form-label">
-        <span className="normal-text">Display with updated time</span>
+        <span className="normal-text">{t("setting.system-section.display-with-updated-time")}</span>
         <Switch checked={state.memoDisplayWithUpdatedTs} onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)} />
       </div>
       <div className="form-label">

@@ -67,7 +67,8 @@
       "info": "Informacija",
       "success": "Uspjeh",
       "warning": "Upozorenje"
-    }
+    },
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "Natrag kući"
@@ -268,7 +269,8 @@
       "openai-api-key-description": "Get API key",
       "openai-api-key-placeholder": "Tvoj OpenAI API Ključ",
       "openai-api-host": "OpenAI: API Host",
-      "openai-api-host-placeholder": "Default: https://api.openai.com/"
+      "openai-api-host-placeholder": "Default: https://api.openai.com/",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Slijedi sustav",

@@ -43,7 +43,7 @@ func (db *DB) Open(ctx context.Context) (err error) {
 	}
 
 	// Connect to the database without foreign_key.
-	sqliteDB, err := sql.Open("sqlite", db.profile.DSN+"?cache=shared&_foreign_keys=0&_journal_mode=WAL")
+	sqliteDB, err := sql.Open("sqlite", db.profile.DSN+"?cache=private&_foreign_keys=0&_busy_timeout=10000&_journal_mode=WAL")
 	if err != nil {
 		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.profile.DSN, err)
 	}

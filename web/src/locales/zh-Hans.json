@@ -73,7 +73,8 @@
       "error": "错误",
       "warning": "警告",
       "success": "成功"
-    }
+    },
+    "mark": "Mark"
   },
   "about": {
     "about-memos": "关于Memos",
@@ -431,7 +432,8 @@
       "openai-api-key-placeholder": "您的 OpenAI API Key",
       "server-name": "服务名称",
       "max-upload-size-hint": "建议值为 32 MiB。",
-      "max-upload-size": "最大上传大小 (MiB)"
+      "max-upload-size": "最大上传大小 (MiB)",
+      "display-with-updated-time": "Display with updated time"
     }
   },
   "shortcut-list": {
