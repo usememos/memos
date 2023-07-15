@@ -77,6 +77,7 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 			// data desensitize
 			systemStatus.Host.OpenID = ""
 			systemStatus.Host.Email = ""
+			systemStatus.Host.AvatarURL = ""
 		}
 
 		systemSettingList, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})
