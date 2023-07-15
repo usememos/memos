@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useLayoutStore, useUserStore, useGlobalStore } from "@/store/module";
+import { useLayoutStore, useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
@@ -16,9 +16,6 @@ const Header = () => {
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
   const isVisitorMode = userStore.isVisitorMode() && !userStore.state.user;
-  const {
-    state: { systemStatus },
-  } = useGlobalStore();
 
   useEffect(() => {
     const handleWindowResize = () => {
