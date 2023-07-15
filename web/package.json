@@ -14,6 +14,7 @@
     "@mui/joy": "^5.0.0-alpha.75",
     "@reduxjs/toolkit": "^1.8.1",
     "axios": "^0.27.2",
+    "classnames": "^2.3.2",
     "copy-to-clipboard": "^3.3.2",
     "highlight.js": "^11.6.0",
     "i18next": "^21.9.2",

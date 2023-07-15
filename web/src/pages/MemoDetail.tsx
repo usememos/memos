@@ -1,16 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslate } from "@/utils/i18n";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { UNKNOWN_ID } from "@/helpers/consts";
 import { useGlobalStore, useMemoStore } from "@/store/module";
 import useLoading from "@/hooks/useLoading";
 import Icon from "@/components/Icon";
 import Memo from "@/components/Memo";
-
-interface State {
-  memo: Memo;
-}
 
 const MemoDetail = () => {
   const t = useTranslate();
@@ -18,23 +13,16 @@ const MemoDetail = () => {
   const location = useLocation();
   const globalStore = useGlobalStore();
   const memoStore = useMemoStore();
-  const [state, setState] = useState<State>({
-    memo: {
-      id: UNKNOWN_ID,
-    } as Memo,
-  });
   const loadingState = useLoading();
   const customizedProfile = globalStore.state.systemStatus.customizedProfile;
+  const memoId = Number(params.memoId);
+  const memo = memoStore.state.memos.find((memo) => memo.id === memoId);
 
   useEffect(() => {
-    const memoId = Number(params.memoId);
     if (memoId && !isNaN(memoId)) {
       memoStore
         .fetchMemoById(memoId)
-        .then((memo) => {
-          setState({
-            memo,
-          });
+        .then(() => {
           loadingState.setFinish();
         })
         .catch((error) => {
@@ -53,21 +41,26 @@ const MemoDetail = () => {
             <p className="detail-name text-4xl tracking-wide text-black dark:text-white">{customizedProfile.name}</p>
           </div>
         </div>
-        {!loadingState.isLoading && (
-          <>
-            <main className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
-              <Memo memo={state.memo} showCreator showRelatedMemos />
-            </main>
-            <div className="mt-4 w-full flex flex-row justify-center items-center gap-2">
-              <Link
-                to="/"
-                className="flex flex-row justify-center items-center text-gray-600 dark:text-gray-300 text-sm px-3 hover:opacity-80 hover:underline"
-              >
-                <Icon.Home className="w-4 h-auto mr-1 -mt-0.5" /> {t("router.back-to-home")}
-              </Link>
-            </div>
-          </>
-        )}
+        {!loadingState.isLoading &&
+          (memo ? (
+            <>
+              <main className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
+                <Memo memo={memo} showCreator showRelatedMemos />
+              </main>
+              <div className="mt-4 w-full flex flex-row justify-center items-center gap-2">
+                <Link
+                  to="/"
+                  className="flex flex-row justify-center items-center text-gray-600 dark:text-gray-300 text-sm px-3 hover:opacity-80 hover:underline"
+                >
+                  <Icon.Home className="w-4 h-auto mr-1 -mt-0.5" /> {t("router.back-to-home")}
+                </Link>
+              </div>
+            </>
+          ) : (
+            <>
+              <p>Not found</p>
+            </>
+          ))}
       </div>
     </section>
   );

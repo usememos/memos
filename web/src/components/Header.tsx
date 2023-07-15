@@ -1,7 +1,8 @@
+import classNames from "classnames";
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useTranslate } from "@/utils/i18n";
 import { useLayoutStore, useUserStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
 import UserBanner from "./UserBanner";
@@ -53,9 +54,10 @@ const Header = () => {
                 to="/"
                 id="header-home"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600"
-                  } px-4 pr-5 py-2 rounded-full border border-transparent flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -66,9 +68,10 @@ const Header = () => {
                 to="/review"
                 id="header-review"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600"
-                  } px-4 pr-5 py-2 rounded-full border border-transparent flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -79,9 +82,10 @@ const Header = () => {
                 to="/resources"
                 id="header-resources"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600"
-                  } px-4 pr-5 py-2 rounded-full border border-transparent flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -94,9 +98,10 @@ const Header = () => {
             to="/explore"
             id="header-explore"
             className={({ isActive }) =>
-              `${
-                isActive && "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600"
-              } px-4 pr-5 py-2 rounded-full border border-transparent flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700`
+              classNames(
+                "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+              )
             }
           >
             <>
@@ -110,9 +115,10 @@ const Header = () => {
                 to="/memo-chat"
                 id="header-memo-chat"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 shadow"
-                  } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -123,9 +129,10 @@ const Header = () => {
                 to="/archived"
                 id="header-archived"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600"
-                  } px-4 pr-5 py-2 rounded-full border border-transparent flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -136,9 +143,10 @@ const Header = () => {
                 to="/setting"
                 id="header-setting"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600"
-                  } px-4 pr-5 py-2 rounded-full border border-transparent flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -154,9 +162,10 @@ const Header = () => {
                 to="/auth"
                 id="header-auth"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600"
-                  } px-4 pr-5 py-2 rounded-full border border-transparent flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>

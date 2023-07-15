@@ -326,6 +326,14 @@
     "and": "And",
     "or": "Or"
   },
+  "amount-text": {
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "TAG",
+    "tag_other": "TAGS",
+    "day_one": "TAG",
+    "day_other": "TAGE"
+  },
   "message": {
     "no-data": "Maybe no data was found, maybe it should be another option.",
     "memos-ready": "all memos are ready 🎉",

@@ -1,4 +1,5 @@
 import { Button, Stack } from "@mui/joy";
+import { head } from "lodash-es";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -9,27 +10,23 @@ import { Conversation, useConversationStore } from "@/store/zustand/conversation
 import Icon from "@/components/Icon";
 import { generateUUID } from "@/utils/uuid";
 import MobileHeader from "@/components/MobileHeader";
-import MemosChatMessage from "@/components/MemosChat/MemosChatMessage";
-import MemosChatInput from "@/components/MemosChat/MemosChatInput";
-import head from "lodash-es/head";
-import ConversationTab from "@/components/MemosChat/ConversationTab";
+import ChatMessage from "@/components/MemoChat/ChatMessage";
+import ChatInput from "@/components/MemoChat/ChatInput";
+import ConversationTab from "@/components/MemoChat/ConversationTab";
 import Empty from "@/components/Empty";
 
-const MemosChat = () => {
+const MemoChat = () => {
   const { t } = useTranslation();
   const fetchingState = useLoading(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [isInIME, setIsInIME] = useState(false);
   const [question, setQuestion] = useState<string>("");
-
   const conversationStore = useConversationStore();
   const conversationList = conversationStore.conversationList;
-
   const [selectedConversationId, setSelectedConversationId] = useState<string>(head(conversationList)?.messageStorageId || "");
   const messageStore = useMessageStore(selectedConversationId)();
   const messageList = messageStore.messageList;
-
-  // the state didn't show in component, just for trigger re-render
+  // The state didn't show in component, just for trigger re-render
   const [message, setMessage] = useState<string>("");
 
   useEffect(() => {
@@ -170,7 +167,7 @@ const MemosChat = () => {
               </div>
             )}
             {messageList.map((message, index) => (
-              <MemosChatMessage key={index} message={message} index={index} />
+              <ChatMessage key={index} message={message} index={index} />
             ))}
           </Stack>
           {fetchingState.isLoading && (
@@ -185,7 +182,7 @@ const MemosChat = () => {
             </div>
           )}
 
-          <MemosChatInput
+          <ChatInput
             question={question}
             handleQuestionTextareaChange={handleQuestionTextareaChange}
             setIsInIME={setIsInIME}
@@ -198,4 +195,4 @@ const MemosChat = () => {
   );
 };
 
-export default MemosChat;
+export default MemoChat;

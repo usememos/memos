@@ -7,7 +7,7 @@ interface MessageProps {
   message: Message;
 }
 
-const MemosChatMessage = ({ index, message }: MessageProps) => {
+const ChatMessage = ({ index, message }: MessageProps) => {
   return (
     <div key={index} className="w-full flex flex-col justify-start items-start space-y-2">
       {message.role === "user" ? (
@@ -28,4 +28,4 @@ const MemosChatMessage = ({ index, message }: MessageProps) => {
   );
 };
 
-export default MemosChatMessage;
+export default ChatMessage;
