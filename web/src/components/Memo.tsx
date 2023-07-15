@@ -257,7 +257,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                     </span>
                     <span className="btn" onClick={handleMarkMemoClick}>
                       <Icon.Link className="w-4 h-auto mr-2" />
-                      Mark
+                      {t("common.mark")}
                     </span>
                     <Divider className="!my-1" />
                     <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>

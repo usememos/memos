@@ -178,7 +178,7 @@ const PreferencesSection = () => {
                             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
                             onClick={() => handleArchiveUserClick(user)}
                           >
-                            {t("common.archive")}
+                            {t("setting.member-section.archive-member")}
                           </button>
                         ) : (
                           <>
@@ -192,7 +192,7 @@ const PreferencesSection = () => {
                               className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
                               onClick={() => handleDeleteUserClick(user)}
                             >
-                              {t("common.delete")}
+                              {t("setting.member-section.delete-member")}
                             </button>
                           </>
                         )}

@@ -74,7 +74,8 @@
     "daily-review": "每日回顧",
     "update-on": "更新於",
     "repeat-new-password": "重複新密碼",
-    "new-password": "新密碼"
+    "new-password": "新密碼",
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "回到首頁"
@@ -283,7 +284,8 @@
       "openai-api-key-description": "取得 API key",
       "openai-api-key-placeholder": "您的 OpenAI API Key",
       "openai-api-host": "OpenAI: API 主機",
-      "openai-api-host-placeholder": "預設: https://api.openai.com/"
+      "openai-api-host-placeholder": "預設: https://api.openai.com/",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "跟隨系統",

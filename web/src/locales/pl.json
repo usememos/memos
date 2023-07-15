@@ -49,7 +49,8 @@
     "link": "Link",
     "vacuum": "Vacuum",
     "select": "Wybierz",
-    "database": "Baza danych"
+    "database": "Baza danych",
+    "mark": "Mark"
   },
   "auth": {
     "signup-as-host": "Zarejestruj się jako właściciel",
@@ -194,7 +195,8 @@
       "additional-style": "Dodatkowy styl",
       "additional-script": "Dodatkowy skrypt",
       "additional-style-placeholder": "Dodatkowy kod CSS",
-      "additional-script-placeholder": "Dodatkowy kod JavaScript"
+      "additional-script-placeholder": "Dodatkowy kod JavaScript",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Systemowy",

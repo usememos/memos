@@ -49,7 +49,8 @@
     "vacuum": "Стиснути",
     "select": "Вибрати",
     "database": "Database",
-    "avatar": "Avatar"
+    "avatar": "Avatar",
+    "mark": "Mark"
   },
   "auth": {
     "signup-as-host": "Зареєструватися як власник",
@@ -185,7 +186,8 @@
       "additional-script": "Кастомні скрипти",
       "additional-style-placeholder": "Додатковий CSS",
       "additional-script-placeholder": "Додатковий JavaScript",
-      "disable-public-memos": "Disable public memos"
+      "disable-public-memos": "Disable public memos",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Автоматично",

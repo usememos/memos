@@ -49,7 +49,8 @@
     "vacuum": "Dọn dẹp",
     "select": "Chọn",
     "avatar": "Avatar",
-    "database": "Cơ sở dữ liệu"
+    "database": "Cơ sở dữ liệu",
+    "mark": "Mark"
   },
   "auth": {
     "signup-as-host": "Đăng ký tài khoản quản trị viên",
@@ -185,7 +186,8 @@
       "additional-script": "Mã lệnh bổ sung",
       "additional-style-placeholder": "Mã CSS bổ sung",
       "additional-script-placeholder": "Mã JavaScript bổ sung",
-      "disable-public-memos": "Vô hiệu hóa ghi chú công khai"
+      "disable-public-memos": "Vô hiệu hóa ghi chú công khai",
+      "display-with-updated-time": "Display with updated time"
     },
     "storage": "Kho lưu trữ",
     "sso": "SSO",

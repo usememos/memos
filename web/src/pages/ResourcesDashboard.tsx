@@ -252,7 +252,7 @@ const ResourcesDashboard = () => {
                     onClick={handleDeleteUnusedResourcesBtnClick}
                   >
                     <Icon.Trash2 className="w-4 h-auto mr-2" />
-                    {t("common.clear")}
+                    {t("resource.clear")}
                   </button>
                 </>
               }
