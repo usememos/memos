@@ -11,19 +11,13 @@ import Memo from "@/components/Memo";
 import MobileHeader from "@/components/MobileHeader";
 import Empty from "@/components/Empty";
 
-interface State {
-  memos: Memo[];
-}
-
 const Explore = () => {
   const t = useTranslate();
   const location = useLocation();
   const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const filter = filterStore.state;
-  const [state, setState] = useState<State>({
-    memos: [],
-  });
+  const memos = memoStore.state.memos;
   const [isComplete, setIsComplete] = useState<boolean>(false);
   const loadingState = useLoading();
 
@@ -32,9 +26,6 @@ const Explore = () => {
       if (memos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       }
-      setState({
-        memos,
-      });
       loadingState.setFinish();
     });
   }, [location]);
@@ -43,7 +34,7 @@ const Explore = () => {
   const showMemoFilter = Boolean(tagQuery || textQuery);
 
   const shownMemos = showMemoFilter
-    ? state.memos.filter((memo) => {
+    ? memos.filter((memo) => {
         let shouldShow = true;
 
         if (tagQuery) {
@@ -64,21 +55,17 @@ const Explore = () => {
         }
         return shouldShow;
       })
-    : state.memos;
+    : memos;
 
-  const sortedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL");
-
+  const sortedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL" && m.visibility !== "PRIVATE");
   const handleFetchMoreClick = async () => {
     try {
-      const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, state.memos.length);
+      const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, memos.length);
       if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       } else {
         setIsComplete(false);
       }
-      setState({
-        memos: state.memos.concat(fetchedMemos),
-      });
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
@@ -95,7 +82,7 @@ const Explore = () => {
             return <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} showCreator />;
           })}
           {isComplete ? (
-            state.memos.length === 0 && (
+            memos.length === 0 && (
               <div className="w-full mt-16 mb-8 flex flex-col justify-center items-center italic">
                 <Empty />
                 <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>

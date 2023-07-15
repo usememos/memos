@@ -16,7 +16,7 @@ const Home = lazy(() => import("@/pages/Home"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
 const EmbedMemo = lazy(() => import("@/pages/EmbedMemo"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
-const MemosChat = lazy(() => import("@/pages/MemosChat"));
+const MemoChat = lazy(() => import("@/pages/MemoChat"));
 
 const initialGlobalStateLoader = (() => {
   let done = false;
@@ -150,7 +150,7 @@ const router = createBrowserRouter([
       },
       {
         path: "memo-chat",
-        element: <MemosChat />,
+        element: <MemoChat />,
         loader: async () => {
           await initialGlobalStateLoader();
 

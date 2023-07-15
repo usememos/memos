@@ -76,7 +76,7 @@ const MemoList = () => {
           return shouldShow;
         })
       : memos
-  ).filter((memo) => memo.creatorId === currentUserId);
+  ).filter((memo) => memo.creatorId === currentUserId && memo.rowStatus === "NORMAL");
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
