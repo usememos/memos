@@ -97,7 +97,7 @@ const Header = () => {
               </NavLink>
             </>
           )}
-          {!systemStatus.disablePublicMemos && isVisitorMode && (
+          {!isVisitorMode && (
             <>
               <NavLink
                 to="/explore"
