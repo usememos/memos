@@ -1,7 +1,7 @@
 import { Table } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useUserStore } from "@/store/module";
 import * as api from "@/helpers/api";
 import Dropdown from "../kit/Dropdown";
@@ -15,7 +15,7 @@ interface State {
 }
 
 const PreferencesSection = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const userStore = useUserStore();
   const currentUser = userStore.state.user;
   const [state, setState] = useState<State>({

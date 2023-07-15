@@ -1,7 +1,7 @@
 import { Divider, Select, Option } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
@@ -11,7 +11,7 @@ import { showCommonDialog } from "../Dialog/CommonDialog";
 import LearnMore from "../LearnMore";
 
 const StorageSection = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const globalStore = useGlobalStore();
   const systemStatus = globalStore.state.systemStatus;
   const [storageServiceId, setStorageServiceId] = useState(systemStatus.storageServiceId);

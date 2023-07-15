@@ -4,7 +4,7 @@ import { TAG_REG, LINK_REG, PLAIN_LINK_REG } from "@/labs/marked/parser";
 export const relationConsts = [
   { text: "filter.and", value: "AND" },
   { text: "filter.or", value: "OR" },
-];
+] as const;
 
 export const filterConsts = {
   TAG: {
@@ -105,11 +105,11 @@ export const filterConsts = {
       },
     ],
   },
-};
+} as const;
 
 export const memoSpecialTypes = filterConsts["TYPE"].values;
 
-export const getTextWithMemoType = (type: string): string => {
+export const getTextWithMemoType = (type: string) => {
   for (const t of memoSpecialTypes) {
     if (t.value === type) {
       return t.text;

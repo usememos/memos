@@ -3,7 +3,7 @@ import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import store, { useAppSelector } from "../";
 import { patchResource, setResources, deleteResource, upsertResources } from "../reducer/resource";
 import { useGlobalStore } from "./global";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 
 const convertResponseModelResource = (resource: Resource): Resource => {
   return {
@@ -15,7 +15,7 @@ const convertResponseModelResource = (resource: Resource): Resource => {
 
 export const useResourceStore = () => {
   const state = useAppSelector((state) => state.resource);
-  const { t } = useTranslation();
+  const t = useTranslate();
   const globalStore = useGlobalStore();
   const maxUploadSizeMiB = globalStore.state.systemStatus.maxUploadSizeMiB;
 

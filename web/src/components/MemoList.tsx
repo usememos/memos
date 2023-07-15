@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "@/store/module";
 import { TAG_REG, LINK_REG, PLAIN_LINK_REG } from "@/labs/marked/parser";
 import { getTimeStampByDate } from "@/helpers/datetime";
@@ -11,7 +11,7 @@ import Memo from "./Memo";
 import "@/less/memo-list.less";
 
 const MemoList = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const memoStore = useMemoStore();
   const userStore = useUserStore();
   const shortcutStore = useShortcutStore();

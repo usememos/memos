@@ -1,5 +1,8 @@
 import i18n, { TLocale, availableLocales } from "@/i18n";
 import { FallbackLngObjList } from "i18next";
+import { useTranslation } from "react-i18next";
+import locales from "@/locales/en.json";
+import type { NestedKeyOf } from "@/types/utils/nestedKeyOf.types";
 
 export const findNearestLanguageMatch = (codename: string): Locale => {
   // Find existing translations for full codes (e.g. "en-US", "zh-Hant")
@@ -32,4 +35,15 @@ export const findNearestLanguageMatch = (codename: string): Locale => {
 
   // should be "en", so the selector is not empty if there isn't a translation for current user's language
   return (i18n.store.options.fallbackLng as FallbackLngObjList).default[0] as Locale;
+};
+
+// Represents the keys of nested translation objects.
+type Translations = NestedKeyOf<typeof locales>;
+
+// Represents a typed translation function.
+type TypedT = (key: Translations, params?: Record<string, any>) => string;
+
+export const useTranslate = (): TypedT => {
+  const { t } = useTranslation<Translations>();
+  return t;
 };

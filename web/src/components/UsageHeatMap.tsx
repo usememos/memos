@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFilterStore, useMemoStore, useUserStore } from "../store/module";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { getMemoStats } from "@/helpers/api";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, getDateString, getTimeStampByDate } from "@/helpers/datetime";
@@ -29,7 +29,7 @@ interface DailyUsageStat {
 }
 
 const UsageHeatMap = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const filterStore = useFilterStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();

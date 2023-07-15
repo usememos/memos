@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { Link, useLocation, useParams } from "react-router-dom";
 import { UNKNOWN_ID } from "@/helpers/consts";
 import { useGlobalStore, useMemoStore } from "@/store/module";
@@ -13,7 +13,7 @@ interface State {
 }
 
 const MemoDetail = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const params = useParams();
   const location = useLocation();
   const globalStore = useGlobalStore();

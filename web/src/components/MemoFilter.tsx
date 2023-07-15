@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useLocation } from "react-router-dom";
 import { useFilterStore, useShortcutStore } from "@/store/module";
 import { getDateString } from "@/helpers/datetime";
@@ -8,7 +8,7 @@ import Icon from "./Icon";
 import "@/less/memo-filter.less";
 
 const MemoFilter = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const location = useLocation();
   const filterStore = useFilterStore();
   const shortcutStore = useShortcutStore();
@@ -46,7 +46,8 @@ const MemoFilter = () => {
           filterStore.setMemoTypeFilter(undefined);
         }}
       >
-        <Icon.Box className="icon-text" /> {t(getTextWithMemoType(memoType as MemoSpecType))}
+        <Icon.Box className="icon-text" />{" "}
+        {t(getTextWithMemoType(memoType as MemoSpecType) as Exclude<ReturnType<typeof getTextWithMemoType>, "">)}
       </div>
       <div
         className={"filter-item-container " + (visibility ? "" : "!hidden")}

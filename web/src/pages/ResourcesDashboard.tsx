@@ -1,7 +1,7 @@
 import { Button } from "@mui/joy";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import useLoading from "@/hooks/useLoading";
 import useEvent from "@/hooks/useEvent";
@@ -17,7 +17,7 @@ import showCreateResourceDialog from "@/components/CreateResourceDialog";
 import Empty from "@/components/Empty";
 
 const ResourcesDashboard = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const loadingState = useLoading();
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;

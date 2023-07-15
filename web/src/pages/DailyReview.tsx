@@ -1,7 +1,7 @@
 import { last } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useMemoStore, useUserStore } from "@/store/module";
 import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import MobileHeader from "@/components/MobileHeader";
@@ -17,7 +17,7 @@ import { convertToMillis, getDateStampByDate, getNormalizedDateString, getTimeSt
 import Empty from "@/components/Empty";
 
 const DailyReview = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const memoStore = useMemoStore();
   const memos = memoStore.state.memos;
 
