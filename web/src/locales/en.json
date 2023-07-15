@@ -126,6 +126,7 @@
     "upload-successfully": "Upload successfully",
     "file-drag-drop-prompt": "Drag and drop your file here to upload file",
     "search-bar-placeholder": "Search resource",
+    "clear": "Clear",
     "create-dialog": {
       "title": "Create Resource",
       "upload-method": "Upload method",
