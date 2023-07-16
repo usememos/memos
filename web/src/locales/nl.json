@@ -77,7 +77,8 @@
     "warning-text-unused": "Weet je zeker dat je deze ongebruikte bron wilt verwijderen? Deze actie is NIET terug te draaien!",
     "no-unused-resources": "Geen ongebruikte bronnen",
     "name": "Name",
-    "clear": "Opruimen"
+    "clear": "Opruimen",
+    "upload-process": "Voortgang uploaden"
   },
   "archived": {
     "archived-memos": "Gearchiveerde Memos",

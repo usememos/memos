@@ -3,6 +3,7 @@ import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import store, { useAppSelector } from "../";
 import { patchResource, setResources, deleteResource, upsertResources } from "../reducer/resource";
 import { useGlobalStore } from "./global";
+import { AxiosResponse } from "axios";
 import { useTranslate } from "@/utils/i18n";
 
 const convertResponseModelResource = (resource: Resource): Resource => {
@@ -47,7 +48,7 @@ export const useResourceStore = () => {
       store.dispatch(setResources([resource, ...resourceList]));
       return resource;
     },
-    async createResourceWithBlob(file: File): Promise<Resource> {
+    async createResourceWithBlob(file: File, progressCallback: (progress: number) => void): Promise<Resource> {
       const { name: filename, size } = file;
       if (size > maxUploadSizeMiB * 1024 * 1024) {
         return Promise.reject(t("message.maximum-upload-size-is", { size: maxUploadSizeMiB }));
@@ -55,14 +56,30 @@ export const useResourceStore = () => {
 
       const formData = new FormData();
       formData.append("file", file, filename);
-      const { data } = await api.createResourceWithBlob(formData);
-      const resource = convertResponseModelResource(data);
-      const resourceList = state.resources;
-      store.dispatch(setResources([resource, ...resourceList]));
-      return resource;
+      return new Promise((resolve, reject) => {
+        api
+          .createResourceWithBlob(formData, (progress) => {
+            progressCallback(progress);
+          })
+          .then((response: AxiosResponse<Resource>) => {
+            const data = response.data;
+            const resource = convertResponseModelResource(data);
+            const resourceList = state.resources;
+            store.dispatch(setResources([resource, ...resourceList]));
+            resolve(resource);
+          })
+          .catch((error) => {
+            reject(error);
+          });
+      });
     },
-    async createResourcesWithBlob(files: FileList): Promise<Array<Resource>> {
+    async createResourcesWithBlob(
+      files: FileList,
+      progressCallback: (progress: number, filename: string) => void
+    ): Promise<Array<Resource>> {
       let newResourceList: Array<Resource> = [];
+      const totalFiles = files.length;
+      let completedFiles = 0;
       for (const file of files) {
         const { name: filename, size } = file;
         if (size > maxUploadSizeMiB * 1024 * 1024) {
@@ -71,8 +88,24 @@ export const useResourceStore = () => {
 
         const formData = new FormData();
         formData.append("file", file, filename);
-        const { data } = await api.createResourceWithBlob(formData);
-        const resource = convertResponseModelResource(data);
+        const resource = await new Promise<Resource>((resolve, reject) => {
+          api
+            .createResourceWithBlob(formData, (progress) => {
+              const fileProgress = (progress / 100) * (1 / totalFiles);
+              const overallProgress = (completedFiles + fileProgress) * 100;
+              progressCallback(overallProgress, filename);
+            })
+            .then((response) => {
+              const data = response.data;
+              const resource = convertResponseModelResource(data);
+              completedFiles++;
+              resolve(resource);
+            })
+            .catch((error) => {
+              console.error(error);
+              reject(error);
+            });
+        });
         newResourceList = [resource, ...newResourceList];
       }
       const resourceList = state.resources;

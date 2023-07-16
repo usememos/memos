@@ -138,7 +138,8 @@
       "download-link": {
         "option": "Ссылка на скачивание"
       }
-    }
+    },
+    "upload-process": "прогресс загрузки"
   },
   "archived": {
     "archived-memos": "Заархивированные записи",

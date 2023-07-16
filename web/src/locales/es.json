@@ -77,7 +77,8 @@
     "warning-text-unused": "¿Está seguro de eliminar estos recursos no utilizados? ESTA ACCIÓN ES IRREVERSIBLE❗",
     "no-unused-resources": "No hay recursos sin utilizar",
     "name": "Nombre",
-    "clear": "Limpiar"
+    "clear": "Limpiar",
+    "upload-process": "Alŝuto progreso"
   },
   "archived": {
     "archived-memos": "Notas Archivadas",

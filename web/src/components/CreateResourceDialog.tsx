@@ -1,8 +1,8 @@
-import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete } from "@mui/joy";
+import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete, LinearProgress } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslate } from "@/utils/i18n";
-import { useResourceStore } from "../store/module";
+import { useResourceStore } from "@/store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
 
@@ -22,6 +22,7 @@ interface State {
 
 const CreateResourceDialog: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
+  const [ProgressValue, setProgressValue] = useState<number>(0);
   const { destroy, onCancel, onConfirm } = props;
   const resourceStore = useResourceStore();
   const [state, setState] = useState<State>({
@@ -162,7 +163,9 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
           if (!fileOnInput) {
             continue;
           }
-          const resource = await resourceStore.createResourceWithBlob(file);
+          const resource = await resourceStore.createResourceWithBlob(file, (progress) => {
+            setProgressValue(progress);
+          });
           createdResourceList.push(resource);
         }
       } else {
@@ -224,29 +227,32 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
             </div>
             <List size="sm" sx={{ width: "100%" }}>
               {fileList.map((file, index) => (
-                <ListItem key={file.name} className="flex justify-between">
-                  <Typography noWrap>{file.name}</Typography>
-                  <div className="flex gap-1">
-                    <button
-                      onClick={() => {
-                        handleReorderFileList(file.name, "up");
-                      }}
-                      disabled={index === 0}
-                      className="disabled:opacity-50"
-                    >
-                      <Icon.ArrowUp className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        handleReorderFileList(file.name, "down");
-                      }}
-                      disabled={index === fileList.length - 1}
-                      className="disabled:opacity-50"
-                    >
-                      <Icon.ArrowDown className="w-4 h-4" />
-                    </button>
-                  </div>
-                </ListItem>
+                <div key={file.name}>
+                  <ListItem key={file.name} className="flex justify-between">
+                    <Typography noWrap>{file.name}</Typography>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => {
+                          handleReorderFileList(file.name, "up");
+                        }}
+                        disabled={index === 0}
+                        className="disabled:opacity-50"
+                      >
+                        <Icon.ArrowUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          handleReorderFileList(file.name, "down");
+                        }}
+                        disabled={index === fileList.length - 1}
+                        className="disabled:opacity-50"
+                      >
+                        <Icon.ArrowDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </ListItem>
+                  <LinearProgress determinate value={ProgressValue} size="lg" />
+                </div>
               ))}
             </List>
           </>

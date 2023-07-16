@@ -296,6 +296,7 @@
     "select": "选择",
     "upload": "上传",
     "upload-successfully": "上传成功",
+    "upload-process": "上传进度",
     "warning-text": "确定删除这个资源么？\n\n此操作不可逆❗",
     "warning-text-unused": "确定删除这些无用资源么？\n\n此操作不可逆❗"
   },

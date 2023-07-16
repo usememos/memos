@@ -77,7 +77,8 @@
     "clear": "Wyczyść",
     "warning-text-unused": "Czy na pewno chcesz usunąć nieużywany zasób? To działanie jest nieodwracalne❗",
     "no-unused-resources": "Brak nieużywanych zasobów",
-    "name": "Nazwa"
+    "name": "Nazwa",
+    "upload-process": "Postęp przesyłania"
   },
   "archived": {
     "archived-memos": "Zarchiwizowane notatki",

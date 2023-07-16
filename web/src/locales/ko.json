@@ -142,7 +142,8 @@
         "type": "종류",
         "type-placeholder": "파일 종류"
       }
-    }
+    },
+    "upload-process": "업로드 진행률"
   },
   "shortcut-list": {
     "shortcut-title": "바로가기 이름",

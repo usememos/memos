@@ -146,7 +146,8 @@
       "download-link": {
         "option": "從外部連結下載"
       }
-    }
+    },
+    "upload-process": "上傳進度"
   },
   "shortcut-list": {
     "shortcut-title": "捷徑標題",

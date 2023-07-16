@@ -1,5 +1,5 @@
 import { Button } from "@mui/joy";
-import { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslate } from "@/utils/i18n";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
@@ -181,16 +181,21 @@ const ResourcesDashboard = () => {
     e.stopPropagation();
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      await resourceStore.createResourcesWithBlob(e.dataTransfer.files).then(
-        (res) => {
-          for (const resource of res) {
-            toast.success(`${resource.filename} ${t("resource.upload-successfully")}`);
+      await resourceStore
+        .createResourcesWithBlob(e.dataTransfer.files, async (progress, filename) => {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+          toast.success(`${filename} ${t("resource.upload-process")} ${progress}%`, { duration: 1000 });
+        })
+        .then(
+          (res) => {
+            for (const resource of res) {
+              toast.success(`${resource.filename} ${t("resource.upload-successfully")}`);
+            }
+          },
+          (reason) => {
+            toast.error(reason);
           }
-        },
-        (reason) => {
-          toast.error(reason);
-        }
-      );
+        );
     }
   };
 

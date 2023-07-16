@@ -1,4 +1,4 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { Message } from "@/store/zustand/message";
 
@@ -200,8 +200,13 @@ export function createResource(resourceCreate: ResourceCreate) {
   return axios.post<Resource>("/api/v1/resource", resourceCreate);
 }
 
-export function createResourceWithBlob(formData: FormData) {
-  return axios.post<Resource>("/api/v1/resource/blob", formData);
+export function createResourceWithBlob(formData: FormData, progressCallback: (progress: number) => void): Promise<AxiosResponse<Resource>> {
+  return axios.post<Resource>("/api/v1/resource/blob", formData, {
+    onUploadProgress: (progressEvent: ProgressEvent) => {
+      const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+      progressCallback(progress);
+    },
+  });
 }
 
 export function patchResource(resourcePatch: ResourcePatch) {

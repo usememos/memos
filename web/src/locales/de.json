@@ -77,7 +77,8 @@
     "no-unused-resources": "Keine ungenutzten Ressourcen",
     "name": "Name",
     "clear": "Clear",
-    "description": "View your static resources in memos. e.g. images"
+    "description": "View your static resources in memos. e.g. images",
+    "upload-process": "Upload fortschritt"
   },
   "archived": {
     "archived-memos": "Archivierte Memos",

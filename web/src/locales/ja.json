@@ -142,7 +142,8 @@
         "type": "タイプ",
         "type-placeholder": "ファイルタイプ"
       }
-    }
+    },
+    "upload-process": "アップロードの進行状況"
   },
   "shortcut-list": {
     "shortcut-title": "ショートカットの名前",

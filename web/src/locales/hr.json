@@ -145,7 +145,8 @@
       "download-link": {
         "option": "Link za preuzimanje"
       }
-    }
+    },
+    "upload-process": "Napredak učitavanja"
   },
   "shortcut-list": {
     "shortcut-title": "ime prečaca",

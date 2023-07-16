@@ -142,7 +142,8 @@
         "type": "Tipo",
         "type-placeholder": "Tipo do arquivo"
       }
-    }
+    },
+    "upload-process": "Eget progressus"
   },
   "shortcut-list": {
     "shortcut-title": "título do atalho",

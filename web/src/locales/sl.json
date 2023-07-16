@@ -97,7 +97,8 @@
         "type": "Tip",
         "type-placeholder": "Tip datoteke"
       }
-    }
+    },
+    "upload-process": "Napredek nalaganja"
   },
   "archived": {
     "archived-memos": "Arhivirane beležke",

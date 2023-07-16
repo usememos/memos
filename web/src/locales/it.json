@@ -77,7 +77,8 @@
     "warning-text-unused": "Sei sicuro di voler eliminare queste risorse? QUESTA AZIONE È IRREVERSIBILE❗",
     "no-unused-resources": "Nessuna risorsa inutilizzata",
     "name": "Nome",
-    "clear": "Clear"
+    "clear": "Clear",
+    "upload-process": "Carica l'avanzamento"
   },
   "archived": {
     "archived-memos": "Memo archiviati",

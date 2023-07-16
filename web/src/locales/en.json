@@ -146,7 +146,8 @@
       "download-link": {
         "option": "Download link"
       }
-    }
+    },
+    "upload-process": "Upload progress"
   },
   "shortcut-list": {
     "shortcut-title": "shortcut title",
