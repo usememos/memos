@@ -1,11 +1,11 @@
 import { Message } from "@/store/zustand/message";
 import { marked } from "@/labs/marked";
 import Icon from "@/components/Icon";
-
 import Dropdown from "../kit/Dropdown";
 import { useMemoStore } from "@/store/module";
 import toast from "react-hot-toast";
 import { useTranslate } from "@/utils/i18n";
+
 interface MessageProps {
   index: number;
   message: Message;
