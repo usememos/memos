@@ -15,7 +15,7 @@ const MemosChatMessage = ({ index, message }: MessageProps) => {
   const memoStore = useMemoStore();
   const { t } = useTranslation();
 
-  const handelSaveAsMemos = async () => {
+  const handleSaveAsMemos = async () => {
     await memoStore.createMemo({
       content: message.content,
       visibility: "PRIVATE",
