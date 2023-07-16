@@ -228,7 +228,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
             <List size="sm" sx={{ width: "100%" }}>
               {fileList.map((file, index) => (
                 <div key={file.name}>
-                  <ListItem key={file.name} className="flex justify-between">
+                  <ListItem className="flex justify-between">
                     <Typography noWrap>{file.name}</Typography>
                     <div className="flex gap-1">
                       <button
