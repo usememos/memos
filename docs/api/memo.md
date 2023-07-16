@@ -13,7 +13,7 @@ POST /api/v1/memo
   "content": "Memo content",
   "visibility": "PUBLIC",
   "resourceIdList": [123, 456],
-  "relationList": [{ "relatedMemoId": 789, "type": "LINK" }]
+  "relationList": [{ "relatedMemoId": 789, "type": "REFERENCE" }]
 }
 ```
 

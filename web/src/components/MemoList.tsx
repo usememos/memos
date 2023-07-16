@@ -164,7 +164,7 @@ const MemoList = () => {
           <p className="status-text">
             {isComplete ? (
               sortedMemos.length === 0 && (
-                <div className="w-full mt-4 mb-8 flex flex-col justify-center items-center italic">
+                <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
                   <Empty />
                   <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
                 </div>

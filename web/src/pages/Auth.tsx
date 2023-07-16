@@ -158,19 +158,32 @@ const Auth = () => {
             </div>
             <div className="flex flex-row justify-end items-center w-full mt-6">
               {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
-              {systemStatus?.allowSignUp && (
+              {!systemStatus.host ? (
+                <Button disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
+                  {t("common.sign-up")}
+                </Button>
+              ) : (
                 <>
-                  <Button variant={"plain"} disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
-                    {t("common.sign-up")}
+                  {systemStatus?.allowSignUp && (
+                    <>
+                      <Button variant={"plain"} disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
+                        {t("common.sign-up")}
+                      </Button>
+                      <span className="mr-2 font-mono text-gray-200">/</span>
+                    </>
+                  )}
+                  <Button type="submit" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
+                    {t("common.sign-in")}
                   </Button>
-                  <span className="mr-2 font-mono text-gray-200">/</span>
                 </>
               )}
-              <Button type="submit" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
-                {t("common.sign-in")}
-              </Button>
             </div>
           </form>
+          {!systemStatus.host && (
+            <p className="w-full inline-block float-right text-sm mt-4 text-gray-500 text-right whitespace-pre-wrap">
+              {t("auth.host-tip")}
+            </p>
+          )}
           {identityProviderList.length > 0 && (
             <>
               <Divider className="!my-4">{t("common.or")}</Divider>
@@ -189,11 +202,6 @@ const Auth = () => {
                 ))}
               </div>
             </>
-          )}
-          {!systemStatus?.host && (
-            <p className="w-full inline-block float-right text-sm mt-4 text-gray-500 text-right whitespace-pre-wrap">
-              {t("auth.host-tip")}
-            </p>
           )}
         </div>
         <div className="flex flex-row items-center justify-center w-full gap-2">

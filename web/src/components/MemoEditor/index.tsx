@@ -7,8 +7,7 @@ import { getMatchedNodes } from "@/labs/marked";
 import { upsertMemoResource } from "@/helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
-import storage from "@/helpers/storage";
-import { clearContentQueryParam, getContentQueryParam } from "@/helpers/utils";
+import { clearContentQueryParam } from "@/helpers/utils";
 import Icon from "../Icon";
 import Editor, { EditorRefActions } from "./Editor";
 import showCreateResourceDialog from "../CreateResourceDialog";
@@ -20,10 +19,6 @@ import "@/less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
-
-const getInitialContent = (): string => {
-  return getContentQueryParam() ?? storage.get(["editorContentCache"]).editorContentCache ?? "";
-};
 
 interface Props {
   className?: string;
@@ -377,7 +372,7 @@ const MemoEditor = (props: Props) => {
   const editorConfig = useMemo(
     () => ({
       className: `memo-editor`,
-      initialContent: getInitialContent(),
+      initialContent: "",
       placeholder: t("editor.placeholder"),
       fullscreen: state.fullscreen,
       onContentChange: handleContentChange,
