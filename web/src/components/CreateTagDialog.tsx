@@ -1,4 +1,4 @@
-import { Input } from "@mui/joy";
+import { Button, Input } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslate } from "@/utils/i18n";
@@ -123,14 +123,14 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
         {shownSuggestTagNameList.length > 0 && (
           <>
             <div className="mt-4 mb-1 text-sm w-full flex flex-row justify-start items-center">
-              <span className="text-gray-400">Tag suggestions</span>
-              <button className="btn-normal ml-2 px-2 py-0 leading-6 font-mono" onClick={handleToggleShowSuggestionTags}>
+              <span className="text-gray-400 mr-2">Tag suggestions</span>
+              <Button size="sm" variant="outlined" onClick={handleToggleShowSuggestionTags}>
                 {showTagSuggestions ? "hide" : "show"}
-              </button>
+              </Button>
             </div>
             {showTagSuggestions && (
               <>
-                <div className="w-full flex flex-row justify-start items-start flex-wrap">
+                <div className="w-full flex flex-row justify-start items-start flex-wrap mb-2">
                   {shownSuggestTagNameList.map((tag) => (
                     <span
                       className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60"
@@ -141,9 +141,9 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
                     </span>
                   ))}
                 </div>
-                <button className="btn-normal mt-2 px-2 py-0 leading-6 font-mono" onClick={handleSaveSuggestTagList}>
+                <Button size="sm" onClick={handleSaveSuggestTagList}>
                   Save all
-                </button>
+                </Button>
               </>
             )}
           </>

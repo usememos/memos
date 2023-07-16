@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useLayoutStore, useUserStore } from "@/store/module";
+import { useGlobalStore, useLayoutStore, useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
@@ -12,6 +12,7 @@ import UpgradeVersionView from "./UpgradeVersionBanner";
 const Header = () => {
   const t = useTranslate();
   const location = useLocation();
+  const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
@@ -111,20 +112,22 @@ const Header = () => {
 
           {!isVisitorMode && (
             <>
-              <NavLink
-                to="/memo-chat"
-                id="header-memo-chat"
-                className={({ isActive }) =>
-                  classNames(
-                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
-                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
-                  )
-                }
-              >
-                <>
-                  <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("memo-chat.title")}
-                </>
-              </NavLink>
+              {globalStore.isDev() && (
+                <NavLink
+                  to="/memo-chat"
+                  id="header-memo-chat"
+                  className={({ isActive }) =>
+                    classNames(
+                      "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                      isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                    )
+                  }
+                >
+                  <>
+                    <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("memo-chat.title")}
+                  </>
+                </NavLink>
+              )}
               <NavLink
                 to="/archived"
                 id="header-archived"

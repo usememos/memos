@@ -119,18 +119,16 @@ const MemoChat = () => {
   };
 
   return (
-    <section className="w-full max-w-2xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
+    <section className="w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       <div className="w-full flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
-        <div className="flex space-x-2">
-          <div className="w-full flex flex-row justify-between items-center">
-            <p className="flex flex-row justify-start items-center select-none rounded">
-              <Icon.Bot className="w-5 h-auto mr-1" /> {t("memo-chat.title")}
-            </p>
+        <div className="w-full flex">
+          <div className="w-auto flex flex-row justify-start items-center select-none shrink-0 mr-4">
+            <Icon.Bot className="w-5 h-auto mr-1" /> {t("memo-chat.title")}
           </div>
 
-          <span className="flex flex-row w-full justify-start items-center">
-            <div className="flex space-x-2 max-w-md overflow-scroll">
+          <div className="flex flex-row w-auto justify-start items-center overflow-y-hidden overflow-x-auto">
+            <div className="flex space-x-2 overflow-x-auto">
               {conversationList.map((item: Conversation) => (
                 <ConversationTab
                   key={item.messageStorageId}
@@ -146,8 +144,7 @@ const MemoChat = () => {
                 />
               ))}
             </div>
-
-            <button className="btn-text px-1 ml-1">
+            <button className="btn-text px-1 ml-1 shrink-0">
               <Icon.Plus
                 className="w-4 h-auto"
                 onClick={() => {
@@ -155,7 +152,7 @@ const MemoChat = () => {
                 }}
               />
             </button>
-          </span>
+          </div>
         </div>
 
         <div className="dialog-content-container w-full">

@@ -160,13 +160,13 @@ const Auth = () => {
               {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
               {systemStatus?.allowSignUp && (
                 <>
-                  <Button variant={"plain"} loading={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
+                  <Button variant={"plain"} disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
                     {t("common.sign-up")}
                   </Button>
                   <span className="mr-2 font-mono text-gray-200">/</span>
                 </>
               )}
-              <Button type="submit" loading={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
+              <Button type="submit" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
                 {t("common.sign-in")}
               </Button>
             </div>
