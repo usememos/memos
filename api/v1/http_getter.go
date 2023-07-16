@@ -10,6 +10,7 @@ import (
 )
 
 func (*APIV1Service) registerGetterPublicRoutes(g *echo.Group) {
+	// GET /get/httpmeta?url={url} - Get website meta.
 	g.GET("/get/httpmeta", func(c echo.Context) error {
 		urlStr := c.QueryParam("url")
 		if urlStr == "" {
@@ -26,6 +27,7 @@ func (*APIV1Service) registerGetterPublicRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, htmlMeta)
 	})
 
+	// GET /get/image?url={url} - Get image.
 	g.GET("/get/image", func(c echo.Context) error {
 		urlStr := c.QueryParam("url")
 		if urlStr == "" {

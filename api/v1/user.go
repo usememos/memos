@@ -129,6 +129,7 @@ func (update UpdateUserRequest) Validate() error {
 }
 
 func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
+	// POST /user - Create a new user.
 	g.POST("/user", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
@@ -184,6 +185,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
+	// GET /user - List all users.
 	g.GET("/user", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		list, err := s.Store.ListUsers(ctx, &store.FindUser{})
@@ -202,7 +204,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, userMessageList)
 	})
 
-	// GET /api/user/me is used to check if the user is logged in.
+	// GET /user/me - Get current user.
 	g.GET("/user/me", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
@@ -233,6 +235,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
+	// GET /user/:id - Get user by id.
 	g.GET("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		id, err := strconv.Atoi(c.Param("id"))
@@ -255,6 +258,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
+	// PUT /user/:id - Update user by id.
 	g.PATCH("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, err := strconv.Atoi(c.Param("id"))
@@ -339,6 +343,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
+	// DELETE /user/:id - Delete user by id.
 	g.DELETE("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		currentUserID, ok := c.Get(getUserIDContextKey()).(int)

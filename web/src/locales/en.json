@@ -126,6 +126,7 @@
     "upload-successfully": "Upload successfully",
     "file-drag-drop-prompt": "Drag and drop your file here to upload file",
     "search-bar-placeholder": "Search resource",
+    "clear": "Clear",
     "create-dialog": {
       "title": "Create Resource",
       "upload-method": "Upload method",
@@ -172,6 +173,7 @@
     "member": "Member",
     "member-list": "Member list",
     "system": "System",
+    "openai": "OpenAI",
     "storage": "Storage",
     "sso": "SSO",
     "account-section": {
@@ -325,6 +327,14 @@
     "and": "And",
     "or": "Or"
   },
+  "amount-text": {
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "TAG",
+    "tag_other": "TAGS",
+    "day_one": "TAG",
+    "day_other": "TAGE"
+  },
   "message": {
     "no-data": "Maybe no data was found, maybe it should be another option.",
     "memos-ready": "all memos are ready 🎉",
@@ -382,6 +392,8 @@
   },
   "memo-chat": {
     "title": "Memo Chat",
+    "save-as-memo": "Save as memo",
+    "save-as-memo-success": "Saved as memo successfully.",
     "not-enabled": "You have not set up your OpenAI API key.",
     "go-to-settings": "Go to settings",
     "placeholder": "Ask anything…",

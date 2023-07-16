@@ -1,4 +1,4 @@
-lockfileVersion: '6.0'
+lockfileVersion: '6.1'
 
 settings:
   autoInstallPeers: true
@@ -23,6 +23,9 @@ dependencies:
   axios:
     specifier: ^0.27.2
     version: 0.27.2
+  classnames:
+    specifier: ^2.3.2
+    version: 2.3.2
   copy-to-clipboard:
     specifier: ^3.3.2
     version: 3.3.2
@@ -1344,6 +1347,10 @@ packages:
       readdirp: 3.6.0
     optionalDependencies:
       fsevents: 2.3.2
+    dev: false
+
+  /classnames@2.3.2:
+    resolution: {integrity: sha512-CSbhY4cFEJRe6/GQzIk5qXZ4Jeg5pcsP7b5peFSDpffpe1cqjASH/n9UTjBwOp6XpMSTwQ8Za2K5V02ueA7Tmw==}
     dev: false
 
   /clsx@1.2.1:
