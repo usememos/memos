@@ -57,7 +57,10 @@ const Explore = () => {
       })
     : memos;
 
-  const sortedMemos = shownMemos.filter((m) => m.rowStatus === "NORMAL" && m.visibility !== "PRIVATE");
+  const sortedMemos = shownMemos
+    .filter((m) => m.rowStatus === "NORMAL" && m.visibility !== "PRIVATE")
+    .sort((mi, mj) => mj.displayTs - mi.displayTs);
+
   const handleFetchMoreClick = async () => {
     try {
       const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, memos.length);

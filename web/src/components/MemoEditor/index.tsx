@@ -1,4 +1,3 @@
-import { Button } from "@mui/joy";
 import { isNumber, last, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -422,9 +421,9 @@ const MemoEditor = (props: Props) => {
       <div className="editor-footer-container">
         <MemoVisibilitySelector value={state.memoVisibility} onChange={handleMemoVisibilityChange} />
         <div className="buttons-container">
-          <Button disabled={!allowSave} onClick={handleSaveBtnClick}>
+          <button className="action-btn confirm-btn" disabled={!allowSave} onClick={handleSaveBtnClick}>
             {t("editor.save")}
-          </Button>
+          </button>
         </div>
       </div>
     </div>

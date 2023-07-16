@@ -173,6 +173,7 @@
     "member": "Member",
     "member-list": "Member list",
     "system": "System",
+    "openai": "OpenAI",
     "storage": "Storage",
     "sso": "SSO",
     "account-section": {
