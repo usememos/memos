@@ -22,7 +22,7 @@ const ChatMessage = ({ index, message }: MessageProps) => {
       resourceIdList: [],
       relationList: [],
     });
-    toast.success(t("memo-chat.save-as-memo"));
+    toast.success(t("memo-chat.save-as-memo-success"));
   };
 
   return (
