@@ -2,7 +2,7 @@ import { Button, Stack } from "@mui/joy";
 import { head } from "lodash-es";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import * as api from "@/helpers/api";
 import useLoading from "@/hooks/useLoading";
 import { useMessageStore } from "@/store/zustand/message";
@@ -16,7 +16,7 @@ import ConversationTab from "@/components/MemoChat/ConversationTab";
 import Empty from "@/components/Empty";
 
 const MemoChat = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const fetchingState = useLoading(false);
   const [isEnabled, setIsEnabled] = useState<boolean>(true);
   const [isInIME, setIsInIME] = useState(false);

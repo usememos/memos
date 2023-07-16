@@ -1,7 +1,7 @@
 import { generateDialog } from "../Dialog";
 import Icon from "../Icon";
 import MemoEditor from ".";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 
 interface Props extends DialogProps {
   memoId?: MemoId;
@@ -12,7 +12,7 @@ const MemoEditorDialog: React.FC<Props> = ({ memoId, relationList, destroy }: Pr
   const handleCloseBtnClick = () => {
     destroy();
   };
-  const { t } = useTranslation();
+  const t = useTranslate();
 
   return (
     <>
