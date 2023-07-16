@@ -176,7 +176,7 @@ func convertTagFromStore(tag *store.Tag) *Tag {
 	}
 }
 
-var tagRegexp = regexp.MustCompile(`#([^\s#,]+)`)
+var tagRegexp = regexp.MustCompile(`#((?:[^\s\p{P}]|_)+)`)
 
 func findTagListFromMemoContent(memoContent string) []string {
 	tagMapSet := make(map[string]bool)
