@@ -1,6 +1,6 @@
 {
   "common": {
-    "memos-slogan": "一個輕量、可自架的便箋中心。 永遠開放原始碼且免費",
+    "memos-slogan": "一個輕量、可自架的備忘錄中心。永遠開源且免費",
     "about": "關於",
     "home": "首頁",
     "resources": "資源庫",
@@ -14,7 +14,7 @@
     "save": "儲存",
     "close": "關閉",
     "cancel": "取消",
-    "create": "創建",
+    "create": "建立",
     "update": "更新",
     "change": "變更",
     "confirm": "確認",
@@ -22,7 +22,7 @@
     "language": "語言",
     "version": "版本",
     "pin": "釘選",
-    "unpin": "解釘",
+    "unpin": "解除釘選",
     "edit": "編輯",
     "restore": "還原",
     "delete": "刪除",
@@ -34,14 +34,14 @@
     "explore": "探索",
     "sign-in": "登入",
     "sign-in-with": "使用 {{provider}} 登入",
-    "or": "or",
+    "or": "或",
     "sign-up": "註冊",
     "sign-out": "登出",
     "type": "類型",
     "shortcuts": "捷徑",
     "title": "標題",
     "filter": "過濾器",
-    "filter-period": "{{from}} to {{to}}",
+    "filter-period": "{{from}} 至 {{to}}",
     "tags": "標籤",
     "yourself": "你自己",
     "changed": "已變更",
@@ -59,8 +59,8 @@
     "name": "名稱",
     "visibility": "可見度",
     "learn-more": "了解",
-    "e.g": "e.g.",
-    "beta": "Beta",
+    "e.g": "例如",
+    "beta": "測試版",
     "dialog": {
       "error": "錯誤",
       "help": "幫助",
@@ -68,13 +68,6 @@
       "success": "成功",
       "warning": "警告"
     },
-    "new": "新建",
-    "back-to-home": "回到主頁",
-    "archived-at": "歸檔於",
-    "daily-review": "每日回顧",
-    "update-on": "更新於",
-    "repeat-new-password": "重複新密碼",
-    "new-password": "新密碼",
     "mark": "Mark"
   },
   "router": {
@@ -93,29 +86,28 @@
     "save": "儲存",
     "placeholder": "任何想法...",
     "only-image-supported": "僅支援圖片檔案。",
-    "cant-empty": "內容不能是空的",
-    "local": "本地",
+    "cant-empty": "內容不能為空",
+    "local": "本機",
     "resources": "資源"
   },
   "memo": {
     "view-detail": "查看詳情",
     "copy-link": "複製連結",
-    "embed": "嵌入的",
-    "archived-memos": "封存的 Memos",
-    "no-archived-memos": "無封存的 memos。",
+    "embed": "內嵌",
+    "archived-memos": "封存的備忘錄",
+    "no-archived-memos": "無封存的備忘錄。",
     "fetching-data": "抓取資料中...",
     "fetch-more": "點此以載入更多",
     "archived-at": "封存於",
-    "search-placeholder": "搜尋 memos",
+    "search-placeholder": "搜尋備忘錄",
     "visibility": {
-      "private": "私人的",
-      "protected": "使用者可見",
+      "private": "私人",
+      "protected": "成員可見",
       "public": "公開給所有人",
-      "disabled": "公開 memos 為禁用的"
+      "disabled": "公共備忘錄已停用"
     },
-    "delete-memo": "刪除 Memo",
-    "delete-confirm": "您確定要刪除此memo？\n\n此動作為不可逆❗",
-    "copy": "複製"
+    "delete-memo": "刪除備忘錄",
+    "delete-confirm": "您確定要刪除此備忘錄？\n\n此動作為不可逆❗"
   },
   "resource": {
     "no-resources": "沒有資源。",
@@ -125,7 +117,7 @@
     "reset-resource-link": "重設資源連結",
     "reset-link-prompt": "您確定要重設連結？\n這將會破壞所有目前的使用中的連結。\n\n此動作為不可逆❗",
     "delete-resource": "刪除資源",
-    "linked-amount": "連結的 Memo 數量",
+    "linked-amount": "連結的數量",
     "warning-text": "您確定要刪除此資源？\n\n此動作為不可逆❗",
     "warning-text-unused": "您確定要刪除這些未使用的資源？\n\n此動作為不可逆❗",
     "no-unused-resources": "無未使用的資源",
@@ -134,11 +126,12 @@
     "upload-successfully": "上傳成功",
     "file-drag-drop-prompt": "拖曳您的檔案到此處以上傳檔案",
     "search-bar-placeholder": "搜尋資源",
+    "clear": "清除",
     "create-dialog": {
       "title": "新增資源",
       "upload-method": "上傳方式",
       "local-file": {
-        "option": "本地檔案",
+        "option": "本機檔案",
         "choose": "選擇檔案..."
       },
       "external-link": {
@@ -151,29 +144,22 @@
         "type-placeholder": "檔案類型"
       },
       "download-link": {
-        "option": "從外部鏈接下載"
+        "option": "從外部連結下載"
       }
-    },
-    "name": "資源名稱",
-    "description": "查看在備忘錄中的靜態資源。例如：圖片",
-    "upload": "上傳",
-    "preview": "預覽",
-    "select": "選擇",
-    "rename": "重命名",
-    "clear": "清除"
+    }
   },
   "shortcut-list": {
     "shortcut-title": "捷徑標題",
     "create-shortcut": "新增捷徑",
     "edit-shortcut": "編輯捷徑",
-    "eligible-memo": "符合條件的memo",
+    "eligible-memo": "符合條件的備忘錄",
     "fill-previous": "請填入前一個過濾器的值",
-    "title-required": "標題為必要的",
-    "value-required": "過濾器值為必要的"
+    "title-required": "標題為必填",
+    "value-required": "過濾器值為必填"
   },
   "tag-list": {
     "tip-text": "輸入 `#tag` 以新增標籤",
-    "create-tag": "創建標籤",
+    "create-tag": "建立標籤",
     "all-tags": "所有標籤",
     "tag-name": "標籤名稱"
   },
@@ -187,7 +173,7 @@
     "member": "使用者",
     "member-list": "使用者列表",
     "system": "系統",
-    "storage": "存儲空間",
+    "storage": "儲存空間",
     "sso": "SSO",
     "account-section": {
       "title": "帳號資訊",
@@ -198,57 +184,57 @@
       "change-password": "變更密碼",
       "reset-api": "重設 API",
       "openapi-title": "OpenAPI",
-      "openapi-reset": "重設 OpenAPI Key",
-      "openapi-reset-warning": "❗ The existing API will be invalidated and a new one will be generated.\n\nAre you sure you want to reset?",
-      "openapi-sample-post": "Hello #memos from {{url}}"
+      "openapi-reset": "重設 OpenAPI 金鑰",
+      "openapi-reset-warning": "❗ 將使現有的 API 金鑰無效並產生新金鑰。\n\n您確定要重設嗎？",
+      "openapi-sample-post": "哈囉 來自 {{url}} 的 #memos"
     },
     "preference-section": {
       "theme": "主題",
-      "default-memo-visibility": "Memo預設之能見度",
+      "default-memo-visibility": "備忘錄預設之能見度",
       "default-resource-visibility": "資源預設之能見度",
-      "enable-folding-memo": "啟用折疊memo",
-      "enable-double-click": "啟用雙擊編輯",
+      "enable-folding-memo": "啟用折疊備忘錄",
+      "enable-double-click": "啟用連點兩次以編輯",
       "editor-font-style": "編輯器字體樣式",
       "mobile-editor-style": "行動版編輯器樣式",
-      "default-memo-sort-option": "Memo 顯示時間",
+      "default-memo-sort-option": "備忘錄顯示時間",
       "telegram-user-id": "Telegram UserID",
-      "telegram-user-id-placeholder": "向 Telegram 機器人傳送任意訊息以獲取",
+      "telegram-user-id-placeholder": "向 Telegram 機器人傳送任意訊息以取得",
       "created_ts": "建立時間",
       "updated_ts": "更新時間",
       "daily-review-time-offset": "每日回顧時間偏移",
       "auto-collapse": "自動摺疊"
     },
     "storage-section": {
-      "current-storage": "目前的存儲空間",
+      "current-storage": "目前的儲存空間",
       "type-database": "資料庫",
-      "type-local": "本地",
-      "storage-services-list": "存儲服務列表",
-      "create-a-service": "新建服務",
+      "type-local": "本機",
+      "storage-services-list": "儲存服務列表",
+      "create-a-service": "建立服務",
       "update-a-service": "更新服務",
-      "warning-text": "您確定要刪除存儲服務 \"{{name}}\"嗎?\n\n此動作為不可逆❗",
-      "delete-storage": "刪除存儲",
-      "local-storage-path": "本地存儲空間路徑",
-      "update-local-path": "更新本地存儲空間路徑",
-      "update-local-path-description": "Local storage path is a relative path to your database file",
+      "warning-text": "您確定要刪除儲存服務 \"{{name}}\"嗎?\n\n此動作為不可逆❗",
+      "delete-storage": "刪除儲存",
+      "local-storage-path": "本機儲存空間路徑",
+      "update-local-path": "更新本機儲存空間路徑",
+      "update-local-path-description": "本機儲存空間路徑為資料庫檔案的相對路徑",
       "create-storage": "新增儲存空間",
       "update-storage": "更新儲存空間",
       "endpoint": "端點",
-      "s3-compatible-url": "S3 相容網址L",
+      "s3-compatible-url": "S3 相容網址",
       "region": "地區",
       "region-placeholder": "地區名稱",
-      "accesskey": "Access key",
-      "accesskey-placeholder": "Access key / Access ID",
-      "secretkey": "Secret key",
-      "secretkey-placeholder": "Secret key / Access Key",
+      "accesskey": "存取金鑰",
+      "accesskey-placeholder": "存取金鑰 / 存取 ID",
+      "secretkey": "密鑰",
+      "secretkey-placeholder": "密鑰 / 存取金鑰",
       "bucket": "Bucket",
-      "bucket-placeholder": "Bucket name",
-      "path": "存儲空間路徑",
-      "path-description": "You can use the same dynamic variables from local storage, like {filename}",
+      "bucket-placeholder": "Bucket 名稱",
+      "path": "儲存空間路徑",
+      "path-description": "您可以使用與本機儲存空間相同的動態變數，如 {filename}",
       "path-placeholder": "custom/path",
-      "url-prefix": "URL prefix",
-      "url-prefix-placeholder": "Custom URL prefix, optional",
-      "url-suffix": "URL suffix",
-      "url-suffix-placeholder": "Custom URL suffix, optional"
+      "url-prefix": "網址前綴",
+      "url-prefix-placeholder": "自訂網址前綴，選填",
+      "url-suffix": "網址後綴",
+      "url-suffix-placeholder": "自訂網址後綴，選填"
     },
     "member-section": {
       "create-a-member": "新增使用者",
@@ -262,7 +248,7 @@
       "customize-server": {
         "title": "自訂伺服器",
         "default": "預設為 memos",
-        "icon-url": "圖標網址",
+        "icon-url": "圖示網址",
         "description": "描述",
         "locale": "伺服器語言",
         "appearance": "伺服器外觀"
@@ -270,22 +256,22 @@
       "database-file-size": "資料庫檔案大小",
       "allow-user-signup": "允許使用者註冊",
       "ignore-version-upgrade": "忽略版本更新提示",
-      "disable-public-memos": "禁用公共memos",
+      "disable-public-memos": "停用公共備忘錄",
       "max-upload-size": "最大上傳檔案大小 (MiB)",
-      "max-upload-size-hint": "建議值為 32 MiB.",
-      "additional-style": "自定義樣式",
-      "additional-script": "自定義腳本",
-      "additional-style-placeholder": "自定義 CSS 代碼",
-      "additional-script-placeholder": "自定義 JavaScript 代碼",
-      "telegram-bot-token": "Telegram Bot Token",
-      "telegram-bot-token-description": "Telegram Bot Token or API Proxy like `http.../bot<token>`",
-      "telegram-bot-token-placeholder": "Your Telegram Bot token",
-      "openai-api-key": "OpenAI: API Key",
-      "openai-api-key-description": "取得 API key",
-      "openai-api-key-placeholder": "您的 OpenAI API Key",
+      "max-upload-size-hint": "建議值為 32 MiB。",
+      "additional-style": "自訂樣式",
+      "additional-script": "自訂腳本",
+      "additional-style-placeholder": "自訂 CSS 代碼",
+      "additional-script-placeholder": "自訂 JavaScript 代碼",
+      "telegram-bot-token": "Telegram 機器人權杖",
+      "telegram-bot-token-description": "Telegram 機器人權杖或 API Proxy，如 `http.../bot<token>`",
+      "telegram-bot-token-placeholder": "您的 Telegram 機器人權杖",
+      "openai-api-key": "OpenAI: API 金鑰",
+      "openai-api-key-description": "取得 API 金鑰",
+      "openai-api-key-placeholder": "您的 OpenAI API 金鑰",
       "openai-api-host": "OpenAI: API 主機",
       "openai-api-host-placeholder": "預設: https://api.openai.com/",
-      "display-with-updated-time": "Display with updated time"
+      "display-with-updated-time": "顯示更新時間"
     },
     "appearance-option": {
       "system": "跟隨系統",
@@ -293,25 +279,25 @@
       "dark": "總是深色"
     },
     "sso-section": {
-      "sso-list": "SSO List",
+      "sso-list": "SSO 列表",
       "delete-sso": "確認刪除",
       "confirm-delete": "您確定要刪除 \"{{name}}\" SSO 設定？\n\n此動作為不可逆❗",
       "create-sso": "新增 SSO",
       "update-sso": "更新 SSO",
       "sso-created": "SSO {{name}} 新增成功",
       "sso-updated": "SSO {{name}} 更新成功",
-      "identifier": "Identifier",
+      "identifier": "識別碼",
       "display-name": "顯示名稱",
-      "template": "Template",
-      "custom": "Custom",
-      "identifier-filter": "Identifier Filter",
-      "redirect-url": "Redirect URL",
-      "client-id": "Client ID",
-      "client-secret": "Client secret",
-      "authorization-endpoint": "Authorization endpoint",
-      "token-endpoint": "Token endpoint",
-      "user-endpoint": "User endpoint",
-      "scopes": "Scopes"
+      "template": "範本",
+      "custom": "自訂",
+      "identifier-filter": "識別碼過濾器",
+      "redirect-url": "重新導向網址",
+      "client-id": "客戶端 ID",
+      "client-secret": "客戶端密鑰",
+      "authorization-endpoint": "驗證端點",
+      "token-endpoint": "權杖端點",
+      "user-endpoint": "使用者端點",
+      "scopes": "範圍"
     }
   },
   "filter": {
@@ -342,15 +328,15 @@
   },
   "message": {
     "no-data": "或許尋覓虛空，或者改換選擇之軌跡。",
-    "memos-ready": "所有 Memo 已就緒 🎉",
-    "resource-ready": "所有 Resource 已就緒 🎉",
+    "memos-ready": "所有備忘錄已就緒 🎉",
+    "resource-ready": "所有資源已就緒 🎉",
     "restored-successfully": "還原成功",
-    "memo-updated-datetime": "Memo 建立日期時間已變更。",
+    "memo-updated-datetime": "備忘錄建立日期時間已變更。",
     "invalid-created-datetime": "建立的日期時間無效。",
-    "change-memo-created-time": "變更 Memo 建立時間",
+    "change-memo-created-time": "變更備忘錄建立時間",
     "change-memo-created-time-warning-1": "這非正常的行為。",
     "change-memo-created-time-warning-2": "請確定您真的需要這麼做。",
-    "memo-not-found": "找不到 Memo。",
+    "memo-not-found": "找不到備忘錄。",
     "fill-all": "請填寫所有欄位。",
     "password-not-match": "密碼不一致。",
     "new-password-not-match": "新密碼不一致。",
@@ -361,10 +347,10 @@
     "signup-failed": "註冊失敗",
     "user-not-found": "查無該使用者",
     "password-changed": "密碼變更完成",
-    "private-only": "此 Memo 僅自己可見。",
+    "private-only": "此備忘錄僅自己可見。",
     "copied": "已複製",
     "succeed-copy-content": "複製內容到剪貼板成功。",
-    "succeed-copy-code": "複製代碼到剪貼簿成功。",
+    "succeed-copy-code": "複製程式碼到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
     "change-resource-filename": "變更資源檔名",
     "resource-filename-updated": "資源檔名變更成功。",
@@ -408,14 +394,14 @@
     "go-to-settings": "前往設定",
     "placeholder": "凡事皆可問…",
     "default-message-group-title": "預設會話",
-    "create-message-group-title": "新建對話",
+    "create-message-group-title": "建立對話",
     "label-message-group-name-title": "對話名稱"
   },
 
   "embed-memo": {
-    "title": "嵌入 Memo",
-    "text": "將以下代碼複製並貼上到您的網誌或網站中。",
-    "only-public-supported": "* 只有公開的memo可以被嵌入",
+    "title": "嵌入備忘錄",
+    "text": "將以下程式碼複製並貼上到您的網誌或網站中。",
+    "only-public-supported": "* 只有公開的備忘錄可以被嵌入。",
     "copy": "複製"
   },
   "heatmap": {
@@ -432,25 +418,5 @@
     "no-server-description": "此伺服器未設置說明。",
     "powered-by": "威力本源",
     "other-projects": "其他專案"
-  },
-  "amount-text": {
-    "tag_other": "TAGS",
-    "day_other": "DAYS",
-    "memo_one": "MEMO",
-    "tag_one": "TAG",
-    "day_one": "DAY",
-    "memo_other": "MEMOS"
-  },
-  "memo-list": {
-    "fetch-more": "點擊加載更多",
-    "fetching-data": "請求數據中..."
-  },
-  "archived": {
-    "no-archived-memos": "沒有歸檔的備忘錄",
-    "fetching-data": "請求數據中...",
-    "archived-memos": "已歸檔的備忘錄"
-  },
-  "search": {
-    "quickly-filter": "快速過濾"
   }
 }
