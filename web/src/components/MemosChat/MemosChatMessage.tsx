@@ -44,7 +44,7 @@ const MemosChatMessage = ({ index, message }: MessageProps) => {
               <>
                 <button
                   className="w-full m-auto text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-                  onClick={() => handelSaveAsMemos()}
+                  onClick={() => handleSaveAsMemos()}
                 >
                   {t("memo.save-as-memo")}
                 </button>
