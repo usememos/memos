@@ -1,5 +1,5 @@
 import { toLower } from "lodash-es";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { useGlobalStore } from "@/store/module";
 import Selector from "@/components/kit/Selector";
@@ -11,14 +11,14 @@ interface Props {
 
 const MemoVisibilitySelector = (props: Props) => {
   const { value, onChange } = props;
-  const { t } = useTranslation();
+  const t = useTranslate();
   const {
     state: { systemStatus },
   } = useGlobalStore();
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
-      text: t(`memo.visibility.${toLower(item.value)}`),
+      text: t(`memo.visibility.${toLower(item.value) as Lowercase<typeof item.value>}`),
     };
   });
 

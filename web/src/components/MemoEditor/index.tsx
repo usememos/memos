@@ -1,6 +1,8 @@
+import { Button } from "@mui/joy";
 import { isNumber, last, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import { useTranslate } from "@/utils/i18n";
 import { useTranslation } from "react-i18next";
 import { getMatchedNodes } from "@/labs/marked";
 import { upsertMemoResource } from "@/helpers/api";
@@ -42,7 +44,8 @@ interface State {
 
 const MemoEditor = (props: Props) => {
   const { className, memoId, onConfirm } = props;
-  const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
+  const t = useTranslate();
   const {
     state: { systemStatus },
   } = useGlobalStore();
@@ -419,9 +422,9 @@ const MemoEditor = (props: Props) => {
       <div className="editor-footer-container">
         <MemoVisibilitySelector value={state.memoVisibility} onChange={handleMemoVisibilityChange} />
         <div className="buttons-container">
-          <button className="action-btn confirm-btn" disabled={!allowSave} onClick={handleSaveBtnClick}>
+          <Button disabled={!allowSave} onClick={handleSaveBtnClick}>
             {t("editor.save")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

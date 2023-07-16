@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { Button, Divider, Input, Switch, Textarea, Tooltip } from "@mui/joy";
 import { formatBytes } from "@/helpers/utils";
 import { useGlobalStore } from "@/store/module";
@@ -21,7 +21,7 @@ interface State {
 }
 
 const SystemSection = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const globalStore = useGlobalStore();
   const systemStatus = globalStore.state.systemStatus;
   const [state, setState] = useState<State>({
@@ -219,7 +219,7 @@ const SystemSection = () => {
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
       </div>
       <div className="form-label">
-        <span className="normal-text">Display with updated time</span>
+        <span className="normal-text">{t("setting.system-section.display-with-updated-time")}</span>
         <Switch checked={state.memoDisplayWithUpdatedTs} onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)} />
       </div>
       <div className="form-label">

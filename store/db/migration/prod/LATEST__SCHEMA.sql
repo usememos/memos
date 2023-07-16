@@ -27,6 +27,8 @@ CREATE TABLE user (
   avatar_url TEXT NOT NULL DEFAULT ''
 );
 
+CREATE INDEX idx_user_username ON user (username);
+
 -- user_setting
 CREATE TABLE user_setting (
   user_id INTEGER NOT NULL,
@@ -45,6 +47,10 @@ CREATE TABLE memo (
   content TEXT NOT NULL DEFAULT '',
   visibility TEXT NOT NULL CHECK (visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')) DEFAULT 'PRIVATE'
 );
+
+CREATE INDEX idx_memo_creator_id ON memo (creator_id);
+CREATE INDEX idx_memo_content ON memo (content);
+CREATE INDEX idx_memo_visibility ON memo (visibility);
 
 -- memo_organizer
 CREATE TABLE memo_organizer (
@@ -78,6 +84,8 @@ CREATE TABLE resource (
   size INTEGER NOT NULL DEFAULT 0,
   internal_path TEXT NOT NULL DEFAULT ''
 );
+
+CREATE INDEX idx_resource_creator_id ON resource (creator_id);
 
 -- memo_resource
 CREATE TABLE memo_resource (

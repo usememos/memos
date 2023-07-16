@@ -23,6 +23,7 @@ export const useMemoStore = () => {
   const fetchMemoById = async (memoId: MemoId) => {
     const { data } = await api.getMemoById(memoId);
     const memo = convertResponseModelMemo(data);
+    store.dispatch(upsertMemos([memo]));
 
     return memo;
   };
@@ -62,6 +63,7 @@ export const useMemoStore = () => {
 
       const { data } = await api.getAllMemos(memoFind);
       const fetchedMemos = data.map((m) => convertResponseModelMemo(m));
+      store.dispatch(upsertMemos(fetchedMemos));
 
       for (const m of fetchedMemos) {
         memoCacheStore.setMemoCache(m);

@@ -49,7 +49,8 @@
     "vacuum": "Aufräumen",
     "select": "Auswählen",
     "avatar": "Avatar",
-    "database": "Database"
+    "database": "Database",
+    "mark": "Mark"
   },
   "auth": {
     "signup-as-host": "Als Host registrieren",
@@ -185,7 +186,8 @@
       "additional-script": "Zusätzliches Skript",
       "additional-style-placeholder": "Zusätzliches CSS",
       "additional-script-placeholder": "Zusätzliches JavaScript",
-      "disable-public-memos": "Disable public memos"
+      "disable-public-memos": "Disable public memos",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "System",

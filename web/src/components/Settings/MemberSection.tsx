@@ -1,7 +1,7 @@
 import { Table } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useUserStore } from "@/store/module";
 import * as api from "@/helpers/api";
 import Dropdown from "../kit/Dropdown";
@@ -15,7 +15,7 @@ interface State {
 }
 
 const PreferencesSection = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const userStore = useUserStore();
   const currentUser = userStore.state.user;
   const [state, setState] = useState<State>({
@@ -178,7 +178,7 @@ const PreferencesSection = () => {
                             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
                             onClick={() => handleArchiveUserClick(user)}
                           >
-                            {t("common.archive")}
+                            {t("setting.member-section.archive-member")}
                           </button>
                         ) : (
                           <>
@@ -192,7 +192,7 @@ const PreferencesSection = () => {
                               className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded text-red-600 hover:bg-gray-100 dark:hover:bg-zinc-600"
                               onClick={() => handleDeleteUserClick(user)}
                             >
-                              {t("common.delete")}
+                              {t("setting.member-section.delete-member")}
                             </button>
                           </>
                         )}

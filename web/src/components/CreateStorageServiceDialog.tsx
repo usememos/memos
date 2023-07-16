@@ -1,7 +1,7 @@
 import { Button, Input, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import * as api from "@/helpers/api";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -14,7 +14,7 @@ interface Props extends DialogProps {
 }
 
 const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const { destroy, storage, confirmCallback } = props;
   const [basicInfo, setBasicInfo] = useState({
     name: "",
@@ -106,7 +106,9 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <span className="title-text ml-auto">{t("setting.storage-section." + (isCreating ? "create" : "update") + "-storage")}</span>
+        <span className="title-text ml-auto">
+          {t(isCreating ? "setting.storage-section.create-storage" : "setting.storage-section.update-storage")}
+        </span>
         <button className="btn close-btn ml-auto" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
@@ -219,7 +221,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
             {t("common.cancel")}
           </Button>
           <Button onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
-            {t("common." + (isCreating ? "create" : "update"))}
+            {t(isCreating ? "common.create" : "common.update")}
           </Button>
         </div>
       </div>

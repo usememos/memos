@@ -1,7 +1,7 @@
 import { Tooltip } from "@mui/joy";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
 import { useMemoStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import { getDateTimeString } from "@/helpers/datetime";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
@@ -15,7 +15,7 @@ interface Props {
 
 const ArchivedMemo: React.FC<Props> = (props: Props) => {
   const { memo } = props;
-  const { t } = useTranslation();
+  const t = useTranslate();
   const memoStore = useMemoStore();
 
   const handleDeleteMemoClick = async () => {

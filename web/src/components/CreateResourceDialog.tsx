@@ -1,7 +1,7 @@
 import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useResourceStore } from "../store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
@@ -21,7 +21,7 @@ interface State {
 }
 
 const CreateResourceDialog: React.FC<Props> = (props: Props) => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const { destroy, onCancel, onConfirm } = props;
   const resourceStore = useResourceStore();
   const [state, setState] = useState<State>({

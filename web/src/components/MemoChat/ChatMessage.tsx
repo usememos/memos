@@ -4,16 +4,15 @@ import Icon from "@/components/Icon";
 import Dropdown from "../kit/Dropdown";
 import { useMemoStore } from "@/store/module";
 import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
-
+import { useTranslate } from "@/utils/i18n";
 interface MessageProps {
   index: number;
   message: Message;
 }
 
-const MemosChatMessage = ({ index, message }: MessageProps) => {
+const ChatMessage = ({ index, message }: MessageProps) => {
   const memoStore = useMemoStore();
-  const { t } = useTranslation();
+  const t = useTranslate();
 
   const handleSaveAsMemos = async () => {
     await memoStore.createMemo({
@@ -22,7 +21,7 @@ const MemosChatMessage = ({ index, message }: MessageProps) => {
       resourceIdList: [],
       relationList: [],
     });
-    toast.success("save as memos success");
+    toast.success(t("memo-chat.save-as-memo"));
   };
 
   return (
@@ -46,7 +45,7 @@ const MemosChatMessage = ({ index, message }: MessageProps) => {
                   className="w-full m-auto text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
                   onClick={() => handleSaveAsMemos()}
                 >
-                  {t("memo.save-as-memo")}
+                  {t("memo-chat.save-as-memo")}
                 </button>
               </>
             }
@@ -57,4 +56,4 @@ const MemosChatMessage = ({ index, message }: MessageProps) => {
   );
 };
 
-export default MemosChatMessage;
+export default ChatMessage;

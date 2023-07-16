@@ -2,20 +2,15 @@ import Icon from "@/components/Icon";
 import Textarea from "@mui/joy/Textarea/Textarea";
 import { useTranslation } from "react-i18next";
 
-interface MemosChatInputProps {
+interface Props {
   question: string;
   handleQuestionTextareaChange: any;
   setIsInIME: any;
   handleKeyDown: any;
   handleSendQuestionButtonClick: any;
 }
-const MemosChatInput = ({
-  question,
-  handleQuestionTextareaChange,
-  setIsInIME,
-  handleKeyDown,
-  handleSendQuestionButtonClick,
-}: MemosChatInputProps) => {
+
+const ChatInput = ({ question, handleQuestionTextareaChange, setIsInIME, handleKeyDown, handleSendQuestionButtonClick }: Props) => {
   const { t } = useTranslation();
 
   return (
@@ -39,4 +34,4 @@ const MemosChatInput = ({
   );
 };
 
-export default MemosChatInput;
+export default ChatInput;

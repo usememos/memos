@@ -1,7 +1,7 @@
 import { Input } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useTagStore } from "@/store/module";
 import { getTagSuggestionList } from "@/helpers/api";
 import { matcher } from "@/labs/marked/matcher";
@@ -22,7 +22,7 @@ const validateTagName = (tagName: string): boolean => {
 const CreateTagDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
   const tagStore = useTagStore();
-  const { t } = useTranslation();
+  const t = useTranslate();
   const [tagName, setTagName] = useState<string>("");
   const [suggestTagNameList, setSuggestTagNameList] = useState<string[]>([]);
   const [showTagSuggestions, setShowTagSuggestions] = useState<boolean>(false);

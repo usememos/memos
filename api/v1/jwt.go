@@ -113,12 +113,13 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		})
 
 		if !accessToken.Valid {
+			auth.RemoveTokensAndCookies(c)
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid access token.")
 		}
-
 		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q.", claims.Audience, auth.AccessTokenAudienceName))
 		}
+
 		generateToken := time.Until(claims.ExpiresAt.Time) < auth.RefreshThresholdDuration
 		if err != nil {
 			var ve *jwt.ValidationError
@@ -129,6 +130,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 					generateToken = true
 				}
 			} else {
+				auth.RemoveTokensAndCookies(c)
 				return echo.NewHTTPError(http.StatusUnauthorized, errors.Wrap(err, "Invalid or expired access token"))
 			}
 		}

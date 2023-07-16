@@ -1,11 +1,11 @@
 import { useEffect, useState, useRef } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import useDebounce from "@/hooks/useDebounce";
 import { useFilterStore } from "@/store/module";
 import Icon from "./Icon";
 
 const SearchBar = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const filterStore = useFilterStore();
   const [queryText, setQueryText] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);

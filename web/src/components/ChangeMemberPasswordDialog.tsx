@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useUserStore } from "@/store/module";
 import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
@@ -11,7 +11,7 @@ interface Props extends DialogProps {
 
 const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
   const { user: propsUser, destroy } = props;
-  const { t } = useTranslation();
+  const t = useTranslate();
   const userStore = useUserStore();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");

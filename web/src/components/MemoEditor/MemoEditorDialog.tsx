@@ -1,6 +1,7 @@
 import { generateDialog } from "../Dialog";
 import Icon from "../Icon";
 import MemoEditor from ".";
+import { useTranslation } from "react-i18next";
 
 interface Props extends DialogProps {
   memoId?: MemoId;
@@ -11,11 +12,12 @@ const MemoEditorDialog: React.FC<Props> = ({ memoId, relationList, destroy }: Pr
   const handleCloseBtnClick = () => {
     destroy();
   };
+  const { t } = useTranslation();
 
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text flex items-center">MEMOS</p>
+        <p className="title-text flex items-center">{t("amount-text.memo_one")}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>

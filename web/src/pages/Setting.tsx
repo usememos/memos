@@ -1,6 +1,6 @@
 import { Option, Select } from "@mui/joy";
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useUserStore } from "@/store/module";
 import Icon from "@/components/Icon";
 import BetaBadge from "@/components/BetaBadge";
@@ -20,7 +20,7 @@ interface State {
 }
 
 const Setting = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const userStore = useUserStore();
   const user = userStore.state.user;
   const [state, setState] = useState<State>({

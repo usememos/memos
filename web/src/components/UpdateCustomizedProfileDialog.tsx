@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { toast } from "react-hot-toast";
 import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
@@ -12,7 +12,7 @@ import AppearanceSelect from "./AppearanceSelect";
 type Props = DialogProps;
 
 const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const globalStore = useGlobalStore();
   const [state, setState] = useState<CustomizedProfile>(globalStore.state.systemStatus.customizedProfile);
 

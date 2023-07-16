@@ -1,6 +1,6 @@
 import { matcher } from "../matcher";
 
-export const TAG_REG = /#([^\s#]+)/;
+export const TAG_REG = /#([^\s#,]+)/;
 
 const renderer = (rawStr: string) => {
   const matchResult = matcher(rawStr, TAG_REG);

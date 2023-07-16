@@ -67,7 +67,8 @@
       "info": "Informação",
       "success": "Sucesso",
       "warning": "Aviso"
-    }
+    },
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "Voltar ao início"
@@ -260,7 +261,8 @@
       "openai-api-key-description": "Obter chave de API",
       "openai-api-key-placeholder": "Sua chave de API da OpenAI",
       "openai-api-host": "OpenAI: Host de API",
-      "openai-api-host-placeholder": "Padrão: https://api.openai.com/"
+      "openai-api-host-placeholder": "Padrão: https://api.openai.com/",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Sistema",

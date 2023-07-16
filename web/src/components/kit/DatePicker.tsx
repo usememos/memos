@@ -1,6 +1,6 @@
 import { Badge, Button } from "@mui/joy";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getMemoStats } from "@/helpers/api";
 import { getDateStampByDate } from "@/helpers/datetime";
@@ -15,7 +15,7 @@ interface DatePickerProps {
 }
 
 const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const { className, datestamp, handleDateStampChange } = props;
   const [currentDateStamp, setCurrentDateStamp] = useState<DateStamp>(getMonthFirstDayDateStamp(datestamp));
   const [countByDate, setCountByDate] = useState(new Map());
