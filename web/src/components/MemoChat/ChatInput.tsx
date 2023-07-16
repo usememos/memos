@@ -1,6 +1,6 @@
 import Icon from "@/components/Icon";
 import Textarea from "@mui/joy/Textarea/Textarea";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   question: string;
@@ -11,7 +11,7 @@ interface Props {
 }
 
 const ChatInput = ({ question, handleQuestionTextareaChange, setIsInIME, handleKeyDown, handleSendQuestionButtonClick }: Props) => {
-  const { t } = useTranslation();
+  const t = useTranslate();
 
   return (
     <div className="w-full relative mt-4">
