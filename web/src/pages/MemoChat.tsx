@@ -174,7 +174,7 @@ const MemoChat = () => {
           )}
           {!isEnabled && (
             <div className="w-full flex flex-col justify-center items-center mt-4 space-y-2">
-              <p>{t("memo-chat.not_enabled")}</p>
+              <p>{t("memo-chat.not-enabled")}</p>
               <Button onClick={() => handleGotoSystemSetting()}>{t("memo-chat.go-to-settings")}</Button>
             </div>
           )}
