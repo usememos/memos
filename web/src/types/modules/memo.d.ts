@@ -5,7 +5,7 @@ type Visibility = "PUBLIC" | "PROTECTED" | "PRIVATE";
 interface Memo {
   id: MemoId;
 
-  creatorId: UserId;
+  creatorUsername: string;
   createdTs: TimeStamp;
   updatedTs: TimeStamp;
   rowStatus: RowStatus;
@@ -38,7 +38,7 @@ interface MemoPatch {
 }
 
 interface MemoFind {
-  creatorId?: UserId;
+  creatorUsername?: string;
   rowStatus?: RowStatus;
   pinned?: boolean;
   visibility?: Visibility;

@@ -38,7 +38,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const [createdTimeStr, setCreatedTimeStr] = useState<string>(getRelativeTimeString(memo.displayTs));
   const [relatedMemoList, setRelatedMemoList] = useState<Memo[]>([]);
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const readonly = userStore.isVisitorMode() || userStore.getCurrentUserId() !== memo.creatorId;
+  const readonly = userStore.isVisitorMode() || userStore.getCurrentUsername() !== memo.creatorUsername;
 
   useEffect(() => {
     Promise.allSettled(memo.relationList.map((memoRelation) => memoCacheStore.getOrFetchMemoById(memoRelation.relatedMemoId))).then(
@@ -220,7 +220,7 @@ const Memo: React.FC<Props> = (props: Props) => {
               {createdTimeStr}
             </Link>
             {showCreator && (
-              <Link className="name-text" to={`/u/${memo.creatorId}`}>
+              <Link className="name-text" to={`/u/${memo.creatorUsername}`}>
                 @{memo.creatorName}
               </Link>
             )}

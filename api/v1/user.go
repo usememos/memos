@@ -258,6 +258,26 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
+	// GET /user/:username - Get user by username.
+	g.GET("/user/:username", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		username := c.Param("username")
+
+		user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusNotFound, "User not found")
+		}
+
+		userMessage := convertUserFromStore(user)
+		// data desensitize
+		userMessage.OpenID = ""
+		userMessage.Email = ""
+		return c.JSON(http.StatusOK, userMessage)
+	})
+
 	// PUT /user/:id - Update user by id.
 	g.PATCH("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()

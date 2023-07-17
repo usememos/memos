@@ -46,6 +46,7 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 
 	g.GET("/status", func(c echo.Context) error {
 		ctx := c.Request().Context()
+
 		systemStatus := SystemStatus{
 			Profile:            *s.Profile,
 			DBSize:             0,
@@ -76,7 +77,7 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
 		if hostUser != nil {
-			systemStatus.Host = convertUserFromStore(hostUser)
+			systemStatus.Host = &User{ID: hostUser.ID}
 			// data desensitize
 			systemStatus.Host.OpenID = ""
 			systemStatus.Host.Email = ""
