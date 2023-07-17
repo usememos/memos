@@ -31,6 +31,7 @@ interface State {
   memoVisibility: Visibility;
   resourceList: Resource[];
   relationList: MemoRelation[];
+  progressList: number[];
   fullscreen: boolean;
   isUploadingResource: boolean;
   isRequesting: boolean;
@@ -53,6 +54,7 @@ const MemoEditor = (props: Props) => {
     memoVisibility: "PRIVATE",
     resourceList: [],
     relationList: props.relationList ?? [],
+    progressList: [],
     fullscreen: false,
     isUploadingResource: false,
     isRequesting: false,
@@ -190,7 +192,7 @@ const MemoEditor = (props: Props) => {
     }));
   };
 
-  const handleUploadResource = async (file: File) => {
+  const handleUploadResource = async (file: File, i: number) => {
     setState((state) => {
       return {
         ...state,
@@ -200,7 +202,18 @@ const MemoEditor = (props: Props) => {
 
     let resource = undefined;
     try {
-      resource = await resourceStore.createResourceWithBlob(file);
+      resource = await resourceStore.createResourceWithBlob(file, (progress) => {
+        setState((prevState) => {
+          // fixme
+          console.log("currentFileName:" + file.name + "    progressBarValue:" + progress + "    whichFile:" + i);
+          const updatedProgressList = [...prevState.progressList];
+          prevState.progressList[i] = progress;
+          return {
+            ...prevState,
+            progressList: updatedProgressList,
+          };
+        });
+      });
     } catch (error: any) {
       console.error(error);
       toast.error(typeof error === "string" ? error : error.response.data.message);
@@ -217,8 +230,8 @@ const MemoEditor = (props: Props) => {
 
   const uploadMultiFiles = async (files: FileList) => {
     const uploadedResourceList: Resource[] = [];
-    for (const file of files) {
-      const resource = await handleUploadResource(file);
+    for (let i = 0; i < files.length; i++) {
+      const resource = await handleUploadResource(files[i], i);
       if (resource) {
         uploadedResourceList.push(resource);
         if (memoId) {
@@ -230,6 +243,7 @@ const MemoEditor = (props: Props) => {
       setState((prevState) => ({
         ...prevState,
         resourceList: [...prevState.resourceList, ...uploadedResourceList],
+        progressList: [...prevState.progressList, ...Array(uploadedResourceList.length).fill(0)],
       }));
     }
   };
@@ -411,7 +425,7 @@ const MemoEditor = (props: Props) => {
           </button>
         </div>
       </div>
-      <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
+      <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} progressList={state.progressList} />
       <RelationListView relationList={state.relationList} setRelationList={handleSetRelationList} />
       <div className="editor-footer-container">
         <MemoVisibilitySelector value={state.memoVisibility} onChange={handleMemoVisibilityChange} />

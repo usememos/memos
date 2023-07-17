@@ -1,13 +1,16 @@
+import { LinearProgress } from "@mui/joy";
 import Icon from "../Icon";
 import ResourceIcon from "../ResourceIcon";
+import React from "react";
 
 interface Props {
   resourceList: Resource[];
   setResourceList: (resourceList: Resource[]) => void;
+  progressList: number[];
 }
 
 const ResourceListView = (props: Props) => {
-  const { resourceList, setResourceList } = props;
+  const { resourceList, setResourceList, progressList } = props;
 
   const handleDeleteResource = async (resourceId: ResourceId) => {
     setResourceList(resourceList.filter((resource) => resource.id !== resourceId));
@@ -17,7 +20,8 @@ const ResourceListView = (props: Props) => {
     <>
       {resourceList.length > 0 && (
         <div className="w-full flex flex-row justify-start flex-wrap gap-2 mt-2">
-          {resourceList.map((resource) => {
+          {resourceList.map((resource, index) => {
+            const progress = progressList[index] || 0;
             return (
               <div
                 key={resource.id}
@@ -26,6 +30,7 @@ const ResourceListView = (props: Props) => {
                 <ResourceIcon resource={resource} className="w-4 h-auto mr-1" />
                 <span className="text-sm max-w-xs truncate">{resource.filename}</span>
                 <Icon.X className="w-4 h-auto ml-1 cursor-pointer hover:opacity-80" onClick={() => handleDeleteResource(resource.id)} />
+                <LinearProgress determinate value={progress} size="lg" />
               </div>
             );
           })}
