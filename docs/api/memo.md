@@ -46,6 +46,7 @@ GET /api/v1/memo
 
 - `creatorId` (optional): Filter by creator ID
 - `visibility` (optional): Filter visibility, `PUBLIC`, `PROTECTED` or `PRIVATE`
+- `rowStatus` (optional): Filter Status, `ARCHIVE`, `NORMAL`, Default `NORMAL`
 - `pinned` (optional): Filter pinned memo, `true` or `false`
 - `tag` (optional): Filter memo with tag
 - `content` (optional): Search in content
