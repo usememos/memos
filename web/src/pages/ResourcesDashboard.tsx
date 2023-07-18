@@ -94,9 +94,12 @@ const ResourcesDashboard = () => {
         style: "warning",
         dialogName: "delete-resource-dialog",
         onConfirm: async () => {
-          selectedList.map(async (resourceId: ResourceId) => {
+          // fix #1986
+          for (const resourceId of selectedList) {
             await resourceStore.deleteResourceById(resourceId);
-          });
+          }
+
+          setSelectedList([]);
         },
       });
     }
