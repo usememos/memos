@@ -13,8 +13,9 @@ import DatePicker from "@/components/kit/DatePicker";
 import DailyMemo from "@/components/DailyMemo";
 import i18n from "@/i18n";
 import { findNearestLanguageMatch } from "@/utils/i18n";
-import { convertToMillis, getDateStampByDate, getNormalizedDateString, getTimeStampByDate } from "@/helpers/datetime";
+import { convertToMillis, getDateStampByDate, getNormalizedDateString, getTimeStampByDate, isFutureDate } from "@/helpers/datetime";
 import Empty from "@/components/Empty";
+import classNames from "classnames";
 
 const DailyReview = () => {
   const t = useTranslate();
@@ -85,6 +86,7 @@ const DailyReview = () => {
   const locale = findNearestLanguageMatch(i18n.language);
   const currentMonth = currentDate.toLocaleDateString(locale, { month: "short" });
   const currentDayOfWeek = currentDate.toLocaleDateString(locale, { weekday: "short" });
+  const isFutureDateDisabled = isFutureDate(currentDateStamp + DAILY_TIMESTAMP);
 
   return (
     <section className="w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
@@ -105,8 +107,12 @@ const DailyReview = () => {
               <Icon.ChevronLeft className="w-full h-auto" />
             </button>
             <button
-              className="w-7 h-7 mr-2 flex justify-center items-center rounded cursor-pointer select-none last:mr-0 hover:bg-gray-200 dark:hover:bg-zinc-700 p-0.5"
+              className={classNames(
+                "w-7 h-7 mr-2 flex justify-center items-center rounded select-none last:mr-0 hover:bg-gray-200 dark:hover:bg-zinc-700 p-0.5",
+                isFutureDateDisabled ? "cursor-not-allowed" : "cursor-pointer"
+              )}
               onClick={() => setCurrentDateStamp(currentDateStamp + DAILY_TIMESTAMP)}
+              disabled={isFutureDateDisabled}
             >
               <Icon.ChevronRight className="w-full h-auto" />
             </button>
@@ -123,6 +129,7 @@ const DailyReview = () => {
             }`}
             datestamp={currentDateStamp}
             handleDateStampChange={handleDataPickerChange}
+            isFutureDateDisabled
           />
         </div>
         <div
