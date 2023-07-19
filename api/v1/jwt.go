@@ -112,14 +112,6 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
 		})
 
-		if !accessToken.Valid {
-			auth.RemoveTokensAndCookies(c)
-			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid access token.")
-		}
-		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q.", claims.Audience, auth.AccessTokenAudienceName))
-		}
-
 		generateToken := time.Until(claims.ExpiresAt.Time) < auth.RefreshThresholdDuration
 		if err != nil {
 			var ve *jwt.ValidationError
@@ -133,6 +125,10 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 				auth.RemoveTokensAndCookies(c)
 				return echo.NewHTTPError(http.StatusUnauthorized, errors.Wrap(err, "Invalid or expired access token"))
 			}
+		}
+
+		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
+			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q.", claims.Audience, auth.AccessTokenAudienceName))
 		}
 
 		// We either have a valid access token or we will attempt to generate new access token and refresh token
