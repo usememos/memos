@@ -23,6 +23,8 @@ type SystemStatus struct {
 	DisablePublicMemos bool `json:"disablePublicMemos"`
 	// Max upload size.
 	MaxUploadSizeMiB int `json:"maxUploadSizeMiB"`
+	// Auto Backup Interval.
+	AutoBackupInterval int `json:"autoBackupInterval"`
 	// Additional style.
 	AdditionalStyle string `json:"additionalStyle"`
 	// Additional script.
@@ -50,6 +52,7 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 			AllowSignUp:        false,
 			DisablePublicMemos: false,
 			MaxUploadSizeMiB:   32,
+			AutoBackupInterval: 0,
 			AdditionalStyle:    "",
 			AdditionalScript:   "",
 			CustomizedProfile: CustomizedProfile{
@@ -103,6 +106,8 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 				systemStatus.DisablePublicMemos = baseValue.(bool)
 			case SystemSettingMaxUploadSizeMiBName.String():
 				systemStatus.MaxUploadSizeMiB = int(baseValue.(float64))
+			case SystemSettingAutoBackupIntervalName.String():
+				systemStatus.AutoBackupInterval = int(baseValue.(float64))
 			case SystemSettingAdditionalStyleName.String():
 				systemStatus.AdditionalStyle = baseValue.(string)
 			case SystemSettingAdditionalScriptName.String():

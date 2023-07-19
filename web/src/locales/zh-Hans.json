@@ -435,6 +435,8 @@
       "server-name": "服务名称",
       "max-upload-size-hint": "建议值为 32 MiB。",
       "max-upload-size": "最大上传大小 (MiB)",
+      "auto-backup-interval": "自动备份间隔(单位：秒)",
+      "auto-backup-interval-hint": "设置为0禁止自动备份，重启后生效",
       "display-with-updated-time": "Display with updated time"
     }
   },
