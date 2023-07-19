@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -143,18 +142,12 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
 	case SystemSettingAutoBackupIntervalName:
-		var value string
+		var value int
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
 		}
-		if value != "" {
-			v, err := strconv.Atoi(value)
-			if err != nil {
-				return fmt.Errorf(systemSettingUnmarshalError, settingName)
-			}
-			if v < 0 {
-				return fmt.Errorf("backup interval should > 0")
-			}
+		if value < 0 {
+			return fmt.Errorf("must be positive")
 		}
 	case SystemSettingTelegramBotTokenName:
 		if upsert.Value == "" {

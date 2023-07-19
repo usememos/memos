@@ -20,6 +20,7 @@ interface SystemStatus {
   allowSignUp: boolean;
   disablePublicMemos: boolean;
   maxUploadSizeMiB: number;
+  autoBackupInterval: number;
   additionalStyle: string;
   additionalScript: string;
   customizedProfile: CustomizedProfile;

@@ -260,6 +260,8 @@
       "disable-public-memos": "Disable public memos",
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
+      "auto-backup-interval": "Auto backup interval (seconds)",
+      "auto-backup-interval-hint": "Set 0 to disable auto backup. Reboot is required after changing this value.",
       "additional-style": "Additional style",
       "additional-script": "Additional script",
       "additional-style-placeholder": "Additional CSS code",
