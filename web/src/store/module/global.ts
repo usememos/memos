@@ -65,6 +65,9 @@ export const useGlobalStore = () => {
     getState: () => {
       return store.getState().global;
     },
+    getDisablePublicMemos: () => {
+      return store.getState().global.systemStatus.disablePublicMemos;
+    },
     isDev: () => {
       return state.systemStatus.profile.mode !== "prod";
     },

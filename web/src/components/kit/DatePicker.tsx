@@ -21,14 +21,14 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   const { className, isFutureDateDisabled, datestamp, handleDateStampChange } = props;
   const [currentDateStamp, setCurrentDateStamp] = useState<DateStamp>(getMonthFirstDayDateStamp(datestamp));
   const [countByDate, setCountByDate] = useState(new Map());
-  const currentUserId = useUserStore().getCurrentUserId();
+  const currentUsername = useUserStore().getCurrentUsername();
 
   useEffect(() => {
     setCurrentDateStamp(getMonthFirstDayDateStamp(datestamp));
   }, [datestamp]);
 
   useEffect(() => {
-    getMemoStats(currentUserId).then(({ data }) => {
+    getMemoStats(currentUsername).then(({ data }) => {
       const m = new Map();
       for (const record of data) {
         const date = getDateStampByDate(record * 1000);
@@ -36,7 +36,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
       }
       setCountByDate(m);
     });
-  }, [currentUserId]);
+  }, [currentUsername]);
 
   const firstDate = new Date(currentDateStamp);
   const firstDateDay = firstDate.getDay() === 0 ? 7 : firstDate.getDay();

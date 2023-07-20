@@ -51,7 +51,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const createdDays = Math.ceil((Date.now() - getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24);
 
   useEffect(() => {
-    getMemoStats(user.id)
+    getMemoStats(user.username)
       .then(({ data }) => {
         setPartialState({
           memoAmount: data.length,

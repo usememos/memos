@@ -1,7 +1,7 @@
 import { camelCase } from "lodash-es";
 import * as api from "@/helpers/api";
 import storage from "@/helpers/storage";
-import { UNKNOWN_ID } from "@/helpers/consts";
+import { UNKNOWN_USERNAME } from "@/helpers/consts";
 import { getSystemColorScheme } from "@/helpers/utils";
 import store, { useAppSelector } from "..";
 import { setAppearance, setLocale } from "../reducer/global";
@@ -82,6 +82,16 @@ const getUserIdFromPath = () => {
   return undefined;
 };
 
+const getUsernameFromPath = () => {
+  const pathname = window.location.pathname;
+  const usernameRegex = /^\/u\/(\w+).*/;
+  const result = pathname.match(usernameRegex);
+  if (result && result.length === 2) {
+    return String(result[1]);
+  }
+  return undefined;
+};
+
 const doSignIn = async () => {
   const { data: user } = await api.getMyselfUser();
   if (user) {
@@ -100,7 +110,7 @@ export const useUserStore = () => {
   const state = useAppSelector((state) => state.user);
 
   const isVisitorMode = () => {
-    return state.user === undefined || (getUserIdFromPath() && state.user.id !== getUserIdFromPath());
+    return state.user === undefined || (getUsernameFromPath() && state.user.username !== getUsernameFromPath());
   };
 
   return {
@@ -110,17 +120,18 @@ export const useUserStore = () => {
     },
     isVisitorMode,
     getUserIdFromPath,
+    getUsernameFromPath,
     doSignIn,
     doSignOut,
-    getCurrentUserId: () => {
+    getCurrentUsername: () => {
       if (isVisitorMode()) {
-        return getUserIdFromPath() || UNKNOWN_ID;
+        return getUsernameFromPath() || UNKNOWN_USERNAME;
       } else {
-        return state.user?.id || UNKNOWN_ID;
+        return state.user?.username || UNKNOWN_USERNAME;
       }
     },
-    getUserById: async (userId: UserId) => {
-      const { data } = await api.getUserById(userId);
+    getUserByUsername: async (username: string) => {
+      const { data } = await api.getUserByUsername(username);
       if (data) {
         const user = convertResponseModelUser(data);
         store.dispatch(setUserById(user));

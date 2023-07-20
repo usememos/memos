@@ -15,14 +15,14 @@ function Home() {
   const user = userStore.state.user;
 
   useEffect(() => {
-    const currentUserId = userStore.getCurrentUserId();
-    userStore.getUserById(currentUserId).then((user) => {
+    const currentUsername = userStore.getCurrentUsername();
+    userStore.getUserByUsername(currentUsername).then((user) => {
       if (!user) {
         toast.error(t("message.user-not-found"));
         return;
       }
     });
-  }, [userStore.getCurrentUserId()]);
+  }, [userStore.getCurrentUsername()]);
 
   useEffect(() => {
     if (user?.setting.locale) {

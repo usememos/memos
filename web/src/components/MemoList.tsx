@@ -10,7 +10,12 @@ import Empty from "./Empty";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
 
-const MemoList = () => {
+interface Props {
+  showCreator?: boolean;
+}
+
+const MemoList: React.FC<Props> = (props: Props) => {
+  const { showCreator } = props;
   const t = useTranslate();
   const memoStore = useMemoStore();
   const userStore = useUserStore();
@@ -20,7 +25,7 @@ const MemoList = () => {
   const { memos, isFetching } = memoStore.state;
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
-  const currentUserId = userStore.getCurrentUserId();
+  const currentUsername = userStore.getCurrentUsername();
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = filter;
   const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
@@ -76,7 +81,7 @@ const MemoList = () => {
           return shouldShow;
         })
       : memos
-  ).filter((memo) => memo.creatorId === currentUserId && memo.rowStatus === "NORMAL");
+  ).filter((memo) => memo.creatorUsername === currentUsername && memo.rowStatus === "NORMAL");
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
@@ -103,7 +108,7 @@ const MemoList = () => {
         console.error(error);
         toast.error(error.response.data.message);
       });
-  }, [currentUserId]);
+  }, [currentUsername]);
 
   useEffect(() => {
     const pageWrapper = document.body.querySelector(".page-wrapper");
@@ -153,7 +158,7 @@ const MemoList = () => {
   return (
     <div className="memo-list-container">
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} showVisibility />
+        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} showVisibility showCreator={showCreator} />
       ))}
       {isFetching ? (
         <div className="status-text-container fetching-tip">

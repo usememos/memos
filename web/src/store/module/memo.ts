@@ -41,7 +41,7 @@ export const useMemoStore = () => {
         offset,
       };
       if (userStore.isVisitorMode()) {
-        memoFind.creatorId = userStore.getUserIdFromPath();
+        memoFind.creatorUsername = userStore.getUsernameFromPath();
       }
       const { data } = await api.getMemoList(memoFind);
       const fetchedMemos = data.map((m) => convertResponseModelMemo(m));
@@ -54,16 +54,22 @@ export const useMemoStore = () => {
 
       return fetchedMemos;
     },
-    fetchAllMemos: async (limit = DEFAULT_MEMO_LIMIT, offset?: number) => {
+    fetchAllMemos: async (limit = DEFAULT_MEMO_LIMIT, offset?: number, username?: string) => {
+      store.dispatch(setIsFetching(true));
       const memoFind: MemoFind = {
         rowStatus: "NORMAL",
         limit,
         offset,
       };
 
+      if (username != undefined) {
+        memoFind.creatorUsername = username;
+      }
+
       const { data } = await api.getAllMemos(memoFind);
       const fetchedMemos = data.map((m) => convertResponseModelMemo(m));
       store.dispatch(upsertMemos(fetchedMemos));
+      store.dispatch(setIsFetching(false));
 
       for (const m of fetchedMemos) {
         memoCacheStore.setMemoCache(m);
@@ -76,7 +82,7 @@ export const useMemoStore = () => {
         rowStatus: "ARCHIVED",
       };
       if (userStore.isVisitorMode()) {
-        memoFind.creatorId = userStore.getUserIdFromPath();
+        memoFind.creatorUsername = userStore.getUsernameFromPath();
       }
       const { data } = await api.getMemoList(memoFind);
       const archivedMemos = data.map((m) => {

@@ -6,7 +6,6 @@ import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
 import UserBanner from "./UserBanner";
-import showAboutSiteDialog from "./AboutSiteDialog";
 import UpgradeVersionView from "./UpgradeVersionBanner";
 
 const Header = () => {
@@ -95,7 +94,7 @@ const Header = () => {
               </NavLink>
             </>
           )}
-          {!isVisitorMode && (
+          {!globalStore.getDisablePublicMemos() && (
             <>
               <NavLink
                 to="/explore"
@@ -179,13 +178,6 @@ const Header = () => {
                   <Icon.LogIn className="mr-3 w-6 h-auto opacity-70" /> {t("common.sign-in")}
                 </>
               </NavLink>
-              <button
-                id="header-about"
-                className="px-4 pr-5 py-2 rounded-full border border-transparent flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700"
-                onClick={() => showAboutSiteDialog()}
-              >
-                <Icon.CupSoda className="mr-3 w-6 h-auto opacity-70" /> {t("common.about")}
-              </button>
             </>
           )}
         </div>

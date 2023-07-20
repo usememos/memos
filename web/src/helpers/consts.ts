@@ -1,5 +1,6 @@
 // UNKNOWN_ID is the symbol for unknown id
 export const UNKNOWN_ID = -1;
+export const UNKNOWN_USERNAME = "";
 
 // default animation duration
 export const ANIMATION_DURATION = 200;

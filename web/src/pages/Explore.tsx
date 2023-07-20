@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslate } from "@/utils/i18n";
 import { useLocation } from "react-router-dom";
-import { useFilterStore, useMemoStore } from "@/store/module";
+import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
 import { TAG_REG } from "@/labs/marked/parser";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import useLoading from "@/hooks/useLoading";
@@ -16,24 +16,16 @@ const Explore = () => {
   const location = useLocation();
   const filterStore = useFilterStore();
   const memoStore = useMemoStore();
+  const userStore = useUserStore();
   const filter = filterStore.state;
-  const memos = memoStore.state.memos;
+  const { memos } = memoStore.state;
   const [isComplete, setIsComplete] = useState<boolean>(false);
   const loadingState = useLoading();
-
-  useEffect(() => {
-    memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, 0).then((memos) => {
-      if (memos.length < DEFAULT_MEMO_LIMIT) {
-        setIsComplete(true);
-      }
-      loadingState.setFinish();
-    });
-  }, [location]);
 
   const { tag: tagQuery, text: textQuery } = filter;
   const showMemoFilter = Boolean(tagQuery || textQuery);
 
-  const shownMemos = showMemoFilter
+  const fetchedMemos = showMemoFilter
     ? memos.filter((memo) => {
         let shouldShow = true;
 
@@ -57,13 +49,35 @@ const Explore = () => {
       })
     : memos;
 
-  const sortedMemos = shownMemos
+  const username = userStore.getUsernameFromPath();
+  let sortedMemos = fetchedMemos
     .filter((m) => m.rowStatus === "NORMAL" && m.visibility !== "PRIVATE")
     .sort((mi, mj) => mj.displayTs - mi.displayTs);
 
+  if (username != undefined) {
+    sortedMemos = sortedMemos.filter((m) => m.creatorUsername === username);
+  }
+
+  useEffect(() => {
+    const username = userStore.getUsernameFromPath();
+    memoStore
+      .fetchAllMemos(DEFAULT_MEMO_LIMIT, 0, username)
+      .then((fetchedMemos) => {
+        if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
+          setIsComplete(true);
+        }
+        loadingState.setFinish();
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error(error.response.data.message);
+      });
+  }, [location]);
+
   const handleFetchMoreClick = async () => {
     try {
-      const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, memos.length);
+      const username = userStore.getUsernameFromPath();
+      const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, memos.length, username);
       if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       } else {

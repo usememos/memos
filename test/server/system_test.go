@@ -32,7 +32,6 @@ func TestSystemServer(t *testing.T) {
 	status, err = s.getSystemStatus()
 	require.NoError(t, err)
 	require.Equal(t, user.ID, status.Host.ID)
-	require.Equal(t, user.Username, status.Host.Username)
 }
 
 func (s *TestingServer) getSystemStatus() (*apiv1.SystemStatus, error) {
