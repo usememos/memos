@@ -31,12 +31,6 @@ type DeleteMemoResource struct {
 }
 
 func (s *Store) UpsertMemoResource(ctx context.Context, upsert *UpsertMemoResource) (*MemoResource, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
 	set := []string{"memo_id", "resource_id"}
 	args := []any{upsert.MemoID, upsert.ResourceID}
 	placeholder := []string{"?", "?"}
@@ -56,7 +50,7 @@ func (s *Store) UpsertMemoResource(ctx context.Context, upsert *UpsertMemoResour
 		RETURNING memo_id, resource_id, created_ts, updated_ts
 	`
 	memoResource := &MemoResource{}
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(
 		&memoResource.MemoID,
 		&memoResource.ResourceID,
 		&memoResource.CreatedTs,
@@ -65,86 +59,10 @@ func (s *Store) UpsertMemoResource(ctx context.Context, upsert *UpsertMemoResour
 		return nil, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
 	return memoResource, nil
 }
 
 func (s *Store) ListMemoResources(ctx context.Context, find *FindMemoResource) ([]*MemoResource, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	list, err := listMemoResources(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	return list, nil
-}
-
-func (s *Store) GetMemoResource(ctx context.Context, find *FindMemoResource) (*MemoResource, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	list, err := listMemoResources(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-	if len(list) == 0 {
-		return nil, nil
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	memoResource := list[0]
-	return memoResource, nil
-}
-
-func (s *Store) DeleteMemoResource(ctx context.Context, delete *DeleteMemoResource) error {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	where, args := []string{}, []any{}
-
-	if v := delete.MemoID; v != nil {
-		where, args = append(where, "memo_id = ?"), append(args, *v)
-	}
-	if v := delete.ResourceID; v != nil {
-		where, args = append(where, "resource_id = ?"), append(args, *v)
-	}
-
-	stmt := `DELETE FROM memo_resource WHERE ` + strings.Join(where, " AND ")
-	_, err = tx.ExecContext(ctx, stmt, args...)
-	if err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
-		// Prevent linter warning.
-		return err
-	}
-
-	return nil
-}
-
-func listMemoResources(ctx context.Context, tx *sql.Tx, find *FindMemoResource) ([]*MemoResource, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.MemoID; v != nil {
@@ -164,7 +82,7 @@ func listMemoResources(ctx context.Context, tx *sql.Tx, find *FindMemoResource) 
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY updated_ts DESC
 	`
-	rows, err := tx.QueryContext(ctx, query, args...)
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -190,6 +108,38 @@ func listMemoResources(ctx context.Context, tx *sql.Tx, find *FindMemoResource) 
 	}
 
 	return list, nil
+}
+
+func (s *Store) GetMemoResource(ctx context.Context, find *FindMemoResource) (*MemoResource, error) {
+	list, err := s.ListMemoResources(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, nil
+	}
+
+	memoResource := list[0]
+	return memoResource, nil
+}
+
+func (s *Store) DeleteMemoResource(ctx context.Context, delete *DeleteMemoResource) error {
+	where, args := []string{}, []any{}
+	if v := delete.MemoID; v != nil {
+		where, args = append(where, "memo_id = ?"), append(args, *v)
+	}
+	if v := delete.ResourceID; v != nil {
+		where, args = append(where, "resource_id = ?"), append(args, *v)
+	}
+	stmt := `DELETE FROM memo_resource WHERE ` + strings.Join(where, " AND ")
+	result, err := s.db.ExecContext(ctx, stmt, args...)
+	if err != nil {
+		return err
+	}
+	if _, err = result.RowsAffected(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func vacuumMemoResource(ctx context.Context, tx *sql.Tx) error {

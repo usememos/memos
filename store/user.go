@@ -2,8 +2,6 @@ package store
 
 import (
 	"context"
-	"database/sql"
-	"errors"
 	"strings"
 )
 
@@ -79,13 +77,7 @@ type DeleteUser struct {
 }
 
 func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	query := `
+	stmt := `
 		INSERT INTO user (
 			username,
 			role,
@@ -97,7 +89,9 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 		VALUES (?, ?, ?, ?, ?, ?)
 		RETURNING id, avatar_url, created_ts, updated_ts, row_status
 	`
-	if err := tx.QueryRowContext(ctx, query,
+	if err := s.db.QueryRowContext(
+		ctx,
+		stmt,
 		create.Username,
 		create.Role,
 		create.Email,
@@ -113,9 +107,6 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 	); err != nil {
 		return nil, err
 	}
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
 
 	user := create
 	s.userCache.Store(user.ID, user)
@@ -123,12 +114,6 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 }
 
 func (s *Store) UpdateUser(ctx context.Context, update *UpdateUser) (*User, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
 	set, args := []string{}, []any{}
 	if v := update.UpdatedTs; v != nil {
 		set, args = append(set, "updated_ts = ?"), append(args, *v)
@@ -163,7 +148,7 @@ func (s *Store) UpdateUser(ctx context.Context, update *UpdateUser) (*User, erro
 		RETURNING id, username, role, email, nickname, password_hash, open_id, avatar_url, created_ts, updated_ts, row_status
 	`
 	user := &User{}
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(
+	if err := s.db.QueryRowContext(ctx, query, args...).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Role,
@@ -179,100 +164,11 @@ func (s *Store) UpdateUser(ctx context.Context, update *UpdateUser) (*User, erro
 		return nil, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
 	s.userCache.Store(user.ID, user)
 	return user, nil
 }
 
 func (s *Store) ListUsers(ctx context.Context, find *FindUser) ([]*User, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	list, err := listUsers(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	for _, user := range list {
-		s.userCache.Store(user.ID, user)
-	}
-	return list, nil
-}
-
-func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
-	if find.ID != nil {
-		if cache, ok := s.userCache.Load(*find.ID); ok {
-			return cache.(*User), nil
-		}
-	}
-
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	list, err := listUsers(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-	if len(list) == 0 {
-		return nil, nil
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	user := list[0]
-	s.userCache.Store(user.ID, user)
-	return user, nil
-}
-
-func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) error {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	result, err := tx.ExecContext(ctx, `
-		DELETE FROM user WHERE id = ?
-	`, delete.ID)
-	if err != nil {
-		return err
-	}
-
-	rows, err := result.RowsAffected()
-	if err != nil {
-		return err
-	}
-	if rows == 0 {
-		return errors.New("user not found")
-	}
-	if err := s.vacuumImpl(ctx, tx); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-
-	s.userCache.Delete(delete.ID)
-	return nil
-}
-
-func listUsers(ctx context.Context, tx *sql.Tx, find *FindUser) ([]*User, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
@@ -311,7 +207,7 @@ func listUsers(ctx context.Context, tx *sql.Tx, find *FindUser) ([]*User, error)
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY created_ts DESC, row_status DESC
 	`
-	rows, err := tx.QueryContext(ctx, query, args...)
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -342,5 +238,46 @@ func listUsers(ctx context.Context, tx *sql.Tx, find *FindUser) ([]*User, error)
 		return nil, err
 	}
 
+	for _, user := range list {
+		s.userCache.Store(user.ID, user)
+	}
 	return list, nil
+}
+
+func (s *Store) GetUser(ctx context.Context, find *FindUser) (*User, error) {
+	if find.ID != nil {
+		if cache, ok := s.userCache.Load(*find.ID); ok {
+			return cache.(*User), nil
+		}
+	}
+
+	list, err := s.ListUsers(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, nil
+	}
+
+	user := list[0]
+	s.userCache.Store(user.ID, user)
+	return user, nil
+}
+
+func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) error {
+	result, err := s.db.ExecContext(ctx, `
+		DELETE FROM user WHERE id = ?
+	`, delete.ID)
+	if err != nil {
+		return err
+	}
+	if _, err := result.RowsAffected(); err != nil {
+		return err
+	}
+	if err := s.Vacuum(ctx); err != nil {
+		// Prevent linter warning.
+		return err
+	}
+	s.userCache.Delete(delete.ID)
+	return nil
 }

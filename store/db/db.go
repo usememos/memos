@@ -190,21 +190,15 @@ func (db *DB) applyMigrationForMinorVersion(ctx context.Context, minorVersion st
 		}
 	}
 
-	tx, err := db.DBInstance.Begin()
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	// upsert the newest version to migration_history
+	// Upsert the newest version to migration_history.
 	version := minorVersion + ".0"
-	if _, err = upsertMigrationHistory(ctx, tx, &MigrationHistoryUpsert{
+	if _, err = db.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
 		Version: version,
 	}); err != nil {
 		return fmt.Errorf("failed to upsert migration history with version: %s, err: %w", version, err)
 	}
 
-	return tx.Commit()
+	return nil
 }
 
 func (db *DB) seed(ctx context.Context) error {

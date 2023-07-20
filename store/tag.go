@@ -3,7 +3,6 @@ package store
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strings"
 )
 
@@ -22,13 +21,7 @@ type DeleteTag struct {
 }
 
 func (s *Store) UpsertTag(ctx context.Context, upsert *Tag) (*Tag, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	query := `
+	stmt := `
 		INSERT INTO tag (
 			name, creator_id
 		)
@@ -37,11 +30,7 @@ func (s *Store) UpsertTag(ctx context.Context, upsert *Tag) (*Tag, error) {
 		SET
 			name = EXCLUDED.name
 	`
-	if _, err := tx.ExecContext(ctx, query, upsert.Name, upsert.CreatorID); err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
+	if _, err := s.db.ExecContext(ctx, stmt, upsert.Name, upsert.CreatorID); err != nil {
 		return nil, err
 	}
 
@@ -50,12 +39,6 @@ func (s *Store) UpsertTag(ctx context.Context, upsert *Tag) (*Tag, error) {
 }
 
 func (s *Store) ListTags(ctx context.Context, find *FindTag) ([]*Tag, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
 	where, args := []string{"creator_id = ?"}, []any{find.CreatorID}
 	query := `
 		SELECT
@@ -65,7 +48,7 @@ func (s *Store) ListTags(ctx context.Context, find *FindTag) ([]*Tag, error) {
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY name ASC
 	`
-	rows, err := tx.QueryContext(ctx, query, args...)
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -88,37 +71,19 @@ func (s *Store) ListTags(ctx context.Context, find *FindTag) ([]*Tag, error) {
 		return nil, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
 	return list, nil
 }
 
 func (s *Store) DeleteTag(ctx context.Context, delete *DeleteTag) error {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
 	where, args := []string{"name = ?", "creator_id = ?"}, []any{delete.Name, delete.CreatorID}
-	query := `DELETE FROM tag WHERE ` + strings.Join(where, " AND ")
-	result, err := tx.ExecContext(ctx, query, args...)
+	stmt := `DELETE FROM tag WHERE ` + strings.Join(where, " AND ")
+	result, err := s.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
 	}
-
-	rows, _ := result.RowsAffected()
-	if rows == 0 {
-		return fmt.Errorf("tag not found")
-	}
-
-	if err := tx.Commit(); err != nil {
-		// Prevent linter warning.
+	if _, err = result.RowsAffected(); err != nil {
 		return err
 	}
-
 	return nil
 }
 

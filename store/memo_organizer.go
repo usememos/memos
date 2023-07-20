@@ -24,13 +24,7 @@ type DeleteMemoOrganizer struct {
 }
 
 func (s *Store) UpsertMemoOrganizer(ctx context.Context, upsert *MemoOrganizer) (*MemoOrganizer, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	query := `
+	stmt := `
 		INSERT INTO memo_organizer (
 			memo_id,
 			user_id,
@@ -41,11 +35,7 @@ func (s *Store) UpsertMemoOrganizer(ctx context.Context, upsert *MemoOrganizer) 
 		SET
 			pinned = EXCLUDED.pinned
 	`
-	if _, err := tx.ExecContext(ctx, query, upsert.MemoID, upsert.UserID, upsert.Pinned); err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
+	if _, err := s.db.ExecContext(ctx, stmt, upsert.MemoID, upsert.UserID, upsert.Pinned); err != nil {
 		return nil, err
 	}
 
@@ -54,12 +44,6 @@ func (s *Store) UpsertMemoOrganizer(ctx context.Context, upsert *MemoOrganizer) 
 }
 
 func (s *Store) GetMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) (*MemoOrganizer, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
 	where, args := []string{}, []any{}
 	if find.MemoID != 0 {
 		where = append(where, "memo_id = ?")
@@ -78,7 +62,7 @@ func (s *Store) GetMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) (
 		FROM memo_organizer
 		WHERE %s
 	`, strings.Join(where, " AND "))
-	row := tx.QueryRowContext(ctx, query, args...)
+	row := s.db.QueryRowContext(ctx, query, args...)
 	if err := row.Err(); err != nil {
 		return nil, err
 	}
@@ -95,40 +79,21 @@ func (s *Store) GetMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) (
 		return nil, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
 	return memoOrganizer, nil
 }
 
 func (s *Store) DeleteMemoOrganizer(ctx context.Context, delete *DeleteMemoOrganizer) error {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
 	where, args := []string{}, []any{}
-
 	if v := delete.MemoID; v != nil {
 		where, args = append(where, "memo_id = ?"), append(args, *v)
 	}
 	if v := delete.UserID; v != nil {
 		where, args = append(where, "user_id = ?"), append(args, *v)
 	}
-
 	stmt := `DELETE FROM memo_organizer WHERE ` + strings.Join(where, " AND ")
-	_, err = tx.ExecContext(ctx, stmt, args...)
-	if err != nil {
+	if _, err := s.db.ExecContext(ctx, stmt, args...); err != nil {
 		return err
 	}
-
-	if err := tx.Commit(); err != nil {
-		// Prevent linter warning.
-		return err
-	}
-
 	return nil
 }
 

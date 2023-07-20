@@ -41,13 +41,7 @@ type DeleteShortcut struct {
 }
 
 func (s *Store) CreateShortcut(ctx context.Context, create *Shortcut) (*Shortcut, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	query := `
+	stmt := `
 		INSERT INTO shortcut (
 			title, 
 			payload, 
@@ -56,7 +50,7 @@ func (s *Store) CreateShortcut(ctx context.Context, create *Shortcut) (*Shortcut
 		VALUES (?, ?, ?)
 		RETURNING id, created_ts, updated_ts, row_status
 	`
-	if err := tx.QueryRowContext(ctx, query, create.Title, create.Payload, create.CreatorID).Scan(
+	if err := s.db.QueryRowContext(ctx, stmt, create.Title, create.Payload, create.CreatorID).Scan(
 		&create.ID,
 		&create.CreatedTs,
 		&create.UpdatedTs,
@@ -65,134 +59,11 @@ func (s *Store) CreateShortcut(ctx context.Context, create *Shortcut) (*Shortcut
 		return nil, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
 	shortcut := create
 	return shortcut, nil
 }
 
 func (s *Store) ListShortcuts(ctx context.Context, find *FindShortcut) ([]*Shortcut, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	list, err := listShortcuts(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	return list, nil
-}
-
-func (s *Store) GetShortcut(ctx context.Context, find *FindShortcut) (*Shortcut, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	list, err := listShortcuts(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(list) == 0 {
-		return nil, nil
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	shortcut := list[0]
-	return shortcut, nil
-}
-
-func (s *Store) UpdateShortcut(ctx context.Context, update *UpdateShortcut) (*Shortcut, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	set, args := []string{}, []any{}
-	if v := update.UpdatedTs; v != nil {
-		set, args = append(set, "updated_ts = ?"), append(args, *v)
-	}
-	if v := update.Title; v != nil {
-		set, args = append(set, "title = ?"), append(args, *v)
-	}
-	if v := update.Payload; v != nil {
-		set, args = append(set, "payload = ?"), append(args, *v)
-	}
-	if v := update.RowStatus; v != nil {
-		set, args = append(set, "row_status = ?"), append(args, *v)
-	}
-	args = append(args, update.ID)
-
-	query := `
-		UPDATE shortcut
-		SET ` + strings.Join(set, ", ") + `
-		WHERE id = ?
-		RETURNING id, title, payload, creator_id, created_ts, updated_ts, row_status
-	`
-	shortcut := &Shortcut{}
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(
-		&shortcut.ID,
-		&shortcut.Title,
-		&shortcut.Payload,
-		&shortcut.CreatorID,
-		&shortcut.CreatedTs,
-		&shortcut.UpdatedTs,
-		&shortcut.RowStatus,
-	); err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	return shortcut, nil
-}
-
-func (s *Store) DeleteShortcut(ctx context.Context, delete *DeleteShortcut) error {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback()
-
-	where, args := []string{}, []any{}
-	if v := delete.ID; v != nil {
-		where, args = append(where, "id = ?"), append(args, *v)
-	}
-	if v := delete.CreatorID; v != nil {
-		where, args = append(where, "creator_id = ?"), append(args, *v)
-	}
-
-	stmt := `DELETE FROM shortcut WHERE ` + strings.Join(where, " AND ")
-	if _, err := tx.ExecContext(ctx, stmt, args...); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return err
-	}
-
-	s.shortcutCache.Delete(*delete.ID)
-	return nil
-}
-
-func listShortcuts(ctx context.Context, tx *sql.Tx, find *FindShortcut) ([]*Shortcut, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
@@ -205,7 +76,7 @@ func listShortcuts(ctx context.Context, tx *sql.Tx, find *FindShortcut) ([]*Shor
 		where, args = append(where, "title = ?"), append(args, *v)
 	}
 
-	rows, err := tx.QueryContext(ctx, `
+	rows, err := s.db.QueryContext(ctx, `
 		SELECT
 			id,
 			title,
@@ -246,6 +117,78 @@ func listShortcuts(ctx context.Context, tx *sql.Tx, find *FindShortcut) ([]*Shor
 	}
 
 	return list, nil
+}
+
+func (s *Store) GetShortcut(ctx context.Context, find *FindShortcut) (*Shortcut, error) {
+	list, err := s.ListShortcuts(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(list) == 0 {
+		return nil, nil
+	}
+
+	shortcut := list[0]
+	return shortcut, nil
+}
+
+func (s *Store) UpdateShortcut(ctx context.Context, update *UpdateShortcut) (*Shortcut, error) {
+	set, args := []string{}, []any{}
+	if v := update.UpdatedTs; v != nil {
+		set, args = append(set, "updated_ts = ?"), append(args, *v)
+	}
+	if v := update.Title; v != nil {
+		set, args = append(set, "title = ?"), append(args, *v)
+	}
+	if v := update.Payload; v != nil {
+		set, args = append(set, "payload = ?"), append(args, *v)
+	}
+	if v := update.RowStatus; v != nil {
+		set, args = append(set, "row_status = ?"), append(args, *v)
+	}
+	args = append(args, update.ID)
+
+	stmt := `
+		UPDATE shortcut
+		SET ` + strings.Join(set, ", ") + `
+		WHERE id = ?
+		RETURNING id, title, payload, creator_id, created_ts, updated_ts, row_status
+	`
+	shortcut := &Shortcut{}
+	if err := s.db.QueryRowContext(ctx, stmt, args...).Scan(
+		&shortcut.ID,
+		&shortcut.Title,
+		&shortcut.Payload,
+		&shortcut.CreatorID,
+		&shortcut.CreatedTs,
+		&shortcut.UpdatedTs,
+		&shortcut.RowStatus,
+	); err != nil {
+		return nil, err
+	}
+
+	return shortcut, nil
+}
+
+func (s *Store) DeleteShortcut(ctx context.Context, delete *DeleteShortcut) error {
+	where, args := []string{}, []any{}
+	if v := delete.ID; v != nil {
+		where, args = append(where, "id = ?"), append(args, *v)
+	}
+	if v := delete.CreatorID; v != nil {
+		where, args = append(where, "creator_id = ?"), append(args, *v)
+	}
+	stmt := `DELETE FROM shortcut WHERE ` + strings.Join(where, " AND ")
+	result, err := s.db.ExecContext(ctx, stmt, args...)
+	if err != nil {
+		return err
+	}
+	if _, err := result.RowsAffected(); err != nil {
+		return err
+	}
+	s.shortcutCache.Delete(*delete.ID)
+	return nil
 }
 
 func vacuumShortcut(ctx context.Context, tx *sql.Tx) error {
