@@ -84,19 +84,16 @@ func (s *Store) GetMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) (
 
 func (s *Store) DeleteMemoOrganizer(ctx context.Context, delete *DeleteMemoOrganizer) error {
 	where, args := []string{}, []any{}
-
 	if v := delete.MemoID; v != nil {
 		where, args = append(where, "memo_id = ?"), append(args, *v)
 	}
 	if v := delete.UserID; v != nil {
 		where, args = append(where, "user_id = ?"), append(args, *v)
 	}
-
 	stmt := `DELETE FROM memo_organizer WHERE ` + strings.Join(where, " AND ")
 	if _, err := s.db.ExecContext(ctx, stmt, args...); err != nil {
 		return err
 	}
-
 	return nil
 }
 

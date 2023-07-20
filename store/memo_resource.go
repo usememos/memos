@@ -125,14 +125,12 @@ func (s *Store) GetMemoResource(ctx context.Context, find *FindMemoResource) (*M
 
 func (s *Store) DeleteMemoResource(ctx context.Context, delete *DeleteMemoResource) error {
 	where, args := []string{}, []any{}
-
 	if v := delete.MemoID; v != nil {
 		where, args = append(where, "memo_id = ?"), append(args, *v)
 	}
 	if v := delete.ResourceID; v != nil {
 		where, args = append(where, "resource_id = ?"), append(args, *v)
 	}
-
 	stmt := `DELETE FROM memo_resource WHERE ` + strings.Join(where, " AND ")
 	result, err := s.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
@@ -141,7 +139,6 @@ func (s *Store) DeleteMemoResource(ctx context.Context, delete *DeleteMemoResour
 	if _, err = result.RowsAffected(); err != nil {
 		return err
 	}
-
 	return nil
 }
 

@@ -213,7 +213,10 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 	if _, err := result.RowsAffected(); err != nil {
 		return err
 	}
-
+	if err := s.Vacuum(ctx); err != nil {
+		// Prevent linter warning.
+		return err
+	}
 	return nil
 }
 

@@ -179,7 +179,6 @@ func (s *Store) DeleteShortcut(ctx context.Context, delete *DeleteShortcut) erro
 	if v := delete.CreatorID; v != nil {
 		where, args = append(where, "creator_id = ?"), append(args, *v)
 	}
-
 	stmt := `DELETE FROM shortcut WHERE ` + strings.Join(where, " AND ")
 	result, err := s.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
@@ -188,7 +187,6 @@ func (s *Store) DeleteShortcut(ctx context.Context, delete *DeleteShortcut) erro
 	if _, err := result.RowsAffected(); err != nil {
 		return err
 	}
-
 	s.shortcutCache.Delete(*delete.ID)
 	return nil
 }

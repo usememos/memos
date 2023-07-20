@@ -129,7 +129,6 @@ func (s *Store) DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelati
 	if delete.Type != nil {
 		where, args = append(where, "type = ?"), append(args, delete.Type)
 	}
-
 	stmt := `
 		DELETE FROM memo_relation
 		WHERE ` + strings.Join(where, " AND ")
@@ -140,7 +139,6 @@ func (s *Store) DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelati
 	if _, err = result.RowsAffected(); err != nil {
 		return err
 	}
-
 	return nil
 }
 

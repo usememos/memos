@@ -311,6 +311,10 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemo) error {
 	if _, err := result.RowsAffected(); err != nil {
 		return err
 	}
+	if err := s.Vacuum(ctx); err != nil {
+		// Prevent linter warning.
+		return err
+	}
 	return nil
 }
 
