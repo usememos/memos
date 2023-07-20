@@ -18,13 +18,7 @@ type Activity struct {
 }
 
 func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	query := `
+	stmt := `
 		INSERT INTO activity (
 			creator_id, 
 			type, 
@@ -34,14 +28,10 @@ func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity
 		VALUES (?, ?, ?, ?)
 		RETURNING id, created_ts
 	`
-	if err := tx.QueryRowContext(ctx, query, create.CreatorID, create.Type, create.Level, create.Payload).Scan(
+	if err := s.db.QueryRowContext(ctx, stmt, create.CreatorID, create.Type, create.Level, create.Payload).Scan(
 		&create.ID,
 		&create.CreatedTs,
 	); err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 

@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"database/sql"
 	"strings"
 )
 
@@ -17,13 +16,7 @@ type FindSystemSetting struct {
 }
 
 func (s *Store) UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	query := `
+	stmt := `
 		INSERT INTO system_setting (
 			name, value, description
 		)
@@ -33,11 +26,7 @@ func (s *Store) UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) 
 			value = EXCLUDED.value,
 			description = EXCLUDED.description
 	`
-	if _, err := tx.ExecContext(ctx, query, upsert.Name, upsert.Value, upsert.Description); err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
+	if _, err := s.db.ExecContext(ctx, stmt, upsert.Name, upsert.Value, upsert.Description); err != nil {
 		return nil, err
 	}
 
@@ -46,68 +35,6 @@ func (s *Store) UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) 
 }
 
 func (s *Store) ListSystemSettings(ctx context.Context, find *FindSystemSetting) ([]*SystemSetting, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	list, err := listSystemSettings(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	for _, systemSettingMessage := range list {
-		s.systemSettingCache.Store(systemSettingMessage.Name, systemSettingMessage)
-	}
-	return list, nil
-}
-
-func (s *Store) GetSystemSetting(ctx context.Context, find *FindSystemSetting) (*SystemSetting, error) {
-	if find.Name != "" {
-		if cache, ok := s.systemSettingCache.Load(find.Name); ok {
-			return cache.(*SystemSetting), nil
-		}
-	}
-
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	list, err := listSystemSettings(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(list) == 0 {
-		return nil, nil
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	systemSettingMessage := list[0]
-	s.systemSettingCache.Store(systemSettingMessage.Name, systemSettingMessage)
-	return systemSettingMessage, nil
-}
-
-func (s *Store) GetSystemSettingValueWithDefault(ctx *context.Context, settingName string, defaultValue string) string {
-	if setting, err := s.GetSystemSetting(*ctx, &FindSystemSetting{
-		Name: settingName,
-	}); err == nil && setting != nil {
-		return setting.Value
-	}
-	return defaultValue
-}
-
-func listSystemSettings(ctx context.Context, tx *sql.Tx, find *FindSystemSetting) ([]*SystemSetting, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.Name != "" {
 		where, args = append(where, "name = ?"), append(args, find.Name)
@@ -121,7 +48,7 @@ func listSystemSettings(ctx context.Context, tx *sql.Tx, find *FindSystemSetting
 		FROM system_setting
 		WHERE ` + strings.Join(where, " AND ")
 
-	rows, err := tx.QueryContext(ctx, query, args...)
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -144,5 +71,38 @@ func listSystemSettings(ctx context.Context, tx *sql.Tx, find *FindSystemSetting
 		return nil, err
 	}
 
+	for _, systemSettingMessage := range list {
+		s.systemSettingCache.Store(systemSettingMessage.Name, systemSettingMessage)
+	}
 	return list, nil
+}
+
+func (s *Store) GetSystemSetting(ctx context.Context, find *FindSystemSetting) (*SystemSetting, error) {
+	if find.Name != "" {
+		if cache, ok := s.systemSettingCache.Load(find.Name); ok {
+			return cache.(*SystemSetting), nil
+		}
+	}
+
+	list, err := s.ListSystemSettings(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(list) == 0 {
+		return nil, nil
+	}
+
+	systemSettingMessage := list[0]
+	s.systemSettingCache.Store(systemSettingMessage.Name, systemSettingMessage)
+	return systemSettingMessage, nil
+}
+
+func (s *Store) GetSystemSettingValueWithDefault(ctx *context.Context, settingName string, defaultValue string) string {
+	if setting, err := s.GetSystemSetting(*ctx, &FindSystemSetting{
+		Name: settingName,
+	}); err == nil && setting != nil {
+		return setting.Value
+	}
+	return defaultValue
 }
