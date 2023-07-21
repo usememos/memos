@@ -126,6 +126,7 @@
     "upload-successfully": "アップロードされました",
     "file-drag-drop-prompt": "アップロードするファイルをドラックアンドドロップする",
     "search-bar-placeholder": "ファイルを検索する",
+    "clear": "Clear",
     "create-dialog": {
       "title": "ファイルをアップロード",
       "upload-method": "アップロード方法",
