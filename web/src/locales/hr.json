@@ -126,6 +126,7 @@
     "upload-successfully": "Upload je uspješan",
     "file-drag-drop-prompt": "Povuci i potegni svoj fajl ovdje kako bi bio prenesen",
     "search-bar-placeholder": "Nađi privitke",
+    "clear": "Clear",
     "create-dialog": {
       "title": "Stvori Resource",
       "upload-method": "Upload metoda",

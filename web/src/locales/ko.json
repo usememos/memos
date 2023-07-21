@@ -126,6 +126,7 @@
     "upload-successfully": "성공적으로 업로드했습니다",
     "file-drag-drop-prompt": "업로드할 파일을 여기에 드래그하세요",
     "search-bar-placeholder": "리소스 검색하기",
+    "clear": "Clear",
     "create-dialog": {
       "title": "리소스 생성",
       "upload-method": "업로드 방법",

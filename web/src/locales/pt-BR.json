@@ -126,6 +126,7 @@
     "upload-successfully": "Carregado com êxito",
     "file-drag-drop-prompt": "Arraste e solte o arquivo aqui para carregá-lo",
     "search-bar-placeholder": "Pesquisar recurso",
+    "clear": "Clear",
     "create-dialog": {
       "title": "Criar recurso",
       "upload-method": "Método de carregamento",
