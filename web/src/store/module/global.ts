@@ -13,6 +13,7 @@ export const initialGlobalState = async () => {
       allowSignUp: false,
       disablePublicMemos: false,
       maxUploadSizeMiB: 0,
+      autoBackupInterval: 0,
       additionalStyle: "",
       additionalScript: "",
       memoDisplayWithUpdatedTs: false,
@@ -63,6 +64,9 @@ export const useGlobalStore = () => {
     state,
     getState: () => {
       return store.getState().global;
+    },
+    getDisablePublicMemos: () => {
+      return store.getState().global.systemStatus.disablePublicMemos;
     },
     isDev: () => {
       return state.systemStatus.profile.mode !== "prod";

@@ -1,7 +1,7 @@
 {
   "common": {
     "memos-slogan": "軽いセルフホスティング型のメモ帳。オープンソースで永久に無料です。",
-    "about": "Notesについて",
+    "about": "About",
     "home": "ホーム",
     "resources": "ファイル",
     "settings": "設定",
@@ -67,7 +67,8 @@
       "info": "info",
       "success": "成功",
       "warning": "警告"
-    }
+    },
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "ホームに戻る"
@@ -125,6 +126,7 @@
     "upload-successfully": "アップロードされました",
     "file-drag-drop-prompt": "アップロードするファイルをドラックアンドドロップする",
     "search-bar-placeholder": "ファイルを検索する",
+    "clear": "Clear",
     "create-dialog": {
       "title": "ファイルをアップロード",
       "upload-method": "アップロード方法",
@@ -265,7 +267,8 @@
       "openai-api-key-description": "API keyを取得する",
       "openai-api-key-placeholder": "あなたのOpenAI API Key",
       "openai-api-host": "OpenAI: API Host",
-      "openai-api-host-placeholder": "標準: https://api.openai.com/"
+      "openai-api-host-placeholder": "標準: https://api.openai.com/",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "システム設定に従う",
@@ -376,7 +379,7 @@
     "sat": "土",
     "sun": "日"
   },
-  "ask-ai": {
+  "memo-chat": {
     "title": "AIに尋ねる",
     "not-enabled": "OpenAIのAPI keyが設定されていません",
     "go-to-settings": "設定へ",
@@ -385,6 +388,7 @@
     "create-message-group-title": "セッションを作成する",
     "label-message-group-name-title": "セッションの名前"
   },
+
   "embed-memo": {
     "title": "メモを埋め込む",
     "text": "コードをあなたのサイズにコピーペーストすればメモを埋め込めます",

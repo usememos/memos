@@ -1,17 +1,17 @@
 import { Divider, Select, Option } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
 import showUpdateLocalStorageDialog from "../UpdateLocalStorageDialog";
 import Dropdown from "../kit/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
-import HelpButton from "../kit/HelpButton";
+import LearnMore from "../LearnMore";
 
 const StorageSection = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const globalStore = useGlobalStore();
   const systemStatus = globalStore.state.systemStatus;
   const [storageServiceId, setStorageServiceId] = useState(systemStatus.storageServiceId);
@@ -76,7 +76,7 @@ const StorageSection = () => {
       <Divider />
       <div className="mt-4 mb-2 w-full flex flex-row justify-start items-center gap-1">
         <span className="font-mono text-sm text-gray-400">{t("setting.storage-section.storage-services-list")}</span>
-        <HelpButton className="btn" icon="info" url="https://usememos.com/docs/storage" />
+        <LearnMore url="https://usememos.com/docs/storage" />
         <button className="btn-normal px-2 py-0 ml-1" onClick={() => showCreateStorageServiceDialog(undefined, fetchStorageList)}>
           {t("common.create")}
         </button>

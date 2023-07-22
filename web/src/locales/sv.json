@@ -49,7 +49,8 @@
     "vacuum": "Vacuum",
     "select": "Select",
     "avatar": "Avatar",
-    "database": "Databas"
+    "database": "Databas",
+    "mark": "Mark"
   },
   "auth": {
     "signup-as-host": "Registera dig som värd",
@@ -185,7 +186,8 @@
       "additional-script": "Ytterligare skript",
       "additional-style-placeholder": "Ytterligare CSS kod",
       "additional-script-placeholder": "Ytterligare JavaScript kod",
-      "disable-public-memos": "Inaktivera offentliga anteckningar"
+      "disable-public-memos": "Inaktivera offentliga anteckningar",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Follow system",

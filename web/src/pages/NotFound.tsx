@@ -1,9 +1,9 @@
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { Link } from "react-router-dom";
 import "@/less/not-found.less";
 
 const NotFound = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
 
   return (
     <div className="page-wrapper not-found">

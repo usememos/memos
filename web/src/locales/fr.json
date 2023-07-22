@@ -49,7 +49,8 @@
     "vacuum": "Vacuum",
     "select": "Select",
     "avatar": "Avatar",
-    "database": "Database"
+    "database": "Database",
+    "mark": "Mark"
   },
   "auth": {
     "signup-as-host": "S'inscrire en tant qu'hôte",
@@ -185,7 +186,8 @@
       "additional-script": "Script supplémentaire",
       "additional-style-placeholder": "Codes CSS supplémentaires",
       "additional-script-placeholder": "Codes JavaScript supplémentaires",
-      "disable-public-memos": "Disable public memos"
+      "disable-public-memos": "Disable public memos",
+      "display-with-updated-time": "Display with updated time"
     },
     "storage-section": {
       "delete-storage": "Delete Storage",

@@ -1,17 +1,17 @@
+import classNames from "classnames";
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useTranslation } from "react-i18next";
-import { useLayoutStore, useUserStore } from "@/store/module";
+import { useGlobalStore, useLayoutStore, useUserStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
 import UserBanner from "./UserBanner";
-import showAboutSiteDialog from "./AboutSiteDialog";
-import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import UpgradeVersionView from "./UpgradeVersionBanner";
 
 const Header = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const location = useLocation();
+  const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
@@ -54,9 +54,10 @@ const Header = () => {
                 to="/"
                 id="header-home"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 shadow"
-                  } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -67,9 +68,10 @@ const Header = () => {
                 to="/review"
                 id="header-review"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 shadow"
-                  } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -80,9 +82,10 @@ const Header = () => {
                 to="/resources"
                 id="header-resources"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 shadow"
-                  } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -91,28 +94,51 @@ const Header = () => {
               </NavLink>
             </>
           )}
-          <NavLink
-            to="/explore"
-            id="header-explore"
-            className={({ isActive }) =>
-              `${
-                isActive && "bg-white dark:bg-zinc-700 shadow"
-              } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
-            }
-          >
+          {!globalStore.getDisablePublicMemos() && (
             <>
-              <Icon.Hash className="mr-3 w-6 h-auto opacity-70" /> {t("common.explore")}
+              <NavLink
+                to="/explore"
+                id="header-explore"
+                className={({ isActive }) =>
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
+                }
+              >
+                <>
+                  <Icon.Hash className="mr-3 w-6 h-auto opacity-70" /> {t("common.explore")}
+                </>
+              </NavLink>
             </>
-          </NavLink>
+          )}
+
           {!isVisitorMode && (
             <>
+              {globalStore.isDev() && (
+                <NavLink
+                  to="/memo-chat"
+                  id="header-memo-chat"
+                  className={({ isActive }) =>
+                    classNames(
+                      "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                      isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                    )
+                  }
+                >
+                  <>
+                    <Icon.Bot className="mr-3 w-6 h-auto opacity-70" /> {t("memo-chat.title")}
+                  </>
+                </NavLink>
+              )}
               <NavLink
                 to="/archived"
                 id="header-archived"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 shadow"
-                  } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
@@ -123,24 +149,16 @@ const Header = () => {
                 to="/setting"
                 id="header-setting"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 shadow"
-                  } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
                   <Icon.Settings className="mr-3 w-6 h-auto opacity-70" /> {t("common.settings")}
                 </>
               </NavLink>
-              <div className="pr-3 pl-1 w-full">
-                <button
-                  className="mt-2 w-full py-3 rounded-full flex flex-row justify-center items-center bg-green-600 text-white hover:shadow hover:opacity-80"
-                  onClick={() => showMemoEditorDialog()}
-                >
-                  <Icon.Edit3 className="w-4 h-auto mr-1" />
-                  {t("common.new")}
-                </button>
-              </div>
               <UpgradeVersionView />
             </>
           )}
@@ -150,22 +168,16 @@ const Header = () => {
                 to="/auth"
                 id="header-auth"
                 className={({ isActive }) =>
-                  `${
-                    isActive && "bg-white dark:bg-zinc-700 shadow"
-                  } px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700`
+                  classNames(
+                    "px-4 pr-5 py-2 rounded-full border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                    isActive ? "bg-white dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                  )
                 }
               >
                 <>
                   <Icon.LogIn className="mr-3 w-6 h-auto opacity-70" /> {t("common.sign-in")}
                 </>
               </NavLink>
-              <button
-                id="header-about"
-                className="px-4 pr-5 py-2 rounded-full flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:shadow dark:hover:bg-zinc-700"
-                onClick={() => showAboutSiteDialog()}
-              >
-                <Icon.CupSoda className="mr-3 w-6 h-auto opacity-70" /> {t("common.about")}
-              </button>
             </>
           )}
         </div>

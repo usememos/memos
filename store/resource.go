@@ -22,7 +22,6 @@ type Resource struct {
 	ExternalLink     string
 	Type             string
 	Size             int64
-	PublicID         string
 	LinkedMemoAmount int
 }
 
@@ -32,7 +31,6 @@ type FindResource struct {
 	CreatorID *int
 	Filename  *string
 	MemoID    *int
-	PublicID  *string
 	Limit     *int
 	Offset    *int
 }
@@ -41,21 +39,14 @@ type UpdateResource struct {
 	ID        int
 	UpdatedTs *int64
 	Filename  *string
-	PublicID  *string
 }
 
 type DeleteResource struct {
 	ID int
 }
 
-func (s *Store) CreateResourceV1(ctx context.Context, create *Resource) (*Resource, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	if err := tx.QueryRowContext(ctx, `
+func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {
+	stmt := `
 		INSERT INTO resource (
 			filename,
 			blob,
@@ -63,18 +54,22 @@ func (s *Store) CreateResourceV1(ctx context.Context, create *Resource) (*Resour
 			type,
 			size,
 			creator_id,
-			internal_path,
-			public_id
+			internal_path
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
 		RETURNING id, created_ts, updated_ts
-	`,
-		create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.PublicID,
+	`
+	if err := s.db.QueryRowContext(
+		ctx,
+		stmt,
+		create.Filename,
+		create.Blob,
+		create.ExternalLink,
+		create.Type,
+		create.Size,
+		create.CreatorID,
+		create.InternalPath,
 	).Scan(&create.ID, &create.CreatedTs, &create.UpdatedTs); err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
 		return nil, err
 	}
 
@@ -83,120 +78,6 @@ func (s *Store) CreateResourceV1(ctx context.Context, create *Resource) (*Resour
 }
 
 func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resource, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	resources, err := listResources(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	return resources, nil
-}
-
-func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	resources, err := listResources(ctx, tx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	if len(resources) == 0 {
-		return nil, nil
-	}
-
-	return resources[0], nil
-}
-
-func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Resource, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, FormatError(err)
-	}
-	defer tx.Rollback()
-
-	set, args := []string{}, []any{}
-
-	if v := update.UpdatedTs; v != nil {
-		set, args = append(set, "updated_ts = ?"), append(args, *v)
-	}
-	if v := update.Filename; v != nil {
-		set, args = append(set, "filename = ?"), append(args, *v)
-	}
-	if v := update.PublicID; v != nil {
-		set, args = append(set, "public_id = ?"), append(args, *v)
-	}
-
-	args = append(args, update.ID)
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path", "public_id"}
-	query := `
-		UPDATE resource
-		SET ` + strings.Join(set, ", ") + `
-		WHERE id = ?
-		RETURNING ` + strings.Join(fields, ", ")
-	resource := Resource{}
-	dests := []any{
-		&resource.ID,
-		&resource.Filename,
-		&resource.ExternalLink,
-		&resource.Type,
-		&resource.Size,
-		&resource.CreatorID,
-		&resource.CreatedTs,
-		&resource.UpdatedTs,
-		&resource.InternalPath,
-		&resource.PublicID,
-	}
-	if err := tx.QueryRowContext(ctx, query, args...).Scan(dests...); err != nil {
-		return nil, FormatError(err)
-	}
-
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-
-	return &resource, nil
-}
-
-func (s *Store) DeleteResourceV1(ctx context.Context, delete *DeleteResource) error {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return FormatError(err)
-	}
-	defer tx.Rollback()
-
-	if _, err := tx.ExecContext(ctx, `
-		DELETE FROM resource
-		WHERE id = ?
-	`, delete.ID); err != nil {
-		return err
-	}
-
-	if err := tx.Commit(); err != nil {
-		// Prevent linter warning.
-		return err
-	}
-
-	return nil
-}
-
-func listResources(ctx context.Context, tx *sql.Tx, find *FindResource) ([]*Resource, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
@@ -211,11 +92,8 @@ func listResources(ctx context.Context, tx *sql.Tx, find *FindResource) ([]*Reso
 	if v := find.MemoID; v != nil {
 		where, args = append(where, "resource.id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
 	}
-	if v := find.PublicID; v != nil {
-		where, args = append(where, "resource.public_id = ?"), append(args, *v)
-	}
 
-	fields := []string{"resource.id", "resource.filename", "resource.external_link", "resource.type", "resource.size", "resource.creator_id", "resource.created_ts", "resource.updated_ts", "internal_path", "public_id"}
+	fields := []string{"resource.id", "resource.filename", "resource.external_link", "resource.type", "resource.size", "resource.creator_id", "resource.created_ts", "resource.updated_ts", "internal_path"}
 	if find.GetBlob {
 		fields = append(fields, "resource.blob")
 	}
@@ -237,9 +115,9 @@ func listResources(ctx context.Context, tx *sql.Tx, find *FindResource) ([]*Reso
 		}
 	}
 
-	rows, err := tx.QueryContext(ctx, query, args...)
+	rows, err := s.db.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -257,22 +135,89 @@ func listResources(ctx context.Context, tx *sql.Tx, find *FindResource) ([]*Reso
 			&resource.CreatedTs,
 			&resource.UpdatedTs,
 			&resource.InternalPath,
-			&resource.PublicID,
 		}
 		if find.GetBlob {
 			dests = append(dests, &resource.Blob)
 		}
 		if err := rows.Scan(dests...); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 		list = append(list, &resource)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return list, nil
+}
+
+func (s *Store) GetResource(ctx context.Context, find *FindResource) (*Resource, error) {
+	resources, err := s.ListResources(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(resources) == 0 {
+		return nil, nil
+	}
+
+	return resources[0], nil
+}
+
+func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Resource, error) {
+	set, args := []string{}, []any{}
+
+	if v := update.UpdatedTs; v != nil {
+		set, args = append(set, "updated_ts = ?"), append(args, *v)
+	}
+	if v := update.Filename; v != nil {
+		set, args = append(set, "filename = ?"), append(args, *v)
+	}
+
+	args = append(args, update.ID)
+	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path"}
+	stmt := `
+		UPDATE resource
+		SET ` + strings.Join(set, ", ") + `
+		WHERE id = ?
+		RETURNING ` + strings.Join(fields, ", ")
+	resource := Resource{}
+	dests := []any{
+		&resource.ID,
+		&resource.Filename,
+		&resource.ExternalLink,
+		&resource.Type,
+		&resource.Size,
+		&resource.CreatorID,
+		&resource.CreatedTs,
+		&resource.UpdatedTs,
+		&resource.InternalPath,
+	}
+	if err := s.db.QueryRowContext(ctx, stmt, args...).Scan(dests...); err != nil {
+		return nil, err
+	}
+
+	return &resource, nil
+}
+
+func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) error {
+	stmt := `
+		DELETE FROM resource
+		WHERE id = ?
+	`
+	result, err := s.db.ExecContext(ctx, stmt, delete.ID)
+	if err != nil {
+		return err
+	}
+	if _, err := result.RowsAffected(); err != nil {
+		return err
+	}
+	if err := s.Vacuum(ctx); err != nil {
+		// Prevent linter warning.
+		return err
+	}
+	return nil
 }
 
 func vacuumResource(ctx context.Context, tx *sql.Tx) error {
@@ -288,7 +233,7 @@ func vacuumResource(ctx context.Context, tx *sql.Tx) error {
 		)`
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 
 	return nil

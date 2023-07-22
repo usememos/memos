@@ -21,8 +21,9 @@ export const useMemoStore = () => {
   const memoCacheStore = useMemoCacheStore();
 
   const fetchMemoById = async (memoId: MemoId) => {
-    const { data } = (await api.getMemoById(memoId)).data;
+    const { data } = await api.getMemoById(memoId);
     const memo = convertResponseModelMemo(data);
+    store.dispatch(upsertMemos([memo]));
 
     return memo;
   };
@@ -40,9 +41,9 @@ export const useMemoStore = () => {
         offset,
       };
       if (userStore.isVisitorMode()) {
-        memoFind.creatorId = userStore.getUserIdFromPath();
+        memoFind.creatorUsername = userStore.getUsernameFromPath();
       }
-      const { data } = (await api.getMemoList(memoFind)).data;
+      const { data } = await api.getMemoList(memoFind);
       const fetchedMemos = data.map((m) => convertResponseModelMemo(m));
       store.dispatch(upsertMemos(fetchedMemos));
       store.dispatch(setIsFetching(false));
@@ -53,15 +54,22 @@ export const useMemoStore = () => {
 
       return fetchedMemos;
     },
-    fetchAllMemos: async (limit = DEFAULT_MEMO_LIMIT, offset?: number) => {
+    fetchAllMemos: async (limit = DEFAULT_MEMO_LIMIT, offset?: number, username?: string) => {
+      store.dispatch(setIsFetching(true));
       const memoFind: MemoFind = {
         rowStatus: "NORMAL",
         limit,
         offset,
       };
 
-      const { data } = (await api.getAllMemos(memoFind)).data;
+      if (username != undefined) {
+        memoFind.creatorUsername = username;
+      }
+
+      const { data } = await api.getAllMemos(memoFind);
       const fetchedMemos = data.map((m) => convertResponseModelMemo(m));
+      store.dispatch(upsertMemos(fetchedMemos));
+      store.dispatch(setIsFetching(false));
 
       for (const m of fetchedMemos) {
         memoCacheStore.setMemoCache(m);
@@ -74,9 +82,9 @@ export const useMemoStore = () => {
         rowStatus: "ARCHIVED",
       };
       if (userStore.isVisitorMode()) {
-        memoFind.creatorId = userStore.getUserIdFromPath();
+        memoFind.creatorUsername = userStore.getUsernameFromPath();
       }
-      const { data } = (await api.getMemoList(memoFind)).data;
+      const { data } = await api.getMemoList(memoFind);
       const archivedMemos = data.map((m) => {
         return convertResponseModelMemo(m);
       });
@@ -97,14 +105,14 @@ export const useMemoStore = () => {
       return state.memos.filter((m) => m.content.match(regex));
     },
     createMemo: async (memoCreate: MemoCreate) => {
-      const { data } = (await api.createMemo(memoCreate)).data;
+      const { data } = await api.createMemo(memoCreate);
       const memo = convertResponseModelMemo(data);
       store.dispatch(createMemo(memo));
       memoCacheStore.setMemoCache(memo);
       return memo;
     },
     patchMemo: async (memoPatch: MemoPatch): Promise<Memo> => {
-      const { data } = (await api.patchMemo(memoPatch)).data;
+      const { data } = await api.patchMemo(memoPatch);
       const memo = convertResponseModelMemo(data);
       store.dispatch(patchMemo(omit(memo, "pinned")));
       memoCacheStore.setMemoCache(memo);

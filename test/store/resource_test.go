@@ -11,7 +11,7 @@ import (
 func TestResourceStore(t *testing.T) {
 	ctx := context.Background()
 	ts := NewTestingStore(ctx, t)
-	_, err := ts.CreateResourceV1(ctx, &store.Resource{
+	_, err := ts.CreateResource(ctx, &store.Resource{
 		CreatorID:    101,
 		Filename:     "test.epub",
 		Blob:         []byte("test"),
@@ -19,7 +19,6 @@ func TestResourceStore(t *testing.T) {
 		ExternalLink: "",
 		Type:         "application/epub+zip",
 		Size:         637607,
-		PublicID:     "a02748e2-9b56-46b2-8b1f-72d686d52f77",
 	})
 	require.NoError(t, err)
 
@@ -49,11 +48,11 @@ func TestResourceStore(t *testing.T) {
 	require.NoError(t, err)
 	require.Nil(t, notFoundResource)
 
-	err = ts.DeleteResourceV1(ctx, &store.DeleteResource{
+	err = ts.DeleteResource(ctx, &store.DeleteResource{
 		ID: 1,
 	})
 	require.NoError(t, err)
-	err = ts.DeleteResourceV1(ctx, &store.DeleteResource{
+	err = ts.DeleteResource(ctx, &store.DeleteResource{
 		ID: 2,
 	})
 	require.NoError(t, err)

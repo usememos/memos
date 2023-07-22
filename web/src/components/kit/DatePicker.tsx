@@ -1,32 +1,34 @@
 import { Badge, Button } from "@mui/joy";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getMemoStats } from "@/helpers/api";
-import { getDateStampByDate } from "@/helpers/datetime";
+import { getDateStampByDate, isFutureDate } from "@/helpers/datetime";
 import { useUserStore } from "@/store/module";
+import classNames from "classnames";
 import Icon from "../Icon";
 import "@/less/common/date-picker.less";
 
 interface DatePickerProps {
   className?: string;
+  isFutureDateDisabled?: boolean;
   datestamp: DateStamp;
   handleDateStampChange: (datestamp: DateStamp) => void;
 }
 
 const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
-  const { t } = useTranslation();
-  const { className, datestamp, handleDateStampChange } = props;
+  const t = useTranslate();
+  const { className, isFutureDateDisabled, datestamp, handleDateStampChange } = props;
   const [currentDateStamp, setCurrentDateStamp] = useState<DateStamp>(getMonthFirstDayDateStamp(datestamp));
   const [countByDate, setCountByDate] = useState(new Map());
-  const currentUserId = useUserStore().getCurrentUserId();
+  const currentUsername = useUserStore().getCurrentUsername();
 
   useEffect(() => {
     setCurrentDateStamp(getMonthFirstDayDateStamp(datestamp));
   }, [datestamp]);
 
   useEffect(() => {
-    getMemoStats(currentUserId).then(({ data: { data } }) => {
+    getMemoStats(currentUsername).then(({ data }) => {
       const m = new Map();
       for (const record of data) {
         const date = getDateStampByDate(record * 1000);
@@ -34,7 +36,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
       }
       setCountByDate(m);
     });
-  }, [currentUserId]);
+  }, [currentUsername]);
 
   const firstDate = new Date(currentDateStamp);
   const firstDateDay = firstDate.getDay() === 0 ? 7 : firstDate.getDay();
@@ -96,6 +98,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
         </div>
 
         {dayList.map((d) => {
+          const isDisabled = isFutureDateDisabled && isFutureDate(d.datestamp);
           if (d.date === 0) {
             return (
               <span key={d.datestamp} className="day-item null">
@@ -106,8 +109,8 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
             return (
               <span
                 key={d.datestamp}
-                className={`day-item relative ${d.datestamp === datestamp ? "current" : ""}`}
-                onClick={() => handleDateItemClick(d.datestamp)}
+                className={classNames(`day-item relative ${d.datestamp === datestamp ? "current" : ""}`, isDisabled && "disabled")}
+                onClick={() => (isDisabled ? null : handleDateItemClick(d.datestamp))}
               >
                 {countByDate.has(d.datestamp) ? <Badge size="sm">{d.date}</Badge> : d.date}
               </span>

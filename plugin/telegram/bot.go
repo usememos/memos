@@ -13,7 +13,7 @@ import (
 
 type Handler interface {
 	BotToken(ctx context.Context) string
-	MessageHandle(ctx context.Context, bot *Bot, message Message, blobs map[string][]byte) error
+	MessageHandle(ctx context.Context, bot *Bot, message Message, attachments []Attachment) error
 	CallbackQueryHandle(ctx context.Context, bot *Bot, callbackQuery CallbackQuery) error
 }
 
@@ -65,9 +65,9 @@ func (b *Bot) Start(ctx context.Context) {
 			if update.Message != nil {
 				message := *update.Message
 
-				// skip message other than text or photo
-				if message.Text == nil && message.Photo == nil {
-					_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Only text or photo message be supported")
+				// skip unsupported message
+				if !message.IsSupported() {
+					_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Supported messages: animation, audio, text, document, photo, video, video note, voice, other messages with caption")
 					if err != nil {
 						log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
 					}

@@ -14,8 +14,9 @@ services:
     working_dir: /work
     command: air -c ./scripts/.air.toml
     volumes:
+      - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
+      - ./.air/bin/:/go/bin/   # Cache for binary used only in container, such as *air*
       - .:/work/
-      - ./.air/go/:/go/ # Cache for go mod database
   web:
     image: node:18.12.1-alpine3.16
     working_dir: /work

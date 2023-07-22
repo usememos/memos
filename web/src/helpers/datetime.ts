@@ -216,3 +216,16 @@ export function getUnixTime(t?: Date | number | string): number {
   const date = new Date(t ? t : Date.now());
   return Math.floor(date.getTime() / 1000);
 }
+
+/**
+ * Checks if the provided date or timestamp is in the future.
+ *
+ * If no date is provided, the current date is used.
+ *
+ * @param t - Date or timestamp to check.
+ * @returns `true` if the date is in the future, `false` otherwise.
+ */
+export function isFutureDate(t?: Date | number | string): boolean {
+  const timestamp = getTimeStampByDate(t ? t : Date.now());
+  return timestamp > Date.now();
+}

@@ -67,7 +67,8 @@
       "info": "Information",
       "success": "Success",
       "warning": "Warning"
-    }
+    },
+    "mark": "Mark"
   },
   "router": {
     "back-to-home": "Back to Home"
@@ -125,6 +126,7 @@
     "upload-successfully": "Upload successfully",
     "file-drag-drop-prompt": "Drag and drop your file here to upload file",
     "search-bar-placeholder": "Search resource",
+    "clear": "Clear",
     "create-dialog": {
       "title": "Create Resource",
       "upload-method": "Upload method",
@@ -171,6 +173,7 @@
     "member": "Member",
     "member-list": "Member list",
     "system": "System",
+    "openai": "OpenAI",
     "storage": "Storage",
     "sso": "SSO",
     "account-section": {
@@ -257,6 +260,8 @@
       "disable-public-memos": "Disable public memos",
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",
+      "auto-backup-interval": "Auto backup interval (seconds)",
+      "auto-backup-interval-hint": "Set 0 to disable auto backup. Reboot is required after changing this value.",
       "additional-style": "Additional style",
       "additional-script": "Additional script",
       "additional-style-placeholder": "Additional CSS code",
@@ -268,7 +273,8 @@
       "openai-api-key-description": "Get API key",
       "openai-api-key-placeholder": "Your OpenAI API Key",
       "openai-api-host": "OpenAI: API Host",
-      "openai-api-host-placeholder": "Default: https://api.openai.com/"
+      "openai-api-host-placeholder": "Default: https://api.openai.com/",
+      "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
       "system": "Follow system",
@@ -323,10 +329,17 @@
     "and": "And",
     "or": "Or"
   },
+  "amount-text": {
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "TAG",
+    "tag_other": "TAGS",
+    "day_one": "TAG",
+    "day_other": "TAGE"
+  },
   "message": {
-    "no-memos": "no memos 🌃",
+    "no-data": "Maybe no data was found, maybe it should be another option.",
     "memos-ready": "all memos are ready 🎉",
-    "no-resource": "no resource 🌃",
     "resource-ready": "all resource are ready 🎉",
     "restored-successfully": "Restored successfully",
     "memo-updated-datetime": "Memo created datetime changed.",
@@ -379,11 +392,14 @@
     "sat": "Sat",
     "sun": "Sun"
   },
-  "ask-ai": {
-    "title": "Ask AI",
+  "memo-chat": {
+    "title": "Memo Chat",
+    "save-as-memo": "Save as memo",
+    "save-as-memo-success": "Saved as memo successfully.",
     "not-enabled": "You have not set up your OpenAI API key.",
     "go-to-settings": "Go to settings",
     "placeholder": "Ask anything…",
+    "no-message": "No Message",
     "default-message-group-title": "Default Session",
     "create-message-group-title": "Create Session",
     "label-message-group-name-title": "Session Name"

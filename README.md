@@ -2,7 +2,7 @@
 
 <img height="72px" src="https://usememos.com/logo.webp" alt="✍️ memos" align="right" />
 
-A lightweight, self-hosted memo hub. Open Source and Free forever.
+A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.
 
 <a href="https://usememos.com/docs">Documentation</a> •
 <a href="https://demo.usememos.com/">Live Demo</a> •
@@ -17,11 +17,11 @@ Discuss in <a href="https://discord.gg/tfPJa4UmAv">Discord</a> / <a href="https:
 
 ## Key points
 
-- Open source and free forever
-- Self-hosting with Docker in seconds
-- Markdown support
-- Customizable and sharable
-- RESTful API for self-service
+- **Open source and free forever**. Embrace a future where creativity knows no boundaries with our open-source solution – free today, tomorrow, and always.
+- **Self-hosting with Docker in just seconds**. Enjoy the flexibility, scalability, and ease of setup that Docker provides, allowing you to have full control over your data and privacy.
+- **Pure text with added Markdown support.** Say goodbye to the overwhelming mental burden of rich formatting and embrace a minimalist approach.
+- **Customize and share your notes effortlessly**. With our intuitive sharing features, you can easily collaborate and distribute your notes with others.
+- **RESTful API for third-party services.** Embrace the power of integration and unleash new possibilities with our RESTful API support.
 
 ## Deploy with Docker in seconds
 

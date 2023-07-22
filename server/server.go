@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/google/uuid"
 	"github.com/pkg/errors"
 	apiv1 "github.com/usememos/memos/api/v1"
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -63,13 +64,18 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}))
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
+		Skipper: func(c echo.Context) bool {
+			// this is a hack to skip timeout for openai chat streaming
+			// because streaming require to flush response. But the timeout middleware will break it.
+			return c.Request().URL.Path == "/api/v1/openai/chat-streaming"
+		},
 		ErrorMessage: "Request timeout",
 		Timeout:      30 * time.Second,
 	}))
 
 	serverID, err := s.getSystemServerID(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to retrieve system server ID: %w", err)
 	}
 	s.ID = serverID
 
@@ -79,29 +85,12 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	if profile.Mode == "prod" {
 		secret, err = s.getSystemSecretSessionName(ctx)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to retrieve system secret session name: %w", err)
 		}
 	}
 	s.Secret = secret
 
 	rootGroup := e.Group("")
-	s.registerRSSRoutes(rootGroup)
-
-	publicGroup := e.Group("/o")
-	publicGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s, next, s.Secret)
-	})
-	registerGetterPublicRoutes(publicGroup)
-
-	apiGroup := e.Group("/api")
-	apiGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return JWTMiddleware(s, next, s.Secret)
-	})
-	s.registerMemoRoutes(apiGroup)
-	s.registerMemoResourceRoutes(apiGroup)
-	s.registerMemoRelationRoutes(apiGroup)
-	s.registerMemoCommentRoutes(apiGroup)
-
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 	apiV1Service.Register(rootGroup)
 
@@ -114,6 +103,7 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 
 	go s.telegramBot.Start(ctx)
+	go autoBackup(ctx, s.Store)
 
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }
@@ -143,7 +133,7 @@ func (s *Server) getSystemServerID(ctx context.Context) (string, error) {
 	serverIDSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
 		Name: apiv1.SystemSettingServerIDName.String(),
 	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
+	if err != nil {
 		return "", err
 	}
 	if serverIDSetting == nil || serverIDSetting.Value == "" {
@@ -162,7 +152,7 @@ func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error)
 	secretSessionNameValue, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
 		Name: apiv1.SystemSettingSecretSessionName.String(),
 	})
-	if err != nil && common.ErrorCode(err) != common.NotFound {
+	if err != nil {
 		return "", err
 	}
 	if secretSessionNameValue == nil || secretSessionNameValue.Value == "" {
@@ -186,7 +176,7 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: apiv1.UnknownID,
 		Type:      apiv1.ActivityServerStart.String(),
 		Level:     apiv1.ActivityInfo.String(),
@@ -196,4 +186,13 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 		return errors.Wrap(err, "failed to create activity")
 	}
 	return err
+}
+
+func defaultGetRequestSkipper(c echo.Context) bool {
+	return c.Request().Method == http.MethodGet
+}
+
+func defaultAPIRequestSkipper(c echo.Context) bool {
+	path := c.Path()
+	return util.HasPrefixes(path, "/api", "/api/v1")
 }

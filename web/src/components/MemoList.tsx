@@ -1,17 +1,22 @@
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "@/store/module";
-import { TAG_REG, LINK_REG } from "@/labs/marked/parser";
+import { TAG_REG, LINK_REG, PLAIN_LINK_REG } from "@/labs/marked/parser";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
+import Empty from "./Empty";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
-import { PLAIN_LINK_REG } from "@/labs/marked/parser";
 
-const MemoList = () => {
-  const { t } = useTranslation();
+interface Props {
+  showCreator?: boolean;
+}
+
+const MemoList: React.FC<Props> = (props: Props) => {
+  const { showCreator } = props;
+  const t = useTranslate();
   const memoStore = useMemoStore();
   const userStore = useUserStore();
   const shortcutStore = useShortcutStore();
@@ -20,7 +25,7 @@ const MemoList = () => {
   const { memos, isFetching } = memoStore.state;
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
-  const currentUserId = userStore.getCurrentUserId();
+  const currentUsername = userStore.getCurrentUsername();
   const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = filter;
   const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
@@ -76,7 +81,7 @@ const MemoList = () => {
           return shouldShow;
         })
       : memos
-  ).filter((memo) => memo.creatorId === currentUserId);
+  ).filter((memo) => memo.creatorUsername === currentUsername && memo.rowStatus === "NORMAL");
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
@@ -103,7 +108,7 @@ const MemoList = () => {
         console.error(error);
         toast.error(error.response.data.message);
       });
-  }, [currentUserId]);
+  }, [currentUsername]);
 
   useEffect(() => {
     const pageWrapper = document.body.querySelector(".page-wrapper");
@@ -153,7 +158,7 @@ const MemoList = () => {
   return (
     <div className="memo-list-container">
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} />
+        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} showVisibility showCreator={showCreator} />
       ))}
       {isFetching ? (
         <div className="status-text-container fetching-tip">
@@ -163,10 +168,11 @@ const MemoList = () => {
         <div ref={statusRef} className="status-text-container">
           <p className="status-text">
             {isComplete ? (
-              sortedMemos.length === 0 ? (
-                t("message.no-memos")
-              ) : (
-                t("message.memos-ready")
+              sortedMemos.length === 0 && (
+                <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
+                  <Empty />
+                  <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+                </div>
               )
             ) : (
               <>

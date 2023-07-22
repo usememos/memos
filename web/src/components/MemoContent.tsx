@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { marked } from "@/labs/marked";
 import { useUserStore } from "@/store/module";
 import Icon from "./Icon";
@@ -23,15 +23,12 @@ interface State {
 
 const MemoContent: React.FC<Props> = (props: Props) => {
   const { className, content, showFull, onMemoContentClick, onMemoContentDoubleClick } = props;
-  const { t } = useTranslation();
-
+  const t = useTranslate();
+  const userStore = useUserStore();
   const [state, setState] = useState<State>({
     expandButtonStatus: -1,
   });
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
-
-  //variable for auto-collapse
-  const userStore = useUserStore();
   const isVisitorMode = userStore.isVisitorMode();
   const autoCollapse: boolean = isVisitorMode ? true : (userStore.state.user as User).localSetting.enableAutoCollapse;
 

@@ -1,7 +1,7 @@
 import copy from "copy-to-clipboard";
 import React from "react";
 import toast from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useResourceStore } from "@/store/module";
 import { getResourceUrl } from "@/utils/resource";
 import Dropdown from "./kit/Dropdown";
@@ -15,7 +15,7 @@ interface Props {
 }
 
 const ResourceItemDropdown = ({ resource }: Props) => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
 
@@ -35,21 +35,6 @@ const ResourceItemDropdown = ({ resource }: Props) => {
     const url = getResourceUrl(resource);
     copy(url);
     toast.success(t("message.succeed-copy-resource-link"));
-  };
-
-  const handleResetResourceLinkBtnClick = (resource: Resource) => {
-    showCommonDialog({
-      title: t("resource.reset-resource-link"),
-      content: t("resource.reset-link-prompt"),
-      style: "warning",
-      dialogName: "reset-resource-link-dialog",
-      onConfirm: async () => {
-        await resourceStore.patchResource({
-          id: resource.id,
-          resetPublicId: true,
-        });
-      },
-    });
   };
 
   const handleRenameBtnClick = (resource: Resource) => {
@@ -90,12 +75,6 @@ const ResourceItemDropdown = ({ resource }: Props) => {
             onClick={() => handleCopyResourceLinkBtnClick(resource)}
           >
             {t("resource.copy-link")}
-          </button>
-          <button
-            className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
-            onClick={() => handleResetResourceLinkBtnClick(resource)}
-          >
-            {t("resource.reset-link")}
           </button>
           <button
             className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"

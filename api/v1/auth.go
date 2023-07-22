@@ -8,10 +8,10 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/api/v1/auth"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
-	"github.com/usememos/memos/server/auth"
 	"github.com/usememos/memos/store"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -33,6 +33,7 @@ type SignUp struct {
 }
 
 func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
+	// POST /auth/signin - Sign in.
 	g.POST("/auth/signin", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		signin := &SignIn{}
@@ -43,7 +44,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			Username: &signin.Username,
 		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 		}
 		if user == nil {
@@ -67,6 +68,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, user)
 	})
 
+	// POST /auth/signin/sso - Sign in with SSO
 	g.POST("/auth/signin/sso", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		signin := &SSOSignIn{}
@@ -114,7 +116,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			Username: &userInfo.Identifier,
 		})
-		if err != nil && common.ErrorCode(err) != common.NotFound {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
 		}
 		if user == nil {
@@ -124,9 +126,9 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 				Role:     store.RoleUser,
 				Nickname: userInfo.DisplayName,
 				Email:    userInfo.Email,
-				OpenID:   common.GenUUID(),
+				OpenID:   util.GenUUID(),
 			}
-			password, err := common.RandomString(20)
+			password, err := util.RandomString(20)
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate random password").SetInternal(err)
 			}
@@ -153,6 +155,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, user)
 	})
 
+	// POST /auth/signup - Sign up a new user.
 	g.POST("/auth/signup", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		signup := &SignUp{}
@@ -173,7 +176,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			// The new signup user should be normal user by default.
 			Role:     store.RoleUser,
 			Nickname: signup.Username,
-			OpenID:   common.GenUUID(),
+			OpenID:   util.GenUUID(),
 		}
 		if len(existedHostUsers) == 0 {
 			// Change the default role to host if there is no host user.
@@ -182,7 +185,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			allowSignUpSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
 				Name: SystemSettingAllowSignUpName.String(),
 			})
-			if err != nil && common.ErrorCode(err) != common.NotFound {
+			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 			}
 
@@ -218,6 +221,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, user)
 	})
 
+	// POST /auth/signout - Sign out.
 	g.POST("/auth/signout", func(c echo.Context) error {
 		auth.RemoveTokensAndCookies(c)
 		return c.JSON(http.StatusOK, true)
@@ -234,7 +238,7 @@ func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.User
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: user.ID,
 		Type:      string(ActivityUserAuthSignIn),
 		Level:     string(ActivityInfo),
@@ -256,7 +260,7 @@ func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *store.User
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: user.ID,
 		Type:      string(ActivityUserAuthSignUp),
 		Level:     string(ActivityInfo),

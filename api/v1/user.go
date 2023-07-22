@@ -9,7 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/common"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -77,7 +77,7 @@ func (create CreateUserRequest) Validate() error {
 		if len(create.Email) > 256 {
 			return fmt.Errorf("email is too long, maximum length is 256")
 		}
-		if !common.ValidateEmail(create.Email) {
+		if !util.ValidateEmail(create.Email) {
 			return fmt.Errorf("invalid email format")
 		}
 	}
@@ -120,7 +120,7 @@ func (update UpdateUserRequest) Validate() error {
 		if len(*update.Email) > 256 {
 			return fmt.Errorf("email is too long, maximum length is 256")
 		}
-		if !common.ValidateEmail(*update.Email) {
+		if !util.ValidateEmail(*update.Email) {
 			return fmt.Errorf("invalid email format")
 		}
 	}
@@ -129,6 +129,7 @@ func (update UpdateUserRequest) Validate() error {
 }
 
 func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
+	// POST /user - Create a new user.
 	g.POST("/user", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
@@ -140,6 +141,9 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by id").SetInternal(err)
+		}
+		if currentUser == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 		}
 		if currentUser.Role != store.RoleHost {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized to create user")
@@ -168,19 +172,20 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 			Email:        userCreate.Email,
 			Nickname:     userCreate.Nickname,
 			PasswordHash: string(passwordHash),
-			OpenID:       common.GenUUID(),
+			OpenID:       util.GenUUID(),
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
 
-		userMessage := converUserFromStore(user)
+		userMessage := convertUserFromStore(user)
 		if err := s.createUserCreateActivity(c, userMessage); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
+	// GET /user - List all users.
 	g.GET("/user", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		list, err := s.Store.ListUsers(ctx, &store.FindUser{})
@@ -190,7 +195,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 
 		userMessageList := make([]*User, 0, len(list))
 		for _, user := range list {
-			userMessage := converUserFromStore(user)
+			userMessage := convertUserFromStore(user)
 			// data desensitize
 			userMessage.OpenID = ""
 			userMessage.Email = ""
@@ -199,7 +204,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, userMessageList)
 	})
 
-	// GET /api/user/me is used to check if the user is logged in.
+	// GET /user/me - Get current user.
 	g.GET("/user/me", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, ok := c.Get(getUserIDContextKey()).(int)
@@ -210,6 +215,9 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{ID: &userID})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 		}
 
 		list, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
@@ -222,11 +230,12 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		for _, userSetting := range list {
 			userSettingList = append(userSettingList, convertUserSettingFromStore(userSetting))
 		}
-		userMessage := converUserFromStore(user)
+		userMessage := convertUserFromStore(user)
 		userMessage.UserSettingList = userSettingList
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
+	// GET /user/:id - Get user by id.
 	g.GET("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		id, err := strconv.Atoi(c.Param("id"))
@@ -242,13 +251,34 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusNotFound, "User not found")
 		}
 
-		userMessage := converUserFromStore(user)
+		userMessage := convertUserFromStore(user)
 		// data desensitize
 		userMessage.OpenID = ""
 		userMessage.Email = ""
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
+	// GET /user/:username - Get user by username.
+	g.GET("/user/:username", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		username := c.Param("username")
+
+		user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+		}
+		if user == nil {
+			return echo.NewHTTPError(http.StatusNotFound, "User not found")
+		}
+
+		userMessage := convertUserFromStore(user)
+		// data desensitize
+		userMessage.OpenID = ""
+		userMessage.Email = ""
+		return c.JSON(http.StatusOK, userMessage)
+	})
+
+	// PUT /user/:id - Update user by id.
 	g.PATCH("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		userID, err := strconv.Atoi(c.Param("id"))
@@ -306,7 +336,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 			userUpdate.PasswordHash = &passwordHashStr
 		}
 		if request.ResetOpenID != nil && *request.ResetOpenID {
-			openID := common.GenUUID()
+			openID := util.GenUUID()
 			userUpdate.OpenID = &openID
 		}
 		if request.AvatarURL != nil {
@@ -328,11 +358,12 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		for _, userSetting := range list {
 			userSettingList = append(userSettingList, convertUserSettingFromStore(userSetting))
 		}
-		userMessage := converUserFromStore(user)
+		userMessage := convertUserFromStore(user)
 		userMessage.UserSettingList = userSettingList
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
+	// DELETE /user/:id - Delete user by id.
 	g.DELETE("/user/:id", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
@@ -377,7 +408,7 @@ func (s *APIV1Service) createUserCreateActivity(c echo.Context, user *User) erro
 	if err != nil {
 		return errors.Wrap(err, "failed to marshal activity payload")
 	}
-	activity, err := s.Store.CreateActivity(ctx, &store.ActivityMessage{
+	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 		CreatorID: user.ID,
 		Type:      ActivityUserCreate.String(),
 		Level:     ActivityInfo.String(),
@@ -389,7 +420,7 @@ func (s *APIV1Service) createUserCreateActivity(c echo.Context, user *User) erro
 	return err
 }
 
-func converUserFromStore(user *store.User) *User {
+func convertUserFromStore(user *store.User) *User {
 	return &User{
 		ID:           user.ID,
 		RowStatus:    RowStatus(user.RowStatus),

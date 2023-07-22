@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import Dropdown from "./kit/Dropdown";
@@ -8,7 +8,7 @@ import UserAvatar from "./UserAvatar";
 import showAboutSiteDialog from "./AboutSiteDialog";
 
 const UserBanner = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const navigate = useNavigate();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
@@ -40,10 +40,10 @@ const UserBanner = () => {
       <Dropdown
         className="w-full"
         trigger={
-          <div className="px-3 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-lg hover:shadow hover:bg-white dark:hover:bg-zinc-700">
+          <div className="px-4 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-lg hover:shadow hover:bg-white dark:hover:bg-zinc-700">
             <UserAvatar avatarUrl={user?.avatarUrl} />
             <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">
-              {userStore.isVisitorMode() ? systemStatus.customizedProfile.name : username}
+              {user != undefined ? username : systemStatus.customizedProfile.name}
             </span>
             {user?.role === "HOST" ? (
               <span className="text-xs px-1 bg-blue-600 dark:bg-blue-800 rounded text-white dark:text-gray-200 shadow">MOD</span>
@@ -54,7 +54,7 @@ const UserBanner = () => {
         positionClassName="top-full mt-2"
         actions={
           <>
-            {!userStore.isVisitorMode() && (
+            {user != undefined && (
               <>
                 <button
                   className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
@@ -64,7 +64,7 @@ const UserBanner = () => {
                 </button>
                 <a
                   className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
-                  href={`/u/${user?.id}/rss.xml`}
+                  href={`/u/${user?.username}/rss.xml`}
                   target="_blank"
                 >
                   <Icon.Rss className="w-5 h-auto mr-2 opacity-80" /> RSS
@@ -77,7 +77,7 @@ const UserBanner = () => {
             >
               <Icon.Info className="w-5 h-auto mr-2 opacity-80" /> {t("common.about")}
             </button>
-            {!userStore.isVisitorMode() && (
+            {user != undefined && (
               <button
                 className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                 onClick={handleSignOutBtnClick}

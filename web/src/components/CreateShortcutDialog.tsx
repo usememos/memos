@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useShortcutStore, useTagStore } from "@/store/module";
 import { filterConsts, getDefaultFilter, relationConsts } from "@/helpers/filter";
 import { getNormalizedTimeString } from "@/helpers/datetime";
@@ -20,7 +20,7 @@ const CreateShortcutDialog: React.FC<Props> = (props: Props) => {
   const [title, setTitle] = useState<string>("");
   const [filters, setFilters] = useState<Filter[]>([]);
   const requestState = useLoading(false);
-  const { t } = useTranslation();
+  const t = useTranslate();
 
   useEffect(() => {
     if (shortcutId) {
@@ -158,7 +158,7 @@ interface MemoFilterInputerProps {
 
 const MemoFilterInputer: React.FC<MemoFilterInputerProps> = (props: MemoFilterInputerProps) => {
   const { index, filter, handleFilterChange, handleFilterRemove } = props;
-  const { t } = useTranslation();
+  const t = useTranslate();
   const tagStore = useTagStore();
   const [value, setValue] = useState<string>(filter.value.value);
   const tags = Array.from(tagStore.getState().tags);

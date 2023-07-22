@@ -17,7 +17,7 @@ Someone who wants...
 
 - to use memos
 - to support the memos project
-- a cost effective and simple way to host it on the cloud with reliablity and persistance
+- a cost effective and simple way to host it on the cloud with reliability and persistance
 - to share memos with friends
 
 ## Requirements

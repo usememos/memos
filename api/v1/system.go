@@ -23,6 +23,8 @@ type SystemStatus struct {
 	DisablePublicMemos bool `json:"disablePublicMemos"`
 	// Max upload size.
 	MaxUploadSizeMiB int `json:"maxUploadSizeMiB"`
+	// Auto Backup Interval.
+	AutoBackupInterval int `json:"autoBackupInterval"`
 	// Additional style.
 	AdditionalStyle string `json:"additionalStyle"`
 	// Additional script.
@@ -44,12 +46,14 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 
 	g.GET("/status", func(c echo.Context) error {
 		ctx := c.Request().Context()
+
 		systemStatus := SystemStatus{
 			Profile:            *s.Profile,
 			DBSize:             0,
 			AllowSignUp:        false,
 			DisablePublicMemos: false,
 			MaxUploadSizeMiB:   32,
+			AutoBackupInterval: 0,
 			AdditionalStyle:    "",
 			AdditionalScript:   "",
 			CustomizedProfile: CustomizedProfile{
@@ -73,10 +77,11 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find host user").SetInternal(err)
 		}
 		if hostUser != nil {
-			systemStatus.Host = converUserFromStore(hostUser)
+			systemStatus.Host = &User{ID: hostUser.ID}
 			// data desensitize
 			systemStatus.Host.OpenID = ""
 			systemStatus.Host.Email = ""
+			systemStatus.Host.AvatarURL = ""
 		}
 
 		systemSettingList, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})
@@ -102,6 +107,8 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 				systemStatus.DisablePublicMemos = baseValue.(bool)
 			case SystemSettingMaxUploadSizeMiBName.String():
 				systemStatus.MaxUploadSizeMiB = int(baseValue.(float64))
+			case SystemSettingAutoBackupIntervalName.String():
+				systemStatus.AutoBackupInterval = int(baseValue.(float64))
 			case SystemSettingAdditionalStyleName.String():
 				systemStatus.AdditionalStyle = baseValue.(string)
 			case SystemSettingAdditionalScriptName.String():

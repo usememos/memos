@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useFilterStore, useShortcutStore } from "@/store/module";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useToggle from "@/hooks/useToggle";
@@ -9,7 +9,7 @@ import Icon from "./Icon";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
 
 const ShortcutList = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const filterStore = useFilterStore();
   const shortcutStore = useShortcutStore();
   const filter = filterStore.state;
@@ -62,7 +62,7 @@ interface ShortcutContainerProps {
 
 const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutContainerProps) => {
   const { shortcut, isActive } = props;
-  const { t } = useTranslation();
+  const t = useTranslate();
   const filterStore = useFilterStore();
   const shortcutStore = useShortcutStore();
   const [showConfirmDeleteBtn, toggleConfirmDeleteBtn] = useToggle(false);
@@ -135,7 +135,7 @@ const ShortcutContainer: React.FC<ShortcutContainerProps> = (props: ShortcutCont
             <Icon.MoreHorizontal className="w-4 h-auto" />
           </span>
           <div className="absolute top-4 right-0 flex-col justify-start items-start w-auto h-auto px-4 pt-3 hidden group-hover/btns:flex z-1">
-            <div className="flex flex-col justify-start items-start w-24 h-auto p-1 whitespace-nowrap rounded-md bg-white dark:bg-zinc-700 shadow">
+            <div className="flex flex-col justify-start items-start w-32 h-auto p-1 whitespace-nowrap rounded-md bg-white dark:bg-zinc-700 shadow">
               <span
                 className="w-full text-sm leading-6 py-1 px-3 rounded text-left dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                 onClick={handlePinShortcutBtnClick}

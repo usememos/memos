@@ -1,16 +1,15 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
-	"path"
 	"strconv"
+	"unicode/utf16"
 
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api"
 	apiv1 "github.com/usememos/memos/api/v1"
-	"github.com/usememos/memos/common"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/store"
 )
@@ -32,7 +31,7 @@ const (
 	successMessage = "Success"
 )
 
-func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, message telegram.Message, blobs map[string][]byte) error {
+func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, message telegram.Message, attachments []telegram.Attachment) error {
 	reply, err := bot.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
 	if err != nil {
 		return fmt.Errorf("fail to SendReplyMessage: %s", err)
@@ -61,49 +60,52 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		return err
 	}
 
-	// create memo
-	memoCreate := api.CreateMemoRequest{
+	create := &store.Memo{
 		CreatorID:  creatorID,
-		Visibility: api.Private,
+		Visibility: store.Private,
 	}
 
 	if message.Text != nil {
-		memoCreate.Content = *message.Text
-	}
-	if blobs != nil && message.Caption != nil {
-		memoCreate.Content = *message.Caption
+		create.Content = convertToMarkdown(*message.Text, message.Entities)
 	}
 
-	memoMessage, err := t.store.CreateMemo(ctx, convertCreateMemoRequestToMemoMessage(&memoCreate))
+	if message.Caption != nil {
+		create.Content = convertToMarkdown(*message.Caption, message.CaptionEntities)
+	}
+
+	if message.ForwardFromChat != nil {
+		create.Content += fmt.Sprintf("\n\n[Message link](%s)", message.GetMessageLink())
+	}
+
+	memoMessage, err := t.store.CreateMemo(ctx, create)
 	if err != nil {
 		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateMemo: %s", err), nil)
 		return err
 	}
 
 	// create resources
-	for filename, blob := range blobs {
-		// TODO support more
-		mime := "application/octet-stream"
-		switch path.Ext(filename) {
-		case ".jpg":
-			mime = "image/jpeg"
-		case ".png":
-			mime = "image/png"
-		}
-		resource, err := t.store.CreateResourceV1(ctx, &store.Resource{
+	for _, attachment := range attachments {
+		// Fill the common field of create
+		create := store.Resource{
 			CreatorID: creatorID,
-			Filename:  filename,
-			Type:      mime,
-			Size:      int64(len(blob)),
-			Blob:      blob,
-			PublicID:  common.GenUUID(),
-		})
+			Filename:  attachment.FileName,
+			Type:      attachment.GetMimeType(),
+			Size:      attachment.FileSize,
+		}
+
+		err := apiv1.SaveResourceBlob(ctx, t.store, &create, bytes.NewReader(attachment.Data))
+		if err != nil {
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to SaveResourceBlob: %s", err), nil)
+			return err
+		}
+
+		resource, err := t.store.CreateResource(ctx, &create)
 		if err != nil {
 			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err), nil)
 			return err
 		}
 
-		_, err = t.store.UpsertMemoResource(ctx, &api.MemoResourceUpsert{
+		_, err = t.store.UpsertMemoResource(ctx, &store.UpsertMemoResource{
 			MemoID:     memoMessage.ID,
 			ResourceID: resource.ID,
 		})
@@ -126,7 +128,7 @@ func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to parse callbackQuery.Data %s", callbackQuery.Data))
 	}
 
-	update := store.UpdateMemoMessage{
+	update := store.UpdateMemo{
 		ID:         memoID,
 		Visibility: &visibility,
 	}
@@ -161,4 +163,52 @@ func generateKeyboardForMemoID(id int) [][]telegram.InlineKeyboardButton {
 	}
 
 	return [][]telegram.InlineKeyboardButton{buttons}
+}
+
+func convertToMarkdown(text string, messageEntities []telegram.MessageEntity) string {
+	insertions := make(map[int]string)
+
+	for _, e := range messageEntities {
+		var before, after string
+
+		// this is supported by the current markdown
+		switch e.Type {
+		case telegram.Bold:
+			before = "**"
+			after = "**"
+		case telegram.Italic:
+			before = "*"
+			after = "*"
+		case telegram.Strikethrough:
+			before = "~~"
+			after = "~~"
+		case telegram.Code:
+			before = "`"
+			after = "`"
+		case telegram.Pre:
+			before = "```" + e.Language
+			after = "```"
+		case telegram.TextLink:
+			before = "["
+			after = fmt.Sprintf(`](%s)`, e.URL)
+		}
+
+		if before != "" {
+			insertions[e.Offset] += before
+			insertions[e.Offset+e.Length] = after + insertions[e.Offset+e.Length]
+		}
+	}
+
+	input := []rune(text)
+	var output []rune
+	utf16pos := 0
+
+	for i := 0; i < len(input); i++ {
+		output = append(output, []rune(insertions[utf16pos])...)
+		output = append(output, input[i])
+		utf16pos += len(utf16.Encode([]rune{input[i]}))
+	}
+	output = append(output, []rune(insertions[utf16pos])...)
+
+	return string(output)
 }

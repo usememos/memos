@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useTranslate } from "@/utils/i18n";
 import { useLocation } from "react-router-dom";
 import { useFilterStore, useShortcutStore } from "@/store/module";
 import { getDateString } from "@/helpers/datetime";
@@ -8,7 +8,7 @@ import Icon from "./Icon";
 import "@/less/memo-filter.less";
 
 const MemoFilter = () => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const location = useLocation();
   const filterStore = useFilterStore();
   const shortcutStore = useShortcutStore();
@@ -31,6 +31,7 @@ const MemoFilter = () => {
         }}
       >
         <Icon.Target className="icon-text" /> {shortcut?.title}
+        <Icon.X className="w-4 h-auto ml-1 opacity-40" />
       </div>
       <div
         className={"filter-item-container " + (tagQuery ? "" : "!hidden")}
@@ -39,6 +40,7 @@ const MemoFilter = () => {
         }}
       >
         <Icon.Tag className="icon-text" /> {tagQuery}
+        <Icon.X className="w-4 h-auto ml-1 opacity-40" />
       </div>
       <div
         className={"filter-item-container " + (memoType ? "" : "!hidden")}
@@ -46,7 +48,9 @@ const MemoFilter = () => {
           filterStore.setMemoTypeFilter(undefined);
         }}
       >
-        <Icon.Box className="icon-text" /> {t(getTextWithMemoType(memoType as MemoSpecType))}
+        <Icon.Box className="icon-text" />{" "}
+        {t(getTextWithMemoType(memoType as MemoSpecType) as Exclude<ReturnType<typeof getTextWithMemoType>, "">)}
+        <Icon.X className="w-4 h-auto ml-1 opacity-40" />
       </div>
       <div
         className={"filter-item-container " + (visibility ? "" : "!hidden")}
@@ -55,6 +59,7 @@ const MemoFilter = () => {
         }}
       >
         <Icon.Eye className="icon-text" /> {visibility}
+        <Icon.X className="w-4 h-auto ml-1 opacity-40" />
       </div>
       {duration && duration.from < duration.to ? (
         <div
@@ -69,6 +74,7 @@ const MemoFilter = () => {
             to: getDateString(duration.to),
             interpolation: { escapeValue: false },
           })}
+          <Icon.X className="w-4 h-auto ml-1 opacity-40" />
         </div>
       ) : null}
       <div
@@ -78,6 +84,7 @@ const MemoFilter = () => {
         }}
       >
         <Icon.Search className="icon-text" /> {textQuery}
+        <Icon.X className="w-4 h-auto ml-1 opacity-40" />
       </div>
     </div>
   );

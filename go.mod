@@ -3,6 +3,8 @@ module github.com/usememos/memos
 go 1.19
 
 require (
+	github.com/CorrectRoadH/echo-sse v0.1.4
+	github.com/PullRequestInc/go-gpt3 v1.1.15
 	github.com/aws/aws-sdk-go-v2 v1.17.4
 	github.com/aws/aws-sdk-go-v2/config v1.18.12
 	github.com/aws/aws-sdk-go-v2/credentials v1.13.12
@@ -23,7 +25,7 @@ require (
 	golang.org/x/mod v0.8.0
 	golang.org/x/net v0.7.0
 	golang.org/x/oauth2 v0.5.0
-	modernc.org/sqlite v1.22.1
+	modernc.org/sqlite v1.24.0
 )
 
 require (

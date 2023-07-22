@@ -2,10 +2,12 @@ import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import { toast } from "react-hot-toast";
 import { matcher } from "../matcher";
+import { useTranslate } from "@/utils/i18n";
 
 export const CODE_BLOCK_REG = /^```(\S*?)\s([\s\S]*?)```/;
 
 const renderer = (rawStr: string) => {
+  const t = useTranslate();
   const matchResult = matcher(rawStr, CODE_BLOCK_REG);
   if (!matchResult) {
     return <>{rawStr}</>;
@@ -25,7 +27,7 @@ const renderer = (rawStr: string) => {
 
   const handleCopyButtonClick = () => {
     copy(matchResult[2]);
-    toast.success("Copy succeed");
+    toast.success(t("message.succeed-copy-code"));
   };
 
   return (

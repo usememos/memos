@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
-import { toast } from "react-hot-toast";
 import { Button, Divider, Input, Option, Select, Typography } from "@mui/joy";
+import { useEffect, useState } from "react";
+import { useTranslate } from "@/utils/i18n";
+import { toast } from "react-hot-toast";
 import * as api from "@/helpers/api";
 import { UNKNOWN_ID } from "@/helpers/consts";
 import { absolutifyLink } from "@/helpers/utils";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import { useTranslation } from "react-i18next";
 
 const templateList: IdentityProvider[] = [
   {
@@ -101,7 +101,7 @@ interface Props extends DialogProps {
 }
 
 const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
-  const { t } = useTranslation();
+  const t = useTranslate();
   const identityProviderTypes = [...new Set(templateList.map((t) => t.type))];
   const { confirmCallback, destroy, identityProvider } = props;
   const [basicInfo, setBasicInfo] = useState({
@@ -170,7 +170,6 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     if (type === "OAUTH2") {
       if (
         oauth2Config.clientId === "" ||
-        oauth2Config.clientSecret === "" ||
         oauth2Config.authUrl === "" ||
         oauth2Config.tokenUrl === "" ||
         oauth2Config.userInfoUrl === "" ||
@@ -179,7 +178,13 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
       ) {
         return false;
       }
+      if (isCreating) {
+        if (oauth2Config.clientSecret === "") {
+          return false;
+        }
+      }
     }
+
     return true;
   };
 
@@ -231,7 +236,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text ml-auto">{t("setting.sso-section." + (isCreating ? "create" : "update") + "-sso")}</p>
+        <p className="title-text ml-auto">{t(isCreating ? "setting.sso-section.create-sso" : "setting.sso-section.update-sso")}</p>
         <button className="btn close-btn ml-auto" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
@@ -406,7 +411,7 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
             {t("common.cancel")}
           </Button>
           <Button onClick={handleConfirmBtnClick} disabled={!allowConfirmAction()}>
-            {t("common." + (isCreating ? "create" : "update"))}
+            {t(isCreating ? "common.create" : "common.update")}
           </Button>
         </div>
       </div>

@@ -13,7 +13,7 @@ func TestMemoRelationStore(t *testing.T) {
 	ts := NewTestingStore(ctx, t)
 	user, err := createTestingHostUser(ctx, ts)
 	require.NoError(t, err)
-	memoCreate := &store.MemoMessage{
+	memoCreate := &store.Memo{
 		CreatorID:  user.ID,
 		Content:    "test_content",
 		Visibility: store.Public,
@@ -21,7 +21,7 @@ func TestMemoRelationStore(t *testing.T) {
 	memo, err := ts.CreateMemo(ctx, memoCreate)
 	require.NoError(t, err)
 	require.Equal(t, memoCreate.Content, memo.Content)
-	memo2Create := &store.MemoMessage{
+	memo2Create := &store.Memo{
 		CreatorID:  user.ID,
 		Content:    "test_content_2",
 		Visibility: store.Public,
@@ -29,14 +29,14 @@ func TestMemoRelationStore(t *testing.T) {
 	memo2, err := ts.CreateMemo(ctx, memo2Create)
 	require.NoError(t, err)
 	require.Equal(t, memo2Create.Content, memo2.Content)
-	memoRelationMessage := &store.MemoRelationMessage{
+	memoRelationMessage := &store.MemoRelation{
 		MemoID:        memo.ID,
 		RelatedMemoID: memo2.ID,
 		Type:          store.MemoRelationReference,
 	}
 	_, err = ts.UpsertMemoRelation(ctx, memoRelationMessage)
 	require.NoError(t, err)
-	memoRelation, err := ts.ListMemoRelations(ctx, &store.FindMemoRelationMessage{
+	memoRelation, err := ts.ListMemoRelations(ctx, &store.FindMemoRelation{
 		MemoID: &memo.ID,
 	})
 	require.NoError(t, err)
@@ -44,11 +44,11 @@ func TestMemoRelationStore(t *testing.T) {
 	require.Equal(t, memo2.ID, memoRelation[0].RelatedMemoID)
 	require.Equal(t, memo.ID, memoRelation[0].MemoID)
 	require.Equal(t, store.MemoRelationReference, memoRelation[0].Type)
-	err = ts.DeleteMemo(ctx, &store.DeleteMemoMessage{
+	err = ts.DeleteMemo(ctx, &store.DeleteMemo{
 		ID: memo2.ID,
 	})
 	require.NoError(t, err)
-	memoRelation, err = ts.ListMemoRelations(ctx, &store.FindMemoRelationMessage{
+	memoRelation, err = ts.ListMemoRelations(ctx, &store.FindMemoRelation{
 		MemoID: &memo.ID,
 	})
 	require.NoError(t, err)

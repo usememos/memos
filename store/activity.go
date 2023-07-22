@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-type ActivityMessage struct {
+type Activity struct {
 	ID int
 
 	// Standard fields
@@ -17,15 +17,8 @@ type ActivityMessage struct {
 	Payload string
 }
 
-// CreateActivity creates an instance of Activity.
-func (s *Store) CreateActivity(ctx context.Context, create *ActivityMessage) (*ActivityMessage, error) {
-	tx, err := s.db.BeginTx(ctx, nil)
-	if err != nil {
-		return nil, err
-	}
-	defer tx.Rollback()
-
-	query := `
+func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity, error) {
+	stmt := `
 		INSERT INTO activity (
 			creator_id, 
 			type, 
@@ -35,16 +28,13 @@ func (s *Store) CreateActivity(ctx context.Context, create *ActivityMessage) (*A
 		VALUES (?, ?, ?, ?)
 		RETURNING id, created_ts
 	`
-	if err := tx.QueryRowContext(ctx, query, create.CreatorID, create.Type, create.Level, create.Payload).Scan(
+	if err := s.db.QueryRowContext(ctx, stmt, create.CreatorID, create.Type, create.Level, create.Payload).Scan(
 		&create.ID,
 		&create.CreatedTs,
 	); err != nil {
 		return nil, err
 	}
 
-	if err := tx.Commit(); err != nil {
-		return nil, err
-	}
-	activityMessage := create
-	return activityMessage, nil
+	activity := create
+	return activity, nil
 }

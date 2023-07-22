@@ -37,6 +37,10 @@ const (
 	SystemSettingTelegramBotTokenName SystemSettingName = "telegram-bot-token"
 	// SystemSettingMemoDisplayWithUpdatedTsName is the name of memo display with updated ts.
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
+	// SystemSettingOpenAIConfigName is the name of OpenAI config.
+	SystemSettingOpenAIConfigName SystemSettingName = "openai-config"
+	// SystemSettingAutoBackupIntervalName is the name of auto backup interval as seconds.
+	SystemSettingAutoBackupIntervalName SystemSettingName = "auto-backup-interval"
 )
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
@@ -64,6 +68,11 @@ type SystemSetting struct {
 	// Value is a JSON string with basic value.
 	Value       string `json:"value"`
 	Description string `json:"description"`
+}
+
+type OpenAIConfig struct {
+	Key  string `json:"key"`
+	Host string `json:"host"`
 }
 
 type UpsertSystemSettingRequest struct {
@@ -126,6 +135,19 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 		value := ""
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
+	case SystemSettingOpenAIConfigName:
+		value := OpenAIConfig{}
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
+	case SystemSettingAutoBackupIntervalName:
+		var value int
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
+		if value < 0 {
+			return fmt.Errorf("must be positive")
 		}
 	case SystemSettingTelegramBotTokenName:
 		if upsert.Value == "" {
