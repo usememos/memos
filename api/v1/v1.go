@@ -44,6 +44,7 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 	s.registerMemoResourceRoutes(apiV1Group)
 	s.registerMemoRelationRoutes(apiV1Group)
 	s.registerOpenAIRoutes(apiV1Group)
+	s.registerMemoCommentRoutes(apiV1Group)
 
 	// Register public routes.
 	publicGroup := rootGroup.Group("/o")

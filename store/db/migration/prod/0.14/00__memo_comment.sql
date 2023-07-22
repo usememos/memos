@@ -6,9 +6,6 @@ CREATE TABLE memo_comment (
   email TEXT NOT NULL DEFAULT '',
   website TEXT DEFAULT '',
   name TEXT NOT NULL DEFAULT 'UNKNOWN',
-  visibility TEXT NOT NULL CHECK (
-          visibility IN ('PUBLIC', 'PROTECTED', 'PRIVATE')
-      ) DEFAULT ('PUBLIC'),
   memo_id INTEGER NOT NULL,
   parent_id INTEGER DEFAULT (0)
 );

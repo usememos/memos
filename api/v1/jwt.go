@@ -86,10 +86,6 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return next(c)
 		}
 
-		if common.HasPrefixes(path, "/api/memo/comment") && method == http.MethodPost {
-			return next(c)
-		}
-
 		token := findAccessToken(c)
 		if token == "" {
 			// Allow the user to access the public endpoints.
@@ -98,6 +94,9 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			}
 			// When the request is not authenticated, we allow the user to access the memo endpoints for those public memos.
 			if util.HasPrefixes(path, "/api/v1/memo") && method == http.MethodGet {
+				return next(c)
+			}
+			if util.HasPrefixes(path, "/api/v1/memo") && strings.HasSuffix(path, "/comment") && method == http.MethodPost {
 				return next(c)
 			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing access token")

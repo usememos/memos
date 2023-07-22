@@ -6,16 +6,13 @@ import (
 	"fmt"
 	"strings"
 	"time"
-
-	"github.com/usememos/memos/common"
 )
 
 type FindMemoCommentMessage struct {
 	ID int
 
 	// Domain specific fields
-	ContentSearch  []string
-	VisibilityList []Visibility
+	ContentSearch []string
 
 	MemoID *int
 
@@ -33,8 +30,7 @@ type MemoCommentMessage struct {
 	UpdatedTs int64
 
 	// Domain specific fields
-	Content    string
-	Visibility Visibility
+	Content string
 
 	// Info fields
 	Email   string
@@ -53,7 +49,7 @@ type DeleteMemoCommentMessage struct {
 func (s *Store) DeleteMemoComment(ctx context.Context, delete *DeleteMemoCommentMessage) error {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return FormatError(err)
+		return err
 	}
 	defer tx.Rollback()
 
@@ -61,15 +57,11 @@ func (s *Store) DeleteMemoComment(ctx context.Context, delete *DeleteMemoComment
 	stmt := `DELETE FROM memo_comment WHERE ` + strings.Join(where, " AND ")
 	result, err := tx.ExecContext(ctx, stmt, args...)
 	if err != nil {
-		return FormatError(err)
-	}
-
-	rows, err := result.RowsAffected()
-	if err != nil {
 		return err
 	}
-	if rows == 0 {
-		return &common.Error{Code: common.NotFound, Err: fmt.Errorf("not found")}
+	_, err = result.RowsAffected()
+	if err != nil {
+		return err
 	}
 	if err := s.vacuumImpl(ctx, tx); err != nil {
 		return err
@@ -81,7 +73,7 @@ func (s *Store) DeleteMemoComment(ctx context.Context, delete *DeleteMemoComment
 func (s *Store) CreateCommentMemo(ctx context.Context, create *MemoCommentMessage) (*MemoCommentMessage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -117,10 +109,10 @@ func (s *Store) CreateCommentMemo(ctx context.Context, create *MemoCommentMessag
 		&create.CreatedTs,
 		&create.UpdatedTs,
 	); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	if err := tx.Commit(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	return create, nil
 }
@@ -128,7 +120,7 @@ func (s *Store) CreateCommentMemo(ctx context.Context, create *MemoCommentMessag
 func (s *Store) GetMemoComments(ctx context.Context, find *FindMemoCommentMessage) ([]*MemoCommentMessage, error) {
 	tx, err := s.db.BeginTx(ctx, nil)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer tx.Rollback()
 
@@ -137,7 +129,7 @@ func (s *Store) GetMemoComments(ctx context.Context, find *FindMemoCommentMessag
 		return nil, err
 	}
 	if len(list) == 0 {
-		return nil, &common.Error{Code: common.NotFound, Err: fmt.Errorf("memo not found")}
+		return nil, err
 	}
 
 	return list, nil
@@ -155,14 +147,6 @@ func listMemoComments(ctx context.Context, tx *sql.Tx, find *FindMemoCommentMess
 			where, args = append(where, "memo_comment.content LIKE ?"), append(args, "%"+s+"%")
 		}
 	}
-	if v := find.VisibilityList; len(v) != 0 {
-		list := []string{}
-		for _, visibility := range v {
-			list = append(list, fmt.Sprintf("$%d", len(args)+1))
-			args = append(args, visibility)
-		}
-		where = append(where, fmt.Sprintf("memo_comment.visibility in (%s)", strings.Join(list, ",")))
-	}
 
 	query := `
 	SELECT
@@ -170,7 +154,6 @@ func listMemoComments(ctx context.Context, tx *sql.Tx, find *FindMemoCommentMess
 		memo_comment.created_ts AS created_ts,
 		memo_comment.updated_ts AS updated_ts,
 		memo_comment.content AS content,
-		memo_comment.visibility AS visibility,
 		memo_comment.email AS email, 
 		memo_comment.website AS website, 
 		memo_comment.name AS name,
@@ -189,7 +172,7 @@ func listMemoComments(ctx context.Context, tx *sql.Tx, find *FindMemoCommentMess
 
 	rows, err := tx.QueryContext(ctx, query, args...)
 	if err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 	defer rows.Close()
 
@@ -201,20 +184,19 @@ func listMemoComments(ctx context.Context, tx *sql.Tx, find *FindMemoCommentMess
 			&memoCommentMessage.CreatedTs,
 			&memoCommentMessage.UpdatedTs,
 			&memoCommentMessage.Content,
-			&memoCommentMessage.Visibility,
 			&memoCommentMessage.Email,
 			&memoCommentMessage.Website,
 			&memoCommentMessage.Name,
 			&memoCommentMessage.ParentID,
 			&memoCommentMessage.MemoID,
 		); err != nil {
-			return nil, FormatError(err)
+			return nil, err
 		}
 		memoCommentMessageList = append(memoCommentMessageList, &memoCommentMessage)
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, FormatError(err)
+		return nil, err
 	}
 
 	return memoCommentMessageList, nil
