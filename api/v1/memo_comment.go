@@ -95,6 +95,9 @@ func (s *APIV1Service) registerMemoCommentRoutes(g *echo.Group) {
 	g.POST("/memo/:memoId/comment", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		memoID, err := strconv.Atoi(c.Param("memoId"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "memo id is required").SetInternal(err)
+		}
 		createMemoCommentRequest := &CreateMemoCommentRequest{}
 		if err = json.NewDecoder(c.Request().Body).Decode(createMemoCommentRequest); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo comment request").SetInternal(err)
