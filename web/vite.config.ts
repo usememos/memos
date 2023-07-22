@@ -23,7 +23,7 @@ export default defineConfig({
         target: devProxyServer,
         changeOrigin: true,
       },
-      "^/u/\\d*/rss.xml": {
+      "^/u/.+/rss.xml": {
         target: devProxyServer,
         changeOrigin: true,
       },
