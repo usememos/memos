@@ -80,7 +80,7 @@ const router = createBrowserRouter([
         },
       },
       {
-        path: "/u/:username",
+        path: "u/:username",
         element: <Explore />,
         loader: async () => {
           await initialGlobalStateLoader();
