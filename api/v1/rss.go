@@ -78,42 +78,6 @@ func (s *APIV1Service) registerRSSRoutes(g *echo.Group) {
 		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationXMLCharsetUTF8)
 		return c.String(http.StatusOK, rss)
 	})
-
-	g.GET("/u/:username/rss.xml", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		username := c.Param("username")
-		user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "User not found")
-		}
-
-		systemCustomizedProfile, err := s.getSystemCustomizedProfile(ctx)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get system customized profile").SetInternal(err)
-		}
-
-		normalStatus := store.Normal
-		memoFind := store.FindMemo{
-			CreatorID:      &user.ID,
-			RowStatus:      &normalStatus,
-			VisibilityList: []store.Visibility{store.Public},
-		}
-		memoList, err := s.Store.ListMemos(ctx, &memoFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
-		}
-
-		baseURL := c.Scheme() + "://" + c.Request().Host
-		rss, err := s.generateRSSFromMemoList(ctx, memoList, baseURL, systemCustomizedProfile)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate rss").SetInternal(err)
-		}
-		c.Response().Header().Set(echo.HeaderContentType, echo.MIMEApplicationXMLCharsetUTF8)
-		return c.String(http.StatusOK, rss)
-	})
 }
 
 func (s *APIV1Service) generateRSSFromMemoList(ctx context.Context, memoList []*store.Memo, baseURL string, profile *CustomizedProfile) (string, error) {
