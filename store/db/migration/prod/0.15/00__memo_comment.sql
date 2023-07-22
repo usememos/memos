@@ -10,6 +10,6 @@ CREATE TABLE memo_comment (
   parent_id INTEGER DEFAULT (0)
 );
 
-CREATE INDEX idx_memo_id ON memo_comment (
+CREATE INDEX idx_memo_content_memo_id ON memo_comment (
     memo_id
 );

@@ -138,7 +138,6 @@ CREATE TABLE memo_relation (
   UNIQUE(memo_id, related_memo_id, type)
 );
 
-
 -- memo_comment
 CREATE TABLE memo_comment (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -151,6 +150,7 @@ CREATE TABLE memo_comment (
   memo_id INTEGER NOT NULL,
   parent_id INTEGER DEFAULT (0)
 );
-CREATE INDEX idx_memo_id ON memo_comment (
+
+CREATE INDEX idx_memo_content_memo_id ON memo_comment (
     memo_id
 );
