@@ -85,7 +85,6 @@ func (s *APIV1Service) registerMemoCommentRoutes(g *echo.Group) {
 				}
 			}
 		}
-
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo comment response").
 				SetInternal(err)
@@ -95,13 +94,9 @@ func (s *APIV1Service) registerMemoCommentRoutes(g *echo.Group) {
 
 	g.POST("/memo/:memoId/comment", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		//_, ok := c.Get(getUserIDContextKey()).(int)
-		//if !ok {
-		//	return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		//}
 		memoID, err := strconv.Atoi(c.Param("memoId"))
 		createMemoCommentRequest := &CreateMemoCommentRequest{}
-		if err := json.NewDecoder(c.Request().Body).Decode(createMemoCommentRequest); err != nil {
+		if err = json.NewDecoder(c.Request().Body).Decode(createMemoCommentRequest); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post memo comment request").SetInternal(err)
 		}
 		if len(createMemoCommentRequest.Content) > maxContentLength {
