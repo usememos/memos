@@ -43,7 +43,7 @@ const MemoList: React.FC<Props> = (props: Props) => {
           }
           if (tagQuery) {
             const tagsSet = new Set<string>();
-            for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
+            for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "gu")) ?? [])) {
               const tag = t.replace(TAG_REG, "$1").trim();
               const items = tag.split("/");
               let temp = "";
