@@ -286,7 +286,7 @@ const ResourcesDashboard = () => {
             ) : (
               <div
                 className={
-                  listStyle === "TABLE"
+                  listStyle === "TABLE" || resourceList.length === 0
                     ? "flex flex-col justify-start items-start w-full"
                     : "w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6"
                 }
