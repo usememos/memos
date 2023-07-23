@@ -74,7 +74,7 @@ func audienceContains(audience jwt.ClaimStrings, token string) bool {
 // will try to generate new access token and refresh token.
 func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		path := c.Request().URL.Path
+		path := c.Path()
 		method := c.Request().Method
 
 		if server.defaultAuthSkipper(c) {
