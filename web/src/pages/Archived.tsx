@@ -6,9 +6,9 @@ import useLoading from "@/hooks/useLoading";
 import ArchivedMemo from "@/components/ArchivedMemo";
 import MobileHeader from "@/components/MobileHeader";
 import Empty from "@/components/Empty";
-import "@/less/archived.less";
 import SearchBar from "@/components/SearchBar";
 import MemoFilter from "@/components/MemoFilter";
+import "@/less/archived.less";
 
 const Archived = () => {
   const t = useTranslate();
