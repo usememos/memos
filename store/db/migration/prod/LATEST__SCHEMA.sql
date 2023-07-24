@@ -146,7 +146,7 @@ CREATE TABLE memo_comment (
   content TEXT NOT NULL DEFAULT '',
   email TEXT NOT NULL DEFAULT '',
   website TEXT DEFAULT '',
-  name TEXT NOT NULL DEFAULT 'UNKNOWN',
+  username TEXT NOT NULL DEFAULT 'UNKNOWN',
   memo_id INTEGER NOT NULL,
   parent_id INTEGER DEFAULT (0)
 );
