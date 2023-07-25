@@ -33,12 +33,9 @@ type MemoCommentMessage struct {
 	Content string
 
 	// Info fields
-	Email   string
-	Website string
-	Name    string
+	Username string
 
-	MemoID   int
-	ParentID int
+	MemoID int
 }
 
 type DeleteMemoCommentMessage struct {
@@ -85,13 +82,10 @@ func (s *Store) CreateCommentMemo(ctx context.Context, create *MemoCommentMessag
 		INSERT INTO memo_comment (
 			created_ts,
 			content,
-			email,
-		    website,
-		    name,
+		    username,
 			memo_id,
-			parent_id 
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?)
 		RETURNING id, created_ts, updated_ts
 	`
 	if err := tx.QueryRowContext(
@@ -99,11 +93,8 @@ func (s *Store) CreateCommentMemo(ctx context.Context, create *MemoCommentMessag
 		query,
 		create.CreatedTs,
 		create.Content,
-		create.Email,
-		create.Website,
-		create.Name,
+		create.Username,
 		create.MemoID,
-		create.ParentID,
 	).Scan(
 		&create.ID,
 		&create.CreatedTs,
@@ -154,10 +145,7 @@ func listMemoComments(ctx context.Context, tx *sql.Tx, find *FindMemoCommentMess
 		memo_comment.created_ts AS created_ts,
 		memo_comment.updated_ts AS updated_ts,
 		memo_comment.content AS content,
-		memo_comment.email AS email, 
-		memo_comment.website AS website, 
-		memo_comment.name AS name,
-		memo_comment.parent_id AS parent_id,
+		memo_comment.username AS username,
 		memo_comment.memo_id AS memo_id
 	FROM
 		memo_comment 
@@ -184,10 +172,7 @@ func listMemoComments(ctx context.Context, tx *sql.Tx, find *FindMemoCommentMess
 			&memoCommentMessage.CreatedTs,
 			&memoCommentMessage.UpdatedTs,
 			&memoCommentMessage.Content,
-			&memoCommentMessage.Email,
-			&memoCommentMessage.Website,
-			&memoCommentMessage.Name,
-			&memoCommentMessage.ParentID,
+			&memoCommentMessage.Username,
 			&memoCommentMessage.MemoID,
 		); err != nil {
 			return nil, err

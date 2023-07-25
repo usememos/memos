@@ -20,12 +20,9 @@ type CreateMemoCommentRequest struct {
 	Content string `json:"content"`
 
 	// Info fields
-	Email   string `json:"email"`
-	Website string `json:"website"`
-	Name    string `json:"name"`
+	Username string `json:"username"`
 
-	MemoID   int `json:"memoId"`
-	ParentID int `json:"parentId"`
+	MemoID int `json:"memoId"`
 }
 
 type MemoCommentResponse struct {
@@ -38,16 +35,10 @@ type MemoCommentResponse struct {
 	DisplayTs int64  `json:"displayTs"`
 	Content   string `json:"content"`
 
-	// Related fields
-	CreatorName string `json:"creatorName"`
-
 	// Info fields
-	Email   string `json:"email"`
-	Website string `json:"website"`
-	Name    string `json:"name"`
+	Username string `json:"username"`
 
-	MemoID   int `json:"memo_id"`
-	ParentID int `json:"parent_id"`
+	MemoID int `json:"memoId"`
 }
 
 func (s *APIV1Service) registerMemoCommentRoutes(g *echo.Group) {
@@ -69,27 +60,26 @@ func (s *APIV1Service) registerMemoCommentRoutes(g *echo.Group) {
 				fmt.Sprintf("Failed to find memo comment by ID: %v", memoID)).SetInternal(err)
 		}
 
-		// userID, ok := c.Get(getUserIDContextKey()).(int)
-		// the map key is parent id , value is parent's reply, 0 is parent
-		mapComments := make(map[int][]*MemoCommentResponse)
-		for _, message := range memoCommentsMessage {
-			memoCommentResponse, err := s.composeMemoCommentMessageToMemoCommentResponse(ctx, message)
-			if err == nil {
-				if mapComments[memoCommentResponse.ParentID] == nil {
-					mapComments[memoCommentResponse.ParentID] = []*MemoCommentResponse{
-						0: memoCommentResponse,
-					}
-				} else {
-					mapComments[memoCommentResponse.ParentID] = append(mapComments[memoCommentResponse.ParentID],
-						memoCommentResponse)
-				}
-			}
-		}
+		// the map key is parent id , value is parent's reply, 0 is parent , Retain this logic for a later version！
+		// mapComments := make(map[int][]*MemoCommentResponse)
+		// for _, message := range memoCommentsMessage {
+		//	 memoCommentResponse, err := s.composeMemoCommentMessageToMemoCommentResponse(ctx, message)
+		//	 if err == nil {
+		//		 if mapComments[memoCommentResponse.ParentID] == nil {
+		//			 mapComments[memoCommentResponse.ParentID] = []*MemoCommentResponse{
+		//				 0: memoCommentResponse,
+		//			 }
+		//		 } else {
+		//			 mapComments[memoCommentResponse.ParentID] = append(mapComments[memoCommentResponse.ParentID],
+		//				 memoCommentResponse)
+		//		 }
+		//	 }
+		// }
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo comment response").
 				SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, mapComments)
+		return c.JSON(http.StatusOK, memoCommentsMessage)
 	})
 
 	g.POST("/memo/:memoId/comment", func(c echo.Context) error {
@@ -179,10 +169,7 @@ func convertCreateMemoCommentRequestToMemoCommentMessage(memoCreate *CreateMemoC
 		CreatedTs: createdTs,
 		Content:   memoCreate.Content,
 		MemoID:    memoCreate.MemoID,
-		ParentID:  memoCreate.ParentID,
-		Email:     memoCreate.Email,
-		Website:   memoCreate.Website,
-		Name:      memoCreate.Name,
+		Username:  memoCreate.Username,
 	}
 }
 
@@ -193,14 +180,11 @@ func (s *APIV1Service) composeMemoCommentMessageToMemoCommentResponse(ctx contex
 		CreatedTs: memoCommentMessage.CreatedTs,
 		UpdatedTs: memoCommentMessage.UpdatedTs,
 		Content:   memoCommentMessage.Content,
-		Email:     memoCommentMessage.Email,
-		Website:   memoCommentMessage.Website,
-		Name:      memoCommentMessage.Name,
-		ParentID:  memoCommentMessage.ParentID,
+		Username:  memoCommentMessage.Username,
 		MemoID:    memoCommentMessage.MemoID,
 	}
 
-	memoCommentResponse.CreatorName = memoCommentMessage.Name
+	memoCommentResponse.Username = memoCommentMessage.Username
 
 	// Compose display ts.
 	memoCommentResponse.DisplayTs = memoCommentResponse.CreatedTs
