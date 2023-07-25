@@ -65,7 +65,8 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		if err := s.createAuthSignInActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, user)
+		userMessage := convertUserFromStore(user)
+		return c.JSON(http.StatusOK, userMessage)
 	})
 
 	// POST /auth/signin/sso - Sign in with SSO
@@ -152,7 +153,8 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		if err := s.createAuthSignInActivity(c, user); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
-		return c.JSON(http.StatusOK, user)
+		userMessage := convertUserFromStore(user)
+		return c.JSON(http.StatusOK, userMessage)
 	})
 
 	// POST /auth/signup - Sign up a new user.
@@ -218,7 +220,8 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 		}
 
-		return c.JSON(http.StatusOK, user)
+		userMessage := convertUserFromStore(user)
+		return c.JSON(http.StatusOK, userMessage)
 	})
 
 	// POST /auth/signout - Sign out.

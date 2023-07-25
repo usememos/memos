@@ -262,7 +262,6 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 	g.GET("/user/:username", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		username := c.Param("username")
-
 		user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)

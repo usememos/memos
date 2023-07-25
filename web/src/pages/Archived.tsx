@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslate } from "@/utils/i18n";
 import toast from "react-hot-toast";
-import { useMemoStore } from "@/store/module";
+import { useFilterStore, useMemoStore } from "@/store/module";
 import useLoading from "@/hooks/useLoading";
 import ArchivedMemo from "@/components/ArchivedMemo";
 import MobileHeader from "@/components/MobileHeader";
 import Empty from "@/components/Empty";
+import SearchBar from "@/components/SearchBar";
+import MemoFilter from "@/components/MemoFilter";
 import "@/less/archived.less";
 
 const Archived = () => {
@@ -14,12 +16,16 @@ const Archived = () => {
   const loadingState = useLoading();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
   const memos = memoStore.state.memos;
+  const filterStore = useFilterStore();
+  const filter = filterStore.state;
+  const { text: textQuery } = filter;
 
   useEffect(() => {
     memoStore
       .fetchArchivedMemos()
       .then((result) => {
-        setArchivedMemos(result);
+        const filteredMemos = textQuery ? result.filter((memo) => memo.content.toLowerCase().includes(textQuery.toLowerCase())) : result;
+        setArchivedMemos(filteredMemos);
       })
       .catch((error) => {
         console.error(error);
@@ -28,12 +34,16 @@ const Archived = () => {
       .finally(() => {
         loadingState.setFinish();
       });
-  }, [memos]);
+  }, [memos, textQuery]);
 
   return (
     <section className="w-full min-h-full flex flex-col md:flex-row justify-start items-start px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       <div className="archived-memo-page">
+        <div className="mb-4 mt-2 w-full">
+          <SearchBar />
+        </div>
+        <MemoFilter />
         {loadingState.isLoading ? (
           <div className="tip-text-container">
             <p className="tip-text">{t("memo.fetching-data")}</p>

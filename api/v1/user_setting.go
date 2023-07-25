@@ -44,6 +44,7 @@ var (
 		"en",
 		"es",
 		"fr",
+		"hi",
 		"hr",
 		"it",
 		"ja",

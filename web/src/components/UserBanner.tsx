@@ -64,7 +64,7 @@ const UserBanner = () => {
                 </button>
                 <a
                   className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
-                  href={`/u/${user?.username}/rss.xml`}
+                  href={`/u/${user?.id}/rss.xml`}
                   target="_blank"
                 >
                   <Icon.Rss className="w-5 h-auto mr-2 opacity-80" /> RSS

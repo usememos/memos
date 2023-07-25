@@ -74,7 +74,7 @@
       "warning": "警告",
       "success": "成功"
     },
-    "mark": "Mark"
+    "mark": "引用"
   },
   "about": {
     "about-memos": "关于Memos",
@@ -437,7 +437,7 @@
       "max-upload-size": "最大上传大小 (MiB)",
       "auto-backup-interval": "自动备份间隔(单位：秒)",
       "auto-backup-interval-hint": "设置为0禁止自动备份，重启后生效",
-      "display-with-updated-time": "Display with updated time"
+      "display-with-updated-time": "显示最后修改时间"
     }
   },
   "shortcut-list": {

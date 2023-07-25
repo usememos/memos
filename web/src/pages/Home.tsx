@@ -8,7 +8,7 @@ import MemoList from "@/components/MemoList";
 import MobileHeader from "@/components/MobileHeader";
 import HomeSidebar from "@/components/HomeSidebar";
 
-function Home() {
+const Home = () => {
   const t = useTranslate();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
@@ -43,6 +43,6 @@ function Home() {
       <HomeSidebar />
     </div>
   );
-}
+};
 
 export default Home;
