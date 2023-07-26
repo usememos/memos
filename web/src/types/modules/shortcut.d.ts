@@ -3,7 +3,6 @@ type ShortcutId = number;
 interface Shortcut {
   id: ShortcutId;
 
-  creatorUsername: string;
   rowStatus: RowStatus;
   createdTs: TimeStamp;
   updatedTs: TimeStamp;

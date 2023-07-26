@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslate } from "@/utils/i18n";
 import { useLocation } from "react-router-dom";
-import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
+import { useFilterStore, useGlobalStore, useMemoStore } from "@/store/module";
 import { TAG_REG } from "@/labs/marked/parser";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import useLoading from "@/hooks/useLoading";
@@ -15,9 +15,9 @@ import SearchBar from "@/components/SearchBar";
 const Explore = () => {
   const t = useTranslate();
   const location = useLocation();
+  const globalStore = useGlobalStore();
   const filterStore = useFilterStore();
   const memoStore = useMemoStore();
-  const userStore = useUserStore();
   const filter = filterStore.state;
   const { memos } = memoStore.state;
   const [isComplete, setIsComplete] = useState<boolean>(false);
@@ -55,19 +55,13 @@ const Explore = () => {
       })
     : memos;
 
-  const username = userStore.getUsernameFromPath();
-  let sortedMemos = fetchedMemos
+  const sortedMemos = fetchedMemos
     .filter((m) => m.rowStatus === "NORMAL" && m.visibility !== "PRIVATE")
     .sort((mi, mj) => mj.displayTs - mi.displayTs);
 
-  if (username != undefined) {
-    sortedMemos = sortedMemos.filter((m) => m.creatorUsername === username);
-  }
-
   useEffect(() => {
-    const username = userStore.getUsernameFromPath();
     memoStore
-      .fetchAllMemos(DEFAULT_MEMO_LIMIT, 0, username)
+      .fetchAllMemos(DEFAULT_MEMO_LIMIT, 0)
       .then((fetchedMemos) => {
         if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
           setIsComplete(true);
@@ -82,8 +76,7 @@ const Explore = () => {
 
   const handleFetchMoreClick = async () => {
     try {
-      const username = userStore.getUsernameFromPath();
-      const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, memos.length, username);
+      const fetchedMemos = await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, memos.length);
       if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       } else {
@@ -98,9 +91,11 @@ const Explore = () => {
   return (
     <section className="w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
-      <div className="mb-4 mt-2 w-full">
-        <SearchBar />
-      </div>
+      {globalStore.isDev() && (
+        <div className="mb-4 mt-2 w-full">
+          <SearchBar />
+        </div>
+      )}
       {!loadingState.isLoading && (
         <main className="relative w-full h-auto flex flex-col justify-start items-start">
           <MemoFilter />

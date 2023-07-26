@@ -258,8 +258,9 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 		return c.JSON(http.StatusOK, userMessage)
 	})
 
-	// GET /user/:username - Get user by username.
-	g.GET("/user/:username", func(c echo.Context) error {
+	// GET /user/name/:username - Get user by username.
+	// NOTE: This should be moved to /api/v2/user/:username
+	g.GET("/user/name/:username", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		username := c.Param("username")
 		user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
