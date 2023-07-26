@@ -268,7 +268,7 @@
       "openai-api-key-placeholder": "あなたのOpenAI API Key",
       "openai-api-host": "OpenAI: API Host",
       "openai-api-host-placeholder": "標準: https://api.openai.com/",
-      "display-with-updated-time": "Display with updated time"
+      "display-with-updated-time": "更新日時を表示する"
     },
     "appearance-option": {
       "system": "システム設定に従う",
