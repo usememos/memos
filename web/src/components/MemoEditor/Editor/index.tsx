@@ -129,7 +129,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   }, []);
 
   return (
-    <div className={"common-editor-wrapper " + className}>
+    <div className={"common-editor-wrapper " + className} style={{ position: "relative" }}>
       <textarea
         className="common-editor-inputer"
         rows={1}
@@ -138,7 +138,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         onPaste={onPaste}
         onInput={handleEditorInput}
       ></textarea>
-      <div style={{ position: "relative", left: coord.left, top: coord.top + coord.height }}>tags</div>
+      <div style={{ position: "absolute", left: coord.left, top: coord.top + coord.height }}>tags</div>
     </div>
   );
 });
