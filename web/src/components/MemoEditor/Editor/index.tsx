@@ -1,5 +1,6 @@
-import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
+import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import "@/less/editor.less";
+import getCaretCoordinates from "textarea-caret";
 
 export interface EditorRefActions {
   focus: FunctionType;
@@ -26,6 +27,7 @@ interface Props {
 const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<EditorRefActions>) {
   const { className, initialContent, placeholder, fullscreen, onPaste, onContentChange: handleContentChangeCallback } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
+  const [coord, setCoord] = useState({ left: 0, top: 0, height: 0 });
 
   useEffect(() => {
     if (editorRef.current && initialContent) {
@@ -120,8 +122,10 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   );
 
   const handleEditorInput = useCallback(() => {
-    handleContentChangeCallback(editorRef.current?.value ?? "");
+    if (!editorRef.current) return;
+    handleContentChangeCallback(editorRef.current.value);
     updateEditorHeight();
+    setCoord(getCaretCoordinates(editorRef.current, editorRef.current.selectionEnd));
   }, []);
 
   return (
@@ -134,6 +138,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         onPaste={onPaste}
         onInput={handleEditorInput}
       ></textarea>
+      <div style={{ position: "relative", left: coord.left, top: coord.top + coord.height }}>tags</div>
     </div>
   );
 });
