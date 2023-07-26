@@ -1,6 +1,6 @@
 {
   "common": {
-    "memos-slogan": "軽いセルフホスティング型のメモ帳。オープンソースで永久に無料です。",
+    "memos-slogan": "軽量なセルフホスティング型のメモ帳。オープンソースで永久にフリーです。",
     "about": "About",
     "home": "ホーム",
     "resources": "ファイル",
@@ -396,16 +396,16 @@
     "copy": "コピー"
   },
   "heatmap": {
-    "memo-in": "{{period}}に作成されたメモ",
-    "memos-in": "{{period}}に作成されたメモ",
-    "memo-on": "{{date}}に{{amount}}個のメモが作成されました",
-    "memos-on": "{{date}}に{{amount}}個のメモが作成されました",
+    "memo-in": "{{period}} 個のメモを作成",
+    "memos-in": "{{period}} 個のメモを作成",
+    "memo-on": "{{date}} に {{amount}} 個のメモを作成",
+    "memos-on": "{{date}} に {{amount}} 個のメモを作成",
     "day": "日",
-    "days": "日"
+    "days": "日間"
   },
   "about": {
-    "about-memos": "Memosについて",
-    "memos-description": "Memosは、メモを書き、整理し、共有するために使用できるWeb-baseのノートアプリです。",
+    "about-memos": "Memos について",
+    "memos-description": "Memos は、メモを書き、整理し、共有するために使用できる Web ベースのノートアプリです。",
     "no-server-description": "このサーバーについての説明は設定されていません",
     "powered-by": "Powered by",
     "other-projects": "他のプロジェクト"
