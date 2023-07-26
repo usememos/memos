@@ -57,7 +57,7 @@ export function getUserList() {
 }
 
 export function getUserByUsername(username: string) {
-  return axios.get<User>(`/api/v1/user/${username}`);
+  return axios.get<User>(`/api/v1/user/name/${username}`);
 }
 
 export function upsertUserSetting(upsert: UserSettingUpsert) {

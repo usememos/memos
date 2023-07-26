@@ -54,17 +54,13 @@ export const useMemoStore = () => {
 
       return fetchedMemos;
     },
-    fetchAllMemos: async (limit = DEFAULT_MEMO_LIMIT, offset?: number, username?: string) => {
+    fetchAllMemos: async (limit = DEFAULT_MEMO_LIMIT, offset?: number) => {
       store.dispatch(setIsFetching(true));
       const memoFind: MemoFind = {
         rowStatus: "NORMAL",
         limit,
         offset,
       };
-
-      if (username != undefined) {
-        memoFind.creatorUsername = username;
-      }
 
       const { data } = await api.getAllMemos(memoFind);
       const fetchedMemos = data.map((m) => convertResponseModelMemo(m));

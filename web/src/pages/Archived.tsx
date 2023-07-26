@@ -40,7 +40,7 @@ const Archived = () => {
     <section className="w-full min-h-full flex flex-col md:flex-row justify-start items-start px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       <div className="archived-memo-page">
-        <div className="mb-4 mt-2 w-full">
+        <div className="mb-2 mt-2 w-full">
           <SearchBar />
         </div>
         <MemoFilter />

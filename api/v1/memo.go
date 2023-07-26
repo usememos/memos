@@ -542,13 +542,6 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 			findMemoMessage.Pinned = &pinned
 		}
 
-		if username := c.QueryParam("creatorUsername"); username != "" {
-			user, _ := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
-			if user != nil {
-				findMemoMessage.CreatorID = &user.ID
-			}
-		}
-
 		contentSearch := []string{}
 		tag := c.QueryParam("tag")
 		if tag != "" {

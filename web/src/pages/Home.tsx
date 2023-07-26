@@ -16,11 +16,9 @@ const Home = () => {
 
   useEffect(() => {
     const currentUsername = userStore.getCurrentUsername();
-    userStore.getUserByUsername(currentUsername).then((user) => {
-      if (!user) {
-        toast.error(t("message.user-not-found"));
-        return;
-      }
+    userStore.getUserByUsername(currentUsername).catch((error) => {
+      console.error(error);
+      toast.error(t("message.user-not-found"));
     });
   }, [userStore.getCurrentUsername()]);
 
