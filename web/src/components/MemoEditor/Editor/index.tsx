@@ -1,6 +1,7 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
 import "@/less/editor.less";
 import getCaretCoordinates from "textarea-caret";
+import TagSuggestions from "./TagSuggestions";
 
 export interface EditorRefActions {
   focus: FunctionType;
@@ -138,7 +139,9 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         onPaste={onPaste}
         onInput={handleEditorInput}
       ></textarea>
-      <div style={{ position: "absolute", left: coord.left, top: coord.top + coord.height }}>tags</div>
+      <div className="z-2 absolute" style={{ left: coord.left, top: coord.top + coord.height }}>
+        <TagSuggestions />
+      </div>
     </div>
   );
 });
