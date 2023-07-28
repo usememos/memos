@@ -23,12 +23,13 @@ import "@/less/memo.less";
 interface Props {
   memo: Memo;
   showCreator?: boolean;
+  showFull?: boolean;
   showVisibility?: boolean;
   showRelatedMemos?: boolean;
 }
 
 const Memo: React.FC<Props> = (props: Props) => {
-  const { memo, showCreator, showVisibility, showRelatedMemos } = props;
+  const { memo, showCreator, showFull, showVisibility, showRelatedMemos } = props;
   const { i18n } = useTranslation();
   const t = useTranslate();
   const filterStore = useFilterStore();
@@ -278,6 +279,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         </div>
         <MemoContent
           content={memo.content}
+          showFull={showFull}
           onMemoContentClick={handleMemoContentClick}
           onMemoContentDoubleClick={handleMemoContentDoubleClick}
         />
