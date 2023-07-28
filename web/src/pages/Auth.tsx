@@ -137,50 +137,50 @@ const Auth = () => {
             <p className="text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
           {!disablePasswordLogin && (
-          <form className="w-full mt-4" onSubmit={handleFormSubmit}>
-            <div className="flex flex-col justify-start items-start w-full gap-4">
-              <Input
-                className="w-full"
-                size="lg"
-                type="text"
-                placeholder={t("common.username")}
-                value={username}
-                onChange={handleUsernameInputChanged}
-                required
-              />
-              <Input
-                className="w-full"
-                size="lg"
-                type="password"
-                placeholder={t("common.password")}
-                value={password}
-                onChange={handlePasswordInputChanged}
-                required
-              />
-            </div>
-            <div className="flex flex-row justify-end items-center w-full mt-6">
-              {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
-              {!systemStatus.host ? (
-                <Button disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
-                  {t("common.sign-up")}
-                </Button>
-              ) : (
-                <>
-                  {systemStatus?.allowSignUp && (
-                    <>
-                      <Button variant={"plain"} disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
-                        {t("common.sign-up")}
-                      </Button>
-                      <span className="mr-2 font-mono text-gray-200">/</span>
-                    </>
-                  )}
-                  <Button type="submit" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
-                    {t("common.sign-in")}
+            <form className="w-full mt-4" onSubmit={handleFormSubmit}>
+              <div className="flex flex-col justify-start items-start w-full gap-4">
+                <Input
+                  className="w-full"
+                  size="lg"
+                  type="text"
+                  placeholder={t("common.username")}
+                  value={username}
+                  onChange={handleUsernameInputChanged}
+                  required
+                />
+                <Input
+                  className="w-full"
+                  size="lg"
+                  type="password"
+                  placeholder={t("common.password")}
+                  value={password}
+                  onChange={handlePasswordInputChanged}
+                  required
+                />
+              </div>
+              <div className="flex flex-row justify-end items-center w-full mt-6">
+                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
+                {!systemStatus.host ? (
+                  <Button disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
+                    {t("common.sign-up")}
                   </Button>
-                </>
-              )}
-            </div>
-          </form>
+                ) : (
+                  <>
+                    {systemStatus?.allowSignUp && (
+                      <>
+                        <Button variant={"plain"} disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
+                          {t("common.sign-up")}
+                        </Button>
+                        <span className="mr-2 font-mono text-gray-200">/</span>
+                      </>
+                    )}
+                    <Button type="submit" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
+                      {t("common.sign-in")}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </form>
           )}
           {!systemStatus.host && (
             <p className="w-full inline-block float-right text-sm mt-4 text-gray-500 text-right whitespace-pre-wrap">
