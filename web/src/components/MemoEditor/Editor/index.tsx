@@ -1,6 +1,5 @@
-import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef, useState } from "react";
+import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import "@/less/editor.less";
-import getCaretCoordinates from "textarea-caret";
 import TagSuggestions from "./TagSuggestions";
 
 export interface EditorRefActions {
@@ -28,7 +27,6 @@ interface Props {
 const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<EditorRefActions>) {
   const { className, initialContent, placeholder, fullscreen, onPaste, onContentChange: handleContentChangeCallback } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
-  const [coord, setCoord] = useState({ left: 0, top: 0, height: 0 });
 
   useEffect(() => {
     if (editorRef.current && initialContent) {
@@ -123,10 +121,8 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   );
 
   const handleEditorInput = useCallback(() => {
-    if (!editorRef.current) return;
-    handleContentChangeCallback(editorRef.current.value);
+    handleContentChangeCallback(editorRef.current?.value ?? "");
     updateEditorHeight();
-    setCoord(getCaretCoordinates(editorRef.current, editorRef.current.selectionEnd));
   }, []);
 
   return (
@@ -139,9 +135,8 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         onPaste={onPaste}
         onInput={handleEditorInput}
       ></textarea>
-      <div className="z-2 absolute" style={{ left: coord.left, top: coord.top + coord.height }}>
-        <TagSuggestions />
-      </div>
+      {/* All logic of suggestions moved out of Editor to not complicate it */}
+      <TagSuggestions textareaRef={editorRef} />
     </div>
   );
 });
