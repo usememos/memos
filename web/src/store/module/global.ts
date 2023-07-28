@@ -11,6 +11,7 @@ export const initialGlobalState = async () => {
     appearance: "system" as Appearance,
     systemStatus: {
       allowSignUp: false,
+      disablePasswordLogin: false,
       disablePublicMemos: false,
       maxUploadSizeMiB: 0,
       autoBackupInterval: 0,

@@ -19,6 +19,7 @@ const Auth = () => {
   const mode = systemStatus.profile.mode;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const disablePasswordLogin = systemStatus.disablePasswordLogin;
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
@@ -135,6 +136,7 @@ const Auth = () => {
             <img className="h-20 w-auto rounded-full shadow mr-1" src={systemStatus.customizedProfile.logoUrl} alt="" />
             <p className="text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
+          {!disablePasswordLogin && (
           <form className="w-full mt-4" onSubmit={handleFormSubmit}>
             <div className="flex flex-col justify-start items-start w-full gap-4">
               <Input
@@ -179,6 +181,7 @@ const Auth = () => {
               )}
             </div>
           </form>
+          )}
           {!systemStatus.host && (
             <p className="w-full inline-block float-right text-sm mt-4 text-gray-500 text-right whitespace-pre-wrap">
               {t("auth.host-tip")}
@@ -186,7 +189,9 @@ const Auth = () => {
           )}
           {identityProviderList.length > 0 && (
             <>
+              {!disablePasswordLogin && (
               <Divider className="!my-4">{t("common.or")}</Divider>
+              )}
               <div className="w-full flex flex-col space-y-2">
                 {identityProviderList.map((identityProvider) => (
                   <Button
