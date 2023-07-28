@@ -189,9 +189,7 @@ const Auth = () => {
           )}
           {identityProviderList.length > 0 && (
             <>
-              {!disablePasswordLogin && (
-              <Divider className="!my-4">{t("common.or")}</Divider>
-              )}
+              {!disablePasswordLogin && <Divider className="!my-4">{t("common.or")}</Divider>}
               <div className="w-full flex flex-col space-y-2">
                 {identityProviderList.map((identityProvider) => (
                   <Button
