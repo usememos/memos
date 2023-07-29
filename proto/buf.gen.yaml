@@ -18,3 +18,7 @@ plugins:
     out: gen
     opt:
       - paths=source_relative
+  - plugin: buf.build/community/pseudomuto-doc:v1.5.1
+    out: gen
+    opt:
+      - markdown,README.md,source_relative
