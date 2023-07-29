@@ -17,7 +17,7 @@ import (
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/telegram"
-	apiv2pb "github.com/usememos/memos/proto/gen/apiv2"
+	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"go.uber.org/zap"

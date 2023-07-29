@@ -6,7 +6,7 @@ import (
 
 	grpcRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/proto/gen/apiv2"
+	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 )
@@ -25,7 +25,7 @@ func RegisterGateway(ctx context.Context, e *echo.Echo, grpcServerPort int) {
 	}
 
 	gwMux := grpcRuntime.NewServeMux()
-	err = apiv2.RegisterTagServiceHandler(context.Background(), gwMux, conn)
+	err = apiv2pb.RegisterTagServiceHandler(context.Background(), gwMux, conn)
 	if err != nil {
 		panic(err)
 	}
