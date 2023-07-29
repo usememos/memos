@@ -5,6 +5,8 @@ on:
     branches:
       - main
       - "release/*.*.*"
+    paths:
+      - "web/**"
 
 jobs:
   eslint-checks:
