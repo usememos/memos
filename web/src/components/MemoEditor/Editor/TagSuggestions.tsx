@@ -5,37 +5,52 @@ import getCaretCoordinates from "textarea-caret";
 type Props = {
   textareaRef: React.RefObject<HTMLTextAreaElement>;
 };
-type Coordinates = { left: number; top: number; height: number };
+type Position = { left: number; top: number; height: number };
 
 const TagSuggestions = ({ textareaRef }: Props) => {
-  const [coord, setCoord] = useState<Coordinates | null>({ left: 0, top: 0, height: 0 });
+  const lastKeyDown = useRef("");
+  const [position, setPosition] = useState<Position | null>(null);
 
-  const handleKeyDown = (e: KeyboardEvent) => {
+  const hide = () => setPosition(null);
+
+  const getCurrentWord = (): [word: string, startIndex: number] => {
+    if (!textareaRef.current) return ["", 0];
+    const cursorPos = textareaRef.current.selectionEnd;
+    const before = textareaRef.current.value.slice(0, cursorPos).match(/\S*$/) || [""];
+    const ahead = textareaRef.current.value.slice(cursorPos).match(/^\S*/) || [""];
+    return [before[0] + ahead[0], before.index || cursorPos];
+  };
+
+  const handleInput = () => {
     if (!textareaRef.current) return;
-    const isArrowKey = ["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"].includes(e.code);
+    const isArrowKey = ["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"].includes(lastKeyDown.current);
     if (isArrowKey) {
-      setCoord(null);
+      hide();
       return;
     }
-    setCoord(getCaretCoordinates(textareaRef.current, textareaRef.current.selectionEnd));
+    const [word, index] = getCurrentWord();
+    if (!word.startsWith("#") || word.slice(1).includes("#")) return hide();
+    setPosition(getCaretCoordinates(textareaRef.current, index));
   };
 
   const areListenersRegistered = useRef(false);
   const registerListeners = () => {
     if (!textareaRef.current || areListenersRegistered.current) return;
-    textareaRef.current.addEventListener("keydown", handleKeyDown);
-    textareaRef.current.addEventListener("click", () => setCoord(null));
+    textareaRef.current.addEventListener("click", hide);
+    textareaRef.current.addEventListener("blur", hide);
+    textareaRef.current.addEventListener("keydown", (e) => (lastKeyDown.current = e.code));
+    textareaRef.current.addEventListener("input", handleInput);
     areListenersRegistered.current = true;
   };
   useEffect(registerListeners, [!!textareaRef.current]);
 
   const { tags } = useTagStore().state;
 
-  if (!coord) return null;
+  if (!position) return null;
   return (
     <div
       className="z-2 absolute rounded font-mono bg-zinc-200 dark:bg-zinc-600"
-      style={{ left: coord.left, top: coord.top + coord.height }}
+      style={{ left: position.left, top: position.top + position.height }}
     >
       {tags.map((tag) => (
         <div

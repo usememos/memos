@@ -126,7 +126,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   }, []);
 
   return (
-    <div className={"common-editor-wrapper " + className} style={{ position: "relative" }}>
+    <div className={"common-editor-wrapper " + className}>
       <textarea
         className="common-editor-inputer"
         rows={1}
