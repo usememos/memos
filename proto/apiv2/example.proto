@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package memos.apiv2;
+
+option go_package = "gen-go/apiv2";
+
+// Person is a simple message type containing information about a person.
+// It is an example of the kind of message that one might define in a protobufs file.
+message Person {
+  string name = 1;
+  int32 id = 2;
+}

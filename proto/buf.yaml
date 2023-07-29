@@ -1,0 +1,10 @@
+version: v1
+name: buf.build/yourselfhosted/memos
+breaking:
+  use:
+    - FILE
+lint:
+  use:
+    - DEFAULT
+  except:
+    - PACKAGE_DIRECTORY_MATCH
