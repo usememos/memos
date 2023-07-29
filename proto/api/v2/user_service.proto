@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "api/v2/common.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+
+option go_package = "gen/api/v2";
+
+service UserService {
+  rpc GetUser(GetUserRequest) returns (GetUserResponse) {
+    option (google.api.http) = {get: "/api/v2/users/{name}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+message User {
+  int32 id = 1;
+
+  RowStatus row_status = 2;
+
+  int64 created_ts = 3;
+
+  int64 updated_ts = 4;
+
+  string username = 5;
+
+  Role role = 6;
+
+  string email = 7;
+
+  string nickname = 8;
+
+  string open_id = 9;
+
+  string avatar_url = 10;
+}
+
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+
+  HOST = 1;
+
+  ADMIN = 2;
+
+  USER = 3;
+}
+
+message GetUserRequest {
+  string name = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}

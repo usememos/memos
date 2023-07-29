@@ -3,6 +3,9 @@
 
 ## Table of Contents
 
+- [api/v2/common.proto](#api_v2_common-proto)
+    - [RowStatus](#memos-api-v2-RowStatus)
+  
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
     - [ListTagsRequest](#memos-api-v2-ListTagsRequest)
     - [ListTagsResponse](#memos-api-v2-ListTagsResponse)
@@ -10,7 +13,45 @@
   
     - [TagService](#memos-api-v2-TagService)
   
+- [api/v2/user_service.proto](#api_v2_user_service-proto)
+    - [GetUserRequest](#memos-api-v2-GetUserRequest)
+    - [GetUserResponse](#memos-api-v2-GetUserResponse)
+    - [User](#memos-api-v2-User)
+  
+    - [Role](#memos-api-v2-Role)
+  
+    - [UserService](#memos-api-v2-UserService)
+  
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="api_v2_common-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/common.proto
+
+
+ 
+
+
+<a name="memos-api-v2-RowStatus"></a>
+
+### RowStatus
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| ROW_STATUS_UNSPECIFIED | 0 |  |
+| ACTIVE | 1 |  |
+| ARCHIVED | 2 |  |
+
+
+ 
+
+ 
+
+ 
 
 
 
@@ -81,6 +122,100 @@
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | ListTags | [ListTagsRequest](#memos-api-v2-ListTagsRequest) | [ListTagsResponse](#memos-api-v2-ListTagsResponse) |  |
+
+ 
+
+
+
+<a name="api_v2_user_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/user_service.proto
+
+
+
+<a name="memos-api-v2-GetUserRequest"></a>
+
+### GetUserRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetUserResponse"></a>
+
+### GetUserResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [User](#memos-api-v2-User) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-User"></a>
+
+### User
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
+| created_ts | [int64](#int64) |  |  |
+| updated_ts | [int64](#int64) |  |  |
+| username | [string](#string) |  |  |
+| role | [Role](#memos-api-v2-Role) |  |  |
+| email | [string](#string) |  |  |
+| nickname | [string](#string) |  |  |
+| open_id | [string](#string) |  |  |
+| avatar_url | [string](#string) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-api-v2-Role"></a>
+
+### Role
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| ROLE_UNSPECIFIED | 0 |  |
+| HOST | 1 |  |
+| ADMIN | 2 |  |
+| USER | 3 |  |
+
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-UserService"></a>
+
+### UserService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| GetUser | [GetUserRequest](#memos-api-v2-GetUserRequest) | [GetUserResponse](#memos-api-v2-GetUserResponse) |  |
 
  
 
