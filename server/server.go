@@ -102,7 +102,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	// Register gPRC server services.
 	s.grpcServer = grpc.NewServer()
-	apiv2pb.RegisterTagServiceServer(s.grpcServer, apiv2.NewTagService())
+	apiv2pb.RegisterTagServiceServer(s.grpcServer, apiv2.NewTagService(store))
 
 	// Register gRPC gateway as api v2.
 	apiv2.RegisterGateway(ctx, e, s.Profile.Port+1)
