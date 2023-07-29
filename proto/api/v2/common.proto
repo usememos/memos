@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+option go_package = "gen/api/v2";
+
+enum RowStatus {
+  ROW_STATUS_UNSPECIFIED = 0;
+
+  ACTIVE = 1;
+
+  ARCHIVED = 2;
+}

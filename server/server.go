@@ -17,7 +17,6 @@ import (
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/telegram"
-	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"go.uber.org/zap"
@@ -101,11 +100,12 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	apiV1Service.Register(rootGroup)
 
 	// Register gPRC server services.
-	s.grpcServer = grpc.NewServer()
-	apiv2pb.RegisterTagServiceServer(s.grpcServer, apiv2.NewTagService(store))
+	s.grpcServer = apiv2.NewGRPCServer(store)
 
 	// Register gRPC gateway as api v2.
-	apiv2.RegisterGateway(ctx, e, s.Profile.Port+1)
+	if err := apiv2.RegisterGateway(ctx, e, s.Profile.Port+1); err != nil {
+		return nil, fmt.Errorf("failed to register gRPC gateway: %w", err)
+	}
 
 	return s, nil
 }
