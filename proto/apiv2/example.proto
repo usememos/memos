@@ -1,0 +1,11 @@
+// This is an example proto file.
+syntax = "proto3";
+
+package memos.apiv2;
+
+option go_package = "gen-go/apiv2";
+
+message Person {
+  string name = 1;
+  int32 id = 2;
+}
