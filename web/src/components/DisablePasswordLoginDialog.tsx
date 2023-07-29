@@ -28,7 +28,7 @@ const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
   };
 
   const allowConfirmAction = () => {
-    return !confirmedOnce || (typingConfirmation === "CONFIRM");
+    return !confirmedOnce || typingConfirmation === "CONFIRM";
   };
 
   const handleConfirmBtnClick = async () => {
@@ -53,7 +53,7 @@ const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
   const handleTypingConfirmationChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value as string;
     setTypingConfirmation(text);
-  }
+  };
 
   return (
     <>
@@ -67,12 +67,7 @@ const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
         {confirmedOnce ? (
           <>
             <p className="content-text">{t("setting.system-section.disable-password-login-final-warning")}</p>
-            <input
-              type="text"
-              className="input-text"
-              value={typingConfirmation}
-              onChange={handleTypingConfirmationChanged}
-            />
+            <input type="text" className="input-text" value={typingConfirmation} onChange={handleTypingConfirmationChanged} />
           </>
         ) : (
           <p className="content-text">{t("setting.system-section.disable-password-login-warning")}</p>
