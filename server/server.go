@@ -100,7 +100,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	apiV1Service.Register(rootGroup)
 
 	// Register gPRC server services.
-	s.grpcServer = apiv2.NewGRPCServer(ctx, store)
+	s.grpcServer = apiv2.NewGRPCServer(store)
 
 	// Register gRPC gateway as api v2.
 	if err := apiv2.RegisterGateway(ctx, e, s.Profile.Port+1); err != nil {

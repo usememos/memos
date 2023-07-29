@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-func NewGRPCServer(ctx context.Context, store *store.Store) *grpc.Server {
+func NewGRPCServer(store *store.Store) *grpc.Server {
 	grpcServer := grpc.NewServer()
 	apiv2pb.RegisterUserServiceServer(grpcServer, NewUserService(store))
 	apiv2pb.RegisterTagServiceServer(grpcServer, NewTagService(store))
