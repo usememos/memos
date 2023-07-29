@@ -135,7 +135,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
         onPaste={onPaste}
         onInput={handleEditorInput}
       ></textarea>
-      {/* All logic of suggestions moved out of Editor to not complicate it */}
       <TagSuggestions textareaRef={editorRef} />
     </div>
   );

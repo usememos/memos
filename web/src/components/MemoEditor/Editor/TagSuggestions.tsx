@@ -8,7 +8,6 @@ type Props = {
 type Position = { left: number; top: number; height: number };
 
 const TagSuggestions = ({ textareaRef }: Props) => {
-  const lastKeyDown = useRef("");
   const [position, setPosition] = useState<Position | null>(null);
 
   const hide = () => setPosition(null);
@@ -21,13 +20,13 @@ const TagSuggestions = ({ textareaRef }: Props) => {
     return [before[0] + ahead[0], before.index || cursorPos];
   };
 
+  const handleKeyDown = (e: KeyboardEvent) => {
+    const isArrowKey = ["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"].includes(e.code);
+    if (isArrowKey) hide();
+  };
+
   const handleInput = () => {
     if (!textareaRef.current) return;
-    const isArrowKey = ["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"].includes(lastKeyDown.current);
-    if (isArrowKey) {
-      hide();
-      return;
-    }
     const [word, index] = getCurrentWord();
     if (!word.startsWith("#") || word.slice(1).includes("#")) return hide();
     setPosition(getCaretCoordinates(textareaRef.current, index));
@@ -38,7 +37,7 @@ const TagSuggestions = ({ textareaRef }: Props) => {
     if (!textareaRef.current || areListenersRegistered.current) return;
     textareaRef.current.addEventListener("click", hide);
     textareaRef.current.addEventListener("blur", hide);
-    textareaRef.current.addEventListener("keydown", (e) => (lastKeyDown.current = e.code));
+    textareaRef.current.addEventListener("keydown", handleKeyDown);
     textareaRef.current.addEventListener("input", handleInput);
     areListenersRegistered.current = true;
   };
@@ -50,7 +49,7 @@ const TagSuggestions = ({ textareaRef }: Props) => {
   return (
     <div
       className="z-2 absolute rounded font-mono bg-zinc-200 dark:bg-zinc-600"
-      style={{ left: position.left, top: position.top + position.height }}
+      style={{ left: position.left - 6, top: position.top + position.height + 2 }}
     >
       {tags.map((tag) => (
         <div
