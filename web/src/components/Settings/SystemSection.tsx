@@ -9,6 +9,8 @@ import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog"
 import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 import "@/less/settings/system-section.less";
+import { showCommonDialog } from "../Dialog/CommonDialog";
+import showDisablePasswordLoginDialog from "../DisablePasswordLoginDialog";
 
 interface State {
   dbSize: number;
@@ -80,15 +82,24 @@ const SystemSection = () => {
   };
 
   const handleDisablePasswordLoginChanged = async (value: boolean) => {
-    setState({
-      ...state,
-      disablePasswordLogin: value,
-    });
-    globalStore.setSystemStatus({ disablePasswordLogin: value });
-    await api.upsertSystemSetting({
-      name: "disable-password-login",
-      value: JSON.stringify(value),
-    });
+    if (value) {
+      showDisablePasswordLoginDialog();
+    } else {
+      showCommonDialog({
+        title: t("setting.system-section.enable-password-login"),
+        content: t("setting.system-section.enable-password-login-warning"),
+        style: "warning",
+        dialogName: "enable-password-login-dialog",
+        onConfirm: async () => {
+          setState({ ...state, disablePasswordLogin: value });
+          globalStore.setSystemStatus({ disablePasswordLogin: value });
+          await api.upsertSystemSetting({
+            name: "disable-password-login",
+            value: JSON.stringify(value),
+          });
+        },
+      });
+    }
   };
 
   const handleUpdateCustomizedProfileButtonClick = () => {
