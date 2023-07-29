@@ -208,6 +208,21 @@ func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
 		if err := systemSettingUpsert.Validate(); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
 		}
+		if systemSettingUpsert.Name == SystemSettingDisablePasswordLoginName {
+			var disablePasswordLogin bool
+			if err := json.Unmarshal([]byte(systemSettingUpsert.Value), &disablePasswordLogin); err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
+			}
+
+			identityProviderList, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
+
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
+			}
+			if disablePasswordLogin && len(identityProviderList) == 0 {
+				return echo.NewHTTPError(http.StatusForbidden, "Cannot disable passwords if no SSO identity provider is configured.")
+			}
+		}
 
 		systemSetting, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 			Name:        systemSettingUpsert.Name.String(),
