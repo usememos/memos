@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+
+option go_package = "gen/api/v2";
+
+service TagService {
+  rpc ListTags(ListTagsRequest) returns (ListTagsResponse) {
+    option (google.api.http) = {get: "/api/v2/tags"};
+  }
+}
+
+message Tag {
+  string name = 1;
+  int32 creator_id = 2;
+}
+
+message ListTagsRequest {
+  int32 creator_id = 1;
+}
+
+message ListTagsResponse {
+  repeated Tag tags = 1;
+}

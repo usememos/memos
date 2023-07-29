@@ -4,23 +4,29 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/pkg/errors"
-	apiv1 "github.com/usememos/memos/api/v1"
-	"github.com/usememos/memos/common/util"
-	"github.com/usememos/memos/plugin/telegram"
-	"github.com/usememos/memos/server/profile"
-	"github.com/usememos/memos/store"
-
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/pkg/errors"
+	apiv1 "github.com/usememos/memos/api/v1"
+	apiv2 "github.com/usememos/memos/api/v2"
+	"github.com/usememos/memos/common/log"
+	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/plugin/telegram"
+	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/store"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 )
 
 type Server struct {
-	e *echo.Echo
+	e          *echo.Echo
+	grpcServer *grpc.Server
 
 	ID      string
 	Secret  string
@@ -94,6 +100,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 	apiV1Service.Register(rootGroup)
 
+	// Register gPRC server services.
+	s.grpcServer = grpc.NewServer()
+	apiv2pb.RegisterTagServiceServer(s.grpcServer, apiv2.NewTagService(store))
+
+	// Register gRPC gateway as api v2.
+	apiv2.RegisterGateway(ctx, e, s.Profile.Port+1)
+
 	return s, nil
 }
 
@@ -104,6 +117,17 @@ func (s *Server) Start(ctx context.Context) error {
 
 	go s.telegramBot.Start(ctx)
 	go autoBackup(ctx, s.Store)
+
+	// Start gRPC server.
+	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Profile.Port+1))
+	if err != nil {
+		return err
+	}
+	go func() {
+		if err := s.grpcServer.Serve(listen); err != nil {
+			log.Error("grpc server listen error", zap.Error(err))
+		}
+	}()
 
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }

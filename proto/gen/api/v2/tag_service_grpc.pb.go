@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: apiv2/tag_service.proto
+// source: api/v2/tag_service.proto
 
 package apiv2
 
@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	TagService_ListTags_FullMethodName = "/memos.apiv2.TagService/ListTags"
+	TagService_ListTags_FullMethodName = "/memos.api.v2.TagService/ListTags"
 )
 
 // TagServiceClient is the client API for TagService service.
@@ -96,7 +96,7 @@ func _TagService_ListTags_Handler(srv interface{}, ctx context.Context, dec func
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var TagService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "memos.apiv2.TagService",
+	ServiceName: "memos.api.v2.TagService",
 	HandlerType: (*TagServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -105,5 +105,5 @@ var TagService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "apiv2/tag_service.proto",
+	Metadata: "api/v2/tag_service.proto",
 }
