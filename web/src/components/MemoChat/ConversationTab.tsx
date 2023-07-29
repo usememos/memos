@@ -1,4 +1,4 @@
-import { Conversation } from "@/store/zustand/conversation";
+import { Conversation } from "@/store/v1/conversation";
 import Icon from "@/components/Icon";
 
 interface ConversationTabProps {
