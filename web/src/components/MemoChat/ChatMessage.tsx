@@ -1,4 +1,4 @@
-import { Message } from "@/store/zustand/message";
+import { Message } from "@/store/v1/message";
 import { marked } from "@/labs/marked";
 import Icon from "@/components/Icon";
 import Dropdown from "../kit/Dropdown";

@@ -1,12 +1,13 @@
 import { Button, Stack } from "@mui/joy";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { head } from "lodash-es";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslate } from "@/utils/i18n";
 import * as api from "@/helpers/api";
 import useLoading from "@/hooks/useLoading";
-import { useMessageStore } from "@/store/zustand/message";
-import { Conversation, useConversationStore } from "@/store/zustand/conversation";
+import { Message, useMessageStore } from "@/store/v1/message";
+import { Conversation, useConversationStore } from "@/store/v1/conversation";
 import Icon from "@/components/Icon";
 import { generateUUID } from "@/utils/uuid";
 import MobileHeader from "@/components/MobileHeader";
@@ -14,6 +15,28 @@ import ChatMessage from "@/components/MemoChat/ChatMessage";
 import ChatInput from "@/components/MemoChat/ChatInput";
 import ConversationTab from "@/components/MemoChat/ConversationTab";
 import Empty from "@/components/Empty";
+
+const chatStreaming = async (messageList: Array<Message>, onmessage: any, onclose: any) => {
+  await fetchEventSource("/api/v1/openai/chat-streaming", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(messageList),
+    async onopen() {
+      // to do nth
+    },
+    onmessage(event: any) {
+      onmessage(event);
+    },
+    onclose() {
+      onclose();
+    },
+    onerror(error: any) {
+      console.log("error", error);
+    },
+  });
+};
 
 const MemoChat = () => {
   const t = useTranslate();
@@ -91,7 +114,7 @@ const MemoChat = () => {
 
   const fetchChatStreaming = async (messageId: string) => {
     const messageList = messageStore.getState().messageList;
-    await api.chatStreaming(
+    await chatStreaming(
       messageList,
       async (event: any) => {
         messageStore.updateMessage(messageId, event.data);

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMemoCacheStore } from "@/store/zustand";
+import { useMemoCacheStore } from "@/store/v1";
 import Icon from "./Icon";
 
 interface Props {
