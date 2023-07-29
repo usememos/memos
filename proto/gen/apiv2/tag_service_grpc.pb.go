@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.3.0
 // - protoc             (unknown)
-// source: apiv2/tag.proto
+// source: apiv2/tag_service.proto
 
 package apiv2
 
@@ -105,5 +105,5 @@ var TagService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "apiv2/tag.proto",
+	Metadata: "apiv2/tag_service.proto",
 }
