@@ -8,3 +8,6 @@ lint:
     - DEFAULT
   except:
     - PACKAGE_DIRECTORY_MATCH
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway

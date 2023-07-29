@@ -2,10 +2,14 @@ syntax = "proto3";
 
 package memos.apiv2;
 
+import "google/api/annotations.proto";
+
 option go_package = "gen/apiv2";
 
 service TagService {
-  rpc ListTags(ListTagsRequest) returns (ListTagsResponse);
+  rpc ListTags(ListTagsRequest) returns (ListTagsResponse) {
+    option (google.api.http) = {get: "/api/v2/tags"};
+  }
 }
 
 message Tag {
