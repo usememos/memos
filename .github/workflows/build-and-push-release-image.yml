@@ -30,6 +30,12 @@ jobs:
           username: neosmemo
           password: ${{ secrets.DOCKER_NEOSMEMO_TOKEN }}
 
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: yourselfhosted
+          password: ${{ secrets.DOCKER_YOURSELFHOSTED_TOKEN }}
+
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v2
         with:
@@ -50,6 +56,7 @@ jobs:
         with:
           images: |
             neosmemo/memos
+            yourselfhosted/memos
             ghcr.io/usememos/memos
           tags: |
             type=raw,value=latest
