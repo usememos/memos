@@ -24,7 +24,7 @@ type APIV2Service struct {
 }
 
 func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store, grpcServerPort int) *APIV2Service {
-	authProvider := auth.NewAuthInterceptor(store, secret)
+	authProvider := auth.NewGRPCAuthInterceptor(store, secret)
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			authProvider.AuthenticationInterceptor,

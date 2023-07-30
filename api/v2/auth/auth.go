@@ -4,7 +4,6 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -21,10 +20,13 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// ContextKey is the key type of context value.
+type ContextKey int
+
 const (
 	// The key name used to store user id in the context
 	// user id is extracted from the jwt token subject field.
-	UserIDContextKey = "user-id"
+	UserIDContextKey ContextKey = iota
 	// issuer is the issuer of the jwt token.
 	issuer = "memos"
 	// Signing key section. For now, this is only used for signing, not for verifying since we only
@@ -49,22 +51,22 @@ const (
 	RefreshTokenCookieName = "memos.refresh-token"
 )
 
-// AuthInterceptor is the auth interceptor for gRPC server.
-type AuthInterceptor struct {
+// GRPCAuthInterceptor is the auth interceptor for gRPC server.
+type GRPCAuthInterceptor struct {
 	store  *store.Store
 	secret string
 }
 
-// NewAuthInterceptor returns a new API auth interceptor.
-func NewAuthInterceptor(store *store.Store, secret string) *AuthInterceptor {
-	return &AuthInterceptor{
+// NewGRPCAuthInterceptor returns a new API auth interceptor.
+func NewGRPCAuthInterceptor(store *store.Store, secret string) *GRPCAuthInterceptor {
+	return &GRPCAuthInterceptor{
 		store:  store,
 		secret: secret,
 	}
 }
 
 // AuthenticationInterceptor is the unary interceptor for gRPC API.
-func (in *AuthInterceptor) AuthenticationInterceptor(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
+func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, request any, serverInfo *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to parse metadata from incoming context")
@@ -87,7 +89,7 @@ func (in *AuthInterceptor) AuthenticationInterceptor(ctx context.Context, reques
 	return handler(childCtx, request)
 }
 
-func (in *AuthInterceptor) authenticate(ctx context.Context, accessTokenStr, refreshTokenStr string) (int, error) {
+func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr, refreshTokenStr string) (int, error) {
 	if accessTokenStr == "" {
 		return 0, status.Errorf(codes.Unauthenticated, "access token not found")
 	}
@@ -174,7 +176,7 @@ func (in *AuthInterceptor) authenticate(ctx context.Context, accessTokenStr, ref
 
 			// If we have a valid refresh token, we will generate new access token and refresh token
 			if refreshToken != nil && refreshToken.Valid {
-				if err := generateTokensAndSetCookies(ctx, user.ID, in.secret); err != nil {
+				if err := generateTokensAndSetCookies(ctx, user.Username, user.ID, in.secret); err != nil {
 					return errs.Wrapf(err, "failed to regenerate token")
 				}
 			}
@@ -234,13 +236,13 @@ type claimsMessage struct {
 }
 
 // generateTokensAndSetCookies generates jwt token and saves it to the http-only cookie.
-func generateTokensAndSetCookies(ctx context.Context, userID int, secret string) error {
-	accessToken, err := GenerateAccessToken(userID, secret)
+func generateTokensAndSetCookies(ctx context.Context, username string, userID int, secret string) error {
+	accessToken, err := GenerateAccessToken(username, userID, secret)
 	if err != nil {
 		return errs.Wrap(err, "failed to generate access token")
 	}
 	// We generate here a new refresh token and saving it to the cookie.
-	refreshToken, err := GenerateRefreshToken(userID, secret)
+	refreshToken, err := GenerateRefreshToken(username, userID, secret)
 	if err != nil {
 		return errs.Wrap(err, "failed to generate refresh token")
 	}
@@ -248,36 +250,29 @@ func generateTokensAndSetCookies(ctx context.Context, userID int, secret string)
 	if err := grpc.SetHeader(ctx, metadata.New(map[string]string{
 		AccessTokenCookieName:  accessToken,
 		RefreshTokenCookieName: refreshToken,
-		UserIDContextKey:       fmt.Sprintf("%d", userID),
 	})); err != nil {
 		return errs.Wrapf(err, "failed to set grpc header")
 	}
 	return nil
 }
 
-// GenerateAPIToken generates an API token.
-func GenerateAPIToken(userID int, secret string) (string, error) {
-	expirationTime := time.Now().Add(apiTokenDuration)
-	return generateToken(userID, AccessTokenAudienceName, expirationTime, []byte(secret))
-}
-
 // GenerateAccessToken generates an access token for web.
-func GenerateAccessToken(userID int, secret string) (string, error) {
+func GenerateAccessToken(username string, userID int, secret string) (string, error) {
 	expirationTime := time.Now().Add(accessTokenDuration)
-	return generateToken(userID, AccessTokenAudienceName, expirationTime, []byte(secret))
+	return generateToken(username, userID, AccessTokenAudienceName, expirationTime, []byte(secret))
 }
 
 // GenerateRefreshToken generates a refresh token for web.
-func GenerateRefreshToken(userID int, secret string) (string, error) {
+func GenerateRefreshToken(username string, userID int, secret string) (string, error) {
 	expirationTime := time.Now().Add(refreshTokenDuration)
-	return generateToken(userID, RefreshTokenAudienceName, expirationTime, []byte(secret))
+	return generateToken(username, userID, RefreshTokenAudienceName, expirationTime, []byte(secret))
 }
 
 // Pay attention to this function. It holds the main JWT token generation logic.
-func generateToken(userID int, aud string, expirationTime time.Time, secret []byte) (string, error) {
+func generateToken(username string, userID int, aud string, expirationTime time.Time, secret []byte) (string, error) {
 	// Create the JWT claims, which includes the username and expiry time.
 	claims := &claimsMessage{
-		Name: fmt.Sprint(userID),
+		Name: username,
 		RegisteredClaims: jwt.RegisteredClaims{
 			Audience: jwt.ClaimStrings{aud},
 			// In JWT, the expiry time is expressed as unix milliseconds.
