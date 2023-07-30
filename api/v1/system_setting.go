@@ -215,7 +215,6 @@ func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
 			}
 
 			identityProviderList, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
-
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
 			}
