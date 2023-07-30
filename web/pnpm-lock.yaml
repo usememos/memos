@@ -103,6 +103,9 @@ devDependencies:
   '@types/semver':
     specifier: ^7.3.13
     version: 7.5.0
+  '@types/textarea-caret':
+    specifier: ^3.0.1
+    version: 3.0.1
   '@types/uuid':
     specifier: ^9.0.2
     version: 9.0.2
@@ -997,6 +1000,10 @@ packages:
 
   /@types/semver@7.5.0:
     resolution: {integrity: sha512-G8hZ6XJiHnuhQKR7ZmysCeJWE08o8T0AXtk5darsCaTVsYZhhgUrq53jizaR2FvsoeCwJhlmwTjkXBY5Pn/ZHw==}
+    dev: true
+
+  /@types/textarea-caret@3.0.1:
+    resolution: {integrity: sha512-JjrXYzk4t6dM/5nz1hHkZXmd3xSdJM6mOIDSBUrpg4xThwKNryiu4CqHx81LwUJHxEEoQWHTu4fMV4em+c5bXg==}
     dev: true
 
   /@types/use-sync-external-store@0.0.3:
