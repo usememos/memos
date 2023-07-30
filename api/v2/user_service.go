@@ -47,7 +47,6 @@ func (s *UserService) GetUser(ctx context.Context, request *apiv2pb.GetUserReque
 	}
 
 	userID, ok := ctx.Value(auth.UserIDContextKey).(int)
-	println(userID, ok)
 	if ok && userID == int(userMessage.Id) {
 		for _, userSetting := range userSettings {
 			userMessage.Settings = append(userMessage.Settings, convertUserSettingFromStore(userSetting))
