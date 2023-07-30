@@ -17,8 +17,12 @@
     - [GetUserRequest](#memos-api-v2-GetUserRequest)
     - [GetUserResponse](#memos-api-v2-GetUserResponse)
     - [User](#memos-api-v2-User)
+    - [UserSetting](#memos-api-v2-UserSetting)
+    - [UserSettingValue](#memos-api-v2-UserSettingValue)
   
     - [Role](#memos-api-v2-Role)
+    - [UserSetting.Key](#memos-api-v2-UserSetting-Key)
+    - [Visibility](#memos-api-v2-Visibility)
   
     - [UserService](#memos-api-v2-UserService)
   
@@ -182,6 +186,40 @@
 | nickname | [string](#string) |  |  |
 | open_id | [string](#string) |  |  |
 | avatar_url | [string](#string) |  |  |
+| settings | [UserSetting](#memos-api-v2-UserSetting) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UserSetting"></a>
+
+### UserSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user_id | [int32](#int32) |  | The user id of the setting. |
+| key | [UserSetting.Key](#memos-api-v2-UserSetting-Key) |  | The key of the setting. |
+| value | [UserSettingValue](#memos-api-v2-UserSettingValue) |  | The value of the setting. |
+
+
+
+
+
+
+<a name="memos-api-v2-UserSettingValue"></a>
+
+### UserSettingValue
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| string_value | [string](#string) |  | Default value as a string. |
+| visibility_value | [Visibility](#memos-api-v2-Visibility) |  |  |
 
 
 
@@ -201,6 +239,35 @@
 | HOST | 1 |  |
 | ADMIN | 2 |  |
 | USER | 3 |  |
+
+
+
+<a name="memos-api-v2-UserSetting-Key"></a>
+
+### UserSetting.Key
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| KEY_UNSPECIFIED | 0 |  |
+| LOCALE | 1 | The preferred locale. |
+| APPEARANCE | 2 | The preferred appearance. |
+| MEMO_VISIBILITY | 3 | The default visibility of the memo when creating a new memo. |
+| TELEGRAM_USER_ID | 4 | User&#39;s telegram id |
+
+
+
+<a name="memos-api-v2-Visibility"></a>
+
+### Visibility
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| VISIBILITY_UNSPECIFIED | 0 |  |
+| PRIVATE | 1 |  |
+| PROTECTED | 2 |  |
+| PUBLIC | 3 |  |
 
 
  

@@ -12,8 +12,18 @@ import (
 	"go.uber.org/zap"
 )
 
-func autoBackup(ctx context.Context, s *store.Store) {
-	intervalStr := s.GetSystemSettingValueWithDefault(&ctx, apiv1.SystemSettingAutoBackupIntervalName.String(), "")
+type BackupRunner struct {
+	Store *store.Store
+}
+
+func NewBackupRunner(store *store.Store) *BackupRunner {
+	return &BackupRunner{
+		Store: store,
+	}
+}
+
+func (r *BackupRunner) Run(ctx context.Context) {
+	intervalStr := r.Store.GetSystemSettingValueWithDefault(&ctx, apiv1.SystemSettingAutoBackupIntervalName.String(), "")
 	if intervalStr == "" {
 		log.Info("no SystemSettingAutoBackupIntervalName setting, disable auto backup")
 		return
@@ -38,9 +48,9 @@ func autoBackup(ctx context.Context, s *store.Store) {
 		case t = <-ticker.C:
 		}
 
-		filename := s.Profile.DSN + t.Format("-20060102-150405.bak")
+		filename := r.Store.Profile.DSN + t.Format("-20060102-150405.bak")
 		log.Info(fmt.Sprintf("create backup to %s", filename))
-		err := s.BackupTo(ctx, filename)
+		err := r.Store.BackupTo(ctx, filename)
 		if err != nil {
 			log.Error("fail to create backup", zap.Error(err))
 		}
