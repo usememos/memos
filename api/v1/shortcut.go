@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"github.com/usememos/memos/api/v1/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -57,7 +58,7 @@ type ShortcutDelete struct {
 func (s *APIV1Service) registerShortcutRoutes(g *echo.Group) {
 	g.POST("/shortcut", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -84,7 +85,7 @@ func (s *APIV1Service) registerShortcutRoutes(g *echo.Group) {
 
 	g.PATCH("/shortcut/:shortcutId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -136,7 +137,7 @@ func (s *APIV1Service) registerShortcutRoutes(g *echo.Group) {
 
 	g.GET("/shortcut", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find shortcut")
 		}
@@ -175,7 +176,7 @@ func (s *APIV1Service) registerShortcutRoutes(g *echo.Group) {
 
 	g.DELETE("/shortcut/:shortcutId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}

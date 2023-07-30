@@ -20,17 +20,18 @@ import (
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"go.uber.org/zap"
-	"google.golang.org/grpc"
 )
 
 type Server struct {
-	e          *echo.Echo
-	grpcServer *grpc.Server
+	e *echo.Echo
 
 	ID      string
 	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
+
+	// API services.
+	apiV2Service *apiv2.APIV2Service
 
 	// Asynchronous runners.
 	backupRunner *BackupRunner
@@ -102,11 +103,9 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store)
 	apiV1Service.Register(rootGroup)
 
-	// Register gPRC server services.
-	s.grpcServer = apiv2.NewGRPCServer(store)
-
+	s.apiV2Service = apiv2.NewAPIV2Service(s.Secret, profile, store, s.Profile.Port+1)
 	// Register gRPC gateway as api v2.
-	if err := apiv2.RegisterGateway(ctx, e, s.Profile.Port+1); err != nil {
+	if err := s.apiV2Service.RegisterGateway(ctx, e); err != nil {
 		return nil, fmt.Errorf("failed to register gRPC gateway: %w", err)
 	}
 
@@ -127,7 +126,7 @@ func (s *Server) Start(ctx context.Context) error {
 		return err
 	}
 	go func() {
-		if err := s.grpcServer.Serve(listen); err != nil {
+		if err := s.apiV2Service.GetGRPCServer().Serve(listen); err != nil {
 			log.Error("grpc server listen error", zap.Error(err))
 		}
 	}()
@@ -220,6 +219,6 @@ func defaultGetRequestSkipper(c echo.Context) bool {
 }
 
 func defaultAPIRequestSkipper(c echo.Context) bool {
-	path := c.Path()
-	return util.HasPrefixes(path, "/api", "/api/v1")
+	path := c.Request().URL.Path
+	return util.HasPrefixes(path, "/api", "/api/v1", "api/v2")
 }

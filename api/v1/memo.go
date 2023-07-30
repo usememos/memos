@@ -10,6 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"github.com/usememos/memos/api/v1/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -113,7 +114,7 @@ const maxContentLength = 1 << 30
 func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 	g.POST("/memo", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -224,7 +225,7 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 
 	g.PATCH("/memo/:memoId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -362,7 +363,7 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 			}
 		}
 
-		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
+		currentUserID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			// Anonymous use should only fetch PUBLIC memos with specified user
 			if findMemoMessage.CreatorID == nil {
@@ -449,7 +450,7 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %d", memoID))
 		}
 
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if memo.Visibility == store.Private {
 			if !ok || memo.CreatorID != userID {
 				return echo.NewHTTPError(http.StatusForbidden, "this memo is private only")
@@ -487,7 +488,7 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find memo")
 		}
 
-		currentUserID, ok := c.Get(getUserIDContextKey()).(int)
+		currentUserID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			findMemoMessage.VisibilityList = []store.Visibility{store.Public}
 		} else {
@@ -529,7 +530,7 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 	g.GET("/memo/all", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		findMemoMessage := &store.FindMemo{}
-		_, ok := c.Get(getUserIDContextKey()).(int)
+		_, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			findMemoMessage.VisibilityList = []store.Visibility{store.Public}
 		} else {
@@ -589,7 +590,7 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 
 	g.DELETE("/memo/:memoId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}

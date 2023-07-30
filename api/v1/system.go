@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/api/v1/auth"
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -140,7 +141,7 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 
 	g.POST("/system/vacuum", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}

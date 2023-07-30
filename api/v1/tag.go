@@ -9,6 +9,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"github.com/usememos/memos/api/v1/auth"
 	"github.com/usememos/memos/store"
 	"golang.org/x/exp/slices"
 )
@@ -29,7 +30,7 @@ type DeleteTagRequest struct {
 func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 	g.POST("/tag", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -58,7 +59,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 
 	g.GET("/tag", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
 		}
@@ -79,7 +80,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 
 	g.GET("/tag/suggestion", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user session")
 		}
@@ -124,7 +125,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 
 	g.POST("/tag/delete", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}

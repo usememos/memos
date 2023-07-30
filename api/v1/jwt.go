@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -14,17 +13,6 @@ import (
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
-
-const (
-	// Context section
-	// The key name used to store user id in the context
-	// user id is extracted from the jwt token subject field.
-	userIDContextKey = "user-id"
-)
-
-func getUserIDContextKey() string {
-	return userIDContextKey
-}
 
 // Claims creates a struct that will be encoded to a JWT.
 // We add jwt.RegisteredClaims as an embedded type, to provide fields such as name.
@@ -112,7 +100,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
 		})
 
-		generateToken := time.Until(claims.ExpiresAt.Time) < auth.RefreshThresholdDuration
+		generateToken := false
 		if err != nil {
 			var ve *jwt.ValidationError
 			if errors.As(err, &ve) {
@@ -203,7 +191,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		}
 
 		// Stores userID into context.
-		c.Set(getUserIDContextKey(), userID)
+		c.Set(auth.UserIDContextKey, userID)
 		return next(c)
 	}
 }
@@ -228,7 +216,7 @@ func (s *APIV1Service) defaultAuthSkipper(c echo.Context) bool {
 		}
 		if user != nil {
 			// Stores userID into context.
-			c.Set(getUserIDContextKey(), user.ID)
+			c.Set(auth.UserIDContextKey, user.ID)
 			return true
 		}
 	}

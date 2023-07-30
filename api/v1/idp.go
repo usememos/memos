@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/api/v1/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -66,7 +67,7 @@ type UpdateIdentityProviderRequest struct {
 func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 	g.POST("/idp", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -100,7 +101,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 
 	g.PATCH("/idp/:idpId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -147,7 +148,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider list").SetInternal(err)
 		}
 
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		isHostUser := false
 		if ok {
 			user, err := s.Store.GetUser(ctx, &store.FindUser{
@@ -175,7 +176,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 
 	g.GET("/idp/:idpId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -209,7 +210,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 
 	g.DELETE("/idp/:idpId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(getUserIDContextKey()).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
