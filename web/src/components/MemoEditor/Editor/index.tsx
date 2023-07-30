@@ -1,6 +1,6 @@
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
-import "@/less/editor.less";
 import TagSuggestions from "./TagSuggestions";
+import "@/less/editor.less";
 
 export interface EditorRefActions {
   focus: FunctionType;
