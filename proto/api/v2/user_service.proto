@@ -35,6 +35,8 @@ message User {
   string open_id = 9;
 
   string avatar_url = 10;
+
+  repeated UserSetting settings = 11;
 }
 
 enum Role {
@@ -53,4 +55,44 @@ message GetUserRequest {
 
 message GetUserResponse {
   User user = 1;
+}
+
+message UserSetting {
+  // The user id of the setting.
+  int32 user_id = 1;
+
+  enum Key {
+    KEY_UNSPECIFIED = 0;
+    // The preferred locale.
+    LOCALE = 1;
+    // The preferred appearance.
+    APPEARANCE = 2;
+    // The default visibility of the memo when creating a new memo.
+    MEMO_VISIBILITY = 3;
+    // User's telegram id
+    TELEGRAM_USER_ID = 4;
+  }
+  // The key of the setting.
+  Key key = 2;
+
+  // The value of the setting.
+  UserSettingValue value = 3;
+}
+
+message UserSettingValue {
+  oneof value {
+    // Default value as a string.
+    string string_value = 1;
+    Visibility visibility_value = 2;
+  }
+}
+
+enum Visibility {
+  VISIBILITY_UNSPECIFIED = 0;
+
+  PRIVATE = 1;
+
+  PROTECTED = 2;
+
+  PUBLIC = 3;
 }

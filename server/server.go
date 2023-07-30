@@ -32,7 +32,9 @@ type Server struct {
 	Profile *profile.Profile
 	Store   *store.Store
 
-	telegramBot *telegram.Bot
+	// Asynchronous runners.
+	backupRunner *BackupRunner
+	telegramBot  *telegram.Bot
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -45,10 +47,11 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		e:       e,
 		Store:   store,
 		Profile: profile,
-	}
 
-	telegramBotHandler := newTelegramHandler(store)
-	s.telegramBot = telegram.NewBotWithHandler(telegramBotHandler)
+		// Asynchronous runners.
+		backupRunner: NewBackupRunner(store),
+		telegramBot:  telegram.NewBotWithHandler(newTelegramHandler(store)),
+	}
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
 		Format: `{"time":"${time_rfc3339}",` +
@@ -116,7 +119,7 @@ func (s *Server) Start(ctx context.Context) error {
 	}
 
 	go s.telegramBot.Start(ctx)
-	go autoBackup(ctx, s.Store)
+	go s.backupRunner.Run(ctx)
 
 	// Start gRPC server.
 	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Profile.Port+1))
