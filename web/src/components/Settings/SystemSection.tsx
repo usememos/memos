@@ -9,10 +9,13 @@ import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog"
 import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 import "@/less/settings/system-section.less";
+import { showCommonDialog } from "../Dialog/CommonDialog";
+import showDisablePasswordLoginDialog from "../DisablePasswordLoginDialog";
 
 interface State {
   dbSize: number;
   allowSignUp: boolean;
+  disablePasswordLogin: boolean;
   disablePublicMemos: boolean;
   additionalStyle: string;
   additionalScript: string;
@@ -28,6 +31,7 @@ const SystemSection = () => {
   const [state, setState] = useState<State>({
     dbSize: systemStatus.dbSize,
     allowSignUp: systemStatus.allowSignUp,
+    disablePasswordLogin: systemStatus.disablePasswordLogin,
     additionalStyle: systemStatus.additionalStyle,
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
@@ -55,6 +59,7 @@ const SystemSection = () => {
       ...state,
       dbSize: systemStatus.dbSize,
       allowSignUp: systemStatus.allowSignUp,
+      disablePasswordLogin: systemStatus.disablePasswordLogin,
       additionalStyle: systemStatus.additionalStyle,
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
@@ -74,6 +79,27 @@ const SystemSection = () => {
       name: "allow-signup",
       value: JSON.stringify(value),
     });
+  };
+
+  const handleDisablePasswordLoginChanged = async (value: boolean) => {
+    if (value) {
+      showDisablePasswordLoginDialog();
+    } else {
+      showCommonDialog({
+        title: t("setting.system-section.enable-password-login"),
+        content: t("setting.system-section.enable-password-login-warning"),
+        style: "warning",
+        dialogName: "enable-password-login-dialog",
+        onConfirm: async () => {
+          setState({ ...state, disablePasswordLogin: value });
+          globalStore.setSystemStatus({ disablePasswordLogin: value });
+          await api.upsertSystemSetting({
+            name: "disable-password-login",
+            value: JSON.stringify(value),
+          });
+        },
+      });
+    }
   };
 
   const handleUpdateCustomizedProfileButtonClick = () => {
@@ -240,6 +266,10 @@ const SystemSection = () => {
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
         <Switch checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
+      </div>
+      <div className="form-label">
+        <span className="normal-text">{t("setting.system-section.disable-password-login")}</span>
+        <Switch checked={state.disablePasswordLogin} onChange={(event) => handleDisablePasswordLoginChanged(event.target.checked)} />
       </div>
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>

@@ -37,6 +37,24 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 	g.POST("/auth/signin", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		signin := &SignIn{}
+
+		disablePasswordLoginSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+			Name: SystemSettingDisablePasswordLoginName.String(),
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+		}
+		if disablePasswordLoginSystemSetting != nil {
+			disablePasswordLogin := false
+			err = json.Unmarshal([]byte(disablePasswordLoginSystemSetting.Value), &disablePasswordLogin)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
+			}
+			if disablePasswordLogin {
+				return echo.NewHTTPError(http.StatusUnauthorized, "Password login is deactivated")
+			}
+		}
+
 		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
 		}

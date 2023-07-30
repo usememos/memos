@@ -19,6 +19,8 @@ type SystemStatus struct {
 	// System settings
 	// Allow sign up.
 	AllowSignUp bool `json:"allowSignUp"`
+	// Disable password login.
+	DisablePasswordLogin bool `json:"disablePasswordLogin"`
 	// Disable public memos.
 	DisablePublicMemos bool `json:"disablePublicMemos"`
 	// Max upload size.
@@ -48,14 +50,15 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 		ctx := c.Request().Context()
 
 		systemStatus := SystemStatus{
-			Profile:            *s.Profile,
-			DBSize:             0,
-			AllowSignUp:        false,
-			DisablePublicMemos: false,
-			MaxUploadSizeMiB:   32,
-			AutoBackupInterval: 0,
-			AdditionalStyle:    "",
-			AdditionalScript:   "",
+			Profile:              *s.Profile,
+			DBSize:               0,
+			AllowSignUp:          false,
+			DisablePasswordLogin: false,
+			DisablePublicMemos:   false,
+			MaxUploadSizeMiB:     32,
+			AutoBackupInterval:   0,
+			AdditionalStyle:      "",
+			AdditionalScript:     "",
 			CustomizedProfile: CustomizedProfile{
 				Name:        "memos",
 				LogoURL:     "",
@@ -103,6 +106,8 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 			switch systemSetting.Name {
 			case SystemSettingAllowSignUpName.String():
 				systemStatus.AllowSignUp = baseValue.(bool)
+			case SystemSettingDisablePasswordLoginName.String():
+				systemStatus.DisablePasswordLogin = baseValue.(bool)
 			case SystemSettingDisablePublicMemosName.String():
 				systemStatus.DisablePublicMemos = baseValue.(bool)
 			case SystemSettingMaxUploadSizeMiBName.String():

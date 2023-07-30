@@ -256,6 +256,11 @@
       },
       "database-file-size": "Database File Size",
       "allow-user-signup": "Allow user signup",
+      "disable-password-login": "Disable password login",
+      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You'll also have to be extra carefull when removing an identity provider❗",
+      "disable-password-login-final-warning": "Please type \"CONFIRM\" if you know what you are doing.",
+      "enable-password-login": "Enable password login",
+      "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password❗",
       "ignore-version-upgrade": "Ignore version upgrade",
       "disable-public-memos": "Disable public memos",
       "max-upload-size": "Maximum upload size (MiB)",
@@ -300,7 +305,8 @@
       "authorization-endpoint": "Authorization endpoint",
       "token-endpoint": "Token endpoint",
       "user-endpoint": "User endpoint",
-      "scopes": "Scopes"
+      "scopes": "Scopes",
+      "disabled-password-login-warning": "Password-login is disabled, be extra careful when removing identity providers❗"
     }
   },
   "filter": {
@@ -381,7 +387,9 @@
     "update-succeed": "Update succeeded",
     "page-not-found": "404 - Page Not Found 😥",
     "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
-    "file-exceeds-upload-limit-of": "File {{file}} exceeds upload limit of {{size}} MiB"
+    "file-exceeds-upload-limit-of": "File {{file}} exceeds upload limit of {{size}} MiB",
+    "updating-setting-failed": "Updating setting failed",
+    "password-login-disabled": "Can't remove last identity provider when password login is disabled"
   },
   "days": {
     "mon": "Mon",

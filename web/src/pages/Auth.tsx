@@ -19,6 +19,7 @@ const Auth = () => {
   const mode = systemStatus.profile.mode;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const disablePasswordLogin = systemStatus.disablePasswordLogin;
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
   useEffect(() => {
@@ -135,50 +136,52 @@ const Auth = () => {
             <img className="h-20 w-auto rounded-full shadow mr-1" src={systemStatus.customizedProfile.logoUrl} alt="" />
             <p className="text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
-          <form className="w-full mt-4" onSubmit={handleFormSubmit}>
-            <div className="flex flex-col justify-start items-start w-full gap-4">
-              <Input
-                className="w-full"
-                size="lg"
-                type="text"
-                placeholder={t("common.username")}
-                value={username}
-                onChange={handleUsernameInputChanged}
-                required
-              />
-              <Input
-                className="w-full"
-                size="lg"
-                type="password"
-                placeholder={t("common.password")}
-                value={password}
-                onChange={handlePasswordInputChanged}
-                required
-              />
-            </div>
-            <div className="flex flex-row justify-end items-center w-full mt-6">
-              {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
-              {!systemStatus.host ? (
-                <Button disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
-                  {t("common.sign-up")}
-                </Button>
-              ) : (
-                <>
-                  {systemStatus?.allowSignUp && (
-                    <>
-                      <Button variant={"plain"} disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
-                        {t("common.sign-up")}
-                      </Button>
-                      <span className="mr-2 font-mono text-gray-200">/</span>
-                    </>
-                  )}
-                  <Button type="submit" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
-                    {t("common.sign-in")}
+          {!disablePasswordLogin && (
+            <form className="w-full mt-4" onSubmit={handleFormSubmit}>
+              <div className="flex flex-col justify-start items-start w-full gap-4">
+                <Input
+                  className="w-full"
+                  size="lg"
+                  type="text"
+                  placeholder={t("common.username")}
+                  value={username}
+                  onChange={handleUsernameInputChanged}
+                  required
+                />
+                <Input
+                  className="w-full"
+                  size="lg"
+                  type="password"
+                  placeholder={t("common.password")}
+                  value={password}
+                  onChange={handlePasswordInputChanged}
+                  required
+                />
+              </div>
+              <div className="flex flex-row justify-end items-center w-full mt-6">
+                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
+                {!systemStatus.host ? (
+                  <Button disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
+                    {t("common.sign-up")}
                   </Button>
-                </>
-              )}
-            </div>
-          </form>
+                ) : (
+                  <>
+                    {systemStatus?.allowSignUp && (
+                      <>
+                        <Button variant={"plain"} disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
+                          {t("common.sign-up")}
+                        </Button>
+                        <span className="mr-2 font-mono text-gray-200">/</span>
+                      </>
+                    )}
+                    <Button type="submit" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
+                      {t("common.sign-in")}
+                    </Button>
+                  </>
+                )}
+              </div>
+            </form>
+          )}
           {!systemStatus.host && (
             <p className="w-full inline-block float-right text-sm mt-4 text-gray-500 text-right whitespace-pre-wrap">
               {t("auth.host-tip")}
@@ -186,7 +189,7 @@ const Auth = () => {
           )}
           {identityProviderList.length > 0 && (
             <>
-              <Divider className="!my-4">{t("common.or")}</Divider>
+              {!disablePasswordLogin && <Divider className="!my-4">{t("common.or")}</Divider>}
               <div className="w-full flex flex-col space-y-2">
                 {identityProviderList.map((identityProvider) => (
                   <Button

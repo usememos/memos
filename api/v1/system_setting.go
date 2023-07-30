@@ -19,6 +19,8 @@ const (
 	SystemSettingSecretSessionName SystemSettingName = "secret-session"
 	// SystemSettingAllowSignUpName is the name of allow signup setting.
 	SystemSettingAllowSignUpName SystemSettingName = "allow-signup"
+	// SystemSettingDisablePasswordLoginName is the name of disable password login setting.
+	SystemSettingDisablePasswordLoginName SystemSettingName = "disable-password-login"
 	// SystemSettingDisablePublicMemosName is the name of disable public memos setting.
 	SystemSettingDisablePublicMemosName SystemSettingName = "disable-public-memos"
 	// SystemSettingMaxUploadSizeMiBName is the name of max upload size setting.
@@ -88,6 +90,11 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 	case SystemSettingServerIDName:
 		return fmt.Errorf("updating %v is not allowed", settingName)
 	case SystemSettingAllowSignUpName:
+		var value bool
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return fmt.Errorf(systemSettingUnmarshalError, settingName)
+		}
+	case SystemSettingDisablePasswordLoginName:
 		var value bool
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return fmt.Errorf(systemSettingUnmarshalError, settingName)
@@ -200,6 +207,20 @@ func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
 		}
 		if err := systemSettingUpsert.Validate(); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
+		}
+		if systemSettingUpsert.Name == SystemSettingDisablePasswordLoginName {
+			var disablePasswordLogin bool
+			if err := json.Unmarshal([]byte(systemSettingUpsert.Value), &disablePasswordLogin); err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
+			}
+
+			identityProviderList, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
+			}
+			if disablePasswordLogin && len(identityProviderList) == 0 {
+				return echo.NewHTTPError(http.StatusForbidden, "Cannot disable passwords if no SSO identity provider is configured.")
+			}
 		}
 
 		systemSetting, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
