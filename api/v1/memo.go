@@ -10,7 +10,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api/v1/auth"
+	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/store"
 )
 
