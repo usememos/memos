@@ -1,6 +1,6 @@
 import { last } from "lodash-es";
 import store, { useAppSelector } from "..";
-import { pushDialogStack, popDialogStack, removeDialog } from "../reducer/dialog";
+import { popDialogStack, pushDialogStack, removeDialog } from "../reducer/dialog";
 
 export const useDialogStore = () => {
   const state = useAppSelector((state) => state.dialog);

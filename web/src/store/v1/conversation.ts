@@ -1,6 +1,6 @@
+import { t } from "i18next";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { t } from "i18next";
 
 export interface Conversation {
   name: string;

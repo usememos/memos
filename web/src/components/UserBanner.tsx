@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { useTranslate } from "@/utils/i18n";
 import { useNavigate } from "react-router-dom";
 import { useGlobalStore, useUserStore } from "@/store/module";
-import Dropdown from "./kit/Dropdown";
-import Icon from "./Icon";
-import UserAvatar from "./UserAvatar";
+import { useTranslate } from "@/utils/i18n";
 import showAboutSiteDialog from "./AboutSiteDialog";
+import Icon from "./Icon";
+import Dropdown from "./kit/Dropdown";
+import UserAvatar from "./UserAvatar";
 
 const UserBanner = () => {
   const t = useTranslate();

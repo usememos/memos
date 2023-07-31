@@ -1,8 +1,8 @@
 import { CssVarsProvider } from "@mui/joy";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
-import store from "./store";
 import App from "./App";
+import store from "./store";
 import theme from "./theme";
 import "./helpers/polyfill";
 import "./i18n";

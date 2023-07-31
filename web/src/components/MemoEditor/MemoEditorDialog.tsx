@@ -1,7 +1,7 @@
+import { useTranslate } from "@/utils/i18n";
+import MemoEditor from ".";
 import { generateDialog } from "../Dialog";
 import Icon from "../Icon";
-import MemoEditor from ".";
-import { useTranslate } from "@/utils/i18n";
 
 interface Props extends DialogProps {
   memoId?: MemoId;

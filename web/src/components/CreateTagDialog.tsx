@@ -1,13 +1,13 @@
 import { Button, Input } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
-import { useTagStore } from "@/store/module";
 import { getTagSuggestionList } from "@/helpers/api";
 import { matcher } from "@/labs/marked/matcher";
 import Tag from "@/labs/marked/parser/Tag";
-import Icon from "./Icon";
+import { useTagStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
+import Icon from "./Icon";
 
 type Props = DialogProps;
 

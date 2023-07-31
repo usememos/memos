@@ -1,6 +1,6 @@
-import i18n, { TLocale, availableLocales } from "@/i18n";
 import { FallbackLngObjList } from "i18next";
 import { useTranslation } from "react-i18next";
+import i18n, { availableLocales, TLocale } from "@/i18n";
 import locales from "@/locales/en.json";
 import type { NestedKeyOf } from "@/types/utils/nestedKeyOf.types";
 

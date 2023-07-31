@@ -1,7 +1,7 @@
 import { Tooltip } from "@mui/joy";
 import { memo, useEffect, useRef } from "react";
-import { useTranslate } from "@/utils/i18n";
 import useToggle from "@/hooks/useToggle";
+import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 import "@/less/common/selector.less";
 

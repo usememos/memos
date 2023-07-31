@@ -1,14 +1,14 @@
 import { Button, Divider, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
-import { useGlobalStore, useUserStore } from "@/store/module";
+import AppearanceSelect from "@/components/AppearanceSelect";
+import Icon from "@/components/Icon";
+import LocaleSelect from "@/components/LocaleSelect";
 import * as api from "@/helpers/api";
 import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
-import Icon from "@/components/Icon";
-import AppearanceSelect from "@/components/AppearanceSelect";
-import LocaleSelect from "@/components/LocaleSelect";
+import { useGlobalStore, useUserStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 
 const Auth = () => {
   const t = useTranslate();

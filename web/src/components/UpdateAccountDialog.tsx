@@ -1,11 +1,11 @@
 import { isEqual } from "lodash-es";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
-import { useUserStore } from "@/store/module";
 import { convertFileToBase64 } from "@/helpers/utils";
-import Icon from "./Icon";
+import { useUserStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
+import Icon from "./Icon";
 import UserAvatar from "./UserAvatar";
 
 type Props = DialogProps;

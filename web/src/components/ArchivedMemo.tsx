@@ -1,12 +1,12 @@
 import { Tooltip } from "@mui/joy";
 import { toast } from "react-hot-toast";
+import { getDateTimeString } from "@/helpers/datetime";
 import { useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
-import { getDateTimeString } from "@/helpers/datetime";
+import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import MemoResourceListView from "./MemoResourceListView";
-import { showCommonDialog } from "./Dialog/CommonDialog";
 import "@/less/memo.less";
 
 interface Props {

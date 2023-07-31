@@ -1,12 +1,12 @@
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
-import { useFilterStore, useShortcutStore } from "@/store/module";
 import { getTimeStampByDate } from "@/helpers/datetime";
-import useToggle from "@/hooks/useToggle";
 import useLoading from "@/hooks/useLoading";
-import Icon from "./Icon";
+import useToggle from "@/hooks/useToggle";
+import { useFilterStore, useShortcutStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import showCreateShortcutDialog from "./CreateShortcutDialog";
+import Icon from "./Icon";
 
 const ShortcutList = () => {
   const t = useTranslate();

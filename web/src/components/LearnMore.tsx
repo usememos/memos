@@ -1,6 +1,7 @@
 import { Tooltip } from "@mui/joy";
-import Icon from "./Icon";
 import { useTranslate } from "@/utils/i18n";
+import Icon from "./Icon";
+
 interface Props {
   className?: string;
   url: string;

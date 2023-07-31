@@ -1,5 +1,5 @@
+import { LINK_REG, PLAIN_LINK_REG, TAG_REG } from "@/labs/marked/parser";
 import { getUnixTimeMillis } from "./datetime";
-import { TAG_REG, LINK_REG, PLAIN_LINK_REG } from "@/labs/marked/parser";
 
 export const relationConsts = [
   { text: "filter.and", value: "AND" },

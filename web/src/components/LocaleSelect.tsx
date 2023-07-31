@@ -1,6 +1,6 @@
 import { Option, Select } from "@mui/joy";
-import { availableLocales } from "@/i18n";
 import { FC } from "react";
+import { availableLocales } from "@/i18n";
 import Icon from "./Icon";
 
 interface Props {

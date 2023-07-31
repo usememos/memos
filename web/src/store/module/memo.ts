@@ -1,10 +1,10 @@
 import { omit } from "lodash-es";
 import * as api from "@/helpers/api";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
-import { useUserStore } from "./";
 import store, { useAppSelector } from "../";
 import { createMemo, deleteMemo, patchMemo, setIsFetching, upsertMemos } from "../reducer/memo";
 import { useMemoCacheStore } from "../v1";
+import { useUserStore } from "./";
 
 export const convertResponseModelMemo = (memo: Memo): Memo => {
   return {

@@ -1,13 +1,13 @@
 import { useColorScheme } from "@mui/joy";
-import { useEffect, Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { Toaster } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { RouterProvider } from "react-router-dom";
-import router from "./router";
-import { useGlobalStore } from "./store/module";
 import storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import Loading from "./pages/Loading";
+import router from "./router";
+import { useGlobalStore } from "./store/module";
 
 const App = () => {
   const { i18n } = useTranslation();

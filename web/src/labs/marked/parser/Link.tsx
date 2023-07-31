@@ -1,10 +1,10 @@
-import Emphasis from "./Emphasis";
-import Bold from "./Bold";
 import { marked } from "..";
-import InlineCode from "./InlineCode";
-import BoldEmphasis from "./BoldEmphasis";
-import PlainText from "./PlainText";
 import { matcher } from "../matcher";
+import Bold from "./Bold";
+import BoldEmphasis from "./BoldEmphasis";
+import Emphasis from "./Emphasis";
+import InlineCode from "./InlineCode";
+import PlainText from "./PlainText";
 
 export const LINK_REG = /\[([^\]]+)\]\(([^)]+)\)/;
 

@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { useGlobalStore, useMemoStore } from "@/store/module";
-import useLoading from "@/hooks/useLoading";
 import Icon from "@/components/Icon";
 import Memo from "@/components/Memo";
+import useLoading from "@/hooks/useLoading";
+import { useGlobalStore, useMemoStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
   const t = useTranslate();

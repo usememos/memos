@@ -5,8 +5,8 @@ import { useGlobalStore, useLayoutStore, useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
-import UserBanner from "./UserBanner";
 import UpgradeVersionView from "./UpgradeVersionBanner";
+import UserBanner from "./UserBanner";
 
 const Header = () => {
   const t = useTranslate();
