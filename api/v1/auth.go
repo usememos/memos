@@ -8,7 +8,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api/v1/auth"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
@@ -77,7 +76,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
 		}
 
-		if err := auth.GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
+		if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createAuthSignInActivity(c, user); err != nil {
@@ -165,7 +164,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
 		}
 
-		if err := auth.GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
+		if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createAuthSignInActivity(c, user); err != nil {
@@ -231,7 +230,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 		}
-		if err := auth.GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
+		if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
 		}
 		if err := s.createAuthSignUpActivity(c, user); err != nil {
@@ -244,7 +243,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 
 	// POST /auth/signout - Sign out.
 	g.POST("/auth/signout", func(c echo.Context) error {
-		auth.RemoveTokensAndCookies(c)
+		RemoveTokensAndCookies(c)
 		return c.JSON(http.StatusOK, true)
 	})
 }

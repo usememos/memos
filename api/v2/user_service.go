@@ -3,7 +3,6 @@ package v2
 import (
 	"context"
 
-	"github.com/usememos/memos/api/v2/auth"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/store"
 	"google.golang.org/grpc/codes"
@@ -46,7 +45,7 @@ func (s *UserService) GetUser(ctx context.Context, request *apiv2pb.GetUserReque
 		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)
 	}
 
-	userID, ok := ctx.Value(auth.UserIDContextKey).(int)
+	userID, ok := ctx.Value(UserIDContextKey).(int)
 	if ok && userID == int(userMessage.Id) {
 		for _, userSetting := range userSettings {
 			userMessage.Settings = append(userMessage.Settings, convertUserSettingFromStore(userSetting))

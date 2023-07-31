@@ -6,7 +6,6 @@ import (
 
 	grpcRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/api/v2/auth"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -24,7 +23,7 @@ type APIV2Service struct {
 }
 
 func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store, grpcServerPort int) *APIV2Service {
-	authProvider := auth.NewGRPCAuthInterceptor(store, secret)
+	authProvider := NewGRPCAuthInterceptor(store, secret)
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
 			authProvider.AuthenticationInterceptor,

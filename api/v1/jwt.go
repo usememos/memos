@@ -5,20 +5,84 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api/v1/auth"
+	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
 
-// Claims creates a struct that will be encoded to a JWT.
-// We add jwt.RegisteredClaims as an embedded type, to provide fields such as name.
-type Claims struct {
+type claimsMessage struct {
 	Name string `json:"name"`
 	jwt.RegisteredClaims
+}
+
+// GenerateAccessToken generates an access token for web.
+func GenerateAccessToken(username string, userID int, secret string) (string, error) {
+	expirationTime := time.Now().Add(auth.AccessTokenDuration)
+	return generateToken(username, userID, auth.AccessTokenAudienceName, expirationTime, []byte(secret))
+}
+
+// GenerateTokensAndSetCookies generates jwt token and saves it to the http-only cookie.
+func GenerateTokensAndSetCookies(c echo.Context, user *store.User, secret string) error {
+	accessToken, err := GenerateAccessToken(user.Username, user.ID, secret)
+	if err != nil {
+		return errors.Wrap(err, "failed to generate access token")
+	}
+
+	cookieExp := time.Now().Add(auth.CookieExpDuration)
+	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
+	return nil
+}
+
+// RemoveTokensAndCookies removes the jwt token and refresh token from the cookies.
+func RemoveTokensAndCookies(c echo.Context) {
+	cookieExp := time.Now().Add(-1 * time.Hour)
+	setTokenCookie(c, auth.AccessTokenCookieName, "", cookieExp)
+}
+
+// setTokenCookie sets the token to the cookie.
+func setTokenCookie(c echo.Context, name, token string, expiration time.Time) {
+	cookie := new(http.Cookie)
+	cookie.Name = name
+	cookie.Value = token
+	cookie.Expires = expiration
+	cookie.Path = "/"
+	// Http-only helps mitigate the risk of client side script accessing the protected cookie.
+	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteStrictMode
+	c.SetCookie(cookie)
+}
+
+// generateToken generates a jwt token.
+func generateToken(username string, userID int, aud string, expirationTime time.Time, secret []byte) (string, error) {
+	// Create the JWT claims, which includes the username and expiry time.
+	claims := &claimsMessage{
+		Name: username,
+		RegisteredClaims: jwt.RegisteredClaims{
+			Audience: jwt.ClaimStrings{aud},
+			// In JWT, the expiry time is expressed as unix milliseconds.
+			ExpiresAt: jwt.NewNumericDate(expirationTime),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
+			Issuer:    auth.Issuer,
+			Subject:   strconv.Itoa(userID),
+		},
+	}
+
+	// Declare the token with the HS256 algorithm used for signing, and the claims.
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token.Header["kid"] = auth.KeyID
+
+	// Create the JWT string.
+	tokenString, err := token.SignedString(secret)
+	if err != nil {
+		return "", err
+	}
+
+	return tokenString, nil
 }
 
 func extractTokenFromHeader(c echo.Context) (string, error) {
@@ -62,7 +126,8 @@ func audienceContains(audience jwt.ClaimStrings, token string) bool {
 // will try to generate new access token and refresh token.
 func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		path := c.Path()
+		ctx := c.Request().Context()
+		path := c.Request().URL.Path
 		method := c.Request().Method
 
 		if server.defaultAuthSkipper(c) {
@@ -87,8 +152,8 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing access token")
 		}
 
-		claims := &Claims{}
-		accessToken, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (any, error) {
+		claims := &claimsMessage{}
+		_, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (any, error) {
 			if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 				return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
 			}
@@ -100,27 +165,15 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
 		})
 
-		generateToken := false
 		if err != nil {
-			var ve *jwt.ValidationError
-			if errors.As(err, &ve) {
-				// If expiration error is the only error, we will clear the err
-				// and generate new access token and refresh token
-				if ve.Errors == jwt.ValidationErrorExpired {
-					generateToken = true
-				}
-			} else {
-				auth.RemoveTokensAndCookies(c)
-				return echo.NewHTTPError(http.StatusUnauthorized, errors.Wrap(err, "Invalid or expired access token"))
-			}
+			RemoveTokensAndCookies(c)
+			return echo.NewHTTPError(http.StatusUnauthorized, errors.Wrap(err, "Invalid or expired access token"))
 		}
-
 		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q.", claims.Audience, auth.AccessTokenAudienceName))
 		}
 
 		// We either have a valid access token or we will attempt to generate new access token and refresh token
-		ctx := c.Request().Context()
 		userID, err := strconv.Atoi(claims.Subject)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Malformed ID in the token.")
@@ -135,59 +188,6 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		}
 		if user == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Failed to find user ID: %d", userID))
-		}
-
-		if generateToken {
-			generateTokenFunc := func() error {
-				rc, err := c.Cookie(auth.RefreshTokenCookieName)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusUnauthorized, "Failed to generate access token. Missing refresh token.")
-				}
-
-				// Parses token and checks if it's valid.
-				refreshTokenClaims := &Claims{}
-				refreshToken, err := jwt.ParseWithClaims(rc.Value, refreshTokenClaims, func(t *jwt.Token) (any, error) {
-					if t.Method.Alg() != jwt.SigningMethodHS256.Name {
-						return nil, errors.Errorf("unexpected refresh token signing method=%v, expected %v", t.Header["alg"], jwt.SigningMethodHS256)
-					}
-
-					if kid, ok := t.Header["kid"].(string); ok {
-						if kid == "v1" {
-							return []byte(secret), nil
-						}
-					}
-					return nil, errors.Errorf("unexpected refresh token kid=%v", t.Header["kid"])
-				})
-				if err != nil {
-					if err == jwt.ErrSignatureInvalid {
-						return echo.NewHTTPError(http.StatusUnauthorized, "Failed to generate access token. Invalid refresh token signature.")
-					}
-					return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Server error to refresh expired token. User Id %d", userID)).SetInternal(err)
-				}
-
-				if !audienceContains(refreshTokenClaims.Audience, auth.RefreshTokenAudienceName) {
-					return echo.NewHTTPError(http.StatusUnauthorized,
-						fmt.Sprintf("Invalid refresh token, audience mismatch, got %q, expected %q. you may send request to the wrong environment",
-							refreshTokenClaims.Audience,
-							auth.RefreshTokenAudienceName,
-						))
-				}
-
-				// If we have a valid refresh token, we will generate new access token and refresh token
-				if refreshToken != nil && refreshToken.Valid {
-					if err := auth.GenerateTokensAndSetCookies(c, user, secret); err != nil {
-						return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Server error to refresh expired token. User Id %d", userID)).SetInternal(err)
-					}
-				}
-
-				return nil
-			}
-
-			// It may happen that we still have a valid access token, but we encounter issue when trying to generate new token
-			// In such case, we won't return the error.
-			if err := generateTokenFunc(); err != nil && !accessToken.Valid {
-				return err
-			}
 		}
 
 		// Stores userID into context.
