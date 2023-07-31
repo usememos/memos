@@ -20,6 +20,24 @@ type claimsMessage struct {
 	jwt.RegisteredClaims
 }
 
+// GenerateAccessToken generates an access token for web.
+func GenerateAccessToken(username string, userID int, secret string) (string, error) {
+	expirationTime := time.Now().Add(auth.AccessTokenDuration)
+	return generateToken(username, userID, auth.AccessTokenAudienceName, expirationTime, []byte(secret))
+}
+
+// GenerateTokensAndSetCookies generates jwt token and saves it to the http-only cookie.
+func GenerateTokensAndSetCookies(c echo.Context, user *store.User, secret string) error {
+	accessToken, err := GenerateAccessToken(user.Username, user.ID, secret)
+	if err != nil {
+		return errors.Wrap(err, "failed to generate access token")
+	}
+
+	cookieExp := time.Now().Add(auth.CookieExpDuration)
+	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
+	return nil
+}
+
 // RemoveTokensAndCookies removes the jwt token and refresh token from the cookies.
 func RemoveTokensAndCookies(c echo.Context) {
 	cookieExp := time.Now().Add(-1 * time.Hour)
