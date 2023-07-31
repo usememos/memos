@@ -1,21 +1,21 @@
-import { Select, Option } from "@mui/joy";
+import { Option, Select } from "@mui/joy";
+import copy from "copy-to-clipboard";
+import { toLower } from "lodash-es";
 import { QRCodeSVG } from "qrcode.react";
 import React, { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
-import copy from "copy-to-clipboard";
-import { toLower } from "lodash-es";
-import toImage from "@/labs/html2image";
-import { useGlobalStore, useMemoStore, useUserStore } from "@/store/module";
+import { getMemoStats } from "@/helpers/api";
 import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { getDateTimeString, getTimeStampByDate } from "@/helpers/datetime";
-import { getMemoStats } from "@/helpers/api";
 import useLoading from "@/hooks/useLoading";
-import Icon from "./Icon";
+import toImage from "@/labs/html2image";
+import { useGlobalStore, useMemoStore, useUserStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
+import showEmbedMemoDialog from "./EmbedMemoDialog";
+import Icon from "./Icon";
 import MemoContent from "./MemoContent";
 import MemoResourceListView from "./MemoResourceListView";
-import showEmbedMemoDialog from "./EmbedMemoDialog";
 import "@/less/share-memo-dialog.less";
 
 interface Props extends DialogProps {

@@ -1,5 +1,5 @@
-import { useTranslate } from "@/utils/i18n";
 import { Link } from "react-router-dom";
+import { useTranslate } from "@/utils/i18n";
 import "@/less/not-found.less";
 
 const NotFound = () => {

@@ -1,7 +1,7 @@
 import { useLayoutStore, useUserStore } from "../store/module";
+import SearchBar from "./SearchBar";
 import ShortcutList from "./ShortcutList";
 import TagList from "./TagList";
-import SearchBar from "./SearchBar";
 import UsageHeatMap from "./UsageHeatMap";
 
 const HomeSidebar = () => {

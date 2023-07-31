@@ -1,12 +1,12 @@
-import { createBrowserRouter, redirect } from "react-router-dom";
 import { lazy } from "react";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import { isNullorUndefined } from "@/helpers/utils";
-import store from "@/store";
-import { initialGlobalState, initialUserState } from "@/store/module";
+import Archived from "@/pages/Archived";
 import DailyReview from "@/pages/DailyReview";
 import ResourcesDashboard from "@/pages/ResourcesDashboard";
 import Setting from "@/pages/Setting";
-import Archived from "@/pages/Archived";
+import store from "@/store";
+import { initialGlobalState, initialUserState } from "@/store/module";
 
 const Root = lazy(() => import("@/layouts/Root"));
 const Auth = lazy(() => import("@/pages/Auth"));

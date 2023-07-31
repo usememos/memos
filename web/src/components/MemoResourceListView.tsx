@@ -1,8 +1,9 @@
+import { ImageList, ImageListItem, useMediaQuery } from "@mui/material";
 import { absolutifyLink } from "@/helpers/utils";
 import { getResourceUrl } from "@/utils/resource";
 import SquareDiv from "./kit/SquareDiv";
-import showPreviewImageDialog from "./PreviewImageDialog";
 import MemoResource from "./MemoResource";
+import showPreviewImageDialog from "./PreviewImageDialog";
 import "@/less/memo-resources.less";
 
 interface Props {
@@ -22,10 +23,14 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
     ...getDefaultProps(),
     ...props,
   };
-  const availableResourceList = resourceList.filter((resource) => resource.type.startsWith("image") || resource.type.startsWith("video"));
-  const otherResourceList = resourceList.filter((resource) => !availableResourceList.includes(resource));
+  const matches = useMediaQuery("(min-width:640px)");
+  const imageResourceList = resourceList.filter((resource) => resource.type.startsWith("image"));
+  const videoResourceList = resourceList.filter((resource) => resource.type.startsWith("video"));
+  const otherResourceList = resourceList.filter(
+    (resource) => !imageResourceList.includes(resource) && !videoResourceList.includes(resource)
+  );
 
-  const imgUrls = availableResourceList
+  const imgUrls = imageResourceList
     .filter((resource) => resource.type.startsWith("image"))
     .map((resource) => {
       return getResourceUrl(resource);
@@ -38,37 +43,38 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <div className={`resource-wrapper ${className || ""}`}>
-        {availableResourceList.length > 0 && (
-          <div className="images-wrapper">
-            {availableResourceList.map((resource) => {
+      {imageResourceList.length > 0 && (
+        <div className="w-full mt-2">
+          <ImageList variant="masonry" cols={matches ? 3 : 2} gap={8}>
+            {imageResourceList.map((resource) => {
               const url = getResourceUrl(resource);
-              if (resource.type.startsWith("image")) {
-                return (
-                  <SquareDiv key={resource.id} className="memo-resource">
-                    <img
-                      src={resource.externalLink ? url : url + "?thumbnail=1"}
-                      onClick={() => handleImageClick(url)}
-                      decoding="async"
-                      loading="lazy"
-                    />
-                  </SquareDiv>
-                );
-              } else if (resource.type.startsWith("video")) {
-                return (
-                  <SquareDiv key={resource.id} className="memo-resource">
-                    <video preload="metadata" controls key={resource.id}>
-                      <source src={absolutifyLink(url)} type={resource.type} />
-                    </video>
-                  </SquareDiv>
-                );
-              } else {
-                return null;
-              }
+              return (
+                <ImageListItem onClick={() => handleImageClick(url)} key={resource.id}>
+                  <img className="shadow rounded" src={url} loading="lazy" />
+                </ImageListItem>
+              );
+            })}
+          </ImageList>
+        </div>
+      )}
+
+      <div className={`resource-wrapper ${className || ""}`}>
+        {videoResourceList.length > 0 && (
+          <div className="images-wrapper">
+            {videoResourceList.map((resource) => {
+              const url = getResourceUrl(resource);
+              return (
+                <SquareDiv key={resource.id} className="memo-resource">
+                  <video preload="metadata" controls key={resource.id}>
+                    <source src={absolutifyLink(url)} type={resource.type} />
+                  </video>
+                </SquareDiv>
+              );
             })}
           </div>
         )}
       </div>
+
       {otherResourceList.length > 0 && (
         <div className="w-full flex flex-row justify-start flex-wrap mt-2">
           {otherResourceList.map((resource) => {

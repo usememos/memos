@@ -1,12 +1,12 @@
 import { last } from "lodash-es";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
 import { useSearchParams } from "react-router-dom";
+import Icon from "@/components/Icon";
 import * as api from "@/helpers/api";
 import { absolutifyLink } from "@/helpers/utils";
 import { useUserStore } from "@/store/module";
-import Icon from "@/components/Icon";
+import { useTranslate } from "@/utils/i18n";
 
 interface State {
   loading: boolean;

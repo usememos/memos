@@ -1,8 +1,8 @@
 import { toLower } from "lodash-es";
-import { useTranslate } from "@/utils/i18n";
+import Selector from "@/components/kit/Selector";
 import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { useGlobalStore } from "@/store/module";
-import Selector from "@/components/kit/Selector";
+import { useTranslate } from "@/utils/i18n";
 
 interface Props {
   value: Visibility;

@@ -1,14 +1,14 @@
 import { Button, Input } from "@mui/joy";
-import { useState } from "react";
-import { useTranslate } from "@/utils/i18n";
-import { toast } from "react-hot-toast";
-import { useGlobalStore } from "@/store/module";
-import * as api from "@/helpers/api";
 import Textarea from "@mui/joy/Textarea/Textarea";
-import Icon from "./Icon";
-import { generateDialog } from "./Dialog";
-import LocaleSelect from "./LocaleSelect";
+import { useState } from "react";
+import { toast } from "react-hot-toast";
+import * as api from "@/helpers/api";
+import { useGlobalStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "./AppearanceSelect";
+import { generateDialog } from "./Dialog";
+import Icon from "./Icon";
+import LocaleSelect from "./LocaleSelect";
 
 type Props = DialogProps;
 

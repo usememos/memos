@@ -1,10 +1,10 @@
-import { Message } from "@/store/v1/message";
-import { marked } from "@/labs/marked";
-import Icon from "@/components/Icon";
-import Dropdown from "../kit/Dropdown";
-import { useMemoStore } from "@/store/module";
 import toast from "react-hot-toast";
+import Icon from "@/components/Icon";
+import { marked } from "@/labs/marked";
+import { useMemoStore } from "@/store/module";
+import { Message } from "@/store/v1/message";
 import { useTranslate } from "@/utils/i18n";
+import Dropdown from "../kit/Dropdown";
 
 interface MessageProps {
   index: number;

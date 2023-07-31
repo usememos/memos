@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
 import { useResourceStore } from "@/store/module";
-import Icon from "./Icon";
+import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
+import Icon from "./Icon";
 import "@/less/change-resource-filename-dialog.less";
 
 interface Props extends DialogProps {

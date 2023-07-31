@@ -1,13 +1,13 @@
 import copy from "copy-to-clipboard";
 import React from "react";
 import toast from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
 import { useResourceStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import { getResourceUrl } from "@/utils/resource";
-import Dropdown from "./kit/Dropdown";
-import Icon from "./Icon";
-import { showCommonDialog } from "./Dialog/CommonDialog";
 import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
+import { showCommonDialog } from "./Dialog/CommonDialog";
+import Icon from "./Icon";
+import Dropdown from "./kit/Dropdown";
 import showPreviewImageDialog from "./PreviewImageDialog";
 
 interface Props {

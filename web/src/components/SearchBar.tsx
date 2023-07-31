@@ -1,7 +1,7 @@
-import { useEffect, useState, useRef } from "react";
-import { useTranslate } from "@/utils/i18n";
+import { useEffect, useRef, useState } from "react";
 import useDebounce from "@/hooks/useDebounce";
 import { useFilterStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
 
 const SearchBar = () => {

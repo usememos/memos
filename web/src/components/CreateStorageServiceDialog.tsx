@@ -1,12 +1,12 @@
 import { Button, Input, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
 import * as api from "@/helpers/api";
+import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import RequiredBadge from "./RequiredBadge";
 import LearnMore from "./LearnMore";
+import RequiredBadge from "./RequiredBadge";
 
 interface Props extends DialogProps {
   storage?: ObjectStorage;

@@ -1,8 +1,8 @@
 import { Button, Input, Textarea } from "@mui/joy";
-import { useTranslate } from "@/utils/i18n";
 import { useUserStore } from "@/store/module";
-import { showCommonDialog } from "../Dialog/CommonDialog";
+import { useTranslate } from "@/utils/i18n";
 import showChangePasswordDialog from "../ChangePasswordDialog";
+import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";

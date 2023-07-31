@@ -1,13 +1,12 @@
-import { Input, Button, Divider, Switch, Option, Select } from "@mui/joy";
-import { useState } from "react";
+import { Button, Divider, Input, Option, Select, Switch } from "@mui/joy";
+import React, { useState } from "react";
 import { toast } from "react-hot-toast";
-import React from "react";
-import { useTranslate } from "@/utils/i18n";
-import { useGlobalStore, useUserStore } from "@/store/module";
 import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
+import { useGlobalStore, useUserStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "../AppearanceSelect";
-import LocaleSelect from "../LocaleSelect";
 import LearnMore from "../LearnMore";
+import LocaleSelect from "../LocaleSelect";
 import "@/less/settings/preferences-section.less";
 
 const PreferencesSection = () => {

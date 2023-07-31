@@ -1,13 +1,13 @@
 import { Divider } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
 import * as api from "@/helpers/api";
-import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
-import Dropdown from "../kit/Dropdown";
-import { showCommonDialog } from "../Dialog/CommonDialog";
-import LearnMore from "../LearnMore";
 import { useGlobalStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
+import showCreateIdentityProviderDialog from "../CreateIdentityProviderDialog";
+import { showCommonDialog } from "../Dialog/CommonDialog";
+import Dropdown from "../kit/Dropdown";
+import LearnMore from "../LearnMore";
 
 interface State {
   disablePasswordLogin: boolean;

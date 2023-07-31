@@ -1,20 +1,20 @@
 import { isNumber, last, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
 import { useTranslation } from "react-i18next";
-import { getMatchedNodes } from "@/labs/marked";
 import { upsertMemoResource } from "@/helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
-import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
 import { clearContentQueryParam } from "@/helpers/utils";
-import Icon from "../Icon";
-import Editor, { EditorRefActions } from "./Editor";
+import { getMatchedNodes } from "@/labs/marked";
+import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import showCreateResourceDialog from "../CreateResourceDialog";
-import TagSelector from "./ActionButton/TagSelector";
+import Icon from "../Icon";
 import MemoVisibilitySelector from "./ActionButton/MemoVisibilitySelector";
-import ResourceListView from "./ResourceListView";
+import TagSelector from "./ActionButton/TagSelector";
+import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
+import ResourceListView from "./ResourceListView";
 import "@/less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];

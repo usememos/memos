@@ -1,11 +1,11 @@
 import { camelCase } from "lodash-es";
 import * as api from "@/helpers/api";
-import storage from "@/helpers/storage";
 import { UNKNOWN_USERNAME } from "@/helpers/consts";
+import storage from "@/helpers/storage";
 import { getSystemColorScheme } from "@/helpers/utils";
 import store, { useAppSelector } from "..";
 import { setAppearance, setLocale } from "../reducer/global";
-import { setUser, patchUser, setHost, setUserById } from "../reducer/user";
+import { patchUser, setHost, setUser, setUserById } from "../reducer/user";
 
 const defaultSetting: Setting = {
   locale: "en",

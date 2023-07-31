@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { useTranslate } from "@/utils/i18n";
-import { useFilterStore, useTagStore } from "@/store/module";
 import useToggle from "@/hooks/useToggle";
-import Icon from "./Icon";
+import { useFilterStore, useTagStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import showCreateTagDialog from "./CreateTagDialog";
+import Icon from "./Icon";
 
 interface Tag {
   key: string;

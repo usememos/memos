@@ -1,8 +1,8 @@
-import { useTranslate } from "@/utils/i18n";
 import { useGlobalStore } from "@/store/module";
-import Icon from "./Icon";
+import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import GitHubBadge from "./GitHubBadge";
+import Icon from "./Icon";
 
 type Props = DialogProps;
 
