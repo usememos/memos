@@ -94,7 +94,6 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr 
 	})
 	if err != nil {
 		return 0, status.Errorf(codes.Unauthenticated, "Invalid or expired access token")
-
 	}
 	if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
 		return 0, status.Errorf(codes.Unauthenticated,
@@ -158,21 +157,6 @@ func audienceContains(audience jwt.ClaimStrings, token string) bool {
 type claimsMessage struct {
 	Name string `json:"name"`
 	jwt.RegisteredClaims
-}
-
-// generateTokensAndSetCookies generates jwt token and saves it to the http-only cookie.
-func generateTokensAndSetCookies(ctx context.Context, username string, userID int, secret string) error {
-	accessToken, err := GenerateAccessToken(username, userID, secret)
-	if err != nil {
-		return errors.Wrap(err, "failed to generate access token")
-	}
-
-	if err := grpc.SetHeader(ctx, metadata.New(map[string]string{
-		auth.AccessTokenCookieName: accessToken,
-	})); err != nil {
-		return errors.Wrapf(err, "failed to set grpc header")
-	}
-	return nil
 }
 
 // GenerateAccessToken generates an access token for web.
