@@ -1,14 +1,14 @@
-import { Divider, Select, Option } from "@mui/joy";
+import { Divider, Option, Select } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
-import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
+import { useGlobalStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
-import showUpdateLocalStorageDialog from "../UpdateLocalStorageDialog";
-import Dropdown from "../kit/Dropdown";
 import { showCommonDialog } from "../Dialog/CommonDialog";
+import Dropdown from "../kit/Dropdown";
 import LearnMore from "../LearnMore";
+import showUpdateLocalStorageDialog from "../UpdateLocalStorageDialog";
 
 const StorageSection = () => {
   const t = useTranslate();

@@ -1,17 +1,17 @@
 import { Option, Select } from "@mui/joy";
 import { useState } from "react";
-import { useTranslate } from "@/utils/i18n";
-import { useGlobalStore, useUserStore } from "@/store/module";
-import Icon from "@/components/Icon";
 import BetaBadge from "@/components/BetaBadge";
-import MyAccountSection from "@/components/Settings/MyAccountSection";
-import PreferencesSection from "@/components/Settings/PreferencesSection";
-import MemberSection from "@/components/Settings/MemberSection";
-import SystemSection from "@/components/Settings/SystemSection";
-import OpenAISection from "@/components/Settings/OpenAISection";
-import StorageSection from "@/components/Settings/StorageSection";
-import SSOSection from "@/components/Settings/SSOSection";
+import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
+import MemberSection from "@/components/Settings/MemberSection";
+import MyAccountSection from "@/components/Settings/MyAccountSection";
+import OpenAISection from "@/components/Settings/OpenAISection";
+import PreferencesSection from "@/components/Settings/PreferencesSection";
+import SSOSection from "@/components/Settings/SSOSection";
+import StorageSection from "@/components/Settings/StorageSection";
+import SystemSection from "@/components/Settings/SystemSection";
+import { useGlobalStore, useUserStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import "@/less/setting.less";
 
 type SettingSection = "my-account" | "preference" | "member" | "system" | "openai" | "storage" | "sso";

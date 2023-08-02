@@ -1,20 +1,20 @@
-import { Button, Stack } from "@mui/joy";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { Button, Stack } from "@mui/joy";
 import { head } from "lodash-es";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
+import Empty from "@/components/Empty";
+import Icon from "@/components/Icon";
+import ChatInput from "@/components/MemoChat/ChatInput";
+import ChatMessage from "@/components/MemoChat/ChatMessage";
+import ConversationTab from "@/components/MemoChat/ConversationTab";
+import MobileHeader from "@/components/MobileHeader";
 import * as api from "@/helpers/api";
 import useLoading from "@/hooks/useLoading";
-import { Message, useMessageStore } from "@/store/v1/message";
 import { Conversation, useConversationStore } from "@/store/v1/conversation";
-import Icon from "@/components/Icon";
+import { Message, useMessageStore } from "@/store/v1/message";
+import { useTranslate } from "@/utils/i18n";
 import { generateUUID } from "@/utils/uuid";
-import MobileHeader from "@/components/MobileHeader";
-import ChatMessage from "@/components/MemoChat/ChatMessage";
-import ChatInput from "@/components/MemoChat/ChatInput";
-import ConversationTab from "@/components/MemoChat/ConversationTab";
-import Empty from "@/components/Empty";
 
 const chatStreaming = async (messageList: Array<Message>, onmessage: any, onclose: any) => {
   await fetchEventSource("/api/v1/openai/chat-streaming", {

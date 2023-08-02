@@ -1,9 +1,9 @@
+import { Button, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
-import { Button, Input } from "@mui/joy";
-import { useGlobalStore } from "@/store/module";
 import * as api from "@/helpers/api";
+import { useGlobalStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import LearnMore from "../LearnMore";
 import "@/less/settings/system-section.less";
 

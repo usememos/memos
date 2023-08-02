@@ -1,10 +1,10 @@
-import { Button, Input, Select, Option, Typography, List, ListItem, Autocomplete } from "@mui/joy";
+import { Autocomplete, Button, Input, List, ListItem, Option, Select, Typography } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslate } from "@/utils/i18n";
 import { useResourceStore } from "../store/module";
-import Icon from "./Icon";
 import { generateDialog } from "./Dialog";
+import Icon from "./Icon";
 
 const fileTypeAutocompleteOptions = ["image/*", "text/*", "audio/*", "video/*", "application/*"];
 

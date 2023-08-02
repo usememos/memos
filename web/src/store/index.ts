@@ -1,14 +1,14 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
-import globalReducer from "./reducer/global";
-import userReducer from "./reducer/user";
-import memoReducer from "./reducer/memo";
-import shortcutReducer from "./reducer/shortcut";
-import filterReducer from "./reducer/filter";
-import resourceReducer from "./reducer/resource";
 import dialogReducer from "./reducer/dialog";
-import tagReducer from "./reducer/tag";
+import filterReducer from "./reducer/filter";
+import globalReducer from "./reducer/global";
 import layoutReducer from "./reducer/layout";
+import memoReducer from "./reducer/memo";
+import resourceReducer from "./reducer/resource";
+import shortcutReducer from "./reducer/shortcut";
+import tagReducer from "./reducer/tag";
+import userReducer from "./reducer/user";
 
 const store = configureStore({
   reducer: {

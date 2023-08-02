@@ -1,7 +1,7 @@
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
+import useDebounce from "@/hooks/useDebounce";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
-import useDebounce from "@/hooks/useDebounce";
 
 interface ResourceSearchBarProps {
   setQuery: (queryText: string) => void;

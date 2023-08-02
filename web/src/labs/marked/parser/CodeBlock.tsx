@@ -1,8 +1,8 @@
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import { toast } from "react-hot-toast";
-import { matcher } from "../matcher";
 import { useTranslate } from "@/utils/i18n";
+import { matcher } from "../matcher";
 
 export const CODE_BLOCK_REG = /^```(\S*?)\s([\s\S]*?)```/;
 

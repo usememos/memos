@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, EffectCallback, DependencyList } from "react";
+import React, { DependencyList, EffectCallback, useEffect, useRef } from "react";
 
 const useIsoMorphicEffect = (effect: EffectCallback, deps?: DependencyList | undefined) => {
   useEffect(effect, deps);

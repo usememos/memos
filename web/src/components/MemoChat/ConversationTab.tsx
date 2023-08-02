@@ -1,5 +1,5 @@
-import { Conversation } from "@/store/v1/conversation";
 import Icon from "@/components/Icon";
+import { Conversation } from "@/store/v1/conversation";
 
 interface ConversationTabProps {
   item: Conversation;

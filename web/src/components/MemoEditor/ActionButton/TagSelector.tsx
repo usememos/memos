@@ -1,5 +1,5 @@
-import { useTagStore } from "@/store/module";
 import Icon from "@/components/Icon";
+import { useTagStore } from "@/store/module";
 
 interface Props {
   onTagSelectorClick: (tag: string) => void;

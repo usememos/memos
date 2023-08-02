@@ -1,7 +1,7 @@
 import i18n, { FallbackLng, FallbackLngObjList } from "i18next";
-import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import toast from "react-hot-toast";
+import { initReactI18next } from "react-i18next";
 
 export const availableLocales = [
   "de",

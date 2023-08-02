@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
-import { useMemoStore } from "@/store/module";
 import useLoading from "@/hooks/useLoading";
-import Icon from "./Icon";
-import { generateDialog } from "./Dialog";
+import { useMemoStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 import ArchivedMemo from "./ArchivedMemo";
+import { generateDialog } from "./Dialog";
+import Icon from "./Icon";
 import "@/less/archived-memo-dialog.less";
 
 type Props = DialogProps;

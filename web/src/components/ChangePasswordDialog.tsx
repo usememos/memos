@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
 import { useGlobalStore, useUserStore } from "@/store/module";
-import Icon from "./Icon";
+import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
+import Icon from "./Icon";
 
 type Props = DialogProps;
 

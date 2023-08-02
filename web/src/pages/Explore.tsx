@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useTranslate } from "@/utils/i18n";
 import { useLocation } from "react-router-dom";
-import { useFilterStore, useGlobalStore, useMemoStore } from "@/store/module";
-import { TAG_REG } from "@/labs/marked/parser";
+import Empty from "@/components/Empty";
+import Memo from "@/components/Memo";
+import MemoFilter from "@/components/MemoFilter";
+import MobileHeader from "@/components/MobileHeader";
+import SearchBar from "@/components/SearchBar";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import useLoading from "@/hooks/useLoading";
-import MemoFilter from "@/components/MemoFilter";
-import Memo from "@/components/Memo";
-import MobileHeader from "@/components/MobileHeader";
-import Empty from "@/components/Empty";
-import SearchBar from "@/components/SearchBar";
+import { TAG_REG } from "@/labs/marked/parser";
+import { useFilterStore, useGlobalStore, useMemoStore } from "@/store/module";
+import { useTranslate } from "@/utils/i18n";
 
 const Explore = () => {
   const t = useTranslate();

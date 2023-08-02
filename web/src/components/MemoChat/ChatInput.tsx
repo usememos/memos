@@ -1,5 +1,5 @@
-import Icon from "@/components/Icon";
 import Textarea from "@mui/joy/Textarea/Textarea";
+import Icon from "@/components/Icon";
 import { useTranslate } from "@/utils/i18n";
 
 interface Props {
