@@ -32,7 +32,6 @@
     "react-router-dom": "^6.8.2",
     "react-use": "^17.4.0",
     "semver": "^7.3.8",
-    "styled-components": "^6.0.5",
     "tailwindcss": "^3.2.4",
     "textarea-caret": "^3.1.0",
     "uuid": "^9.0.0",
