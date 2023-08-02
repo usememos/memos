@@ -192,7 +192,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="dialog-content-container !w-80">
-        <Typography className="!mb-1" level="body2">
+        <Typography className="!mb-1" level="body-md">
           {t("resource.create-dialog.upload-method")}
         </Typography>
         <Select
@@ -254,7 +254,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
 
         {state.selectedMode === "external-link" && (
           <>
-            <Typography className="!mb-1" level="body2">
+            <Typography className="!mb-1" level="body-md">
               {t("resource.create-dialog.external-link.link")}
             </Typography>
             <Input
@@ -264,7 +264,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
               onChange={handleExternalLinkChanged}
               fullWidth
             />
-            <Typography className="!mb-1" level="body2">
+            <Typography className="!mb-1" level="body-md">
               {t("resource.create-dialog.external-link.file-name")}
             </Typography>
             <Input
@@ -274,7 +274,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
               onChange={handleFileNameChanged}
               fullWidth
             />
-            <Typography className="!mb-1" level="body2">
+            <Typography className="!mb-1" level="body-md">
               {t("resource.create-dialog.external-link.type")}
             </Typography>
             <Autocomplete
@@ -290,7 +290,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
 
         {state.selectedMode === "download-link" && (
           <>
-            <Typography className="!mb-1" level="body2">
+            <Typography className="!mb-1" level="body-md">
               {t("resource.create-dialog.external-link.link")}
             </Typography>
             <Input
