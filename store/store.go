@@ -17,7 +17,6 @@ type Store struct {
 	systemSettingCache sync.Map // map[string]*SystemSetting
 	userCache          sync.Map // map[int]*User
 	userSettingCache   sync.Map // map[string]*UserSetting
-	shortcutCache      sync.Map // map[int]*Shortcut
 	idpCache           sync.Map // map[int]*IdentityProvider
 }
 
@@ -98,9 +97,6 @@ func (*Store) vacuumImpl(ctx context.Context, tx *sql.Tx) error {
 		return err
 	}
 	if err := vacuumResource(ctx, tx); err != nil {
-		return err
-	}
-	if err := vacuumShortcut(ctx, tx); err != nil {
 		return err
 	}
 	if err := vacuumUserSetting(ctx, tx); err != nil {

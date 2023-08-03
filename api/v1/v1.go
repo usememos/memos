@@ -36,7 +36,6 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 	s.registerUserRoutes(apiV1Group)
 	s.registerUserSettingRoutes(apiV1Group)
 	s.registerTagRoutes(apiV1Group)
-	s.registerShortcutRoutes(apiV1Group)
 	s.registerStorageRoutes(apiV1Group)
 	s.registerResourceRoutes(apiV1Group)
 	s.registerMemoRoutes(apiV1Group)
