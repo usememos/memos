@@ -16,7 +16,6 @@ const Home = lazy(() => import("@/pages/Home"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
 const EmbedMemo = lazy(() => import("@/pages/EmbedMemo"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
-const MemoChat = lazy(() => import("@/pages/MemoChat"));
 
 const initialGlobalStateLoader = (() => {
   let done = false;
@@ -162,27 +161,6 @@ const router = createBrowserRouter([
           return null;
         },
       },
-      {
-        path: "memo-chat",
-        element: <MemoChat />,
-        loader: async () => {
-          await initialGlobalStateLoader();
-
-          try {
-            await initialUserState();
-          } catch (error) {
-            // do nth
-          }
-
-          const { user } = store.getState().user;
-
-          if (isNullorUndefined(user)) {
-            return redirect("/auth");
-          }
-          return null;
-        },
-      },
-
       {
         path: "archived",
         element: <Archived />,

@@ -369,16 +369,6 @@
     "sat": "土",
     "sun": "日"
   },
-  "memo-chat": {
-    "title": "AIに尋ねる",
-    "not-enabled": "OpenAIのAPI keyが設定されていません",
-    "go-to-settings": "設定へ",
-    "placeholder": "何か聞いてみてください...",
-    "default-message-group-title": "デフォルトセッション",
-    "create-message-group-title": "セッションを作成する",
-    "label-message-group-name-title": "セッションの名前"
-  },
-
   "embed-memo": {
     "title": "メモを埋め込む",
     "text": "コードをあなたのサイズにコピーペーストすればメモを埋め込めます",
