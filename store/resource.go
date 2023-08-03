@@ -36,9 +36,11 @@ type FindResource struct {
 }
 
 type UpdateResource struct {
-	ID        int
-	UpdatedTs *int64
-	Filename  *string
+	ID           int
+	UpdatedTs    *int64
+	Filename     *string
+	InternalPath *string
+	Blob         []byte
 }
 
 type DeleteResource struct {
@@ -173,6 +175,12 @@ func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Re
 	}
 	if v := update.Filename; v != nil {
 		set, args = append(set, "filename = ?"), append(args, *v)
+	}
+	if v := update.InternalPath; v != nil {
+		set, args = append(set, "internal_path = ?"), append(args, *v)
+	}
+	if v := update.Blob; v != nil {
+		set, args = append(set, "blob = ?"), append(args, v)
 	}
 
 	args = append(args, update.ID)
