@@ -43,7 +43,6 @@
     "sign-out": "Выйти",
     "back-to-home": "Вернуться на главную",
     "type": "Тип",
-    "shortcuts": "Фильтры",
     "title": "Заголовок",
     "filter": "Фильтр",
     "filter-period": "{{from}} по {{to}}",
@@ -178,15 +177,6 @@
   "memo-list": {
     "fetching-data": "загрузка данных...",
     "fetch-more": "Загрузить больше"
-  },
-  "shortcut-list": {
-    "shortcut-title": "Название фильтра",
-    "create-shortcut": "Создать фильтр",
-    "edit-shortcut": "Редактировать фильтр",
-    "eligible-memo": "связанные записи",
-    "fill-previous": "Пожалуйста, заполните значение фильтра",
-    "title-required": "Название обязательно",
-    "value-required": "Значение фильтра обязательно"
   },
   "filter": {
     "new-filter": "Новый фильтр",

@@ -38,7 +38,6 @@
     "sign-up": "Registriraj se",
     "sign-out": "Odjavi se",
     "type": "Tip",
-    "shortcuts": "Prečaci",
     "title": "Naslov",
     "filter": "Filtriraj",
     "filter-period": "{{from}} do {{to}}",
@@ -147,15 +146,6 @@
         "option": "Link za preuzimanje"
       }
     }
-  },
-  "shortcut-list": {
-    "shortcut-title": "ime prečaca",
-    "create-shortcut": "Stvori prečac",
-    "edit-shortcut": "Uredi prečac",
-    "eligible-memo": "eligible memo",
-    "fill-previous": "Please fill in previous filter value",
-    "title-required": "Naslov je obavezan",
-    "value-required": "Filter value je tražena"
   },
   "tag-list": {
     "tip-text": "Unesi `#tag` kako bi stvorio",

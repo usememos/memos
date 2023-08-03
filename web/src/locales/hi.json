@@ -38,7 +38,6 @@
     "sign-up": "साइन अप करें",
     "sign-out": "साइन आउट करें",
     "type": "प्रकार",
-    "shortcuts": "शॉर्टकट",
     "title": "शीर्षक",
     "filter": "फ़िल्टर",
     "filter-period": "{{from}} से {{to}} तक",
@@ -147,15 +146,6 @@
         "option": "डाउनलोड लिंक"
       }
     }
-  },
-  "shortcut-list": {
-    "shortcut-title": "शॉर्टकट शीर्षक",
-    "create-shortcut": "शॉर्टकट बनाएँ",
-    "edit-shortcut": "शॉर्टकट संपादित करें",
-    "eligible-memo": "उपयुक्त मेमो",
-    "fill-previous": "कृपया पिछले फ़िल्टर मान को भरें",
-    "title-required": "शीर्षक आवश्यक है",
-    "value-required": "फ़िल्टर मान आवश्यक है"
   },
   "tag-list": {
     "tip-text": "बनाने के लिए `#tag` इनपुट करें",

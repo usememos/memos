@@ -38,7 +38,6 @@
     "sign-up": "註冊",
     "sign-out": "登出",
     "type": "類型",
-    "shortcuts": "捷徑",
     "title": "標題",
     "filter": "過濾器",
     "filter-period": "{{from}} 至 {{to}}",
@@ -147,15 +146,6 @@
         "option": "從外部連結下載"
       }
     }
-  },
-  "shortcut-list": {
-    "shortcut-title": "捷徑標題",
-    "create-shortcut": "新增捷徑",
-    "edit-shortcut": "編輯捷徑",
-    "eligible-memo": "符合條件的備忘錄",
-    "fill-previous": "請填入前一個過濾器的值",
-    "title-required": "標題為必填",
-    "value-required": "過濾器值為必填"
   },
   "tag-list": {
     "tip-text": "輸入 `#tag` 以新增標籤",

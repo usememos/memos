@@ -32,7 +32,6 @@
     "sign-out": "Uitloggen",
     "back-to-home": "Terug naar homepagina",
     "type": "Type",
-    "shortcuts": "Snelkoppelingen",
     "title": "Titel",
     "filter": "Filter",
     "tags": "Labels",
@@ -108,15 +107,6 @@
   "memo-list": {
     "fetching-data": "data aan het ophalen...",
     "fetch-more": "Klik hier om meer op te halen"
-  },
-  "shortcut-list": {
-    "shortcut-title": "snelkoppelingstitel",
-    "create-shortcut": "Maak Snelkoppeling",
-    "edit-shortcut": "Wijzig Shortcut",
-    "eligible-memo": "geschikte memo",
-    "fill-previous": "Vul alsjeblieft het vorige filter in",
-    "title-required": "Titel is verplicht",
-    "value-required": "Filter is verplicht"
   },
   "filter": {
     "new-filter": "Nieuw Filter",

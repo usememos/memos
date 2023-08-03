@@ -38,7 +38,6 @@
     "sign-up": "Registrar",
     "sign-out": "Sair",
     "type": "Tipo",
-    "shortcuts": "Atalhos",
     "title": "Título",
     "filter": "Filtro",
     "filter-period": "{{from}} até {{to}}",
@@ -144,15 +143,6 @@
         "type-placeholder": "Tipo do arquivo"
       }
     }
-  },
-  "shortcut-list": {
-    "shortcut-title": "título do atalho",
-    "create-shortcut": "Criar atalho",
-    "edit-shortcut": "Editar atalho",
-    "eligible-memo": "memo elegível",
-    "fill-previous": "Por favor, preencha o valor do filtro anterior",
-    "title-required": "O título do atalho é obrigatório",
-    "value-required": "O valor do filtro é obrigatório"
   },
   "tag-list": {
     "tip-text": "Insira `#tag` para criar uma nova",

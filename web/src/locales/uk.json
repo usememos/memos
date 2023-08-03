@@ -34,7 +34,6 @@
     "sign-out": "Вийти",
     "back-to-home": "Повернутися на головну",
     "type": "Типу",
-    "shortcuts": "Ярлики",
     "title": "Заголовок",
     "filter": "Фільтр",
     "tags": "Теги",
@@ -108,15 +107,6 @@
   "memo-list": {
     "fetching-data": "завантаження даних...",
     "fetch-more": "Завантажити більше"
-  },
-  "shortcut-list": {
-    "shortcut-title": "назва ярлика",
-    "create-shortcut": "Створити ярлик",
-    "edit-shortcut": "Редагувати ярлик",
-    "eligible-memo": "пов'язані нотатки",
-    "fill-previous": "Будь ласка заповніть значення фільтра",
-    "title-required": "Назва обов'язкова",
-    "value-required": "Значення фільтра обов'язкове"
   },
   "filter": {
     "new-filter": "Новий фільтр",

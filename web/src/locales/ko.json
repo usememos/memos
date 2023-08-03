@@ -38,7 +38,6 @@
     "sign-up": "회원등록",
     "sign-out": "로그아웃",
     "type": "타입",
-    "shortcuts": "바로가기",
     "title": "제목",
     "filter": "필터",
     "filter-period": "{{from}} 부터 {{to}}",
@@ -144,15 +143,6 @@
         "type-placeholder": "파일 종류"
       }
     }
-  },
-  "shortcut-list": {
-    "shortcut-title": "바로가기 이름",
-    "create-shortcut": "바로가기 생성",
-    "edit-shortcut": "바로가기 변경",
-    "eligible-memo": "해당하는 메모",
-    "fill-previous": "위의 필터 값을 채워주세요",
-    "title-required": "제목이 있어야 합니다",
-    "value-required": "필터 값이 있어야 합니다"
   },
   "tag-list": {
     "tip-text": "`#태그명`을 입력하세요",

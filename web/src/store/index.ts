@@ -6,7 +6,6 @@ import globalReducer from "./reducer/global";
 import layoutReducer from "./reducer/layout";
 import memoReducer from "./reducer/memo";
 import resourceReducer from "./reducer/resource";
-import shortcutReducer from "./reducer/shortcut";
 import tagReducer from "./reducer/tag";
 import userReducer from "./reducer/user";
 
@@ -16,7 +15,6 @@ const store = configureStore({
     user: userReducer,
     memo: memoReducer,
     tag: tagReducer,
-    shortcut: shortcutReducer,
     filter: filterReducer,
     resource: resourceReducer,
     dialog: dialogReducer,

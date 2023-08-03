@@ -34,7 +34,6 @@
     "sign-out": "Çıkış yap",
     "back-to-home": "Ana sayfaya dön",
     "type": "Tip",
-    "shortcuts": "Kısayollar",
     "title": "Başlık",
     "filter": "Filtre",
     "tags": "Etiketler",
@@ -98,15 +97,6 @@
   "memo-list": {
     "fetching-data": "Veriler yükleniyor...",
     "fetch-more": "Daha fazla yükle"
-  },
-  "shortcut-list": {
-    "shortcut-title": "Kısayol adı",
-    "create-shortcut": "Kısayol oluştur",
-    "edit-shortcut": "Kısayolu düzenle",
-    "eligible-memo": "İlgili notlar",
-    "fill-previous": "Lütfen filtre değerini doldurun",
-    "title-required": "Başlık gerekli",
-    "value-required": "Filtre değeri gerekli"
   },
   "filter": {
     "new-filter": "Yeni filtre",
