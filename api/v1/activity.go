@@ -30,15 +30,6 @@ const (
 	// ActivityMemoDelete is the type for deleting memos.
 	ActivityMemoDelete ActivityType = "memo.delete"
 
-	// Shortcut related.
-
-	// ActivityShortcutCreate is the type for creating shortcuts.
-	ActivityShortcutCreate ActivityType = "shortcut.create"
-	// ActivityShortcutUpdate is the type for updating shortcuts.
-	ActivityShortcutUpdate ActivityType = "shortcut.update"
-	// ActivityShortcutDelete is the type for deleting shortcuts.
-	ActivityShortcutDelete ActivityType = "shortcut.delete"
-
 	// Resource related.
 
 	// ActivityResourceCreate is the type for creating resources.
@@ -98,11 +89,6 @@ type ActivityUserAuthSignUpPayload struct {
 type ActivityMemoCreatePayload struct {
 	Content    string `json:"content"`
 	Visibility string `json:"visibility"`
-}
-
-type ActivityShortcutCreatePayload struct {
-	Title   string `json:"title"`
-	Payload string `json:"payload"`
 }
 
 type ActivityResourceCreatePayload struct {
