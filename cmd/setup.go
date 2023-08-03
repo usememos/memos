@@ -1,17 +1,63 @@
-package setup
+package cmd
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
-	"golang.org/x/crypto/bcrypt"
-
+	"github.com/spf13/cobra"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
+	"github.com/usememos/memos/store/db"
+	"golang.org/x/crypto/bcrypt"
 )
 
-func Execute(ctx context.Context, store *store.Store, hostUsername, hostPassword string) error {
+var (
+	setupCmdFlagHostUsername = "host-username"
+	setupCmdFlagHostPassword = "host-password"
+	setupCmd                 = &cobra.Command{
+		Use:   "setup",
+		Short: "Make initial setup for memos",
+		Run: func(cmd *cobra.Command, _ []string) {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+			defer cancel()
+
+			hostUsername, err := cmd.Flags().GetString(setupCmdFlagHostUsername)
+			if err != nil {
+				fmt.Printf("failed to get owner username, error: %+v\n", err)
+				return
+			}
+
+			hostPassword, err := cmd.Flags().GetString(setupCmdFlagHostPassword)
+			if err != nil {
+				fmt.Printf("failed to get owner password, error: %+v\n", err)
+				return
+			}
+
+			db := db.NewDB(profile)
+			if err := db.Open(ctx); err != nil {
+				fmt.Printf("failed to open db, error: %+v\n", err)
+				return
+			}
+
+			store := store.New(db.DBInstance, profile)
+			if err := ExecuteSetup(ctx, store, hostUsername, hostPassword); err != nil {
+				fmt.Printf("failed to setup, error: %+v\n", err)
+				return
+			}
+		},
+	}
+)
+
+func init() {
+	setupCmd.Flags().String(setupCmdFlagHostUsername, "", "Owner username")
+	setupCmd.Flags().String(setupCmdFlagHostPassword, "", "Owner password")
+
+	rootCmd.AddCommand(setupCmd)
+}
+
+func ExecuteSetup(ctx context.Context, store *store.Store, hostUsername, hostPassword string) error {
 	s := setupService{store: store}
 	return s.Setup(ctx, hostUsername, hostPassword)
 }
