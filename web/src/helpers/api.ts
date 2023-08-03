@@ -142,26 +142,6 @@ export function checkOpenAIEnabled() {
   return axios.get<boolean>(`/api/openai/enabled`);
 }
 
-export function getShortcutList(shortcutFind?: ShortcutFind) {
-  const queryList = [];
-  if (shortcutFind?.creatorUsername) {
-    queryList.push(`creatorUsername=${shortcutFind.creatorUsername}`);
-  }
-  return axios.get<Shortcut[]>(`/api/v1/shortcut?${queryList.join("&")}`);
-}
-
-export function createShortcut(shortcutCreate: ShortcutCreate) {
-  return axios.post<Shortcut>("/api/v1/shortcut", shortcutCreate);
-}
-
-export function patchShortcut(shortcutPatch: ShortcutPatch) {
-  return axios.patch<Shortcut>(`/api/v1/shortcut/${shortcutPatch.id}`, shortcutPatch);
-}
-
-export function deleteShortcutById(shortcutId: ShortcutId) {
-  return axios.delete(`/api/v1/shortcut/${shortcutId}`);
-}
-
 export function getResourceList() {
   return axios.get<Resource[]>("/api/v1/resource");
 }

@@ -34,7 +34,6 @@
     "sign-out": "Esci",
     "back-to-home": "Ritorna alla Home",
     "type": "Tipo",
-    "shortcuts": "Scorciatoie",
     "title": "Titolo",
     "filter": "Filtro",
     "tags": "Etichette",
@@ -108,15 +107,6 @@
   "memo-list": {
     "fetching-data": "recupero i dati...",
     "fetch-more": "Clicca per caricare più dati"
-  },
-  "shortcut-list": {
-    "shortcut-title": "titolo Scorciatoia",
-    "create-shortcut": "Crea Scorciatoia",
-    "edit-shortcut": "Modifica Scorciatoia",
-    "eligible-memo": "eligible memo",
-    "fill-previous": "Compila il valore del filtro precedente",
-    "title-required": "Il titolo è obbligatorio",
-    "value-required": "Il valore del filtro è obbligatorio"
   },
   "filter": {
     "new-filter": "Nuovo Filtro",

@@ -39,7 +39,6 @@
     "sign-out": "Odjavi se",
     "back-to-home": "Nazaj domov",
     "type": "Tip",
-    "shortcuts": "Bližnjice",
     "title": "Naslov",
     "filter": "Filter",
     "tags": "Značke",
@@ -130,15 +129,6 @@
     "fetching-data": "pridobivam podatke...",
     "fetch-more": "Kliknite tu da pridobite še več"
   },
-  "shortcut-list": {
-    "shortcut-title": "naslov bližnjice",
-    "create-shortcut": "Kreiraj bližnjico",
-    "edit-shortcut": "Uredi bližnjico",
-    "eligible-memo": "upravičene beležke",
-    "fill-previous": "Prosim izpolnite prejšnje vrednosti filtra",
-    "title-required": "Naslov je obvezen",
-    "value-required": "Vrednost filtra je obvezna"
-  },
   "filter": {
     "new-filter": "Nov filter",
     "type": {
@@ -200,7 +190,7 @@
       "created_ts": "Čas ustvarjanja",
       "updated_ts": "Čas posodobitve",
       "daily-review-time-offset": "Časovni odmik dnevnega pregleda",
-      "auto-collapse":"Samodejno strni"
+      "auto-collapse": "Samodejno strni"
     },
     "storage-section": {
       "storage-services-list": "Seznam storitev shramb",

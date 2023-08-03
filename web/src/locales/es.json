@@ -34,7 +34,6 @@
     "sign-out": "Cerrar sesión",
     "back-to-home": "Volver al Inicio",
     "type": "Tipo",
-    "shortcuts": "Atajos",
     "title": "Título",
     "filter": "Filtros",
     "tags": "Etiquetas",
@@ -108,15 +107,6 @@
   "memo-list": {
     "fetching-data": "obteniendo datos...",
     "fetch-more": "Click aqui para obtener más información"
-  },
-  "shortcut-list": {
-    "shortcut-title": "título del atajo",
-    "create-shortcut": "Crear Atajo",
-    "edit-shortcut": "Editar Atajo",
-    "eligible-memo": "nota elegible",
-    "fill-previous": "Introduce el valor del filtro anterior",
-    "title-required": "El título es obligatorio",
-    "value-required": "El valor del filtro es obligatorio"
   },
   "filter": {
     "new-filter": "Nuevo Filtro",

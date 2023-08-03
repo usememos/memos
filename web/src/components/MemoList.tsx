@@ -2,9 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
-import { checkShouldShowMemoWithFilters } from "@/helpers/filter";
 import { LINK_REG, PLAIN_LINK_REG, TAG_REG } from "@/labs/marked/parser";
-import { useFilterStore, useMemoStore, useShortcutStore, useUserStore } from "@/store/module";
+import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "./Empty";
 import Memo from "./Memo";
@@ -19,28 +18,20 @@ const MemoList: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
   const memoStore = useMemoStore();
   const userStore = useUserStore();
-  const shortcutStore = useShortcutStore();
   const filterStore = useFilterStore();
   const filter = filterStore.state;
   const { memos, isFetching } = memoStore.state;
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
   const currentUsername = userStore.getCurrentUsername();
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, shortcutId, visibility } = filter;
-  const shortcut = shortcutId ? shortcutStore.getShortcutById(shortcutId) : null;
-  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || shortcut || visibility);
+  const { tag: tagQuery, duration, type: memoType, text: textQuery, visibility } = filter;
+  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || visibility);
 
   const shownMemos = (
-    showMemoFilter || shortcut
+    showMemoFilter
       ? memos.filter((memo) => {
           let shouldShow = true;
 
-          if (shortcut) {
-            const filters = JSON.parse(shortcut.payload) as Filter[];
-            if (Array.isArray(filters)) {
-              shouldShow = checkShouldShowMemoWithFilters(memo, filters);
-            }
-          }
           if (tagQuery) {
             const tagsSet = new Set<string>();
             for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "gu")) ?? [])) {

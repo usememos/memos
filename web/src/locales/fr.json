@@ -34,7 +34,6 @@
     "sign-out": "Se déconnecter",
     "back-to-home": "Retour à l'accueil",
     "type": "Type",
-    "shortcuts": "Raccourcis",
     "title": "Titre",
     "filter": "Filtre",
     "tags": "Étiquettes",
@@ -108,15 +107,6 @@
   "memo-list": {
     "fetching-data": "récupération des données...",
     "fetch-more": "Cliquez ici pour en savoir plus"
-  },
-  "shortcut-list": {
-    "shortcut-title": "titre du raccourci",
-    "create-shortcut": "Créer un raccourci",
-    "edit-shortcut": "Editer un raccourci",
-    "eligible-memo": "mémo admissible",
-    "fill-previous": "Veuillez remplir la valeur du filtre précédent",
-    "title-required": "Le titre est requis",
-    "value-required": "La valeur du filtre est requise"
   },
   "filter": {
     "new-filter": "Nouveau filtre",

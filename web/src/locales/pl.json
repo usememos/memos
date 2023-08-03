@@ -35,7 +35,6 @@
     "sign-out": "Wyloguj",
     "back-to-home": "Powrót do Strony Głównej",
     "type": "Typ",
-    "shortcuts": "Skróty",
     "title": "Tytuł",
     "filter": "Filtruj",
     "tags": "Tagi",
@@ -108,15 +107,6 @@
   "memo-list": {
     "fetching-data": "pobieranie danych...",
     "fetch-more": "Kliknij, aby pobrać więcej"
-  },
-  "shortcut-list": {
-    "shortcut-title": "krótki tytuł",
-    "create-shortcut": "Utwórz skrót",
-    "edit-shortcut": "Edytuj skrót",
-    "eligible-memo": "kwalifikująca się notatka",
-    "fill-previous": "Proszę uzupełnij poprzednią wartość filtra",
-    "title-required": "Tytuł jest wymagany",
-    "value-required": "Wartość filtra jest wymagana"
   },
   "filter": {
     "new-filter": "Nowy filtr",

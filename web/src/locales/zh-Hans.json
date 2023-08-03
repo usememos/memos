@@ -49,7 +49,6 @@
     "select": "选择",
     "settings": "设置",
     "share": "分享",
-    "shortcuts": "捷径",
     "sign-in": "登录",
     "sign-in-with": "使用{{provider}}登录",
     "sign-out": "注销",
@@ -439,15 +438,6 @@
       "auto-backup-interval-hint": "设置为0禁止自动备份，重启后生效",
       "display-with-updated-time": "显示最后修改时间"
     }
-  },
-  "shortcut-list": {
-    "create-shortcut": "创建捷径",
-    "edit-shortcut": "编辑捷径",
-    "eligible-memo": "符合条件的备忘录",
-    "fill-previous": "请填写之前的过滤值",
-    "shortcut-title": "捷径标题",
-    "title-required": "标题是必填项",
-    "value-required": "过滤值是必填项"
   },
   "tag-list": {
     "all-tags": "全部标签",

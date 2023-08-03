@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useFilterStore, useLayoutStore, useShortcutStore } from "@/store/module";
+import { useState } from "react";
+import { useLayoutStore } from "@/store/module";
 import Icon from "./Icon";
 
 interface Props {
@@ -8,24 +8,8 @@ interface Props {
 
 const MobileHeader = (props: Props) => {
   const { showSearch = true } = props;
-  const filterStore = useFilterStore();
-  const shortcutStore = useShortcutStore();
   const layoutStore = useLayoutStore();
-  const filter = filterStore.state;
-  const shortcuts = shortcutStore.state.shortcuts;
-  const [titleText, setTitleText] = useState("MEMOS");
-
-  useEffect(() => {
-    if (!filter.shortcutId) {
-      setTitleText("MEMOS");
-      return;
-    }
-
-    const shortcut = shortcutStore.getShortcutById(filter.shortcutId);
-    if (shortcut) {
-      setTitleText(shortcut.title);
-    }
-  }, [filter, shortcuts]);
+  const [titleText] = useState("MEMOS");
 
   return (
     <div className="sticky top-0 pt-4 sm:pt-1 pb-1 mb-1 backdrop-blur bg-zinc-100 dark:bg-zinc-800 bg-opacity-70 flex md:hidden flex-row justify-between items-center w-full h-auto flex-nowrap shrink-0 z-2">

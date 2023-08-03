@@ -10,7 +10,6 @@ interface State {
   duration?: Duration;
   type?: MemoSpecType;
   text?: string;
-  shortcutId?: ShortcutId;
   visibility?: Visibility;
 }
 

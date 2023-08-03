@@ -34,7 +34,6 @@
     "sign-out": "Đăng xuất",
     "back-to-home": "Về trang chủ",
     "type": "Kiểu",
-    "shortcuts": "Lối tắt",
     "title": "Tiêu đề",
     "filter": "Bộ lọc",
     "tags": "Thẻ",
@@ -108,15 +107,6 @@
   "memo-list": {
     "fetching-data": "đang tải dữ liệu...",
     "fetch-more": "Nhấp vào đây để tải thêm dữ liệu"
-  },
-  "shortcut-list": {
-    "shortcut-title": "Tên lối tắt",
-    "create-shortcut": "Tạo lối tắt",
-    "edit-shortcut": "Chỉnh sửa lối tắt",
-    "eligible-memo": "ghi chú đạt chuẩn",
-    "fill-previous": "Vui lòng nhập vào giá trị của bộ lọc trước đó",
-    "title-required": "Tiêu đề là bắt buộc",
-    "value-required": "Giá trị bộ lọc là bắt buộc"
   },
   "filter": {
     "new-filter": "Bộ Lọc Mới",

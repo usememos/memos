@@ -38,7 +38,6 @@
     "sign-up": "登録",
     "sign-out": "ログアウト",
     "type": "タイプ",
-    "shortcuts": "ショートカット",
     "title": "タイトル",
     "filter": "フィルター",
     "filter-period": "{{from}}から{{to}}",
@@ -144,15 +143,6 @@
         "type-placeholder": "ファイルタイプ"
       }
     }
-  },
-  "shortcut-list": {
-    "shortcut-title": "ショートカットの名前",
-    "create-shortcut": "ショートカットを作成",
-    "edit-shortcut": "ショートカットを編集",
-    "eligible-memo": "的確なメモ",
-    "fill-previous": "前回のフィルターの値を入力してください。",
-    "title-required": "タイトルは必須です",
-    "value-required": "フィルターの値は必須です。"
   },
   "tag-list": {
     "tip-text": "作成するには`#tag`のように入力してください",

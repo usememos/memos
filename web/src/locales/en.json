@@ -38,7 +38,6 @@
     "sign-up": "Sign up",
     "sign-out": "Sign out",
     "type": "Type",
-    "shortcuts": "Shortcuts",
     "title": "Title",
     "filter": "Filter",
     "filter-period": "{{from}} to {{to}}",
@@ -147,15 +146,6 @@
         "option": "Download link"
       }
     }
-  },
-  "shortcut-list": {
-    "shortcut-title": "shortcut title",
-    "create-shortcut": "Create Shortcut",
-    "edit-shortcut": "Edit Shortcut",
-    "eligible-memo": "eligible memo",
-    "fill-previous": "Please fill in previous filter value",
-    "title-required": "Title is required",
-    "value-required": "Filter value is required"
   },
   "tag-list": {
     "tip-text": "Input `#tag` to create",
