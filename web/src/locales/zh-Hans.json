@@ -95,17 +95,6 @@
     "fetching-data": "请求数据中...",
     "no-archived-memos": "没有归档的备忘录"
   },
-  "memo-chat": {
-    "go-to-settings": "前往设置",
-    "save-as-memo": "保存为 Memo",
-    "save-as-memo-success": "保存为 Memo 成功",
-    "not-enabled": "您尚未设置 OpenAI API 密钥。",
-    "placeholder": "随便问",
-    "title": "问 AI",
-    "default-message-group-title": "默认会话",
-    "create-message-group-title": "新建会话",
-    "label-message-group-name-title": "会话名称"
-  },
   "auth": {
     "host-tip": "你正在注册为管理员用户账号。",
     "new-password": "新密码",

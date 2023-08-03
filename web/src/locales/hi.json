@@ -385,18 +385,6 @@
     "sat": "शनिवार",
     "sun": "रविवार"
   },
-  "memo-chat": {
-    "title": "मेमो चैट",
-    "save-as-memo": "मेमो के रूप में सहेजें",
-    "save-as-memo-success": "मेमो के रूप में सफलतापूर्वक सहेजा गया।",
-    "not-enabled": "आपने अपना OpenAI API कुंजी सेट नहीं किया है।",
-    "go-to-settings": "सेटिंग्स पर जाएं",
-    "placeholder": "कुछ भी पूछें...",
-    "no-message": "कोई संदेश नहीं",
-    "default-message-group-title": "डिफ़ॉल्ट सत्र",
-    "create-message-group-title": "सत्र बनाएँ",
-    "label-message-group-name-title": "सत्र का नाम"
-  },
   "embed-memo": {
     "title": "मेमो एम्बेड करें",
     "text": "नीचे दिए गए कोड को अपने ब्लॉग या वेबसाइट में कॉपी और पेस्ट करें।",

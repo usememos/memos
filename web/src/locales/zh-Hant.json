@@ -378,16 +378,6 @@
     "friday": "星期五",
     "wednesday": "星期三"
   },
-  "memo-chat": {
-    "title": "問 AI",
-    "not-enabled": "您尚未設置 OpenAI API 密鑰。",
-    "go-to-settings": "前往設定",
-    "placeholder": "凡事皆可問…",
-    "default-message-group-title": "預設會話",
-    "create-message-group-title": "建立對話",
-    "label-message-group-name-title": "對話名稱"
-  },
-
   "embed-memo": {
     "title": "嵌入備忘錄",
     "text": "將以下程式碼複製並貼上到您的網誌或網站中。",
