@@ -116,7 +116,7 @@ var (
 	}
 
 	mvrssCmd = &cobra.Command{
-		Use:   "mvrss",
+		Use:   "mvrss", // `mvrss` is a shortened for 'means move resource'
 		Short: "Move resource between storage",
 		Run: func(cmd *cobra.Command, _ []string) {
 			ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
