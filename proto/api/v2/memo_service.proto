@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "api/v2/common.proto";
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+
+option go_package = "gen/api/v2";
+
+service MemoService {
+  rpc ListMemos(ListMemosRequest) returns (ListMemosResponse) {
+    option (google.api.http) = {get: "/api/v2/memos"};
+  }
+
+  rpc GetMemo(GetMemoRequest) returns (GetMemoResponse) {
+    option (google.api.http) = {get: "/api/v2/memos/{id}"};
+    option (google.api.method_signature) = "id";
+  }
+}
+
+message Memo {
+  int32 id = 1;
+
+  RowStatus row_status = 2;
+
+  int32 creator_id = 3;
+
+  int64 created_ts = 4;
+
+  int64 updated_ts = 5;
+
+  string content = 6;
+
+  Visibility visibility = 7;
+
+  bool pinned = 8;
+}
+
+message ListMemosRequest {
+  int32 page = 1;
+
+  int32 page_size = 2;
+
+  // Filter is used to filter memos returned in the list.
+  string filter = 3;
+}
+
+message ListMemosResponse {
+  repeated Memo memos = 1;
+
+  int32 total = 2;
+}
+
+message GetMemoRequest {
+  int32 id = 1;
+}
+
+message GetMemoResponse {
+  Memo memo = 1;
+}
+
+enum Visibility {
+  VISIBILITY_UNSPECIFIED = 0;
+
+  PRIVATE = 1;
+
+  PROTECTED = 2;
+
+  PUBLIC = 3;
+}

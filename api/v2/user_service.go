@@ -37,20 +37,6 @@ func (s *UserService) GetUser(ctx context.Context, request *apiv2pb.GetUserReque
 	// Data desensitization.
 	userMessage.OpenId = ""
 
-	userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
-		UserID: &userMessage.Id,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)
-	}
-
-	userID, ok := ctx.Value(UserIDContextKey).(int)
-	if ok && userID == int(userMessage.Id) {
-		for _, userSetting := range userSettings {
-			userMessage.Settings = append(userMessage.Settings, convertUserSettingFromStore(userSetting))
-		}
-	}
-
 	response := &apiv2pb.GetUserResponse{
 		User: userMessage,
 	}
@@ -69,7 +55,6 @@ func convertUserFromStore(user *store.User) *apiv2pb.User {
 		Nickname:  user.Nickname,
 		OpenId:    user.OpenID,
 		AvatarUrl: user.AvatarURL,
-		Settings:  []*apiv2pb.UserSetting{},
 	}
 }
 

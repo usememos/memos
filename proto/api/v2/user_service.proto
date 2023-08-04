@@ -3,6 +3,7 @@ syntax = "proto3";
 package memos.api.v2;
 
 import "api/v2/common.proto";
+import "api/v2/memo_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 
@@ -35,8 +36,6 @@ message User {
   string open_id = 9;
 
   string avatar_url = 10;
-
-  repeated UserSetting settings = 11;
 }
 
 enum Role {
@@ -85,14 +84,4 @@ message UserSettingValue {
     string string_value = 1;
     Visibility visibility_value = 2;
   }
-}
-
-enum Visibility {
-  VISIBILITY_UNSPECIFIED = 0;
-
-  PRIVATE = 1;
-
-  PROTECTED = 2;
-
-  PUBLIC = 3;
 }
