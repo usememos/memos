@@ -1,5 +1,7 @@
 package telegram
 
+// CallbackQuery represents an incoming callback query from a callback button in
+// an inline keyboard (PUBLIC, PROTECTED, PRIVATE).
 type CallbackQuery struct {
 	ID              string   `json:"id"`
 	From            User     `json:"from"`

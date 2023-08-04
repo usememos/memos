@@ -37,6 +37,14 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		return fmt.Errorf("fail to SendReplyMessage: %s", err)
 	}
 
+	// TODO: handle channel
+	// Message from channel
+	//if message.SenderChat != nil {
+	//
+	//} else {
+	//
+	//}
+	// validate telegram userid
 	var creatorID int32
 	userSettingList, err := t.store.ListUserSettings(ctx, &store.FindUserSetting{
 		Key: apiv1.UserSettingTelegramUserIDKey.String(),
@@ -52,6 +60,9 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 
 		if value == strconv.Itoa(message.From.ID) {
 			creatorID = userSetting.UserID
+			//} else if va {
+			//
+			// TODO: handle channel
 		}
 	}
 
