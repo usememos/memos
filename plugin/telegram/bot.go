@@ -29,13 +29,13 @@ func NewBotWithHandler(h Handler) *Bot {
 const noTokenWait = 30 * time.Second
 const errRetryWait = 10 * time.Second
 
-// Start start an infinity call of getUpdates from Telegram, call r.MessageHandle while get new message updates.
+// Start start a long polling using getUpdates to get Update, call r.MessageHandle while get new message updates.
 func (b *Bot) Start(ctx context.Context) {
 	var offset int
 
 	for {
 		updates, err := b.GetUpdates(ctx, offset)
-		if err == ErrInvalidToken {
+		if errors.Is(err, ErrInvalidToken) {
 			time.Sleep(noTokenWait)
 			continue
 		}
@@ -61,28 +61,32 @@ func (b *Bot) Start(ctx context.Context) {
 				continue
 			}
 
-			// handle Message update
+			var message Message
 			if update.Message != nil {
-				message := *update.Message
+				// handle private message
+				message = *update.Message
+			} else if update.ChannelPost != nil {
+				// handle channel message
+				message = *update.ChannelPost
+			}
 
-				// skip unsupported message
-				if !message.IsSupported() {
-					_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Supported messages: animation, audio, text, document, photo, video, video note, voice, other messages with caption")
-					if err != nil {
-						log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
-					}
-					continue
+			// skip unsupported message
+			if !message.IsSupported() {
+				_, err := b.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, "Supported messages: animation, audio, text, document, photo, video, video note, voice, other messages with caption")
+				if err != nil {
+					log.Error(fmt.Sprintf("fail to telegram.SendReplyMessage for messageID=%d", message.MessageID), zap.Error(err))
 				}
-
-				// Group message need do more
-				if message.MediaGroupID != nil {
-					groupMessages = append(groupMessages, message)
-					continue
-				}
-
-				singleMessages = append(singleMessages, message)
 				continue
 			}
+
+			// Group message need do more
+			if message.MediaGroupID != nil {
+				groupMessages = append(groupMessages, message)
+				continue
+			}
+
+			singleMessages = append(singleMessages, message)
+			continue
 		}
 
 		err = b.handleSingleMessages(ctx, singleMessages)

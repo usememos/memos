@@ -37,27 +37,55 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		return fmt.Errorf("fail to SendReplyMessage: %s", err)
 	}
 
+	// validate userid or channel name set in `user_setting` table
 	var creatorID int32
-	userSettingList, err := t.store.ListUserSettings(ctx, &store.FindUserSetting{
+	telegramUserIDSetting, err := t.store.ListUserSettings(ctx, &store.FindUserSetting{
 		Key: apiv1.UserSettingTelegramUserIDKey.String(),
 	})
 	if err != nil {
-		return errors.Wrap(err, "Failed to find userSettingList")
+		return errors.Wrap(err, "Failed to find telegramUserIDSetting in user_setting table")
 	}
-	for _, userSetting := range userSettingList {
-		var value string
-		if err := json.Unmarshal([]byte(userSetting.Value), &value); err != nil {
-			continue
-		}
-
-		if value == strconv.Itoa(message.From.ID) {
-			creatorID = userSetting.UserID
-		}
+	telegramChannelNameSetting, err := t.store.ListUserSettings(ctx, &store.FindUserSetting{
+		Key: apiv1.UserSettingTelegramChannelNameKey.String(),
+	})
+	if err != nil {
+		return errors.Wrap(err, "Failed to find telegramChannelNameSetting in user_setting table")
 	}
 
-	if creatorID == 0 {
-		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Please set your telegram userid %d in UserSetting of Memos", message.From.ID), nil)
-		return err
+	if message.SenderChat != nil {
+		// sent from channel
+		for _, channelSetting := range telegramChannelNameSetting {
+			var value string
+			if err := json.Unmarshal([]byte(channelSetting.Value), &value); err != nil {
+				continue
+			}
+
+			if value == message.SenderChat.Title {
+				creatorID = channelSetting.UserID
+			}
+		}
+
+		if creatorID == 0 {
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Please set your telegram channel name %s in UserSetting of Memos", message.SenderChat.Title), nil)
+			return err
+		}
+	} else {
+		// sent from user
+		for _, userSetting := range telegramUserIDSetting {
+			var value string
+			if err := json.Unmarshal([]byte(userSetting.Value), &value); err != nil {
+				continue
+			}
+
+			if value == strconv.Itoa(message.From.ID) {
+				creatorID = userSetting.UserID
+			}
+		}
+
+		if creatorID == 0 {
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Please set your telegram userid %d in UserSetting of Memos", message.From.ID), nil)
+			return err
+		}
 	}
 
 	create := &store.Memo{

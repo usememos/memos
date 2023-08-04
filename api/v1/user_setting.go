@@ -20,8 +20,10 @@ const (
 	UserSettingAppearanceKey UserSettingKey = "appearance"
 	// UserSettingMemoVisibilityKey is the key type for user preference memo default visibility.
 	UserSettingMemoVisibilityKey UserSettingKey = "memo-visibility"
-	// UserSettingTelegramUserID is the key type for telegram UserID of memos user.
+	// UserSettingTelegramUserIDKey is the key type for telegram UserID of memos user.
 	UserSettingTelegramUserIDKey UserSettingKey = "telegram-user-id"
+	// UserSettingTelegramChannelNameKey is the key type for telegram channel name user sent memo from.
+	UserSettingTelegramChannelNameKey UserSettingKey = "telegram-channel-name"
 )
 
 // String returns the string format of UserSettingKey type.
@@ -35,6 +37,8 @@ func (key UserSettingKey) String() string {
 		return "memo-visibility"
 	case UserSettingTelegramUserIDKey:
 		return "telegram-user-id"
+	case UserSettingTelegramChannelNameKey:
+		return "telegram-channel-name"
 	}
 	return ""
 }
@@ -111,6 +115,12 @@ func (upsert UpsertUserSettingRequest) Validate() error {
 		err := json.Unmarshal([]byte(upsert.Value), &key)
 		if err != nil {
 			return fmt.Errorf("invalid user setting telegram user id value")
+		}
+	} else if upsert.Key == UserSettingTelegramChannelNameKey {
+		var key string
+		err := json.Unmarshal([]byte(upsert.Value), &key)
+		if err != nil {
+			return fmt.Errorf("invalid user setting telegram channel name value")
 		}
 	} else {
 		return fmt.Errorf("invalid user setting key")
