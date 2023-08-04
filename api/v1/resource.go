@@ -30,10 +30,10 @@ import (
 )
 
 type Resource struct {
-	ID int `json:"id"`
+	ID int32 `json:"id"`
 
 	// Standard fields
-	CreatorID int   `json:"creatorId"`
+	CreatorID int32 `json:"creatorId"`
 	CreatedTs int64 `json:"createdTs"`
 	UpdatedTs int64 `json:"updatedTs"`
 
@@ -58,8 +58,8 @@ type CreateResourceRequest struct {
 }
 
 type FindResourceRequest struct {
-	ID        *int    `json:"id"`
-	CreatorID *int    `json:"creatorId"`
+	ID        *int32  `json:"id"`
+	CreatorID *int32  `json:"creatorId"`
 	Filename  *string `json:"filename"`
 }
 
@@ -83,7 +83,7 @@ var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
 func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -157,7 +157,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 
 	g.POST("/resource/blob", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -217,7 +217,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 
 	g.GET("/resource", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -244,12 +244,12 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 
 	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		resourceID, err := strconv.Atoi(c.Param("resourceId"))
+		resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
@@ -290,12 +290,12 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 
 	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
 
-		resourceID, err := strconv.Atoi(c.Param("resourceId"))
+		resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
@@ -335,7 +335,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 	f := func(c echo.Context) error {
 		ctx := c.Request().Context()
-		resourceID, err := strconv.Atoi(c.Param("resourceId"))
+		resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}
@@ -346,7 +346,7 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 		}
 
 		// Protected resource require a logined user
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if resourceVisibility == store.Protected && (!ok || userID <= 0) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
 		}
@@ -501,7 +501,7 @@ func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error)
 	return dstBlob, nil
 }
 
-func checkResourceVisibility(ctx context.Context, s *store.Store, resourceID int) (store.Visibility, error) {
+func checkResourceVisibility(ctx context.Context, s *store.Store, resourceID int32) (store.Visibility, error) {
 	memoResources, err := s.ListMemoResources(ctx, &store.FindMemoResource{
 		ResourceID: &resourceID,
 	})
@@ -514,7 +514,7 @@ func checkResourceVisibility(ctx context.Context, s *store.Store, resourceID int
 		return store.Private, nil
 	}
 
-	memoIDs := make([]int, 0, len(memoResources))
+	memoIDs := make([]int32, 0, len(memoResources))
 	for _, memoResource := range memoResources {
 		memoIDs = append(memoIDs, memoResource.MemoID)
 	}

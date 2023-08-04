@@ -8,19 +8,19 @@ import (
 )
 
 type MemoOrganizer struct {
-	MemoID int
-	UserID int
+	MemoID int32
+	UserID int32
 	Pinned bool
 }
 
 type FindMemoOrganizer struct {
-	MemoID int
-	UserID int
+	MemoID int32
+	UserID int32
 }
 
 type DeleteMemoOrganizer struct {
-	MemoID *int
-	UserID *int
+	MemoID *int32
+	UserID *int32
 }
 
 func (s *Store) UpsertMemoOrganizer(ctx context.Context, upsert *MemoOrganizer) (*MemoOrganizer, error) {

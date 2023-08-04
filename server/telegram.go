@@ -37,7 +37,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		return fmt.Errorf("fail to SendReplyMessage: %s", err)
 	}
 
-	var creatorID int
+	var creatorID int32
 	userSettingList, err := t.store.ListUserSettings(ctx, &store.FindUserSetting{
 		Key: apiv1.UserSettingTelegramUserIDKey.String(),
 	})
@@ -121,7 +121,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 }
 
 func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram.Bot, callbackQuery telegram.CallbackQuery) error {
-	var memoID int
+	var memoID int32
 	var visibility store.Visibility
 	n, err := fmt.Sscanf(callbackQuery.Data, "%s %d", &visibility, &memoID)
 	if err != nil || n != 2 {
@@ -146,7 +146,7 @@ func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 	return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Success change Memo %d to %s", memoID, visibility))
 }
 
-func generateKeyboardForMemoID(id int) [][]telegram.InlineKeyboardButton {
+func generateKeyboardForMemoID(id int32) [][]telegram.InlineKeyboardButton {
 	allVisibility := []store.Visibility{
 		store.Public,
 		store.Protected,

@@ -29,15 +29,15 @@ func TestResourceStore(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, correctFilename, res.Filename)
-	require.Equal(t, 1, res.ID)
+	require.Equal(t, int32(1), res.ID)
 	notFoundResource, err := ts.GetResource(ctx, &store.FindResource{
 		Filename: &incorrectFilename,
 	})
 	require.NoError(t, err)
 	require.Nil(t, notFoundResource)
 
-	correctCreatorID := 101
-	incorrectCreatorID := 102
+	var correctCreatorID int32 = 101
+	var incorrectCreatorID int32 = 102
 	_, err = ts.GetResource(ctx, &store.FindResource{
 		CreatorID: &correctCreatorID,
 	})

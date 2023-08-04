@@ -71,13 +71,13 @@ func (l ActivityLevel) String() string {
 }
 
 type ActivityUserCreatePayload struct {
-	UserID   int    `json:"userId"`
+	UserID   int32  `json:"userId"`
 	Username string `json:"username"`
 	Role     Role   `json:"role"`
 }
 
 type ActivityUserAuthSignInPayload struct {
-	UserID int    `json:"userId"`
+	UserID int32  `json:"userId"`
 	IP     string `json:"ip"`
 }
 
@@ -107,10 +107,10 @@ type ActivityServerStartPayload struct {
 }
 
 type Activity struct {
-	ID int `json:"id"`
+	ID int32 `json:"id"`
 
 	// Standard fields
-	CreatorID int   `json:"creatorId"`
+	CreatorID int32 `json:"creatorId"`
 	CreatedTs int64 `json:"createdTs"`
 
 	// Domain specific fields
@@ -122,7 +122,7 @@ type Activity struct {
 // ActivityCreate is the API message for creating an activity.
 type ActivityCreate struct {
 	// Standard fields
-	CreatorID int
+	CreatorID int32
 
 	// Domain specific fields
 	Type    ActivityType `json:"type"`

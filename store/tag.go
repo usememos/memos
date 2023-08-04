@@ -8,16 +8,16 @@ import (
 
 type Tag struct {
 	Name      string
-	CreatorID int
+	CreatorID int32
 }
 
 type FindTag struct {
-	CreatorID int
+	CreatorID int32
 }
 
 type DeleteTag struct {
 	Name      string
-	CreatorID int
+	CreatorID int32
 }
 
 func (s *Store) UpsertTag(ctx context.Context, upsert *Tag) (*Tag, error) {

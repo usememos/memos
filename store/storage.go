@@ -6,24 +6,24 @@ import (
 )
 
 type Storage struct {
-	ID     int
+	ID     int32
 	Name   string
 	Type   string
 	Config string
 }
 
 type FindStorage struct {
-	ID *int
+	ID *int32
 }
 
 type UpdateStorage struct {
-	ID     int
+	ID     int32
 	Name   *string
 	Config *string
 }
 
 type DeleteStorage struct {
-	ID int
+	ID int32
 }
 
 func (s *Store) CreateStorage(ctx context.Context, create *Storage) (*Storage, error) {

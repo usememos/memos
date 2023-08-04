@@ -67,13 +67,13 @@ var (
 )
 
 type UserSetting struct {
-	UserID int            `json:"userId"`
+	UserID int32          `json:"userId"`
 	Key    UserSettingKey `json:"key"`
 	Value  string         `json:"value"`
 }
 
 type UpsertUserSettingRequest struct {
-	UserID int            `json:"-"`
+	UserID int32          `json:"-"`
 	Key    UserSettingKey `json:"key"`
 	Value  string         `json:"value"`
 }
@@ -122,7 +122,7 @@ func (upsert UpsertUserSettingRequest) Validate() error {
 func (s *APIV1Service) registerUserSettingRoutes(g *echo.Group) {
 	g.POST("/user/setting", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 		}

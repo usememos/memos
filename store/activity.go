@@ -5,10 +5,10 @@ import (
 )
 
 type Activity struct {
-	ID int
+	ID int32
 
 	// Standard fields
-	CreatorID int
+	CreatorID int32
 	CreatedTs int64
 
 	// Domain specific fields

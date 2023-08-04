@@ -49,7 +49,7 @@ func (s *APIV1Service) registerRSSRoutes(g *echo.Group) {
 
 	g.GET("/u/:id/rss.xml", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		id, err := strconv.Atoi(c.Param("id"))
+		id, err := util.ConvertStringToInt32(c.Param("id"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "User id is not a number").SetInternal(err)
 		}
@@ -94,10 +94,10 @@ func (s *APIV1Service) generateRSSFromMemoList(ctx context.Context, memoList []*
 		memo := memoList[i]
 		feed.Items[i] = &feeds.Item{
 			Title:       getRSSItemTitle(memo.Content),
-			Link:        &feeds.Link{Href: baseURL + "/m/" + strconv.Itoa(memo.ID)},
+			Link:        &feeds.Link{Href: baseURL + "/m/" + fmt.Sprintf("%d", memo.ID)},
 			Description: getRSSItemDescription(memo.Content),
 			Created:     time.Unix(memo.CreatedTs, 0),
-			Enclosure:   &feeds.Enclosure{Url: baseURL + "/m/" + strconv.Itoa(memo.ID) + "/image"},
+			Enclosure:   &feeds.Enclosure{Url: baseURL + "/m/" + fmt.Sprintf("%d", memo.ID) + "/image"},
 		}
 		if len(memo.ResourceIDList) > 0 {
 			resourceID := memo.ResourceIDList[0]
@@ -114,7 +114,7 @@ func (s *APIV1Service) generateRSSFromMemoList(ctx context.Context, memoList []*
 			if resource.ExternalLink != "" {
 				enclosure.Url = resource.ExternalLink
 			} else {
-				enclosure.Url = baseURL + "/o/r/" + strconv.Itoa(resource.ID)
+				enclosure.Url = baseURL + "/o/r/" + fmt.Sprintf("%d", resource.ID)
 			}
 			enclosure.Length = strconv.Itoa(int(resource.Size))
 			enclosure.Type = resource.Type

@@ -37,9 +37,8 @@ func (s *UserService) GetUser(ctx context.Context, request *apiv2pb.GetUserReque
 	// Data desensitization.
 	userMessage.OpenId = ""
 
-	userUID := int(userMessage.Id)
 	userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
-		UserID: &userUID,
+		UserID: &userMessage.Id,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)

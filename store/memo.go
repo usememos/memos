@@ -4,9 +4,10 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
+
+	"github.com/usememos/memos/common/util"
 )
 
 // Visibility is the type of a visibility.
@@ -34,11 +35,11 @@ func (v Visibility) String() string {
 }
 
 type Memo struct {
-	ID int
+	ID int32
 
 	// Standard fields
 	RowStatus RowStatus
-	CreatorID int
+	CreatorID int32
 	CreatedTs int64
 	UpdatedTs int64
 
@@ -48,16 +49,16 @@ type Memo struct {
 
 	// Composed fields
 	Pinned         bool
-	ResourceIDList []int
+	ResourceIDList []int32
 	RelationList   []*MemoRelation
 }
 
 type FindMemo struct {
-	ID *int
+	ID *int32
 
 	// Standard fields
 	RowStatus *RowStatus
-	CreatorID *int
+	CreatorID *int32
 
 	// Domain specific fields
 	Pinned         *bool
@@ -71,7 +72,7 @@ type FindMemo struct {
 }
 
 type UpdateMemo struct {
-	ID         int
+	ID         int32
 	CreatedTs  *int64
 	UpdatedTs  *int64
 	RowStatus  *RowStatus
@@ -80,7 +81,7 @@ type UpdateMemo struct {
 }
 
 type DeleteMemo struct {
-	ID int
+	ID int32
 }
 
 func (s *Store) CreateMemo(ctx context.Context, create *Memo) (*Memo, error) {
@@ -220,9 +221,9 @@ func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) 
 
 		if memoResourceIDList.Valid {
 			idStringList := strings.Split(memoResourceIDList.String, ",")
-			memo.ResourceIDList = make([]int, 0, len(idStringList))
+			memo.ResourceIDList = make([]int32, 0, len(idStringList))
 			for _, idString := range idStringList {
-				id, err := strconv.Atoi(idString)
+				id, err := util.ConvertStringToInt32(idString)
 				if err != nil {
 					return nil, err
 				}
@@ -237,7 +238,7 @@ func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) 
 				if len(relatedMemoTypeList) != 2 {
 					return nil, fmt.Errorf("invalid relation format")
 				}
-				relatedMemoID, err := strconv.Atoi(relatedMemoTypeList[0])
+				relatedMemoID, err := util.ConvertStringToInt32(relatedMemoTypeList[0])
 				if err != nil {
 					return nil, err
 				}
@@ -318,7 +319,7 @@ func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemo) error {
 	return nil
 }
 
-func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int) ([]Visibility, error) {
+func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]Visibility, error) {
 	args := make([]any, 0, len(memoIDs))
 	list := make([]string, 0, len(memoIDs))
 	for _, memoID := range memoIDs {

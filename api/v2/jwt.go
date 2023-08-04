@@ -10,6 +10,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api/auth"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -76,7 +77,7 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 	return handler(childCtx, request)
 }
 
-func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr string) (int, error) {
+func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr string) (int32, error) {
 	if accessTokenStr == "" {
 		return 0, status.Errorf(codes.Unauthenticated, "access token not found")
 	}
@@ -103,7 +104,7 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr 
 		)
 	}
 
-	userID, err := strconv.Atoi(claims.Subject)
+	userID, err := util.ConvertStringToInt32(claims.Subject)
 	if err != nil {
 		return 0, status.Errorf(codes.Unauthenticated, "malformed ID %q in the access token", claims.Subject)
 	}

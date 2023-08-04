@@ -16,7 +16,7 @@ import (
 
 type Tag struct {
 	Name      string
-	CreatorID int
+	CreatorID int32
 }
 
 type UpsertTagRequest struct {
@@ -30,7 +30,7 @@ type DeleteTagRequest struct {
 func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 	g.POST("/tag", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -59,7 +59,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 
 	g.GET("/tag", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
 		}
@@ -80,7 +80,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 
 	g.GET("/tag/suggestion", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user session")
 		}
@@ -125,7 +125,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 
 	g.POST("/tag/delete", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}

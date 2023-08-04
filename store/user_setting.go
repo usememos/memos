@@ -7,13 +7,13 @@ import (
 )
 
 type UserSetting struct {
-	UserID int
+	UserID int32
 	Key    string
 	Value  string
 }
 
 type FindUserSetting struct {
-	UserID *int
+	UserID *int32
 	Key    string
 }
 
