@@ -21,7 +21,7 @@ type SignIn struct {
 }
 
 type SSOSignIn struct {
-	IdentityProviderID int    `json:"identityProviderId"`
+	IdentityProviderID int32  `json:"identityProviderId"`
 	Code               string `json:"code"`
 	RedirectURI        string `json:"redirectUri"`
 }

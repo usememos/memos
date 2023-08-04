@@ -4,45 +4,45 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api/auth"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
 
 type MemoResource struct {
-	MemoID     int   `json:"memoId"`
-	ResourceID int   `json:"resourceId"`
+	MemoID     int32 `json:"memoId"`
+	ResourceID int32 `json:"resourceId"`
 	CreatedTs  int64 `json:"createdTs"`
 	UpdatedTs  int64 `json:"updatedTs"`
 }
 
 type UpsertMemoResourceRequest struct {
-	ResourceID int    `json:"resourceId"`
+	ResourceID int32  `json:"resourceId"`
 	UpdatedTs  *int64 `json:"updatedTs"`
 }
 
 type MemoResourceFind struct {
-	MemoID     *int
-	ResourceID *int
+	MemoID     *int32
+	ResourceID *int32
 }
 
 type MemoResourceDelete struct {
-	MemoID     *int
-	ResourceID *int
+	MemoID     *int32
+	ResourceID *int32
 }
 
 func (s *APIV1Service) registerMemoResourceRoutes(g *echo.Group) {
 	g.POST("/memo/:memoId/resource", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		memoID, err := strconv.Atoi(c.Param("memoId"))
+		memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -78,7 +78,7 @@ func (s *APIV1Service) registerMemoResourceRoutes(g *echo.Group) {
 
 	g.GET("/memo/:memoId/resource", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		memoID, err := strconv.Atoi(c.Param("memoId"))
+		memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
@@ -98,15 +98,15 @@ func (s *APIV1Service) registerMemoResourceRoutes(g *echo.Group) {
 
 	g.DELETE("/memo/:memoId/resource/:resourceId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
-		memoID, err := strconv.Atoi(c.Param("memoId"))
+		memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Memo ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
-		resourceID, err := strconv.Atoi(c.Param("resourceId"))
+		resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Resource ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}

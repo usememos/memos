@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
 
@@ -18,20 +18,20 @@ const (
 )
 
 type MemoRelation struct {
-	MemoID        int              `json:"memoId"`
-	RelatedMemoID int              `json:"relatedMemoId"`
+	MemoID        int32            `json:"memoId"`
+	RelatedMemoID int32            `json:"relatedMemoId"`
 	Type          MemoRelationType `json:"type"`
 }
 
 type UpsertMemoRelationRequest struct {
-	RelatedMemoID int              `json:"relatedMemoId"`
+	RelatedMemoID int32            `json:"relatedMemoId"`
 	Type          MemoRelationType `json:"type"`
 }
 
 func (s *APIV1Service) registerMemoRelationRoutes(g *echo.Group) {
 	g.POST("/memo/:memoId/relation", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		memoID, err := strconv.Atoi(c.Param("memoId"))
+		memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
@@ -54,7 +54,7 @@ func (s *APIV1Service) registerMemoRelationRoutes(g *echo.Group) {
 
 	g.GET("/memo/:memoId/relation", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		memoID, err := strconv.Atoi(c.Param("memoId"))
+		memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
@@ -70,11 +70,11 @@ func (s *APIV1Service) registerMemoRelationRoutes(g *echo.Group) {
 
 	g.DELETE("/memo/:memoId/relation/:relatedMemoId/type/:relationType", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		memoID, err := strconv.Atoi(c.Param("memoId"))
+		memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Memo ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
-		relatedMemoID, err := strconv.Atoi(c.Param("relatedMemoId"))
+		relatedMemoID, err := util.ConvertStringToInt32(c.Param("relatedMemoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Related memo ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 		}

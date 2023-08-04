@@ -187,7 +187,7 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
 	g.POST("/system/setting", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -237,7 +237,7 @@ func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
 
 	g.GET("/system/setting", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}

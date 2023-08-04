@@ -24,7 +24,7 @@ func NewTagService(store *store.Store) *TagService {
 
 func (s *TagService) ListTags(ctx context.Context, request *apiv2pb.ListTagsRequest) (*apiv2pb.ListTagsResponse, error) {
 	tags, err := s.Store.ListTags(ctx, &store.FindTag{
-		CreatorID: int(request.CreatorId),
+		CreatorID: request.CreatorId,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list tags: %v", err)

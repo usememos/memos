@@ -7,27 +7,27 @@ import (
 )
 
 type MemoResource struct {
-	MemoID     int
-	ResourceID int
+	MemoID     int32
+	ResourceID int32
 	CreatedTs  int64
 	UpdatedTs  int64
 }
 
 type UpsertMemoResource struct {
-	MemoID     int
-	ResourceID int
+	MemoID     int32
+	ResourceID int32
 	CreatedTs  int64
 	UpdatedTs  *int64
 }
 
 type FindMemoResource struct {
-	MemoID     *int
-	ResourceID *int
+	MemoID     *int32
+	ResourceID *int32
 }
 
 type DeleteMemoResource struct {
-	MemoID     *int
-	ResourceID *int
+	MemoID     *int32
+	ResourceID *int32
 }
 
 func (s *Store) UpsertMemoResource(ctx context.Context, upsert *UpsertMemoResource) (*MemoResource, error) {

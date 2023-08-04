@@ -14,20 +14,20 @@ const (
 )
 
 type MemoRelation struct {
-	MemoID        int
-	RelatedMemoID int
+	MemoID        int32
+	RelatedMemoID int32
 	Type          MemoRelationType
 }
 
 type FindMemoRelation struct {
-	MemoID        *int
-	RelatedMemoID *int
+	MemoID        *int32
+	RelatedMemoID *int32
 	Type          *MemoRelationType
 }
 
 type DeleteMemoRelation struct {
-	MemoID        *int
-	RelatedMemoID *int
+	MemoID        *int32
+	RelatedMemoID *int32
 	Type          *MemoRelationType
 }
 

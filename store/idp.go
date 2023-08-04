@@ -38,7 +38,7 @@ type FieldMapping struct {
 }
 
 type IdentityProvider struct {
-	ID               int
+	ID               int32
 	Name             string
 	Type             IdentityProviderType
 	IdentifierFilter string
@@ -46,11 +46,11 @@ type IdentityProvider struct {
 }
 
 type FindIdentityProvider struct {
-	ID *int
+	ID *int32
 }
 
 type UpdateIdentityProvider struct {
-	ID               int
+	ID               int32
 	Type             IdentityProviderType
 	Name             *string
 	IdentifierFilter *string
@@ -58,7 +58,7 @@ type UpdateIdentityProvider struct {
 }
 
 type DeleteIdentityProvider struct {
-	ID int
+	ID int32
 }
 
 func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProvider) (*IdentityProvider, error) {

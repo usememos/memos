@@ -8,10 +8,10 @@ import (
 )
 
 type Resource struct {
-	ID int
+	ID int32
 
 	// Standard fields
-	CreatorID int
+	CreatorID int32
 	CreatedTs int64
 	UpdatedTs int64
 
@@ -27,16 +27,16 @@ type Resource struct {
 
 type FindResource struct {
 	GetBlob   bool
-	ID        *int
-	CreatorID *int
+	ID        *int32
+	CreatorID *int32
 	Filename  *string
-	MemoID    *int
+	MemoID    *int32
 	Limit     *int
 	Offset    *int
 }
 
 type UpdateResource struct {
-	ID           int
+	ID           int32
 	UpdatedTs    *int64
 	Filename     *string
 	InternalPath *string
@@ -44,7 +44,7 @@ type UpdateResource struct {
 }
 
 type DeleteResource struct {
-	ID int
+	ID int32
 }
 
 func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {

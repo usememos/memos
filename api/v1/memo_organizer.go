@@ -4,17 +4,17 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api/auth"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
 
 type MemoOrganizer struct {
-	MemoID int  `json:"memoId"`
-	UserID int  `json:"userId"`
-	Pinned bool `json:"pinned"`
+	MemoID int32 `json:"memoId"`
+	UserID int32 `json:"userId"`
+	Pinned bool  `json:"pinned"`
 }
 
 type UpsertMemoOrganizerRequest struct {
@@ -24,12 +24,12 @@ type UpsertMemoOrganizerRequest struct {
 func (s *APIV1Service) registerMemoOrganizerRoutes(g *echo.Group) {
 	g.POST("/memo/:memoId/organizer", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		memoID, err := strconv.Atoi(c.Param("memoId"))
+		memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 		}
 
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}

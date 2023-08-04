@@ -61,7 +61,7 @@ func TestMemoRelationServer(t *testing.T) {
 	require.Len(t, memo2.RelationList, 1)
 }
 
-func (s *TestingServer) postMemoRelationUpsert(memoID int, memoRelationUpsert *apiv1.UpsertMemoRelationRequest) (*apiv1.MemoRelation, error) {
+func (s *TestingServer) postMemoRelationUpsert(memoID int32, memoRelationUpsert *apiv1.UpsertMemoRelationRequest) (*apiv1.MemoRelation, error) {
 	rawData, err := json.Marshal(&memoRelationUpsert)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal memo relation upsert")
@@ -85,7 +85,7 @@ func (s *TestingServer) postMemoRelationUpsert(memoID int, memoRelationUpsert *a
 	return memoRelation, nil
 }
 
-func (s *TestingServer) deleteMemoRelation(memoID int, relatedMemoID int, relationType apiv1.MemoRelationType) error {
+func (s *TestingServer) deleteMemoRelation(memoID int32, relatedMemoID int32, relationType apiv1.MemoRelationType) error {
 	_, err := s.delete(fmt.Sprintf("/api/v1/memo/%d/relation/%d/type/%s", memoID, relatedMemoID, relationType), nil)
 	return err
 }

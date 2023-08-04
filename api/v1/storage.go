@@ -4,18 +4,18 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/labstack/echo/v4"
 	"github.com/usememos/memos/api/auth"
+	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
 
 const (
 	// LocalStorage means the storage service is local file system.
-	LocalStorage = -1
+	LocalStorage int32 = -1
 	// DatabaseStorage means the storage service is database.
-	DatabaseStorage = 0
+	DatabaseStorage int32 = 0
 )
 
 type StorageType string
@@ -44,7 +44,7 @@ type StorageS3Config struct {
 }
 
 type Storage struct {
-	ID     int            `json:"id"`
+	ID     int32          `json:"id"`
 	Name   string         `json:"name"`
 	Type   StorageType    `json:"type"`
 	Config *StorageConfig `json:"config"`
@@ -65,7 +65,7 @@ type UpdateStorageRequest struct {
 func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
 	g.POST("/storage", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -111,7 +111,7 @@ func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
 
 	g.PATCH("/storage/:storageId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -126,7 +126,7 @@ func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
-		storageID, err := strconv.Atoi(c.Param("storageId"))
+		storageID, err := util.ConvertStringToInt32(c.Param("storageId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("storageId"))).SetInternal(err)
 		}
@@ -165,7 +165,7 @@ func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
 
 	g.GET("/storage", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -199,7 +199,7 @@ func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
 
 	g.DELETE("/storage/:storageId", func(c echo.Context) error {
 		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int)
+		userID, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 		}
@@ -214,7 +214,7 @@ func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
 		}
 
-		storageID, err := strconv.Atoi(c.Param("storageId"))
+		storageID, err := util.ConvertStringToInt32(c.Param("storageId"))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("storageId"))).SetInternal(err)
 		}

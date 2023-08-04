@@ -30,7 +30,7 @@ func (e Role) String() string {
 }
 
 type User struct {
-	ID int
+	ID int32
 
 	// Standard fields
 	RowStatus RowStatus
@@ -48,7 +48,7 @@ type User struct {
 }
 
 type UpdateUser struct {
-	ID int
+	ID int32
 
 	UpdatedTs    *int64
 	RowStatus    *RowStatus
@@ -63,7 +63,7 @@ type UpdateUser struct {
 }
 
 type FindUser struct {
-	ID        *int
+	ID        *int32
 	RowStatus *RowStatus
 	Username  *string
 	Role      *Role
@@ -73,7 +73,7 @@ type FindUser struct {
 }
 
 type DeleteUser struct {
-	ID int
+	ID int32
 }
 
 func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {

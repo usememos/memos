@@ -59,7 +59,7 @@ func TestMemoServer(t *testing.T) {
 	require.Len(t, memoList, 0)
 }
 
-func (s *TestingServer) getMemo(memoID int) (*apiv1.Memo, error) {
+func (s *TestingServer) getMemo(memoID int32) (*apiv1.Memo, error) {
 	body, err := s.get(fmt.Sprintf("/api/v1/memo/%d", memoID), nil)
 	if err != nil {
 		return nil, err
@@ -145,12 +145,12 @@ func (s *TestingServer) patchMemo(memoPatch *apiv1.PatchMemoRequest) (*apiv1.Mem
 	return memo, nil
 }
 
-func (s *TestingServer) deleteMemo(memoID int) error {
+func (s *TestingServer) deleteMemo(memoID int32) error {
 	_, err := s.delete(fmt.Sprintf("/api/v1/memo/%d", memoID), nil)
 	return err
 }
 
-func (s *TestingServer) postMemoOrganizer(memoID int, memosOrganizer *apiv1.UpsertMemoOrganizerRequest) (*apiv1.Memo, error) {
+func (s *TestingServer) postMemoOrganizer(memoID int32, memosOrganizer *apiv1.UpsertMemoOrganizerRequest) (*apiv1.Memo, error) {
 	rawData, err := json.Marshal(&memosOrganizer)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to marshal memos organizer")
