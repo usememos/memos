@@ -1,6 +1,6 @@
 # 1.Prepare your workspace by:
-#     docker compose run api go install github.com/cosmtrek/air@latest
-#     docker compose run web npm install
+#     docker compose -f docker-compose.dev.yaml run api go install github.com/cosmtrek/air@latest
+#     docker compose -f docker-compose.dev.yaml run web npm install
 #
 # 2. Start you work by:
 #     docker compose up -d
