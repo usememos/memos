@@ -5,16 +5,15 @@ import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
 import MemberSection from "@/components/Settings/MemberSection";
 import MyAccountSection from "@/components/Settings/MyAccountSection";
-import OpenAISection from "@/components/Settings/OpenAISection";
 import PreferencesSection from "@/components/Settings/PreferencesSection";
 import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
 import SystemSection from "@/components/Settings/SystemSection";
-import { useGlobalStore, useUserStore } from "@/store/module";
+import { useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import "@/less/setting.less";
 
-type SettingSection = "my-account" | "preference" | "member" | "system" | "openai" | "storage" | "sso";
+type SettingSection = "my-account" | "preference" | "member" | "system" | "storage" | "sso";
 
 interface State {
   selectedSection: SettingSection;
@@ -22,7 +21,6 @@ interface State {
 
 const Setting = () => {
   const t = useTranslate();
-  const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const user = userStore.state.user;
   const [state, setState] = useState<State>({
@@ -39,11 +37,7 @@ const Setting = () => {
   const getSettingSectionList = () => {
     let settingList: SettingSection[] = ["my-account", "preference"];
     if (isHost) {
-      if (globalStore.isDev()) {
-        settingList = settingList.concat(["member", "system", "openai", "storage", "sso"]);
-      } else {
-        settingList = settingList.concat(["member", "system", "storage", "sso"]);
-      }
+      settingList = settingList.concat(["member", "system", "storage", "sso"]);
     }
     return settingList;
   };
@@ -84,14 +78,6 @@ const Setting = () => {
                 >
                   <Icon.Settings2 className="w-4 h-auto mr-2 opacity-80" /> {t("setting.system")}
                 </span>
-                {globalStore.isDev() && (
-                  <span
-                    onClick={() => handleSectionSelectorItemClick("openai")}
-                    className={`section-item ${state.selectedSection === "openai" ? "selected" : ""}`}
-                  >
-                    <Icon.Bot className="w-4 h-auto mr-2 opacity-80" /> {t("setting.openai")} <BetaBadge />
-                  </span>
-                )}
                 <span
                   onClick={() => handleSectionSelectorItemClick("storage")}
                   className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
@@ -128,8 +114,6 @@ const Setting = () => {
             <MemberSection />
           ) : state.selectedSection === "system" ? (
             <SystemSection />
-          ) : state.selectedSection === "openai" ? (
-            <OpenAISection />
           ) : state.selectedSection === "storage" ? (
             <StorageSection />
           ) : state.selectedSection === "sso" ? (
