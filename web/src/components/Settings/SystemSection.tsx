@@ -5,12 +5,12 @@ import * as api from "@/helpers/api";
 import { formatBytes } from "@/helpers/utils";
 import { useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
+import { showCommonDialog } from "../Dialog/CommonDialog";
+import showDisablePasswordLoginDialog from "../DisablePasswordLoginDialog";
 import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
 import "@/less/settings/system-section.less";
-import { showCommonDialog } from "../Dialog/CommonDialog";
-import showDisablePasswordLoginDialog from "../DisablePasswordLoginDialog";
 
 interface State {
   dbSize: number;

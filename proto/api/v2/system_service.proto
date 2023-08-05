@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+
+option go_package = "gen/api/v2";
+
+service SystemService {
+  rpc GetSystemInfo(GetSystemInfoRequest) returns (GetSystemInfoResponse) {
+    option (google.api.http) = {get: "/api/v2/system/info"};
+  }
+}
+
+message SystemInfo {
+  string version = 1;
+  string mode = 2;
+  bool allow_registration = 3;
+  bool disable_password_login = 4;
+  string additional_script = 5;
+  string additional_style = 6;
+  int64 db_size = 7;
+}
+
+message GetSystemInfoRequest {}
+
+message GetSystemInfoResponse {
+  SystemInfo system_info = 1;
+}
