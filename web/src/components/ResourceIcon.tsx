@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { getResourceUrl } from "@/utils/resource";
 import Icon from "./Icon";
-import SquareDiv from "./kit/SquareDiv";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import SquareDiv from "./kit/SquareDiv";
 
 interface Props {
   className: string;

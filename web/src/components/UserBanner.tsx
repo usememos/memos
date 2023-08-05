@@ -4,8 +4,8 @@ import { useGlobalStore, useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import Icon from "./Icon";
-import Dropdown from "./kit/Dropdown";
 import UserAvatar from "./UserAvatar";
+import Dropdown from "./kit/Dropdown";
 
 const UserBanner = () => {
   const t = useTranslate();

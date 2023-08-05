@@ -17,6 +17,13 @@
   
     - [MemoService](#memos-api-v2-MemoService)
   
+- [api/v2/system_service.proto](#api_v2_system_service-proto)
+    - [GetSystemInfoRequest](#memos-api-v2-GetSystemInfoRequest)
+    - [GetSystemInfoResponse](#memos-api-v2-GetSystemInfoResponse)
+    - [SystemInfo](#memos-api-v2-SystemInfo)
+  
+    - [SystemService](#memos-api-v2-SystemService)
+  
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
     - [ListTagsRequest](#memos-api-v2-ListTagsRequest)
     - [ListTagsResponse](#memos-api-v2-ListTagsResponse)
@@ -190,6 +197,78 @@
 | ----------- | ------------ | ------------- | ------------|
 | ListMemos | [ListMemosRequest](#memos-api-v2-ListMemosRequest) | [ListMemosResponse](#memos-api-v2-ListMemosResponse) |  |
 | GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) |  |
+
+ 
+
+
+
+<a name="api_v2_system_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/system_service.proto
+
+
+
+<a name="memos-api-v2-GetSystemInfoRequest"></a>
+
+### GetSystemInfoRequest
+
+
+
+
+
+
+
+<a name="memos-api-v2-GetSystemInfoResponse"></a>
+
+### GetSystemInfoResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| system_info | [SystemInfo](#memos-api-v2-SystemInfo) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SystemInfo"></a>
+
+### SystemInfo
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| version | [string](#string) |  |  |
+| mode | [string](#string) |  |  |
+| allow_registration | [bool](#bool) |  |  |
+| disable_password_login | [bool](#bool) |  |  |
+| additional_script | [string](#string) |  |  |
+| additional_style | [string](#string) |  |  |
+| db_size | [int64](#int64) |  |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-SystemService"></a>
+
+### SystemService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| GetSystemInfo | [GetSystemInfoRequest](#memos-api-v2-GetSystemInfoRequest) | [GetSystemInfoResponse](#memos-api-v2-GetSystemInfoResponse) |  |
 
  
 

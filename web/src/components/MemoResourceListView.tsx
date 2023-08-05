@@ -1,9 +1,9 @@
 import { ImageList, ImageListItem, useMediaQuery } from "@mui/material";
 import { absolutifyLink } from "@/helpers/utils";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
-import SquareDiv from "./kit/SquareDiv";
 import MemoResource from "./MemoResource";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import SquareDiv from "./kit/SquareDiv";
 import "@/less/memo-resources.less";
 
 interface Props {

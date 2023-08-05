@@ -82,10 +82,6 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 		}
 		if hostUser != nil {
 			systemStatus.Host = &User{ID: hostUser.ID}
-			// data desensitize
-			systemStatus.Host.OpenID = ""
-			systemStatus.Host.Email = ""
-			systemStatus.Host.AvatarURL = ""
 		}
 
 		systemSettingList, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})

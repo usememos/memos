@@ -28,8 +28,9 @@ const (
 )
 
 var authenticationAllowlistMethods = map[string]bool{
-	"/memos.api.v2.UserService/GetUser":   true,
-	"/memos.api.v2.MemoService/ListMemos": true,
+	"/memos.api.v2.SystemService/GetSystemInfo": true,
+	"/memos.api.v2.UserService/GetUser":         true,
+	"/memos.api.v2.MemoService/ListMemos":       true,
 }
 
 // IsAuthenticationAllowed returns whether the method is exempted from authentication.
