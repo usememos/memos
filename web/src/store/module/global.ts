@@ -75,7 +75,7 @@ export const useGlobalStore = () => {
     },
     fetchSystemStatus: async () => {
       const { data: systemStatus } = await api.getSystemStatus();
-      // TODO: update 
+      // TODO: update this when api v2 is ready.
       const {
         data: { systemInfo },
       } = await axios.get("/api/v2/system/info");

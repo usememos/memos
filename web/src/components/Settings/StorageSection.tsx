@@ -6,9 +6,9 @@ import { useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import showCreateStorageServiceDialog from "../CreateStorageServiceDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
-import Dropdown from "../kit/Dropdown";
 import LearnMore from "../LearnMore";
 import showUpdateLocalStorageDialog from "../UpdateLocalStorageDialog";
+import Dropdown from "../kit/Dropdown";
 
 const StorageSection = () => {
   const t = useTranslate();

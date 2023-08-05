@@ -7,8 +7,8 @@ import { getResourceType, getResourceUrl } from "@/utils/resource";
 import showChangeResourceFilenameDialog from "./ChangeResourceFilenameDialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
-import Dropdown from "./kit/Dropdown";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import Dropdown from "./kit/Dropdown";
 
 interface Props {
   resource: Resource;

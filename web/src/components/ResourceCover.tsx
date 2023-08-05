@@ -1,8 +1,8 @@
 import React from "react";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
 import Icon from "./Icon";
-import SquareDiv from "./kit/SquareDiv";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import SquareDiv from "./kit/SquareDiv";
 import "@/less/resource-cover.less";
 
 interface ResourceCoverProps {
