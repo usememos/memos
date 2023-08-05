@@ -1,6 +1,6 @@
 import { ImageList, ImageListItem, useMediaQuery } from "@mui/material";
 import { absolutifyLink } from "@/helpers/utils";
-import { getResourceUrl } from "@/utils/resource";
+import { getResourceType, getResourceUrl } from "@/utils/resource";
 import SquareDiv from "./kit/SquareDiv";
 import MemoResource from "./MemoResource";
 import showPreviewImageDialog from "./PreviewImageDialog";
@@ -24,17 +24,15 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
     ...props,
   };
   const matches = useMediaQuery("(min-width:640px)");
-  const imageResourceList = resourceList.filter((resource) => resource.type.startsWith("image"));
+  const imageResourceList = resourceList.filter((resource) => getResourceType(resource).startsWith("image"));
   const videoResourceList = resourceList.filter((resource) => resource.type.startsWith("video"));
   const otherResourceList = resourceList.filter(
     (resource) => !imageResourceList.includes(resource) && !videoResourceList.includes(resource)
   );
 
-  const imgUrls = imageResourceList
-    .filter((resource) => resource.type.startsWith("image"))
-    .map((resource) => {
-      return getResourceUrl(resource);
-    });
+  const imgUrls = imageResourceList.map((resource) => {
+    return getResourceUrl(resource);
+  });
 
   const handleImageClick = (imgUrl: string) => {
     const index = imgUrls.findIndex((url) => url === imgUrl);
