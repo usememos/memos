@@ -49,17 +49,43 @@ func (s *MemoService) ListMemos(ctx context.Context, request *apiv2pb.ListMemosR
 		memoMessages[i] = convertMemoFromStore(memo)
 	}
 
+	// TODO(steven): Add privalige checks.
 	response := &apiv2pb.ListMemosResponse{
-		Memos: memoMessages,
+		Memos: nil,
 	}
 	return response, nil
 }
 
-const visibilityFilterExample = `visibility == "PRIVATE"`
+func (s *MemoService) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequest) (*apiv2pb.GetMemoResponse, error) {
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+		ID: &request.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+	if memo.Visibility != store.Public {
+		userIDPtr := ctx.Value(UserIDContextKey)
+		if userIDPtr == nil {
+			return nil, status.Errorf(codes.Unauthenticated, "unauthenticated")
+		}
+		userID := userIDPtr.(int32)
+		if memo.Visibility == store.Private && memo.CreatorID != userID {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+	}
+
+	response := &apiv2pb.GetMemoResponse{
+		Memo: convertMemoFromStore(memo),
+	}
+	return response, nil
+}
 
 // getVisibilityFilter will parse the simple filter such as `visibility = "PRIVATE"` to "PRIVATE" .
 func getVisibilityFilter(filter string) (string, error) {
-	formatInvalidErr := errors.Errorf("invalid filter %q, example %q", filter, visibilityFilterExample)
+	formatInvalidErr := errors.Errorf("invalid filter %q", filter)
 	e, err := cel.NewEnv(cel.Variable("visibility", cel.StringType))
 	if err != nil {
 		return "", err
