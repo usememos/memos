@@ -37,20 +37,6 @@ func (s *UserService) GetUser(ctx context.Context, request *apiv2pb.GetUserReque
 	// Data desensitization.
 	userMessage.OpenId = ""
 
-	userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
-		UserID: &userMessage.Id,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)
-	}
-
-	userID, ok := ctx.Value(UserIDContextKey).(int)
-	if ok && userID == int(userMessage.Id) {
-		for _, userSetting := range userSettings {
-			userMessage.Settings = append(userMessage.Settings, convertUserSettingFromStore(userSetting))
-		}
-	}
-
 	response := &apiv2pb.GetUserResponse{
 		User: userMessage,
 	}
@@ -69,7 +55,6 @@ func convertUserFromStore(user *store.User) *apiv2pb.User {
 		Nickname:  user.Nickname,
 		OpenId:    user.OpenID,
 		AvatarUrl: user.AvatarURL,
-		Settings:  []*apiv2pb.UserSetting{},
 	}
 }
 
@@ -86,7 +71,8 @@ func convertUserRoleFromStore(role store.Role) apiv2pb.Role {
 	}
 }
 
-func convertUserSettingFromStore(userSetting *store.UserSetting) *apiv2pb.UserSetting {
+// ConvertUserSettingFromStore converts a user setting from store to protobuf.
+func ConvertUserSettingFromStore(userSetting *store.UserSetting) *apiv2pb.UserSetting {
 	userSettingKey := apiv2pb.UserSetting_KEY_UNSPECIFIED
 	userSettingValue := &apiv2pb.UserSettingValue{}
 	switch userSetting.Key {
@@ -103,7 +89,7 @@ func convertUserSettingFromStore(userSetting *store.UserSetting) *apiv2pb.UserSe
 	case "memo-visibility":
 		userSettingKey = apiv2pb.UserSetting_MEMO_VISIBILITY
 		userSettingValue.Value = &apiv2pb.UserSettingValue_VisibilityValue{
-			VisibilityValue: convertVisibilityFromString(userSetting.Value),
+			VisibilityValue: convertVisibilityFromStore(store.Visibility(userSetting.Value)),
 		}
 	case "telegram-user-id":
 		userSettingKey = apiv2pb.UserSetting_TELEGRAM_USER_ID
@@ -115,16 +101,5 @@ func convertUserSettingFromStore(userSetting *store.UserSetting) *apiv2pb.UserSe
 		UserId: int32(userSetting.UserID),
 		Key:    userSettingKey,
 		Value:  userSettingValue,
-	}
-}
-
-func convertVisibilityFromString(visibility string) apiv2pb.Visibility {
-	switch visibility {
-	case "public":
-		return apiv2pb.Visibility_PUBLIC
-	case "private":
-		return apiv2pb.Visibility_PRIVATE
-	default:
-		return apiv2pb.Visibility_VISIBILITY_UNSPECIFIED
 	}
 }
