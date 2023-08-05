@@ -18,6 +18,15 @@ import (
 	"google.golang.org/grpc/status"
 )
 
+// ContextKey is the key type of context value.
+type ContextKey int
+
+const (
+	// The key name used to store user id in the context
+	// user id is extracted from the jwt token subject field.
+	UserIDContextKey ContextKey = iota
+)
+
 var authenticationAllowlistMethods = map[string]bool{
 	"/memos.api.v2.UserService/GetUser":   true,
 	"/memos.api.v2.MemoService/ListMemos": true,
@@ -30,15 +39,6 @@ func IsAuthenticationAllowed(fullMethodName string) bool {
 	}
 	return authenticationAllowlistMethods[fullMethodName]
 }
-
-// ContextKey is the key type of context value.
-type ContextKey int
-
-const (
-	// The key name used to store user id in the context
-	// user id is extracted from the jwt token subject field.
-	UserIDContextKey ContextKey = iota
-)
 
 // GRPCAuthInterceptor is the auth interceptor for gRPC server.
 type GRPCAuthInterceptor struct {
