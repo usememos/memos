@@ -138,10 +138,6 @@ export function deleteMemo(memoId: MemoId) {
   return axios.delete(`/api/v1/memo/${memoId}`);
 }
 
-export function checkOpenAIEnabled() {
-  return axios.get<boolean>(`/api/openai/enabled`);
-}
-
 export function getResourceList() {
   return axios.get<Resource[]>("/api/v1/resource");
 }
