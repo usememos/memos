@@ -1,0 +1,17 @@
+{{- if and .Values.persistence.enabled  (not .Values.persistence.existPersistClaim) }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: {{ template "memos.fullname" . }}
+  labels:
+    {{- include "memos.labels" . | nindent 4 }}
+spec:
+  {{- if .Values.persistence.storageClass }}
+  storageClassName: {{ .Values.persistence.storageClass | quote }}
+  {{- end }}
+  accessModes:
+    - {{ .Values.persistence.accessMode | quote }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.size | quote }}
+{{- end -}}
