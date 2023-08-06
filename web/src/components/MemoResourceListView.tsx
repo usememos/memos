@@ -1,4 +1,4 @@
-import { ImageList, ImageListItem, useMediaQuery } from "@mui/material";
+import classNames from "classnames";
 import { absolutifyLink } from "@/helpers/utils";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
 import MemoResource from "./MemoResource";
@@ -23,7 +23,6 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
     ...getDefaultProps(),
     ...props,
   };
-  const matches = useMediaQuery("(min-width:640px)");
   const imageResourceList = resourceList.filter((resource) => getResourceType(resource).startsWith("image"));
   const videoResourceList = resourceList.filter((resource) => resource.type.startsWith("video"));
   const otherResourceList = resourceList.filter(
@@ -41,20 +40,38 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      {imageResourceList.length > 0 && (
-        <div className="w-full mt-2">
-          <ImageList variant="masonry" cols={matches ? 3 : 2} gap={8}>
+      {imageResourceList.length > 0 &&
+        (imageResourceList.length === 1 ? (
+          <div className="mt-2 max-w-[90%] max-h-64 flex justify-center items-center shadow rounded overflow-hidden hide-scrollbar hover:shadow-md">
+            <img
+              className="cursor-pointer min-h-full w-auto min-w-full object-cover"
+              src={getResourceUrl(imageResourceList[0])}
+              onClick={() => handleImageClick(getResourceUrl(imageResourceList[0]))}
+              decoding="async"
+              loading="lazy"
+            />
+          </div>
+        ) : (
+          <div className={classNames("w-full mt-2 grid gap-2 grid-cols-2 sm:grid-cols-3")}>
             {imageResourceList.map((resource) => {
               const url = getResourceUrl(resource);
               return (
-                <ImageListItem onClick={() => handleImageClick(url)} key={resource.id}>
-                  <img className="shadow rounded" src={url} loading="lazy" />
-                </ImageListItem>
+                <SquareDiv
+                  key={resource.id}
+                  className="flex justify-center items-center shadow rounded overflow-hidden hide-scrollbar hover:shadow-md"
+                >
+                  <img
+                    className="cursor-pointer min-h-full w-auto min-w-full object-cover"
+                    src={resource.externalLink ? url : url + "?thumbnail=1"}
+                    onClick={() => handleImageClick(url)}
+                    decoding="async"
+                    loading="lazy"
+                  />
+                </SquareDiv>
               );
             })}
-          </ImageList>
-        </div>
-      )}
+          </div>
+        ))}
 
       <div className={`resource-wrapper ${className || ""}`}>
         {videoResourceList.length > 0 && (
