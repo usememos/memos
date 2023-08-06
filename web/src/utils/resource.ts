@@ -7,7 +7,7 @@ export const getResourceUrl = (resource: Resource, withOrigin = true) => {
 };
 
 export const getResourceType = (resource: Resource) => {
-  if (resource.type.startsWith("image") && isImage(resource.type)) {
+  if (isImage(resource.type)) {
     return "image/*";
   } else if (resource.type.startsWith("video")) {
     return "video/*";
@@ -34,5 +34,10 @@ export const getResourceType = (resource: Resource) => {
 
 // isImage returns true if the given mime type is an image.
 export const isImage = (t: string) => {
-  return t === "image/jpeg" || t === "image/png" || t === "image/gif" || t === "image/svg+xml" || t === "image/webp";
+  // Don't show PSDs as images.
+  return t.startsWith("image/") && !isPSD(t);
+};
+
+const isPSD = (t: string) => {
+  return t === "image/vnd.adobe.photoshop" || t === "image/x-photoshop" || t === "image/photoshop";
 };

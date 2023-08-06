@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { getResourceUrl } from "@/utils/resource";
+import { getResourceType, getResourceUrl } from "@/utils/resource";
 import Icon from "./Icon";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import SquareDiv from "./kit/SquareDiv";
@@ -12,7 +12,7 @@ interface Props {
 const ResourceIcon = (props: Props) => {
   const { className, resource } = props;
 
-  if (resource.type.includes("image")) {
+  if (getResourceType(resource).startsWith("image")) {
     const url = getResourceUrl(resource);
     return (
       <SquareDiv key={resource.id} className={classNames("cursor-pointer rounded hover:shadow", className)}>
