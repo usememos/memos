@@ -91,7 +91,7 @@
     "cant-empty": "Inhalt kann nicht leer sein",
     "local": "Lokal",
     "resources": "Ressourcen",
-    "editing": "Editing..."
+    "editing": "Bearbeitung..."
   },
   "memo": {
     "view-detail": "Details anzeigen",
@@ -132,7 +132,9 @@
     "text-placeholder": "Beginne einen Regex mit ^"
   },
   "tag-list": {
-    "tip-text": "Erstelle einen Tag mit `#tag`"
+    "all-tags": "Alle Tags",
+    "tip-text": "Erstelle einen Tag mit `#tag`",
+    "invalid-tag-name": "Ungültiger Tagname"
   },
   "search": {
     "quickly-filter": "Schnellfilter"
@@ -184,11 +186,11 @@
       "light": "Hell",
       "dark": "Dunkel"
     },
-    "storage": "Storage",
+    "storage": "Speicherung",
     "sso": "SSO",
     "storage-section": {
       "storage-services-list": "Storage service list",
-      "create-a-service": "Create a service",
+      "create-a-service": "Erstelle einen Service",
       "update-a-service": "Update a service",
       "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIBLE❗",
       "delete-storage": "Delete Storage"
@@ -204,6 +206,7 @@
   },
   "message": {
     "no-memos": "Keine Memos 🌃",
+    "no-data": "Vielleicht keine Daten gefunden?",
     "memos-ready": "Alle Memos geladen 🎉",
     "restored-successfully": "Erfolgreich wiederhergestellt",
     "memo-updated-datetime": "Erstellungszeitpunkt geändert.",
@@ -240,7 +243,7 @@
     "succeed-update-additional-script": "Zusätzliches Skript wurde erfolgreich aktualisiert",
     "update-succeed": "Update erfolgreich",
     "succeed-copy-code": "Succeed to copy code to clipboard.",
-    "page-not-found": "404 - Page Not Found 😥"
+    "page-not-found": "404 - Seite nicht gefunden 😥"
   },
   "days": {
     "monday": "Montag",
