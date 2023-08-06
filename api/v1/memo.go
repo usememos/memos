@@ -531,29 +531,12 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 	g.GET("/memo/all", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		findMemoMessage := &store.FindMemo{}
-		_, ok := c.Get(auth.UserIDContextKey).(int)
+		_, ok := c.Get(auth.UserIDContextKey).(int32)
 		if !ok {
 			findMemoMessage.VisibilityList = []store.Visibility{store.Public}
 		} else {
 			findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected}
 		}
-
-		pinnedStr := c.QueryParam("pinned")
-		if pinnedStr != "" {
-			pinned := pinnedStr == "true"
-			findMemoMessage.Pinned = &pinned
-		}
-
-		contentSearch := []string{}
-		tag := c.QueryParam("tag")
-		if tag != "" {
-			contentSearch = append(contentSearch, "#"+tag+" ")
-		}
-		contentSlice := c.QueryParams()["content"]
-		if len(contentSlice) > 0 {
-			contentSearch = append(contentSearch, contentSlice...)
-		}
-		findMemoMessage.ContentSearch = contentSearch
 
 		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
 			findMemoMessage.Limit = &limit
