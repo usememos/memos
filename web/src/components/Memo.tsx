@@ -66,6 +66,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     );
   }, [memo.relationList]);
 
+  // Update display time string.
   useEffect(() => {
     let intervalFlag: any = -1;
     if (Date.now() - memo.displayTs < 1000 * 60 * 60 * 24) {
@@ -101,6 +102,11 @@ const Memo: React.FC<Props> = (props: Props) => {
       root.addEventListener("scroll", checkShouldRender);
     }
   }, [lazyRendering]);
+
+  if (!shouldRender) {
+    // Render a placeholder to occupy the space.
+    return <div className={`memo-wrapper min-h-[128px] ${"memos-" + memo.id}`} ref={memoContainerRef}></div>;
+  }
 
   const handleTogglePinMemoBtnClick = async () => {
     try {
@@ -245,15 +251,6 @@ const Memo: React.FC<Props> = (props: Props) => {
       filterStore.setMemoVisibilityFilter(visibility);
     }
   };
-
-  if (!shouldRender) {
-    return (
-      <div
-        className={`memo-wrapper min-h-[128px] ${"memos-" + memo.id} ${memo.pinned && !readonly ? "pinned" : ""}`}
-        ref={memoContainerRef}
-      ></div>
-    );
-  }
 
   return (
     <>
