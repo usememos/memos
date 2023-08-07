@@ -27,14 +27,14 @@ func (t *telegramHandler) BotToken(ctx context.Context) string {
 }
 
 const (
-	workingMessage = "Working on send your memo..."
+	workingMessage = "Working on sending your memo..."
 	successMessage = "Success"
 )
 
 func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, message telegram.Message, attachments []telegram.Attachment) error {
 	reply, err := bot.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
 	if err != nil {
-		return fmt.Errorf("fail to SendReplyMessage: %s", err)
+		return fmt.Errorf("Failed to SendReplyMessage: %s", err)
 	}
 
 	var creatorID int32
@@ -79,7 +79,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 
 	memoMessage, err := t.store.CreateMemo(ctx, create)
 	if err != nil {
-		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateMemo: %s", err), nil)
+		_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Failed to CreateMemo: %s", err), nil)
 		return err
 	}
 
@@ -95,13 +95,13 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 
 		err := apiv1.SaveResourceBlob(ctx, t.store, &create, bytes.NewReader(attachment.Data))
 		if err != nil {
-			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to SaveResourceBlob: %s", err), nil)
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Failed to SaveResourceBlob: %s", err), nil)
 			return err
 		}
 
 		resource, err := t.store.CreateResource(ctx, &create)
 		if err != nil {
-			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to CreateResource: %s", err), nil)
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Failed to CreateResource: %s", err), nil)
 			return err
 		}
 
@@ -110,7 +110,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 			ResourceID: resource.ID,
 		})
 		if err != nil {
-			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("failed to UpsertMemoResource: %s", err), nil)
+			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Failed to UpsertMemoResource: %s", err), nil)
 			return err
 		}
 	}
@@ -125,7 +125,7 @@ func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 	var visibility store.Visibility
 	n, err := fmt.Sscanf(callbackQuery.Data, "%s %d", &visibility, &memoID)
 	if err != nil || n != 2 {
-		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to parse callbackQuery.Data %s", callbackQuery.Data))
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to parse callbackQuery.Data %s", callbackQuery.Data))
 	}
 
 	update := store.UpdateMemo{
@@ -134,16 +134,16 @@ func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram
 	}
 	err = t.store.UpdateMemo(ctx, &update)
 	if err != nil {
-		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to call UpdateMemo %s", err))
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to call UpdateMemo %s", err))
 	}
 
 	keyboard := generateKeyboardForMemoID(memoID)
 	_, err = bot.EditMessage(ctx, callbackQuery.Message.Chat.ID, callbackQuery.Message.MessageID, fmt.Sprintf("Saved as %s Memo %d", visibility, memoID), keyboard)
 	if err != nil {
-		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("fail to EditMessage %s", err))
+		return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Failed to EditMessage %s", err))
 	}
 
-	return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Success change Memo %d to %s", memoID, visibility))
+	return bot.AnswerCallbackQuery(ctx, callbackQuery.ID, fmt.Sprintf("Success changing Memo %d to %s", memoID, visibility))
 }
 
 func generateKeyboardForMemoID(id int32) [][]telegram.InlineKeyboardButton {

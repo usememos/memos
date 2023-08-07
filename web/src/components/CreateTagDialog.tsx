@@ -56,7 +56,7 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
 
   const handleSaveBtnClick = async () => {
     if (!validateTagName(tagName)) {
-      toast.error("Invalid tag name");
+      toast.error(t("tag-list.invalid-tag-name"));
       return;
     }
 
