@@ -9,7 +9,7 @@ import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { getDateTimeString, getTimeStampByDate } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
-import { useGlobalStore, useMemoStore, useUserStore } from "@/store/module";
+import { useMemoStore, useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import showEmbedMemoDialog from "./EmbedMemoDialog";
@@ -33,9 +33,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
-  const globalStore = useGlobalStore();
   const user = userStore.state.user as User;
-  const { systemStatus } = globalStore.state;
   const [state, setState] = useState<State>({
     memoAmount: 0,
     memoVisibility: propsMemo.visibility,
@@ -181,7 +179,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-4 px-6">
               <div className="mr-2">
-                <img className="h-10 w-auto rounded-lg" src={`${systemStatus.customizedProfile.logoUrl || "/logo.webp"}`} alt="" />
+                <img className="h-10 w-auto rounded-lg" src={`${user.avatarUrl || "/logo.webp"}`} alt="" />
               </div>
               <div className="w-auto grow truncate flex mr-2 flex-col justify-center items-start">
                 <span className="w-full text-sm truncate font-bold text-gray-600 dark:text-gray-300">{user.nickname || user.username}</span>
