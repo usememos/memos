@@ -1,18 +1,21 @@
 {
   "common": {
+    "memos-slogan": "Ein schlankes, selbstgehostetes Memo-Hub. Open Source und für immer kostenlos.",
     "about": "Über Memos",
+    "home": "Startseite",
+    "resources": "Ressourcen",
+    "setting": "Einstellung",
+    "archived": "Archiviert",
     "email": "E-Mail",
     "password": "Passwort",
-    "repeat-password-short": "Wiederholen",
-    "repeat-password": "Wiederhole das Passwort",
-    "new-password": "Neues Passwort",
-    "repeat-new-password": "Neues Passwort wiederholen",
+    "avatar": "Avatar",
     "username": "Nutzername",
     "nickname": "Nickname",
     "save": "Speichern",
     "close": "Schließen",
     "cancel": "Abbrechen",
     "create": "Erstellen",
+    "update": "Update",
     "change": "Ändern",
     "confirm": "Bestätigen",
     "reset": "Zurücksetzen",
@@ -30,83 +33,271 @@
     "admin": "Administration",
     "explore": "Erkunden",
     "sign-in": "Anmelden",
+    "sign-in-with": "Anmelden mit {{provider}}",
+    "or": "oder",
     "sign-up": "Registrieren",
     "sign-out": "Abmelden",
-    "back-to-home": "Zurück zur Startseite",
     "type": "Typ",
     "title": "Titel",
     "filter": "Filter",
+    "filter-period": "{{from}} bis {{to}}",
     "tags": "Tags",
     "yourself": "Du selbst",
-    "archived-at": "Archiviert am",
     "changed": "Verändert",
-    "update-on": "Verändert am",
     "fold": "Einklappen",
     "expand": "Erweitern",
     "image": "Bild",
     "link": "Link",
     "vacuum": "Aufräumen",
     "select": "Auswählen",
-    "avatar": "Avatar",
-    "database": "Database",
+    "database": "Datenbank",
+    "upload": "Hochladen",
+    "preview": "Vorschau",
+    "rename": "Umbenennen",
+    "clear": "Leeren",
+    "name": "Name",
+    "visibility": "Sichtbarkeit",
+    "learn-more": "Mehr erfahren",
+    "beta": "Beta",
+    "new": "Neu",
+    "dialog": {
+      "error": "Fehler",
+      "help": "Hilfe",
+      "info": "Information",
+      "success": "Erfolgreich",
+      "warning": "Warnung"
+    },
     "mark": "Mark"
+  },
+  "router": {
+    "back-to-home": "Zurück zur Startseite"
   },
   "auth": {
     "signup-as-host": "Als Host registrieren",
     "host-tip": "Du registrierst dich als Host dieser Seite.",
-    "not-host-tip": "Kontaktiere den Host dieser Seite, wenn du noch kein Konto hast."
-  },
-  "sidebar": {
-    "daily-review": "Tagesbilanz",
-    "resources": "Ressourcen",
-    "setting": "Einstellung",
-    "archived": "Archiviert"
-  },
-  "resource": {
-    "no-resources": "Keine Ressourcen.",
-    "fetching-data": "Lade Daten...",
-    "upload": "Hochladen",
-    "preview": "Vorschau",
-    "copy-link": "Link kopieren",
-    "delete-resource": "Ressource löschen",
-    "warning-text": "Möchtest du diese Ressource wirklich löschen? Dies kann nicht rückgängig gemacht werden❗",
-    "linked-amount": "Anzahl verlinkter Memos",
-    "rename": "Umbenennen",
-    "warning-text-unused": "Möchtest du diese ungenutzte Ressource wirklich löschen? Dies kann nicht rückgängig gemacht werden❗",
-    "no-unused-resources": "Keine ungenutzten Ressourcen",
-    "name": "Name",
-    "clear": "Clear",
-    "description": "View your static resources in memos. e.g. images"
-  },
-  "archived": {
-    "archived-memos": "Archivierte Memos",
-    "no-archived-memos": "Keine archivierten Memos",
-    "fetching-data": "Lade Daten..."
+    "not-host-tip": "Kontaktiere den Host dieser Seite, wenn du noch kein Konto hast.",
+    "new-password": "Neues Passwort",
+    "repeat-new-password": "Neues Passwort wiederholen"
   },
   "editor": {
+    "editing": "in Bearbeitung...",
     "cancel-edit": "Bearbeiten abbrechen",
     "save": "Speichern",
     "placeholder": "Ein Gedanke...",
     "only-image-supported": "Nur Bilder werden unterstützt.",
     "cant-empty": "Inhalt kann nicht leer sein",
     "local": "Lokal",
-    "resources": "Ressourcen",
-    "editing": "Bearbeitung..."
+    "resources": "Ressourcen"
   },
   "memo": {
     "view-detail": "Details anzeigen",
-    "copy": "Kopieren",
-    "copy-link": "Link Kopieren",
+    "copy-link": "Link kopieren",
+    "embed": "Einbinden",
+    "archived-memos": "Archivierte Memos",
+    "no-archived-memos": "Keine archivierten Memos",
+    "fetching-data": "Lade Daten...",
+    "fetch-more": "Klicke hier, um mehr zu laden",
+    "archived-at": "Archiviert am",
+    "search-placeholder": "Suche memos",
     "visibility": {
       "private": "Nur für dich sichtbar",
       "protected": "Für Mitglieder sichtbar",
       "public": "Für alle sichtbar",
-      "disabled": "Public memos are disabled"
+      "disabled": "Öffentliche memos sind deaktiviert"
+    },
+    "delete-memo": "Memo löschen",
+    "delete-confirm": "Bist du sicher, dass du diese Notiz löschen möchtest?\n\nDiese Aktion ist nicht rückgängig zu machen❗"
+  },
+  "resource": {
+    "no-resources": "Keine Ressourcen.",
+    "fetching-data": "Lade Daten...",
+    "copy-link": "Link kopieren",
+    "reset-link": "Link zurücksetzen",
+    "reset-resource-link": "Ressourcen-Link zurücksetzen",
+    "reset-link-prompt": "Bist du sicher, dass du diesen Link zurücksetzen möchtest?\nDadurch werden alle aktuellen Linkverwendungen ungültig.\n\nDiese Aktion ist nicht rückgängig zu machen❗",
+    "delete-resource": "Ressource löschen",
+    "linked-amount": "Anzahl verlinkter Memos",
+    "warning-text": "Möchtest du diese Ressource wirklich löschen? Dies kann nicht rückgängig gemacht werden❗",
+    "warning-text-unused": "Möchtest du diese ungenutzte Ressource wirklich löschen? Dies kann nicht rückgängig gemacht werden❗",
+    "no-unused-resources": "Keine ungenutzten Ressourcen",
+    "delete-selected-resources": "Ausgewählte Ressource löschen",
+    "no-files-selected": "Keine Dateien ausgewählt❗",
+    "upload-successfully": "Upload erfolgreich",
+    "file-drag-drop-prompt": "Ziehe deine Datei per Drag & Drop hierher, um sie hochzuladen",
+    "search-bar-placeholder": "Ressource suchen",
+    "clear": "Löschen",
+    "create-dialog": {
+      "title": "Ressource erstellen",
+      "upload-method": "Upload Methode",
+      "local-file": {
+        "option": "Lokale Datei",
+        "choose": "Wähle eine Datei..."
+      },
+      "external-link": {
+        "option": "Externer Link",
+        "link": "Link",
+        "link-placeholder": "https://der.link.zu/deiner/ressource",
+        "file-name": "Dateiname",
+        "file-name-placeholder": "Dateiname",
+        "type": "Typ",
+        "type-placeholder": "Dateityp"
+      },
+      "download-link": {
+        "option": "Download-Link"
+      }
     }
   },
-  "memo-list": {
-    "fetching-data": "Lade Daten...",
-    "fetch-more": "Klicke hier, um mehr zu laden"
+  "tag-list": {
+    "tip-text": "Erstelle einen Tag mit `#tag`",
+    "create-tag": "Tag erstellen",
+    "all-tags": "Alle Tags",
+    "tag-name": "TAG_NAME"
+  },
+  "daily-review": {
+    "title": "Tagesbilanz",
+    "no-memos": "Hoppla, da ist ja gar nichts."
+  },
+  "setting": {
+    "my-account": "Mein Konto",
+    "preference": "Einstellungen",
+    "member": "Mitglieder",
+    "member-list": "Mitgliederliste",
+    "system": "System",
+    "openai": "OpenAI",
+    "storage": "Speicher",
+    "sso": "SSO",
+    "account-section": {
+      "title": "Konto-Informationen",
+      "username-note": "Zum Anmelden verwendet",
+      "nickname-note": "Wird im Banner angezeigt",
+      "email-note": "Optional",
+      "update-information": "Informationen ändern",
+      "change-password": "Passwort ändern",
+      "reset-api": "API zurücksetzen",
+      "openapi-title": "OpenAPI",
+      "openapi-reset": "OpenAPI Key zurücksetzen",
+      "openapi-reset-warning": "❗ Die bestehende API wird ungültig und eine neue wird erstellt.\n\nBist du sicher, dass du zurücksetzen möchtest?",
+      "openapi-sample-post": "Hallo #memos von {{url}}"
+    },
+    "preference-section": {
+      "theme": "Design",
+      "default-memo-visibility": "Standard Sichtbarkeit von Memos",
+      "default-resource-visibility": "Standard Sichbarkeit von Ressourcen",
+      "enable-folding-memo": "Einklappen von Memos aktivieren",
+      "enable-double-click": "Doppelklick zum Bearbeiten aktivieren",
+      "editor-font-style": "Textstil des Editors",
+      "mobile-editor-style": "Stil des mobilen Editors",
+      "default-memo-sort-option": "Angezeigter Memo-Zeitpunkt",
+      "telegram-user-id": "Telegram UserID",
+      "telegram-user-id-placeholder": "Sende beliebige Wörter als Memo an deinen Telegram Bot",
+      "created_ts": "Erstellungszeitpunkt",
+      "updated_ts": "Änderungszeitpunkt",
+      "daily-review-time-offset": "Tägliche Überprüfung Zeitverschiebung",
+      "auto-collapse": "Automatisch reduzieren"
+    },
+    "storage-section": {
+      "current-storage": "Aktueller Speicherdienst",
+      "type-database": "Datenbank",
+      "type-local": "Lokal",
+      "storage-services-list": "Liste der Speicherdienste",
+      "create-a-service": "Erstelle einen Dienst",
+      "update-a-service": "Aktualisiere einen Dienst",
+      "warning-text": "Bist du sicher, dass du den Speicherdienst \"{{name}}\" löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN❗",
+      "delete-storage": "Speicher löschen",
+      "local-storage-path": "Lokaler Speicherpfad",
+      "update-local-path": "Lokalen Speicherpfad aktualisieren",
+      "update-local-path-description": "Der lokale Speicherpfad ist ein relativer Pfad zu deiner Datenbankdatei",
+      "create-storage": "Speicher erstellen",
+      "update-storage": "Speicher aktualisieren",
+      "endpoint": "Endpoint",
+      "s3-compatible-url": "S3 kompatible URL",
+      "region": "Region",
+      "region-placeholder": "Name der Region",
+      "accesskey": "Zugangsschlüssel",
+      "accesskey-placeholder": "Zugangsschlüssel / Zugangs-ID",
+      "secretkey": "Geheimer Schlüssel",
+      "secretkey-placeholder": "Geheimer Schlüssel / Zugangsschlüssel",
+      "bucket": "Behälter",
+      "bucket-placeholder": "Name des Behälters",
+      "path": "Speicherpfad",
+      "path-description": "Du kannst dieselben dynamischen Variablen aus dem lokalen Speicher verwenden, wie {filename}",
+      "path-placeholder": "dein/pfad",
+      "url-prefix": "URL Präfix",
+      "url-prefix-placeholder": "Benutzerdefiniertes URL Präfix (optional)",
+      "url-suffix": "URL Suffix",
+      "url-suffix-placeholder": "Benutzerdefiniertes URL Suffix (optional)"
+    },
+    "member-section": {
+      "create-a-member": "Mitglied hinzufügen",
+      "archive-member": "Mitglied archivieren",
+      "archive-warning": "❗ Bist du sicher, dass du {{username}} archivieren möchtest?",
+      "delete-member": "Mitglied löschen",
+      "delete-warning": "❗  Bist du sicher, dass du {{username}} löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN❗"
+    },
+    "system-section": {
+      "server-name": "Servername",
+      "customize-server": {
+        "title": "Server bearbeiten",
+        "default": "Standard: memos",
+        "icon-url": "Icon-URL",
+        "description": "Beschreibunb",
+        "locale": "Sprache",
+        "appearance": "Erscheinungsbild"
+      },
+      "database-file-size": "Dateigröße der Datenbank",
+      "allow-user-signup": "Erlaube Registrierung neuer Mitglieder",
+      "disable-password-login": "Anmeldung mit Passwort deaktivieren",
+      "disable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer deaktiviert. Es ist nicht möglich sich anzumelden, ohne diese Einstellung in der Datenbank rückgängig zu machen, wenn deine konfigurierten Provider ausfallen. Du musst auch besonders vorsichtig sein, wenn du einen Identitätsanbieter entfernst❗",
+      "disable-password-login-final-warning": "Bitte gebe \"CONFIRM\" ein, wenn du weißt, was du tust.",
+      "enable-password-login": "Anmeldung mit Passwort aktivieren",
+      "enable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer aktiviert. Fahre nur fort, wenn du möchtest, dass sich Benutzer sowohl mit SSO als auch mit einem Passwort anmelden können❗",
+      "ignore-version-upgrade": "Versions-Upgrade ignorieren",
+      "disable-public-memos": "Öffentliche memos deaktivieren",
+      "max-upload-size": "Maximale Uploadgröße (MiB)",
+      "max-upload-size-hint": "Empfohlene Wert ist 32 MiB.",
+      "auto-backup-interval": "Intervall für automatische Sicherung (Sekunden)",
+      "auto-backup-interval-hint": "Setze den Wert auf 0, um die automatische Sicherung zu deaktivieren. Nach Änderung dieses Wertes ist ein Neustart erforderlich.",
+      "additional-style": "Zusätzlicher Stil",
+      "additional-script": "Zusätzliches Skript",
+      "additional-style-placeholder": "Zusätzliches CSS",
+      "additional-script-placeholder": "Zusätzliches JavaScript",
+      "telegram-bot-token": "Telegram Bot Token",
+      "telegram-bot-token-description": "Telegram Bot Token oder API Proxy, wie `http.../bot<token>`",
+      "telegram-bot-token-placeholder": "Dein Telegram Bot token",
+      "openai-api-key": "OpenAI: API Schlüssel",
+      "openai-api-key-description": "API-Schlüssel abrufen",
+      "openai-api-key-placeholder": "Dein OpenAI API-Schlüssel",
+      "openai-api-host": "OpenAI: API Host",
+      "openai-api-host-placeholder": "Standard: https://api.openai.com/",
+      "display-with-updated-time": "Anzeige mit aktualisierter Zeit"
+    },
+    "appearance-option": {
+      "system": "System",
+      "light": "Hell",
+      "dark": "Dunkel"
+    },
+    "sso-section": {
+      "sso-list": "SSO Liste",
+      "delete-sso": "Löschen bestätigen",
+      "confirm-delete": "Bist du sicher, dass du die SSO-Konfiguration von \"{{name}}\" löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN❗",
+      "create-sso": "SSO erstellen",
+      "update-sso": "SSO aktualisieren",
+      "sso-created": "SSO {{name}} erstellt",
+      "sso-updated": "SSO {{name}} aktualisiert",
+      "identifier": "Kennzeichnung",
+      "display-name": "Anzeigename",
+      "template": "Vorlage",
+      "custom": "Benutzerdefiniert",
+      "identifier-filter": "Kennzeichnungsfilter",
+      "redirect-url": "URL-Weiterleitung",
+      "client-id": "Client ID",
+      "client-secret": "Client secret",
+      "authorization-endpoint": "Autorisierungsendpunkt",
+      "token-endpoint": "Tokenendpunkt",
+      "user-endpoint": "Benutzerendpunkt",
+      "scopes": "Geltungsbereiche",
+      "disabled-password-login-warning": "Passwort-Login ist deaktiviert, sei besonders vorsichtig beim Entfernen von Identitätsanbieter❗"
+    }
   },
   "filter": {
     "new-filter": "Neuer Filter",
@@ -127,74 +318,12 @@
     },
     "value": {
       "not-tagged": "Keine Tags",
-      "linked": "Hat Links"
+      "linked": "Hat Links",
+      "has-attachment": "Hat Anhänge"
     },
-    "text-placeholder": "Beginne einen Regex mit ^"
-  },
-  "tag-list": {
-    "all-tags": "Alle Tags",
-    "tip-text": "Erstelle einen Tag mit `#tag`",
-    "invalid-tag-name": "Ungültiger Tagname"
-  },
-  "search": {
-    "quickly-filter": "Schnellfilter"
-  },
-  "setting": {
-    "my-account": "Mein Konto",
-    "preference": "Einstellungen",
-    "member": "Mitglieder",
-    "member-list": "Mitgliederliste",
-    "system": "System",
-    "account-section": {
-      "title": "Konto-Informationen",
-      "update-information": "Informationen ändern",
-      "change-password": "Passwort ändern"
-    },
-    "preference-section": {
-      "theme": "Erscheinungsbild",
-      "default-memo-visibility": "Standard Sichtbarkeit von Memos",
-      "enable-folding-memo": "Einklappen von Memos aktivieren",
-      "editor-font-style": "Textstil des Editors",
-      "mobile-editor-style": "Stil des mobilen Editors",
-      "default-memo-sort-option": "Angezeigter Memo-Zeitpunkt",
-      "created_ts": "Erstellungszeitpunkt",
-      "updated_ts": "Änderungszeitpunkt",
-      "enable-double-click": "Doppelklick zum Bearbeiten aktivieren",
-      "auto-collapse": "Automatisch reduzieren"
-    },
-    "member-section": {
-      "create-a-member": "Mitglied hinzufügen"
-    },
-    "system-section": {
-      "server-name": "Servername",
-      "customize-server": {
-        "title": "Server bearbeiten",
-        "default": "Standard: \"memos\"",
-        "icon-url": "Icon-URL"
-      },
-      "database-file-size": "Dateigröße der Datenbank",
-      "allow-user-signup": "Erlaube Registrierung neuer Mitglieder",
-      "additional-style": "Zusätzlicher Stil",
-      "additional-script": "Zusätzliches Skript",
-      "additional-style-placeholder": "Zusätzliches CSS",
-      "additional-script-placeholder": "Zusätzliches JavaScript",
-      "disable-public-memos": "Disable public memos",
-      "display-with-updated-time": "Display with updated time"
-    },
-    "appearance-option": {
-      "system": "System",
-      "light": "Hell",
-      "dark": "Dunkel"
-    },
-    "storage": "Speicherung",
-    "sso": "SSO",
-    "storage-section": {
-      "storage-services-list": "Storage service list",
-      "create-a-service": "Erstelle einen Service",
-      "update-a-service": "Update a service",
-      "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIBLE❗",
-      "delete-storage": "Delete Storage"
-    }
+    "text-placeholder": "Beginne einen Regex mit ^",
+    "and": "Und",
+    "or": "Oder"
   },
   "amount-text": {
     "memo_one": "MEMO",
@@ -205,19 +334,22 @@
     "day_other": "TAGE"
   },
   "message": {
-    "no-memos": "Keine Memos 🌃",
-    "no-data": "Vielleicht keine Daten gefunden?",
+    "no-data": "Vielleicht wurden keine Daten gefunden, vielleicht sollte es eine andere Option sein.",
     "memos-ready": "Alle Memos geladen 🎉",
+    "resource-ready": "Alle Ressourcen geladen 🎉",
     "restored-successfully": "Erfolgreich wiederhergestellt",
     "memo-updated-datetime": "Erstellungszeitpunkt geändert.",
     "invalid-created-datetime": "Ungültiger Erstellungszeitpunkt",
     "change-memo-created-time": "Erstellungszeitpunkt ändern",
+    "change-memo-created-time-warning-1": "DIES IST KEIN NORMALES VERHALTEN.",
+    "change-memo-created-time-warning-2": "Bitte vergewissere dich, dass du es wirklich brauchst.",
     "memo-not-found": "Memo nicht gefunden.",
     "fill-all": "Bitte alle Felder ausfüllen.",
     "password-not-match": "Passwörter stimmen nicht überein",
     "new-password-not-match": "Neue Passwörter stimmen nicht überein.",
     "image-load-failed": "Laden des Bildes fehlgeschlagen",
     "fill-form": "Bitte das Formular ausfüllen",
+    "fill-server-name": "Bitte Servernamen ausfüllen",
     "login-failed": "Anmeldung fehlgeschlagen",
     "signup-failed": "Registrierung fehlgeschlagen",
     "user-not-found": "Nutzer nicht gefunden",
@@ -225,6 +357,7 @@
     "private-only": "Dieses Memo ist privat.",
     "copied": "Kopiert",
     "succeed-copy-content": "Inhalt erfolgreich kopiert",
+    "succeed-copy-code": "Code in die Zwischenablage kopieren.",
     "succeed-copy-link": "Link erfolgreich kopiert",
     "change-resource-filename": "Dateinamen der Ressource ändern",
     "resource-filename-updated": "Dateiname der Ressource geändert.",
@@ -242,23 +375,40 @@
     "succeed-update-customized-profile": "Server-Einstlelungen wurden erfolgreich gespeichert",
     "succeed-update-additional-script": "Zusätzliches Skript wurde erfolgreich aktualisiert",
     "update-succeed": "Update erfolgreich",
-    "succeed-copy-code": "Succeed to copy code to clipboard.",
-    "page-not-found": "404 - Seite nicht gefunden 😥"
+    "page-not-found": "404 - Seite nicht gefunden 😥",
+    "maximum-upload-size-is": "Die maximal zulässige Upload-Größe beträgt {{size}} MiB",
+    "file-exceeds-upload-limit-of": "Datei {{file}} überschreitet Upload-Limit von {{size}} MiB",
+    "updating-setting-failed": "Aktualisierung der Einstellung fehlgeschlagen",
+    "password-login-disabled": "Der letzte Identitätsanbieter kann nicht entfernt werden, solang die Passwortanmeldung deaktiviert ist"
   },
   "days": {
-    "monday": "Montag",
     "mon": "Mo",
-    "tuesday": "Dienstag",
     "tue": "Di",
-    "wednesday": "Mittwoch",
     "wed": "Mi",
-    "thursday": "Donnerstag",
     "thu": "Do",
-    "friday": "Freitag",
     "fri": "Fr",
-    "saturday": "Samstag",
     "sat": "Sa",
-    "sunday": "Sonntag",
     "sun": "So"
+  },
+  "embed-memo": {
+    "title": "Memo einbetten",
+    "text": "Kopiere den unten stehenden Code und füge diesen in deinen Blog oder deine Website ein.",
+    "only-public-supported": "* Nur öffentliche Notizen können eingebettet werden.",
+    "copy": "Kopieren"
+  },
+  "heatmap": {
+    "memo-in": "memo in {{period}}",
+    "memos-in": "memos in {{period}}",
+    "memo-on": "{{amount}} memo am {{date}}",
+    "memos-on": "{{amount}} memos am {{date}}",
+    "day": "Tag",
+    "days": "Tage"
+  },
+  "about": {
+    "about-memos": "Über Memos",
+    "memos-description": "Memos ist eine webbasierte Anwendung zur Erstellung von Notizen, mit der Sie Notizen schreiben, organisieren und teilen können.",
+    "no-server-description": "Für diesen Server ist keine Beschreibung konfiguriert.",
+    "powered-by": "Powered by",
+    "other-projects": "Andere Projekte"
   }
 }
