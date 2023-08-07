@@ -75,7 +75,7 @@
   "auth": {
     "signup-as-host": "Sign up as Host",
     "host-tip": "You are registering as the Site Host.",
-    "not-host-tip": "If you don’t have an account, please contact the site host.",
+    "not-host-tip": "If you don't have an account, please contact the site host.",
     "new-password": "New password",
     "repeat-new-password": "Repeat the new password"
   },
@@ -164,7 +164,6 @@
     "member": "Member",
     "member-list": "Member list",
     "system": "System",
-    "openai": "OpenAI",
     "storage": "Storage",
     "sso": "SSO",
     "account-section": {
@@ -265,11 +264,6 @@
       "telegram-bot-token": "Telegram Bot Token",
       "telegram-bot-token-description": "Telegram Bot Token or API Proxy like `http.../bot<token>`",
       "telegram-bot-token-placeholder": "Your Telegram Bot token",
-      "openai-api-key": "OpenAI: API Key",
-      "openai-api-key-description": "Get API key",
-      "openai-api-key-placeholder": "Your OpenAI API Key",
-      "openai-api-host": "OpenAI: API Host",
-      "openai-api-host-placeholder": "Default: https://api.openai.com/",
       "display-with-updated-time": "Display with updated time"
     },
     "appearance-option": {
@@ -300,32 +294,6 @@
       "disabled-password-login-warning": "Password-login is disabled, be extra careful when removing identity providers❗"
     }
   },
-  "filter": {
-    "new-filter": "New Filter",
-    "type": {
-      "tag": "Tag",
-      "type": "Type",
-      "text": "Text",
-      "display-time": "Display Time",
-      "visibility": "Visibility"
-    },
-    "operator": {
-      "contains": "Contains",
-      "not-contains": "Does not contain",
-      "is": "Is",
-      "is-not": "Is Not",
-      "before": "Before",
-      "after": "After"
-    },
-    "value": {
-      "not-tagged": "No tags",
-      "linked": "Has links",
-      "has-attachment": "Has attachments"
-    },
-    "text-placeholder": "Starts with ^ to use regex",
-    "and": "And",
-    "or": "Or"
-  },
   "amount-text": {
     "memo_one": "MEMO",
     "memo_other": "MEMOS",
@@ -333,6 +301,36 @@
     "tag_other": "TAGS",
     "day_one": "TAG",
     "day_other": "TAGE"
+  },
+  "days": {
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat",
+    "sun": "Sun"
+  },
+  "embed-memo": {
+    "title": "Embed Memo",
+    "text": "Copy and paste the below code into your blog or website.",
+    "only-public-supported": "* Only public memos can be embedded.",
+    "copy": "Copy"
+  },
+  "heatmap": {
+    "memo-in": "memo in {{period}}",
+    "memos-in": "memos in {{period}}",
+    "memo-on": "{{amount}} memo on {{date}}",
+    "memos-on": "{{amount}} memos on {{date}}",
+    "day": "day",
+    "days": "days"
+  },
+  "about": {
+    "about-memos": "About Memos",
+    "memos-description": "Memos is a web-based note-taking application that you can use to write, organize, and share notes.",
+    "no-server-description": "No description configured for this server.",
+    "powered-by": "Powered by",
+    "other-projects": "Other Projects"
   },
   "message": {
     "no-data": "Maybe no data was found, or maybe it should be another option.",
@@ -380,36 +378,6 @@
     "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
     "file-exceeds-upload-limit-of": "File {{file}} exceeds upload limit of {{size}} MiB",
     "updating-setting-failed": "Updating setting failed",
-    "password-login-disabled": "Can’t remove last identity provider when password login is disabled"
-  },
-  "days": {
-    "mon": "Mon",
-    "tue": "Tue",
-    "wed": "Wed",
-    "thu": "Thu",
-    "fri": "Fri",
-    "sat": "Sat",
-    "sun": "Sun"
-  },
-  "embed-memo": {
-    "title": "Embed Memo",
-    "text": "Copy and paste the below code into your blog or website.",
-    "only-public-supported": "* Only public memos can be embedded.",
-    "copy": "Copy"
-  },
-  "heatmap": {
-    "memo-in": "memo in {{period}}",
-    "memos-in": "memos in {{period}}",
-    "memo-on": "{{amount}} memo on {{date}}",
-    "memos-on": "{{amount}} memos on {{date}}",
-    "day": "day",
-    "days": "days"
-  },
-  "about": {
-    "about-memos": "About Memos",
-    "memos-description": "Memos is a web-based note-taking application that you can use to write, organize, and share notes.",
-    "no-server-description": "No description configured for this server.",
-    "powered-by": "Powered by",
-    "other-projects": "Other Projects"
+    "password-login-disabled": "Can't remove last identity provider when password login is disabled"
   }
 }
