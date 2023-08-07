@@ -148,7 +148,7 @@
 		}
 	},
 	"tag-list": {
-		"tip-text": "Erstelle einen Tag mit `#tag`"
+		"tip-text": "Erstelle einen Tag mit `#tag`",
 		"create-tag": "Tag erstellen",
 		"all-tags": "Alle Tags",
 		"tag-name": "TAG_NAME"
@@ -318,7 +318,7 @@
 		},
 		"value": {
 			"not-tagged": "Keine Tags",
-			"linked": "Hat Links"
+			"linked": "Hat Links",
 			"has-attachment": "Hat Anhänge"
 		},
 		"text-placeholder": "Beginne einen Regex mit ^",
