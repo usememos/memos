@@ -101,7 +101,7 @@
       "private": "Visibile solo a te",
       "protected": "Visibile ai membri",
       "public": "Visibile a tutti",
-      "disabled": "Public memos are disabled"
+      "disabled": "I memos pubblici sono disattivati"
     }
   },
   "memo-list": {
@@ -151,7 +151,7 @@
     "preference-section": {
       "theme": "Tema",
       "default-memo-visibility": "Visibilità predefinita memo",
-      "enable-folding-memo": "Enable folding memo",
+      "enable-folding-memo": "Attiva memo pieghevoli",
       "editor-font-style": "Editor font style",
       "mobile-editor-style": "Mobile editor style",
       "default-memo-sort-option": "Ordine visualizzazione memo",
@@ -176,8 +176,8 @@
       "additional-script": "Script aggiuntivo",
       "additional-style-placeholder": "Codice CSS aggiuntivo",
       "additional-script-placeholder": "Codice JavaScript aggiuntivo",
-      "disable-public-memos": "Disable public memos",
-      "display-with-updated-time": "Display with updated time"
+      "disable-public-memos": "Disattiva memos pubblici",
+      "display-with-updated-time": "Mostra con orario aggiornato"
     },
     "appearance-option": {
       "system": "Sistema",
@@ -185,13 +185,13 @@
       "dark": "Scuro"
     },
     "sso": "SSO",
-    "storage": "Storage",
+    "storage": "Archiviazione",
     "storage-section": {
-      "storage-services-list": "Storage service list",
-      "create-a-service": "Create a service",
-      "update-a-service": "Update a service",
-      "warning-text": "Are you sure to delete this storage service? THIS ACTION IS IRREVERSIBLE❗",
-      "delete-storage": "Delete Storage"
+      "storage-services-list": "Lista di servizi di archiviazione",
+      "create-a-service": "Aggiungi un servizio",
+      "update-a-service": "Aggiorna un servizio",
+      "warning-text": "Sei sicuro di voler eliminare questo servizio di archiviazione? QUESTA AZIONE È IRREVERSIBILE❗",
+      "delete-storage": "Elimina archiviazione"
     }
   },
   "amount-text": {
@@ -200,7 +200,7 @@
     "day_one": "GIORNO",
     "memo_other": "MEMOS",
     "tag_other": "TAGS",
-    "day_other": "DAYS"
+    "day_other": "GIORNI"
   },
   "message": {
     "no-memos": "nessun memo 🌃",
@@ -239,8 +239,8 @@
     "succeed-update-customized-profile": "Profilo aggiornato con successo",
     "succeed-update-additional-script": "Script aggiuntivo aggiornato con successo",
     "update-succeed": "Aggiornamento riuscito",
-    "succeed-copy-code": "Succeed to copy code to clipboard.",
-    "page-not-found": "404 - Page Not Found 😥"
+    "succeed-copy-code": "Codice copiato nella clipboard.",
+    "page-not-found": "404 - Pagina non trovata 😥"
   },
   "days": {
     "monday": "Lunedì",
