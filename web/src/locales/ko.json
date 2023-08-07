@@ -58,8 +58,8 @@
     "name": "이름",
     "visibility": "공개 범위",
     "learn-more": "더 보기",
-    "e.g": "ex) ",
     "beta": "베타",
+    "new": "신규",
     "dialog": {
       "error": "오류",
       "help": "도움말",
@@ -67,7 +67,7 @@
       "success": "성공",
       "warning": "경고"
     },
-    "mark": "Mark"
+    "mark": "연결"
   },
   "router": {
     "back-to-home": "홈으로 돌아가기"
@@ -141,6 +141,9 @@
         "file-name-placeholder": "파일 이름",
         "type": "종류",
         "type-placeholder": "파일 종류"
+      },
+      "download-link": {
+        "option": "링크 다운로드"
       }
     }
   },
@@ -148,7 +151,8 @@
     "tip-text": "`#태그명`을 입력하세요",
     "create-tag": "태그 생성",
     "all-tags": "모든 태그",
-    "tag-name": "TAG_NAME"
+    "tag-name": "TAG_NAME",
+    "invalid-tag-name": "잘못된 태그명입니다"
   },
   "daily-review": {
     "title": "날마다 돌아보기",
@@ -160,6 +164,7 @@
     "member": "멤버",
     "member-list": "멤버 목록",
     "system": "시스템",
+    "openai": "OpenAI",
     "storage": "저장소",
     "sso": "SSO",
     "account-section": {
@@ -173,7 +178,7 @@
       "openapi-title": "OpenAPI",
       "openapi-reset": "OpenAPI 키 초기화",
       "openapi-reset-warning": "❗현재 API 키가 완전히 파기되고 새로운 키가 생성됩니다.\n\nAPI 키를 초기화할까요?",
-      "openapi-sample-post": "{{url}}의 #메모 들에게 안녕!"
+      "openapi-sample-post": "안녕, {{url}} ! #memo"
     },
     "preference-section": {
       "theme": "테마",
@@ -242,10 +247,17 @@
       },
       "database-file-size": "데이터베이스 파일 크기",
       "allow-user-signup": "회원등록 허용",
+      "disable-password-login": "비밀번호 로그인 금지",
+      "disable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인하지 못하게 합니다. 설정된 SSO에 문제가 생겼을 경우, 데이터베이스를 직접 조작해서 이 설정을 끄지 않는 한 절대로 로그인하지 못하게 됩니다. SSO 설정을 수정/제거할 때에는 특히 더 조심해 주세요❗",
+      "disable-password-login-final-warning": "이로부터 발생할 수 있는 모든 상황을 이해했다면, 아래에 \"CONFIRM\"을 입력해 주세요.",
+      "enable-password-login": "비밀번호 로그인 허용",
+      "enable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인할 수 있게 합니다. 사용자들이 SSO와 비밀번호 둘 다 사용할 수 있게 하고 싶은 경우에만 켜 주세요❗",
       "ignore-version-upgrade": "업그레이드 알림 무시",
       "disable-public-memos": "공개된 메모 금지",
       "max-upload-size": "최대 업로드 크기 (MiB)",
       "max-upload-size-hint": "권장값은 32 MiB입니다.",
+      "auto-backup-interval": "자동 백업 주기 (초)",
+      "auto-backup-interval-hint": "0으로 설정하면 자동 백업을 비활성화합니다. 이 설정을 바꾼 뒤에는 재시작이 필요합니다.",
       "additional-style": "추가적인 스타일",
       "additional-script": "추가적인 스크립트",
       "additional-style-placeholder": "추가적인 CSS 코드",
@@ -258,7 +270,7 @@
       "openai-api-key-placeholder": "내 OpenAI API 키",
       "openai-api-host": "OpenAI: API 호스트",
       "openai-api-host-placeholder": "기본값: https://api.openai.com/",
-      "display-with-updated-time": "Display with updated time"
+      "display-with-updated-time": "수정된 시각을 표시"
     },
     "appearance-option": {
       "system": "기본값 사용",
@@ -284,7 +296,8 @@
       "authorization-endpoint": "인증 엔드포인트",
       "token-endpoint": "토큰 엔드포인트",
       "user-endpoint": "유저 엔드포인트",
-      "scopes": "스코프"
+      "scopes": "스코프",
+      "disabled-password-login-warning": "비밀번호 로그인이 비활성화되어 있습니다. SSO를 지울 때는 더 조심하세요❗"
     }
   },
   "filter": {
@@ -313,10 +326,17 @@
     "and": "그리고",
     "or": "또는"
   },
+  "amount-text": {
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "TAG",
+    "tag_other": "TAGS",
+    "day_one": "TAG",
+    "day_other": "TAGE"
+  },
   "message": {
-    "no-memos": "메모가 없습니다 🌃",
+    "no-data": "데이터가 없습니다.",
     "memos-ready": "모든 메모가 준비되었습니다 🎉",
-    "no-resource": "리소스가 없습니다 🌃",
     "resource-ready": "모든 리소스가 준비되었습니다 🎉",
     "restored-successfully": "성공적으로 복구했습니다",
     "memo-updated-datetime": "메모 생성 시각이 변경되었습니다.",
@@ -358,7 +378,9 @@
     "update-succeed": "업데이트 성공",
     "page-not-found": "404 - 페이지를 찾을 수 없습니다 😥",
     "maximum-upload-size-is": "업로드 최대 크기는 {{size}} MiB입니다",
-    "file-exceeds-upload-limit-of": "파일 {{file}}의 크기가 최대 크기인 {{size}} MiB를 넘습니다"
+    "file-exceeds-upload-limit-of": "파일 {{file}}의 크기가 최대 크기인 {{size}} MiB를 넘습니다",
+    "updating-setting-failed": "설정을 업데이트하지 못했습니다.",
+    "password-login-disabled": "비밀번호 로그인이 비활성화되어 있으면 마지막으로 남은 SSO를 삭제할 수 없습니다."
   },
   "days": {
     "mon": "월",
@@ -368,15 +390,6 @@
     "fri": "금",
     "sat": "토",
     "sun": "일"
-  },
-  "ask-ai": {
-    "title": "AI에게 물어보기",
-    "not-enabled": "OpenAI API 키를 넣지 않았습니다.",
-    "go-to-settings": "설정으로 이동",
-    "placeholder": "무엇이든 물어보세요...",
-    "default-message-group-title": "기본 세션",
-    "create-message-group-title": "세션 생성",
-    "label-message-group-name-title": "세션 이름"
   },
   "embed-memo": {
     "title": "메모 임베드",
