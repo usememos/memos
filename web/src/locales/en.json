@@ -152,7 +152,11 @@
     "create-tag": "Create Tag",
     "all-tags": "All Tags",
     "tag-name": "TAG_NAME",
-    "invalid-tag-name": "Invalid tag name"
+    "invalid-tag-name": "Invalid tag name",
+    "tag-suggestions": "Tag suggestions",
+    "show": "Show",
+    "hide": "Hide",
+    "save-all": "Save all"
   },
   "daily-review": {
     "title": "Daily Review",
