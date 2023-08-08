@@ -432,6 +432,10 @@
     "all-tags": "全部标签",
     "create-tag": "创建标签",
     "tag-name": "标签名称",
-    "tip-text": "输入`#tag`来创建标签"
+    "tip-text": "输入`#tag`来创建标签",
+    "tag-suggestions": "标签建议",
+    "show": "展开",
+    "hide": "收起",
+    "save-all": "全部保存"
   }
 }
