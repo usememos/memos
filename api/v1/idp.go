@@ -65,176 +65,246 @@ type UpdateIdentityProviderRequest struct {
 }
 
 func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
-	g.POST("/idp", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+	g.GET("/idp", s.getIdentityProviderList)
+	g.POST("/idp", s.createIdentityProvider)
 
+	g.GET("/idp/:idpId", s.getIdentityProvider)
+	g.DELETE("/idp/:idpId", s.deleteIdentityProvider)
+	g.PATCH("/idp/:idpId", s.updateIdentityProvider)
+}
+
+// getIdentityProviderList godoc
+//
+//	@Summary		Get a list of identity providers
+//	@Description	*clientSecret is only available for host user
+//	@Tags			idp
+//	@Produce		json
+//	@Success		200	{object}	[]IdentityProvider	"List of available identity providers"
+//	@Failure		500	{object}	nil					"Failed to find identity provider list | Failed to find user"
+//	@Router			/api/v1/idp [GET]
+func (s *APIV1Service) getIdentityProviderList(c echo.Context) error {
+	ctx := c.Request().Context()
+	list, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider list").SetInternal(err)
+	}
+
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	isHostUser := false
+	if ok {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &userID,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
 		}
-		if user == nil || user.Role != store.RoleHost {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+		if user == nil || user.Role == store.RoleHost {
+			isHostUser = true
 		}
+	}
 
-		identityProviderCreate := &CreateIdentityProviderRequest{}
-		if err := json.NewDecoder(c.Request().Body).Decode(identityProviderCreate); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post identity provider request").SetInternal(err)
+	identityProviderList := []*IdentityProvider{}
+	for _, item := range list {
+		identityProvider := convertIdentityProviderFromStore(item)
+		// data desensitize
+		if !isHostUser {
+			identityProvider.Config.OAuth2Config.ClientSecret = ""
 		}
+		identityProviderList = append(identityProviderList, identityProvider)
+	}
+	return c.JSON(http.StatusOK, identityProviderList)
+}
 
-		identityProvider, err := s.Store.CreateIdentityProvider(ctx, &store.IdentityProvider{
-			Name:             identityProviderCreate.Name,
-			Type:             store.IdentityProviderType(identityProviderCreate.Type),
-			IdentifierFilter: identityProviderCreate.IdentifierFilter,
-			Config:           convertIdentityProviderConfigToStore(identityProviderCreate.Config),
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
+// createIdentityProvider godoc
+//
+//	@Summary	Create Identity Provider
+//	@Tags		idp
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		CreateIdentityProviderRequest	true	"Identity provider information"
+//	@Success	200		{object}	store.IdentityProvider			"Identity provider information"
+//	@Failure	401		{object}	nil								"Missing user in session | Unauthorized"
+//	@Failure	400		{object}	nil								"Malformatted post identity provider request"
+//	@Failure	500		{object}	nil								"Failed to find user | Failed to create identity provider"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/idp [POST]
+func (s *APIV1Service) createIdentityProvider(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
+
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
 	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+	}
+	if user == nil || user.Role != store.RoleHost {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+	}
 
-	g.PATCH("/idp/:idpId", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+	identityProviderCreate := &CreateIdentityProviderRequest{}
+	if err := json.NewDecoder(c.Request().Body).Decode(identityProviderCreate); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post identity provider request").SetInternal(err)
+	}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != store.RoleHost {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
-
-		identityProviderID, err := util.ConvertStringToInt32(c.Param("idpId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
-		}
-
-		identityProviderPatch := &UpdateIdentityProviderRequest{
-			ID: identityProviderID,
-		}
-		if err := json.NewDecoder(c.Request().Body).Decode(identityProviderPatch); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch identity provider request").SetInternal(err)
-		}
-
-		identityProvider, err := s.Store.UpdateIdentityProvider(ctx, &store.UpdateIdentityProvider{
-			ID:               identityProviderPatch.ID,
-			Type:             store.IdentityProviderType(identityProviderPatch.Type),
-			Name:             identityProviderPatch.Name,
-			IdentifierFilter: identityProviderPatch.IdentifierFilter,
-			Config:           convertIdentityProviderConfigToStore(identityProviderPatch.Config),
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch identity provider").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
+	identityProvider, err := s.Store.CreateIdentityProvider(ctx, &store.IdentityProvider{
+		Name:             identityProviderCreate.Name,
+		Type:             store.IdentityProviderType(identityProviderCreate.Type),
+		IdentifierFilter: identityProviderCreate.IdentifierFilter,
+		Config:           convertIdentityProviderConfigToStore(identityProviderCreate.Config),
 	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider").SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
+}
 
-	g.GET("/idp", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		list, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider list").SetInternal(err)
-		}
+// getIdentityProvider godoc
+//
+//	@Summary	Get an identity provider by ID
+//	@Tags		idp
+//	@Accept		json
+//	@Produce	json
+//	@Param		idpId	path		int						true	"Identity provider ID"
+//	@Success	200		{object}	store.IdentityProvider	"Requested identity provider"
+//	@Failure	400		{object}	nil						"ID is not a number: %s"
+//	@Failure	401		{object}	nil						"Missing user in session | Unauthorized"
+//	@Failure	404		{object}	nil						"Identity provider not found"
+//	@Failure	500		{object}	nil						"Failed to find identity provider list | Failed to find user"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/idp/{idpId} [GET]
+func (s *APIV1Service) getIdentityProvider(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
 
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		isHostUser := false
-		if ok {
-			user, err := s.Store.GetUser(ctx, &store.FindUser{
-				ID: &userID,
-			})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-			}
-			if user == nil || user.Role == store.RoleHost {
-				isHostUser = true
-			}
-		}
-
-		identityProviderList := []*IdentityProvider{}
-		for _, item := range list {
-			identityProvider := convertIdentityProviderFromStore(item)
-			// data desensitize
-			if !isHostUser {
-				identityProvider.Config.OAuth2Config.ClientSecret = ""
-			}
-			identityProviderList = append(identityProviderList, identityProvider)
-		}
-		return c.JSON(http.StatusOK, identityProviderList)
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
 	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+	}
+	if user == nil || user.Role != store.RoleHost {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+	}
 
-	g.GET("/idp/:idpId", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != store.RoleHost {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
-
-		identityProviderID, err := util.ConvertStringToInt32(c.Param("idpId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
-		}
-		identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
-			ID: &identityProviderID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get identity provider").SetInternal(err)
-		}
-		if identityProvider == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "Identity provider not found")
-		}
-
-		return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
+	identityProviderID, err := util.ConvertStringToInt32(c.Param("idpId"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
+	}
+	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
+		ID: &identityProviderID,
 	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get identity provider").SetInternal(err)
+	}
+	if identityProvider == nil {
+		return echo.NewHTTPError(http.StatusNotFound, "Identity provider not found")
+	}
 
-	g.DELETE("/idp/:idpId", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+	return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
+}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != store.RoleHost {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
+// deleteIdentityProvider godoc
+//
+//	@Summary	Delete an identity provider by ID
+//	@Tags		idp
+//	@Accept		json
+//	@Produce	json
+//	@Param		idpId	path		int		true	"Identity Provider ID"
+//	@Success	200		{boolean}	true	"Identity Provider deleted"
+//	@Failure	400		{object}	nil		"ID is not a number: %s | Malformatted patch identity provider request"
+//	@Failure	401		{object}	nil		"Missing user in session | Unauthorized"
+//	@Failure	500		{object}	nil		"Failed to find user | Failed to patch identity provider"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/idp/{idpId} [DELETE]
+func (s *APIV1Service) deleteIdentityProvider(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
 
-		identityProviderID, err := util.ConvertStringToInt32(c.Param("idpId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
-		}
-
-		if err = s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProvider{ID: identityProviderID}); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete identity provider").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, true)
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
 	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+	}
+	if user == nil || user.Role != store.RoleHost {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+	}
+
+	identityProviderID, err := util.ConvertStringToInt32(c.Param("idpId"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
+	}
+
+	if err = s.Store.DeleteIdentityProvider(ctx, &store.DeleteIdentityProvider{ID: identityProviderID}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete identity provider").SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, true)
+}
+
+// updateIdentityProvider godoc
+//
+//	@Summary	Update an identity provider by ID
+//	@Tags		idp
+//	@Accept		json
+//	@Produce	json
+//	@Param		idpId	path		int								true	"Identity Provider ID"
+//	@Param		body	body		UpdateIdentityProviderRequest	true	"Patched identity provider information"
+//	@Success	200		{object}	store.IdentityProvider			"Patched identity provider"
+//	@Failure	400		{object}	nil								"ID is not a number: %s | Malformatted patch identity provider request"
+//	@Failure	401		{object}	nil								"Missing user in session | Unauthorized
+//	@Failure	500		{object}	nil								"Failed to find user | Failed to patch identity provider"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/idp/{idpId} [PATCH]
+func (s *APIV1Service) updateIdentityProvider(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
+
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+	}
+	if user == nil || user.Role != store.RoleHost {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+	}
+
+	identityProviderID, err := util.ConvertStringToInt32(c.Param("idpId"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("idpId"))).SetInternal(err)
+	}
+
+	identityProviderPatch := &UpdateIdentityProviderRequest{
+		ID: identityProviderID,
+	}
+	if err := json.NewDecoder(c.Request().Body).Decode(identityProviderPatch); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch identity provider request").SetInternal(err)
+	}
+
+	identityProvider, err := s.Store.UpdateIdentityProvider(ctx, &store.UpdateIdentityProvider{
+		ID:               identityProviderPatch.ID,
+		Type:             store.IdentityProviderType(identityProviderPatch.Type),
+		Name:             identityProviderPatch.Name,
+		IdentifierFilter: identityProviderPatch.IdentifierFilter,
+		Config:           convertIdentityProviderConfigToStore(identityProviderPatch.Config),
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch identity provider").SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
 }
 
 func convertIdentityProviderFromStore(identityProvider *store.IdentityProvider) *IdentityProvider {

@@ -81,331 +81,416 @@ const (
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
 
 func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
-	g.POST("/resource", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		request := &CreateResourceRequest{}
-		if err := json.NewDecoder(c.Request().Body).Decode(request); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post resource request").SetInternal(err)
-		}
-
-		create := &store.Resource{
-			CreatorID:    userID,
-			Filename:     request.Filename,
-			ExternalLink: request.ExternalLink,
-			Type:         request.Type,
-		}
-		if request.ExternalLink != "" {
-			// Only allow those external links scheme with http/https
-			linkURL, err := url.Parse(request.ExternalLink)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link").SetInternal(err)
-			}
-			if linkURL.Scheme != "http" && linkURL.Scheme != "https" {
-				return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link scheme")
-			}
-
-			if request.DownloadToLocal {
-				resp, err := http.Get(linkURL.String())
-				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to request %s", request.ExternalLink))
-				}
-				defer resp.Body.Close()
-
-				blob, err := io.ReadAll(resp.Body)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read %s", request.ExternalLink))
-				}
-
-				mediaType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
-				if err != nil {
-					return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read mime from %s", request.ExternalLink))
-				}
-				create.Type = mediaType
-
-				filename := path.Base(linkURL.Path)
-				if path.Ext(filename) == "" {
-					extensions, _ := mime.ExtensionsByType(mediaType)
-					if len(extensions) > 0 {
-						filename += extensions[0]
-					}
-				}
-				create.Filename = filename
-				create.ExternalLink = ""
-				create.Size = int64(len(blob))
-
-				err = SaveResourceBlob(ctx, s.Store, create, bytes.NewReader(blob))
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to save resource").SetInternal(err)
-				}
-			}
-		}
-
-		resource, err := s.Store.CreateResource(ctx, create)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
-		}
-		if err := s.createResourceCreateActivity(ctx, resource); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, convertResourceFromStore(resource))
-	})
-
-	g.POST("/resource/blob", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		// This is the backend default max upload size limit.
-		maxUploadSetting := s.Store.GetSystemSettingValueWithDefault(&ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
-		var settingMaxUploadSizeBytes int
-		if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
-			settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
-		} else {
-			log.Warn("Failed to parse max upload size", zap.Error(err))
-			settingMaxUploadSizeBytes = 0
-		}
-
-		file, err := c.FormFile("file")
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get uploading file").SetInternal(err)
-		}
-		if file == nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Upload file not found").SetInternal(err)
-		}
-
-		if file.Size > int64(settingMaxUploadSizeBytes) {
-			message := fmt.Sprintf("File size exceeds allowed limit of %d MiB", settingMaxUploadSizeBytes/MebiByte)
-			return echo.NewHTTPError(http.StatusBadRequest, message).SetInternal(err)
-		}
-		if err := c.Request().ParseMultipartForm(maxUploadBufferSizeBytes); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Failed to parse upload data").SetInternal(err)
-		}
-
-		sourceFile, err := file.Open()
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open file").SetInternal(err)
-		}
-		defer sourceFile.Close()
-
-		create := &store.Resource{
-			CreatorID: userID,
-			Filename:  file.Filename,
-			Type:      file.Header.Get("Content-Type"),
-			Size:      file.Size,
-		}
-		err = SaveResourceBlob(ctx, s.Store, create, sourceFile)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to save resource").SetInternal(err)
-		}
-
-		resource, err := s.Store.CreateResource(ctx, create)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
-		}
-		if err := s.createResourceCreateActivity(ctx, resource); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, convertResourceFromStore(resource))
-	})
-
-	g.GET("/resource", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-		find := &store.FindResource{
-			CreatorID: &userID,
-		}
-		if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-			find.Limit = &limit
-		}
-		if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-			find.Offset = &offset
-		}
-
-		list, err := s.Store.ListResources(ctx, find)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
-		}
-		resourceMessageList := []*Resource{}
-		for _, resource := range list {
-			resourceMessageList = append(resourceMessageList, convertResourceFromStore(resource))
-		}
-		return c.JSON(http.StatusOK, resourceMessageList)
-	})
-
-	g.PATCH("/resource/:resourceId", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
-		}
-
-		resource, err := s.Store.GetResource(ctx, &store.FindResource{
-			ID: &resourceID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
-		}
-		if resource == nil {
-			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
-		}
-		if resource.CreatorID != userID {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
-
-		request := &UpdateResourceRequest{}
-		if err := json.NewDecoder(c.Request().Body).Decode(request); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch resource request").SetInternal(err)
-		}
-
-		currentTs := time.Now().Unix()
-		update := &store.UpdateResource{
-			ID:        resourceID,
-			UpdatedTs: &currentTs,
-		}
-		if request.Filename != nil && *request.Filename != "" {
-			update.Filename = request.Filename
-		}
-
-		resource, err = s.Store.UpdateResource(ctx, update)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, convertResourceFromStore(resource))
-	})
-
-	g.DELETE("/resource/:resourceId", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
-		}
-
-		resource, err := s.Store.GetResource(ctx, &store.FindResource{
-			ID:        &resourceID,
-			CreatorID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
-		}
-		if resource == nil {
-			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
-		}
-
-		if resource.InternalPath != "" {
-			if err := os.Remove(resource.InternalPath); err != nil {
-				log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
-			}
-		}
-
-		ext := filepath.Ext(resource.Filename)
-		thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
-		if err := os.Remove(thumbnailPath); err != nil {
-			log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
-		}
-
-		if err := s.Store.DeleteResource(ctx, &store.DeleteResource{
-			ID: resourceID,
-		}); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, true)
-	})
+	g.GET("/resource", s.getResourceList)
+	g.POST("/resource", s.createResource)
+	g.POST("/resource/blob", s.uploadResource)
+	g.DELETE("/resource/:resourceId", s.deleteResource)
+	g.PATCH("/resource/:resourceId", s.updateResource)
 }
 
 func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
-	f := func(c echo.Context) error {
-		ctx := c.Request().Context()
-		resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
-		}
+	g.GET("/r/:resourceId", s.streamResource)
+	g.GET("/r/:resourceId/*", s.streamResource)
+}
 
-		resourceVisibility, err := checkResourceVisibility(ctx, s.Store, resourceID)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Failed to get resource visibility").SetInternal(err)
-		}
-
-		// Protected resource require a logined user
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if resourceVisibility == store.Protected && (!ok || userID <= 0) {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
-		}
-
-		resource, err := s.Store.GetResource(ctx, &store.FindResource{
-			ID:      &resourceID,
-			GetBlob: true,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
-		}
-		if resource == nil {
-			return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
-		}
-
-		// Private resource require logined user is the creator
-		if resourceVisibility == store.Private && (!ok || userID != resource.CreatorID) {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
-		}
-
-		blob := resource.Blob
-		if resource.InternalPath != "" {
-			resourcePath := resource.InternalPath
-			src, err := os.Open(resourcePath)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", resourcePath)).SetInternal(err)
-			}
-			defer src.Close()
-			blob, err = io.ReadAll(src)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", resourcePath)).SetInternal(err)
-			}
-		}
-
-		if c.QueryParam("thumbnail") == "1" && util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
-			ext := filepath.Ext(resource.Filename)
-			thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
-			thumbnailBlob, err := getOrGenerateThumbnailImage(blob, thumbnailPath)
-			if err != nil {
-				log.Warn(fmt.Sprintf("failed to get or generate local thumbnail with path %s", thumbnailPath), zap.Error(err))
-			} else {
-				blob = thumbnailBlob
-			}
-		}
-
-		c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
-		c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
-		resourceType := strings.ToLower(resource.Type)
-		if strings.HasPrefix(resourceType, "text") {
-			resourceType = echo.MIMETextPlainCharsetUTF8
-		} else if strings.HasPrefix(resourceType, "video") || strings.HasPrefix(resourceType, "audio") {
-			http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(blob))
-			return nil
-		}
-		return c.Stream(http.StatusOK, resourceType, bytes.NewReader(blob))
+// getResourceList godoc
+//
+//	@Summary	Get a list of resources
+//	@Tags		resource
+//	@Produce	json
+//	@Param		limit	query		int					false	"Limit"
+//	@Param		offset	query		int					false	"Offset"
+//	@Success	200		{object}	[]store.Resource	"Resource list"
+//	@Failure	401		{object}	nil					"Missing user in session"
+//	@Failure	500		{object}	nil					"Failed to fetch resource list"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/resource [GET]
+func (s *APIV1Service) getResourceList(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
+	find := &store.FindResource{
+		CreatorID: &userID,
+	}
+	if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
+		find.Limit = &limit
+	}
+	if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
+		find.Offset = &offset
 	}
 
-	g.GET("/r/:resourceId", f)
-	g.GET("/r/:resourceId/*", f)
+	list, err := s.Store.ListResources(ctx, find)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch resource list").SetInternal(err)
+	}
+	resourceMessageList := []*Resource{}
+	for _, resource := range list {
+		resourceMessageList = append(resourceMessageList, convertResourceFromStore(resource))
+	}
+	return c.JSON(http.StatusOK, resourceMessageList)
+}
+
+// createResource godoc
+//
+//	@Summary	Create resource
+//	@Tags		resource
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		CreateResourceRequest	true	"Request object."
+//	@Success	200		{object}	store.Resource			"Created resource"
+//	@Failure	400		{object}	nil						"Malformatted post resource request | Invalid external link | Invalid external link scheme | Failed to request %s | Failed to read %s | Failed to read mime from %s"
+//	@Failure	401		{object}	nil						"Missing user in session"
+//	@Failure	500		{object}	nil						"Failed to save resource | Failed to create resource | Failed to create activity"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/resource [POST]
+func (s *APIV1Service) createResource(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
+
+	request := &CreateResourceRequest{}
+	if err := json.NewDecoder(c.Request().Body).Decode(request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post resource request").SetInternal(err)
+	}
+
+	create := &store.Resource{
+		CreatorID:    userID,
+		Filename:     request.Filename,
+		ExternalLink: request.ExternalLink,
+		Type:         request.Type,
+	}
+	if request.ExternalLink != "" {
+		// Only allow those external links scheme with http/https
+		linkURL, err := url.Parse(request.ExternalLink)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link").SetInternal(err)
+		}
+		if linkURL.Scheme != "http" && linkURL.Scheme != "https" {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link scheme")
+		}
+
+		if request.DownloadToLocal {
+			resp, err := http.Get(linkURL.String())
+			if err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to request %s", request.ExternalLink))
+			}
+			defer resp.Body.Close()
+
+			blob, err := io.ReadAll(resp.Body)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read %s", request.ExternalLink))
+			}
+
+			mediaType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
+			if err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read mime from %s", request.ExternalLink))
+			}
+			create.Type = mediaType
+
+			filename := path.Base(linkURL.Path)
+			if path.Ext(filename) == "" {
+				extensions, _ := mime.ExtensionsByType(mediaType)
+				if len(extensions) > 0 {
+					filename += extensions[0]
+				}
+			}
+			create.Filename = filename
+			create.ExternalLink = ""
+			create.Size = int64(len(blob))
+
+			err = SaveResourceBlob(ctx, s.Store, create, bytes.NewReader(blob))
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to save resource").SetInternal(err)
+			}
+		}
+	}
+
+	resource, err := s.Store.CreateResource(ctx, create)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
+	}
+	if err := s.createResourceCreateActivity(ctx, resource); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
+}
+
+// uploadResource godoc
+//
+//	@Summary	Upload resource
+//	@Tags		resource
+//	@Accept		multipart/form-data
+//	@Produce	json
+//	@Param		file	formData	file			true	"File to upload"
+//	@Success	200		{object}	store.Resource	"Created resource"
+//	@Failure	400		{object}	nil				"Upload file not found | File size exceeds allowed limit of %d MiB | Failed to parse upload data"
+//	@Failure	401		{object}	nil				"Missing user in session"
+//	@Failure	500		{object}	nil				"Failed to get uploading file | Failed to open file | Failed to save resource | Failed to create resource | Failed to create activity"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/resource/blob [POST]
+func (s *APIV1Service) uploadResource(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
+
+	// This is the backend default max upload size limit.
+	maxUploadSetting := s.Store.GetSystemSettingValueWithDefault(&ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
+	var settingMaxUploadSizeBytes int
+	if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
+		settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
+	} else {
+		log.Warn("Failed to parse max upload size", zap.Error(err))
+		settingMaxUploadSizeBytes = 0
+	}
+
+	file, err := c.FormFile("file")
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get uploading file").SetInternal(err)
+	}
+	if file == nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Upload file not found").SetInternal(err)
+	}
+
+	if file.Size > int64(settingMaxUploadSizeBytes) {
+		message := fmt.Sprintf("File size exceeds allowed limit of %d MiB", settingMaxUploadSizeBytes/MebiByte)
+		return echo.NewHTTPError(http.StatusBadRequest, message).SetInternal(err)
+	}
+	if err := c.Request().ParseMultipartForm(maxUploadBufferSizeBytes); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Failed to parse upload data").SetInternal(err)
+	}
+
+	sourceFile, err := file.Open()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to open file").SetInternal(err)
+	}
+	defer sourceFile.Close()
+
+	create := &store.Resource{
+		CreatorID: userID,
+		Filename:  file.Filename,
+		Type:      file.Header.Get("Content-Type"),
+		Size:      file.Size,
+	}
+	err = SaveResourceBlob(ctx, s.Store, create, sourceFile)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to save resource").SetInternal(err)
+	}
+
+	resource, err := s.Store.CreateResource(ctx, create)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
+	}
+	if err := s.createResourceCreateActivity(ctx, resource); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
+}
+
+// deleteResource godoc
+//
+//	@Summary	Delete a resource
+//	@Tags		resource
+//	@Produce	json
+//	@Param		resourceId	path		int		true	"Resource ID"
+//	@Success	200			{boolean}	true	"Resource deleted"
+//	@Failure	400			{object}	nil		"ID is not a number: %s"
+//	@Failure	401			{object}	nil		"Missing user in session"
+//	@Failure	404			{object}	nil		"Resource not found: %d"
+//	@Failure	500			{object}	nil		"Failed to find resource | Failed to delete resource"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/resource/{resourceId} [DELETE]
+func (s *APIV1Service) deleteResource(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
+
+	resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
+	}
+
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{
+		ID:        &resourceID,
+		CreatorID: &userID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
+	}
+	if resource == nil {
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
+	}
+
+	if resource.InternalPath != "" {
+		if err := os.Remove(resource.InternalPath); err != nil {
+			log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
+		}
+	}
+
+	ext := filepath.Ext(resource.Filename)
+	thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
+	if err := os.Remove(thumbnailPath); err != nil {
+		log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
+	}
+
+	if err := s.Store.DeleteResource(ctx, &store.DeleteResource{
+		ID: resourceID,
+	}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, true)
+}
+
+// updateResource godoc
+//
+//	@Summary	Update a resource
+//	@Tags		resource
+//	@Produce	json
+//	@Param		resourceId	path		int						true	"Resource ID"
+//	@Param		patch		body		UpdateResourceRequest	true	"Patch resource request"
+//	@Success	200			{object}	store.Resource			"Updated resource"
+//	@Failure	400			{object}	nil						"ID is not a number: %s | Malformatted patch resource request"
+//	@Failure	401			{object}	nil						"Missing user in session | Unauthorized"
+//	@Failure	404			{object}	nil						"Resource not found: %d"
+//	@Failure	500			{object}	nil						"Failed to find resource | Failed to patch resource"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/resource/{resourceId} [PATCH]
+func (s *APIV1Service) updateResource(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
+
+	resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
+	}
+
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{
+		ID: &resourceID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find resource").SetInternal(err)
+	}
+	if resource == nil {
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
+	}
+	if resource.CreatorID != userID {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+	}
+
+	request := &UpdateResourceRequest{}
+	if err := json.NewDecoder(c.Request().Body).Decode(request); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted patch resource request").SetInternal(err)
+	}
+
+	currentTs := time.Now().Unix()
+	update := &store.UpdateResource{
+		ID:        resourceID,
+		UpdatedTs: &currentTs,
+	}
+	if request.Filename != nil && *request.Filename != "" {
+		update.Filename = request.Filename
+	}
+
+	resource, err = s.Store.UpdateResource(ctx, update)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
+}
+
+// streamResource godoc
+//
+//	@Summary		Stream a resource
+//	@Description	*Swagger UI may have problems displaying other file types than images
+//	@Tags			resource
+//	@Produce		octet-stream
+//	@Param			resourceId	path		int	true	"Resource ID"
+//	@Param			thumbnail	query		int	false	"Thumbnail"
+//	@Success		200			{object}	nil	"Requested resource"
+//	@Failure		400			{object}	nil	"ID is not a number: %s | Failed to get resource visibility"
+//	@Failure		401			{object}	nil	"Resource visibility not match"
+//	@Failure		404			{object}	nil	"Resource not found: %d"
+//	@Failure		500			{object}	nil	"Failed to find resource by ID: %v | Failed to open the local resource: %s | Failed to read the local resource: %s"
+//	@Router			/o/r/{resourceId} [GET]
+func (s *APIV1Service) streamResource(c echo.Context) error {
+	ctx := c.Request().Context()
+	resourceID, err := util.ConvertStringToInt32(c.Param("resourceId"))
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
+	}
+
+	resourceVisibility, err := checkResourceVisibility(ctx, s.Store, resourceID)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Failed to get resource visibility").SetInternal(err)
+	}
+
+	// Protected resource require a logined user
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if resourceVisibility == store.Protected && (!ok || userID <= 0) {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
+	}
+
+	resource, err := s.Store.GetResource(ctx, &store.FindResource{
+		ID:      &resourceID,
+		GetBlob: true,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find resource by ID: %v", resourceID)).SetInternal(err)
+	}
+	if resource == nil {
+		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
+	}
+
+	// Private resource require logined user is the creator
+	if resourceVisibility == store.Private && (!ok || userID != resource.CreatorID) {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
+	}
+
+	blob := resource.Blob
+	if resource.InternalPath != "" {
+		resourcePath := resource.InternalPath
+		src, err := os.Open(resourcePath)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", resourcePath)).SetInternal(err)
+		}
+		defer src.Close()
+		blob, err = io.ReadAll(src)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to read the local resource: %s", resourcePath)).SetInternal(err)
+		}
+	}
+
+	if c.QueryParam("thumbnail") == "1" && util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
+		ext := filepath.Ext(resource.Filename)
+		thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
+		thumbnailBlob, err := getOrGenerateThumbnailImage(blob, thumbnailPath)
+		if err != nil {
+			log.Warn(fmt.Sprintf("failed to get or generate local thumbnail with path %s", thumbnailPath), zap.Error(err))
+		} else {
+			blob = thumbnailBlob
+		}
+	}
+
+	c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
+	c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
+	resourceType := strings.ToLower(resource.Type)
+	if strings.HasPrefix(resourceType, "text") {
+		resourceType = echo.MIMETextPlainCharsetUTF8
+	} else if strings.HasPrefix(resourceType, "video") || strings.HasPrefix(resourceType, "audio") {
+		http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(blob))
+		return nil
+	}
+	return c.Stream(http.StatusOK, resourceType, bytes.NewReader(blob))
 }
 
 func (s *APIV1Service) createResourceCreateActivity(ctx context.Context, resource *store.Resource) error {

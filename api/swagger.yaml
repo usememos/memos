@@ -1,0 +1,2248 @@
+basePath: /
+definitions:
+  getter.HTMLMeta:
+    properties:
+      description:
+        type: string
+      image:
+        type: string
+      title:
+        type: string
+    type: object
+  profile.Profile:
+    properties:
+      mode:
+        description: Mode can be "prod" or "dev" or "demo"
+        type: string
+      version:
+        description: Version is the current version of server
+        type: string
+    type: object
+  store.FieldMapping:
+    properties:
+      displayName:
+        type: string
+      email:
+        type: string
+      identifier:
+        type: string
+    type: object
+  store.IdentityProvider:
+    properties:
+      config:
+        $ref: '#/definitions/store.IdentityProviderConfig'
+      id:
+        type: integer
+      identifierFilter:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/store.IdentityProviderType'
+    type: object
+  store.IdentityProviderConfig:
+    properties:
+      oauth2Config:
+        $ref: '#/definitions/store.IdentityProviderOAuth2Config'
+    type: object
+  store.IdentityProviderOAuth2Config:
+    properties:
+      authUrl:
+        type: string
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+      fieldMapping:
+        $ref: '#/definitions/store.FieldMapping'
+      scopes:
+        items:
+          type: string
+        type: array
+      tokenUrl:
+        type: string
+      userInfoUrl:
+        type: string
+    type: object
+  store.IdentityProviderType:
+    enum:
+    - OAUTH2
+    type: string
+    x-enum-varnames:
+    - IdentityProviderOAuth2Type
+  store.Memo:
+    properties:
+      content:
+        description: Domain specific fields
+        type: string
+      createdTs:
+        type: integer
+      creatorID:
+        type: integer
+      id:
+        type: integer
+      pinned:
+        description: Composed fields
+        type: boolean
+      relationList:
+        items:
+          $ref: '#/definitions/store.MemoRelation'
+        type: array
+      resourceIDList:
+        items:
+          type: integer
+        type: array
+      rowStatus:
+        allOf:
+        - $ref: '#/definitions/store.RowStatus'
+        description: Standard fields
+      updatedTs:
+        type: integer
+      visibility:
+        $ref: '#/definitions/store.Visibility'
+    type: object
+  store.MemoRelation:
+    properties:
+      memoID:
+        type: integer
+      relatedMemoID:
+        type: integer
+      type:
+        $ref: '#/definitions/store.MemoRelationType'
+    type: object
+  store.MemoRelationType:
+    enum:
+    - REFERENCE
+    - ADDITIONAL
+    type: string
+    x-enum-varnames:
+    - MemoRelationReference
+    - MemoRelationAdditional
+  store.Resource:
+    properties:
+      blob:
+        items:
+          type: integer
+        type: array
+      createdTs:
+        type: integer
+      creatorID:
+        description: Standard fields
+        type: integer
+      externalLink:
+        type: string
+      filename:
+        description: Domain specific fields
+        type: string
+      id:
+        type: integer
+      internalPath:
+        type: string
+      linkedMemoAmount:
+        type: integer
+      size:
+        type: integer
+      type:
+        type: string
+      updatedTs:
+        type: integer
+    type: object
+  store.Role:
+    enum:
+    - HOST
+    - ADMIN
+    - USER
+    type: string
+    x-enum-varnames:
+    - RoleHost
+    - RoleAdmin
+    - RoleUser
+  store.RowStatus:
+    enum:
+    - NORMAL
+    - ARCHIVED
+    type: string
+    x-enum-varnames:
+    - Normal
+    - Archived
+  store.Storage:
+    properties:
+      config:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      type:
+        type: string
+    type: object
+  store.SystemSetting:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+      value:
+        type: string
+    type: object
+  store.User:
+    properties:
+      avatarURL:
+        type: string
+      createdTs:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      openID:
+        type: string
+      passwordHash:
+        type: string
+      role:
+        $ref: '#/definitions/store.Role'
+      rowStatus:
+        allOf:
+        - $ref: '#/definitions/store.RowStatus'
+        description: Standard fields
+      updatedTs:
+        type: integer
+      username:
+        description: Domain specific fields
+        type: string
+    type: object
+  store.UserSetting:
+    properties:
+      key:
+        type: string
+      userID:
+        type: integer
+      value:
+        type: string
+    type: object
+  store.Visibility:
+    enum:
+    - PUBLIC
+    - PROTECTED
+    - PRIVATE
+    type: string
+    x-enum-varnames:
+    - Public
+    - Protected
+    - Private
+  v1.CreateIdentityProviderRequest:
+    properties:
+      config:
+        $ref: '#/definitions/v1.IdentityProviderConfig'
+      identifierFilter:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/v1.IdentityProviderType'
+    type: object
+  v1.CreateMemoRequest:
+    properties:
+      content:
+        type: string
+      createdTs:
+        type: integer
+      relationList:
+        items:
+          $ref: '#/definitions/v1.UpsertMemoRelationRequest'
+        type: array
+      resourceIdList:
+        description: Related fields
+        items:
+          type: integer
+        type: array
+      visibility:
+        allOf:
+        - $ref: '#/definitions/v1.Visibility'
+        description: Domain specific fields
+    type: object
+  v1.CreateResourceRequest:
+    properties:
+      downloadToLocal:
+        type: boolean
+      externalLink:
+        type: string
+      filename:
+        type: string
+      internalPath:
+        type: string
+      type:
+        type: string
+    type: object
+  v1.CreateStorageRequest:
+    properties:
+      config:
+        $ref: '#/definitions/v1.StorageConfig'
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/v1.StorageType'
+    type: object
+  v1.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      role:
+        $ref: '#/definitions/v1.Role'
+      username:
+        type: string
+    type: object
+  v1.CustomizedProfile:
+    properties:
+      appearance:
+        description: Appearance is the server default appearance.
+        type: string
+      description:
+        description: Description is the server description.
+        type: string
+      externalUrl:
+        description: ExternalURL is the external url of server. e.g. https://usermemos.com
+        type: string
+      locale:
+        description: Locale is the server default locale.
+        type: string
+      logoUrl:
+        description: LogoURL is the url of logo image.
+        type: string
+      name:
+        description: Name is the server name, default is `memos`
+        type: string
+    type: object
+  v1.DeleteTagRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  v1.FieldMapping:
+    properties:
+      displayName:
+        type: string
+      email:
+        type: string
+      identifier:
+        type: string
+    type: object
+  v1.IdentityProvider:
+    properties:
+      config:
+        $ref: '#/definitions/v1.IdentityProviderConfig'
+      id:
+        type: integer
+      identifierFilter:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/v1.IdentityProviderType'
+    type: object
+  v1.IdentityProviderConfig:
+    properties:
+      oauth2Config:
+        $ref: '#/definitions/v1.IdentityProviderOAuth2Config'
+    type: object
+  v1.IdentityProviderOAuth2Config:
+    properties:
+      authUrl:
+        type: string
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+      fieldMapping:
+        $ref: '#/definitions/v1.FieldMapping'
+      scopes:
+        items:
+          type: string
+        type: array
+      tokenUrl:
+        type: string
+      userInfoUrl:
+        type: string
+    type: object
+  v1.IdentityProviderType:
+    enum:
+    - OAUTH2
+    type: string
+    x-enum-varnames:
+    - IdentityProviderOAuth2Type
+  v1.MemoRelationType:
+    enum:
+    - REFERENCE
+    - ADDITIONAL
+    type: string
+    x-enum-varnames:
+    - MemoRelationReference
+    - MemoRelationAdditional
+  v1.PatchMemoRequest:
+    properties:
+      content:
+        description: Domain specific fields
+        type: string
+      createdTs:
+        description: Standard fields
+        type: integer
+      relationList:
+        items:
+          $ref: '#/definitions/v1.UpsertMemoRelationRequest'
+        type: array
+      resourceIdList:
+        description: Related fields
+        items:
+          type: integer
+        type: array
+      rowStatus:
+        $ref: '#/definitions/v1.RowStatus'
+      updatedTs:
+        type: integer
+      visibility:
+        $ref: '#/definitions/v1.Visibility'
+    type: object
+  v1.Resource:
+    properties:
+      createdTs:
+        type: integer
+      creatorId:
+        description: Standard fields
+        type: integer
+      externalLink:
+        type: string
+      filename:
+        description: Domain specific fields
+        type: string
+      id:
+        type: integer
+      linkedMemoAmount:
+        description: Related fields
+        type: integer
+      size:
+        type: integer
+      type:
+        type: string
+      updatedTs:
+        type: integer
+    type: object
+  v1.Role:
+    enum:
+    - HOST
+    - ADMIN
+    - USER
+    type: string
+    x-enum-varnames:
+    - RoleHost
+    - RoleAdmin
+    - RoleUser
+  v1.RowStatus:
+    enum:
+    - NORMAL
+    - ARCHIVED
+    type: string
+    x-enum-varnames:
+    - Normal
+    - Archived
+  v1.SSOSignIn:
+    properties:
+      code:
+        type: string
+      identityProviderId:
+        type: integer
+      redirectUri:
+        type: string
+    type: object
+  v1.SignIn:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  v1.SignUp:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  v1.StorageConfig:
+    properties:
+      s3Config:
+        $ref: '#/definitions/v1.StorageS3Config'
+    type: object
+  v1.StorageS3Config:
+    properties:
+      accessKey:
+        type: string
+      bucket:
+        type: string
+      endPoint:
+        type: string
+      path:
+        type: string
+      region:
+        type: string
+      secretKey:
+        type: string
+      urlPrefix:
+        type: string
+      urlSuffix:
+        type: string
+    type: object
+  v1.StorageType:
+    enum:
+    - S3
+    type: string
+    x-enum-varnames:
+    - StorageS3
+  v1.SystemSetting:
+    properties:
+      description:
+        type: string
+      name:
+        $ref: '#/definitions/v1.SystemSettingName'
+      value:
+        description: Value is a JSON string with basic value.
+        type: string
+    type: object
+  v1.SystemSettingName:
+    enum:
+    - server-id
+    - secret-session
+    - allow-signup
+    - disable-password-login
+    - disable-public-memos
+    - max-upload-size-mib
+    - additional-style
+    - additional-script
+    - customized-profile
+    - storage-service-id
+    - local-storage-path
+    - telegram-bot-token
+    - memo-display-with-updated-ts
+    - auto-backup-interval
+    type: string
+    x-enum-varnames:
+    - SystemSettingServerIDName
+    - SystemSettingSecretSessionName
+    - SystemSettingAllowSignUpName
+    - SystemSettingDisablePasswordLoginName
+    - SystemSettingDisablePublicMemosName
+    - SystemSettingMaxUploadSizeMiBName
+    - SystemSettingAdditionalStyleName
+    - SystemSettingAdditionalScriptName
+    - SystemSettingCustomizedProfileName
+    - SystemSettingStorageServiceIDName
+    - SystemSettingLocalStoragePathName
+    - SystemSettingTelegramBotTokenName
+    - SystemSettingMemoDisplayWithUpdatedTsName
+    - SystemSettingAutoBackupIntervalName
+  v1.SystemStatus:
+    properties:
+      additionalScript:
+        description: Additional script.
+        type: string
+      additionalStyle:
+        description: Additional style.
+        type: string
+      allowSignUp:
+        description: |-
+          System settings
+          Allow sign up.
+        type: boolean
+      autoBackupInterval:
+        description: Auto Backup Interval.
+        type: integer
+      customizedProfile:
+        allOf:
+        - $ref: '#/definitions/v1.CustomizedProfile'
+        description: Customized server profile, including server name and external
+          url.
+      dbSize:
+        type: integer
+      disablePasswordLogin:
+        description: Disable password login.
+        type: boolean
+      disablePublicMemos:
+        description: Disable public memos.
+        type: boolean
+      host:
+        $ref: '#/definitions/v1.User'
+      localStoragePath:
+        description: Local storage path.
+        type: string
+      maxUploadSizeMiB:
+        description: Max upload size.
+        type: integer
+      memoDisplayWithUpdatedTs:
+        description: Memo display with updated timestamp.
+        type: boolean
+      profile:
+        $ref: '#/definitions/profile.Profile'
+      storageServiceId:
+        description: Storage service ID.
+        type: integer
+    type: object
+  v1.UpdateIdentityProviderRequest:
+    properties:
+      config:
+        $ref: '#/definitions/v1.IdentityProviderConfig'
+      identifierFilter:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/v1.IdentityProviderType'
+    type: object
+  v1.UpdateResourceRequest:
+    properties:
+      filename:
+        type: string
+    type: object
+  v1.UpdateStorageRequest:
+    properties:
+      config:
+        $ref: '#/definitions/v1.StorageConfig'
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/v1.StorageType'
+    type: object
+  v1.UpdateUserRequest:
+    properties:
+      avatarUrl:
+        type: string
+      email:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      resetOpenId:
+        type: boolean
+      rowStatus:
+        $ref: '#/definitions/v1.RowStatus'
+      username:
+        type: string
+    type: object
+  v1.UpsertMemoOrganizerRequest:
+    properties:
+      pinned:
+        type: boolean
+    type: object
+  v1.UpsertMemoRelationRequest:
+    properties:
+      relatedMemoId:
+        type: integer
+      type:
+        $ref: '#/definitions/v1.MemoRelationType'
+    type: object
+  v1.UpsertMemoResourceRequest:
+    properties:
+      resourceId:
+        type: integer
+      updatedTs:
+        type: integer
+    type: object
+  v1.UpsertSystemSettingRequest:
+    properties:
+      description:
+        type: string
+      name:
+        $ref: '#/definitions/v1.SystemSettingName'
+      value:
+        type: string
+    type: object
+  v1.UpsertTagRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  v1.UpsertUserSettingRequest:
+    properties:
+      key:
+        $ref: '#/definitions/v1.UserSettingKey'
+      value:
+        type: string
+    type: object
+  v1.User:
+    properties:
+      avatarUrl:
+        type: string
+      createdTs:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      openId:
+        type: string
+      role:
+        $ref: '#/definitions/v1.Role'
+      rowStatus:
+        allOf:
+        - $ref: '#/definitions/v1.RowStatus'
+        description: Standard fields
+      updatedTs:
+        type: integer
+      userSettingList:
+        items:
+          $ref: '#/definitions/v1.UserSetting'
+        type: array
+      username:
+        description: Domain specific fields
+        type: string
+    type: object
+  v1.UserSetting:
+    properties:
+      key:
+        $ref: '#/definitions/v1.UserSettingKey'
+      userId:
+        type: integer
+      value:
+        type: string
+    type: object
+  v1.UserSettingKey:
+    enum:
+    - locale
+    - appearance
+    - memo-visibility
+    - telegram-user-id
+    type: string
+    x-enum-varnames:
+    - UserSettingLocaleKey
+    - UserSettingAppearanceKey
+    - UserSettingMemoVisibilityKey
+    - UserSettingTelegramUserIDKey
+  v1.Visibility:
+    enum:
+    - PUBLIC
+    - PROTECTED
+    - PRIVATE
+    type: string
+    x-enum-varnames:
+    - Public
+    - Protected
+    - Private
+externalDocs:
+  description: Find out more about Memos
+  url: https://usememos.com/
+info:
+  contact:
+    name: API Support
+    url: https://github.com/orgs/usememos/discussions
+  description: A privacy-first, lightweight note-taking service.
+  license:
+    name: MIT License
+    url: https://github.com/usememos/memos/blob/main/LICENSE
+  title: memos API
+  version: "1.0"
+paths:
+  /api/v1/auth/signin:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Sign-in object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.SignIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information
+          schema:
+            $ref: '#/definitions/store.User'
+        "400":
+          description: Malformatted signin request
+        "401":
+          description: Password login is deactivated | Incorrect login credentials,
+            please try again
+        "403":
+          description: User has been archived with username %s
+        "500":
+          description: Failed to find system setting | Failed to unmarshal system
+            setting | Incorrect login credentials, please try again | Failed to generate
+            tokens | Failed to create activity
+      summary: Sign-in to memos.
+      tags:
+      - auth
+  /api/v1/auth/signin/sso:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: SSO sign-in object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.SSOSignIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information
+          schema:
+            $ref: '#/definitions/store.User'
+        "400":
+          description: Malformatted signin request
+        "401":
+          description: Access denied, identifier does not match the filter.
+        "403":
+          description: User has been archived with username {username}
+        "404":
+          description: Identity provider not found
+        "500":
+          description: Failed to find identity provider | Failed to create identity
+            provider instance | Failed to exchange token | Failed to get user info
+            | Failed to compile identifier filter | Incorrect login credentials, please
+            try again | Failed to generate random password | Failed to generate password
+            hash | Failed to create user | Failed to generate tokens | Failed to create
+            activity
+      summary: Sign-in to memos using SSO.
+      tags:
+      - auth
+  /api/v1/auth/signout:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Sign-out success
+          schema:
+            type: boolean
+      summary: Sign-out from memos.
+      tags:
+      - auth
+  /api/v1/auth/signup:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Sign-up object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.SignUp'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User information
+          schema:
+            $ref: '#/definitions/store.User'
+        "400":
+          description: Malformatted signup request | Failed to find users
+        "401":
+          description: signup is disabled
+        "403":
+          description: Forbidden
+        "404":
+          description: Not found
+        "500":
+          description: Failed to find system setting | Failed to unmarshal system
+            setting allow signup | Failed to generate password hash | Failed to create
+            user | Failed to generate tokens | Failed to create activity
+      summary: Sign-up to memos.
+      tags:
+      - auth
+  /api/v1/idp:
+    get:
+      description: '*clientSecret is only available for host user'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of available identity providers
+          schema:
+            items:
+              $ref: '#/definitions/v1.IdentityProvider'
+            type: array
+        "500":
+          description: Failed to find identity provider list | Failed to find user
+      summary: Get a list of identity providers
+      tags:
+      - idp
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Identity provider information
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateIdentityProviderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Identity provider information
+          schema:
+            $ref: '#/definitions/store.IdentityProvider'
+        "400":
+          description: Malformatted post identity provider request
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to create identity provider
+      security:
+      - ApiKeyAuth: []
+      summary: Create Identity Provider
+      tags:
+      - idp
+  /api/v1/idp/{idpId}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: Identity Provider ID
+        in: path
+        name: idpId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Identity Provider deleted
+          schema:
+            type: boolean
+        "400":
+          description: 'ID is not a number: %s | Malformatted patch identity provider
+            request'
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to patch identity provider
+      security:
+      - ApiKeyAuth: []
+      summary: Delete an identity provider by ID
+      tags:
+      - idp
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Identity provider ID
+        in: path
+        name: idpId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requested identity provider
+          schema:
+            $ref: '#/definitions/store.IdentityProvider'
+        "400":
+          description: 'ID is not a number: %s'
+        "401":
+          description: Missing user in session | Unauthorized
+        "404":
+          description: Identity provider not found
+        "500":
+          description: Failed to find identity provider list | Failed to find user
+      security:
+      - ApiKeyAuth: []
+      summary: Get an identity provider by ID
+      tags:
+      - idp
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Identity Provider ID
+        in: path
+        name: idpId
+        required: true
+        type: integer
+      - description: Patched identity provider information
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpdateIdentityProviderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Patched identity provider
+          schema:
+            $ref: '#/definitions/store.IdentityProvider'
+        "400":
+          description: 'ID is not a number: %s | Malformatted patch identity provider
+            request'
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to patch identity provider
+      security:
+      - ApiKeyAuth: []
+      summary: Update an identity provider by ID
+      tags:
+      - idp
+  /api/v1/memo:
+    get:
+      parameters:
+      - description: Creator ID
+        in: query
+        name: creatorId
+        type: integer
+      - description: Creator username
+        in: query
+        name: creatorUsername
+        type: string
+      - description: Row status
+        enum:
+        - NORMAL
+        - ARCHIVED
+        in: query
+        name: rowStatus
+        type: string
+      - description: Pinned
+        in: query
+        name: pinned
+        type: boolean
+      - description: 'Search for tag. Do not append #'
+        in: query
+        name: tag
+        type: string
+      - description: Search for content
+        in: query
+        name: content
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo list
+          schema:
+            items:
+              $ref: '#/definitions/store.Memo'
+            type: array
+        "400":
+          description: Missing user to find memo
+        "500":
+          description: Failed to get memo display with updated ts setting value |
+            Failed to fetch memo list | Failed to compose memo response
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of memos matching optional filters
+      tags:
+      - memo
+    post:
+      consumes:
+      - application/json
+      description: |-
+        Visibility can be PUBLIC, PROTECTED or PRIVATE
+        *You should omit fields to use their default values
+      parameters:
+      - description: Request object.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateMemoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Stored memo
+          schema:
+            $ref: '#/definitions/store.Memo'
+        "400":
+          description: Malformatted post memo request | Content size overflow, up
+            to 1MB
+        "401":
+          description: Missing user in session
+        "404":
+          description: 'User not found | Memo not found: %d'
+        "500":
+          description: Failed to find user setting | Failed to unmarshal user setting
+            value | Failed to find system setting | Failed to unmarshal system setting
+            | Failed to find user | Failed to create memo | Failed to create activity
+            | Failed to upsert memo resource | Failed to upsert memo relation | Failed
+            to compose memo | Failed to compose memo response
+      security:
+      - ApiKeyAuth: []
+      summary: Create a memo
+      tags:
+      - memo
+  /api/v1/memo/{memoId}:
+    delete:
+      parameters:
+      - description: Memo ID to delete
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo deleted
+          schema:
+            type: boolean
+        "400":
+          description: 'ID is not a number: %s'
+        "401":
+          description: Missing user in session | Unauthorized
+        "404":
+          description: 'Memo not found: %d'
+        "500":
+          description: 'Failed to find memo | Failed to delete memo ID: %v'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete memo by ID
+      tags:
+      - memo
+    get:
+      parameters:
+      - description: Memo ID
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo list
+          schema:
+            items:
+              $ref: '#/definitions/store.Memo'
+            type: array
+        "400":
+          description: 'ID is not a number: %s'
+        "401":
+          description: Missing user in session
+        "403":
+          description: this memo is private only | this memo is protected, missing
+            user in session
+        "404":
+          description: 'Memo not found: %d'
+        "500":
+          description: 'Failed to find memo by ID: %v | Failed to compose memo response'
+      summary: Get memo by ID
+      tags:
+      - memo
+    patch:
+      consumes:
+      - application/json
+      description: |-
+        Visibility can be PUBLIC, PROTECTED or PRIVATE
+        *You should omit fields to use their default values
+      parameters:
+      - description: ID of memo to update
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      - description: Patched object.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.PatchMemoRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Stored memo
+          schema:
+            $ref: '#/definitions/store.Memo'
+        "400":
+          description: 'ID is not a number: %s | Malformatted patch memo request |
+            Content size overflow, up to 1MB'
+        "401":
+          description: Missing user in session | Unauthorized
+        "404":
+          description: 'Memo not found: %d'
+        "500":
+          description: Failed to find memo | Failed to patch memo | Failed to upsert
+            memo resource | Failed to delete memo resource | Failed to compose memo
+            response
+      security:
+      - ApiKeyAuth: []
+      summary: Update a memo
+      tags:
+      - memo
+  /api/v1/memo/{memoId}/organizer:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID of memo to organize
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      - description: Memo organizer object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpsertMemoOrganizerRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo information
+          schema:
+            $ref: '#/definitions/store.Memo'
+        "400":
+          description: 'ID is not a number: %s | Malformatted post memo organizer
+            request'
+        "401":
+          description: Missing user in session | Unauthorized
+        "404":
+          description: 'Memo not found: %v'
+        "500":
+          description: 'Failed to find memo | Failed to upsert memo organizer | Failed
+            to find memo by ID: %v | Failed to compose memo response'
+      security:
+      - ApiKeyAuth: []
+      summary: Organize memo (pin/unpin)
+      tags:
+      - memo-organizer
+  /api/v1/memo/{memoId}/relation:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID of memo to find relations
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo relation information list
+          schema:
+            items:
+              $ref: '#/definitions/store.MemoRelation'
+            type: array
+        "400":
+          description: 'ID is not a number: %s'
+        "500":
+          description: Failed to list memo relations
+      summary: Get a list of Memo Relations
+      tags:
+      - memo-relation
+    post:
+      consumes:
+      - application/json
+      description: Create a relation between two memos
+      parameters:
+      - description: ID of memo to relate
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      - description: Memo relation object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpsertMemoRelationRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo relation information
+          schema:
+            $ref: '#/definitions/store.MemoRelation'
+        "400":
+          description: 'ID is not a number: %s | Malformatted post memo relation request'
+        "500":
+          description: Failed to upsert memo relation
+      summary: Create Memo Relation
+      tags:
+      - memo-relation
+  /api/v1/memo/{memoId}/relation/{relatedMemoId}/type/{relationType}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes a relation between two memos
+      parameters:
+      - description: ID of memo to find relations
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      - description: ID of memo to remove relation to
+        in: path
+        name: relatedMemoId
+        required: true
+        type: integer
+      - description: Type of relation to remove
+        enum:
+        - REFERENCE
+        - ADDITIONAL
+        in: path
+        name: relationType
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo relation deleted
+          schema:
+            type: boolean
+        "400":
+          description: 'Memo ID is not a number: %s | Related memo ID is not a number:
+            %s'
+        "500":
+          description: Failed to delete memo relation
+      summary: Delete a Memo Relation
+      tags:
+      - memo-relation
+  /api/v1/memo/{memoId}/resource:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID of memo to fetch resource list from
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo resource list
+          schema:
+            items:
+              $ref: '#/definitions/v1.Resource'
+            type: array
+        "400":
+          description: 'ID is not a number: %s'
+        "500":
+          description: Failed to fetch resource list
+      summary: Get resource list of a memo
+      tags:
+      - memo-resource
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID of memo to bind resource to
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      - description: Memo resource request object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpsertMemoResourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo resource binded
+          schema:
+            type: boolean
+        "400":
+          description: 'ID is not a number: %s | Malformatted post memo resource request
+            | Resource not found'
+        "401":
+          description: Missing user in session | Unauthorized to bind this resource
+        "500":
+          description: Failed to fetch resource | Failed to upsert memo resource
+      security:
+      - ApiKeyAuth: []
+      summary: Bind resource to memo
+      tags:
+      - memo-resource
+  /api/v1/memo/{memoId}/resource/{resourceId}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: ID of memo to unbind resource from
+        in: path
+        name: memoId
+        required: true
+        type: integer
+      - description: ID of resource to unbind from memo
+        in: path
+        name: resourceId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 'Memo resource unbinded. *200 is returned even if the reference
+            doesn''t exists '
+          schema:
+            type: boolean
+        "400":
+          description: 'Memo ID is not a number: %s | Resource ID is not a number:
+            %s | Memo not found'
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find memo | Failed to fetch resource list
+      security:
+      - ApiKeyAuth: []
+      summary: Unbind resource from memo
+      tags:
+      - memo-resource
+  /api/v1/memo/all:
+    get:
+      description: |-
+        This should also list protected memos if the user is logged in
+        Authentication is optional
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo list
+          schema:
+            items:
+              $ref: '#/definitions/store.Memo'
+            type: array
+        "500":
+          description: Failed to get memo display with updated ts setting value |
+            Failed to fetch all memo list | Failed to compose memo response
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of public memos matching optional filters
+      tags:
+      - memo
+  /api/v1/memo/stats:
+    get:
+      description: Used to generate the heatmap
+      parameters:
+      - description: Creator ID
+        in: query
+        name: creatorId
+        type: integer
+      - description: Creator username
+        in: query
+        name: creatorUsername
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Memo createdTs list
+          schema:
+            items:
+              type: integer
+            type: array
+        "400":
+          description: Missing user id to find memo
+        "500":
+          description: Failed to get memo display with updated ts setting value |
+            Failed to find memo list | Failed to compose memo response
+      summary: Get memo stats by creator ID or username
+      tags:
+      - memo
+  /api/v1/ping:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: System profile
+          schema:
+            $ref: '#/definitions/profile.Profile'
+      summary: Ping the system
+      tags:
+      - system
+  /api/v1/resource:
+    get:
+      parameters:
+      - description: Limit
+        in: query
+        name: limit
+        type: integer
+      - description: Offset
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Resource list
+          schema:
+            items:
+              $ref: '#/definitions/store.Resource'
+            type: array
+        "401":
+          description: Missing user in session
+        "500":
+          description: Failed to fetch resource list
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of resources
+      tags:
+      - resource
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request object.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateResourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created resource
+          schema:
+            $ref: '#/definitions/store.Resource'
+        "400":
+          description: Malformatted post resource request | Invalid external link
+            | Invalid external link scheme | Failed to request %s | Failed to read
+            %s | Failed to read mime from %s
+        "401":
+          description: Missing user in session
+        "500":
+          description: Failed to save resource | Failed to create resource | Failed
+            to create activity
+      security:
+      - ApiKeyAuth: []
+      summary: Create resource
+      tags:
+      - resource
+  /api/v1/resource/{resourceId}:
+    delete:
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Resource deleted
+          schema:
+            type: boolean
+        "400":
+          description: 'ID is not a number: %s'
+        "401":
+          description: Missing user in session
+        "404":
+          description: 'Resource not found: %d'
+        "500":
+          description: Failed to find resource | Failed to delete resource
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a resource
+      tags:
+      - resource
+    patch:
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: integer
+      - description: Patch resource request
+        in: body
+        name: patch
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpdateResourceRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated resource
+          schema:
+            $ref: '#/definitions/store.Resource'
+        "400":
+          description: 'ID is not a number: %s | Malformatted patch resource request'
+        "401":
+          description: Missing user in session | Unauthorized
+        "404":
+          description: 'Resource not found: %d'
+        "500":
+          description: Failed to find resource | Failed to patch resource
+      security:
+      - ApiKeyAuth: []
+      summary: Update a resource
+      tags:
+      - resource
+  /api/v1/resource/blob:
+    post:
+      consumes:
+      - multipart/form-data
+      parameters:
+      - description: File to upload
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created resource
+          schema:
+            $ref: '#/definitions/store.Resource'
+        "400":
+          description: Upload file not found | File size exceeds allowed limit of
+            %d MiB | Failed to parse upload data
+        "401":
+          description: Missing user in session
+        "500":
+          description: Failed to get uploading file | Failed to open file | Failed
+            to save resource | Failed to create resource | Failed to create activity
+      security:
+      - ApiKeyAuth: []
+      summary: Upload resource
+      tags:
+      - resource
+  /api/v1/status:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: System status
+          schema:
+            $ref: '#/definitions/v1.SystemStatus'
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find host user | Failed to find system setting list
+            | Failed to unmarshal system setting customized profile value
+      summary: Get system status
+      tags:
+      - system
+  /api/v1/storage:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of storages
+          schema:
+            items:
+              $ref: '#/definitions/store.Storage'
+            type: array
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to convert storage
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of storages
+      tags:
+      - storage
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request object.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateStorageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created storage
+          schema:
+            $ref: '#/definitions/store.Storage'
+        "400":
+          description: Malformatted post storage request
+        "401":
+          description: Missing user in session
+        "500":
+          description: Failed to find user | Failed to create storage | Failed to
+            convert storage
+      security:
+      - ApiKeyAuth: []
+      summary: Create storage
+      tags:
+      - storage
+  /api/v1/storage/{storageId}:
+    delete:
+      parameters:
+      - description: Storage ID
+        in: path
+        name: storageId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Storage deleted
+          schema:
+            type: boolean
+        "400":
+          description: 'ID is not a number: %s | Storage service %d is using'
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to find storage | Failed to unmarshal
+            storage service id | Failed to delete storage
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a storage
+      tags:
+      - storage
+    patch:
+      parameters:
+      - description: Storage ID
+        in: path
+        name: storageId
+        required: true
+        type: integer
+      - description: Patch request
+        in: body
+        name: patch
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpdateStorageRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated resource
+          schema:
+            $ref: '#/definitions/store.Storage'
+        "400":
+          description: 'ID is not a number: %s | Malformatted patch storage request
+            | Malformatted post storage request'
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to patch storage | Failed to convert
+            storage
+      security:
+      - ApiKeyAuth: []
+      summary: Update a storage
+      tags:
+      - storage
+  /api/v1/system/setting:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: System setting list
+          schema:
+            items:
+              $ref: '#/definitions/v1.SystemSetting'
+            type: array
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to find system setting list
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of system settings
+      tags:
+      - system-setting
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request object.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpsertSystemSettingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created system setting
+          schema:
+            $ref: '#/definitions/store.SystemSetting'
+        "400":
+          description: Malformatted post system setting request | invalid system setting
+        "401":
+          description: Missing user in session | Unauthorized
+        "403":
+          description: Cannot disable passwords if no SSO identity provider is configured.
+        "500":
+          description: Failed to find user | Failed to upsert system setting
+      security:
+      - ApiKeyAuth: []
+      summary: Create system setting
+      tags:
+      - system-setting
+  /api/v1/system/vacuum:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Database vacuumed
+          schema:
+            type: boolean
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to vacuum database
+      security:
+      - ApiKeyAuth: []
+      summary: Vacuum the database
+      tags:
+      - system
+  /api/v1/tag:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tag list
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Missing user id to find tag
+        "500":
+          description: Failed to find tag list
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of tags
+      tags:
+      - tag
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request object.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpsertTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created tag name
+          schema:
+            type: string
+        "400":
+          description: Malformatted post tag request | Tag name shouldn't be empty
+        "401":
+          description: Missing user in session
+        "500":
+          description: Failed to upsert tag | Failed to create activity
+      security:
+      - ApiKeyAuth: []
+      summary: Create a tag
+      tags:
+      - tag
+  /api/v1/tag/delete:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request object.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.DeleteTagRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tag deleted
+          schema:
+            type: boolean
+        "400":
+          description: Malformatted post tag request | Tag name shouldn't be empty
+        "401":
+          description: Missing user in session
+        "500":
+          description: 'Failed to delete tag name: %v'
+      security:
+      - ApiKeyAuth: []
+      summary: Delete a tag
+      tags:
+      - tag
+  /api/v1/tag/suggestion:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Tag list
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Missing user session
+        "500":
+          description: Failed to find memo list | Failed to find tag list
+      security:
+      - ApiKeyAuth: []
+      summary: Get a list of tags suggested from other memos contents
+      tags:
+      - tag
+  /api/v1/user:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User list
+          schema:
+            items:
+              $ref: '#/definitions/store.User'
+            type: array
+        "500":
+          description: Failed to fetch user list
+      summary: Get a list of users
+      tags:
+      - user
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created user
+          schema:
+            $ref: '#/definitions/store.User'
+        "400":
+          description: Malformatted post user request | Invalid user create format
+        "401":
+          description: Missing auth session | Unauthorized to create user
+        "403":
+          description: Could not create host user
+        "500":
+          description: Failed to find user by id | Failed to generate password hash
+            | Failed to create user | Failed to create activity
+      summary: Create a user
+      tags:
+      - user
+  /api/v1/user/{id}:
+    delete:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted
+          schema:
+            type: boolean
+        "400":
+          description: 'ID is not a number: %s | Current session user not found with
+            ID: %d'
+        "401":
+          description: Missing user in session
+        "403":
+          description: Unauthorized to delete user
+        "500":
+          description: Failed to find user | Failed to delete user
+      summary: Delete a user
+      tags:
+      - user
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requested user
+          schema:
+            $ref: '#/definitions/store.User'
+        "400":
+          description: Malformatted user id
+        "404":
+          description: User not found
+        "500":
+          description: Failed to find user
+      summary: Get user by id
+      tags:
+      - user
+    patch:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Patch request
+        in: body
+        name: patch
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated user
+          schema:
+            $ref: '#/definitions/store.User'
+        "400":
+          description: 'ID is not a number: %s | Current session user not found with
+            ID: %d | Malformatted patch user request | Invalid update user request'
+        "401":
+          description: Missing user in session
+        "403":
+          description: Unauthorized to update user
+        "500":
+          description: Failed to find user | Failed to generate password hash | Failed
+            to patch user | Failed to find userSettingList
+      summary: Update a user
+      tags:
+      - user
+  /api/v1/user/me:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Current user
+          schema:
+            $ref: '#/definitions/store.User'
+        "401":
+          description: Missing auth session
+        "500":
+          description: Failed to find user | Failed to find userSettingList
+      security:
+      - ApiKeyAuth: []
+      summary: Get current user
+      tags:
+      - user
+  /api/v1/user/name/{username}:
+    get:
+      parameters:
+      - description: Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Requested user
+          schema:
+            $ref: '#/definitions/store.User'
+        "404":
+          description: User not found
+        "500":
+          description: Failed to find user
+      summary: Get user by username
+      tags:
+      - user
+  /api/v1/user/setting:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Request object.
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/v1.UpsertUserSettingRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created user setting
+          schema:
+            $ref: '#/definitions/store.UserSetting'
+        "400":
+          description: Malformatted post user setting upsert request | Invalid user
+            setting format
+        "401":
+          description: Missing auth session
+        "500":
+          description: Failed to upsert user setting
+      security:
+      - ApiKeyAuth: []
+      summary: Create user setting
+      tags:
+      - user-setting
+  /explore/rss.xml:
+    get:
+      produces:
+      - text/xml
+      responses:
+        "200":
+          description: RSS
+        "500":
+          description: Failed to get system customized profile | Failed to find memo
+            list | Failed to generate rss
+      summary: Get RSS
+      tags:
+      - rss
+  /o/get/httpmeta:
+    get:
+      parameters:
+      - description: Website URL
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Extracted metadata
+          schema:
+            $ref: '#/definitions/getter.HTMLMeta'
+        "400":
+          description: Missing website url | Wrong url
+        "406":
+          description: 'Failed to get website meta with url: %s'
+      summary: Get website metadata
+      tags:
+      - get
+  /o/get/image:
+    get:
+      parameters:
+      - description: Image url
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - image/*
+      responses:
+        "200":
+          description: Image
+        "400":
+          description: 'Missing image url | Wrong url | Failed to get image url: %s'
+        "500":
+          description: Failed to write image blob
+      summary: Get image from URL
+      tags:
+      - get
+  /o/r/{resourceId}:
+    get:
+      description: '*Swagger UI may have problems displaying other file types than
+        images'
+      parameters:
+      - description: Resource ID
+        in: path
+        name: resourceId
+        required: true
+        type: integer
+      - description: Thumbnail
+        in: query
+        name: thumbnail
+        type: integer
+      produces:
+      - application/octet-stream
+      responses:
+        "200":
+          description: Requested resource
+        "400":
+          description: 'ID is not a number: %s | Failed to get resource visibility'
+        "401":
+          description: Resource visibility not match
+        "404":
+          description: 'Resource not found: %d'
+        "500":
+          description: 'Failed to find resource by ID: %v | Failed to open the local
+            resource: %s | Failed to read the local resource: %s'
+      summary: Stream a resource
+      tags:
+      - resource
+  /u/{id}/rss.xml:
+    get:
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - text/xml
+      responses:
+        "200":
+          description: RSS
+        "400":
+          description: User id is not a number
+        "500":
+          description: Failed to get system customized profile | Failed to find memo
+            list | Failed to generate rss
+      summary: Get RSS for a user
+      tags:
+      - rss
+securityDefinitions:
+  ApiKeyAuth:
+    description: Insert your Open ID API Key here.
+    in: query
+    name: openId
+    type: apiKey
+swagger: "2.0"
