@@ -40,25 +40,25 @@ type Server struct {
 	telegramBot  *telegram.Bot
 }
 
-//	@title						memos API
-//	@version					1.0
-//	@description				A privacy-first, lightweight note-taking service.
+// @title						memos API
+// @version					1.0
+// @description				A privacy-first, lightweight note-taking service.
 //
-//	@contact.name				API Support
-//	@contact.url				https://github.com/orgs/usememos/discussions
+// @contact.name				API Support
+// @contact.url				https://github.com/orgs/usememos/discussions
 //
-//	@license.name				MIT License
-//	@license.url				https://github.com/usememos/memos/blob/main/LICENSE
+// @license.name				MIT License
+// @license.url				https://github.com/usememos/memos/blob/main/LICENSE
 //
-//	@BasePath					/
+// @BasePath					/
 //
-//	@externalDocs.url			https://usememos.com/
-//	@externalDocs.description	Find out more about Memos
+// @externalDocs.url			https://usememos.com/
+// @externalDocs.description	Find out more about Memos
 //
-//	@securitydefinitions.apikey	ApiKeyAuth
-//	@in							query
-//	@name						openId
-//	@description				Insert your Open ID API Key here.
+// @securitydefinitions.apikey	ApiKeyAuth
+// @in							query
+// @name						openId
+// @description				Insert your Open ID API Key here.
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
 	// programmatically set API version same as the server version
 	api.SwaggerInfo.Version = profile.Version

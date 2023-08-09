@@ -212,7 +212,7 @@ func (s *APIV1Service) signInSSO(c echo.Context) error {
 //	@Produce	json
 //	@Success	200	{boolean}	true	"Sign-out success"
 //	@Router		/api/v1/auth/signout [POST]
-func (s *APIV1Service) signOut(c echo.Context) error {
+func (*APIV1Service) signOut(c echo.Context) error {
 	RemoveTokensAndCookies(c)
 	return c.JSON(http.StatusOK, true)
 }

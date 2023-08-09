@@ -73,7 +73,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 	g.GET("/user/me", s.getCurrentUser)
 	// NOTE: This should be moved to /api/v2/user/:username
 	g.GET("/user/name/:username", s.getUserByUsername)
-	g.GET("/user/:id", s.getUserById)
+	g.GET("/user/:id", s.getUserByID)
 	g.DELETE("/user/:id", s.deleteUser)
 	g.PATCH("/user/:id", s.updateUser)
 }
@@ -240,7 +240,7 @@ func (s *APIV1Service) getUserByUsername(c echo.Context) error {
 	return c.JSON(http.StatusOK, userMessage)
 }
 
-// getUserById godoc
+// getUserByID godoc
 //
 //	@Summary	Get user by id
 //	@Tags		user
@@ -251,7 +251,7 @@ func (s *APIV1Service) getUserByUsername(c echo.Context) error {
 //	@Failure	404	{object}	nil			"User not found"
 //	@Failure	500	{object}	nil			"Failed to find user"
 //	@Router		/api/v1/user/{id} [GET]
-func (s *APIV1Service) getUserById(c echo.Context) error {
+func (s *APIV1Service) getUserByID(c echo.Context) error {
 	ctx := c.Request().Context()
 	id, err := util.ConvertStringToInt32(c.Param("id"))
 	if err != nil {

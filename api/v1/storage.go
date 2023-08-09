@@ -186,7 +186,7 @@ func (s *APIV1Service) createStorage(c echo.Context) error {
 //	@Router		/api/v1/storage/{storageId} [DELETE]
 //
 // NOTES:
-// - error message "Storage service %d is using" probably should be "Storage service %d is in use"
+// - error message "Storage service %d is using" probably should be "Storage service %d is in use".
 func (s *APIV1Service) deleteStorage(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)

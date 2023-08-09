@@ -118,8 +118,8 @@ func (s *APIV1Service) createMemoRelation(c echo.Context) error {
 //	@Router			/api/v1/memo/{memoId}/relation/{relatedMemoId}/type/{relationType} [DELETE]
 //
 // NOTES:
-// - Currently not secured
-// - Will always return true, even if the relation doesn't exist
+// - Currently not secured.
+// - Will always return true, even if the relation doesn't exist.
 func (s *APIV1Service) deleteMemoRelation(c echo.Context) error {
 	ctx := c.Request().Context()
 	memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
