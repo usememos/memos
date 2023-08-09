@@ -60,8 +60,8 @@ Write-Host "Formatting comments via ``swag fmt --dir `"$swagFmtDirs`"``..." -f M
 $goFmtDirs = $swagFmtDirs -split ',' | ForEach-Object { "`"$($_)`"" }
 
 # This is just in case swag fmt do something non-conforming to go fmt
-Write-Host "Formatting code via ``go fmt -n ${goFmtDirs}``..." -f Magenta
-go fmt -n ${goFmtDirs}
+Write-Host "Formatting code via ``go fmt ${goFmtDirs}``..." -f Magenta
+go fmt ${goFmtDirs}
 
 Write-Host "Generating Swagger API documentation..." -f Magenta
 &$swag init --output $env:SWAG_OUTPUT --outputTypes $env:SWAG_OUTPUT_TYPES --generalInfo $env:SWAG_GENERAL_INFO --dir "./,${env:SWAG_API_DIRS}"

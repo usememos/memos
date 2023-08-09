@@ -95,8 +95,8 @@ $swag fmt --dir "$general_info_path,$SWAG_API_DIRS"
 
 # This is just in case "swag fmt" do something non-conforming to "go fmt"
 go_fmt_dirs=$(echo $general_info_path $SWAG_API_DIRS | tr "," " ")
-echo -e "\e[35mFormatting code via \`go fmt -n $go_fmt_dirs\`...\e[0m"
-go fmt -n $go_fmt_dirs
+echo -e "\e[35mFormatting code via \`go fmt $go_fmt_dirs\`...\e[0m"
+go fmt $go_fmt_dirs
 
 echo -e "\e[35mGenerating Swagger API documentation...\e[0m"
 $swag init --output "$SWAG_OUTPUT" --outputTypes "$SWAG_OUTPUT_TYPES" --generalInfo "$SWAG_GENERAL_INFO" --dir "./,$SWAG_API_DIRS"
