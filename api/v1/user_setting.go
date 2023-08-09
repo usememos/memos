@@ -79,12 +79,12 @@ type UpsertUserSettingRequest struct {
 }
 
 func (s *APIV1Service) registerUserSettingRoutes(g *echo.Group) {
-	g.POST("/user/setting", s.createUserSetting)
+	g.POST("/user/setting", s.UpsertUserSetting)
 }
 
-// createUserSetting godoc
+// UpsertUserSetting godoc
 //
-//	@Summary	Create user setting
+//	@Summary	Upsert user setting
 //	@Tags		user-setting
 //	@Accept		json
 //	@Produce	json
@@ -95,7 +95,7 @@ func (s *APIV1Service) registerUserSettingRoutes(g *echo.Group) {
 //	@Failure	500		{object}	nil							"Failed to upsert user setting"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/user/setting [POST]
-func (s *APIV1Service) createUserSetting(c echo.Context) error {
+func (s *APIV1Service) UpsertUserSetting(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {

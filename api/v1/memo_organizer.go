@@ -22,10 +22,10 @@ type UpsertMemoOrganizerRequest struct {
 }
 
 func (s *APIV1Service) registerMemoOrganizerRoutes(g *echo.Group) {
-	g.POST("/memo/:memoId/organizer", s.organizeMemo)
+	g.POST("/memo/:memoId/organizer", s.CreateMemoOrganizer)
 }
 
-// organizeMemo godoc
+// CreateMemoOrganizer godoc
 //
 //	@Summary	Organize memo (pin/unpin)
 //	@Tags		memo-organizer
@@ -40,7 +40,7 @@ func (s *APIV1Service) registerMemoOrganizerRoutes(g *echo.Group) {
 //	@Failure	500		{object}	nil							"Failed to find memo | Failed to upsert memo organizer | Failed to find memo by ID: %v | Failed to compose memo response"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/memo/{memoId}/organizer [POST]
-func (s *APIV1Service) organizeMemo(c echo.Context) error {
+func (s *APIV1Service) CreateMemoOrganizer(c echo.Context) error {
 	ctx := c.Request().Context()
 	memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 	if err != nil {

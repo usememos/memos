@@ -21,11 +21,11 @@ const maxRSSItemCount = 100
 const maxRSSItemTitleLength = 100
 
 func (s *APIV1Service) registerRSSRoutes(g *echo.Group) {
-	g.GET("/explore/rss.xml", s.getRSS)
-	g.GET("/u/:id/rss.xml", s.getUserRSS)
+	g.GET("/explore/rss.xml", s.GetExploreRSS)
+	g.GET("/u/:id/rss.xml", s.GetUserRSS)
 }
 
-// getRSS godoc
+// GetExploreRSS godoc
 //
 //	@Summary	Get RSS
 //	@Tags		rss
@@ -33,7 +33,7 @@ func (s *APIV1Service) registerRSSRoutes(g *echo.Group) {
 //	@Success	200	{object}	nil	"RSS"
 //	@Failure	500	{object}	nil	"Failed to get system customized profile | Failed to find memo list | Failed to generate rss"
 //	@Router		/explore/rss.xml [GET]
-func (s *APIV1Service) getRSS(c echo.Context) error {
+func (s *APIV1Service) GetExploreRSS(c echo.Context) error {
 	ctx := c.Request().Context()
 	systemCustomizedProfile, err := s.getSystemCustomizedProfile(ctx)
 	if err != nil {
@@ -59,7 +59,7 @@ func (s *APIV1Service) getRSS(c echo.Context) error {
 	return c.String(http.StatusOK, rss)
 }
 
-// getUserRSS godoc
+// GetUserRSS godoc
 //
 //	@Summary	Get RSS for a user
 //	@Tags		rss
@@ -69,7 +69,7 @@ func (s *APIV1Service) getRSS(c echo.Context) error {
 //	@Failure	400	{object}	nil	"User id is not a number"
 //	@Failure	500	{object}	nil	"Failed to get system customized profile | Failed to find memo list | Failed to generate rss"
 //	@Router		/u/{id}/rss.xml [GET]
-func (s *APIV1Service) getUserRSS(c echo.Context) error {
+func (s *APIV1Service) GetUserRSS(c echo.Context) error {
 	ctx := c.Request().Context()
 	id, err := util.ConvertStringToInt32(c.Param("id"))
 	if err != nil {

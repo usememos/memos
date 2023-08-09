@@ -43,32 +43,32 @@ type SystemStatus struct {
 }
 
 func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
-	g.GET("/ping", s.ping)
-	g.GET("/status", s.status)
-	g.POST("/system/vacuum", s.vacuum)
+	g.GET("/ping", s.PingSystem)
+	g.GET("/status", s.GetSystemStatus)
+	g.POST("/system/vacuum", s.ExecVacuum)
 }
 
-// ping godoc
+// PingSystem godoc
 //
 //	@Summary	Ping the system
 //	@Tags		system
 //	@Produce	json
 //	@Success	200	{object}	profile.Profile	"System profile"
-//	@Router		/api/v1/ping [GET]
-func (s *APIV1Service) ping(c echo.Context) error {
+//	@Router		/api/v1/PingSystem [GET]
+func (s *APIV1Service) PingSystem(c echo.Context) error {
 	return c.JSON(http.StatusOK, s.Profile)
 }
 
-// status godoc
+// GetSystemStatus godoc
 //
-//	@Summary	Get system status
+//	@Summary	Get system GetSystemStatus
 //	@Tags		system
 //	@Produce	json
-//	@Success	200	{object}	SystemStatus	"System status"
+//	@Success	200	{object}	SystemStatus	"System GetSystemStatus"
 //	@Failure	401	{object}	nil				"Missing user in session | Unauthorized"
 //	@Failure	500	{object}	nil				"Failed to find host user | Failed to find system setting list | Failed to unmarshal system setting customized profile value"
-//	@Router		/api/v1/status [GET]
-func (s *APIV1Service) status(c echo.Context) error {
+//	@Router		/api/v1/GetSystemStatus [GET]
+func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	systemStatus := SystemStatus{
@@ -156,17 +156,17 @@ func (s *APIV1Service) status(c echo.Context) error {
 	return c.JSON(http.StatusOK, systemStatus)
 }
 
-// vacuum godoc
+// ExecVacuum godoc
 //
 //	@Summary	Vacuum the database
 //	@Tags		system
 //	@Produce	json
 //	@Success	200	{boolean}	true	"Database vacuumed"
 //	@Failure	401	{object}	nil		"Missing user in session | Unauthorized"
-//	@Failure	500	{object}	nil		"Failed to find user | Failed to vacuum database"
+//	@Failure	500	{object}	nil		"Failed to find user | Failed to ExecVacuum database"
 //	@Security	ApiKeyAuth
-//	@Router		/api/v1/system/vacuum [POST]
-func (s *APIV1Service) vacuum(c echo.Context) error {
+//	@Router		/api/v1/system/ExecVacuum [POST]
+func (s *APIV1Service) ExecVacuum(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {

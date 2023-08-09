@@ -32,13 +32,13 @@ type SignUp struct {
 }
 
 func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
-	g.POST("/auth/signin", s.signIn)
-	g.POST("/auth/signin/sso", s.signInSSO)
-	g.POST("/auth/signout", s.signOut)
-	g.POST("/auth/signup", s.signUp)
+	g.POST("/auth/signin", s.SignIn)
+	g.POST("/auth/signin/sso", s.SignInSSO)
+	g.POST("/auth/signout", s.SignOut)
+	g.POST("/auth/signup", s.SignUp)
 }
 
-// signIn godoc
+// SignIn godoc
 //
 //	@Summary	Sign-in to memos.
 //	@Tags		auth
@@ -51,7 +51,7 @@ func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
 //	@Failure	403		{object}	nil			"User has been archived with username %s"
 //	@Failure	500		{object}	nil			"Failed to find system setting | Failed to unmarshal system setting | Incorrect login credentials, please try again | Failed to generate tokens | Failed to create activity"
 //	@Router		/api/v1/auth/signin [POST]
-func (s *APIV1Service) signIn(c echo.Context) error {
+func (s *APIV1Service) SignIn(c echo.Context) error {
 	ctx := c.Request().Context()
 	signin := &SignIn{}
 
@@ -104,7 +104,7 @@ func (s *APIV1Service) signIn(c echo.Context) error {
 	return c.JSON(http.StatusOK, userMessage)
 }
 
-// signInSSO godoc
+// SignInSSO godoc
 //
 //	@Summary	Sign-in to memos using SSO.
 //	@Tags		auth
@@ -118,7 +118,7 @@ func (s *APIV1Service) signIn(c echo.Context) error {
 //	@Failure	404		{object}	nil			"Identity provider not found"
 //	@Failure	500		{object}	nil			"Failed to find identity provider | Failed to create identity provider instance | Failed to exchange token | Failed to get user info | Failed to compile identifier filter | Incorrect login credentials, please try again | Failed to generate random password | Failed to generate password hash | Failed to create user | Failed to generate tokens | Failed to create activity"
 //	@Router		/api/v1/auth/signin/sso [POST]
-func (s *APIV1Service) signInSSO(c echo.Context) error {
+func (s *APIV1Service) SignInSSO(c echo.Context) error {
 	ctx := c.Request().Context()
 	signin := &SSOSignIn{}
 	if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
@@ -205,19 +205,19 @@ func (s *APIV1Service) signInSSO(c echo.Context) error {
 	return c.JSON(http.StatusOK, userMessage)
 }
 
-// signOut godoc
+// SignOut godoc
 //
 //	@Summary	Sign-out from memos.
 //	@Tags		auth
 //	@Produce	json
 //	@Success	200	{boolean}	true	"Sign-out success"
 //	@Router		/api/v1/auth/signout [POST]
-func (*APIV1Service) signOut(c echo.Context) error {
+func (*APIV1Service) SignOut(c echo.Context) error {
 	RemoveTokensAndCookies(c)
 	return c.JSON(http.StatusOK, true)
 }
 
-// signUp godoc
+// SignUp godoc
 //
 //	@Summary	Sign-up to memos.
 //	@Tags		auth
@@ -231,7 +231,7 @@ func (*APIV1Service) signOut(c echo.Context) error {
 //	@Failure	404		{object}	nil			"Not found"
 //	@Failure	500		{object}	nil			"Failed to find system setting | Failed to unmarshal system setting allow signup | Failed to generate password hash | Failed to create user | Failed to generate tokens | Failed to create activity"
 //	@Router		/api/v1/auth/signup [POST]
-func (s *APIV1Service) signUp(c echo.Context) error {
+func (s *APIV1Service) SignUp(c echo.Context) error {
 	ctx := c.Request().Context()
 	signup := &SignUp{}
 	if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {

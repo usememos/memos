@@ -113,17 +113,16 @@ type FindMemoRequest struct {
 const maxContentLength = 1 << 30
 
 func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
-	g.GET("/memo", s.getMemoList)
-	g.POST("/memo", s.createMemo)
-	g.GET("/memo/all", s.getAllMemos)
-	g.GET("/memo/stats", s.getMemoStats)
-
-	g.GET("/memo/:memoId", s.getMemo)
-	g.DELETE("/memo/:memoId", s.deleteMemo)
-	g.PATCH("/memo/:memoId", s.updateMemo)
+	g.GET("/memo", s.GetMemoList)
+	g.POST("/memo", s.CreateMemo)
+	g.GET("/memo/all", s.GetAllMemos)
+	g.GET("/memo/stats", s.GetMemoStats)
+	g.GET("/memo/:memoId", s.GetMemo)
+	g.PATCH("/memo/:memoId", s.UpdateMemo)
+	g.DELETE("/memo/:memoId", s.DeleteMemo)
 }
 
-// getMemoList godoc
+// GetMemoList godoc
 //
 //	@Summary	Get a list of memos matching optional filters
 //	@Tags		memo
@@ -141,7 +140,7 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 //	@Failure	500				{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to compose memo response"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/memo [GET]
-func (s *APIV1Service) getMemoList(c echo.Context) error {
+func (s *APIV1Service) GetMemoList(c echo.Context) error {
 	ctx := c.Request().Context()
 	findMemoMessage := &store.FindMemo{}
 	if userID, err := util.ConvertStringToInt32(c.QueryParam("creatorId")); err == nil {
@@ -225,7 +224,7 @@ func (s *APIV1Service) getMemoList(c echo.Context) error {
 	return c.JSON(http.StatusOK, memoResponseList)
 }
 
-// createMemo godoc
+// CreateMemo godoc
 //
 //	@Summary		Create a memo
 //	@Description	Visibility can be PUBLIC, PROTECTED or PRIVATE
@@ -244,7 +243,7 @@ func (s *APIV1Service) getMemoList(c echo.Context) error {
 //
 // NOTES:
 // - It's currently possible to create phantom resources and relations. Phantom relations will trigger backend 404's when fetching memo.
-func (s *APIV1Service) createMemo(c echo.Context) error {
+func (s *APIV1Service) CreateMemo(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -355,7 +354,7 @@ func (s *APIV1Service) createMemo(c echo.Context) error {
 	return c.JSON(http.StatusOK, memoResponse)
 }
 
-// getAllMemos godoc
+// GetAllMemos godoc
 //
 //	@Summary		Get a list of public memos matching optional filters
 //	@Description	This should also list protected memos if the user is logged in
@@ -371,7 +370,7 @@ func (s *APIV1Service) createMemo(c echo.Context) error {
 //
 //	NOTES:
 //	- creatorUsername is listed at ./web/src/helpers/api.ts:82, but it's not present here
-func (s *APIV1Service) getAllMemos(c echo.Context) error {
+func (s *APIV1Service) GetAllMemos(c echo.Context) error {
 	ctx := c.Request().Context()
 	findMemoMessage := &store.FindMemo{}
 	_, ok := c.Get(auth.UserIDContextKey).(int32)
@@ -415,7 +414,7 @@ func (s *APIV1Service) getAllMemos(c echo.Context) error {
 	return c.JSON(http.StatusOK, memoResponseList)
 }
 
-// getMemoStats godoc
+// GetMemoStats godoc
 //
 //	@Summary		Get memo stats by creator ID or username
 //	@Description	Used to generate the heatmap
@@ -427,7 +426,7 @@ func (s *APIV1Service) getAllMemos(c echo.Context) error {
 //	@Failure		400				{object}	nil		"Missing user id to find memo"
 //	@Failure		500				{object}	nil		"Failed to get memo display with updated ts setting value | Failed to find memo list | Failed to compose memo response"
 //	@Router			/api/v1/memo/stats [GET]
-func (s *APIV1Service) getMemoStats(c echo.Context) error {
+func (s *APIV1Service) GetMemoStats(c echo.Context) error {
 	ctx := c.Request().Context()
 	normalStatus := store.Normal
 	findMemoMessage := &store.FindMemo{
@@ -487,7 +486,7 @@ func (s *APIV1Service) getMemoStats(c echo.Context) error {
 	return c.JSON(http.StatusOK, displayTsList)
 }
 
-// getMemo godoc
+// GetMemo godoc
 //
 //	@Summary	Get memo by ID
 //	@Tags		memo
@@ -500,7 +499,7 @@ func (s *APIV1Service) getMemoStats(c echo.Context) error {
 //	@Failure	404		{object}	nil				"Memo not found: %d"
 //	@Failure	500		{object}	nil				"Failed to find memo by ID: %v | Failed to compose memo response"
 //	@Router		/api/v1/memo/{memoId} [GET]
-func (s *APIV1Service) getMemo(c echo.Context) error {
+func (s *APIV1Service) GetMemo(c echo.Context) error {
 	ctx := c.Request().Context()
 	memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 	if err != nil {
@@ -534,7 +533,7 @@ func (s *APIV1Service) getMemo(c echo.Context) error {
 	return c.JSON(http.StatusOK, memoResponse)
 }
 
-// deleteMemo godoc
+// DeleteMemo godoc
 //
 //	@Summary	Delete memo by ID
 //	@Tags		memo
@@ -547,7 +546,7 @@ func (s *APIV1Service) getMemo(c echo.Context) error {
 //	@Failure	500		{object}	nil		"Failed to find memo | Failed to delete memo ID: %v"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/memo/{memoId} [DELETE]
-func (s *APIV1Service) deleteMemo(c echo.Context) error {
+func (s *APIV1Service) DeleteMemo(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -579,7 +578,7 @@ func (s *APIV1Service) deleteMemo(c echo.Context) error {
 	return c.JSON(http.StatusOK, true)
 }
 
-// updateMemo godoc
+// UpdateMemo godoc
 //
 //	@Summary		Update a memo
 //	@Description	Visibility can be PUBLIC, PROTECTED or PRIVATE
@@ -600,7 +599,7 @@ func (s *APIV1Service) deleteMemo(c echo.Context) error {
 // NOTES:
 // - It's currently possible to create phantom resources and relations. Phantom relations will trigger backend 404's when fetching memo.
 // - Passing 0 to createdTs and updatedTs will set them to 0 in the database, which is probably unwanted.
-func (s *APIV1Service) updateMemo(c echo.Context) error {
+func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {

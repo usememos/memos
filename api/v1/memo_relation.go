@@ -29,12 +29,12 @@ type UpsertMemoRelationRequest struct {
 }
 
 func (s *APIV1Service) registerMemoRelationRoutes(g *echo.Group) {
-	g.GET("/memo/:memoId/relation", s.getMemoRelationList)
-	g.POST("/memo/:memoId/relation", s.createMemoRelation)
-	g.DELETE("/memo/:memoId/relation/:relatedMemoId/type/:relationType", s.deleteMemoRelation)
+	g.GET("/memo/:memoId/relation", s.GetMemoRelationList)
+	g.POST("/memo/:memoId/relation", s.CreateMemoRelation)
+	g.DELETE("/memo/:memoId/relation/:relatedMemoId/type/:relationType", s.DeleteMemoRelation)
 }
 
-// getMemoRelationList godoc
+// GetMemoRelationList godoc
 //
 //	@Summary	Get a list of Memo Relations
 //	@Tags		memo-relation
@@ -45,7 +45,7 @@ func (s *APIV1Service) registerMemoRelationRoutes(g *echo.Group) {
 //	@Failure	400		{object}	nil						"ID is not a number: %s"
 //	@Failure	500		{object}	nil						"Failed to list memo relations"
 //	@Router		/api/v1/memo/{memoId}/relation [GET]
-func (s *APIV1Service) getMemoRelationList(c echo.Context) error {
+func (s *APIV1Service) GetMemoRelationList(c echo.Context) error {
 	ctx := c.Request().Context()
 	memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 	if err != nil {
@@ -61,7 +61,7 @@ func (s *APIV1Service) getMemoRelationList(c echo.Context) error {
 	return c.JSON(http.StatusOK, memoRelationList)
 }
 
-// createMemoRelation godoc
+// CreateMemoRelation godoc
 //
 //	@Summary		Create Memo Relation
 //	@Description	Create a relation between two memos
@@ -79,7 +79,7 @@ func (s *APIV1Service) getMemoRelationList(c echo.Context) error {
 // - Currently not secured
 // - It's possible to create relations to memos that doesn't exist, which will trigger 404 errors when the frontend tries to load them.
 // - It's possible to create multiple relations, though the interface only shows first.
-func (s *APIV1Service) createMemoRelation(c echo.Context) error {
+func (s *APIV1Service) CreateMemoRelation(c echo.Context) error {
 	ctx := c.Request().Context()
 	memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 	if err != nil {
@@ -102,7 +102,7 @@ func (s *APIV1Service) createMemoRelation(c echo.Context) error {
 	return c.JSON(http.StatusOK, memoRelation)
 }
 
-// deleteMemoRelation godoc
+// DeleteMemoRelation godoc
 //
 //	@Summary		Delete a Memo Relation
 //	@Description	Removes a relation between two memos
@@ -120,7 +120,7 @@ func (s *APIV1Service) createMemoRelation(c echo.Context) error {
 // NOTES:
 // - Currently not secured.
 // - Will always return true, even if the relation doesn't exist.
-func (s *APIV1Service) deleteMemoRelation(c echo.Context) error {
+func (s *APIV1Service) DeleteMemoRelation(c echo.Context) error {
 	ctx := c.Request().Context()
 	memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 	if err != nil {

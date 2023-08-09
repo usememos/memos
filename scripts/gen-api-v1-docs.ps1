@@ -7,10 +7,10 @@
 # Requirements:
 # * go
 
-# swag is configured mainly via generate-api-documentation.cfg file.
+# swag is configured mainly via gen-api-v1-docs.cfg file.
 
 # Usage:
-# ./scripts/generate-api-documentation.ps1
+# ./scripts/gen-api-v1-docs.ps1
 
 foreach ($dir in @(".", "../")) {
     if (Test-Path (Join-Path $dir ".gitignore")) {
@@ -20,8 +20,8 @@ foreach ($dir in @(".", "../")) {
 }
 Set-Location $repoRoot
 
-Write-Host "Parsing generate-api-documentation.cfg..."
-foreach ($line in (Get-Content "$repoRoot\scripts\generate-api-documentation.cfg" )) {
+Write-Host "Parsing gen-api-v1-docs.cfg..."
+foreach ($line in (Get-Content "$repoRoot\scripts\gen-api-v1-docs.cfg" )) {
     if ($line.Trim().StartsWith('#')) {
         continue
     }

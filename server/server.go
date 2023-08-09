@@ -13,7 +13,6 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	api "github.com/usememos/memos/api"
 	apiv1 "github.com/usememos/memos/api/v1"
 	apiv2 "github.com/usememos/memos/api/v2"
 	"github.com/usememos/memos/common/log"
@@ -60,9 +59,6 @@ type Server struct {
 // @name						openId
 // @description				Insert your Open ID API Key here.
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
-	// programmatically set API version same as the server version
-	api.SwaggerInfo.Version = profile.Version
-
 	e := echo.New()
 	e.Debug = true
 	e.HideBanner = true
@@ -152,6 +148,9 @@ func (s *Server) Start(ctx context.Context) error {
 			log.Error("grpc server listen error", zap.Error(err))
 		}
 	}()
+
+	// programmatically set API version same as the server version
+	apiv1.SwaggerInfo.Version = s.Profile.Version
 
 	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
 }

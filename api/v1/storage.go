@@ -63,13 +63,13 @@ type UpdateStorageRequest struct {
 }
 
 func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
-	g.GET("/storage", s.getStorageList)
-	g.POST("/storage", s.createStorage)
-	g.DELETE("/storage/:storageId", s.deleteStorage)
-	g.PATCH("/storage/:storageId", s.updateStorage)
+	g.GET("/storage", s.GetStorageList)
+	g.POST("/storage", s.CreateStorage)
+	g.PATCH("/storage/:storageId", s.UpdateStorage)
+	g.DELETE("/storage/:storageId", s.DeleteStorage)
 }
 
-// getStorageList godoc
+// GetStorageList godoc
 //
 //	@Summary	Get a list of storages
 //	@Tags		storage
@@ -79,7 +79,7 @@ func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
 //	@Failure	500	{object}	nil				"Failed to find user | Failed to convert storage"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/storage [GET]
-func (s *APIV1Service) getStorageList(c echo.Context) error {
+func (s *APIV1Service) GetStorageList(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -113,7 +113,7 @@ func (s *APIV1Service) getStorageList(c echo.Context) error {
 	return c.JSON(http.StatusOK, storageList)
 }
 
-// createStorage godoc
+// CreateStorage godoc
 //
 //	@Summary	Create storage
 //	@Tags		storage
@@ -126,7 +126,7 @@ func (s *APIV1Service) getStorageList(c echo.Context) error {
 //	@Failure	500		{object}	nil						"Failed to find user | Failed to create storage | Failed to convert storage"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/storage [POST]
-func (s *APIV1Service) createStorage(c echo.Context) error {
+func (s *APIV1Service) CreateStorage(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -172,7 +172,7 @@ func (s *APIV1Service) createStorage(c echo.Context) error {
 	return c.JSON(http.StatusOK, storageMessage)
 }
 
-// deleteStorage godoc
+// DeleteStorage godoc
 //
 //	@Summary	Delete a storage
 //	@Tags		storage
@@ -187,7 +187,7 @@ func (s *APIV1Service) createStorage(c echo.Context) error {
 //
 // NOTES:
 // - error message "Storage service %d is using" probably should be "Storage service %d is in use".
-func (s *APIV1Service) deleteStorage(c echo.Context) error {
+func (s *APIV1Service) DeleteStorage(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -230,7 +230,7 @@ func (s *APIV1Service) deleteStorage(c echo.Context) error {
 	return c.JSON(http.StatusOK, true)
 }
 
-// updateStorage godoc
+// UpdateStorage godoc
 //
 //	@Summary	Update a storage
 //	@Tags		storage
@@ -243,7 +243,7 @@ func (s *APIV1Service) deleteStorage(c echo.Context) error {
 //	@Failure	500			{object}	nil						"Failed to find user | Failed to patch storage | Failed to convert storage"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/storage/{storageId} [PATCH]
-func (s *APIV1Service) updateStorage(c echo.Context) error {
+func (s *APIV1Service) UpdateStorage(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {

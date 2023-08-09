@@ -748,6 +748,35 @@ info:
   title: memos API
   version: "1.0"
 paths:
+  /api/v1/GetSystemStatus:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: System GetSystemStatus
+          schema:
+            $ref: '#/definitions/v1.SystemStatus'
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find host user | Failed to find system setting list
+            | Failed to unmarshal system setting customized profile value
+      summary: Get system GetSystemStatus
+      tags:
+      - system
+  /api/v1/PingSystem:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: System profile
+          schema:
+            $ref: '#/definitions/profile.Profile'
+      summary: Ping the system
+      tags:
+      - system
   /api/v1/auth/signin:
     post:
       consumes:
@@ -1480,18 +1509,6 @@ paths:
       summary: Get memo stats by creator ID or username
       tags:
       - memo
-  /api/v1/ping:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: System profile
-          schema:
-            $ref: '#/definitions/profile.Profile'
-      summary: Ping the system
-      tags:
-      - system
   /api/v1/resource:
     get:
       parameters:
@@ -1643,23 +1660,6 @@ paths:
       summary: Upload resource
       tags:
       - resource
-  /api/v1/status:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: System status
-          schema:
-            $ref: '#/definitions/v1.SystemStatus'
-        "401":
-          description: Missing user in session | Unauthorized
-        "500":
-          description: Failed to find host user | Failed to find system setting list
-            | Failed to unmarshal system setting customized profile value
-      summary: Get system status
-      tags:
-      - system
   /api/v1/storage:
     get:
       produces:
@@ -1769,6 +1769,24 @@ paths:
       summary: Update a storage
       tags:
       - storage
+  /api/v1/system/ExecVacuum:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Database vacuumed
+          schema:
+            type: boolean
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to ExecVacuum database
+      security:
+      - ApiKeyAuth: []
+      summary: Vacuum the database
+      tags:
+      - system
   /api/v1/system/setting:
     get:
       produces:
@@ -1819,24 +1837,6 @@ paths:
       summary: Create system setting
       tags:
       - system-setting
-  /api/v1/system/vacuum:
-    post:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Database vacuumed
-          schema:
-            type: boolean
-        "401":
-          description: Missing user in session | Unauthorized
-        "500":
-          description: Failed to find user | Failed to vacuum database
-      security:
-      - ApiKeyAuth: []
-      summary: Vacuum the database
-      tags:
-      - system
   /api/v1/tag:
     get:
       produces:
@@ -2129,7 +2129,7 @@ paths:
           description: Failed to upsert user setting
       security:
       - ApiKeyAuth: []
-      summary: Create user setting
+      summary: Upsert user setting
       tags:
       - user-setting
   /explore/rss.xml:
@@ -2145,7 +2145,28 @@ paths:
       summary: Get RSS
       tags:
       - rss
-  /o/get/httpmeta:
+  /o/get/GetImage:
+    get:
+      parameters:
+      - description: Image url
+        in: query
+        name: url
+        required: true
+        type: string
+      produces:
+      - GetImage/*
+      responses:
+        "200":
+          description: Image
+        "400":
+          description: 'Missing GetImage url | Wrong url | Failed to get GetImage
+            url: %s'
+        "500":
+          description: Failed to write GetImage blob
+      summary: Get GetImage from URL
+      tags:
+      - get
+  /o/get/GetWebsiteMetadata:
     get:
       parameters:
       - description: Website URL
@@ -2165,26 +2186,6 @@ paths:
         "406":
           description: 'Failed to get website meta with url: %s'
       summary: Get website metadata
-      tags:
-      - get
-  /o/get/image:
-    get:
-      parameters:
-      - description: Image url
-        in: query
-        name: url
-        required: true
-        type: string
-      produces:
-      - image/*
-      responses:
-        "200":
-          description: Image
-        "400":
-          description: 'Missing image url | Wrong url | Failed to get image url: %s'
-        "500":
-          description: Failed to write image blob
-      summary: Get image from URL
       tags:
       - get
   /o/r/{resourceId}:

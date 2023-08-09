@@ -35,12 +35,12 @@ type MemoResourceDelete struct {
 }
 
 func (s *APIV1Service) registerMemoResourceRoutes(g *echo.Group) {
-	g.GET("/memo/:memoId/resource", s.getMemoResourceList)
-	g.POST("/memo/:memoId/resource", s.bindMemoResource)
-	g.DELETE("/memo/:memoId/resource/:resourceId", s.unbindMemoResource)
+	g.GET("/memo/:memoId/resource", s.GetMemoResourceList)
+	g.POST("/memo/:memoId/resource", s.BindMemoResource)
+	g.DELETE("/memo/:memoId/resource/:resourceId", s.UnbindMemoResource)
 }
 
-// getMemoResourceList godoc
+// GetMemoResourceList godoc
 //
 //	@Summary	Get resource list of a memo
 //	@Tags		memo-resource
@@ -51,7 +51,7 @@ func (s *APIV1Service) registerMemoResourceRoutes(g *echo.Group) {
 //	@Failure	400		{object}	nil			"ID is not a number: %s"
 //	@Failure	500		{object}	nil			"Failed to fetch resource list"
 //	@Router		/api/v1/memo/{memoId}/resource [GET]
-func (s *APIV1Service) getMemoResourceList(c echo.Context) error {
+func (s *APIV1Service) GetMemoResourceList(c echo.Context) error {
 	ctx := c.Request().Context()
 	memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 	if err != nil {
@@ -71,7 +71,7 @@ func (s *APIV1Service) getMemoResourceList(c echo.Context) error {
 	return c.JSON(http.StatusOK, resourceList)
 }
 
-// bindMemoResource godoc
+// BindMemoResource godoc
 //
 //	@Summary	Bind resource to memo
 //	@Tags		memo-resource
@@ -88,7 +88,7 @@ func (s *APIV1Service) getMemoResourceList(c echo.Context) error {
 //
 // NOTES:
 // - Passing 0 to updatedTs will set it to 0 in the database, which is probably unwanted.
-func (s *APIV1Service) bindMemoResource(c echo.Context) error {
+func (s *APIV1Service) BindMemoResource(c echo.Context) error {
 	ctx := c.Request().Context()
 	memoID, err := util.ConvertStringToInt32(c.Param("memoId"))
 	if err != nil {
@@ -129,7 +129,7 @@ func (s *APIV1Service) bindMemoResource(c echo.Context) error {
 	return c.JSON(http.StatusOK, true)
 }
 
-// unbindMemoResource godoc
+// UnbindMemoResource godoc
 //
 //	@Summary	Unbind resource from memo
 //	@Tags		memo-resource
@@ -143,7 +143,7 @@ func (s *APIV1Service) bindMemoResource(c echo.Context) error {
 //	@Failure	500			{object}	nil		"Failed to find memo | Failed to fetch resource list"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/memo/{memoId}/resource/{resourceId} [DELETE]
-func (s *APIV1Service) unbindMemoResource(c echo.Context) error {
+func (s *APIV1Service) UnbindMemoResource(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {

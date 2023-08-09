@@ -79,11 +79,11 @@ type UpsertSystemSettingRequest struct {
 }
 
 func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
-	g.GET("/system/setting", s.getSystemSettingList)
-	g.POST("/system/setting", s.createSystemSetting)
+	g.GET("/system/setting", s.GetSystemSettingList)
+	g.POST("/system/setting", s.CreateSystemSetting)
 }
 
-// getSystemSettingList godoc
+// GetSystemSettingList godoc
 //
 //	@Summary	Get a list of system settings
 //	@Tags		system-setting
@@ -93,7 +93,7 @@ func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
 //	@Failure	500	{object}	nil				"Failed to find user | Failed to find system setting list"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/system/setting [GET]
-func (s *APIV1Service) getSystemSettingList(c echo.Context) error {
+func (s *APIV1Service) GetSystemSettingList(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -122,7 +122,7 @@ func (s *APIV1Service) getSystemSettingList(c echo.Context) error {
 	return c.JSON(http.StatusOK, systemSettingList)
 }
 
-// createSystemSetting godoc
+// CreateSystemSetting godoc
 //
 //	@Summary	Create system setting
 //	@Tags		system-setting
@@ -136,7 +136,7 @@ func (s *APIV1Service) getSystemSettingList(c echo.Context) error {
 //	@Failure	500		{object}	nil							"Failed to find user | Failed to upsert system setting"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/system/setting [POST]
-func (s *APIV1Service) createSystemSetting(c echo.Context) error {
+func (s *APIV1Service) CreateSystemSetting(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
