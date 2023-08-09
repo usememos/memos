@@ -37,8 +37,8 @@
 
 2. Run one of the following provided scripts:
 
-   - Linux: `./scripts/generate-api-documentation.sh` (remember to `chmod +x` the script first)
-   - Windows: `./scripts/generate-api-documentation.ps1`
+   - Linux: `./scripts/gen-api-v1-docs.sh` (remember to `chmod +x` the script first)
+   - Windows: `./scripts/gen-api-v1-docs.ps1`
 
    > The scripts will install swag if needed (via go install), then run `swag fmt` and `swag init` commands.
 
@@ -48,7 +48,7 @@
 
 - If you reference a custom Go struct from outside the API file, use a relative definition, like `store.IdentityProvider`. This works because `./` is passed to swag at `--dir` argument. If swag can't resolve the reference, it will fail.
 
-- If the API grows or you need to reference some type from another location, remember to update ./scripts/generate-api-documentation.cfg file with the new paths.
+- If the API grows or you need to reference some type from another location, remember to update ./scripts/gen-api-v1-docs.cfg file with the new paths.
 
 - It's possible to list multiple errors for the same code using enum-like structs, that will show a proper, spec-conformant model with all entries at Swagger-UI. The drawback is that this approach requires a major refactoring and will add a lot of boilerplate code, as there are inconsistencies between API methods error responses.
 

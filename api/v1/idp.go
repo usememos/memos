@@ -65,15 +65,14 @@ type UpdateIdentityProviderRequest struct {
 }
 
 func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
-	g.GET("/idp", s.getIdentityProviderList)
-	g.POST("/idp", s.createIdentityProvider)
-
-	g.GET("/idp/:idpId", s.getIdentityProvider)
-	g.DELETE("/idp/:idpId", s.deleteIdentityProvider)
-	g.PATCH("/idp/:idpId", s.updateIdentityProvider)
+	g.GET("/idp", s.GetIdentityProviderList)
+	g.POST("/idp", s.CreateIdentityProvider)
+	g.GET("/idp/:idpId", s.GetIdentityProvider)
+	g.PATCH("/idp/:idpId", s.UpdateIdentityProvider)
+	g.DELETE("/idp/:idpId", s.DeleteIdentityProvider)
 }
 
-// getIdentityProviderList godoc
+// GetIdentityProviderList godoc
 //
 //	@Summary		Get a list of identity providers
 //	@Description	*clientSecret is only available for host user
@@ -82,7 +81,7 @@ func (s *APIV1Service) registerIdentityProviderRoutes(g *echo.Group) {
 //	@Success		200	{object}	[]IdentityProvider	"List of available identity providers"
 //	@Failure		500	{object}	nil					"Failed to find identity provider list | Failed to find user"
 //	@Router			/api/v1/idp [GET]
-func (s *APIV1Service) getIdentityProviderList(c echo.Context) error {
+func (s *APIV1Service) GetIdentityProviderList(c echo.Context) error {
 	ctx := c.Request().Context()
 	list, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
 	if err != nil {
@@ -115,7 +114,7 @@ func (s *APIV1Service) getIdentityProviderList(c echo.Context) error {
 	return c.JSON(http.StatusOK, identityProviderList)
 }
 
-// createIdentityProvider godoc
+// CreateIdentityProvider godoc
 //
 //	@Summary	Create Identity Provider
 //	@Tags		idp
@@ -128,7 +127,7 @@ func (s *APIV1Service) getIdentityProviderList(c echo.Context) error {
 //	@Failure	500		{object}	nil								"Failed to find user | Failed to create identity provider"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/idp [POST]
-func (s *APIV1Service) createIdentityProvider(c echo.Context) error {
+func (s *APIV1Service) CreateIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -162,7 +161,7 @@ func (s *APIV1Service) createIdentityProvider(c echo.Context) error {
 	return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
 }
 
-// getIdentityProvider godoc
+// GetIdentityProvider godoc
 //
 //	@Summary	Get an identity provider by ID
 //	@Tags		idp
@@ -176,7 +175,7 @@ func (s *APIV1Service) createIdentityProvider(c echo.Context) error {
 //	@Failure	500		{object}	nil						"Failed to find identity provider list | Failed to find user"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/idp/{idpId} [GET]
-func (s *APIV1Service) getIdentityProvider(c echo.Context) error {
+func (s *APIV1Service) GetIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -210,7 +209,7 @@ func (s *APIV1Service) getIdentityProvider(c echo.Context) error {
 	return c.JSON(http.StatusOK, convertIdentityProviderFromStore(identityProvider))
 }
 
-// deleteIdentityProvider godoc
+// DeleteIdentityProvider godoc
 //
 //	@Summary	Delete an identity provider by ID
 //	@Tags		idp
@@ -223,7 +222,7 @@ func (s *APIV1Service) getIdentityProvider(c echo.Context) error {
 //	@Failure	500		{object}	nil		"Failed to find user | Failed to patch identity provider"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/idp/{idpId} [DELETE]
-func (s *APIV1Service) deleteIdentityProvider(c echo.Context) error {
+func (s *APIV1Service) DeleteIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -251,7 +250,7 @@ func (s *APIV1Service) deleteIdentityProvider(c echo.Context) error {
 	return c.JSON(http.StatusOK, true)
 }
 
-// updateIdentityProvider godoc
+// UpdateIdentityProvider godoc
 //
 //	@Summary	Update an identity provider by ID
 //	@Tags		idp
@@ -265,7 +264,7 @@ func (s *APIV1Service) deleteIdentityProvider(c echo.Context) error {
 //	@Failure	500		{object}	nil								"Failed to find user | Failed to patch identity provider"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/idp/{idpId} [PATCH]
-func (s *APIV1Service) updateIdentityProvider(c echo.Context) error {
+func (s *APIV1Service) UpdateIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {

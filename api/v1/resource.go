@@ -81,11 +81,11 @@ const (
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
 
 func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
-	g.GET("/resource", s.getResourceList)
-	g.POST("/resource", s.createResource)
-	g.POST("/resource/blob", s.uploadResource)
-	g.DELETE("/resource/:resourceId", s.deleteResource)
-	g.PATCH("/resource/:resourceId", s.updateResource)
+	g.GET("/resource", s.GetResourceList)
+	g.POST("/resource", s.CreateResource)
+	g.POST("/resource/blob", s.UploadResource)
+	g.PATCH("/resource/:resourceId", s.UpdateResource)
+	g.DELETE("/resource/:resourceId", s.DeleteResource)
 }
 
 func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
@@ -93,7 +93,7 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 	g.GET("/r/:resourceId/*", s.streamResource)
 }
 
-// getResourceList godoc
+// GetResourceList godoc
 //
 //	@Summary	Get a list of resources
 //	@Tags		resource
@@ -105,7 +105,7 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 //	@Failure	500		{object}	nil					"Failed to fetch resource list"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource [GET]
-func (s *APIV1Service) getResourceList(c echo.Context) error {
+func (s *APIV1Service) GetResourceList(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -132,7 +132,7 @@ func (s *APIV1Service) getResourceList(c echo.Context) error {
 	return c.JSON(http.StatusOK, resourceMessageList)
 }
 
-// createResource godoc
+// CreateResource godoc
 //
 //	@Summary	Create resource
 //	@Tags		resource
@@ -145,7 +145,7 @@ func (s *APIV1Service) getResourceList(c echo.Context) error {
 //	@Failure	500		{object}	nil						"Failed to save resource | Failed to create resource | Failed to create activity"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource [POST]
-func (s *APIV1Service) createResource(c echo.Context) error {
+func (s *APIV1Service) CreateResource(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -219,7 +219,7 @@ func (s *APIV1Service) createResource(c echo.Context) error {
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 }
 
-// uploadResource godoc
+// UploadResource godoc
 //
 //	@Summary	Upload resource
 //	@Tags		resource
@@ -232,7 +232,7 @@ func (s *APIV1Service) createResource(c echo.Context) error {
 //	@Failure	500		{object}	nil				"Failed to get uploading file | Failed to open file | Failed to save resource | Failed to create resource | Failed to create activity"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource/blob [POST]
-func (s *APIV1Service) uploadResource(c echo.Context) error {
+func (s *APIV1Service) UploadResource(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -292,7 +292,7 @@ func (s *APIV1Service) uploadResource(c echo.Context) error {
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 }
 
-// deleteResource godoc
+// DeleteResource godoc
 //
 //	@Summary	Delete a resource
 //	@Tags		resource
@@ -305,7 +305,7 @@ func (s *APIV1Service) uploadResource(c echo.Context) error {
 //	@Failure	500			{object}	nil		"Failed to find resource | Failed to delete resource"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource/{resourceId} [DELETE]
-func (s *APIV1Service) deleteResource(c echo.Context) error {
+func (s *APIV1Service) DeleteResource(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -348,7 +348,7 @@ func (s *APIV1Service) deleteResource(c echo.Context) error {
 	return c.JSON(http.StatusOK, true)
 }
 
-// updateResource godoc
+// UpdateResource godoc
 //
 //	@Summary	Update a resource
 //	@Tags		resource
@@ -362,7 +362,7 @@ func (s *APIV1Service) deleteResource(c echo.Context) error {
 //	@Failure	500			{object}	nil						"Failed to find resource | Failed to patch resource"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource/{resourceId} [PATCH]
-func (s *APIV1Service) updateResource(c echo.Context) error {
+func (s *APIV1Service) UpdateResource(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {

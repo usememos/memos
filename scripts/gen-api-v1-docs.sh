@@ -9,11 +9,11 @@
 # Requirements:
 # * go
 
-# swag is configured via generate-api-documentation.cfg file.
+# swag is configured via gen-api-v1-docs.cfg file.
 
 # Usage:
-# chmod +x ./scripts/generate-api-documentation.sh
-# ./scripts/generate-api-documentation.sh
+# chmod +x ./scripts/gen-api-v1-docs.sh
+# ./scripts/gen-api-v1-docs.sh
 
 find_repo_root() {
     # Usage: find_repo_root <file_at_root> <dir1> <dir2> ...
@@ -59,8 +59,8 @@ else
 fi
 cd $repo_root
 
-echo "Parsing generate-api-documentation.cfg..."
-source "$repo_root/scripts/generate-api-documentation.cfg"
+echo "Parsing gen-api-v1-docs.cfg..."
+source "$repo_root/scripts/gen-api-v1-docs.cfg"
 
 echo -e "API directories: \033[0;34m$SWAG_API_DIRS\033[0m"
 echo -e "Output directory: \033[0;34m$SWAG_OUTPUT\033[0m"

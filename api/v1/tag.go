@@ -28,13 +28,13 @@ type DeleteTagRequest struct {
 }
 
 func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
-	g.GET("/tag", s.getTagList)
-	g.POST("/tag", s.createTag)
-	g.POST("/tag/delete", s.deleteTag)
-	g.GET("/tag/suggestion", s.getTagSuggestion)
+	g.GET("/tag", s.GetTagList)
+	g.POST("/tag", s.CreateTag)
+	g.GET("/tag/suggestion", s.GetTagSuggestion)
+	g.POST("/tag/delete", s.DeleteTag)
 }
 
-// getTagList godoc
+// GetTagList godoc
 //
 //	@Summary	Get a list of tags
 //	@Tags		tag
@@ -44,7 +44,7 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 //	@Failure	500	{object}	nil			"Failed to find tag list"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/tag [GET]
-func (s *APIV1Service) getTagList(c echo.Context) error {
+func (s *APIV1Service) GetTagList(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -65,7 +65,7 @@ func (s *APIV1Service) getTagList(c echo.Context) error {
 	return c.JSON(http.StatusOK, tagNameList)
 }
 
-// createTag godoc
+// CreateTag godoc
 //
 //	@Summary	Create a tag
 //	@Tags		tag
@@ -78,7 +78,7 @@ func (s *APIV1Service) getTagList(c echo.Context) error {
 //	@Failure	500		{object}	nil					"Failed to upsert tag | Failed to create activity"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/tag [POST]
-func (s *APIV1Service) createTag(c echo.Context) error {
+func (s *APIV1Service) CreateTag(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -107,7 +107,7 @@ func (s *APIV1Service) createTag(c echo.Context) error {
 	return c.JSON(http.StatusOK, tagMessage.Name)
 }
 
-// deleteTag godoc
+// DeleteTag godoc
 //
 //	@Summary	Delete a tag
 //	@Tags		tag
@@ -120,7 +120,7 @@ func (s *APIV1Service) createTag(c echo.Context) error {
 //	@Failure	500		{object}	nil					"Failed to delete tag name: %v"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/tag/delete [POST]
-func (s *APIV1Service) deleteTag(c echo.Context) error {
+func (s *APIV1Service) DeleteTag(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -145,7 +145,7 @@ func (s *APIV1Service) deleteTag(c echo.Context) error {
 	return c.JSON(http.StatusOK, true)
 }
 
-// getTagSuggestion godoc
+// GetTagSuggestion godoc
 //
 //	@Summary	Get a list of tags suggested from other memos contents
 //	@Tags		tag
@@ -155,7 +155,7 @@ func (s *APIV1Service) deleteTag(c echo.Context) error {
 //	@Failure	500	{object}	nil			"Failed to find memo list | Failed to find tag list"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/tag/suggestion [GET]
-func (s *APIV1Service) getTagSuggestion(c echo.Context) error {
+func (s *APIV1Service) GetTagSuggestion(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {

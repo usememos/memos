@@ -11,13 +11,13 @@ import (
 
 func (*APIV1Service) registerGetterPublicRoutes(g *echo.Group) {
 	// GET /get/httpmeta?url={url} - Get website meta.
-	g.GET("/get/httpmeta", httpmeta)
+	g.GET("/get/httpmeta", GetWebsiteMetadata)
 
 	// GET /get/image?url={url} - Get image.
-	g.GET("/get/image", image)
+	g.GET("/get/image", GetImage)
 }
 
-// httpmeta godoc
+// GetWebsiteMetadata godoc
 //
 //	@Summary	Get website metadata
 //	@Tags		get
@@ -26,8 +26,8 @@ func (*APIV1Service) registerGetterPublicRoutes(g *echo.Group) {
 //	@Success	200	{object}	getter.HTMLMeta	"Extracted metadata"
 //	@Failure	400	{object}	nil				"Missing website url | Wrong url"
 //	@Failure	406	{object}	nil				"Failed to get website meta with url: %s"
-//	@Router		/o/get/httpmeta [GET]
-func httpmeta(c echo.Context) error {
+//	@Router		/o/get/GetWebsiteMetadata [GET]
+func GetWebsiteMetadata(c echo.Context) error {
 	urlStr := c.QueryParam("url")
 	if urlStr == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Missing website url")
@@ -43,17 +43,17 @@ func httpmeta(c echo.Context) error {
 	return c.JSON(http.StatusOK, htmlMeta)
 }
 
-// image godoc
+// GetImage godoc
 //
-//	@Summary	Get image from URL
+//	@Summary	Get GetImage from URL
 //	@Tags		get
-//	@Produce	image/*
+//	@Produce	GetImage/*
 //	@Param		url	query		string	true	"Image url"
 //	@Success	200	{object}	nil		"Image"
-//	@Failure	400	{object}	nil		"Missing image url | Wrong url | Failed to get image url: %s"
-//	@Failure	500	{object}	nil		"Failed to write image blob"
-//	@Router		/o/get/image [GET]
-func image(c echo.Context) error {
+//	@Failure	400	{object}	nil		"Missing GetImage url | Wrong url | Failed to get GetImage url: %s"
+//	@Failure	500	{object}	nil		"Failed to write GetImage blob"
+//	@Router		/o/get/GetImage [GET]
+func GetImage(c echo.Context) error {
 	urlStr := c.QueryParam("url")
 	if urlStr == "" {
 		return echo.NewHTTPError(http.StatusBadRequest, "Missing image url")

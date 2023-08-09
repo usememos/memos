@@ -68,17 +68,17 @@ type UpdateUserRequest struct {
 }
 
 func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
-	g.GET("/user", s.getUserList)
-	g.POST("/user", s.createUser)
-	g.GET("/user/me", s.getCurrentUser)
+	g.GET("/user", s.GetUserList)
+	g.POST("/user", s.CreateUser)
+	g.GET("/user/me", s.GetCurrentUser)
 	// NOTE: This should be moved to /api/v2/user/:username
-	g.GET("/user/name/:username", s.getUserByUsername)
-	g.GET("/user/:id", s.getUserByID)
-	g.DELETE("/user/:id", s.deleteUser)
-	g.PATCH("/user/:id", s.updateUser)
+	g.GET("/user/name/:username", s.GetUserByUsername)
+	g.GET("/user/:id", s.GetUserByID)
+	g.PATCH("/user/:id", s.UpdateUser)
+	g.DELETE("/user/:id", s.DeleteUser)
 }
 
-// getUserList godoc
+// GetUserList godoc
 //
 //	@Summary	Get a list of users
 //	@Tags		user
@@ -86,7 +86,7 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 //	@Success	200	{object}	[]store.User	"User list"
 //	@Failure	500	{object}	nil				"Failed to fetch user list"
 //	@Router		/api/v1/user [GET]
-func (s *APIV1Service) getUserList(c echo.Context) error {
+func (s *APIV1Service) GetUserList(c echo.Context) error {
 	ctx := c.Request().Context()
 	list, err := s.Store.ListUsers(ctx, &store.FindUser{})
 	if err != nil {
@@ -104,7 +104,7 @@ func (s *APIV1Service) getUserList(c echo.Context) error {
 	return c.JSON(http.StatusOK, userMessageList)
 }
 
-// createUser godoc
+// CreateUser godoc
 //
 //	@Summary	Create a user
 //	@Tags		user
@@ -117,7 +117,7 @@ func (s *APIV1Service) getUserList(c echo.Context) error {
 //	@Failure	403		{object}	nil					"Could not create host user"
 //	@Failure	500		{object}	nil					"Failed to find user by id | Failed to generate password hash | Failed to create user | Failed to create activity"
 //	@Router		/api/v1/user [POST]
-func (s *APIV1Service) createUser(c echo.Context) error {
+func (s *APIV1Service) CreateUser(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -172,7 +172,7 @@ func (s *APIV1Service) createUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, userMessage)
 }
 
-// getCurrentUser godoc
+// GetCurrentUser godoc
 //
 //	@Summary	Get current user
 //	@Tags		user
@@ -182,7 +182,7 @@ func (s *APIV1Service) createUser(c echo.Context) error {
 //	@Failure	500	{object}	nil			"Failed to find user | Failed to find userSettingList"
 //	@Security	ApiKeyAuth
 //	@Router		/api/v1/user/me [GET]
-func (s *APIV1Service) getCurrentUser(c echo.Context) error {
+func (s *APIV1Service) GetCurrentUser(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -212,7 +212,7 @@ func (s *APIV1Service) getCurrentUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, userMessage)
 }
 
-// getUserByUsername godoc
+// GetUserByUsername godoc
 //
 //	@Summary	Get user by username
 //	@Tags		user
@@ -222,7 +222,7 @@ func (s *APIV1Service) getCurrentUser(c echo.Context) error {
 //	@Failure	404			{object}	nil			"User not found"
 //	@Failure	500			{object}	nil			"Failed to find user"
 //	@Router		/api/v1/user/name/{username} [GET]
-func (s *APIV1Service) getUserByUsername(c echo.Context) error {
+func (s *APIV1Service) GetUserByUsername(c echo.Context) error {
 	ctx := c.Request().Context()
 	username := c.Param("username")
 	user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
@@ -240,7 +240,7 @@ func (s *APIV1Service) getUserByUsername(c echo.Context) error {
 	return c.JSON(http.StatusOK, userMessage)
 }
 
-// getUserByID godoc
+// GetUserByID godoc
 //
 //	@Summary	Get user by id
 //	@Tags		user
@@ -251,7 +251,7 @@ func (s *APIV1Service) getUserByUsername(c echo.Context) error {
 //	@Failure	404	{object}	nil			"User not found"
 //	@Failure	500	{object}	nil			"Failed to find user"
 //	@Router		/api/v1/user/{id} [GET]
-func (s *APIV1Service) getUserByID(c echo.Context) error {
+func (s *APIV1Service) GetUserByID(c echo.Context) error {
 	ctx := c.Request().Context()
 	id, err := util.ConvertStringToInt32(c.Param("id"))
 	if err != nil {
@@ -273,7 +273,7 @@ func (s *APIV1Service) getUserByID(c echo.Context) error {
 	return c.JSON(http.StatusOK, userMessage)
 }
 
-// deleteUser godoc
+// DeleteUser godoc
 //
 //	@Summary	Delete a user
 //	@Tags		user
@@ -285,7 +285,7 @@ func (s *APIV1Service) getUserByID(c echo.Context) error {
 //	@Failure	403	{object}	nil		"Unauthorized to delete user"
 //	@Failure	500	{object}	nil		"Failed to find user | Failed to delete user"
 //	@Router		/api/v1/user/{id} [DELETE]
-func (s *APIV1Service) deleteUser(c echo.Context) error {
+func (s *APIV1Service) DeleteUser(c echo.Context) error {
 	ctx := c.Request().Context()
 	currentUserID, ok := c.Get(auth.UserIDContextKey).(int32)
 	if !ok {
@@ -317,7 +317,7 @@ func (s *APIV1Service) deleteUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, true)
 }
 
-// updateUser godoc
+// UpdateUser godoc
 //
 //	@Summary	Update a user
 //	@Tags		user
@@ -330,7 +330,7 @@ func (s *APIV1Service) deleteUser(c echo.Context) error {
 //	@Failure	403		{object}	nil					"Unauthorized to update user"
 //	@Failure	500		{object}	nil					"Failed to find user | Failed to generate password hash | Failed to patch user | Failed to find userSettingList"
 //	@Router		/api/v1/user/{id} [PATCH]
-func (s *APIV1Service) updateUser(c echo.Context) error {
+func (s *APIV1Service) UpdateUser(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, err := util.ConvertStringToInt32(c.Param("id"))
 	if err != nil {
