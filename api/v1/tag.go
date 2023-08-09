@@ -28,125 +28,176 @@ type DeleteTagRequest struct {
 }
 
 func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
-	g.POST("/tag", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
+	g.GET("/tag", s.getTagList)
+	g.POST("/tag", s.createTag)
+	g.POST("/tag/delete", s.deleteTag)
+	g.GET("/tag/suggestion", s.getTagSuggestion)
+}
 
-		tagUpsert := &UpsertTagRequest{}
-		if err := json.NewDecoder(c.Request().Body).Decode(tagUpsert); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
-		}
-		if tagUpsert.Name == "" {
-			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
-		}
+// getTagList godoc
+//
+//	@Summary	Get a list of tags
+//	@Tags		tag
+//	@Produce	json
+//	@Success	200	{object}	[]string	"Tag list"
+//	@Failure	400	{object}	nil			"Missing user id to find tag"
+//	@Failure	500	{object}	nil			"Failed to find tag list"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/tag [GET]
+func (s *APIV1Service) getTagList(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
+	}
 
-		tag, err := s.Store.UpsertTag(ctx, &store.Tag{
-			Name:      tagUpsert.Name,
-			CreatorID: userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert tag").SetInternal(err)
-		}
-		tagMessage := convertTagFromStore(tag)
-		if err := s.createTagCreateActivity(c, tagMessage); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, tagMessage.Name)
+	list, err := s.Store.ListTags(ctx, &store.FindTag{
+		CreatorID: userID,
 	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find tag list").SetInternal(err)
+	}
 
-	g.GET("/tag", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusBadRequest, "Missing user id to find tag")
-		}
+	tagNameList := []string{}
+	for _, tag := range list {
+		tagNameList = append(tagNameList, tag.Name)
+	}
+	return c.JSON(http.StatusOK, tagNameList)
+}
 
-		list, err := s.Store.ListTags(ctx, &store.FindTag{
-			CreatorID: userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find tag list").SetInternal(err)
-		}
+// createTag godoc
+//
+//	@Summary	Create a tag
+//	@Tags		tag
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		UpsertTagRequest	true	"Request object."
+//	@Success	200		{object}	string				"Created tag name"
+//	@Failure	400		{object}	nil					"Malformatted post tag request | Tag name shouldn't be empty"
+//	@Failure	401		{object}	nil					"Missing user in session"
+//	@Failure	500		{object}	nil					"Failed to upsert tag | Failed to create activity"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/tag [POST]
+func (s *APIV1Service) createTag(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
 
-		tagNameList := []string{}
-		for _, tag := range list {
-			tagNameList = append(tagNameList, tag.Name)
-		}
-		return c.JSON(http.StatusOK, tagNameList)
+	tagUpsert := &UpsertTagRequest{}
+	if err := json.NewDecoder(c.Request().Body).Decode(tagUpsert); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
+	}
+	if tagUpsert.Name == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
+	}
+
+	tag, err := s.Store.UpsertTag(ctx, &store.Tag{
+		Name:      tagUpsert.Name,
+		CreatorID: userID,
 	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert tag").SetInternal(err)
+	}
+	tagMessage := convertTagFromStore(tag)
+	if err := s.createTagCreateActivity(c, tagMessage); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, tagMessage.Name)
+}
 
-	g.GET("/tag/suggestion", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusBadRequest, "Missing user session")
-		}
-		normalRowStatus := store.Normal
-		memoFind := &store.FindMemo{
-			CreatorID:     &userID,
-			ContentSearch: []string{"#"},
-			RowStatus:     &normalRowStatus,
-		}
+// deleteTag godoc
+//
+//	@Summary	Delete a tag
+//	@Tags		tag
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		DeleteTagRequest	true	"Request object."
+//	@Success	200		{boolean}	true				"Tag deleted"
+//	@Failure	400		{object}	nil					"Malformatted post tag request | Tag name shouldn't be empty"
+//	@Failure	401		{object}	nil					"Missing user in session"
+//	@Failure	500		{object}	nil					"Failed to delete tag name: %v"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/tag/delete [POST]
+func (s *APIV1Service) deleteTag(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
 
-		memoMessageList, err := s.Store.ListMemos(ctx, memoFind)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
-		}
+	tagDelete := &DeleteTagRequest{}
+	if err := json.NewDecoder(c.Request().Body).Decode(tagDelete); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
+	}
+	if tagDelete.Name == "" {
+		return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
+	}
 
-		list, err := s.Store.ListTags(ctx, &store.FindTag{
-			CreatorID: userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find tag list").SetInternal(err)
-		}
-		tagNameList := []string{}
-		for _, tag := range list {
-			tagNameList = append(tagNameList, tag.Name)
-		}
+	err := s.Store.DeleteTag(ctx, &store.DeleteTag{
+		Name:      tagDelete.Name,
+		CreatorID: userID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete tag name: %v", tagDelete.Name)).SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, true)
+}
 
-		tagMapSet := make(map[string]bool)
-		for _, memo := range memoMessageList {
-			for _, tag := range findTagListFromMemoContent(memo.Content) {
-				if !slices.Contains(tagNameList, tag) {
-					tagMapSet[tag] = true
-				}
+// getTagSuggestion godoc
+//
+//	@Summary	Get a list of tags suggested from other memos contents
+//	@Tags		tag
+//	@Produce	json
+//	@Success	200	{object}	[]string	"Tag list"
+//	@Failure	400	{object}	nil			"Missing user session"
+//	@Failure	500	{object}	nil			"Failed to find memo list | Failed to find tag list"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/tag/suggestion [GET]
+func (s *APIV1Service) getTagSuggestion(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusBadRequest, "Missing user session")
+	}
+	normalRowStatus := store.Normal
+	memoFind := &store.FindMemo{
+		CreatorID:     &userID,
+		ContentSearch: []string{"#"},
+		RowStatus:     &normalRowStatus,
+	}
+
+	memoMessageList, err := s.Store.ListMemos(ctx, memoFind)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
+	}
+
+	list, err := s.Store.ListTags(ctx, &store.FindTag{
+		CreatorID: userID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find tag list").SetInternal(err)
+	}
+	tagNameList := []string{}
+	for _, tag := range list {
+		tagNameList = append(tagNameList, tag.Name)
+	}
+
+	tagMapSet := make(map[string]bool)
+	for _, memo := range memoMessageList {
+		for _, tag := range findTagListFromMemoContent(memo.Content) {
+			if !slices.Contains(tagNameList, tag) {
+				tagMapSet[tag] = true
 			}
 		}
-		tagList := []string{}
-		for tag := range tagMapSet {
-			tagList = append(tagList, tag)
-		}
-		sort.Strings(tagList)
-		return c.JSON(http.StatusOK, tagList)
-	})
-
-	g.POST("/tag/delete", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		tagDelete := &DeleteTagRequest{}
-		if err := json.NewDecoder(c.Request().Body).Decode(tagDelete); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post tag request").SetInternal(err)
-		}
-		if tagDelete.Name == "" {
-			return echo.NewHTTPError(http.StatusBadRequest, "Tag name shouldn't be empty")
-		}
-
-		err := s.Store.DeleteTag(ctx, &store.DeleteTag{
-			Name:      tagDelete.Name,
-			CreatorID: userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to delete tag name: %v", tagDelete.Name)).SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, true)
-	})
+	}
+	tagList := []string{}
+	for tag := range tagMapSet {
+		tagList = append(tagList, tag)
+	}
+	sort.Strings(tagList)
+	return c.JSON(http.StatusOK, tagList)
 }
 
 func (s *APIV1Service) createTagCreateActivity(c echo.Context, tag *Tag) error {

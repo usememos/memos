@@ -43,6 +43,7 @@ const (
 	// SystemSettingAutoBackupIntervalName is the name of auto backup interval as seconds.
 	SystemSettingAutoBackupIntervalName SystemSettingName = "auto-backup-interval"
 )
+const systemSettingUnmarshalError = `failed to unmarshal value from system setting "%v"`
 
 // CustomizedProfile is the struct definition for SystemSettingCustomizedProfileName system setting item.
 type CustomizedProfile struct {
@@ -77,7 +78,113 @@ type UpsertSystemSettingRequest struct {
 	Description string            `json:"description"`
 }
 
-const systemSettingUnmarshalError = `failed to unmarshal value from system setting "%v"`
+func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
+	g.GET("/system/setting", s.getSystemSettingList)
+	g.POST("/system/setting", s.createSystemSetting)
+}
+
+// getSystemSettingList godoc
+//
+//	@Summary	Get a list of system settings
+//	@Tags		system-setting
+//	@Produce	json
+//	@Success	200	{object}	[]SystemSetting	"System setting list"
+//	@Failure	401	{object}	nil				"Missing user in session | Unauthorized"
+//	@Failure	500	{object}	nil				"Failed to find user | Failed to find system setting list"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/system/setting [GET]
+func (s *APIV1Service) getSystemSettingList(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
+
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+	}
+	if user == nil || user.Role != store.RoleHost {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+	}
+
+	list, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
+	}
+
+	systemSettingList := make([]*SystemSetting, 0, len(list))
+	for _, systemSetting := range list {
+		systemSettingList = append(systemSettingList, convertSystemSettingFromStore(systemSetting))
+	}
+	return c.JSON(http.StatusOK, systemSettingList)
+}
+
+// createSystemSetting godoc
+//
+//	@Summary	Create system setting
+//	@Tags		system-setting
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		UpsertSystemSettingRequest	true	"Request object."
+//	@Success	200		{object}	store.SystemSetting			"Created system setting"
+//	@Failure	400		{object}	nil							"Malformatted post system setting request | invalid system setting"
+//	@Failure	401		{object}	nil							"Missing user in session | Unauthorized"
+//	@Failure	403		{object}	nil							"Cannot disable passwords if no SSO identity provider is configured."
+//	@Failure	500		{object}	nil							"Failed to find user | Failed to upsert system setting"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/system/setting [POST]
+func (s *APIV1Service) createSystemSetting(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
+	}
+
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
+	}
+	if user == nil || user.Role != store.RoleHost {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
+	}
+
+	systemSettingUpsert := &UpsertSystemSettingRequest{}
+	if err := json.NewDecoder(c.Request().Body).Decode(systemSettingUpsert); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post system setting request").SetInternal(err)
+	}
+	if err := systemSettingUpsert.Validate(); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
+	}
+	if systemSettingUpsert.Name == SystemSettingDisablePasswordLoginName {
+		var disablePasswordLogin bool
+		if err := json.Unmarshal([]byte(systemSettingUpsert.Value), &disablePasswordLogin); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
+		}
+
+		identityProviderList, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
+		}
+		if disablePasswordLogin && len(identityProviderList) == 0 {
+			return echo.NewHTTPError(http.StatusForbidden, "Cannot disable passwords if no SSO identity provider is configured.")
+		}
+	}
+
+	systemSetting, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
+		Name:        systemSettingUpsert.Name.String(),
+		Value:       systemSettingUpsert.Value,
+		Description: systemSettingUpsert.Description,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
+	}
+	return c.JSON(http.StatusOK, convertSystemSettingFromStore(systemSetting))
+}
 
 func (upsert UpsertSystemSettingRequest) Validate() error {
 	switch settingName := upsert.Name; settingName {
@@ -170,87 +277,6 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 		return fmt.Errorf("invalid system setting name")
 	}
 	return nil
-}
-
-func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
-	g.POST("/system/setting", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != store.RoleHost {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
-
-		systemSettingUpsert := &UpsertSystemSettingRequest{}
-		if err := json.NewDecoder(c.Request().Body).Decode(systemSettingUpsert); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post system setting request").SetInternal(err)
-		}
-		if err := systemSettingUpsert.Validate(); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
-		}
-		if systemSettingUpsert.Name == SystemSettingDisablePasswordLoginName {
-			var disablePasswordLogin bool
-			if err := json.Unmarshal([]byte(systemSettingUpsert.Value), &disablePasswordLogin); err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, "invalid system setting").SetInternal(err)
-			}
-
-			identityProviderList, err := s.Store.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
-			}
-			if disablePasswordLogin && len(identityProviderList) == 0 {
-				return echo.NewHTTPError(http.StatusForbidden, "Cannot disable passwords if no SSO identity provider is configured.")
-			}
-		}
-
-		systemSetting, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
-			Name:        systemSettingUpsert.Name.String(),
-			Value:       systemSettingUpsert.Value,
-			Description: systemSettingUpsert.Description,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert system setting").SetInternal(err)
-		}
-		return c.JSON(http.StatusOK, convertSystemSettingFromStore(systemSetting))
-	})
-
-	g.GET("/system/setting", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
-		}
-
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			ID: &userID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user").SetInternal(err)
-		}
-		if user == nil || user.Role != store.RoleHost {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized")
-		}
-
-		list, err := s.Store.ListSystemSettings(ctx, &store.FindSystemSetting{})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting list").SetInternal(err)
-		}
-
-		systemSettingList := make([]*SystemSetting, 0, len(list))
-		for _, systemSetting := range list {
-			systemSettingList = append(systemSettingList, convertSystemSettingFromStore(systemSetting))
-		}
-		return c.JSON(http.StatusOK, systemSettingList)
-	})
 }
 
 func convertSystemSettingFromStore(systemSetting *store.SystemSetting) *SystemSetting {

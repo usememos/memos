@@ -78,6 +78,52 @@ type UpsertUserSettingRequest struct {
 	Value  string         `json:"value"`
 }
 
+func (s *APIV1Service) registerUserSettingRoutes(g *echo.Group) {
+	g.POST("/user/setting", s.createUserSetting)
+}
+
+// createUserSetting godoc
+//
+//	@Summary	Create user setting
+//	@Tags		user-setting
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		UpsertUserSettingRequest	true	"Request object."
+//	@Success	200		{object}	store.UserSetting			"Created user setting"
+//	@Failure	400		{object}	nil							"Malformatted post user setting upsert request | Invalid user setting format"
+//	@Failure	401		{object}	nil							"Missing auth session"
+//	@Failure	500		{object}	nil							"Failed to upsert user setting"
+//	@Security	ApiKeyAuth
+//	@Router		/api/v1/user/setting [POST]
+func (s *APIV1Service) createUserSetting(c echo.Context) error {
+	ctx := c.Request().Context()
+	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
+	}
+
+	userSettingUpsert := &UpsertUserSettingRequest{}
+	if err := json.NewDecoder(c.Request().Body).Decode(userSettingUpsert); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user setting upsert request").SetInternal(err)
+	}
+	if err := userSettingUpsert.Validate(); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Invalid user setting format").SetInternal(err)
+	}
+
+	userSettingUpsert.UserID = userID
+	userSetting, err := s.Store.UpsertUserSetting(ctx, &store.UserSetting{
+		UserID: userID,
+		Key:    userSettingUpsert.Key.String(),
+		Value:  userSettingUpsert.Value,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert user setting").SetInternal(err)
+	}
+
+	userSettingMessage := convertUserSettingFromStore(userSetting)
+	return c.JSON(http.StatusOK, userSettingMessage)
+}
+
 func (upsert UpsertUserSettingRequest) Validate() error {
 	if upsert.Key == UserSettingLocaleKey {
 		localeValue := "en"
@@ -117,37 +163,6 @@ func (upsert UpsertUserSettingRequest) Validate() error {
 	}
 
 	return nil
-}
-
-func (s *APIV1Service) registerUserSettingRoutes(g *echo.Group) {
-	g.POST("/user/setting", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		userID, ok := c.Get(auth.UserIDContextKey).(int32)
-		if !ok {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
-		}
-
-		userSettingUpsert := &UpsertUserSettingRequest{}
-		if err := json.NewDecoder(c.Request().Body).Decode(userSettingUpsert); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user setting upsert request").SetInternal(err)
-		}
-		if err := userSettingUpsert.Validate(); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user setting format").SetInternal(err)
-		}
-
-		userSettingUpsert.UserID = userID
-		userSetting, err := s.Store.UpsertUserSetting(ctx, &store.UserSetting{
-			UserID: userID,
-			Key:    userSettingUpsert.Key.String(),
-			Value:  userSettingUpsert.Value,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert user setting").SetInternal(err)
-		}
-
-		userSettingMessage := convertUserSettingFromStore(userSetting)
-		return c.JSON(http.StatusOK, userSettingMessage)
-	})
 }
 
 func convertUserSettingFromStore(userSetting *store.UserSetting) *UserSetting {

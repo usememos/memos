@@ -32,220 +32,269 @@ type SignUp struct {
 }
 
 func (s *APIV1Service) registerAuthRoutes(g *echo.Group) {
-	// POST /auth/signin - Sign in.
-	g.POST("/auth/signin", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		signin := &SignIn{}
+	g.POST("/auth/signin", s.signIn)
+	g.POST("/auth/signin/sso", s.signInSSO)
+	g.POST("/auth/signout", s.signOut)
+	g.POST("/auth/signup", s.signUp)
+}
 
-		disablePasswordLoginSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
-			Name: SystemSettingDisablePasswordLoginName.String(),
+// signIn godoc
+//
+//	@Summary	Sign-in to memos.
+//	@Tags		auth
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		SignIn		true	"Sign-in object"
+//	@Success	200		{object}	store.User	"User information"
+//	@Failure	400		{object}	nil			"Malformatted signin request"
+//	@Failure	401		{object}	nil			"Password login is deactivated | Incorrect login credentials, please try again"
+//	@Failure	403		{object}	nil			"User has been archived with username %s"
+//	@Failure	500		{object}	nil			"Failed to find system setting | Failed to unmarshal system setting | Incorrect login credentials, please try again | Failed to generate tokens | Failed to create activity"
+//	@Router		/api/v1/auth/signin [POST]
+func (s *APIV1Service) signIn(c echo.Context) error {
+	ctx := c.Request().Context()
+	signin := &SignIn{}
+
+	disablePasswordLoginSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+		Name: SystemSettingDisablePasswordLoginName.String(),
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+	}
+	if disablePasswordLoginSystemSetting != nil {
+		disablePasswordLogin := false
+		err = json.Unmarshal([]byte(disablePasswordLoginSystemSetting.Value), &disablePasswordLogin)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
+		}
+		if disablePasswordLogin {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Password login is deactivated")
+		}
+	}
+
+	if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
+	}
+
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		Username: &signin.Username,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
+	}
+	if user == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
+	} else if user.RowStatus == store.Archived {
+		return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", signin.Username))
+	}
+
+	// Compare the stored hashed password, with the hashed version of the password that was received.
+	if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(signin.Password)); err != nil {
+		// If the two passwords don't match, return a 401 status.
+		return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
+	}
+
+	if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
+	}
+	if err := s.createAuthSignInActivity(c, user); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+	}
+	userMessage := convertUserFromStore(user)
+	return c.JSON(http.StatusOK, userMessage)
+}
+
+// signInSSO godoc
+//
+//	@Summary	Sign-in to memos using SSO.
+//	@Tags		auth
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		SSOSignIn	true	"SSO sign-in object"
+//	@Success	200		{object}	store.User	"User information"
+//	@Failure	400		{object}	nil			"Malformatted signin request"
+//	@Failure	401		{object}	nil			"Access denied, identifier does not match the filter."
+//	@Failure	403		{object}	nil			"User has been archived with username {username}"
+//	@Failure	404		{object}	nil			"Identity provider not found"
+//	@Failure	500		{object}	nil			"Failed to find identity provider | Failed to create identity provider instance | Failed to exchange token | Failed to get user info | Failed to compile identifier filter | Incorrect login credentials, please try again | Failed to generate random password | Failed to generate password hash | Failed to create user | Failed to generate tokens | Failed to create activity"
+//	@Router		/api/v1/auth/signin/sso [POST]
+func (s *APIV1Service) signInSSO(c echo.Context) error {
+	ctx := c.Request().Context()
+	signin := &SSOSignIn{}
+	if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
+	}
+
+	identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
+		ID: &signin.IdentityProviderID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider").SetInternal(err)
+	}
+	if identityProvider == nil {
+		return echo.NewHTTPError(http.StatusNotFound, "Identity provider not found")
+	}
+
+	var userInfo *idp.IdentityProviderUserInfo
+	if identityProvider.Type == store.IdentityProviderOAuth2Type {
+		oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.OAuth2Config)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider instance").SetInternal(err)
+		}
+		token, err := oauth2IdentityProvider.ExchangeToken(ctx, signin.RedirectURI, signin.Code)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to exchange token").SetInternal(err)
+		}
+		userInfo, err = oauth2IdentityProvider.UserInfo(token)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get user info").SetInternal(err)
+		}
+	}
+
+	identifierFilter := identityProvider.IdentifierFilter
+	if identifierFilter != "" {
+		identifierFilterRegex, err := regexp.Compile(identifierFilter)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compile identifier filter").SetInternal(err)
+		}
+		if !identifierFilterRegex.MatchString(userInfo.Identifier) {
+			return echo.NewHTTPError(http.StatusUnauthorized, "Access denied, identifier does not match the filter.").SetInternal(err)
+		}
+	}
+
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		Username: &userInfo.Identifier,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
+	}
+	if user == nil {
+		userCreate := &store.User{
+			Username: userInfo.Identifier,
+			// The new signup user should be normal user by default.
+			Role:     store.RoleUser,
+			Nickname: userInfo.DisplayName,
+			Email:    userInfo.Email,
+			OpenID:   util.GenUUID(),
+		}
+		password, err := util.RandomString(20)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate random password").SetInternal(err)
+		}
+		passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
+		}
+		userCreate.PasswordHash = string(passwordHash)
+		user, err = s.Store.CreateUser(ctx, userCreate)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
+		}
+	}
+	if user.RowStatus == store.Archived {
+		return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
+	}
+
+	if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
+	}
+	if err := s.createAuthSignInActivity(c, user); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+	}
+	userMessage := convertUserFromStore(user)
+	return c.JSON(http.StatusOK, userMessage)
+}
+
+// signOut godoc
+//
+//	@Summary	Sign-out from memos.
+//	@Tags		auth
+//	@Produce	json
+//	@Success	200	{boolean}	true	"Sign-out success"
+//	@Router		/api/v1/auth/signout [POST]
+func (*APIV1Service) signOut(c echo.Context) error {
+	RemoveTokensAndCookies(c)
+	return c.JSON(http.StatusOK, true)
+}
+
+// signUp godoc
+//
+//	@Summary	Sign-up to memos.
+//	@Tags		auth
+//	@Accept		json
+//	@Produce	json
+//	@Param		body	body		SignUp		true	"Sign-up object"
+//	@Success	200		{object}	store.User	"User information"
+//	@Failure	400		{object}	nil			"Malformatted signup request | Failed to find users"
+//	@Failure	401		{object}	nil			"signup is disabled"
+//	@Failure	403		{object}	nil			"Forbidden"
+//	@Failure	404		{object}	nil			"Not found"
+//	@Failure	500		{object}	nil			"Failed to find system setting | Failed to unmarshal system setting allow signup | Failed to generate password hash | Failed to create user | Failed to generate tokens | Failed to create activity"
+//	@Router		/api/v1/auth/signup [POST]
+func (s *APIV1Service) signUp(c echo.Context) error {
+	ctx := c.Request().Context()
+	signup := &SignUp{}
+	if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
+	}
+
+	hostUserType := store.RoleHost
+	existedHostUsers, err := s.Store.ListUsers(ctx, &store.FindUser{
+		Role: &hostUserType,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, "Failed to find users").SetInternal(err)
+	}
+
+	userCreate := &store.User{
+		Username: signup.Username,
+		// The new signup user should be normal user by default.
+		Role:     store.RoleUser,
+		Nickname: signup.Username,
+		OpenID:   util.GenUUID(),
+	}
+	if len(existedHostUsers) == 0 {
+		// Change the default role to host if there is no host user.
+		userCreate.Role = store.RoleHost
+	} else {
+		allowSignUpSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+			Name: SystemSettingAllowSignUpName.String(),
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 		}
-		if disablePasswordLoginSystemSetting != nil {
-			disablePasswordLogin := false
-			err = json.Unmarshal([]byte(disablePasswordLoginSystemSetting.Value), &disablePasswordLogin)
+
+		allowSignUpSettingValue := false
+		if allowSignUpSetting != nil {
+			err = json.Unmarshal([]byte(allowSignUpSetting.Value), &allowSignUpSettingValue)
 			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
-			}
-			if disablePasswordLogin {
-				return echo.NewHTTPError(http.StatusUnauthorized, "Password login is deactivated")
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting allow signup").SetInternal(err)
 			}
 		}
+		if !allowSignUpSettingValue {
+			return echo.NewHTTPError(http.StatusUnauthorized, "signup is disabled").SetInternal(err)
+		}
+	}
 
-		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
-		}
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(signup.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
+	}
 
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			Username: &signin.Username,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
-		}
-		if user == nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
-		} else if user.RowStatus == store.Archived {
-			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", signin.Username))
-		}
+	userCreate.PasswordHash = string(passwordHash)
+	user, err := s.Store.CreateUser(ctx, userCreate)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
+	}
+	if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
+	}
+	if err := s.createAuthSignUpActivity(c, user); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+	}
 
-		// Compare the stored hashed password, with the hashed version of the password that was received.
-		if err := bcrypt.CompareHashAndPassword([]byte(user.PasswordHash), []byte(signin.Password)); err != nil {
-			// If the two passwords don't match, return a 401 status.
-			return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
-		}
-
-		if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
-		}
-		if err := s.createAuthSignInActivity(c, user); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-		}
-		userMessage := convertUserFromStore(user)
-		return c.JSON(http.StatusOK, userMessage)
-	})
-
-	// POST /auth/signin/sso - Sign in with SSO
-	g.POST("/auth/signin/sso", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		signin := &SSOSignIn{}
-		if err := json.NewDecoder(c.Request().Body).Decode(signin); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signin request").SetInternal(err)
-		}
-
-		identityProvider, err := s.Store.GetIdentityProvider(ctx, &store.FindIdentityProvider{
-			ID: &signin.IdentityProviderID,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider").SetInternal(err)
-		}
-		if identityProvider == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "Identity provider not found")
-		}
-
-		var userInfo *idp.IdentityProviderUserInfo
-		if identityProvider.Type == store.IdentityProviderOAuth2Type {
-			oauth2IdentityProvider, err := oauth2.NewIdentityProvider(identityProvider.Config.OAuth2Config)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create identity provider instance").SetInternal(err)
-			}
-			token, err := oauth2IdentityProvider.ExchangeToken(ctx, signin.RedirectURI, signin.Code)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to exchange token").SetInternal(err)
-			}
-			userInfo, err = oauth2IdentityProvider.UserInfo(token)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get user info").SetInternal(err)
-			}
-		}
-
-		identifierFilter := identityProvider.IdentifierFilter
-		if identifierFilter != "" {
-			identifierFilterRegex, err := regexp.Compile(identifierFilter)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compile identifier filter").SetInternal(err)
-			}
-			if !identifierFilterRegex.MatchString(userInfo.Identifier) {
-				return echo.NewHTTPError(http.StatusUnauthorized, "Access denied, identifier does not match the filter.").SetInternal(err)
-			}
-		}
-
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			Username: &userInfo.Identifier,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Incorrect login credentials, please try again")
-		}
-		if user == nil {
-			userCreate := &store.User{
-				Username: userInfo.Identifier,
-				// The new signup user should be normal user by default.
-				Role:     store.RoleUser,
-				Nickname: userInfo.DisplayName,
-				Email:    userInfo.Email,
-				OpenID:   util.GenUUID(),
-			}
-			password, err := util.RandomString(20)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate random password").SetInternal(err)
-			}
-			passwordHash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
-			}
-			userCreate.PasswordHash = string(passwordHash)
-			user, err = s.Store.CreateUser(ctx, userCreate)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
-			}
-		}
-		if user.RowStatus == store.Archived {
-			return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
-		}
-
-		if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
-		}
-		if err := s.createAuthSignInActivity(c, user); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-		}
-		userMessage := convertUserFromStore(user)
-		return c.JSON(http.StatusOK, userMessage)
-	})
-
-	// POST /auth/signup - Sign up a new user.
-	g.POST("/auth/signup", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		signup := &SignUp{}
-		if err := json.NewDecoder(c.Request().Body).Decode(signup); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Malformatted signup request").SetInternal(err)
-		}
-
-		hostUserType := store.RoleHost
-		existedHostUsers, err := s.Store.ListUsers(ctx, &store.FindUser{
-			Role: &hostUserType,
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Failed to find users").SetInternal(err)
-		}
-
-		userCreate := &store.User{
-			Username: signup.Username,
-			// The new signup user should be normal user by default.
-			Role:     store.RoleUser,
-			Nickname: signup.Username,
-			OpenID:   util.GenUUID(),
-		}
-		if len(existedHostUsers) == 0 {
-			// Change the default role to host if there is no host user.
-			userCreate.Role = store.RoleHost
-		} else {
-			allowSignUpSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
-				Name: SystemSettingAllowSignUpName.String(),
-			})
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
-			}
-
-			allowSignUpSettingValue := false
-			if allowSignUpSetting != nil {
-				err = json.Unmarshal([]byte(allowSignUpSetting.Value), &allowSignUpSettingValue)
-				if err != nil {
-					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting allow signup").SetInternal(err)
-				}
-			}
-			if !allowSignUpSettingValue {
-				return echo.NewHTTPError(http.StatusUnauthorized, "signup is disabled").SetInternal(err)
-			}
-		}
-
-		passwordHash, err := bcrypt.GenerateFromPassword([]byte(signup.Password), bcrypt.DefaultCost)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate password hash").SetInternal(err)
-		}
-
-		userCreate.PasswordHash = string(passwordHash)
-		user, err := s.Store.CreateUser(ctx, userCreate)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
-		}
-		if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
-		}
-		if err := s.createAuthSignUpActivity(c, user); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-		}
-
-		userMessage := convertUserFromStore(user)
-		return c.JSON(http.StatusOK, userMessage)
-	})
-
-	// POST /auth/signout - Sign out.
-	g.POST("/auth/signout", func(c echo.Context) error {
-		RemoveTokensAndCookies(c)
-		return c.JSON(http.StatusOK, true)
-	})
+	userMessage := convertUserFromStore(user)
+	return c.JSON(http.StatusOK, userMessage)
 }
 
 func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.User) error {
