@@ -23,50 +23,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/api/v1/GetSystemStatus": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "system"
-                ],
-                "summary": "Get system GetSystemStatus",
-                "responses": {
-                    "200": {
-                        "description": "System GetSystemStatus",
-                        "schema": {
-                            "$ref": "#/definitions/v1.SystemStatus"
-                        }
-                    },
-                    "401": {
-                        "description": "Missing user in session | Unauthorized"
-                    },
-                    "500": {
-                        "description": "Failed to find host user | Failed to find system setting list | Failed to unmarshal system setting customized profile value"
-                    }
-                }
-            }
-        },
-        "/api/v1/PingSystem": {
-            "get": {
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "system"
-                ],
-                "summary": "Ping the system",
-                "responses": {
-                    "200": {
-                        "description": "System profile",
-                        "schema": {
-                            "$ref": "#/definitions/profile.Profile"
-                        }
-                    }
-                }
-            }
-        },
         "/api/v1/auth/signin": {
             "post": {
                 "consumes": [
@@ -1152,6 +1108,25 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/ping": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Ping the system",
+                "responses": {
+                    "200": {
+                        "description": "If succeed to ping the system",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/resource": {
             "get": {
                 "security": [
@@ -1386,6 +1361,31 @@ const docTemplate = `{
                 }
             }
         },
+        "/api/v1/status": {
+            "get": {
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Get system GetSystemStatus",
+                "responses": {
+                    "200": {
+                        "description": "System GetSystemStatus",
+                        "schema": {
+                            "$ref": "#/definitions/v1.SystemStatus"
+                        }
+                    },
+                    "401": {
+                        "description": "Missing user in session | Unauthorized"
+                    },
+                    "500": {
+                        "description": "Failed to find host user | Failed to find system setting list | Failed to unmarshal system setting customized profile value"
+                    }
+                }
+            }
+        },
         "/api/v1/storage": {
             "get": {
                 "security": [
@@ -1555,36 +1555,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/system/ExecVacuum": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "system"
-                ],
-                "summary": "Vacuum the database",
-                "responses": {
-                    "200": {
-                        "description": "Database vacuumed",
-                        "schema": {
-                            "type": "boolean"
-                        }
-                    },
-                    "401": {
-                        "description": "Missing user in session | Unauthorized"
-                    },
-                    "500": {
-                        "description": "Failed to find user | Failed to ExecVacuum database"
-                    }
-                }
-            }
-        },
         "/api/v1/system/setting": {
             "get": {
                 "security": [
@@ -1662,6 +1632,36 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to find user | Failed to upsert system setting"
+                    }
+                }
+            }
+        },
+        "/api/v1/system/vacuum": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "system"
+                ],
+                "summary": "Vacuum the database",
+                "responses": {
+                    "200": {
+                        "description": "Database vacuumed",
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    "401": {
+                        "description": "Missing user in session | Unauthorized"
+                    },
+                    "500": {
+                        "description": "Failed to find user | Failed to ExecVacuum database"
                     }
                 }
             }

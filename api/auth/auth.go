@@ -19,8 +19,6 @@ const (
 
 	// CookieExpDuration expires slightly earlier than the jwt expiration. Client would be logged out if the user
 	// cookie expires, thus the client would always logout first before attempting to make a request with the expired jwt.
-	// Suppose we have a valid refresh token, we will refresh the token in cases:
-	// 1. The access token has already expired, we refresh the token so that the ongoing request can pass through.
 	CookieExpDuration = AccessTokenDuration - 1*time.Minute
 	// AccessTokenCookieName is the cookie name of access token.
 	AccessTokenCookieName = "memos.access-token"

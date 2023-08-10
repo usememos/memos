@@ -53,10 +53,10 @@ func (s *APIV1Service) registerSystemRoutes(g *echo.Group) {
 //	@Summary	Ping the system
 //	@Tags		system
 //	@Produce	json
-//	@Success	200	{object}	profile.Profile	"System profile"
-//	@Router		/api/v1/PingSystem [GET]
-func (s *APIV1Service) PingSystem(c echo.Context) error {
-	return c.JSON(http.StatusOK, s.Profile)
+//	@Success	200	{boolean}	true	"If succeed to ping the system"
+//	@Router		/api/v1/ping [GET]
+func (*APIV1Service) PingSystem(c echo.Context) error {
+	return c.JSON(http.StatusOK, true)
 }
 
 // GetSystemStatus godoc
@@ -67,7 +67,7 @@ func (s *APIV1Service) PingSystem(c echo.Context) error {
 //	@Success	200	{object}	SystemStatus	"System GetSystemStatus"
 //	@Failure	401	{object}	nil				"Missing user in session | Unauthorized"
 //	@Failure	500	{object}	nil				"Failed to find host user | Failed to find system setting list | Failed to unmarshal system setting customized profile value"
-//	@Router		/api/v1/GetSystemStatus [GET]
+//	@Router		/api/v1/status [GET]
 func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 	ctx := c.Request().Context()
 
@@ -165,7 +165,7 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 //	@Failure	401	{object}	nil		"Missing user in session | Unauthorized"
 //	@Failure	500	{object}	nil		"Failed to find user | Failed to ExecVacuum database"
 //	@Security	ApiKeyAuth
-//	@Router		/api/v1/system/ExecVacuum [POST]
+//	@Router		/api/v1/system/vacuum [POST]
 func (s *APIV1Service) ExecVacuum(c echo.Context) error {
 	ctx := c.Request().Context()
 	userID, ok := c.Get(auth.UserIDContextKey).(int32)

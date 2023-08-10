@@ -748,35 +748,6 @@ info:
   title: memos API
   version: "1.0"
 paths:
-  /api/v1/GetSystemStatus:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: System GetSystemStatus
-          schema:
-            $ref: '#/definitions/v1.SystemStatus'
-        "401":
-          description: Missing user in session | Unauthorized
-        "500":
-          description: Failed to find host user | Failed to find system setting list
-            | Failed to unmarshal system setting customized profile value
-      summary: Get system GetSystemStatus
-      tags:
-      - system
-  /api/v1/PingSystem:
-    get:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: System profile
-          schema:
-            $ref: '#/definitions/profile.Profile'
-      summary: Ping the system
-      tags:
-      - system
   /api/v1/auth/signin:
     post:
       consumes:
@@ -1509,6 +1480,18 @@ paths:
       summary: Get memo stats by creator ID or username
       tags:
       - memo
+  /api/v1/ping:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: If succeed to ping the system
+          schema:
+            type: boolean
+      summary: Ping the system
+      tags:
+      - system
   /api/v1/resource:
     get:
       parameters:
@@ -1660,6 +1643,23 @@ paths:
       summary: Upload resource
       tags:
       - resource
+  /api/v1/status:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: System GetSystemStatus
+          schema:
+            $ref: '#/definitions/v1.SystemStatus'
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find host user | Failed to find system setting list
+            | Failed to unmarshal system setting customized profile value
+      summary: Get system GetSystemStatus
+      tags:
+      - system
   /api/v1/storage:
     get:
       produces:
@@ -1769,24 +1769,6 @@ paths:
       summary: Update a storage
       tags:
       - storage
-  /api/v1/system/ExecVacuum:
-    post:
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Database vacuumed
-          schema:
-            type: boolean
-        "401":
-          description: Missing user in session | Unauthorized
-        "500":
-          description: Failed to find user | Failed to ExecVacuum database
-      security:
-      - ApiKeyAuth: []
-      summary: Vacuum the database
-      tags:
-      - system
   /api/v1/system/setting:
     get:
       produces:
@@ -1837,6 +1819,24 @@ paths:
       summary: Create system setting
       tags:
       - system-setting
+  /api/v1/system/vacuum:
+    post:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Database vacuumed
+          schema:
+            type: boolean
+        "401":
+          description: Missing user in session | Unauthorized
+        "500":
+          description: Failed to find user | Failed to ExecVacuum database
+      security:
+      - ApiKeyAuth: []
+      summary: Vacuum the database
+      tags:
+      - system
   /api/v1/tag:
     get:
       produces:

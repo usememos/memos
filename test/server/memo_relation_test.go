@@ -22,7 +22,7 @@ func TestMemoRelationServer(t *testing.T) {
 		Username: "testuser",
 		Password: "testpassword",
 	}
-	user, err := s.postAuthSignup(signup)
+	user, err := s.postAuthSignUp(signup)
 	require.NoError(t, err)
 	require.Equal(t, signup.Username, user.Username)
 	memo, err := s.postMemoCreate(&apiv1.CreateMemoRequest{
