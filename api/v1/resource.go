@@ -490,6 +490,7 @@ func (s *APIV1Service) streamResource(c echo.Context) error {
 		http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(blob))
 		return nil
 	}
+	c.Response().Writer.Header().Set("Content-Disposition", fmt.Sprintf(`filename="%s"`, resource.Filename))
 	return c.Stream(http.StatusOK, resourceType, bytes.NewReader(blob))
 }
 
