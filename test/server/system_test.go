@@ -25,13 +25,22 @@ func TestSystemServer(t *testing.T) {
 		Username: "testuser",
 		Password: "testpassword",
 	}
-	user, err := s.postAuthSignup(signup)
+	user, err := s.postAuthSignUp(signup)
 	require.NoError(t, err)
 	require.Equal(t, signup.Username, user.Username)
-
+	err = s.pingSystem()
+	require.NoError(t, err)
 	status, err = s.getSystemStatus()
 	require.NoError(t, err)
 	require.Equal(t, user.ID, status.Host.ID)
+}
+
+func (s *TestingServer) pingSystem() error {
+	_, err := s.get("/api/v1/ping", nil)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (s *TestingServer) getSystemStatus() (*apiv1.SystemStatus, error) {

@@ -37,7 +37,7 @@ func GenerateTokensAndSetCookies(c echo.Context, user *store.User, secret string
 	return nil
 }
 
-// RemoveTokensAndCookies removes the jwt token and refresh token from the cookies.
+// RemoveTokensAndCookies removes the jwt token from the cookies.
 func RemoveTokensAndCookies(c echo.Context) {
 	cookieExp := time.Now().Add(-1 * time.Hour)
 	setTokenCookie(c, auth.AccessTokenCookieName, "", cookieExp)
@@ -121,8 +121,6 @@ func audienceContains(audience jwt.ClaimStrings, token string) bool {
 }
 
 // JWTMiddleware validates the access token.
-// If the access token is about to expire or has expired and the request has a valid refresh token, it
-// will try to generate new access token and refresh token.
 func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) echo.HandlerFunc {
 	return func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -172,7 +170,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q.", claims.Audience, auth.AccessTokenAudienceName))
 		}
 
-		// We either have a valid access token or we will attempt to generate new access token and refresh token
+		// We either have a valid access token or we will attempt to generate new access token.
 		userID, err := util.ConvertStringToInt32(claims.Subject)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Malformed ID in the token.")
