@@ -14,13 +14,13 @@ type Message struct {
 	Photo                []PhotoSize     `json:"photo"`                   // Photo message is a photo, available sizes of the photo;
 	Caption              *string         `json:"caption"`                 // Caption for the animation, audio, document, photo, video or voice, 0-1024 characters;
 	Entities             []MessageEntity `json:"entities"`                // Entities are for text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text;
-	CaptionEntities      []MessageEntity `json:"caption_entities"`
-	Document             *Document       `json:"document"`   // Document message is a general file, information about the file;
-	Video                *Video          `json:"video"`      // Video message is a video, information about the video;
-	VideoNote            *VideoNote      `json:"video_note"` // VideoNote message is a video note, information about the video message;
-	Voice                *Voice          `json:"voice"`      // Voice message is a voice message, information about the file;
-	Audio                *Audio          `json:"audio"`      // Audio message is an audio file, information about the file;
-	Animation            *Animation      `json:"animation"`  // Animation message is an animation, information about the animation. For backward compatibility, when this field is set, the document field will also be set;
+	CaptionEntities      []MessageEntity `json:"caption_entities"`        // CaptionEntities are for messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear in the caption;
+	Document             *Document       `json:"document"`                // Document message is a general file, information about the file;
+	Video                *Video          `json:"video"`                   // Video message is a video, information about the video;
+	VideoNote            *VideoNote      `json:"video_note"`              // VideoNote message is a video note, information about the video message;
+	Voice                *Voice          `json:"voice"`                   // Voice message is a voice message, information about the file;
+	Audio                *Audio          `json:"audio"`                   // Audio message is an audio file, information about the file;
+	Animation            *Animation      `json:"animation"`               // Animation message is an animation, information about the animation. For backward compatibility, when this field is set, the document field will also be set;
 }
 
 func (m Message) GetMaxPhotoFileID() string {

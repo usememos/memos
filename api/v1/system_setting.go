@@ -36,7 +36,7 @@ const (
 	SystemSettingStorageServiceIDName SystemSettingName = "storage-service-id"
 	// SystemSettingLocalStoragePathName is the name of local storage path.
 	SystemSettingLocalStoragePathName SystemSettingName = "local-storage-path"
-	// SystemSettingTelegramBotToken is the name of Telegram Bot Token.
+	// SystemSettingTelegramBotTokenName is the name of Telegram Bot Token.
 	SystemSettingTelegramBotTokenName SystemSettingName = "telegram-bot-token"
 	// SystemSettingMemoDisplayWithUpdatedTsName is the name of memo display with updated ts.
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"

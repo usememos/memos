@@ -48,7 +48,7 @@ func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]
 	query := `
 		SELECT
 			user_id,
-		  key,
+			key,
 			value
 		FROM user_setting
 		WHERE ` + strings.Join(where, " AND ")

@@ -20,7 +20,7 @@ const (
 	UserSettingAppearanceKey UserSettingKey = "appearance"
 	// UserSettingMemoVisibilityKey is the key type for user preference memo default visibility.
 	UserSettingMemoVisibilityKey UserSettingKey = "memo-visibility"
-	// UserSettingTelegramUserID is the key type for telegram UserID of memos user.
+	// UserSettingTelegramUserIDKey is the key type for telegram UserID of memos user.
 	UserSettingTelegramUserIDKey UserSettingKey = "telegram-user-id"
 )
 
