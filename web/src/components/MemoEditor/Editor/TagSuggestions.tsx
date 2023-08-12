@@ -52,8 +52,9 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
 
   const handleSelection = (tag: string) => {
     if (!editorActions || !("current" in editorActions) || !editorActions.current) return;
-    const partial = getCurrentWord()[0].slice(1);
-    editorActions.current.insertText(tag.slice(partial.length));
+    const [currentWord, currentWordIndex] = getCurrentWord();
+    editorActions.current.removeText(currentWordIndex, currentWord.length);
+    editorActions.current.insertText(`#${tag}`);
   };
 
   if (!position || !suggestions.length) return null;
