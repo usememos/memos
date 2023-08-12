@@ -45,8 +45,8 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
 
   const { tags } = useTagStore().state;
   const getSuggestions = () => {
-    const partial = getCurrentWord()[0].slice(1);
-    return tags.filter((tag) => tag.startsWith(partial)).slice(0, 5);
+    const partial = getCurrentWord()[0].slice(1).toLowerCase();
+    return tags.filter((tag) => tag.toLowerCase().startsWith(partial)).slice(0, 5);
   };
   const suggestions = getSuggestions();
 
