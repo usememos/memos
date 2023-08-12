@@ -27,30 +27,16 @@ const (
 	UserIDContextKey ContextKey = iota
 )
 
-var authenticationAllowlistMethods = map[string]bool{
-	"/memos.api.v2.SystemService/GetSystemInfo": true,
-	"/memos.api.v2.UserService/GetUser":         true,
-	"/memos.api.v2.MemoService/ListMemos":       true,
-}
-
-// IsAuthenticationAllowed returns whether the method is exempted from authentication.
-func IsAuthenticationAllowed(fullMethodName string) bool {
-	if strings.HasPrefix(fullMethodName, "/grpc.reflection") {
-		return true
-	}
-	return authenticationAllowlistMethods[fullMethodName]
-}
-
 // GRPCAuthInterceptor is the auth interceptor for gRPC server.
 type GRPCAuthInterceptor struct {
-	store  *store.Store
+	Store  *store.Store
 	secret string
 }
 
 // NewGRPCAuthInterceptor returns a new API auth interceptor.
 func NewGRPCAuthInterceptor(store *store.Store, secret string) *GRPCAuthInterceptor {
 	return &GRPCAuthInterceptor{
-		store:  store,
+		Store:  store,
 		secret: secret,
 	}
 }
@@ -68,10 +54,22 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 
 	userID, err := in.authenticate(ctx, accessTokenStr)
 	if err != nil {
-		if IsAuthenticationAllowed(serverInfo.FullMethod) {
+		if isUnauthorizeAllowedMethod(serverInfo.FullMethod) {
 			return handler(ctx, request)
 		}
 		return nil, err
+	}
+	user, err := in.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get user")
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user ID %q not exists in the access token", userID)
+	}
+	if isOnlyForAdminAllowedMethod(serverInfo.FullMethod) && user.Role != store.RoleHost && user.Role != store.RoleAdmin {
+		return nil, status.Errorf(codes.PermissionDenied, "user ID %q is not admin", userID)
 	}
 
 	// Stores userID into context.
@@ -110,7 +108,7 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr 
 	if err != nil {
 		return 0, status.Errorf(codes.Unauthenticated, "malformed ID %q in the access token", claims.Subject)
 	}
-	user, err := in.store.GetUser(ctx, &store.FindUser{
+	user, err := in.Store.GetUser(ctx, &store.FindUser{
 		ID: &userID,
 	})
 	if err != nil {
