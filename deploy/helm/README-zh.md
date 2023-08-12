@@ -12,7 +12,6 @@ helm install memos -n app .
 ```yaml
 persistence:
   ## 如果enabled 为False, 会使用emptyDir, Pod 重建后数据可能丢失, 建议使用持久卷
-  ## If enabled is False, emptyDir will be used, data may be lost after Pod rebuild, it is recommended to use persistent volume
   enabled: false
   storageClass: "local"
   existPersistClaim: ""
