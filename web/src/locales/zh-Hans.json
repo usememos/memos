@@ -410,6 +410,11 @@
         "title": "自定义服务"
       },
       "database-file-size": "数据库文件大小",
+      "disable-password-login": "禁用密码登录",
+      "disable-password-login-warning": "所有用户将无法使用密码登录。如果配置的身份提供程序失效，不在数据库中恢复此设置将无法登录。删除身份提供程序时也要格外小心❗",
+      "disable-password-login-final-warning": "如果你知道自己在做什么，请输入 \"CONFIRM\"",
+      "enable-password-login": "启用密码登录",
+      "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用 SSO 和密码登录，请开启密码登录",
       "disable-public-memos": "禁用公共备忘录",
       "ignore-version-upgrade": "忽略版本升级",
       "telegram-bot-token": "Telegram 机器人 Token",
