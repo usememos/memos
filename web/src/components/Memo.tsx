@@ -101,7 +101,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       }
       root.addEventListener("scroll", checkShouldRender);
     }
-  }, [lazyRendering]);
+  }, [lazyRendering, filterStore.state]);
 
   if (!shouldRender) {
     // Render a placeholder to occupy the space.
