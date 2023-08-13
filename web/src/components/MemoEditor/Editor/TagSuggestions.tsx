@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { KeyboardEvent, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import { useTagStore } from "@/store/module";
 import { EditorRefActions } from ".";
@@ -6,10 +6,12 @@ import { EditorRefActions } from ".";
 type Props = {
   editorRef: React.RefObject<HTMLTextAreaElement>;
   editorActions: React.ForwardedRef<EditorRefActions>;
+  children: React.ReactNode;
 };
 type Position = { left: number; top: number; height: number };
 
-const TagSuggestions = ({ editorRef, editorActions }: Props) => {
+const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
+  const { tags } = useTagStore().state;
   const [position, setPosition] = useState<Position | null>(null);
   const hide = () => setPosition(null);
 
@@ -25,30 +27,13 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
     const isArrowKey = ["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"].includes(e.code);
     if (isArrowKey || ["Tab", "Escape"].includes(e.code)) hide();
   };
+
   const handleInput = () => {
     if (!editorRef.current) return;
     const [word, index] = getCurrentWord();
     if (!word.startsWith("#") || word.slice(1).includes("#")) return hide();
     setPosition(getCaretCoordinates(editorRef.current, index));
   };
-
-  const areListenersRegistered = useRef(false);
-  const registerListeners = () => {
-    if (!editorRef.current || areListenersRegistered.current) return;
-    editorRef.current.addEventListener("click", hide);
-    editorRef.current.addEventListener("blur", hide);
-    editorRef.current.addEventListener("keydown", handleKeyDown);
-    editorRef.current.addEventListener("input", handleInput);
-    areListenersRegistered.current = true;
-  };
-  useEffect(registerListeners, [!!editorRef.current]);
-
-  const { tags } = useTagStore().state;
-  const getSuggestions = () => {
-    const partial = getCurrentWord()[0].slice(1).toLowerCase();
-    return tags.filter((tag) => tag.toLowerCase().startsWith(partial)).slice(0, 5);
-  };
-  const suggestions = getSuggestions();
 
   const handleSelection = (tag: string) => {
     if (!editorActions || !("current" in editorActions) || !editorActions.current) return;
@@ -57,21 +42,30 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
     editorActions.current.insertText(`#${tag}`);
   };
 
-  if (!position || !suggestions.length) return null;
+  const suggestions = (() => {
+    const partial = getCurrentWord()[0].slice(1).toLowerCase();
+    return tags.filter((tag) => tag.toLowerCase().startsWith(partial)).slice(0, 5);
+  })();
+
   return (
-    <div
-      className="z-2 p-1 absolute max-w-[12rem] rounded font-mono shadow bg-zinc-200 dark:bg-zinc-600"
-      style={{ left: position.left - 6, top: position.top + position.height + 2 }}
-    >
-      {suggestions.map((tag) => (
+    <div className="w-full flex flex-col bg-red-500" onClick={hide} onBlur={hide} onKeyDown={handleKeyDown} onInput={handleInput}>
+      {children}
+      {position && suggestions.length > 0 && (
         <div
-          key={tag}
-          onMouseDown={() => handleSelection(tag)}
-          className="rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-300 dark:hover:bg-zinc-700"
+          className="z-2 p-1 absolute max-w-[12rem] rounded font-mono shadow bg-zinc-200 dark:bg-zinc-600"
+          style={{ left: position.left - 6, top: position.top + position.height + 2 }}
         >
-          #{tag}
+          {suggestions.map((tag) => (
+            <div
+              key={tag}
+              onMouseDown={() => handleSelection(tag)}
+              className="rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-300 dark:hover:bg-zinc-700"
+            >
+              #{tag}
+            </div>
+          ))}
         </div>
-      ))}
+      )}
     </div>
   );
 };
