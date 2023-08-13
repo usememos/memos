@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useTagStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import MemoEditor from ".";
 import { generateDialog } from "../Dialog";
@@ -9,10 +11,16 @@ interface Props extends DialogProps {
 }
 
 const MemoEditorDialog: React.FC<Props> = ({ memoId, relationList, destroy }: Props) => {
+  const t = useTranslate();
+  const tagStore = useTagStore();
+
+  useEffect(() => {
+    tagStore.fetchTags();
+  }, []);
+
   const handleCloseBtnClick = () => {
     destroy();
   };
-  const t = useTranslate();
 
   return (
     <>
