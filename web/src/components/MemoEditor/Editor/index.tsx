@@ -129,7 +129,7 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
     <div className={"common-editor-wrapper " + className}>
       <TagSuggestions editorRef={editorRef} editorActions={ref}>
         <textarea
-          className="common-editor-inputer outline-none"
+          className="common-editor-inputer"
           rows={1}
           placeholder={placeholder}
           ref={editorRef}

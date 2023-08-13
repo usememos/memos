@@ -23,6 +23,11 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
     return [before[0] + ahead[0], before.index || cursorPos];
   };
 
+  const getSuggestions = () => {
+    const partial = getCurrentWord()[0].slice(1).toLowerCase();
+    return tags.filter((tag) => tag.toLowerCase().startsWith(partial)).slice(0, 5);
+  };
+
   const handleKeyDown = (e: KeyboardEvent) => {
     const isArrowKey = ["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"].includes(e.code);
     if (isArrowKey || ["Tab", "Escape"].includes(e.code)) hide();
@@ -35,20 +40,17 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
     setPosition(getCaretCoordinates(editorRef.current, index));
   };
 
-  const handleSelection = (tag: string) => {
+  const autocomplete = (tag: string) => {
     if (!editorActions || !("current" in editorActions) || !editorActions.current) return;
-    const [currentWord, currentWordIndex] = getCurrentWord();
-    editorActions.current.removeText(currentWordIndex, currentWord.length);
+    const [word, index] = getCurrentWord();
+    editorActions.current.removeText(index, word.length);
     editorActions.current.insertText(`#${tag}`);
   };
 
-  const suggestions = (() => {
-    const partial = getCurrentWord()[0].slice(1).toLowerCase();
-    return tags.filter((tag) => tag.toLowerCase().startsWith(partial)).slice(0, 5);
-  })();
+  const suggestions = getSuggestions();
 
   return (
-    <div className="w-full flex flex-col bg-red-500" onClick={hide} onBlur={hide} onKeyDown={handleKeyDown} onInput={handleInput}>
+    <div className="w-full flex flex-col" onClick={hide} onBlur={hide} onKeyDown={handleKeyDown} onInput={handleInput}>
       {children}
       {position && suggestions.length > 0 && (
         <div
@@ -58,7 +60,7 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
           {suggestions.map((tag) => (
             <div
               key={tag}
-              onMouseDown={() => handleSelection(tag)}
+              onMouseDown={() => autocomplete(tag)}
               className="rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-300 dark:hover:bg-zinc-700"
             >
               #{tag}
