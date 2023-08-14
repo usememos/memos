@@ -1,4 +1,5 @@
 import classNames from "classnames";
+import { partial, matches } from "lodash-es";
 import { KeyboardEvent, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import { useTagStore } from "@/store/module";
@@ -28,8 +29,19 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
 
   const suggestions = (() => {
     const partial = getCurrentWord()[0].slice(1).toLowerCase();
-    return tags.filter((tag) => tag.toLowerCase().startsWith(partial)).slice(0, 5);
+    const matches = (str: string) => str.startsWith(partial) && partial.length < str.length;
+    return tags.filter((tag) => matches(tag.toLowerCase())).slice(0, 5);
   })();
+
+  const isVisible = position && suggestions.length > 0;
+
+  const autocomplete = (tag: string) => {
+    if (!editorActions || !("current" in editorActions) || !editorActions.current) return;
+    const [word, index] = getCurrentWord();
+    editorActions.current.removeText(index, word.length);
+    editorActions.current.insertText(`#${tag}`);
+    hide();
+  };
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if ("ArrowDown" === e.code) {
@@ -40,7 +52,13 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
       select((selected - 1) % suggestions.length);
       e.preventDefault();
     }
-    if (["ArrowLeft", "ArrowRight", "Tab", "Escape"].includes(e.code)) hide();
+    if (["Enter", "Tab"].includes(e.code)) {
+      if (isVisible) {
+        autocomplete(suggestions[selected]);
+        e.preventDefault();
+      }
+    }
+    if (["ArrowLeft", "ArrowRight"].includes(e.code)) hide();
   };
 
   const handleInput = () => {
@@ -50,15 +68,6 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
     const isActive = word.startsWith("#") && !word.slice(1).includes("#");
     isActive ? setPosition(getCaretCoordinates(editorRef.current, index)) : hide();
   };
-
-  const autocomplete = (tag: string) => {
-    if (!editorActions || !("current" in editorActions) || !editorActions.current) return;
-    const [word, index] = getCurrentWord();
-    editorActions.current.removeText(index, word.length);
-    editorActions.current.insertText(`#${tag}`);
-  };
-
-  const isVisible = position && suggestions.length > 0;
 
   return (
     <div className="w-full flex flex-col" onClick={hide} onBlur={hide} onKeyDown={handleKeyDown} onInput={handleInput}>
