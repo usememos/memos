@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { KeyboardEvent, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import { useTagStore } from "@/store/module";
@@ -12,6 +13,7 @@ type Position = { left: number; top: number; height: number };
 
 const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
   const { tags } = useTagStore().state;
+  const [selected, setSelected] = useState(0);
   const [position, setPosition] = useState<Position | null>(null);
   const hide = () => setPosition(null);
 
@@ -58,11 +60,14 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
           className="z-2 p-1 absolute max-w-[12rem] rounded font-mono shadow bg-zinc-200 dark:bg-zinc-600"
           style={{ left: position.left - 6, top: position.top + position.height + 2 }}
         >
-          {suggestions.map((tag) => (
+          {suggestions.map((tag, i) => (
             <div
               key={tag}
               onMouseDown={() => autocomplete(tag)}
-              className="rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-300 dark:hover:bg-zinc-700"
+              className={classNames(
+                "rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-300 dark:hover:bg-zinc-700",
+                i === selected ? "bg-zinc-300 dark:bg-zinc-700" : ""
+              )}
             >
               #{tag}
             </div>
