@@ -36,8 +36,8 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
   const handleInput = () => {
     if (!editorRef.current) return;
     const [word, index] = getCurrentWord();
-    if (!word.startsWith("#") || word.slice(1).includes("#")) return hide();
-    setPosition(getCaretCoordinates(editorRef.current, index));
+    const isActive = word.startsWith("#") && !word.slice(1).includes("#");
+    isActive ? setPosition(getCaretCoordinates(editorRef.current, index)) : hide();
   };
 
   const autocomplete = (tag: string) => {
@@ -48,11 +48,12 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
   };
 
   const suggestions = getSuggestions();
+  const isVisible = position && suggestions.length > 0;
 
   return (
     <div className="w-full flex flex-col" onClick={hide} onBlur={hide} onKeyDown={handleKeyDown} onInput={handleInput}>
       {children}
-      {position && suggestions.length > 0 && (
+      {isVisible && (
         <div
           className="z-2 p-1 absolute max-w-[12rem] rounded font-mono shadow bg-zinc-200 dark:bg-zinc-600"
           style={{ left: position.left - 6, top: position.top + position.height + 2 }}
