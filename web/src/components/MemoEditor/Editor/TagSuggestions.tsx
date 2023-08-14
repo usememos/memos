@@ -44,7 +44,7 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
 
   const handleKeyDown = (e: KeyboardEvent) => {
     if (!isVisible) return;
-    if (["ArrowLeft", "ArrowRight"].includes(e.code)) hide();
+    if (["Escape", "ArrowLeft", "ArrowRight"].includes(e.code)) hide();
     if ("ArrowDown" === e.code) {
       select((selected + 1) % suggestions.length);
       e.preventDefault();
