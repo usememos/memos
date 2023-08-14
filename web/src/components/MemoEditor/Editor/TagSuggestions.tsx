@@ -13,8 +13,9 @@ type Position = { left: number; top: number; height: number };
 
 const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
   const { tags } = useTagStore().state;
-  const [selected, setSelected] = useState(0);
+  const [selected, select] = useState(0);
   const [position, setPosition] = useState<Position | null>(null);
+
   const hide = () => setPosition(null);
 
   const getCurrentWord = (): [word: string, startIndex: number] => {
@@ -25,18 +26,26 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
     return [before[0] + ahead[0], before.index || cursorPos];
   };
 
-  const getSuggestions = () => {
+  const suggestions = (() => {
     const partial = getCurrentWord()[0].slice(1).toLowerCase();
     return tags.filter((tag) => tag.toLowerCase().startsWith(partial)).slice(0, 5);
-  };
+  })();
 
   const handleKeyDown = (e: KeyboardEvent) => {
-    const isArrowKey = ["ArrowLeft", "ArrowRight", "ArrowDown", "ArrowUp"].includes(e.code);
-    if (isArrowKey || ["Tab", "Escape"].includes(e.code)) hide();
+    if ("ArrowDown" === e.code) {
+      select((selected + 1) % suggestions.length);
+      e.preventDefault();
+    }
+    if ("ArrowUp" === e.code) {
+      select((selected - 1) % suggestions.length);
+      e.preventDefault();
+    }
+    if (["ArrowLeft", "ArrowRight", "Tab", "Escape"].includes(e.code)) hide();
   };
 
   const handleInput = () => {
     if (!editorRef.current) return;
+    select(0);
     const [word, index] = getCurrentWord();
     const isActive = word.startsWith("#") && !word.slice(1).includes("#");
     isActive ? setPosition(getCaretCoordinates(editorRef.current, index)) : hide();
@@ -49,7 +58,6 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
     editorActions.current.insertText(`#${tag}`);
   };
 
-  const suggestions = getSuggestions();
   const isVisible = position && suggestions.length > 0;
 
   return (
