@@ -46,15 +46,18 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
     if ("ArrowDown" === e.code) {
       select((selected + 1) % suggestions.length);
       e.preventDefault();
+      e.stopPropagation();
     }
     if ("ArrowUp" === e.code) {
       select((selected - 1) % suggestions.length);
       e.preventDefault();
+      e.stopPropagation();
     }
     if (["Enter", "Tab"].includes(e.code)) {
       if (isVisible) {
         autocomplete(suggestions[selected]);
         e.preventDefault();
+        e.stopPropagation();
       }
     }
     if (["ArrowLeft", "ArrowRight"].includes(e.code)) hide();
