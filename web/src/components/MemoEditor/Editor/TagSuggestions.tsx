@@ -22,8 +22,8 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
     if (!editorRef.current) return ["", 0];
     const cursorPos = editorRef.current.selectionEnd;
     const before = editorRef.current.value.slice(0, cursorPos).match(/\S*$/) || { 0: "", index: cursorPos };
-    const ahead = editorRef.current.value.slice(cursorPos).match(/^\S*/) || { 0: "" };
-    return [before[0] + ahead[0], before.index || cursorPos];
+    const after = editorRef.current.value.slice(cursorPos).match(/^\S*/) || { 0: "" };
+    return [before[0] + after[0], before.index ?? cursorPos];
   };
 
   const suggestions = (() => {
@@ -43,24 +43,23 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    if (!isVisible) return;
+    if (["ArrowLeft", "ArrowRight"].includes(e.code)) hide();
     if ("ArrowDown" === e.code) {
       select((selected + 1) % suggestions.length);
       e.preventDefault();
       e.stopPropagation();
     }
     if ("ArrowUp" === e.code) {
-      select((selected - 1) % suggestions.length);
+      select((selected - 1 + suggestions.length) % suggestions.length);
       e.preventDefault();
       e.stopPropagation();
     }
     if (["Enter", "Tab"].includes(e.code)) {
-      if (isVisible) {
-        autocomplete(suggestions[selected]);
-        e.preventDefault();
-        e.stopPropagation();
-      }
+      autocomplete(suggestions[selected]);
+      e.preventDefault();
+      e.stopPropagation();
     }
-    if (["ArrowLeft", "ArrowRight"].includes(e.code)) hide();
   };
 
   const handleInput = () => {
