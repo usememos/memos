@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { KeyboardEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
 import { useTagStore } from "@/store/module";
 import { EditorRefActions } from ".";
@@ -7,11 +7,10 @@ import { EditorRefActions } from ".";
 type Props = {
   editorRef: React.RefObject<HTMLTextAreaElement>;
   editorActions: React.ForwardedRef<EditorRefActions>;
-  children: React.ReactNode;
 };
 type Position = { left: number; top: number; height: number };
 
-const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
+const TagSuggestions = ({ editorRef, editorActions }: Props) => {
   const { tags } = useTagStore().state;
   const [selected, select] = useState(0);
   const [position, setPosition] = useState<Position | null>(null);
@@ -43,23 +42,29 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
   };
 
   const handleKeyDown = (e: KeyboardEvent) => {
+    console.log("tag suggestions: handle key down");
     if (!isVisible) return;
     if (["Escape", "ArrowLeft", "ArrowRight"].includes(e.code)) hide();
     if ("ArrowDown" === e.code) {
       select((selected + 1) % suggestions.length);
       e.preventDefault();
       e.stopPropagation();
+      return false;
     }
     if ("ArrowUp" === e.code) {
       select((selected - 1 + suggestions.length) % suggestions.length);
       e.preventDefault();
       e.stopPropagation();
+      return false;
     }
     if (["Enter", "Tab"].includes(e.code)) {
       autocomplete(suggestions[selected]);
       e.preventDefault();
       e.stopPropagation();
+      return false;
     }
+    // console.log("--------------");
+    // console.log(e);
   };
 
   const handleInput = () => {
@@ -70,28 +75,37 @@ const TagSuggestions = ({ children, editorRef, editorActions }: Props) => {
     isActive ? setPosition(getCaretCoordinates(editorRef.current, index)) : hide();
   };
 
+  // const areListenersRegistered = useRef(false);
+  const registerListeners = () => {
+    console.log("register listeners");
+    // if (!editorRef.current || areListenersRegistered.current) return;
+    if (!editorRef.current) return;
+    editorRef.current.addEventListener("click", hide);
+    editorRef.current.addEventListener("blur", hide);
+    editorRef.current.addEventListener("keydown", handleKeyDown, true);
+    editorRef.current.addEventListener("input", handleInput);
+    // areListenersRegistered.current = true;
+  };
+  useEffect(registerListeners, [!!editorRef.current]);
+
+  if (!isVisible) return null;
   return (
-    <div className="w-full flex flex-col" onClick={hide} onBlur={hide} onKeyDown={handleKeyDown} onInput={handleInput}>
-      {children}
-      {isVisible && (
+    <div
+      className="z-2 p-1 absolute max-w-[12rem] rounded font-mono shadow bg-zinc-200 dark:bg-zinc-600"
+      style={{ left: position.left - 6, top: position.top + position.height + 2 }}
+    >
+      {suggestions.map((tag, i) => (
         <div
-          className="z-2 p-1 absolute max-w-[12rem] rounded font-mono shadow bg-zinc-200 dark:bg-zinc-600"
-          style={{ left: position.left - 6, top: position.top + position.height + 2 }}
+          key={tag}
+          onMouseDown={() => autocomplete(tag)}
+          className={classNames(
+            "rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-300 dark:hover:bg-zinc-700",
+            i === selected ? "bg-zinc-300 dark:bg-zinc-700" : ""
+          )}
         >
-          {suggestions.map((tag, i) => (
-            <div
-              key={tag}
-              onMouseDown={() => autocomplete(tag)}
-              className={classNames(
-                "rounded p-1 px-2 w-full truncate text-sm dark:text-gray-300 cursor-pointer hover:bg-zinc-300 dark:hover:bg-zinc-700",
-                i === selected ? "bg-zinc-300 dark:bg-zinc-700" : ""
-              )}
-            >
-              #{tag}
-            </div>
-          ))}
+          #{tag}
         </div>
-      )}
+      ))}
     </div>
   );
 };

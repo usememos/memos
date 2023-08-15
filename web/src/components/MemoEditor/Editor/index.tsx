@@ -121,22 +121,22 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   );
 
   const handleEditorInput = useCallback(() => {
+    console.log("Editor/index handleEditorInput");
     handleContentChangeCallback(editorRef.current?.value ?? "");
     updateEditorHeight();
   }, []);
 
   return (
     <div className={"common-editor-wrapper " + className}>
-      <TagSuggestions editorRef={editorRef} editorActions={ref}>
-        <textarea
-          className="common-editor-inputer"
-          rows={1}
-          placeholder={placeholder}
-          ref={editorRef}
-          onPaste={onPaste}
-          onInput={handleEditorInput}
-        ></textarea>
-      </TagSuggestions>
+      <textarea
+        className="common-editor-inputer"
+        rows={1}
+        placeholder={placeholder}
+        ref={editorRef}
+        onPaste={onPaste}
+        onInput={handleEditorInput}
+      ></textarea>
+      <TagSuggestions editorRef={editorRef} editorActions={ref} />
     </div>
   );
 });

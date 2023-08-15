@@ -92,6 +92,7 @@ const MemoEditor = (props: Props) => {
   }, [memoId]);
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
+    console.log("handleKeyDown MemoEditor");
     if (!editorRef.current) {
       return;
     }
