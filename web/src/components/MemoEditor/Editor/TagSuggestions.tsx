@@ -43,28 +43,25 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
 
   const handleKeyDown = (e: KeyboardEvent) => {
     console.log("tag suggestions: handle key down");
+    console.log("------------------");
+    console.log(!!isVisible);
     if (!isVisible) return;
     if (["Escape", "ArrowLeft", "ArrowRight"].includes(e.code)) hide();
     if ("ArrowDown" === e.code) {
       select((selected + 1) % suggestions.length);
       e.preventDefault();
       e.stopPropagation();
-      return false;
     }
     if ("ArrowUp" === e.code) {
       select((selected - 1 + suggestions.length) % suggestions.length);
       e.preventDefault();
       e.stopPropagation();
-      return false;
     }
     if (["Enter", "Tab"].includes(e.code)) {
       autocomplete(suggestions[selected]);
       e.preventDefault();
       e.stopPropagation();
-      return false;
     }
-    // console.log("--------------");
-    // console.log(e);
   };
 
   const handleInput = () => {
@@ -75,16 +72,13 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
     isActive ? setPosition(getCaretCoordinates(editorRef.current, index)) : hide();
   };
 
-  // const areListenersRegistered = useRef(false);
   const registerListeners = () => {
     console.log("register listeners");
-    // if (!editorRef.current || areListenersRegistered.current) return;
     if (!editorRef.current) return;
     editorRef.current.addEventListener("click", hide);
     editorRef.current.addEventListener("blur", hide);
-    editorRef.current.addEventListener("keydown", handleKeyDown, true);
+    editorRef.current.addEventListener("keydown", handleKeyDown);
     editorRef.current.addEventListener("input", handleInput);
-    // areListenersRegistered.current = true;
   };
   useEffect(registerListeners, [!!editorRef.current]);
 
