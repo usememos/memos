@@ -121,7 +121,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   );
 
   const handleEditorInput = useCallback(() => {
-    console.log("Editor/index handleEditorInput");
     handleContentChangeCallback(editorRef.current?.value ?? "");
     updateEditorHeight();
   }, []);
