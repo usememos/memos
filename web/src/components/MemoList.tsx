@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
-import { LINK_REG, PLAIN_LINK_REG, TAG_REG } from "@/labs/marked/parser";
+import { TAG_REG } from "@/labs/marked/parser";
 import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "./Empty";
@@ -24,8 +24,8 @@ const MemoList: React.FC<Props> = (props: Props) => {
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
   const currentUsername = userStore.getCurrentUsername();
-  const { tag: tagQuery, duration, type: memoType, text: textQuery, visibility } = filter;
-  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || memoType || textQuery || visibility);
+  const { tag: tagQuery, duration, text: textQuery, visibility } = filter;
+  const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || textQuery || visibility);
 
   const shownMemos = (
     showMemoFilter
@@ -54,13 +54,6 @@ const MemoList: React.FC<Props> = (props: Props) => {
             (getTimeStampByDate(memo.displayTs) < duration.from || getTimeStampByDate(memo.displayTs) > duration.to)
           ) {
             shouldShow = false;
-          }
-          if (memoType) {
-            if (memoType === "NOT_TAGGED" && memo.content.match(TAG_REG) !== null) {
-              shouldShow = false;
-            } else if (memoType === "LINKED" && (memo.content.match(LINK_REG) === null || memo.content.match(PLAIN_LINK_REG) === null)) {
-              shouldShow = false;
-            }
           }
           if (textQuery && !memo.content.toLowerCase().includes(textQuery.toLowerCase())) {
             shouldShow = false;

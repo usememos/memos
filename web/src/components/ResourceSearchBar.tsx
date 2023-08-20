@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import useDebounce from "@/hooks/useDebounce";
+import { useDebounce } from "react-use";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
 
