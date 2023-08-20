@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { last } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { useToggle } from "react-use";
+import useToggle from "react-use/lib/useToggle";
 import DailyMemo from "@/components/DailyMemo";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
