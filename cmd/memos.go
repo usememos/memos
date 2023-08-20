@@ -10,7 +10,9 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
 
+	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -42,7 +44,7 @@ var (
 			db := db.NewDB(profile)
 			if err := db.Open(ctx); err != nil {
 				cancel()
-				fmt.Printf("failed to open db, error: %+v\n", err)
+				log.Error("failed to open db", zap.Error(err))
 				return
 			}
 
@@ -50,7 +52,7 @@ var (
 			s, err := server.NewServer(ctx, profile, store)
 			if err != nil {
 				cancel()
-				fmt.Printf("failed to create server, error: %+v\n", err)
+				log.Error("failed to create server", zap.Error(err))
 				return
 			}
 
@@ -61,16 +63,16 @@ var (
 			signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 			go func() {
 				sig := <-c
-				fmt.Printf("%s received.\n", sig.String())
+				log.Info(fmt.Sprintf("%s received.\n", sig.String()))
 				s.Shutdown(ctx)
 				cancel()
 			}()
 
-			println(greetingBanner)
-			fmt.Printf("Version %s has started at :%d\n", profile.Version, profile.Port)
+			printGreetings()
+
 			if err := s.Start(ctx); err != nil {
 				if err != http.ErrServerClosed {
-					fmt.Printf("failed to start server, error: %+v\n", err)
+					log.Error("failed to start server", zap.Error(err))
 					cancel()
 				}
 			}
@@ -82,6 +84,7 @@ var (
 )
 
 func Execute() error {
+	defer log.Sync()
 	return rootCmd.Execute()
 }
 
@@ -126,4 +129,14 @@ func initConfig() {
 	println("mode:", profile.Mode)
 	println("version:", profile.Version)
 	println("---")
+}
+
+func printGreetings() {
+	fmt.Print(greetingBanner)
+	fmt.Printf("Version %s has been started on port %d\n", profile.Version, profile.Port)
+	fmt.Println("---")
+	fmt.Println("See more in:")
+	fmt.Printf("👉Website: %s\n", "https://usememos.com")
+	fmt.Printf("👉GitHub: %s\n", "https://github.com/usememos/memos")
+	fmt.Println("---")
 }
