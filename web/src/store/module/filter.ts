@@ -16,17 +16,9 @@ export const useFilterStore = () => {
       store.dispatch(
         setFilter({
           tag: undefined,
-          type: undefined,
           duration: undefined,
           text: undefined,
           visibility: undefined,
-        })
-      );
-    },
-    setMemoTypeFilter: (type?: MemoSpecType) => {
-      store.dispatch(
-        setFilter({
-          type: type,
         })
       );
     },

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import useDebounce from "@/hooks/useDebounce";
+import useDebounce from "react-use/lib/useDebounce";
 import { useFilterStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
