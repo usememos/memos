@@ -25,7 +25,7 @@ func NewBackupRunner(store *store.Store) *BackupRunner {
 func (r *BackupRunner) Run(ctx context.Context) {
 	intervalStr := r.Store.GetSystemSettingValueWithDefault(&ctx, apiv1.SystemSettingAutoBackupIntervalName.String(), "")
 	if intervalStr == "" {
-		log.Info("no SystemSettingAutoBackupIntervalName setting, disable auto backup")
+		log.Debug("no SystemSettingAutoBackupIntervalName setting, disable auto backup")
 		return
 	}
 
