@@ -58,8 +58,8 @@
     "name": "名稱",
     "visibility": "可見度",
     "learn-more": "了解",
-    "e.g": "例如",
     "beta": "測試版",
+    "new": "新增",
     "dialog": {
       "error": "錯誤",
       "help": "幫助",
@@ -151,7 +151,12 @@
     "tip-text": "輸入 `#tag` 以新增標籤",
     "create-tag": "建立標籤",
     "all-tags": "所有標籤",
-    "tag-name": "標籤名稱"
+    "tag-name": "標籤名稱",
+    "invalid-tag-name": "無效的標籤名稱",
+    "tag-suggestions": "標籤建議",
+    "show": "顯示",
+    "hide": "隱藏",
+    "save-all": "全部儲存"
   },
   "daily-review": {
     "title": "每日回顧",
@@ -245,10 +250,17 @@
       },
       "database-file-size": "資料庫檔案大小",
       "allow-user-signup": "允許使用者註冊",
+      "disable-password-login": "禁用密碼登入",
+      "disable-password-login-warning": "所有使用者將無法使用密碼登入。如果配置的身份識別提供者失效，不在資料庫中恢復此設定將無法登入。刪除身分識別提供者時也要特別小心❗",
+      "disable-password-login-final-warning": "如果你知道自己在做什麼，請輸入 \"CONFIRM\"",
+      "enable-password-login": "啟用密碼登入",
+      "enable-password-login-warning": "啟用所有使用者的密碼登入。如果希望使用者同時使用 SSO 和密碼登入，請開啟密碼登入❗",
       "ignore-version-upgrade": "忽略版本更新提示",
       "disable-public-memos": "停用公共備忘錄",
       "max-upload-size": "最大上傳檔案大小 (MiB)",
       "max-upload-size-hint": "建議值為 32 MiB。",
+      "auto-backup-interval": "自動備份間隔(單位：秒)",
+      "auto-backup-interval-hint": "設定為0禁止自動備份，重新啟動後生效",
       "additional-style": "自訂樣式",
       "additional-script": "自訂腳本",
       "additional-style-placeholder": "自訂 CSS 代碼",
@@ -256,11 +268,6 @@
       "telegram-bot-token": "Telegram 機器人權杖",
       "telegram-bot-token-description": "Telegram 機器人權杖或 API Proxy，如 `http.../bot<token>`",
       "telegram-bot-token-placeholder": "您的 Telegram 機器人權杖",
-      "openai-api-key": "OpenAI: API 金鑰",
-      "openai-api-key-description": "取得 API 金鑰",
-      "openai-api-key-placeholder": "您的 OpenAI API 金鑰",
-      "openai-api-host": "OpenAI: API 主機",
-      "openai-api-host-placeholder": "預設: https://api.openai.com/",
       "display-with-updated-time": "顯示更新時間"
     },
     "appearance-option": {
@@ -360,7 +367,9 @@
     "update-succeed": "更新成功",
     "page-not-found": "404 - 網頁無法顯示 😥",
     "maximum-upload-size-is": "最大允許檔案上傳大小 {{size}} MiB",
-    "file-exceeds-upload-limit-of": "檔案 {{file}} 超過上傳限制 {{size}} MiB"
+    "file-exceeds-upload-limit-of": "檔案 {{file}} 超過上傳限制 {{size}} MiB",
+    "updating-setting-failed": "更新設定失敗",
+    "password-login-disabled": "在禁用密碼登入時無法移除最後一個身份識別提供者"
   },
   "days": {
     "mon": "一",
@@ -369,14 +378,7 @@
     "thu": "四",
     "fri": "五",
     "sat": "六",
-    "sun": "日",
-    "tuesday": "星期二",
-    "sunday": "星期天",
-    "monday": "星期一",
-    "thursday": "星期四",
-    "saturday": "星期六",
-    "friday": "星期五",
-    "wednesday": "星期三"
+    "sun": "日"
   },
   "embed-memo": {
     "title": "嵌入備忘錄",
