@@ -5,17 +5,15 @@ import Empty from "@/components/Empty";
 import Memo from "@/components/Memo";
 import MemoFilter from "@/components/MemoFilter";
 import MobileHeader from "@/components/MobileHeader";
-import SearchBar from "@/components/SearchBar";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import useLoading from "@/hooks/useLoading";
 import { TAG_REG } from "@/labs/marked/parser";
-import { useFilterStore, useGlobalStore, useMemoStore } from "@/store/module";
+import { useFilterStore, useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 
 const Explore = () => {
   const t = useTranslate();
   const location = useLocation();
-  const globalStore = useGlobalStore();
   const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const filter = filterStore.state;
@@ -91,11 +89,6 @@ const Explore = () => {
   return (
     <section className="w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
-      {globalStore.isDev() && (
-        <div className="mb-4 mt-2 w-full">
-          <SearchBar />
-        </div>
-      )}
       {!loadingState.isLoading && (
         <main className="relative w-full h-auto flex flex-col justify-start items-start">
           <MemoFilter />

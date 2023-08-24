@@ -4,7 +4,6 @@ import ArchivedMemo from "@/components/ArchivedMemo";
 import Empty from "@/components/Empty";
 import MemoFilter from "@/components/MemoFilter";
 import MobileHeader from "@/components/MobileHeader";
-import SearchBar from "@/components/SearchBar";
 import useLoading from "@/hooks/useLoading";
 import { useFilterStore, useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
@@ -40,9 +39,6 @@ const Archived = () => {
     <section className="w-full min-h-full flex flex-col md:flex-row justify-start items-start px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       <div className="archived-memo-page">
-        <div className="mb-2 mt-2 w-full">
-          <SearchBar />
-        </div>
         <MemoFilter />
         {loadingState.isLoading ? (
           <div className="tip-text-container">

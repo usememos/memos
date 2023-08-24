@@ -1,4 +1,4 @@
-import { Button, Input } from "@mui/joy";
+import { Button, Dropdown, Input, Menu, MenuButton } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import * as api from "@/helpers/api";
@@ -6,7 +6,7 @@ import { useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
-import Dropdown from "../kit/Dropdown";
+import Icon from "../Icon";
 
 interface State {
   createUserUsername: string;
@@ -163,8 +163,11 @@ const PreferencesSection = () => {
                     {currentUser?.id === user.id ? (
                       <span>{t("common.yourself")}</span>
                     ) : (
-                      <Dropdown
-                        actions={
+                      <Dropdown>
+                        <MenuButton size="sm">
+                          <Icon.MoreVertical className="w-4 h-auto" />
+                        </MenuButton>
+                        <Menu>
                           <>
                             <button
                               className="w-full text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
@@ -196,8 +199,8 @@ const PreferencesSection = () => {
                               </>
                             )}
                           </>
-                        }
-                      />
+                        </Menu>
+                      </Dropdown>
                     )}
                   </td>
                 </tr>

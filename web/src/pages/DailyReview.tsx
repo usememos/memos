@@ -19,15 +19,13 @@ import { findNearestLanguageMatch, useTranslate } from "@/utils/i18n";
 const DailyReview = () => {
   const t = useTranslate();
   const memoStore = useMemoStore();
-  const memos = memoStore.state.memos;
-
   const userStore = useUserStore();
   const { localSetting } = userStore.state.user as User;
   const [currentDateStamp, setCurrentDateStamp] = useState(getDateStampByDate(getNormalizedDateString()));
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const memosElRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date(currentDateStamp);
-  const dailyMemos = memos
+  const dailyMemos = memoStore.state.memos
     .filter((m) => {
       const displayTimestamp = getTimeStampByDate(m.displayTs);
       const currentDateStampWithOffset = currentDateStamp + convertToMillis(localSetting);

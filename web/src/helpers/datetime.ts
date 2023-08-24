@@ -5,10 +5,6 @@ export function convertToMillis(localSetting: LocalSetting) {
   return hoursToMillis;
 }
 
-export function getNowTimeStamp(): number {
-  return Date.now();
-}
-
 export function getTimeStampByDate(t: Date | number | string): number {
   if (typeof t === "string") {
     t = t.replaceAll("-", "/");
@@ -113,7 +109,6 @@ export function getDateString(t?: Date | number | string, locale = i18n.language
  * - "x months ago"
  * - "last year"
  * - "x years ago"
- *
  */
 export const getRelativeTimeString = (time: number, locale = i18n.language, formatStyle: "long" | "short" | "narrow" = "long"): string => {
   const pastTimeMillis = Date.now() - time;
