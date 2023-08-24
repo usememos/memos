@@ -47,10 +47,6 @@ const PreferencesSection = () => {
     userStore.upsertLocalSetting({ ...localSetting, dailyReviewTimeOffset: value });
   };
 
-  const handleAutoCollapseChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
-    userStore.upsertLocalSetting({ ...localSetting, enableAutoCollapse: event.target.checked });
-  };
-
   const handleSaveTelegramUserId = async () => {
     try {
       await userStore.upsertUserSetting("telegram-user-id", telegramUserId);
@@ -128,11 +124,6 @@ const PreferencesSection = () => {
       <label className="form-label selector">
         <span className="text-sm break-keep">{t("setting.preference-section.enable-double-click")}</span>
         <Switch className="ml-2" checked={localSetting.enableDoubleClickEditing} onChange={handleDoubleClickEnabledChanged} />
-      </label>
-
-      <label className="form-label selector">
-        <span className="normal-text">{t("setting.preference-section.auto-collapse")}</span>
-        <Switch className="ml-2" checked={localSetting.enableAutoCollapse} onChange={handleAutoCollapseChanged} />
       </label>
 
       <Divider className="!mt-3 !my-4" />

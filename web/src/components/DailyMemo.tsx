@@ -17,7 +17,7 @@ const DailyMemo: React.FC<Props> = (props: Props) => {
         <span className="normal-text">{displayTimeStr}</span>
       </div>
       <div className="memo-container">
-        <MemoContent content={memo.content} showFull={true} />
+        <MemoContent content={memo.content} />
         <MemoResourceListView resourceList={memo.resourceList} />
       </div>
       <div className="split-line"></div>
