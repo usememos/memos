@@ -15,6 +15,8 @@ import (
 type Profile struct {
 	// Mode can be "prod" or "dev" or "demo"
 	Mode string `json:"mode"`
+	// Addr is the binding address for server
+	Addr string `json:"-"`
 	// Port is the binding port for server
 	Port int `json:"-"`
 	// Data is the data directory

@@ -32,6 +32,7 @@ const (
 var (
 	profile *_profile.Profile
 	mode    string
+	addr    string
 	port    int
 	data    string
 
@@ -91,10 +92,15 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVarP(&mode, "mode", "m", "demo", `mode of server, can be "prod" or "dev" or "demo"`)
+	rootCmd.PersistentFlags().StringVarP(&addr, "addr", "a", "", "address of server")
 	rootCmd.PersistentFlags().IntVarP(&port, "port", "p", 8081, "port of server")
 	rootCmd.PersistentFlags().StringVarP(&data, "data", "d", "", "data directory")
 
 	err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode"))
+	if err != nil {
+		panic(err)
+	}
+	err = viper.BindPFlag("addr", rootCmd.PersistentFlags().Lookup("addr"))
 	if err != nil {
 		panic(err)
 	}
@@ -108,6 +114,7 @@ func init() {
 	}
 
 	viper.SetDefault("mode", "demo")
+	viper.SetDefault("addr", "")
 	viper.SetDefault("port", 8081)
 	viper.SetEnvPrefix("memos")
 }
@@ -124,6 +131,7 @@ func initConfig() {
 	println("---")
 	println("Server profile")
 	println("dsn:", profile.DSN)
+	println("addr:", profile.Addr)
 	println("port:", profile.Port)
 	println("mode:", profile.Mode)
 	println("version:", profile.Version)
@@ -132,7 +140,11 @@ func initConfig() {
 
 func printGreetings() {
 	fmt.Print(greetingBanner)
-	fmt.Printf("Version %s has been started on port %d\n", profile.Version, profile.Port)
+	if len(profile.Addr) == 0 {
+		fmt.Printf("Version %s has been started on port %d\n", profile.Version, profile.Port)
+	} else {
+		fmt.Printf("Version %s has been started on address '%s' and port %d\n", profile.Version, profile.Addr, profile.Port)
+	}
 	fmt.Println("---")
 	fmt.Println("See more in:")
 	fmt.Printf("👉Website: %s\n", "https://usememos.com")

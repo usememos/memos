@@ -139,7 +139,7 @@ func (s *Server) Start(ctx context.Context) error {
 	go s.backupRunner.Run(ctx)
 
 	// Start gRPC server.
-	listen, err := net.Listen("tcp", fmt.Sprintf(":%d", s.Profile.Port+1))
+	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port+1))
 	if err != nil {
 		return err
 	}
@@ -152,7 +152,7 @@ func (s *Server) Start(ctx context.Context) error {
 	// programmatically set API version same as the server version
 	apiv1.SwaggerInfo.Version = s.Profile.Version
 
-	return s.e.Start(fmt.Sprintf(":%d", s.Profile.Port))
+	return s.e.Start(fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port))
 }
 
 func (s *Server) Shutdown(ctx context.Context) {
