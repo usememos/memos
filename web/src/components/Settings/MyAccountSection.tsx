@@ -53,7 +53,7 @@ const MyAccountSection = () => {
         <p className="title-text">Open ID</p>
         <div className="w-full flex flex-row justify-start items-center">
           <Input className="grow mr-2" value={user.openId} readOnly />
-          <Button className="shrink-0" color="warning" onClick={handleResetOpenIdBtnClick}>
+          <Button className="shrink-0" color="neutral" variant="outlined" onClick={handleResetOpenIdBtnClick}>
             <Icon.RefreshCw className="h-4 w-4" />
           </Button>
         </div>

@@ -38,7 +38,7 @@ const UserBanner = () => {
   return (
     <div className="flex flex-row justify-between items-center relative w-full h-auto px-2 flex-nowrap shrink-0">
       <Dropdown
-        className="w-full"
+        className="w-auto"
         trigger={
           <div className="px-4 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-lg hover:shadow hover:bg-white dark:hover:bg-zinc-700">
             <UserAvatar avatarUrl={user?.avatarUrl} />

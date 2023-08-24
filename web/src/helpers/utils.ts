@@ -2,21 +2,6 @@ export const isNullorUndefined = (value: any) => {
   return value === null || value === undefined;
 };
 
-export function getOSVersion(): "Windows" | "MacOS" | "Linux" | "Unknown" {
-  const appVersion = navigator.userAgent;
-  let detectedOS: "Windows" | "MacOS" | "Linux" | "Unknown" = "Unknown";
-
-  if (appVersion.indexOf("Win") != -1) {
-    detectedOS = "Windows";
-  } else if (appVersion.indexOf("Mac") != -1) {
-    detectedOS = "MacOS";
-  } else if (appVersion.indexOf("Linux") != -1) {
-    detectedOS = "Linux";
-  }
-
-  return detectedOS;
-}
-
 export const getElementBounding = (element: HTMLElement, relativeEl?: HTMLElement) => {
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft;
@@ -67,14 +52,6 @@ export const getElementBounding = (element: HTMLElement, relativeEl?: HTMLElemen
   });
 };
 
-export const parseHTMLToRawText = (htmlStr: string): string => {
-  const tempEl = document.createElement("div");
-  tempEl.className = "memo-content-text";
-  tempEl.innerHTML = htmlStr;
-  const text = tempEl.innerText;
-  return text;
-};
-
 export function absolutifyLink(rel: string): string {
   const anchor = document.createElement("a");
   anchor.setAttribute("href", rel);
@@ -105,11 +82,6 @@ export const formatBytes = (bytes: number) => {
     sizes = ["Bytes", "KiB", "MiB", "GiB", "TiB", "PiB", "EiB", "ZiB", "YiB"],
     i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
-};
-
-export const getContentQueryParam = (): string | undefined => {
-  const urlParams = new URLSearchParams(window.location.search);
-  return urlParams.get("content") ?? undefined;
 };
 
 export const clearContentQueryParam = () => {
