@@ -174,7 +174,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
           >
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{memo.displayTsStr}</span>
             <div className="w-full px-6 text-base pb-4">
-              <MemoContent content={memo.content} showFull={true} />
+              <MemoContent content={memo.content} />
               <MemoResourceListView className="!grid-cols-2" resourceList={memo.resourceList} />
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-4 px-6">

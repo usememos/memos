@@ -16,7 +16,6 @@ const defaultSetting: Setting = {
 
 const defaultLocalSetting: LocalSetting = {
   enableDoubleClickEditing: false,
-  enableAutoCollapse: false,
   dailyReviewTimeOffset: 0,
 };
 

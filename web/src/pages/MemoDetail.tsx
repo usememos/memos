@@ -45,7 +45,7 @@ const MemoDetail = () => {
           (memo ? (
             <>
               <main className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
-                <Memo memo={memo} showCreator showFull showRelatedMemos />
+                <Memo memo={memo} showCreator showRelatedMemos />
               </main>
               <div className="mt-4 w-full flex flex-row justify-center items-center gap-2">
                 <Link
