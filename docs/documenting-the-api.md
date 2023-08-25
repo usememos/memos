@@ -6,7 +6,7 @@
 
 - Documentation is written using [Declarative Comments Format](https://github.com/swaggo/swag#declarative-comments-format).
 
-- The documentation is generated in the `./api` folder as `docs.go`.
+- The documentation is generated in the `./api/v1` folder as `docs.go`.
 
 - [echo-swagger](https://github.com/swaggo/echo-swagger) is used to integrate with Echo framework and serve the documentation with [Swagger-UI](https://swagger.io/tools/swagger-ui/) at `http://memos.host:5230/api/index.html`
 
@@ -107,7 +107,7 @@ If `$HOME/go/bin` is not in your `PATH`, you can call `swag` directly at `$HOME/
 
    ```bash
    cd <project-root>
-   swag init --output api --generalInfo ./server/server.go --dir ./,./api/v1
+   swag init --output ./api/v1 --generalInfo ./api/v1/v1.go --dir ./,./api/v1
    ```
 
 > If the API gets a new version, you'll need to add the file system path to swag's `--dir` parameter.

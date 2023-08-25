@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+package memos.store;
+
+option go_package = "gen/store";
+
+enum SystemSettingKey {
+  SYSTEM_SETTING_KEY_UNSPECIFIED = 0;
+
+  // BackupConfig is the key for auto-backup configuration.
+  BACKUP_CONFIG = 1;
+}
+
+message BackupConfig {
+  // enabled indicates whether backup is enabled.
+  bool enabled = 1;
+  // cron is the cron expression for backup. See https://godoc.org/github.com/robfig/cron#hdr-CRON_Expression_Format
+  string cron = 2;
+  // max_keep is the maximum number of backups to keep.
+  int32 max_keep = 3;
+}
