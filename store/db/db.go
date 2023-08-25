@@ -36,7 +36,10 @@ func NewDB(profile *profile.Profile) *DB {
 	return db
 }
 
-func (db *DB) Open(ctx context.Context) (err error) {
+// Open opens a database specified by its database driver name and a
+// driver-specific data source name, usually consisting of at least a
+// database name and connection information.
+func (db *DB) Open() error {
 	// Ensure a DSN is set before attempting to open the database.
 	if db.profile.DSN == "" {
 		return fmt.Errorf("dsn required")
@@ -61,7 +64,11 @@ func (db *DB) Open(ctx context.Context) (err error) {
 		return fmt.Errorf("failed to open db with dsn: %s, err: %w", db.profile.DSN, err)
 	}
 	db.DBInstance = sqliteDB
+	return nil
+}
 
+// Migrate applies the latest schema to the database.
+func (db *DB) Migrate(ctx context.Context) error {
 	if db.profile.Mode == "prod" {
 		_, err := os.Stat(db.profile.DSN)
 		if err != nil {

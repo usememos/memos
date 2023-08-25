@@ -42,9 +42,14 @@ var (
 		Run: func(_cmd *cobra.Command, _args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
 			db := db.NewDB(profile)
-			if err := db.Open(ctx); err != nil {
+			if err := db.Open(); err != nil {
 				cancel()
 				log.Error("failed to open db", zap.Error(err))
+				return
+			}
+			if err := db.Migrate(ctx); err != nil {
+				cancel()
+				log.Error("failed to migrate db", zap.Error(err))
 				return
 			}
 
