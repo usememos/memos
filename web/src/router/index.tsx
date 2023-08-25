@@ -13,6 +13,7 @@ const Auth = lazy(() => import("@/pages/Auth"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
 const Explore = lazy(() => import("@/pages/Explore"));
 const Home = lazy(() => import("@/pages/Home"));
+const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
 const EmbedMemo = lazy(() => import("@/pages/EmbedMemo"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
@@ -76,28 +77,6 @@ const router = createBrowserRouter([
           }
 
           return redirect("/explore");
-        },
-      },
-      {
-        path: "u/:username",
-        element: <Home />,
-        loader: async () => {
-          await initialGlobalStateLoader();
-
-          try {
-            await initialUserState();
-          } catch (error) {
-            // do nth
-          }
-
-          const { user } = store.getState().user;
-          const { systemStatus } = store.getState().global;
-
-          if (isNullorUndefined(user) && systemStatus.disablePublicMemos) {
-            return redirect("/auth");
-          }
-
-          return null;
         },
       },
       {
@@ -227,6 +206,20 @@ const router = createBrowserRouter([
   {
     path: "/m/:memoId/embed",
     element: <EmbedMemo />,
+    loader: async () => {
+      await initialGlobalStateLoader();
+
+      try {
+        await initialUserState();
+      } catch (error) {
+        // do nth
+      }
+      return null;
+    },
+  },
+  {
+    path: "u/:username",
+    element: <UserProfile />,
     loader: async () => {
       await initialGlobalStateLoader();
 

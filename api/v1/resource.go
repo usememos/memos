@@ -656,7 +656,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		return fmt.Errorf("Failed to find SystemSettingStorageServiceIDName: %s", err)
 	}
 
-	storageServiceID := DatabaseStorage
+	storageServiceID := LocalStorage
 	if systemSettingStorageServiceID != nil {
 		err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
 		if err != nil {
@@ -672,15 +672,13 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		}
 		create.Blob = fileBytes
 		return nil
-	}
-
-	// `LocalStorage` means save blob into local disk
-	if storageServiceID == LocalStorage {
+	} else if storageServiceID == LocalStorage {
+		// `LocalStorage` means save blob into local disk
 		systemSettingLocalStoragePath, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingLocalStoragePathName.String()})
 		if err != nil {
 			return fmt.Errorf("Failed to find SystemSettingLocalStoragePathName: %s", err)
 		}
-		localStoragePath := "assets/{filename}"
+		localStoragePath := "assets/{timestamp}_{filename}"
 		if systemSettingLocalStoragePath != nil && systemSettingLocalStoragePath.Value != "" {
 			err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
 			if err != nil {

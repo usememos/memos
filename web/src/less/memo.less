@@ -8,30 +8,6 @@
   > .memo-top-wrapper {
     @apply flex flex-row justify-between items-center w-full h-6 mb-1;
 
-    > .status-text-container {
-      @apply flex flex-row justify-start items-center;
-
-      > .time-text {
-        @apply text-sm text-gray-400;
-      }
-
-      > .name-text {
-        @apply ml-1 text-sm text-gray-400 cursor-pointer hover:opacity-80;
-      }
-
-      > .status-text {
-        @apply text-xs cursor-pointer ml-2 rounded border px-1;
-
-        &.public {
-          @apply border-green-600 text-green-600;
-        }
-
-        &.protected {
-          @apply border-gray-400 text-gray-400;
-        }
-      }
-    }
-
     > .btns-container {
       @apply flex flex-row justify-end items-center relative shrink-0;
 
@@ -56,7 +32,7 @@
         @apply flex flex-row justify-center items-center leading-6 text-sm rounded hover:bg-gray-200 dark:hover:bg-zinc-600;
 
         &.more-action-btn {
-          @apply w-auto opacity-60 cursor-default hover:bg-transparent;
+          @apply w-auto opacity-50 cursor-default hover:bg-transparent;
 
           > .icon-img {
             @apply w-4 h-auto dark:text-gray-300;

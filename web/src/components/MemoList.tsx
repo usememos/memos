@@ -9,12 +9,7 @@ import Empty from "./Empty";
 import Memo from "./Memo";
 import "@/less/memo-list.less";
 
-interface Props {
-  showCreator?: boolean;
-}
-
-const MemoList: React.FC<Props> = (props: Props) => {
-  const { showCreator } = props;
+const MemoList: React.FC = () => {
   const t = useTranslate();
   const memoStore = useMemoStore();
   const userStore = useUserStore();
@@ -142,7 +137,7 @@ const MemoList: React.FC<Props> = (props: Props) => {
   return (
     <div className="memo-list-container">
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} lazyRendering showVisibility showCreator={showCreator} />
+        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} lazyRendering showVisibility />
       ))}
       {isFetching ? (
         <div className="status-text-container fetching-tip">
