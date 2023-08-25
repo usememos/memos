@@ -32,8 +32,11 @@ type TestingServer struct {
 func NewTestingServer(ctx context.Context, t *testing.T) (*TestingServer, error) {
 	profile := test.GetTestingProfile(t)
 	db := db.NewDB(profile)
-	if err := db.Open(ctx); err != nil {
+	if err := db.Open(); err != nil {
 		return nil, errors.Wrap(err, "failed to open db")
+	}
+	if err := db.Migrate(ctx); err != nil {
+		return nil, errors.Wrap(err, "failed to migrate db")
 	}
 
 	store := store.New(db.DBInstance, profile)
