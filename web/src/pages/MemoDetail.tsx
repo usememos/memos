@@ -33,7 +33,7 @@ const MemoDetail = () => {
   }, [location]);
 
   return (
-    <section className="relative top-0 w-full h-full overflow-y-auto overflow-x-hidden bg-zinc-100 dark:bg-zinc-800">
+    <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-zinc-100 dark:bg-zinc-800">
       <div className="relative w-full min-h-full mx-auto flex flex-col justify-start items-center pb-6">
         <div className="max-w-2xl w-full flex flex-row justify-center items-center px-4 py-2 mt-2 bg-zinc-100 dark:bg-zinc-800">
           <div className="detail-header flex flex-row justify-start items-center">
@@ -45,7 +45,7 @@ const MemoDetail = () => {
           (memo ? (
             <>
               <main className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
-                <Memo memo={memo} showCreator showRelatedMemos />
+                <Memo memo={memo} />
               </main>
               <div className="mt-4 w-full flex flex-row justify-center items-center gap-2">
                 <Link

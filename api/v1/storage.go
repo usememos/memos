@@ -13,6 +13,7 @@ import (
 
 const (
 	// LocalStorage means the storage service is local file system.
+	// Default storage service is local file system.
 	LocalStorage int32 = -1
 	// DatabaseStorage means the storage service is database.
 	DatabaseStorage int32 = 0
@@ -214,7 +215,7 @@ func (s *APIV1Service) DeleteStorage(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find storage").SetInternal(err)
 	}
 	if systemSetting != nil {
-		storageServiceID := DatabaseStorage
+		storageServiceID := LocalStorage
 		err = json.Unmarshal([]byte(systemSetting.Value), &storageServiceID)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal storage service id").SetInternal(err)

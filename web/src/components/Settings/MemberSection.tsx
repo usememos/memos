@@ -156,7 +156,10 @@ const PreferencesSection = () => {
               {userList.map((user) => (
                 <tr key={user.id}>
                   <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900">{user.id}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{user.username}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                    {user.username}
+                    <span className="ml-1 italic">{user.rowStatus === "ARCHIVED" && "(Archived)"}</span>
+                  </td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{user.nickname}</td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{user.email}</td>
                   <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium flex justify-end">
