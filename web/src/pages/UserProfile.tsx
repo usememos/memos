@@ -1,25 +1,25 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import FloatingNavButton from "@/components/FloatingNavButton";
 import MemoFilter from "@/components/MemoFilter";
 import MemoList from "@/components/MemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
-import { useGlobalStore, useUserStore } from "@/store/module";
+import { useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = () => {
   const t = useTranslate();
-  const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const loadingState = useLoading();
-  const user = userStore.state.user;
+  const [user, setUser] = useState<User>();
 
   useEffect(() => {
     const currentUsername = userStore.getCurrentUsername();
     userStore
       .getUserByUsername(currentUsername)
-      .then(() => {
+      .then((user) => {
+        setUser(user);
         loadingState.setFinish();
       })
       .catch((error) => {
@@ -27,12 +27,6 @@ const UserProfile = () => {
         toast.error(t("message.user-not-found"));
       });
   }, [userStore.getCurrentUsername()]);
-
-  useEffect(() => {
-    if (user?.setting.locale) {
-      globalStore.setLocale(user.setting.locale);
-    }
-  }, [user?.setting.locale]);
 
   return (
     <>

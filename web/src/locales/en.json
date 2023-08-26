@@ -60,14 +60,15 @@
     "learn-more": "Learn more",
     "beta": "Beta",
     "new": "New",
+    "mark": "Mark",
+    "profile": "Profile",
     "dialog": {
       "error": "Error",
       "help": "Help",
       "info": "Information",
       "success": "Success",
       "warning": "Warning"
-    },
-    "mark": "Mark"
+    }
   },
   "router": {
     "back-to-home": "Back to Home"
