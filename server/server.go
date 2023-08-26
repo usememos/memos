@@ -19,6 +19,7 @@ import (
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/server/service"
 	"github.com/usememos/memos/store"
 	"go.uber.org/zap"
 )
@@ -35,29 +36,10 @@ type Server struct {
 	apiV2Service *apiv2.APIV2Service
 
 	// Asynchronous runners.
-	backupRunner *BackupRunner
+	backupRunner *service.BackupRunner
 	telegramBot  *telegram.Bot
 }
 
-// @title						memos API
-// @version					1.0
-// @description				A privacy-first, lightweight note-taking service.
-//
-// @contact.name				API Support
-// @contact.url				https://github.com/orgs/usememos/discussions
-//
-// @license.name				MIT License
-// @license.url				https://github.com/usememos/memos/blob/main/LICENSE
-//
-// @BasePath					/
-//
-// @externalDocs.url			https://usememos.com/
-// @externalDocs.description	Find out more about Memos
-//
-// @securitydefinitions.apikey	ApiKeyAuth
-// @in							query
-// @name						openId
-// @description				Insert your Open ID API Key here.
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
 	e := echo.New()
 	e.Debug = true
@@ -70,7 +52,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		Profile: profile,
 
 		// Asynchronous runners.
-		backupRunner: NewBackupRunner(store),
+		backupRunner: service.NewBackupRunner(store),
 		telegramBot:  telegram.NewBotWithHandler(newTelegramHandler(store)),
 	}
 
@@ -148,9 +130,6 @@ func (s *Server) Start(ctx context.Context) error {
 			log.Error("grpc server listen error", zap.Error(err))
 		}
 	}()
-
-	// programmatically set API version same as the server version
-	apiv1.SwaggerInfo.Version = s.Profile.Version
 
 	return s.e.Start(fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port))
 }

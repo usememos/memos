@@ -12,6 +12,25 @@ type APIV1Service struct {
 	Store   *store.Store
 }
 
+// @title						memos API
+// @version					1.0
+// @description				A privacy-first, lightweight note-taking service.
+//
+// @contact.name				API Support
+// @contact.url				https://github.com/orgs/usememos/discussions
+//
+// @license.name				MIT License
+// @license.url				https://github.com/usememos/memos/blob/main/LICENSE
+//
+// @BasePath					/
+//
+// @externalDocs.url			https://usememos.com/
+// @externalDocs.description	Find out more about Memos
+//
+// @securitydefinitions.apikey	ApiKeyAuth
+// @in							query
+// @name						openId
+// @description				Insert your Open ID API Key here.
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
 	return &APIV1Service{
 		Secret:  secret,
@@ -50,4 +69,7 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 	})
 	s.registerGetterPublicRoutes(publicGroup)
 	s.registerResourcePublicRoutes(publicGroup)
+
+	// programmatically set API version same as the server version
+	SwaggerInfo.Version = s.Profile.Version
 }
