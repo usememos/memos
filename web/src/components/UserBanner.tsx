@@ -23,7 +23,7 @@ const UserBanner = () => {
   }, [user]);
 
   const handleMyAccountClick = () => {
-    navigate("/setting");
+    navigate(`/u/${user?.username}`);
   };
 
   const handleAboutBtnClick = () => {
@@ -41,7 +41,7 @@ const UserBanner = () => {
         className="w-auto"
         trigger={
           <div className="px-4 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-lg hover:shadow hover:bg-white dark:hover:bg-zinc-700">
-            <UserAvatar avatarUrl={user?.avatarUrl} />
+            <UserAvatar className="shadow" avatarUrl={user?.avatarUrl} />
             <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">
               {user != undefined ? username : systemStatus.customizedProfile.name}
             </span>
@@ -60,7 +60,7 @@ const UserBanner = () => {
                   className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
                   onClick={handleMyAccountClick}
                 >
-                  <Icon.User className="w-5 h-auto mr-2 opacity-80" /> {t("setting.my-account")}
+                  <Icon.User className="w-5 h-auto mr-2 opacity-80" /> {t("common.profile")}
                 </button>
                 <a
                   className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"

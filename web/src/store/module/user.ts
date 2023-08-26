@@ -71,16 +71,6 @@ export const initialUserState = async () => {
   }
 };
 
-const getUserIdFromPath = () => {
-  const pathname = window.location.pathname;
-  const userIdRegex = /^\/u\/(\d+).*/;
-  const result = pathname.match(userIdRegex);
-  if (result && result.length === 2) {
-    return Number(result[1]);
-  }
-  return undefined;
-};
-
 const getUsernameFromPath = () => {
   const pathname = window.location.pathname;
   const usernameRegex = /^\/u\/(\w+).*/;
@@ -109,7 +99,7 @@ export const useUserStore = () => {
   const state = useAppSelector((state) => state.user);
 
   const isVisitorMode = () => {
-    return state.user === undefined || (getUsernameFromPath() && state.user.username !== getUsernameFromPath());
+    return state.user === undefined || getUsernameFromPath();
   };
 
   return {
@@ -118,7 +108,6 @@ export const useUserStore = () => {
       return store.getState().user;
     },
     isVisitorMode,
-    getUserIdFromPath,
     getUsernameFromPath,
     doSignIn,
     doSignOut,
