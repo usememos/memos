@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/usememos/memos/plugin/cron"
+	"github.com/usememos/memos/internal/cron"
 )
 
 func TestNewMoment(t *testing.T) {
