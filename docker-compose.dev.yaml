@@ -10,15 +10,15 @@
 #
 services:
   api:
-    image: golang:1.19.3-alpine3.16
+    image: golang:1.21-alpine
     working_dir: /work
     command: air -c ./scripts/.air.toml
     volumes:
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
-      - ./.air/bin/:/go/bin/   # Cache for binary used only in container, such as *air*
+      - ./.air/bin/:/go/bin/ # Cache for binary used only in container, such as *air*
       - .:/work/
   web:
-    image: node:18.12.1-alpine3.16
+    image: node:18-alpine
     working_dir: /work
     depends_on: ["api"]
     ports: ["3001:3001"]
