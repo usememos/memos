@@ -9,10 +9,10 @@ import (
 )
 
 // EditMessage make an editMessageText api request.
-func (b *Bot) EditMessage(ctx context.Context, chatID, messageID int, text string, inlineKeyboards [][]InlineKeyboardButton) (*Message, error) {
+func (b *Bot) EditMessage(ctx context.Context, chatID, messageID int64, text string, inlineKeyboards [][]InlineKeyboardButton) (*Message, error) {
 	formData := url.Values{
-		"message_id": {strconv.Itoa(messageID)},
-		"chat_id":    {strconv.Itoa(chatID)},
+		"message_id": {strconv.FormatInt(messageID, 10)},
+		"chat_id":    {strconv.FormatInt(chatID, 10)},
 		"text":       {text},
 	}
 

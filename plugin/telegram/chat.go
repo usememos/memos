@@ -10,7 +10,7 @@ const (
 )
 
 type Chat struct {
-	ID        int      `json:"id"`
+	ID        int64    `json:"id"`
 	Title     string   `json:"title"`      // Title for supergroups, channels and group chats
 	Type      ChatType `json:"type"`       // Type of chat, can be either “private”, “group”, “supergroup” or “channel”
 	FirstName string   `json:"first_name"` // FirstName of the other party in a private chat
