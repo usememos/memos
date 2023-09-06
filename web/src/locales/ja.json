@@ -68,7 +68,7 @@
       "info": "info",
       "success": "成功",
       "warning": "警告"
-    },
+    }
   },
   "router": {
     "back-to-home": "ホームに戻る"
@@ -126,7 +126,7 @@
     "upload-successfully": "アップロードされました",
     "file-drag-drop-prompt": "アップロードするファイルをドラックアンドドロップする",
     "search-bar-placeholder": "ファイルを検索する",
-    "clear": "Clear",
+    "clear": "クリア",
     "create-dialog": {
       "title": "ファイルをアップロード",
       "upload-method": "アップロード方法",
@@ -237,7 +237,7 @@
       "archive-member": "メンバーをゴミ箱に入れる",
       "archive-warning": "❗本当に{{username}}をゴミ箱に追加していいですか?",
       "delete-member": "メンバーを消去する",
-      "delete-warning": "❗本当に{{username}}を消去していいですか?\n\n消去後、元に戻せません！"
+      "delete-warning": "❗本当に{{username}}を消去していいですか?\n\n消去後、元に戻せません"
     },
     "system-section": {
       "server-name": "サーバーの名前",
