@@ -10,6 +10,9 @@ service SystemService {
   rpc GetSystemInfo(GetSystemInfoRequest) returns (GetSystemInfoResponse) {
     option (google.api.http) = {get: "/api/v2/system/info"};
   }
+  rpc UpdateSystemInfo(UpdateSystemInfoRequest) returns (UpdateSystemInfoResponse) {
+    option (google.api.http) = {post: "/api/v2/system/info"};
+  }
 }
 
 message SystemInfo {
@@ -25,5 +28,16 @@ message SystemInfo {
 message GetSystemInfoRequest {}
 
 message GetSystemInfoResponse {
+  SystemInfo system_info = 1;
+}
+
+message UpdateSystemInfoRequest {
+  // System info is the updated data.
+  SystemInfo system_info = 1;
+  // Update mask is the array of paths.
+  repeated string update_mask = 2;
+}
+
+message UpdateSystemInfoResponse {
   SystemInfo system_info = 1;
 }
