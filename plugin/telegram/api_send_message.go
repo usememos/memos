@@ -7,10 +7,10 @@ import (
 )
 
 // SendReplyMessage make a sendMessage api request.
-func (b *Bot) SendReplyMessage(ctx context.Context, chatID, replyID int, text string) (*Message, error) {
+func (b *Bot) SendReplyMessage(ctx context.Context, chatID, replyID int64, text string) (*Message, error) {
 	formData := url.Values{
-		"reply_to_message_id": {strconv.Itoa(replyID)},
-		"chat_id":             {strconv.Itoa(chatID)},
+		"reply_to_message_id": {strconv.FormatInt(replyID, 10)},
+		"chat_id":             {strconv.FormatInt(chatID, 10)},
 		"text":                {text},
 	}
 

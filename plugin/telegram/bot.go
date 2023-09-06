@@ -31,7 +31,7 @@ const errRetryWait = 10 * time.Second
 
 // Start start a long polling using getUpdates to get Update, call r.MessageHandle while get new message updates.
 func (b *Bot) Start(ctx context.Context) {
-	var offset int
+	var offset int64
 
 	for {
 		updates, err := b.GetUpdates(ctx, offset)

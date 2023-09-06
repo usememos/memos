@@ -50,7 +50,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 			continue
 		}
 
-		if value == strconv.Itoa(message.From.ID) {
+		if value == strconv.FormatInt(message.From.ID, 10) {
 			creatorID = userSetting.UserID
 		}
 	}

@@ -3,13 +3,13 @@ package telegram
 import "fmt"
 
 type Message struct {
-	MessageID            int             `json:"message_id"`              // MessageID is a unique message identifier inside this chat
+	MessageID            int64           `json:"message_id"`              // MessageID is a unique message identifier inside this chat
 	From                 User            `json:"from"`                    // From is a sender, empty for messages sent to channels;
 	Date                 int             `json:"date"`                    // Date of the message was sent in Unix time
 	Text                 *string         `json:"text"`                    // Text is for text messages, the actual UTF-8 text of the message, 0-4096 characters;
 	Chat                 *Chat           `json:"chat"`                    // Chat is the conversation the message belongs to
 	ForwardFromChat      *Chat           `json:"forward_from_chat"`       // ForwardFromChat for messages forwarded from channels, information about the original channel;
-	ForwardFromMessageID int             `json:"forward_from_message_id"` // ForwardFromMessageID for messages forwarded from channels, identifier of the original message in the channel;
+	ForwardFromMessageID int64           `json:"forward_from_message_id"` // ForwardFromMessageID for messages forwarded from channels, identifier of the original message in the channel;
 	MediaGroupID         *string         `json:"media_group_id"`          // MediaGroupID is the unique identifier of a media message group this message belongs to;
 	Photo                []PhotoSize     `json:"photo"`                   // Photo message is a photo, available sizes of the photo;
 	Caption              *string         `json:"caption"`                 // Caption for the animation, audio, document, photo, video or voice, 0-1024 characters;
