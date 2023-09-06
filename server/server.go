@@ -85,10 +85,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 	s.ID = serverID
 
+	// Serve frontend.
 	embedFrontend(e)
 
-	// This will serve Swagger UI at /api/index.html and Swagger 2.0 spec at /api/doc.json
-	e.GET("/api/*", echoSwagger.WrapHandler)
+	// Serve swagger in dev/demo mode.
+	if profile.Mode == "dev" || profile.Mode == "demo" {
+		e.GET("/api/*", echoSwagger.WrapHandler)
+	}
 
 	secret := "usememos"
 	if profile.Mode == "prod" {
