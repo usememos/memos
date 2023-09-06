@@ -58,16 +58,17 @@
     "name": "名前",
     "visibility": "公開範囲",
     "learn-more": "もっと詳しく",
-    "e.g": "例えば、",
     "beta": "ベータ",
+    "new": "New",
+    "mark": "マーク",
+    "profile": "プロファイル",
     "dialog": {
       "error": "エラー",
       "help": "ヘルプ",
       "info": "info",
       "success": "成功",
       "warning": "警告"
-    },
-    "mark": "Mark"
+    }
   },
   "router": {
     "back-to-home": "ホームに戻る"
@@ -125,7 +126,7 @@
     "upload-successfully": "アップロードされました",
     "file-drag-drop-prompt": "アップロードするファイルをドラックアンドドロップする",
     "search-bar-placeholder": "ファイルを検索する",
-    "clear": "Clear",
+    "clear": "クリア",
     "create-dialog": {
       "title": "ファイルをアップロード",
       "upload-method": "アップロード方法",
@@ -141,6 +142,9 @@
         "file-name-placeholder": "ファイル名",
         "type": "タイプ",
         "type-placeholder": "ファイルタイプ"
+      },
+      "download-link": {
+        "option": "ダウンロードリンク"
       }
     }
   },
@@ -148,7 +152,12 @@
     "tip-text": "作成するには`#tag`のように入力してください",
     "create-tag": "タグを作成する",
     "all-tags": "すべてのタグ",
-    "tag-name": "タグの名前"
+    "tag-name": "タグの名前",
+    "invalid-tag-name": "無効なタグ名",
+    "tag-suggestions": "タグの提案",
+    "show": "表示",
+    "hide": "非表示",
+    "save-all": "すべて保存"
   },
   "daily-review": {
     "title": "今日のまとめ",
@@ -226,9 +235,9 @@
     "member-section": {
       "create-a-member": "メンバーを追加する",
       "archive-member": "メンバーをゴミ箱に入れる",
-      "archive-warning": "本当に{{username}}をゴミ箱に追加していいですか?",
+      "archive-warning": "❗本当に{{username}}をゴミ箱に追加していいですか?",
       "delete-member": "メンバーを消去する",
-      "delete-warning": "本当に{{username}}を消去していいですか?\n\n消去後、元に戻せません！"
+      "delete-warning": "❗本当に{{username}}を消去していいですか?\n\n消去後、元に戻せません"
     },
     "system-section": {
       "server-name": "サーバーの名前",
@@ -242,10 +251,17 @@
       },
       "database-file-size": "データベースのファイルサイズ",
       "allow-user-signup": "ユーザー登録を有効にする",
+      "disable-password-login": "パスワードでのログインを無効にする",
+      "disable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが無効になります。設定済みのIDプロバイダーが失敗した場合、この設定をデータベースで元に戻さない限り、ログインすることはできません。IDプロバイダーを削除する際も、非常に注意が必要です❗",
+      "disable-password-login-final-warning": "何をしているか理解している場合は、「CONFIRM」と入力してください。",
+      "enable-password-login": "パスワードでのログインを有効にする",
+      "enable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが有効になります。SSOとパスワードの両方を使用してログインできるようにしたい場合のみ、続行してください❗",
       "ignore-version-upgrade": "アップデートを無効にする",
       "disable-public-memos": "公開メモを無効化する",
       "max-upload-size": "最大ファイルサイズ(MiB)",
       "max-upload-size-hint": "推奨サイズは32 MiBです。",
+      "auto-backup-interval": "自動バックアップの間隔（秒）",
+      "auto-backup-interval-hint": "自動バックアップを無効にするには0を設定してください。この値を変更した後、再起動が必要です。",
       "additional-style": "追加CSS",
       "additional-script": "追加スクリプト",
       "additional-style-placeholder": "CSSのコードを追加してください。",
@@ -253,11 +269,6 @@
       "telegram-bot-token": "Telegram Bot Token",
       "telegram-bot-token-description": "Telegram Bot TokenかAPI Proxyを`http.../bot<token>`のように入力してください。",
       "telegram-bot-token-placeholder": "あなたのTelegram Bot token",
-      "openai-api-key": "OpenAI: API Key",
-      "openai-api-key-description": "API keyを取得する",
-      "openai-api-key-placeholder": "あなたのOpenAI API Key",
-      "openai-api-host": "OpenAI: API Host",
-      "openai-api-host-placeholder": "標準: https://api.openai.com/",
       "display-with-updated-time": "更新日時を表示する"
     },
     "appearance-option": {
@@ -284,7 +295,8 @@
       "authorization-endpoint": "Authorization endpoint",
       "token-endpoint": "Token endpoint",
       "user-endpoint": "User endpoint",
-      "scopes": "Scopes"
+      "scopes": "Scopes",
+      "disabled-password-login-warning": "パスワードによるログインが無効になっていますので、アイデンティティプロバイダーを削除する際は特に注意してください❗"
     }
   },
   "filter": {
@@ -358,7 +370,17 @@
     "update-succeed": "変更は保存されました。",
     "page-not-found": "404 - ページは見つかりませんでした😥",
     "maximum-upload-size-is": "ファイルの最大サイズは{{size}} MiBです。",
-    "file-exceeds-upload-limit-of": "ファイル{{file}}がアップロード制限の{{size}}MiBを超えています。"
+    "file-exceeds-upload-limit-of": "ファイル{{file}}がアップロード制限の{{size}}MiBを超えています。",
+    "updating-setting-failed": "設定の更新に失敗しました",
+    "password-login-disabled": "パスワードログインが無効の場合、最後のIDプロバイダーを削除することはできません"
+  },
+  "amount-text": {
+    "memo_one": "MEMO",
+    "memo_other": "MEMOS",
+    "tag_one": "TAG",
+    "tag_other": "TAGS",
+    "day_one": "TAG",
+    "day_other": "TAGE"
   },
   "days": {
     "mon": "月",
