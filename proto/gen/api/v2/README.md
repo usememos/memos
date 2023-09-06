@@ -21,6 +21,8 @@
     - [GetSystemInfoRequest](#memos-api-v2-GetSystemInfoRequest)
     - [GetSystemInfoResponse](#memos-api-v2-GetSystemInfoResponse)
     - [SystemInfo](#memos-api-v2-SystemInfo)
+    - [UpdateSystemInfoRequest](#memos-api-v2-UpdateSystemInfoRequest)
+    - [UpdateSystemInfoResponse](#memos-api-v2-UpdateSystemInfoResponse)
   
     - [SystemService](#memos-api-v2-SystemService)
   
@@ -254,6 +256,37 @@
 
 
 
+
+<a name="memos-api-v2-UpdateSystemInfoRequest"></a>
+
+### UpdateSystemInfoRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| system_info | [SystemInfo](#memos-api-v2-SystemInfo) |  | System info is the updated data. |
+| update_mask | [string](#string) | repeated | Update mask is the array of paths. |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateSystemInfoResponse"></a>
+
+### UpdateSystemInfoResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| system_info | [SystemInfo](#memos-api-v2-SystemInfo) |  |  |
+
+
+
+
+
  
 
  
@@ -269,6 +302,7 @@
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | GetSystemInfo | [GetSystemInfoRequest](#memos-api-v2-GetSystemInfoRequest) | [GetSystemInfoResponse](#memos-api-v2-GetSystemInfoResponse) |  |
+| UpdateSystemInfo | [UpdateSystemInfoRequest](#memos-api-v2-UpdateSystemInfoRequest) | [UpdateSystemInfoResponse](#memos-api-v2-UpdateSystemInfoResponse) |  |
 
  
 

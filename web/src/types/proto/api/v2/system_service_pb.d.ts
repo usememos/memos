@@ -103,3 +103,60 @@ export declare class GetSystemInfoResponse extends Message<GetSystemInfoResponse
   static equals(a: GetSystemInfoResponse | PlainMessage<GetSystemInfoResponse> | undefined, b: GetSystemInfoResponse | PlainMessage<GetSystemInfoResponse> | undefined): boolean;
 }
 
+/**
+ * @generated from message memos.api.v2.UpdateSystemInfoRequest
+ */
+export declare class UpdateSystemInfoRequest extends Message<UpdateSystemInfoRequest> {
+  /**
+   * System info is the updated data.
+   *
+   * @generated from field: memos.api.v2.SystemInfo system_info = 1;
+   */
+  systemInfo?: SystemInfo;
+
+  /**
+   * Update mask is the array of paths.
+   *
+   * @generated from field: repeated string update_mask = 2;
+   */
+  updateMask: string[];
+
+  constructor(data?: PartialMessage<UpdateSystemInfoRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.UpdateSystemInfoRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateSystemInfoRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UpdateSystemInfoRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UpdateSystemInfoRequest;
+
+  static equals(a: UpdateSystemInfoRequest | PlainMessage<UpdateSystemInfoRequest> | undefined, b: UpdateSystemInfoRequest | PlainMessage<UpdateSystemInfoRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message memos.api.v2.UpdateSystemInfoResponse
+ */
+export declare class UpdateSystemInfoResponse extends Message<UpdateSystemInfoResponse> {
+  /**
+   * @generated from field: memos.api.v2.SystemInfo system_info = 1;
+   */
+  systemInfo?: SystemInfo;
+
+  constructor(data?: PartialMessage<UpdateSystemInfoResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.UpdateSystemInfoResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateSystemInfoResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UpdateSystemInfoResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UpdateSystemInfoResponse;
+
+  static equals(a: UpdateSystemInfoResponse | PlainMessage<UpdateSystemInfoResponse> | undefined, b: UpdateSystemInfoResponse | PlainMessage<UpdateSystemInfoResponse> | undefined): boolean;
+}
+

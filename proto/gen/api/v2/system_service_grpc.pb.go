@@ -19,7 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	SystemService_GetSystemInfo_FullMethodName = "/memos.api.v2.SystemService/GetSystemInfo"
+	SystemService_GetSystemInfo_FullMethodName    = "/memos.api.v2.SystemService/GetSystemInfo"
+	SystemService_UpdateSystemInfo_FullMethodName = "/memos.api.v2.SystemService/UpdateSystemInfo"
 )
 
 // SystemServiceClient is the client API for SystemService service.
@@ -27,6 +28,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type SystemServiceClient interface {
 	GetSystemInfo(ctx context.Context, in *GetSystemInfoRequest, opts ...grpc.CallOption) (*GetSystemInfoResponse, error)
+	UpdateSystemInfo(ctx context.Context, in *UpdateSystemInfoRequest, opts ...grpc.CallOption) (*UpdateSystemInfoResponse, error)
 }
 
 type systemServiceClient struct {
@@ -46,11 +48,21 @@ func (c *systemServiceClient) GetSystemInfo(ctx context.Context, in *GetSystemIn
 	return out, nil
 }
 
+func (c *systemServiceClient) UpdateSystemInfo(ctx context.Context, in *UpdateSystemInfoRequest, opts ...grpc.CallOption) (*UpdateSystemInfoResponse, error) {
+	out := new(UpdateSystemInfoResponse)
+	err := c.cc.Invoke(ctx, SystemService_UpdateSystemInfo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // SystemServiceServer is the server API for SystemService service.
 // All implementations must embed UnimplementedSystemServiceServer
 // for forward compatibility
 type SystemServiceServer interface {
 	GetSystemInfo(context.Context, *GetSystemInfoRequest) (*GetSystemInfoResponse, error)
+	UpdateSystemInfo(context.Context, *UpdateSystemInfoRequest) (*UpdateSystemInfoResponse, error)
 	mustEmbedUnimplementedSystemServiceServer()
 }
 
@@ -60,6 +72,9 @@ type UnimplementedSystemServiceServer struct {
 
 func (UnimplementedSystemServiceServer) GetSystemInfo(context.Context, *GetSystemInfoRequest) (*GetSystemInfoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetSystemInfo not implemented")
+}
+func (UnimplementedSystemServiceServer) UpdateSystemInfo(context.Context, *UpdateSystemInfoRequest) (*UpdateSystemInfoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateSystemInfo not implemented")
 }
 func (UnimplementedSystemServiceServer) mustEmbedUnimplementedSystemServiceServer() {}
 
@@ -92,6 +107,24 @@ func _SystemService_GetSystemInfo_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SystemService_UpdateSystemInfo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateSystemInfoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(SystemServiceServer).UpdateSystemInfo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: SystemService_UpdateSystemInfo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(SystemServiceServer).UpdateSystemInfo(ctx, req.(*UpdateSystemInfoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // SystemService_ServiceDesc is the grpc.ServiceDesc for SystemService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +135,10 @@ var SystemService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetSystemInfo",
 			Handler:    _SystemService_GetSystemInfo_Handler,
+		},
+		{
+			MethodName: "UpdateSystemInfo",
+			Handler:    _SystemService_UpdateSystemInfo_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

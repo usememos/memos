@@ -39,3 +39,24 @@ export const GetSystemInfoResponse = proto3.makeMessageType(
   ],
 );
 
+/**
+ * @generated from message memos.api.v2.UpdateSystemInfoRequest
+ */
+export const UpdateSystemInfoRequest = proto3.makeMessageType(
+  "memos.api.v2.UpdateSystemInfoRequest",
+  () => [
+    { no: 1, name: "system_info", kind: "message", T: SystemInfo },
+    { no: 2, name: "update_mask", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
+  ],
+);
+
+/**
+ * @generated from message memos.api.v2.UpdateSystemInfoResponse
+ */
+export const UpdateSystemInfoResponse = proto3.makeMessageType(
+  "memos.api.v2.UpdateSystemInfoResponse",
+  () => [
+    { no: 1, name: "system_info", kind: "message", T: SystemInfo },
+  ],
+);
+
