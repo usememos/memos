@@ -1,6 +1,6 @@
-import { useTranslate } from "@/utils/i18n";
 import { Dropdown, IconButton, Menu, MenuButton } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
+import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
 
 const FloatingNavButton = () => {
