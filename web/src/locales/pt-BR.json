@@ -60,6 +60,7 @@
     "learn-more": "Saiba mais",
     "e.g": "ex.",
     "beta": "Beta",
+    "profile": "Perfil",
     "dialog": {
       "error": "Erro",
       "help": "Ajuda",
@@ -309,6 +310,7 @@
     "or": "Ou"
   },
   "message": {
+    "no-data": "Talvez nenhum dado tenha sido encontrado ou talvez devesse ser outra opção.",
     "no-memos": "nenhum memo 🌃",
     "memos-ready": "todos os memos estão prontos 🎉",
     "no-resource": "nenhum recurso 🌃",
