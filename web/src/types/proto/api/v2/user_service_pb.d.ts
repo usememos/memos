@@ -3,15 +3,89 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
+import type { BinaryReadOptions, FieldList, FieldMask, JsonReadOptions, JsonValue, PartialMessage, PlainMessage, Timestamp } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
 import type { RowStatus } from "./common_pb.js";
 import type { Visibility } from "./memo_service_pb.js";
 
 /**
- * @generated from enum memos.api.v2.Role
+ * @generated from message memos.api.v2.User
  */
-export declare enum Role {
+export declare class User extends Message<User> {
+  /**
+   * @generated from field: int32 id = 1;
+   */
+  id: number;
+
+  /**
+   * @generated from field: memos.api.v2.RowStatus row_status = 2;
+   */
+  rowStatus: RowStatus;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp create_time = 3;
+   */
+  createTime?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp update_time = 4;
+   */
+  updateTime?: Timestamp;
+
+  /**
+   * @generated from field: string username = 5;
+   */
+  username: string;
+
+  /**
+   * @generated from field: memos.api.v2.User.Role role = 6;
+   */
+  role: User_Role;
+
+  /**
+   * @generated from field: string email = 7;
+   */
+  email: string;
+
+  /**
+   * @generated from field: string nickname = 8;
+   */
+  nickname: string;
+
+  /**
+   * @generated from field: string open_id = 9;
+   */
+  openId: string;
+
+  /**
+   * @generated from field: string avatar_url = 10;
+   */
+  avatarUrl: string;
+
+  /**
+   * @generated from field: string password = 11;
+   */
+  password: string;
+
+  constructor(data?: PartialMessage<User>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.User";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): User;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): User;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): User;
+
+  static equals(a: User | PlainMessage<User> | undefined, b: User | PlainMessage<User> | undefined): boolean;
+}
+
+/**
+ * @generated from enum memos.api.v2.User.Role
+ */
+export declare enum User_Role {
   /**
    * @generated from enum value: ROLE_UNSPECIFIED = 0;
    */
@@ -34,82 +108,13 @@ export declare enum Role {
 }
 
 /**
- * @generated from message memos.api.v2.User
- */
-export declare class User extends Message<User> {
-  /**
-   * @generated from field: int32 id = 1;
-   */
-  id: number;
-
-  /**
-   * @generated from field: memos.api.v2.RowStatus row_status = 2;
-   */
-  rowStatus: RowStatus;
-
-  /**
-   * @generated from field: int64 created_ts = 3;
-   */
-  createdTs: bigint;
-
-  /**
-   * @generated from field: int64 updated_ts = 4;
-   */
-  updatedTs: bigint;
-
-  /**
-   * @generated from field: string username = 5;
-   */
-  username: string;
-
-  /**
-   * @generated from field: memos.api.v2.Role role = 6;
-   */
-  role: Role;
-
-  /**
-   * @generated from field: string email = 7;
-   */
-  email: string;
-
-  /**
-   * @generated from field: string nickname = 8;
-   */
-  nickname: string;
-
-  /**
-   * @generated from field: string open_id = 9;
-   */
-  openId: string;
-
-  /**
-   * @generated from field: string avatar_url = 10;
-   */
-  avatarUrl: string;
-
-  constructor(data?: PartialMessage<User>);
-
-  static readonly runtime: typeof proto3;
-  static readonly typeName = "memos.api.v2.User";
-  static readonly fields: FieldList;
-
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): User;
-
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): User;
-
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): User;
-
-  static equals(a: User | PlainMessage<User> | undefined, b: User | PlainMessage<User> | undefined): boolean;
-}
-
-/**
  * @generated from message memos.api.v2.GetUserRequest
  */
 export declare class GetUserRequest extends Message<GetUserRequest> {
   /**
-   * @generated from field: string name = 1;
+   * @generated from field: string username = 1;
    */
-  name: string;
+  username: string;
 
   constructor(data?: PartialMessage<GetUserRequest>);
 
@@ -148,6 +153,66 @@ export declare class GetUserResponse extends Message<GetUserResponse> {
   static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): GetUserResponse;
 
   static equals(a: GetUserResponse | PlainMessage<GetUserResponse> | undefined, b: GetUserResponse | PlainMessage<GetUserResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message memos.api.v2.UpdateUserRequest
+ */
+export declare class UpdateUserRequest extends Message<UpdateUserRequest> {
+  /**
+   * @generated from field: string username = 1;
+   */
+  username: string;
+
+  /**
+   * @generated from field: memos.api.v2.User user = 2;
+   */
+  user?: User;
+
+  /**
+   * The update mask applies to the user resource.
+   *
+   * @generated from field: google.protobuf.FieldMask update_mask = 3;
+   */
+  updateMask?: FieldMask;
+
+  constructor(data?: PartialMessage<UpdateUserRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.UpdateUserRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateUserRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UpdateUserRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UpdateUserRequest;
+
+  static equals(a: UpdateUserRequest | PlainMessage<UpdateUserRequest> | undefined, b: UpdateUserRequest | PlainMessage<UpdateUserRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message memos.api.v2.UpdateUserResponse
+ */
+export declare class UpdateUserResponse extends Message<UpdateUserResponse> {
+  /**
+   * @generated from field: memos.api.v2.User user = 1;
+   */
+  user?: User;
+
+  constructor(data?: PartialMessage<UpdateUserResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.UpdateUserResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UpdateUserResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UpdateUserResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UpdateUserResponse;
+
+  static equals(a: UpdateUserResponse | PlainMessage<UpdateUserResponse> | undefined, b: UpdateUserResponse | PlainMessage<UpdateUserResponse> | undefined): boolean;
 }
 
 /**

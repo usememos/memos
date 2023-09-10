@@ -53,7 +53,7 @@ const UsageHeatMap = () => {
       if (!user) {
         return;
       }
-      setCreatedDays(Math.ceil((Date.now() - getTimeStampByDate(user.createdTs)) / 1000 / 3600 / 24));
+      setCreatedDays(Math.ceil((Date.now() - getTimeStampByDate(user.createTime)) / 1000 / 3600 / 24));
     });
   }, [currentUsername]);
 

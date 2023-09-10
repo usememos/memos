@@ -36,11 +36,13 @@
 - [api/v2/user_service.proto](#api_v2_user_service-proto)
     - [GetUserRequest](#memos-api-v2-GetUserRequest)
     - [GetUserResponse](#memos-api-v2-GetUserResponse)
+    - [UpdateUserRequest](#memos-api-v2-UpdateUserRequest)
+    - [UpdateUserResponse](#memos-api-v2-UpdateUserResponse)
     - [User](#memos-api-v2-User)
     - [UserSetting](#memos-api-v2-UserSetting)
     - [UserSettingValue](#memos-api-v2-UserSettingValue)
   
-    - [Role](#memos-api-v2-Role)
+    - [User.Role](#memos-api-v2-User-Role)
     - [UserSetting.Key](#memos-api-v2-UserSetting-Key)
   
     - [UserService](#memos-api-v2-UserService)
@@ -395,7 +397,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  |  |
+| username | [string](#string) |  |  |
 
 
 
@@ -405,6 +407,38 @@
 <a name="memos-api-v2-GetUserResponse"></a>
 
 ### GetUserResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [User](#memos-api-v2-User) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateUserRequest"></a>
+
+### UpdateUserRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| username | [string](#string) |  |  |
+| user | [User](#memos-api-v2-User) |  |  |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  | The update mask applies to the user resource. |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateUserResponse"></a>
+
+### UpdateUserResponse
 
 
 
@@ -427,14 +461,15 @@
 | ----- | ---- | ----- | ----------- |
 | id | [int32](#int32) |  |  |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
-| created_ts | [int64](#int64) |  |  |
-| updated_ts | [int64](#int64) |  |  |
+| create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
+| update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | username | [string](#string) |  |  |
-| role | [Role](#memos-api-v2-Role) |  |  |
+| role | [User.Role](#memos-api-v2-User-Role) |  |  |
 | email | [string](#string) |  |  |
 | nickname | [string](#string) |  |  |
 | open_id | [string](#string) |  |  |
 | avatar_url | [string](#string) |  |  |
+| password | [string](#string) |  |  |
 
 
 
@@ -476,9 +511,9 @@
  
 
 
-<a name="memos-api-v2-Role"></a>
+<a name="memos-api-v2-User-Role"></a>
 
-### Role
+### User.Role
 
 
 | Name | Number | Description |
@@ -517,6 +552,7 @@
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | GetUser | [GetUserRequest](#memos-api-v2-GetUserRequest) | [GetUserResponse](#memos-api-v2-GetUserResponse) |  |
+| UpdateUser | [UpdateUserRequest](#memos-api-v2-UpdateUserRequest) | [UpdateUserResponse](#memos-api-v2-UpdateUserResponse) |  |
 
  
 

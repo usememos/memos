@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import * as api from "@/helpers/api";
-import { convertResponseModelUser } from "../module";
+import { User } from "@/types/proto/api/v2/user_service_pb";
 
 interface UserV1Store {
   userMapByUsername: Record<string, User>;
@@ -24,9 +24,13 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
 
     const promise = api.getUserByUsername(username);
     requestCache.set(username, promise);
-    const { data } = await promise;
+    const {
+      data: { user: user },
+    } = await promise;
+    if (!user) {
+      throw new Error("User not found");
+    }
     requestCache.delete(username);
-    const user = convertResponseModelUser(data);
     userMap[username] = user;
     set(userMap);
     return user;

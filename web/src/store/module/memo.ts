@@ -4,7 +4,7 @@ import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import store, { useAppSelector } from "../";
 import { createMemo, deleteMemo, patchMemo, upsertMemos } from "../reducer/memo";
 import { useMemoCacheStore } from "../v1";
-import { useUserStore } from "./";
+import { getUsernameFromPath, useUserStore } from "./";
 
 export const convertResponseModelMemo = (memo: Memo): Memo => {
   return {
@@ -40,7 +40,7 @@ export const useMemoStore = () => {
         offset,
       };
       if (userStore.isVisitorMode()) {
-        memoFind.creatorUsername = userStore.getUsernameFromPath();
+        memoFind.creatorUsername = getUsernameFromPath();
       }
       const { data } = await api.getMemoList(memoFind);
       const fetchedMemos = data.map((m) => convertResponseModelMemo(m));
@@ -70,9 +70,6 @@ export const useMemoStore = () => {
       const memoFind: MemoFind = {
         rowStatus: "ARCHIVED",
       };
-      if (userStore.isVisitorMode()) {
-        memoFind.creatorUsername = userStore.getUsernameFromPath();
-      }
       const { data } = await api.getMemoList(memoFind);
       const archivedMemos = data.map((m) => {
         return convertResponseModelMemo(m);

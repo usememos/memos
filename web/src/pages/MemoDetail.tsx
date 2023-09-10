@@ -7,6 +7,7 @@ import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
 import { useMemoStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
+import { User } from "@/types/proto/api/v2/user_service_pb";
 
 const MemoDetail = () => {
   const params = useParams();

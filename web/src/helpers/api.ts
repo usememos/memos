@@ -1,4 +1,5 @@
 import axios from "axios";
+import { GetUserResponse } from "@/types/proto/api/v2/user_service_pb";
 
 export function getSystemStatus() {
   return axios.get<SystemStatus>("/api/v1/status");
@@ -55,7 +56,7 @@ export function getUserList() {
 }
 
 export function getUserByUsername(username: string) {
-  return axios.get<User>(`/api/v1/user/name/${username}`);
+  return axios.get<GetUserResponse>(`/api/v2/users/${username}`);
 }
 
 export function upsertUserSetting(upsert: UserSettingUpsert) {
@@ -183,12 +184,8 @@ export function deleteMemoResource(memoId: MemoId, resourceId: ResourceId) {
   return axios.delete(`/api/v1/memo/${memoId}/resource/${resourceId}`);
 }
 
-export function getTagList(tagFind?: TagFind) {
-  const queryList = [];
-  if (tagFind?.creatorUsername) {
-    queryList.push(`creatorUsername=${tagFind.creatorUsername}`);
-  }
-  return axios.get<string[]>(`/api/v1/tag?${queryList.join("&")}`);
+export function getTagList() {
+  return axios.get<string[]>(`/api/v1/tag`);
 }
 
 export function getTagSuggestionList() {

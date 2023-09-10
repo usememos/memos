@@ -71,16 +71,6 @@ export const initialUserState = async () => {
   }
 };
 
-const getUsernameFromPath = () => {
-  const pathname = window.location.pathname;
-  const usernameRegex = /^\/u\/(\w+).*/;
-  const result = pathname.match(usernameRegex);
-  if (result && result.length === 2) {
-    return String(result[1]);
-  }
-  return undefined;
-};
-
 const doSignIn = async () => {
   const { data: user } = await api.getMyselfUser();
   if (user) {
@@ -93,6 +83,16 @@ const doSignIn = async () => {
 
 const doSignOut = async () => {
   await api.signout();
+};
+
+export const getUsernameFromPath = () => {
+  const pathname = window.location.pathname;
+  const usernameRegex = /^\/u\/(\w+).*/;
+  const result = pathname.match(usernameRegex);
+  if (result && result.length === 2) {
+    return String(result[1]);
+  }
+  return undefined;
 };
 
 export const useUserStore = () => {
@@ -108,7 +108,6 @@ export const useUserStore = () => {
       return store.getState().user;
     },
     isVisitorMode,
-    getUsernameFromPath,
     doSignIn,
     doSignOut,
     getCurrentUsername: () => {

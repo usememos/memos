@@ -3,22 +3,9 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { proto3 } from "@bufbuild/protobuf";
+import { FieldMask, proto3, Timestamp } from "@bufbuild/protobuf";
 import { RowStatus } from "./common_pb.js";
 import { Visibility } from "./memo_service_pb.js";
-
-/**
- * @generated from enum memos.api.v2.Role
- */
-export const Role = proto3.makeEnum(
-  "memos.api.v2.Role",
-  [
-    {no: 0, name: "ROLE_UNSPECIFIED"},
-    {no: 1, name: "HOST"},
-    {no: 2, name: "ADMIN"},
-    {no: 3, name: "USER"},
-  ],
-);
 
 /**
  * @generated from message memos.api.v2.User
@@ -28,14 +15,28 @@ export const User = proto3.makeMessageType(
   () => [
     { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
     { no: 2, name: "row_status", kind: "enum", T: proto3.getEnumType(RowStatus) },
-    { no: 3, name: "created_ts", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
-    { no: 4, name: "updated_ts", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 3, name: "create_time", kind: "message", T: Timestamp },
+    { no: 4, name: "update_time", kind: "message", T: Timestamp },
     { no: 5, name: "username", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 6, name: "role", kind: "enum", T: proto3.getEnumType(Role) },
+    { no: 6, name: "role", kind: "enum", T: proto3.getEnumType(User_Role) },
     { no: 7, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 8, name: "nickname", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 9, name: "open_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 10, name: "avatar_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 11, name: "password", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from enum memos.api.v2.User.Role
+ */
+export const User_Role = proto3.makeEnum(
+  "memos.api.v2.User.Role",
+  [
+    {no: 0, name: "ROLE_UNSPECIFIED"},
+    {no: 1, name: "HOST"},
+    {no: 2, name: "ADMIN"},
+    {no: 3, name: "USER"},
   ],
 );
 
@@ -45,7 +46,7 @@ export const User = proto3.makeMessageType(
 export const GetUserRequest = proto3.makeMessageType(
   "memos.api.v2.GetUserRequest",
   () => [
-    { no: 1, name: "name", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 1, name: "username", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
@@ -54,6 +55,28 @@ export const GetUserRequest = proto3.makeMessageType(
  */
 export const GetUserResponse = proto3.makeMessageType(
   "memos.api.v2.GetUserResponse",
+  () => [
+    { no: 1, name: "user", kind: "message", T: User },
+  ],
+);
+
+/**
+ * @generated from message memos.api.v2.UpdateUserRequest
+ */
+export const UpdateUserRequest = proto3.makeMessageType(
+  "memos.api.v2.UpdateUserRequest",
+  () => [
+    { no: 1, name: "username", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "user", kind: "message", T: User },
+    { no: 3, name: "update_mask", kind: "message", T: FieldMask },
+  ],
+);
+
+/**
+ * @generated from message memos.api.v2.UpdateUserResponse
+ */
+export const UpdateUserResponse = proto3.makeMessageType(
+  "memos.api.v2.UpdateUserResponse",
   () => [
     { no: 1, name: "user", kind: "message", T: User },
   ],

@@ -15,3 +15,14 @@ func convertRowStatusFromStore(rowStatus store.RowStatus) apiv2pb.RowStatus {
 		return apiv2pb.RowStatus_ROW_STATUS_UNSPECIFIED
 	}
 }
+
+func convertRowStatusToStore(rowStatus apiv2pb.RowStatus) store.RowStatus {
+	switch rowStatus {
+	case apiv2pb.RowStatus_ACTIVE:
+		return store.Normal
+	case apiv2pb.RowStatus_ARCHIVED:
+		return store.Archived
+	default:
+		return store.Normal
+	}
+}

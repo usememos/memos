@@ -6,13 +6,20 @@ import "api/v2/common.proto";
 import "api/v2/memo_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/api/field_behavior.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v2";
 
 service UserService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
-    option (google.api.http) = {get: "/api/v2/users/{name}"};
-    option (google.api.method_signature) = "name";
+    option (google.api.http) = {get: "/api/v2/users/{username}"};
+    option (google.api.method_signature) = "username";
+  }
+  rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
+    option (google.api.http) = {patch: "/api/v2/users/{username}"};
+    option (google.api.method_signature) = "username";
   }
 }
 
@@ -21,11 +28,18 @@ message User {
 
   RowStatus row_status = 2;
 
-  int64 created_ts = 3;
+  google.protobuf.Timestamp create_time = 3;
 
-  int64 updated_ts = 4;
+  google.protobuf.Timestamp update_time = 4;
 
   string username = 5;
+
+  enum Role {
+    ROLE_UNSPECIFIED = 0;
+    HOST = 1;
+    ADMIN = 2;
+    USER = 3;
+  }
 
   Role role = 6;
 
@@ -36,23 +50,28 @@ message User {
   string open_id = 9;
 
   string avatar_url = 10;
-}
 
-enum Role {
-  ROLE_UNSPECIFIED = 0;
-
-  HOST = 1;
-
-  ADMIN = 2;
-
-  USER = 3;
+  string password = 11 [(google.api.field_behavior) = INPUT_ONLY];
 }
 
 message GetUserRequest {
-  string name = 1;
+  string username = 1;
 }
 
 message GetUserResponse {
+  User user = 1;
+}
+
+message UpdateUserRequest {
+  string username = 1;
+
+  User user = 2;
+
+  // The update mask applies to the user resource.
+  google.protobuf.FieldMask update_mask = 3;
+}
+
+message UpdateUserResponse {
   User user = 1;
 }
 

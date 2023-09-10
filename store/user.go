@@ -52,12 +52,12 @@ type UpdateUser struct {
 
 	UpdatedTs    *int64
 	RowStatus    *RowStatus
-	Username     *string `json:"username"`
-	Email        *string `json:"email"`
-	Nickname     *string `json:"nickname"`
-	Password     *string `json:"password"`
-	ResetOpenID  *bool   `json:"resetOpenId"`
-	AvatarURL    *string `json:"avatarUrl"`
+	Username     *string
+	Role         *Role
+	Email        *string
+	Nickname     *string
+	Password     *string
+	AvatarURL    *string
 	PasswordHash *string
 	OpenID       *string
 }

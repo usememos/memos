@@ -6,10 +6,6 @@ export function convertToMillis(localSetting: LocalSetting) {
 }
 
 export function getTimeStampByDate(t: Date | number | string): number {
-  if (typeof t === "string") {
-    t = t.replaceAll("-", "/");
-  }
-
   return new Date(t).getTime();
 }
 

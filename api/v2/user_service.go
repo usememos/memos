@@ -2,11 +2,17 @@ package v2
 
 import (
 	"context"
+	"net/http"
+	"time"
 
+	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/common/util"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/store"
+	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type UserService struct {
@@ -24,18 +30,24 @@ func NewUserService(store *store.Store) *UserService {
 
 func (s *UserService) GetUser(ctx context.Context, request *apiv2pb.GetUserRequest) (*apiv2pb.GetUserResponse, error) {
 	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		Username: &request.Name,
+		Username: &request.Username,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list tags: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
 
 	userMessage := convertUserFromStore(user)
-	// Data desensitization.
-	userMessage.OpenId = ""
+	userIDPtr := ctx.Value(UserIDContextKey)
+	if userIDPtr != nil {
+		userID := userIDPtr.(int32)
+		if userID != userMessage.Id {
+			// Data desensitization.
+			userMessage.OpenId = ""
+		}
+	}
 
 	response := &apiv2pb.GetUserResponse{
 		User: userMessage,
@@ -43,31 +55,105 @@ func (s *UserService) GetUser(ctx context.Context, request *apiv2pb.GetUserReque
 	return response, nil
 }
 
+func (s *UserService) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUserRequest) (*apiv2pb.UpdateUserResponse, error) {
+	userID := ctx.Value(UserIDContextKey).(int32)
+	currentUser, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleAdmin) {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
+	}
+
+	currentTs := time.Now().Unix()
+	update := &store.UpdateUser{
+		ID:        userID,
+		UpdatedTs: &currentTs,
+	}
+	for _, path := range request.UpdateMask.Paths {
+		if path == "username" {
+			update.Username = &request.User.Username
+		} else if path == "nickname" {
+			update.Nickname = &request.User.Nickname
+		} else if path == "email" {
+			update.Email = &request.User.Email
+		} else if path == "avatar_url" {
+			update.AvatarURL = &request.User.AvatarUrl
+		} else if path == "role" {
+			role := convertUserRoleToStore(request.User.Role)
+			update.Role = &role
+		} else if path == "reset_open_id" {
+			openID := util.GenUUID()
+			update.OpenID = &openID
+		} else if path == "password" {
+			passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
+			if err != nil {
+				return nil, echo.NewHTTPError(http.StatusInternalServerError, "failed to generate password hash").SetInternal(err)
+			}
+			passwordHashStr := string(passwordHash)
+			update.PasswordHash = &passwordHashStr
+		} else if path == "row_status" {
+			rowStatus := convertRowStatusToStore(request.User.RowStatus)
+			update.RowStatus = &rowStatus
+		} else {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", path)
+		}
+	}
+
+	user, err := s.Store.UpdateUser(ctx, update)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
+	}
+
+	response := &apiv2pb.UpdateUserResponse{
+		User: convertUserFromStore(user),
+	}
+	return response, nil
+}
+
 func convertUserFromStore(user *store.User) *apiv2pb.User {
 	return &apiv2pb.User{
-		Id:        int32(user.ID),
-		RowStatus: convertRowStatusFromStore(user.RowStatus),
-		CreatedTs: user.CreatedTs,
-		UpdatedTs: user.UpdatedTs,
-		Username:  user.Username,
-		Role:      convertUserRoleFromStore(user.Role),
-		Email:     user.Email,
-		Nickname:  user.Nickname,
-		OpenId:    user.OpenID,
-		AvatarUrl: user.AvatarURL,
+		Id:         int32(user.ID),
+		RowStatus:  convertRowStatusFromStore(user.RowStatus),
+		CreateTime: timestamppb.New(time.Unix(user.CreatedTs, 0)),
+		UpdateTime: timestamppb.New(time.Unix(user.UpdatedTs, 0)),
+		Username:   user.Username,
+		Role:       convertUserRoleFromStore(user.Role),
+		Email:      user.Email,
+		Nickname:   user.Nickname,
+		OpenId:     user.OpenID,
+		AvatarUrl:  user.AvatarURL,
 	}
 }
 
-func convertUserRoleFromStore(role store.Role) apiv2pb.Role {
+func convertUserRoleFromStore(role store.Role) apiv2pb.User_Role {
 	switch role {
 	case store.RoleHost:
-		return apiv2pb.Role_HOST
+		return apiv2pb.User_HOST
 	case store.RoleAdmin:
-		return apiv2pb.Role_ADMIN
+		return apiv2pb.User_ADMIN
 	case store.RoleUser:
-		return apiv2pb.Role_USER
+		return apiv2pb.User_USER
 	default:
-		return apiv2pb.Role_ROLE_UNSPECIFIED
+		return apiv2pb.User_ROLE_UNSPECIFIED
+	}
+}
+
+func convertUserRoleToStore(role apiv2pb.User_Role) store.Role {
+	switch role {
+	case apiv2pb.User_HOST:
+		return store.RoleHost
+	case apiv2pb.User_ADMIN:
+		return store.RoleAdmin
+	case apiv2pb.User_USER:
+		return store.RoleUser
+	default:
+		return store.RoleUser
 	}
 }
 
