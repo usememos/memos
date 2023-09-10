@@ -3,15 +3,12 @@ import { uniqBy } from "lodash-es";
 
 interface State {
   memos: Memo[];
-  isFetching: boolean;
 }
 
 const memoSlice = createSlice({
   name: "memo",
   initialState: {
     memos: [],
-    // isFetching flag should starts with true.
-    isFetching: true,
   } as State,
   reducers: {
     upsertMemos: (state, action: PayloadAction<Memo[]>) => {
@@ -51,15 +48,9 @@ const memoSlice = createSlice({
         }),
       };
     },
-    setIsFetching: (state, action: PayloadAction<boolean>) => {
-      return {
-        ...state,
-        isFetching: action.payload,
-      };
-    },
   },
 });
 
-export const { upsertMemos, createMemo, patchMemo, deleteMemo, setIsFetching } = memoSlice.actions;
+export const { upsertMemos, createMemo, patchMemo, deleteMemo } = memoSlice.actions;
 
 export default memoSlice.reducer;

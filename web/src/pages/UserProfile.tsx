@@ -6,18 +6,20 @@ import MemoList from "@/components/MemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
 import { useUserStore } from "@/store/module";
+import { useUserV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = () => {
   const t = useTranslate();
   const userStore = useUserStore();
+  const userV1Store = useUserV1Store();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
 
   useEffect(() => {
     const currentUsername = userStore.getCurrentUsername();
-    userStore
-      .getUserByUsername(currentUsername)
+    userV1Store
+      .getOrFetchUserByUsername(currentUsername)
       .then((user) => {
         setUser(user);
         loadingState.setFinish();

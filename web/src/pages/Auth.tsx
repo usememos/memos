@@ -143,7 +143,7 @@ const Auth = () => {
                   className="w-full"
                   size="lg"
                   type="text"
-                  disabled={actionBtnLoadingState.isLoading}
+                  readOnly={actionBtnLoadingState.isLoading}
                   placeholder={t("common.username")}
                   value={username}
                   onChange={handleUsernameInputChanged}
@@ -153,7 +153,7 @@ const Auth = () => {
                   className="w-full"
                   size="lg"
                   type="password"
-                  disabled={actionBtnLoadingState.isLoading}
+                  readOnly={actionBtnLoadingState.isLoading}
                   placeholder={t("common.password")}
                   value={password}
                   onChange={handlePasswordInputChanged}

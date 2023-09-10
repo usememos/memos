@@ -136,17 +136,17 @@ const PreferencesSection = () => {
         <div className="inline-block min-w-full align-middle">
           <table className="min-w-full divide-y divide-gray-300">
             <thead>
-              <tr>
-                <th scope="col" className="py-2 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+              <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-300">
+                <th scope="col" className="py-2 pl-4 pr-3">
                   ID
                 </th>
-                <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="px-3 py-2">
                   {t("common.username")}
                 </th>
-                <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="px-3 py-2">
                   {t("common.nickname")}
                 </th>
-                <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900">
+                <th scope="col" className="px-3 py-2">
                   {t("common.email")}
                 </th>
                 <th scope="col" className="relative py-2 pl-3 pr-4"></th>
@@ -155,13 +155,13 @@ const PreferencesSection = () => {
             <tbody className="divide-y divide-gray-200">
               {userList.map((user) => (
                 <tr key={user.id}>
-                  <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900">{user.id}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">
+                  <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-300">{user.id}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-300">
                     {user.username}
                     <span className="ml-1 italic">{user.rowStatus === "ARCHIVED" && "(Archived)"}</span>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{user.nickname}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500">{user.email}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-300">{user.nickname}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-300">{user.email}</td>
                   <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium flex justify-end">
                     {currentUser?.id === user.id ? (
                       <span>{t("common.yourself")}</span>

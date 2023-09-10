@@ -8,6 +8,9 @@ interface UserV1Store {
   getUserByUsername: (username: string) => User;
 }
 
+// Request cache is used to prevent multiple requests.
+const requestCache = new Map<string, Promise<any>>();
+
 const useUserV1Store = create<UserV1Store>()((set, get) => ({
   userMapByUsername: {},
   getOrFetchUserByUsername: async (username: string) => {
@@ -15,8 +18,14 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
     if (userMap[username]) {
       return userMap[username] as User;
     }
+    if (requestCache.has(username)) {
+      return await requestCache.get(username);
+    }
 
-    const { data } = await api.getUserByUsername(username);
+    const promise = api.getUserByUsername(username);
+    requestCache.set(username, promise);
+    const { data } = await promise;
+    requestCache.delete(username);
     const user = convertResponseModelUser(data);
     userMap[username] = user;
     set(userMap);

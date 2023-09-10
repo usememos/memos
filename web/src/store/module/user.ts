@@ -5,7 +5,7 @@ import storage from "@/helpers/storage";
 import { getSystemColorScheme } from "@/helpers/utils";
 import store, { useAppSelector } from "..";
 import { setAppearance, setLocale } from "../reducer/global";
-import { patchUser, setHost, setUser, setUserById } from "../reducer/user";
+import { patchUser, setHost, setUser } from "../reducer/user";
 
 const defaultSetting: Setting = {
   locale: "en",
@@ -116,16 +116,6 @@ export const useUserStore = () => {
         return getUsernameFromPath() || UNKNOWN_USERNAME;
       } else {
         return state.user?.username || UNKNOWN_USERNAME;
-      }
-    },
-    getUserByUsername: async (username: string) => {
-      const { data } = await api.getUserByUsername(username);
-      if (data) {
-        const user = convertResponseModelUser(data);
-        store.dispatch(setUserById(user));
-        return user;
-      } else {
-        return undefined;
       }
     },
     upsertUserSetting: async (key: string, value: any) => {

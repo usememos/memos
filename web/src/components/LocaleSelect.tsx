@@ -5,8 +5,8 @@ import Icon from "./Icon";
 
 interface Props {
   value: Locale;
-  onChange: (locale: Locale) => void;
   className?: string;
+  onChange: (locale: Locale) => void;
 }
 
 const LocaleSelect: FC<Props> = (props: Props) => {

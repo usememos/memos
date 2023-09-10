@@ -229,7 +229,7 @@ const Memo: React.FC<Props> = (props: Props) => {
               <>
                 <Link className="flex flex-row justify-start items-center" to={`/u/${memo.creatorUsername}`}>
                   <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
-                  <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-zinc-300">{creator.nickname}</span>
+                  <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator.nickname}</span>
                 </Link>
                 <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
               </>

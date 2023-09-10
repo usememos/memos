@@ -5,12 +5,13 @@ import FloatingNavButton from "@/components/FloatingNavButton";
 import Memo from "@/components/Memo";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
-import { useMemoStore, useUserStore } from "@/store/module";
+import { useMemoStore } from "@/store/module";
+import { useUserV1Store } from "@/store/v1";
 
 const MemoDetail = () => {
   const params = useParams();
   const memoStore = useMemoStore();
-  const userStore = useUserStore();
+  const userV1Store = useUserV1Store();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
   const memoId = Number(params.memoId);
@@ -21,7 +22,7 @@ const MemoDetail = () => {
       memoStore
         .fetchMemoById(memoId)
         .then(async (memo) => {
-          const user = await userStore.getUserByUsername(memo.creatorUsername);
+          const user = await userV1Store.getOrFetchUserByUsername(memo.creatorUsername);
           setUser(user);
           loadingState.setFinish();
         })

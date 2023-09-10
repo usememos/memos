@@ -9,7 +9,11 @@ const UserAvatar = (props: Props) => {
   const { avatarUrl, className } = props;
   return (
     <div className={classNames(`w-8 h-auto overflow-clip rounded-full`, className)}>
-      <img className="w-full h-auto rounded-full min-w-full min-h-full object-cover" src={avatarUrl || "/logo.webp"} alt="" />
+      <img
+        className="w-full h-auto rounded-full min-w-full min-h-full object-cover dark:opacity-80"
+        src={avatarUrl || "/logo.webp"}
+        alt=""
+      />
     </div>
   );
 };

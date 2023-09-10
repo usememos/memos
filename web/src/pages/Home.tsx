@@ -6,17 +6,19 @@ import MemoFilter from "@/components/MemoFilter";
 import MemoList from "@/components/MemoList";
 import MobileHeader from "@/components/MobileHeader";
 import { useGlobalStore, useUserStore } from "@/store/module";
+import { useUserV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
   const t = useTranslate();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
+  const userV1Store = useUserV1Store();
   const user = userStore.state.user;
 
   useEffect(() => {
     const currentUsername = userStore.getCurrentUsername();
-    userStore.getUserByUsername(currentUsername).catch((error) => {
+    userV1Store.getOrFetchUserByUsername(currentUsername).catch((error) => {
       console.error(error);
       toast.error(t("message.user-not-found"));
     });

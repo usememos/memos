@@ -15,7 +15,8 @@ const MemoList: React.FC = () => {
   const userStore = useUserStore();
   const filterStore = useFilterStore();
   const filter = filterStore.state;
-  const { memos, isFetching } = memoStore.state;
+  const { memos } = memoStore.state;
+  const [isFetching, setIsFetching] = useState<boolean>(true);
   const [isComplete, setIsComplete] = useState<boolean>(false);
 
   const currentUsername = userStore.getCurrentUsername();
@@ -82,6 +83,7 @@ const MemoList: React.FC = () => {
         } else {
           setIsComplete(false);
         }
+        setIsFetching(false);
       })
       .catch((error) => {
         console.error(error);
@@ -122,12 +124,14 @@ const MemoList: React.FC = () => {
 
   const handleFetchMoreClick = async () => {
     try {
+      setIsFetching(true);
       const fetchedMemos = await memoStore.fetchMemos(DEFAULT_MEMO_LIMIT, memos.length);
       if (fetchedMemos.length < DEFAULT_MEMO_LIMIT) {
         setIsComplete(true);
       } else {
         setIsComplete(false);
       }
+      setIsFetching(false);
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
