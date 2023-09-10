@@ -5,7 +5,7 @@ export function convertToMillis(localSetting: LocalSetting) {
   return hoursToMillis;
 }
 
-export function getTimeStampByDate(t: Date | number | string): number {
+export function getTimeStampByDate(t: Date | number | string | any): number {
   return new Date(t).getTime();
 }
 

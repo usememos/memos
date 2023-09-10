@@ -12,14 +12,14 @@ import "@/less/common/date-picker.less";
 interface DatePickerProps {
   className?: string;
   isFutureDateDisabled?: boolean;
-  datestamp: DateStamp;
-  handleDateStampChange: (datestamp: DateStamp) => void;
+  datestamp: number;
+  handleDateStampChange: (datestamp: number) => void;
 }
 
 const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   const t = useTranslate();
   const { className, isFutureDateDisabled, datestamp, handleDateStampChange } = props;
-  const [currentDateStamp, setCurrentDateStamp] = useState<DateStamp>(getMonthFirstDayDateStamp(datestamp));
+  const [currentDateStamp, setCurrentDateStamp] = useState<number>(getMonthFirstDayDateStamp(datestamp));
   const [countByDate, setCountByDate] = useState(new Map());
   const currentUsername = useUserStore().getCurrentUsername();
 
@@ -55,7 +55,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
     });
   }
 
-  const handleDateItemClick = (datestamp: DateStamp) => {
+  const handleDateItemClick = (datestamp: number) => {
     handleDateStampChange(datestamp);
   };
 
@@ -122,7 +122,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   );
 };
 
-function getMonthDayAmount(datestamp: DateStamp): number {
+function getMonthDayAmount(datestamp: number): number {
   const dateTemp = new Date(datestamp);
   const currentDate = new Date(`${dateTemp.getFullYear()}/${dateTemp.getMonth() + 1}/1`);
   const nextMonthDate =
@@ -133,7 +133,7 @@ function getMonthDayAmount(datestamp: DateStamp): number {
   return (nextMonthDate.getTime() - currentDate.getTime()) / DAILY_TIMESTAMP;
 }
 
-function getMonthFirstDayDateStamp(timestamp: TimeStamp): DateStamp {
+function getMonthFirstDayDateStamp(timestamp: number): number {
   const dateTemp = new Date(timestamp);
   const currentDate = new Date(`${dateTemp.getFullYear()}/${dateTemp.getMonth() + 1}/1`);
   return currentDate.getTime();

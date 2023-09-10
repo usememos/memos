@@ -83,7 +83,7 @@ const DailyReview = () => {
       });
   };
 
-  const handleDataPickerChange = (datestamp: DateStamp): void => {
+  const handleDataPickerChange = (datestamp: number): void => {
     setCurrentDateStamp(datestamp);
     toggleShowDatePicker(false);
   };

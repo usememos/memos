@@ -4,8 +4,8 @@ type UserRole = "HOST" | "USER";
 interface User {
   id: UserId;
 
-  createdTs: TimeStamp;
-  updatedTs: TimeStamp;
+  createdTs: number;
+  updatedTs: number;
   rowStatus: RowStatus;
 
   username: string;
