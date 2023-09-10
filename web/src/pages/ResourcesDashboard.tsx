@@ -11,6 +11,7 @@ import ResourceItem from "@/components/ResourceItem";
 import ResourceSearchBar from "@/components/ResourceSearchBar";
 import Dropdown from "@/components/kit/Dropdown";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useEvent from "@/hooks/useEvent";
 import useLoading from "@/hooks/useLoading";
 import { useResourceStore } from "@/store/module";
@@ -19,6 +20,7 @@ import { useTranslate } from "@/utils/i18n";
 const ResourcesDashboard = () => {
   const t = useTranslate();
   const loadingState = useLoading();
+  const user = useCurrentUser();
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
   const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
@@ -26,6 +28,12 @@ const ResourcesDashboard = () => {
   const [queryText, setQueryText] = useState<string>("");
   const [dragActive, setDragActive] = useState(false);
   const [isComplete, setIsComplete] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!user) {
+      window.location.href = "/auth";
+    }
+  }, []);
 
   useEffect(() => {
     resourceStore

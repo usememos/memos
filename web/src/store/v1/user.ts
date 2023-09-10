@@ -39,7 +39,7 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
   },
   getUserByUsername: (username: string) => {
     const userMap = get().userMapByUsername;
-    return userMap[username] as User;
+    return userMap[username];
   },
   updateUser: async (user: Partial<User>, updateMask: string[]) => {
     const {

@@ -1,5 +1,6 @@
 import { Option, Select } from "@mui/joy";
-import { useState } from "react";
+import { isEqual } from "lodash-es";
+import { useEffect, useState } from "react";
 import BetaBadge from "@/components/BetaBadge";
 import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
@@ -9,7 +10,7 @@ import PreferencesSection from "@/components/Settings/PreferencesSection";
 import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
 import SystemSection from "@/components/Settings/SystemSection";
-import { useUserStore } from "@/store/module";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTranslate } from "@/utils/i18n";
 import "@/less/setting.less";
 
@@ -21,12 +22,17 @@ interface State {
 
 const Setting = () => {
   const t = useTranslate();
-  const userStore = useUserStore();
-  const user = userStore.state.user;
+  const user = useCurrentUser();
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });
-  const isHost = user?.role === "HOST";
+  const isHost = isEqual(user.role, "HOST");
+
+  useEffect(() => {
+    if (!user) {
+      window.location.href = "/auth";
+    }
+  }, []);
 
   const handleSectionSelectorItemClick = (settingSection: SettingSection) => {
     setState({

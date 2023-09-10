@@ -68,6 +68,7 @@ export const initialUserState = async () => {
     if (user.setting.appearance) {
       store.dispatch(setAppearance(user.setting.appearance));
     }
+    return user;
   }
 };
 

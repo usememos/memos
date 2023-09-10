@@ -1,34 +1,29 @@
 import { useEffect } from "react";
-import { toast } from "react-hot-toast";
 import HomeSidebar from "@/components/HomeSidebar";
 import MemoEditor from "@/components/MemoEditor";
 import MemoFilter from "@/components/MemoFilter";
 import MemoList from "@/components/MemoList";
 import MobileHeader from "@/components/MobileHeader";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useGlobalStore, useUserStore } from "@/store/module";
-import { useUserV1Store } from "@/store/v1";
-import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
-  const t = useTranslate();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
-  const userV1Store = useUserV1Store();
-  const user = userStore.state.user;
+  const user = useCurrentUser();
 
   useEffect(() => {
-    const currentUsername = userStore.getCurrentUsername();
-    userV1Store.getOrFetchUserByUsername(currentUsername).catch((error) => {
-      console.error(error);
-      toast.error(t("message.user-not-found"));
-    });
-  }, [userStore.getCurrentUsername()]);
-
-  useEffect(() => {
-    if (user?.setting.locale) {
-      globalStore.setLocale(user.setting.locale);
+    if (user) {
+      return;
     }
-  }, [user?.setting.locale]);
+
+    const systemStatus = globalStore.state.systemStatus;
+    if (systemStatus.disablePublicMemos) {
+      window.location.href = "/auth";
+    } else {
+      window.location.href = "/explore";
+    }
+  }, []);
 
   return (
     <div className="w-full flex flex-row justify-start items-start">

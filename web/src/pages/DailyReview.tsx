@@ -11,6 +11,7 @@ import showPreviewImageDialog from "@/components/PreviewImageDialog";
 import DatePicker from "@/components/kit/DatePicker";
 import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { convertToMillis, getDateStampByDate, getNormalizedDateString, getTimeStampByDate, isFutureDate } from "@/helpers/datetime";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import i18n from "@/i18n";
 import toImage from "@/labs/html2image";
 import { useMemoStore, useUserStore } from "@/store/module";
@@ -20,6 +21,7 @@ const DailyReview = () => {
   const t = useTranslate();
   const memoStore = useMemoStore();
   const userStore = useUserStore();
+  const user = useCurrentUser();
   const { localSetting } = userStore.state.user as User;
   const [currentDateStamp, setCurrentDateStamp] = useState(getDateStampByDate(getNormalizedDateString()));
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
@@ -36,6 +38,12 @@ const DailyReview = () => {
       );
     })
     .sort((a, b) => getTimeStampByDate(a.displayTs) - getTimeStampByDate(b.displayTs));
+
+  useEffect(() => {
+    if (!user) {
+      window.location.href = "/auth";
+    }
+  }, []);
 
   useEffect(() => {
     let offset = 0;
