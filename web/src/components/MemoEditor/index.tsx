@@ -31,7 +31,6 @@ interface State {
   memoVisibility: Visibility;
   resourceList: Resource[];
   relationList: MemoRelation[];
-  fullscreen: boolean;
   isUploadingResource: boolean;
   isRequesting: boolean;
 }
@@ -53,7 +52,6 @@ const MemoEditor = (props: Props) => {
     memoVisibility: "PRIVATE",
     resourceList: [],
     relationList: props.relationList ?? [],
-    fullscreen: false,
     isUploadingResource: false,
     isRequesting: false,
   });
@@ -136,12 +134,6 @@ const MemoEditor = (props: Props) => {
           }
           editorRef.current?.scrollToCursor();
         }
-      }
-      return;
-    }
-    if (event.key === "Escape") {
-      if (state.fullscreen) {
-        handleFullscreenBtnClick();
       }
       return;
     }
@@ -304,12 +296,6 @@ const MemoEditor = (props: Props) => {
       await tagStore.upsertTag(tagName);
     }
 
-    setState((state) => {
-      return {
-        ...state,
-        fullscreen: false,
-      };
-    });
     setState((prevState) => ({
       ...prevState,
       resourceList: [],
@@ -352,15 +338,6 @@ const MemoEditor = (props: Props) => {
     editorRef.current?.scrollToCursor();
   };
 
-  const handleFullscreenBtnClick = useCallback(() => {
-    setState((state) => {
-      return {
-        ...state,
-        fullscreen: !state.fullscreen,
-      };
-    });
-  }, []);
-
   const handleTagSelectorClick = useCallback((tag: string) => {
     editorRef.current?.insertText(`#${tag} `);
   }, []);
@@ -374,18 +351,17 @@ const MemoEditor = (props: Props) => {
       className: `memo-editor`,
       initialContent: "",
       placeholder: t("editor.placeholder"),
-      fullscreen: state.fullscreen,
       onContentChange: handleContentChange,
       onPaste: handlePasteEvent,
     }),
-    [state.fullscreen, i18n.language]
+    [i18n.language]
   );
 
   const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
 
   return (
     <div
-      className={`${className ?? ""} memo-editor-container ${state.fullscreen ? "fullscreen" : ""}`}
+      className={`${className ?? ""} memo-editor-container`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
@@ -398,16 +374,13 @@ const MemoEditor = (props: Props) => {
         <div className="common-tools-container">
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
           <button className="action-btn">
+            <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
+          </button>
+          <button className="action-btn">
             <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
           </button>
           <button className="action-btn">
             <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
-          </button>
-          <button className="action-btn">
-            <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
-          </button>
-          <button className="action-btn" onClick={handleFullscreenBtnClick}>
-            {state.fullscreen ? <Icon.Minimize className="icon-img" /> : <Icon.Maximize className="icon-img" />}
           </button>
         </div>
       </div>

@@ -18,14 +18,13 @@ interface Props {
   className: string;
   initialContent: string;
   placeholder: string;
-  fullscreen: boolean;
   tools?: ReactNode;
   onContentChange: (content: string) => void;
   onPaste: (event: React.ClipboardEvent) => void;
 }
 
 const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<EditorRefActions>) {
-  const { className, initialContent, placeholder, fullscreen, onPaste, onContentChange: handleContentChangeCallback } = props;
+  const { className, initialContent, placeholder, onPaste, onContentChange: handleContentChangeCallback } = props;
   const editorRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
@@ -36,10 +35,10 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   }, []);
 
   useEffect(() => {
-    if (editorRef.current && !fullscreen) {
+    if (editorRef.current) {
       updateEditorHeight();
     }
-  }, [editorRef.current?.value, fullscreen]);
+  }, [editorRef.current?.value]);
 
   const updateEditorHeight = () => {
     if (editorRef.current) {
