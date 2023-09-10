@@ -1,11 +1,13 @@
+import axios from "axios";
 import { create } from "zustand";
 import * as api from "@/helpers/api";
-import { User } from "@/types/proto/api/v2/user_service_pb";
+import { UpdateUserResponse, User } from "@/types/proto/api/v2/user_service_pb";
 
 interface UserV1Store {
   userMapByUsername: Record<string, User>;
   getOrFetchUserByUsername: (username: string) => Promise<User>;
   getUserByUsername: (username: string) => User;
+  updateUser: (user: Partial<User>, updateMask: string[]) => Promise<User>;
 }
 
 // Request cache is used to prevent multiple requests.
@@ -38,6 +40,21 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
   getUserByUsername: (username: string) => {
     const userMap = get().userMapByUsername;
     return userMap[username] as User;
+  },
+  updateUser: async (user: Partial<User>, updateMask: string[]) => {
+    const {
+      data: { user: updatedUser },
+    } = await axios.post<UpdateUserResponse>(`/api/v2/users/${user.username}`, {
+      user,
+      updateMask,
+    });
+    if (!updatedUser) {
+      throw new Error("User not found");
+    }
+    const userMap = get().userMapByUsername;
+    userMap[updatedUser.username] = updatedUser;
+    set(userMap);
+    return updatedUser;
   },
 }));
 

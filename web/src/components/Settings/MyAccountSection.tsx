@@ -1,5 +1,6 @@
 import { Button, Input, Textarea } from "@mui/joy";
-import { useUserStore } from "@/store/module";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useUserV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showChangePasswordDialog from "../ChangePasswordDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
@@ -9,8 +10,8 @@ import UserAvatar from "../UserAvatar";
 
 const MyAccountSection = () => {
   const t = useTranslate();
-  const userStore = useUserStore();
-  const user = userStore.state.user as User;
+  const userV1Store = useUserV1Store();
+  const user = useCurrentUser();
   const openAPIRoute = `${window.location.origin}/api/v1/memo?openId=${user.openId}`;
 
   const handleResetOpenIdBtnClick = async () => {
@@ -20,10 +21,12 @@ const MyAccountSection = () => {
       style: "warning",
       dialogName: "reset-openid-dialog",
       onConfirm: async () => {
-        await userStore.patchUser({
-          id: user.id,
-          resetOpenId: true,
-        });
+        await userV1Store.updateUser(
+          {
+            username: user.username,
+          },
+          ["reset_open_id"]
+        );
       },
     });
   };

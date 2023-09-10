@@ -7,7 +7,6 @@ import "api/v2/memo_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
-import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v2";
@@ -18,7 +17,10 @@ service UserService {
     option (google.api.method_signature) = "username";
   }
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
-    option (google.api.http) = {patch: "/api/v2/users/{username}"};
+    option (google.api.http) = {
+      post: "/api/v2/users/{username}"
+      body: "*"
+    };
     option (google.api.method_signature) = "username";
   }
 }
@@ -68,7 +70,7 @@ message UpdateUserRequest {
   User user = 2;
 
   // The update mask applies to the user resource.
-  google.protobuf.FieldMask update_mask = 3;
+  repeated string update_mask = 3;
 }
 
 message UpdateUserResponse {

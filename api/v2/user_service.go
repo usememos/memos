@@ -66,7 +66,7 @@ func (s *UserService) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUse
 	if currentUser == nil || (currentUser.ID != userID && currentUser.Role != store.RoleAdmin) {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
+	if request.UpdateMask == nil || len(request.UpdateMask) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
 
@@ -75,7 +75,7 @@ func (s *UserService) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUse
 		ID:        userID,
 		UpdatedTs: &currentTs,
 	}
-	for _, path := range request.UpdateMask.Paths {
+	for _, path := range request.UpdateMask {
 		if path == "username" {
 			update.Username = &request.User.Username
 		} else if path == "nickname" {

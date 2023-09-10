@@ -429,7 +429,7 @@
 | ----- | ---- | ----- | ----------- |
 | username | [string](#string) |  |  |
 | user | [User](#memos-api-v2-User) |  |  |
-| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  | The update mask applies to the user resource. |
+| update_mask | [string](#string) | repeated | The update mask applies to the user resource. |
 
 
 

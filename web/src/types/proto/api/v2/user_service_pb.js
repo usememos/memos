@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { FieldMask, proto3, Timestamp } from "@bufbuild/protobuf";
+import { proto3, Timestamp } from "@bufbuild/protobuf";
 import { RowStatus } from "./common_pb.js";
 import { Visibility } from "./memo_service_pb.js";
 
@@ -68,7 +68,7 @@ export const UpdateUserRequest = proto3.makeMessageType(
   () => [
     { no: 1, name: "username", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 2, name: "user", kind: "message", T: User },
-    { no: 3, name: "update_mask", kind: "message", T: FieldMask },
+    { no: 3, name: "update_mask", kind: "scalar", T: 9 /* ScalarType.STRING */, repeated: true },
   ],
 );
 

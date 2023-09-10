@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { BinaryReadOptions, FieldList, FieldMask, JsonReadOptions, JsonValue, PartialMessage, PlainMessage, Timestamp } from "@bufbuild/protobuf";
+import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage, Timestamp } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
 import type { RowStatus } from "./common_pb.js";
 import type { Visibility } from "./memo_service_pb.js";
@@ -172,9 +172,9 @@ export declare class UpdateUserRequest extends Message<UpdateUserRequest> {
   /**
    * The update mask applies to the user resource.
    *
-   * @generated from field: google.protobuf.FieldMask update_mask = 3;
+   * @generated from field: repeated string update_mask = 3;
    */
-  updateMask?: FieldMask;
+  updateMask: string[];
 
   constructor(data?: PartialMessage<UpdateUserRequest>);
 
