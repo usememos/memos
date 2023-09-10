@@ -265,8 +265,6 @@ definitions:
     type: object
   v1.CreateResourceRequest:
     properties:
-      downloadToLocal:
-        type: boolean
       externalLink:
         type: string
       filename:

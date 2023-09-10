@@ -141,9 +141,6 @@
         "file-name-placeholder": "फ़ाइल का नाम",
         "type": "प्रकार",
         "type-placeholder": "फ़ाइल प्रकार"
-      },
-      "download-link": {
-        "option": "डाउनलोड लिंक"
       }
     }
   },

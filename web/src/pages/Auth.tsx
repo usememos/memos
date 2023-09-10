@@ -133,16 +133,17 @@ const Auth = () => {
       <div className="w-80 max-w-full h-full py-4 flex flex-col justify-start items-center">
         <div className="w-full py-4 grow flex flex-col justify-center items-center">
           <div className="w-full flex flex-col justify-center items-center mb-2">
-            <img className="h-20 w-auto rounded-full shadow mr-1" src={systemStatus.customizedProfile.logoUrl} alt="" />
-            <p className="text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
+            <img className="h-20 w-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
+            <p className="mt-2 text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
           {!disablePasswordLogin && (
-            <form className="w-full mt-4" onSubmit={handleFormSubmit}>
+            <form className="w-full mt-2" onSubmit={handleFormSubmit}>
               <div className="flex flex-col justify-start items-start w-full gap-4">
                 <Input
                   className="w-full"
                   size="lg"
                   type="text"
+                  disabled={actionBtnLoadingState.isLoading}
                   placeholder={t("common.username")}
                   value={username}
                   onChange={handleUsernameInputChanged}
@@ -152,6 +153,7 @@ const Auth = () => {
                   className="w-full"
                   size="lg"
                   type="password"
+                  disabled={actionBtnLoadingState.isLoading}
                   placeholder={t("common.password")}
                   value={password}
                   onChange={handlePasswordInputChanged}

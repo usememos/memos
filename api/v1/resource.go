@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"mime"
 	"net/http"
 	"net/url"
 	"os"
@@ -50,11 +49,10 @@ type Resource struct {
 }
 
 type CreateResourceRequest struct {
-	Filename        string `json:"filename"`
-	InternalPath    string `json:"internalPath"`
-	ExternalLink    string `json:"externalLink"`
-	Type            string `json:"type"`
-	DownloadToLocal bool   `json:"downloadToLocal"`
+	Filename     string `json:"filename"`
+	InternalPath string `json:"internalPath"`
+	ExternalLink string `json:"externalLink"`
+	Type         string `json:"type"`
 }
 
 type FindResourceRequest struct {
@@ -171,41 +169,6 @@ func (s *APIV1Service) CreateResource(c echo.Context) error {
 		}
 		if linkURL.Scheme != "http" && linkURL.Scheme != "https" {
 			return echo.NewHTTPError(http.StatusBadRequest, "Invalid external link scheme")
-		}
-
-		if request.DownloadToLocal {
-			resp, err := http.Get(linkURL.String())
-			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to request %s", request.ExternalLink))
-			}
-			defer resp.Body.Close()
-
-			blob, err := io.ReadAll(resp.Body)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read %s", request.ExternalLink))
-			}
-
-			mediaType, _, err := mime.ParseMediaType(resp.Header.Get("Content-Type"))
-			if err != nil {
-				return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Failed to read mime from %s", request.ExternalLink))
-			}
-			create.Type = mediaType
-
-			filename := path.Base(linkURL.Path)
-			if path.Ext(filename) == "" {
-				extensions, _ := mime.ExtensionsByType(mediaType)
-				if len(extensions) > 0 {
-					filename += extensions[0]
-				}
-			}
-			create.Filename = filename
-			create.ExternalLink = ""
-			create.Size = int64(len(blob))
-
-			err = SaveResourceBlob(ctx, s.Store, create, bytes.NewReader(blob))
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to save resource").SetInternal(err)
-			}
 		}
 	}
 

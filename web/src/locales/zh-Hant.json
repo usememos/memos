@@ -141,9 +141,6 @@
         "file-name-placeholder": "檔案名稱",
         "type": "類型",
         "type-placeholder": "檔案類型"
-      },
-      "download-link": {
-        "option": "從外部連結下載"
       }
     }
   },

@@ -39,7 +39,7 @@ const UserProfile = () => {
                   <div className="w-full flex flex-row justify-start items-start">
                     <div className="flex-grow shrink w-full">
                       <div className="w-full flex flex-col justify-start items-center py-8">
-                        <UserAvatar className="w-16 h-auto mb-4 drop-shadow" avatarUrl={user?.avatarUrl} />
+                        <UserAvatar className="!w-20 h-auto mb-4 drop-shadow" avatarUrl={user?.avatarUrl} />
                         <div>
                           <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">{user?.nickname}</p>
                         </div>

@@ -133,9 +133,6 @@
         "type": "Тип",
         "type-placeholder": "Тип файла",
         "link-placeholder": "https://the.link.to/your/resource"
-      },
-      "download-link": {
-        "option": "Ссылка на скачивание"
       }
     }
   },

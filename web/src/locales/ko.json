@@ -141,9 +141,6 @@
         "file-name-placeholder": "파일 이름",
         "type": "종류",
         "type-placeholder": "파일 종류"
-      },
-      "download-link": {
-        "option": "링크 다운로드"
       }
     }
   },

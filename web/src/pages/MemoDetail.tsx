@@ -1,20 +1,18 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { Link, useLocation, useParams } from "react-router-dom";
-import Icon from "@/components/Icon";
+import { useParams } from "react-router-dom";
+import FloatingNavButton from "@/components/FloatingNavButton";
 import Memo from "@/components/Memo";
+import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
-import { useGlobalStore, useMemoStore } from "@/store/module";
-import { useTranslate } from "@/utils/i18n";
+import { useMemoStore, useUserStore } from "@/store/module";
 
 const MemoDetail = () => {
-  const t = useTranslate();
   const params = useParams();
-  const location = useLocation();
-  const globalStore = useGlobalStore();
   const memoStore = useMemoStore();
+  const userStore = useUserStore();
   const loadingState = useLoading();
-  const customizedProfile = globalStore.state.systemStatus.customizedProfile;
+  const [user, setUser] = useState<User>();
   const memoId = Number(params.memoId);
   const memo = memoStore.state.memos.find((memo) => memo.id === memoId);
 
@@ -22,7 +20,9 @@ const MemoDetail = () => {
     if (memoId && !isNaN(memoId)) {
       memoStore
         .fetchMemoById(memoId)
-        .then(() => {
+        .then(async (memo) => {
+          const user = await userStore.getUserByUsername(memo.creatorUsername);
+          setUser(user);
           loadingState.setFinish();
         })
         .catch((error) => {
@@ -30,39 +30,35 @@ const MemoDetail = () => {
           toast.error(error.response.data.message);
         });
     }
-  }, [location]);
+  }, [memoId]);
 
   return (
-    <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-zinc-100 dark:bg-zinc-800">
-      <div className="relative w-full min-h-full mx-auto flex flex-col justify-start items-center pb-6">
-        <div className="max-w-2xl w-full flex flex-row justify-center items-center px-4 py-2 mt-2 bg-zinc-100 dark:bg-zinc-800">
-          <div className="detail-header flex flex-row justify-start items-center">
-            <img className="detail-logo h-10 w-auto rounded-lg mr-2" src={customizedProfile.logoUrl} alt="" />
-            <p className="detail-name text-4xl tracking-wide text-black dark:text-white">{customizedProfile.name}</p>
+    <>
+      <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-zinc-100 dark:bg-zinc-800">
+        <div className="relative w-full min-h-full mx-auto flex flex-col justify-start items-center pb-6">
+          <div className="w-full flex flex-col justify-start items-center py-8">
+            <UserAvatar className="!w-20 h-auto mb-4 drop-shadow" avatarUrl={user?.avatarUrl} />
+            <div>
+              <p className="text-2xl font-bold text-gray-700 dark:text-gray-300">{user?.nickname}</p>
+            </div>
           </div>
+          {!loadingState.isLoading &&
+            (memo ? (
+              <>
+                <main className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
+                  <Memo memo={memo} />
+                </main>
+              </>
+            ) : (
+              <>
+                <p>Not found</p>
+              </>
+            ))}
         </div>
-        {!loadingState.isLoading &&
-          (memo ? (
-            <>
-              <main className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
-                <Memo memo={memo} />
-              </main>
-              <div className="mt-4 w-full flex flex-row justify-center items-center gap-2">
-                <Link
-                  to="/"
-                  className="flex flex-row justify-center items-center text-gray-600 dark:text-gray-300 text-sm px-3 hover:opacity-80 hover:underline"
-                >
-                  <Icon.Home className="w-4 h-auto mr-1 -mt-0.5" /> {t("router.back-to-home")}
-                </Link>
-              </div>
-            </>
-          ) : (
-            <>
-              <p>Not found</p>
-            </>
-          ))}
-      </div>
-    </section>
+      </section>
+
+      <FloatingNavButton />
+    </>
   );
 };
 

@@ -255,9 +255,6 @@
         "type": "类型",
         "type-placeholder": "文件类型"
       },
-      "download-link": {
-        "option": "从外部链接下载"
-      },
       "local-file": {
         "choose": "选择文件...",
         "option": "本地文件"

@@ -218,7 +218,7 @@ const router = createBrowserRouter([
     },
   },
   {
-    path: "u/:username",
+    path: "/u/:username",
     element: <UserProfile />,
     loader: async () => {
       await initialGlobalStateLoader();

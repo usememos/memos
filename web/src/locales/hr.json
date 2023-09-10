@@ -141,9 +141,6 @@
         "file-name-placeholder": "Ime fajla",
         "type": "Tip",
         "type-placeholder": "Tip fajla"
-      },
-      "download-link": {
-        "option": "Link za preuzimanje"
       }
     }
   },

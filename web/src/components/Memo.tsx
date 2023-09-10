@@ -216,17 +216,15 @@ const Memo: React.FC<Props> = (props: Props) => {
   };
 
   const handleMemoCreatedTimeClick = (e: React.MouseEvent) => {
-    if (e.altKey) {
-      e.preventDefault();
-      showChangeMemoCreatedTsDialog(memo.id);
-    }
+    e.preventDefault();
+    showChangeMemoCreatedTsDialog(memo.id);
   };
 
   return (
     <>
       <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned && !readonly ? "pinned" : ""}`} ref={memoContainerRef}>
         <div className="memo-top-wrapper">
-          <p className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
+          <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
             {creator && (
               <>
                 <Link className="flex flex-row justify-start items-center" to={`/u/${memo.creatorUsername}`}>
@@ -236,10 +234,10 @@ const Memo: React.FC<Props> = (props: Props) => {
                 <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
               </>
             )}
-            <span className="text-sm text-gray-400" onClick={handleMemoCreatedTimeClick}>
+            <span className="text-sm text-gray-400 select-none" onDoubleClick={handleMemoCreatedTimeClick}>
               {displayTime}
             </span>
-          </p>
+          </div>
           <div className="btns-container space-x-2">
             {!readonly && (
               <>

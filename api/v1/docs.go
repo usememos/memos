@@ -2687,9 +2687,6 @@ const docTemplate = `{
         "v1.CreateResourceRequest": {
             "type": "object",
             "properties": {
-                "downloadToLocal": {
-                    "type": "boolean"
-                },
                 "externalLink": {
                     "type": "string"
                 },

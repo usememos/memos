@@ -96,7 +96,7 @@ const Explore = () => {
             return <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} />;
           })}
           {isComplete ? (
-            memos.length === 0 && (
+            sortedMemos.length === 0 && (
               <div className="w-full mt-16 mb-8 flex flex-col justify-center items-center italic">
                 <Empty />
                 <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>

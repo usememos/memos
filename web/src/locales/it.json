@@ -141,9 +141,6 @@
         "file-name-placeholder": "Nome file",
         "type": "Tipo",
         "type-placeholder": "Tipo file"
-      },
-      "download-link": {
-        "option": "Link di download"
       }
     }
   },
