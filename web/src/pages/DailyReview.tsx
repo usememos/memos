@@ -33,6 +33,7 @@ const DailyReview = () => {
       const currentDateStampWithOffset = currentDateStamp + convertToMillis(localSetting);
       return (
         m.rowStatus === "NORMAL" &&
+        m.creatorUsername === user.username &&
         displayTimestamp >= currentDateStampWithOffset &&
         displayTimestamp < currentDateStampWithOffset + DAILY_TIMESTAMP
       );
