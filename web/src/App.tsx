@@ -59,7 +59,6 @@ const App = () => {
     }
   }, []);
 
-  // Inject additional style and script codes.
   useEffect(() => {
     if (systemStatus.additionalStyle) {
       const styleEl = document.createElement("style");
@@ -67,17 +66,22 @@ const App = () => {
       styleEl.setAttribute("type", "text/css");
       document.body.insertAdjacentElement("beforeend", styleEl);
     }
+  }, [systemStatus.additionalStyle]);
+
+  useEffect(() => {
     if (systemStatus.additionalScript) {
       const scriptEl = document.createElement("script");
       scriptEl.innerHTML = systemStatus.additionalScript;
       document.head.appendChild(scriptEl);
     }
+  }, [systemStatus.additionalScript]);
 
+  useEffect(() => {
     // dynamic update metadata with customized profile.
     document.title = systemStatus.customizedProfile.name;
     const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
     link.href = systemStatus.customizedProfile.logoUrl || "/logo.webp";
-  }, [systemStatus]);
+  }, [systemStatus.customizedProfile]);
 
   useEffect(() => {
     document.documentElement.setAttribute("lang", locale);
