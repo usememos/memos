@@ -1,3 +1,4 @@
+import BlockLatex from "./BlockLatex";
 import Blockquote from "./Blockquote";
 import Bold from "./Bold";
 import BoldEmphasis from "./BoldEmphasis";
@@ -9,6 +10,7 @@ import Heading from "./Heading";
 import HorizontalRules from "./HorizontalRules";
 import Image from "./Image";
 import InlineCode from "./InlineCode";
+import InlineLatex from "./InlineLatex";
 import Link from "./Link";
 import OrderedList from "./OrderedList";
 import Paragraph from "./Paragraph";
@@ -25,6 +27,7 @@ export { PLAIN_LINK_REG } from "./PlainLink";
 
 // The order determines the order of execution.
 export const blockElementParserList = [
+  BlockLatex,
   Br,
   CodeBlock,
   Blockquote,
@@ -36,5 +39,16 @@ export const blockElementParserList = [
   HorizontalRules,
   Paragraph,
 ];
-
-export const inlineElementParserList = [Image, BoldEmphasis, Bold, Emphasis, Link, InlineCode, PlainLink, Strikethrough, Tag, PlainText];
+export const inlineElementParserList = [
+  InlineLatex,
+  Image,
+  BoldEmphasis,
+  Bold,
+  Emphasis,
+  Link,
+  InlineCode,
+  PlainLink,
+  Strikethrough,
+  Tag,
+  PlainText,
+];
