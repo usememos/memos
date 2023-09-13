@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import { useLocalStorage } from "react-use";
 import { compare } from "semver";
 import * as api from "@/helpers/api";
-import storage from "@/helpers/storage";
 import { useGlobalStore } from "@/store/module";
 import Icon from "./Icon";
 
@@ -12,6 +12,7 @@ interface State {
 
 const UpgradeVersionView: React.FC = () => {
   const globalStore = useGlobalStore();
+  const [skippedVersion, setSkippedVersion] = useLocalStorage<string>("skipped_version", "0.0.0");
   const profile = globalStore.state.systemStatus.profile;
   const [state, setState] = useState<State>({
     latestVersion: "",
@@ -20,7 +21,6 @@ const UpgradeVersionView: React.FC = () => {
 
   useEffect(() => {
     api.getRepoLatestTag().then((latestTag) => {
-      const { skippedVersion } = storage.get(["skippedVersion"]);
       const latestVersion = latestTag.slice(1) || "0.0.0";
       const currentVersion = profile.version;
       const skipped = skippedVersion ? skippedVersion === latestVersion : false;
@@ -32,7 +32,7 @@ const UpgradeVersionView: React.FC = () => {
   }, []);
 
   const onSkip = () => {
-    storage.set({ skippedVersion: state.latestVersion });
+    setSkippedVersion(state.latestVersion);
     setState((s) => ({
       ...s,
       show: false,

@@ -2,6 +2,7 @@ import { isNumber, last, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
+import { useLocalStorage } from "react-use";
 import { upsertMemoResource } from "@/helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { clearContentQueryParam } from "@/helpers/utils";
@@ -39,6 +40,7 @@ const MemoEditor = (props: Props) => {
   const { className, memoId, onConfirm } = props;
   const { i18n } = useTranslation();
   const t = useTranslate();
+  const [contentCache, setContentCache] = useLocalStorage<string>(`memo-editor-${props.memoId || "0"}`, "");
   const {
     state: { systemStatus },
   } = useGlobalStore();
@@ -62,6 +64,10 @@ const MemoEditor = (props: Props) => {
   const setting = user.setting;
 
   useEffect(() => {
+    editorRef.current?.setContent(contentCache || "");
+  }, []);
+
+  useEffect(() => {
     let visibility = setting.memoVisibility;
     if (systemStatus.disablePublicMemos && visibility === "PUBLIC") {
       visibility = "PRIVATE";
@@ -83,7 +89,9 @@ const MemoEditor = (props: Props) => {
             resourceList: memo.resourceList,
             relationList: memo.relationList,
           }));
-          editorRef.current?.setContent(memo.content ?? "");
+          if (!contentCache) {
+            editorRef.current?.setContent(memo.content ?? "");
+          }
         }
       });
     }
@@ -242,6 +250,7 @@ const MemoEditor = (props: Props) => {
 
   const handleContentChange = (content: string) => {
     setHasContent(content !== "");
+    setContentCache(content);
   };
 
   const handleSaveBtnClick = async () => {

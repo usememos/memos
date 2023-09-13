@@ -2,18 +2,12 @@
  * Define storage data type
  */
 interface StorageData {
-  // Editor content cache
-  editorContentCache: string;
-  // Editing memo id cache
-  editingMemoIdCache: MemoId;
   // locale
   locale: Locale;
   // appearance
   appearance: Appearance;
   // local setting
   localSetting: LocalSetting;
-  // skipped version
-  skippedVersion: string;
 }
 
 type StorageKey = keyof StorageData;
