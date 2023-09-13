@@ -136,11 +136,6 @@ export declare class ListMemosResponse extends Message<ListMemosResponse> {
    */
   memos: Memo[];
 
-  /**
-   * @generated from field: int32 total = 2;
-   */
-  total: number;
-
   constructor(data?: PartialMessage<ListMemosResponse>);
 
   static readonly runtime: typeof proto3;

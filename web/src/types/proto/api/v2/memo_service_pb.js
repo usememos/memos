@@ -55,7 +55,6 @@ export const ListMemosResponse = proto3.makeMessageType(
   "memos.api.v2.ListMemosResponse",
   () => [
     { no: 1, name: "memos", kind: "message", T: Memo, repeated: true },
-    { no: 2, name: "total", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
   ],
 );
 

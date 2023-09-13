@@ -143,7 +143,6 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | memos | [Memo](#memos-api-v2-Memo) | repeated |  |
-| total | [int32](#int32) |  |  |
 
 
 

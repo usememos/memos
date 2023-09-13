@@ -48,8 +48,6 @@ message ListMemosRequest {
 
 message ListMemosResponse {
   repeated Memo memos = 1;
-
-  int32 total = 2;
 }
 
 message GetMemoRequest {
