@@ -2,14 +2,16 @@ package v1
 
 import (
 	"github.com/labstack/echo/v4"
+	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
 
 type APIV1Service struct {
-	Secret  string
-	Profile *profile.Profile
-	Store   *store.Store
+	Secret      string
+	Profile     *profile.Profile
+	Store       *store.Store
+	telegramBot *telegram.Bot
 }
 
 // @title						memos API
@@ -31,11 +33,12 @@ type APIV1Service struct {
 // @in							query
 // @name						openId
 // @description				Insert your Open ID API Key here.
-func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store) *APIV1Service {
+func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store, telegramBot *telegram.Bot) *APIV1Service {
 	return &APIV1Service{
-		Secret:  secret,
-		Profile: profile,
-		Store:   store,
+		Secret:      secret,
+		Profile:     profile,
+		Store:       store,
+		telegramBot: telegramBot,
 	}
 }
 
