@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocalStorage } from "react-use";
+import useLocalStorage from "react-use/lib/useLocalStorage";
 import { compare } from "semver";
 import * as api from "@/helpers/api";
 import { useGlobalStore } from "@/store/module";
