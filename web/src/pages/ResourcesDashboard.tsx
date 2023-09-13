@@ -7,12 +7,10 @@ import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
 import ResourceCard from "@/components/ResourceCard";
-import ResourceItem from "@/components/ResourceItem";
 import ResourceSearchBar from "@/components/ResourceSearchBar";
 import Dropdown from "@/components/kit/Dropdown";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import useEvent from "@/hooks/useEvent";
 import useLoading from "@/hooks/useLoading";
 import { useResourceStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
@@ -23,8 +21,6 @@ const ResourcesDashboard = () => {
   const user = useCurrentUser();
   const resourceStore = useResourceStore();
   const resources = resourceStore.state.resources;
-  const [selectedList, setSelectedList] = useState<Array<ResourceId>>([]);
-  const [listStyle, setListStyle] = useState<"GRID" | "TABLE">("TABLE");
   const [queryText, setQueryText] = useState<string>("");
   const [dragActive, setDragActive] = useState(false);
   const [isComplete, setIsComplete] = useState<boolean>(false);
@@ -49,19 +45,6 @@ const ResourcesDashboard = () => {
         toast.error(error.response.data.message);
       });
   }, []);
-
-  const handleCheckBtnClick = useEvent((resourceId: ResourceId) => {
-    setSelectedList([...selectedList, resourceId]);
-  });
-
-  const handleUncheckBtnClick = useEvent((resourceId: ResourceId) => {
-    setSelectedList(selectedList.filter((id) => id !== resourceId));
-  });
-
-  const handleStyleChangeBtnClick = (listStyle: "GRID" | "TABLE") => {
-    setListStyle(listStyle);
-    setSelectedList([]);
-  };
 
   const handleDeleteUnusedResourcesBtnClick = async () => {
     let warningText = t("resource.warning-text-unused");
@@ -89,27 +72,6 @@ const ResourcesDashboard = () => {
         }
       },
     });
-  };
-
-  const handleDeleteSelectedBtnClick = () => {
-    if (selectedList.length == 0) {
-      toast.error(t("resource.no-files-selected"));
-    } else {
-      const warningText = t("resource.warning-text");
-      showCommonDialog({
-        title: t("resource.delete-resource"),
-        content: warningText,
-        style: "warning",
-        dialogName: "delete-resource-dialog",
-        onConfirm: async () => {
-          for (const resourceId of selectedList) {
-            await resourceStore.deleteResourceById(resourceId);
-          }
-
-          setSelectedList([]);
-        },
-      });
-    }
   };
 
   const handleFetchMoreResourceBtnClick = async () => {
@@ -149,7 +111,6 @@ const ResourcesDashboard = () => {
     if (query === queryText) return;
     await fetchAllResources();
     setQueryText(query);
-    setSelectedList([]);
   };
 
   const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
@@ -166,24 +127,8 @@ const ResourcesDashboard = () => {
     () =>
       resources
         .filter((res: Resource) => (queryText === "" ? true : res.filename.toLowerCase().includes(queryText.toLowerCase())))
-        .map((resource) =>
-          listStyle === "TABLE" ? (
-            <ResourceItem
-              key={resource.id}
-              resource={resource}
-              handleCheckClick={() => handleCheckBtnClick(resource.id)}
-              handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-            ></ResourceItem>
-          ) : (
-            <ResourceCard
-              key={resource.id}
-              resource={resource}
-              handleCheckClick={() => handleCheckBtnClick(resource.id)}
-              handleUncheckClick={() => handleUncheckBtnClick(resource.id)}
-            ></ResourceCard>
-          )
-        ),
-    [resources, queryText, listStyle]
+        .map((resource) => <ResourceCard key={resource.id} resource={resource}></ResourceCard>),
+    [resources, queryText]
   );
 
   const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
@@ -230,11 +175,6 @@ const ResourcesDashboard = () => {
             <ResourceSearchBar setQuery={handleSearchResourceInputChange} />
           </div>
           <div className="w-full flex flex-row justify-end items-center space-x-2 mt-3 z-1">
-            {selectedList.length > 0 && (
-              <Button onClick={() => handleDeleteSelectedBtnClick()} color="danger">
-                <Icon.Trash2 className="w-4 h-auto" />
-              </Button>
-            )}
             <Button
               onClick={() =>
                 showCreateResourceDialog({
@@ -267,24 +207,6 @@ const ResourcesDashboard = () => {
                 </>
               }
             />
-            <div className="flex rounded-lg cursor-pointer h-8 overflow-clip border dark:border-zinc-600">
-              <div
-                className={`flex justify-center items-center px-3 ${
-                  listStyle === "GRID" ? "bg-white dark:bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800 opacity-60"
-                }`}
-                onClick={() => handleStyleChangeBtnClick("GRID")}
-              >
-                <Icon.Grid className="w-4 h-auto opacity-80" />
-              </div>
-              <div
-                className={`flex justify-center items-center px-3 ${
-                  listStyle === "TABLE" ? "bg-white dark:bg-zinc-700" : "bg-gray-200 dark:bg-zinc-800 opacity-60"
-                }`}
-                onClick={() => handleStyleChangeBtnClick("TABLE")}
-              >
-                <Icon.List className="w-4 h-auto opacity-80" />
-              </div>
-            </div>
           </div>
           <div className="w-full flex flex-col justify-start items-start mt-4 mb-6">
             {loadingState.isLoading ? (
@@ -294,19 +216,11 @@ const ResourcesDashboard = () => {
             ) : (
               <div
                 className={
-                  listStyle === "TABLE" || resourceList.length === 0
+                  resourceList.length === 0
                     ? "flex flex-col justify-start items-start w-full"
                     : "w-full h-auto grid grid-cols-2 md:grid-cols-4 md:px-6 gap-6"
                 }
               >
-                {listStyle === "TABLE" && (
-                  <div className="px-2 py-2 w-full grid grid-cols-10 border-b dark:border-b-zinc-600">
-                    <span></span>
-                    <span className="col-span-2">ID</span>
-                    <span className="col-span-6">{t("common.name")}</span>
-                    <span></span>
-                  </div>
-                )}
                 {resourceList.length === 0 ? (
                   <div className="w-full mt-8 mb-8 flex flex-col justify-center items-center italic">
                     <Empty />

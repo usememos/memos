@@ -1,34 +1,22 @@
-import { useState } from "react";
 import { getDateTimeString } from "@/helpers/datetime";
-import Icon from "./Icon";
-import ResourceCover from "./ResourceCover";
+import ResourceIcon from "./ResourceIcon";
 import ResourceItemDropdown from "./ResourceItemDropdown";
 import "@/less/resource-card.less";
 
-const ResourceCard = ({ resource, handleCheckClick, handleUncheckClick }: ResourceItemType) => {
-  const [isSelected, setIsSelected] = useState<boolean>(false);
+interface Props {
+  resource: Resource;
+}
 
-  const handleSelectBtnClick = () => {
-    if (isSelected) {
-      handleUncheckClick();
-    } else {
-      handleCheckClick();
-    }
-    setIsSelected(!isSelected);
-  };
-
+const ResourceCard = ({ resource }: Props) => {
   return (
     <div className="resource-card">
-      <div className="w-full p-2 flex flex-row justify-between items-center absolute top-0 left-0">
-        <div onClick={() => handleSelectBtnClick()}>
-          {isSelected ? <Icon.CheckCircle2 className="resource-checkbox !flex" /> : <Icon.Circle className="resource-checkbox" />}
-        </div>
+      <div className="w-full p-2 flex flex-row justify-end items-center absolute top-0 left-0">
         <div className="more-action-btn">
           <ResourceItemDropdown resource={resource} />
         </div>
       </div>
       <div className="w-full flex flex-row justify-center items-center pb-2 pt-4 px-2">
-        <ResourceCover resource={resource} />
+        <ResourceIcon resource={resource} strokeWidth={1} />
       </div>
       <div className="w-full flex flex-col justify-start items-center px-1 select-none">
         <div className="w-full text-base text-center text-ellipsis overflow-hidden line-clamp-3">{resource.filename}</div>
