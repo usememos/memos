@@ -504,18 +504,16 @@ func (s *APIV1Service) GetMemoStats(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find memo list").SetInternal(err)
 	}
-	memoResponseList := []*Memo{}
-	for _, memo := range list {
-		memoResponse, err := s.convertMemoFromStore(ctx, memo)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
-		}
-		memoResponseList = append(memoResponseList, memoResponse)
-	}
 
 	displayTsList := []int64{}
-	for _, memo := range memoResponseList {
-		displayTsList = append(displayTsList, memo.DisplayTs)
+	if memoDisplayWithUpdatedTs {
+		for _, memo := range list {
+			displayTsList = append(displayTsList, memo.CreatedTs)
+		}
+	} else {
+		for _, memo := range list {
+			displayTsList = append(displayTsList, memo.UpdatedTs)
+		}
 	}
 	return c.JSON(http.StatusOK, displayTsList)
 }
