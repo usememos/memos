@@ -42,9 +42,9 @@ func (s *MemoService) ListMemos(ctx context.Context, request *apiv2pb.ListMemosR
 			memoFind.CreatedTsAfter = filter.CreatedTsAfter
 		}
 	}
-	userIDPtr := ctx.Value(UserIDContextKey)
+	user, _ := getCurrentUser(ctx, s.Store)
 	// If the user is not authenticated, only public memos are visible.
-	if userIDPtr == nil {
+	if user == nil {
 		memoFind.VisibilityList = []store.Visibility{store.Public}
 	}
 	if request.PageSize != 0 {
@@ -80,12 +80,14 @@ func (s *MemoService) GetMemo(ctx context.Context, request *apiv2pb.GetMemoReque
 		return nil, status.Errorf(codes.NotFound, "memo not found")
 	}
 	if memo.Visibility != store.Public {
-		userIDPtr := ctx.Value(UserIDContextKey)
-		if userIDPtr == nil {
-			return nil, status.Errorf(codes.Unauthenticated, "unauthenticated")
+		user, err := getCurrentUser(ctx, s.Store)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to get user")
 		}
-		userID := userIDPtr.(int32)
-		if memo.Visibility == store.Private && memo.CreatorID != userID {
+		if user == nil {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+		if memo.Visibility == store.Private && memo.CreatorID != user.ID {
 			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 		}
 	}

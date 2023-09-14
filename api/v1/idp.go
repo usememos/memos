@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
@@ -88,7 +87,7 @@ func (s *APIV1Service) GetIdentityProviderList(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find identity provider list").SetInternal(err)
 	}
 
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	isHostUser := false
 	if ok {
 		user, err := s.Store.GetUser(ctx, &store.FindUser{
@@ -129,7 +128,7 @@ func (s *APIV1Service) GetIdentityProviderList(c echo.Context) error {
 //	@Router		/api/v1/idp [POST]
 func (s *APIV1Service) CreateIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -177,7 +176,7 @@ func (s *APIV1Service) CreateIdentityProvider(c echo.Context) error {
 //	@Router		/api/v1/idp/{idpId} [GET]
 func (s *APIV1Service) GetIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -224,7 +223,7 @@ func (s *APIV1Service) GetIdentityProvider(c echo.Context) error {
 //	@Router		/api/v1/idp/{idpId} [DELETE]
 func (s *APIV1Service) DeleteIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -266,7 +265,7 @@ func (s *APIV1Service) DeleteIdentityProvider(c echo.Context) error {
 //	@Router		/api/v1/idp/{idpId} [PATCH]
 func (s *APIV1Service) UpdateIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}

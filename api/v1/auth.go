@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"time"
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
@@ -94,12 +96,15 @@ func (s *APIV1Service) SignIn(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
 	}
 
-	if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
+	accessToken, err := auth.GenerateAccessToken(user.Email, user.ID, time.Now().Add(auth.AccessTokenDuration), s.Secret)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to generate tokens, err: %s", err)).SetInternal(err)
 	}
 	if err := s.createAuthSignInActivity(c, user); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 	}
+	cookieExp := time.Now().Add(auth.CookieExpDuration)
+	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
 	userMessage := convertUserFromStore(user)
 	return c.JSON(http.StatusOK, userMessage)
 }
@@ -213,12 +218,15 @@ func (s *APIV1Service) SignInSSO(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusForbidden, fmt.Sprintf("User has been archived with username %s", userInfo.Identifier))
 	}
 
-	if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
+	accessToken, err := auth.GenerateAccessToken(user.Email, user.ID, time.Now().Add(auth.AccessTokenDuration), s.Secret)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to generate tokens, err: %s", err)).SetInternal(err)
 	}
 	if err := s.createAuthSignInActivity(c, user); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 	}
+	cookieExp := time.Now().Add(auth.CookieExpDuration)
+	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
 	userMessage := convertUserFromStore(user)
 	return c.JSON(http.StatusOK, userMessage)
 }
@@ -304,13 +312,15 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
 	}
-	if err := GenerateTokensAndSetCookies(c, user, s.Secret); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to generate tokens").SetInternal(err)
+	accessToken, err := auth.GenerateAccessToken(user.Email, user.ID, time.Now().Add(auth.AccessTokenDuration), s.Secret)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to generate tokens, err: %s", err)).SetInternal(err)
 	}
 	if err := s.createAuthSignUpActivity(c, user); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 	}
-
+	cookieExp := time.Now().Add(auth.CookieExpDuration)
+	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
 	userMessage := convertUserFromStore(user)
 	return c.JSON(http.StatusOK, userMessage)
 }
@@ -357,4 +367,23 @@ func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *store.User
 		return errors.Wrap(err, "failed to create activity")
 	}
 	return err
+}
+
+// RemoveTokensAndCookies removes the jwt token from the cookies.
+func RemoveTokensAndCookies(c echo.Context) {
+	cookieExp := time.Now().Add(-1 * time.Hour)
+	setTokenCookie(c, auth.AccessTokenCookieName, "", cookieExp)
+}
+
+// setTokenCookie sets the token to the cookie.
+func setTokenCookie(c echo.Context, name, token string, expiration time.Time) {
+	cookie := new(http.Cookie)
+	cookie.Name = name
+	cookie.Value = token
+	cookie.Expires = expiration
+	cookie.Path = "/"
+	// Http-only helps mitigate the risk of client side script accessing the protected cookie.
+	cookie.HttpOnly = true
+	cookie.SameSite = http.SameSiteStrictMode
+	c.SetCookie(cookie)
 }

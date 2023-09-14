@@ -16,6 +16,9 @@ message UserSetting {
 
 enum UserSettingKey {
   USER_SETTING_KEY_UNSPECIFIED = 0;
+
+  // Access tokens for the user.
+  USER_SETTING_ACCESS_TOKENS = 1;
 }
 
 message AccessTokensUserSetting {

@@ -13,7 +13,14 @@ export declare enum UserSettingKey {
   /**
    * @generated from enum value: USER_SETTING_KEY_UNSPECIFIED = 0;
    */
-  UNSPECIFIED = 0,
+  USER_SETTING_KEY_UNSPECIFIED = 0,
+
+  /**
+   * Access tokens for the user.
+   *
+   * @generated from enum value: USER_SETTING_ACCESS_TOKENS = 1;
+   */
+  USER_SETTING_ACCESS_TOKENS = 1,
 }
 
 /**

@@ -20,7 +20,6 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/storage/s3"
@@ -105,7 +104,7 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 //	@Router		/api/v1/resource [GET]
 func (s *APIV1Service) GetResourceList(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -145,7 +144,7 @@ func (s *APIV1Service) GetResourceList(c echo.Context) error {
 //	@Router		/api/v1/resource [POST]
 func (s *APIV1Service) CreateResource(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -197,7 +196,7 @@ func (s *APIV1Service) CreateResource(c echo.Context) error {
 //	@Router		/api/v1/resource/blob [POST]
 func (s *APIV1Service) UploadResource(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -270,7 +269,7 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 //	@Router		/api/v1/resource/{resourceId} [DELETE]
 func (s *APIV1Service) DeleteResource(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -327,7 +326,7 @@ func (s *APIV1Service) DeleteResource(c echo.Context) error {
 //	@Router		/api/v1/resource/{resourceId} [PATCH]
 func (s *APIV1Service) UpdateResource(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -398,7 +397,7 @@ func (s *APIV1Service) streamResource(c echo.Context) error {
 	}
 
 	// Protected resource require a logined user
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if resourceVisibility == store.Protected && (!ok || userID <= 0) {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
 	}

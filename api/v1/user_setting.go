@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/store"
 	"golang.org/x/exp/slices"
 )
@@ -97,7 +96,7 @@ func (s *APIV1Service) registerUserSettingRoutes(g *echo.Group) {
 //	@Router		/api/v1/user/setting [POST]
 func (s *APIV1Service) UpsertUserSetting(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 	}

@@ -11,7 +11,8 @@ import { proto3 } from "@bufbuild/protobuf";
 export const UserSettingKey = proto3.makeEnum(
   "memos.store.UserSettingKey",
   [
-    {no: 0, name: "USER_SETTING_KEY_UNSPECIFIED", localName: "UNSPECIFIED"},
+    {no: 0, name: "USER_SETTING_KEY_UNSPECIFIED"},
+    {no: 1, name: "USER_SETTING_ACCESS_TOKENS"},
   ],
 );
 

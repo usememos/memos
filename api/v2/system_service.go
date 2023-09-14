@@ -31,22 +31,16 @@ func (s *SystemService) GetSystemInfo(ctx context.Context, _ *apiv2pb.GetSystemI
 	defaultSystemInfo := &apiv2pb.SystemInfo{}
 
 	// Get the database size if the user is a host.
-	userIDPtr := ctx.Value(UserIDContextKey)
-	if userIDPtr != nil {
-		userID := userIDPtr.(int32)
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			ID: &userID,
-		})
+	currentUser, err := getCurrentUser(ctx, s.Store)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if currentUser != nil && currentUser.Role == store.RoleHost {
+		fi, err := os.Stat(s.Profile.DSN)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to get file info: %v", err)
 		}
-		if user != nil && user.Role == store.RoleHost {
-			fi, err := os.Stat(s.Profile.DSN)
-			if err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to get file info: %v", err)
-			}
-			defaultSystemInfo.DbSize = fi.Size()
-		}
+		defaultSystemInfo.DbSize = fi.Size()
 	}
 
 	response := &apiv2pb.GetSystemInfoResponse{
@@ -56,12 +50,9 @@ func (s *SystemService) GetSystemInfo(ctx context.Context, _ *apiv2pb.GetSystemI
 }
 
 func (s *SystemService) UpdateSystemInfo(ctx context.Context, request *apiv2pb.UpdateSystemInfoRequest) (*apiv2pb.UpdateSystemInfoResponse, error) {
-	userID := ctx.Value(UserIDContextKey).(int32)
-	user, err := s.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
-	})
+	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	if user.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")

@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
@@ -47,7 +46,7 @@ func (s *APIV1Service) CreateMemoOrganizer(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("memoId"))).SetInternal(err)
 	}
 
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}

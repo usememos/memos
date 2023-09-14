@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 )
@@ -82,7 +81,7 @@ func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
 //	@Router		/api/v1/storage [GET]
 func (s *APIV1Service) GetStorageList(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -129,7 +128,7 @@ func (s *APIV1Service) GetStorageList(c echo.Context) error {
 //	@Router		/api/v1/storage [POST]
 func (s *APIV1Service) CreateStorage(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -190,7 +189,7 @@ func (s *APIV1Service) CreateStorage(c echo.Context) error {
 // - error message "Storage service %d is using" probably should be "Storage service %d is in use".
 func (s *APIV1Service) DeleteStorage(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -246,7 +245,7 @@ func (s *APIV1Service) DeleteStorage(c echo.Context) error {
 //	@Router		/api/v1/storage/{storageId} [PATCH]
 func (s *APIV1Service) UpdateStorage(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}

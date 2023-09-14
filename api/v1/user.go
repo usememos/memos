@@ -8,7 +8,6 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 	"golang.org/x/crypto/bcrypt"
@@ -119,7 +118,7 @@ func (s *APIV1Service) GetUserList(c echo.Context) error {
 //	@Router		/api/v1/user [POST]
 func (s *APIV1Service) CreateUser(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 	}
@@ -184,7 +183,7 @@ func (s *APIV1Service) CreateUser(c echo.Context) error {
 //	@Router		/api/v1/user/me [GET]
 func (s *APIV1Service) GetCurrentUser(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 	}
@@ -287,7 +286,7 @@ func (s *APIV1Service) GetUserByID(c echo.Context) error {
 //	@Router		/api/v1/user/{id} [DELETE]
 func (s *APIV1Service) DeleteUser(c echo.Context) error {
 	ctx := c.Request().Context()
-	currentUserID, ok := c.Get(auth.UserIDContextKey).(int32)
+	currentUserID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -337,7 +336,7 @@ func (s *APIV1Service) UpdateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("id"))).SetInternal(err)
 	}
 
-	currentUserID, ok := c.Get(auth.UserIDContextKey).(int32)
+	currentUserID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -168,7 +167,7 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 //	@Router		/api/v1/system/vacuum [POST]
 func (s *APIV1Service) ExecVacuum(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}

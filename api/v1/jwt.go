@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
@@ -14,75 +13,11 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-type claimsMessage struct {
-	Name string `json:"name"`
-	jwt.RegisteredClaims
-}
-
-// GenerateAccessToken generates an access token for web.
-func GenerateAccessToken(username string, userID int32, secret string) (string, error) {
-	expirationTime := time.Now().Add(auth.AccessTokenDuration)
-	return generateToken(username, userID, auth.AccessTokenAudienceName, expirationTime, []byte(secret))
-}
-
-// GenerateTokensAndSetCookies generates jwt token and saves it to the http-only cookie.
-func GenerateTokensAndSetCookies(c echo.Context, user *store.User, secret string) error {
-	accessToken, err := GenerateAccessToken(user.Username, user.ID, secret)
-	if err != nil {
-		return errors.Wrap(err, "failed to generate access token")
-	}
-
-	cookieExp := time.Now().Add(auth.CookieExpDuration)
-	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
-	return nil
-}
-
-// RemoveTokensAndCookies removes the jwt token from the cookies.
-func RemoveTokensAndCookies(c echo.Context) {
-	cookieExp := time.Now().Add(-1 * time.Hour)
-	setTokenCookie(c, auth.AccessTokenCookieName, "", cookieExp)
-}
-
-// setTokenCookie sets the token to the cookie.
-func setTokenCookie(c echo.Context, name, token string, expiration time.Time) {
-	cookie := new(http.Cookie)
-	cookie.Name = name
-	cookie.Value = token
-	cookie.Expires = expiration
-	cookie.Path = "/"
-	// Http-only helps mitigate the risk of client side script accessing the protected cookie.
-	cookie.HttpOnly = true
-	cookie.SameSite = http.SameSiteStrictMode
-	c.SetCookie(cookie)
-}
-
-// generateToken generates a jwt token.
-func generateToken(username string, userID int32, aud string, expirationTime time.Time, secret []byte) (string, error) {
-	// Create the JWT claims, which includes the username and expiry time.
-	claims := &claimsMessage{
-		Name: username,
-		RegisteredClaims: jwt.RegisteredClaims{
-			Audience: jwt.ClaimStrings{aud},
-			// In JWT, the expiry time is expressed as unix milliseconds.
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Issuer:    auth.Issuer,
-			Subject:   fmt.Sprintf("%d", userID),
-		},
-	}
-
-	// Declare the token with the HS256 algorithm used for signing, and the claims.
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token.Header["kid"] = auth.KeyID
-
-	// Create the JWT string.
-	tokenString, err := token.SignedString(secret)
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
-}
+const (
+	// The key name used to store user id in the context
+	// user id is extracted from the jwt token subject field.
+	userIDContextKey = "user-id"
+)
 
 func extractTokenFromHeader(c echo.Context) (string, error) {
 	authHeader := c.Request().Header.Get("Authorization")
@@ -149,7 +84,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing access token")
 		}
 
-		claims := &claimsMessage{}
+		claims := &auth.ClaimsMessage{}
 		_, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (any, error) {
 			if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 				return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
@@ -163,7 +98,6 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		})
 
 		if err != nil {
-			RemoveTokensAndCookies(c)
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.Wrap(err, "Invalid or expired access token"))
 		}
 		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
@@ -188,7 +122,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		}
 
 		// Stores userID into context.
-		c.Set(auth.UserIDContextKey, userID)
+		c.Set(userIDContextKey, userID)
 		return next(c)
 	}
 }
@@ -213,7 +147,7 @@ func (s *APIV1Service) defaultAuthSkipper(c echo.Context) bool {
 		}
 		if user != nil {
 			// Stores userID into context.
-			c.Set(auth.UserIDContextKey, user.ID)
+			c.Set(userIDContextKey, user.ID)
 			return true
 		}
 	}

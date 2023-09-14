@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/store"
 )
 
@@ -95,7 +94,7 @@ func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
 //	@Router		/api/v1/system/setting [GET]
 func (s *APIV1Service) GetSystemSettingList(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}
@@ -138,7 +137,7 @@ func (s *APIV1Service) GetSystemSettingList(c echo.Context) error {
 //	@Router		/api/v1/system/setting [POST]
 func (s *APIV1Service) CreateSystemSetting(c echo.Context) error {
 	ctx := c.Request().Context()
-	userID, ok := c.Get(auth.UserIDContextKey).(int32)
+	userID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing user in session")
 	}

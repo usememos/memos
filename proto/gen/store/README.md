@@ -146,6 +146,7 @@
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | USER_SETTING_KEY_UNSPECIFIED | 0 |  |
+| USER_SETTING_ACCESS_TOKENS | 1 | Access tokens for the user. |
 
 
  

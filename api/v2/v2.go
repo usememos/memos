@@ -30,7 +30,7 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 		),
 	)
 	apiv2pb.RegisterSystemServiceServer(grpcServer, NewSystemService(profile, store))
-	apiv2pb.RegisterUserServiceServer(grpcServer, NewUserService(store))
+	apiv2pb.RegisterUserServiceServer(grpcServer, NewUserService(store, secret))
 	apiv2pb.RegisterMemoServiceServer(grpcServer, NewMemoService(store))
 	apiv2pb.RegisterTagServiceServer(grpcServer, NewTagService(store))
 

@@ -3,14 +3,11 @@ package v2
 import (
 	"context"
 	"net/http"
-	"strconv"
 	"strings"
-	"time"
 
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api/auth"
-	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -22,9 +19,9 @@ import (
 type ContextKey int
 
 const (
-	// The key name used to store user id in the context
+	// The key name used to store username in the context
 	// user id is extracted from the jwt token subject field.
-	UserIDContextKey ContextKey = iota
+	usernameContextKey ContextKey = iota
 )
 
 // GRPCAuthInterceptor is the auth interceptor for gRPC server.
@@ -52,7 +49,7 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 		return nil, status.Errorf(codes.Unauthenticated, err.Error())
 	}
 
-	userID, err := in.authenticate(ctx, accessTokenStr)
+	username, err := in.authenticate(ctx, accessTokenStr)
 	if err != nil {
 		if isUnauthorizeAllowedMethod(serverInfo.FullMethod) {
 			return handler(ctx, request)
@@ -60,28 +57,28 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 		return nil, err
 	}
 	user, err := in.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
+		Username: &username,
 	})
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to get user")
 	}
 	if user == nil {
-		return nil, status.Errorf(codes.Unauthenticated, "user ID %q not exists in the access token", userID)
+		return nil, errors.Errorf("user %q not exists", username)
 	}
 	if isOnlyForAdminAllowedMethod(serverInfo.FullMethod) && user.Role != store.RoleHost && user.Role != store.RoleAdmin {
-		return nil, status.Errorf(codes.PermissionDenied, "user ID %q is not admin", userID)
+		return nil, errors.Errorf("user %q is not admin", username)
 	}
 
 	// Stores userID into context.
-	childCtx := context.WithValue(ctx, UserIDContextKey, userID)
+	childCtx := context.WithValue(ctx, usernameContextKey, username)
 	return handler(childCtx, request)
 }
 
-func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr string) (int32, error) {
+func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr string) (string, error) {
 	if accessTokenStr == "" {
-		return 0, status.Errorf(codes.Unauthenticated, "access token not found")
+		return "", status.Errorf(codes.Unauthenticated, "access token not found")
 	}
-	claims := &claimsMessage{}
+	claims := &auth.ClaimsMessage{}
 	_, err := jwt.ParseWithClaims(accessTokenStr, claims, func(t *jwt.Token) (any, error) {
 		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 			return nil, status.Errorf(codes.Unauthenticated, "unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
@@ -94,34 +91,31 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr 
 		return nil, status.Errorf(codes.Unauthenticated, "unexpected access token kid=%v", t.Header["kid"])
 	})
 	if err != nil {
-		return 0, status.Errorf(codes.Unauthenticated, "Invalid or expired access token")
+		return "", status.Errorf(codes.Unauthenticated, "Invalid or expired access token")
 	}
 	if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
-		return 0, status.Errorf(codes.Unauthenticated,
+		return "", status.Errorf(codes.Unauthenticated,
 			"invalid access token, audience mismatch, got %q, expected %q. you may send request to the wrong environment",
 			claims.Audience,
 			auth.AccessTokenAudienceName,
 		)
 	}
 
-	userID, err := util.ConvertStringToInt32(claims.Subject)
-	if err != nil {
-		return 0, status.Errorf(codes.Unauthenticated, "malformed ID %q in the access token", claims.Subject)
-	}
+	username := claims.Name
 	user, err := in.Store.GetUser(ctx, &store.FindUser{
-		ID: &userID,
+		Username: &username,
 	})
 	if err != nil {
-		return 0, status.Errorf(codes.Unauthenticated, "failed to find user ID %q in the access token", userID)
+		return "", errors.Wrap(err, "failed to get user")
 	}
 	if user == nil {
-		return 0, status.Errorf(codes.Unauthenticated, "user ID %q not exists in the access token", userID)
+		return "", errors.Errorf("user %q not exists in the access token", username)
 	}
 	if user.RowStatus == store.Archived {
-		return 0, status.Errorf(codes.Unauthenticated, "user ID %q has been deactivated by administrators", userID)
+		return "", errors.Errorf("user %q is archived", username)
 	}
 
-	return userID, nil
+	return username, nil
 }
 
 func getTokenFromMetadata(md metadata.MD) (string, error) {
@@ -153,42 +147,4 @@ func audienceContains(audience jwt.ClaimStrings, token string) bool {
 		}
 	}
 	return false
-}
-
-type claimsMessage struct {
-	Name string `json:"name"`
-	jwt.RegisteredClaims
-}
-
-// GenerateAccessToken generates an access token for web.
-func GenerateAccessToken(username string, userID int, secret string) (string, error) {
-	expirationTime := time.Now().Add(auth.AccessTokenDuration)
-	return generateToken(username, userID, auth.AccessTokenAudienceName, expirationTime, []byte(secret))
-}
-
-func generateToken(username string, userID int, aud string, expirationTime time.Time, secret []byte) (string, error) {
-	// Create the JWT claims, which includes the username and expiry time.
-	claims := &claimsMessage{
-		Name: username,
-		RegisteredClaims: jwt.RegisteredClaims{
-			Audience: jwt.ClaimStrings{aud},
-			// In JWT, the expiry time is expressed as unix milliseconds.
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-			IssuedAt:  jwt.NewNumericDate(time.Now()),
-			Issuer:    auth.Issuer,
-			Subject:   strconv.Itoa(userID),
-		},
-	}
-
-	// Declare the token with the HS256 algorithm used for signing, and the claims.
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	token.Header["kid"] = auth.KeyID
-
-	// Create the JWT string.
-	tokenString, err := token.SignedString(secret)
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
 }
