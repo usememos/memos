@@ -3,7 +3,6 @@ syntax = "proto3";
 package memos.api.v2;
 
 import "api/v2/common.proto";
-import "api/v2/memo_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/api/field_behavior.proto";
@@ -23,18 +22,30 @@ service UserService {
     };
     option (google.api.method_signature) = "username";
   }
+  // ListUserAccessTokens returns a list of access tokens for a user.
+  rpc ListUserAccessTokens(ListUserAccessTokensRequest) returns (ListUserAccessTokensResponse) {
+    option (google.api.http) = {get: "/api/v2/users/{username}/access_tokens"};
+    option (google.api.method_signature) = "username";
+  }
+  // CreateUserAccessToken creates a new access token for a user.
+  rpc CreateUserAccessToken(CreateUserAccessTokenRequest) returns (CreateUserAccessTokenResponse) {
+    option (google.api.http) = {
+      post: "/api/v2/users/{username}/access_tokens"
+      body: "user_access_token"
+    };
+    option (google.api.method_signature) = "username";
+  }
+  // DeleteUserAccessToken deletes an access token for a user.
+  rpc DeleteUserAccessToken(DeleteUserAccessTokenRequest) returns (DeleteUserAccessTokenResponse) {
+    option (google.api.http) = {delete: "/api/v2/users/{username}/access_tokens/{access_token}"};
+    option (google.api.method_signature) = "username,access_token";
+  }
 }
 
 message User {
   int32 id = 1;
 
-  RowStatus row_status = 2;
-
-  google.protobuf.Timestamp create_time = 3;
-
-  google.protobuf.Timestamp update_time = 4;
-
-  string username = 5;
+  string username = 2;
 
   enum Role {
     ROLE_UNSPECIFIED = 0;
@@ -42,18 +53,23 @@ message User {
     ADMIN = 2;
     USER = 3;
   }
+  Role role = 3;
 
-  Role role = 6;
+  string email = 4;
 
-  string email = 7;
+  string nickname = 5;
 
-  string nickname = 8;
+  string open_id = 6;
 
-  string open_id = 9;
+  string avatar_url = 7;
 
-  string avatar_url = 10;
+  string password = 8 [(google.api.field_behavior) = INPUT_ONLY];
 
-  string password = 11 [(google.api.field_behavior) = INPUT_ONLY];
+  RowStatus row_status = 9;
+
+  google.protobuf.Timestamp create_time = 10;
+
+  google.protobuf.Timestamp update_time = 11;
 }
 
 message GetUserRequest {
@@ -77,32 +93,35 @@ message UpdateUserResponse {
   User user = 1;
 }
 
-message UserSetting {
-  // The user id of the setting.
-  int32 user_id = 1;
-
-  enum Key {
-    KEY_UNSPECIFIED = 0;
-    // The preferred locale.
-    LOCALE = 1;
-    // The preferred appearance.
-    APPEARANCE = 2;
-    // The default visibility of the memo when creating a new memo.
-    MEMO_VISIBILITY = 3;
-    // User's telegram id
-    TELEGRAM_USER_ID = 4;
-  }
-  // The key of the setting.
-  Key key = 2;
-
-  // The value of the setting.
-  UserSettingValue value = 3;
+message ListUserAccessTokensRequest {
+  string username = 1;
 }
 
-message UserSettingValue {
-  oneof value {
-    // Default value as a string.
-    string string_value = 1;
-    Visibility visibility_value = 2;
-  }
+message ListUserAccessTokensResponse {
+  repeated UserAccessToken access_tokens = 1;
+}
+
+message CreateUserAccessTokenRequest {
+  string username = 1;
+
+  UserAccessToken user_access_token = 2;
+}
+
+message CreateUserAccessTokenResponse {
+  UserAccessToken access_token = 1;
+}
+
+message DeleteUserAccessTokenRequest {
+  string username = 1;
+  // access_token is the access token to delete.
+  string access_token = 2;
+}
+
+message DeleteUserAccessTokenResponse {}
+
+message UserAccessToken {
+  string access_token = 1;
+  string description = 2;
+  google.protobuf.Timestamp issued_at = 3;
+  google.protobuf.Timestamp expires_at = 4;
 }

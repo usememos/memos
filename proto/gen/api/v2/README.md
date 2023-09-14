@@ -34,16 +34,20 @@
     - [TagService](#memos-api-v2-TagService)
   
 - [api/v2/user_service.proto](#api_v2_user_service-proto)
+    - [CreateUserAccessTokenRequest](#memos-api-v2-CreateUserAccessTokenRequest)
+    - [CreateUserAccessTokenResponse](#memos-api-v2-CreateUserAccessTokenResponse)
+    - [DeleteUserAccessTokenRequest](#memos-api-v2-DeleteUserAccessTokenRequest)
+    - [DeleteUserAccessTokenResponse](#memos-api-v2-DeleteUserAccessTokenResponse)
     - [GetUserRequest](#memos-api-v2-GetUserRequest)
     - [GetUserResponse](#memos-api-v2-GetUserResponse)
+    - [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest)
+    - [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse)
     - [UpdateUserRequest](#memos-api-v2-UpdateUserRequest)
     - [UpdateUserResponse](#memos-api-v2-UpdateUserResponse)
     - [User](#memos-api-v2-User)
-    - [UserSetting](#memos-api-v2-UserSetting)
-    - [UserSettingValue](#memos-api-v2-UserSettingValue)
+    - [UserAccessToken](#memos-api-v2-UserAccessToken)
   
     - [User.Role](#memos-api-v2-User-Role)
-    - [UserSetting.Key](#memos-api-v2-UserSetting-Key)
   
     - [UserService](#memos-api-v2-UserService)
   
@@ -388,6 +392,63 @@
 
 
 
+<a name="memos-api-v2-CreateUserAccessTokenRequest"></a>
+
+### CreateUserAccessTokenRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| username | [string](#string) |  |  |
+| user_access_token | [UserAccessToken](#memos-api-v2-UserAccessToken) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CreateUserAccessTokenResponse"></a>
+
+### CreateUserAccessTokenResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| access_token | [UserAccessToken](#memos-api-v2-UserAccessToken) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteUserAccessTokenRequest"></a>
+
+### DeleteUserAccessTokenRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| username | [string](#string) |  |  |
+| access_token | [string](#string) |  | access_token is the access token to delete. |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteUserAccessTokenResponse"></a>
+
+### DeleteUserAccessTokenResponse
+
+
+
+
+
+
+
 <a name="memos-api-v2-GetUserRequest"></a>
 
 ### GetUserRequest
@@ -412,6 +473,36 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | user | [User](#memos-api-v2-User) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListUserAccessTokensRequest"></a>
+
+### ListUserAccessTokensRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| username | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListUserAccessTokensResponse"></a>
+
+### ListUserAccessTokensResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| access_tokens | [UserAccessToken](#memos-api-v2-UserAccessToken) | repeated |  |
 
 
 
@@ -459,9 +550,6 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int32](#int32) |  |  |
-| row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
-| create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
-| update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | username | [string](#string) |  |  |
 | role | [User.Role](#memos-api-v2-User-Role) |  |  |
 | email | [string](#string) |  |  |
@@ -469,39 +557,27 @@
 | open_id | [string](#string) |  |  |
 | avatar_url | [string](#string) |  |  |
 | password | [string](#string) |  |  |
+| row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
+| create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
+| update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 
 
 
 
 
 
-<a name="memos-api-v2-UserSetting"></a>
+<a name="memos-api-v2-UserAccessToken"></a>
 
-### UserSetting
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| user_id | [int32](#int32) |  | The user id of the setting. |
-| key | [UserSetting.Key](#memos-api-v2-UserSetting-Key) |  | The key of the setting. |
-| value | [UserSettingValue](#memos-api-v2-UserSettingValue) |  | The value of the setting. |
-
-
-
-
-
-
-<a name="memos-api-v2-UserSettingValue"></a>
-
-### UserSettingValue
+### UserAccessToken
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| string_value | [string](#string) |  | Default value as a string. |
-| visibility_value | [Visibility](#memos-api-v2-Visibility) |  |  |
+| access_token | [string](#string) |  |  |
+| description | [string](#string) |  |  |
+| issued_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
+| expires_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 
 
 
@@ -523,21 +599,6 @@
 | USER | 3 |  |
 
 
-
-<a name="memos-api-v2-UserSetting-Key"></a>
-
-### UserSetting.Key
-
-
-| Name | Number | Description |
-| ---- | ------ | ----------- |
-| KEY_UNSPECIFIED | 0 |  |
-| LOCALE | 1 | The preferred locale. |
-| APPEARANCE | 2 | The preferred appearance. |
-| MEMO_VISIBILITY | 3 | The default visibility of the memo when creating a new memo. |
-| TELEGRAM_USER_ID | 4 | User&#39;s telegram id |
-
-
  
 
  
@@ -552,6 +613,9 @@
 | ----------- | ------------ | ------------- | ------------|
 | GetUser | [GetUserRequest](#memos-api-v2-GetUserRequest) | [GetUserResponse](#memos-api-v2-GetUserResponse) |  |
 | UpdateUser | [UpdateUserRequest](#memos-api-v2-UpdateUserRequest) | [UpdateUserResponse](#memos-api-v2-UpdateUserResponse) |  |
+| ListUserAccessTokens | [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest) | [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse) | ListUserAccessTokens returns a list of access tokens for a user. |
+| CreateUserAccessToken | [CreateUserAccessTokenRequest](#memos-api-v2-CreateUserAccessTokenRequest) | [CreateUserAccessTokenResponse](#memos-api-v2-CreateUserAccessTokenResponse) | CreateUserAccessToken creates a new access token for a user. |
+| DeleteUserAccessToken | [DeleteUserAccessTokenRequest](#memos-api-v2-DeleteUserAccessTokenRequest) | [DeleteUserAccessTokenResponse](#memos-api-v2-DeleteUserAccessTokenResponse) | DeleteUserAccessToken deletes an access token for a user. |
 
  
 

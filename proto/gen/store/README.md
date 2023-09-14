@@ -9,6 +9,13 @@
   
     - [SystemSettingKey](#memos-store-SystemSettingKey)
   
+- [store/user_setting.proto](#store_user_setting-proto)
+    - [AccessTokensUserSetting](#memos-store-AccessTokensUserSetting)
+    - [AccessTokensUserSetting.AccessToken](#memos-store-AccessTokensUserSetting-AccessToken)
+    - [UserSetting](#memos-store-UserSetting)
+  
+    - [UserSettingKey](#memos-store-UserSettingKey)
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -64,6 +71,81 @@
 | ---- | ------ | ----------- |
 | SYSTEM_SETTING_KEY_UNSPECIFIED | 0 |  |
 | BACKUP_CONFIG | 1 | BackupConfig is the key for auto-backup configuration. |
+
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="store_user_setting-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## store/user_setting.proto
+
+
+
+<a name="memos-store-AccessTokensUserSetting"></a>
+
+### AccessTokensUserSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| access_tokens | [AccessTokensUserSetting.AccessToken](#memos-store-AccessTokensUserSetting-AccessToken) | repeated |  |
+
+
+
+
+
+
+<a name="memos-store-AccessTokensUserSetting-AccessToken"></a>
+
+### AccessTokensUserSetting.AccessToken
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| access_token | [string](#string) |  | The access token is a JWT token. Including expiration time, issuer, etc. |
+| description | [string](#string) |  | A description for the access token. |
+
+
+
+
+
+
+<a name="memos-store-UserSetting"></a>
+
+### UserSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user_id | [int32](#int32) |  |  |
+| key | [UserSettingKey](#memos-store-UserSettingKey) |  |  |
+| access_tokens | [AccessTokensUserSetting](#memos-store-AccessTokensUserSetting) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-store-UserSettingKey"></a>
+
+### UserSettingKey
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| USER_SETTING_KEY_UNSPECIFIED | 0 |  |
 
 
  

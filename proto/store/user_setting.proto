@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package memos.store;
+
+option go_package = "gen/store";
+
+message UserSetting {
+  int32 user_id = 1;
+
+  UserSettingKey key = 2;
+
+  oneof value {
+    AccessTokensUserSetting access_tokens = 3;
+  }
+}
+
+enum UserSettingKey {
+  USER_SETTING_KEY_UNSPECIFIED = 0;
+}
+
+message AccessTokensUserSetting {
+  message AccessToken {
+    // The access token is a JWT token.
+    // Including expiration time, issuer, etc.
+    string access_token = 1;
+    // A description for the access token.
+    string description = 2;
+  }
+  repeated AccessToken access_tokens = 1;
+}

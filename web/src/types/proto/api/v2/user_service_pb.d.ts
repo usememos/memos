@@ -6,7 +6,6 @@
 import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage, Timestamp } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
 import type { RowStatus } from "./common_pb.js";
-import type { Visibility } from "./memo_service_pb.js";
 
 /**
  * @generated from message memos.api.v2.User
@@ -18,54 +17,54 @@ export declare class User extends Message<User> {
   id: number;
 
   /**
-   * @generated from field: memos.api.v2.RowStatus row_status = 2;
-   */
-  rowStatus: RowStatus;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp create_time = 3;
-   */
-  createTime?: Timestamp;
-
-  /**
-   * @generated from field: google.protobuf.Timestamp update_time = 4;
-   */
-  updateTime?: Timestamp;
-
-  /**
-   * @generated from field: string username = 5;
+   * @generated from field: string username = 2;
    */
   username: string;
 
   /**
-   * @generated from field: memos.api.v2.User.Role role = 6;
+   * @generated from field: memos.api.v2.User.Role role = 3;
    */
   role: User_Role;
 
   /**
-   * @generated from field: string email = 7;
+   * @generated from field: string email = 4;
    */
   email: string;
 
   /**
-   * @generated from field: string nickname = 8;
+   * @generated from field: string nickname = 5;
    */
   nickname: string;
 
   /**
-   * @generated from field: string open_id = 9;
+   * @generated from field: string open_id = 6;
    */
   openId: string;
 
   /**
-   * @generated from field: string avatar_url = 10;
+   * @generated from field: string avatar_url = 7;
    */
   avatarUrl: string;
 
   /**
-   * @generated from field: string password = 11;
+   * @generated from field: string password = 8;
    */
   password: string;
+
+  /**
+   * @generated from field: memos.api.v2.RowStatus row_status = 9;
+   */
+  rowStatus: RowStatus;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp create_time = 10;
+   */
+  createTime?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp update_time = 11;
+   */
+  updateTime?: Timestamp;
 
   constructor(data?: PartialMessage<User>);
 
@@ -216,118 +215,192 @@ export declare class UpdateUserResponse extends Message<UpdateUserResponse> {
 }
 
 /**
- * @generated from message memos.api.v2.UserSetting
+ * @generated from message memos.api.v2.ListUserAccessTokensRequest
  */
-export declare class UserSetting extends Message<UserSetting> {
+export declare class ListUserAccessTokensRequest extends Message<ListUserAccessTokensRequest> {
   /**
-   * The user id of the setting.
-   *
-   * @generated from field: int32 user_id = 1;
+   * @generated from field: string username = 1;
    */
-  userId: number;
+  username: string;
 
-  /**
-   * The key of the setting.
-   *
-   * @generated from field: memos.api.v2.UserSetting.Key key = 2;
-   */
-  key: UserSetting_Key;
-
-  /**
-   * The value of the setting.
-   *
-   * @generated from field: memos.api.v2.UserSettingValue value = 3;
-   */
-  value?: UserSettingValue;
-
-  constructor(data?: PartialMessage<UserSetting>);
+  constructor(data?: PartialMessage<ListUserAccessTokensRequest>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "memos.api.v2.UserSetting";
+  static readonly typeName = "memos.api.v2.ListUserAccessTokensRequest";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UserSetting;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListUserAccessTokensRequest;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UserSetting;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListUserAccessTokensRequest;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UserSetting;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListUserAccessTokensRequest;
 
-  static equals(a: UserSetting | PlainMessage<UserSetting> | undefined, b: UserSetting | PlainMessage<UserSetting> | undefined): boolean;
+  static equals(a: ListUserAccessTokensRequest | PlainMessage<ListUserAccessTokensRequest> | undefined, b: ListUserAccessTokensRequest | PlainMessage<ListUserAccessTokensRequest> | undefined): boolean;
 }
 
 /**
- * @generated from enum memos.api.v2.UserSetting.Key
+ * @generated from message memos.api.v2.ListUserAccessTokensResponse
  */
-export declare enum UserSetting_Key {
+export declare class ListUserAccessTokensResponse extends Message<ListUserAccessTokensResponse> {
   /**
-   * @generated from enum value: KEY_UNSPECIFIED = 0;
+   * @generated from field: repeated memos.api.v2.UserAccessToken access_tokens = 1;
    */
-  KEY_UNSPECIFIED = 0,
+  accessTokens: UserAccessToken[];
 
-  /**
-   * The preferred locale.
-   *
-   * @generated from enum value: LOCALE = 1;
-   */
-  LOCALE = 1,
+  constructor(data?: PartialMessage<ListUserAccessTokensResponse>);
 
-  /**
-   * The preferred appearance.
-   *
-   * @generated from enum value: APPEARANCE = 2;
-   */
-  APPEARANCE = 2,
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.ListUserAccessTokensResponse";
+  static readonly fields: FieldList;
 
-  /**
-   * The default visibility of the memo when creating a new memo.
-   *
-   * @generated from enum value: MEMO_VISIBILITY = 3;
-   */
-  MEMO_VISIBILITY = 3,
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): ListUserAccessTokensResponse;
 
-  /**
-   * User's telegram id
-   *
-   * @generated from enum value: TELEGRAM_USER_ID = 4;
-   */
-  TELEGRAM_USER_ID = 4,
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): ListUserAccessTokensResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): ListUserAccessTokensResponse;
+
+  static equals(a: ListUserAccessTokensResponse | PlainMessage<ListUserAccessTokensResponse> | undefined, b: ListUserAccessTokensResponse | PlainMessage<ListUserAccessTokensResponse> | undefined): boolean;
 }
 
 /**
- * @generated from message memos.api.v2.UserSettingValue
+ * @generated from message memos.api.v2.CreateUserAccessTokenRequest
  */
-export declare class UserSettingValue extends Message<UserSettingValue> {
+export declare class CreateUserAccessTokenRequest extends Message<CreateUserAccessTokenRequest> {
   /**
-   * @generated from oneof memos.api.v2.UserSettingValue.value
+   * @generated from field: string username = 1;
    */
-  value: {
-    /**
-     * Default value as a string.
-     *
-     * @generated from field: string string_value = 1;
-     */
-    value: string;
-    case: "stringValue";
-  } | {
-    /**
-     * @generated from field: memos.api.v2.Visibility visibility_value = 2;
-     */
-    value: Visibility;
-    case: "visibilityValue";
-  } | { case: undefined; value?: undefined };
+  username: string;
 
-  constructor(data?: PartialMessage<UserSettingValue>);
+  /**
+   * @generated from field: memos.api.v2.UserAccessToken user_access_token = 2;
+   */
+  userAccessToken?: UserAccessToken;
+
+  constructor(data?: PartialMessage<CreateUserAccessTokenRequest>);
 
   static readonly runtime: typeof proto3;
-  static readonly typeName = "memos.api.v2.UserSettingValue";
+  static readonly typeName = "memos.api.v2.CreateUserAccessTokenRequest";
   static readonly fields: FieldList;
 
-  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UserSettingValue;
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateUserAccessTokenRequest;
 
-  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UserSettingValue;
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateUserAccessTokenRequest;
 
-  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UserSettingValue;
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateUserAccessTokenRequest;
 
-  static equals(a: UserSettingValue | PlainMessage<UserSettingValue> | undefined, b: UserSettingValue | PlainMessage<UserSettingValue> | undefined): boolean;
+  static equals(a: CreateUserAccessTokenRequest | PlainMessage<CreateUserAccessTokenRequest> | undefined, b: CreateUserAccessTokenRequest | PlainMessage<CreateUserAccessTokenRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message memos.api.v2.CreateUserAccessTokenResponse
+ */
+export declare class CreateUserAccessTokenResponse extends Message<CreateUserAccessTokenResponse> {
+  /**
+   * @generated from field: memos.api.v2.UserAccessToken access_token = 1;
+   */
+  accessToken?: UserAccessToken;
+
+  constructor(data?: PartialMessage<CreateUserAccessTokenResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.CreateUserAccessTokenResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): CreateUserAccessTokenResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): CreateUserAccessTokenResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): CreateUserAccessTokenResponse;
+
+  static equals(a: CreateUserAccessTokenResponse | PlainMessage<CreateUserAccessTokenResponse> | undefined, b: CreateUserAccessTokenResponse | PlainMessage<CreateUserAccessTokenResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message memos.api.v2.DeleteUserAccessTokenRequest
+ */
+export declare class DeleteUserAccessTokenRequest extends Message<DeleteUserAccessTokenRequest> {
+  /**
+   * @generated from field: string username = 1;
+   */
+  username: string;
+
+  /**
+   * access_token is the access token to delete.
+   *
+   * @generated from field: string access_token = 2;
+   */
+  accessToken: string;
+
+  constructor(data?: PartialMessage<DeleteUserAccessTokenRequest>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.DeleteUserAccessTokenRequest";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DeleteUserAccessTokenRequest;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): DeleteUserAccessTokenRequest;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): DeleteUserAccessTokenRequest;
+
+  static equals(a: DeleteUserAccessTokenRequest | PlainMessage<DeleteUserAccessTokenRequest> | undefined, b: DeleteUserAccessTokenRequest | PlainMessage<DeleteUserAccessTokenRequest> | undefined): boolean;
+}
+
+/**
+ * @generated from message memos.api.v2.DeleteUserAccessTokenResponse
+ */
+export declare class DeleteUserAccessTokenResponse extends Message<DeleteUserAccessTokenResponse> {
+  constructor(data?: PartialMessage<DeleteUserAccessTokenResponse>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.DeleteUserAccessTokenResponse";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): DeleteUserAccessTokenResponse;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): DeleteUserAccessTokenResponse;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): DeleteUserAccessTokenResponse;
+
+  static equals(a: DeleteUserAccessTokenResponse | PlainMessage<DeleteUserAccessTokenResponse> | undefined, b: DeleteUserAccessTokenResponse | PlainMessage<DeleteUserAccessTokenResponse> | undefined): boolean;
+}
+
+/**
+ * @generated from message memos.api.v2.UserAccessToken
+ */
+export declare class UserAccessToken extends Message<UserAccessToken> {
+  /**
+   * @generated from field: string access_token = 1;
+   */
+  accessToken: string;
+
+  /**
+   * @generated from field: string description = 2;
+   */
+  description: string;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp issued_at = 3;
+   */
+  issuedAt?: Timestamp;
+
+  /**
+   * @generated from field: google.protobuf.Timestamp expires_at = 4;
+   */
+  expiresAt?: Timestamp;
+
+  constructor(data?: PartialMessage<UserAccessToken>);
+
+  static readonly runtime: typeof proto3;
+  static readonly typeName = "memos.api.v2.UserAccessToken";
+  static readonly fields: FieldList;
+
+  static fromBinary(bytes: Uint8Array, options?: Partial<BinaryReadOptions>): UserAccessToken;
+
+  static fromJson(jsonValue: JsonValue, options?: Partial<JsonReadOptions>): UserAccessToken;
+
+  static fromJsonString(jsonString: string, options?: Partial<JsonReadOptions>): UserAccessToken;
+
+  static equals(a: UserAccessToken | PlainMessage<UserAccessToken> | undefined, b: UserAccessToken | PlainMessage<UserAccessToken> | undefined): boolean;
 }
 

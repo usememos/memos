@@ -5,7 +5,6 @@
 
 import { proto3, Timestamp } from "@bufbuild/protobuf";
 import { RowStatus } from "./common_pb.js";
-import { Visibility } from "./memo_service_pb.js";
 
 /**
  * @generated from message memos.api.v2.User
@@ -14,16 +13,16 @@ export const User = proto3.makeMessageType(
   "memos.api.v2.User",
   () => [
     { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    { no: 2, name: "row_status", kind: "enum", T: proto3.getEnumType(RowStatus) },
-    { no: 3, name: "create_time", kind: "message", T: Timestamp },
-    { no: 4, name: "update_time", kind: "message", T: Timestamp },
-    { no: 5, name: "username", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 6, name: "role", kind: "enum", T: proto3.getEnumType(User_Role) },
-    { no: 7, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 8, name: "nickname", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 9, name: "open_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 10, name: "avatar_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 11, name: "password", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "username", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "role", kind: "enum", T: proto3.getEnumType(User_Role) },
+    { no: 4, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 5, name: "nickname", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 6, name: "open_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: "avatar_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 8, name: "password", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 9, name: "row_status", kind: "enum", T: proto3.getEnumType(RowStatus) },
+    { no: 10, name: "create_time", kind: "message", T: Timestamp },
+    { no: 11, name: "update_time", kind: "message", T: Timestamp },
   ],
 );
 
@@ -83,39 +82,75 @@ export const UpdateUserResponse = proto3.makeMessageType(
 );
 
 /**
- * @generated from message memos.api.v2.UserSetting
+ * @generated from message memos.api.v2.ListUserAccessTokensRequest
  */
-export const UserSetting = proto3.makeMessageType(
-  "memos.api.v2.UserSetting",
+export const ListUserAccessTokensRequest = proto3.makeMessageType(
+  "memos.api.v2.ListUserAccessTokensRequest",
   () => [
-    { no: 1, name: "user_id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    { no: 2, name: "key", kind: "enum", T: proto3.getEnumType(UserSetting_Key) },
-    { no: 3, name: "value", kind: "message", T: UserSettingValue },
+    { no: 1, name: "username", kind: "scalar", T: 9 /* ScalarType.STRING */ },
   ],
 );
 
 /**
- * @generated from enum memos.api.v2.UserSetting.Key
+ * @generated from message memos.api.v2.ListUserAccessTokensResponse
  */
-export const UserSetting_Key = proto3.makeEnum(
-  "memos.api.v2.UserSetting.Key",
-  [
-    {no: 0, name: "KEY_UNSPECIFIED"},
-    {no: 1, name: "LOCALE"},
-    {no: 2, name: "APPEARANCE"},
-    {no: 3, name: "MEMO_VISIBILITY"},
-    {no: 4, name: "TELEGRAM_USER_ID"},
+export const ListUserAccessTokensResponse = proto3.makeMessageType(
+  "memos.api.v2.ListUserAccessTokensResponse",
+  () => [
+    { no: 1, name: "access_tokens", kind: "message", T: UserAccessToken, repeated: true },
   ],
 );
 
 /**
- * @generated from message memos.api.v2.UserSettingValue
+ * @generated from message memos.api.v2.CreateUserAccessTokenRequest
  */
-export const UserSettingValue = proto3.makeMessageType(
-  "memos.api.v2.UserSettingValue",
+export const CreateUserAccessTokenRequest = proto3.makeMessageType(
+  "memos.api.v2.CreateUserAccessTokenRequest",
   () => [
-    { no: 1, name: "string_value", kind: "scalar", T: 9 /* ScalarType.STRING */, oneof: "value" },
-    { no: 2, name: "visibility_value", kind: "enum", T: proto3.getEnumType(Visibility), oneof: "value" },
+    { no: 1, name: "username", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "user_access_token", kind: "message", T: UserAccessToken },
+  ],
+);
+
+/**
+ * @generated from message memos.api.v2.CreateUserAccessTokenResponse
+ */
+export const CreateUserAccessTokenResponse = proto3.makeMessageType(
+  "memos.api.v2.CreateUserAccessTokenResponse",
+  () => [
+    { no: 1, name: "access_token", kind: "message", T: UserAccessToken },
+  ],
+);
+
+/**
+ * @generated from message memos.api.v2.DeleteUserAccessTokenRequest
+ */
+export const DeleteUserAccessTokenRequest = proto3.makeMessageType(
+  "memos.api.v2.DeleteUserAccessTokenRequest",
+  () => [
+    { no: 1, name: "username", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "access_token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+  ],
+);
+
+/**
+ * @generated from message memos.api.v2.DeleteUserAccessTokenResponse
+ */
+export const DeleteUserAccessTokenResponse = proto3.makeMessageType(
+  "memos.api.v2.DeleteUserAccessTokenResponse",
+  [],
+);
+
+/**
+ * @generated from message memos.api.v2.UserAccessToken
+ */
+export const UserAccessToken = proto3.makeMessageType(
+  "memos.api.v2.UserAccessToken",
+  () => [
+    { no: 1, name: "access_token", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 2, name: "description", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 3, name: "issued_at", kind: "message", T: Timestamp },
+    { no: 4, name: "expires_at", kind: "message", T: Timestamp },
   ],
 );
 

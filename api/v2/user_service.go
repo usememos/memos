@@ -156,36 +156,3 @@ func convertUserRoleToStore(role apiv2pb.User_Role) store.Role {
 		return store.RoleUser
 	}
 }
-
-// ConvertUserSettingFromStore converts a user setting from store to protobuf.
-func ConvertUserSettingFromStore(userSetting *store.UserSetting) *apiv2pb.UserSetting {
-	userSettingKey := apiv2pb.UserSetting_KEY_UNSPECIFIED
-	userSettingValue := &apiv2pb.UserSettingValue{}
-	switch userSetting.Key {
-	case "locale":
-		userSettingKey = apiv2pb.UserSetting_LOCALE
-		userSettingValue.Value = &apiv2pb.UserSettingValue_StringValue{
-			StringValue: userSetting.Value,
-		}
-	case "appearance":
-		userSettingKey = apiv2pb.UserSetting_APPEARANCE
-		userSettingValue.Value = &apiv2pb.UserSettingValue_StringValue{
-			StringValue: userSetting.Value,
-		}
-	case "memo-visibility":
-		userSettingKey = apiv2pb.UserSetting_MEMO_VISIBILITY
-		userSettingValue.Value = &apiv2pb.UserSettingValue_VisibilityValue{
-			VisibilityValue: convertVisibilityFromStore(store.Visibility(userSetting.Value)),
-		}
-	case "telegram-user-id":
-		userSettingKey = apiv2pb.UserSetting_TELEGRAM_USER_ID
-		userSettingValue.Value = &apiv2pb.UserSettingValue_StringValue{
-			StringValue: userSetting.Value,
-		}
-	}
-	return &apiv2pb.UserSetting{
-		UserId: int32(userSetting.UserID),
-		Key:    userSettingKey,
-		Value:  userSettingValue,
-	}
-}
