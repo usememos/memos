@@ -9,7 +9,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api/auth"
-	"github.com/usememos/memos/common/util"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -47,12 +46,6 @@ func (s *UserService) GetUser(ctx context.Context, request *apiv2pb.GetUserReque
 	}
 
 	userMessage := convertUserFromStore(user)
-	currentUser, _ := getCurrentUser(ctx, s.Store)
-	if currentUser == nil || currentUser.ID != user.ID {
-		// Data desensitization.
-		userMessage.OpenId = ""
-	}
-
 	response := &apiv2pb.GetUserResponse{
 		User: userMessage,
 	}
@@ -88,9 +81,6 @@ func (s *UserService) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUse
 		} else if path == "role" {
 			role := convertUserRoleToStore(request.User.Role)
 			update.Role = &role
-		} else if path == "reset_open_id" {
-			openID := util.GenUUID()
-			update.OpenID = &openID
 		} else if path == "password" {
 			passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
 			if err != nil {
@@ -283,7 +273,6 @@ func convertUserFromStore(user *store.User) *apiv2pb.User {
 		Role:       convertUserRoleFromStore(user.Role),
 		Email:      user.Email,
 		Nickname:   user.Nickname,
-		OpenId:     user.OpenID,
 		AvatarUrl:  user.AvatarURL,
 	}
 }

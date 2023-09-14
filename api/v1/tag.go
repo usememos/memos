@@ -41,7 +41,6 @@ func (s *APIV1Service) registerTagRoutes(g *echo.Group) {
 //	@Success	200	{object}	[]string	"Tag list"
 //	@Failure	400	{object}	nil			"Missing user id to find tag"
 //	@Failure	500	{object}	nil			"Failed to find tag list"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/tag [GET]
 func (s *APIV1Service) GetTagList(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -75,7 +74,6 @@ func (s *APIV1Service) GetTagList(c echo.Context) error {
 //	@Failure	400		{object}	nil					"Malformatted post tag request | Tag name shouldn't be empty"
 //	@Failure	401		{object}	nil					"Missing user in session"
 //	@Failure	500		{object}	nil					"Failed to upsert tag | Failed to create activity"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/tag [POST]
 func (s *APIV1Service) CreateTag(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -117,7 +115,6 @@ func (s *APIV1Service) CreateTag(c echo.Context) error {
 //	@Failure	400		{object}	nil					"Malformatted post tag request | Tag name shouldn't be empty"
 //	@Failure	401		{object}	nil					"Missing user in session"
 //	@Failure	500		{object}	nil					"Failed to delete tag name: %v"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/tag/delete [POST]
 func (s *APIV1Service) DeleteTag(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -152,7 +149,6 @@ func (s *APIV1Service) DeleteTag(c echo.Context) error {
 //	@Success	200	{object}	[]string	"Tag list"
 //	@Failure	400	{object}	nil			"Missing user session"
 //	@Failure	500	{object}	nil			"Failed to find memo list | Failed to find tag list"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/tag/suggestion [GET]
 func (s *APIV1Service) GetTagSuggestion(c echo.Context) error {
 	ctx := c.Request().Context()

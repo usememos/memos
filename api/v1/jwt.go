@@ -128,28 +128,11 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 }
 
 func (s *APIV1Service) defaultAuthSkipper(c echo.Context) bool {
-	ctx := c.Request().Context()
 	path := c.Path()
 
 	// Skip auth.
 	if util.HasPrefixes(path, "/api/v1/auth") {
 		return true
-	}
-
-	// If there is openId in query string and related user is found, then skip auth.
-	openID := c.QueryParam("openId")
-	if openID != "" {
-		user, err := s.Store.GetUser(ctx, &store.FindUser{
-			OpenID: &openID,
-		})
-		if err != nil {
-			return false
-		}
-		if user != nil {
-			// Stores userID into context.
-			c.Set(userIDContextKey, user.ID)
-			return true
-		}
 	}
 
 	return false

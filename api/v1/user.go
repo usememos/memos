@@ -43,7 +43,6 @@ type User struct {
 	Email           string         `json:"email"`
 	Nickname        string         `json:"nickname"`
 	PasswordHash    string         `json:"-"`
-	OpenID          string         `json:"openId"`
 	AvatarURL       string         `json:"avatarUrl"`
 	UserSettingList []*UserSetting `json:"userSettingList"`
 }
@@ -57,13 +56,12 @@ type CreateUserRequest struct {
 }
 
 type UpdateUserRequest struct {
-	RowStatus   *RowStatus `json:"rowStatus"`
-	Username    *string    `json:"username"`
-	Email       *string    `json:"email"`
-	Nickname    *string    `json:"nickname"`
-	Password    *string    `json:"password"`
-	ResetOpenID *bool      `json:"resetOpenId"`
-	AvatarURL   *string    `json:"avatarUrl"`
+	RowStatus *RowStatus `json:"rowStatus"`
+	Username  *string    `json:"username"`
+	Email     *string    `json:"email"`
+	Nickname  *string    `json:"nickname"`
+	Password  *string    `json:"password"`
+	AvatarURL *string    `json:"avatarUrl"`
 }
 
 func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
@@ -96,7 +94,6 @@ func (s *APIV1Service) GetUserList(c echo.Context) error {
 	for _, user := range list {
 		userMessage := convertUserFromStore(user)
 		// data desensitize
-		userMessage.OpenID = ""
 		userMessage.Email = ""
 		userMessageList = append(userMessageList, userMessage)
 	}
@@ -158,7 +155,6 @@ func (s *APIV1Service) CreateUser(c echo.Context) error {
 		Email:        userCreate.Email,
 		Nickname:     userCreate.Nickname,
 		PasswordHash: string(passwordHash),
-		OpenID:       util.GenUUID(),
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create user").SetInternal(err)
@@ -179,7 +175,6 @@ func (s *APIV1Service) CreateUser(c echo.Context) error {
 //	@Success	200	{object}	store.User	"Current user"
 //	@Failure	401	{object}	nil			"Missing auth session"
 //	@Failure	500	{object}	nil			"Failed to find user | Failed to find userSettingList"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/user/me [GET]
 func (s *APIV1Service) GetCurrentUser(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -234,7 +229,6 @@ func (s *APIV1Service) GetUserByUsername(c echo.Context) error {
 
 	userMessage := convertUserFromStore(user)
 	// data desensitize
-	userMessage.OpenID = ""
 	userMessage.Email = ""
 	return c.JSON(http.StatusOK, userMessage)
 }
@@ -267,7 +261,6 @@ func (s *APIV1Service) GetUserByID(c echo.Context) error {
 
 	userMessage := convertUserFromStore(user)
 	// data desensitize
-	userMessage.OpenID = ""
 	userMessage.Email = ""
 	return c.JSON(http.StatusOK, userMessage)
 }
@@ -384,10 +377,6 @@ func (s *APIV1Service) UpdateUser(c echo.Context) error {
 
 		passwordHashStr := string(passwordHash)
 		userUpdate.PasswordHash = &passwordHashStr
-	}
-	if request.ResetOpenID != nil && *request.ResetOpenID {
-		openID := util.GenUUID()
-		userUpdate.OpenID = &openID
 	}
 	if request.AvatarURL != nil {
 		userUpdate.AvatarURL = request.AvatarURL
@@ -508,7 +497,6 @@ func convertUserFromStore(user *store.User) *User {
 		Email:        user.Email,
 		Nickname:     user.Nickname,
 		PasswordHash: user.PasswordHash,
-		OpenID:       user.OpenID,
 		AvatarURL:    user.AvatarURL,
 	}
 }

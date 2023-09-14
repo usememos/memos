@@ -43,7 +43,6 @@ type User struct {
 	Email        string
 	Nickname     string
 	PasswordHash string
-	OpenID       string
 	AvatarURL    string
 }
 
@@ -59,7 +58,6 @@ type UpdateUser struct {
 	Password     *string
 	AvatarURL    *string
 	PasswordHash *string
-	OpenID       *string
 }
 
 type FindUser struct {
@@ -69,7 +67,6 @@ type FindUser struct {
 	Role      *Role
 	Email     *string
 	Nickname  *string
-	OpenID    *string
 }
 
 type DeleteUser struct {
@@ -83,10 +80,9 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 			role,
 			email,
 			nickname,
-			password_hash,
-			open_id
+			password_hash
 		)
-		VALUES (?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?)
 		RETURNING id, avatar_url, created_ts, updated_ts, row_status
 	`
 	if err := s.db.QueryRowContext(
@@ -97,7 +93,6 @@ func (s *Store) CreateUser(ctx context.Context, create *User) (*User, error) {
 		create.Email,
 		create.Nickname,
 		create.PasswordHash,
-		create.OpenID,
 	).Scan(
 		&create.ID,
 		&create.AvatarURL,
@@ -136,16 +131,13 @@ func (s *Store) UpdateUser(ctx context.Context, update *UpdateUser) (*User, erro
 	if v := update.PasswordHash; v != nil {
 		set, args = append(set, "password_hash = ?"), append(args, *v)
 	}
-	if v := update.OpenID; v != nil {
-		set, args = append(set, "open_id = ?"), append(args, *v)
-	}
 	args = append(args, update.ID)
 
 	query := `
 		UPDATE user
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, username, role, email, nickname, password_hash, open_id, avatar_url, created_ts, updated_ts, row_status
+		RETURNING id, username, role, email, nickname, password_hash, avatar_url, created_ts, updated_ts, row_status
 	`
 	user := &User{}
 	if err := s.db.QueryRowContext(ctx, query, args...).Scan(
@@ -155,7 +147,6 @@ func (s *Store) UpdateUser(ctx context.Context, update *UpdateUser) (*User, erro
 		&user.Email,
 		&user.Nickname,
 		&user.PasswordHash,
-		&user.OpenID,
 		&user.AvatarURL,
 		&user.CreatedTs,
 		&user.UpdatedTs,
@@ -186,9 +177,6 @@ func (s *Store) ListUsers(ctx context.Context, find *FindUser) ([]*User, error) 
 	if v := find.Nickname; v != nil {
 		where, args = append(where, "nickname = ?"), append(args, *v)
 	}
-	if v := find.OpenID; v != nil {
-		where, args = append(where, "open_id = ?"), append(args, *v)
-	}
 
 	query := `
 		SELECT 
@@ -198,7 +186,6 @@ func (s *Store) ListUsers(ctx context.Context, find *FindUser) ([]*User, error) 
 			email,
 			nickname,
 			password_hash,
-			open_id,
 			avatar_url,
 			created_ts,
 			updated_ts,
@@ -223,7 +210,6 @@ func (s *Store) ListUsers(ctx context.Context, find *FindUser) ([]*User, error) 
 			&user.Email,
 			&user.Nickname,
 			&user.PasswordHash,
-			&user.OpenID,
 			&user.AvatarURL,
 			&user.CreatedTs,
 			&user.UpdatedTs,

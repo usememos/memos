@@ -209,11 +209,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -256,11 +251,6 @@ const docTemplate = `{
         },
         "/api/v1/idp/{idpId}": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -302,11 +292,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -345,11 +330,6 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -399,11 +379,6 @@ const docTemplate = `{
         },
         "/api/v1/memo": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -484,11 +459,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Visibility can be PUBLIC, PROTECTED or PRIVATE\n*You should omit fields to use their default values",
                 "consumes": [
                     "application/json"
@@ -535,11 +505,6 @@ const docTemplate = `{
         },
         "/api/v1/memo/all": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "This should also list protected memos if the user is logged in\nAuthentication is optional",
                 "produces": [
                     "application/json"
@@ -667,11 +632,6 @@ const docTemplate = `{
                 }
             },
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -710,11 +670,6 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "description": "Visibility can be PUBLIC, PROTECTED or PRIVATE\n*You should omit fields to use their default values",
                 "consumes": [
                     "application/json"
@@ -768,11 +723,6 @@ const docTemplate = `{
         },
         "/api/v1/memo/{memoId}/organizer": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1004,11 +954,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1058,11 +1003,6 @@ const docTemplate = `{
         },
         "/api/v1/memo/{memoId}/resource/{resourceId}": {
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1129,11 +1069,6 @@ const docTemplate = `{
         },
         "/api/v1/resource": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1174,11 +1109,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1221,11 +1151,6 @@ const docTemplate = `{
         },
         "/api/v1/resource/blob": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "multipart/form-data"
                 ],
@@ -1266,11 +1191,6 @@ const docTemplate = `{
         },
         "/api/v1/resource/{resourceId}": {
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1309,11 +1229,6 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1388,11 +1303,6 @@ const docTemplate = `{
         },
         "/api/v1/storage": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1419,11 +1329,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1466,11 +1371,6 @@ const docTemplate = `{
         },
         "/api/v1/storage/{storageId}": {
             "delete": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1506,11 +1406,6 @@ const docTemplate = `{
                 }
             },
             "patch": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1557,11 +1452,6 @@ const docTemplate = `{
         },
         "/api/v1/system/setting": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1588,11 +1478,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1638,11 +1523,6 @@ const docTemplate = `{
         },
         "/api/v1/system/vacuum": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1668,11 +1548,6 @@ const docTemplate = `{
         },
         "/api/v1/tag": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1699,11 +1574,6 @@ const docTemplate = `{
                 }
             },
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1746,11 +1616,6 @@ const docTemplate = `{
         },
         "/api/v1/tag/delete": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1793,11 +1658,6 @@ const docTemplate = `{
         },
         "/api/v1/tag/suggestion": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1894,11 +1754,6 @@ const docTemplate = `{
         },
         "/api/v1/user/me": {
             "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -1958,11 +1813,6 @@ const docTemplate = `{
         },
         "/api/v1/user/setting": {
             "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
                 "consumes": [
                     "application/json"
                 ],
@@ -1988,7 +1838,7 @@ const docTemplate = `{
                     "200": {
                         "description": "Created user setting",
                         "schema": {
-                            "$ref": "#/definitions/store.UserSetting"
+                            "$ref": "#/definitions/github_com_usememos_memos_store.UserSetting"
                         }
                     },
                     "400": {
@@ -2300,6 +2150,20 @@ const docTemplate = `{
                 }
             }
         },
+        "github_com_usememos_memos_store.UserSetting": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "userID": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
         "profile.Profile": {
             "type": "object",
             "properties": {
@@ -2582,9 +2446,6 @@ const docTemplate = `{
                 "nickname": {
                     "type": "string"
                 },
-                "openID": {
-                    "type": "string"
-                },
                 "passwordHash": {
                     "type": "string"
                 },
@@ -2604,20 +2465,6 @@ const docTemplate = `{
                 },
                 "username": {
                     "description": "Domain specific fields",
-                    "type": "string"
-                }
-            }
-        },
-        "store.UserSetting": {
-            "type": "object",
-            "properties": {
-                "key": {
-                    "type": "string"
-                },
-                "userID": {
-                    "type": "integer"
-                },
-                "value": {
                     "type": "string"
                 }
             }
@@ -3205,9 +3052,6 @@ const docTemplate = `{
                 "password": {
                     "type": "string"
                 },
-                "resetOpenId": {
-                    "type": "boolean"
-                },
                 "rowStatus": {
                     "$ref": "#/definitions/v1.RowStatus"
                 },
@@ -3297,9 +3141,6 @@ const docTemplate = `{
                 "nickname": {
                     "type": "string"
                 },
-                "openId": {
-                    "type": "string"
-                },
                 "role": {
                     "$ref": "#/definitions/v1.Role"
                 },
@@ -3369,16 +3210,8 @@ const docTemplate = `{
             ]
         }
     },
-    "securityDefinitions": {
-        "ApiKeyAuth": {
-            "description": "Insert your Open ID API Key here.",
-            "type": "apiKey",
-            "name": "openId",
-            "in": "query"
-        }
-    },
     "externalDocs": {
-        "description": "Find out more about Memos",
+        "description": "Find out more about Memos.",
         "url": "https://usememos.com/"
     }
 }`

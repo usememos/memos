@@ -9,6 +9,15 @@ definitions:
       title:
         type: string
     type: object
+  github_com_usememos_memos_store.UserSetting:
+    properties:
+      key:
+        type: string
+      userID:
+        type: integer
+      value:
+        type: string
+    type: object
   profile.Profile:
     properties:
       mode:
@@ -197,8 +206,6 @@ definitions:
         type: integer
       nickname:
         type: string
-      openID:
-        type: string
       passwordHash:
         type: string
       role:
@@ -211,15 +218,6 @@ definitions:
         type: integer
       username:
         description: Domain specific fields
-        type: string
-    type: object
-  store.UserSetting:
-    properties:
-      key:
-        type: string
-      userID:
-        type: integer
-      value:
         type: string
     type: object
   store.Visibility:
@@ -624,8 +622,6 @@ definitions:
         type: string
       password:
         type: string
-      resetOpenId:
-        type: boolean
       rowStatus:
         $ref: '#/definitions/v1.RowStatus'
       username:
@@ -683,8 +679,6 @@ definitions:
         type: integer
       nickname:
         type: string
-      openId:
-        type: string
       role:
         $ref: '#/definitions/v1.Role'
       rowStatus:
@@ -733,7 +727,7 @@ definitions:
     - Protected
     - Private
 externalDocs:
-  description: Find out more about Memos
+  description: Find out more about Memos.
   url: https://usememos.com/
 info:
   contact:
@@ -899,8 +893,6 @@ paths:
           description: Missing user in session | Unauthorized
         "500":
           description: Failed to find user | Failed to create identity provider
-      security:
-      - ApiKeyAuth: []
       summary: Create Identity Provider
       tags:
       - idp
@@ -928,8 +920,6 @@ paths:
           description: Missing user in session | Unauthorized
         "500":
           description: Failed to find user | Failed to patch identity provider
-      security:
-      - ApiKeyAuth: []
       summary: Delete an identity provider by ID
       tags:
       - idp
@@ -957,8 +947,6 @@ paths:
           description: Identity provider not found
         "500":
           description: Failed to find identity provider list | Failed to find user
-      security:
-      - ApiKeyAuth: []
       summary: Get an identity provider by ID
       tags:
       - idp
@@ -991,8 +979,6 @@ paths:
           description: Missing user in session | Unauthorized
         "500":
           description: Failed to find user | Failed to patch identity provider
-      security:
-      - ApiKeyAuth: []
       summary: Update an identity provider by ID
       tags:
       - idp
@@ -1048,8 +1034,6 @@ paths:
         "500":
           description: Failed to get memo display with updated ts setting value |
             Failed to fetch memo list | Failed to compose memo response
-      security:
-      - ApiKeyAuth: []
       summary: Get a list of memos matching optional filters
       tags:
       - memo
@@ -1086,8 +1070,6 @@ paths:
             | Failed to find user | Failed to create memo | Failed to create activity
             | Failed to upsert memo resource | Failed to upsert memo relation | Failed
             to compose memo | Failed to compose memo response
-      security:
-      - ApiKeyAuth: []
       summary: Create a memo
       tags:
       - memo
@@ -1114,8 +1096,6 @@ paths:
           description: 'Memo not found: %d'
         "500":
           description: 'Failed to find memo | Failed to delete memo ID: %v'
-      security:
-      - ApiKeyAuth: []
       summary: Delete memo by ID
       tags:
       - memo
@@ -1185,8 +1165,6 @@ paths:
           description: Failed to find memo | Failed to patch memo | Failed to upsert
             memo resource | Failed to delete memo resource | Failed to compose memo
             response
-      security:
-      - ApiKeyAuth: []
       summary: Update a memo
       tags:
       - memo
@@ -1223,8 +1201,6 @@ paths:
         "500":
           description: 'Failed to find memo | Failed to upsert memo organizer | Failed
             to find memo by ID: %v | Failed to compose memo response'
-      security:
-      - ApiKeyAuth: []
       summary: Organize memo (pin/unpin)
       tags:
       - memo-organizer
@@ -1378,8 +1354,6 @@ paths:
           description: Missing user in session | Unauthorized to bind this resource
         "500":
           description: Failed to fetch resource | Failed to upsert memo resource
-      security:
-      - ApiKeyAuth: []
       summary: Bind resource to memo
       tags:
       - memo-resource
@@ -1413,8 +1387,6 @@ paths:
           description: Missing user in session | Unauthorized
         "500":
           description: Failed to find memo | Failed to fetch resource list
-      security:
-      - ApiKeyAuth: []
       summary: Unbind resource from memo
       tags:
       - memo-resource
@@ -1444,8 +1416,6 @@ paths:
         "500":
           description: Failed to get memo display with updated ts setting value |
             Failed to fetch all memo list | Failed to compose memo response
-      security:
-      - ApiKeyAuth: []
       summary: Get a list of public memos matching optional filters
       tags:
       - memo
@@ -1514,8 +1484,6 @@ paths:
           description: Missing user in session
         "500":
           description: Failed to fetch resource list
-      security:
-      - ApiKeyAuth: []
       summary: Get a list of resources
       tags:
       - resource
@@ -1545,8 +1513,6 @@ paths:
         "500":
           description: Failed to save resource | Failed to create resource | Failed
             to create activity
-      security:
-      - ApiKeyAuth: []
       summary: Create resource
       tags:
       - resource
@@ -1573,8 +1539,6 @@ paths:
           description: 'Resource not found: %d'
         "500":
           description: Failed to find resource | Failed to delete resource
-      security:
-      - ApiKeyAuth: []
       summary: Delete a resource
       tags:
       - resource
@@ -1606,8 +1570,6 @@ paths:
           description: 'Resource not found: %d'
         "500":
           description: Failed to find resource | Failed to patch resource
-      security:
-      - ApiKeyAuth: []
       summary: Update a resource
       tags:
       - resource
@@ -1636,8 +1598,6 @@ paths:
         "500":
           description: Failed to get uploading file | Failed to open file | Failed
             to save resource | Failed to create resource | Failed to create activity
-      security:
-      - ApiKeyAuth: []
       summary: Upload resource
       tags:
       - resource
@@ -1673,8 +1633,6 @@ paths:
           description: Missing user in session | Unauthorized
         "500":
           description: Failed to find user | Failed to convert storage
-      security:
-      - ApiKeyAuth: []
       summary: Get a list of storages
       tags:
       - storage
@@ -1702,8 +1660,6 @@ paths:
         "500":
           description: Failed to find user | Failed to create storage | Failed to
             convert storage
-      security:
-      - ApiKeyAuth: []
       summary: Create storage
       tags:
       - storage
@@ -1729,8 +1685,6 @@ paths:
         "500":
           description: Failed to find user | Failed to find storage | Failed to unmarshal
             storage service id | Failed to delete storage
-      security:
-      - ApiKeyAuth: []
       summary: Delete a storage
       tags:
       - storage
@@ -1762,8 +1716,6 @@ paths:
         "500":
           description: Failed to find user | Failed to patch storage | Failed to convert
             storage
-      security:
-      - ApiKeyAuth: []
       summary: Update a storage
       tags:
       - storage
@@ -1782,8 +1734,6 @@ paths:
           description: Missing user in session | Unauthorized
         "500":
           description: Failed to find user | Failed to find system setting list
-      security:
-      - ApiKeyAuth: []
       summary: Get a list of system settings
       tags:
       - system-setting
@@ -1812,8 +1762,6 @@ paths:
           description: Cannot disable passwords if no SSO identity provider is configured.
         "500":
           description: Failed to find user | Failed to upsert system setting
-      security:
-      - ApiKeyAuth: []
       summary: Create system setting
       tags:
       - system-setting
@@ -1830,8 +1778,6 @@ paths:
           description: Missing user in session | Unauthorized
         "500":
           description: Failed to find user | Failed to ExecVacuum database
-      security:
-      - ApiKeyAuth: []
       summary: Vacuum the database
       tags:
       - system
@@ -1850,8 +1796,6 @@ paths:
           description: Missing user id to find tag
         "500":
           description: Failed to find tag list
-      security:
-      - ApiKeyAuth: []
       summary: Get a list of tags
       tags:
       - tag
@@ -1878,8 +1822,6 @@ paths:
           description: Missing user in session
         "500":
           description: Failed to upsert tag | Failed to create activity
-      security:
-      - ApiKeyAuth: []
       summary: Create a tag
       tags:
       - tag
@@ -1907,8 +1849,6 @@ paths:
           description: Missing user in session
         "500":
           description: 'Failed to delete tag name: %v'
-      security:
-      - ApiKeyAuth: []
       summary: Delete a tag
       tags:
       - tag
@@ -1927,8 +1867,6 @@ paths:
           description: Missing user session
         "500":
           description: Failed to find memo list | Failed to find tag list
-      security:
-      - ApiKeyAuth: []
       summary: Get a list of tags suggested from other memos contents
       tags:
       - tag
@@ -2073,8 +2011,6 @@ paths:
           description: Missing auth session
         "500":
           description: Failed to find user | Failed to find userSettingList
-      security:
-      - ApiKeyAuth: []
       summary: Get current user
       tags:
       - user
@@ -2117,7 +2053,7 @@ paths:
         "200":
           description: Created user setting
           schema:
-            $ref: '#/definitions/store.UserSetting'
+            $ref: '#/definitions/github_com_usememos_memos_store.UserSetting'
         "400":
           description: Malformatted post user setting upsert request | Invalid user
             setting format
@@ -2125,8 +2061,6 @@ paths:
           description: Missing auth session
         "500":
           description: Failed to upsert user setting
-      security:
-      - ApiKeyAuth: []
       summary: Upsert user setting
       tags:
       - user-setting
@@ -2238,10 +2172,4 @@ paths:
       summary: Get RSS for a user
       tags:
       - rss
-securityDefinitions:
-  ApiKeyAuth:
-    description: Insert your Open ID API Key here.
-    in: query
-    name: openId
-    type: apiKey
 swagger: "2.0"

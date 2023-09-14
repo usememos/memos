@@ -163,7 +163,6 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 //	@Success	200	{boolean}	true	"Database vacuumed"
 //	@Failure	401	{object}	nil		"Missing user in session | Unauthorized"
 //	@Failure	500	{object}	nil		"Failed to find user | Failed to ExecVacuum database"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/system/vacuum [POST]
 func (s *APIV1Service) ExecVacuum(c echo.Context) error {
 	ctx := c.Request().Context()

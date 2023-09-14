@@ -59,17 +59,15 @@ message User {
 
   string nickname = 5;
 
-  string open_id = 6;
+  string avatar_url = 6;
 
-  string avatar_url = 7;
+  string password = 7 [(google.api.field_behavior) = INPUT_ONLY];
 
-  string password = 8 [(google.api.field_behavior) = INPUT_ONLY];
+  RowStatus row_status = 8;
 
-  RowStatus row_status = 9;
+  google.protobuf.Timestamp create_time = 9;
 
-  google.protobuf.Timestamp create_time = 10;
-
-  google.protobuf.Timestamp update_time = 11;
+  google.protobuf.Timestamp update_time = 10;
 }
 
 message GetUserRequest {

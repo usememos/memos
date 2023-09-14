@@ -77,7 +77,6 @@ func (s *APIV1Service) registerStorageRoutes(g *echo.Group) {
 //	@Success	200	{object}	[]store.Storage	"List of storages"
 //	@Failure	401	{object}	nil				"Missing user in session | Unauthorized"
 //	@Failure	500	{object}	nil				"Failed to find user | Failed to convert storage"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/storage [GET]
 func (s *APIV1Service) GetStorageList(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -124,7 +123,6 @@ func (s *APIV1Service) GetStorageList(c echo.Context) error {
 //	@Failure	400		{object}	nil						"Malformatted post storage request"
 //	@Failure	401		{object}	nil						"Missing user in session"
 //	@Failure	500		{object}	nil						"Failed to find user | Failed to create storage | Failed to convert storage"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/storage [POST]
 func (s *APIV1Service) CreateStorage(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -182,7 +180,6 @@ func (s *APIV1Service) CreateStorage(c echo.Context) error {
 //	@Failure	400			{object}	nil		"ID is not a number: %s | Storage service %d is using"
 //	@Failure	401			{object}	nil		"Missing user in session | Unauthorized"
 //	@Failure	500			{object}	nil		"Failed to find user | Failed to find storage | Failed to unmarshal storage service id | Failed to delete storage"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/storage/{storageId} [DELETE]
 //
 // NOTES:
@@ -241,7 +238,6 @@ func (s *APIV1Service) DeleteStorage(c echo.Context) error {
 //	@Failure	400			{object}	nil						"ID is not a number: %s | Malformatted patch storage request | Malformatted post storage request"
 //	@Failure	401			{object}	nil						"Missing user in session | Unauthorized"
 //	@Failure	500			{object}	nil						"Failed to find user | Failed to patch storage | Failed to convert storage"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/storage/{storageId} [PATCH]
 func (s *APIV1Service) UpdateStorage(c echo.Context) error {
 	ctx := c.Request().Context()

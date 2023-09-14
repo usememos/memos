@@ -82,7 +82,6 @@ func (s *APIV1Service) GetMemoResourceList(c echo.Context) error {
 //	@Failure	400		{object}	nil							"ID is not a number: %s | Malformatted post memo resource request | Resource not found"
 //	@Failure	401		{object}	nil							"Missing user in session | Unauthorized to bind this resource"
 //	@Failure	500		{object}	nil							"Failed to fetch resource | Failed to upsert memo resource"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/memo/{memoId}/resource [POST]
 //
 // NOTES:
@@ -140,7 +139,6 @@ func (s *APIV1Service) BindMemoResource(c echo.Context) error {
 //	@Failure	400			{object}	nil		"Memo ID is not a number: %s | Resource ID is not a number: %s | Memo not found"
 //	@Failure	401			{object}	nil		"Missing user in session | Unauthorized"
 //	@Failure	500			{object}	nil		"Failed to find memo | Failed to fetch resource list"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/memo/{memoId}/resource/{resourceId} [DELETE]
 func (s *APIV1Service) UnbindMemoResource(c echo.Context) error {
 	ctx := c.Request().Context()

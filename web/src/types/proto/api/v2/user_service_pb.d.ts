@@ -37,32 +37,27 @@ export declare class User extends Message<User> {
   nickname: string;
 
   /**
-   * @generated from field: string open_id = 6;
-   */
-  openId: string;
-
-  /**
-   * @generated from field: string avatar_url = 7;
+   * @generated from field: string avatar_url = 6;
    */
   avatarUrl: string;
 
   /**
-   * @generated from field: string password = 8;
+   * @generated from field: string password = 7;
    */
   password: string;
 
   /**
-   * @generated from field: memos.api.v2.RowStatus row_status = 9;
+   * @generated from field: memos.api.v2.RowStatus row_status = 8;
    */
   rowStatus: RowStatus;
 
   /**
-   * @generated from field: google.protobuf.Timestamp create_time = 10;
+   * @generated from field: google.protobuf.Timestamp create_time = 9;
    */
   createTime?: Timestamp;
 
   /**
-   * @generated from field: google.protobuf.Timestamp update_time = 11;
+   * @generated from field: google.protobuf.Timestamp update_time = 10;
    */
   updateTime?: Timestamp;
 

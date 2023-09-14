@@ -124,7 +124,6 @@ func (s *APIV1Service) GetIdentityProviderList(c echo.Context) error {
 //	@Failure	401		{object}	nil								"Missing user in session | Unauthorized"
 //	@Failure	400		{object}	nil								"Malformatted post identity provider request"
 //	@Failure	500		{object}	nil								"Failed to find user | Failed to create identity provider"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/idp [POST]
 func (s *APIV1Service) CreateIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -172,7 +171,6 @@ func (s *APIV1Service) CreateIdentityProvider(c echo.Context) error {
 //	@Failure	401		{object}	nil						"Missing user in session | Unauthorized"
 //	@Failure	404		{object}	nil						"Identity provider not found"
 //	@Failure	500		{object}	nil						"Failed to find identity provider list | Failed to find user"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/idp/{idpId} [GET]
 func (s *APIV1Service) GetIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -219,7 +217,6 @@ func (s *APIV1Service) GetIdentityProvider(c echo.Context) error {
 //	@Failure	400		{object}	nil		"ID is not a number: %s | Malformatted patch identity provider request"
 //	@Failure	401		{object}	nil		"Missing user in session | Unauthorized"
 //	@Failure	500		{object}	nil		"Failed to find user | Failed to patch identity provider"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/idp/{idpId} [DELETE]
 func (s *APIV1Service) DeleteIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -261,7 +258,6 @@ func (s *APIV1Service) DeleteIdentityProvider(c echo.Context) error {
 //	@Failure	400		{object}	nil								"ID is not a number: %s | Malformatted patch identity provider request"
 //	@Failure	401		{object}	nil								"Missing user in session | Unauthorized
 //	@Failure	500		{object}	nil								"Failed to find user | Failed to patch identity provider"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/idp/{idpId} [PATCH]
 func (s *APIV1Service) UpdateIdentityProvider(c echo.Context) error {
 	ctx := c.Request().Context()

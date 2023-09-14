@@ -101,7 +101,6 @@ func (s setupService) createUser(ctx context.Context, hostUsername, hostPassword
 		// The new signup user should be normal user by default.
 		Role:     store.RoleHost,
 		Nickname: hostUsername,
-		OpenID:   util.GenUUID(),
 	}
 
 	if len(userCreate.Username) < 3 {

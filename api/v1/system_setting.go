@@ -90,7 +90,6 @@ func (s *APIV1Service) registerSystemSettingRoutes(g *echo.Group) {
 //	@Success	200	{object}	[]SystemSetting	"System setting list"
 //	@Failure	401	{object}	nil				"Missing user in session | Unauthorized"
 //	@Failure	500	{object}	nil				"Failed to find user | Failed to find system setting list"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/system/setting [GET]
 func (s *APIV1Service) GetSystemSettingList(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -133,7 +132,6 @@ func (s *APIV1Service) GetSystemSettingList(c echo.Context) error {
 //	@Failure	401		{object}	nil							"Missing user in session | Unauthorized"
 //	@Failure	403		{object}	nil							"Cannot disable passwords if no SSO identity provider is configured."
 //	@Failure	500		{object}	nil							"Failed to find user | Failed to upsert system setting"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/system/setting [POST]
 func (s *APIV1Service) CreateSystemSetting(c echo.Context) error {
 	ctx := c.Request().Context()

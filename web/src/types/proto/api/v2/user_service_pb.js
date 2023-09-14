@@ -17,12 +17,11 @@ export const User = proto3.makeMessageType(
     { no: 3, name: "role", kind: "enum", T: proto3.getEnumType(User_Role) },
     { no: 4, name: "email", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 5, name: "nickname", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 6, name: "open_id", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 7, name: "avatar_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 8, name: "password", kind: "scalar", T: 9 /* ScalarType.STRING */ },
-    { no: 9, name: "row_status", kind: "enum", T: proto3.getEnumType(RowStatus) },
-    { no: 10, name: "create_time", kind: "message", T: Timestamp },
-    { no: 11, name: "update_time", kind: "message", T: Timestamp },
+    { no: 6, name: "avatar_url", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 7, name: "password", kind: "scalar", T: 9 /* ScalarType.STRING */ },
+    { no: 8, name: "row_status", kind: "enum", T: proto3.getEnumType(RowStatus) },
+    { no: 9, name: "create_time", kind: "message", T: Timestamp },
+    { no: 10, name: "update_time", kind: "message", T: Timestamp },
   ],
 );
 

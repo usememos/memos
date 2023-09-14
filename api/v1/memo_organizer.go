@@ -37,7 +37,6 @@ func (s *APIV1Service) registerMemoOrganizerRoutes(g *echo.Group) {
 //	@Failure	401		{object}	nil							"Missing user in session | Unauthorized"
 //	@Failure	404		{object}	nil							"Memo not found: %v"
 //	@Failure	500		{object}	nil							"Failed to find memo | Failed to upsert memo organizer | Failed to find memo by ID: %v | Failed to compose memo response"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/memo/{memoId}/organizer [POST]
 func (s *APIV1Service) CreateMemoOrganizer(c echo.Context) error {
 	ctx := c.Request().Context()

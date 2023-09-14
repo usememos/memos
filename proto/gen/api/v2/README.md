@@ -554,7 +554,6 @@
 | role | [User.Role](#memos-api-v2-User-Role) |  |  |
 | email | [string](#string) |  |  |
 | nickname | [string](#string) |  |  |
-| open_id | [string](#string) |  |  |
 | avatar_url | [string](#string) |  |  |
 | password | [string](#string) |  |  |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |

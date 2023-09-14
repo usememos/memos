@@ -1,6 +1,7 @@
 package v1
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -13,6 +14,7 @@ import (
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/plugin/idp/oauth2"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -99,6 +101,9 @@ func (s *APIV1Service) SignIn(c echo.Context) error {
 	accessToken, err := auth.GenerateAccessToken(user.Email, user.ID, time.Now().Add(auth.AccessTokenDuration), s.Secret)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to generate tokens, err: %s", err)).SetInternal(err)
+	}
+	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert access token, err: %s", err)).SetInternal(err)
 	}
 	if err := s.createAuthSignInActivity(c, user); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
@@ -198,7 +203,6 @@ func (s *APIV1Service) SignInSSO(c echo.Context) error {
 			Role:     store.RoleUser,
 			Nickname: userInfo.DisplayName,
 			Email:    userInfo.Email,
-			OpenID:   util.GenUUID(),
 		}
 		password, err := util.RandomString(20)
 		if err != nil {
@@ -221,6 +225,9 @@ func (s *APIV1Service) SignInSSO(c echo.Context) error {
 	accessToken, err := auth.GenerateAccessToken(user.Email, user.ID, time.Now().Add(auth.AccessTokenDuration), s.Secret)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to generate tokens, err: %s", err)).SetInternal(err)
+	}
+	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert access token, err: %s", err)).SetInternal(err)
 	}
 	if err := s.createAuthSignInActivity(c, user); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
@@ -277,7 +284,6 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 		// The new signup user should be normal user by default.
 		Role:     store.RoleUser,
 		Nickname: signup.Username,
-		OpenID:   util.GenUUID(),
 	}
 	if len(existedHostUsers) == 0 {
 		// Change the default role to host if there is no host user.
@@ -316,6 +322,9 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to generate tokens, err: %s", err)).SetInternal(err)
 	}
+	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert access token, err: %s", err)).SetInternal(err)
+	}
 	if err := s.createAuthSignUpActivity(c, user); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 	}
@@ -323,6 +332,30 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
 	userMessage := convertUserFromStore(user)
 	return c.JSON(http.StatusOK, userMessage)
+}
+
+func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store.User, accessToken string) error {
+	userAccessTokens, err := s.Store.GetUserAccessTokens(ctx, user.ID)
+	if err != nil {
+		return errors.Wrap(err, "failed to get user access tokens")
+	}
+	userAccessToken := storepb.AccessTokensUserSetting_AccessToken{
+		AccessToken: accessToken,
+		Description: "Account sign in",
+	}
+	userAccessTokens = append(userAccessTokens, &userAccessToken)
+	if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+		UserId: user.ID,
+		Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_AccessTokens{
+			AccessTokens: &storepb.AccessTokensUserSetting{
+				AccessTokens: userAccessTokens,
+			},
+		},
+	}); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert user setting, err: %s", err)).SetInternal(err)
+	}
+	return nil
 }
 
 func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.User) error {

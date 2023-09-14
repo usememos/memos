@@ -100,7 +100,6 @@ func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
 //	@Success	200		{object}	[]store.Resource	"Resource list"
 //	@Failure	401		{object}	nil					"Missing user in session"
 //	@Failure	500		{object}	nil					"Failed to fetch resource list"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource [GET]
 func (s *APIV1Service) GetResourceList(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -140,7 +139,6 @@ func (s *APIV1Service) GetResourceList(c echo.Context) error {
 //	@Failure	400		{object}	nil						"Malformatted post resource request | Invalid external link | Invalid external link scheme | Failed to request %s | Failed to read %s | Failed to read mime from %s"
 //	@Failure	401		{object}	nil						"Missing user in session"
 //	@Failure	500		{object}	nil						"Failed to save resource | Failed to create resource | Failed to create activity"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource [POST]
 func (s *APIV1Service) CreateResource(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -192,7 +190,6 @@ func (s *APIV1Service) CreateResource(c echo.Context) error {
 //	@Failure	400		{object}	nil				"Upload file not found | File size exceeds allowed limit of %d MiB | Failed to parse upload data"
 //	@Failure	401		{object}	nil				"Missing user in session"
 //	@Failure	500		{object}	nil				"Failed to get uploading file | Failed to open file | Failed to save resource | Failed to create resource | Failed to create activity"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource/blob [POST]
 func (s *APIV1Service) UploadResource(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -265,7 +262,6 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 //	@Failure	401			{object}	nil		"Missing user in session"
 //	@Failure	404			{object}	nil		"Resource not found: %d"
 //	@Failure	500			{object}	nil		"Failed to find resource | Failed to delete resource"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource/{resourceId} [DELETE]
 func (s *APIV1Service) DeleteResource(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -322,7 +318,6 @@ func (s *APIV1Service) DeleteResource(c echo.Context) error {
 //	@Failure	401			{object}	nil						"Missing user in session | Unauthorized"
 //	@Failure	404			{object}	nil						"Resource not found: %d"
 //	@Failure	500			{object}	nil						"Failed to find resource | Failed to patch resource"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/resource/{resourceId} [PATCH]
 func (s *APIV1Service) UpdateResource(c echo.Context) error {
 	ctx := c.Request().Context()

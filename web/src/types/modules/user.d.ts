@@ -12,7 +12,6 @@ interface User {
   role: UserRole;
   email: string;
   nickname: string;
-  openId: string;
   avatarUrl: string;
   userSettingList: UserSetting[];
 
@@ -34,7 +33,6 @@ interface UserPatch {
   nickname?: string;
   avatarUrl?: string;
   password?: string;
-  resetOpenId?: boolean;
 }
 
 interface UserDelete {

@@ -139,7 +139,6 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 //	@Success	200				{object}	[]store.Memo	"Memo list"
 //	@Failure	400				{object}	nil				"Missing user to find memo"
 //	@Failure	500				{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to compose memo response"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/memo [GET]
 func (s *APIV1Service) GetMemoList(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -239,7 +238,6 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 //	@Failure		401		{object}	nil					"Missing user in session"
 //	@Failure		404		{object}	nil					"User not found | Memo not found: %d"
 //	@Failure		500		{object}	nil					"Failed to find user setting | Failed to unmarshal user setting value | Failed to find system setting | Failed to unmarshal system setting | Failed to find user | Failed to create memo | Failed to create activity | Failed to upsert memo resource | Failed to upsert memo relation | Failed to compose memo | Failed to compose memo response"
-//	@Security		ApiKeyAuth
 //	@Router			/api/v1/memo [POST]
 //
 // NOTES:
@@ -398,7 +396,6 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 //	@Param			offset	query		int				false	"Offset"
 //	@Success		200		{object}	[]store.Memo	"Memo list"
 //	@Failure		500		{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch all memo list | Failed to compose memo response"
-//	@Security		ApiKeyAuth
 //	@Router			/api/v1/memo/all [GET]
 //
 //	NOTES:
@@ -575,7 +572,6 @@ func (s *APIV1Service) GetMemo(c echo.Context) error {
 //	@Failure	401		{object}	nil		"Missing user in session | Unauthorized"
 //	@Failure	404		{object}	nil		"Memo not found: %d"
 //	@Failure	500		{object}	nil		"Failed to find memo | Failed to delete memo ID: %v"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/memo/{memoId} [DELETE]
 func (s *APIV1Service) DeleteMemo(c echo.Context) error {
 	ctx := c.Request().Context()
@@ -624,7 +620,6 @@ func (s *APIV1Service) DeleteMemo(c echo.Context) error {
 //	@Failure		401		{object}	nil					"Missing user in session | Unauthorized"
 //	@Failure		404		{object}	nil					"Memo not found: %d"
 //	@Failure		500		{object}	nil					"Failed to find memo | Failed to patch memo | Failed to upsert memo resource | Failed to delete memo resource | Failed to compose memo response"
-//	@Security		ApiKeyAuth
 //	@Router			/api/v1/memo/{memoId} [PATCH]
 //
 // NOTES:

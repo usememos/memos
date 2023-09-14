@@ -27,12 +27,7 @@ type APIV1Service struct {
 // @BasePath					/
 //
 // @externalDocs.url			https://usememos.com/
-// @externalDocs.description	Find out more about Memos
-//
-// @securitydefinitions.apikey	ApiKeyAuth
-// @in							query
-// @name						openId
-// @description				Insert your Open ID API Key here.
+// @externalDocs.description	Find out more about Memos.
 func NewAPIV1Service(secret string, profile *profile.Profile, store *store.Store, telegramBot *telegram.Bot) *APIV1Service {
 	return &APIV1Service{
 		Secret:      secret,

@@ -42,7 +42,6 @@ func createTestingHostUser(ctx context.Context, ts *store.Store) (*store.User, e
 		Role:     store.RoleHost,
 		Email:    "test@test.com",
 		Nickname: "test_nickname",
-		OpenID:   "test_open_id",
 	}
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte("test_password"), bcrypt.DefaultCost)
 	if err != nil {

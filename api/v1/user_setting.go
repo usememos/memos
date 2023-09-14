@@ -92,7 +92,6 @@ func (s *APIV1Service) registerUserSettingRoutes(g *echo.Group) {
 //	@Failure	400		{object}	nil							"Malformatted post user setting upsert request | Invalid user setting format"
 //	@Failure	401		{object}	nil							"Missing auth session"
 //	@Failure	500		{object}	nil							"Failed to upsert user setting"
-//	@Security	ApiKeyAuth
 //	@Router		/api/v1/user/setting [POST]
 func (s *APIV1Service) UpsertUserSetting(c echo.Context) error {
 	ctx := c.Request().Context()

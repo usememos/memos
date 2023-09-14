@@ -23,7 +23,6 @@ CREATE TABLE user (
   email TEXT NOT NULL DEFAULT '',
   nickname TEXT NOT NULL DEFAULT '',
   password_hash TEXT NOT NULL,
-  open_id TEXT NOT NULL UNIQUE,
   avatar_url TEXT NOT NULL DEFAULT ''
 );
 
