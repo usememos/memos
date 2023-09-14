@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import { last } from "lodash-es";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import toast from "react-hot-toast";
+import useLocalStorage from "react-use/lib/useLocalStorage";
 import useToggle from "react-use/lib/useToggle";
 import DailyMemo from "@/components/DailyMemo";
 import Empty from "@/components/Empty";
@@ -23,7 +24,11 @@ const DailyReview = () => {
   const userStore = useUserStore();
   const user = useCurrentUser();
   const { localSetting } = userStore.state.user as User;
-  const [currentDateStamp, setCurrentDateStamp] = useState(getDateStampByDate(getNormalizedDateString()));
+  const [currentDateStampRaw, setCurrentDateStamp] = useLocalStorage<number>(
+    "daily-review-datestamp",
+    getDateStampByDate(getNormalizedDateString())
+  );
+  const currentDateStamp = currentDateStampRaw as number;
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const memosElRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date(currentDateStamp);
