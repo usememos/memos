@@ -18,12 +18,16 @@ import { useMemoStore, useUserStore } from "@/store/module";
 import { findNearestLanguageMatch, useTranslate } from "@/utils/i18n";
 
 const DailyReview = () => {
+  let initCurrentDateStamp = Number(window.sessionStorage.getItem("daily-review-datestamp"));
+  if (initCurrentDateStamp == 0) {
+    initCurrentDateStamp = getDateStampByDate(getNormalizedDateString());
+  }
   const t = useTranslate();
   const memoStore = useMemoStore();
   const userStore = useUserStore();
   const user = useCurrentUser();
   const { localSetting } = userStore.state.user as User;
-  const [currentDateStamp, setCurrentDateStamp] = useState(getDateStampByDate(getNormalizedDateString()));
+  const [currentDateStamp, setCurrentDateStamp] = useState(initCurrentDateStamp);
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const memosElRef = useRef<HTMLDivElement>(null);
   const currentDate = new Date(currentDateStamp);
@@ -85,8 +89,13 @@ const DailyReview = () => {
   };
 
   const handleDataPickerChange = (datestamp: number): void => {
-    setCurrentDateStamp(datestamp);
+    updateCurrentDateStamp(datestamp);
     toggleShowDatePicker(false);
+  };
+
+  const updateCurrentDateStamp = (datestamp: number): void => {
+    setCurrentDateStamp(datestamp);
+    window.sessionStorage.setItem("daily-review-datestamp", datestamp.toString());
   };
 
   const locale = findNearestLanguageMatch(i18n.language);
@@ -108,7 +117,7 @@ const DailyReview = () => {
           <div className="flex flex-row justify-end items-center">
             <button
               className="w-7 h-7 mr-2 flex justify-center items-center rounded cursor-pointer select-none last:mr-0 hover:bg-gray-200 dark:hover:bg-zinc-700 p-0.5"
-              onClick={() => setCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}
+              onClick={() => updateCurrentDateStamp(currentDateStamp - DAILY_TIMESTAMP)}
             >
               <Icon.ChevronLeft className="w-full h-auto" />
             </button>
@@ -117,7 +126,7 @@ const DailyReview = () => {
                 "w-7 h-7 mr-2 flex justify-center items-center rounded select-none last:mr-0 hover:bg-gray-200 dark:hover:bg-zinc-700 p-0.5",
                 isFutureDateDisabled ? "cursor-not-allowed" : "cursor-pointer"
               )}
-              onClick={() => setCurrentDateStamp(currentDateStamp + DAILY_TIMESTAMP)}
+              onClick={() => updateCurrentDateStamp(currentDateStamp + DAILY_TIMESTAMP)}
               disabled={isFutureDateDisabled}
             >
               <Icon.ChevronRight className="w-full h-auto" />
