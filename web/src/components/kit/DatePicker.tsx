@@ -59,31 +59,29 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
     handleDateStampChange(datestamp);
   };
 
-  const handleChangeMonthBtnClick = (i: -1 | 1) => {
-    const year = firstDate.getFullYear();
-    const month = firstDate.getMonth() + 1;
-    let nextDateStamp = 0;
-    if (month === 1 && i === -1) {
-      nextDateStamp = new Date(`${year - 1}/12/1`).getTime();
-    } else if (month === 12 && i === 1) {
-      nextDateStamp = new Date(`${year + 1}/1/1`).getTime();
-    } else {
-      nextDateStamp = new Date(`${year}/${month + i}/1`).getTime();
-    }
-    setCurrentDateStamp(getMonthFirstDayDateStamp(nextDateStamp));
+  const handleChangeMonthBtnClick = (i: number) => {
+    const nextDate = new Date(firstDate.getTime());
+    nextDate.setMonth(nextDate.getMonth() + i);
+    setCurrentDateStamp(getMonthFirstDayDateStamp(nextDate.getTime()));
   };
 
   return (
     <div className={`date-picker-wrapper ${className}`}>
       <div className="date-picker-header">
+        <Button variant="plain" color="neutral" onClick={() => handleChangeMonthBtnClick(-12)}>
+          <Icon.ChevronsLeft className="icon-img" />
+        </Button>
         <Button variant="plain" color="neutral" onClick={() => handleChangeMonthBtnClick(-1)}>
           <Icon.ChevronLeft className="icon-img" />
         </Button>
         <span className="normal-text">
-          {firstDate.getFullYear()}/{firstDate.getMonth() + 1}
+          {firstDate.getFullYear()}/{(firstDate.getMonth() + 1).toString().padStart(2, "0")}
         </span>
         <Button variant="plain" color="neutral" onClick={() => handleChangeMonthBtnClick(1)}>
           <Icon.ChevronRight className="icon-img" />
+        </Button>
+        <Button variant="plain" color="neutral" onClick={() => handleChangeMonthBtnClick(12)}>
+          <Icon.ChevronsRight className="icon-img" />
         </Button>
       </div>
       <div className="date-picker-day-container">
