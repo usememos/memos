@@ -94,7 +94,7 @@ const Setting = () => {
             </>
           ) : null}
         </div>
-        <div className="section-content-container sm:max-w-[calc(100%-14rem)]">
+        <div className="section-content-container sm:max-w-[calc(100%-12rem)]">
           <Select
             className="block mb-2 sm:!hidden"
             value={state.selectedSection}

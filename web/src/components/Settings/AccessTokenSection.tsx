@@ -9,6 +9,7 @@ import { useTranslate } from "@/utils/i18n";
 import showCreateAccessTokenDialog from "../CreateAccessTokenDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
+import LearnMore from "../LearnMore";
 
 const listAccessTokens = async (username: string) => {
   const { data } = await axios.get<ListUserAccessTokensResponse>(`/api/v2/users/${username}/access_tokens`);
@@ -57,12 +58,15 @@ const AccessTokenSection = () => {
     <>
       <div className="mt-8 w-full flex flex-col justify-start items-start space-y-4">
         <div className="w-full">
-          <div className="sm:flex sm:items-center">
-            <div className="sm:flex-auto">
-              <p className="text-sm mt-4 first:mt-2 mb-3 font-mono text-gray-500 dark:text-gray-400">Access Tokens</p>
-              <p className="mt-2 text-sm text-gray-700">A list of all access tokens for your account.</p>
+          <div className="sm:flex sm:items-center sm:justify-between">
+            <div className="sm:flex-auto space-y-1">
+              <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">
+                Access Tokens
+                <LearnMore className="ml-2" url="https://usememos.com/docs/local-storage" />
+              </p>
+              <p className="text-sm text-gray-700">A list of all access tokens for your account.</p>
             </div>
-            <div className="mt-4 sm:ml-16 sm:mt-0 sm:flex-none">
+            <div className="mt-4 sm:mt-0">
               <Button
                 variant="outlined"
                 color="neutral"
