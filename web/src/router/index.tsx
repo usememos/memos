@@ -34,13 +34,15 @@ const initialGlobalStateLoader = (() => {
 })();
 
 const userStateLoader = async () => {
+  let user = undefined;
   try {
-    const user = await initialUserState();
-    if (!user) {
-      return redirect("/explore");
-    }
+    user = await initialUserState();
   } catch (error) {
     // do nothing.
+  }
+
+  if (!user) {
+    return redirect("/explore");
   }
   return null;
 };

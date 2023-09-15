@@ -67,8 +67,6 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return next(c)
 		}
 
-		println("path", path)
-
 		// Skip validation for server status endpoints.
 		if util.HasPrefixes(path, "/api/v1/ping", "/api/v1/idp", "/api/v1/status", "/api/v1/user") && path != "/api/v1/user/me" && method == http.MethodGet {
 			return next(c)
