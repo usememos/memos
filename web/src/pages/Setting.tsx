@@ -1,6 +1,6 @@
 import { Option, Select } from "@mui/joy";
 import { isEqual } from "lodash-es";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import BetaBadge from "@/components/BetaBadge";
 import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
@@ -27,12 +27,6 @@ const Setting = () => {
     selectedSection: "my-account",
   });
   const isHost = isEqual(user.role, "HOST");
-
-  useEffect(() => {
-    if (!user) {
-      window.location.href = "/auth";
-    }
-  }, []);
 
   const handleSectionSelectorItemClick = (settingSection: SettingSection) => {
     setState({

@@ -5,7 +5,8 @@ import { Outlet } from "react-router-dom";
 import storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import Loading from "./pages/Loading";
-import { initialGlobalState, initialUserState, useGlobalStore } from "./store/module";
+import store from "./store";
+import { useGlobalStore } from "./store/module";
 import { useUserV1Store } from "./store/v1";
 
 const App = () => {
@@ -18,21 +19,10 @@ const App = () => {
 
   useEffect(() => {
     const initialState = async () => {
-      try {
-        await initialGlobalState();
-      } catch (error) {
-        // do nothing
+      const { user } = store.getState().user;
+      if (user) {
+        await userV1Store.getOrFetchUserByUsername(user.username);
       }
-
-      try {
-        const user = await initialUserState();
-        if (user) {
-          await userV1Store.getOrFetchUserByUsername(user.username);
-        }
-      } catch (error) {
-        // do nothing.
-      }
-
       setLoading(false);
     };
 

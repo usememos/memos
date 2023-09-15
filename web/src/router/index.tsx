@@ -1,11 +1,13 @@
 import { lazy } from "react";
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, redirect } from "react-router-dom";
 import App from "@/App";
+import { isNullorUndefined } from "@/helpers/utils";
 import Archived from "@/pages/Archived";
 import DailyReview from "@/pages/DailyReview";
 import ResourcesDashboard from "@/pages/ResourcesDashboard";
 import Setting from "@/pages/Setting";
-import { initialGlobalState } from "@/store/module";
+import store from "@/store";
+import { initialGlobalState, initialUserState } from "@/store/module";
 
 const Root = lazy(() => import("@/layouts/Root"));
 const Auth = lazy(() => import("@/pages/Auth"));
@@ -37,14 +39,14 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
+    loader: async () => {
+      await initialGlobalStateLoader();
+      return null;
+    },
     children: [
       {
         path: "/auth",
         element: <Auth />,
-        loader: async () => {
-          await initialGlobalStateLoader();
-          return null;
-        },
       },
       {
         path: "/auth/callback",
@@ -53,10 +55,25 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <Root />,
+        loader: async () => {
+          try {
+            await initialUserState();
+          } catch (error) {
+            // do nth
+          }
+          return null;
+        },
         children: [
           {
             path: "",
             element: <Home />,
+            loader: async () => {
+              const { user } = store.getState().user;
+
+              if (isNullorUndefined(user)) {
+                return redirect("/explore");
+              }
+            },
           },
           {
             path: "explore",
@@ -65,18 +82,46 @@ const router = createBrowserRouter([
           {
             path: "review",
             element: <DailyReview />,
+            loader: async () => {
+              const { user } = store.getState().user;
+
+              if (isNullorUndefined(user)) {
+                return redirect("/explore");
+              }
+            },
           },
           {
             path: "resources",
             element: <ResourcesDashboard />,
+            loader: async () => {
+              const { user } = store.getState().user;
+
+              if (isNullorUndefined(user)) {
+                return redirect("/explore");
+              }
+            },
           },
           {
             path: "archived",
             element: <Archived />,
+            loader: async () => {
+              const { user } = store.getState().user;
+
+              if (isNullorUndefined(user)) {
+                return redirect("/explore");
+              }
+            },
           },
           {
             path: "setting",
             element: <Setting />,
+            loader: async () => {
+              const { user } = store.getState().user;
+
+              if (isNullorUndefined(user)) {
+                return redirect("/explore");
+              }
+            },
           },
         ],
       },

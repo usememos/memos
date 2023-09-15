@@ -46,12 +46,6 @@ const DailyReview = () => {
     .sort((a, b) => getTimeStampByDate(a.displayTs) - getTimeStampByDate(b.displayTs));
 
   useEffect(() => {
-    if (!user) {
-      window.location.href = "/auth";
-    }
-  }, []);
-
-  useEffect(() => {
     let offset = 0;
     const fetchMoreMemos = async () => {
       try {

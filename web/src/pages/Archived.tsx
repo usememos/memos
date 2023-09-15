@@ -4,7 +4,6 @@ import ArchivedMemo from "@/components/ArchivedMemo";
 import Empty from "@/components/Empty";
 import MemoFilter from "@/components/MemoFilter";
 import MobileHeader from "@/components/MobileHeader";
-import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useFilterStore, useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
@@ -12,7 +11,6 @@ import "@/less/archived.less";
 
 const Archived = () => {
   const t = useTranslate();
-  const user = useCurrentUser();
   const memoStore = useMemoStore();
   const loadingState = useLoading();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
@@ -20,12 +18,6 @@ const Archived = () => {
   const filterStore = useFilterStore();
   const filter = filterStore.state;
   const { text: textQuery } = filter;
-
-  useEffect(() => {
-    if (!user) {
-      window.location.href = "/auth";
-    }
-  }, []);
 
   useEffect(() => {
     memoStore
