@@ -17,19 +17,19 @@ export default defineConfig({
     proxy: {
       "^/api": {
         target: devProxyServer,
-        changeOrigin: true,
+        xfwd: true,
       },
       "^/o/": {
         target: devProxyServer,
-        changeOrigin: true,
+        xfwd: true,
       },
       "^/u/.+/rss.xml": {
         target: devProxyServer,
-        changeOrigin: true,
+        xfwd: true,
       },
       "/explore/rss.xml": {
         target: devProxyServer,
-        changeOrigin: true,
+        xfwd: true,
       },
     },
   },
