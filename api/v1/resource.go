@@ -42,9 +42,6 @@ type Resource struct {
 	ExternalLink string `json:"externalLink"`
 	Type         string `json:"type"`
 	Size         int64  `json:"size"`
-
-	// Related fields
-	LinkedMemoAmount int `json:"linkedMemoAmount"`
 }
 
 type CreateResourceRequest struct {
@@ -587,17 +584,16 @@ func checkResourceVisibility(ctx context.Context, s *store.Store, resourceID int
 
 func convertResourceFromStore(resource *store.Resource) *Resource {
 	return &Resource{
-		ID:               resource.ID,
-		CreatorID:        resource.CreatorID,
-		CreatedTs:        resource.CreatedTs,
-		UpdatedTs:        resource.UpdatedTs,
-		Filename:         resource.Filename,
-		Blob:             resource.Blob,
-		InternalPath:     resource.InternalPath,
-		ExternalLink:     resource.ExternalLink,
-		Type:             resource.Type,
-		Size:             resource.Size,
-		LinkedMemoAmount: resource.LinkedMemoAmount,
+		ID:           resource.ID,
+		CreatorID:    resource.CreatorID,
+		CreatedTs:    resource.CreatedTs,
+		UpdatedTs:    resource.UpdatedTs,
+		Filename:     resource.Filename,
+		Blob:         resource.Blob,
+		InternalPath: resource.InternalPath,
+		ExternalLink: resource.ExternalLink,
+		Type:         resource.Type,
+		Size:         resource.Size,
 	}
 }
 

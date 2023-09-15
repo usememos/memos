@@ -10,8 +10,6 @@ interface Resource {
   externalLink: string;
   type: string;
   size: string;
-
-  linkedMemoAmount: number;
 }
 
 interface ResourceCreate {

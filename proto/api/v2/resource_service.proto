@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+
+option go_package = "gen/api/v2";
+
+service ResourceService {
+  rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse) {
+    option (google.api.http) = {get: "/api/v2/resources"};
+  }
+}
+
+message Resource {
+  int32 id = 1;
+  int64 created_ts = 2;
+  string filename = 3;
+  string external_link = 4;
+  string type = 5;
+  int64 size = 6;
+  optional int32 related_memo_id = 7;
+}
+
+message ListResourcesRequest {}
+
+message ListResourcesResponse {
+  repeated Resource resources = 1;
+}

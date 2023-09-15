@@ -46,17 +46,17 @@ const Header = () => {
     title: t("daily-review.title"),
     icon: <Icon.Calendar className="mr-3 w-6 h-auto opacity-70" />,
   };
-  const exploreNavLink: NavLinkItem = {
-    id: "header-explore",
-    path: "/explore",
-    title: t("common.explore"),
-    icon: <Icon.Hash className="mr-3 w-6 h-auto opacity-70" />,
-  };
   const resourcesNavLink: NavLinkItem = {
     id: "header-resources",
     path: "/resources",
     title: t("common.resources"),
     icon: <Icon.Paperclip className="mr-3 w-6 h-auto opacity-70" />,
+  };
+  const exploreNavLink: NavLinkItem = {
+    id: "header-explore",
+    path: "/explore",
+    title: t("common.explore"),
+    icon: <Icon.Hash className="mr-3 w-6 h-auto opacity-70" />,
   };
   const archivedNavLink: NavLinkItem = {
     id: "header-archived",
@@ -78,7 +78,7 @@ const Header = () => {
   };
 
   const navLinks: NavLinkItem[] = !isVisitorMode
-    ? [homeNavLink, dailyReviewNavLink, exploreNavLink, resourcesNavLink, archivedNavLink, settingNavLink]
+    ? [homeNavLink, dailyReviewNavLink, resourcesNavLink, exploreNavLink, archivedNavLink, settingNavLink]
     : [exploreNavLink, authNavLink];
 
   return (

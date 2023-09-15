@@ -34,7 +34,6 @@ func (s *TagService) ListTags(ctx context.Context, request *apiv2pb.ListTagsRequ
 	for _, tag := range tags {
 		response.Tags = append(response.Tags, convertTagFromStore(tag))
 	}
-
 	return response, nil
 }
 

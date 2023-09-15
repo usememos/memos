@@ -17,6 +17,13 @@
   
     - [MemoService](#memos-api-v2-MemoService)
   
+- [api/v2/resource_service.proto](#api_v2_resource_service-proto)
+    - [ListResourcesRequest](#memos-api-v2-ListResourcesRequest)
+    - [ListResourcesResponse](#memos-api-v2-ListResourcesResponse)
+    - [Resource](#memos-api-v2-Resource)
+  
+    - [ResourceService](#memos-api-v2-ResourceService)
+  
 - [api/v2/system_service.proto](#api_v2_system_service-proto)
     - [GetSystemInfoRequest](#memos-api-v2-GetSystemInfoRequest)
     - [GetSystemInfoResponse](#memos-api-v2-GetSystemInfoResponse)
@@ -204,6 +211,78 @@
 | ----------- | ------------ | ------------- | ------------|
 | ListMemos | [ListMemosRequest](#memos-api-v2-ListMemosRequest) | [ListMemosResponse](#memos-api-v2-ListMemosResponse) |  |
 | GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) |  |
+
+ 
+
+
+
+<a name="api_v2_resource_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/resource_service.proto
+
+
+
+<a name="memos-api-v2-ListResourcesRequest"></a>
+
+### ListResourcesRequest
+
+
+
+
+
+
+
+<a name="memos-api-v2-ListResourcesResponse"></a>
+
+### ListResourcesResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resources | [Resource](#memos-api-v2-Resource) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-Resource"></a>
+
+### Resource
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| created_ts | [int64](#int64) |  |  |
+| filename | [string](#string) |  |  |
+| external_link | [string](#string) |  |  |
+| type | [string](#string) |  |  |
+| size | [int64](#int64) |  |  |
+| related_memo_id | [int32](#int32) | optional |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-ResourceService"></a>
+
+### ResourceService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| ListResources | [ListResourcesRequest](#memos-api-v2-ListResourcesRequest) | [ListResourcesResponse](#memos-api-v2-ListResourcesResponse) |  |
 
  
 

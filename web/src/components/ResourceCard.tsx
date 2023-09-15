@@ -1,6 +1,5 @@
 import { getDateTimeString } from "@/helpers/datetime";
 import ResourceIcon from "./ResourceIcon";
-import "@/less/resource-card.less";
 
 interface Props {
   resource: Resource;
@@ -8,7 +7,7 @@ interface Props {
 
 const ResourceCard = ({ resource }: Props) => {
   return (
-    <div className="resource-card">
+    <div className="w-full p-2 relative flex flex-col justify-start hover:shadow hover:bg-slate-200 dark:hover:bg-slate-600 rounded-md">
       <div className="w-full flex flex-row justify-center items-center pb-2 pt-4 px-2">
         <ResourceIcon resource={resource} strokeWidth={0.5} />
       </div>

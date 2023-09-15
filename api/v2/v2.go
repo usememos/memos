@@ -34,6 +34,7 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 	apiv2pb.RegisterUserServiceServer(grpcServer, NewUserService(store, secret))
 	apiv2pb.RegisterMemoServiceServer(grpcServer, NewMemoService(store))
 	apiv2pb.RegisterTagServiceServer(grpcServer, NewTagService(store))
+	apiv2pb.RegisterResourceServiceServer(grpcServer, NewResourceService(store))
 	reflection.Register(grpcServer)
 
 	return &APIV2Service{
@@ -73,6 +74,9 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 		return err
 	}
 	if err := apiv2pb.RegisterTagServiceHandler(context.Background(), gwMux, conn); err != nil {
+		return err
+	}
+	if err := apiv2pb.RegisterResourceServiceHandler(context.Background(), gwMux, conn); err != nil {
 		return err
 	}
 	e.Any("/api/v2/*", echo.WrapHandler(gwMux))

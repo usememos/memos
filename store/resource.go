@@ -16,13 +16,15 @@ type Resource struct {
 	UpdatedTs int64
 
 	// Domain specific fields
-	Filename         string
-	Blob             []byte
-	InternalPath     string
-	ExternalLink     string
-	Type             string
-	Size             int64
-	LinkedMemoAmount int
+	Filename     string
+	Blob         []byte
+	InternalPath string
+	ExternalLink string
+	Type         string
+	Size         int64
+
+	// Related fields
+	RelatedMemoID *int32
 }
 
 type FindResource struct {
@@ -102,7 +104,7 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 
 	query := fmt.Sprintf(`
 		SELECT
-		  COUNT(DISTINCT memo_resource.memo_id) AS linked_memo_amount,
+			GROUP_CONCAT(memo_resource.memo_id) as related_memo_id,
 			%s
 		FROM resource
 		LEFT JOIN memo_resource ON resource.id = memo_resource.resource_id
@@ -127,7 +129,7 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 	for rows.Next() {
 		resource := Resource{}
 		dests := []any{
-			&resource.LinkedMemoAmount,
+			&resource.RelatedMemoID,
 			&resource.ID,
 			&resource.Filename,
 			&resource.ExternalLink,
