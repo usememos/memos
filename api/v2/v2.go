@@ -11,6 +11,7 @@ import (
 	"github.com/usememos/memos/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/reflection"
 )
 
 type APIV2Service struct {
@@ -33,6 +34,7 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 	apiv2pb.RegisterUserServiceServer(grpcServer, NewUserService(store, secret))
 	apiv2pb.RegisterMemoServiceServer(grpcServer, NewMemoService(store))
 	apiv2pb.RegisterTagServiceServer(grpcServer, NewTagService(store))
+	reflection.Register(grpcServer)
 
 	return &APIV2Service{
 		Secret:         secret,
