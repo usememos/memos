@@ -75,7 +75,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
           <Icon.ChevronLeft className="icon-img" />
         </Button>
         <span className="normal-text">
-          {firstDate.getFullYear()}/{firstDate.getMonth() + 1}
+          {firstDate.getFullYear()}/{(firstDate.getMonth() + 1).toString().padStart(2, "0")}
         </span>
         <Button variant="plain" color="neutral" onClick={() => handleChangeMonthBtnClick(1)}>
           <Icon.ChevronRight className="icon-img" />
