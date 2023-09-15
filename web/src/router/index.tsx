@@ -3,7 +3,7 @@ import { createBrowserRouter, redirect } from "react-router-dom";
 import App from "@/App";
 import Archived from "@/pages/Archived";
 import DailyReview from "@/pages/DailyReview";
-import ResourcesDashboard from "@/pages/ResourcesDashboard";
+import Resources from "@/pages/Resources";
 import Setting from "@/pages/Setting";
 import { initialGlobalState, initialUserState } from "@/store/module";
 
@@ -92,7 +92,7 @@ const router = createBrowserRouter([
           },
           {
             path: "resources",
-            element: <ResourcesDashboard />,
+            element: <Resources />,
             loader: userStateLoader,
           },
           {

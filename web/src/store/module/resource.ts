@@ -1,8 +1,7 @@
 import * as api from "@/helpers/api";
-import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { useTranslate } from "@/utils/i18n";
 import store, { useAppSelector } from "../";
-import { deleteResource, patchResource, setResources, upsertResources } from "../reducer/resource";
+import { deleteResource, patchResource, setResources } from "../reducer/resource";
 import { useGlobalStore } from "./global";
 
 const convertResponseModelResource = (resource: Resource): Resource => {
@@ -28,16 +27,6 @@ export const useResourceStore = () => {
       const { data } = await api.getResourceList();
       const resourceList = data.map((m) => convertResponseModelResource(m));
       store.dispatch(setResources(resourceList));
-      return resourceList;
-    },
-    async fetchResourceListWithLimit(limit = DEFAULT_MEMO_LIMIT, offset?: number): Promise<Resource[]> {
-      const resourceFind: ResourceFind = {
-        limit,
-        offset,
-      };
-      const { data } = await api.getResourceListWithLimit(resourceFind);
-      const resourceList = data.map((m) => convertResponseModelResource(m));
-      store.dispatch(upsertResources(resourceList));
       return resourceList;
     },
     async createResource(resourceCreate: ResourceCreate): Promise<Resource> {
