@@ -38,7 +38,7 @@ const UserProfile = () => {
           {!loadingState.isLoading &&
             (user ? (
               <>
-                <main className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
+                <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
                   <div className="w-full flex flex-row justify-start items-start">
                     <div className="flex-grow shrink w-full">
                       <div className="w-full flex flex-col justify-start items-center py-8">
@@ -53,7 +53,7 @@ const UserProfile = () => {
                       <MemoList />
                     </div>
                   </div>
-                </main>
+                </div>
               </>
             ) : (
               <>

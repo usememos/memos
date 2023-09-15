@@ -13,15 +13,13 @@ const Home = () => {
   const user = useCurrentUser();
 
   useEffect(() => {
-    if (user) {
-      return;
-    }
-
-    const systemStatus = globalStore.state.systemStatus;
-    if (systemStatus.disablePublicMemos) {
-      window.location.href = "/auth";
-    } else {
-      window.location.href = "/explore";
+    if (!user) {
+      const systemStatus = globalStore.state.systemStatus;
+      if (systemStatus.disablePublicMemos) {
+        window.location.href = "/auth";
+      } else {
+        window.location.href = "/explore";
+      }
     }
   }, []);
 

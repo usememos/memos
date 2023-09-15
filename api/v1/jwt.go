@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/util"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
@@ -66,13 +67,15 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return next(c)
 		}
 
+		println("path", path)
+
 		// Skip validation for server status endpoints.
 		if util.HasPrefixes(path, "/api/v1/ping", "/api/v1/idp", "/api/v1/status", "/api/v1/user") && path != "/api/v1/user/me" && method == http.MethodGet {
 			return next(c)
 		}
 
-		token := findAccessToken(c)
-		if token == "" {
+		accessToken := findAccessToken(c)
+		if accessToken == "" {
 			// Allow the user to access the public endpoints.
 			if util.HasPrefixes(path, "/o") {
 				return next(c)
@@ -85,7 +88,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		}
 
 		claims := &auth.ClaimsMessage{}
-		_, err := jwt.ParseWithClaims(token, claims, func(t *jwt.Token) (any, error) {
+		_, err := jwt.ParseWithClaims(accessToken, claims, func(t *jwt.Token) (any, error) {
 			if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 				return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
 			}
@@ -98,6 +101,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		})
 
 		if err != nil {
+			RemoveTokensAndCookies(c)
 			return echo.NewHTTPError(http.StatusUnauthorized, errors.Wrap(err, "Invalid or expired access token"))
 		}
 		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
@@ -108,6 +112,15 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		userID, err := util.ConvertStringToInt32(claims.Subject)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "Malformed ID in the token.")
+		}
+
+		accessTokens, err := server.Store.GetUserAccessTokens(ctx, userID)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get user access tokens.").WithInternal(err)
+		}
+		if !validateAccessToken(accessToken, accessTokens) {
+			RemoveTokensAndCookies(c)
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid access token.")
 		}
 
 		// Even if there is no error, we still need to make sure the user still exists.
@@ -127,13 +140,16 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 	}
 }
 
-func (s *APIV1Service) defaultAuthSkipper(c echo.Context) bool {
+func (*APIV1Service) defaultAuthSkipper(c echo.Context) bool {
 	path := c.Path()
+	return util.HasPrefixes(path, "/api/v1/auth")
+}
 
-	// Skip auth.
-	if util.HasPrefixes(path, "/api/v1/auth") {
-		return true
+func validateAccessToken(accessTokenString string, userAccessTokens []*storepb.AccessTokensUserSetting_AccessToken) bool {
+	for _, userAccessToken := range userAccessTokens {
+		if accessTokenString == userAccessToken.AccessToken {
+			return true
+		}
 	}
-
 	return false
 }

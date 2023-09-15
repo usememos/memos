@@ -42,7 +42,7 @@ const EmbedMemo = () => {
   return (
     <section className="w-full h-full flex flex-row justify-start items-start p-2">
       {!loadingState.isLoading && (
-        <main className="w-full max-w-lg mx-auto my-auto shadow px-4 py-4 rounded-lg">
+        <div className="w-full max-w-lg mx-auto my-auto shadow px-4 py-4 rounded-lg">
           <div className="w-full flex flex-col justify-start items-start">
             <div className="w-full mb-2 flex flex-row justify-start items-center text-sm text-gray-400 dark:text-gray-300">
               <span>{getDateTimeString(state.memo.displayTs)}</span>
@@ -53,7 +53,7 @@ const EmbedMemo = () => {
             <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
             <MemoResourceListView resourceList={state.memo.resourceList} />
           </div>
-        </main>
+        </div>
       )}
     </section>
   );

@@ -8,6 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/api/auth"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -44,12 +45,12 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 	if !ok {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to parse metadata from incoming context")
 	}
-	accessTokenStr, err := getTokenFromMetadata(md)
+	accessToken, err := getTokenFromMetadata(md)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, err.Error())
 	}
 
-	username, err := in.authenticate(ctx, accessTokenStr)
+	username, err := in.authenticate(ctx, accessToken)
 	if err != nil {
 		if isUnauthorizeAllowedMethod(serverInfo.FullMethod) {
 			return handler(ctx, request)
@@ -74,12 +75,12 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 	return handler(childCtx, request)
 }
 
-func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr string) (string, error) {
-	if accessTokenStr == "" {
+func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessToken string) (string, error) {
+	if accessToken == "" {
 		return "", status.Errorf(codes.Unauthenticated, "access token not found")
 	}
 	claims := &auth.ClaimsMessage{}
-	_, err := jwt.ParseWithClaims(accessTokenStr, claims, func(t *jwt.Token) (any, error) {
+	_, err := jwt.ParseWithClaims(accessToken, claims, func(t *jwt.Token) (any, error) {
 		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
 			return nil, status.Errorf(codes.Unauthenticated, "unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
 		}
@@ -115,6 +116,14 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessTokenStr 
 		return "", errors.Errorf("user %q is archived", username)
 	}
 
+	accessTokens, err := in.Store.GetUserAccessTokens(ctx, user.ID)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to get user access tokens")
+	}
+	if !validateAccessToken(accessToken, accessTokens) {
+		return "", status.Errorf(codes.Unauthenticated, "invalid access token")
+	}
+
 	return username, nil
 }
 
@@ -143,6 +152,15 @@ func getTokenFromMetadata(md metadata.MD) (string, error) {
 func audienceContains(audience jwt.ClaimStrings, token string) bool {
 	for _, v := range audience {
 		if v == token {
+			return true
+		}
+	}
+	return false
+}
+
+func validateAccessToken(accessTokenString string, userAccessTokens []*storepb.AccessTokensUserSetting_AccessToken) bool {
+	for _, userAccessToken := range userAccessTokens {
+		if accessTokenString == userAccessToken.AccessToken {
 			return true
 		}
 	}

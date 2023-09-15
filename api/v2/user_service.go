@@ -167,7 +167,7 @@ func (s *UserService) CreateUserAccessToken(ctx context.Context, request *apiv2p
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 
-	accessToken, err := auth.GenerateAccessToken(user.Email, user.ID, request.UserAccessToken.ExpiresAt.AsTime(), s.Secret)
+	accessToken, err := auth.GenerateAccessToken(user.Username, user.ID, request.UserAccessToken.ExpiresAt.AsTime(), s.Secret)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate access token: %v", err)
 	}

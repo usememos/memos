@@ -47,9 +47,9 @@ const MemoDetail = () => {
           {!loadingState.isLoading &&
             (memo ? (
               <>
-                <main className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
+                <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
                   <Memo memo={memo} />
-                </main>
+                </div>
               </>
             ) : (
               <>

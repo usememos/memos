@@ -90,7 +90,7 @@ const Explore = () => {
     <section className="w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       {!loadingState.isLoading && (
-        <main className="relative w-full h-auto flex flex-col justify-start items-start">
+        <div className="relative w-full h-auto flex flex-col justify-start items-start">
           <MemoFilter />
           {sortedMemos.map((memo) => {
             return <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} />;
@@ -107,7 +107,7 @@ const Explore = () => {
               {t("memo.fetch-more")}
             </p>
           )}
-        </main>
+        </div>
       )}
     </section>
   );
