@@ -52,7 +52,12 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
             />
           </div>
         ) : (
-          <div className={classNames("w-full mt-2 grid gap-2 grid-cols-2 sm:grid-cols-3")}>
+          <div
+            className={classNames(
+              "w-full mt-2 grid gap-2 grid-cols-2",
+              imageResourceList.length === 4 ? "sm:grid-cols-2" : "sm:grid-cols-3"
+            )}
+          >
             {imageResourceList.map((resource) => {
               const url = getResourceUrl(resource);
               return (
