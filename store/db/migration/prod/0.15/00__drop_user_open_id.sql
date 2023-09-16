@@ -22,4 +22,4 @@ FROM
 
 DROP TABLE user;
 
-ALTER TABLE user_temp_temp RENAME TO user_temp;
+ALTER TABLE user_temp RENAME TO user_temp;
