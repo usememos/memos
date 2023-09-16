@@ -322,14 +322,24 @@ const MemoEditor = (props: Props) => {
     if (!editorRef.current) {
       return;
     }
-
-    const cursorPosition = editorRef.current.getCursorPosition();
-    const prevValue = editorRef.current.getContent().slice(0, cursorPosition);
-    if (prevValue === "" || prevValue.endsWith("\n")) {
-      editorRef.current?.insertText("", "- [ ] ");
+    const currentPosition = editorRef.current?.getCursorPosition();
+    const currentLineNumber = editorRef.current?.getCursorLineNumber();
+    const currentLine = editorRef.current?.getLine(currentLineNumber);
+    let newLine = "";
+    let cursorChange = 0;
+    if (/^- \[( |x|X)\] /.test(currentLine)) {
+      newLine = currentLine.replace(/^- \[( |x|X)\] /, "");
+      cursorChange = -6;
+    } else if (/^\d+\. |- /.test(currentLine)) {
+      const match = currentLine.match(/^\d+\. |- /) ?? [""];
+      newLine = currentLine.replace(/^\d+\. |- /, "- [ ] ");
+      cursorChange = -match[0].length + 6;
     } else {
-      editorRef.current?.insertText("", "\n- [ ] ");
+      newLine = "- [ ] " + currentLine;
+      cursorChange = 6;
     }
+    editorRef.current?.setLine(currentLineNumber, newLine);
+    editorRef.current.setCursorPosition(currentPosition + cursorChange);
     editorRef.current?.scrollToCursor();
   };
 

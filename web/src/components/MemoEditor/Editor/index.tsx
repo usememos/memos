@@ -12,6 +12,9 @@ export interface EditorRefActions {
   getSelectedContent: () => string;
   getCursorPosition: () => number;
   setCursorPosition: (startPos: number, endPos?: number) => void;
+  getCursorLineNumber: () => number;
+  getLine: (lineNumber: number) => string;
+  setLine: (lineNumber: number, text: string) => void;
 }
 
 interface Props {
@@ -114,6 +117,24 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       setCursorPosition: (startPos: number, endPos?: number) => {
         const _endPos = isNaN(endPos as number) ? startPos : (endPos as number);
         editorRef.current?.setSelectionRange(startPos, _endPos);
+      },
+      getCursorLineNumber: () => {
+        const cursorPosition = editorRef.current?.selectionStart ?? 0;
+        const lines = editorRef.current?.value.slice(0, cursorPosition).split("\n") ?? [];
+        return lines.length - 1;
+      },
+      getLine: (lineNumber: number) => {
+        return editorRef.current?.value.split("\n")[lineNumber] ?? "";
+      },
+      setLine: (lineNumber: number, text: string) => {
+        const lines = editorRef.current?.value.split("\n") ?? [];
+        lines[lineNumber] = text;
+        if (editorRef.current) {
+          editorRef.current.value = lines.join("\n");
+          editorRef.current.focus();
+          handleContentChangeCallback(editorRef.current.value);
+          updateEditorHeight();
+        }
       },
     }),
     []
