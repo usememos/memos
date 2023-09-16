@@ -2,11 +2,13 @@ package v2
 
 import (
 	"context"
+	"time"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/store"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type ResourceService struct {
@@ -28,7 +30,8 @@ func (s *ResourceService) ListResources(ctx context.Context, _ *apiv2pb.ListReso
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	resources, err := s.Store.ListResources(ctx, &store.FindResource{
-		CreatorID: &user.ID,
+		CreatorID:      &user.ID,
+		HasRelatedMemo: true,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list tags: %v", err)
@@ -44,7 +47,7 @@ func (s *ResourceService) ListResources(ctx context.Context, _ *apiv2pb.ListReso
 func convertResourceFromStore(resource *store.Resource) *apiv2pb.Resource {
 	return &apiv2pb.Resource{
 		Id:            resource.ID,
-		CreatedTs:     resource.CreatedTs,
+		CreatedTs:     timestamppb.New(time.Unix(resource.CreatedTs, 0)),
 		Filename:      resource.Filename,
 		ExternalLink:  resource.ExternalLink,
 		Type:          resource.Type,

@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import { proto3 } from "@bufbuild/protobuf";
+import { proto3, Timestamp } from "@bufbuild/protobuf";
 
 /**
  * @generated from message memos.api.v2.Resource
@@ -12,7 +12,7 @@ export const Resource = proto3.makeMessageType(
   "memos.api.v2.Resource",
   () => [
     { no: 1, name: "id", kind: "scalar", T: 5 /* ScalarType.INT32 */ },
-    { no: 2, name: "created_ts", kind: "scalar", T: 3 /* ScalarType.INT64 */ },
+    { no: 2, name: "created_ts", kind: "message", T: Timestamp },
     { no: 3, name: "filename", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 4, name: "external_link", kind: "scalar", T: 9 /* ScalarType.STRING */ },
     { no: 5, name: "type", kind: "scalar", T: 9 /* ScalarType.STRING */ },

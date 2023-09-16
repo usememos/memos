@@ -3,6 +3,7 @@ syntax = "proto3";
 package memos.api.v2;
 
 import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v2";
 
@@ -14,7 +15,7 @@ service ResourceService {
 
 message Resource {
   int32 id = 1;
-  int64 created_ts = 2;
+  google.protobuf.Timestamp created_ts = 2;
   string filename = 3;
   string external_link = 4;
   string type = 5;

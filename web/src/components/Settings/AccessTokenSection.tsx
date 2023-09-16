@@ -64,7 +64,7 @@ const AccessTokenSection = () => {
                 Access Tokens
                 <LearnMore className="ml-2" url="https://usememos.com/docs/local-storage" />
               </p>
-              <p className="text-sm text-gray-700">A list of all access tokens for your account.</p>
+              <p className="text-sm text-gray-700 dark:text-gray-500">A list of all access tokens for your account.</p>
             </div>
             <div className="mt-4 sm:mt-0">
               <Button
@@ -81,7 +81,7 @@ const AccessTokenSection = () => {
           <div className="mt-2 flow-root">
             <div className="overflow-x-auto">
               <div className="inline-block min-w-full py-2 align-middle">
-                <table className="min-w-full divide-y divide-gray-300">
+                <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-400">
                   <thead>
                     <tr>
                       <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
@@ -101,7 +101,7 @@ const AccessTokenSection = () => {
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
                     {userAccessTokens.map((userAccessToken) => (
                       <tr key={userAccessToken.accessToken}>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-900 dark:text-gray-400 flex flex-row justify-start items-center gap-x-1">

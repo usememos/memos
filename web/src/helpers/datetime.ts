@@ -57,7 +57,7 @@ export function getTimeString(t?: Date | number | string): string {
  * - "pt-BR" locale: "30/01/2023 22:05:00"
  * - "pl" locale: "30.01.2023, 22:05:00"
  */
-export function getDateTimeString(t?: Date | number | string, locale = i18n.language): string {
+export function getDateTimeString(t?: Date | number | string | any, locale = i18n.language): string {
   const tsFromDate = getTimeStampByDate(t ? t : Date.now());
 
   return new Date(tsFromDate).toLocaleDateString(locale, {

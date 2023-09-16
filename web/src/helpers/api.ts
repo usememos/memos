@@ -1,4 +1,5 @@
 import axios from "axios";
+import { Resource } from "@/types/proto/api/v2/resource_service_pb";
 import { GetUserResponse } from "@/types/proto/api/v2/user_service_pb";
 
 export function getSystemStatus() {
@@ -141,17 +142,6 @@ export function deleteMemo(memoId: MemoId) {
 
 export function getResourceList() {
   return axios.get<Resource[]>("/api/v1/resource");
-}
-
-export function getResourceListWithLimit(resourceFind?: ResourceFind) {
-  const queryList = [];
-  if (resourceFind?.offset) {
-    queryList.push(`offset=${resourceFind.offset}`);
-  }
-  if (resourceFind?.limit) {
-    queryList.push(`limit=${resourceFind.limit}`);
-  }
-  return axios.get<Resource[]>(`/api/v1/resource?${queryList.join("&")}`);
 }
 
 export function createResource(resourceCreate: ResourceCreate) {

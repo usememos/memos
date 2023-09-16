@@ -28,13 +28,14 @@ type Resource struct {
 }
 
 type FindResource struct {
-	GetBlob   bool
-	ID        *int32
-	CreatorID *int32
-	Filename  *string
-	MemoID    *int32
-	Limit     *int
-	Offset    *int
+	GetBlob        bool
+	ID             *int32
+	CreatorID      *int32
+	Filename       *string
+	MemoID         *int32
+	HasRelatedMemo bool
+	Limit          *int
+	Offset         *int
 }
 
 type UpdateResource struct {
@@ -96,6 +97,9 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 	if v := find.MemoID; v != nil {
 		where, args = append(where, "resource.id in (SELECT resource_id FROM memo_resource WHERE memo_id = ?)"), append(args, *v)
 	}
+	if find.HasRelatedMemo {
+		where = append(where, "memo_resource.memo_id IS NOT NULL")
+	}
 
 	fields := []string{"resource.id", "resource.filename", "resource.external_link", "resource.type", "resource.size", "resource.creator_id", "resource.created_ts", "resource.updated_ts", "internal_path"}
 	if find.GetBlob {
@@ -110,7 +114,7 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 		LEFT JOIN memo_resource ON resource.id = memo_resource.resource_id
 		WHERE %s
 		GROUP BY resource.id
-		ORDER BY resource.id DESC
+		ORDER BY resource.created_ts DESC
 	`, strings.Join(fields, ", "), strings.Join(where, " AND "))
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)

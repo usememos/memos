@@ -16,7 +16,7 @@ interface Memo {
   pinned: boolean;
 
   creatorName: string;
-  resourceList: Resource[];
+  resourceList: any[];
   relationList: MemoRelation[];
 }
 

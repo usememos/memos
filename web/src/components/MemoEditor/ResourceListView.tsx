@@ -1,3 +1,4 @@
+import { Resource } from "@/types/proto/api/v2/resource_service_pb";
 import Icon from "../Icon";
 import ResourceIcon from "../ResourceIcon";
 
@@ -23,7 +24,7 @@ const ResourceListView = (props: Props) => {
                 key={resource.id}
                 className="max-w-full flex flex-row justify-start items-center flex-nowrap gap-x-1 bg-gray-100 dark:bg-zinc-800 px-2 py-1 rounded text-gray-500"
               >
-                <ResourceIcon resource={resource} className="!w-4 !h-auto !opacity-100" />
+                <ResourceIcon resource={resource} className="!w-4 !h-4 !opacity-100" />
                 <span className="text-sm max-w-[8rem] truncate">{resource.filename}</span>
                 <Icon.X
                   className="w-4 h-auto cursor-pointer opacity-60 hover:opacity-100"

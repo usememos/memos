@@ -257,7 +257,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int32](#int32) |  |  |
-| created_ts | [int64](#int64) |  |  |
+| created_ts | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | filename | [string](#string) |  |  |
 | external_link | [string](#string) |  |  |
 | type | [string](#string) |  |  |

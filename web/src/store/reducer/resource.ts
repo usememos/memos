@@ -1,5 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { uniqBy } from "lodash-es";
+import { Resource } from "@/types/proto/api/v2/resource_service_pb";
 
 interface State {
   resources: Resource[];

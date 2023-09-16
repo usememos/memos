@@ -3,7 +3,7 @@
 /* eslint-disable */
 // @ts-nocheck
 
-import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage } from "@bufbuild/protobuf";
+import type { BinaryReadOptions, FieldList, JsonReadOptions, JsonValue, PartialMessage, PlainMessage, Timestamp } from "@bufbuild/protobuf";
 import { Message, proto3 } from "@bufbuild/protobuf";
 
 /**
@@ -16,9 +16,9 @@ export declare class Resource extends Message<Resource> {
   id: number;
 
   /**
-   * @generated from field: int64 created_ts = 2;
+   * @generated from field: google.protobuf.Timestamp created_ts = 2;
    */
-  createdTs: bigint;
+  createdTs?: Timestamp;
 
   /**
    * @generated from field: string filename = 3;

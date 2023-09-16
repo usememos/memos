@@ -1,16 +1,9 @@
 import * as api from "@/helpers/api";
+import { Resource } from "@/types/proto/api/v2/resource_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import store, { useAppSelector } from "../";
 import { deleteResource, patchResource, setResources } from "../reducer/resource";
 import { useGlobalStore } from "./global";
-
-const convertResponseModelResource = (resource: Resource): Resource => {
-  return {
-    ...resource,
-    createdTs: resource.createdTs * 1000,
-    updatedTs: resource.updatedTs * 1000,
-  };
-};
 
 export const useResourceStore = () => {
   const state = useAppSelector((state) => state.resource);
@@ -24,14 +17,12 @@ export const useResourceStore = () => {
       return store.getState().resource;
     },
     async fetchResourceList(): Promise<Resource[]> {
-      const { data } = await api.getResourceList();
-      const resourceList = data.map((m) => convertResponseModelResource(m));
+      const { data: resourceList } = await api.getResourceList();
       store.dispatch(setResources(resourceList));
       return resourceList;
     },
     async createResource(resourceCreate: ResourceCreate): Promise<Resource> {
-      const { data } = await api.createResource(resourceCreate);
-      const resource = convertResponseModelResource(data);
+      const { data: resource } = await api.createResource(resourceCreate);
       const resourceList = state.resources;
       store.dispatch(setResources([resource, ...resourceList]));
       return resource;
@@ -44,8 +35,7 @@ export const useResourceStore = () => {
 
       const formData = new FormData();
       formData.append("file", file, filename);
-      const { data } = await api.createResourceWithBlob(formData);
-      const resource = convertResponseModelResource(data);
+      const { data: resource } = await api.createResourceWithBlob(formData);
       const resourceList = state.resources;
       store.dispatch(setResources([resource, ...resourceList]));
       return resource;
@@ -60,8 +50,7 @@ export const useResourceStore = () => {
 
         const formData = new FormData();
         formData.append("file", file, filename);
-        const { data } = await api.createResourceWithBlob(formData);
-        const resource = convertResponseModelResource(data);
+        const { data: resource } = await api.createResourceWithBlob(formData);
         newResourceList = [resource, ...newResourceList];
       }
       const resourceList = state.resources;
@@ -73,8 +62,7 @@ export const useResourceStore = () => {
       store.dispatch(deleteResource(id));
     },
     async patchResource(resourcePatch: ResourcePatch): Promise<Resource> {
-      const { data } = await api.patchResource(resourcePatch);
-      const resource = convertResponseModelResource(data);
+      const { data: resource } = await api.patchResource(resourcePatch);
       store.dispatch(patchResource(resource));
       return resource;
     },

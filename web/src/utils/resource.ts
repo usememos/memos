@@ -1,3 +1,5 @@
+import { Resource } from "@/types/proto/api/v2/resource_service_pb";
+
 export const getResourceUrl = (resource: Resource, withOrigin = true) => {
   if (resource.externalLink) {
     return resource.externalLink;

@@ -1,29 +1,45 @@
-import { useEffect } from "react";
-import { toast } from "react-hot-toast";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
-import ResourceCard from "@/components/ResourceCard";
+import ResourceIcon from "@/components/ResourceIcon";
 import useLoading from "@/hooks/useLoading";
-import { useResourceStore } from "@/store/module";
+import { ListResourcesResponse, Resource } from "@/types/proto/api/v2/resource_service_pb";
 import { useTranslate } from "@/utils/i18n";
+
+const fetchAllResources = async () => {
+  const { data } = await axios.get<ListResourcesResponse>("/api/v2/resources");
+  return data.resources;
+};
+
+function groupResourcesByDate(resources: Resource[]) {
+  const grouped = new Map<number, Resource[]>();
+  resources.forEach((item) => {
+    const date = new Date(item.createdTs as any);
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const timestamp = Date.UTC(year, month - 1, 1);
+    if (!grouped.has(timestamp)) {
+      grouped.set(timestamp, []);
+    }
+    grouped.get(timestamp)?.push(item);
+  });
+  return grouped;
+}
 
 const Resources = () => {
   const t = useTranslate();
   const loadingState = useLoading();
-  const resourceStore = useResourceStore();
-  const resources = resourceStore.state.resources;
+  const [resources, setResources] = useState<Resource[]>([]);
+  const groupedResources = groupResourcesByDate(resources);
 
   useEffect(() => {
-    resourceStore
-      .fetchResourceList()
-      .then(() => {
-        loadingState.setFinish();
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error(error.response.data.message);
-      });
+    fetchAllResources().then((resources) => {
+      setResources(resources);
+      loadingState.setFinish();
+    });
   }, []);
 
   return (
@@ -41,22 +57,51 @@ const Resources = () => {
               <p className="w-full text-center text-base my-6 mt-8">{t("resource.fetching-data")}</p>
             </div>
           ) : (
-            <div
-              className={
-                resources.length === 0
-                  ? "flex flex-col justify-start items-start w-full"
-                  : "w-full h-auto grid grid-cols-2 md:grid-cols-4 gap-6"
-              }
-            >
+            <>
               {resources.length === 0 ? (
                 <div className="w-full mt-8 mb-8 flex flex-col justify-center items-center italic">
                   <Empty />
                   <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
                 </div>
               ) : (
-                resources.map((resource) => <ResourceCard key={resource.id} resource={resource}></ResourceCard>)
+                <div className={"w-full h-auto px-2 flex flex-col justify-start items-start gap-y-8"}>
+                  {Array.from(groupedResources.entries()).map(([timestamp, resources]) => {
+                    const date = new Date(timestamp);
+                    return (
+                      <div key={timestamp} className="w-full flex flex-row justify-start items-start">
+                        <div className="w-16 sm:w-24 pt-4 sm:pl-4 flex flex-col justify-start items-start">
+                          <span className="text-sm opacity-60">{date.getFullYear()}</span>
+                          <span className="font-medium text-xl">{date.toLocaleString("default", { month: "short" })}</span>
+                        </div>
+                        <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
+                          {resources.map((resource) => {
+                            return (
+                              <div key={resource.id} className="w-auto h-auto flex flex-col justify-start items-start">
+                                <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded cursor-pointer hover:shadow hover:opacity-80">
+                                  <ResourceIcon resource={resource} strokeWidth={0.5} />
+                                </div>
+                                <div className="w-full flex flex-row justify-between items-center mt-1 px-1">
+                                  <div>
+                                    <p className="text-xs text-gray-400">{new Date(resource.createdTs as any).toLocaleDateString()}</p>
+                                  </div>
+                                  <Link
+                                    className="flex flex-row justify-start items-center text-gray-400 hover:underline hover:text-blue-600"
+                                    to={`/m/${resource.relatedMemoId}`}
+                                    target="_blank"
+                                  >
+                                    <span className="text-xs ml-0.5">#{resource.relatedMemoId}</span>
+                                  </Link>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </div>

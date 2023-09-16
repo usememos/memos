@@ -1,6 +1,7 @@
 import { Autocomplete, Button, Input, List, ListItem, Option, Select, Typography } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
+import { Resource } from "@/types/proto/api/v2/resource_service_pb";
 import { useTranslate } from "@/utils/i18n";
 import { useResourceStore } from "../store/module";
 import { generateDialog } from "./Dialog";

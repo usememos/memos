@@ -1,5 +1,6 @@
 import classNames from "classnames";
 import { absolutifyLink } from "@/helpers/utils";
+import { Resource } from "@/types/proto/api/v2/resource_service_pb";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
 import MemoResource from "./MemoResource";
 import showPreviewImageDialog from "./PreviewImageDialog";
@@ -42,7 +43,7 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
     <>
       {imageResourceList.length > 0 &&
         (imageResourceList.length === 1 ? (
-          <div className="mt-2 max-w-[90%] max-h-64 flex justify-center items-center shadow rounded overflow-hidden hide-scrollbar hover:shadow-md">
+          <div className="mt-2 max-w-[90%] max-h-64 flex justify-center items-center border rounded overflow-hidden hide-scrollbar hover:shadow-md">
             <img
               className="cursor-pointer min-h-full w-auto min-w-full object-cover"
               src={getResourceUrl(imageResourceList[0])}
@@ -63,7 +64,7 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
               return (
                 <SquareDiv
                   key={resource.id}
-                  className="flex justify-center items-center shadow rounded overflow-hidden hide-scrollbar hover:shadow-md"
+                  className="flex justify-center items-center border dark:border-zinc-900 rounded overflow-hidden hide-scrollbar hover:shadow-md"
                 >
                   <img
                     className="cursor-pointer min-h-full w-auto min-w-full object-cover"

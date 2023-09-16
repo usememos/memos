@@ -1,4 +1,5 @@
 import { getDateTimeString } from "@/helpers/datetime";
+import { Resource } from "@/types/proto/api/v2/resource_service_pb";
 import ResourceIcon from "./ResourceIcon";
 
 interface Props {
