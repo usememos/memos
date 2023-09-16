@@ -384,7 +384,7 @@ const MemoEditor = (props: Props) => {
         <div className="common-tools-container">
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
           <button className="action-btn">
-            <Icon.Image className="icon-img" onClick={handleUploadFileBtnClick} />
+            <Icon.Paperclip className="icon-img" onClick={handleUploadFileBtnClick} />
           </button>
           <button className="action-btn">
             <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />

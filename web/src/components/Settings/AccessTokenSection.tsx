@@ -62,7 +62,7 @@ const AccessTokenSection = () => {
             <div className="sm:flex-auto space-y-1">
               <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">
                 Access Tokens
-                <LearnMore className="ml-2" url="https://usememos.com/docs/local-storage" />
+                <LearnMore className="ml-2" url="https://usememos.com/docs/access-tokens" />
               </p>
               <p className="text-sm text-gray-700 dark:text-gray-500">A list of all access tokens for your account.</p>
             </div>
