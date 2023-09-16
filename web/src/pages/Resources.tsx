@@ -82,7 +82,7 @@ const Resources = () => {
                                 </div>
                                 <div className="w-full flex flex-row justify-between items-center mt-1 px-1">
                                   <div>
-                                    <p className="text-xs text-gray-400">{new Date(resource.createdTs as any).toLocaleDateString()}</p>
+                                    <p className="text-xs text-gray-400">{resource.type}</p>
                                   </div>
                                   <Link
                                     className="flex flex-row justify-start items-center text-gray-400 hover:underline hover:text-blue-600"
