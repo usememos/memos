@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/google/uuid"
@@ -16,7 +17,6 @@ import (
 	apiv1 "github.com/usememos/memos/api/v1"
 	apiv2 "github.com/usememos/memos/api/v2"
 	"github.com/usememos/memos/common/log"
-	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/service"
@@ -65,13 +65,13 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	e.Use(middleware.Gzip())
 
-	e.Use(middleware.CORS())
-
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
+		Skipper: grpcRequestSkipper,
 		Timeout: 30 * time.Second,
 	}))
 
 	e.Use(middleware.RateLimiterWithConfig(middleware.RateLimiterConfig{
+		Skipper: grpcRequestSkipper,
 		Store: middleware.NewRateLimiterMemoryStoreWithConfig(
 			middleware.RateLimiterMemoryStoreConfig{Rate: 30, Burst: 60, ExpiresIn: 3 * time.Minute},
 		),
@@ -225,11 +225,6 @@ func (s *Server) createServerStartActivity(ctx context.Context) error {
 	return err
 }
 
-func defaultGetRequestSkipper(c echo.Context) bool {
-	return c.Request().Method == http.MethodGet
-}
-
-func defaultAPIRequestSkipper(c echo.Context) bool {
-	path := c.Request().URL.Path
-	return util.HasPrefixes(path, "/api", "/api/v1", "api/v2")
+func grpcRequestSkipper(c echo.Context) bool {
+	return strings.HasPrefix(c.Request().URL.Path, "/memos.api.v2.")
 }

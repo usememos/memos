@@ -13,6 +13,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/feeds v1.1.1
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.16.2
+	github.com/improbable-eng/grpc-web v0.15.0
 	github.com/labstack/echo/v4 v4.11.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.6.1
@@ -35,6 +36,8 @@ require (
 require (
 	github.com/KyleBanks/depth v1.2.1 // indirect
 	github.com/antlr/antlr4/runtime/Go/antlr/v4 v4.0.0-20230305170008-8188dc5388df // indirect
+	github.com/cenkalti/backoff/v4 v4.1.1 // indirect
+	github.com/desertbit/timer v0.0.0-20180107155436-c41aec40b27f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/go-openapi/jsonpointer v0.20.0 // indirect
 	github.com/go-openapi/jsonreference v0.20.2 // indirect
@@ -42,9 +45,11 @@ require (
 	github.com/go-openapi/swag v0.22.4 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kballard/go-shellquote v0.0.0-20180428030007-95032a82bc51 // indirect
+	github.com/klauspost/compress v1.11.7 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/remyoudompheng/bigfft v0.0.0-20230129092748-24d4a6f8daec // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
+	github.com/rs/cors v1.7.0 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/swaggo/files/v2 v2.0.0 // indirect
 	golang.org/x/image v0.7.0 // indirect
@@ -60,6 +65,7 @@ require (
 	modernc.org/opt v0.1.3 // indirect
 	modernc.org/strutil v1.1.3 // indirect
 	modernc.org/token v1.0.1 // indirect
+	nhooyr.io/websocket v1.8.6 // indirect
 )
 
 require (

@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	grpcRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/labstack/echo/v4"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/server/profile"
@@ -24,6 +25,7 @@ type APIV2Service struct {
 }
 
 func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store, grpcServerPort int) *APIV2Service {
+	grpc.EnableTracing = true
 	authProvider := NewGRPCAuthInterceptor(store, secret)
 	grpcServer := grpc.NewServer(
 		grpc.ChainUnaryInterceptor(
@@ -80,6 +82,16 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 		return err
 	}
 	e.Any("/api/v2/*", echo.WrapHandler(gwMux))
+
+	// GRPC web proxy.
+	options := []grpcweb.Option{
+		grpcweb.WithCorsForRegisteredEndpointsOnly(false),
+		grpcweb.WithOriginFunc(func(origin string) bool {
+			return true
+		}),
+	}
+	wrappedGrpc := grpcweb.WrapServer(s.grpcServer, options...)
+	e.Any("/memos.api.v2.*", echo.WrapHandler(wrappedGrpc))
 
 	return nil
 }

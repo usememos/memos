@@ -1,7 +1,6 @@
-import axios from "axios";
 import { create } from "zustand";
-import * as api from "@/helpers/api";
-import { UpdateUserResponse, User } from "@/types/proto/api/v2/user_service_pb";
+import { userServiceClient } from "@/grpcweb";
+import { User } from "@/types/proto-grpcweb/api/v2/user_service";
 
 interface UserV1Store {
   userMapByUsername: Record<string, User>;
@@ -24,11 +23,11 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
       return await requestCache.get(username);
     }
 
-    const promise = api.getUserByUsername(username);
+    const promise = userServiceClient.getUser({
+      username: username,
+    });
     requestCache.set(username, promise);
-    const {
-      data: { user: user },
-    } = await promise;
+    const { user } = await promise;
     if (!user) {
       throw new Error("User not found");
     }
@@ -42,11 +41,10 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
     return userMap[username];
   },
   updateUser: async (user: Partial<User>, updateMask: string[]) => {
-    const {
-      data: { user: updatedUser },
-    } = await axios.post<UpdateUserResponse>(`/api/v2/users/${user.username}`, {
-      user,
-      updateMask,
+    const { user: updatedUser } = await userServiceClient.updateUser({
+      username: user.username,
+      user: user,
+      updateMask: updateMask,
     });
     if (!updatedUser) {
       throw new Error("User not found");

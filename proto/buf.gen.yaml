@@ -21,6 +21,16 @@ plugins:
   # Build the TypeScript definitions for the web.
   - plugin: buf.build/bufbuild/es:v1.3.0
     out: ../web/src/types/proto
+  - plugin: buf.build/community/stephenh-ts-proto:v1.152.1
+    out: ../web/src/types/proto-grpcweb
+    # reference: https://github.com/deeplay-io/nice-grpc/blob/master/packages/nice-grpc-web/README.md#using-ts-proto
+    opt:
+      - env=browser
+      - useOptionals=messages
+      - outputServices=generic-definitions
+      - outputJsonMethods=false
+      - useExactTypes=false
+      - esModuleInterop=true
   - plugin: buf.build/community/pseudomuto-doc:v1.5.1
     out: gen
     opt:
