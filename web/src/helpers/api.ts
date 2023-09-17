@@ -1,6 +1,6 @@
 import axios from "axios";
-import { Resource } from "@/types/proto-grpcweb/api/v2/resource_service";
-import { GetUserResponse } from "@/types/proto-grpcweb/api/v2/user_service";
+import { Resource } from "@/types/proto/api/v2/resource_service";
+import { GetUserResponse } from "@/types/proto/api/v2/user_service";
 
 export function getSystemStatus() {
   return axios.get<SystemStatus>("/api/v1/status");

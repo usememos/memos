@@ -2,11 +2,17 @@
 FROM node:18-alpine AS frontend
 WORKDIR /frontend-build
 
-COPY ./web/package.json ./web/pnpm-lock.yaml ./
+COPY . .
+
+WORKDIR /frontend-build/proto
+
+RUN npm i -g @bufbuild/buf
+
+RUN buf generate
+
+WORKDIR /frontend-build/web
 
 RUN corepack enable && pnpm i --frozen-lockfile
-
-COPY ./web/ .
 
 RUN pnpm build
 
@@ -15,7 +21,7 @@ FROM golang:1.21-alpine AS backend
 WORKDIR /backend-build
 
 COPY . .
-COPY --from=frontend /frontend-build/dist ./server/dist
+COPY --from=frontend /frontend-build/web/dist ./server/dist
 
 RUN CGO_ENABLED=0 go build -o memos ./main.go
 

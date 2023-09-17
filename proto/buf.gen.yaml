@@ -20,7 +20,7 @@ plugins:
       - paths=source_relative
   # Build the TypeScript definitions for the web.
   - plugin: buf.build/community/stephenh-ts-proto:v1.152.1
-    out: ../web/src/types/proto-grpcweb
+    out: ../web/src/types/proto
     # reference: https://github.com/deeplay-io/nice-grpc/blob/master/packages/nice-grpc-web/README.md#using-ts-proto
     opt:
       - env=browser

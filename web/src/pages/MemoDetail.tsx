@@ -7,7 +7,7 @@ import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
 import { useMemoStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
-import { User } from "@/types/proto-grpcweb/api/v2/user_service";
+import { User } from "@/types/proto/api/v2/user_service";
 
 const MemoDetail = () => {
   const params = useParams();

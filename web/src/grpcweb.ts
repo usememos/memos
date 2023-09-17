@@ -1,5 +1,5 @@
 import { createChannel, createClientFactory, FetchTransport } from "nice-grpc-web";
-import { UserServiceDefinition } from "./types/proto-grpcweb/api/v2/user_service";
+import { UserServiceDefinition } from "./types/proto/api/v2/user_service";
 
 const address = import.meta.env.MODE === "development" ? "http://localhost:8081" : window.location.origin;
 

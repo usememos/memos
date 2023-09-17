@@ -6,7 +6,7 @@ import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
 import ResourceIcon from "@/components/ResourceIcon";
 import useLoading from "@/hooks/useLoading";
-import { ListResourcesResponse, Resource } from "@/types/proto-grpcweb/api/v2/resource_service";
+import { ListResourcesResponse, Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 
 const fetchAllResources = async () => {
