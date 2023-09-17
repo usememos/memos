@@ -9,6 +9,7 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/require"
+
 	apiv1 "github.com/usememos/memos/api/v1"
 )
 

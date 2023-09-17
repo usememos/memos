@@ -20,11 +20,12 @@ import (
 	"github.com/disintegration/imaging"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
+
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/plugin/storage/s3"
 	"github.com/usememos/memos/store"
-	"go.uber.org/zap"
 )
 
 type Resource struct {
@@ -606,14 +607,14 @@ func convertResourceFromStore(resource *store.Resource) *Resource {
 func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resource, r io.Reader) error {
 	systemSettingStorageServiceID, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
 	if err != nil {
-		return fmt.Errorf("Failed to find SystemSettingStorageServiceIDName: %s", err)
+		return errors.Errorf("Failed to find SystemSettingStorageServiceIDName: %s", err)
 	}
 
 	storageServiceID := LocalStorage
 	if systemSettingStorageServiceID != nil {
 		err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
 		if err != nil {
-			return fmt.Errorf("Failed to unmarshal storage service id: %s", err)
+			return errors.Errorf("Failed to unmarshal storage service id: %s", err)
 		}
 	}
 
@@ -621,7 +622,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 	if storageServiceID == DatabaseStorage {
 		fileBytes, err := io.ReadAll(r)
 		if err != nil {
-			return fmt.Errorf("Failed to read file: %s", err)
+			return errors.Errorf("Failed to read file: %s", err)
 		}
 		create.Blob = fileBytes
 		return nil
@@ -629,13 +630,13 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		// `LocalStorage` means save blob into local disk
 		systemSettingLocalStoragePath, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingLocalStoragePathName.String()})
 		if err != nil {
-			return fmt.Errorf("Failed to find SystemSettingLocalStoragePathName: %s", err)
+			return errors.Errorf("Failed to find SystemSettingLocalStoragePathName: %s", err)
 		}
 		localStoragePath := "assets/{timestamp}_{filename}"
 		if systemSettingLocalStoragePath != nil && systemSettingLocalStoragePath.Value != "" {
 			err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
 			if err != nil {
-				return fmt.Errorf("Failed to unmarshal SystemSettingLocalStoragePathName: %s", err)
+				return errors.Errorf("Failed to unmarshal SystemSettingLocalStoragePathName: %s", err)
 			}
 		}
 		filePath := filepath.FromSlash(localStoragePath)
@@ -646,16 +647,16 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 
 		dir := filepath.Dir(filePath)
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
-			return fmt.Errorf("Failed to create directory: %s", err)
+			return errors.Errorf("Failed to create directory: %s", err)
 		}
 		dst, err := os.Create(filePath)
 		if err != nil {
-			return fmt.Errorf("Failed to create file: %s", err)
+			return errors.Errorf("Failed to create file: %s", err)
 		}
 		defer dst.Close()
 		_, err = io.Copy(dst, r)
 		if err != nil {
-			return fmt.Errorf("Failed to copy file: %s", err)
+			return errors.Errorf("Failed to copy file: %s", err)
 		}
 
 		create.InternalPath = filePath
@@ -665,18 +666,18 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 	// Others: store blob into external service, such as S3
 	storage, err := s.GetStorage(ctx, &store.FindStorage{ID: &storageServiceID})
 	if err != nil {
-		return fmt.Errorf("Failed to find StorageServiceID: %s", err)
+		return errors.Errorf("Failed to find StorageServiceID: %s", err)
 	}
 	if storage == nil {
-		return fmt.Errorf("Storage %d not found", storageServiceID)
+		return errors.Errorf("Storage %d not found", storageServiceID)
 	}
 	storageMessage, err := ConvertStorageFromStore(storage)
 	if err != nil {
-		return fmt.Errorf("Failed to ConvertStorageFromStore: %s", err)
+		return errors.Errorf("Failed to ConvertStorageFromStore: %s", err)
 	}
 
 	if storageMessage.Type != StorageS3 {
-		return fmt.Errorf("Unsupported storage type: %s", storageMessage.Type)
+		return errors.Errorf("Unsupported storage type: %s", storageMessage.Type)
 	}
 
 	s3Config := storageMessage.Config.S3Config
@@ -690,7 +691,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		URLSuffix: s3Config.URLSuffix,
 	})
 	if err != nil {
-		return fmt.Errorf("Failed to create s3 client: %s", err)
+		return errors.Errorf("Failed to create s3 client: %s", err)
 	}
 
 	filePath := s3Config.Path
@@ -701,7 +702,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 
 	link, err := s3Client.UploadFile(ctx, filePath, create.Type, r)
 	if err != nil {
-		return fmt.Errorf("Failed to upload via s3 client: %s", err)
+		return errors.Errorf("Failed to upload via s3 client: %s", err)
 	}
 
 	create.ExternalLink = link

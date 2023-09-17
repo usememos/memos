@@ -6,10 +6,11 @@ import (
 	"strconv"
 	"time"
 
+	"go.uber.org/zap"
+
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/store"
-	"go.uber.org/zap"
 )
 
 type BackupRunner struct {

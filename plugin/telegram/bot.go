@@ -7,8 +7,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/usememos/memos/common/log"
 	"go.uber.org/zap"
+
+	"github.com/usememos/memos/common/log"
 )
 
 type Handler interface {

@@ -3,8 +3,9 @@ package telegram
 import (
 	"path"
 
-	"github.com/usememos/memos/common/log"
 	"go.uber.org/zap"
+
+	"github.com/usememos/memos/common/log"
 )
 
 type Attachment struct {

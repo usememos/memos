@@ -6,8 +6,9 @@ import (
 	"errors"
 	"strings"
 
-	storepb "github.com/usememos/memos/proto/gen/store"
 	"google.golang.org/protobuf/encoding/protojson"
+
+	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 type UserSetting struct {

@@ -1,7 +1,7 @@
 package getter
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -29,7 +29,7 @@ func GetImage(urlStr string) (*Image, error) {
 		return nil, err
 	}
 	if !strings.HasPrefix(mediatype, "image/") {
-		return nil, fmt.Errorf("Wrong image mediatype")
+		return nil, errors.New("Wrong image mediatype")
 	}
 
 	bodyBytes, err := io.ReadAll(response.Body)

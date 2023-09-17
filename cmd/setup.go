@@ -2,15 +2,16 @@ package cmd
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"golang.org/x/crypto/bcrypt"
+
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
-	"golang.org/x/crypto/bcrypt"
 )
 
 var (
@@ -76,7 +77,7 @@ func (s setupService) Setup(ctx context.Context, hostUsername, hostPassword stri
 	}
 
 	if err := s.createUser(ctx, hostUsername, hostPassword); err != nil {
-		return fmt.Errorf("create user: %w", err)
+		return errors.Wrap(err, "create user")
 	}
 	return nil
 }
@@ -85,7 +86,7 @@ func (s setupService) makeSureHostUserNotExists(ctx context.Context) error {
 	hostUserType := store.RoleHost
 	existedHostUsers, err := s.store.ListUsers(ctx, &store.FindUser{Role: &hostUserType})
 	if err != nil {
-		return fmt.Errorf("find user list: %w", err)
+		return errors.Wrap(err, "find user list")
 	}
 
 	if len(existedHostUsers) != 0 {
@@ -104,37 +105,37 @@ func (s setupService) createUser(ctx context.Context, hostUsername, hostPassword
 	}
 
 	if len(userCreate.Username) < 3 {
-		return fmt.Errorf("username is too short, minimum length is 3")
+		return errors.New("username is too short, minimum length is 3")
 	}
 	if len(userCreate.Username) > 32 {
-		return fmt.Errorf("username is too long, maximum length is 32")
+		return errors.New("username is too long, maximum length is 32")
 	}
 	if len(hostPassword) < 3 {
-		return fmt.Errorf("password is too short, minimum length is 3")
+		return errors.New("password is too short, minimum length is 3")
 	}
 	if len(hostPassword) > 512 {
-		return fmt.Errorf("password is too long, maximum length is 512")
+		return errors.New("password is too long, maximum length is 512")
 	}
 	if len(userCreate.Nickname) > 64 {
-		return fmt.Errorf("nickname is too long, maximum length is 64")
+		return errors.New("nickname is too long, maximum length is 64")
 	}
 	if userCreate.Email != "" {
 		if len(userCreate.Email) > 256 {
-			return fmt.Errorf("email is too long, maximum length is 256")
+			return errors.New("email is too long, maximum length is 256")
 		}
 		if !util.ValidateEmail(userCreate.Email) {
-			return fmt.Errorf("invalid email format")
+			return errors.New("invalid email format")
 		}
 	}
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(hostPassword), bcrypt.DefaultCost)
 	if err != nil {
-		return fmt.Errorf("failed to hash password: %w", err)
+		return errors.Wrap(err, "failed to hash password")
 	}
 
 	userCreate.PasswordHash = string(passwordHash)
 	if _, err := s.store.CreateUser(ctx, userCreate); err != nil {
-		return fmt.Errorf("failed to create user: %w", err)
+		return errors.Wrap(err, "failed to create user")
 	}
 
 	return nil

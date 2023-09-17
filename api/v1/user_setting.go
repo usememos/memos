@@ -2,12 +2,13 @@ package v1
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
-	"github.com/usememos/memos/store"
+	"github.com/pkg/errors"
 	"golang.org/x/exp/slices"
+
+	"github.com/usememos/memos/store"
 )
 
 type UserSettingKey string
@@ -127,37 +128,37 @@ func (upsert UpsertUserSettingRequest) Validate() error {
 		localeValue := "en"
 		err := json.Unmarshal([]byte(upsert.Value), &localeValue)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting locale value")
+			return errors.Errorf("failed to unmarshal user setting locale value")
 		}
 		if !slices.Contains(UserSettingLocaleValue, localeValue) {
-			return fmt.Errorf("invalid user setting locale value")
+			return errors.Errorf("invalid user setting locale value")
 		}
 	} else if upsert.Key == UserSettingAppearanceKey {
 		appearanceValue := "system"
 		err := json.Unmarshal([]byte(upsert.Value), &appearanceValue)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting appearance value")
+			return errors.Errorf("failed to unmarshal user setting appearance value")
 		}
 		if !slices.Contains(UserSettingAppearanceValue, appearanceValue) {
-			return fmt.Errorf("invalid user setting appearance value")
+			return errors.Errorf("invalid user setting appearance value")
 		}
 	} else if upsert.Key == UserSettingMemoVisibilityKey {
 		memoVisibilityValue := Private
 		err := json.Unmarshal([]byte(upsert.Value), &memoVisibilityValue)
 		if err != nil {
-			return fmt.Errorf("failed to unmarshal user setting memo visibility value")
+			return errors.Errorf("failed to unmarshal user setting memo visibility value")
 		}
 		if !slices.Contains(UserSettingMemoVisibilityValue, memoVisibilityValue) {
-			return fmt.Errorf("invalid user setting memo visibility value")
+			return errors.Errorf("invalid user setting memo visibility value")
 		}
 	} else if upsert.Key == UserSettingTelegramUserIDKey {
 		var key string
 		err := json.Unmarshal([]byte(upsert.Value), &key)
 		if err != nil {
-			return fmt.Errorf("invalid user setting telegram user id value")
+			return errors.Errorf("invalid user setting telegram user id value")
 		}
 	} else {
-		return fmt.Errorf("invalid user setting key")
+		return errors.Errorf("invalid user setting key")
 	}
 
 	return nil

@@ -7,7 +7,9 @@ import (
 	"runtime"
 	"strings"
 
+	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+
 	"github.com/usememos/memos/server/version"
 )
 
@@ -46,7 +48,7 @@ func checkDSN(dataDir string) (string, error) {
 	dataDir = strings.TrimRight(dataDir, "\\/")
 
 	if _, err := os.Stat(dataDir); err != nil {
-		return "", fmt.Errorf("unable to access data folder %s, err %w", dataDir, err)
+		return "", errors.Wrapf(err, "unable to access data folder %s", dataDir)
 	}
 
 	return dataDir, nil

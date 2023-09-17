@@ -9,8 +9,9 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/store"
 	"golang.org/x/exp/slices"
+
+	"github.com/usememos/memos/store"
 )
 
 type Tag struct {

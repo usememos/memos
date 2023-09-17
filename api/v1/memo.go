@@ -10,10 +10,11 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
+
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
-	"go.uber.org/zap"
 )
 
 // Visibility is the type of a visibility.
@@ -336,17 +337,17 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 		}
 	}
 
-	memo, err = s.Store.GetMemo(ctx, &store.FindMemo{
+	composedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 		ID: &memo.ID,
 	})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo").SetInternal(err)
 	}
-	if memo == nil {
+	if composedMemo == nil {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Memo not found: %d", memo.ID))
 	}
 
-	memoResponse, err := s.convertMemoFromStore(ctx, memo)
+	memoResponse, err := s.convertMemoFromStore(ctx, composedMemo)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
 	}

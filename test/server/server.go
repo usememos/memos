@@ -11,15 +11,15 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	// sqlite driver.
+	_ "modernc.org/sqlite"
+
 	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 	"github.com/usememos/memos/test"
-
-	// sqlite driver.
-	_ "modernc.org/sqlite"
 )
 
 type TestingServer struct {

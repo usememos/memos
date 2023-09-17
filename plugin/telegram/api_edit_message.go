@@ -3,9 +3,10 @@ package telegram
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"strconv"
+
+	"github.com/pkg/errors"
 )
 
 // EditMessage make an editMessageText api request.
@@ -23,7 +24,7 @@ func (b *Bot) EditMessage(ctx context.Context, chatID, messageID int64, text str
 		markup.InlineKeyboard = inlineKeyboards
 		data, err := json.Marshal(markup)
 		if err != nil {
-			return nil, fmt.Errorf("fail to encode inlineKeyboard: %s", err)
+			return nil, errors.Wrap(err, "fail to encode inlineKeyboard")
 		}
 		formData.Set("reply_markup", string(data))
 	}

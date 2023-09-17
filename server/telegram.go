@@ -9,6 +9,7 @@ import (
 	"unicode/utf16"
 
 	"github.com/pkg/errors"
+
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/store"
@@ -34,7 +35,7 @@ const (
 func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, message telegram.Message, attachments []telegram.Attachment) error {
 	reply, err := bot.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
 	if err != nil {
-		return fmt.Errorf("Failed to SendReplyMessage: %s", err)
+		return errors.Wrap(err, "Failed to SendReplyMessage")
 	}
 
 	var creatorID int32

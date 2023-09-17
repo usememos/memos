@@ -1,5 +1,6 @@
 linters:
   enable:
+    - errcheck
     - goimports
     - revive
     - govet
@@ -10,17 +11,30 @@ linters:
     - rowserrcheck
     - nilerr
     - godot
+    - forbidigo
+    - mirror
+    - bodyclose
 
 issues:
+  include:
+    # https://golangci-lint.run/usage/configuration/#command-line-options
   exclude:
     - Rollback
+    - logger.Sync
+    - pgInstance.Stop
     - fmt.Printf
-    - fmt.Print
+    - Enter(.*)_(.*)
+    - Exit(.*)_(.*)
 
 linters-settings:
+  goimports:
+    # Put imports beginning with prefix after 3rd-party packages.
+    local-prefixes: github.com/usememos/memos
   revive:
+    # Default to run all linters so that new rules in the future could automatically be added to the static check.
     enable-all-rules: true
     rules:
+      # The following rules are too strict and make coding harder. We do not enable them for now.
       - name: file-header
         disabled: true
       - name: line-length-limit
@@ -56,9 +70,14 @@ linters-settings:
       - ifElseChain
   govet:
     settings:
-      printf:
-        funcs:
+      printf: # The name of the analyzer, run `go tool vet help` to see the list of all analyzers
+        funcs: # Run `go tool vet help printf` to see the full configuration of `printf`.
           - common.Errorf
+    enable-all: true
+    disable:
+      - fieldalignment
+      - shadow
   forbidigo:
     forbid:
       - 'fmt\.Errorf(# Please use errors\.Wrap\|Wrapf\|Errorf instead)?'
+      - 'ioutil\.ReadDir(# Please use os\.ReadDir)?'

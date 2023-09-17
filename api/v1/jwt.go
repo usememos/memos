@@ -8,6 +8,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/api/auth"
 	"github.com/usememos/memos/common/util"
 	storepb "github.com/usememos/memos/proto/gen/store"

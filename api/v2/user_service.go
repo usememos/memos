@@ -8,15 +8,16 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
-	"github.com/usememos/memos/api/auth"
-	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
-	storepb "github.com/usememos/memos/proto/gen/store"
-	"github.com/usememos/memos/store"
 	"golang.org/x/crypto/bcrypt"
 	"golang.org/x/exp/slices"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
+
+	"github.com/usememos/memos/api/auth"
+	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/store"
 )
 
 type UserService struct {

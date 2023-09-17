@@ -2,6 +2,7 @@ package s3
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"strings"
@@ -80,7 +81,7 @@ func (client *Client) UploadFile(ctx context.Context, filename string, fileType 
 		link = fmt.Sprintf("%s/%s%s", client.Config.URLPrefix, filename, client.Config.URLSuffix)
 	}
 	if link == "" {
-		return "", fmt.Errorf("failed to get file link")
+		return "", errors.New("failed to get file link")
 	}
 	return link, nil
 }

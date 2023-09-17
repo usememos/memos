@@ -5,11 +5,12 @@ import (
 
 	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
-	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
-	"github.com/usememos/memos/store"
 	v1alpha1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+
+	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	"github.com/usememos/memos/store"
 )
 
 type MemoService struct {

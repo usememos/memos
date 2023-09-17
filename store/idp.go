@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 type IdentityProviderType string
@@ -70,7 +72,7 @@ func (s *Store) CreateIdentityProvider(ctx context.Context, create *IdentityProv
 		}
 		configBytes = bytes
 	} else {
-		return nil, fmt.Errorf("unsupported idp type %s", string(create.Type))
+		return nil, errors.Errorf("unsupported idp type %s", string(create.Type))
 	}
 
 	stmt := `
@@ -146,7 +148,7 @@ func (s *Store) ListIdentityProviders(ctx context.Context, find *FindIdentityPro
 				OAuth2Config: oauth2Config,
 			}
 		} else {
-			return nil, fmt.Errorf("unsupported idp type %s", string(identityProvider.Type))
+			return nil, errors.Errorf("unsupported idp type %s", string(identityProvider.Type))
 		}
 		identityProviders = append(identityProviders, &identityProvider)
 	}
@@ -198,7 +200,7 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 			}
 			configBytes = bytes
 		} else {
-			return nil, fmt.Errorf("unsupported idp type %s", string(update.Type))
+			return nil, errors.Errorf("unsupported idp type %s", string(update.Type))
 		}
 		set, args = append(set, "config = ?"), append(args, string(configBytes))
 	}
@@ -231,7 +233,7 @@ func (s *Store) UpdateIdentityProvider(ctx context.Context, update *UpdateIdenti
 			OAuth2Config: oauth2Config,
 		}
 	} else {
-		return nil, fmt.Errorf("unsupported idp type %s", string(identityProvider.Type))
+		return nil, errors.Errorf("unsupported idp type %s", string(identityProvider.Type))
 	}
 
 	s.idpCache.Store(identityProvider.ID, identityProvider)

@@ -12,9 +12,11 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
+	"github.com/yuin/goldmark"
+
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
-	"github.com/yuin/goldmark"
 )
 
 const maxRSSItemCount = 100
@@ -129,7 +131,7 @@ func (s *APIV1Service) generateRSSFromMemoList(ctx context.Context, memoList []*
 				return "", err
 			}
 			if resource == nil {
-				return "", fmt.Errorf("Resource not found: %d", resourceID)
+				return "", errors.Errorf("Resource not found: %d", resourceID)
 			}
 			enclosure := feeds.Enclosure{}
 			if resource.ExternalLink != "" {

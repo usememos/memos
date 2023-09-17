@@ -5,10 +5,11 @@ import (
 	"net/http"
 
 	"github.com/labstack/echo/v4"
+	"go.uber.org/zap"
+
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
-	"go.uber.org/zap"
 )
 
 type SystemStatus struct {

@@ -7,12 +7,13 @@ import (
 	grpcRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/labstack/echo/v4"
-	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
-	"github.com/usememos/memos/server/profile"
-	"github.com/usememos/memos/store"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
+
+	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	"github.com/usememos/memos/server/profile"
+	"github.com/usememos/memos/store"
 )
 
 type APIV2Service struct {

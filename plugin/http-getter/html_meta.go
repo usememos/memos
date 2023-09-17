@@ -1,7 +1,7 @@
 package getter
 
 import (
-	"fmt"
+	"errors"
 	"io"
 	"net/http"
 	"net/url"
@@ -32,7 +32,7 @@ func GetHTMLMeta(urlStr string) (*HTMLMeta, error) {
 		return nil, err
 	}
 	if mediatype != "text/html" {
-		return nil, fmt.Errorf("Wrong website mediatype")
+		return nil, errors.New("Wrong website mediatype")
 	}
 
 	htmlMeta := extractHTMLMeta(response.Body)

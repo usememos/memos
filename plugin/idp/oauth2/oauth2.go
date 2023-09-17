@@ -9,9 +9,10 @@ import (
 	"net/http"
 
 	"github.com/pkg/errors"
+	"golang.org/x/oauth2"
+
 	"github.com/usememos/memos/plugin/idp"
 	"github.com/usememos/memos/store"
-	"golang.org/x/oauth2"
 )
 
 // IdentityProvider represents an OAuth2 Identity Provider.
@@ -82,6 +83,7 @@ func (p *IdentityProvider) UserInfo(token string) (*idp.IdentityProviderUserInfo
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to read response body")
 	}
+	defer resp.Body.Close()
 
 	var claims map[string]any
 	err = json.Unmarshal(body, &claims)

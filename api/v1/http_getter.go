@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/labstack/echo/v4"
+
 	getter "github.com/usememos/memos/plugin/http-getter"
 )
 

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
 )
@@ -85,7 +86,7 @@ var (
 
 				fmt.Printf("Resource %5d copy %12d bytes from %s\n", res.ID, len(buf), res.InternalPath)
 			}
-			fmt.Println("done")
+			println("done")
 		},
 	}
 )

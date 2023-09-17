@@ -2,6 +2,7 @@ package v1
 
 import (
 	"github.com/labstack/echo/v4"
+
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"

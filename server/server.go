@@ -14,6 +14,8 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
 	echoSwagger "github.com/swaggo/echo-swagger"
+	"go.uber.org/zap"
+
 	apiv1 "github.com/usememos/memos/api/v1"
 	apiv2 "github.com/usememos/memos/api/v2"
 	"github.com/usememos/memos/common/log"
@@ -21,7 +23,6 @@ import (
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/service"
 	"github.com/usememos/memos/store"
-	"go.uber.org/zap"
 )
 
 type Server struct {
@@ -89,7 +90,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	serverID, err := s.getSystemServerID(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to retrieve system server ID: %w", err)
+		return nil, errors.Wrap(err, "failed to retrieve system server ID")
 	}
 	s.ID = serverID
 
@@ -105,7 +106,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	if profile.Mode == "prod" {
 		secret, err = s.getSystemSecretSessionName(ctx)
 		if err != nil {
-			return nil, fmt.Errorf("failed to retrieve system secret session name: %w", err)
+			return nil, errors.Wrap(err, "failed to retrieve system secret session name")
 		}
 	}
 	s.Secret = secret
@@ -117,7 +118,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.apiV2Service = apiv2.NewAPIV2Service(s.Secret, profile, store, s.Profile.Port+1)
 	// Register gRPC gateway as api v2.
 	if err := s.apiV2Service.RegisterGateway(ctx, e); err != nil {
-		return nil, fmt.Errorf("failed to register gRPC gateway: %w", err)
+		return nil, errors.Wrap(err, "failed to register gRPC gateway")
 	}
 
 	return s, nil

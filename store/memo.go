@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/common/util"
 )
 
@@ -244,7 +246,7 @@ func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) 
 			for _, relatedMemoType := range relatedMemoTypeList {
 				relatedMemoTypeList := strings.Split(relatedMemoType, ":")
 				if len(relatedMemoTypeList) != 2 {
-					return nil, fmt.Errorf("invalid relation format")
+					return nil, errors.Errorf("invalid relation format")
 				}
 				relatedMemoID, err := util.ConvertStringToInt32(relatedMemoTypeList[0])
 				if err != nil {

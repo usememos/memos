@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
 

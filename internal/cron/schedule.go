@@ -1,11 +1,11 @@
 package cron
 
 import (
-	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 // Moment represents a parsed single time moment.
@@ -132,7 +132,7 @@ func parseCronSegment(segment string, min int, max int) (map[int]struct{}, error
 				return nil, err
 			}
 			if parsedStep < 1 || parsedStep > max {
-				return nil, fmt.Errorf("invalid segment step boundary - the step must be between 1 and the %d", max)
+				return nil, errors.Errorf("invalid segment step boundary - the step must be between 1 and the %d", max)
 			}
 			step = parsedStep
 		default:
@@ -167,7 +167,7 @@ func parseCronSegment(segment string, min int, max int) (map[int]struct{}, error
 					return nil, err
 				}
 				if parsedMin < min || parsedMin > max {
-					return nil, fmt.Errorf("invalid segment range minimum - must be between %d and %d", min, max)
+					return nil, errors.Errorf("invalid segment range minimum - must be between %d and %d", min, max)
 				}
 				rangeMin = parsedMin
 
@@ -176,7 +176,7 @@ func parseCronSegment(segment string, min int, max int) (map[int]struct{}, error
 					return nil, err
 				}
 				if parsedMax < parsedMin || parsedMax > max {
-					return nil, fmt.Errorf("invalid segment range maximum - must be between %d and %d", rangeMin, max)
+					return nil, errors.Errorf("invalid segment range maximum - must be between %d and %d", rangeMin, max)
 				}
 				rangeMax = parsedMax
 			default:

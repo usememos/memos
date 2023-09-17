@@ -3,11 +3,13 @@ package store
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"sync"
 
-	"github.com/usememos/memos/server/profile"
 	"modernc.org/sqlite"
+
+	"github.com/pkg/errors"
+
+	"github.com/usememos/memos/server/profile"
 )
 
 // Store provides database access to all raw objects.
@@ -35,7 +37,7 @@ func (s *Store) GetDB() *sql.DB {
 func (s *Store) BackupTo(ctx context.Context, filename string) error {
 	conn, err := s.db.Conn(ctx)
 	if err != nil {
-		return fmt.Errorf("fail to get conn %s", err)
+		return errors.Errorf("fail to get conn %s", err)
 	}
 	defer conn.Close()
 
@@ -45,25 +47,25 @@ func (s *Store) BackupTo(ctx context.Context, filename string) error {
 		}
 		backupConn, ok := driverConn.(backuper)
 		if !ok {
-			return fmt.Errorf("db connection is not a sqlite backuper")
+			return errors.Errorf("db connection is not a sqlite backuper")
 		}
 
 		bck, err := backupConn.NewBackup(filename)
 		if err != nil {
-			return fmt.Errorf("fail to create sqlite backup %s", err)
+			return errors.Errorf("fail to create sqlite backup %s", err)
 		}
 
 		for more := true; more; {
 			more, err = bck.Step(-1)
 			if err != nil {
-				return fmt.Errorf("fail to execute sqlite backup %s", err)
+				return errors.Errorf("fail to execute sqlite backup %s", err)
 			}
 		}
 
 		return bck.Finish()
 	})
 	if err != nil {
-		return fmt.Errorf("fail to backup %s", err)
+		return errors.Errorf("fail to backup %s", err)
 	}
 
 	return nil

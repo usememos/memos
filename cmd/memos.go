@@ -10,12 +10,13 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"go.uber.org/zap"
+
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
-	"go.uber.org/zap"
 )
 
 const (
@@ -144,15 +145,15 @@ func initConfig() {
 }
 
 func printGreetings() {
-	fmt.Print(greetingBanner)
+	print(greetingBanner)
 	if len(profile.Addr) == 0 {
 		fmt.Printf("Version %s has been started on port %d\n", profile.Version, profile.Port)
 	} else {
 		fmt.Printf("Version %s has been started on address '%s' and port %d\n", profile.Version, profile.Addr, profile.Port)
 	}
-	fmt.Println("---")
-	fmt.Println("See more in:")
+	println("---")
+	println("See more in:")
 	fmt.Printf("👉Website: %s\n", "https://usememos.com")
 	fmt.Printf("👉GitHub: %s\n", "https://github.com/usememos/memos")
-	fmt.Println("---")
+	println("---")
 }
