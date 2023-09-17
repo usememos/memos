@@ -10,6 +10,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
 
 - [Go](https://golang.org/doc/install)
 - [Air](https://github.com/cosmtrek/air#installation) for backend live reload
+- [Buf](https://buf.build/docs/installation)
 - [Node.js](https://nodejs.org/)
 - [pnpm](https://pnpm.io/installation)
 
@@ -27,7 +28,13 @@ Memos is built with a curated tech stack. It is optimized for developer experien
    air -c scripts/.air.toml
    ```
 
-3. start frontend dev server
+3. generate TypeScript code from protobuf with `buf`
+
+   ```
+   cd proto && buf generate
+   ```
+
+4. start frontend dev server
 
    ```bash
    cd web && pnpm i && pnpm dev
