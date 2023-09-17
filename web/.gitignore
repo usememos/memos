@@ -3,9 +3,4 @@ node_modules
 dist
 dist-ssr
 *.local
-
-/test-results/
-/playwright-report/
-/playwright/.cache/
-/playwright-screenshot/
-
+src/types/proto

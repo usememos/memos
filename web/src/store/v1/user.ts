@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { userServiceClient } from "@/grpcweb";
-import { User } from "@/types/proto-grpcweb/api/v2/user_service";
+import { User } from "@/types/proto/api/v2/user_service";
 
 interface UserV1Store {
   userMapByUsername: Record<string, User>;
