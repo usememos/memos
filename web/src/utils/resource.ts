@@ -1,4 +1,4 @@
-import { Resource } from "@/types/proto/api/v2/resource_service_pb";
+import { Resource } from "@/types/proto-grpcweb/api/v2/resource_service";
 
 export const getResourceUrl = (resource: Resource, withOrigin = true) => {
   if (resource.externalLink) {

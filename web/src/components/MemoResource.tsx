@@ -1,4 +1,4 @@
-import { Resource } from "@/types/proto/api/v2/resource_service_pb";
+import { Resource } from "@/types/proto-grpcweb/api/v2/resource_service";
 import { getResourceUrl } from "@/utils/resource";
 import ResourceIcon from "./ResourceIcon";
 

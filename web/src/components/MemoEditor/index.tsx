@@ -8,7 +8,7 @@ import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { clearContentQueryParam } from "@/helpers/utils";
 import { getMatchedNodes } from "@/labs/marked";
 import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
-import { Resource } from "@/types/proto/api/v2/resource_service_pb";
+import { Resource } from "@/types/proto-grpcweb/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateResourceDialog from "../CreateResourceDialog";
 import Icon from "../Icon";

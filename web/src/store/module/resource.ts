@@ -1,5 +1,5 @@
 import * as api from "@/helpers/api";
-import { Resource } from "@/types/proto/api/v2/resource_service_pb";
+import { Resource } from "@/types/proto-grpcweb/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import store, { useAppSelector } from "../";
 import { deleteResource, patchResource, setResources } from "../reducer/resource";

@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import React from "react";
-import { Resource } from "@/types/proto/api/v2/resource_service_pb";
+import { Resource } from "@/types/proto-grpcweb/api/v2/resource_service";
 import { getResourceType, getResourceUrl } from "@/utils/resource";
 import Icon from "./Icon";
 import showPreviewImageDialog from "./PreviewImageDialog";
