@@ -505,11 +505,11 @@ func (s *APIV1Service) GetMemoStats(c echo.Context) error {
 	displayTsList := []int64{}
 	if memoDisplayWithUpdatedTs {
 		for _, memo := range list {
-			displayTsList = append(displayTsList, memo.CreatedTs)
+			displayTsList = append(displayTsList, memo.UpdatedTs)
 		}
 	} else {
 		for _, memo := range list {
-			displayTsList = append(displayTsList, memo.UpdatedTs)
+			displayTsList = append(displayTsList, memo.CreatedTs)
 		}
 	}
 	return c.JSON(http.StatusOK, displayTsList)
