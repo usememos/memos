@@ -76,20 +76,18 @@ const Resources = () => {
                         <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                           {resources.map((resource) => {
                             return (
-                              <div key={resource.id} className="w-auto h-auto flex flex-col justify-start items-start">
+                              <div key={resource.id} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
                                 <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded cursor-pointer hover:shadow hover:opacity-80">
                                   <ResourceIcon resource={resource} strokeWidth={0.5} />
                                 </div>
-                                <div className="w-full flex flex-row justify-between items-center mt-1 px-1">
-                                  <div>
-                                    <p className="text-xs text-gray-400">{resource.type}</p>
-                                  </div>
+                                <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
+                                  <p className="text-xs shrink text-gray-400 truncate">{resource.filename}</p>
                                   <Link
-                                    className="flex flex-row justify-start items-center text-gray-400 hover:underline hover:text-blue-600"
+                                    className="shrink-0 text-xs ml-1 text-gray-400 hover:underline hover:text-blue-600"
                                     to={`/m/${resource.relatedMemoId}`}
                                     target="_blank"
                                   >
-                                    <span className="text-xs ml-0.5">#{resource.relatedMemoId}</span>
+                                    #{resource.relatedMemoId}
                                   </Link>
                                 </div>
                               </div>
