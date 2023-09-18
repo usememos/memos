@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/labstack/echo/v4"
@@ -283,7 +284,7 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Failed to find users").SetInternal(err)
 	}
-	if !usernameMatcher.MatchString(signup.Username) {
+	if !usernameMatcher.MatchString(strings.ToLower(signup.Username)) {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid username %s", signup.Username)).SetInternal(err)
 	}
 

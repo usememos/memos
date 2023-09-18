@@ -4,6 +4,7 @@ import (
 	"context"
 	"net/http"
 	"regexp"
+	"strings"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -77,7 +78,7 @@ func (s *UserService) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUse
 	}
 	for _, path := range request.UpdateMask {
 		if path == "username" {
-			if !usernameMatcher.MatchString(request.User.Username) {
+			if !usernameMatcher.MatchString(strings.ToLower(request.User.Username)) {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 			}
 			update.Username = &request.User.Username
