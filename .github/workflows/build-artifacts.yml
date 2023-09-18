@@ -4,7 +4,7 @@ on:
   push:
     branches:
       # Run on pushing branches like `release/1.0.0`
-      - "release/*.*.*"
+      - "release/0.15.0"
 
 jobs:
   build-artifacts:
@@ -12,7 +12,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        goarch: [amd64, arm64]
+        goarch: [amd64, arm64, x86_64]
         include:
           - os: windows-latest
             goos: windows
