@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/usememos/memos/api/auth"
+	"github.com/usememos/memos/common/util"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
@@ -103,18 +104,22 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessToken str
 		)
 	}
 
-	username := claims.Name
+	// We either have a valid access token or we will attempt to generate new access token.
+	userID, err := util.ConvertStringToInt32(claims.Subject)
+	if err != nil {
+		return "", errors.Wrap(err, "malformed ID in the token")
+	}
 	user, err := in.Store.GetUser(ctx, &store.FindUser{
-		Username: &username,
+		ID: &userID,
 	})
 	if err != nil {
 		return "", errors.Wrap(err, "failed to get user")
 	}
 	if user == nil {
-		return "", errors.Errorf("user %q not exists in the access token", username)
+		return "", errors.Errorf("user %q not exists", userID)
 	}
 	if user.RowStatus == store.Archived {
-		return "", errors.Errorf("user %q is archived", username)
+		return "", errors.Errorf("user %q is archived", userID)
 	}
 
 	accessTokens, err := in.Store.GetUserAccessTokens(ctx, user.ID)
@@ -125,7 +130,7 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessToken str
 		return "", status.Errorf(codes.Unauthenticated, "invalid access token")
 	}
 
-	return username, nil
+	return user.Username, nil
 }
 
 func getTokenFromMetadata(md metadata.MD) (string, error) {
