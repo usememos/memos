@@ -318,12 +318,10 @@ const MemoEditor = (props: Props) => {
     }
   };
 
-  const handleCheckBoxBtnClick = () => {
+  const handleCheckBoxSingleLine = (currentLineNumber: number): number => {
     if (!editorRef.current) {
-      return;
+      return 0;
     }
-    const currentPosition = editorRef.current?.getCursorPosition();
-    const currentLineNumber = editorRef.current?.getCursorLineNumber();
     const currentLine = editorRef.current?.getLine(currentLineNumber);
     let newLine = "";
     let cursorChange = 0;
@@ -339,7 +337,27 @@ const MemoEditor = (props: Props) => {
       cursorChange = 6;
     }
     editorRef.current?.setLine(currentLineNumber, newLine);
-    editorRef.current.setCursorPosition(currentPosition + cursorChange);
+    return cursorChange;
+  };
+
+  const handleCheckBoxBtnClick = () => {
+    if (!editorRef.current) {
+      return;
+    }
+    const selectedContent = editorRef.current?.getSelectedContent();
+    if (selectedContent.length > 0) {
+      // multi lines
+      const selectedLineNumbers = editorRef.current?.getSelectedLineNumbers();
+      for (let i = selectedLineNumbers[0]; i <= selectedLineNumbers[1]; i++) {
+        handleCheckBoxSingleLine(i);
+      }
+    } else {
+      // single line
+      const currentPosition = editorRef.current?.getCursorPosition();
+      const currentLineNumber = editorRef.current?.getCursorLineNumber();
+      const cursorChange = handleCheckBoxSingleLine(currentLineNumber);
+      editorRef.current.setCursorPosition(currentPosition + cursorChange);
+    }
     editorRef.current?.scrollToCursor();
   };
 
