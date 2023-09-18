@@ -797,7 +797,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 	} else {
 		memoResponse.CreatorName = user.Username
 	}
-
 	memoResponse.CreatorUsername = user.Username
 
 	// Compose display ts.
@@ -822,10 +821,7 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		resource, err := s.Store.GetResource(ctx, &store.FindResource{
 			ID: &resourceID,
 		})
-		if err != nil {
-			return nil, err
-		}
-		if resource != nil {
+		if resource != nil && err == nil {
 			resourceList = append(resourceList, convertResourceFromStore(resource))
 		}
 	}
