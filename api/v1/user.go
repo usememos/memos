@@ -140,6 +140,9 @@ func (s *APIV1Service) CreateUser(c echo.Context) error {
 	if err := userCreate.Validate(); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format").SetInternal(err)
 	}
+	if !usernameMatcher.MatchString(userCreate.Username) {
+		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid username %s", userCreate.Username)).SetInternal(err)
+	}
 	// Disallow host user to be created.
 	if userCreate.Role == RoleHost {
 		return echo.NewHTTPError(http.StatusForbidden, "Could not create host user")
@@ -362,6 +365,9 @@ func (s *APIV1Service) UpdateUser(c echo.Context) error {
 		userUpdate.RowStatus = &rowStatus
 	}
 	if request.Username != nil {
+		if !usernameMatcher.MatchString(*request.Username) {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid username %s", *request.Username)).SetInternal(err)
+		}
 		userUpdate.Username = request.Username
 	}
 	if request.Email != nil {

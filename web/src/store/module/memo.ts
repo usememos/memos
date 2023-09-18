@@ -4,7 +4,6 @@ import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import store, { useAppSelector } from "../";
 import { createMemo, deleteMemo, patchMemo, upsertMemos } from "../reducer/memo";
 import { useMemoCacheStore } from "../v1";
-import { getUsernameFromPath, useUserStore } from "./";
 
 export const convertResponseModelMemo = (memo: Memo): Memo => {
   return {
@@ -17,7 +16,6 @@ export const convertResponseModelMemo = (memo: Memo): Memo => {
 
 export const useMemoStore = () => {
   const state = useAppSelector((state) => state.memo);
-  const userStore = useUserStore();
   const memoCacheStore = useMemoCacheStore();
 
   const fetchMemoById = async (memoId: MemoId) => {
@@ -33,14 +31,14 @@ export const useMemoStore = () => {
     getState: () => {
       return store.getState().memo;
     },
-    fetchMemos: async (limit = DEFAULT_MEMO_LIMIT, offset = 0) => {
+    fetchMemos: async (username = "", limit = DEFAULT_MEMO_LIMIT, offset = 0) => {
       const memoFind: MemoFind = {
         rowStatus: "NORMAL",
         limit,
         offset,
       };
-      if (userStore.isVisitorMode()) {
-        memoFind.creatorUsername = getUsernameFromPath();
+      if (username) {
+        memoFind.creatorUsername = username;
       }
       const { data } = await api.getMemoList(memoFind);
       const fetchedMemos = data.map((m) => convertResponseModelMemo(m));

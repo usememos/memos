@@ -27,7 +27,7 @@ export default defineConfig({
         target: devProxyServer,
         xfwd: true,
       },
-      "/explore/rss.xml": {
+      "^/explore/rss.xml": {
         target: devProxyServer,
         xfwd: true,
       },

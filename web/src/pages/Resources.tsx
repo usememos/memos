@@ -1,17 +1,17 @@
-import axios from "axios";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
 import ResourceIcon from "@/components/ResourceIcon";
+import { resourceServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
-import { ListResourcesResponse, Resource } from "@/types/proto/api/v2/resource_service";
+import { Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 
 const fetchAllResources = async () => {
-  const { data } = await axios.get<ListResourcesResponse>("/api/v2/resources");
-  return data.resources;
+  const { resources } = await resourceServiceClient.listResources({});
+  return resources;
 };
 
 function groupResourcesByDate(resources: Resource[]) {

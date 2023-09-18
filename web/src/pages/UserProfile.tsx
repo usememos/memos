@@ -1,26 +1,30 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { useParams } from "react-router-dom";
 import FloatingNavButton from "@/components/FloatingNavButton";
 import MemoFilter from "@/components/MemoFilter";
 import MemoList from "@/components/MemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
-import { useUserStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
 import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = () => {
   const t = useTranslate();
-  const userStore = useUserStore();
+  const params = useParams();
   const userV1Store = useUserV1Store();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
 
   useEffect(() => {
-    const currentUsername = userStore.getCurrentUsername();
+    const username = params.username;
+    if (!username) {
+      throw new Error("username is required");
+    }
+
     userV1Store
-      .getOrFetchUserByUsername(currentUsername)
+      .getOrFetchUserByUsername(username)
       .then((user) => {
         setUser(user);
         loadingState.setFinish();
@@ -29,7 +33,7 @@ const UserProfile = () => {
         console.error(error);
         toast.error(t("message.user-not-found"));
       });
-  }, [userStore.getCurrentUsername()]);
+  }, [params.username]);
 
   return (
     <>

@@ -1,10 +1,10 @@
 import { Button, IconButton } from "@mui/joy";
-import axios from "axios";
 import copy from "copy-to-clipboard";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { ListUserAccessTokensResponse, UserAccessToken } from "@/types/proto/api/v2/user_service";
+import { UserAccessToken } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateAccessTokenDialog from "../CreateAccessTokenDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
@@ -12,8 +12,8 @@ import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 
 const listAccessTokens = async (username: string) => {
-  const { data } = await axios.get<ListUserAccessTokensResponse>(`/api/v2/users/${username}/access_tokens`);
-  return data.accessTokens;
+  const { accessTokens } = await userServiceClient.listUserAccessTokens({ username: username });
+  return accessTokens;
 };
 
 const AccessTokenSection = () => {
@@ -44,7 +44,7 @@ const AccessTokenSection = () => {
       style: "danger",
       dialogName: "delete-access-token-dialog",
       onConfirm: async () => {
-        await axios.delete(`/api/v2/users/${currentUser.id}/access_tokens/${accessToken}`);
+        await userServiceClient.deleteUserAccessToken({ username: currentUser.username, accessToken: accessToken });
         setUserAccessTokens(userAccessTokens.filter((token) => token.accessToken !== accessToken));
       },
     });

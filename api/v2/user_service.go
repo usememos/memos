@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"net/http"
+	"regexp"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -18,6 +19,10 @@ import (
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
+)
+
+var (
+	usernameMatcher = regexp.MustCompile("^[a-z]([a-z0-9-]{2,30}[a-z0-9])?$")
 )
 
 type UserService struct {
@@ -72,6 +77,9 @@ func (s *UserService) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUse
 	}
 	for _, path := range request.UpdateMask {
 		if path == "username" {
+			if !usernameMatcher.MatchString(request.User.Username) {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
+			}
 			update.Username = &request.User.Username
 		} else if path == "nickname" {
 			update.Nickname = &request.User.Nickname

@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import { UNKNOWN_ID } from "@/helpers/consts";
 import { getRelativeTimeString } from "@/helpers/datetime";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
@@ -28,16 +29,17 @@ interface Props {
 
 const Memo: React.FC<Props> = (props: Props) => {
   const { memo, lazyRendering } = props;
-  const { i18n } = useTranslation();
   const t = useTranslate();
+  const { i18n } = useTranslation();
   const filterStore = useFilterStore();
   const userStore = useUserStore();
   const memoStore = useMemoStore();
   const userV1Store = useUserV1Store();
+  const user = useCurrentUser();
   const [shouldRender, setShouldRender] = useState<boolean>(lazyRendering ? false : true);
   const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(memo.displayTs));
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const readonly = userStore.isVisitorMode() || userStore.getCurrentUsername() !== memo.creatorUsername;
+  const readonly = memo.creatorUsername !== user?.username;
   const creator = userV1Store.getUserByUsername(memo.creatorUsername);
 
   // Prepare memo creator.
@@ -227,7 +229,7 @@ const Memo: React.FC<Props> = (props: Props) => {
           <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
             {creator && (
               <>
-                <Link className="flex flex-row justify-start items-center" to={`/u/${memo.creatorUsername}`}>
+                <Link className="flex flex-row justify-start items-center" to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
                   <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
                   <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator.nickname}</span>
                 </Link>

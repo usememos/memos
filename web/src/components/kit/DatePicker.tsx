@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { getMemoStats } from "@/helpers/api";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, isFutureDate } from "@/helpers/datetime";
-import { useUserStore } from "@/store/module";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 import "@/less/common/date-picker.less";
@@ -21,14 +21,14 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   const { className, isFutureDateDisabled, datestamp, handleDateStampChange } = props;
   const [currentDateStamp, setCurrentDateStamp] = useState<number>(getMonthFirstDayDateStamp(datestamp));
   const [countByDate, setCountByDate] = useState(new Map());
-  const currentUsername = useUserStore().getCurrentUsername();
+  const user = useCurrentUser();
 
   useEffect(() => {
     setCurrentDateStamp(getMonthFirstDayDateStamp(datestamp));
   }, [datestamp]);
 
   useEffect(() => {
-    getMemoStats(currentUsername).then(({ data }) => {
+    getMemoStats(user.username).then(({ data }) => {
       const m = new Map();
       for (const record of data) {
         const date = getDateStampByDate(record * 1000);
@@ -36,7 +36,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
       }
       setCountByDate(m);
     });
-  }, [currentUsername]);
+  }, [user.username]);
 
   const firstDate = new Date(currentDateStamp);
   const firstDateDay = firstDate.getDay() === 0 ? 7 : firstDate.getDay();

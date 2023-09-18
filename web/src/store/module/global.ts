@@ -1,4 +1,4 @@
-import axios from "axios";
+import { systemServiceClient } from "@/grpcweb";
 import * as api from "@/helpers/api";
 import storage from "@/helpers/storage";
 import i18n from "@/i18n";
@@ -75,11 +75,8 @@ export const useGlobalStore = () => {
     },
     fetchSystemStatus: async () => {
       const { data: systemStatus } = await api.getSystemStatus();
-      // TODO: update this when api v2 is ready.
-      const {
-        data: { systemInfo },
-      } = await axios.get("/api/v2/system/info");
-      systemStatus.dbSize = Number(systemInfo.dbSize);
+      const { systemInfo } = await systemServiceClient.getSystemInfo({});
+      systemStatus.dbSize = systemInfo?.dbSize || 0;
       store.dispatch(setGlobalState({ systemStatus: systemStatus }));
       return systemStatus;
     },

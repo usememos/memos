@@ -1,6 +1,5 @@
 import axios from "axios";
 import { Resource } from "@/types/proto/api/v2/resource_service";
-import { GetUserResponse } from "@/types/proto/api/v2/user_service";
 
 export function getSystemStatus() {
   return axios.get<SystemStatus>("/api/v1/status");
@@ -54,10 +53,6 @@ export function getMyselfUser() {
 
 export function getUserList() {
   return axios.get<User[]>("/api/v1/user");
-}
-
-export function getUserByUsername(username: string) {
-  return axios.get<GetUserResponse>(`/api/v2/users/${username}`);
 }
 
 export function upsertUserSetting(upsert: UserSettingUpsert) {

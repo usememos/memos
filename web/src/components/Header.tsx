@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { useLayoutStore, useUserStore } from "@/store/module";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useLayoutStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
@@ -17,10 +18,9 @@ interface NavLinkItem {
 const Header = () => {
   const t = useTranslate();
   const location = useLocation();
-  const userStore = useUserStore();
   const layoutStore = useLayoutStore();
   const showHeader = layoutStore.state.showHeader;
-  const isVisitorMode = userStore.isVisitorMode() && !userStore.state.user;
+  const user = useCurrentUser();
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -77,7 +77,7 @@ const Header = () => {
     icon: <Icon.LogIn className="mr-3 w-6 h-auto opacity-70" />,
   };
 
-  const navLinks: NavLinkItem[] = !isVisitorMode
+  const navLinks: NavLinkItem[] = user
     ? [homeNavLink, dailyReviewNavLink, resourcesNavLink, exploreNavLink, archivedNavLink, settingNavLink]
     : [exploreNavLink, authNavLink];
 

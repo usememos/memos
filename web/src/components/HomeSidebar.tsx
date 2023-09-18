@@ -1,11 +1,10 @@
-import { useLayoutStore, useUserStore } from "../store/module";
+import { useLayoutStore } from "../store/module";
 import SearchBar from "./SearchBar";
 import TagList from "./TagList";
 import UsageHeatMap from "./UsageHeatMap";
 
 const HomeSidebar = () => {
   const layoutStore = useLayoutStore();
-  const userStore = useUserStore();
   const showHomeSidebar = layoutStore.state.showHomeSidebar;
 
   return (
@@ -29,11 +28,7 @@ const HomeSidebar = () => {
           <SearchBar />
         </div>
         <UsageHeatMap />
-        {!userStore.isVisitorMode() && (
-          <>
-            <TagList />
-          </>
-        )}
+        <TagList />
       </aside>
     </div>
   );

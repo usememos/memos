@@ -5,7 +5,7 @@ import { useUserV1Store } from "@/store/v1";
 const useCurrentUser = () => {
   const userStore = useUserStore();
   const userV1Store = useUserV1Store();
-  const currentUsername = userStore.getCurrentUsername();
+  const currentUsername = userStore.state.user?.username;
 
   useEffect(() => {
     if (currentUsername) {
@@ -13,7 +13,7 @@ const useCurrentUser = () => {
     }
   }, [currentUsername]);
 
-  return userV1Store.getUserByUsername(currentUsername);
+  return userV1Store.getUserByUsername(currentUsername || "");
 };
 
 export default useCurrentUser;

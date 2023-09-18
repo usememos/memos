@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { useGlobalStore, useUserStore } from "@/store/module";
+import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import Icon from "./Icon";
@@ -13,17 +14,11 @@ const UserBanner = () => {
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const { systemStatus } = globalStore.state;
-  const { user } = userStore.state;
-  const [username, setUsername] = useState("Memos");
-
-  useEffect(() => {
-    if (user) {
-      setUsername(user.nickname || user.username);
-    }
-  }, [user]);
+  const user = useCurrentUser();
+  const title = user ? user.nickname : systemStatus.customizedProfile.name || "memos";
 
   const handleMyAccountClick = () => {
-    navigate(`/u/${user?.username}`);
+    navigate(`/u/${encodeURIComponent(user.username)}`);
   };
 
   const handleAboutBtnClick = () => {
@@ -42,10 +37,8 @@ const UserBanner = () => {
         trigger={
           <div className="px-4 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-lg hover:shadow hover:bg-white dark:hover:bg-zinc-700">
             <UserAvatar className="shadow" avatarUrl={user?.avatarUrl} />
-            <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">
-              {user != undefined ? username : systemStatus.customizedProfile.name}
-            </span>
-            {user?.role === "HOST" ? (
+            <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{title}</span>
+            {user?.role === User_Role.HOST ? (
               <span className="text-xs px-1 bg-blue-600 dark:bg-blue-800 rounded text-white dark:text-gray-200 shadow">MOD</span>
             ) : null}
           </div>
