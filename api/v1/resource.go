@@ -379,6 +379,7 @@ func (s *APIV1Service) GetExternalResourceMetadata(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to send HEAD request").SetInternal(err)
 	}
+	defer response.Body.Close()
 	parts := strings.Split(url, "/")
 	metadata := make(map[string]string)
 	metadata["fileType"] = response.Header.Get("Content-Type")
