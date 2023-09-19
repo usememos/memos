@@ -49,7 +49,6 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
               src={getResourceUrl(imageResourceList[0])}
               onClick={() => handleImageClick(getResourceUrl(imageResourceList[0]))}
               decoding="async"
-              loading="lazy"
             />
           </div>
         ) : (
@@ -71,7 +70,6 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
                     src={resource.externalLink ? url : url + "?thumbnail=1"}
                     onClick={() => handleImageClick(url)}
                     decoding="async"
-                    loading="lazy"
                   />
                 </SquareDiv>
               );
