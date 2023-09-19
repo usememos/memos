@@ -20,6 +20,7 @@ import (
 	apiv2 "github.com/usememos/memos/api/v2"
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/plugin/telegram"
+	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/service"
 	"github.com/usememos/memos/store"
@@ -47,7 +48,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	e.HideBanner = true
 	e.HidePort = true
 
-	telegramBot := telegram.NewBotWithHandler(newTelegramHandler(store))
 	s := &Server{
 		e:       e,
 		Store:   store,
@@ -55,7 +55,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 		// Asynchronous runners.
 		backupRunner: service.NewBackupRunner(store),
-		telegramBot:  telegramBot,
+		telegramBot:  telegram.NewBotWithHandler(integration.NewTelegramHandler(store)),
 	}
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -118,7 +118,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.Secret = secret
 
 	rootGroup := e.Group("")
-	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, telegramBot)
+	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, s.telegramBot)
 	apiV1Service.Register(rootGroup)
 
 	s.apiV2Service = apiv2.NewAPIV2Service(s.Secret, profile, store, s.Profile.Port+1)

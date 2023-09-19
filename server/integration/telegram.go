@@ -1,4 +1,4 @@
-package server
+package integration
 
 import (
 	"bytes"
@@ -15,15 +15,15 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-type telegramHandler struct {
+type TelegramHandler struct {
 	store *store.Store
 }
 
-func newTelegramHandler(store *store.Store) *telegramHandler {
-	return &telegramHandler{store: store}
+func NewTelegramHandler(store *store.Store) *TelegramHandler {
+	return &TelegramHandler{store: store}
 }
 
-func (t *telegramHandler) BotToken(ctx context.Context) string {
+func (t *TelegramHandler) BotToken(ctx context.Context) string {
 	return t.store.GetSystemSettingValueWithDefault(&ctx, apiv1.SystemSettingTelegramBotTokenName.String(), "")
 }
 
@@ -32,7 +32,7 @@ const (
 	successMessage = "Success"
 )
 
-func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, message telegram.Message, attachments []telegram.Attachment) error {
+func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, message telegram.Message, attachments []telegram.Attachment) error {
 	reply, err := bot.SendReplyMessage(ctx, message.Chat.ID, message.MessageID, workingMessage)
 	if err != nil {
 		return errors.Wrap(err, "Failed to SendReplyMessage")
@@ -121,7 +121,7 @@ func (t *telegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	return err
 }
 
-func (t *telegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram.Bot, callbackQuery telegram.CallbackQuery) error {
+func (t *TelegramHandler) CallbackQueryHandle(ctx context.Context, bot *telegram.Bot, callbackQuery telegram.CallbackQuery) error {
 	var memoID int32
 	var visibility store.Visibility
 	n, err := fmt.Sscanf(callbackQuery.Data, "%s %d", &visibility, &memoID)
