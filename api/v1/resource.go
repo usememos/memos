@@ -81,6 +81,7 @@ func (s *APIV1Service) registerResourceRoutes(g *echo.Group) {
 	g.POST("/resource/blob", s.UploadResource)
 	g.PATCH("/resource/:resourceId", s.UpdateResource)
 	g.DELETE("/resource/:resourceId", s.DeleteResource)
+	g.GET("/resource/external/metadata", s.GetExternalResourceMetadata)
 }
 
 func (s *APIV1Service) registerResourcePublicRoutes(g *echo.Group) {
@@ -361,6 +362,28 @@ func (s *APIV1Service) UpdateResource(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
 	}
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
+}
+
+// GetExternalResourceMetadata godoc
+//
+//	@Summary	Get metadata by an external resource URL
+//	@Tags		resource
+//	@Produce	json
+//	@Param		url		path		string				true	"External URL"
+//	@Success	200		{object}	map[string]string	"Updated resource"
+//	@Failure	500		{object}	nil					"Failed to send HEAD request"
+//	@Router		/api/v1/resource/external/metadata/{url} [GET]
+func (s *APIV1Service) GetExternalResourceMetadata(c echo.Context) error {
+	url := c.QueryParam("url")
+	response, err := http.Head(url)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to send HEAD request").SetInternal(err)
+	}
+	parts := strings.Split(url, "/")
+	metadata := make(map[string]string)
+	metadata["fileType"] = response.Header.Get("Content-Type")
+	metadata["fileName"] = parts[len(parts)-1]
+	return c.JSON(http.StatusOK, metadata)
 }
 
 // streamResource godoc
