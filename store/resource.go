@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -108,7 +109,7 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 
 	query := fmt.Sprintf(`
 		SELECT
-			GROUP_CONCAT(memo_resource.memo_id) as related_memo_id,
+			GROUP_CONCAT(memo_resource.memo_id) as related_memo_ids,
 			%s
 		FROM resource
 		LEFT JOIN memo_resource ON resource.id = memo_resource.resource_id
@@ -132,8 +133,9 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 	list := make([]*Resource, 0)
 	for rows.Next() {
 		resource := Resource{}
+		var relatedMemoIDs sql.NullString
 		dests := []any{
-			&resource.RelatedMemoID,
+			&relatedMemoIDs,
 			&resource.ID,
 			&resource.Filename,
 			&resource.ExternalLink,
@@ -149,6 +151,18 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 		}
 		if err := rows.Scan(dests...); err != nil {
 			return nil, err
+		}
+		if relatedMemoIDs.Valid {
+			relatedMemoIDList := strings.Split(relatedMemoIDs.String, ",")
+			if len(relatedMemoIDList) > 0 {
+				// Only take the first related memo ID.
+				relatedMemoIDInt, err := strconv.Atoi(relatedMemoIDList[0])
+				if err != nil {
+					return nil, err
+				}
+				relatedMemoIDInt32 := int32(relatedMemoIDInt)
+				resource.RelatedMemoID = &relatedMemoIDInt32
+			}
 		}
 		list = append(list, &resource)
 	}

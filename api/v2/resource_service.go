@@ -35,7 +35,7 @@ func (s *ResourceService) ListResources(ctx context.Context, _ *apiv2pb.ListReso
 		HasRelatedMemo: true,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list tags: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to list resources: %v", err)
 	}
 
 	response := &apiv2pb.ListResourcesResponse{}
