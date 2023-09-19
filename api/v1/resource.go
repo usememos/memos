@@ -373,7 +373,7 @@ func (s *APIV1Service) UpdateResource(c echo.Context) error {
 //	@Success	200		{object}	map[string]string	"Updated resource"
 //	@Failure	500		{object}	nil					"Failed to send HEAD request"
 //	@Router		/api/v1/resource/external/metadata/{url} [GET]
-func (s *APIV1Service) GetExternalResourceMetadata(c echo.Context) error {
+func (_ *APIV1Service) GetExternalResourceMetadata(c echo.Context) error {
 	url := c.QueryParam("url")
 	response, err := http.Head(url)
 	if err != nil {
