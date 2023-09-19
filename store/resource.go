@@ -156,12 +156,12 @@ func (s *Store) ListResources(ctx context.Context, find *FindResource) ([]*Resou
 			relatedMemoIDList := strings.Split(relatedMemoIDs.String, ",")
 			if len(relatedMemoIDList) > 0 {
 				// Only take the first related memo ID.
-				relatedMemoIDInt, err := strconv.Atoi(relatedMemoIDList[0])
+				relatedMemoIDInt, err := strconv.ParseInt(relatedMemoIDList[0], 10, 32)
 				if err != nil {
 					return nil, err
 				}
-				relatedMemoIDInt32 := int32(relatedMemoIDInt)
-				resource.RelatedMemoID = &relatedMemoIDInt32
+				relatedMemoID := int32(relatedMemoIDInt)
+				resource.RelatedMemoID = &relatedMemoID
 			}
 		}
 		list = append(list, &resource)
