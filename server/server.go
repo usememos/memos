@@ -66,6 +66,12 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	e.Use(middleware.Gzip())
 
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		Skipper:      grpcRequestSkipper,
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{http.MethodGet, http.MethodHead, http.MethodPut, http.MethodPatch, http.MethodPost, http.MethodDelete},
+	}))
+
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
 		Skipper: grpcRequestSkipper,
 		Timeout: 30 * time.Second,
