@@ -237,7 +237,7 @@
         "title": "Server bearbeiten",
         "default": "Standard: memos",
         "icon-url": "Icon-URL",
-        "description": "Beschreibunb",
+        "description": "Beschreibung",
         "locale": "Sprache",
         "appearance": "Erscheinungsbild"
       },
