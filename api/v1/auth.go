@@ -251,8 +251,34 @@ func (s *APIV1Service) SignInSSO(c echo.Context) error {
 //	@Produce	json
 //	@Success	200	{boolean}	true	"Sign-out success"
 //	@Router		/api/v1/auth/signout [POST]
-func (*APIV1Service) SignOut(c echo.Context) error {
-	RemoveTokensAndCookies(c)
+func (s *APIV1Service) SignOut(c echo.Context) error {
+	ctx := c.Request().Context()
+	accessToken := findAccessToken(c)
+	userID, _ := getUserIDFromAccessToken(accessToken, s.Secret)
+	userAccessTokens, err := s.Store.GetUserAccessTokens(ctx, userID)
+	// Auto remove the current access token from the user access tokens.
+	if err == nil && len(userAccessTokens) != 0 {
+		accessTokens := []*storepb.AccessTokensUserSetting_AccessToken{}
+		for _, userAccessToken := range userAccessTokens {
+			if accessToken != userAccessToken.AccessToken {
+				accessTokens = append(accessTokens, userAccessToken)
+			}
+		}
+
+		if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+			UserId: userID,
+			Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
+			Value: &storepb.UserSetting_AccessTokens{
+				AccessTokens: &storepb.AccessTokensUserSetting{
+					AccessTokens: accessTokens,
+				},
+			},
+		}); err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert user setting, err: %s", err)).SetInternal(err)
+		}
+	}
+
+	removeAccessTokenAndCookies(c)
 	return c.JSON(http.StatusOK, true)
 }
 
@@ -411,8 +437,8 @@ func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *store.User
 	return err
 }
 
-// RemoveTokensAndCookies removes the jwt token from the cookies.
-func RemoveTokensAndCookies(c echo.Context) {
+// removeAccessTokenAndCookies removes the jwt token from the cookies.
+func removeAccessTokenAndCookies(c echo.Context) {
 	cookieExp := time.Now().Add(-1 * time.Hour)
 	setTokenCookie(c, auth.AccessTokenCookieName, "", cookieExp)
 }

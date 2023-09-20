@@ -48,15 +48,6 @@ func findAccessToken(c echo.Context) string {
 	return accessToken
 }
 
-func audienceContains(audience jwt.ClaimStrings, token string) bool {
-	for _, v := range audience {
-		if v == token {
-			return true
-		}
-	}
-	return false
-}
-
 // JWTMiddleware validates the access token.
 func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) echo.HandlerFunc {
 	return func(c echo.Context) error {
@@ -86,31 +77,10 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing access token")
 		}
 
-		claims := &auth.ClaimsMessage{}
-		_, err := jwt.ParseWithClaims(accessToken, claims, func(t *jwt.Token) (any, error) {
-			if t.Method.Alg() != jwt.SigningMethodHS256.Name {
-				return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
-			}
-			if kid, ok := t.Header["kid"].(string); ok {
-				if kid == "v1" {
-					return []byte(secret), nil
-				}
-			}
-			return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
-		})
-
+		userID, err := getUserIDFromAccessToken(accessToken, secret)
 		if err != nil {
-			RemoveTokensAndCookies(c)
-			return echo.NewHTTPError(http.StatusUnauthorized, errors.Wrap(err, "Invalid or expired access token"))
-		}
-		if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
-			return echo.NewHTTPError(http.StatusUnauthorized, fmt.Sprintf("Invalid access token, audience mismatch, got %q, expected %q.", claims.Audience, auth.AccessTokenAudienceName))
-		}
-
-		// We either have a valid access token or we will attempt to generate new access token.
-		userID, err := util.ConvertStringToInt32(claims.Subject)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "Malformed ID in the token.")
+			removeAccessTokenAndCookies(c)
+			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired access token")
 		}
 
 		accessTokens, err := server.Store.GetUserAccessTokens(ctx, userID)
@@ -118,7 +88,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get user access tokens.").WithInternal(err)
 		}
 		if !validateAccessToken(accessToken, accessTokens) {
-			RemoveTokensAndCookies(c)
+			removeAccessTokenAndCookies(c)
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid access token.")
 		}
 
@@ -137,6 +107,30 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		c.Set(userIDContextKey, userID)
 		return next(c)
 	}
+}
+
+func getUserIDFromAccessToken(accessToken, secret string) (int32, error) {
+	claims := &auth.ClaimsMessage{}
+	_, err := jwt.ParseWithClaims(accessToken, claims, func(t *jwt.Token) (any, error) {
+		if t.Method.Alg() != jwt.SigningMethodHS256.Name {
+			return nil, errors.Errorf("unexpected access token signing method=%v, expect %v", t.Header["alg"], jwt.SigningMethodHS256)
+		}
+		if kid, ok := t.Header["kid"].(string); ok {
+			if kid == "v1" {
+				return []byte(secret), nil
+			}
+		}
+		return nil, errors.Errorf("unexpected access token kid=%v", t.Header["kid"])
+	})
+	if err != nil {
+		return 0, errors.Wrap(err, "Invalid or expired access token")
+	}
+	// We either have a valid access token or we will attempt to generate new access token.
+	userID, err := util.ConvertStringToInt32(claims.Subject)
+	if err != nil {
+		return 0, errors.Wrap(err, "Malformed ID in the token")
+	}
+	return userID, nil
 }
 
 func (*APIV1Service) defaultAuthSkipper(c echo.Context) bool {

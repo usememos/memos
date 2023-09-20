@@ -96,13 +96,6 @@ func (in *GRPCAuthInterceptor) authenticate(ctx context.Context, accessToken str
 	if err != nil {
 		return "", status.Errorf(codes.Unauthenticated, "Invalid or expired access token")
 	}
-	if !audienceContains(claims.Audience, auth.AccessTokenAudienceName) {
-		return "", status.Errorf(codes.Unauthenticated,
-			"invalid access token, audience mismatch, got %q, expected %q. you may send request to the wrong environment",
-			claims.Audience,
-			auth.AccessTokenAudienceName,
-		)
-	}
 
 	// We either have a valid access token or we will attempt to generate new access token.
 	userID, err := util.ConvertStringToInt32(claims.Subject)
@@ -153,15 +146,6 @@ func getTokenFromMetadata(md metadata.MD) (string, error) {
 		}
 	}
 	return accessToken, nil
-}
-
-func audienceContains(audience jwt.ClaimStrings, token string) bool {
-	for _, v := range audience {
-		if v == token {
-			return true
-		}
-	}
-	return false
 }
 
 func validateAccessToken(accessTokenString string, userAccessTokens []*storepb.AccessTokensUserSetting_AccessToken) bool {
