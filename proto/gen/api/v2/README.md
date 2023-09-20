@@ -480,7 +480,8 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | username | [string](#string) |  |  |
-| user_access_token | [UserAccessToken](#memos-api-v2-UserAccessToken) |  |  |
+| description | [string](#string) |  |  |
+| expires_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 
 
 

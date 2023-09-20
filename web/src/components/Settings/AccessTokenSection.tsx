@@ -119,10 +119,10 @@ const AccessTokenSection = () => {
                           {userAccessToken.description}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-                          {String(userAccessToken.issuedAt)}
+                          {userAccessToken.issuedAt?.toLocaleString()}
                         </td>
                         <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
-                          {String(userAccessToken.expiresAt ?? "Never")}
+                          {userAccessToken.expiresAt?.toLocaleString() ?? "Never"}
                         </td>
                         <td className="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm">
                           <IconButton

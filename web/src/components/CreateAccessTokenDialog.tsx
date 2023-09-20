@@ -70,10 +70,8 @@ const CreateAccessTokenDialog: React.FC<Props> = (props: Props) => {
     try {
       await userServiceClient.createUserAccessToken({
         username: currentUser.username,
-        userAccessToken: {
-          description: state.description,
-          expiresAt: new Date(Date.now() + state.expiration * 1000),
-        },
+        description: state.description,
+        expiresAt: state.expiration ? new Date(Date.now() + state.expiration * 1000) : undefined,
       });
 
       onConfirm();

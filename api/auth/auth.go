@@ -30,9 +30,8 @@ type ClaimsMessage struct {
 }
 
 // GenerateAccessToken generates an access token.
-// username is the email of the user.
-func GenerateAccessToken(username string, userID int32, expirationTime time.Time, secret string) (string, error) {
-	return generateToken(username, userID, AccessTokenAudienceName, expirationTime, []byte(secret))
+func GenerateAccessToken(username string, userID int32, expirationTime time.Time, secret []byte) (string, error) {
+	return generateToken(username, userID, AccessTokenAudienceName, expirationTime, secret)
 }
 
 // generateToken generates a jwt token.
@@ -43,7 +42,7 @@ func generateToken(username string, userID int32, audience string, expirationTim
 		IssuedAt: jwt.NewNumericDate(time.Now()),
 		Subject:  fmt.Sprint(userID),
 	}
-	if expirationTime.After(time.Now()) {
+	if !expirationTime.IsZero() {
 		registeredClaims.ExpiresAt = jwt.NewNumericDate(expirationTime)
 	}
 

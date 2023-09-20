@@ -31,7 +31,7 @@ service UserService {
   rpc CreateUserAccessToken(CreateUserAccessTokenRequest) returns (CreateUserAccessTokenResponse) {
     option (google.api.http) = {
       post: "/api/v2/users/{username}/access_tokens"
-      body: "user_access_token"
+      body: "*"
     };
     option (google.api.method_signature) = "username";
   }
@@ -102,7 +102,9 @@ message ListUserAccessTokensResponse {
 message CreateUserAccessTokenRequest {
   string username = 1;
 
-  UserAccessToken user_access_token = 2;
+  string description = 2;
+
+  optional google.protobuf.Timestamp expires_at = 3;
 }
 
 message CreateUserAccessTokenResponse {

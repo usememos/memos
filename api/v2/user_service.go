@@ -177,7 +177,11 @@ func (s *UserService) CreateUserAccessToken(ctx context.Context, request *apiv2p
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 
-	accessToken, err := auth.GenerateAccessToken(user.Username, user.ID, request.UserAccessToken.ExpiresAt.AsTime(), s.Secret)
+	expiresAt := time.Time{}
+	if request.ExpiresAt != nil {
+		expiresAt = request.ExpiresAt.AsTime()
+	}
+	accessToken, err := auth.GenerateAccessToken(user.Username, user.ID, expiresAt, []byte(s.Secret))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate access token: %v", err)
 	}
@@ -199,13 +203,13 @@ func (s *UserService) CreateUserAccessToken(ctx context.Context, request *apiv2p
 	}
 
 	// Upsert the access token to user setting store.
-	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken, request.UserAccessToken.Description); err != nil {
+	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken, request.Description); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to upsert access token to store: %v", err)
 	}
 
 	userAccessToken := &apiv2pb.UserAccessToken{
 		AccessToken: accessToken,
-		Description: request.UserAccessToken.Description,
+		Description: request.Description,
 		IssuedAt:    timestamppb.New(claims.IssuedAt.Time),
 	}
 	if claims.ExpiresAt != nil {
