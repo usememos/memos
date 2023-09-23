@@ -1,19 +1,21 @@
+import { Button } from "@mui/joy";
 import { Link } from "react-router-dom";
+import Icon from "@/components/Icon";
 import { useTranslate } from "@/utils/i18n";
-import "@/less/not-found.less";
 
 const NotFound = () => {
   const t = useTranslate();
 
   return (
-    <div className="page-wrapper not-found">
-      <div className="page-container">
-        <p className="title-text">{t("message.page-not-found")}</p>
-        <div className="action-button-container">
-          <Link to="/" className="link-btn">
-            <span>🏠</span> {t("router.back-to-home")}
-          </Link>
-        </div>
+    <div className="w-full h-full overflow-y-auto overflow-x-hidden bg-zinc-100 dark:bg-zinc-800">
+      <div className="w-full h-full flex flex-col justify-center items-center">
+        <Icon.Meh strokeWidth={1} className="w-20 h-auto opacity-80 dark:text-gray-300" />
+        <p className="mt-4 text-5xl font-mono dark:text-gray-300">404</p>
+        <Link className="mt-4" to="/">
+          <Button variant="outlined" startDecorator={<Icon.Home className="w-4 h-auto" />}>
+            {t("router.back-to-home")}
+          </Button>
+        </Link>
       </div>
     </div>
   );
