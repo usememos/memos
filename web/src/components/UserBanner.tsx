@@ -1,5 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -10,7 +10,7 @@ import Dropdown from "./kit/Dropdown";
 
 const UserBanner = () => {
   const t = useTranslate();
-  const navigate = useNavigate();
+  const navigateTo = useNavigateTo();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const { systemStatus } = globalStore.state;
@@ -18,7 +18,7 @@ const UserBanner = () => {
   const title = user ? user.nickname : systemStatus.customizedProfile.name || "memos";
 
   const handleMyAccountClick = () => {
-    navigate(`/u/${encodeURIComponent(user.username)}`);
+    navigateTo(`/u/${encodeURIComponent(user.username)}`);
   };
 
   const handleAboutBtnClick = () => {

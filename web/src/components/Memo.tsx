@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { UNKNOWN_ID } from "@/helpers/consts";
 import { getRelativeTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
@@ -17,7 +18,6 @@ import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
 import showPreviewImageDialog from "./PreviewImageDialog";
-import showShareMemo from "./ShareMemoDialog";
 import UserAvatar from "./UserAvatar";
 import "@/less/memo.less";
 
@@ -30,6 +30,7 @@ interface Props {
 const Memo: React.FC<Props> = (props: Props) => {
   const { memo, lazyRendering } = props;
   const t = useTranslate();
+  const navigateTo = useNavigateTo();
   const { i18n } = useTranslation();
   const filterStore = useFilterStore();
   const userStore = useUserStore();
@@ -89,6 +90,14 @@ const Memo: React.FC<Props> = (props: Props) => {
     return <div className={`memo-wrapper min-h-[128px] ${"memos-" + memo.id}`} ref={memoContainerRef}></div>;
   }
 
+  const handleGotoMemoDetailPage = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (event.altKey) {
+      showChangeMemoCreatedTsDialog(memo.id);
+    } else {
+      navigateTo(`/m/${memo.id}`);
+    }
+  };
+
   const handleTogglePinMemoBtnClick = async () => {
     try {
       if (memo.pinned) {
@@ -141,10 +150,6 @@ const Memo: React.FC<Props> = (props: Props) => {
         await memoStore.deleteMemoById(memo.id);
       },
     });
-  };
-
-  const handleGenerateMemoImageBtnClick = () => {
-    showShareMemo(memo);
   };
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
@@ -217,11 +222,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     handleEditMemoClick();
   };
 
-  const handleMemoCreatedTimeClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    showChangeMemoCreatedTsDialog(memo.id);
-  };
-
   return (
     <>
       <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned && !readonly ? "pinned" : ""}`} ref={memoContainerRef}>
@@ -236,7 +236,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                 <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
               </>
             )}
-            <span className="text-sm text-gray-400 select-none" onDoubleClick={handleMemoCreatedTimeClick}>
+            <span className="text-sm text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
               {displayTime}
             </span>
           </div>
@@ -255,10 +255,6 @@ const Memo: React.FC<Props> = (props: Props) => {
                     <span className="btn" onClick={handleEditMemoClick}>
                       <Icon.Edit3 className="w-4 h-auto mr-2" />
                       {t("common.edit")}
-                    </span>
-                    <span className="btn" onClick={handleGenerateMemoImageBtnClick}>
-                      <Icon.Share className="w-4 h-auto mr-2" />
-                      {t("common.share")}
                     </span>
                     <span className="btn" onClick={handleMarkMemoClick}>
                       <Icon.Link className="w-4 h-auto mr-2" />

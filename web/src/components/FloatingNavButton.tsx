@@ -1,10 +1,10 @@
 import { Dropdown, IconButton, Menu, MenuButton } from "@mui/joy";
-import { useNavigate } from "react-router-dom";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
 
 const FloatingNavButton = () => {
-  const navigate = useNavigate();
+  const navigateTo = useNavigateTo();
   const t = useTranslate();
 
   return (
@@ -23,7 +23,7 @@ const FloatingNavButton = () => {
         <Menu placement="top-end">
           <button
             className="w-full text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-600"
-            onClick={() => navigate("/")}
+            onClick={() => navigateTo("/")}
           >
             {t("router.back-to-home")}
           </button>
