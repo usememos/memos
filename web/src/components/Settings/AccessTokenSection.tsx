@@ -60,11 +60,11 @@ const AccessTokenSection = () => {
         <div className="w-full">
           <div className="sm:flex sm:items-center sm:justify-between">
             <div className="sm:flex-auto space-y-1">
-              <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">
+              <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-300">
                 Access Tokens
                 <LearnMore className="ml-2" url="https://usememos.com/docs/access-tokens" />
               </p>
-              <p className="text-sm text-gray-700 dark:text-gray-500">A list of all access tokens for your account.</p>
+              <p className="text-sm text-gray-700 dark:text-gray-400">A list of all access tokens for your account.</p>
             </div>
             <div className="mt-4 sm:mt-0">
               <Button

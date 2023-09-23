@@ -134,7 +134,7 @@ const PreferencesSection = () => {
       </div>
       <div className="w-full overflow-x-auto">
         <div className="inline-block min-w-full align-middle">
-          <table className="min-w-full divide-y divide-gray-300">
+          <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-400">
             <thead>
               <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-300">
                 <th scope="col" className="py-2 pl-4 pr-3">
@@ -152,7 +152,7 @@ const PreferencesSection = () => {
                 <th scope="col" className="relative py-2 pl-3 pr-4"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
               {userList.map((user) => (
                 <tr key={user.id}>
                   <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-300">{user.id}</td>
