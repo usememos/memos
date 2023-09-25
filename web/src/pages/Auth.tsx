@@ -32,7 +32,7 @@ const Auth = () => {
 
   useEffect(() => {
     if (mode === "demo") {
-      setUsername("demohero");
+      setUsername("memos-demo");
       setPassword("secret");
     }
   }, [mode]);

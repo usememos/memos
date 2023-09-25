@@ -10,7 +10,7 @@ INSERT INTO
 VALUES
   (
     101,
-    'demohero',
+    'memos-demo',
     'HOST',
     'demo@usememos.com',
     'Derobot',
