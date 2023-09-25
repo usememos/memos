@@ -23,11 +23,13 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
       return await requestCache.get(username);
     }
 
-    const promise = userServiceClient.getUser({
-      username: username,
-    });
-    requestCache.set(username, promise);
-    const { user } = await promise;
+    const promisedUser = userServiceClient
+      .getUser({
+        username: username,
+      })
+      .then(({ user }) => user);
+    requestCache.set(username, promisedUser);
+    const user = await promisedUser;
     if (!user) {
       throw new Error("User not found");
     }
