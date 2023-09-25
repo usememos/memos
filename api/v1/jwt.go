@@ -36,15 +36,15 @@ func extractTokenFromHeader(c echo.Context) (string, error) {
 }
 
 func findAccessToken(c echo.Context) string {
-	accessToken := ""
-	cookie, _ := c.Cookie(auth.AccessTokenCookieName)
-	if cookie != nil {
-		accessToken = cookie.Value
-	}
+	// Check the HTTP request header first.
+	accessToken, _ := extractTokenFromHeader(c)
 	if accessToken == "" {
-		accessToken, _ = extractTokenFromHeader(c)
+		// Check the cookie.
+		cookie, _ := c.Cookie(auth.AccessTokenCookieName)
+		if cookie != nil {
+			accessToken = cookie.Value
+		}
 	}
-
 	return accessToken
 }
 
