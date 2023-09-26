@@ -10,7 +10,7 @@ import (
 
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
-	"github.com/usememos/memos/store/sqlite3"
+	"github.com/usememos/memos/store/sqlite"
 )
 
 var (
@@ -50,7 +50,7 @@ var (
 				return
 			}
 
-			driver := sqlite3.NewDriver(db.DBInstance)
+			driver := sqlite.NewDriver(db.DBInstance)
 
 			s := store.New(db.DBInstance, driver, profile)
 			resources, err := s.ListResources(ctx, &store.FindResource{})
