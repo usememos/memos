@@ -1,6 +1,10 @@
 package store
 
-import "context"
+import (
+	"context"
+
+	storepb "github.com/usememos/memos/proto/gen/store"
+)
 
 type Driver interface {
 	CreateActivity(ctx context.Context, create *Activity) (*Activity, error)
@@ -12,4 +16,9 @@ type Driver interface {
 	UpdateUser(ctx context.Context, update *UpdateUser) (*User, error)
 	ListUsers(ctx context.Context, find *FindUser) ([]*User, error)
 	DeleteUser(ctx context.Context, delete *DeleteUser) error
+
+	UpsertUserSetting(ctx context.Context, upsert *UserSetting) (*UserSetting, error)
+	ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*UserSetting, error)
+	UpsertUserSettingV1(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error)
+	ListUserSettingsV1(ctx context.Context, find *FindUserSettingV1) ([]*storepb.UserSetting, error)
 }
