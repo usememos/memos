@@ -5,9 +5,10 @@ import (
 	"errors"
 	"strings"
 
+	"google.golang.org/protobuf/encoding/protojson"
+
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (d *Driver) UpsertUserSetting(ctx context.Context, upsert *store.UserSetting) (*store.UserSetting, error) {
