@@ -8,6 +8,6 @@ SET memo_id = (
   LIMIT 1
 );
 
-DROP TABLE memo_resource;
-
 CREATE INDEX idx_resource_memo_id ON resource (memo_id);
+
+DROP TABLE IF EXISTS memo_resource;

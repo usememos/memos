@@ -59,17 +59,6 @@ CREATE TABLE memo_organizer (
   UNIQUE(memo_id, user_id)
 );
 
--- shortcut
-CREATE TABLE shortcut (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  creator_id INTEGER NOT NULL,
-  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  row_status TEXT NOT NULL CHECK (row_status IN ('NORMAL', 'ARCHIVED')) DEFAULT 'NORMAL',
-  title TEXT NOT NULL DEFAULT '',
-  payload TEXT NOT NULL DEFAULT '{}'
-);
-
 -- resource
 CREATE TABLE resource (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
