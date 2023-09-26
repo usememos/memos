@@ -17,6 +17,7 @@ import (
 	_profile "github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
+	"github.com/usememos/memos/store/sqlite3"
 )
 
 const (
@@ -54,7 +55,9 @@ var (
 				return
 			}
 
-			store := store.New(db.DBInstance, profile)
+			driver := sqlite3.NewDriver(db.DBInstance)
+
+			store := store.New(db.DBInstance, driver, profile)
 			s, err := server.NewServer(ctx, profile, store)
 			if err != nil {
 				cancel()

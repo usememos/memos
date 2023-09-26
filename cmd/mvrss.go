@@ -10,6 +10,7 @@ import (
 
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
+	"github.com/usememos/memos/store/sqlite3"
 )
 
 var (
@@ -49,7 +50,9 @@ var (
 				return
 			}
 
-			s := store.New(db.DBInstance, profile)
+			driver := sqlite3.NewDriver(db.DBInstance)
+
+			s := store.New(db.DBInstance, driver, profile)
 			resources, err := s.ListResources(ctx, &store.FindResource{})
 			if err != nil {
 				fmt.Printf("failed to list resources, error: %+v\n", err)

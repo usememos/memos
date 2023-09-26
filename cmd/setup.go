@@ -12,6 +12,7 @@ import (
 	"github.com/usememos/memos/common/util"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
+	"github.com/usememos/memos/store/sqlite3"
 )
 
 var (
@@ -46,7 +47,9 @@ var (
 				return
 			}
 
-			store := store.New(db.DBInstance, profile)
+			driver := sqlite3.NewDriver(db.DBInstance)
+
+			store := store.New(db.DBInstance, driver, profile)
 			if err := ExecuteSetup(ctx, store, hostUsername, hostPassword); err != nil {
 				fmt.Printf("failed to setup, error: %+v\n", err)
 				return

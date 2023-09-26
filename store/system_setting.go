@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"strings"
 )
 
 type SystemSetting struct {
@@ -16,58 +15,12 @@ type FindSystemSetting struct {
 }
 
 func (s *Store) UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error) {
-	stmt := `
-		INSERT INTO system_setting (
-			name, value, description
-		)
-		VALUES (?, ?, ?)
-		ON CONFLICT(name) DO UPDATE 
-		SET
-			value = EXCLUDED.value,
-			description = EXCLUDED.description
-	`
-	if _, err := s.db.ExecContext(ctx, stmt, upsert.Name, upsert.Value, upsert.Description); err != nil {
-		return nil, err
-	}
-
-	systemSetting := upsert
-	return systemSetting, nil
+	return s.driver.UpsertSystemSetting(ctx, upsert)
 }
 
 func (s *Store) ListSystemSettings(ctx context.Context, find *FindSystemSetting) ([]*SystemSetting, error) {
-	where, args := []string{"1 = 1"}, []any{}
-	if find.Name != "" {
-		where, args = append(where, "name = ?"), append(args, find.Name)
-	}
-
-	query := `
-		SELECT
-			name,
-			value,
-			description
-		FROM system_setting
-		WHERE ` + strings.Join(where, " AND ")
-
-	rows, err := s.db.QueryContext(ctx, query, args...)
+	list, err := s.driver.ListSystemSettings(ctx, find)
 	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	list := []*SystemSetting{}
-	for rows.Next() {
-		systemSettingMessage := &SystemSetting{}
-		if err := rows.Scan(
-			&systemSettingMessage.Name,
-			&systemSettingMessage.Value,
-			&systemSettingMessage.Description,
-		); err != nil {
-			return nil, err
-		}
-		list = append(list, systemSettingMessage)
-	}
-
-	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 

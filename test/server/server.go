@@ -19,6 +19,7 @@ import (
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
+	"github.com/usememos/memos/store/sqlite3"
 	"github.com/usememos/memos/test"
 )
 
@@ -39,7 +40,9 @@ func NewTestingServer(ctx context.Context, t *testing.T) (*TestingServer, error)
 		return nil, errors.Wrap(err, "failed to migrate db")
 	}
 
-	store := store.New(db.DBInstance, profile)
+	driver := sqlite3.NewDriver(db.DBInstance)
+
+	store := store.New(db.DBInstance, driver, profile)
 	server, err := server.NewServer(ctx, profile, store)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create server")
