@@ -24,7 +24,7 @@ func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 		fmt.Printf("failed to migrate db, error: %+v\n", err)
 	}
 
-	driver := sqlite3.New(db.DBInstance)
+	driver := sqlite3.NewDriver(db.DBInstance)
 
 	store := store.New(db.DBInstance, driver, profile)
 	return store

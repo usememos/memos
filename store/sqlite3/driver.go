@@ -10,6 +10,6 @@ type Driver struct {
 	db *sql.DB
 }
 
-func New(db *sql.DB) store.Driver {
+func NewDriver(db *sql.DB) store.Driver {
 	return &Driver{db: db}
 }

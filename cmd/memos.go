@@ -55,7 +55,7 @@ var (
 				return
 			}
 
-			driver := sqlite3.New(db.DBInstance)
+			driver := sqlite3.NewDriver(db.DBInstance)
 
 			store := store.New(db.DBInstance, driver, profile)
 			s, err := server.NewServer(ctx, profile, store)

@@ -50,7 +50,7 @@ var (
 				return
 			}
 
-			driver := sqlite3.New(db.DBInstance)
+			driver := sqlite3.NewDriver(db.DBInstance)
 
 			s := store.New(db.DBInstance, driver, profile)
 			resources, err := s.ListResources(ctx, &store.FindResource{})
