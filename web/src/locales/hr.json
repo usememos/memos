@@ -24,7 +24,7 @@
     "pin": "Pinaj",
     "unpin": "Makni pin",
     "edit": "Uredi",
-    "restore": "Restore",
+    "restore": "Vrati",
     "delete": "Obriši",
     "null": "Ništa",
     "share": "Podijeli",
@@ -73,8 +73,8 @@
     "back-to-home": "Natrag kući"
   },
   "auth": {
-    "signup-as-host": "Registriraj se kao Host",
-    "host-tip": "Registriraš se kao Site Host.",
+    "signup-as-host": "Registriraj se kao Vlasnik",
+    "host-tip": "Registriraš se kao Vlasnik sajta.",
     "not-host-tip": "Ako nemaš račun, kontaktiraj vlasnika stranice.",
     "new-password": "Nova lozinka",
     "repeat-new-password": "Ponovi novu lozinku"
@@ -257,8 +257,8 @@
       "openai-api-key-description": "Get API key",
       "openai-api-key-placeholder": "Tvoj OpenAI API Ključ",
       "openai-api-host": "OpenAI: API Host",
-      "openai-api-host-placeholder": "Default: https://api.openai.com/",
-      "display-with-updated-time": "Display with updated time"
+      "openai-api-host-placeholder": "Zadano: https://api.openai.com/",
+      "display-with-updated-time": "Prikaži sa obnovljenim vremenom"
     },
     "appearance-option": {
       "system": "Slijedi sustav",
@@ -278,8 +278,8 @@
       "template": "Predložak",
       "custom": "Custom",
       "identifier-filter": "Identifier Filter",
-      "redirect-url": "Redirect URL",
-      "client-id": "Client ID",
+      "redirect-url": "Preusmjeri URL",
+      "client-id": "Klijent ID",
       "client-secret": "Client secret",
       "authorization-endpoint": "Authorization endpoint",
       "token-endpoint": "Token endpoint",
@@ -319,11 +319,11 @@
     "no-resource": "nema resursa 🌃",
     "resource-ready": "svi resursi su spremni 🎉",
     "restored-successfully": "Uspješno vraćeno",
-    "memo-updated-datetime": "Memo created datetime changed.",
-    "invalid-created-datetime": "Invalid created datetime.",
-    "change-memo-created-time": "Change memo created time",
-    "change-memo-created-time-warning-1": "THIS IS NOT A NORMAL BEHAVIOR.",
-    "change-memo-created-time-warning-2": "Please make sure you really need it.",
+    "memo-updated-datetime": "Datum/vrijeme stvaranja memoa je promijenjen.",
+    "invalid-created-datetime": "Datum i vrijeme stvaranja nije valjano uneseno.",
+    "change-memo-created-time": "Promijeni vrijeme stvaranja memoa",
+    "change-memo-created-time-warning-1": "OVO NIJE NORMALNO PONAŠANJE.",
+    "change-memo-created-time-warning-2": "Budi sasvim siguran da ti ovo stvarno treba.",
     "memo-not-found": "Memo nije nađen.",
     "fill-all": "Molimo, popuni sva polja.",
     "password-not-match": "Lozinke nisu jednake.",
@@ -350,12 +350,12 @@
     "too-long": "predugo",
     "not-allow-space": "Ne dozvoli razmak",
     "not-allow-chinese": "Ne dozvoli kineski",
-    "succeed-vacuum-database": "Succeed to vacuum database",
+    "succeed-vacuum-database": "Vakuumiranje databaze je uspjelo",
     "succeed-update-additional-style": "Dodatni stil je uspješno obnovljen.",
     "succeed-copy-resource-link": "Resource link je uspješno kopiran.",
     "succeed-update-customized-profile": "Profil je uspješno izmijenjen.",
     "succeed-update-additional-script": "Dodatna skripta je uspješno izmijenjena.",
-    "update-succeed": "Update je uspio",
+    "update-succeed": "Obnavljanje aplikacije je uspjelo!🎉",
     "page-not-found": "404 - Stranica nije nađena 😥",
     "maximum-upload-size-is": "Maximalna dozvoljena veličina fajla je {{size}} MiB",
     "file-exceeds-upload-limit-of": "Fajl {{file}} premašuje limit za upload koji je {{size}} MiB"
@@ -375,8 +375,8 @@
     "go-to-settings": "Idi na postavke",
     "placeholder": "Pitaj bilo što…",
     "default-message-group-title": "Default Session",
-    "create-message-group-title": "Create Session",
-    "label-message-group-name-title": "Session Name"
+    "create-message-group-title": "Stvori sesiju",
+    "label-message-group-name-title": "Ime sesije"
   },
   "embed-memo": {
     "title": "Ugradi Memo",
