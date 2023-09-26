@@ -124,16 +124,22 @@ const MemoDetail = () => {
               </div>
               <div className="flex flex-row sm:justify-end items-center">
                 {allowEdit && (
-                  <IconButton size="sm" onClick={handleEditMemoClick}>
-                    <Icon.Edit3 className="w-4 h-auto text-gray-600 dark:text-gray-400" />
-                  </IconButton>
+                  <Tooltip title={"Edit"} placement="top">
+                    <IconButton size="sm" onClick={handleEditMemoClick}>
+                      <Icon.Edit3 className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                    </IconButton>
+                  </Tooltip>
                 )}
-                <IconButton size="sm" onClick={handleCopyLinkBtnClick}>
-                  <Icon.Link className="w-4 h-auto text-gray-600 dark:text-gray-400" />
-                </IconButton>
-                <IconButton size="sm" onClick={() => showShareMemoDialog(memo)}>
-                  <Icon.Share className="w-4 h-auto text-gray-600 dark:text-gray-400" />
-                </IconButton>
+                <Tooltip title={"Copy link"} placement="top">
+                  <IconButton size="sm" onClick={handleCopyLinkBtnClick}>
+                    <Icon.Link className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title={"Share"} placement="top">
+                  <IconButton size="sm" onClick={() => showShareMemoDialog(memo)}>
+                    <Icon.Share className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                  </IconButton>
+                </Tooltip>
               </div>
             </div>
           </div>
