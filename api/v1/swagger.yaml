@@ -147,7 +147,7 @@ definitions:
         type: integer
       internalPath:
         type: string
-      linkedMemoAmount:
+      memoID:
         type: integer
       size:
         type: integer
@@ -404,30 +404,6 @@ definitions:
       visibility:
         $ref: '#/definitions/v1.Visibility'
     type: object
-  v1.Resource:
-    properties:
-      createdTs:
-        type: integer
-      creatorId:
-        description: Standard fields
-        type: integer
-      externalLink:
-        type: string
-      filename:
-        description: Domain specific fields
-        type: string
-      id:
-        type: integer
-      linkedMemoAmount:
-        description: Related fields
-        type: integer
-      size:
-        type: integer
-      type:
-        type: string
-      updatedTs:
-        type: integer
-    type: object
   v1.Role:
     enum:
     - HOST
@@ -638,13 +614,6 @@ definitions:
         type: integer
       type:
         $ref: '#/definitions/v1.MemoRelationType'
-    type: object
-  v1.UpsertMemoResourceRequest:
-    properties:
-      resourceId:
-        type: integer
-      updatedTs:
-        type: integer
     type: object
   v1.UpsertSystemSettingRequest:
     properties:
@@ -1299,97 +1268,6 @@ paths:
       summary: Delete a Memo Relation
       tags:
       - memo-relation
-  /api/v1/memo/{memoId}/resource:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: ID of memo to fetch resource list from
-        in: path
-        name: memoId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Memo resource list
-          schema:
-            items:
-              $ref: '#/definitions/v1.Resource'
-            type: array
-        "400":
-          description: 'ID is not a number: %s'
-        "500":
-          description: Failed to fetch resource list
-      summary: Get resource list of a memo
-      tags:
-      - memo-resource
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: ID of memo to bind resource to
-        in: path
-        name: memoId
-        required: true
-        type: integer
-      - description: Memo resource request object
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/v1.UpsertMemoResourceRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Memo resource binded
-          schema:
-            type: boolean
-        "400":
-          description: 'ID is not a number: %s | Malformatted post memo resource request
-            | Resource not found'
-        "401":
-          description: Missing user in session | Unauthorized to bind this resource
-        "500":
-          description: Failed to fetch resource | Failed to upsert memo resource
-      summary: Bind resource to memo
-      tags:
-      - memo-resource
-  /api/v1/memo/{memoId}/resource/{resourceId}:
-    delete:
-      consumes:
-      - application/json
-      parameters:
-      - description: ID of memo to unbind resource from
-        in: path
-        name: memoId
-        required: true
-        type: integer
-      - description: ID of resource to unbind from memo
-        in: path
-        name: resourceId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: 'Memo resource unbinded. *200 is returned even if the reference
-            doesn''t exists '
-          schema:
-            type: boolean
-        "400":
-          description: 'Memo ID is not a number: %s | Resource ID is not a number:
-            %s | Memo not found'
-        "401":
-          description: Missing user in session | Unauthorized
-        "500":
-          description: Failed to find memo | Failed to fetch resource list
-      summary: Unbind resource from memo
-      tags:
-      - memo-resource
   /api/v1/memo/all:
     get:
       description: |-

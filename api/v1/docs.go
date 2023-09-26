@@ -914,140 +914,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/api/v1/memo/{memoId}/resource": {
-            "get": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "memo-resource"
-                ],
-                "summary": "Get resource list of a memo",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID of memo to fetch resource list from",
-                        "name": "memoId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Memo resource list",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/v1.Resource"
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "ID is not a number: %s"
-                    },
-                    "500": {
-                        "description": "Failed to fetch resource list"
-                    }
-                }
-            },
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "memo-resource"
-                ],
-                "summary": "Bind resource to memo",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID of memo to bind resource to",
-                        "name": "memoId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "description": "Memo resource request object",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.UpsertMemoResourceRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Memo resource binded",
-                        "schema": {
-                            "type": "boolean"
-                        }
-                    },
-                    "400": {
-                        "description": "ID is not a number: %s | Malformatted post memo resource request | Resource not found"
-                    },
-                    "401": {
-                        "description": "Missing user in session | Unauthorized to bind this resource"
-                    },
-                    "500": {
-                        "description": "Failed to fetch resource | Failed to upsert memo resource"
-                    }
-                }
-            }
-        },
-        "/api/v1/memo/{memoId}/resource/{resourceId}": {
-            "delete": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "memo-resource"
-                ],
-                "summary": "Unbind resource from memo",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "ID of memo to unbind resource from",
-                        "name": "memoId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "ID of resource to unbind from memo",
-                        "name": "resourceId",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Memo resource unbinded. *200 is returned even if the reference doesn't exists ",
-                        "schema": {
-                            "type": "boolean"
-                        }
-                    },
-                    "400": {
-                        "description": "Memo ID is not a number: %s | Resource ID is not a number: %s | Memo not found"
-                    },
-                    "401": {
-                        "description": "Missing user in session | Unauthorized"
-                    },
-                    "500": {
-                        "description": "Failed to find memo | Failed to fetch resource list"
-                    }
-                }
-            }
-        },
         "/api/v1/ping": {
             "get": {
                 "produces": [
@@ -2359,7 +2225,7 @@ const docTemplate = `{
                 "internalPath": {
                     "type": "string"
                 },
-                "linkedMemoAmount": {
+                "memoID": {
                     "type": "integer"
                 },
                 "size": {
@@ -2745,41 +2611,6 @@ const docTemplate = `{
                 }
             }
         },
-        "v1.Resource": {
-            "type": "object",
-            "properties": {
-                "createdTs": {
-                    "type": "integer"
-                },
-                "creatorId": {
-                    "description": "Standard fields",
-                    "type": "integer"
-                },
-                "externalLink": {
-                    "type": "string"
-                },
-                "filename": {
-                    "description": "Domain specific fields",
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "linkedMemoAmount": {
-                    "description": "Related fields",
-                    "type": "integer"
-                },
-                "size": {
-                    "type": "integer"
-                },
-                "type": {
-                    "type": "string"
-                },
-                "updatedTs": {
-                    "type": "integer"
-                }
-            }
-        },
         "v1.Role": {
             "type": "string",
             "enum": [
@@ -3076,17 +2907,6 @@ const docTemplate = `{
                 },
                 "type": {
                     "$ref": "#/definitions/v1.MemoRelationType"
-                }
-            }
-        },
-        "v1.UpsertMemoResourceRequest": {
-            "type": "object",
-            "properties": {
-                "resourceId": {
-                    "type": "integer"
-                },
-                "updatedTs": {
-                    "type": "integer"
                 }
             }
         },
