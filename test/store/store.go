@@ -7,7 +7,7 @@ import (
 
 	"github.com/usememos/memos/store"
 	"github.com/usememos/memos/store/db"
-	"github.com/usememos/memos/store/sqlite3"
+	"github.com/usememos/memos/store/sqlite"
 	"github.com/usememos/memos/test"
 
 	// sqlite driver.
@@ -24,7 +24,7 @@ func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 		fmt.Printf("failed to migrate db, error: %+v\n", err)
 	}
 
-	driver := sqlite3.NewDriver(db.DBInstance)
+	driver := sqlite.NewDriver(db.DBInstance)
 
 	store := store.New(db.DBInstance, driver, profile)
 	return store
