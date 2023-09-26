@@ -26,4 +26,10 @@ type Driver interface {
 	ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*UserSetting, error)
 	UpsertUserSettingV1(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error)
 	ListUserSettingsV1(ctx context.Context, find *FindUserSettingV1) ([]*storepb.UserSetting, error)
+
+	CreateIdentityProvider(ctx context.Context, create *IdentityProvider) (*IdentityProvider, error)
+	ListIdentityProviders(ctx context.Context, find *FindIdentityProvider) ([]*IdentityProvider, error)
+	GetIdentityProvider(ctx context.Context, find *FindIdentityProvider) (*IdentityProvider, error)
+	UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProvider) (*IdentityProvider, error)
+	DeleteIdentityProvider(ctx context.Context, delete *DeleteIdentityProvider) error
 }
