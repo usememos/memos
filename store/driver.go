@@ -2,6 +2,6 @@ package store
 
 import "context"
 
-type Database interface {
+type Driver interface {
 	CreateActivity(ctx context.Context, create *Activity) (*Activity, error)
 }

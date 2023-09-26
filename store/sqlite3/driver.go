@@ -6,10 +6,10 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-type Database struct {
+type Driver struct {
 	db *sql.DB
 }
 
-func New(db *sql.DB) store.Database {
-	return &Database{db: db}
+func New(db *sql.DB) store.Driver {
+	return &Driver{db: db}
 }

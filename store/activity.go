@@ -18,5 +18,5 @@ type Activity struct {
 }
 
 func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity, error) {
-	return s.database.CreateActivity(ctx, create)
+	return s.driver.CreateActivity(ctx, create)
 }

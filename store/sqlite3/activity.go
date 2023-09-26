@@ -6,7 +6,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (d *Database) CreateActivity(ctx context.Context, create *store.Activity) (*store.Activity, error) {
+func (d *Driver) CreateActivity(ctx context.Context, create *store.Activity) (*store.Activity, error) {
 	stmt := `
 		INSERT INTO activity (
 			creator_id,
