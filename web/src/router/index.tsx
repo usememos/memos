@@ -33,7 +33,7 @@ const initialGlobalStateLoader = (() => {
   };
 })();
 
-const userStateLoader = async () => {
+const initialUserStateLoader = async (redirectWhenNotFound = true) => {
   let user = undefined;
   try {
     user = await initialUserState();
@@ -41,7 +41,7 @@ const userStateLoader = async () => {
     // do nothing.
   }
 
-  if (!user) {
+  if (!user && redirectWhenNotFound) {
     return redirect("/explore");
   }
   return null;
@@ -71,53 +71,49 @@ const router = createBrowserRouter([
           {
             path: "",
             element: <Home />,
-            loader: userStateLoader,
+            loader: () => initialUserStateLoader(),
           },
           {
             path: "explore",
             element: <Explore />,
-            loader: async () => {
-              try {
-                await initialUserState();
-              } catch (error) {
-                // do nothing.
-              }
-              return null;
-            },
+            loader: () => initialUserStateLoader(false),
           },
           {
             path: "review",
             element: <DailyReview />,
-            loader: userStateLoader,
+            loader: () => initialUserStateLoader(),
           },
           {
             path: "resources",
             element: <Resources />,
-            loader: userStateLoader,
+            loader: () => initialUserStateLoader(),
           },
           {
             path: "archived",
             element: <Archived />,
-            loader: userStateLoader,
+            loader: () => initialUserStateLoader(),
           },
           {
             path: "setting",
             element: <Setting />,
-            loader: userStateLoader,
+            loader: () => initialUserStateLoader(),
           },
         ],
       },
       {
         path: "/m/:memoId",
         element: <MemoDetail />,
+        loader: () => initialUserStateLoader(false),
       },
       {
         path: "/m/:memoId/embed",
         element: <EmbedMemo />,
+        loader: () => initialUserStateLoader(false),
       },
       {
         path: "/u/:username",
         element: <UserProfile />,
+        loader: () => initialUserStateLoader(false),
       },
       {
         path: "*",

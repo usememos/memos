@@ -7,12 +7,14 @@ import { useParams } from "react-router-dom";
 import FloatingNavButton from "@/components/FloatingNavButton";
 import Icon from "@/components/Icon";
 import MemoContent from "@/components/MemoContent";
+import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
 import MemoRelationListView from "@/components/MemoRelationListView";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import showShareMemoDialog from "@/components/ShareMemoDialog";
 import UserAvatar from "@/components/UserAvatar";
 import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useMemoStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
@@ -25,9 +27,11 @@ const MemoDetail = () => {
   const t = useTranslate();
   const memoStore = useMemoStore();
   const userV1Store = useUserV1Store();
+  const currentUser = useCurrentUser();
   const [user, setUser] = useState<User>();
   const memoId = Number(params.memoId);
   const memo = memoStore.state.memos.find((memo) => memo.id === memoId);
+  const allowEdit = memo?.creatorUsername === currentUser?.username;
 
   useEffect(() => {
     if (memoId && !isNaN(memoId)) {
@@ -62,6 +66,12 @@ const MemoDetail = () => {
     await memoStore.patchMemo({
       id: memo.id,
       visibility: visibilityValue,
+    });
+  };
+
+  const handleEditMemoClick = () => {
+    showMemoEditorDialog({
+      memoId: memo.id,
     });
   };
 
@@ -113,6 +123,11 @@ const MemoDetail = () => {
                 </Tooltip>
               </div>
               <div className="flex flex-row sm:justify-end items-center">
+                {allowEdit && (
+                  <IconButton size="sm" onClick={handleEditMemoClick}>
+                    <Icon.Edit3 className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                  </IconButton>
+                )}
                 <IconButton size="sm" onClick={handleCopyLinkBtnClick}>
                   <Icon.Link className="w-4 h-auto text-gray-600 dark:text-gray-400" />
                 </IconButton>

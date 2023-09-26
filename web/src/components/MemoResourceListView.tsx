@@ -43,7 +43,7 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
     <>
       {imageResourceList.length > 0 &&
         (imageResourceList.length === 1 ? (
-          <div className="mt-2 max-w-[90%] max-h-64 flex justify-center items-center border dark:border-zinc-800 rounded overflow-hidden hide-scrollbar hover:shadow-md">
+          <div className="mt-2 max-w-full max-h-72 flex justify-center items-center border dark:border-zinc-800 rounded overflow-hidden hide-scrollbar hover:shadow-md">
             <img
               className="cursor-pointer min-h-full w-auto min-w-full object-cover"
               src={getResourceUrl(imageResourceList[0])}
