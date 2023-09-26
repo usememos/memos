@@ -84,10 +84,10 @@ const Resources = () => {
                                   <p className="text-xs shrink text-gray-400 truncate">{resource.filename}</p>
                                   <Link
                                     className="shrink-0 text-xs ml-1 text-gray-400 hover:underline hover:text-blue-600"
-                                    to={`/m/${resource.relatedMemoId}`}
+                                    to={`/m/${resource.memoId}`}
                                     target="_blank"
                                   >
-                                    #{resource.relatedMemoId}
+                                    #{resource.memoId}
                                   </Link>
                                 </div>
                               </div>
