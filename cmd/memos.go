@@ -55,9 +55,9 @@ var (
 				return
 			}
 
-			database := sqlite3.New(db.DBInstance)
+			driver := sqlite3.New(db.DBInstance)
 
-			store := store.New(db.DBInstance, database, profile)
+			store := store.New(db.DBInstance, driver, profile)
 			s, err := server.NewServer(ctx, profile, store)
 			if err != nil {
 				cancel()

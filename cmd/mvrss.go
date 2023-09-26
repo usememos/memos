@@ -50,9 +50,9 @@ var (
 				return
 			}
 
-			database := sqlite3.New(db.DBInstance)
+			driver := sqlite3.New(db.DBInstance)
 
-			s := store.New(db.DBInstance, database, profile)
+			s := store.New(db.DBInstance, driver, profile)
 			resources, err := s.ListResources(ctx, &store.FindResource{})
 			if err != nil {
 				fmt.Printf("failed to list resources, error: %+v\n", err)

@@ -47,9 +47,9 @@ var (
 				return
 			}
 
-			database := sqlite3.New(db.DBInstance)
+			driver := sqlite3.New(db.DBInstance)
 
-			store := store.New(db.DBInstance, database, profile)
+			store := store.New(db.DBInstance, driver, profile)
 			if err := ExecuteSetup(ctx, store, hostUsername, hostPassword); err != nil {
 				fmt.Printf("failed to setup, error: %+v\n", err)
 				return
