@@ -32,4 +32,8 @@ type Driver interface {
 	GetIdentityProvider(ctx context.Context, find *FindIdentityProvider) (*IdentityProvider, error)
 	UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProvider) (*IdentityProvider, error)
 	DeleteIdentityProvider(ctx context.Context, delete *DeleteIdentityProvider) error
+
+	UpsertTag(ctx context.Context, upsert *Tag) (*Tag, error)
+	ListTags(ctx context.Context, find *FindTag) ([]*Tag, error)
+	DeleteTag(ctx context.Context, delete *DeleteTag) error
 }
