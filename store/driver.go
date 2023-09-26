@@ -36,4 +36,10 @@ type Driver interface {
 	UpsertTag(ctx context.Context, upsert *Tag) (*Tag, error)
 	ListTags(ctx context.Context, find *FindTag) ([]*Tag, error)
 	DeleteTag(ctx context.Context, delete *DeleteTag) error
+
+	CreateStorage(ctx context.Context, create *Storage) (*Storage, error)
+	ListStorages(ctx context.Context, find *FindStorage) ([]*Storage, error)
+	GetStorage(ctx context.Context, find *FindStorage) (*Storage, error)
+	UpdateStorage(ctx context.Context, update *UpdateStorage) (*Storage, error)
+	DeleteStorage(ctx context.Context, delete *DeleteStorage) error
 }
