@@ -16,6 +16,7 @@ import (
 type Store struct {
 	Profile            *profile.Profile
 	db                 *sql.DB
+	database           Database
 	systemSettingCache sync.Map // map[string]*SystemSetting
 	userCache          sync.Map // map[int]*User
 	userSettingCache   sync.Map // map[string]*UserSetting
@@ -23,10 +24,11 @@ type Store struct {
 }
 
 // New creates a new instance of Store.
-func New(db *sql.DB, profile *profile.Profile) *Store {
+func New(db *sql.DB, database Database, profile *profile.Profile) *Store {
 	return &Store{
-		Profile: profile,
-		db:      db,
+		Profile:  profile,
+		db:       db,
+		database: database,
 	}
 }
 
