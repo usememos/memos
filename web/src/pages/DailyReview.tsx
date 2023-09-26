@@ -161,7 +161,7 @@ const DailyReview = () => {
           ) : (
             <div className="flex flex-col justify-start items-start w-full mt-2">
               {dailyMemos.map((memo) => (
-                <DailyMemo key={`${memo.id}-${memo.updatedTs}`} memo={memo} />
+                <DailyMemo key={`${memo.id}-${memo.displayTs}`} memo={memo} />
               ))}
             </div>
           )}
