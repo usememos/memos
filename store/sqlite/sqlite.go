@@ -11,5 +11,7 @@ type Driver struct {
 }
 
 func NewDriver(db *sql.DB) store.Driver {
-	return &Driver{db: db}
+	return &Driver{
+		db: db,
+	}
 }
