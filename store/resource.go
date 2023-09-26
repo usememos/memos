@@ -20,9 +20,7 @@ type Resource struct {
 	ExternalLink string
 	Type         string
 	Size         int64
-
-	// Related fields
-	RelatedMemoID *int32
+	MemoID       *int32
 }
 
 type FindResource struct {
@@ -41,11 +39,14 @@ type UpdateResource struct {
 	UpdatedTs    *int64
 	Filename     *string
 	InternalPath *string
+	MemoID       *int32
+	UnbindMemo   bool
 	Blob         []byte
 }
 
 type DeleteResource struct {
-	ID int32
+	ID     int32
+	MemoID *int32
 }
 
 func (s *Store) CreateResource(ctx context.Context, create *Resource) (*Resource, error) {

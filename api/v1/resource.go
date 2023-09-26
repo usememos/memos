@@ -384,17 +384,6 @@ func (s *APIV1Service) streamResource(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("resourceId"))).SetInternal(err)
 	}
 
-	resourceVisibility, err := checkResourceVisibility(ctx, s.Store, resourceID)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Failed to get resource visibility").SetInternal(err)
-	}
-
-	// Protected resource require a logined user
-	userID, ok := c.Get(userIDContextKey).(int32)
-	if resourceVisibility == store.Protected && (!ok || userID <= 0) {
-		return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
-	}
-
 	resource, err := s.Store.GetResource(ctx, &store.FindResource{
 		ID:      &resourceID,
 		GetBlob: true,
@@ -405,10 +394,20 @@ func (s *APIV1Service) streamResource(c echo.Context) error {
 	if resource == nil {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
 	}
-
-	// Private resource require logined user is the creator
-	if resourceVisibility == store.Private && (!ok || userID != resource.CreatorID) {
-		return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match").SetInternal(err)
+	// Check the related memo visibility.
+	if resource.MemoID != nil {
+		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+			ID: resource.MemoID,
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to find memo by ID: %v", resource.MemoID)).SetInternal(err)
+		}
+		if memo != nil && memo.Visibility != store.Public {
+			userID, ok := c.Get(userIDContextKey).(int32)
+			if !ok || (memo.Visibility == store.Private && userID != resource.CreatorID) {
+				return echo.NewHTTPError(http.StatusUnauthorized, "Resource visibility not match")
+			}
+		}
 	}
 
 	blob := resource.Blob
@@ -540,47 +539,6 @@ func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error)
 		return nil, errors.Wrap(err, "failed to read the local resource")
 	}
 	return dstBlob, nil
-}
-
-func checkResourceVisibility(ctx context.Context, s *store.Store, resourceID int32) (store.Visibility, error) {
-	memoResources, err := s.ListMemoResources(ctx, &store.FindMemoResource{
-		ResourceID: &resourceID,
-	})
-	if err != nil {
-		return store.Private, err
-	}
-
-	// If resource is belongs to no memo, it'll always PRIVATE.
-	if len(memoResources) == 0 {
-		return store.Private, nil
-	}
-
-	memoIDs := make([]int32, 0, len(memoResources))
-	for _, memoResource := range memoResources {
-		memoIDs = append(memoIDs, memoResource.MemoID)
-	}
-	visibilityList, err := s.FindMemosVisibilityList(ctx, memoIDs)
-	if err != nil {
-		return store.Private, err
-	}
-
-	var isProtected bool
-	for _, visibility := range visibilityList {
-		// If any memo is PUBLIC, resource should be PUBLIC too.
-		if visibility == store.Public {
-			return store.Public, nil
-		}
-
-		if visibility == store.Protected {
-			isProtected = true
-		}
-	}
-
-	if isProtected {
-		return store.Protected, nil
-	}
-
-	return store.Private, nil
 }
 
 func convertResourceFromStore(resource *store.Resource) *Resource {

@@ -92,6 +92,7 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 			Filename:  attachment.FileName,
 			Type:      attachment.GetMimeType(),
 			Size:      attachment.FileSize,
+			MemoID:    &memoMessage.ID,
 		}
 
 		err := apiv1.SaveResourceBlob(ctx, t.store, &create, bytes.NewReader(attachment.Data))
@@ -100,18 +101,9 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 			return err
 		}
 
-		resource, err := t.store.CreateResource(ctx, &create)
+		_, err = t.store.CreateResource(ctx, &create)
 		if err != nil {
 			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Failed to CreateResource: %s", err), nil)
-			return err
-		}
-
-		_, err = t.store.UpsertMemoResource(ctx, &store.UpsertMemoResource{
-			MemoID:     memoMessage.ID,
-			ResourceID: resource.ID,
-		})
-		if err != nil {
-			_, err := bot.EditMessage(ctx, message.Chat.ID, reply.MessageID, fmt.Sprintf("Failed to UpsertMemoResource: %s", err), nil)
 			return err
 		}
 	}

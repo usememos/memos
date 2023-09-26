@@ -58,7 +58,6 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 	s.registerResourceRoutes(apiV1Group)
 	s.registerMemoRoutes(apiV1Group)
 	s.registerMemoOrganizerRoutes(apiV1Group)
-	s.registerMemoResourceRoutes(apiV1Group)
 	s.registerMemoRelationRoutes(apiV1Group)
 
 	// Register public routes.

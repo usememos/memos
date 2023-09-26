@@ -175,7 +175,7 @@ func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) 
 		memo.content AS content,
 		memo.visibility AS visibility,
 		CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END AS pinned,
-		GROUP_CONCAT(memo_resource.resource_id) AS resource_id_list,
+		GROUP_CONCAT(resource.id) AS resource_id_list,
 		(
 				SELECT
 						GROUP_CONCAT(related_memo_id || ':' || type)
@@ -191,7 +191,7 @@ func (s *Store) ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error) 
 	LEFT JOIN
 		memo_organizer ON memo.id = memo_organizer.memo_id
 	LEFT JOIN
-		memo_resource ON memo.id = memo_resource.memo_id
+		resource ON memo.id = resource.memo_id
 	WHERE ` + strings.Join(where, " AND ") + `
 	GROUP BY memo.id
 	ORDER BY ` + strings.Join(orders, ", ") + `

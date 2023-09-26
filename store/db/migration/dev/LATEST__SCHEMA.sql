@@ -81,19 +81,13 @@ CREATE TABLE resource (
   external_link TEXT NOT NULL DEFAULT '',
   type TEXT NOT NULL DEFAULT '',
   size INTEGER NOT NULL DEFAULT 0,
-  internal_path TEXT NOT NULL DEFAULT ''
+  internal_path TEXT NOT NULL DEFAULT '',
+  memo_id INTEGER
 );
 
 CREATE INDEX idx_resource_creator_id ON resource (creator_id);
 
--- memo_resource
-CREATE TABLE memo_resource (
-  memo_id INTEGER NOT NULL,
-  resource_id INTEGER NOT NULL,
-  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  updated_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
-  UNIQUE(memo_id, resource_id)
-);
+CREATE INDEX idx_resource_memo_id ON resource (memo_id);
 
 -- tag
 CREATE TABLE tag (

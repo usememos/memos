@@ -20,7 +20,7 @@ message Resource {
   string external_link = 4;
   string type = 5;
   int64 size = 6;
-  optional int32 related_memo_id = 7;
+  optional int32 memo_id = 7;
 }
 
 message ListResourcesRequest {}

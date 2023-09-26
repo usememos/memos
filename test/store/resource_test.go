@@ -31,17 +31,6 @@ func TestResourceStore(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, correctFilename, resource.Filename)
 	require.Equal(t, int32(1), resource.ID)
-	_, err = ts.UpsertMemoResource(ctx, &store.UpsertMemoResource{
-		MemoID:     1,
-		ResourceID: resource.ID,
-	})
-	require.NoError(t, err)
-
-	resource, err = ts.GetResource(ctx, &store.FindResource{
-		ID: &resource.ID,
-	})
-	require.NoError(t, err)
-	require.Equal(t, *resource.RelatedMemoID, int32(1))
 
 	notFoundResource, err := ts.GetResource(ctx, &store.FindResource{
 		Filename: &incorrectFilename,

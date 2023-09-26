@@ -155,20 +155,6 @@ export function deleteResourceById(id: ResourceId) {
   return axios.delete(`/api/v1/resource/${id}`);
 }
 
-export function getMemoResourceList(memoId: MemoId) {
-  return axios.get<Resource[]>(`/api/v1/memo/${memoId}/resource`);
-}
-
-export function upsertMemoResource(memoId: MemoId, resourceId: ResourceId) {
-  return axios.post(`/api/v1/memo/${memoId}/resource`, {
-    resourceId,
-  });
-}
-
-export function deleteMemoResource(memoId: MemoId, resourceId: ResourceId) {
-  return axios.delete(`/api/v1/memo/${memoId}/resource/${resourceId}`);
-}
-
 export function getTagList() {
   return axios.get<string[]>(`/api/v1/tag`);
 }

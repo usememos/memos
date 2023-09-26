@@ -3,7 +3,6 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
-import { upsertMemoResource } from "@/helpers/api";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { clearContentQueryParam } from "@/helpers/utils";
 import { getMatchedNodes } from "@/labs/marked";
@@ -223,7 +222,10 @@ const MemoEditor = (props: Props) => {
       if (resource) {
         uploadedResourceList.push(resource);
         if (memoId) {
-          await upsertMemoResource(memoId, resource.id);
+          await resourceStore.patchResource({
+            id: resource.id,
+            memoId,
+          });
         }
       }
     }

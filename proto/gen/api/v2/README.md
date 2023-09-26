@@ -262,7 +262,7 @@
 | external_link | [string](#string) |  |  |
 | type | [string](#string) |  |  |
 | size | [int64](#int64) |  |  |
-| related_memo_id | [int32](#int32) | optional |  |
+| memo_id | [int32](#int32) | optional |  |
 
 
 

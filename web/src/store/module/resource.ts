@@ -40,31 +40,14 @@ export const useResourceStore = () => {
       store.dispatch(setResources([resource, ...resourceList]));
       return resource;
     },
-    async createResourcesWithBlob(files: FileList): Promise<Array<Resource>> {
-      let newResourceList: Array<Resource> = [];
-      for (const file of files) {
-        const { name: filename, size } = file;
-        if (size > maxUploadSizeMiB * 1024 * 1024) {
-          return Promise.reject(t("message.file-exceeds-upload-limit-of", { file: filename, size: maxUploadSizeMiB }));
-        }
-
-        const formData = new FormData();
-        formData.append("file", file, filename);
-        const { data: resource } = await api.createResourceWithBlob(formData);
-        newResourceList = [resource, ...newResourceList];
-      }
-      const resourceList = state.resources;
-      store.dispatch(setResources([...newResourceList, ...resourceList]));
-      return newResourceList;
-    },
-    async deleteResourceById(id: ResourceId) {
-      await api.deleteResourceById(id);
-      store.dispatch(deleteResource(id));
-    },
     async patchResource(resourcePatch: ResourcePatch): Promise<Resource> {
       const { data: resource } = await api.patchResource(resourcePatch);
       store.dispatch(patchResource(resource));
       return resource;
+    },
+    async deleteResourceById(id: ResourceId) {
+      await api.deleteResourceById(id);
+      store.dispatch(deleteResource(id));
     },
   };
 };

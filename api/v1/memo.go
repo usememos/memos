@@ -319,9 +319,9 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 	}
 
 	for _, resourceID := range createMemoRequest.ResourceIDList {
-		if _, err := s.Store.UpsertMemoResource(ctx, &store.UpsertMemoResource{
-			MemoID:     memo.ID,
-			ResourceID: resourceID,
+		if _, err := s.Store.UpdateResource(ctx, &store.UpdateResource{
+			ID:     resourceID,
+			MemoID: &memo.ID,
 		}); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
 		}
@@ -694,19 +694,18 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 	if patchMemoRequest.ResourceIDList != nil {
 		addedResourceIDList, removedResourceIDList := getIDListDiff(memo.ResourceIDList, patchMemoRequest.ResourceIDList)
 		for _, resourceID := range addedResourceIDList {
-			if _, err := s.Store.UpsertMemoResource(ctx, &store.UpsertMemoResource{
-				MemoID:     memo.ID,
-				ResourceID: resourceID,
+			if _, err := s.Store.UpdateResource(ctx, &store.UpdateResource{
+				ID:     resourceID,
+				MemoID: &memo.ID,
 			}); err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo resource").SetInternal(err)
 			}
 		}
 		for _, resourceID := range removedResourceIDList {
-			if err := s.Store.DeleteMemoResource(ctx, &store.DeleteMemoResource{
-				MemoID:     &memo.ID,
-				ResourceID: &resourceID,
+			if err := s.Store.DeleteResource(ctx, &store.DeleteResource{
+				ID: resourceID,
 			}); err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete memo resource").SetInternal(err)
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete resource").SetInternal(err)
 			}
 		}
 	}

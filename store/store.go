@@ -109,9 +109,6 @@ func (*Store) vacuumImpl(ctx context.Context, tx *sql.Tx) error {
 	if err := vacuumMemoOrganizer(ctx, tx); err != nil {
 		return err
 	}
-	if err := vacuumMemoResource(ctx, tx); err != nil {
-		return err
-	}
 	if err := vacuumMemoRelations(ctx, tx); err != nil {
 		return err
 	}

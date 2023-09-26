@@ -9,6 +9,7 @@ interface ResourceCreate {
 interface ResourcePatch {
   id: ResourceId;
   filename?: string;
+  memoId?: number;
 }
 
 interface ResourceFind {

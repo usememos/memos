@@ -47,12 +47,12 @@ func (s *ResourceService) ListResources(ctx context.Context, _ *apiv2pb.ListReso
 
 func convertResourceFromStore(resource *store.Resource) *apiv2pb.Resource {
 	return &apiv2pb.Resource{
-		Id:            resource.ID,
-		CreatedTs:     timestamppb.New(time.Unix(resource.CreatedTs, 0)),
-		Filename:      resource.Filename,
-		ExternalLink:  resource.ExternalLink,
-		Type:          resource.Type,
-		Size:          resource.Size,
-		RelatedMemoId: resource.RelatedMemoID,
+		Id:           resource.ID,
+		CreatedTs:    timestamppb.New(time.Unix(resource.CreatedTs, 0)),
+		Filename:     resource.Filename,
+		ExternalLink: resource.ExternalLink,
+		Type:         resource.Type,
+		Size:         resource.Size,
+		MemoId:       resource.MemoID,
 	}
 }
