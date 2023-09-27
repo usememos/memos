@@ -162,7 +162,7 @@ func (s *Server) Shutdown(ctx context.Context) {
 	}
 
 	// Close database connection
-	if err := s.Store.GetDB().Close(); err != nil {
+	if err := s.Store.Close(); err != nil {
 		fmt.Printf("failed to close database, error: %v\n", err)
 	}
 

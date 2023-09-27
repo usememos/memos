@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"database/sql"
 )
 
 type MemoOrganizer struct {
@@ -31,29 +30,4 @@ func (s *Store) GetMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) (
 
 func (s *Store) DeleteMemoOrganizer(ctx context.Context, delete *DeleteMemoOrganizer) error {
 	return s.driver.DeleteMemoOrganizer(ctx, delete)
-}
-
-func vacuumMemoOrganizer(ctx context.Context, tx *sql.Tx) error {
-	stmt := `
-	DELETE FROM 
-		memo_organizer 
-	WHERE 
-		memo_id NOT IN (
-			SELECT 
-				id 
-			FROM 
-				memo
-		)
-		OR user_id NOT IN (
-			SELECT 
-				id 
-			FROM 
-				user
-		)`
-	_, err := tx.ExecContext(ctx, stmt)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

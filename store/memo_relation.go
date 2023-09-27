@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"database/sql"
 )
 
 type MemoRelationType string
@@ -53,14 +52,4 @@ func (s *Store) GetMemoRelation(ctx context.Context, find *FindMemoRelation) (*M
 
 func (s *Store) DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error {
 	return s.driver.DeleteMemoRelation(ctx, delete)
-}
-
-func vacuumMemoRelations(ctx context.Context, tx *sql.Tx) error {
-	if _, err := tx.ExecContext(ctx, `
-		DELETE FROM memo_relation
-		WHERE memo_id NOT IN (SELECT id FROM memo) OR related_memo_id NOT IN (SELECT id FROM memo)
-	`); err != nil {
-		return err
-	}
-	return nil
 }

@@ -25,7 +25,6 @@ func NewTestingStore(ctx context.Context, t *testing.T) *store.Store {
 	}
 
 	driver := sqlite.NewDriver(db.DBInstance)
-
-	store := store.New(db.DBInstance, driver, profile)
+	store := store.New(driver, profile)
 	return store
 }

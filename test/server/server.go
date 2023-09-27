@@ -41,8 +41,7 @@ func NewTestingServer(ctx context.Context, t *testing.T) (*TestingServer, error)
 	}
 
 	driver := sqlite.NewDriver(db.DBInstance)
-
-	store := store.New(db.DBInstance, driver, profile)
+	store := store.New(driver, profile)
 	server, err := server.NewServer(ctx, profile, store)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to create server")

@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"database/sql"
 )
 
 type Resource struct {
@@ -75,33 +74,5 @@ func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Re
 }
 
 func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) error {
-	err := s.driver.DeleteResource(ctx, delete)
-	if err != nil {
-		return err
-	}
-
-	if err := s.Vacuum(ctx); err != nil {
-		// Prevent linter warning.
-		return err
-	}
-	return nil
-}
-
-func vacuumResource(ctx context.Context, tx *sql.Tx) error {
-	stmt := `
-	DELETE FROM 
-		resource 
-	WHERE 
-		creator_id NOT IN (
-			SELECT 
-				id 
-			FROM 
-				user
-		)`
-	_, err := tx.ExecContext(ctx, stmt)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return s.driver.DeleteResource(ctx, delete)
 }

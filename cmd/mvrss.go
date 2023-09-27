@@ -51,8 +51,7 @@ var (
 			}
 
 			driver := sqlite.NewDriver(db.DBInstance)
-
-			s := store.New(db.DBInstance, driver, profile)
+			s := store.New(driver, profile)
 			resources, err := s.ListResources(ctx, &store.FindResource{})
 			if err != nil {
 				fmt.Printf("failed to list resources, error: %+v\n", err)

@@ -2,7 +2,6 @@ package store
 
 import (
 	"context"
-	"database/sql"
 )
 
 // Visibility is the type of a visibility.
@@ -107,35 +106,9 @@ func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
 }
 
 func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemo) error {
-	if err := s.driver.DeleteMemo(ctx, delete); err != nil {
-		return err
-	}
-	if err := s.Vacuum(ctx); err != nil {
-		// Prevent linter warning.
-		return err
-	}
-	return nil
+	return s.driver.DeleteMemo(ctx, delete)
 }
 
 func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]Visibility, error) {
 	return s.driver.FindMemosVisibilityList(ctx, memoIDs)
-}
-
-func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
-	stmt := `
-	DELETE FROM 
-		memo 
-	WHERE 
-		creator_id NOT IN (
-			SELECT 
-				id 
-			FROM 
-				user
-		)`
-	_, err := tx.ExecContext(ctx, stmt)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
