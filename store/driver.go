@@ -20,6 +20,14 @@ type Driver interface {
 	DeleteMemo(ctx context.Context, delete *DeleteMemo) error
 	FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]Visibility, error)
 
+	UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error)
+	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)
+	DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error
+
+	UpsertMemoOrganizer(ctx context.Context, upsert *MemoOrganizer) (*MemoOrganizer, error)
+	GetMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) (*MemoOrganizer, error)
+	DeleteMemoOrganizer(ctx context.Context, delete *DeleteMemoOrganizer) error
+
 	UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error)
 	ListSystemSettings(ctx context.Context, find *FindSystemSetting) ([]*SystemSetting, error)
 
