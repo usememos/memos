@@ -57,6 +57,14 @@ func (d *Driver) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Ta
 }
 
 func (d *Driver) DeleteTag(ctx context.Context, delete *store.DeleteTag) error {
-	_, _, _ = d, ctx, delete
-	return errNotImplemented
+	where, args := []string{"name = ?", "creator_id = ?"}, []any{delete.Name, delete.CreatorID}
+	stmt := `DELETE FROM tag WHERE ` + strings.Join(where, " AND ")
+	result, err := d.db.ExecContext(ctx, stmt, args...)
+	if err != nil {
+		return err
+	}
+	if _, err = result.RowsAffected(); err != nil {
+		return err
+	}
+	return nil
 }
