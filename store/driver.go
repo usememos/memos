@@ -18,6 +18,10 @@ type Driver interface {
 	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)
 	DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error
 
+	UpsertMemoOrganizer(ctx context.Context, upsert *MemoOrganizer) (*MemoOrganizer, error)
+	GetMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) (*MemoOrganizer, error)
+	DeleteMemoOrganizer(ctx context.Context, delete *DeleteMemoOrganizer) error
+
 	UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error)
 	ListSystemSettings(ctx context.Context, find *FindSystemSetting) ([]*SystemSetting, error)
 
