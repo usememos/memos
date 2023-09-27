@@ -33,7 +33,7 @@ func (p *Profile) IsDev() bool {
 	return p.Mode != "prod"
 }
 
-func checkDSN(dataDir string) (string, error) {
+func checkDataDir(dataDir string) (string, error) {
 	// Convert to absolute path if relative path is supplied.
 	if !filepath.IsAbs(dataDir) {
 		relativeDir := filepath.Join(filepath.Dir(os.Args[0]), dataDir)
@@ -81,7 +81,7 @@ func GetProfile() (*Profile, error) {
 		}
 	}
 
-	dataDir, err := checkDSN(profile.Data)
+	dataDir, err := checkDataDir(profile.Data)
 	if err != nil {
 		fmt.Printf("Failed to check dsn: %s, err: %+v\n", dataDir, err)
 		return nil, err
