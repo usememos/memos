@@ -187,6 +187,19 @@ func (d *Driver) UpdateResource(ctx context.Context, update *store.UpdateResourc
 }
 
 func (d *Driver) DeleteResource(ctx context.Context, delete *store.DeleteResource) error {
-	_, _, _ = d, ctx, delete
-	return errNotImplemented
+	stmt := `DELETE FROM resource WHERE id = ?`
+	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
+	if err != nil {
+		return err
+	}
+	if _, err := result.RowsAffected(); err != nil {
+		return err
+	}
+
+	if err := d.Vacuum(ctx); err != nil {
+		// Prevent linter warning.
+		return err
+	}
+
+	return nil
 }
