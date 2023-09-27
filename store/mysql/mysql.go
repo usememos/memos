@@ -6,6 +6,7 @@ import (
 
 	"github.com/pkg/errors"
 
+	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -29,7 +30,8 @@ func NewDriver(profile *profile.Profile) (store.Driver, error) {
 
 func (d *Driver) Vacuum(ctx context.Context) error {
 	_, _ = d, ctx
-	return errNotImplemented
+	log.Error("driver.Vacuum MUST BE implement")
+	return nil
 }
 
 func (d *Driver) BackupTo(ctx context.Context, filename string) error {

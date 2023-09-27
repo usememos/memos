@@ -172,6 +172,20 @@ func (d *Driver) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.
 }
 
 func (d *Driver) DeleteUser(ctx context.Context, delete *store.DeleteUser) error {
-	_, _, _ = d, ctx, delete
-	return errNotImplemented
+	result, err := d.db.ExecContext(ctx, `
+		DELETE FROM user WHERE id = ?
+	`, delete.ID)
+	if err != nil {
+		return err
+	}
+	if _, err := result.RowsAffected(); err != nil {
+		return err
+	}
+
+	if err := d.Vacuum(ctx); err != nil {
+		// Prevent linter warning.
+		return err
+	}
+
+	return nil
 }
