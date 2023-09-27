@@ -82,10 +82,14 @@ func (d *Driver) UpdateUser(ctx context.Context, update *store.UpdateUser) (*sto
 		UPDATE user
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, username, role, email, nickname, password_hash, avatar_url, created_ts, updated_ts, row_status
 	`
+	if _, err := d.db.ExecContext(ctx, query, args...); err != nil {
+		return nil, err
+	}
+
 	user := &store.User{}
-	if err := d.db.QueryRowContext(ctx, query, args...).Scan(
+	query = "SELECT id, username, role, email, nickname, password_hash, avatar_url, created_ts, updated_ts, row_status FROM user WHERE id = ?"
+	if err := d.db.QueryRowContext(ctx, query, update.ID).Scan(
 		&user.ID,
 		&user.Username,
 		&user.Role,
