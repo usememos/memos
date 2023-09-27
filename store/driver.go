@@ -14,6 +14,12 @@ type Driver interface {
 	UpdateResource(ctx context.Context, update *UpdateResource) (*Resource, error)
 	DeleteResource(ctx context.Context, delete *DeleteResource) error
 
+	CreateMemo(ctx context.Context, create *Memo) (*Memo, error)
+	ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error)
+	UpdateMemo(ctx context.Context, update *UpdateMemo) error
+	DeleteMemo(ctx context.Context, delete *DeleteMemo) error
+	FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]Visibility, error)
+
 	UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error)
 	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)
 	DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error
