@@ -36,6 +36,8 @@ var (
 	addr    string
 	port    int
 	data    string
+	driver  string
+	dsn     string
 
 	rootCmd = &cobra.Command{
 		Use:   "memos",
@@ -101,6 +103,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&addr, "addr", "a", "", "address of server")
 	rootCmd.PersistentFlags().IntVarP(&port, "port", "p", 8081, "port of server")
 	rootCmd.PersistentFlags().StringVarP(&data, "data", "d", "", "data directory")
+	rootCmd.PersistentFlags().StringVarP(&driver, "driver", "", "", "database driver")
+	rootCmd.PersistentFlags().StringVarP(&dsn, "dsn", "", "", "database source name(aka. DSN)")
 
 	err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode"))
 	if err != nil {
@@ -118,8 +122,17 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	err = viper.BindPFlag("driver", rootCmd.PersistentFlags().Lookup("driver"))
+	if err != nil {
+		panic(err)
+	}
+	err = viper.BindPFlag("dsn", rootCmd.PersistentFlags().Lookup("dsn"))
+	if err != nil {
+		panic(err)
+	}
 
 	viper.SetDefault("mode", "demo")
+	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("addr", "")
 	viper.SetDefault("port", 8081)
 	viper.SetEnvPrefix("memos")
@@ -140,6 +153,7 @@ func initConfig() {
 	println("addr:", profile.Addr)
 	println("port:", profile.Port)
 	println("mode:", profile.Mode)
+	println("driver:", profile.Driver)
 	println("version:", profile.Version)
 	println("---")
 }

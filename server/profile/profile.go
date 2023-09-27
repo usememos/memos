@@ -24,7 +24,9 @@ type Profile struct {
 	// Data is the data directory
 	Data string `json:"-"`
 	// DSN points to where Memos stores its own data
-	DSN string `json:"-"`
+	DSN string `json:"dsn"`
+	// Driver is the database driver
+	Driver string `json:"driver"`
 	// Version is the current version of server
 	Version string `json:"version"`
 }
@@ -88,8 +90,10 @@ func GetProfile() (*Profile, error) {
 	}
 
 	profile.Data = dataDir
-	dbFile := fmt.Sprintf("memos_%s.db", profile.Mode)
-	profile.DSN = filepath.Join(dataDir, dbFile)
+	if profile.Driver == "sqlite" && profile.DSN == "" {
+		dbFile := fmt.Sprintf("memos_%s.db", profile.Mode)
+		profile.DSN = filepath.Join(dataDir, dbFile)
+	}
 	profile.Version = version.GetCurrentVersion(profile.Mode)
 
 	return &profile, nil
