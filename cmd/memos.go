@@ -16,6 +16,7 @@ import (
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
+	"github.com/usememos/memos/store/mysql"
 	"github.com/usememos/memos/store/sqlite"
 )
 
@@ -44,7 +45,19 @@ var (
 		Short: `An open-source, self-hosted memo hub with knowledge management and social networking.`,
 		Run: func(_cmd *cobra.Command, _args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
-			driver, err := sqlite.NewDriver(profile)
+
+			var err error
+			var driver store.Driver
+			switch profile.Driver {
+			case "sqlite":
+				driver, err = sqlite.NewDriver(profile)
+			case "mysql":
+				driver, err = mysql.NewDriver(profile)
+			default:
+				cancel()
+				log.Error("unknown db driver", zap.String("driver", profile.Driver))
+				return
+			}
 			if err != nil {
 				cancel()
 				log.Error("failed to create db driver", zap.Error(err))
