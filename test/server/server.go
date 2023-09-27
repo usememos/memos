@@ -18,7 +18,6 @@ import (
 	"github.com/usememos/memos/server"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db"
 	"github.com/usememos/memos/store/sqlite"
 	"github.com/usememos/memos/test"
 )
@@ -32,15 +31,14 @@ type TestingServer struct {
 
 func NewTestingServer(ctx context.Context, t *testing.T) (*TestingServer, error) {
 	profile := test.GetTestingProfile(t)
-	db := db.NewDB(profile)
-	if err := db.Open(); err != nil {
-		return nil, errors.Wrap(err, "failed to open db")
+	driver, err := sqlite.NewDriver(profile)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to create db driver")
 	}
-	if err := db.Migrate(ctx); err != nil {
+	if err := driver.Migrate(ctx); err != nil {
 		return nil, errors.Wrap(err, "failed to migrate db")
 	}
 
-	driver := sqlite.NewDriver(db.DBInstance)
 	store := store.New(driver, profile)
 	server, err := server.NewServer(ctx, profile, store)
 	if err != nil {

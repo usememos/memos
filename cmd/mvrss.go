@@ -9,7 +9,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db"
 	"github.com/usememos/memos/store/sqlite"
 )
 
@@ -40,17 +39,16 @@ var (
 				return
 			}
 
-			db := db.NewDB(profile)
-			if err := db.Open(); err != nil {
-				fmt.Printf("failed to open db, error: %+v\n", err)
+			driver, err := sqlite.NewDriver(profile)
+			if err != nil {
+				fmt.Printf("failed to create db driver, error: %+v\n", err)
 				return
 			}
-			if err := db.Migrate(ctx); err != nil {
+			if err := driver.Migrate(ctx); err != nil {
 				fmt.Printf("failed to migrate db, error: %+v\n", err)
 				return
 			}
 
-			driver := sqlite.NewDriver(db.DBInstance)
 			s := store.New(driver, profile)
 			resources, err := s.ListResources(ctx, &store.FindResource{})
 			if err != nil {
