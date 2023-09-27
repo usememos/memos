@@ -13,3 +13,4 @@ follow_symlink = false
 full_bin = ""
 send_interrupt = true
 kill_delay = 2000
+stop_on_error = true
