@@ -8,6 +8,8 @@ import (
 
 type Driver interface {
 	Vacuum(ctx context.Context) error
+	BackupTo(ctx context.Context, filename string) error
+	Close() error
 
 	CreateActivity(ctx context.Context, create *Activity) (*Activity, error)
 

@@ -48,8 +48,7 @@ var (
 			}
 
 			driver := sqlite.NewDriver(db.DBInstance)
-
-			store := store.New(db.DBInstance, driver, profile)
+			store := store.New(driver, profile)
 			if err := ExecuteSetup(ctx, store, hostUsername, hostPassword); err != nil {
 				fmt.Printf("failed to setup, error: %+v\n", err)
 				return

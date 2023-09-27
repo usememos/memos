@@ -56,8 +56,7 @@ var (
 			}
 
 			driver := sqlite.NewDriver(db.DBInstance)
-
-			store := store.New(db.DBInstance, driver, profile)
+			store := store.New(driver, profile)
 			s, err := server.NewServer(ctx, profile, store)
 			if err != nil {
 				cancel()

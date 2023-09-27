@@ -4,6 +4,9 @@ import (
 	"context"
 	"database/sql"
 
+	"github.com/pkg/errors"
+	"modernc.org/sqlite"
+
 	"github.com/usememos/memos/store"
 )
 
@@ -62,4 +65,45 @@ func vacuumImpl(ctx context.Context, tx *sql.Tx) error {
 	}
 
 	return nil
+}
+
+func (d *Driver) BackupTo(ctx context.Context, filename string) error {
+	conn, err := d.db.Conn(ctx)
+	if err != nil {
+		return errors.Errorf("fail to get conn %s", err)
+	}
+	defer conn.Close()
+
+	err = conn.Raw(func(driverConn any) error {
+		type backuper interface {
+			NewBackup(string) (*sqlite.Backup, error)
+		}
+		backupConn, ok := driverConn.(backuper)
+		if !ok {
+			return errors.Errorf("db connection is not a sqlite backuper")
+		}
+
+		bck, err := backupConn.NewBackup(filename)
+		if err != nil {
+			return errors.Errorf("fail to create sqlite backup %s", err)
+		}
+
+		for more := true; more; {
+			more, err = bck.Step(-1)
+			if err != nil {
+				return errors.Errorf("fail to execute sqlite backup %s", err)
+			}
+		}
+
+		return bck.Finish()
+	})
+	if err != nil {
+		return errors.Errorf("fail to backup %s", err)
+	}
+
+	return nil
+}
+
+func (d *Driver) Close() error {
+	return d.db.Close()
 }
