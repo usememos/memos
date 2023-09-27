@@ -2,21 +2,106 @@ package mysql
 
 import (
 	"context"
+	"strings"
 
 	"github.com/usememos/memos/store"
 )
 
 func (d *Driver) UpsertMemoRelation(ctx context.Context, create *store.MemoRelation) (*store.MemoRelation, error) {
-	_, _, _ = d, ctx, create
-	return nil, errNotImplemented
+	stmt := `
+		INSERT INTO memo_relation (
+			memo_id,
+			related_memo_id,
+			type
+		)
+		VALUES (?, ?, ?)
+		ON DUPLICATE KEY UPDATE type = ?
+	`
+	_, err := d.db.ExecContext(
+		ctx,
+		stmt,
+		create.MemoID,
+		create.RelatedMemoID,
+		create.Type,
+		create.Type,
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	memoRelation := store.MemoRelation{
+		MemoID:        create.MemoID,
+		RelatedMemoID: create.RelatedMemoID,
+		Type:          create.Type,
+	}
+
+	return &memoRelation, nil
 }
 
 func (d *Driver) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation) ([]*store.MemoRelation, error) {
-	_, _, _ = d, ctx, find
-	return nil, errNotImplemented
+	where, args := []string{"TRUE"}, []any{}
+	if find.MemoID != nil {
+		where, args = append(where, "memo_id = ?"), append(args, find.MemoID)
+	}
+	if find.RelatedMemoID != nil {
+		where, args = append(where, "related_memo_id = ?"), append(args, find.RelatedMemoID)
+	}
+	if find.Type != nil {
+		where, args = append(where, "type = ?"), append(args, find.Type)
+	}
+
+	rows, err := d.db.QueryContext(ctx, `
+		SELECT
+			memo_id,
+			related_memo_id,
+			type
+		FROM memo_relation
+		WHERE `+strings.Join(where, " AND "), args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	list := []*store.MemoRelation{}
+	for rows.Next() {
+		memoRelation := &store.MemoRelation{}
+		if err := rows.Scan(
+			&memoRelation.MemoID,
+			&memoRelation.RelatedMemoID,
+			&memoRelation.Type,
+		); err != nil {
+			return nil, err
+		}
+		list = append(list, memoRelation)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }
 
 func (d *Driver) DeleteMemoRelation(ctx context.Context, delete *store.DeleteMemoRelation) error {
-	_, _, _ = d, ctx, delete
-	return errNotImplemented
+	where, args := []string{"TRUE"}, []any{}
+	if delete.MemoID != nil {
+		where, args = append(where, "memo_id = ?"), append(args, delete.MemoID)
+	}
+	if delete.RelatedMemoID != nil {
+		where, args = append(where, "related_memo_id = ?"), append(args, delete.RelatedMemoID)
+	}
+	if delete.Type != nil {
+		where, args = append(where, "type = ?"), append(args, delete.Type)
+	}
+	stmt := `
+		DELETE FROM memo_relation
+		WHERE ` + strings.Join(where, " AND ")
+	result, err := d.db.ExecContext(ctx, stmt, args...)
+	if err != nil {
+		return err
+	}
+	if _, err = result.RowsAffected(); err != nil {
+		return err
+	}
+	return nil
 }
