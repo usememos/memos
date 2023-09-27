@@ -7,17 +7,46 @@ import (
 	"github.com/pkg/errors"
 	"modernc.org/sqlite"
 
+	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
 
 type Driver struct {
-	db *sql.DB
+	db      *sql.DB
+	profile *profile.Profile
 }
 
-func NewDriver(db *sql.DB) store.Driver {
-	return &Driver{
-		db: db,
+// NewDriver opens a database specified by its database driver name and a
+// driver-specific data source name, usually consisting of at least a
+// database name and connection information.
+func NewDriver(profile *profile.Profile) (store.Driver, error) {
+	// Ensure a DSN is set before attempting to open the database.
+	if profile.DSN == "" {
+		return nil, errors.New("dsn required")
 	}
+
+	// Connect to the database with some sane settings:
+	// - No shared-cache: it's obsolete; WAL journal mode is a better solution.
+	// - No foreign key constraints: it's currently disabled by default, but it's a
+	// good practice to be explicit and prevent future surprises on SQLite upgrades.
+	// - Journal mode set to WAL: it's the recommended journal mode for most applications
+	// as it prevents locking issues.
+	//
+	// Notes:
+	// - When using the `modernc.org/sqlite` driver, each pragma must be prefixed with `_pragma=`.
+	//
+	// References:
+	// - https://pkg.go.dev/modernc.org/sqlite#Driver.Open
+	// - https://www.sqlite.org/sharedcache.html
+	// - https://www.sqlite.org/pragma.html
+	sqliteDB, err := sql.Open("sqlite", profile.DSN+"?_pragma=foreign_keys(0)&_pragma=busy_timeout(10000)&_pragma=journal_mode(WAL)")
+	if err != nil {
+		return nil, errors.Wrapf(err, "failed to open db with dsn: %s", profile.DSN)
+	}
+
+	driver := Driver{db: sqliteDB, profile: profile}
+
+	return &driver, nil
 }
 
 func (d *Driver) Vacuum(ctx context.Context) error {

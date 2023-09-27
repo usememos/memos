@@ -16,7 +16,6 @@ import (
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/db"
 	"github.com/usememos/memos/store/sqlite"
 )
 
@@ -43,19 +42,18 @@ var (
 		Short: `An open-source, self-hosted memo hub with knowledge management and social networking.`,
 		Run: func(_cmd *cobra.Command, _args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
-			db := db.NewDB(profile)
-			if err := db.Open(); err != nil {
+			driver, err := sqlite.NewDriver(profile)
+			if err != nil {
 				cancel()
-				log.Error("failed to open db", zap.Error(err))
+				log.Error("failed to create db driver", zap.Error(err))
 				return
 			}
-			if err := db.Migrate(ctx); err != nil {
+			if err := driver.Migrate(ctx); err != nil {
 				cancel()
 				log.Error("failed to migrate db", zap.Error(err))
 				return
 			}
 
-			driver := sqlite.NewDriver(db.DBInstance)
 			store := store.New(driver, profile)
 			s, err := server.NewServer(ctx, profile, store)
 			if err != nil {
