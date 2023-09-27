@@ -14,6 +14,10 @@ type Driver interface {
 	UpdateResource(ctx context.Context, update *UpdateResource) (*Resource, error)
 	DeleteResource(ctx context.Context, delete *DeleteResource) error
 
+	UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error)
+	ListMemoRelations(ctx context.Context, find *FindMemoRelation) ([]*MemoRelation, error)
+	DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error
+
 	UpsertSystemSetting(ctx context.Context, upsert *SystemSetting) (*SystemSetting, error)
 	ListSystemSettings(ctx context.Context, find *FindSystemSetting) ([]*SystemSetting, error)
 
