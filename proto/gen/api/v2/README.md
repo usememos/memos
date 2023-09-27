@@ -18,6 +18,8 @@
     - [MemoService](#memos-api-v2-MemoService)
   
 - [api/v2/resource_service.proto](#api_v2_resource_service-proto)
+    - [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest)
+    - [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse)
     - [ListResourcesRequest](#memos-api-v2-ListResourcesRequest)
     - [ListResourcesResponse](#memos-api-v2-ListResourcesResponse)
     - [Resource](#memos-api-v2-Resource)
@@ -223,6 +225,31 @@
 
 
 
+<a name="memos-api-v2-DeleteResourceRequest"></a>
+
+### DeleteResourceRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteResourceResponse"></a>
+
+### DeleteResourceResponse
+
+
+
+
+
+
+
 <a name="memos-api-v2-ListResourcesRequest"></a>
 
 ### ListResourcesRequest
@@ -283,6 +310,7 @@
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | ListResources | [ListResourcesRequest](#memos-api-v2-ListResourcesRequest) | [ListResourcesResponse](#memos-api-v2-ListResourcesResponse) |  |
+| DeleteResource | [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest) | [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse) |  |
 
  
 

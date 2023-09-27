@@ -3,6 +3,7 @@ syntax = "proto3";
 package memos.api.v2;
 
 import "google/api/annotations.proto";
+import "google/api/client.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v2";
@@ -10,6 +11,10 @@ option go_package = "gen/api/v2";
 service ResourceService {
   rpc ListResources(ListResourcesRequest) returns (ListResourcesResponse) {
     option (google.api.http) = {get: "/api/v2/resources"};
+  }
+  rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse) {
+    option (google.api.http) = {get: "/api/v2/resources/{id}"};
+    option (google.api.method_signature) = "id";
   }
 }
 
@@ -28,3 +33,9 @@ message ListResourcesRequest {}
 message ListResourcesResponse {
   repeated Resource resources = 1;
 }
+
+message DeleteResourceRequest {
+  int32 id = 1;
+}
+
+message DeleteResourceResponse {}
