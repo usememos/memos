@@ -205,13 +205,51 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 }
 
 func (d *Driver) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
-	_, _, _ = d, ctx, update
-	return errNotImplemented
+	set, args := []string{}, []any{}
+	if v := update.CreatedTs; v != nil {
+		set, args = append(set, "created_ts = ?"), append(args, *v)
+	}
+	if v := update.UpdatedTs; v != nil {
+		set, args = append(set, "updated_ts = ?"), append(args, *v)
+	}
+	if v := update.RowStatus; v != nil {
+		set, args = append(set, "row_status = ?"), append(args, *v)
+	}
+	if v := update.Content; v != nil {
+		set, args = append(set, "content = ?"), append(args, *v)
+	}
+	if v := update.Visibility; v != nil {
+		set, args = append(set, "visibility = ?"), append(args, *v)
+	}
+	args = append(args, update.ID)
+
+	stmt := `
+		UPDATE memo
+		SET ` + strings.Join(set, ", ") + `
+		WHERE id = ?
+	`
+	if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (d *Driver) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
-	_, _, _ = d, ctx, delete
-	return errNotImplemented
+	where, args := []string{"id = ?"}, []any{delete.ID}
+	stmt := `DELETE FROM memo WHERE ` + strings.Join(where, " AND ")
+	result, err := d.db.ExecContext(ctx, stmt, args...)
+	if err != nil {
+		return err
+	}
+	if _, err := result.RowsAffected(); err != nil {
+		return err
+	}
+
+	if err := d.Vacuum(ctx); err != nil {
+		// Prevent linter warning.
+		return err
+	}
+	return nil
 }
 
 func (d *Driver) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]store.Visibility, error) {
