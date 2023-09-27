@@ -130,10 +130,6 @@ func (s *Store) DeleteUser(ctx context.Context, delete *DeleteUser) error {
 		return err
 	}
 
-	if err := s.Vacuum(ctx); err != nil {
-		// Prevent linter warning.
-		return err
-	}
 	s.userCache.Delete(delete.ID)
 	return nil
 }

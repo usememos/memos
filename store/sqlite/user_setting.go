@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"strings"
 
@@ -152,4 +153,23 @@ func (d *Driver) ListUserSettingsV1(ctx context.Context, find *store.FindUserSet
 	}
 
 	return userSettingList, nil
+}
+
+func vacuumUserSetting(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM 
+		user_setting 
+	WHERE 
+		user_id NOT IN (
+			SELECT 
+				id 
+			FROM 
+				user
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }

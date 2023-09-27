@@ -7,6 +7,8 @@ import (
 )
 
 type Driver interface {
+	Vacuum(ctx context.Context) error
+
 	CreateActivity(ctx context.Context, create *Activity) (*Activity, error)
 
 	CreateResource(ctx context.Context, create *Resource) (*Resource, error)
