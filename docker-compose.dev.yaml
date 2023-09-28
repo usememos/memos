@@ -34,3 +34,43 @@ services:
     volumes:
       - ./web:/work
       - ./.air/node_modules/:/work/node_modules/ # Cache for Node Modules
+
+  # Services below are used for developers to run once
+  #
+  # You can just run `docker compose run --rm SERVICE_NAME` to use
+  # For example:
+  #   To regenerate typescript code of gRPC proto
+  #   Just run `docker compose run --rm buf`
+  #
+  # All of theses services belongs to profile 'tools'
+  # This will prevent to launch by normally `docker compose up` unexpectly
+
+  # Generate typescript code of gRPC proto
+  buf:
+    profiles: ["tools"]
+    image: bufbuild/buf
+    working_dir: /work/proto
+    command: generate
+    volumes:
+      - ./proto:/work/proto
+      - ./web/src/types/:/work/web/src/types/
+
+  # Do golang static code check before create PR
+  golangci-lint:
+    profiles: ["tools"]
+    image: golangci/golangci-lint:v1.54.2
+    working_dir: /work/
+    command: golangci-lint run -v
+    volumes:
+      - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
+      - .:/work/
+
+  # Do javascript lint before create PR
+  lint:
+    profiles: ["tools"]
+    image: node:18-alpine
+    working_dir: /work
+    command: npm run lint
+    volumes:
+      - ./web:/work
+      - ./.air/node_modules/:/work/node_modules/

@@ -3,7 +3,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "lint": "eslint --ext .js,.ts,.tsx, src",
+    "lint": "tsc && eslint --ext .js,.ts,.tsx, src",
     "lint-fix": "eslint --ext .js,.ts,.tsx, src --fix"
   },
   "packageManager": "pnpm@8.7.0",
