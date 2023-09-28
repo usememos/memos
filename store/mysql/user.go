@@ -2,10 +2,10 @@ package mysql
 
 import (
 	"context"
-	"fmt"
 	"strings"
 
 	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/store"
 )
 
@@ -44,7 +44,7 @@ func (d *Driver) CreateUser(ctx context.Context, create *store.User) (*store.Use
 		return nil, err
 	}
 	if len(list) != 1 {
-		return nil, errors.New(fmt.Sprintf("user count is not 1, but %d", len(list)))
+		return nil, errors.Wrapf(nil, "unexpected user count: %d", len(list))
 	}
 
 	return list[0], nil
