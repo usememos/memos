@@ -105,8 +105,8 @@ CREATE TABLE IF NOT EXISTS `tag` (
 -- user
 CREATE TABLE IF NOT EXISTS `user` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `created_ts` bigint NOT NULL DEFAULT '0',
-  `updated_ts` bigint NOT NULL DEFAULT '0',
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `row_status` varchar(255) NOT NULL DEFAULT 'NORMAL',
   `username` varchar(255) NOT NULL,
   `role` varchar(255) NOT NULL DEFAULT 'USER',

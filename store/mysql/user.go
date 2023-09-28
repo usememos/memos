@@ -2,17 +2,14 @@ package mysql
 
 import (
 	"context"
+	"fmt"
 	"strings"
-	"time"
 
+	"github.com/pkg/errors"
 	"github.com/usememos/memos/store"
 )
 
 func (d *Driver) CreateUser(ctx context.Context, create *store.User) (*store.User, error) {
-	create.CreatedTs = time.Now().Unix()
-	create.UpdatedTs = create.CreatedTs
-	create.RowStatus = store.Normal
-
 	stmt := `
 		INSERT INTO user (
 			username,
@@ -20,24 +17,16 @@ func (d *Driver) CreateUser(ctx context.Context, create *store.User) (*store.Use
 			email,
 			nickname,
 			password_hash,
-			created_ts,
-			updated_ts,
-			row_status,
 			avatar_url
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?)
 	`
-	result, err := d.db.ExecContext(
-		ctx,
-		stmt,
+	result, err := d.db.ExecContext(ctx, stmt,
 		create.Username,
 		create.Role,
 		create.Email,
 		create.Nickname,
 		create.PasswordHash,
-		create.CreatedTs,
-		create.UpdatedTs,
-		create.RowStatus,
 		create.AvatarURL,
 	)
 	if err != nil {
@@ -49,8 +38,16 @@ func (d *Driver) CreateUser(ctx context.Context, create *store.User) (*store.Use
 		return nil, err
 	}
 
-	create.ID = int32(id)
-	return create, nil
+	id64 := int32(id)
+	list, err := d.ListUsers(ctx, &store.FindUser{ID: &id64})
+	if err != nil {
+		return nil, err
+	}
+	if len(list) != 1 {
+		return nil, errors.New(fmt.Sprintf("user count is not 1, but %d", len(list)))
+	}
+
+	return list[0], nil
 }
 
 func (d *Driver) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.User, error) {
@@ -88,7 +85,20 @@ func (d *Driver) UpdateUser(ctx context.Context, update *store.UpdateUser) (*sto
 	}
 
 	user := &store.User{}
-	query = "SELECT id, username, role, email, nickname, password_hash, avatar_url, created_ts, updated_ts, row_status FROM user WHERE id = ?"
+	query = `
+		SELECT
+			id,
+			username,
+			role,
+			email,
+			nickname,
+			password_hash,
+			avatar_url,
+			UNIX_TIMESTAMP(created_ts),
+			UNIX_TIMESTAMP(updated_ts),
+			row_status
+		FROM user WHERE id = ?
+	`
 	if err := d.db.QueryRowContext(ctx, query, update.ID).Scan(
 		&user.ID,
 		&user.Username,
@@ -135,8 +145,8 @@ func (d *Driver) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.
 			nickname,
 			password_hash,
 			avatar_url,
-			created_ts,
-			updated_ts,
+			UNIX_TIMESTAMP(created_ts),
+			UNIX_TIMESTAMP(updated_ts),
 			row_status
 		FROM user
 		WHERE ` + strings.Join(where, " AND ") + `
