@@ -5,13 +5,8 @@ import { SystemServiceDefinition } from "./types/proto/api/v2/system_service";
 import { TagServiceDefinition } from "./types/proto/api/v2/tag_service";
 import { UserServiceDefinition } from "./types/proto/api/v2/user_service";
 
-let address = window.location.origin;
-if (window.location.host == "localhost") {
-  address = "http://localhost:8081";
-}
-
 const channel = createChannel(
-  address,
+  window.location.origin,
   FetchTransport({
     credentials: "include",
   })
