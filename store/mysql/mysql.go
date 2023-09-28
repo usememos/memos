@@ -10,8 +10,6 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-var errNotImplemented = errors.New("not implemented")
-
 type Driver struct {
 	db      *sql.DB
 	profile *profile.Profile
