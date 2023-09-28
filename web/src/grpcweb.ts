@@ -5,10 +5,8 @@ import { SystemServiceDefinition } from "./types/proto/api/v2/system_service";
 import { TagServiceDefinition } from "./types/proto/api/v2/tag_service";
 import { UserServiceDefinition } from "./types/proto/api/v2/user_service";
 
-const address = import.meta.env.MODE === "development" ? "http://localhost:8081" : window.location.origin;
-
 const channel = createChannel(
-  address,
+  window.location.origin,
   FetchTransport({
     credentials: "include",
   })
