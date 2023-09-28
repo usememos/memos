@@ -283,3 +283,22 @@ func (d *Driver) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) (
 
 	return visibilityList, nil
 }
+
+func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM
+		memo
+	WHERE
+		creator_id NOT IN (
+			SELECT
+				id
+			FROM
+				user
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

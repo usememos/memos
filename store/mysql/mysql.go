@@ -6,7 +6,6 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -29,17 +28,39 @@ func NewDriver(profile *profile.Profile) (store.Driver, error) {
 }
 
 func (d *Driver) Vacuum(ctx context.Context) error {
-	_, _ = d, ctx
-	log.Error("driver.Vacuum MUST BE implement")
-	return nil
+	tx, err := d.db.BeginTx(ctx, nil)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	if err := vacuumMemo(ctx, tx); err != nil {
+		return err
+	}
+	if err := vacuumResource(ctx, tx); err != nil {
+		return err
+	}
+	if err := vacuumUserSetting(ctx, tx); err != nil {
+		return err
+	}
+	if err := vacuumMemoOrganizer(ctx, tx); err != nil {
+		return err
+	}
+	if err := vacuumMemoRelations(ctx, tx); err != nil {
+		return err
+	}
+	if err := vacuumTag(ctx, tx); err != nil {
+		// Prevent revive warning.
+		return err
+	}
+
+	return tx.Commit()
 }
 
-func (d *Driver) BackupTo(ctx context.Context, filename string) error {
-	_, _, _ = d, ctx, filename
-	return errNotImplemented
+func (*Driver) BackupTo(context.Context, string) error {
+	return errors.New("Please use mysqldump to backup")
 }
 
 func (d *Driver) Close() error {
-	_ = d
-	return errNotImplemented
+	return d.db.Close()
 }

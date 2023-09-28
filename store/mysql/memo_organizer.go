@@ -2,6 +2,7 @@ package mysql
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strings"
 
@@ -76,5 +77,30 @@ func (d *Driver) DeleteMemoOrganizer(ctx context.Context, delete *store.DeleteMe
 	if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
 		return err
 	}
+	return nil
+}
+
+func vacuumMemoOrganizer(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM
+		memo_organizer
+	WHERE
+		memo_id NOT IN (
+			SELECT
+				id
+			FROM
+				memo
+		)
+		OR user_id NOT IN (
+			SELECT
+				id
+			FROM
+				user
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

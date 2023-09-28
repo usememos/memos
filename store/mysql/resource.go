@@ -203,3 +203,22 @@ func (d *Driver) DeleteResource(ctx context.Context, delete *store.DeleteResourc
 
 	return nil
 }
+
+func vacuumResource(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM
+		resource
+	WHERE
+		creator_id NOT IN (
+			SELECT
+				id
+			FROM
+				user
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
