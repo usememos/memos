@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	"time"
 
 	"github.com/pkg/errors"
 
@@ -14,35 +13,20 @@ import (
 )
 
 func (d *Driver) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	ts := time.Now().Unix()
-	if create.CreatedTs == 0 {
-		create.CreatedTs = ts
-	}
-	if create.UpdatedTs == 0 {
-		create.UpdatedTs = ts
-	}
-	create.RowStatus = store.Normal
-
 	stmt := `
 		INSERT INTO memo (
 			creator_id,
-			created_ts,
 			content,
-			visibility,
-			updated_ts,
-			row_status
+			visibility
 		)
-		VALUES (?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?)
 	`
 	result, err := d.db.ExecContext(
 		ctx,
 		stmt,
 		create.CreatorID,
-		create.CreatedTs,
 		create.Content,
 		create.Visibility,
-		create.UpdatedTs,
-		create.RowStatus,
 	)
 	if err != nil {
 		return nil, err
@@ -53,9 +37,32 @@ func (d *Driver) CreateMemo(ctx context.Context, create *store.Memo) (*store.Mem
 		return nil, err
 	}
 
-	create.ID = int32(id)
+	var memo store.Memo
+	stmt = `
+		SELECT
+			id,
+			creator_id,
+			content,
+			visibility,
+			UNIX_TIMESTAMP(created_ts),
+			UNIX_TIMESTAMP(updated_ts),
+			row_status
+		FROM memo
+		WHERE id = ?
+	`
+	if err := d.db.QueryRowContext(ctx, stmt, id).Scan(
+		&memo.ID,
+		&memo.CreatorID,
+		&memo.Content,
+		&memo.Visibility,
+		&memo.UpdatedTs,
+		&memo.CreatedTs,
+		&memo.RowStatus,
+	); err != nil {
+		return nil, err
+	}
 
-	return create, nil
+	return &memo, nil
 }
 
 func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
@@ -71,10 +78,10 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 		where, args = append(where, "memo.row_status = ?"), append(args, *v)
 	}
 	if v := find.CreatedTsBefore; v != nil {
-		where, args = append(where, "memo.created_ts < ?"), append(args, *v)
+		where, args = append(where, "UNIX_TIMESTAMP(memo.created_ts) < ?"), append(args, *v)
 	}
 	if v := find.CreatedTsAfter; v != nil {
-		where, args = append(where, "memo.created_ts > ?"), append(args, *v)
+		where, args = append(where, "UNIX_TIMESTAMP(memo.created_ts) > ?"), append(args, *v)
 	}
 	if v := find.Pinned; v != nil {
 		where = append(where, "memo_organizer.pinned = 1")
@@ -104,8 +111,8 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 	SELECT
 		memo.id AS id,
 		memo.creator_id AS creator_id,
-		memo.created_ts AS created_ts,
-		memo.updated_ts AS updated_ts,
+		UNIX_TIMESTAMP(memo.created_ts) AS created_ts,
+		UNIX_TIMESTAMP(memo.updated_ts) AS updated_ts,
 		memo.row_status AS row_status,
 		memo.content AS content,
 		memo.visibility AS visibility,
@@ -207,10 +214,10 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 func (d *Driver) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	set, args := []string{}, []any{}
 	if v := update.CreatedTs; v != nil {
-		set, args = append(set, "created_ts = ?"), append(args, *v)
+		set, args = append(set, "created_ts = FROM_UNIXTIME(?)"), append(args, *v)
 	}
 	if v := update.UpdatedTs; v != nil {
-		set, args = append(set, "updated_ts = ?"), append(args, *v)
+		set, args = append(set, "updated_ts = FROM_UNIXTIME(?)"), append(args, *v)
 	}
 	if v := update.RowStatus; v != nil {
 		set, args = append(set, "row_status = ?"), append(args, *v)

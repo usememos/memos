@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS `idp` (
 CREATE TABLE IF NOT EXISTS `memo` (
   `id` int NOT NULL AUTO_INCREMENT,
   `creator_id` int NOT NULL,
-  `created_ts` bigint NOT NULL DEFAULT '0',
-  `updated_ts` bigint NOT NULL DEFAULT '0',
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `row_status` varchar(255) NOT NULL DEFAULT 'NORMAL',
   `content` text NOT NULL,
   `visibility` varchar(255) NOT NULL DEFAULT 'PRIVATE',
