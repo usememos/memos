@@ -113,7 +113,7 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 		GROUP_CONCAT(resource.id) AS resource_id_list,
 		(
 				SELECT
-						GROUP_CONCAT(related_memo_id,':',type)
+						GROUP_CONCAT(related_memo_id || ':' || type)
 				FROM
 						memo_relation
 				WHERE
