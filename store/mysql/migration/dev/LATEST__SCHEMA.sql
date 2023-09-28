@@ -2,7 +2,7 @@
 CREATE TABLE IF NOT EXISTS `activity` (
   `id` int NOT NULL AUTO_INCREMENT,
   `creator_id` int NOT NULL,
-  `created_ts` bigint NOT NULL DEFAULT '0',
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `type` varchar(255) NOT NULL DEFAULT '',
   `level` varchar(255) NOT NULL DEFAULT 'INFO',
   `payload` text NOT NULL,
