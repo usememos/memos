@@ -64,8 +64,8 @@ CREATE TABLE IF NOT EXISTS `migration_history` (
 CREATE TABLE IF NOT EXISTS `resource` (
   `id` int NOT NULL AUTO_INCREMENT,
   `creator_id` int NOT NULL,
-  `created_ts` bigint NOT NULL DEFAULT '0',
-  `updated_ts` bigint NOT NULL DEFAULT '0',
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `filename` text NOT NULL,
   `blob` blob,
   `external_link` text NOT NULL,

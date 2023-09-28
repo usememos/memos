@@ -5,14 +5,13 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
-	"time"
+
+	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/store"
 )
 
 func (d *Driver) CreateResource(ctx context.Context, create *store.Resource) (*store.Resource, error) {
-	create.CreatedTs = time.Now().Unix()
-	create.UpdatedTs = create.CreatedTs
 	stmt := `
 		INSERT INTO resource (
 			filename,
@@ -21,11 +20,9 @@ func (d *Driver) CreateResource(ctx context.Context, create *store.Resource) (*s
 			type,
 			size,
 			creator_id,
-			internal_path,
-			created_ts,
-			updated_ts
+			internal_path
 		)
-		VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+		VALUES (?, ?, ?, ?, ?, ?, ?)
 	`
 	result, err := d.db.ExecContext(
 		ctx,
@@ -37,8 +34,6 @@ func (d *Driver) CreateResource(ctx context.Context, create *store.Resource) (*s
 		create.Size,
 		create.CreatorID,
 		create.InternalPath,
-		create.CreatedTs,
-		create.UpdatedTs,
 	)
 	if err != nil {
 		return nil, err
@@ -49,8 +44,16 @@ func (d *Driver) CreateResource(ctx context.Context, create *store.Resource) (*s
 		return nil, err
 	}
 
-	create.ID = int32(id)
-	return create, nil
+	id32 := int32(id)
+	list, err := d.ListResources(ctx, &store.FindResource{ID: &id32})
+	if err != nil {
+		return nil, err
+	}
+	if len(list) != 1 {
+		return nil, errors.Wrapf(nil, "unexpected resource count: %d", len(list))
+	}
+
+	return list[0], nil
 }
 
 func (d *Driver) ListResources(ctx context.Context, find *store.FindResource) ([]*store.Resource, error) {
@@ -72,7 +75,7 @@ func (d *Driver) ListResources(ctx context.Context, find *store.FindResource) ([
 		where = append(where, "memo_id IS NOT NULL")
 	}
 
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path", "memo_id"}
+	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "UNIX_TIMESTAMP(created_ts)", "UNIX_TIMESTAMP(updated_ts)", "internal_path", "memo_id"}
 	if find.GetBlob {
 		fields = append(fields, "resource.blob")
 	}
@@ -165,25 +168,15 @@ func (d *Driver) UpdateResource(ctx context.Context, update *store.UpdateResourc
 		return nil, err
 	}
 
-	var resource store.Resource
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "created_ts", "updated_ts", "internal_path"}
-	stmt = `SELECT ` + strings.Join(fields, ", ") + ` FROM resource WHERE id = ?`
-	err := d.db.QueryRowContext(ctx, stmt, update.ID).Scan(
-		&resource.ID,
-		&resource.Filename,
-		&resource.ExternalLink,
-		&resource.Type,
-		&resource.Size,
-		&resource.CreatorID,
-		&resource.CreatedTs,
-		&resource.UpdatedTs,
-		&resource.InternalPath,
-	)
+	list, err := d.ListResources(ctx, &store.FindResource{ID: &update.ID})
 	if err != nil {
 		return nil, err
 	}
+	if len(list) != 1 {
+		return nil, errors.Wrapf(nil, "unexpected resource count: %d", len(list))
+	}
 
-	return &resource, nil
+	return list[0], nil
 }
 
 func (d *Driver) DeleteResource(ctx context.Context, delete *store.DeleteResource) error {
