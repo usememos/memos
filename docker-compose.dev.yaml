@@ -67,13 +67,3 @@ services:
     volumes:
       - ./web:/work
       - ./.air/node_modules/:/work/node_modules/
-
-  # Compile typescripts before create PR
-  tsc:
-    profiles: ["tools"]
-    image: node:18-alpine
-    working_dir: /work
-    command: npm run tsc
-    volumes:
-      - ./web:/work
-      - ./.air/node_modules/:/work/node_modules/
