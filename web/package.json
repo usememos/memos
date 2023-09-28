@@ -3,6 +3,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "tsc": "tsc",
     "lint": "eslint --ext .js,.ts,.tsx, src",
     "lint-fix": "eslint --ext .js,.ts,.tsx, src --fix"
   },
