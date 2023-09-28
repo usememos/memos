@@ -1,9 +1,9 @@
-import { Divider } from "@mui/joy";
+import { Divider, Select, Tooltip, Option } from "@mui/joy";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { UNKNOWN_ID } from "@/helpers/consts";
+import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { getRelativeTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -89,6 +89,14 @@ const Memo: React.FC<Props> = (props: Props) => {
     // Render a placeholder to occupy the space.
     return <div className={`memo-wrapper min-h-[128px] ${"memos-" + memo.id}`} ref={memoContainerRef}></div>;
   }
+
+  const handleMemoVisibilityOptionChanged = async (value: string) => {
+    const visibilityValue = value as Visibility;
+    await memoStore.patchMemo({
+      id: memo.id,
+      visibility: visibilityValue,
+    });
+  };
 
   const handleGotoMemoDetailPage = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.altKey) {
@@ -227,15 +235,6 @@ const Memo: React.FC<Props> = (props: Props) => {
       <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned && !readonly ? "pinned" : ""}`} ref={memoContainerRef}>
         <div className="memo-top-wrapper">
           <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
-            {creator && (
-              <>
-                <Link className="flex flex-row justify-start items-center" to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
-                  <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
-                  <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator.nickname}</span>
-                </Link>
-                <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-              </>
-            )}
             <span className="text-sm text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
               {displayTime}
             </span>
@@ -282,6 +281,47 @@ const Memo: React.FC<Props> = (props: Props) => {
         />
         <MemoResourceListView resourceList={memo.resourceList} />
         <MemoRelationListView relationList={memo.relationList} />
+        <div className="mt-4 w-full flex flex-row justify-between items-center gap-2">
+          <div className="flex flex-row justify-start items-center">
+            {creator && (
+              <>
+                <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}`}>
+                  <Tooltip title={"The identifier of memo"} placement="top">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
+                  </Tooltip>
+                </Link>
+                <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
+                <Link className="flex flex-row justify-start items-center" to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
+                  <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
+                  <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator.nickname}</span>
+                </Link>
+                {props.showVisibility && (
+                  <>
+                    <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
+                    <Tooltip title={"The visibility of memo"} placement="top">
+                      <Select
+                        className="w-auto text-sm"
+                        variant="plain"
+                        value={memo.visibility}
+                        onChange={(_, visibility) => {
+                          if (visibility) {
+                            handleMemoVisibilityOptionChanged(visibility);
+                          }
+                        }}
+                      >
+                        {VISIBILITY_SELECTOR_ITEMS.map((item) => (
+                          <Option key={item.value} value={item.value} className="whitespace-nowrap">
+                            {item.text}
+                          </Option>
+                        ))}
+                      </Select>
+                    </Tooltip>
+                  </>
+                )}
+              </>
+            )}
+          </div>
+        </div>
       </div>
     </>
   );

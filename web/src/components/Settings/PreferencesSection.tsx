@@ -19,7 +19,7 @@ const PreferencesSection = () => {
   const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
       value: item.value,
-      text: t(`memo.visibility.${item.text.toLowerCase() as Lowercase<typeof item.text>}`),
+      text: t(`memo.visibility.${item.value.toLowerCase() as Lowercase<typeof item.value>}`),
     };
   });
 
