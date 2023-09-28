@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `memo_relation` (
 -- migration_history
 CREATE TABLE IF NOT EXISTS `migration_history` (
   `version` varchar(255) NOT NULL,
-  `created_ts` bigint NOT NULL DEFAULT '0',
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`version`)
 );
 

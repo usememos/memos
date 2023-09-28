@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"strings"
-	"time"
 )
 
 type MigrationHistory struct {
@@ -27,11 +26,8 @@ func (d *Driver) FindMigrationHistoryList(ctx context.Context, find *MigrationHi
 	}
 
 	query := `
-		SELECT 
-			version,
-			created_ts
-		FROM
-			migration_history
+		SELECT version, UNIX_TIMESTAMP(created_ts)
+		FROM migration_history
 		WHERE ` + strings.Join(where, " AND ") + `
 		ORDER BY created_ts DESC
 	`
@@ -62,18 +58,26 @@ func (d *Driver) FindMigrationHistoryList(ctx context.Context, find *MigrationHi
 }
 
 func (d *Driver) UpsertMigrationHistory(ctx context.Context, upsert *MigrationHistoryUpsert) (*MigrationHistory, error) {
-	ts := time.Now().Unix()
 	stmt := `
-		INSERT INTO migration_history (version,created_ts) VALUES ( ?, ? )
+		INSERT INTO migration_history (version) VALUES (?)
 		ON DUPLICATE KEY UPDATE version = ?
 	`
-	_, err := d.db.ExecContext(ctx, stmt, upsert.Version, ts, upsert.Version)
+	_, err := d.db.ExecContext(ctx, stmt, upsert.Version, upsert.Version)
 	if err != nil {
 		return nil, err
 	}
-	migrationHistory := MigrationHistory{
-		Version:   upsert.Version,
-		CreatedTs: ts,
+
+	var migrationHistory MigrationHistory
+	stmt = `
+		SELECT version, UNIX_TIMESTAMP(created_ts)
+		FROM migration_history
+		WHERE version = ?
+	`
+	if err := d.db.QueryRowContext(ctx, stmt, upsert.Version).Scan(
+		&migrationHistory.Version,
+		&migrationHistory.CreatedTs,
+	); err != nil {
+		return nil, err
 	}
 
 	return &migrationHistory, nil
