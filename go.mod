@@ -9,6 +9,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.11.51
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.30.3
 	github.com/disintegration/imaging v1.6.2
+	github.com/go-sql-driver/mysql v1.7.1
 	github.com/google/cel-go v0.17.1
 	github.com/google/uuid v1.3.0
 	github.com/gorilla/feeds v1.1.1

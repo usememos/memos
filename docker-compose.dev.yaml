@@ -9,10 +9,17 @@
 #     docker compose logs -f
 #
 services:
+  db:
+    image: mysql
+    volumes:
+      - ./.air/mysql:/var/lib/mysql
   api:
     image: golang:1.21-alpine
     working_dir: /work
     command: air -c ./scripts/.air.toml
+    environment:
+      - "MEMOS_DSN=root@tcp(db)/memos"
+      - "MEMOS_DRIVER=mysql"
     volumes:
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
       - ./.air/bin/:/go/bin/ # Cache for binary used only in container, such as *air*

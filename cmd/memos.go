@@ -16,6 +16,7 @@ import (
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
+	"github.com/usememos/memos/store/mysql"
 	"github.com/usememos/memos/store/sqlite"
 )
 
@@ -36,13 +37,27 @@ var (
 	addr    string
 	port    int
 	data    string
+	driver  string
+	dsn     string
 
 	rootCmd = &cobra.Command{
 		Use:   "memos",
 		Short: `An open-source, self-hosted memo hub with knowledge management and social networking.`,
 		Run: func(_cmd *cobra.Command, _args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
-			driver, err := sqlite.NewDriver(profile)
+
+			var err error
+			var driver store.Driver
+			switch profile.Driver {
+			case "sqlite":
+				driver, err = sqlite.NewDriver(profile)
+			case "mysql":
+				driver, err = mysql.NewDriver(profile)
+			default:
+				cancel()
+				log.Error("unknown db driver", zap.String("driver", profile.Driver))
+				return
+			}
 			if err != nil {
 				cancel()
 				log.Error("failed to create db driver", zap.Error(err))
@@ -101,6 +116,8 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&addr, "addr", "a", "", "address of server")
 	rootCmd.PersistentFlags().IntVarP(&port, "port", "p", 8081, "port of server")
 	rootCmd.PersistentFlags().StringVarP(&data, "data", "d", "", "data directory")
+	rootCmd.PersistentFlags().StringVarP(&driver, "driver", "", "", "database driver")
+	rootCmd.PersistentFlags().StringVarP(&dsn, "dsn", "", "", "database source name(aka. DSN)")
 
 	err := viper.BindPFlag("mode", rootCmd.PersistentFlags().Lookup("mode"))
 	if err != nil {
@@ -118,8 +135,17 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	err = viper.BindPFlag("driver", rootCmd.PersistentFlags().Lookup("driver"))
+	if err != nil {
+		panic(err)
+	}
+	err = viper.BindPFlag("dsn", rootCmd.PersistentFlags().Lookup("dsn"))
+	if err != nil {
+		panic(err)
+	}
 
 	viper.SetDefault("mode", "demo")
+	viper.SetDefault("driver", "sqlite")
 	viper.SetDefault("addr", "")
 	viper.SetDefault("port", 8081)
 	viper.SetEnvPrefix("memos")
@@ -140,6 +166,7 @@ func initConfig() {
 	println("addr:", profile.Addr)
 	println("port:", profile.Port)
 	println("mode:", profile.Mode)
+	println("driver:", profile.Driver)
 	println("version:", profile.Version)
 	println("---")
 }
