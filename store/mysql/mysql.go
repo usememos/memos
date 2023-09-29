@@ -18,11 +18,15 @@ type Driver struct {
 func NewDriver(profile *profile.Profile) (store.Driver, error) {
 	db, err := sql.Open("mysql", profile.DSN)
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrapf(err, "failed to open db: %s", profile.DSN)
 	}
 
 	driver := Driver{db: db, profile: profile}
 	return &driver, nil
+}
+
+func (d *Driver) GetDB() *sql.DB {
+	return d.db
 }
 
 func (d *Driver) Vacuum(ctx context.Context) error {

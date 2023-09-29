@@ -49,6 +49,10 @@ func NewDriver(profile *profile.Profile) (store.Driver, error) {
 	return &driver, nil
 }
 
+func (d *Driver) GetDB() *sql.DB {
+	return d.db
+}
+
 func (d *Driver) Vacuum(ctx context.Context) error {
 	tx, err := d.db.BeginTx(ctx, nil)
 	if err != nil {

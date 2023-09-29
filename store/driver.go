@@ -2,11 +2,13 @@ package store
 
 import (
 	"context"
+	"database/sql"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 )
 
 type Driver interface {
+	GetDB() *sql.DB
 	Close() error
 
 	Migrate(ctx context.Context) error

@@ -32,37 +32,19 @@ func (d *Driver) CreateMemo(ctx context.Context, create *store.Memo) (*store.Mem
 		return nil, err
 	}
 
-	id, err := result.LastInsertId()
+	rawID, err := result.LastInsertId()
 	if err != nil {
 		return nil, err
 	}
-
-	var memo store.Memo
-	stmt = `
-		SELECT
-			id,
-			creator_id,
-			content,
-			visibility,
-			UNIX_TIMESTAMP(created_ts),
-			UNIX_TIMESTAMP(updated_ts),
-			row_status
-		FROM memo
-		WHERE id = ?
-	`
-	if err := d.db.QueryRowContext(ctx, stmt, id).Scan(
-		&memo.ID,
-		&memo.CreatorID,
-		&memo.Content,
-		&memo.Visibility,
-		&memo.UpdatedTs,
-		&memo.CreatedTs,
-		&memo.RowStatus,
-	); err != nil {
+	id := int32(rawID)
+	memo, err := d.GetMemo(ctx, &store.FindMemo{ID: &id})
+	if err != nil {
 		return nil, err
 	}
-
-	return &memo, nil
+	if memo == nil {
+		return nil, errors.Errorf("failed to create memo")
+	}
+	return memo, nil
 }
 
 func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
@@ -209,6 +191,19 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 	}
 
 	return list, nil
+}
+
+func (d *Driver) GetMemo(ctx context.Context, find *store.FindMemo) (*store.Memo, error) {
+	list, err := d.ListMemos(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, nil
+	}
+
+	memo := list[0]
+	return memo, nil
 }
 
 func (d *Driver) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {

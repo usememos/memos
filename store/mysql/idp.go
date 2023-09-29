@@ -3,7 +3,6 @@ package mysql
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -56,7 +55,7 @@ func (d *Driver) CreateIdentityProvider(ctx context.Context, create *store.Ident
 func (d *Driver) ListIdentityProviders(ctx context.Context, find *store.FindIdentityProvider) ([]*store.IdentityProvider, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if v := find.ID; v != nil {
-		where, args = append(where, fmt.Sprintf("id = $%d", len(args)+1)), append(args, *v)
+		where, args = append(where, "id = ?"), append(args, *v)
 	}
 
 	rows, err := d.db.QueryContext(ctx, `
@@ -150,39 +149,22 @@ func (d *Driver) UpdateIdentityProvider(ctx context.Context, update *store.Updat
 		UPDATE idp
 		SET ` + strings.Join(set, ", ") + `
 		WHERE id = ?
-		RETURNING id, name, type, identifier_filter, config
 	`
 	_, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, err
 	}
 
-	var identityProvider store.IdentityProvider
-	var identityProviderConfig string
-	stmt = `SELECT id, name, type, identifier_filter, config FROM idp WHERE id = ?`
-	if err := d.db.QueryRowContext(ctx, stmt, update.ID).Scan(
-		&identityProvider.ID,
-		&identityProvider.Name,
-		&identityProvider.Type,
-		&identityProvider.IdentifierFilter,
-		&identityProviderConfig,
-	); err != nil {
+	identityProvider, err := d.GetIdentityProvider(ctx, &store.FindIdentityProvider{
+		ID: &update.ID,
+	})
+	if err != nil {
 		return nil, err
 	}
-
-	if identityProvider.Type == store.IdentityProviderOAuth2Type {
-		oauth2Config := &store.IdentityProviderOAuth2Config{}
-		if err := json.Unmarshal([]byte(identityProviderConfig), oauth2Config); err != nil {
-			return nil, err
-		}
-		identityProvider.Config = &store.IdentityProviderConfig{
-			OAuth2Config: oauth2Config,
-		}
-	} else {
-		return nil, errors.Errorf("unsupported idp type %s", string(identityProvider.Type))
+	if identityProvider == nil {
+		return nil, errors.Errorf("idp %d not found", update.ID)
 	}
-
-	return &identityProvider, nil
+	return identityProvider, nil
 }
 
 func (d *Driver) DeleteIdentityProvider(ctx context.Context, delete *store.DeleteIdentityProvider) error {

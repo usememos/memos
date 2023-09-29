@@ -26,6 +26,7 @@ type Profile struct {
 	// DSN points to where Memos stores its own data
 	DSN string `json:"dsn"`
 	// Driver is the database driver
+	// sqlite, mysql
 	Driver string `json:"driver"`
 	// Version is the current version of server
 	Version string `json:"version"`

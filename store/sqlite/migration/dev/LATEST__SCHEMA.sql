@@ -1,3 +1,17 @@
+-- drop all tables first
+DROP TABLE IF EXISTS migration_history;
+DROP TABLE IF EXISTS system_setting;
+DROP TABLE IF EXISTS user;
+DROP TABLE IF EXISTS user_setting;
+DROP TABLE IF EXISTS memo;
+DROP TABLE IF EXISTS memo_organizer;
+DROP TABLE IF EXISTS memo_relation;
+DROP TABLE IF EXISTS resource;
+DROP TABLE IF EXISTS tag;
+DROP TABLE IF EXISTS activity;
+DROP TABLE IF EXISTS storage;
+DROP TABLE IF EXISTS idp;
+
 -- migration_history
 CREATE TABLE migration_history (
   version TEXT NOT NULL PRIMARY KEY,
@@ -59,6 +73,14 @@ CREATE TABLE memo_organizer (
   UNIQUE(memo_id, user_id)
 );
 
+-- memo_relation
+CREATE TABLE memo_relation (
+  memo_id INTEGER NOT NULL,
+  related_memo_id INTEGER NOT NULL,
+  type TEXT NOT NULL,
+  UNIQUE(memo_id, related_memo_id, type)
+);
+
 -- resource
 CREATE TABLE resource (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -110,12 +132,4 @@ CREATE TABLE idp (
   type TEXT NOT NULL,
   identifier_filter TEXT NOT NULL DEFAULT '',
   config TEXT NOT NULL DEFAULT '{}'
-);
-
--- memo_relation
-CREATE TABLE memo_relation (
-  memo_id INTEGER NOT NULL,
-  related_memo_id INTEGER NOT NULL,
-  type TEXT NOT NULL,
-  UNIQUE(memo_id, related_memo_id, type)
 );
