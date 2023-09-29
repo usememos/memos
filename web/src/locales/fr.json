@@ -184,7 +184,7 @@
       "storage-services-list": "Liste des services de stockage",
       "create-a-service": "Créer un service",
       "update-a-service": "Mettre à jour un service",
-      "warning-text": "Etes-vous sûr de vouloir supprimer ce service de stockage ? CETTE ACTION EST IRRÉVERSIBLE❗",
+      "warning-text": "Etes-vous sûr de vouloir supprimer ce service de stockage ? CETTE ACTION EST IRRÉVERSIBLE❗"
     },
     "storage": "Stockage",
     "sso": "SSO",
