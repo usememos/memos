@@ -4,8 +4,12 @@ import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
 
 const FloatingNavButton = () => {
-  const navigateTo = useNavigateTo();
   const t = useTranslate();
+  const navigateTo = useNavigateTo();
+
+  const handleScrollToTop = () => {
+    document.body.querySelector("#root")?.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   return (
     <>
@@ -22,10 +26,18 @@ const FloatingNavButton = () => {
         </div>
         <Menu placement="top-end">
           <button
-            className="w-full text-left text-sm whitespace-nowrap leading-6 py-1 px-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-600"
+            className="w-full text-left text-sm flex flex-row justify-center items-center whitespace-nowrap leading-6 py-1 px-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-600"
+            onClick={handleScrollToTop}
+          >
+            <Icon.ArrowUpToLine strokeWidth={1} className="w-4 h-auto mr-1" />
+            {t("router.back-to-top")}
+          </button>
+          <button
+            className="w-full text-left text-sm flex flex-row justify-center items-center whitespace-nowrap leading-6 py-1 px-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-600"
             onClick={() => navigateTo("/")}
           >
-            {t("router.back-to-home")}
+            <Icon.Home strokeWidth={1} className="w-4 h-auto mr-1" />
+            {t("router.go-to-home")}
           </button>
         </Menu>
       </Dropdown>

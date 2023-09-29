@@ -285,7 +285,7 @@
     "warning-text-unused": "确定删除这些无用资源么？\n\n此操作不可逆❗"
   },
   "router": {
-    "back-to-home": "回到首页"
+    "go-to-home": "回到首页"
   },
   "search": {
     "quickly-filter": "快速过滤"

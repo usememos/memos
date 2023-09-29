@@ -13,7 +13,7 @@ const NotFound = () => {
         <p className="mt-4 text-5xl font-mono dark:text-gray-300">404</p>
         <Link className="mt-4" to="/">
           <Button variant="outlined" startDecorator={<Icon.Home className="w-4 h-auto" />}>
-            {t("router.back-to-home")}
+            {t("router.go-to-home")}
           </Button>
         </Link>
       </div>

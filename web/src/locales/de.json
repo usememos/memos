@@ -70,7 +70,7 @@
     "mark": "Mark"
   },
   "router": {
-    "back-to-home": "Zurück zur Startseite"
+    "go-to-home": "Zurück zur Startseite"
   },
   "auth": {
     "signup-as-host": "Als Host registrieren",

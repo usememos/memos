@@ -71,7 +71,8 @@
     }
   },
   "router": {
-    "back-to-home": "Back to Home"
+    "go-to-home": "Go to Home",
+    "back-to-top": "Back to Top"
   },
   "auth": {
     "signup-as-host": "Sign up as Host",

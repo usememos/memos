@@ -70,7 +70,7 @@
     "mark": "Mark"
   },
   "router": {
-    "back-to-home": "回到首頁"
+    "go-to-home": "回到首頁"
   },
   "auth": {
     "signup-as-host": "註冊為管理員",
