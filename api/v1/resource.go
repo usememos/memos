@@ -565,14 +565,14 @@ func convertResourceFromStore(resource *store.Resource) *Resource {
 func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resource, r io.Reader) error {
 	systemSettingStorageServiceID, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingStorageServiceIDName.String()})
 	if err != nil {
-		return errors.Errorf("Failed to find SystemSettingStorageServiceIDName: %s", err)
+		return errors.Wrap(err, "Failed to find SystemSettingStorageServiceIDName")
 	}
 
 	storageServiceID := LocalStorage
 	if systemSettingStorageServiceID != nil {
 		err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
 		if err != nil {
-			return errors.Errorf("Failed to unmarshal storage service id: %s", err)
+			return errors.Wrap(err, "Failed to unmarshal storage service id")
 		}
 	}
 
@@ -580,7 +580,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 	if storageServiceID == DatabaseStorage {
 		fileBytes, err := io.ReadAll(r)
 		if err != nil {
-			return errors.Errorf("Failed to read file: %s", err)
+			return errors.Wrap(err, "Failed to read file")
 		}
 		create.Blob = fileBytes
 		return nil
@@ -588,13 +588,13 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		// `LocalStorage` means save blob into local disk
 		systemSettingLocalStoragePath, err := s.GetSystemSetting(ctx, &store.FindSystemSetting{Name: SystemSettingLocalStoragePathName.String()})
 		if err != nil {
-			return errors.Errorf("Failed to find SystemSettingLocalStoragePathName: %s", err)
+			return errors.Wrap(err, "Failed to find SystemSettingLocalStoragePathName")
 		}
 		localStoragePath := "assets/{timestamp}_{filename}"
 		if systemSettingLocalStoragePath != nil && systemSettingLocalStoragePath.Value != "" {
 			err = json.Unmarshal([]byte(systemSettingLocalStoragePath.Value), &localStoragePath)
 			if err != nil {
-				return errors.Errorf("Failed to unmarshal SystemSettingLocalStoragePathName: %s", err)
+				return errors.Wrap(err, "Failed to unmarshal SystemSettingLocalStoragePathName")
 			}
 		}
 		filePath := filepath.FromSlash(localStoragePath)
@@ -605,16 +605,16 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 
 		dir := filepath.Dir(filePath)
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
-			return errors.Errorf("Failed to create directory: %s", err)
+			return errors.Wrap(err, "Failed to create directory")
 		}
 		dst, err := os.Create(filePath)
 		if err != nil {
-			return errors.Errorf("Failed to create file: %s", err)
+			return errors.Wrap(err, "Failed to create file")
 		}
 		defer dst.Close()
 		_, err = io.Copy(dst, r)
 		if err != nil {
-			return errors.Errorf("Failed to copy file: %s", err)
+			return errors.Wrap(err, "Failed to copy file")
 		}
 
 		create.InternalPath = filePath
@@ -624,14 +624,14 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 	// Others: store blob into external service, such as S3
 	storage, err := s.GetStorage(ctx, &store.FindStorage{ID: &storageServiceID})
 	if err != nil {
-		return errors.Errorf("Failed to find StorageServiceID: %s", err)
+		return errors.Wrap(err, "Failed to find StorageServiceID")
 	}
 	if storage == nil {
 		return errors.Errorf("Storage %d not found", storageServiceID)
 	}
 	storageMessage, err := ConvertStorageFromStore(storage)
 	if err != nil {
-		return errors.Errorf("Failed to ConvertStorageFromStore: %s", err)
+		return errors.Wrap(err, "Failed to ConvertStorageFromStore")
 	}
 
 	if storageMessage.Type != StorageS3 {
@@ -649,7 +649,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		URLSuffix: s3Config.URLSuffix,
 	})
 	if err != nil {
-		return errors.Errorf("Failed to create s3 client: %s", err)
+		return errors.Wrap(err, "Failed to create s3 client")
 	}
 
 	filePath := s3Config.Path
@@ -660,7 +660,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 
 	link, err := s3Client.UploadFile(ctx, filePath, create.Type, r)
 	if err != nil {
-		return errors.Errorf("Failed to upload via s3 client: %s", err)
+		return errors.Wrap(err, "Failed to upload via s3 client")
 	}
 
 	create.ExternalLink = link

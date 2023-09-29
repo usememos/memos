@@ -132,7 +132,7 @@ func getTokenFromMetadata(md metadata.MD) (string, error) {
 	if len(md.Get("Authorization")) > 0 {
 		authHeaderParts := strings.Fields(authorizationHeaders[0])
 		if len(authHeaderParts) != 2 || strings.ToLower(authHeaderParts[0]) != "bearer" {
-			return "", errors.Errorf("authorization header format must be Bearer {token}")
+			return "", errors.New("authorization header format must be Bearer {token}")
 		}
 		return authHeaderParts[1], nil
 	}

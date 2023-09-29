@@ -170,7 +170,7 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 			for _, relatedMemoType := range relatedMemoTypeList {
 				relatedMemoTypeList := strings.Split(relatedMemoType, ":")
 				if len(relatedMemoTypeList) != 2 {
-					return nil, errors.Errorf("invalid relation format")
+					return nil, errors.New("invalid relation format")
 				}
 				relatedMemoID, err := util.ConvertStringToInt32(relatedMemoTypeList[0])
 				if err != nil {

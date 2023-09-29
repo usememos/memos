@@ -248,7 +248,7 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)
 		}
 		if value < 0 {
-			return errors.Errorf("must be positive")
+			return errors.New("must be positive")
 		}
 	case SystemSettingTelegramBotTokenName:
 		if upsert.Value == "" {
@@ -260,7 +260,7 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 			if strings.HasPrefix(upsert.Value[slashIndex:], "/bot") {
 				return nil
 			}
-			return errors.Errorf("token start with `http` must end with `/bot<token>`")
+			return errors.New("token start with `http` must end with `/bot<token>`")
 		}
 		fragments := strings.Split(upsert.Value, ":")
 		if len(fragments) != 2 {
@@ -272,7 +272,7 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)
 		}
 	default:
-		return errors.Errorf("invalid system setting name")
+		return errors.New("invalid system setting name")
 	}
 	return nil
 }

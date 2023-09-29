@@ -103,7 +103,7 @@ func vacuumImpl(ctx context.Context, tx *sql.Tx) error {
 func (d *Driver) BackupTo(ctx context.Context, filename string) error {
 	conn, err := d.db.Conn(ctx)
 	if err != nil {
-		return errors.Errorf("fail to get conn %s", err)
+		return errors.Wrap(err, "fail to open new connection")
 	}
 	defer conn.Close()
 
@@ -113,25 +113,25 @@ func (d *Driver) BackupTo(ctx context.Context, filename string) error {
 		}
 		backupConn, ok := driverConn.(backuper)
 		if !ok {
-			return errors.Errorf("db connection is not a sqlite backuper")
+			return errors.New("db connection is not a sqlite backuper")
 		}
 
 		bck, err := backupConn.NewBackup(filename)
 		if err != nil {
-			return errors.Errorf("fail to create sqlite backup %s", err)
+			return errors.Wrap(err, "fail to create sqlite backup")
 		}
 
 		for more := true; more; {
 			more, err = bck.Step(-1)
 			if err != nil {
-				return errors.Errorf("fail to execute sqlite backup %s", err)
+				return errors.Wrap(err, "fail to execute sqlite backup")
 			}
 		}
 
 		return bck.Finish()
 	})
 	if err != nil {
-		return errors.Errorf("fail to backup %s", err)
+		return errors.Wrap(err, "fail to backup")
 	}
 
 	return nil

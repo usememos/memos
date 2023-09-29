@@ -412,26 +412,26 @@ func (s *APIV1Service) UpdateUser(c echo.Context) error {
 
 func (create CreateUserRequest) Validate() error {
 	if len(create.Username) < 3 {
-		return errors.Errorf("username is too short, minimum length is 3")
+		return errors.New("username is too short, minimum length is 3")
 	}
 	if len(create.Username) > 32 {
-		return errors.Errorf("username is too long, maximum length is 32")
+		return errors.New("username is too long, maximum length is 32")
 	}
 	if len(create.Password) < 3 {
-		return errors.Errorf("password is too short, minimum length is 3")
+		return errors.New("password is too short, minimum length is 3")
 	}
 	if len(create.Password) > 512 {
-		return errors.Errorf("password is too long, maximum length is 512")
+		return errors.New("password is too long, maximum length is 512")
 	}
 	if len(create.Nickname) > 64 {
-		return errors.Errorf("nickname is too long, maximum length is 64")
+		return errors.New("nickname is too long, maximum length is 64")
 	}
 	if create.Email != "" {
 		if len(create.Email) > 256 {
-			return errors.Errorf("email is too long, maximum length is 256")
+			return errors.New("email is too long, maximum length is 256")
 		}
 		if !util.ValidateEmail(create.Email) {
-			return errors.Errorf("invalid email format")
+			return errors.New("invalid email format")
 		}
 	}
 
@@ -440,31 +440,31 @@ func (create CreateUserRequest) Validate() error {
 
 func (update UpdateUserRequest) Validate() error {
 	if update.Username != nil && len(*update.Username) < 3 {
-		return errors.Errorf("username is too short, minimum length is 3")
+		return errors.New("username is too short, minimum length is 3")
 	}
 	if update.Username != nil && len(*update.Username) > 32 {
-		return errors.Errorf("username is too long, maximum length is 32")
+		return errors.New("username is too long, maximum length is 32")
 	}
 	if update.Password != nil && len(*update.Password) < 3 {
-		return errors.Errorf("password is too short, minimum length is 3")
+		return errors.New("password is too short, minimum length is 3")
 	}
 	if update.Password != nil && len(*update.Password) > 512 {
-		return errors.Errorf("password is too long, maximum length is 512")
+		return errors.New("password is too long, maximum length is 512")
 	}
 	if update.Nickname != nil && len(*update.Nickname) > 64 {
-		return errors.Errorf("nickname is too long, maximum length is 64")
+		return errors.New("nickname is too long, maximum length is 64")
 	}
 	if update.AvatarURL != nil {
 		if len(*update.AvatarURL) > 2<<20 {
-			return errors.Errorf("avatar is too large, maximum is 2MB")
+			return errors.New("avatar is too large, maximum is 2MB")
 		}
 	}
 	if update.Email != nil && *update.Email != "" {
 		if len(*update.Email) > 256 {
-			return errors.Errorf("email is too long, maximum length is 256")
+			return errors.New("email is too long, maximum length is 256")
 		}
 		if !util.ValidateEmail(*update.Email) {
-			return errors.Errorf("invalid email format")
+			return errors.New("invalid email format")
 		}
 	}
 

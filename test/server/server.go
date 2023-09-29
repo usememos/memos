@@ -142,7 +142,7 @@ func (s *TestingServer) request(method, uri string, body io.Reader, params, head
 				}
 			}
 			if cookie == "" {
-				return nil, errors.Errorf("unable to find access token in the login response headers")
+				return nil, errors.New("unable to find access token in the login response headers")
 			}
 			s.cookie = cookie
 		} else if strings.Contains(uri, "/api/v1/auth/signout") {
