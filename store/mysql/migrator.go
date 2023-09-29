@@ -35,15 +35,9 @@ func (d *Driver) nonProdMigrate(ctx context.Context) error {
 		return errors.Errorf("failed to read latest schema file: %s", err)
 	}
 
-	for _, stmt := range strings.Split(string(buf), ";") {
-		stmt = strings.TrimSpace(stmt)
-		if stmt == "" {
-			continue
-		}
-		_, err := d.db.ExecContext(ctx, stmt)
-		if err != nil {
-			return errors.Errorf("failed to exec SQL %s: %s", stmt, err)
-		}
+	stmt := string(buf)
+	if _, err := d.db.ExecContext(ctx, stmt); err != nil {
+		return errors.Errorf("failed to exec SQL %s: %s", stmt, err)
 	}
 
 	// In demo mode, we should seed the database.
@@ -54,17 +48,27 @@ func (d *Driver) nonProdMigrate(ctx context.Context) error {
 	}
 	return nil
 }
+
 func (d *Driver) prodMigrate(ctx context.Context) error {
 	currentVersion := version.GetCurrentVersion(d.profile.Mode)
 	migrationHistoryList, err := d.FindMigrationHistoryList(ctx, &MigrationHistoryFind{})
 	if err != nil {
 		return errors.Wrap(err, "failed to find migration history")
 	}
+	// If there is no migration history, we should apply the latest schema.
 	if len(migrationHistoryList) == 0 {
-		_, err := d.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
-			Version: currentVersion,
-		})
+		buf, err := migrationFS.ReadFile("migration/prod/" + latestSchemaFileName)
 		if err != nil {
+			return errors.Errorf("failed to read latest schema file: %s", err)
+		}
+
+		stmt := string(buf)
+		if _, err := d.db.ExecContext(ctx, stmt); err != nil {
+			return errors.Errorf("failed to exec SQL %s: %s", stmt, err)
+		}
+		if _, err := d.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
+			Version: currentVersion,
+		}); err != nil {
 			return errors.Wrap(err, "failed to upsert migration history")
 		}
 		return nil
@@ -76,7 +80,6 @@ func (d *Driver) prodMigrate(ctx context.Context) error {
 	}
 	sort.Sort(version.SortVersion(migrationHistoryVersionList))
 	latestMigrationHistoryVersion := migrationHistoryVersionList[len(migrationHistoryVersionList)-1]
-
 	if !version.IsVersionGreaterThan(version.GetSchemaVersion(currentVersion), latestMigrationHistoryVersion) {
 		return nil
 	}
@@ -96,7 +99,7 @@ func (d *Driver) prodMigrate(ctx context.Context) error {
 }
 
 func (d *Driver) applyMigrationForMinorVersion(ctx context.Context, minorVersion string) error {
-	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("%s/%s/*.sql", "migration/prod", minorVersion))
+	filenames, err := fs.Glob(migrationFS, fmt.Sprintf("migration/prod/%s/*.sql", minorVersion))
 	if err != nil {
 		return errors.Wrap(err, "failed to read ddl files")
 	}
@@ -131,13 +134,12 @@ func (d *Driver) applyMigrationForMinorVersion(ctx context.Context, minorVersion
 var seedFS embed.FS
 
 func (d *Driver) seed(ctx context.Context) error {
-	filenames, err := fs.Glob(seedFS, fmt.Sprintf("%s/*.sql", "seed"))
+	filenames, err := fs.Glob(seedFS, "seed/*.sql")
 	if err != nil {
 		return errors.Wrap(err, "failed to read seed files")
 	}
 
 	sort.Strings(filenames)
-
 	// Loop over all seed files and execute them in order.
 	for _, filename := range filenames {
 		buf, err := seedFS.ReadFile(filename)

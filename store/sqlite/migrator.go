@@ -117,7 +117,7 @@ func (d *Driver) applyLatestSchema(ctx context.Context) error {
 	if d.profile.Mode == "prod" {
 		schemaMode = "prod"
 	}
-	latestSchemaPath := fmt.Sprintf("%s/%s/%s", "migration", schemaMode, latestSchemaFileName)
+	latestSchemaPath := fmt.Sprintf("migration/%s/%s", schemaMode, latestSchemaFileName)
 	buf, err := migrationFS.ReadFile(latestSchemaPath)
 	if err != nil {
 		return errors.Wrapf(err, "failed to read latest schema %q", latestSchemaPath)

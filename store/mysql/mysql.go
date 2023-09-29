@@ -3,6 +3,7 @@ package mysql
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
 	"github.com/pkg/errors"
 
@@ -16,7 +17,10 @@ type Driver struct {
 }
 
 func NewDriver(profile *profile.Profile) (store.Driver, error) {
-	db, err := sql.Open("mysql", profile.DSN)
+	// Open MySQL connection with parameter.
+	// multiStatements=true is required for migration.
+	// See more in: https://github.com/go-sql-driver/mysql#multistatements
+	db, err := sql.Open("mysql", fmt.Sprintf("%s?multiStatements=true", profile.DSN))
 	if err != nil {
 		return nil, errors.Wrapf(err, "failed to open db: %s", profile.DSN)
 	}
