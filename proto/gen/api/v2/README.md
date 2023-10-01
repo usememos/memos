@@ -7,8 +7,14 @@
     - [RowStatus](#memos-api-v2-RowStatus)
   
 - [api/v2/memo_service.proto](#api_v2_memo_service-proto)
+    - [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest)
+    - [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse)
+    - [CreateMemoRequest](#memos-api-v2-CreateMemoRequest)
+    - [CreateMemoResponse](#memos-api-v2-CreateMemoResponse)
     - [GetMemoRequest](#memos-api-v2-GetMemoRequest)
     - [GetMemoResponse](#memos-api-v2-GetMemoResponse)
+    - [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest)
+    - [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse)
     - [ListMemosRequest](#memos-api-v2-ListMemosRequest)
     - [ListMemosResponse](#memos-api-v2-ListMemosResponse)
     - [Memo](#memos-api-v2-Memo)
@@ -100,6 +106,68 @@
 
 
 
+<a name="memos-api-v2-CreateMemoCommentRequest"></a>
+
+### CreateMemoCommentRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  | id is the memo id to create comment for. |
+| create | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CreateMemoCommentResponse"></a>
+
+### CreateMemoCommentResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo | [Memo](#memos-api-v2-Memo) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CreateMemoRequest"></a>
+
+### CreateMemoRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+| visibility | [Visibility](#memos-api-v2-Visibility) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CreateMemoResponse"></a>
+
+### CreateMemoResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo | [Memo](#memos-api-v2-Memo) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-GetMemoRequest"></a>
 
 ### GetMemoRequest
@@ -124,6 +192,36 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | memo | [Memo](#memos-api-v2-Memo) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListMemoCommentsRequest"></a>
+
+### ListMemoCommentsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListMemoCommentsResponse"></a>
+
+### ListMemoCommentsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memos | [Memo](#memos-api-v2-Memo) | repeated |  |
 
 
 
@@ -211,8 +309,11 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
+| CreateMemo | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) | [CreateMemoResponse](#memos-api-v2-CreateMemoResponse) |  |
 | ListMemos | [ListMemosRequest](#memos-api-v2-ListMemosRequest) | [ListMemosResponse](#memos-api-v2-ListMemosResponse) |  |
 | GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) |  |
+| CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) |  |
+| ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) |  |
 
  
 

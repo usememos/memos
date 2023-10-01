@@ -19,16 +19,22 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	MemoService_ListMemos_FullMethodName = "/memos.api.v2.MemoService/ListMemos"
-	MemoService_GetMemo_FullMethodName   = "/memos.api.v2.MemoService/GetMemo"
+	MemoService_CreateMemo_FullMethodName        = "/memos.api.v2.MemoService/CreateMemo"
+	MemoService_ListMemos_FullMethodName         = "/memos.api.v2.MemoService/ListMemos"
+	MemoService_GetMemo_FullMethodName           = "/memos.api.v2.MemoService/GetMemo"
+	MemoService_CreateMemoComment_FullMethodName = "/memos.api.v2.MemoService/CreateMemoComment"
+	MemoService_ListMemoComments_FullMethodName  = "/memos.api.v2.MemoService/ListMemoComments"
 )
 
 // MemoServiceClient is the client API for MemoService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MemoServiceClient interface {
+	CreateMemo(ctx context.Context, in *CreateMemoRequest, opts ...grpc.CallOption) (*CreateMemoResponse, error)
 	ListMemos(ctx context.Context, in *ListMemosRequest, opts ...grpc.CallOption) (*ListMemosResponse, error)
 	GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*GetMemoResponse, error)
+	CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*CreateMemoCommentResponse, error)
+	ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error)
 }
 
 type memoServiceClient struct {
@@ -37,6 +43,15 @@ type memoServiceClient struct {
 
 func NewMemoServiceClient(cc grpc.ClientConnInterface) MemoServiceClient {
 	return &memoServiceClient{cc}
+}
+
+func (c *memoServiceClient) CreateMemo(ctx context.Context, in *CreateMemoRequest, opts ...grpc.CallOption) (*CreateMemoResponse, error) {
+	out := new(CreateMemoResponse)
+	err := c.cc.Invoke(ctx, MemoService_CreateMemo_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *memoServiceClient) ListMemos(ctx context.Context, in *ListMemosRequest, opts ...grpc.CallOption) (*ListMemosResponse, error) {
@@ -57,12 +72,33 @@ func (c *memoServiceClient) GetMemo(ctx context.Context, in *GetMemoRequest, opt
 	return out, nil
 }
 
+func (c *memoServiceClient) CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*CreateMemoCommentResponse, error) {
+	out := new(CreateMemoCommentResponse)
+	err := c.cc.Invoke(ctx, MemoService_CreateMemoComment_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memoServiceClient) ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error) {
+	out := new(ListMemoCommentsResponse)
+	err := c.cc.Invoke(ctx, MemoService_ListMemoComments_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MemoServiceServer is the server API for MemoService service.
 // All implementations must embed UnimplementedMemoServiceServer
 // for forward compatibility
 type MemoServiceServer interface {
+	CreateMemo(context.Context, *CreateMemoRequest) (*CreateMemoResponse, error)
 	ListMemos(context.Context, *ListMemosRequest) (*ListMemosResponse, error)
 	GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error)
+	CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*CreateMemoCommentResponse, error)
+	ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error)
 	mustEmbedUnimplementedMemoServiceServer()
 }
 
@@ -70,11 +106,20 @@ type MemoServiceServer interface {
 type UnimplementedMemoServiceServer struct {
 }
 
+func (UnimplementedMemoServiceServer) CreateMemo(context.Context, *CreateMemoRequest) (*CreateMemoResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMemo not implemented")
+}
 func (UnimplementedMemoServiceServer) ListMemos(context.Context, *ListMemosRequest) (*ListMemosResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMemos not implemented")
 }
 func (UnimplementedMemoServiceServer) GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMemo not implemented")
+}
+func (UnimplementedMemoServiceServer) CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*CreateMemoCommentResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMemoComment not implemented")
+}
+func (UnimplementedMemoServiceServer) ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMemoComments not implemented")
 }
 func (UnimplementedMemoServiceServer) mustEmbedUnimplementedMemoServiceServer() {}
 
@@ -87,6 +132,24 @@ type UnsafeMemoServiceServer interface {
 
 func RegisterMemoServiceServer(s grpc.ServiceRegistrar, srv MemoServiceServer) {
 	s.RegisterService(&MemoService_ServiceDesc, srv)
+}
+
+func _MemoService_CreateMemo_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMemoRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).CreateMemo(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_CreateMemo_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).CreateMemo(ctx, req.(*CreateMemoRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _MemoService_ListMemos_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -125,6 +188,42 @@ func _MemoService_GetMemo_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemoService_CreateMemoComment_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMemoCommentRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).CreateMemoComment(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_CreateMemoComment_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).CreateMemoComment(ctx, req.(*CreateMemoCommentRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _MemoService_ListMemoComments_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMemoCommentsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).ListMemoComments(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_ListMemoComments_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).ListMemoComments(ctx, req.(*ListMemoCommentsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MemoService_ServiceDesc is the grpc.ServiceDesc for MemoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -133,12 +232,24 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*MemoServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "CreateMemo",
+			Handler:    _MemoService_CreateMemo_Handler,
+		},
+		{
 			MethodName: "ListMemos",
 			Handler:    _MemoService_ListMemos_Handler,
 		},
 		{
 			MethodName: "GetMemo",
 			Handler:    _MemoService_GetMemo_Handler,
+		},
+		{
+			MethodName: "CreateMemoComment",
+			Handler:    _MemoService_CreateMemoComment_Handler,
+		},
+		{
+			MethodName: "ListMemoComments",
+			Handler:    _MemoService_ListMemoComments_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

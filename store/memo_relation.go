@@ -7,8 +7,10 @@ import (
 type MemoRelationType string
 
 const (
-	MemoRelationReference  MemoRelationType = "REFERENCE"
-	MemoRelationAdditional MemoRelationType = "ADDITIONAL"
+	// MemoRelationReference is the type for a reference memo relation.
+	MemoRelationReference MemoRelationType = "REFERENCE"
+	// MemoRelationComment is the type for a comment memo relation.
+	MemoRelationComment MemoRelationType = "COMMENT"
 )
 
 type MemoRelation struct {
