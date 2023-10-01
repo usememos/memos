@@ -102,13 +102,11 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 		GROUP_CONCAT(resource.id) AS resource_id_list,
 		(
 			SELECT
-				GROUP_CONCAT(related_memo_id || ':' || type)
+				GROUP_CONCAT(memo_id || ':' || related_memo_id || ':' || type)
 			FROM
 				memo_relation
 			WHERE
-				memo_relation.memo_id = memo.id
-			GROUP BY
-				memo_relation.memo_id
+				memo_relation.memo_id = memo.id OR memo_relation.related_memo_id = memo.id
 		) AS relation_list
 	FROM
 		memo
@@ -169,21 +167,25 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 			relatedMemoTypeList := strings.Split(memoRelationList.String, ",")
 			for _, relatedMemoType := range relatedMemoTypeList {
 				relatedMemoTypeList := strings.Split(relatedMemoType, ":")
-				if len(relatedMemoTypeList) != 2 {
+				if len(relatedMemoTypeList) != 3 {
 					return nil, errors.New("invalid relation format")
 				}
-				relatedMemoID, err := util.ConvertStringToInt32(relatedMemoTypeList[0])
+				memoID, err := util.ConvertStringToInt32(relatedMemoTypeList[0])
 				if err != nil {
 					return nil, err
 				}
-				relationType := store.MemoRelationType(relatedMemoTypeList[1])
+				relatedMemoID, err := util.ConvertStringToInt32(relatedMemoTypeList[1])
+				if err != nil {
+					return nil, err
+				}
+				relationType := store.MemoRelationType(relatedMemoTypeList[2])
 				memo.RelationList = append(memo.RelationList, &store.MemoRelation{
-					MemoID:        memo.ID,
+					MemoID:        memoID,
 					RelatedMemoID: relatedMemoID,
 					Type:          relationType,
 				})
 				// Set the first parent ID if relation type is comment.
-				if memo.ParentID == nil && relationType == store.MemoRelationComment {
+				if memo.ParentID == nil && memoID == memo.ID && relationType == store.MemoRelationComment {
 					memo.ParentID = &relatedMemoID
 				}
 			}
