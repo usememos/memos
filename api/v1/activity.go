@@ -25,6 +25,8 @@ const (
 
 	// ActivityMemoCreate is the type for creating memos.
 	ActivityMemoCreate ActivityType = "memo.create"
+	// ActivityMemoView is the type for viewing memos.
+	ActivityMemoView ActivityType = "memo.view"
 	// ActivityMemoUpdate is the type for updating memos.
 	ActivityMemoUpdate ActivityType = "memo.update"
 	// ActivityMemoDelete is the type for deleting memos.
@@ -87,8 +89,11 @@ type ActivityUserAuthSignUpPayload struct {
 }
 
 type ActivityMemoCreatePayload struct {
-	Content    string `json:"content"`
-	Visibility string `json:"visibility"`
+	MemoID int32 `json:"memoId"`
+}
+
+type ActivityMemoViewPayload struct {
+	MemoID int32 `json:"memoId"`
 }
 
 type ActivityResourceCreatePayload struct {
