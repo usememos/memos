@@ -18,6 +18,7 @@ interface Memo {
   creatorName: string;
   resourceList: any[];
   relationList: MemoRelation[];
+  parent?: Memo;
 }
 
 interface MemoCreate {

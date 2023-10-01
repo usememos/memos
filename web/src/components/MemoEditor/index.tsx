@@ -49,7 +49,6 @@ const MemoEditor = (props: Props) => {
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
   const resourceStore = useResourceStore();
-
   const [state, setState] = useState<State>({
     memoVisibility: "PRIVATE",
     resourceList: [],

@@ -133,7 +133,7 @@ const MemoList: React.FC = () => {
   return (
     <div className="memo-list-container">
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} lazyRendering showVisibility />
+        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} lazyRendering showVisibility showCommentEntry />
       ))}
       {isFetching ? (
         <div className="status-text-container fetching-tip">

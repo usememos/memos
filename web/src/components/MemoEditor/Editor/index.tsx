@@ -98,7 +98,6 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
       setContent: (text: string) => {
         if (editorRef.current) {
           editorRef.current.value = text;
-          editorRef.current.focus();
           handleContentChangeCallback(editorRef.current.value);
           updateEditorHeight();
         }

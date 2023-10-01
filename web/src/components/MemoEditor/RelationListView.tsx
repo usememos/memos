@@ -17,18 +17,19 @@ const RelationListView = (props: Props) => {
   const [formatedMemoRelationList, setFormatedMemoRelationList] = useState<FormatedMemoRelation[]>([]);
 
   useEffect(() => {
-    const fetchRelatedMemoList = async () => {
-      const requests = relationList.map(async (relation) => {
-        const relatedMemo = await memoCacheStore.getOrFetchMemoById(relation.relatedMemoId);
-        return {
-          ...relation,
-          relatedMemo,
-        };
-      });
+    (async () => {
+      const requests = relationList
+        .filter((relation) => relation.type === "REFERENCE")
+        .map(async (relation) => {
+          const relatedMemo = await memoCacheStore.getOrFetchMemoById(relation.relatedMemoId);
+          return {
+            ...relation,
+            relatedMemo,
+          };
+        });
       const list = await Promise.all(requests);
       setFormatedMemoRelationList(list);
-    };
-    fetchRelatedMemoList();
+    })();
   }, [relationList]);
 
   const handleDeleteRelation = async (memoRelation: FormatedMemoRelation) => {

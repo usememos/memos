@@ -1,9 +1,9 @@
-import { Divider, Select, Tooltip, Option } from "@mui/joy";
+import { Divider, Tooltip } from "@mui/joy";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
+import { UNKNOWN_ID } from "@/helpers/consts";
 import { getRelativeTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -19,11 +19,13 @@ import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
 import showPreviewImageDialog from "./PreviewImageDialog";
 import UserAvatar from "./UserAvatar";
+import VisibilityIcon from "./VisibilityIcon";
 import "@/less/memo.less";
 
 interface Props {
   memo: Memo;
   showVisibility?: boolean;
+  showCommentEntry?: boolean;
   lazyRendering?: boolean;
 }
 
@@ -89,14 +91,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     // Render a placeholder to occupy the space.
     return <div className={`memo-wrapper min-h-[128px] ${"memos-" + memo.id}`} ref={memoContainerRef}></div>;
   }
-
-  const handleMemoVisibilityOptionChanged = async (value: string) => {
-    const visibilityValue = value as Visibility;
-    await memoStore.patchMemo({
-      id: memo.id,
-      visibility: visibilityValue,
-    });
-  };
 
   const handleGotoMemoDetailPage = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.altKey) {
@@ -274,6 +268,13 @@ const Memo: React.FC<Props> = (props: Props) => {
             )}
           </div>
         </div>
+        {memo.parent && props.showCommentEntry && (
+          <div>
+            <Link to={`/m/${memo.parent.id}`}>
+              <span className="text-xs text-gray-400 opacity-80 dark:text-gray-500">This is a comment of #{memo.parent.id}</span>
+            </Link>
+          </div>
+        )}
         <MemoContent
           content={memo.content}
           onMemoContentClick={handleMemoContentClick}
@@ -299,22 +300,9 @@ const Memo: React.FC<Props> = (props: Props) => {
                   <>
                     <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                     <Tooltip title={"The visibility of memo"} placement="top">
-                      <Select
-                        className="w-auto text-sm"
-                        variant="plain"
-                        value={memo.visibility}
-                        onChange={(_, visibility) => {
-                          if (visibility) {
-                            handleMemoVisibilityOptionChanged(visibility);
-                          }
-                        }}
-                      >
-                        {VISIBILITY_SELECTOR_ITEMS.map((item) => (
-                          <Option key={item.value} value={item.value} className="whitespace-nowrap">
-                            {item.text}
-                          </Option>
-                        ))}
-                      </Select>
+                      <span>
+                        <VisibilityIcon visibility={memo.visibility} />
+                      </span>
                     </Tooltip>
                   </>
                 )}

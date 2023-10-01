@@ -1,17 +1,21 @@
-import { Divider, Select, Tooltip, Option, IconButton } from "@mui/joy";
+import { Select, Tooltip, Option, IconButton, Divider } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import FloatingNavButton from "@/components/FloatingNavButton";
 import Icon from "@/components/Icon";
+import Memo from "@/components/Memo";
 import MemoContent from "@/components/MemoContent";
+import MemoEditor from "@/components/MemoEditor";
 import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
 import MemoRelationListView from "@/components/MemoRelationListView";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import showShareMemoDialog from "@/components/ShareMemoDialog";
 import UserAvatar from "@/components/UserAvatar";
-import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
+import VisibilityIcon from "@/components/VisibilityIcon";
+import { memoServiceClient } from "@/grpcweb";
+import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -29,11 +33,13 @@ const MemoDetail = () => {
   const userV1Store = useUserV1Store();
   const currentUser = useCurrentUser();
   const [user, setUser] = useState<User>();
+  const [comments, setComments] = useState<Memo[]>([]);
   const { systemStatus } = globalStore.state;
   const memoId = Number(params.memoId);
   const memo = memoStore.state.memos.find((memo) => memo.id === memoId);
   const allowEdit = memo?.creatorUsername === currentUser?.username;
 
+  // Prepare memo.
   useEffect(() => {
     if (memoId && !isNaN(memoId)) {
       memoStore
@@ -50,6 +56,28 @@ const MemoDetail = () => {
       navigateTo("/404");
     }
   }, [memoId]);
+
+  // Prepare memo comments.
+  useEffect(() => {
+    if (!memo) {
+      return;
+    }
+
+    fetchMemoComments();
+  }, [memo]);
+
+  const fetchMemoComments = async () => {
+    if (!memo) {
+      return;
+    }
+
+    const { memos } = await memoServiceClient.listMemoComments({
+      id: memo.id,
+    });
+    const requests = memos.map((memo) => memoStore.fetchMemoById(memo.id));
+    const composedMemos = await Promise.all(requests);
+    setComments(composedMemos);
+  };
 
   if (!memo) {
     return null;
@@ -76,21 +104,20 @@ const MemoDetail = () => {
 
   return (
     <>
-      <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-white dark:bg-zinc-800">
-        <div className="relative w-full min-h-full mx-auto flex flex-col justify-start items-center pb-6">
+      <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-zinc-100 dark:bg-zinc-800">
+        <div className="relative w-full h-auto mx-auto flex flex-col justify-start items-center bg-white dark:bg-zinc-900">
           <div className="w-full flex flex-col justify-start items-center py-8">
             <UserAvatar className="!w-20 h-auto mb-2 drop-shadow" avatarUrl={systemStatus.customizedProfile.logoUrl} />
             <p className="text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
-          <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
+          <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 pb-6">
             <div className="w-full mb-4 flex flex-row justify-start items-center mr-1">
               <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTs)}</span>
             </div>
             <MemoContent content={memo.content} />
             <MemoResourceListView resourceList={memo.resourceList} />
             <MemoRelationListView relationList={memo.relationList} />
-            <Divider className="!my-6" />
-            <div className="w-full flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
+            <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
               <div className="flex flex-row justify-start items-center">
                 <Tooltip title={"The identifier of memo"} placement="top">
                   <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
@@ -103,24 +130,23 @@ const MemoDetail = () => {
                 {allowEdit && (
                   <>
                     <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-                    <Tooltip title={"The visibility of memo"} placement="top">
-                      <Select
-                        className="w-auto text-sm"
-                        variant="plain"
-                        value={memo.visibility}
-                        onChange={(_, visibility) => {
-                          if (visibility) {
-                            handleMemoVisibilityOptionChanged(visibility);
-                          }
-                        }}
-                      >
-                        {VISIBILITY_SELECTOR_ITEMS.map((item) => (
-                          <Option key={item.value} value={item.value} className="whitespace-nowrap">
-                            {item.text}
-                          </Option>
-                        ))}
-                      </Select>
-                    </Tooltip>
+                    <Select
+                      className="w-auto text-sm"
+                      variant="plain"
+                      value={memo.visibility}
+                      startDecorator={<VisibilityIcon visibility={memo.visibility} />}
+                      onChange={(_, visibility) => {
+                        if (visibility) {
+                          handleMemoVisibilityOptionChanged(visibility);
+                        }
+                      }}
+                    >
+                      {VISIBILITY_SELECTOR_ITEMS.map((item) => (
+                        <Option key={item.value} value={item.value} className="whitespace-nowrap">
+                          {item.text}
+                        </Option>
+                      ))}
+                    </Select>
                   </>
                 )}
               </div>
@@ -144,6 +170,31 @@ const MemoDetail = () => {
                 </Tooltip>
               </div>
             </div>
+          </div>
+        </div>
+        <div className="py-6 w-full border-t dark:border-t-zinc-700">
+          <div className="relative mx-auto flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 gap-y-1">
+            {comments.map((comment) => (
+              <Memo key={comment.id} memo={comment} />
+            ))}
+            {comments.length === 0 && (
+              <div className="w-full flex flex-col justify-center items-center py-6">
+                <Icon.MessageCircle strokeWidth={1} className="w-8 h-auto text-gray-400" />
+                <p className="text-gray-400 italic text-sm">No comments</p>
+              </div>
+            )}
+            {/* Only show comment editor when user login */}
+            {currentUser && (
+              <>
+                {comments.length === 0 && <Divider className="!my-4" />}
+                <MemoEditor
+                  key={memo.id}
+                  className="border-none"
+                  relationList={[{ memoId: UNKNOWN_ID, relatedMemoId: memo.id, type: "COMMENT" }]}
+                  onConfirm={() => fetchMemoComments()}
+                />
+              </>
+            )}
           </div>
         </div>
       </section>

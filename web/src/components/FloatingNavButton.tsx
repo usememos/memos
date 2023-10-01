@@ -1,4 +1,5 @@
 import { Dropdown, IconButton, Menu, MenuButton } from "@mui/joy";
+import { useEffect } from "react";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "./Icon";
@@ -6,6 +7,10 @@ import Icon from "./Icon";
 const FloatingNavButton = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
+
+  useEffect(() => {
+    handleScrollToTop();
+  }, []);
 
   const handleScrollToTop = () => {
     document.body.querySelector("#root")?.scrollTo({ top: 0, behavior: "smooth" });

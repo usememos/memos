@@ -9,16 +9,15 @@ interface Props {
 const MemoRelationListView = (props: Props) => {
   const memoCacheStore = useMemoCacheStore();
   const [relatedMemoList, setRelatedMemoList] = useState<Memo[]>([]);
-  const relationList = props.relationList;
 
   useEffect(() => {
-    const fetchRelatedMemoList = async () => {
+    (async () => {
+      // Only show reference relations.
+      const relationList = props.relationList.filter((relation) => relation.type === "REFERENCE");
       const memoList = await Promise.all(relationList.map((relation) => memoCacheStore.getOrFetchMemoById(relation.relatedMemoId)));
       setRelatedMemoList(memoList);
-    };
-
-    fetchRelatedMemoList();
-  }, [relationList]);
+    })();
+  }, [props.relationList]);
 
   const handleGotoMemoDetail = (memo: Memo) => {
     window.open(`/m/${memo.id}`, "_blank");
