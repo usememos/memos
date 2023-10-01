@@ -101,14 +101,14 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 		CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END AS pinned,
 		GROUP_CONCAT(resource.id) AS resource_id_list,
 		(
-				SELECT
-						GROUP_CONCAT(related_memo_id || ':' || type)
-				FROM
-						memo_relation
-				WHERE
-						memo_relation.memo_id = memo.id
-				GROUP BY
-						memo_relation.memo_id
+			SELECT
+				GROUP_CONCAT(related_memo_id || ':' || type)
+			FROM
+				memo_relation
+			WHERE
+				memo_relation.memo_id = memo.id
+			GROUP BY
+				memo_relation.memo_id
 		) AS relation_list
 	FROM
 		memo
@@ -176,11 +176,16 @@ func (d *Driver) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.
 				if err != nil {
 					return nil, err
 				}
+				relationType := store.MemoRelationType(relatedMemoTypeList[1])
 				memo.RelationList = append(memo.RelationList, &store.MemoRelation{
 					MemoID:        memo.ID,
 					RelatedMemoID: relatedMemoID,
-					Type:          store.MemoRelationType(relatedMemoTypeList[1]),
+					Type:          relationType,
 				})
+				// Set the first parent ID if relation type is comment.
+				if memo.ParentID == nil && relationType == store.MemoRelationComment {
+					memo.ParentID = &relatedMemoID
+				}
 			}
 		}
 		list = append(list, &memo)

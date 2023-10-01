@@ -57,6 +57,7 @@ type Memo struct {
 	Pinned     bool       `json:"pinned"`
 
 	// Related fields
+	Parent          *Memo           `json:"parent"`
 	CreatorName     string          `json:"creatorName"`
 	CreatorUsername string          `json:"creatorUsername"`
 	ResourceList    []*Resource     `json:"resourceList"`
@@ -848,6 +849,22 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		}
 	}
 	memoResponse.ResourceList = resourceList
+
+	if memo.ParentID != nil {
+		parentMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+			ID: memo.ParentID,
+		})
+		if err != nil {
+			return nil, err
+		}
+		if parentMemo != nil {
+			parent, err := s.convertMemoFromStore(ctx, parentMemo)
+			if err != nil {
+				return nil, err
+			}
+			memoResponse.Parent = parent
+		}
+	}
 
 	return memoResponse, nil
 }
