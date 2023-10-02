@@ -100,7 +100,7 @@
     "archived-at": "Archiviato il",
     "search-placeholder": "Cerca memos",
     "visibility": {
-      "private": "Privao",
+      "private": "Privato",
       "protected": "Visibile ai membri",
       "public": "Pubblico",
       "disabled": "I memo pubblici sono disattivati"
