@@ -311,7 +311,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                   </>
                 )}
                 <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-                <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}#comments`}>
+                <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}`}>
                   <Icon.MessageCircle className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                   <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{commentRelations.length}</span>
                 </Link>
