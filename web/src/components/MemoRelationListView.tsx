@@ -12,9 +12,7 @@ const MemoRelationListView = (props: Props) => {
 
   useEffect(() => {
     (async () => {
-      // Only show reference relations.
-      const relationList = props.relationList.filter((relation) => relation.type === "REFERENCE");
-      const memoList = await Promise.all(relationList.map((relation) => memoCacheStore.getOrFetchMemoById(relation.relatedMemoId)));
+      const memoList = await Promise.all(props.relationList.map((relation) => memoCacheStore.getOrFetchMemoById(relation.relatedMemoId)));
       setRelatedMemoList(memoList);
     })();
   }, [props.relationList]);

@@ -38,6 +38,10 @@ const MemoDetail = () => {
   const memoId = Number(params.memoId);
   const memo = memoStore.state.memos.find((memo) => memo.id === memoId);
   const allowEdit = memo?.creatorUsername === currentUser?.username;
+  const referenceRelations =
+    memo?.relationList.filter(
+      (relation) => relation.memoId === memo?.id && relation.relatedMemoId !== memo?.id && relation.type === "REFERENCE"
+    ) || [];
 
   // Prepare memo.
   useEffect(() => {
@@ -114,9 +118,16 @@ const MemoDetail = () => {
             <div className="w-full mb-4 flex flex-row justify-start items-center mr-1">
               <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTs)}</span>
             </div>
+            {memo.parent && (
+              <div className="mb-2">
+                <Link to={`/m/${memo.parent.id}`}>
+                  <span className="text-xs text-gray-400 opacity-80">This is a comment of #{memo.parent.id}</span>
+                </Link>
+              </div>
+            )}
             <MemoContent content={memo.content} />
             <MemoResourceListView resourceList={memo.resourceList} />
-            <MemoRelationListView relationList={memo.relationList} />
+            <MemoRelationListView relationList={referenceRelations} />
             <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
               <div className="flex flex-row justify-start items-center">
                 <Tooltip title={"The identifier of memo"} placement="top">
@@ -174,15 +185,24 @@ const MemoDetail = () => {
         </div>
         <div className="py-6 w-full border-t dark:border-t-zinc-700">
           <div className="relative mx-auto flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 gap-y-1">
-            {comments.map((comment) => (
-              <Memo key={comment.id} memo={comment} />
-            ))}
-            {comments.length === 0 && (
+            {comments.length === 0 ? (
               <div className="w-full flex flex-col justify-center items-center py-6">
                 <Icon.MessageCircle strokeWidth={1} className="w-8 h-auto text-gray-400" />
                 <p className="text-gray-400 italic text-sm">No comments</p>
               </div>
+            ) : (
+              <>
+                <div className="w-full flex flex-row justify-start items-center mb-2">
+                  <Icon.MessageCircle strokeWidth={1} className="w-5 h-auto text-gray-400 mr-1" />
+                  <span className="text-gray-400 text-sm">Comments</span>
+                  <span className="text-gray-400 text-sm">({comments.length})</span>
+                </div>
+                {comments.map((comment) => (
+                  <Memo key={comment.id} memo={comment} />
+                ))}
+              </>
             )}
+
             {/* Only show comment editor when user login */}
             {currentUser && (
               <>

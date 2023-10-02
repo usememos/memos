@@ -61,6 +61,11 @@ const MemoEditor = (props: Props) => {
   const editorRef = useRef<EditorRefActions>(null);
   const user = userStore.state.user as User;
   const setting = user.setting;
+  const referenceRelations = memoId
+    ? state.relationList.filter(
+        (relation) => relation.memoId === memoId && relation.relatedMemoId !== memoId && relation.type === "REFERENCE"
+      )
+    : state.relationList.filter((relation) => relation.type === "REFERENCE");
 
   useEffect(() => {
     editorRef.current?.setContent(contentCache || "");
@@ -406,7 +411,7 @@ const MemoEditor = (props: Props) => {
         </div>
       </div>
       <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
-      <RelationListView relationList={state.relationList} setRelationList={handleSetRelationList} />
+      <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
       <div className="editor-footer-container">
         <MemoVisibilitySelector value={state.memoVisibility} onChange={handleMemoVisibilityChange} />
         <div className="buttons-container">

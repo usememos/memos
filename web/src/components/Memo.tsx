@@ -44,6 +44,10 @@ const Memo: React.FC<Props> = (props: Props) => {
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const readonly = memo.creatorUsername !== user?.username;
   const creator = userV1Store.getUserByUsername(memo.creatorUsername);
+  const referenceRelations = memo.relationList.filter(
+    (relation) => relation.memoId === memo.id && relation.relatedMemoId !== memo.id && relation.type === "REFERENCE"
+  );
+  const commentRelations = memo.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT");
 
   // Prepare memo creator.
   useEffect(() => {
@@ -89,7 +93,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   if (!shouldRender) {
     // Render a placeholder to occupy the space.
-    return <div className={`memo-wrapper min-h-[128px] ${"memos-" + memo.id}`} ref={memoContainerRef}></div>;
+    return <div className={`w-full h-32 !bg-transparent ${"memos-" + memo.id}`} ref={memoContainerRef}></div>;
   }
 
   const handleGotoMemoDetailPage = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -271,7 +275,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         {memo.parent && props.showCommentEntry && (
           <div>
             <Link to={`/m/${memo.parent.id}`}>
-              <span className="text-xs text-gray-400 opacity-80 dark:text-gray-500">This is a comment of #{memo.parent.id}</span>
+              <span className="text-xs text-gray-400 opacity-80">This is a comment of #{memo.parent.id}</span>
             </Link>
           </div>
         )}
@@ -281,7 +285,7 @@ const Memo: React.FC<Props> = (props: Props) => {
           onMemoContentDoubleClick={handleMemoContentDoubleClick}
         />
         <MemoResourceListView resourceList={memo.resourceList} />
-        <MemoRelationListView relationList={memo.relationList} />
+        <MemoRelationListView relationList={referenceRelations} />
         <div className="mt-4 w-full flex flex-row justify-between items-center gap-2">
           <div className="flex flex-row justify-start items-center">
             {creator && (
@@ -306,6 +310,11 @@ const Memo: React.FC<Props> = (props: Props) => {
                     </Tooltip>
                   </>
                 )}
+                <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
+                <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}#comments`}>
+                  <Icon.MessageCircle className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
+                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-1">{commentRelations.length}</span>
+                </Link>
               </>
             )}
           </div>
