@@ -155,24 +155,8 @@ export function deleteResourceById(id: ResourceId) {
   return axios.delete(`/api/v1/resource/${id}`);
 }
 
-export function getTagList() {
-  return axios.get<string[]>(`/api/v1/tag`);
-}
-
 export function getTagSuggestionList() {
   return axios.get<string[]>(`/api/v1/tag/suggestion`);
-}
-
-export function upsertTag(tagName: string) {
-  return axios.post<string>(`/api/v1/tag`, {
-    name: tagName,
-  });
-}
-
-export function deleteTag(tagName: string) {
-  return axios.post(`/api/v1/tag/delete`, {
-    name: tagName,
-  });
 }
 
 export function getStorageList() {

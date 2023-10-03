@@ -42,9 +42,13 @@
     - [SystemService](#memos-api-v2-SystemService)
   
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
+    - [DeleteTagRequest](#memos-api-v2-DeleteTagRequest)
+    - [DeleteTagResponse](#memos-api-v2-DeleteTagResponse)
     - [ListTagsRequest](#memos-api-v2-ListTagsRequest)
     - [ListTagsResponse](#memos-api-v2-ListTagsResponse)
     - [Tag](#memos-api-v2-Tag)
+    - [UpsertTagRequest](#memos-api-v2-UpsertTagRequest)
+    - [UpsertTagResponse](#memos-api-v2-UpsertTagResponse)
   
     - [TagService](#memos-api-v2-TagService)
   
@@ -528,6 +532,31 @@
 
 
 
+<a name="memos-api-v2-DeleteTagRequest"></a>
+
+### DeleteTagRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tag | [Tag](#memos-api-v2-Tag) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteTagResponse"></a>
+
+### DeleteTagResponse
+
+
+
+
+
+
+
 <a name="memos-api-v2-ListTagsRequest"></a>
 
 ### ListTagsRequest
@@ -573,6 +602,36 @@
 
 
 
+
+<a name="memos-api-v2-UpsertTagRequest"></a>
+
+### UpsertTagRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpsertTagResponse"></a>
+
+### UpsertTagResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tag | [Tag](#memos-api-v2-Tag) |  |  |
+
+
+
+
+
  
 
  
@@ -587,7 +646,9 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
+| UpsertTag | [UpsertTagRequest](#memos-api-v2-UpsertTagRequest) | [UpsertTagResponse](#memos-api-v2-UpsertTagResponse) |  |
 | ListTags | [ListTagsRequest](#memos-api-v2-ListTagsRequest) | [ListTagsResponse](#memos-api-v2-ListTagsResponse) |  |
+| DeleteTag | [DeleteTagRequest](#memos-api-v2-DeleteTagRequest) | [DeleteTagResponse](#memos-api-v2-DeleteTagResponse) |  |
 
  
 
