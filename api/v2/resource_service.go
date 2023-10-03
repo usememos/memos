@@ -44,6 +44,29 @@ func (s *ResourceService) ListResources(ctx context.Context, _ *apiv2pb.ListReso
 	return response, nil
 }
 
+func (s *ResourceService) UpdateResource(ctx context.Context, request *apiv2pb.UpdateResourceRequest) (*apiv2pb.UpdateResourceResponse, error) {
+	currentTs := time.Now().Unix()
+	update := &store.UpdateResource{
+		ID:        request.Id,
+		UpdatedTs: &currentTs,
+	}
+	for _, field := range request.UpdateMask {
+		if field == "filename" {
+			update.Filename = &request.Resource.Filename
+		} else if field == "memo_id" {
+			update.MemoID = request.Resource.MemoId
+		}
+	}
+
+	resource, err := s.Store.UpdateResource(ctx, update)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update resource: %v", err)
+	}
+	return &apiv2pb.UpdateResourceResponse{
+		Resource: convertResourceFromStore(resource),
+	}, nil
+}
+
 func (s *ResourceService) DeleteResource(ctx context.Context, request *apiv2pb.DeleteResourceRequest) (*apiv2pb.DeleteResourceResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {

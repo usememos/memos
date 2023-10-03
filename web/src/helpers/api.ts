@@ -135,24 +135,12 @@ export function deleteMemo(memoId: MemoId) {
   return axios.delete(`/api/v1/memo/${memoId}`);
 }
 
-export function getResourceList() {
-  return axios.get<Resource[]>("/api/v1/resource");
-}
-
 export function createResource(resourceCreate: ResourceCreate) {
   return axios.post<Resource>("/api/v1/resource", resourceCreate);
 }
 
 export function createResourceWithBlob(formData: FormData) {
   return axios.post<Resource>("/api/v1/resource/blob", formData);
-}
-
-export function patchResource(resourcePatch: ResourcePatch) {
-  return axios.patch<Resource>(`/api/v1/resource/${resourcePatch.id}`, resourcePatch);
-}
-
-export function deleteResourceById(id: ResourceId) {
-  return axios.delete(`/api/v1/resource/${id}`);
 }
 
 export function getTagSuggestionList() {

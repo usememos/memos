@@ -24,11 +24,15 @@
     - [MemoService](#memos-api-v2-MemoService)
   
 - [api/v2/resource_service.proto](#api_v2_resource_service-proto)
+    - [CreateResourceRequest](#memos-api-v2-CreateResourceRequest)
+    - [CreateResourceResponse](#memos-api-v2-CreateResourceResponse)
     - [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest)
     - [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse)
     - [ListResourcesRequest](#memos-api-v2-ListResourcesRequest)
     - [ListResourcesResponse](#memos-api-v2-ListResourcesResponse)
     - [Resource](#memos-api-v2-Resource)
+    - [UpdateResourceRequest](#memos-api-v2-UpdateResourceRequest)
+    - [UpdateResourceResponse](#memos-api-v2-UpdateResourceResponse)
   
     - [ResourceService](#memos-api-v2-ResourceService)
   
@@ -330,6 +334,39 @@
 
 
 
+<a name="memos-api-v2-CreateResourceRequest"></a>
+
+### CreateResourceRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| filename | [string](#string) |  |  |
+| external_link | [string](#string) |  |  |
+| type | [string](#string) |  |  |
+| memo_id | [int32](#int32) | optional |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CreateResourceResponse"></a>
+
+### CreateResourceResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource | [Resource](#memos-api-v2-Resource) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-DeleteResourceRequest"></a>
 
 ### DeleteResourceRequest
@@ -400,6 +437,38 @@
 
 
 
+
+<a name="memos-api-v2-UpdateResourceRequest"></a>
+
+### UpdateResourceRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| resource | [Resource](#memos-api-v2-Resource) |  |  |
+| update_mask | [string](#string) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateResourceResponse"></a>
+
+### UpdateResourceResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| resource | [Resource](#memos-api-v2-Resource) |  |  |
+
+
+
+
+
  
 
  
@@ -414,7 +483,9 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
+| CreateResource | [CreateResourceRequest](#memos-api-v2-CreateResourceRequest) | [CreateResourceResponse](#memos-api-v2-CreateResourceResponse) |  |
 | ListResources | [ListResourcesRequest](#memos-api-v2-ListResourcesRequest) | [ListResourcesResponse](#memos-api-v2-ListResourcesResponse) |  |
+| UpdateResource | [UpdateResourceRequest](#memos-api-v2-UpdateResourceRequest) | [UpdateResourceResponse](#memos-api-v2-UpdateResourceResponse) |  |
 | DeleteResource | [DeleteResourceRequest](#memos-api-v2-DeleteResourceRequest) | [DeleteResourceResponse](#memos-api-v2-DeleteResourceResponse) |  |
 
  

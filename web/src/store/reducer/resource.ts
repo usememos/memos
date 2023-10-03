@@ -39,17 +39,9 @@ const resourceSlice = createSlice({
         }),
       };
     },
-    deleteResource: (state, action: PayloadAction<ResourceId>) => {
-      return {
-        ...state,
-        resources: state.resources.filter((resource) => {
-          return resource.id !== action.payload;
-        }),
-      };
-    },
   },
 });
 
-export const { setResources, upsertResources, patchResource, deleteResource } = resourceSlice.actions;
+export const { setResources, upsertResources, patchResource } = resourceSlice.actions;
 
 export default resourceSlice.reducer;

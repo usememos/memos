@@ -19,7 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	ResourceService_CreateResource_FullMethodName = "/memos.api.v2.ResourceService/CreateResource"
 	ResourceService_ListResources_FullMethodName  = "/memos.api.v2.ResourceService/ListResources"
+	ResourceService_UpdateResource_FullMethodName = "/memos.api.v2.ResourceService/UpdateResource"
 	ResourceService_DeleteResource_FullMethodName = "/memos.api.v2.ResourceService/DeleteResource"
 )
 
@@ -27,7 +29,9 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ResourceServiceClient interface {
+	CreateResource(ctx context.Context, in *CreateResourceRequest, opts ...grpc.CallOption) (*CreateResourceResponse, error)
 	ListResources(ctx context.Context, in *ListResourcesRequest, opts ...grpc.CallOption) (*ListResourcesResponse, error)
+	UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error)
 	DeleteResource(ctx context.Context, in *DeleteResourceRequest, opts ...grpc.CallOption) (*DeleteResourceResponse, error)
 }
 
@@ -39,9 +43,27 @@ func NewResourceServiceClient(cc grpc.ClientConnInterface) ResourceServiceClient
 	return &resourceServiceClient{cc}
 }
 
+func (c *resourceServiceClient) CreateResource(ctx context.Context, in *CreateResourceRequest, opts ...grpc.CallOption) (*CreateResourceResponse, error) {
+	out := new(CreateResourceResponse)
+	err := c.cc.Invoke(ctx, ResourceService_CreateResource_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *resourceServiceClient) ListResources(ctx context.Context, in *ListResourcesRequest, opts ...grpc.CallOption) (*ListResourcesResponse, error) {
 	out := new(ListResourcesResponse)
 	err := c.cc.Invoke(ctx, ResourceService_ListResources_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *resourceServiceClient) UpdateResource(ctx context.Context, in *UpdateResourceRequest, opts ...grpc.CallOption) (*UpdateResourceResponse, error) {
+	out := new(UpdateResourceResponse)
+	err := c.cc.Invoke(ctx, ResourceService_UpdateResource_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +83,9 @@ func (c *resourceServiceClient) DeleteResource(ctx context.Context, in *DeleteRe
 // All implementations must embed UnimplementedResourceServiceServer
 // for forward compatibility
 type ResourceServiceServer interface {
+	CreateResource(context.Context, *CreateResourceRequest) (*CreateResourceResponse, error)
 	ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error)
+	UpdateResource(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error)
 	DeleteResource(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error)
 	mustEmbedUnimplementedResourceServiceServer()
 }
@@ -70,8 +94,14 @@ type ResourceServiceServer interface {
 type UnimplementedResourceServiceServer struct {
 }
 
+func (UnimplementedResourceServiceServer) CreateResource(context.Context, *CreateResourceRequest) (*CreateResourceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateResource not implemented")
+}
 func (UnimplementedResourceServiceServer) ListResources(context.Context, *ListResourcesRequest) (*ListResourcesResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListResources not implemented")
+}
+func (UnimplementedResourceServiceServer) UpdateResource(context.Context, *UpdateResourceRequest) (*UpdateResourceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateResource not implemented")
 }
 func (UnimplementedResourceServiceServer) DeleteResource(context.Context, *DeleteResourceRequest) (*DeleteResourceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteResource not implemented")
@@ -89,6 +119,24 @@ func RegisterResourceServiceServer(s grpc.ServiceRegistrar, srv ResourceServiceS
 	s.RegisterService(&ResourceService_ServiceDesc, srv)
 }
 
+func _ResourceService_CreateResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateResourceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResourceServiceServer).CreateResource(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ResourceService_CreateResource_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResourceServiceServer).CreateResource(ctx, req.(*CreateResourceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _ResourceService_ListResources_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ListResourcesRequest)
 	if err := dec(in); err != nil {
@@ -103,6 +151,24 @@ func _ResourceService_ListResources_Handler(srv interface{}, ctx context.Context
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ResourceServiceServer).ListResources(ctx, req.(*ListResourcesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ResourceService_UpdateResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateResourceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ResourceServiceServer).UpdateResource(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ResourceService_UpdateResource_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ResourceServiceServer).UpdateResource(ctx, req.(*UpdateResourceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -133,8 +199,16 @@ var ResourceService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*ResourceServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
+			MethodName: "CreateResource",
+			Handler:    _ResourceService_CreateResource_Handler,
+		},
+		{
 			MethodName: "ListResources",
 			Handler:    _ResourceService_ListResources_Handler,
+		},
+		{
+			MethodName: "UpdateResource",
+			Handler:    _ResourceService_UpdateResource_Handler,
 		},
 		{
 			MethodName: "DeleteResource",

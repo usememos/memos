@@ -226,9 +226,12 @@ const MemoEditor = (props: Props) => {
       if (resource) {
         uploadedResourceList.push(resource);
         if (memoId) {
-          await resourceStore.patchResource({
+          await resourceStore.updateResource({
             id: resource.id,
-            memoId,
+            resource: Resource.fromPartial({
+              memoId,
+            }),
+            updateMask: ["memo_id"],
           });
         }
       }

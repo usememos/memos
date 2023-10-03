@@ -47,7 +47,6 @@ type Resource struct {
 
 type CreateResourceRequest struct {
 	Filename     string `json:"filename"`
-	InternalPath string `json:"internalPath"`
 	ExternalLink string `json:"externalLink"`
 	Type         string `json:"type"`
 }
