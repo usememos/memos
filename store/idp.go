@@ -96,7 +96,6 @@ func (s *Store) GetIdentityProvider(ctx context.Context, find *FindIdentityProvi
 	}
 
 	identityProvider := list[0]
-	s.idpCache.Store(identityProvider.ID, identityProvider)
 	return identityProvider, nil
 }
 

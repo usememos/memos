@@ -56,7 +56,6 @@ func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*Use
 	}
 
 	userSetting := list[0]
-	s.userSettingCache.Store(getUserSettingCacheKey(userSetting.UserID, userSetting.Key), userSetting)
 	return userSetting, nil
 }
 
