@@ -79,7 +79,9 @@
         "linked-amount": "Aantal gelinkte memo's",
         "warning-text-unused": "Weet je zeker dat je deze ongebruikte bron wilt verwijderen? Deze actie is NIET terug te draaien!",
         "no-unused-resources": "Geen ongebruikte bronnen",
-        "clear": "Opruimen"
+        "clear": "Opruimen",
+        "reset-resource-link": "Link resetten",
+        "reset-link": "Link resetten"
     },
     "editor": {
         "editing": "Aan het bewerken...",
@@ -99,14 +101,20 @@
         "fetch-more": "Klik hier om meer op te halen",
         "visibility": {
             "private": "Privé",
-            "protected": "Zichtbaar voor gebruikers",
+            "protected": "Werkruimte",
             "public": "Openbaar",
             "disabled": "Openbare memos zijn uitgezet"
         },
         "delete-memo": "Memo verwijderen",
         "delete-confirm": "Weet je zeker dat je deze memo wilt verwijderen?\n\nDit kan niet teruggedraaid worden!",
         "embed": "Insluiten",
-        "archived-memos": "Gearchiveerde memos"
+        "archived-memos": "Gearchiveerde memos",
+        "archived-at": "Gearchiveerd op",
+        "comment": {
+            "no-comment": "Geen opmerking",
+            "self": "Opmerkingen"
+        },
+        "no-archived-memos": "Geen gearchiveerde memos."
     },
     "tag-list": {
         "tip-text": "Typ `#label` om aan te maken",
