@@ -104,7 +104,9 @@
             "disabled": "Openbare memos zijn uitgezet"
         },
         "delete-memo": "Memo verwijderen",
-        "delete-confirm": "Weet je zeker dat je deze memo wilt verwijderen?\n\nDit kan niet teruggedraaid worden!"
+        "delete-confirm": "Weet je zeker dat je deze memo wilt verwijderen?\n\nDit kan niet teruggedraaid worden!",
+        "embed": "Insluiten",
+        "archived-memos": "Gearchiveerde memos"
     },
     "tag-list": {
         "tip-text": "Typ `#label` om aan te maken",
