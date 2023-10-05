@@ -136,7 +136,8 @@
         "account-section": {
             "title": "Accountinformatie",
             "update-information": "Informatie wijzigen",
-            "change-password": "Wachtwoord wijzigen"
+            "change-password": "Wachtwoord wijzigen",
+            "openapi-sample-post": "Hallo #memos vanaf {{url}}"
         },
         "preference-section": {
             "theme": "Thema",
@@ -151,17 +152,25 @@
             "updated_ts": "Tijd van wijziging",
             "daily-review-time-offset": "Dagelijkse review tijdscompensatie",
             "enable-double-click": "Dubbelklik op memo om te bewerken",
-            "auto-collapse": "Automatisch samenvouwen"
+            "auto-collapse": "Automatisch samenvouwen",
+            "default-resource-visibility": "Standaard bron zichtbaarheid"
         },
         "member-section": {
-            "create-a-member": "Lid toevoegen"
+            "create-a-member": "Lid toevoegen",
+            "delete-warning": "Weet je zeker dat je {{username}} wilt verwijderen?\n\nDEZE ACTIE IS NIET TERUG TE DRAAIEN",
+            "archive-member": "Archiveer gebruiker",
+            "archive-warning": "Weet je zeker dat je {{username}} wilt archiveren?",
+            "delete-member": "Gebruiker verwijderen"
         },
         "system-section": {
             "server-name": "Servernaam",
             "customize-server": {
                 "title": "Server aanpassen",
                 "default": "Standaard is 'memos'",
-                "icon-url": "Icoon URL"
+                "icon-url": "Icoon URL",
+                "appearance": "Server uiterlijk",
+                "locale": "Server taal",
+                "description": "Beschrijving"
             },
             "database-file-size": "Database bestandsgrootte",
             "allow-user-signup": "Registratie toestaan",
@@ -169,7 +178,7 @@
             "disable-password-login-warning": "Als je dit uitzet, kan je niet meer inloggen met een wachtwoord, zonder de database aan te passen. Als je inlogprovider niet werkt, kan je memos niet in.",
             "disable-password-login-final-warning": "Typ \"CONFIRM\" als je zeker weet wat je doet.",
             "enable-password-login": "Wachtwoordlogin aanzetten",
-            "enable-password-login-warning": "Als je dit aanzet kan er met zowel SSO als een wachtwoord ingelogd worden.",
+            "enable-password-login-warning": "Als je dit aanzet kan er met zowel SSO als een wachtwoord ingelogd worden",
             "additional-style": "Optionele stijl",
             "additional-script": "Optionele scripts",
             "additional-style-placeholder": "Optionele CSS code",
@@ -182,7 +191,8 @@
             "display-with-updated-time": "Laten zien met bewerkte tijd",
             "telegram-bot-token": "Telegram bot token",
             "telegram-bot-token-description": "Telegram bot token of API proxy zoals `http://.../bot<token>`",
-            "telegram-bot-token-placeholder": "Je Telegram bot token"
+            "telegram-bot-token-placeholder": "Je Telegram bot token",
+            "ignore-version-upgrade": "Versieupdate negeren"
         },
         "appearance-option": {
             "light": "Altijd licht",
@@ -194,7 +204,7 @@
         "sso-section": {
             "sso-list": "SSO lijst",
             "delete-sso": "Verwijdering bevestigen",
-            "confirm-delete": "Weet je zeker dat je de \"{{name}}\" SSO configuratie wilt verwijderen?\n\nDeze actie is niet terug te draaien!",
+            "confirm-delete": "Weet je zeker dat je de \"{{name}}\" SSO configuratie wilt verwijderen?\n\nDeze actie is niet terug te draaien",
             "create-sso": "SSO instellen",
             "update-sso": "SSO bijwerken",
             "sso-created": "SSO {{name}} ingesteld",
@@ -211,12 +221,12 @@
             "token-endpoint": "Token endpoint",
             "user-endpoint": "User endpoint",
             "scopes": "Scopes",
-            "disabled-password-login-warning": "Wachtwoordlogin is uitgeschakeld. Kijk uit met het verwijderen van inlogproviders!"
+            "disabled-password-login-warning": "Wachtwoordlogin is uitgeschakeld. Kijk uit met het verwijderen van inlogproviders"
         },
         "storage-section": {
             "current-storage": "Huidige objectopslag",
             "type-database": "Database",
-            "type-local": "Lokaal",
+            "type-local": "Lokaal bestandssysteem",
             "storage-services-list": "Opslagdiensten",
             "create-a-service": "Opslagdienst instellen",
             "update-a-service": "Opslagdienst bijwerken",
