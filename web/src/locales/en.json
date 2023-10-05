@@ -90,7 +90,7 @@
         "embed": "Embed",
         "archived-memos": "Archived Memos",
         "no-archived-memos": "No archived memos.",
-        "fetching-data": "Fetching data...",
+        "fetching-data": "Fetching data…",
         "fetch-more": "Click here to fetch more",
         "archived-at": "Archived at",
         "search-placeholder": "Search memos",
@@ -109,7 +109,7 @@
     },
     "resource": {
         "no-resources": "No resources.",
-        "fetching-data": "Fetching data...",
+        "fetching-data": "Fetching data…",
         "copy-link": "Copy Link",
         "reset-link": "Reset Link",
         "reset-resource-link": "Reset Resource Link",
@@ -130,7 +130,7 @@
             "upload-method": "Upload method",
             "local-file": {
                 "option": "Local file",
-                "choose": "Choose a file..."
+                "choose": "Choose a file…"
             },
             "external-link": {
                 "option": "External link",
@@ -261,7 +261,7 @@
             "additional-style-placeholder": "Additional CSS code",
             "additional-script-placeholder": "Additional JavaScript code",
             "telegram-bot-token": "Telegram Bot Token",
-            "telegram-bot-token-description": "Telegram Bot Token or API Proxy like `http.../bot<token>`",
+            "telegram-bot-token-description": "Telegram Bot Token or API Proxy like `http…/bot<token>`",
             "telegram-bot-token-placeholder": "Your Telegram Bot token",
             "display-with-updated-time": "Display with updated time"
         },
@@ -356,7 +356,7 @@
         "resource-filename-updated": "Resource filename changed.",
         "invalid-resource-filename": "Invalid filename.",
         "click-to-save-the-image": "Click to save the image",
-        "generating-the-screenshot": "Generating the screenshot...",
+        "generating-the-screenshot": "Generating the screenshot…",
         "count-selected-resources": "Total selected",
         "succeed-vacuum-database": "Successfully vacuumed database.",
         "succeed-update-additional-style": "Additional style updated successfully.",
