@@ -14,7 +14,6 @@ import MemoResourceListView from "@/components/MemoResourceListView";
 import showShareMemoDialog from "@/components/ShareMemoDialog";
 import UserAvatar from "@/components/UserAvatar";
 import VisibilityIcon from "@/components/VisibilityIcon";
-import { memoServiceClient } from "@/grpcweb";
 import { UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -25,15 +24,14 @@ import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
+  const t = useTranslate();
   const params = useParams();
   const navigateTo = useNavigateTo();
-  const t = useTranslate();
   const globalStore = useGlobalStore();
   const memoStore = useMemoStore();
   const userV1Store = useUserV1Store();
   const currentUser = useCurrentUser();
-  const [user, setUser] = useState<User>();
-  const [comments, setComments] = useState<Memo[]>([]);
+  const [creator, setCreator] = useState<User>();
   const { systemStatus } = globalStore.state;
   const memoId = Number(params.memoId);
   const memo = memoStore.state.memos.find((memo) => memo.id === memoId);
@@ -42,6 +40,10 @@ const MemoDetail = () => {
     memo?.relationList.filter(
       (relation) => relation.memoId === memo?.id && relation.relatedMemoId !== memo?.id && relation.type === "REFERENCE"
     ) || [];
+  const commentRelations = memo?.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT") || [];
+  const comments = commentRelations
+    .map((relation) => memoStore.state.memos.find((memo) => memo.id === relation.memoId))
+    .filter((memo) => memo) as Memo[];
 
   // Prepare memo.
   useEffect(() => {
@@ -50,7 +52,7 @@ const MemoDetail = () => {
         .fetchMemoById(memoId)
         .then(async (memo) => {
           const user = await userV1Store.getOrFetchUserByUsername(memo.creatorUsername);
-          setUser(user);
+          setCreator(user);
         })
         .catch((error) => {
           console.error(error);
@@ -67,20 +69,19 @@ const MemoDetail = () => {
       return;
     }
 
-    fetchMemoComments();
-  }, [memo]);
+    (async () => {
+      await fetchMemoComments();
+    })();
+  }, [memo?.relationList]);
 
   const fetchMemoComments = async () => {
     if (!memo) {
       return;
     }
 
-    const { memos } = await memoServiceClient.listMemoComments({
-      id: memo.id,
-    });
-    const requests = memos.map((memo) => memoStore.fetchMemoById(memo.id));
-    const composedMemos = await Promise.all(requests);
-    setComments(composedMemos);
+    const commentRelations = memo.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT");
+    const requests = commentRelations.map((relation) => memoStore.fetchMemoById(relation.memoId));
+    await Promise.all(requests);
   };
 
   if (!memo) {
@@ -135,8 +136,8 @@ const MemoDetail = () => {
                 </Tooltip>
                 <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                 <Link className="flex flex-row justify-start items-center" to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
-                  <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={user?.avatarUrl} />
-                  <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{user?.nickname}</span>
+                  <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator?.avatarUrl} />
+                  <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator?.nickname}</span>
                 </Link>
                 {allowEdit && (
                   <>

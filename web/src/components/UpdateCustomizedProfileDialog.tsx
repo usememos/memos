@@ -63,7 +63,7 @@ const UpdateCustomizedProfileDialog: React.FC<Props> = ({ destroy }: Props) => {
   const handleRestoreButtonClick = () => {
     setPartialState({
       name: "memos",
-      logoUrl: "/logo.webp",
+      logoUrl: "/logo.png",
       description: "",
       locale: "en",
       appearance: "system",

@@ -33,17 +33,17 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
           <div className="flex flex-row justify-start items-center mr-2">
             {t("about.powered-by")}
             <a href="https://usememos.com" target="_blank" className="flex flex-row justify-start items-center mx-1 hover:underline">
-              <img className="w-6 h-auto rounded-full mr-1" src="/logo.webp" alt="" />
+              <img className="w-6 h-auto rounded-full mr-1" src="/logo.png" alt="" />
               memos
             </a>
             <span>v{profile.version}</span>
           </div>
           <GitHubBadge />
         </div>
-        <div className="border-t w-full mt-3 pt-2 text-sm flex flex-row justify-start items-center space-x-4">
+        <div className="border-t w-full mt-3 pt-2 text-sm flex flex-row justify-start items-center space-x-2">
           <span className="text-gray-500">{t("about.other-projects")}:</span>
           <a href="https://github.com/boojack/slash" target="_blank" className="flex items-center underline text-blue-600 hover:opacity-80">
-            <img className="w-4 h-auto mr-1" src="https://github.com/boojack/slash/raw/main/resources/logo.png" alt="" />
+            <img className="w-5 h-auto mr-1 rounded-full" src="https://github.com/boojack/slash/raw/main/resources/logo.png" alt="" />
             <span>Slash</span>
           </a>
           <a
@@ -52,7 +52,7 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
             className="flex items-center underline text-blue-600 hover:opacity-80"
           >
             <img
-              className="w-4 h-auto mr-1"
+              className="w-5 h-auto mr-1"
               src="https://raw.githubusercontent.com/boojack/sticky-notes/main/public/sticky-notes.ico"
               alt=""
             />

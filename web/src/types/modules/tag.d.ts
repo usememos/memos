@@ -1,3 +1,0 @@
-interface TagFind {
-  creatorUsername?: string;
-}
