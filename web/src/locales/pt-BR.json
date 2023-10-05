@@ -159,7 +159,6 @@
             "reset-api": "Redefinir API",
             "openapi-title": "OpenAPI",
             "openapi-reset": "Redefinir chave OpenAPI",
-            "openapi-reset-warning": "❗ A chave de API existente será invalidada e uma nova será gerada.\n\nTem certeza de que deseja redefinir?",
             "openapi-sample-post": "Olá #memos em {{url}}"
         },
         "preference-section": {
