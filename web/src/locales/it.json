@@ -160,7 +160,6 @@
             "reset-api": "Ripristina API",
             "openapi-title": "OpenAPI",
             "openapi-reset": "Ripristina key OpenAPI",
-            "openapi-reset-warning": "❗ L'API esistente verrà invalidata e ne verrà generata una nuova.\n\nSei sicuro di voler ripristinare?",
             "openapi-sample-post": "Ciao #memos da {{url}}"
         },
         "preference-section": {
