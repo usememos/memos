@@ -74,7 +74,7 @@ const SignUp = () => {
             <img className="h-14 w-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
             <p className="ml-4 text-5xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
-          <p className="w-full text-2xl mt-6 dark:text-gray-500">Create your account</p>
+          <p className="w-full text-2xl mt-2 dark:text-gray-500">{t("auth.create-your-account")}</p>
           <form className="w-full mt-2" onSubmit={handleFormSubmit}>
             <div className="flex flex-col justify-start items-start w-full gap-4">
               <div className="w-full flex flex-col justify-start items-start gap-2">
@@ -116,8 +116,9 @@ const SignUp = () => {
               </Button>
             </div>
           </form>
+          {!systemStatus.host && <p className="w-full mt-4 text-sm font-medium dark:text-gray-500">{t("auth.host-tip")}</p>}
           <p className="w-full mt-4 text-sm">
-            <span className="dark:text-gray-500">{"Already has an account?"}</span>
+            <span className="dark:text-gray-500">{t("auth.sign-in-tip")}</span>
             <Link to="/auth" className="cursor-pointer ml-2 text-blue-600 hover:underline">
               {t("common.sign-in")}
             </Link>

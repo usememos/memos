@@ -75,9 +75,10 @@
     "back-to-top": "Back to Top"
   },
   "auth": {
-    "signup-as-host": "Sign up as Host",
+    "create-your-account": "Create your account",
+    "sign-up-tip": "Don't have an account yet?",
+    "sign-in-tip": "Already has an account?",
     "host-tip": "You are registering as the Site Host.",
-    "not-host-tip": "If you don't have an account, please contact the site host.",
     "new-password": "New password",
     "repeat-new-password": "Repeat the new password"
   },

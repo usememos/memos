@@ -152,7 +152,7 @@ const SignIn = () => {
               </form>
               {systemStatus.allowSignUp && (
                 <p className="w-full mt-4 text-sm">
-                  <span className="dark:text-gray-500">{"Don't have an account yet?"}</span>
+                  <span className="dark:text-gray-500">{t("auth.sign-up-tip")}</span>
                   <Link to="/auth/signup" className="cursor-pointer ml-2 text-blue-600 hover:underline">
                     {t("common.sign-up")}
                   </Link>
