@@ -328,7 +328,7 @@
     "other-projects": "Other Projects"
   },
   "message": {
-    "no-data": "Maybe no data was found, or maybe it should be another option.",
+    "no-data": "No data found.",
     "memos-ready": "all memos are ready",
     "resource-ready": "all resource are ready",
     "restored-successfully": "Restored successfully",

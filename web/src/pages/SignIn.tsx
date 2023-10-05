@@ -105,7 +105,7 @@ const SignIn = () => {
         <div className="w-full py-4 grow flex flex-col justify-center items-center">
           <div className="w-full flex flex-row justify-center items-center mb-6">
             <img className="h-14 w-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
-            <p className="ml-4 text-5xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
+            <p className="ml-2 text-5xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
           {!disablePasswordLogin && (
             <>
