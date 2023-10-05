@@ -67,7 +67,8 @@
         "new-password": "Nieuw wachtwoord",
         "repeat-new-password": "Nieuw wachtwoord herhalen",
         "create-your-account": "Maak je account",
-        "sign-up-tip": "Nog geen account?"
+        "sign-up-tip": "Nog geen account?",
+        "sign-in-tip": "Al een account?"
     },
     "resource": {
         "no-resources": "Geen bronnen.",
