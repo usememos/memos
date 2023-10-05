@@ -65,7 +65,8 @@
     "auth": {
         "host-tip": "Je registreert je als Site Host.",
         "new-password": "Nieuw wachtwoord",
-        "repeat-new-password": "Nieuw wachtwoord herhalen"
+        "repeat-new-password": "Nieuw wachtwoord herhalen",
+        "create-your-account": "Maak je account"
     },
     "resource": {
         "no-resources": "Geen bronnen.",
@@ -307,6 +308,7 @@
         "other-projects": "Andere projecten"
     },
     "router": {
-        "go-to-home": "Ga naar homepagina"
+        "go-to-home": "Ga naar homepagina",
+        "back-to-top": "Terug naar boven"
     }
 }
