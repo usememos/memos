@@ -89,7 +89,7 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 			Appearance:  "system",
 			ExternalURL: "",
 		},
-		StorageServiceID:         LocalStorage,
+		StorageServiceID:         DefaultStorage,
 		LocalStoragePath:         "assets/{timestamp}_{filename}",
 		MemoDisplayWithUpdatedTs: false,
 	}

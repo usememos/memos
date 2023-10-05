@@ -567,7 +567,7 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 		return errors.Wrap(err, "Failed to find SystemSettingStorageServiceIDName")
 	}
 
-	storageServiceID := LocalStorage
+	storageServiceID := DefaultStorage
 	if systemSettingStorageServiceID != nil {
 		err = json.Unmarshal([]byte(systemSettingStorageServiceID.Value), &storageServiceID)
 		if err != nil {

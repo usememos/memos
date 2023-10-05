@@ -119,7 +119,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-4 px-6">
               <UserAvatar className="mr-2" avatarUrl={user.avatarUrl} />
               <div className="w-auto grow truncate flex mr-2 flex-col justify-center items-start">
-                <span className="w-full text-sm truncate font-bold text-gray-600 dark:text-gray-300">{user.nickname || user.username}</span>
+                <span className="w-full text truncate font-medium text-gray-600 dark:text-gray-300">{user.nickname || user.username}</span>
               </div>
               <QRCodeSVG
                 value={`${window.location.origin}/m/${memo.id}`}
