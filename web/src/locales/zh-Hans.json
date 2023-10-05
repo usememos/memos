@@ -219,7 +219,6 @@
             "email-note": "可选",
             "nickname-note": "显示在横幅中",
             "openapi-reset": "重置 OpenAPI 密钥",
-            "openapi-reset-warning": "❗现有的API将失效并生成一个新的API。\n\n您确定要重置吗？",
             "openapi-sample-post": "你好 #memos 来自 {{url}}",
             "openapi-title": "OpenAPI",
             "reset-api": "重置API",

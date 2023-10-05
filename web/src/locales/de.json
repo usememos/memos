@@ -161,7 +161,6 @@
             "reset-api": "API zurücksetzen",
             "openapi-title": "OpenAPI",
             "openapi-reset": "OpenAPI Key zurücksetzen",
-            "openapi-reset-warning": "❗ Die bestehende API wird ungültig und eine neue wird erstellt.\n\nBist du sicher, dass du zurücksetzen möchtest?",
             "openapi-sample-post": "Hallo #memos von {{url}}"
         },
         "preference-section": {

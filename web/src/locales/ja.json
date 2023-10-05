@@ -165,7 +165,6 @@
             "reset-api": "APIをリセットする",
             "openapi-title": "OpenAPI",
             "openapi-reset": "OpenAPI Keyをリセットする",
-            "openapi-reset-warning": "続行すると既存のAPIは無効化され、新しいAPIが発行されます。\n\n本当にリセットしますか？",
             "openapi-sample-post": "{{url}}より、こんにちは！#memos"
         },
         "preference-section": {

@@ -158,7 +158,6 @@
             "reset-api": "Resetiraj API",
             "openapi-title": "OpenAPI",
             "openapi-reset": "Resetiraj OpenAPI Ključ",
-            "openapi-reset-warning": "❗ Postojeći API će odsada biti nevaljan i bit će generiran novi.\n\nJesi li siguran da želiš resetirati?",
             "openapi-sample-post": "Zdravo #memos od {{url}}"
         },
         "preference-section": {

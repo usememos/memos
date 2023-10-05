@@ -160,7 +160,6 @@
             "reset-api": "API 초기화",
             "openapi-title": "OpenAPI",
             "openapi-reset": "OpenAPI 키 초기화",
-            "openapi-reset-warning": "❗현재 API 키가 완전히 파기되고 새로운 키가 생성됩니다.\n\nAPI 키를 초기화할까요?",
             "openapi-sample-post": "안녕, {{url}} ! #memo"
         },
         "preference-section": {

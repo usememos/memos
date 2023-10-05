@@ -159,7 +159,6 @@
             "reset-api": "API रीसेट करें",
             "openapi-title": "OpenAPI",
             "openapi-reset": "OpenAPI कुंजी रीसेट करें",
-            "openapi-reset-warning": "❗ मौजूदा API अमान्य हो जाएगा और एक नया जेनरेट होगा।\n\nक्या आप नया जेनरेट करना चाहते हैं?",
             "openapi-sample-post": "नमस्ते #memos से {{url}}"
         },
         "preference-section": {
