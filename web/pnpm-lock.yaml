@@ -93,8 +93,8 @@ dependencies:
     specifier: ^9.0.1
     version: 9.0.1
   zustand:
-    specifier: ^4.4.2
-    version: 4.4.2(@types/react@18.2.25)(react@18.2.0)
+    specifier: 4.4.1
+    version: 4.4.1(@types/react@18.2.25)(react@18.2.0)
 
 devDependencies:
   '@trivago/prettier-plugin-sort-imports':
@@ -4332,8 +4332,8 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /zustand@4.4.2(@types/react@18.2.25)(react@18.2.0):
-    resolution: {integrity: sha512-qF3/vZHCrjPUX5DvPE3DPDZlh+FiAWRKlP9PI7SlW1MCk8q4vUCDqyWsbF8K41ne0Yx8eeeb0m1cypn1LqUMYQ==}
+  /zustand@4.4.1(@types/react@18.2.25)(react@18.2.0):
+    resolution: {integrity: sha512-QCPfstAS4EBiTQzlaGP1gmorkh/UL1Leaj2tdj+zZCZ/9bm0WS7sI2wnfD5lpOszFqWJ1DcPnGoY8RDL61uokw==}
     engines: {node: '>=12.7.0'}
     peerDependencies:
       '@types/react': '>=16.8'

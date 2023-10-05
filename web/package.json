@@ -37,7 +37,7 @@
     "tailwindcss": "^3.3.3",
     "textarea-caret": "^3.1.0",
     "uuid": "^9.0.1",
-    "zustand": "^4.4.2"
+    "zustand": "4.4.1"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^3.4.0",
