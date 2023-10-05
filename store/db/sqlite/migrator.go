@@ -23,6 +23,7 @@ var seedFS embed.FS
 
 // Migrate applies the latest schema to the database.
 func (d *DB) Migrate(ctx context.Context) error {
+	currentVersion := version.GetCurrentVersion(d.profile.Mode)
 	if d.profile.Mode == "prod" {
 		_, err := os.Stat(d.profile.DSN)
 		if err != nil {
@@ -31,17 +32,27 @@ func (d *DB) Migrate(ctx context.Context) error {
 				if err := d.applyLatestSchema(ctx); err != nil {
 					return errors.Wrap(err, "failed to apply latest schema")
 				}
+				// Upsert the newest version to migration_history.
+				if _, err := d.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
+					Version: currentVersion,
+				}); err != nil {
+					return errors.Wrap(err, "failed to upsert migration history")
+				}
 			} else {
 				return errors.Wrap(err, "failed to get db file stat")
 			}
 		} else {
 			// If db file exists, we should check if we need to migrate the database.
-			currentVersion := version.GetCurrentVersion(d.profile.Mode)
 			migrationHistoryList, err := d.FindMigrationHistoryList(ctx, &MigrationHistoryFind{})
 			if err != nil {
 				return errors.Wrap(err, "failed to find migration history")
 			}
+			// If no migration history, we should apply the latest version migration and upsert the migration history.
 			if len(migrationHistoryList) == 0 {
+				minorVersion := version.GetMinorVersion(currentVersion)
+				if err := d.applyMigrationForMinorVersion(ctx, minorVersion); err != nil {
+					return errors.Wrapf(err, "failed to apply version %s migration", minorVersion)
+				}
 				_, err := d.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
 					Version: currentVersion,
 				})
@@ -60,7 +71,6 @@ func (d *DB) Migrate(ctx context.Context) error {
 
 			if version.IsVersionGreaterThan(version.GetSchemaVersion(currentVersion), latestMigrationHistoryVersion) {
 				minorVersionList := getMinorVersionList()
-
 				// backup the raw database file before migration
 				rawBytes, err := os.ReadFile(d.profile.DSN)
 				if err != nil {
@@ -71,7 +81,6 @@ func (d *DB) Migrate(ctx context.Context) error {
 					return errors.Wrap(err, "failed to write raw database file")
 				}
 				println("succeed to copy a backup database file")
-
 				println("start migrate")
 				for _, minorVersion := range minorVersionList {
 					normalizedVersion := minorVersion + ".0"
