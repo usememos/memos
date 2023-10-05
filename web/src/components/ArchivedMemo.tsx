@@ -47,8 +47,8 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
   return (
     <div className={`memo-wrapper archived ${"memos-" + memo.id}`}>
       <div className="memo-top-wrapper">
-        <div className="status-text-container">
-          <span className="time-text">{getDateTimeString(memo.updatedTs)}</span>
+        <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
+          <span className="text-sm text-gray-400 select-none">{getDateTimeString(memo.displayTs)}</span>
         </div>
         <div className="flex flex-row justify-end items-center gap-x-2">
           <Tooltip title={t("common.restore")} placement="top">
