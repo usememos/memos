@@ -46,7 +46,21 @@
         "link": "Link",
         "select": "Selecteer",
         "database": "Database",
-        "mark": "Citeren"
+        "mark": "Citeren",
+        "preview": "Voorbeeld",
+        "name": "Naam",
+        "beta": "Beta",
+        "upload": "Uploaden",
+        "update": "Bijwerken",
+        "visibility": "Zichtbaarheid",
+        "clear": "Leegmaken",
+        "rename": "Hernoemen",
+        "learn-more": "Lees meer",
+        "new": "Nieuw",
+        "or": "of",
+        "filter-period": "{{from}} tot {{to}}",
+        "sign-in-with": "Log in met {{provider}}",
+        "profile": "Profiel"
     },
     "auth": {
         "host-tip": "Je registreert je als Site Host.",
@@ -291,5 +305,8 @@
         "no-server-description": "Geen beschrijving geconfigureerd.",
         "powered-by": "Mogelijk gemaakt door",
         "other-projects": "Andere projecten"
+    },
+    "router": {
+        "go-to-home": "Ga naar homepagina"
     }
 }
