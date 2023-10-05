@@ -70,7 +70,7 @@ const Header = () => {
     title: t("common.settings"),
     icon: <Icon.Settings className="mr-3 w-6 h-auto opacity-70" />,
   };
-  const authNavLink: NavLinkItem = {
+  const signInNavLink: NavLinkItem = {
     id: "header-auth",
     path: "/auth",
     title: t("common.sign-in"),
@@ -79,7 +79,7 @@ const Header = () => {
 
   const navLinks: NavLinkItem[] = user
     ? [homeNavLink, dailyReviewNavLink, resourcesNavLink, exploreNavLink, archivedNavLink, settingNavLink]
-    : [exploreNavLink, authNavLink];
+    : [exploreNavLink, signInNavLink];
 
   return (
     <div

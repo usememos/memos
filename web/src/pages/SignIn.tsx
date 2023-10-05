@@ -1,8 +1,8 @@
 import { Button, Divider, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
+import { Link } from "react-router-dom";
 import AppearanceSelect from "@/components/AppearanceSelect";
-import Icon from "@/components/Icon";
 import LocaleSelect from "@/components/LocaleSelect";
 import * as api from "@/helpers/api";
 import { absolutifyLink } from "@/helpers/utils";
@@ -10,7 +10,7 @@ import useLoading from "@/hooks/useLoading";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 
-const Auth = () => {
+const SignIn = () => {
   const t = useTranslate();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
@@ -57,11 +57,7 @@ const Auth = () => {
 
   const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (systemStatus?.host) {
-      handleSignInButtonClick();
-    } else {
-      handleSignUpButtonClick();
-    }
+    handleSignInButtonClick();
   };
 
   const handleSignInButtonClick = async () => {
@@ -89,31 +85,6 @@ const Auth = () => {
     actionBtnLoadingState.setFinish();
   };
 
-  const handleSignUpButtonClick = async () => {
-    if (username === "" || password === "") {
-      return;
-    }
-
-    if (actionBtnLoadingState.isLoading) {
-      return;
-    }
-
-    try {
-      actionBtnLoadingState.setLoading();
-      await api.signup(username, password);
-      const user = await userStore.doSignIn();
-      if (user) {
-        window.location.href = "/";
-      } else {
-        toast.error(t("message.signup-failed"));
-      }
-    } catch (error: any) {
-      console.error(error);
-      toast.error(error.response.data.message || error.message || t("message.signup-failed"));
-    }
-    actionBtnLoadingState.setFinish();
-  };
-
   const handleSignInWithIdentityProvider = async (identityProvider: IdentityProvider) => {
     const stateQueryParameter = `auth.signin.${identityProvider.name}-${identityProvider.id}`;
     if (identityProvider.type === "OAUTH2") {
@@ -132,62 +103,62 @@ const Auth = () => {
     <div className="flex flex-row justify-center items-center w-full h-full dark:bg-zinc-800">
       <div className="w-80 max-w-full h-full py-4 flex flex-col justify-start items-center">
         <div className="w-full py-4 grow flex flex-col justify-center items-center">
-          <div className="w-full flex flex-col justify-center items-center mb-2">
-            <img className="h-20 w-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
-            <p className="mt-2 text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
+          <div className="w-full flex flex-row justify-center items-center mb-6">
+            <img className="h-14 w-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
+            <p className="ml-4 text-5xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
           {!disablePasswordLogin && (
-            <form className="w-full mt-2" onSubmit={handleFormSubmit}>
-              <div className="flex flex-col justify-start items-start w-full gap-4">
-                <Input
-                  className="w-full"
-                  size="lg"
-                  type="text"
-                  readOnly={actionBtnLoadingState.isLoading}
-                  placeholder={t("common.username")}
-                  value={username}
-                  onChange={handleUsernameInputChanged}
-                  required
-                />
-                <Input
-                  className="w-full"
-                  size="lg"
-                  type="password"
-                  readOnly={actionBtnLoadingState.isLoading}
-                  placeholder={t("common.password")}
-                  value={password}
-                  onChange={handlePasswordInputChanged}
-                  required
-                />
-              </div>
-              <div className="flex flex-row justify-end items-center w-full mt-6">
-                {actionBtnLoadingState.isLoading && <Icon.Loader className="w-4 h-auto mr-2 animate-spin dark:text-gray-300" />}
-                {!systemStatus.host ? (
-                  <Button disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
-                    {t("common.sign-up")}
+            <>
+              <form className="w-full mt-2" onSubmit={handleFormSubmit}>
+                <div className="flex flex-col justify-start items-start w-full gap-4">
+                  <div className="w-full flex flex-col justify-start items-start gap-2">
+                    <span className="leading-8 text-gray-600">{t("common.username")}</span>
+                    <Input
+                      className="w-full"
+                      size="lg"
+                      type="text"
+                      readOnly={actionBtnLoadingState.isLoading}
+                      placeholder={t("common.username")}
+                      value={username}
+                      onChange={handleUsernameInputChanged}
+                      required
+                    />
+                  </div>
+                  <div className="w-full flex flex-col justify-start items-start gap-2">
+                    <span className="leading-8 text-gray-600">{t("common.password")}</span>
+                    <Input
+                      className="w-full"
+                      size="lg"
+                      type="password"
+                      readOnly={actionBtnLoadingState.isLoading}
+                      placeholder={t("common.password")}
+                      value={password}
+                      onChange={handlePasswordInputChanged}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="flex flex-row justify-end items-center w-full mt-6">
+                  <Button
+                    className="w-full"
+                    type="submit"
+                    disabled={actionBtnLoadingState.isLoading}
+                    loading={actionBtnLoadingState.isLoading}
+                    onClick={handleSignInButtonClick}
+                  >
+                    {t("common.sign-in")}
                   </Button>
-                ) : (
-                  <>
-                    {systemStatus?.allowSignUp && (
-                      <>
-                        <Button variant={"plain"} disabled={actionBtnLoadingState.isLoading} onClick={handleSignUpButtonClick}>
-                          {t("common.sign-up")}
-                        </Button>
-                        <span className="mr-2 font-mono text-gray-200">/</span>
-                      </>
-                    )}
-                    <Button type="submit" disabled={actionBtnLoadingState.isLoading} onClick={handleSignInButtonClick}>
-                      {t("common.sign-in")}
-                    </Button>
-                  </>
-                )}
-              </div>
-            </form>
-          )}
-          {!systemStatus.host && (
-            <p className="w-full inline-block float-right text-sm mt-4 text-gray-500 text-right whitespace-pre-wrap">
-              {t("auth.host-tip")}
-            </p>
+                </div>
+              </form>
+              {systemStatus.allowSignUp && (
+                <p className="w-full mt-4 text-sm">
+                  <span className="dark:text-gray-500">{"Don't have an account yet?"}</span>
+                  <Link to="/auth/signup" className="cursor-pointer ml-2 text-blue-600 hover:underline">
+                    {t("common.sign-up")}
+                  </Link>
+                </p>
+              )}
+            </>
           )}
           {identityProviderList.length > 0 && (
             <>
@@ -218,4 +189,4 @@ const Auth = () => {
   );
 };
 
-export default Auth;
+export default SignIn;

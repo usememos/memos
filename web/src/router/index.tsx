@@ -1,20 +1,21 @@
 import { lazy } from "react";
 import { createBrowserRouter, redirect } from "react-router-dom";
 import App from "@/App";
-import Archived from "@/pages/Archived";
-import DailyReview from "@/pages/DailyReview";
-import Resources from "@/pages/Resources";
-import Setting from "@/pages/Setting";
 import { initialGlobalState, initialUserState } from "@/store/module";
 
 const Root = lazy(() => import("@/layouts/Root"));
-const Auth = lazy(() => import("@/pages/Auth"));
+const SignIn = lazy(() => import("@/pages/SignIn"));
+const SignUp = lazy(() => import("@/pages/SignUp"));
 const AuthCallback = lazy(() => import("@/pages/AuthCallback"));
 const Explore = lazy(() => import("@/pages/Explore"));
 const Home = lazy(() => import("@/pages/Home"));
 const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
 const EmbedMemo = lazy(() => import("@/pages/EmbedMemo"));
+const Archived = lazy(() => import("@/pages/Archived"));
+const DailyReview = lazy(() => import("@/pages/DailyReview"));
+const Resources = lazy(() => import("@/pages/Resources"));
+const Setting = lazy(() => import("@/pages/Setting"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
 const initialGlobalStateLoader = (() => {
@@ -58,7 +59,11 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/auth",
-        element: <Auth />,
+        element: <SignIn />,
+      },
+      {
+        path: "/auth/signup",
+        element: <SignUp />,
       },
       {
         path: "/auth/callback",
