@@ -52,11 +52,8 @@ func (d *Driver) nonProdMigrate(ctx context.Context) error {
 func (d *Driver) prodMigrate(ctx context.Context) error {
 	currentVersion := version.GetCurrentVersion(d.profile.Mode)
 	migrationHistoryList, err := d.FindMigrationHistoryList(ctx, &MigrationHistoryFind{})
-	if err != nil {
-		return errors.Wrap(err, "failed to find migration history")
-	}
 	// If there is no migration history, we should apply the latest schema.
-	if len(migrationHistoryList) == 0 {
+	if err != nil || len(migrationHistoryList) == 0 {
 		buf, err := migrationFS.ReadFile("migration/prod/" + latestSchemaFileName)
 		if err != nil {
 			return errors.Errorf("failed to read latest schema file: %s", err)
