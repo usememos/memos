@@ -72,26 +72,17 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	systemStatus := SystemStatus{
-		Profile:              *s.Profile,
-		DBSize:               0,
-		AllowSignUp:          false,
-		DisablePasswordLogin: false,
-		DisablePublicMemos:   false,
-		MaxUploadSizeMiB:     32,
-		AutoBackupInterval:   0,
-		AdditionalStyle:      "",
-		AdditionalScript:     "",
+		Profile: *s.Profile,
+		// Allow sign up by default.
+		AllowSignUp:      true,
+		MaxUploadSizeMiB: 32,
 		CustomizedProfile: CustomizedProfile{
-			Name:        "memos",
-			LogoURL:     "",
-			Description: "",
-			Locale:      "en",
-			Appearance:  "system",
-			ExternalURL: "",
+			Name:       "memos",
+			Locale:     "en",
+			Appearance: "system",
 		},
-		StorageServiceID:         DefaultStorage,
-		LocalStoragePath:         "assets/{timestamp}_{filename}",
-		MemoDisplayWithUpdatedTs: false,
+		StorageServiceID: DefaultStorage,
+		LocalStoragePath: "assets/{timestamp}_{filename}",
 	}
 
 	hostUserType := store.RoleHost
