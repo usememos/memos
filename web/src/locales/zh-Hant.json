@@ -167,7 +167,6 @@
             "reset-api": "重設 API",
             "openapi-title": "OpenAPI",
             "openapi-reset": "重設 OpenAPI 金鑰",
-            "openapi-reset-warning": "❗ 將使現有的 API 金鑰無效並產生新金鑰。\n\n您確定要重設嗎？",
             "openapi-sample-post": "哈囉 來自 {{url}} 的 #memos"
         },
         "preference-section": {
