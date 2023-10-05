@@ -120,14 +120,14 @@ const Resources = () => {
                     <>
                       <Divider />
                       <div className="w-full flex flex-row justify-start items-start">
-                        <div className="w-16 sm:w-24 pt-4 sm:pl-4 flex flex-col justify-start items-start"></div>
+                        <div className="w-16 sm:w-24 sm:pl-4 flex flex-col justify-start items-start"></div>
                         <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                           <div className="w-full flex flex-row justify-start items-center gap-2">
                             <span className="text-gray-600 dark:text-gray-400">Unused resources</span>
                             <span className="text-gray-500 dark:text-gray-500 opacity-80">({unusedResources.length})</span>
                             <Tooltip title="Delete all" placement="top">
                               <IconButton size="sm" onClick={handleDeleteUnusedResources}>
-                                <Icon.Trash className="w-4 h-auto" />
+                                <Icon.Trash className="w-4 h-auto opacity-60" />
                               </IconButton>
                             </Tooltip>
                           </div>

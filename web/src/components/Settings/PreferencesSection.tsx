@@ -50,7 +50,7 @@ const PreferencesSection = () => {
   const handleSaveTelegramUserId = async () => {
     try {
       await userStore.upsertUserSetting("telegram-user-id", telegramUserId);
-      toast.success(t("common.dialog.success"));
+      toast.success(t("message.update-succeed"));
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);

@@ -1,6 +1,5 @@
 {
   "common": {
-    "memos-slogan": "A lightweight, self-hosted memo hub. Open Source and Free forever.",
     "about": "About",
     "home": "Home",
     "resources": "Resources",
@@ -61,14 +60,7 @@
     "beta": "Beta",
     "new": "New",
     "mark": "Mark",
-    "profile": "Profile",
-    "dialog": {
-      "error": "Error",
-      "help": "Help",
-      "info": "Information",
-      "success": "Success",
-      "warning": "Warning"
-    }
+    "profile": "Profile"
   },
   "router": {
     "go-to-home": "Go to Home",
@@ -88,7 +80,7 @@
     "save": "Save",
     "placeholder": "Any thoughts...",
     "only-image-supported": "Only image file supported.",
-    "cant-empty": "Content can’t be empty",
+    "cant-empty": "Content can't be empty",
     "local": "Local",
     "resources": "Resources"
   },
@@ -104,12 +96,16 @@
     "search-placeholder": "Search memos",
     "visibility": {
       "private": "Private",
-      "protected": "Visible to members",
-      "public": "Public to everyone",
+      "protected": "Workspace",
+      "public": "Public",
       "disabled": "Public memos are disabled"
     },
     "delete-memo": "Delete Memo",
-    "delete-confirm": "Are you sure you want to delete this memo?\n\nTHIS ACTION IS IRREVERSIBLE❗"
+    "delete-confirm": "Are you sure you want to delete this memo?\n\nTHIS ACTION IS IRREVERSIBLE",
+    "comment": {
+      "self": "Comments",
+      "no-comment": "No comment"
+    }
   },
   "resource": {
     "no-resources": "No resources.",
@@ -117,14 +113,14 @@
     "copy-link": "Copy Link",
     "reset-link": "Reset Link",
     "reset-resource-link": "Reset Resource Link",
-    "reset-link-prompt": "Are you sure to reset the link?\nThis will break all current link usages.\n\nTHIS ACTION IS IRREVERSIBLE❗",
+    "reset-link-prompt": "Are you sure to reset the link?\nThis will break all current link usages.\n\nTHIS ACTION IS IRREVERSIBLE",
     "delete-resource": "Delete Resource",
     "linked-amount": "Linked amount",
-    "warning-text": "Are you sure to delete this resource?\n\nTHIS ACTION IS IRREVERSIBLE❗",
-    "warning-text-unused": "Are you sure to delete these unused resources?\n\nTHIS ACTION IS IRREVERSIBLE❗",
+    "warning-text": "Are you sure to delete this resource?\n\nTHIS ACTION IS IRREVERSIBLE",
+    "warning-text-unused": "Are you sure to delete these unused resources?\n\nTHIS ACTION IS IRREVERSIBLE",
     "no-unused-resources": "No unused resources",
     "delete-selected-resources": "Delete Selected Resources",
-    "no-files-selected": "No files selected❗",
+    "no-files-selected": "No files selected",
     "upload-successfully": "Upload successfully",
     "file-drag-drop-prompt": "Drag and drop your file here to upload file",
     "search-bar-placeholder": "Search resource",
@@ -180,7 +176,7 @@
       "reset-api": "Reset API",
       "openapi-title": "OpenAPI",
       "openapi-reset": "Reset OpenAPI Key",
-      "openapi-reset-warning": "❗ The existing API will be invalidated and a new one will be generated.\n\nAre you sure you want to reset?",
+      "openapi-reset-warning": " The existing API will be invalidated and a new one will be generated.\n\nAre you sure you want to reset?",
       "openapi-sample-post": "Hello #memos from {{url}}"
     },
     "preference-section": {
@@ -206,7 +202,7 @@
       "storage-services-list": "Storage service list",
       "create-a-service": "Create a service",
       "update-a-service": "Update a service",
-      "warning-text": "Are you sure to delete storage service \"{{name}}\"?\n\nTHIS ACTION IS IRREVERSIBLE❗",
+      "warning-text": "Are you sure to delete storage service \"{{name}}\"?\n\nTHIS ACTION IS IRREVERSIBLE",
       "delete-storage": "Delete Storage",
       "local-storage-path": "Local storage path",
       "update-local-path": "Update Local Storage Path",
@@ -234,9 +230,9 @@
     "member-section": {
       "create-a-member": "Create a member",
       "archive-member": "Archive member",
-      "archive-warning": "❗ Are you sure to archive {{username}}?",
+      "archive-warning": "Are you sure to archive {{username}}?",
       "delete-member": "Delete Member",
-      "delete-warning": "❗ Are you sure to delete {{username}}?\n\nTHIS ACTION IS IRREVERSIBLE❗"
+      "delete-warning": "Are you sure to delete {{username}}?\n\nTHIS ACTION IS IRREVERSIBLE"
     },
     "system-section": {
       "server-name": "Server Name",
@@ -251,10 +247,10 @@
       "database-file-size": "Database File Size",
       "allow-user-signup": "Allow user signup",
       "disable-password-login": "Disable password login",
-      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra carefull when removing an identity provider❗",
+      "disable-password-login-warning": "This will disable password login for all users. It is not possible to log in without reverting this setting in the database if your configured identity providers fail. You’ll also have to be extra carefull when removing an identity provider",
       "disable-password-login-final-warning": "Please type \"CONFIRM\" if you know what you are doing.",
       "enable-password-login": "Enable password login",
-      "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password❗",
+      "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password",
       "ignore-version-upgrade": "Ignore version upgrade",
       "disable-public-memos": "Disable public memos",
       "max-upload-size": "Maximum upload size (MiB)",
@@ -278,7 +274,7 @@
     "sso-section": {
       "sso-list": "SSO List",
       "delete-sso": "Confirm delete",
-      "confirm-delete": "Are you sure to delete \"{{name}}\" SSO configuration?\n\nTHIS ACTION IS IRREVERSIBLE❗",
+      "confirm-delete": "Are you sure to delete \"{{name}}\" SSO configuration?\n\nTHIS ACTION IS IRREVERSIBLE",
       "create-sso": "Create SSO",
       "update-sso": "Update SSO",
       "sso-created": "SSO {{name}} created",
@@ -295,16 +291,11 @@
       "token-endpoint": "Token endpoint",
       "user-endpoint": "User endpoint",
       "scopes": "Scopes",
-      "disabled-password-login-warning": "Password-login is disabled, be extra careful when removing identity providers❗"
+      "disabled-password-login-warning": "Password-login is disabled, be extra careful when removing identity providers"
     }
   },
   "amount-text": {
-    "memo_one": "MEMO",
-    "memo_other": "MEMOS",
-    "tag_one": "TAG",
-    "tag_other": "TAGS",
-    "day_one": "TAG",
-    "day_other": "TAGE"
+    "memo": "MEMO"
   },
   "days": {
     "mon": "Mon",
@@ -338,8 +329,8 @@
   },
   "message": {
     "no-data": "Maybe no data was found, or maybe it should be another option.",
-    "memos-ready": "all memos are ready 🎉",
-    "resource-ready": "all resource are ready 🎉",
+    "memos-ready": "all memos are ready",
+    "resource-ready": "all resource are ready",
     "restored-successfully": "Restored successfully",
     "memo-updated-datetime": "Memo created datetime changed.",
     "invalid-created-datetime": "Invalid created datetime.",
@@ -368,17 +359,13 @@
     "click-to-save-the-image": "Click to save the image",
     "generating-the-screenshot": "Generating the screenshot...",
     "count-selected-resources": "Total selected",
-    "too-short": "Too short",
-    "too-long": "Too long",
-    "not-allow-space": "Don’t allow space",
-    "not-allow-chinese": "Don’t allow chinese",
     "succeed-vacuum-database": "Successfully vacuumed database.",
     "succeed-update-additional-style": "Additional style updated successfully.",
     "succeed-copy-resource-link": "Resource link copied successfully.",
     "succeed-update-customized-profile": "Profile successfully customized.",
     "succeed-update-additional-script": "Additional script updated successfully.",
     "update-succeed": "Update succeeded",
-    "page-not-found": "404 - Page Not Found 😥",
+    "page-not-found": "404 - Page Not Found",
     "maximum-upload-size-is": "Maximum allowed upload size is {{size}} MiB",
     "file-exceeds-upload-limit-of": "File {{file}} exceeds upload limit of {{size}} MiB",
     "updating-setting-failed": "Updating setting failed",

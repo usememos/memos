@@ -291,14 +291,18 @@ const Memo: React.FC<Props> = (props: Props) => {
             {creator && (
               <>
                 <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}`}>
-                  <Tooltip title={"The identifier of memo"} placement="top">
+                  <Tooltip title={"Identifier"} placement="top">
                     <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
                   </Tooltip>
                 </Link>
                 <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-                <Link className="flex flex-row justify-start items-center" to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
-                  <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
-                  <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator.nickname}</span>
+                <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
+                  <Tooltip title={"Creator"} placement="top">
+                    <span className="flex flex-row justify-start items-center">
+                      <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
+                      <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator.nickname}</span>
+                    </span>
+                  </Tooltip>
                 </Link>
                 {memo.pinned && (
                   <>
@@ -308,10 +312,10 @@ const Memo: React.FC<Props> = (props: Props) => {
                     </Tooltip>
                   </>
                 )}
-                {props.showVisibility && (
+                {props.showVisibility && memo.visibility !== "PRIVATE" && (
                   <>
                     <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-                    <Tooltip title={"The visibility of memo"} placement="top">
+                    <Tooltip title={t(`memo.visibility.${memo.visibility.toLowerCase()}` as any)} placement="top">
                       <span>
                         <VisibilityIcon visibility={memo.visibility} />
                       </span>

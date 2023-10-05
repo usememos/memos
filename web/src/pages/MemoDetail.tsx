@@ -127,13 +127,17 @@ const MemoDetail = () => {
             <MemoRelationListView relationList={referenceRelations} />
             <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
               <div className="flex flex-row justify-start items-center">
-                <Tooltip title={"The identifier of memo"} placement="top">
+                <Tooltip title={"Identifier"} placement="top">
                   <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
                 </Tooltip>
                 <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-                <Link className="flex flex-row justify-start items-center" to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
-                  <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator?.avatarUrl} />
-                  <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator?.nickname}</span>
+                <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
+                  <Tooltip title={"Creator"} placement="top">
+                    <span className="flex flex-row justify-start items-center">
+                      <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator?.avatarUrl} />
+                      <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator?.nickname}</span>
+                    </span>
+                  </Tooltip>
                 </Link>
                 {allowEdit && (
                   <>
@@ -185,13 +189,13 @@ const MemoDetail = () => {
             {comments.length === 0 ? (
               <div className="w-full flex flex-col justify-center items-center py-6 mb-2">
                 <Icon.MessageCircle strokeWidth={1} className="w-8 h-auto text-gray-400" />
-                <p className="text-gray-400 italic text-sm">No comments</p>
+                <p className="text-gray-400 italic text-sm">{t("memo.comment.no-comment")}</p>
               </div>
             ) : (
               <>
                 <div className="w-full flex flex-row justify-start items-center pl-3 mb-3">
                   <Icon.MessageCircle className="w-5 h-auto text-gray-400 mr-1" />
-                  <span className="text-gray-400 text-sm">Comments</span>
+                  <span className="text-gray-400 text-sm">{t("memo.comment.self")}</span>
                   <span className="text-gray-400 text-sm ml-0.5">({comments.length})</span>
                 </div>
                 {comments.map((comment) => (

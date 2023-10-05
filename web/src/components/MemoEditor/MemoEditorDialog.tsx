@@ -25,7 +25,7 @@ const MemoEditorDialog: React.FC<Props> = ({ memoId, relationList, destroy }: Pr
   return (
     <>
       <div className="dialog-header-container">
-        <p className="title-text flex items-center">{t("amount-text.memo_one")}</p>
+        <p className="title-text flex items-center">{t("amount-text.memo")}</p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />
         </button>
