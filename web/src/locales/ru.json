@@ -157,7 +157,6 @@
             "reset-api": "Очистить API",
             "openapi-title": "OpenAPI",
             "openapi-reset": "Очистить ключ OpenAPI",
-            "openapi-reset-warning": "❗ Существующий API будет признан недействительным и будет сгенерирован новый.\n\nВы уверены, что хотите выполнить сброс?",
             "openapi-sample-post": "Привет #memos от {{url}}"
         },
         "preference-section": {
