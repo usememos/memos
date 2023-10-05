@@ -12,14 +12,14 @@
     "@emotion/styled": "^11.11.0",
     "@matejmazur/react-katex": "^3.1.3",
     "@mui/joy": "5.0.0-beta.7",
-    "@reduxjs/toolkit": "^1.9.6",
+    "@reduxjs/toolkit": "^1.9.7",
     "axios": "^0.27.2",
     "classnames": "^2.3.2",
     "copy-to-clipboard": "^3.3.3",
     "highlight.js": "^11.8.0",
     "i18next": "^21.10.0",
     "i18next-browser-languagedetector": "^7.1.0",
-    "katex": "^0.16.8",
+    "katex": "^0.16.9",
     "lodash-es": "^4.17.21",
     "long": "^5.2.3",
     "lucide-react": "^0.263.1",
@@ -37,16 +37,16 @@
     "tailwindcss": "^3.3.3",
     "textarea-caret": "^3.1.0",
     "uuid": "^9.0.1",
-    "zustand": "^4.4.1"
+    "zustand": "^4.4.2"
   },
   "devDependencies": {
     "@trivago/prettier-plugin-sort-imports": "^3.4.0",
     "@types/katex": "^0.16.3",
     "@types/lodash-es": "^4.17.9",
-    "@types/node": "^18.18.1",
+    "@types/node": "^18.18.3",
     "@types/qs": "^6.9.8",
-    "@types/react": "^18.2.23",
-    "@types/react-dom": "^18.2.8",
+    "@types/react": "^18.2.25",
+    "@types/react-dom": "^18.2.10",
     "@types/semver": "^7.5.3",
     "@types/textarea-caret": "^3.0.1",
     "@types/uuid": "^9.0.4",
@@ -61,8 +61,8 @@
     "less": "^4.2.0",
     "postcss": "^8.4.31",
     "prettier": "2.6.2",
-    "terser": "^5.20.0",
+    "terser": "^5.21.0",
     "typescript": "^5.2.2",
-    "vite": "^4.4.9"
+    "vite": "^4.4.10"
   }
 }
