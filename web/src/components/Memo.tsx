@@ -300,6 +300,14 @@ const Memo: React.FC<Props> = (props: Props) => {
                   <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
                   <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator.nickname}</span>
                 </Link>
+                {memo.pinned && (
+                  <>
+                    <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
+                    <Tooltip title={"Pinned"} placement="top">
+                      <Icon.Bookmark className="w-4 h-auto text-green-600" />
+                    </Tooltip>
+                  </>
+                )}
                 {props.showVisibility && (
                   <>
                     <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
