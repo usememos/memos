@@ -14,7 +14,7 @@ const memoSlice = createSlice({
     upsertMemos: (state, action: PayloadAction<Memo[]>) => {
       return {
         ...state,
-        memos: uniqBy([...state.memos, ...action.payload], "id"),
+        memos: uniqBy([...action.payload, ...state.memos], "id"),
       };
     },
     createMemo: (state, action: PayloadAction<Memo>) => {

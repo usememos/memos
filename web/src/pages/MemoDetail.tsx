@@ -70,19 +70,11 @@ const MemoDetail = () => {
     }
 
     (async () => {
-      await fetchMemoComments();
+      const commentRelations = memo.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT");
+      const requests = commentRelations.map((relation) => memoStore.fetchMemoById(relation.memoId));
+      await Promise.all(requests);
     })();
   }, [memo?.relationList]);
-
-  const fetchMemoComments = async () => {
-    if (!memo) {
-      return;
-    }
-
-    const commentRelations = memo.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT");
-    const requests = commentRelations.map((relation) => memoStore.fetchMemoById(relation.memoId));
-    await Promise.all(requests);
-  };
 
   if (!memo) {
     return null;
@@ -105,6 +97,10 @@ const MemoDetail = () => {
   const handleCopyLinkBtnClick = () => {
     copy(`${window.location.origin}/m/${memo.id}`);
     toast.success(t("message.succeed-copy-link"));
+  };
+
+  const handleCommentCreated = async () => {
+    await memoStore.fetchMemoById(memoId);
   };
 
   return (
@@ -210,7 +206,7 @@ const MemoDetail = () => {
                 key={memo.id}
                 className="!border"
                 relationList={[{ memoId: UNKNOWN_ID, relatedMemoId: memo.id, type: "COMMENT" }]}
-                onConfirm={() => fetchMemoComments()}
+                onConfirm={handleCommentCreated}
               />
             )}
           </div>

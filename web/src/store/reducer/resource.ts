@@ -21,7 +21,7 @@ const resourceSlice = createSlice({
     upsertResources: (state, action: PayloadAction<Resource[]>) => {
       return {
         ...state,
-        resources: uniqBy([...state.resources, ...action.payload], "id"),
+        resources: uniqBy([...action.payload, ...state.resources], "id"),
       };
     },
     patchResource: (state, action: PayloadAction<Partial<Resource>>) => {
