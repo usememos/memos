@@ -39,7 +39,6 @@ type UpdateResource struct {
 	Filename     *string
 	InternalPath *string
 	MemoID       *int32
-	UnbindMemo   bool
 	Blob         []byte
 }
 

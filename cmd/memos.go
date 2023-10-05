@@ -16,8 +16,7 @@ import (
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
-	"github.com/usememos/memos/store/mysql"
-	"github.com/usememos/memos/store/sqlite"
+	"github.com/usememos/memos/store/db"
 )
 
 const (
@@ -45,31 +44,19 @@ var (
 		Short: `An open-source, self-hosted memo hub with knowledge management and social networking.`,
 		Run: func(_cmd *cobra.Command, _args []string) {
 			ctx, cancel := context.WithCancel(context.Background())
-
-			var err error
-			var driver store.Driver
-			switch profile.Driver {
-			case "sqlite":
-				driver, err = sqlite.NewDriver(profile)
-			case "mysql":
-				driver, err = mysql.NewDriver(profile)
-			default:
-				cancel()
-				log.Error("unknown db driver", zap.String("driver", profile.Driver))
-				return
-			}
+			dbDriver, err := db.NewDBDriver(profile)
 			if err != nil {
 				cancel()
 				log.Error("failed to create db driver", zap.Error(err))
 				return
 			}
-			if err := driver.Migrate(ctx); err != nil {
+			if err := dbDriver.Migrate(ctx); err != nil {
 				cancel()
 				log.Error("failed to migrate db", zap.Error(err))
 				return
 			}
 
-			store := store.New(driver, profile)
+			store := store.New(dbDriver, profile)
 			s, err := server.NewServer(ctx, profile, store)
 			if err != nil {
 				cancel()
