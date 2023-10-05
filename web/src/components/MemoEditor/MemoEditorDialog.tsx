@@ -31,7 +31,7 @@ const MemoEditorDialog: React.FC<Props> = ({ memoId, relationList, destroy }: Pr
         </button>
       </div>
       <div className="flex flex-col justify-start items-start max-w-full w-[36rem]">
-        <MemoEditor memoId={memoId} relationList={relationList} onConfirm={handleCloseBtnClick} />
+        <MemoEditor cacheKey={`memo-editor-${memoId}`} memoId={memoId} relationList={relationList} onConfirm={handleCloseBtnClick} />
       </div>
     </>
   );

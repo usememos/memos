@@ -205,6 +205,7 @@ const MemoDetail = () => {
               <MemoEditor
                 key={memo.id}
                 className="!border"
+                cacheKey={`comment-editor-${memo.id}`}
                 relationList={[{ memoId: UNKNOWN_ID, relatedMemoId: memo.id, type: "COMMENT" }]}
                 onConfirm={handleCommentCreated}
               />
