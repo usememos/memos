@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	grpcRuntime "github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/grpc"
@@ -37,7 +37,7 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 	apiv2pb.RegisterUserServiceServer(grpcServer, NewUserService(store, secret))
 	apiv2pb.RegisterMemoServiceServer(grpcServer, NewMemoService(store))
 	apiv2pb.RegisterTagServiceServer(grpcServer, NewTagService(store))
-	apiv2pb.RegisterResourceServiceServer(grpcServer, NewResourceService(store))
+	apiv2pb.RegisterResourceServiceServer(grpcServer, NewResourceService(profile, store))
 	reflection.Register(grpcServer)
 
 	return &APIV2Service{
@@ -66,7 +66,7 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 		return err
 	}
 
-	gwMux := grpcRuntime.NewServeMux()
+	gwMux := runtime.NewServeMux()
 	if err := apiv2pb.RegisterSystemServiceHandler(context.Background(), gwMux, conn); err != nil {
 		return err
 	}
