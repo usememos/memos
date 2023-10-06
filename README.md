@@ -57,10 +57,6 @@ Contributions are what make the open-source community such an amazing place to l
 - [Memos Desktop](https://github.com/xudaolong/memos-desktop) - Third party client for MacOS and Windows
 - [MemosGallery](https://github.com/BarryYangi/MemosGallery) - A static Gallery rendered with the Memos API
 
-## Acknowledgements
-
-- Thanks [Uffizzi](https://www.uffizzi.com/) for sponsoring preview environments for PRs.
-
 ## Star history
 
 [![Star History Chart](https://api.star-history.com/svg?repos=usememos/memos&type=Date)](https://star-history.com/#usememos/memos&Date)
