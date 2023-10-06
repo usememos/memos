@@ -1,14 +1,5 @@
 basePath: /
 definitions:
-  getter.HTMLMeta:
-    properties:
-      description:
-        type: string
-      image:
-        type: string
-      title:
-        type: string
-    type: object
   github_com_usememos_memos_store.UserSetting:
     properties:
       key:
@@ -20,6 +11,14 @@ definitions:
     type: object
   profile.Profile:
     properties:
+      driver:
+        description: |-
+          Driver is the database driver
+          sqlite, mysql
+        type: string
+      dsn:
+        description: DSN points to where Memos stores its own data
+        type: string
       mode:
         description: Mode can be "prod" or "dev" or "demo"
         type: string
@@ -90,8 +89,13 @@ definitions:
         type: integer
       id:
         type: integer
+      parentID:
+        description: |-
+          Composed fields
+          For those comment memos, the parent ID is the memo ID of the memo being commented.
+          If the parent ID is nil, then this memo is not a comment.
+        type: integer
       pinned:
-        description: Composed fields
         type: boolean
       relationList:
         items:
@@ -122,11 +126,11 @@ definitions:
   store.MemoRelationType:
     enum:
     - REFERENCE
-    - ADDITIONAL
+    - COMMENT
     type: string
     x-enum-varnames:
     - MemoRelationReference
-    - MemoRelationAdditional
+    - MemoRelationComment
   store.Resource:
     properties:
       blob:
@@ -266,8 +270,6 @@ definitions:
       externalLink:
         type: string
       filename:
-        type: string
-      internalPath:
         type: string
       type:
         type: string
@@ -1974,28 +1976,6 @@ paths:
         "500":
           description: Failed to write GetImage blob
       summary: Get GetImage from URL
-      tags:
-      - get
-  /o/get/GetWebsiteMetadata:
-    get:
-      parameters:
-      - description: Website URL
-        in: query
-        name: url
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Extracted metadata
-          schema:
-            $ref: '#/definitions/getter.HTMLMeta'
-        "400":
-          description: Missing website url | Wrong url
-        "406":
-          description: 'Failed to get website meta with url: %s'
-      summary: Get website metadata
       tags:
       - get
   /o/r/{resourceId}:
