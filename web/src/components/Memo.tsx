@@ -245,18 +245,26 @@ const Memo: React.FC<Props> = (props: Props) => {
                 </span>
                 <div className="more-action-btns-wrapper">
                   <div className="more-action-btns-container min-w-[6em]">
-                    <span className="btn" onClick={handleTogglePinMemoBtnClick}>
-                      {memo.pinned ? <Icon.BookmarkMinus className="w-4 h-auto mr-2" /> : <Icon.BookmarkPlus className="w-4 h-auto mr-2" />}
-                      {memo.pinned ? t("common.unpin") : t("common.pin")}
-                    </span>
+                    {!memo.parent && (
+                      <span className="btn" onClick={handleTogglePinMemoBtnClick}>
+                        {memo.pinned ? (
+                          <Icon.BookmarkMinus className="w-4 h-auto mr-2" />
+                        ) : (
+                          <Icon.BookmarkPlus className="w-4 h-auto mr-2" />
+                        )}
+                        {memo.pinned ? t("common.unpin") : t("common.pin")}
+                      </span>
+                    )}
                     <span className="btn" onClick={handleEditMemoClick}>
                       <Icon.Edit3 className="w-4 h-auto mr-2" />
                       {t("common.edit")}
                     </span>
-                    <span className="btn" onClick={handleMarkMemoClick}>
-                      <Icon.Link className="w-4 h-auto mr-2" />
-                      {t("common.mark")}
-                    </span>
+                    {!memo.parent && (
+                      <span className="btn" onClick={handleMarkMemoClick}>
+                        <Icon.Link className="w-4 h-auto mr-2" />
+                        {t("common.mark")}
+                      </span>
+                    )}
                     <Divider className="!my-1" />
                     <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>
                       <Icon.Archive className="w-4 h-auto mr-2" />
@@ -290,12 +298,6 @@ const Memo: React.FC<Props> = (props: Props) => {
           <div className="flex flex-row justify-start items-center">
             {creator && (
               <>
-                <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}`}>
-                  <Tooltip title={"Identifier"} placement="top">
-                    <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
-                  </Tooltip>
-                </Link>
-                <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                 <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
                   <Tooltip title={"Creator"} placement="top">
                     <span className="flex flex-row justify-start items-center">

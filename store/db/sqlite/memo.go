@@ -65,9 +65,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if v := find.CreatedTsAfter; v != nil {
 		where, args = append(where, "memo.created_ts > ?"), append(args, *v)
 	}
-	if v := find.Pinned; v != nil {
-		where = append(where, "memo_organizer.pinned = 1")
-	}
 	if v := find.ContentSearch; len(v) != 0 {
 		for _, s := range v {
 			where, args = append(where, "memo.content LIKE ?"), append(args, "%"+s+"%")
@@ -81,6 +78,17 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(list, ",")))
 	}
+	if v := find.Pinned; v != nil {
+		where = append(where, "memo_organizer.pinned = 1")
+	}
+	if v := find.HasParent; v != nil {
+		if *v {
+			where = append(where, "parent_id IS NOT NULL")
+		} else {
+			where = append(where, "parent_id IS NULL")
+		}
+	}
+
 	orders := []string{"pinned DESC"}
 	if find.OrderByUpdatedTs {
 		orders = append(orders, "updated_ts DESC")
@@ -99,6 +107,15 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		memo.content AS content,
 		memo.visibility AS visibility,
 		CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END AS pinned,
+		(
+			SELECT
+				related_memo_id
+			FROM
+				memo_relation
+			WHERE
+				memo_relation.memo_id = memo.id AND memo_relation.type = 'COMMENT'
+			LIMIT 1
+		) AS parent_id,
 		GROUP_CONCAT(resource.id) AS resource_id_list,
 		(
 			SELECT
@@ -145,6 +162,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.Content,
 			&memo.Visibility,
 			&memo.Pinned,
+			&memo.ParentID,
 			&memoResourceIDList,
 			&memoRelationList,
 		); err != nil {
@@ -184,10 +202,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 					RelatedMemoID: relatedMemoID,
 					Type:          relationType,
 				})
-				// Set the first parent ID if relation type is comment.
-				if memo.ParentID == nil && memoID == memo.ID && relationType == store.MemoRelationComment {
-					memo.ParentID = &relatedMemoID
-				}
 			}
 		}
 		list = append(list, &memo)

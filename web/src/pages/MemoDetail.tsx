@@ -114,6 +114,10 @@ const MemoDetail = () => {
           <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 pb-6">
             <div className="w-full mb-4 flex flex-row justify-start items-center mr-1">
               <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTs)}</span>
+              <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
+              <Tooltip title={"Identifier"} placement="top">
+                <span className="text-gray-400 dark:text-gray-400">#{memo.id}</span>
+              </Tooltip>
             </div>
             {memo.parent && (
               <div className="mb-2">
@@ -127,10 +131,6 @@ const MemoDetail = () => {
             <MemoRelationListView relationList={referenceRelations} />
             <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
               <div className="flex flex-row justify-start items-center">
-                <Tooltip title={"Identifier"} placement="top">
-                  <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
-                </Tooltip>
-                <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                 <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
                   <Tooltip title={"Creator"} placement="top">
                     <span className="flex flex-row justify-start items-center">

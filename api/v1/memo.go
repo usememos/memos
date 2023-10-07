@@ -144,7 +144,10 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 //	@Router		/api/v1/memo [GET]
 func (s *APIV1Service) GetMemoList(c echo.Context) error {
 	ctx := c.Request().Context()
-	findMemoMessage := &store.FindMemo{}
+	hasParentFlag := false
+	findMemoMessage := &store.FindMemo{
+		HasParent: &hasParentFlag,
+	}
 	if userID, err := util.ConvertStringToInt32(c.QueryParam("creatorId")); err == nil {
 		findMemoMessage.CreatorID = &userID
 	}
@@ -404,7 +407,10 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 //	- creatorUsername is listed at ./web/src/helpers/api.ts:82, but it's not present here
 func (s *APIV1Service) GetAllMemos(c echo.Context) error {
 	ctx := c.Request().Context()
-	findMemoMessage := &store.FindMemo{}
+	hasParentFlag := false
+	findMemoMessage := &store.FindMemo{
+		HasParent: &hasParentFlag,
+	}
 	_, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		findMemoMessage.VisibilityList = []store.Visibility{store.Public}
@@ -461,8 +467,10 @@ func (s *APIV1Service) GetAllMemos(c echo.Context) error {
 func (s *APIV1Service) GetMemoStats(c echo.Context) error {
 	ctx := c.Request().Context()
 	normalStatus := store.Normal
+	hasParentFlag := false
 	findMemoMessage := &store.FindMemo{
 		RowStatus: &normalStatus,
+		HasParent: &hasParentFlag,
 	}
 	if creatorID, err := util.ConvertStringToInt32(c.QueryParam("creatorId")); err == nil {
 		findMemoMessage.CreatorID = &creatorID

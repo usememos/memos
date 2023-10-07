@@ -54,7 +54,7 @@ const Explore = () => {
     : memos;
 
   const sortedMemos = fetchedMemos
-    .filter((m) => m.rowStatus === "NORMAL" && m.visibility !== "PRIVATE")
+    .filter((m) => m.rowStatus === "NORMAL" && m.visibility !== "PRIVATE" && !m.parent)
     .sort((mi, mj) => mj.displayTs - mi.displayTs);
 
   useEffect(() => {

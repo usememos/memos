@@ -60,9 +60,10 @@ type FindMemo struct {
 	CreatedTsBefore *int64
 
 	// Domain specific fields
-	Pinned         *bool
 	ContentSearch  []string
 	VisibilityList []Visibility
+	Pinned         *bool
+	HasParent      *bool
 
 	// Pagination
 	Limit            *int

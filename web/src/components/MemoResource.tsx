@@ -16,22 +16,18 @@ const MemoResource: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <>
-      <div className={`w-auto flex flex-row justify-start items-center text-gray-500 dark:text-gray-400 hover:opacity-80 ${className}`}>
-        {resource.type.startsWith("audio") ? (
-          <>
-            <audio src={resourceUrl} controls></audio>
-          </>
-        ) : (
-          <>
-            <ResourceIcon className="!w-4 !h-4 mr-1" resource={resource} />
-            <span className="text-sm max-w-[256px] truncate cursor-pointer" onClick={handlePreviewBtnClick}>
-              {resource.filename}
-            </span>
-          </>
-        )}
-      </div>
-    </>
+    <div className={`w-auto flex flex-row justify-start items-center text-gray-500 dark:text-gray-400 hover:opacity-80 ${className}`}>
+      {resource.type.startsWith("audio") ? (
+        <audio src={resourceUrl} controls></audio>
+      ) : (
+        <>
+          <ResourceIcon className="!w-4 !h-4 mr-1" resource={resource} />
+          <span className="text-sm max-w-[256px] truncate cursor-pointer" onClick={handlePreviewBtnClick}>
+            {resource.filename}
+          </span>
+        </>
+      )}
+    </div>
   );
 };
 
