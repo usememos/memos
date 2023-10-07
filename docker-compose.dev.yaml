@@ -1,36 +1,26 @@
-# 1.Prepare your workspace by:
-#     docker compose -f docker-compose.dev.yaml run api go install github.com/cosmtrek/air@latest
-#     docker compose -f docker-compose.dev.yaml run web npm install
-#
-# 2. Start you work by:
-#     docker compose up -d
-#
-# 3. Check logs by:
-#     docker compose logs -f
-#
 services:
   db:
     image: mysql
     volumes:
       - ./.air/mysql:/var/lib/mysql
   api:
-    image: golang:1.21-alpine
+    image: cosmtrek/air
     working_dir: /work
-    command: air -c ./scripts/.air.toml
+    command: ["-c", "./scripts/.air.toml"]
     environment:
       - "MEMOS_DSN=root@tcp(db)/memos"
       - "MEMOS_DRIVER=mysql"
     volumes:
-      - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
-      - ./.air/bin/:/go/bin/ # Cache for binary used only in container, such as *air*
       - .:/work/
+      - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
   web:
     image: node:18-alpine
     working_dir: /work
     depends_on: ["api"]
     ports: ["3001:3001"]
     environment: ["DEV_PROXY_SERVER=http://api:8081/"]
-    command: npm run dev
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["corepack enable && pnpm install && pnpm dev"]
     volumes:
       - ./web:/work
       - ./.air/node_modules/:/work/node_modules/ # Cache for Node Modules
