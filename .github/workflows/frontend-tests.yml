@@ -15,9 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: bufbuild/buf-setup-action@v1
-      - run: buf generate
-        working-directory: proto
       - uses: pnpm/action-setup@v2.2.4
         with:
           version: 8
@@ -27,6 +24,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: "web/pnpm-lock.yaml"
       - run: pnpm install
+        working-directory: web
+      - run: pnpm type-gen
         working-directory: web
       - name: Run eslint check
         run: pnpm lint
@@ -36,9 +35,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: bufbuild/buf-setup-action@v1
-      - run: buf generate
-        working-directory: proto
       - uses: pnpm/action-setup@v2.2.4
         with:
           version: 8
@@ -48,6 +44,8 @@ jobs:
           cache: pnpm
           cache-dependency-path: "web/pnpm-lock.yaml"
       - run: pnpm install
+        working-directory: web
+      - run: pnpm type-gen
         working-directory: web
       - name: Run frontend build
         run: pnpm build
