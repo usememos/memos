@@ -9,21 +9,12 @@ import (
 )
 
 func (d *DB) UpsertMemoRelation(ctx context.Context, create *store.MemoRelation) (*store.MemoRelation, error) {
-	stmt := `
-		INSERT INTO memo_relation (
-			memo_id,
-			related_memo_id,
-			type
-		)
-		VALUES (?, ?, ?)
-		ON DUPLICATE KEY UPDATE type = ?
-	`
+	stmt := "INSERT INTO `memo_relation` (`memo_id`, `related_memo_id`, `type`) VALUES (?, ?, ?)"
 	_, err := d.db.ExecContext(
 		ctx,
 		stmt,
 		create.MemoID,
 		create.RelatedMemoID,
-		create.Type,
 		create.Type,
 	)
 	if err != nil {
@@ -42,22 +33,16 @@ func (d *DB) UpsertMemoRelation(ctx context.Context, create *store.MemoRelation)
 func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation) ([]*store.MemoRelation, error) {
 	where, args := []string{"TRUE"}, []any{}
 	if find.MemoID != nil {
-		where, args = append(where, "memo_id = ?"), append(args, find.MemoID)
+		where, args = append(where, "`memo_id` = ?"), append(args, find.MemoID)
 	}
 	if find.RelatedMemoID != nil {
-		where, args = append(where, "related_memo_id = ?"), append(args, find.RelatedMemoID)
+		where, args = append(where, "`related_memo_id` = ?"), append(args, find.RelatedMemoID)
 	}
 	if find.Type != nil {
-		where, args = append(where, "type = ?"), append(args, find.Type)
+		where, args = append(where, "`type` = ?"), append(args, find.Type)
 	}
 
-	rows, err := d.db.QueryContext(ctx, `
-		SELECT
-			memo_id,
-			related_memo_id,
-			type
-		FROM memo_relation
-		WHERE `+strings.Join(where, " AND "), args...)
+	rows, err := d.db.QueryContext(ctx, "SELECT `memo_id`, `related_memo_id`, `type` FROM `memo_relation` WHERE "+strings.Join(where, " AND "), args...)
 	if err != nil {
 		return nil, err
 	}
@@ -86,17 +71,15 @@ func (d *DB) ListMemoRelations(ctx context.Context, find *store.FindMemoRelation
 func (d *DB) DeleteMemoRelation(ctx context.Context, delete *store.DeleteMemoRelation) error {
 	where, args := []string{"TRUE"}, []any{}
 	if delete.MemoID != nil {
-		where, args = append(where, "memo_id = ?"), append(args, delete.MemoID)
+		where, args = append(where, "`memo_id` = ?"), append(args, delete.MemoID)
 	}
 	if delete.RelatedMemoID != nil {
-		where, args = append(where, "related_memo_id = ?"), append(args, delete.RelatedMemoID)
+		where, args = append(where, "`related_memo_id` = ?"), append(args, delete.RelatedMemoID)
 	}
 	if delete.Type != nil {
-		where, args = append(where, "type = ?"), append(args, delete.Type)
+		where, args = append(where, "`type` = ?"), append(args, delete.Type)
 	}
-	stmt := `
-		DELETE FROM memo_relation
-		WHERE ` + strings.Join(where, " AND ")
+	stmt := "DELETE FROM `memo_relation` WHERE " + strings.Join(where, " AND ")
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
@@ -108,10 +91,7 @@ func (d *DB) DeleteMemoRelation(ctx context.Context, delete *store.DeleteMemoRel
 }
 
 func vacuumMemoRelations(ctx context.Context, tx *sql.Tx) error {
-	if _, err := tx.ExecContext(ctx, `
-		DELETE FROM memo_relation
-		WHERE memo_id NOT IN (SELECT id FROM memo) OR related_memo_id NOT IN (SELECT id FROM memo)
-	`); err != nil {
+	if _, err := tx.ExecContext(ctx, "DELETE FROM `memo_relation` WHERE `memo_id` NOT IN (SELECT `id` FROM `memo`) OR `related_memo_id` NOT IN (SELECT `id` FROM `memo`)"); err != nil {
 		return err
 	}
 	return nil

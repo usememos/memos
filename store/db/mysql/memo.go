@@ -13,14 +13,7 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	stmt := `
-		INSERT INTO memo (
-			creator_id,
-			content,
-			visibility
-		)
-		VALUES (?, ?, ?)
-	`
+	stmt := "INSERT INTO `memo` (`creator_id`, `content`, `visibility`) VALUES (?, ?, ?)"
 	result, err := d.db.ExecContext(
 		ctx,
 		stmt,
@@ -51,26 +44,26 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
-		where, args = append(where, "memo.id = ?"), append(args, *v)
+		where, args = append(where, "`memo`.`id` = ?"), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
-		where, args = append(where, "memo.creator_id = ?"), append(args, *v)
+		where, args = append(where, "`memo`.`creator_id` = ?"), append(args, *v)
 	}
 	if v := find.RowStatus; v != nil {
-		where, args = append(where, "memo.row_status = ?"), append(args, *v)
+		where, args = append(where, "`memo`.`row_status` = ?"), append(args, *v)
 	}
 	if v := find.CreatedTsBefore; v != nil {
-		where, args = append(where, "UNIX_TIMESTAMP(memo.created_ts) < ?"), append(args, *v)
+		where, args = append(where, "UNIX_TIMESTAMP(`memo`.`created_ts`) < ?"), append(args, *v)
 	}
 	if v := find.CreatedTsAfter; v != nil {
-		where, args = append(where, "UNIX_TIMESTAMP(memo.created_ts) > ?"), append(args, *v)
+		where, args = append(where, "UNIX_TIMESTAMP(`memo`.`created_ts`) > ?"), append(args, *v)
 	}
 	if v := find.Pinned; v != nil {
-		where = append(where, "memo_organizer.pinned = 1")
+		where = append(where, "`memo_organizer`.`pinned` = 1")
 	}
 	if v := find.ContentSearch; len(v) != 0 {
 		for _, s := range v {
-			where, args = append(where, "memo.content LIKE ?"), append(args, "%"+s+"%")
+			where, args = append(where, "`memo`.`content` LIKE ?"), append(args, "%"+s+"%")
 		}
 	}
 	if v := find.VisibilityList; len(v) != 0 {
@@ -79,45 +72,17 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			list = append(list, "?")
 			args = append(args, visibility)
 		}
-		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(list, ",")))
+		where = append(where, fmt.Sprintf("`memo`.`visibility` in (%s)", strings.Join(list, ",")))
 	}
-	orders := []string{"pinned DESC"}
+	orders := []string{"`pinned` DESC"}
 	if find.OrderByUpdatedTs {
-		orders = append(orders, "updated_ts DESC")
+		orders = append(orders, "`updated_ts` DESC")
 	} else {
-		orders = append(orders, "created_ts DESC")
+		orders = append(orders, "`created_ts` DESC")
 	}
-	orders = append(orders, "id DESC")
+	orders = append(orders, "`id` DESC")
 
-	query := `
-	SELECT
-		memo.id AS id,
-		memo.creator_id AS creator_id,
-		UNIX_TIMESTAMP(memo.created_ts) AS created_ts,
-		UNIX_TIMESTAMP(memo.updated_ts) AS updated_ts,
-		memo.row_status AS row_status,
-		memo.content AS content,
-		memo.visibility AS visibility,
-		MAX(CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END) AS pinned,
-		GROUP_CONCAT(resource.id) AS resource_id_list,
-		(
-			SELECT
-				GROUP_CONCAT(memo_id,':',related_memo_id,':',type)
-			FROM
-				memo_relation
-			WHERE
-				memo_relation.memo_id = memo.id OR memo_relation.related_memo_id = memo.id
-		) AS relation_list
-	FROM
-		memo
-	LEFT JOIN
-		memo_organizer ON memo.id = memo_organizer.memo_id
-	LEFT JOIN
-		resource ON memo.id = resource.memo_id
-	WHERE ` + strings.Join(where, " AND ") + `
-	GROUP BY memo.id
-	ORDER BY ` + strings.Join(orders, ", ") + `
-	`
+	query := "SELECT `memo`.`id` AS `id`, `memo`.`creator_id` AS `creator_id`, UNIX_TIMESTAMP(`memo`.`created_ts`) AS `created_ts`, UNIX_TIMESTAMP(`memo`.`updated_ts`) AS `updated_ts`, `memo`.`row_status` AS `row_status`, `memo`.`content` AS `content`, `memo`.`visibility` AS `visibility`, MAX(CASE WHEN `memo_organizer`.`pinned` = 1 THEN 1 ELSE 0 END) AS `pinned`, GROUP_CONCAT(`resource`.`id`) AS `resource_id_list`, (SELECT GROUP_CONCAT(`memo_id`,':',`related_memo_id`,':',`type`) FROM `memo_relation` WHERE `memo_relation`.`memo_id` = `memo`.`id` OR `memo_relation`.`related_memo_id` = `memo`.`id` ) AS `relation_list` FROM `memo` LEFT JOIN `memo_organizer` ON `memo`.`id` = `memo_organizer`.`memo_id` LEFT JOIN `resource` ON `memo`.`id` = `resource`.`memo_id` WHERE " + strings.Join(where, " AND ") + " GROUP BY `memo`.`id` ORDER BY " + strings.Join(orders, ", ")
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {
@@ -216,27 +181,23 @@ func (d *DB) GetMemo(ctx context.Context, find *store.FindMemo) (*store.Memo, er
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	set, args := []string{}, []any{}
 	if v := update.CreatedTs; v != nil {
-		set, args = append(set, "created_ts = FROM_UNIXTIME(?)"), append(args, *v)
+		set, args = append(set, "`created_ts` = FROM_UNIXTIME(?)"), append(args, *v)
 	}
 	if v := update.UpdatedTs; v != nil {
-		set, args = append(set, "updated_ts = FROM_UNIXTIME(?)"), append(args, *v)
+		set, args = append(set, "`updated_ts` = FROM_UNIXTIME(?)"), append(args, *v)
 	}
 	if v := update.RowStatus; v != nil {
-		set, args = append(set, "row_status = ?"), append(args, *v)
+		set, args = append(set, "`row_status` = ?"), append(args, *v)
 	}
 	if v := update.Content; v != nil {
-		set, args = append(set, "content = ?"), append(args, *v)
+		set, args = append(set, "`content` = ?"), append(args, *v)
 	}
 	if v := update.Visibility; v != nil {
-		set, args = append(set, "visibility = ?"), append(args, *v)
+		set, args = append(set, "`visibility` = ?"), append(args, *v)
 	}
 	args = append(args, update.ID)
 
-	stmt := `
-		UPDATE memo
-		SET ` + strings.Join(set, ", ") + `
-		WHERE id = ?
-	`
+	stmt := "UPDATE `memo` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
 	if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
 		return err
 	}
@@ -244,8 +205,8 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 }
 
 func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
-	where, args := []string{"id = ?"}, []any{delete.ID}
-	stmt := `DELETE FROM memo WHERE ` + strings.Join(where, " AND ")
+	where, args := []string{"`id` = ?"}, []any{delete.ID}
+	stmt := "DELETE FROM `memo` WHERE " + strings.Join(where, " AND ")
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
@@ -269,8 +230,8 @@ func (d *DB) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]st
 		list = append(list, "?")
 	}
 
-	where := fmt.Sprintf("id in (%s)", strings.Join(list, ","))
-	query := `SELECT DISTINCT(visibility) FROM memo WHERE ` + where
+	where := fmt.Sprintf("`id` in (%s)", strings.Join(list, ","))
+	query := "SELECT DISTINCT(`visibility`) FROM `memo` WHERE " + where
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -294,16 +255,7 @@ func (d *DB) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]st
 }
 
 func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
-	stmt := `
-	DELETE FROM
-		memo
-	WHERE
-		creator_id NOT IN (
-			SELECT
-				id
-			FROM
-				user
-		)`
+	stmt := "DELETE FROM `memo` WHERE `creator_id` NOT IN (SELECT `id` FROM `user`)"
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
 		return err

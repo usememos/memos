@@ -13,7 +13,7 @@ import (
 )
 
 func (d *DB) UpsertUserSetting(ctx context.Context, upsert *store.UserSetting) (*store.UserSetting, error) {
-	stmt := "INSERT INTO user_setting (`user_id`, `key`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE value = ?"
+	stmt := "INSERT INTO `user_setting` (`user_id`, `key`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = ?"
 	if _, err := d.db.ExecContext(ctx, stmt, upsert.UserID, upsert.Key, upsert.Value, upsert.Value); err != nil {
 		return nil, err
 	}
@@ -25,19 +25,13 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.Key; v != "" {
-		where, args = append(where, "user_setting.key = ?"), append(args, v)
+		where, args = append(where, "`key` = ?"), append(args, v)
 	}
 	if v := find.UserID; v != nil {
-		where, args = append(where, "user_id = ?"), append(args, *find.UserID)
+		where, args = append(where, "`user_id` = ?"), append(args, *find.UserID)
 	}
 
-	query := `
-		SELECT
-			user_id,
-			user_setting.key,
-			value
-		FROM user_setting
-		WHERE ` + strings.Join(where, " AND ")
+	query := "SELECT `user_id`, `key`, `value` FROM `user_setting` WHERE " + strings.Join(where, " AND ")
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -65,11 +59,7 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 }
 
 func (d *DB) UpsertUserSettingV1(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
-	stmt := `
-		INSERT INTO user_setting (user_id, user_setting.key, value)
-		VALUES (?, ?, ?)
-		ON DUPLICATE KEY UPDATE value = ?
-	`
+	stmt := "INSERT INTO `user_setting` (`user_id`, `key`, `value`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = ?"
 	var valueString string
 	if upsert.Key == storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS {
 		valueBytes, err := protojson.Marshal(upsert.GetAccessTokens())
@@ -92,19 +82,13 @@ func (d *DB) ListUserSettingsV1(ctx context.Context, find *store.FindUserSetting
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.Key; v != storepb.UserSettingKey_USER_SETTING_KEY_UNSPECIFIED {
-		where, args = append(where, "user_setting.key = ?"), append(args, v.String())
+		where, args = append(where, "`key` = ?"), append(args, v.String())
 	}
 	if v := find.UserID; v != nil {
-		where, args = append(where, "user_id = ?"), append(args, *find.UserID)
+		where, args = append(where, "`user_id` = ?"), append(args, *find.UserID)
 	}
 
-	query := `
-		SELECT
-			user_id,
-			user_setting.key,
-			value
-		FROM user_setting
-		WHERE ` + strings.Join(where, " AND ")
+	query := "SELECT `user_id`, `key`, `value` FROM `user_setting` WHERE " + strings.Join(where, " AND ")
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -146,16 +130,7 @@ func (d *DB) ListUserSettingsV1(ctx context.Context, find *store.FindUserSetting
 }
 
 func vacuumUserSetting(ctx context.Context, tx *sql.Tx) error {
-	stmt := `
-	DELETE FROM
-		user_setting
-	WHERE
-		user_id NOT IN (
-			SELECT
-				id
-			FROM
-				user
-		)`
+	stmt := "DELETE FROM `user_setting` WHERE `user_id` NOT IN (SELECT `id` FROM `user`)"
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
 		return err

@@ -8,13 +8,7 @@ import (
 )
 
 func (d *DB) UpsertSystemSetting(ctx context.Context, upsert *store.SystemSetting) (*store.SystemSetting, error) {
-	stmt := `
-		INSERT INTO system_setting (
-			name, value, description
-		)
-		VALUES (?, ?, ?)
-		ON DUPLICATE KEY UPDATE value = ?, description = ?
-	`
+	stmt := "INSERT INTO `system_setting` (`name`, `value`, `description`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `value` = ?, `description` = ?"
 	_, err := d.db.ExecContext(
 		ctx,
 		stmt,
@@ -34,17 +28,10 @@ func (d *DB) UpsertSystemSetting(ctx context.Context, upsert *store.SystemSettin
 func (d *DB) ListSystemSettings(ctx context.Context, find *store.FindSystemSetting) ([]*store.SystemSetting, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.Name != "" {
-		where, args = append(where, "name = ?"), append(args, find.Name)
+		where, args = append(where, "`name` = ?"), append(args, find.Name)
 	}
 
-	query := `
-		SELECT
-			name,
-			value,
-			description
-		FROM system_setting
-		WHERE ` + strings.Join(where, " AND ")
-
+	query := "SELECT `name`, `value`, `description` FROM `system_setting` WHERE " + strings.Join(where, " AND ")
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err

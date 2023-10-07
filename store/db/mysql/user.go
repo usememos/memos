@@ -10,17 +10,7 @@ import (
 )
 
 func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, error) {
-	stmt := `
-		INSERT INTO user (
-			username,
-			role,
-			email,
-			nickname,
-			password_hash,
-			avatar_url
-		)
-		VALUES (?, ?, ?, ?, ?, ?)
-	`
+	stmt := "INSERT INTO `user` (`username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`) VALUES (?, ?, ?, ?, ?, ?)"
 	result, err := d.db.ExecContext(ctx, stmt,
 		create.Username,
 		create.Role,
@@ -53,52 +43,35 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.User, error) {
 	set, args := []string{}, []any{}
 	if v := update.UpdatedTs; v != nil {
-		set, args = append(set, "updated_ts = ?"), append(args, *v)
+		set, args = append(set, "`updated_ts` = ?"), append(args, *v)
 	}
 	if v := update.RowStatus; v != nil {
-		set, args = append(set, "row_status = ?"), append(args, *v)
+		set, args = append(set, "`row_status` = ?"), append(args, *v)
 	}
 	if v := update.Username; v != nil {
-		set, args = append(set, "username = ?"), append(args, *v)
+		set, args = append(set, "`username` = ?"), append(args, *v)
 	}
 	if v := update.Email; v != nil {
-		set, args = append(set, "email = ?"), append(args, *v)
+		set, args = append(set, "`email` = ?"), append(args, *v)
 	}
 	if v := update.Nickname; v != nil {
-		set, args = append(set, "nickname = ?"), append(args, *v)
+		set, args = append(set, "`nickname` = ?"), append(args, *v)
 	}
 	if v := update.AvatarURL; v != nil {
-		set, args = append(set, "avatar_url = ?"), append(args, *v)
+		set, args = append(set, "`avatar_url` = ?"), append(args, *v)
 	}
 	if v := update.PasswordHash; v != nil {
-		set, args = append(set, "password_hash = ?"), append(args, *v)
+		set, args = append(set, "`password_hash` = ?"), append(args, *v)
 	}
 	args = append(args, update.ID)
 
-	query := `
-		UPDATE user
-		SET ` + strings.Join(set, ", ") + `
-		WHERE id = ?
-	`
+	query := "UPDATE `user` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
 	if _, err := d.db.ExecContext(ctx, query, args...); err != nil {
 		return nil, err
 	}
 
 	user := &store.User{}
-	query = `
-		SELECT
-			id,
-			username,
-			role,
-			email,
-			nickname,
-			password_hash,
-			avatar_url,
-			UNIX_TIMESTAMP(created_ts),
-			UNIX_TIMESTAMP(updated_ts),
-			row_status
-		FROM user WHERE id = ?
-	`
+	query = "SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE `id` = ?"
 	if err := d.db.QueryRowContext(ctx, query, update.ID).Scan(
 		&user.ID,
 		&user.Username,
@@ -121,37 +94,22 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
-		where, args = append(where, "id = ?"), append(args, *v)
+		where, args = append(where, "`id` = ?"), append(args, *v)
 	}
 	if v := find.Username; v != nil {
-		where, args = append(where, "username = ?"), append(args, *v)
+		where, args = append(where, "`username` = ?"), append(args, *v)
 	}
 	if v := find.Role; v != nil {
-		where, args = append(where, "role = ?"), append(args, *v)
+		where, args = append(where, "`role` = ?"), append(args, *v)
 	}
 	if v := find.Email; v != nil {
-		where, args = append(where, "email = ?"), append(args, *v)
+		where, args = append(where, "`email` = ?"), append(args, *v)
 	}
 	if v := find.Nickname; v != nil {
-		where, args = append(where, "nickname = ?"), append(args, *v)
+		where, args = append(where, "`nickname` = ?"), append(args, *v)
 	}
 
-	query := `
-		SELECT 
-			id,
-			username,
-			role,
-			email,
-			nickname,
-			password_hash,
-			avatar_url,
-			UNIX_TIMESTAMP(created_ts),
-			UNIX_TIMESTAMP(updated_ts),
-			row_status
-		FROM user
-		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY created_ts DESC, row_status DESC
-	`
+	query := "SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE " + strings.Join(where, " AND ") + " ORDER BY `created_ts` DESC, `row_status` DESC"
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -186,9 +144,7 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 }
 
 func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) error {
-	result, err := d.db.ExecContext(ctx, `
-		DELETE FROM user WHERE id = ?
-	`, delete.ID)
+	result, err := d.db.ExecContext(ctx, "DELETE FROM `user` WHERE `id` = ?", delete.ID)
 	if err != nil {
 		return err
 	}

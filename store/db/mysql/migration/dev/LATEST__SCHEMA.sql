@@ -81,7 +81,7 @@ CREATE TABLE `resource` (
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `filename` TEXT NOT NULL,
-  `blob` BLOB,
+  `blob` MEDIUMBLOB,
   `external_link` TEXT NOT NULL,
   `type` VARCHAR(255) NOT NULL DEFAULT '',
   `size` INT NOT NULL DEFAULT '0',

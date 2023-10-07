@@ -22,15 +22,10 @@ func (d *DB) FindMigrationHistoryList(ctx context.Context, find *MigrationHistor
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.Version; v != nil {
-		where, args = append(where, "version = ?"), append(args, *v)
+		where, args = append(where, "`version` = ?"), append(args, *v)
 	}
 
-	query := `
-		SELECT version, UNIX_TIMESTAMP(created_ts)
-		FROM migration_history
-		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY created_ts DESC
-	`
+	query := "SELECT `version`, UNIX_TIMESTAMP(`created_ts`) FROM `migration_history` WHERE " + strings.Join(where, " AND ") + " ORDER BY `created_ts` DESC"
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -58,21 +53,14 @@ func (d *DB) FindMigrationHistoryList(ctx context.Context, find *MigrationHistor
 }
 
 func (d *DB) UpsertMigrationHistory(ctx context.Context, upsert *MigrationHistoryUpsert) (*MigrationHistory, error) {
-	stmt := `
-		INSERT INTO migration_history (version) VALUES (?)
-		ON DUPLICATE KEY UPDATE version = ?
-	`
+	stmt := "INSERT INTO `migration_history` (`version`) VALUES (?) ON DUPLICATE KEY UPDATE `version` = ?"
 	_, err := d.db.ExecContext(ctx, stmt, upsert.Version, upsert.Version)
 	if err != nil {
 		return nil, err
 	}
 
 	var migrationHistory MigrationHistory
-	stmt = `
-		SELECT version, UNIX_TIMESTAMP(created_ts)
-		FROM migration_history
-		WHERE version = ?
-	`
+	stmt = "SELECT `version`, UNIX_TIMESTAMP(`created_ts`) FROM `migration_history` WHERE `version` = ?"
 	if err := d.db.QueryRowContext(ctx, stmt, upsert.Version).Scan(
 		&migrationHistory.Version,
 		&migrationHistory.CreatedTs,

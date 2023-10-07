@@ -9,11 +9,7 @@ import (
 )
 
 func (d *DB) UpsertTag(ctx context.Context, upsert *store.Tag) (*store.Tag, error) {
-	stmt := `
-		INSERT INTO tag (name, creator_id)
-		VALUES (?, ?)
-		ON DUPLICATE KEY UPDATE name = ?
-	`
+	stmt := "INSERT INTO `tag` (`name`, `creator_id`) VALUES (?, ?) ON DUPLICATE KEY UPDATE `name` = ?"
 	if _, err := d.db.ExecContext(ctx, stmt, upsert.Name, upsert.CreatorID, upsert.Name); err != nil {
 		return nil, err
 	}
@@ -22,15 +18,8 @@ func (d *DB) UpsertTag(ctx context.Context, upsert *store.Tag) (*store.Tag, erro
 }
 
 func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, error) {
-	where, args := []string{"creator_id = ?"}, []any{find.CreatorID}
-	query := `
-		SELECT
-			name,
-			creator_id
-		FROM tag
-		WHERE ` + strings.Join(where, " AND ") + `
-		ORDER BY name ASC
-	`
+	where, args := []string{"`creator_id` = ?"}, []any{find.CreatorID}
+	query := "SELECT `name`, `creator_id` FROM `tag` WHERE " + strings.Join(where, " AND ") + " ORDER BY name ASC"
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -58,8 +47,8 @@ func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, e
 }
 
 func (d *DB) DeleteTag(ctx context.Context, delete *store.DeleteTag) error {
-	where, args := []string{"name = ?", "creator_id = ?"}, []any{delete.Name, delete.CreatorID}
-	stmt := `DELETE FROM tag WHERE ` + strings.Join(where, " AND ")
+	where, args := []string{"`name` = ?", "`creator_id` = ?"}, []any{delete.Name, delete.CreatorID}
+	stmt := "DELETE FROM `tag` WHERE " + strings.Join(where, " AND ")
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
@@ -71,16 +60,7 @@ func (d *DB) DeleteTag(ctx context.Context, delete *store.DeleteTag) error {
 }
 
 func vacuumTag(ctx context.Context, tx *sql.Tx) error {
-	stmt := `
-	DELETE FROM
-		tag
-	WHERE
-		creator_id NOT IN (
-			SELECT
-				id
-			FROM
-				user
-		)`
+	stmt := "DELETE FROM `tag` WHERE `creator_id` NOT IN (SELECT `id` FROM `user`)"
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
 		return err

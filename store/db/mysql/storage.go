@@ -8,14 +8,7 @@ import (
 )
 
 func (d *DB) CreateStorage(ctx context.Context, create *store.Storage) (*store.Storage, error) {
-	stmt := `
-		INSERT INTO storage (
-			name,
-			type,
-			config
-		)
-		VALUES (?, ?, ?)
-	`
+	stmt := "INSERT INTO `storage` (`name`, `type`, `config`) VALUES (?, ?, ?)"
 	result, err := d.db.ExecContext(ctx, stmt, create.Name, create.Type, create.Config)
 	if err != nil {
 		return nil, err
@@ -33,18 +26,10 @@ func (d *DB) CreateStorage(ctx context.Context, create *store.Storage) (*store.S
 func (d *DB) ListStorages(ctx context.Context, find *store.FindStorage) ([]*store.Storage, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if find.ID != nil {
-		where, args = append(where, "id = ?"), append(args, *find.ID)
+		where, args = append(where, "`id` = ?"), append(args, *find.ID)
 	}
 
-	rows, err := d.db.QueryContext(ctx, `
-		SELECT
-			id,
-			name,
-			type,
-			config
-		FROM storage
-		WHERE `+strings.Join(where, " AND ")+`
-		ORDER BY id DESC`,
+	rows, err := d.db.QueryContext(ctx, "SELECT `id`, `name`, `type`, `config` FROM `storage` WHERE "+strings.Join(where, " AND ")+" ORDER BY `id` DESC",
 		args...,
 	)
 	if err != nil {
@@ -88,27 +73,23 @@ func (d *DB) GetStorage(ctx context.Context, find *store.FindStorage) (*store.St
 func (d *DB) UpdateStorage(ctx context.Context, update *store.UpdateStorage) (*store.Storage, error) {
 	set, args := []string{}, []any{}
 	if update.Name != nil {
-		set = append(set, "name = ?")
+		set = append(set, "`name` = ?")
 		args = append(args, *update.Name)
 	}
 	if update.Config != nil {
-		set = append(set, "config = ?")
+		set = append(set, "`config` = ?")
 		args = append(args, *update.Config)
 	}
 	args = append(args, update.ID)
 
-	stmt := `
-		UPDATE storage
-		SET ` + strings.Join(set, ", ") + `
-		WHERE id = ?
-	`
+	stmt := "UPDATE `storage` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
 	_, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, err
 	}
 
 	storage := &store.Storage{}
-	stmt = `SELECT id,name,type,config FROM storage WHERE id = ?`
+	stmt = "SELECT `id`, `name`, `type`, `config` FROM `storage` WHERE `id` = ?"
 	if err := d.db.QueryRowContext(ctx, stmt, update.ID).Scan(
 		&storage.ID,
 		&storage.Name,
@@ -122,10 +103,7 @@ func (d *DB) UpdateStorage(ctx context.Context, update *store.UpdateStorage) (*s
 }
 
 func (d *DB) DeleteStorage(ctx context.Context, delete *store.DeleteStorage) error {
-	stmt := `
-		DELETE FROM storage
-		WHERE id = ?
-	`
+	stmt := "DELETE FROM `storage` WHERE `id` = ?"
 	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
 	if err != nil {
 		return err

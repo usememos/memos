@@ -22,15 +22,7 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 		return nil, errors.Errorf("unsupported idp type %s", string(create.Type))
 	}
 
-	stmt := `
-		INSERT INTO idp (
-			name,
-			type,
-			identifier_filter,
-			config
-		)
-		VALUES (?, ?, ?, ?)
-	`
+	stmt := "INSERT INTO `idp` (`name`, `type`, `identifier_filter`, `config`) VALUES (?, ?, ?, ?)"
 	result, err := d.db.ExecContext(
 		ctx,
 		stmt,
@@ -55,18 +47,10 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentityProvider) ([]*store.IdentityProvider, error) {
 	where, args := []string{"1 = 1"}, []any{}
 	if v := find.ID; v != nil {
-		where, args = append(where, "id = ?"), append(args, *v)
+		where, args = append(where, "`id` = ?"), append(args, *v)
 	}
 
-	rows, err := d.db.QueryContext(ctx, `
-		SELECT
-			id,
-			name,
-			type,
-			identifier_filter,
-			config
-		FROM idp
-		WHERE `+strings.Join(where, " AND ")+` ORDER BY id ASC`,
+	rows, err := d.db.QueryContext(ctx, "SELECT `id`, `name`, `type`, `identifier_filter`, `config` FROM `idp` WHERE "+strings.Join(where, " AND ")+" ORDER BY `id` ASC",
 		args...,
 	)
 	if err != nil {
@@ -125,10 +109,10 @@ func (d *DB) GetIdentityProvider(ctx context.Context, find *store.FindIdentityPr
 func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIdentityProvider) (*store.IdentityProvider, error) {
 	set, args := []string{}, []any{}
 	if v := update.Name; v != nil {
-		set, args = append(set, "name = ?"), append(args, *v)
+		set, args = append(set, "`name` = ?"), append(args, *v)
 	}
 	if v := update.IdentifierFilter; v != nil {
-		set, args = append(set, "identifier_filter = ?"), append(args, *v)
+		set, args = append(set, "`identifier_filter` = ?"), append(args, *v)
 	}
 	if v := update.Config; v != nil {
 		var configBytes []byte
@@ -141,15 +125,11 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 		} else {
 			return nil, errors.Errorf("unsupported idp type %s", string(update.Type))
 		}
-		set, args = append(set, "config = ?"), append(args, string(configBytes))
+		set, args = append(set, "`config` = ?"), append(args, string(configBytes))
 	}
 	args = append(args, update.ID)
 
-	stmt := `
-		UPDATE idp
-		SET ` + strings.Join(set, ", ") + `
-		WHERE id = ?
-	`
+	stmt := "UPDATE `idp` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
 	_, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, err
@@ -168,8 +148,8 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 }
 
 func (d *DB) DeleteIdentityProvider(ctx context.Context, delete *store.DeleteIdentityProvider) error {
-	where, args := []string{"id = ?"}, []any{delete.ID}
-	stmt := `DELETE FROM idp WHERE ` + strings.Join(where, " AND ")
+	where, args := []string{"`id` = ?"}, []any{delete.ID}
+	stmt := "DELETE FROM `idp` WHERE " + strings.Join(where, " AND ")
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err

@@ -12,7 +12,7 @@ import (
 )
 
 func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store.Resource, error) {
-	stmt := "INSERT INTO resource (`filename`, `blob`, `external_link`, `type`, `size`, `creator_id`, `internal_path`) VALUES (?, ?, ?, ?, ?, ?, ?)"
+	stmt := "INSERT INTO `resource` (`filename`, `blob`, `external_link`, `type`, `size`, `creator_id`, `internal_path`) VALUES (?, ?, ?, ?, ?, ?, ?)"
 	result, err := d.db.ExecContext(
 		ctx,
 		stmt,
@@ -49,34 +49,27 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	where, args := []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
-		where, args = append(where, "id = ?"), append(args, *v)
+		where, args = append(where, "`id` = ?"), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
-		where, args = append(where, "creator_id = ?"), append(args, *v)
+		where, args = append(where, "`creator_id` = ?"), append(args, *v)
 	}
 	if v := find.Filename; v != nil {
-		where, args = append(where, "filename = ?"), append(args, *v)
+		where, args = append(where, "`filename` = ?"), append(args, *v)
 	}
 	if v := find.MemoID; v != nil {
-		where, args = append(where, "memo_id = ?"), append(args, *v)
+		where, args = append(where, "`memo_id` = ?"), append(args, *v)
 	}
 	if find.HasRelatedMemo {
-		where = append(where, "memo_id IS NOT NULL")
+		where = append(where, "`memo_id` IS NOT NULL")
 	}
 
-	fields := []string{"id", "filename", "external_link", "type", "size", "creator_id", "UNIX_TIMESTAMP(created_ts)", "UNIX_TIMESTAMP(updated_ts)", "internal_path", "memo_id"}
+	fields := []string{"`id`", "`filename`", "`external_link`", "`type`", "`size`", "`creator_id`", "UNIX_TIMESTAMP(`created_ts`)", "UNIX_TIMESTAMP(`updated_ts`)", "`internal_path`", "`memo_id`"}
 	if find.GetBlob {
-		fields = append(fields, "blob")
+		fields = append(fields, "`blob`")
 	}
 
-	query := fmt.Sprintf(`
-		SELECT
-			%s
-		FROM resource
-		WHERE %s
-		GROUP BY id
-		ORDER BY created_ts DESC
-	`, strings.Join(fields, ", "), strings.Join(where, " AND "))
+	query := fmt.Sprintf("SELECT %s FROM `resource` WHERE %s GROUP BY `id` ORDER BY `created_ts` DESC", strings.Join(fields, ", "), strings.Join(where, " AND "))
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {
@@ -129,27 +122,23 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (
 	set, args := []string{}, []any{}
 
 	if v := update.UpdatedTs; v != nil {
-		set, args = append(set, "updated_ts = ?"), append(args, *v)
+		set, args = append(set, "`updated_ts` = ?"), append(args, *v)
 	}
 	if v := update.Filename; v != nil {
-		set, args = append(set, "filename = ?"), append(args, *v)
+		set, args = append(set, "`filename` = ?"), append(args, *v)
 	}
 	if v := update.InternalPath; v != nil {
-		set, args = append(set, "internal_path = ?"), append(args, *v)
+		set, args = append(set, "`internal_path` = ?"), append(args, *v)
 	}
 	if v := update.MemoID; v != nil {
-		set, args = append(set, "memo_id = ?"), append(args, *v)
+		set, args = append(set, "`memo_id` = ?"), append(args, *v)
 	}
 	if v := update.Blob; v != nil {
-		set, args = append(set, "blob = ?"), append(args, v)
+		set, args = append(set, "`blob` = ?"), append(args, v)
 	}
 
 	args = append(args, update.ID)
-	stmt := `
-		UPDATE resource
-		SET ` + strings.Join(set, ", ") + `
-		WHERE id = ?
-	`
+	stmt := "UPDATE `resource` SET " + strings.Join(set, ", ") + " WHERE `id` = ?"
 	if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
 		return nil, err
 	}
@@ -166,7 +155,7 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (
 }
 
 func (d *DB) DeleteResource(ctx context.Context, delete *store.DeleteResource) error {
-	stmt := `DELETE FROM resource WHERE id = ?`
+	stmt := "DELETE FROM `resource` WHERE `id` = ?"
 	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
 	if err != nil {
 		return err
@@ -184,16 +173,7 @@ func (d *DB) DeleteResource(ctx context.Context, delete *store.DeleteResource) e
 }
 
 func vacuumResource(ctx context.Context, tx *sql.Tx) error {
-	stmt := `
-	DELETE FROM
-		resource
-	WHERE
-		creator_id NOT IN (
-			SELECT
-				id
-			FROM
-				user
-		)`
+	stmt := "DELETE FROM `resource` WHERE `creator_id` NOT IN (SELECT `id` FROM `user`)"
 	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
 		return err
