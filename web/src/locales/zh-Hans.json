@@ -1,6 +1,6 @@
 {
     "about": {
-        "about-memos": "关于Memos",
+        "about-memos": "关于 Memos",
         "memos-description": "Memos 是一个基于网页的笔记应用程序，您可以使用它来编写、组织和共享笔记。",
         "no-server-description": "没有为此服务器配置描述。",
         "other-projects": "其他的项目",
@@ -11,7 +11,7 @@
     },
     "auth": {
         "create-your-account": "创建你的账户",
-        "host-tip": "你正在注册为管理员用户账号。",
+        "host-tip": "你正在注册为管理员用户。",
         "new-password": "新密码",
         "repeat-new-password": "重复新密码",
         "sign-in-tip": "已有账户？",
@@ -39,7 +39,7 @@
         "expand": "展开",
         "explore": "探索",
         "filter": "过滤器",
-        "filter-period": "{{from}}到{{to}}",
+        "filter-period": "{{from}} 到 {{to}}",
         "fold": "折叠",
         "home": "主页",
         "image": "图片",
@@ -65,7 +65,7 @@
         "settings": "设置",
         "share": "分享",
         "sign-in": "登录",
-        "sign-in-with": "使用{{provider}}登录",
+        "sign-in-with": "使用 {{provider}} 登录",
         "sign-out": "注销",
         "sign-up": "注册",
         "tags": "全部标签",
@@ -135,7 +135,7 @@
         "view-detail": "查看详情",
         "visibility": {
             "disabled": "公共备忘录已禁用",
-            "private": "仅自己可见",
+            "private": "私有",
             "protected": "工作区",
             "public": "公开"
         }
@@ -232,7 +232,7 @@
             "openapi-reset": "重置 OpenAPI 密钥",
             "openapi-sample-post": "你好 #memos 来自 {{url}}",
             "openapi-title": "OpenAPI",
-            "reset-api": "重置API",
+            "reset-api": "重置 API",
             "title": "账号信息",
             "update-information": "更新个人信息",
             "username-note": "用于登录"
@@ -265,11 +265,11 @@
             "enable-folding-memo": "开启折叠备忘录",
             "mobile-editor-style": "移动端编辑器样式",
             "telegram-user-id": "Telegram UserID",
-            "telegram-user-id-placeholder": "向Telegram机器人发送任意消息以获取",
+            "telegram-user-id-placeholder": "向 Telegram 机器人发送任意消息以获取",
             "theme": "主题",
             "updated_ts": "更新时间"
         },
-        "sso": "SSO",
+        "sso": "单点登录",
         "sso-section": {
             "authorization-endpoint": "授权端点（Authorization Endpoint）",
             "client-id": "客户端ID（Client ID）",
@@ -332,7 +332,7 @@
             "additional-style": "自定义样式",
             "additional-style-placeholder": "自定义 CSS 代码",
             "allow-user-signup": "允许用户注册",
-            "auto-backup-interval": "自动备份间隔(单位：秒)",
+            "auto-backup-interval": "自动备份间隔（单位：秒）",
             "auto-backup-interval-hint": "设置为 0 禁止自动备份，重启后生效。",
             "customize-server": {
                 "appearance": "服务器外观",
@@ -349,14 +349,14 @@
             "disable-public-memos": "禁用公共备忘录",
             "display-with-updated-time": "显示最后修改时间",
             "enable-password-login": "启用密码登录",
-            "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用 SSO 和密码登录，请开启密码登录",
+            "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用单点登录和密码登录，请开启密码登录",
             "ignore-version-upgrade": "忽略版本升级",
             "max-upload-size": "最大上传大小 (MiB)",
             "max-upload-size-hint": "建议值为 32 MiB。",
             "server-name": "服务名称",
             "telegram-bot-token": "Telegram 机器人 Token",
             "telegram-bot-token-description": "Telegram 机器人 Token 或 `http…/bot<token>` 格式的代理地址",
-            "telegram-bot-token-placeholder": "Telegram 的机器人 Token"
+            "telegram-bot-token-placeholder": "您的 Telegram 机器人 Token"
         }
     },
     "tag-list": {
