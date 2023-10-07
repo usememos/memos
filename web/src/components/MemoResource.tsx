@@ -20,9 +20,7 @@ const MemoResource: React.FC<Props> = (props: Props) => {
       <div className={`w-auto flex flex-row justify-start items-center text-gray-500 dark:text-gray-400 hover:opacity-80 ${className}`}>
         {resource.type.startsWith("audio") ? (
           <>
-            <audio controls>
-              <source src={resourceUrl} type={resource.type} />
-            </audio>
+            <audio src={resourceUrl} controls></audio>
           </>
         ) : (
           <>

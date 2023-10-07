@@ -84,9 +84,7 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
               const url = getResourceUrl(resource);
               return (
                 <SquareDiv key={resource.id} className="memo-resource">
-                  <video preload="metadata" controls key={resource.id}>
-                    <source src={absolutifyLink(url)} type={resource.type} />
-                  </video>
+                  <video preload="metadata" crossOrigin="anonymous" src={absolutifyLink(url)} controls></video>
                 </SquareDiv>
               );
             })}
