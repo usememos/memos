@@ -13,35 +13,35 @@ import (
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	fields := []string{"creator_id", "content", "visibility"}
+	fields := []string{"`creator_id`", "`content`", "`visibility`"}
 	placeholder := []string{"?", "?", "?"}
 	args := []any{create.CreatorID, create.Content, create.Visibility}
 
 	if create.ID != 0 {
-		fields = append(fields, "id")
+		fields = append(fields, "`id`")
 		placeholder = append(placeholder, "?")
 		args = append(args, create.ID)
 	}
 
 	if create.CreatedTs != 0 {
-		fields = append(fields, "created_ts")
+		fields = append(fields, "`created_ts`")
 		placeholder = append(placeholder, "?")
 		args = append(args, create.CreatedTs)
 	}
 
 	if create.UpdatedTs != 0 {
-		fields = append(fields, "updated_ts")
+		fields = append(fields, "`updated_ts`")
 		placeholder = append(placeholder, "?")
 		args = append(args, create.UpdatedTs)
 	}
 
 	if create.RowStatus != "" {
-		fields = append(fields, "row_status")
+		fields = append(fields, "`row_status`")
 		placeholder = append(placeholder, "?")
 		args = append(args, create.RowStatus)
 	}
 
-	stmt := "INSERT INTO memo (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING id, created_ts, updated_ts, row_status"
+	stmt := "INSERT INTO memo (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`, `updated_ts`, `row_status`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,
 		&create.CreatedTs,
