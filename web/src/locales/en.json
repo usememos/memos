@@ -320,8 +320,8 @@
         "days": "days"
     },
     "about": {
-        "about-memos": "About Memos",
-        "memos-description": "Memos is a web-based note-taking application that you can use to write, organize, and share notes.",
+        "about-memos": "About memos",
+        "memos-description": "memos is a web-based note-taking application that you can use to write, organize, and share notes.",
         "no-server-description": "No description configured for this server.",
         "powered-by": "Powered by",
         "other-projects": "Other Projects"

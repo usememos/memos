@@ -18,21 +18,14 @@ const Resources = lazy(() => import("@/pages/Resources"));
 const Setting = lazy(() => import("@/pages/Setting"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
-const initialGlobalStateLoader = (() => {
-  let done = false;
-
-  return async () => {
-    if (done) {
-      return;
-    }
-    done = true;
-    try {
-      await initialGlobalState();
-    } catch (error) {
-      // do nth
-    }
-  };
-})();
+const initialGlobalStateLoader = async () => {
+  try {
+    await initialGlobalState();
+  } catch (error) {
+    // do nth
+  }
+  return null;
+};
 
 const initialUserStateLoader = async (redirectWhenNotFound = true) => {
   let user = undefined;
@@ -52,10 +45,7 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    loader: async () => {
-      await initialGlobalStateLoader();
-      return null;
-    },
+    loader: () => initialGlobalStateLoader(),
     children: [
       {
         path: "/auth",

@@ -7,9 +7,10 @@ import store, { useAppSelector } from "../";
 import { setAppearance, setGlobalState, setLocale } from "../reducer/global";
 
 export const initialGlobalState = async () => {
+  const { locale: storageLocale, appearance: storageAppearance } = storage.get(["locale", "appearance"]);
   const defaultGlobalState = {
-    locale: "en" as Locale,
-    appearance: "system" as Appearance,
+    locale: (storageLocale || "en") as Locale,
+    appearance: (storageAppearance || "system") as Appearance,
     systemStatus: {
       allowSignUp: false,
       disablePasswordLogin: false,
@@ -30,14 +31,6 @@ export const initialGlobalState = async () => {
     } as SystemStatus,
   };
 
-  const { locale: storageLocale, appearance: storageAppearance } = storage.get(["locale", "appearance"]);
-  if (storageLocale) {
-    defaultGlobalState.locale = storageLocale;
-  }
-  if (storageAppearance) {
-    defaultGlobalState.appearance = storageAppearance;
-  }
-
   const { data } = await api.getSystemStatus();
   if (data) {
     const customizedProfile = data.customizedProfile;
@@ -53,8 +46,8 @@ export const initialGlobalState = async () => {
       },
     };
     defaultGlobalState.locale =
-      storageLocale || defaultGlobalState.systemStatus.customizedProfile.locale || findNearestLanguageMatch(i18n.language);
-    defaultGlobalState.appearance = defaultGlobalState.systemStatus.customizedProfile.appearance;
+      defaultGlobalState.locale || defaultGlobalState.systemStatus.customizedProfile.locale || findNearestLanguageMatch(i18n.language);
+    defaultGlobalState.appearance = defaultGlobalState.appearance || defaultGlobalState.systemStatus.customizedProfile.appearance;
   }
   store.dispatch(setGlobalState(defaultGlobalState));
 };
