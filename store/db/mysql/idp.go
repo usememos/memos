@@ -22,15 +22,16 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 		return nil, errors.Errorf("unsupported idp type %s", string(create.Type))
 	}
 
-	stmt := "INSERT INTO `idp` (`name`, `type`, `identifier_filter`, `config`) VALUES (?, ?, ?, ?)"
-	result, err := d.db.ExecContext(
-		ctx,
-		stmt,
-		create.Name,
-		create.Type,
-		create.IdentifierFilter,
-		string(configBytes),
-	)
+	placeholders := []string{"?", "?", "?", "?"}
+	fields := []string{"`name`", "`type`", "`identifier_filter`", "`config`"}
+	args := []any{create.Name, create.Type, create.IdentifierFilter, string(configBytes)}
+
+	if create.ID != 0 {
+		fields, placeholders, args = append(fields, "`id`"), append(placeholders, "?"), append(args, create.ID)
+	}
+
+	stmt := "INSERT INTO `idp` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholders, ", ") + ")"
+	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, err
 	}
