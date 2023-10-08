@@ -10,15 +10,36 @@ import (
 )
 
 func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, error) {
-	stmt := "INSERT INTO `user` (`username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`) VALUES (?, ?, ?, ?, ?, ?)"
-	result, err := d.db.ExecContext(ctx, stmt,
-		create.Username,
-		create.Role,
-		create.Email,
-		create.Nickname,
-		create.PasswordHash,
-		create.AvatarURL,
-	)
+	fields := []string{"`username`", "`role`", "`email`", "`nickname`", "`password_hash`", "`avatar_url`"}
+	placeholder := []string{"?", "?", "?", "?", "?", "?"}
+	args := []any{create.Username, create.Role, create.Email, create.Nickname, create.PasswordHash, create.AvatarURL}
+
+	if create.RowStatus != "" {
+		fields = append(fields, "`row_status`")
+		placeholder = append(placeholder, "?")
+		args = append(args, create.RowStatus)
+	}
+
+	if create.CreatedTs != 0 {
+		fields = append(fields, "`created_ts`")
+		placeholder = append(placeholder, "FROM_UNIXTIME(?)")
+		args = append(args, create.CreatedTs)
+	}
+
+	if create.UpdatedTs != 0 {
+		fields = append(fields, "`updated_ts`")
+		placeholder = append(placeholder, "FROM_UNIXTIME(?)")
+		args = append(args, create.UpdatedTs)
+	}
+
+	if create.ID != 0 {
+		fields = append(fields, "`id`")
+		placeholder = append(placeholder, "?")
+		args = append(args, create.ID)
+	}
+
+	stmt := "INSERT INTO user (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
+	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, err
 	}
