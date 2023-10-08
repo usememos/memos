@@ -30,6 +30,31 @@ func (d *DB) Migrate(ctx context.Context) error {
 }
 
 func (d *DB) nonProdMigrate(ctx context.Context) error {
+	rows, err := d.db.QueryContext(ctx, "SHOW TABLES")
+	if err != nil {
+		return errors.Errorf("failed to query database tables: %s", err)
+	}
+	if rows.Err() != nil {
+		return errors.Errorf("failed to query database tables: %s", err)
+	}
+	defer rows.Close()
+
+	var tables []string
+	for rows.Next() {
+		var table string
+		err := rows.Scan(&table)
+		if err != nil {
+			return errors.Errorf("failed to scan table name: %s", err)
+		}
+		tables = append(tables, table)
+	}
+
+	if len(tables) != 0 {
+		return nil
+	}
+
+	println("no tables in the database. start migration")
+
 	buf, err := migrationFS.ReadFile("migration/dev/" + latestSchemaFileName)
 	if err != nil {
 		return errors.Errorf("failed to read latest schema file: %s", err)
