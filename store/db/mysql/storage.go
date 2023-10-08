@@ -8,8 +8,18 @@ import (
 )
 
 func (d *DB) CreateStorage(ctx context.Context, create *store.Storage) (*store.Storage, error) {
-	stmt := "INSERT INTO `storage` (`name`, `type`, `config`) VALUES (?, ?, ?)"
-	result, err := d.db.ExecContext(ctx, stmt, create.Name, create.Type, create.Config)
+	fields := []string{"`name`", "`type`", "`config`"}
+	placeholder := []string{"?", "?", "?"}
+	args := []any{create.Name, create.Type, create.Config}
+
+	if create.ID != 0 {
+		fields = append(fields, "`id`")
+		placeholder = append(placeholder, "?")
+		args = append(args, create.ID)
+	}
+
+	stmt := "INSERT INTO `storage` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
+	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, err
 	}
