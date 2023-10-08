@@ -3,6 +3,7 @@ package v1
 import (
 	"github.com/labstack/echo/v4"
 
+	"github.com/usememos/memos/api/resource"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -66,7 +67,9 @@ func (s *APIV1Service) Register(rootGroup *echo.Group) {
 		return JWTMiddleware(s, next, s.Secret)
 	})
 	s.registerGetterPublicRoutes(publicGroup)
-	s.registerResourcePublicRoutes(publicGroup)
+	// Create and register resource public routes.
+	resourceService := resource.NewService(s.Profile, s.Store)
+	resourceService.RegisterResourcePublicRoutes(publicGroup)
 
 	// programmatically set API version same as the server version
 	SwaggerInfo.Version = s.Profile.Version
