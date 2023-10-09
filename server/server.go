@@ -77,23 +77,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		Timeout: 30 * time.Second,
 	}))
 
-	e.Use(middleware.RateLimiterWithConfig(middleware.RateLimiterConfig{
-		Skipper: grpcRequestSkipper,
-		Store: middleware.NewRateLimiterMemoryStoreWithConfig(
-			middleware.RateLimiterMemoryStoreConfig{Rate: 30, Burst: 100, ExpiresIn: 3 * time.Minute},
-		),
-		IdentifierExtractor: func(ctx echo.Context) (string, error) {
-			id := ctx.RealIP()
-			return id, nil
-		},
-		ErrorHandler: func(context echo.Context, err error) error {
-			return context.JSON(http.StatusForbidden, nil)
-		},
-		DenyHandler: func(context echo.Context, identifier string, err error) error {
-			return context.JSON(http.StatusTooManyRequests, nil)
-		},
-	}))
-
 	serverID, err := s.getSystemServerID(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to retrieve system server ID")
