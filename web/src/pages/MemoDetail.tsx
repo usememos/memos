@@ -119,16 +119,16 @@ const MemoDetail = () => {
                 <span className="text-gray-400 dark:text-gray-400">#{memo.id}</span>
               </Tooltip>
             </div>
+            <MemoContent content={memo.content} />
+            <MemoResourceListView resourceList={memo.resourceList} />
+            <MemoRelationListView relationList={referenceRelations} />
             {memo.parent && (
-              <div className="mb-2">
+              <div className="w-full mt-2">
                 <Link to={`/m/${memo.parent.id}`}>
                   <span className="text-xs text-gray-400 opacity-80">This is a comment of #{memo.parent.id}</span>
                 </Link>
               </div>
             )}
-            <MemoContent content={memo.content} />
-            <MemoResourceListView resourceList={memo.resourceList} />
-            <MemoRelationListView relationList={referenceRelations} />
             <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
               <div className="flex flex-row justify-start items-center">
                 <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>

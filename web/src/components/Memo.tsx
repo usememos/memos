@@ -25,7 +25,6 @@ import "@/less/memo.less";
 interface Props {
   memo: Memo;
   showVisibility?: boolean;
-  showCommentEntry?: boolean;
   lazyRendering?: boolean;
 }
 
@@ -280,13 +279,6 @@ const Memo: React.FC<Props> = (props: Props) => {
             )}
           </div>
         </div>
-        {memo.parent && props.showCommentEntry && (
-          <div>
-            <Link to={`/m/${memo.parent.id}`}>
-              <span className="text-xs text-gray-400 opacity-80">This is a comment of #{memo.parent.id}</span>
-            </Link>
-          </div>
-        )}
         <MemoContent
           content={memo.content}
           onMemoContentClick={handleMemoContentClick}
