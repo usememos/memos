@@ -28,8 +28,8 @@ func (d *DB) UpsertMemoOrganizer(ctx context.Context, upsert *store.MemoOrganize
 	return upsert, nil
 }
 
-func (d *DB) GetMemoOrganizer(ctx context.Context, find *store.FindMemoOrganizer) (*store.MemoOrganizer, error) {
-	where, args := []string{}, []any{}
+func (d *DB) ListMemoOrganizer(ctx context.Context, find *store.FindMemoOrganizer) ([]*store.MemoOrganizer, error) {
+	where, args := []string{"1 = 1"}, []any{}
 	if find.MemoID != 0 {
 		where = append(where, "memo_id = ?")
 		args = append(args, find.MemoID)
@@ -47,24 +47,31 @@ func (d *DB) GetMemoOrganizer(ctx context.Context, find *store.FindMemoOrganizer
 		FROM memo_organizer
 		WHERE %s
 	`, strings.Join(where, " AND "))
-	row := d.db.QueryRowContext(ctx, query, args...)
-	if err := row.Err(); err != nil {
+	rows, err := d.db.QueryContext(ctx, query, args...)
+	if err != nil {
 		return nil, err
 	}
-	if row == nil {
-		return nil, nil
+	defer rows.Close()
+
+	list := []*store.MemoOrganizer{}
+	for rows.Next() {
+		memoOrganizer := &store.MemoOrganizer{}
+		if err := rows.Scan(
+			&memoOrganizer.MemoID,
+			&memoOrganizer.UserID,
+			&memoOrganizer.Pinned,
+		); err != nil {
+			return nil, err
+		}
+
+		list = append(list, memoOrganizer)
 	}
 
-	memoOrganizer := &store.MemoOrganizer{}
-	if err := row.Scan(
-		&memoOrganizer.MemoID,
-		&memoOrganizer.UserID,
-		&memoOrganizer.Pinned,
-	); err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
 	}
 
-	return memoOrganizer, nil
+	return list, nil
 }
 
 func (d *DB) DeleteMemoOrganizer(ctx context.Context, delete *store.DeleteMemoOrganizer) error {

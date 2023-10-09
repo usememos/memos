@@ -41,7 +41,7 @@ type Driver interface {
 
 	// MemoOrganizer model related methods.
 	UpsertMemoOrganizer(ctx context.Context, upsert *MemoOrganizer) (*MemoOrganizer, error)
-	GetMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) (*MemoOrganizer, error)
+	ListMemoOrganizer(ctx context.Context, find *FindMemoOrganizer) ([]*MemoOrganizer, error)
 	DeleteMemoOrganizer(ctx context.Context, delete *DeleteMemoOrganizer) error
 
 	// SystemSetting model related methods.
