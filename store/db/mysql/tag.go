@@ -18,7 +18,12 @@ func (d *DB) UpsertTag(ctx context.Context, upsert *store.Tag) (*store.Tag, erro
 }
 
 func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, error) {
-	where, args := []string{"`creator_id` = ?"}, []any{find.CreatorID}
+	where, args := []string{"1 = 1"}, []any{}
+
+	if find.CreatorID != 0 {
+		where, args = append(where, "`creator_id` = ?"), append(args, find.CreatorID)
+	}
+
 	query := "SELECT `name`, `creator_id` FROM `tag` WHERE " + strings.Join(where, " AND ") + " ORDER BY name ASC"
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
