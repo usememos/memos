@@ -41,7 +41,7 @@ const SSOSection = () => {
     showCommonDialog({
       title: t("setting.sso-section.delete-sso"),
       content: content,
-      style: "warning",
+      style: "danger",
       dialogName: "delete-identity-provider-dialog",
       onConfirm: async () => {
         try {

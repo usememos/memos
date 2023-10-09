@@ -1,3 +1,4 @@
+import { Button } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getNormalizedTimeString, getUnixTime } from "@/helpers/datetime";
@@ -69,10 +70,6 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
         </button>
       </div>
       <div className="flex flex-col justify-start items-start !w-72 max-w-full">
-        <div className="w-full bg-yellow-100 border border-yellow-400 rounded p-2 text-black">
-          <p className="uppercase">{t("message.change-memo-created-time-warning-1")}</p>
-          <p>{t("message.change-memo-created-time-warning-2")}</p>
-        </div>
         <input
           className="input-text mt-2"
           type="datetime-local"
@@ -80,13 +77,13 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
           max={maxDatetimeValue}
           onChange={handleDatetimeInputChange}
         />
-        <div className="flex flex-row justify-end items-center mt-2 w-full">
-          <span className="btn-text" onClick={handleCloseBtnClick}>
+        <div className="flex flex-row justify-end items-center mt-4 w-full gap-x-2">
+          <Button color="neutral" variant="plain" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
-          </span>
-          <span className="btn-primary" onClick={handleSaveBtnClick}>
+          </Button>
+          <Button color="primary" onClick={handleSaveBtnClick}>
             {t("common.save")}
-          </span>
+          </Button>
         </div>
       </div>
     </>

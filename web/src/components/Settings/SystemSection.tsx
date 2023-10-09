@@ -88,7 +88,7 @@ const SystemSection = () => {
       showCommonDialog({
         title: t("setting.system-section.enable-password-login"),
         content: t("setting.system-section.enable-password-login-warning"),
-        style: "warning",
+        style: "danger",
         dialogName: "enable-password-login-dialog",
         onConfirm: async () => {
           setState({ ...state, disablePasswordLogin: value });

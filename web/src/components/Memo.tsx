@@ -149,7 +149,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     showCommonDialog({
       title: t("memo.delete-memo"),
       content: t("memo.delete-confirm"),
-      style: "warning",
+      style: "danger",
       dialogName: "delete-memo-dialog",
       onConfirm: async () => {
         await memoStore.deleteMemoById(memo.id);

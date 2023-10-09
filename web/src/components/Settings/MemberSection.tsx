@@ -78,7 +78,7 @@ const PreferencesSection = () => {
     showCommonDialog({
       title: t("setting.member-section.archive-member"),
       content: t("setting.member-section.archive-warning", { username: user.username }),
-      style: "warning",
+      style: "danger",
       dialogName: "archive-user-dialog",
       onConfirm: async () => {
         await userStore.patchUser({
@@ -102,7 +102,7 @@ const PreferencesSection = () => {
     showCommonDialog({
       title: t("setting.member-section.delete-member"),
       content: t("setting.member-section.delete-warning", { username: user.username }),
-      style: "warning",
+      style: "danger",
       dialogName: "delete-user-dialog",
       onConfirm: async () => {
         await userStore.deleteUser({

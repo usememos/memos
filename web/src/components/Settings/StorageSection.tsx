@@ -40,7 +40,7 @@ const StorageSection = () => {
     showCommonDialog({
       title: t("setting.storage-section.delete-storage"),
       content: t("setting.storage-section.warning-text", { name: storage.name }),
-      style: "warning",
+      style: "danger",
       dialogName: "delete-storage-dialog",
       onConfirm: async () => {
         try {
