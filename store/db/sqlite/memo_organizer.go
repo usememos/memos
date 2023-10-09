@@ -51,6 +51,7 @@ func (d *DB) ListMemoOrganizer(ctx context.Context, find *store.FindMemoOrganize
 	if err != nil {
 		return nil, err
 	}
+	defer rows.Close()
 
 	list := []*store.MemoOrganizer{}
 	for rows.Next() {
