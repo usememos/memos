@@ -142,8 +142,6 @@
   },
   "message": {
     "change-memo-created-time": "更改备忘录创建时间",
-    "change-memo-created-time-warning-1": "这不是正常行为。",
-    "change-memo-created-time-warning-2": "请确定您真的需要这么做。",
     "change-resource-filename": "更改资源文件名",
     "click-to-save-the-image": "点击保存图片",
     "copied": "已复制",

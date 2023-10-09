@@ -144,8 +144,6 @@
   },
   "message": {
     "change-memo-created-time": "Alterar data de criação do memo",
-    "change-memo-created-time-warning-1": "ESTE NÃO É UM PROCEDIMENTO RECOMENDADO.",
-    "change-memo-created-time-warning-2": "Esteja certo de que realmente precisa disso.",
     "change-resource-filename": "Alterar nome do arquivo do recurso",
     "click-to-save-the-image": "Clique para salvar a imagem",
     "copied": "Copiado",
