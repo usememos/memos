@@ -59,7 +59,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
-		Format: `{"time":"${time_rfc3339}",` +
+		Format: `{"time":"${time_rfc3339}","latency":"${latency_human}",` +
 			`"method":"${method}","uri":"${uri}",` +
 			`"status":${status},"error":"${error}"}` + "\n",
 	}))
