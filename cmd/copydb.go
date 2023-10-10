@@ -35,7 +35,7 @@ var (
 
 			err = copydb(fromProfile, profile)
 			if err != nil {
-				fmt.Printf("fail to copydb: %s", err)
+				fmt.Printf("fail to copydb: %s\n", err)
 				return
 			}
 
@@ -69,21 +69,34 @@ func copydb(fromProfile, toProfile *_profile.Profile) error {
 	}
 
 	// Register here if any table is added
-	copyFuncs := []func(context.Context, store.Driver, store.Driver) error{
-		copyActivity,
-		copyIdp,
-		copyMemo,
-		copyMemoOrganizer,
-		copyMemoRelation,
-		copyResource,
-		copyStorage,
-		copySystemSettings,
-		copyTag,
-		copyUser,
-		copyUserSettings,
+	copyMap := map[string]func(context.Context, store.Driver, store.Driver) error{
+		"activity":       copyActivity,
+		"idp":            copyIdp,
+		"memo":           copyMemo,
+		"memo_organizer": copyMemoOrganizer,
+		"memo_relation":  copyMemoRelation,
+		"resource":       copyResource,
+		"storage":        copyStorage,
+		"system_setting": copySystemSettings,
+		"tag":            copyTag,
+		"user":           copyUser,
+		"user_setting":   copyUserSettings,
 	}
 
-	for _, f := range copyFuncs {
+	toDb := toDriver.GetDB()
+	for table := range copyMap {
+		println("Checking " + table + "...")
+		var cnt int
+		err := toDb.QueryRowContext(ctx, "SELECT COUNT(*) FROM "+table).Scan(&cnt)
+		if err != nil {
+			return errors.Wrapf(err, "fail to check '%s'", table)
+		}
+		if cnt > 0 {
+			return errors.Errorf("table '%s' is not empty", table)
+		}
+	}
+
+	for _, f := range copyMap {
 		err = f(ctx, fromDriver, toDriver)
 		if err != nil {
 			return errors.Wrap(err, "fail to copy data")
