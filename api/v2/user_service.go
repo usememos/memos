@@ -162,8 +162,8 @@ func (s *UserService) ListUserAccessTokens(ctx context.Context, request *apiv2pb
 	}
 
 	// Sort by issued time in descending order.
-	slices.SortFunc(accessTokens, func(i, j *apiv2pb.UserAccessToken) bool {
-		return i.IssuedAt.Seconds > j.IssuedAt.Seconds
+	slices.SortFunc(accessTokens, func(i, j *apiv2pb.UserAccessToken) int {
+		return int(i.IssuedAt.Seconds - j.IssuedAt.Seconds)
 	})
 	response := &apiv2pb.ListUserAccessTokensResponse{
 		AccessTokens: accessTokens,
