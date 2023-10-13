@@ -37,7 +37,7 @@
       @apply h-8;
 
       > .current-value-container {
-        @apply rounded-full px-3;
+        @apply rounded-xl px-3;
 
         > .value-text {
           @apply text-sm w-full mr-1;
@@ -48,12 +48,8 @@
     > .buttons-container {
       @apply grow-0 shrink-0 flex flex-row justify-end items-center;
 
-      > .cancel-btn {
-        @apply mr-4 text-sm text-gray-500 hover:opacity-80 dark:text-gray-300;
-      }
-
       > .confirm-btn {
-        @apply border-none select-none rounded-full flex flex-row justify-center items-center shadow cursor-pointer px-4 py-0 leading-8 bg-green-600 text-white text-sm hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60;
+        @apply border-none select-none rounded-xl flex flex-row justify-center items-center shadow cursor-pointer px-4 py-0 leading-8 bg-green-600 text-white text-sm hover:opacity-80 disabled:cursor-not-allowed disabled:opacity-60;
       }
     }
   }

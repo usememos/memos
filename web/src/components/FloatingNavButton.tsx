@@ -31,14 +31,14 @@ const FloatingNavButton = () => {
         </div>
         <Menu placement="top-end">
           <button
-            className="w-full text-left text-sm flex flex-row justify-center items-center whitespace-nowrap leading-6 py-1 px-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-600"
+            className="w-full text-left text-sm flex flex-row justify-start items-center whitespace-nowrap leading-6 py-1 px-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-600"
             onClick={handleScrollToTop}
           >
             <Icon.ArrowUpToLine className="w-4 h-auto mr-1 opacity-70" />
             {t("router.back-to-top")}
           </button>
           <button
-            className="w-full text-left text-sm flex flex-row justify-center items-center whitespace-nowrap leading-6 py-1 px-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-600"
+            className="w-full text-left text-sm flex flex-row justify-start items-center whitespace-nowrap leading-6 py-1 px-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-zinc-600"
             onClick={() => navigateTo("/")}
           >
             <Icon.Home className="w-4 h-auto mr-1 opacity-70" />

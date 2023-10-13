@@ -63,9 +63,9 @@ const Resources = () => {
   return (
     <section className="w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
-      <div className="w-full flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
+      <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
         <div className="relative w-full flex flex-row justify-between items-center">
-          <p className="px-2 py-1 flex flex-row justify-start items-center select-none rounded opacity-80">
+          <p className="px-2 py-1 flex flex-row justify-start items-center select-none opacity-80">
             <Icon.Paperclip className="w-5 h-auto mr-1" /> {t("common.resources")}
           </p>
         </div>
@@ -95,7 +95,7 @@ const Resources = () => {
                           {resources.map((resource) => {
                             return (
                               <div key={resource.id} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-                                <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded cursor-pointer hover:shadow hover:opacity-80">
+                                <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
                                   <ResourceIcon resource={resource} strokeWidth={0.5} />
                                 </div>
                                 <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">
@@ -134,7 +134,7 @@ const Resources = () => {
                           {unusedResources.map((resource) => {
                             return (
                               <div key={resource.id} className="w-24 sm:w-32 h-auto flex flex-col justify-start items-start">
-                                <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded cursor-pointer hover:shadow hover:opacity-80">
+                                <div className="w-24 h-24 flex justify-center items-center sm:w-32 sm:h-32 border dark:border-zinc-900 overflow-clip rounded-xl cursor-pointer hover:shadow hover:opacity-80">
                                   <ResourceIcon resource={resource} strokeWidth={0.5} />
                                 </div>
                                 <div className="w-full max-w-full flex flex-row justify-between items-center mt-1 px-1">

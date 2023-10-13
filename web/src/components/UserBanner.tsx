@@ -35,7 +35,7 @@ const UserBanner = () => {
       <Dropdown
         className="w-auto"
         trigger={
-          <div className="px-4 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-lg hover:shadow hover:bg-white dark:hover:bg-zinc-700">
+          <div className="px-4 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-2xl hover:shadow hover:bg-white dark:hover:bg-zinc-700">
             <UserAvatar className="shadow" avatarUrl={user?.avatarUrl} />
             <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{title}</span>
             {user?.role === User_Role.HOST ? (
