@@ -41,6 +41,7 @@ func (key UserSettingKey) String() string {
 
 var (
 	UserSettingLocaleValue = []string{
+		"ar",
 		"de",
 		"en",
 		"es",

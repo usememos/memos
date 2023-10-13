@@ -88,6 +88,11 @@ const App = () => {
     storage.set({
       locale: locale,
     });
+    if (locale === "ar") {
+      document.documentElement.setAttribute("dir", "rtl");
+    } else {
+      document.documentElement.setAttribute("dir", "ltr");
+    }
   }, [locale]);
 
   useEffect(() => {
