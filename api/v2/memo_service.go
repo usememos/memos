@@ -38,7 +38,7 @@ func (s *MemoService) CreateMemo(ctx context.Context, request *apiv2pb.CreateMem
 	create := &store.Memo{
 		CreatorID:  user.ID,
 		Content:    request.Content,
-		Visibility: store.Visibility(request.Visibility),
+		Visibility: store.Visibility(request.Visibility.String()),
 	}
 	memo, err := s.Store.CreateMemo(ctx, create)
 	if err != nil {
