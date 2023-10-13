@@ -200,7 +200,11 @@ func parseListMemosFilter(expression string) (*ListMemosFilter, error) {
 		return nil, errors.Errorf("found issue %v", issues)
 	}
 	filter := &ListMemosFilter{}
-	callExpr := ast.Expr().GetCallExpr()
+	expr, err := cel.AstToParsedExpr(ast)
+	if err != nil {
+		return nil, err
+	}
+	callExpr := expr.GetExpr().GetCallExpr()
 	findField(callExpr, filter)
 	return filter, nil
 }
