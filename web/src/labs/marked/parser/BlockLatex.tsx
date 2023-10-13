@@ -25,7 +25,11 @@ const blockRenderer = (rawStr: string) => {
     latexCode = matchResult[3];
   }
 
-  return <TeX block={true}>{latexCode}</TeX>;
+  return (
+    <div className="w-full max-w-full overflow-x-auto">
+      <TeX block={true}>{latexCode}</TeX>
+    </div>
+  );
 };
 
 export default {

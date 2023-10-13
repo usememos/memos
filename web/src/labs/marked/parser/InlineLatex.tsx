@@ -12,7 +12,11 @@ const inlineRenderer = (rawStr: string) => {
     } else if (matchResult[2]) {
       latexCode = matchResult[2];
     }
-    return <TeX key={latexCode}>{latexCode}</TeX>;
+    return (
+      <div className="w-full max-w-full overflow-x-auto">
+        <TeX key={latexCode}>{latexCode}</TeX>
+      </div>
+    );
   }
   return rawStr;
 };
