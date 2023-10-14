@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	usernameMatcher = regexp.MustCompile("^[a-z]([a-z0-9-]{1,30}[a-z0-9])?$")
+	usernameMatcher = regexp.MustCompile("^[a-z0-9]([a-z0-9-]{1,30}[a-z0-9])$")
 )
 
 type UserService struct {
