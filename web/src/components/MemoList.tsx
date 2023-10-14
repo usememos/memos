@@ -9,7 +9,6 @@ import { useFilterStore, useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "./Empty";
 import Memo from "./Memo";
-import "@/less/memo-list.less";
 
 const MemoList: React.FC = () => {
   const t = useTranslate();
@@ -131,17 +130,17 @@ const MemoList: React.FC = () => {
   };
 
   return (
-    <div className="memo-list-container">
+    <div className="flex flex-col justify-start items-start w-full max-w-full overflow-y-scroll pb-28 hide-scrollbar">
       {sortedMemos.map((memo) => (
         <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} lazyRendering showVisibility />
       ))}
       {isFetching ? (
-        <div className="status-text-container fetching-tip">
-          <p className="status-text">{t("memo.fetching-data")}</p>
+        <div className="flex flex-col justify-start items-center w-full mt-2 mb-1">
+          <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
         </div>
       ) : (
-        <div className="status-text-container">
-          <div className="status-text">
+        <div className="flex flex-col justify-start items-center w-full my-6">
+          <div className="text-sm text-gray-400 italic">
             {isComplete ? (
               sortedMemos.length === 0 && (
                 <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">

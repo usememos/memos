@@ -7,7 +7,6 @@ import MobileHeader from "@/components/MobileHeader";
 import useLoading from "@/hooks/useLoading";
 import { useFilterStore, useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
-import "@/less/archived.less";
 
 const Archived = () => {
   const t = useTranslate();
@@ -38,25 +37,23 @@ const Archived = () => {
   return (
     <section className="w-full max-w-3xl min-h-full flex flex-col justify-start items-start px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
-      <div className="archived-memo-page">
-        <MemoFilter />
-        {loadingState.isLoading ? (
-          <div className="tip-text-container">
-            <p className="tip-text">{t("memo.fetching-data")}</p>
-          </div>
-        ) : archivedMemos.length === 0 ? (
-          <div className="w-full mt-16 mb-8 flex flex-col justify-center items-center italic">
-            <Empty />
-            <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
-          </div>
-        ) : (
-          <div className="archived-memos-container">
-            {archivedMemos.map((memo) => (
-              <ArchivedMemo key={`${memo.id}-${memo.updatedTs}`} memo={memo} />
-            ))}
-          </div>
-        )}
-      </div>
+      <MemoFilter />
+      {loadingState.isLoading ? (
+        <div className="w-full h-32 flex flex-col justify-center items-center">
+          <p className="opacity-70">{t("memo.fetching-data")}</p>
+        </div>
+      ) : archivedMemos.length === 0 ? (
+        <div className="w-full mt-16 mb-8 flex flex-col justify-center items-center italic">
+          <Empty />
+          <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+        </div>
+      ) : (
+        <div className="w-full flex flex-col justify-start items-start">
+          {archivedMemos.map((memo) => (
+            <ArchivedMemo key={`${memo.id}-${memo.updatedTs}`} memo={memo} />
+          ))}
+        </div>
+      )}
     </section>
   );
 };
