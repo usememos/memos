@@ -88,13 +88,13 @@ const Header = () => {
       }`}
     >
       <div
-        className={`fixed top-0 left-0 w-full h-full bg-black opacity-0 pointer-events-none transition-opacity duration-300 sm:!hidden ${
+        className={`fixed top-0 left-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-300 sm:!hidden ${
           showHeader && "opacity-60 pointer-events-auto"
         }`}
         onClick={() => layoutStore.setHeaderStatus(false)}
       ></div>
       <header
-        className={`relative w-56 sm:w-full h-full max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start py-4 z-30 bg-zinc-100 dark:bg-zinc-800 sm:bg-transparent sm:shadow-none transition-all duration-300 -translate-x-full sm:translate-x-0 ${
+        className={`relative w-56 sm:w-full h-full max-h-screen border-r sm:border-none dark:border-r-zinc-700 overflow-auto hide-scrollbar flex flex-col justify-start items-start py-4 z-30 bg-zinc-100 dark:bg-zinc-800 sm:bg-transparent sm:shadow-none transition-all duration-300 -translate-x-full sm:translate-x-0 ${
           showHeader && "translate-x-0 shadow-2xl"
         }`}
       >
