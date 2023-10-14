@@ -1,9 +1,10 @@
+import { Select, Option, Button } from "@mui/joy";
 import { isNumber, last, uniq } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
-import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
+import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { clearContentQueryParam } from "@/helpers/utils";
 import { getMatchedNodes } from "@/labs/marked";
 import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
@@ -11,12 +12,11 @@ import { Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateResourceDialog from "../CreateResourceDialog";
 import Icon from "../Icon";
-import MemoVisibilitySelector from "./ActionButton/MemoVisibilitySelector";
+import VisibilityIcon from "../VisibilityIcon";
 import TagSelector from "./ActionButton/TagSelector";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
-import "@/less/memo-editor.less";
 
 const listItemSymbolList = ["- [ ] ", "- [x] ", "- [X] ", "* ", "- "];
 const emptyOlReg = /^(\d+)\. $/;
@@ -378,7 +378,7 @@ const MemoEditor = (props: Props) => {
 
   const editorConfig = useMemo(
     () => ({
-      className: `memo-editor`,
+      className: "",
       initialContent: "",
       placeholder: t("editor.placeholder"),
       onContentChange: handleContentChange,
@@ -391,7 +391,9 @@ const MemoEditor = (props: Props) => {
 
   return (
     <div
-      className={`${className ?? ""} memo-editor-container`}
+      className={`${
+        className ?? ""
+      } relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-700 px-4 pt-4 rounded-lg border-2 border-gray-200 dark:border-zinc-600`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
@@ -400,28 +402,45 @@ const MemoEditor = (props: Props) => {
       onCompositionEnd={() => setIsInIME(false)}
     >
       <Editor ref={editorRef} {...editorConfig} />
-      <div className="common-tools-wrapper">
-        <div className="common-tools-container">
+      <div className="relative w-full flex flex-row justify-between items-center pt-2 z-1">
+        <div className="flex flex-row justify-start items-center">
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
-          <button className="action-btn">
-            <Icon.Paperclip className="icon-img" onClick={handleUploadFileBtnClick} />
+          <button className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow">
+            <Icon.Paperclip className="w-5 h-5 mx-auto" onClick={handleUploadFileBtnClick} />
           </button>
-          <button className="action-btn">
-            <Icon.CheckSquare className="icon-img" onClick={handleCheckBoxBtnClick} />
+          <button className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow">
+            <Icon.CheckSquare className="w-5 h-5 mx-auto" onClick={handleCheckBoxBtnClick} />
           </button>
-          <button className="action-btn">
-            <Icon.Code className="icon-img" onClick={handleCodeBlockBtnClick} />
+          <button className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow">
+            <Icon.Code className="w-5 h-5 mx-auto" onClick={handleCodeBlockBtnClick} />
           </button>
         </div>
       </div>
       <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
       <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
-      <div className="editor-footer-container">
-        <MemoVisibilitySelector value={state.memoVisibility} onChange={handleMemoVisibilityChange} />
-        <div className="buttons-container">
-          <button className="action-btn confirm-btn" disabled={!allowSave} onClick={handleSaveBtnClick}>
+      <div className="w-full flex flex-row justify-between items-center py-3 mt-2 border-t border-t-gray-100 dark:border-t-zinc-500">
+        <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
+          <Select
+            variant="plain"
+            value={state.memoVisibility}
+            startDecorator={<VisibilityIcon visibility={state.memoVisibility} />}
+            onChange={(_, visibility) => {
+              if (visibility) {
+                handleMemoVisibilityChange(visibility);
+              }
+            }}
+          >
+            {VISIBILITY_SELECTOR_ITEMS.map((item) => (
+              <Option key={item.value} value={item.value} className="whitespace-nowrap">
+                {item.text}
+              </Option>
+            ))}
+          </Select>
+        </div>
+        <div className="shrink-0 flex flex-row justify-end items-center">
+          <Button color="success" disabled={!allowSave} onClick={handleSaveBtnClick}>
             {t("editor.save")}
-          </button>
+          </Button>
         </div>
       </div>
     </div>

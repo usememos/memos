@@ -1,6 +1,6 @@
+import classNames from "classnames";
 import { forwardRef, ReactNode, useCallback, useEffect, useImperativeHandle, useRef } from "react";
 import TagSuggestions from "./TagSuggestions";
-import "@/less/editor.less";
 
 export interface EditorRefActions {
   focus: FunctionType;
@@ -145,9 +145,9 @@ const Editor = forwardRef(function Editor(props: Props, ref: React.ForwardedRef<
   }, []);
 
   return (
-    <div className={"common-editor-wrapper " + className}>
+    <div className={classNames("flex flex-col justify-start items-start relative w-full h-auto bg-inherit dark:text-gray-200", className)}>
       <textarea
-        className="common-editor-inputer"
+        className="w-full h-full max-h-[300px] my-1 text-base resize-none overflow-x-hidden overflow-y-auto bg-transparent outline-none whitespace-pre-wrap word-break"
         rows={1}
         placeholder={placeholder}
         ref={editorRef}
