@@ -11,12 +11,15 @@
     "memo_other": "MEMOS"
   },
   "auth": {
+    "create-your-account": "Benutzerkonto anlegen",
     "host-tip": "Du registrierst dich als Host dieser Seite.",
     "new-password": "Neues Passwort",
-    "repeat-new-password": "Neues Passwort wiederholen"
+    "repeat-new-password": "Neues Passwort wiederholen",
+    "sign-in-tip": "Bereits ein Benutzerkonto?",
+    "sign-up-tip": "Noch kein Benutzerkonto?"
   },
   "common": {
-    "about": "Über Memos",
+    "about": "Über",
     "admin": "Administration",
     "archive": "Archivieren",
     "archived": "Archiviert",
@@ -53,12 +56,14 @@
     "password": "Passwort",
     "pin": "Anpinnen",
     "preview": "Vorschau",
+    "profile": "Profil",
     "rename": "Umbenennen",
     "reset": "Zurücksetzen",
     "resources": "Ressourcen",
     "restore": "Wiederherstellen",
     "save": "Speichern",
     "select": "Auswählen",
+    "settings": "Einstellungen",
     "share": "Teilen",
     "sign-in": "Anmelden",
     "sign-in-with": "Anmelden mit {{provider}}",
@@ -116,20 +121,24 @@
   "memo": {
     "archived-at": "Archiviert am",
     "archived-memos": "Archivierte Memos",
+    "comment": {
+      "no-comment": "Kein Kommentar",
+      "self": "Kommentare"
+    },
     "copy-link": "Link kopieren",
-    "delete-confirm": "Bist du sicher, dass du diese Notiz löschen möchtest?\n\nDiese Aktion ist nicht rückgängig zu machen❗",
+    "delete-confirm": "Bist du sicher, dass du diese Notiz löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
     "delete-memo": "Memo löschen",
     "embed": "Einbinden",
     "fetch-more": "Klicke hier, um mehr zu laden",
-    "fetching-data": "Lade Daten...",
+    "fetching-data": "Lade Daten…",
     "no-archived-memos": "Keine archivierten Memos",
     "search-placeholder": "Suche memos",
     "view-detail": "Details anzeigen",
     "visibility": {
       "disabled": "Öffentliche memos sind deaktiviert",
       "private": "Nur für dich sichtbar",
-      "protected": "Für Mitglieder sichtbar",
-      "public": "Für alle sichtbar"
+      "protected": "Mitglieder",
+      "public": "Öffentlich"
     }
   },
   "message": {
@@ -142,7 +151,7 @@
     "fill-all": "Bitte alle Felder ausfüllen.",
     "fill-form": "Bitte das Formular ausfüllen",
     "fill-server-name": "Bitte Servernamen ausfüllen",
-    "generating-the-screenshot": "Erstelle Screenshot...",
+    "generating-the-screenshot": "Erstelle Screenshot…",
     "image-load-failed": "Laden des Bildes fehlgeschlagen",
     "invalid-created-datetime": "Ungültiger Erstellungszeitpunkt",
     "invalid-resource-filename": "Ungültiger Dateiname.",
@@ -150,16 +159,16 @@
     "maximum-upload-size-is": "Die maximal zulässige Upload-Größe beträgt {{size}} MiB",
     "memo-not-found": "Memo nicht gefunden.",
     "memo-updated-datetime": "Erstellungszeitpunkt geändert.",
-    "memos-ready": "Alle Memos geladen 🎉",
+    "memos-ready": "Alle Memos geladen",
     "new-password-not-match": "Neue Passwörter stimmen nicht überein.",
-    "no-data": "Vielleicht wurden keine Daten gefunden, vielleicht sollte es eine andere Option sein.",
-    "page-not-found": "404 - Seite nicht gefunden 😥",
+    "no-data": "Keine Daten gefunden,.",
+    "page-not-found": "404 - Seite nicht gefunden",
     "password-changed": "Passwort geändert",
     "password-login-disabled": "Der letzte Identitätsanbieter kann nicht entfernt werden, solang die Passwortanmeldung deaktiviert ist",
     "password-not-match": "Passwörter stimmen nicht überein",
     "private-only": "Dieses Memo ist privat.",
     "resource-filename-updated": "Dateiname der Ressource geändert.",
-    "resource-ready": "Alle Ressourcen geladen 🎉",
+    "resource-ready": "Alle Ressourcen geladen",
     "restored-successfully": "Erfolgreich wiederhergestellt",
     "signup-failed": "Registrierung fehlgeschlagen",
     "succeed-copy-code": "Code in die Zwischenablage kopieren.",
@@ -188,7 +197,7 @@
         "type-placeholder": "Dateityp"
       },
       "local-file": {
-        "choose": "Wähle eine Datei...",
+        "choose": "Wähle eine Datei…",
         "option": "Lokale Datei"
       },
       "title": "Ressource erstellen",
@@ -196,21 +205,22 @@
     },
     "delete-resource": "Ressource löschen",
     "delete-selected-resources": "Ausgewählte Ressource löschen",
-    "fetching-data": "Lade Daten...",
+    "fetching-data": "Lade Daten…",
     "file-drag-drop-prompt": "Ziehe deine Datei per Drag & Drop hierher, um sie hochzuladen",
     "linked-amount": "Anzahl verlinkter Memos",
-    "no-files-selected": "Keine Dateien ausgewählt❗",
+    "no-files-selected": "Keine Dateien ausgewählt",
     "no-resources": "Keine Ressourcen.",
     "no-unused-resources": "Keine ungenutzten Ressourcen",
     "reset-link": "Link zurücksetzen",
-    "reset-link-prompt": "Bist du sicher, dass du diesen Link zurücksetzen möchtest?\nDadurch werden alle aktuellen Linkverwendungen ungültig.\n\nDiese Aktion ist nicht rückgängig zu machen❗",
+    "reset-link-prompt": "Bist du sicher, dass du diesen Link zurücksetzen möchtest?\nDadurch werden alle aktuellen Linkverwendungen ungültig.\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
     "reset-resource-link": "Ressourcen-Link zurücksetzen",
     "search-bar-placeholder": "Ressource suchen",
     "upload-successfully": "Upload erfolgreich",
-    "warning-text": "Möchtest du diese Ressource wirklich löschen? Dies kann nicht rückgängig gemacht werden❗",
-    "warning-text-unused": "Möchtest du diese ungenutzte Ressource wirklich löschen? Dies kann nicht rückgängig gemacht werden❗"
+    "warning-text": "Möchtest du diese Ressource wirklich löschen? \n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
+    "warning-text-unused": "Möchtest du diese ungenutzte Ressource wirklich löschen? \n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN"
   },
   "router": {
+    "back-to-top": "Zurück nach oben",
     "go-to-home": "Zurück zur Startseite"
   },
   "setting": {
@@ -235,10 +245,10 @@
     "member-list": "Mitgliederliste",
     "member-section": {
       "archive-member": "Mitglied archivieren",
-      "archive-warning": "❗ Bist du sicher, dass du {{username}} archivieren möchtest?",
+      "archive-warning": "Bist du sicher, dass du {{username}} archivieren möchtest?",
       "create-a-member": "Mitglied hinzufügen",
       "delete-member": "Mitglied löschen",
-      "delete-warning": "❗  Bist du sicher, dass du {{username}} löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN❗"
+      "delete-warning": "Bist du sicher, dass du {{username}} löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN"
     },
     "my-account": "Mein Konto",
     "preference": "Einstellungen",
@@ -263,11 +273,11 @@
       "authorization-endpoint": "Autorisierungsendpunkt",
       "client-id": "Client ID",
       "client-secret": "Client secret",
-      "confirm-delete": "Bist du sicher, dass du die SSO-Konfiguration von \"{{name}}\" löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN❗",
+      "confirm-delete": "Bist du sicher, dass du die SSO-Konfiguration von \"{{name}}\" löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN",
       "create-sso": "SSO erstellen",
       "custom": "Benutzerdefiniert",
       "delete-sso": "Löschen bestätigen",
-      "disabled-password-login-warning": "Passwort-Login ist deaktiviert, sei besonders vorsichtig beim Entfernen von Identitätsanbieter❗",
+      "disabled-password-login-warning": "Passwort-Login ist deaktiviert, sei besonders vorsichtig beim Entfernen von Identitätsanbieter",
       "display-name": "Anzeigename",
       "identifier": "Kennzeichnung",
       "identifier-filter": "Kennzeichnungsfilter",
@@ -303,7 +313,7 @@
       "secretkey-placeholder": "Geheimer Schlüssel / Zugangsschlüssel",
       "storage-services-list": "Liste der Speicherdienste",
       "type-database": "Datenbank",
-      "type-local": "Lokal",
+      "type-local": "Lokales Dateisystem",
       "update-a-service": "Aktualisiere einen Dienst",
       "update-local-path": "Lokalen Speicherpfad aktualisieren",
       "update-local-path-description": "Der lokale Speicherpfad ist ein relativer Pfad zu deiner Datenbankdatei",
@@ -312,7 +322,7 @@
       "url-prefix-placeholder": "Benutzerdefiniertes URL Präfix (optional)",
       "url-suffix": "URL Suffix",
       "url-suffix-placeholder": "Benutzerdefiniertes URL Suffix (optional)",
-      "warning-text": "Bist du sicher, dass du den Speicherdienst \"{{name}}\" löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN❗"
+      "warning-text": "Bist du sicher, dass du den Speicherdienst \"{{name}}\" löschen möchtest?\n\nDIESE AKTION KANN NICHT RÜCKGÄNGIG GEMACHT WERDEN"
     },
     "system": "System",
     "system-section": {
@@ -334,24 +344,29 @@
       "database-file-size": "Dateigröße der Datenbank",
       "disable-password-login": "Anmeldung mit Passwort deaktivieren",
       "disable-password-login-final-warning": "Bitte gebe \"CONFIRM\" ein, wenn du weißt, was du tust.",
-      "disable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer deaktiviert. Es ist nicht möglich sich anzumelden, ohne diese Einstellung in der Datenbank rückgängig zu machen, wenn deine konfigurierten Provider ausfallen. Du musst auch besonders vorsichtig sein, wenn du einen Identitätsanbieter entfernst❗",
+      "disable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer deaktiviert. Es ist nicht möglich sich anzumelden, ohne diese Einstellung in der Datenbank rückgängig zu machen, wenn deine konfigurierten Provider ausfallen. Du musst auch besonders vorsichtig sein, wenn du einen Identitätsanbieter entfernst",
       "disable-public-memos": "Öffentliche memos deaktivieren",
       "display-with-updated-time": "Anzeige mit aktualisierter Zeit",
       "enable-password-login": "Anmeldung mit Passwort aktivieren",
-      "enable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer aktiviert. Fahre nur fort, wenn du möchtest, dass sich Benutzer sowohl mit SSO als auch mit einem Passwort anmelden können❗",
+      "enable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer aktiviert. Fahre nur fort, wenn du möchtest, dass sich Benutzer sowohl mit SSO als auch mit einem Passwort anmelden können",
       "ignore-version-upgrade": "Versions-Upgrade ignorieren",
       "max-upload-size": "Maximale Uploadgröße (MiB)",
       "max-upload-size-hint": "Empfohlene Wert ist 32 MiB.",
       "server-name": "Servername",
       "telegram-bot-token": "Telegram Bot Token",
-      "telegram-bot-token-description": "Telegram Bot Token oder API Proxy, wie `http.../bot<token>`",
+      "telegram-bot-token-description": "Telegram Bot Token oder API Proxy, wie `http…/bot<token>`",
       "telegram-bot-token-placeholder": "Dein Telegram Bot token"
     }
   },
   "tag-list": {
     "all-tags": "Alle Tags",
     "create-tag": "Tag erstellen",
+    "hide": "Ausblenden",
+    "invalid-tag-name": "Ungültiger Tag-Name",
+    "save-all": "Alle speichern",
+    "show": "Anzeigen",
     "tag-name": "TAG_NAME",
+    "tag-suggestions": "Tag-Vorschläge",
     "tip-text": "Erstelle einen Tag mit `#tag`"
   }
 }
