@@ -36,11 +36,11 @@ func (s *SystemService) GetSystemInfo(ctx context.Context, _ *apiv2pb.GetSystemI
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	if currentUser != nil && currentUser.Role == store.RoleHost {
-		if size, err := s.Store.CurrentSize(ctx); err != nil {
+		size, err := s.Store.GetCurrentDBSize(ctx)
+		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to get db size: %v", err)
-		} else {
-			defaultSystemInfo.DbSize = size
 		}
+		defaultSystemInfo.DbSize = size
 	}
 
 	response := &apiv2pb.GetSystemInfoResponse{

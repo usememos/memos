@@ -18,7 +18,7 @@ type Driver interface {
 	BackupTo(ctx context.Context, filename string) error
 
 	// current file is driver
-	CurrentSize(ctx context.Context) (int64, error)
+	GetCurrentDBSize(ctx context.Context) (int64, error)
 
 	// Activity model related methods.
 	CreateActivity(ctx context.Context, create *Activity) (*Activity, error)

@@ -140,7 +140,7 @@ func (d *DB) BackupTo(ctx context.Context, filename string) error {
 	return nil
 }
 
-func (d *DB) CurrentSize(ctx context.Context) (int64, error) {
+func (d *DB) GetCurrentDBSize(context.Context) (int64, error) {
 	fi, err := os.Stat(d.profile.DSN)
 	if err != nil {
 		return 0, status.Errorf(codes.Internal, "failed to get file info: %v", err)

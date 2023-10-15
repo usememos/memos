@@ -37,6 +37,6 @@ func (s *Store) Close() error {
 	return s.driver.Close()
 }
 
-func (s *Store) CurrentSize(ctx context.Context) (int64, error) {
-	return s.driver.CurrentSize(ctx)
+func (s *Store) GetCurrentDBSize(ctx context.Context) (int64, error) {
+	return s.driver.GetCurrentDBSize(ctx)
 }

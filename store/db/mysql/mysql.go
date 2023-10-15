@@ -67,7 +67,7 @@ func (*DB) BackupTo(context.Context, string) error {
 	return errors.New("Please use mysqldump to backup")
 }
 
-func (d *DB) CurrentSize(ctx context.Context) (int64, error) {
+func (*DB) GetCurrentDBSize(context.Context) (int64, error) {
 	// return 0, errors.New("Not implemented")
 	return 0, nil
 }
