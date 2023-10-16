@@ -112,7 +112,7 @@
   },
   "heatmap": {
     "day": "Tag",
-    "days": "Tage",
+    "days": "Tagen",
     "memo-in": "memo in {{period}}",
     "memo-on": "{{amount}} memo am {{date}}",
     "memos-in": "memos in {{period}}",
