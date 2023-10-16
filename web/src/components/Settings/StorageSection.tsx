@@ -32,7 +32,11 @@ const StorageSection = () => {
       name: "storage-service-id",
       value: JSON.stringify(storageId),
     });
-    await globalStore.fetchSystemStatus();
+    try {
+      await globalStore.fetchSystemStatus();
+    } catch (error: any) {
+      console.error(error);
+    }
     setStorageServiceId(storageId);
   };
 
