@@ -9,7 +9,8 @@ import ResourceIcon from "@/components/ResourceIcon";
 import { resourceServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
 import { Resource } from "@/types/proto/api/v2/resource_service";
-import { useTranslate } from "@/utils/i18n";
+import { findNearestLanguageMatch, useTranslate } from "@/utils/i18n";
+import i18n from "@/i18n";
 
 const fetchAllResources = async () => {
   const { resources } = await resourceServiceClient.listResources({});
@@ -60,6 +61,8 @@ const Resources = () => {
     });
   };
 
+  const locale = findNearestLanguageMatch(i18n.language);
+
   return (
     <section className="w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
@@ -89,7 +92,7 @@ const Resources = () => {
                       <div key={timestamp} className="w-full flex flex-row justify-start items-start">
                         <div className="w-16 sm:w-24 pt-4 sm:pl-4 flex flex-col justify-start items-start">
                           <span className="text-sm opacity-60">{date.getFullYear()}</span>
-                          <span className="font-medium text-xl">{date.toLocaleString("default", { month: "short" })}</span>
+                          <span className="font-medium text-xl">{date.toLocaleString(locale, { month: "short" })}</span>
                         </div>
                         <div className="w-full max-w-[calc(100%-4rem)] sm:max-w-[calc(100%-6rem)] flex flex-row justify-start items-start gap-4 flex-wrap">
                           {resources.map((resource) => {
