@@ -2,7 +2,6 @@ package v2
 
 import (
 	"context"
-	"os"
 	"strconv"
 
 	"google.golang.org/grpc/codes"
@@ -37,11 +36,11 @@ func (s *SystemService) GetSystemInfo(ctx context.Context, _ *apiv2pb.GetSystemI
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 	if currentUser != nil && currentUser.Role == store.RoleHost {
-		fi, err := os.Stat(s.Profile.DSN)
+		size, err := s.Store.GetCurrentDBSize(ctx)
 		if err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to get file info: %v", err)
+			return nil, status.Errorf(codes.Internal, "failed to get db size: %v", err)
 		}
-		defaultSystemInfo.DbSize = fi.Size()
+		defaultSystemInfo.DbSize = size
 	}
 
 	response := &apiv2pb.GetSystemInfoResponse{
