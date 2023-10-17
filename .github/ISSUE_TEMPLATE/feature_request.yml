@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to suggest an idea for Memos!
+        Thanks for taking the time to suggest an idea for memos!
   - type: textarea
     attributes:
       label: Is your feature request related to a problem?

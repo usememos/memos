@@ -23,7 +23,7 @@ type Profile struct {
 	Port int `json:"-"`
 	// Data is the data directory
 	Data string `json:"-"`
-	// DSN points to where Memos stores its own data
+	// DSN points to where memos stores its own data
 	DSN string `json:"dsn"`
 	// Driver is the database driver
 	// sqlite, mysql
