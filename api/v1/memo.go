@@ -14,6 +14,7 @@ import (
 
 	"github.com/usememos/memos/common/log"
 	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -387,6 +388,7 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 			}
 		}
 	}
+	metric.Enqueue("memo create")
 	return c.JSON(http.StatusOK, memoResponse)
 }
 

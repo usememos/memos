@@ -1,4 +1,4 @@
-package service
+package backup
 
 import (
 	"context"
@@ -13,6 +13,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+// nolint
 type BackupRunner struct {
 	Store *store.Store
 }

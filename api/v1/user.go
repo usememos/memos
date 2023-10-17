@@ -12,6 +12,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -169,6 +170,7 @@ func (s *APIV1Service) CreateUser(c echo.Context) error {
 	if err := s.createUserCreateActivity(c, userMessage); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 	}
+	metric.Enqueue("user create")
 	return c.JSON(http.StatusOK, userMessage)
 }
 

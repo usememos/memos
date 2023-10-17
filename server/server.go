@@ -22,7 +22,8 @@ import (
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
-	"github.com/usememos/memos/server/service"
+	"github.com/usememos/memos/server/service/backup"
+	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -38,7 +39,7 @@ type Server struct {
 	apiV2Service *apiv2.APIV2Service
 
 	// Asynchronous runners.
-	backupRunner *service.BackupRunner
+	backupRunner *backup.BackupRunner
 	telegramBot  *telegram.Bot
 }
 
@@ -54,7 +55,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		Profile: profile,
 
 		// Asynchronous runners.
-		backupRunner: service.NewBackupRunner(store),
+		backupRunner: backup.NewBackupRunner(store),
 		telegramBot:  telegram.NewBotWithHandler(integration.NewTelegramHandler(store)),
 	}
 
@@ -132,6 +133,7 @@ func (s *Server) Start(ctx context.Context) error {
 		}
 	}()
 
+	metric.Enqueue("server start")
 	return s.e.Start(fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port))
 }
 
