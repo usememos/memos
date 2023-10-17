@@ -44,7 +44,7 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
         (imageResourceList.length === 1 ? (
           <div className="mt-2 max-w-full max-h-72 flex justify-center items-center border dark:border-zinc-800 rounded overflow-hidden hide-scrollbar hover:shadow-md">
             <img
-              className="cursor-pointer min-h-full w-auto min-w-full object-cover"
+              className="cursor-pointer min-h-full w-auto object-cover"
               src={getResourceUrl(imageResourceList[0])}
               onClick={() => handleImageClick(getResourceUrl(imageResourceList[0]))}
               decoding="async"
@@ -65,7 +65,7 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
                   className="flex justify-center items-center border dark:border-zinc-900 rounded overflow-hidden hide-scrollbar hover:shadow-md"
                 >
                   <img
-                    className="cursor-pointer min-h-full w-auto min-w-full object-cover"
+                    className="cursor-pointer min-h-full w-auto object-cover"
                     src={resource.externalLink ? url : url + "?thumbnail=1"}
                     onClick={() => handleImageClick(url)}
                     decoding="async"
