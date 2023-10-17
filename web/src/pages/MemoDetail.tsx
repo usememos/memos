@@ -112,23 +112,24 @@ const MemoDetail = () => {
             <p className="text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
           <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 pb-6">
+            {memo.parent && (
+              <div className="w-full mb-4">
+                <Link
+                  className="px-3 py-1 border rounded-full max-w-xs w-full text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
+                  to={`/m/${memo.parent.id}`}
+                >
+                  <Icon.ArrowUpLeftFromCircle className="w-4 h-auto shrink-0 opacity-60" />
+                  <span className="mx-1 opacity-60">#{memo.parent.id}</span>
+                  <span className="truncate">{memo.parent.content}</span>
+                </Link>
+              </div>
+            )}
             <div className="w-full mb-4 flex flex-row justify-start items-center mr-1">
               <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTs)}</span>
-              <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-              <Tooltip title={"Identifier"} placement="top">
-                <span className="text-gray-400 dark:text-gray-400">#{memo.id}</span>
-              </Tooltip>
             </div>
             <MemoContent content={memo.content} />
             <MemoResourceListView resourceList={memo.resourceList} />
             <MemoRelationListView relationList={referenceRelations} />
-            {memo.parent && (
-              <div className="w-full mt-2">
-                <Link to={`/m/${memo.parent.id}`}>
-                  <span className="text-xs text-gray-400 opacity-80">This is a comment of #{memo.parent.id}</span>
-                </Link>
-              </div>
-            )}
             <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
               <div className="flex flex-row justify-start items-center">
                 <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>

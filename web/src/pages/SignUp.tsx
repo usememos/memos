@@ -107,6 +107,7 @@ const SignUp = () => {
             <div className="flex flex-row justify-end items-center w-full mt-6">
               <Button
                 className="w-full"
+                size="md"
                 type="submit"
                 disabled={actionBtnLoadingState.isLoading}
                 loading={actionBtnLoadingState.isLoading}
