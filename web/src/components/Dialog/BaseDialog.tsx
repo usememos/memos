@@ -1,4 +1,5 @@
 import { CssVarsProvider } from "@mui/joy";
+import classNames from "classnames";
 import { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import { Provider } from "react-redux";
@@ -11,6 +12,7 @@ import "@/less/base-dialog.less";
 interface DialogConfig {
   dialogName: string;
   className?: string;
+  containerClassName?: string;
   clickSpaceDestroy?: boolean;
 }
 
@@ -19,7 +21,7 @@ interface Props extends DialogConfig, DialogProps {
 }
 
 const BaseDialog: React.FC<Props> = (props: Props) => {
-  const { children, className, clickSpaceDestroy, dialogName, destroy } = props;
+  const { children, className, containerClassName, clickSpaceDestroy, dialogName, destroy } = props;
   const dialogStore = useDialogStore();
   const dialogContainerRef = useRef<HTMLDivElement>(null);
   const dialogIndex = dialogStore.state.dialogStack.findIndex((item) => item === dialogName);
@@ -55,8 +57,8 @@ const BaseDialog: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`dialog-wrapper ${className ?? ""}`} onMouseDown={handleSpaceClicked}>
-      <div ref={dialogContainerRef} className="dialog-container" onMouseDown={(e) => e.stopPropagation()}>
+    <div className={classNames("dialog-wrapper", className)} onMouseDown={handleSpaceClicked}>
+      <div ref={dialogContainerRef} className={classNames("dialog-container", containerClassName)} onMouseDown={(e) => e.stopPropagation()}>
         {children}
       </div>
     </div>

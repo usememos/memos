@@ -132,7 +132,7 @@ const MemoList: React.FC = () => {
   return (
     <div className="flex flex-col justify-start items-start w-full max-w-full overflow-y-scroll pb-28 hide-scrollbar">
       {sortedMemos.map((memo) => (
-        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} lazyRendering showVisibility />
+        <Memo key={`${memo.id}-${memo.displayTs}`} memo={memo} lazyRendering showVisibility showPinnedStyle />
       ))}
       {isFetching ? (
         <div className="flex flex-col justify-start items-center w-full mt-2 mb-1">

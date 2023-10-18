@@ -31,7 +31,13 @@ const MemoEditorDialog: React.FC<Props> = ({ memoId, relationList, destroy }: Pr
         </button>
       </div>
       <div className="flex flex-col justify-start items-start max-w-full w-[36rem]">
-        <MemoEditor cacheKey={`memo-editor-${memoId}`} memoId={memoId} relationList={relationList} onConfirm={handleCloseBtnClick} />
+        <MemoEditor
+          className="border-none !p-0 -mb-2"
+          cacheKey={`memo-editor-${memoId}`}
+          memoId={memoId}
+          relationList={relationList}
+          onConfirm={handleCloseBtnClick}
+        />
       </div>
     </>
   );
@@ -42,6 +48,7 @@ export default function showMemoEditorDialog(props: Pick<Props, "memoId" | "rela
     {
       className: "memo-editor-dialog",
       dialogName: "memo-editor-dialog",
+      containerClassName: "dark:!bg-zinc-700",
     },
     MemoEditorDialog,
     props

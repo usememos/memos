@@ -83,12 +83,12 @@ const Header = () => {
 
   return (
     <div
-      className={`fixed sm:sticky top-0 left-0 w-full sm:w-56 h-full shrink-0 pointer-events-none sm:pointer-events-auto z-10 ${
+      className={`fixed sm:sticky top-0 left-0 w-full sm:w-56 h-screen shrink-0 pointer-events-none sm:pointer-events-auto z-10 ${
         showHeader && "pointer-events-auto"
       }`}
     >
       <div
-        className={`fixed top-0 left-0 w-full h-full opacity-0 pointer-events-none transition-opacity duration-300 sm:!hidden ${
+        className={`fixed top-0 left-0 w-full h-full max-h-screen opacity-0 pointer-events-none transition-opacity duration-300 sm:!hidden ${
           showHeader && "opacity-60 pointer-events-auto"
         }`}
         onClick={() => layoutStore.setHeaderStatus(false)}

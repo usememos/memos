@@ -25,6 +25,7 @@ import "@/less/memo.less";
 interface Props {
   memo: Memo;
   showVisibility?: boolean;
+  showPinnedStyle?: boolean;
   lazyRendering?: boolean;
 }
 
@@ -229,7 +230,7 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   return (
     <>
-      <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned && !readonly ? "pinned" : ""}`} ref={memoContainerRef}>
+      <div className={`memo-wrapper ${"memos-" + memo.id} ${memo.pinned && props.showPinnedStyle ? "pinned" : ""}`} ref={memoContainerRef}>
         <div className="memo-top-wrapper">
           <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
             <span className="text-sm text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
@@ -290,6 +291,12 @@ const Memo: React.FC<Props> = (props: Props) => {
           <div className="flex flex-row justify-start items-center">
             {creator && (
               <>
+                <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}`}>
+                  <Tooltip title={"Identifier"} placement="top">
+                    <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
+                  </Tooltip>
+                </Link>
+                <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                 <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
                   <Tooltip title={"Creator"} placement="top">
                     <span className="flex flex-row justify-start items-center">
@@ -298,7 +305,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                     </span>
                   </Tooltip>
                 </Link>
-                {memo.pinned && (
+                {memo.pinned && props.showPinnedStyle && (
                   <>
                     <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                     <Tooltip title={"Pinned"} placement="top">

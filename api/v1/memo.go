@@ -194,9 +194,9 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 	if tag != "" {
 		contentSearch = append(contentSearch, "#"+tag)
 	}
-	contentSlice := c.QueryParams()["content"]
-	if len(contentSlice) > 0 {
-		contentSearch = append(contentSearch, contentSlice...)
+	content := c.QueryParam("content")
+	if content != "" {
+		contentSearch = append(contentSearch, content)
 	}
 	findMemoMessage.ContentSearch = contentSearch
 
