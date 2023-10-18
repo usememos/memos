@@ -7,9 +7,12 @@
     "powered-by": "Powered by"
   },
   "auth": {
+    "create-your-account": "Stvori svoj račun",
     "host-tip": "Registriraš se kao Vlasnik sajta.",
     "new-password": "Nova lozinka",
-    "repeat-new-password": "Ponovi novu lozinku"
+    "repeat-new-password": "Ponovi novu lozinku",
+    "sign-in-tip": "Račun već postoji?",
+    "sign-up-tip": "Još nemaš račun?"
   },
   "common": {
     "about": "O aplikaciji",
@@ -42,12 +45,14 @@
     "link": "Link",
     "mark": "Mark",
     "name": "Ime",
+    "new": "Novi",
     "nickname": "Nadimak",
     "null": "Ništa",
     "or": "ili",
     "password": "Lozinka",
     "pin": "Pinaj",
     "preview": "Pregled",
+    "profile": "Profil",
     "rename": "Preimenuj",
     "reset": "Resetiraj",
     "resources": "Privitci",
@@ -112,6 +117,10 @@
   "memo": {
     "archived-at": "Arhivirano u",
     "archived-memos": "Arhivirani Memoi",
+    "comment": {
+      "no-comment": "Nema komentara",
+      "self": "Komentari"
+    },
     "copy-link": "Kopiraj Link",
     "delete-confirm": "Jesi li siguran?\n\nOVA AKCIJA JE NEPOVRATNA❗",
     "delete-memo": "Obriši Memo",
@@ -168,7 +177,7 @@
     "user-not-found": "Korisnik nije nađen"
   },
   "resource": {
-    "clear": "Clear",
+    "clear": "Očisti",
     "copy-link": "Kopiraj link",
     "create-dialog": {
       "external-link": {
@@ -184,24 +193,28 @@
         "choose": "Odaberi fajl...",
         "option": "Lokalni fajl"
       },
-      "title": "Stvori Resource",
+      "title": "Stvori Resurs",
       "upload-method": "Upload metoda"
     },
-    "delete-resource": "Obriši Resource",
+    "delete-resource": "Da li sigurno želiš obrisati ove neupotrebljavane resurse ?Obriši Resource",
     "delete-selected-resources": "Delete Selected Resources",
     "fetching-data": "dohvaćanje podataka...",
     "file-drag-drop-prompt": "Povuci i potegni svoj fajl ovdje kako bi bio prenesen",
     "linked-amount": "Linked amount",
     "no-files-selected": "Nema odabranih fajlova❗",
-    "no-resources": "Nema resursa.",
+    "no-resources": "OVA AKCIJA JE NEPOVRATNA ❗Nema resursa.",
     "no-unused-resources": "Nema neiskorištenih resources",
     "reset-link": "Resetiraj link",
-    "reset-link-prompt": "Želiš li sigurno resetirati link?\nOvo će break sve trenutne link usages.\n\nTHIS ACTION IS IRREVERSIBLE❗",
+    "reset-link-prompt": "Želiš li sigurno resetirati link?\nOvo će break sve trenutne link usages.\n\nOVO JE NEPOVRATNA AKCIJA❗",
     "reset-resource-link": "Resetiraj Resource link",
     "search-bar-placeholder": "Nađi privitke",
     "upload-successfully": "Upload je uspješan",
     "warning-text": "Želiš li sigurno izbrisati ovaj resource?\n\nOVO JE NEPOVRATNA AKCIJA❗",
     "warning-text-unused": "Are you sure to delete these unused resources?\n\nOVO JE NEPOVRATNA AKCIJA❗"
+  },
+  "router": {
+    "back-to-top": "Na vrh",
+    "go-to-home": "Kući"
   },
   "setting": {
     "account-section": {
