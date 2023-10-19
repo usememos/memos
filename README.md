@@ -52,7 +52,7 @@ Contributions are what make the open-source community such an amazing place to l
 - [eallion/memos.top](https://github.com/eallion/memos.top) - Static page rendered with the Memos API
 - [eindex/logseq-memos-sync](https://github.com/EINDEX/logseq-memos-sync) - Logseq plugin
 - [JakeLaoyu/memos-import-from-flomo](https://github.com/JakeLaoyu/memos-import-from-flomo) - Import data. Support from flomo, wechat reading
-- [Send to memos](https://sharecuts.cn/shortcut/13098) - A shortcut for iOS
+- [Quick Memo](https://www.icloud.com/shortcuts/1eaef307112843ed9f91d256f5ee7ad9) - Shortcuts (iOS, iPadOS or macOS)
 - [Memos Raycast Extension](https://www.raycast.com/JakeYu/memos) - Raycast extension
 - [Memos Desktop](https://github.com/xudaolong/memos-desktop) - Third party client for MacOS and Windows
 - [MemosGallery](https://github.com/BarryYangi/MemosGallery) - A static Gallery rendered with the Memos API
