@@ -17,10 +17,11 @@ export function vacuumDatabase() {
   return axios.post("/api/v1/system/vacuum");
 }
 
-export function signin(username: string, password: string) {
+export function signin(username: string, password: string, remember: boolean) {
   return axios.post("/api/v1/auth/signin", {
     username,
     password,
+    remember,
   });
 }
 

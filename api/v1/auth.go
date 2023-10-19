@@ -28,6 +28,7 @@ var (
 type SignIn struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
+	Remember bool   `json:"remember"`
 }
 
 type SSOSignIn struct {
@@ -104,7 +105,12 @@ func (s *APIV1Service) SignIn(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Incorrect login credentials, please try again")
 	}
 
-	accessToken, err := auth.GenerateAccessToken(user.Username, user.ID, time.Now().Add(auth.AccessTokenDuration), []byte(s.Secret))
+	var expireAt time.Time
+	if !signin.Remember {
+		expireAt = time.Now().Add(auth.AccessTokenDuration)
+	}
+
+	accessToken, err := auth.GenerateAccessToken(user.Username, user.ID, expireAt, []byte(s.Secret))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to generate tokens, err: %s", err)).SetInternal(err)
 	}

@@ -1,4 +1,4 @@
-import { Button, Divider, Input } from "@mui/joy";
+import { Button, Checkbox, Divider, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -19,6 +19,7 @@ const SignIn = () => {
   const mode = systemStatus.profile.mode;
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(true);
   const disablePasswordLogin = systemStatus.disablePasswordLogin;
   const [identityProviderList, setIdentityProviderList] = useState<IdentityProvider[]>([]);
 
@@ -71,7 +72,7 @@ const SignIn = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.signin(username, password);
+      await api.signin(username, password, remember);
       const user = await userStore.doSignIn();
       if (user) {
         window.location.href = "/";
@@ -137,6 +138,9 @@ const SignIn = () => {
                       required
                     />
                   </div>
+                </div>
+                <div className="flex flex-row justify-start items-center w-full mt-6">
+                  <Checkbox label={t("common.remember-me")} checked={remember} onChange={(e) => setRemember(e.target.checked)} />
                 </div>
                 <div className="flex flex-row justify-end items-center w-full mt-6">
                   <Button
