@@ -1,44 +1,81 @@
+import { Tooltip } from "@mui/joy";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useMemoCacheStore } from "@/store/v1";
 import Icon from "./Icon";
 
 interface Props {
+  memo: Memo;
   relationList: MemoRelation[];
 }
 
 const MemoRelationListView = (props: Props) => {
+  const { memo, relationList } = props;
   const memoCacheStore = useMemoCacheStore();
-  const [relatedMemoList, setRelatedMemoList] = useState<Memo[]>([]);
+  const [referencingMemoList, setReferencingMemoList] = useState<Memo[]>([]);
+  const [referencedMemoList, setReferencedMemoList] = useState<Memo[]>([]);
 
   useEffect(() => {
     (async () => {
-      const memoList = await Promise.all(props.relationList.map((relation) => memoCacheStore.getOrFetchMemoById(relation.relatedMemoId)));
-      setRelatedMemoList(memoList);
+      const referencingMemoList = await Promise.all(
+        relationList
+          .filter((relation) => relation.memoId === memo.id && relation.relatedMemoId !== memo.id)
+          .map((relation) => memoCacheStore.getOrFetchMemoById(relation.relatedMemoId))
+      );
+      setReferencingMemoList(referencingMemoList);
+      const referencedMemoList = await Promise.all(
+        relationList
+          .filter((relation) => relation.memoId !== memo.id && relation.relatedMemoId === memo.id)
+          .map((relation) => memoCacheStore.getOrFetchMemoById(relation.memoId))
+      );
+      setReferencedMemoList(referencedMemoList);
     })();
-  }, [props.relationList]);
-
-  const handleGotoMemoDetail = (memo: Memo) => {
-    window.open(`/m/${memo.id}`, "_blank");
-  };
+  }, [memo, relationList]);
 
   return (
     <>
-      {relatedMemoList.length > 0 && (
-        <div className="w-full max-w-full overflow-hidden grid grid-cols-1 gap-1 mt-2">
-          {relatedMemoList.map((memo) => {
-            return (
-              <div
-                key={memo.id}
-                className="w-auto flex flex-row justify-start items-center hover:bg-gray-100 dark:hover:bg-zinc-800 rounded text-sm p-1 text-gray-500 dark:text-gray-400 cursor-pointer"
-                onClick={() => handleGotoMemoDetail(memo)}
-              >
-                <div className="w-5 h-5 flex justify-center items-center shrink-0 bg-gray-100 dark:bg-zinc-800 rounded-full">
-                  <Icon.Link className="w-3 h-auto" />
+      {referencingMemoList.length > 0 && (
+        <div className="w-full mt-2 flex flex-row justify-start items-start">
+          <Tooltip title="References" placement="top">
+            <Icon.Link className="w-4 h-auto shrink-0 opacity-70 mt-1.5 mr-1" />
+          </Tooltip>
+          <div className="w-auto max-w-[calc(100%-2rem)] flex flex-row justify-start items-center flex-wrap gap-2">
+            {referencingMemoList.map((memo) => {
+              return (
+                <div key={memo.id} className="block w-auto max-w-[50%]">
+                  <Link
+                    className="px-2 border rounded-full w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-300 dark:border-gray-600 hover:shadow hover:opacity-80"
+                    to={`/m/${memo.id}`}
+                  >
+                    <span className="opacity-70 mr-1">#{memo.id}</span>
+                    <span className="truncate">{memo.content}</span>
+                  </Link>
                 </div>
-                <span className="mx-1 w-auto truncate">{memo.content}</span>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        </div>
+      )}
+      {referencedMemoList.length > 0 && (
+        <div className="w-full mt-2 flex flex-row justify-start items-start">
+          <Tooltip title="Referenced" placement="top">
+            <Icon.Milestone className="w-4 h-auto shrink-0 opacity-70 mt-1.5 mr-1" />
+          </Tooltip>
+          <div className="grow w-auto max-w-[calc(100%-2rem)] flex flex-row justify-start items-center flex-wrap gap-2">
+            {referencedMemoList.map((memo) => {
+              return (
+                <div key={memo.id} className="block w-auto max-w-[50%]">
+                  <Link
+                    className="px-2 border rounded-full w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-300 dark:border-gray-600 hover:shadow hover:opacity-80"
+                    to={`/m/${memo.id}`}
+                  >
+                    <span className="opacity-70 mr-1">#{memo.id}</span>
+                    <span className="truncate">{memo.content}</span>
+                  </Link>
+                </div>
+              );
+            })}
+          </div>
         </div>
       )}
     </>

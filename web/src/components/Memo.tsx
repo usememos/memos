@@ -44,9 +44,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const readonly = memo.creatorUsername !== user?.username;
   const creator = userV1Store.getUserByUsername(memo.creatorUsername);
-  const referenceRelations = memo.relationList.filter(
-    (relation) => relation.memoId === memo.id && relation.relatedMemoId !== memo.id && relation.type === "REFERENCE"
-  );
+  const referenceRelations = memo.relationList.filter((relation) => relation.type === "REFERENCE");
   const commentRelations = memo.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT");
 
   // Prepare memo creator.
@@ -286,7 +284,7 @@ const Memo: React.FC<Props> = (props: Props) => {
           onMemoContentDoubleClick={handleMemoContentDoubleClick}
         />
         <MemoResourceListView resourceList={memo.resourceList} />
-        <MemoRelationListView relationList={referenceRelations} />
+        <MemoRelationListView memo={memo} relationList={referenceRelations} />
         <div className="mt-4 w-full flex flex-row justify-between items-center gap-2">
           <div className="flex flex-row justify-start items-center">
             {creator && (

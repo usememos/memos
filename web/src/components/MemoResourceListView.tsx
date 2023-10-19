@@ -78,7 +78,7 @@ const MemoResourceListView: React.FC<Props> = (props: Props) => {
 
       <div className={`w-full flex flex-col justify-start items-start ${className || ""}`}>
         {videoResourceList.length > 0 && (
-          <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2wrapper">
+          <div className="w-full grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
             {videoResourceList.map((resource) => {
               const url = getResourceUrl(resource);
               return (

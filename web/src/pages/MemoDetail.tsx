@@ -36,10 +36,7 @@ const MemoDetail = () => {
   const memoId = Number(params.memoId);
   const memo = memoStore.state.memos.find((memo) => memo.id === memoId);
   const allowEdit = memo?.creatorUsername === currentUser?.username;
-  const referenceRelations =
-    memo?.relationList.filter(
-      (relation) => relation.memoId === memo?.id && relation.relatedMemoId !== memo?.id && relation.type === "REFERENCE"
-    ) || [];
+  const referenceRelations = memo?.relationList.filter((relation) => relation.type === "REFERENCE") || [];
   const commentRelations = memo?.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT") || [];
   const comments = commentRelations
     .map((relation) => memoStore.state.memos.find((memo) => memo.id === relation.memoId))
@@ -113,9 +110,9 @@ const MemoDetail = () => {
           </div>
           <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 pb-6">
             {memo.parent && (
-              <div className="w-full mb-4">
+              <div className="w-auto mb-4">
                 <Link
-                  className="px-3 py-1 border rounded-full max-w-xs w-full text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
+                  className="px-3 py-1 border rounded-full max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
                   to={`/m/${memo.parent.id}`}
                 >
                   <Icon.ArrowUpLeftFromCircle className="w-4 h-auto shrink-0 opacity-60" />
@@ -129,7 +126,7 @@ const MemoDetail = () => {
             </div>
             <MemoContent content={memo.content} />
             <MemoResourceListView resourceList={memo.resourceList} />
-            <MemoRelationListView relationList={referenceRelations} />
+            <MemoRelationListView memo={memo} relationList={referenceRelations} />
             <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
               <div className="flex flex-row justify-start items-center">
                 <Tooltip title={"Identifier"} placement="top">
