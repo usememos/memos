@@ -86,13 +86,13 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
       </div>
       <div className="date-picker-day-container">
         <div className="date-picker-day-header">
+          <span className="day-item">{t("days.sun")}</span>
           <span className="day-item">{t("days.mon")}</span>
           <span className="day-item">{t("days.tue")}</span>
           <span className="day-item">{t("days.wed")}</span>
           <span className="day-item">{t("days.thu")}</span>
           <span className="day-item">{t("days.fri")}</span>
           <span className="day-item">{t("days.sat")}</span>
-          <span className="day-item">{t("days.sun")}</span>
         </div>
 
         {dayList.map((d) => {

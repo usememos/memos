@@ -1,10 +1,5 @@
 import i18n from "@/i18n";
 
-export function convertToMillis(localSetting: LocalSetting) {
-  const hoursToMillis = localSetting.dailyReviewTimeOffset * 60 * 60 * 1000;
-  return hoursToMillis;
-}
-
 export function getTimeStampByDate(t: Date | number | string | any): number {
   return new Date(t).getTime();
 }
@@ -170,21 +165,6 @@ export function getNormalizedTimeString(t?: Date | number | string): string {
   const mm = m < 10 ? "0" + m : m;
 
   return `${yyyy}-${MM}-${dd}T${hh}:${mm}`;
-}
-
-/**
- * This returns the number of **milliseconds** since the Unix Epoch of the provided date.
- *
- * If no date is provided, the current date is used.
- *
- * ```
- * getUnixTimeMillis("2019-01-25 00:00") // 1548381600000
- * ```
- * To get a Unix timestamp (the number of seconds since the epoch), use `getUnixTime()`.
- */
-export function getUnixTimeMillis(t?: Date | number | string): number {
-  const date = new Date(t ? t : Date.now());
-  return date.getTime();
 }
 
 /**
