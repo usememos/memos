@@ -105,20 +105,20 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	orders = append(orders, "id DESC")
 
 	fields := []string{
-		`memo.id AS id`,
-		`memo.creator_id AS creator_id`,
-		`memo.created_ts AS created_ts`,
-		`memo.updated_ts AS updated_ts`,
-		`memo.row_status AS row_status`,
-		`memo.visibility AS visibility`,
+		`memo.id AS id,`,
+		`memo.creator_id AS creator_id,`,
+		`memo.created_ts AS created_ts,`,
+		`memo.updated_ts AS updated_ts,`,
+		`memo.row_status AS row_status,`,
+		`memo.visibility AS visibility,`,
 	}
 	if !find.ExcludeContent {
-		fields = append(fields, `memo.content AS content`)
+		fields = append(fields, `memo.content AS content,`)
 	}
 
 	query := `
 	SELECT
-    ` + strings.Join(fields, ", ") + `
+    ` + strings.Join(fields, "\n") + `
     CASE WHEN mo.pinned = 1 THEN 1 ELSE 0 END AS pinned,
     (
 			SELECT
