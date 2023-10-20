@@ -64,6 +64,7 @@ type FindMemo struct {
 	VisibilityList []Visibility
 	Pinned         *bool
 	HasParent      *bool
+	ExcludeContent bool
 
 	// Pagination
 	Limit            *int

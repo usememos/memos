@@ -104,7 +104,7 @@ const MemoDetail = () => {
     <>
       <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-zinc-100 dark:bg-zinc-900">
         <div className="relative w-full h-auto mx-auto flex flex-col justify-start items-center bg-white dark:bg-zinc-700">
-          <div className="w-full flex flex-col justify-start items-center py-8">
+          <div className="w-full flex flex-col justify-start items-center pt-16 pb-8">
             <UserAvatar className="!w-20 h-auto mb-2 drop-shadow" avatarUrl={systemStatus.customizedProfile.logoUrl} />
             <p className="text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
@@ -186,7 +186,7 @@ const MemoDetail = () => {
             </div>
           </div>
         </div>
-        <div className="py-6 w-full border-t dark:border-t-zinc-700">
+        <div className="pt-8 pb-16 w-full border-t dark:border-t-zinc-700">
           <div className="relative mx-auto flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 gap-y-1">
             {comments.length === 0 ? (
               <div className="w-full flex flex-col justify-center items-center py-6 mb-2">

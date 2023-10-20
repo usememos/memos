@@ -471,8 +471,9 @@ func (s *APIV1Service) GetMemoStats(c echo.Context) error {
 	normalStatus := store.Normal
 	hasParentFlag := false
 	findMemoMessage := &store.FindMemo{
-		RowStatus: &normalStatus,
-		HasParent: &hasParentFlag,
+		RowStatus:      &normalStatus,
+		HasParent:      &hasParentFlag,
+		ExcludeContent: true,
 	}
 	if creatorID, err := util.ConvertStringToInt32(c.QueryParam("creatorId")); err == nil {
 		findMemoMessage.CreatorID = &creatorID

@@ -104,17 +104,23 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	orders = append(orders, "id DESC")
 
+	fields := []string{
+		`memo.id AS id`,
+		`memo.creator_id AS creator_id`,
+		`memo.created_ts AS created_ts`,
+		`memo.updated_ts AS updated_ts`,
+		`memo.row_status AS row_status`,
+		`memo.visibility AS visibility`,
+	}
+	if !find.ExcludeContent {
+		fields = append(fields, `memo.content AS content`)
+	}
+
 	query := `
 	SELECT
-		memo.id AS id,
-		memo.creator_id AS creator_id,
-		memo.created_ts AS created_ts,
-		memo.updated_ts AS updated_ts,
-		memo.row_status AS row_status,
-		memo.content AS content,
-		memo.visibility AS visibility,
-		CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END AS pinned,
-		(
+    ` + strings.Join(fields, ", ") + `
+    CASE WHEN mo.pinned = 1 THEN 1 ELSE 0 END AS pinned,
+    (
 			SELECT
 				related_memo_id
 			FROM
@@ -122,26 +128,25 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			WHERE
 				memo_relation.memo_id = memo.id AND memo_relation.type = 'COMMENT'
 			LIMIT 1
-		) AS parent_id,
-		GROUP_CONCAT(resource.id) AS resource_id_list,
-		(
+    ) AS parent_id,
+    GROUP_CONCAT(resource.id) AS resource_id_list,
+    (
 			SELECT
-				GROUP_CONCAT(memo_id || ':' || related_memo_id || ':' || type)
+				GROUP_CONCAT(memo_relation.memo_id || ':' || memo_relation.related_memo_id || ':' || memo_relation.type)
 			FROM
 				memo_relation
 			WHERE
 				memo_relation.memo_id = memo.id OR memo_relation.related_memo_id = memo.id
-		) AS relation_list
-	FROM
-		memo
-	LEFT JOIN
-		memo_organizer ON memo.id = memo_organizer.memo_id
-	LEFT JOIN
-		resource ON memo.id = resource.memo_id
-	WHERE ` + strings.Join(where, " AND ") + `
-	GROUP BY memo.id
-	ORDER BY ` + strings.Join(orders, ", ") + `
-	`
+    ) AS relation_list
+		FROM
+			memo
+		LEFT JOIN
+			memo_organizer mo ON memo.id = mo.memo_id
+		LEFT JOIN
+			resource ON memo.id = resource.memo_id
+		WHERE ` + strings.Join(where, " AND ") + `
+		GROUP BY memo.id
+		ORDER BY ` + strings.Join(orders, ", ")
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {
@@ -160,19 +165,19 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		var memo store.Memo
 		var memoResourceIDList sql.NullString
 		var memoRelationList sql.NullString
-		if err := rows.Scan(
+		dests := []any{
 			&memo.ID,
 			&memo.CreatorID,
 			&memo.CreatedTs,
 			&memo.UpdatedTs,
 			&memo.RowStatus,
-			&memo.Content,
 			&memo.Visibility,
-			&memo.Pinned,
-			&memo.ParentID,
-			&memoResourceIDList,
-			&memoRelationList,
-		); err != nil {
+		}
+		if !find.ExcludeContent {
+			dests = append(dests, &memo.Content)
+		}
+		dests = append(dests, &memo.Pinned, &memo.ParentID, &memoResourceIDList, &memoRelationList)
+		if err := rows.Scan(dests...); err != nil {
 			return nil, err
 		}
 
