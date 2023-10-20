@@ -14,11 +14,6 @@ func NewDBDriver(profile *profile.Profile) (store.Driver, error) {
 	var driver store.Driver
 	var err error
 
-	// As mysql driver is not fully implemented, we use sqlite for now in prod mode.
-	if profile.Mode == "prod" && profile.Driver != "sqlite" {
-		return nil, errors.New("Only SQLite is supported in prod mode")
-	}
-
 	switch profile.Driver {
 	case "sqlite":
 		driver, err = sqlite.NewDB(profile)
