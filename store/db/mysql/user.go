@@ -64,7 +64,7 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.User, error) {
 	set, args := []string{}, []any{}
 	if v := update.UpdatedTs; v != nil {
-		set, args = append(set, "`updated_ts` = ?"), append(args, *v)
+		set, args = append(set, "`updated_ts` = FROM_UNIXTIME(?)"), append(args, *v)
 	}
 	if v := update.RowStatus; v != nil {
 		set, args = append(set, "`row_status` = ?"), append(args, *v)
