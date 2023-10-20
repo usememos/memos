@@ -72,7 +72,10 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 	ctx := c.Request().Context()
 
 	systemStatus := SystemStatus{
-		Profile: *s.Profile,
+		Profile: profile.Profile{
+			Mode:    s.Profile.Mode,
+			Version: s.Profile.Version,
+		},
 		// Allow sign up by default.
 		AllowSignUp:      true,
 		MaxUploadSizeMiB: 32,
