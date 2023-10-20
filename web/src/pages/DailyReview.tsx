@@ -68,14 +68,23 @@ const DailyReview = () => {
     <section className="@container w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8 bg-zinc-100 dark:bg-zinc-800">
       <MobileHeader showSearch={false} />
       <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
-        <div className="relative w-full flex flex-row justify-between items-center">
+        <div className="relative w-full flex flex-row justify-start items-center">
           <p
-            className="px-2 py-1 flex flex-row justify-start items-center cursor-pointer select-none rounded opacity-80 hover:bg-gray-100 dark:hover:bg-zinc-700"
+            className="px-2 py-1 mr-2 flex flex-row justify-start items-center cursor-pointer select-none rounded opacity-80 hover:bg-gray-100 dark:hover:bg-zinc-700"
             onClick={() => toggleShowDatePicker()}
           >
             <Icon.Calendar className="w-5 h-auto mr-2" />
             <span className="font-mono mt-0.5">{new Date(selectedDateStamp).toLocaleDateString()}</span>
           </p>
+          {selectedDateStamp !== currentDateStamp && (
+            <Button
+              variant="outlined"
+              startDecorator={<Icon.Undo2 className="w-5 h-auto" />}
+              onClick={() => setSelectedDateStamp(currentDateStamp)}
+            >
+              {"Back to today"}
+            </Button>
+          )}
           <DatePicker
             className={`absolute top-8 mt-2 z-20 mx-auto border bg-white shadow dark:bg-zinc-800 dark:border-zinc-800 rounded-lg mb-6 ${
               showDatePicker ? "" : "!hidden"
@@ -115,19 +124,11 @@ const DailyReview = () => {
               </div>
             ))}
 
-            <div className="w-full sm:mt-4">
-              {selectedDateStamp === currentDateStamp ? (
-                <div className="w-full pl-0 sm:pl-10">
-                  <MemoEditor className="!border" cacheKey="daily-review-editor" />
-                </div>
-              ) : (
-                <div className="w-full flex flex-row justify-center items-center">
-                  <Button startDecorator={<Icon.Undo2 className="w-5 h-auto" />} onClick={() => setSelectedDateStamp(currentDateStamp)}>
-                    {"Back to today"}
-                  </Button>
-                </div>
-              )}
-            </div>
+            {selectedDateStamp === currentDateStamp && (
+              <div className="w-full pl-0 sm:pl-10 sm:mt-4">
+                <MemoEditor className="!border" cacheKey="daily-review-editor" />
+              </div>
+            )}
           </div>
         </div>
       </div>
