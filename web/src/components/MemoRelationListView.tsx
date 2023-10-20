@@ -35,47 +35,43 @@ const MemoRelationListView = (props: Props) => {
   return (
     <>
       {referencingMemoList.length > 0 && (
-        <div className="w-full mt-2 flex flex-row justify-start items-start">
-          <Tooltip title="References" placement="top">
-            <Icon.Link className="w-4 h-auto shrink-0 opacity-70 mt-1.5 mr-1" />
-          </Tooltip>
-          <div className="w-auto max-w-[calc(100%-2rem)] flex flex-row justify-start items-center flex-wrap gap-2">
-            {referencingMemoList.map((memo) => {
-              return (
-                <div key={memo.id} className="block w-auto max-w-[50%]">
-                  <Link
-                    className="px-2 border rounded-full w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-300 dark:border-gray-600 hover:shadow hover:opacity-80"
-                    to={`/m/${memo.id}`}
-                  >
-                    <span className="opacity-70 mr-1">#{memo.id}</span>
-                    <span className="truncate">{memo.content}</span>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
+        <div className="w-full mt-2 flex flex-row justify-start items-center flex-wrap gap-2">
+          {referencingMemoList.map((memo) => {
+            return (
+              <div key={memo.id} className="block w-auto max-w-[50%]">
+                <Link
+                  className="px-2 border rounded-full w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-300 dark:border-gray-600 hover:shadow hover:opacity-80"
+                  to={`/m/${memo.id}`}
+                >
+                  <Tooltip title="Reference" placement="top">
+                    <Icon.Link className="w-4 h-auto shrink-0 opacity-70" />
+                  </Tooltip>
+                  <span className="opacity-70 mx-1">#{memo.id}</span>
+                  <span className="truncate">{memo.content}</span>
+                </Link>
+              </div>
+            );
+          })}
         </div>
       )}
       {referencedMemoList.length > 0 && (
-        <div className="w-full mt-2 flex flex-row justify-start items-start">
-          <Tooltip title="Referenced" placement="top">
-            <Icon.Milestone className="w-4 h-auto shrink-0 opacity-70 mt-1.5 mr-1" />
-          </Tooltip>
-          <div className="grow w-auto max-w-[calc(100%-2rem)] flex flex-row justify-start items-center flex-wrap gap-2">
-            {referencedMemoList.map((memo) => {
-              return (
-                <div key={memo.id} className="block w-auto max-w-[50%]">
-                  <Link
-                    className="px-2 border rounded-full w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-300 dark:border-gray-600 hover:shadow hover:opacity-80"
-                    to={`/m/${memo.id}`}
-                  >
-                    <span className="opacity-70 mr-1">#{memo.id}</span>
-                    <span className="truncate">{memo.content}</span>
-                  </Link>
-                </div>
-              );
-            })}
-          </div>
+        <div className="w-full mt-2 flex flex-row justify-start items-center flex-wrap gap-2">
+          {referencedMemoList.map((memo) => {
+            return (
+              <div key={memo.id} className="block w-auto max-w-[50%]">
+                <Link
+                  className="px-2 border rounded-full w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-300 dark:border-gray-600 hover:shadow hover:opacity-80"
+                  to={`/m/${memo.id}`}
+                >
+                  <Tooltip title="Backlink" placement="top">
+                    <Icon.Milestone className="w-4 h-auto shrink-0 opacity-70" />
+                  </Tooltip>
+                  <span className="opacity-70 mx-1">#{memo.id}</span>
+                  <span className="truncate">{memo.content}</span>
+                </Link>
+              </div>
+            );
+          })}
         </div>
       )}
     </>

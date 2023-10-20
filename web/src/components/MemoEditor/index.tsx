@@ -24,6 +24,7 @@ const emptyOlReg = /^(\d+)\. $/;
 
 interface Props {
   className?: string;
+  editorClassName?: string;
   cacheKey?: string;
   memoId?: MemoId;
   relationList?: MemoRelation[];
@@ -39,7 +40,7 @@ interface State {
 }
 
 const MemoEditor = (props: Props) => {
-  const { className, cacheKey, memoId, onConfirm } = props;
+  const { className, editorClassName, cacheKey, memoId, onConfirm } = props;
   const { i18n } = useTranslation();
   const t = useTranslate();
   const [contentCache, setContentCache] = useLocalStorage<string>(`memo-editor-${cacheKey}`, "");
@@ -396,7 +397,7 @@ const MemoEditor = (props: Props) => {
 
   const editorConfig = useMemo(
     () => ({
-      className: "",
+      className: editorClassName ?? "",
       initialContent: "",
       placeholder: t("editor.placeholder"),
       onContentChange: handleContentChange,
