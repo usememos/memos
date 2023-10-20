@@ -132,7 +132,7 @@ const PreferencesSection = () => {
       <div className="w-full flex flex-row justify-between items-center mt-6">
         <div className="title-text">{t("setting.member-list")}</div>
       </div>
-      <div className="w-full overflow-x-auto">
+      <div className="w-full overflow-x-auto max-h-[calc(100%-22rem)]">
         <div className="inline-block min-w-full align-middle">
           <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-400">
             <thead>
