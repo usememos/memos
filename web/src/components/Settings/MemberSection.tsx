@@ -34,7 +34,7 @@ const MemberSection = () => {
     setUserList(data.sort((a, b) => a.id - b.id));
   };
 
-  const handleRoleInputChange = (_, value: string) => {
+  const handleRoleInputChange = (value: UserRole) => {
     setState({
       ...state,
       createUserRole: value,
@@ -133,7 +133,15 @@ const MemberSection = () => {
       <p className="title-text">{t("setting.member-section.create-a-user")}</p>
       <div className="w-full flex flex-col justify-start items-start gap-2">
         <div className="flex flex-col justify-start items-start gap-1">
-          <Select className="text-sm" value={state.createUserRole} onChange={handleRoleInputChange}>
+          <Select
+            className="text-sm"
+            value={state.createUserRole}
+            onChange={(_, value) => {
+              if (value==="USER" || value ==="EXTERNAL") {
+               handleRoleInputChange(value);
+              }
+            }}
+          >
             <Option value="USER">用户</Option>
             <Option value="EXTERNAL">外部用户</Option>
           </Select>
