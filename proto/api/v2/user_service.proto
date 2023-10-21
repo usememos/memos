@@ -25,7 +25,7 @@ service UserService {
   }
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
-      post: "/api/v2/users/{user.username=*}"
+      patch: "/api/v2/users/{user.username}"
       body: "user"
     };
     option (google.api.method_signature) = "user,update_mask";

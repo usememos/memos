@@ -4,6 +4,7 @@ package memos.api.v2;
 
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v2";
@@ -16,8 +17,11 @@ service ResourceService {
     option (google.api.http) = {get: "/api/v2/resources"};
   }
   rpc UpdateResource(UpdateResourceRequest) returns (UpdateResourceResponse) {
-    option (google.api.http) = {put: "/api/v2/resources/{id}"};
-    option (google.api.method_signature) = "id";
+    option (google.api.http) = {
+      patch: "/api/v2/resources/{resource.id}",
+      body: "resource"
+    };
+    option (google.api.method_signature) = "resource,update_mask";
   }
   rpc DeleteResource(DeleteResourceRequest) returns (DeleteResourceResponse) {
     option (google.api.http) = {get: "/api/v2/resources/{id}"};
@@ -53,11 +57,9 @@ message ListResourcesResponse {
 }
 
 message UpdateResourceRequest {
-  int32 id = 1;
+  Resource resource = 1;
 
-  Resource resource = 2;
-
-  repeated string update_mask = 3;
+  google.protobuf.FieldMask update_mask = 2;
 }
 
 message UpdateResourceResponse {

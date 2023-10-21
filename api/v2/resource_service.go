@@ -58,12 +58,16 @@ func (s *ResourceService) ListResources(ctx context.Context, _ *apiv2pb.ListReso
 }
 
 func (s *ResourceService) UpdateResource(ctx context.Context, request *apiv2pb.UpdateResourceRequest) (*apiv2pb.UpdateResourceResponse, error) {
+	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
+	}
+
 	currentTs := time.Now().Unix()
 	update := &store.UpdateResource{
-		ID:        request.Id,
+		ID:        request.Resource.Id,
 		UpdatedTs: &currentTs,
 	}
-	for _, field := range request.UpdateMask {
+	for _, field := range request.UpdateMask.Paths {
 		if field == "filename" {
 			update.Filename = &request.Resource.Filename
 		} else if field == "memo_id" {

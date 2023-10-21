@@ -448,9 +448,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| id | [int32](#int32) |  |  |
 | resource | [Resource](#memos-api-v2-Resource) |  |  |
-| update_mask | [string](#string) | repeated |  |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
 
 
 
@@ -556,7 +555,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | system_info | [SystemInfo](#memos-api-v2-SystemInfo) |  | System info is the updated data. |
-| update_mask | [string](#string) | repeated | Update mask is the array of paths. |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
 
 
 

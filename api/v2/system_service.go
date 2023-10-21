@@ -57,12 +57,12 @@ func (s *SystemService) UpdateSystemInfo(ctx context.Context, request *apiv2pb.U
 	if user.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	if request.UpdateMask == nil || len(request.UpdateMask) == 0 {
+	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
 
 	// Update system settings.
-	for _, path := range request.UpdateMask {
+	for _, path := range request.UpdateMask.Paths {
 		if path == "allow_registration" {
 			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 				Name:  "allow-signup",
