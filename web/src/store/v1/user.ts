@@ -44,7 +44,6 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
   },
   updateUser: async (user: Partial<User>, updateMask: string[]) => {
     const { user: updatedUser } = await userServiceClient.updateUser({
-      username: user.username,
       user: user,
       updateMask: updateMask,
     });
