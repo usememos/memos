@@ -137,8 +137,8 @@ const MemberSection = () => {
             className="text-sm"
             value={state.createUserRole}
             onChange={(_, value) => {
-              if (value==="USER" || value ==="EXTERNAL") {
-               handleRoleInputChange(value);
+              if (value === "USER" || value === "EXTERNAL") {
+                handleRoleInputChange(value);
               }
             }}
           >
