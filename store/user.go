@@ -14,6 +14,8 @@ const (
 	RoleAdmin Role = "ADMIN"
 	// RoleUser is the USER role.
 	RoleUser Role = "USER"
+	// RoleExternal is the EXTERNAL role.
+	RoleExternal Role = "EXTERNAL"
 )
 
 func (e Role) String() string {
@@ -24,6 +26,8 @@ func (e Role) String() string {
 		return "ADMIN"
 	case RoleUser:
 		return "USER"
+	case RoleExternal:
+		return "EXTERNAL"
 	}
 	return "USER"
 }

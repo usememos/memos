@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -26,6 +27,8 @@ const (
 	RoleAdmin Role = "ADMIN"
 	// RoleUser is the USER role.
 	RoleUser Role = "USER"
+	// RoleExternal is the EXTERNAL role.
+	RoleExternal Role = "EXTERNAL"
 )
 
 func (role Role) String() string {
@@ -139,11 +142,27 @@ func (s *APIV1Service) CreateUser(c echo.Context) error {
 	if err := json.NewDecoder(c.Request().Body).Decode(userCreate); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, "Malformatted post user request").SetInternal(err)
 	}
-	if err := userCreate.Validate(); err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format").SetInternal(err)
-	}
-	if !usernameMatcher.MatchString(strings.ToLower(userCreate.Username)) {
-		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid username %s", userCreate.Username)).SetInternal(err)
+
+	if userCreate.Role != RoleExternal {
+		if err := userCreate.Validate(); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "Invalid user create format").SetInternal(err)
+		}
+		if !usernameMatcher.MatchString(strings.ToLower(userCreate.Username)) {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Invalid username %s", userCreate.Username)).SetInternal(err)
+		}
+	} else {
+		externalUserInfo, err := fetchExternalUserInfo(userCreate.Username)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Fail to check external user %s", err)).SetInternal(err)
+		}
+		userCreate.Nickname = externalUserInfo.Nickname
+
+		// Set a random password to prevent external user to login
+		randomPassword, err := util.RandomString(20)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("Fail to create external user %s", err)).SetInternal(err)
+		}
+		userCreate.Password = randomPassword
 	}
 	// Disallow host user to be created.
 	if userCreate.Role == RoleHost {
@@ -438,6 +457,34 @@ func (create CreateUserRequest) Validate() error {
 	}
 
 	return nil
+}
+
+// fetchExternalUserInfo fetch user info of external user by request it's home address.
+func fetchExternalUserInfo(homeAddr string) (*User, error) {
+	u, err := url.Parse(homeAddr)
+	if err != nil {
+		return nil, err
+	}
+
+	if !strings.HasPrefix(u.Path, "/u/") {
+		return nil, errors.New("url path should start with /u/")
+	}
+
+	u.Path = "/api/v1/user/name/" + strings.TrimPrefix(u.Path, "/u/")
+	httpClient := &http.Client{Timeout: time.Second}
+	resp, err := httpClient.Get(u.String())
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var user User
+	err = json.NewDecoder(resp.Body).Decode(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
 }
 
 func (update UpdateUserRequest) Validate() error {
