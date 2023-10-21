@@ -1,6 +1,5 @@
 import { Button } from "@mui/joy";
 import copy from "copy-to-clipboard";
-import { QRCodeSVG } from "qrcode.react";
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { getDateTimeString } from "@/helpers/datetime";
@@ -106,7 +105,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             {t("common.link")}
           </Button>
         </div>
-        <div className="w-full rounded-lg border-t overflow-clip">
+        <div className="w-full border-t dark:border-zinc-700 overflow-clip">
           <div
             className="w-full h-auto select-none relative flex flex-col justify-start items-start bg-white dark:bg-zinc-800"
             ref={memoElRef}
@@ -117,17 +116,15 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
               <MemoResourceListView className="!grid-cols-2" resourceList={memo.resourceList} />
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-4 px-6">
-              <UserAvatar className="mr-2" avatarUrl={user.avatarUrl} />
-              <div className="w-auto grow truncate flex mr-2 flex-col justify-center items-start">
-                <span className="w-full text truncate font-medium text-gray-600 dark:text-gray-300">{user.nickname || user.username}</span>
+              <div className="flex flex-row justify-start items-center">
+                <UserAvatar className="mr-2" avatarUrl={user.avatarUrl} />
+                <div className="w-auto grow truncate flex mr-2 flex-col justify-center items-start">
+                  <span className="w-full text truncate font-medium text-gray-600 dark:text-gray-300">
+                    {user.nickname || user.username}
+                  </span>
+                </div>
               </div>
-              <QRCodeSVG
-                value={`${window.location.origin}/m/${memo.id}`}
-                size={28}
-                bgColor={"#F3F4F6"}
-                fgColor={"#4B5563"}
-                includeMargin={false}
-              />
+              <span className="text-gray-500 dark:text-gray-400">via memos</span>
             </div>
           </div>
         </div>
