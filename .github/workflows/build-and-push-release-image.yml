@@ -55,7 +55,6 @@ jobs:
             type=raw,value=latest
             type=semver,pattern={{version}},value=${{ env.VERSION }}
             type=semver,pattern={{major}}.{{minor}},value=${{ env.VERSION }}
-            type=semver,pattern={{major}},value=${{ env.VERSION }}
 
       - name: Build and Push
         id: docker_build
