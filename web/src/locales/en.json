@@ -229,6 +229,8 @@
     },
     "member-section": {
       "create-a-member": "Create a member",
+      "create-a-user": "Create a user",
+      "user-home-address": "User home address",
       "archive-member": "Archive member",
       "archive-warning": "Are you sure to archive {{username}}?",
       "delete-member": "Delete Member",

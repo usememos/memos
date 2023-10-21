@@ -1,5 +1,5 @@
 type UserId = number;
-type UserRole = "HOST" | "USER";
+type UserRole = "HOST" | "USER" | "EXTERNAL";
 
 interface User {
   id: UserId;

@@ -1,4 +1,4 @@
-import { Button, Dropdown, Input, Menu, MenuButton } from "@mui/joy";
+import { Button, Dropdown, Input, Menu, MenuButton, Select, Option } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import * as api from "@/helpers/api";
@@ -11,6 +11,7 @@ import Icon from "../Icon";
 interface State {
   createUserUsername: string;
   createUserPassword: string;
+  createUserRole: UserRole;
 }
 
 const MemberSection = () => {
@@ -20,6 +21,7 @@ const MemberSection = () => {
   const [state, setState] = useState<State>({
     createUserUsername: "",
     createUserPassword: "",
+    createUserRole: "EXTERNAL",
   });
   const [userList, setUserList] = useState<User[]>([]);
 
@@ -30,6 +32,13 @@ const MemberSection = () => {
   const fetchUserList = async () => {
     const { data } = await api.getUserList();
     setUserList(data.sort((a, b) => a.id - b.id));
+  };
+
+  const handleRoleInputChange = (_, value: string) => {
+    setState({
+      ...state,
+      createUserRole: value,
+    });
   };
 
   const handleUsernameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,7 +56,12 @@ const MemberSection = () => {
   };
 
   const handleCreateUserBtnClick = async () => {
-    if (state.createUserUsername === "" || state.createUserPassword === "") {
+    if (state.createUserUsername === "") {
+      toast.error(t("message.fill-form"));
+      return;
+    }
+
+    if (state.createUserRole !== "EXTERNAL" && state.createUserPassword === "") {
       toast.error(t("message.fill-form"));
       return;
     }
@@ -55,7 +69,7 @@ const MemberSection = () => {
     const userCreate: UserCreate = {
       username: state.createUserUsername,
       password: state.createUserPassword,
-      role: "USER",
+      role: state.createUserRole,
     };
 
     try {
@@ -67,6 +81,7 @@ const MemberSection = () => {
     setState({
       createUserUsername: "",
       createUserPassword: "",
+      createUserRole: state.createUserRole,
     });
   };
 
@@ -115,16 +130,36 @@ const MemberSection = () => {
 
   return (
     <div className="section-container member-section-container">
-      <p className="title-text">{t("setting.member-section.create-a-member")}</p>
+      <p className="title-text">{t("setting.member-section.create-a-user")}</p>
       <div className="w-full flex flex-col justify-start items-start gap-2">
         <div className="flex flex-col justify-start items-start gap-1">
-          <span className="text-sm">{t("common.username")}</span>
-          <Input type="text" placeholder={t("common.username")} value={state.createUserUsername} onChange={handleUsernameInputChange} />
+          <Select className="text-sm" value={state.createUserRole} onChange={handleRoleInputChange}>
+            <Option value="USER">用户</Option>
+            <Option value="EXTERNAL">外部用户</Option>
+          </Select>
         </div>
         <div className="flex flex-col justify-start items-start gap-1">
-          <span className="text-sm">{t("common.password")}</span>
-          <Input type="password" placeholder={t("common.password")} value={state.createUserPassword} onChange={handlePasswordInputChange} />
+          <span className="text-sm">
+            {t(state.createUserRole !== "EXTERNAL" ? "common.username" : "setting.member-section.user-home-address")}
+          </span>
+          <Input
+            type="text"
+            placeholder={t(state.createUserRole !== "EXTERNAL" ? "common.username" : "setting.member-section.user-home-address")}
+            value={state.createUserUsername}
+            onChange={handleUsernameInputChange}
+          />
         </div>
+        {state.createUserRole !== "EXTERNAL" && (
+          <div className="flex flex-col justify-start items-start gap-1">
+            <span className="text-sm">{t("common.password")}</span>
+            <Input
+              type="password"
+              placeholder={t("common.password")}
+              value={state.createUserPassword}
+              onChange={handlePasswordInputChange}
+            />
+          </div>
+        )}
         <div className="btns-container">
           <Button onClick={handleCreateUserBtnClick}>{t("common.create")}</Button>
         </div>
