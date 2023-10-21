@@ -59,15 +59,49 @@ func (s *UserService) GetUser(ctx context.Context, request *apiv2pb.GetUserReque
 	return response, nil
 }
 
+func (s *UserService) CreateUser(ctx context.Context, request *apiv2pb.CreateUserRequest) (*apiv2pb.CreateUserResponse, error) {
+	currentUser, err := getCurrentUser(ctx, s.Store)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser.Role != store.RoleHost {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	if !usernameMatcher.MatchString(strings.ToLower(request.User.Username)) {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
+	}
+	passwordHash, err := bcrypt.GenerateFromPassword([]byte(request.User.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "failed to generate password hash").SetInternal(err)
+	}
+
+	user, err := s.Store.CreateUser(ctx, &store.User{
+		Username:     request.User.Username,
+		Role:         convertUserRoleToStore(request.User.Role),
+		Email:        request.User.Email,
+		Nickname:     request.User.Nickname,
+		PasswordHash: string(passwordHash),
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
+	}
+
+	response := &apiv2pb.CreateUserResponse{
+		User: convertUserFromStore(user),
+	}
+	return response, nil
+}
+
 func (s *UserService) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUserRequest) (*apiv2pb.UpdateUserResponse, error) {
 	currentUser, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
-	if currentUser.Username != request.Username && currentUser.Role != store.RoleAdmin {
+	if currentUser.Username != request.User.Username && currentUser.Role != store.RoleAdmin {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
-	if request.UpdateMask == nil || len(request.UpdateMask) == 0 {
+	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
 
@@ -76,7 +110,7 @@ func (s *UserService) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUse
 		ID:        currentUser.ID,
 		UpdatedTs: &currentTs,
 	}
-	for _, field := range request.UpdateMask {
+	for _, field := range request.UpdateMask.Paths {
 		if field == "username" {
 			if !usernameMatcher.MatchString(strings.ToLower(request.User.Username)) {
 				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)

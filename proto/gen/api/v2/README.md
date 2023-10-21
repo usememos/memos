@@ -59,6 +59,8 @@
 - [api/v2/user_service.proto](#api_v2_user_service-proto)
     - [CreateUserAccessTokenRequest](#memos-api-v2-CreateUserAccessTokenRequest)
     - [CreateUserAccessTokenResponse](#memos-api-v2-CreateUserAccessTokenResponse)
+    - [CreateUserRequest](#memos-api-v2-CreateUserRequest)
+    - [CreateUserResponse](#memos-api-v2-CreateUserResponse)
     - [DeleteUserAccessTokenRequest](#memos-api-v2-DeleteUserAccessTokenRequest)
     - [DeleteUserAccessTokenResponse](#memos-api-v2-DeleteUserAccessTokenResponse)
     - [GetUserRequest](#memos-api-v2-GetUserRequest)
@@ -764,6 +766,36 @@
 
 
 
+<a name="memos-api-v2-CreateUserRequest"></a>
+
+### CreateUserRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [User](#memos-api-v2-User) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CreateUserResponse"></a>
+
+### CreateUserResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [User](#memos-api-v2-User) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-DeleteUserAccessTokenRequest"></a>
 
 ### DeleteUserAccessTokenRequest
@@ -858,9 +890,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| username | [string](#string) |  |  |
 | user | [User](#memos-api-v2-User) |  |  |
-| update_mask | [string](#string) | repeated | The update mask applies to the user resource. |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
 
 
 
@@ -952,6 +983,7 @@
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | GetUser | [GetUserRequest](#memos-api-v2-GetUserRequest) | [GetUserResponse](#memos-api-v2-GetUserResponse) |  |
+| CreateUser | [CreateUserRequest](#memos-api-v2-CreateUserRequest) | [CreateUserResponse](#memos-api-v2-CreateUserResponse) |  |
 | UpdateUser | [UpdateUserRequest](#memos-api-v2-UpdateUserRequest) | [UpdateUserResponse](#memos-api-v2-UpdateUserResponse) |  |
 | ListUserAccessTokens | [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest) | [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse) | ListUserAccessTokens returns a list of access tokens for a user. |
 | CreateUserAccessToken | [CreateUserAccessTokenRequest](#memos-api-v2-CreateUserAccessTokenRequest) | [CreateUserAccessTokenResponse](#memos-api-v2-CreateUserAccessTokenResponse) | CreateUserAccessToken creates a new access token for a user. |

@@ -3,6 +3,7 @@
 
 ## Table of Contents
 
+- [store/activity.proto](#store_activity-proto)
 - [store/common.proto](#store_common-proto)
 - [store/system_setting.proto](#store_system_setting-proto)
     - [BackupConfig](#memos-store-BackupConfig)
@@ -17,6 +18,22 @@
     - [UserSettingKey](#memos-store-UserSettingKey)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="store_activity-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## store/activity.proto
+
+
+ 
+
+ 
+
+ 
+
+ 
 
 
 
