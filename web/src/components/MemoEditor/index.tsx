@@ -1,4 +1,4 @@
-import { Select, Option, Button } from "@mui/joy";
+import { Select, Option, Button, IconButton } from "@mui/joy";
 import { isNumber, last, uniq, uniqBy } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -424,18 +424,27 @@ const MemoEditor = (props: Props) => {
       <div className="relative w-full flex flex-row justify-between items-center pt-2 z-1">
         <div className="flex flex-row justify-start items-center">
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
-          <button className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow">
-            <Icon.Image className="w-5 h-5 mx-auto" onClick={handleUploadFileBtnClick} />
-          </button>
-          <button className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow">
-            <Icon.Link className="w-5 h-5 mx-auto" onClick={handleAddMemoRelationBtnClick} />
-          </button>
-          <button className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow">
-            <Icon.CheckSquare className="w-5 h-5 mx-auto" onClick={handleCheckBoxBtnClick} />
-          </button>
-          <button className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow">
-            <Icon.Code className="w-5 h-5 mx-auto" onClick={handleCodeBlockBtnClick} />
-          </button>
+          <IconButton
+            onClick={handleUploadFileBtnClick}
+            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+          >
+            <Icon.Image className="w-5 h-5 mx-auto" />
+          </IconButton>
+          <IconButton
+            onClick={handleAddMemoRelationBtnClick}
+            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+          >
+            <Icon.Link className="w-5 h-5 mx-auto" />
+          </IconButton>
+          <IconButton onClick={handleCheckBoxBtnClick}>
+            <Icon.CheckSquare className="w-5 h-5 mx-auto" />
+          </IconButton>
+          <IconButton
+            onClick={handleCodeBlockBtnClick}
+            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+          >
+            <Icon.Code className="w-5 h-5 mx-auto" />
+          </IconButton>
         </div>
       </div>
       <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
