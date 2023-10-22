@@ -33,9 +33,28 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
 
   const suggestionsRef = useRef<string[]>([]);
   suggestionsRef.current = (() => {
-    const partial = getCurrentWord()[0].slice(1).toLowerCase();
-    const matches = (str: string) => str.startsWith(partial) && partial.length < str.length;
-    return tagsRef.current.filter((tag) => matches(tag.toLowerCase())).slice(0, 5);
+    const input = getCurrentWord()[0].slice(1).toLowerCase();
+
+    const customMatches = (tag: string, input: string) => {
+      const tagLowerCase = tag.toLowerCase();
+      const inputLowerCase = input.toLowerCase();
+      let inputIndex = 0;
+
+      for (let i = 0; i < tagLowerCase.length; i++) {
+        if (tagLowerCase[i] === inputLowerCase[inputIndex]) {
+          inputIndex++;
+          if (inputIndex === inputLowerCase.length) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    };
+
+    const matchedTags = tagsRef.current.filter((tag) => customMatches(tag, input));
+
+    return matchedTags.slice(0, 5);
   })();
 
   const isVisibleRef = useRef(false);
