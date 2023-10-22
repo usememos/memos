@@ -7,6 +7,10 @@ on:
     branches:
       - main
       - "release/*.*.*"
+    paths:
+      - "go.mod"
+      - "go.sum"
+      - "**.go"
 
 jobs:
   go-static-checks:
