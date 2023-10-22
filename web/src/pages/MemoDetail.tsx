@@ -156,8 +156,8 @@ const MemoDetail = () => {
                       }}
                     >
                       {VISIBILITY_SELECTOR_ITEMS.map((item) => (
-                        <Option key={item.value} value={item.value} className="whitespace-nowrap">
-                          {item.text}
+                        <Option key={item} value={item} className="whitespace-nowrap">
+                          {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
                         </Option>
                       ))}
                     </Select>

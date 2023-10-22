@@ -18,8 +18,8 @@ const PreferencesSection = () => {
   const [telegramUserId, setTelegramUserId] = useState<string>(setting.telegramUserId);
   const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
-      value: item.value,
-      text: t(`memo.visibility.${item.value.toLowerCase() as Lowercase<typeof item.value>}`),
+      value: item,
+      text: t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`),
     };
   });
 

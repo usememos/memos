@@ -17,8 +17,8 @@ const MemoVisibilitySelector = (props: Props) => {
   } = useGlobalStore();
   const memoVisibilityOptionSelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
     return {
-      value: item.value,
-      text: t(`memo.visibility.${toLower(item.value) as Lowercase<typeof item.value>}`),
+      value: item,
+      text: t(`memo.visibility.${toLower(item) as Lowercase<typeof item>}`),
     };
   });
 
