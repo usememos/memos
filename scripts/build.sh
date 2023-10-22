@@ -74,6 +74,14 @@ if [ $? -ne 0 ]; then
 fi
 echo -e "\033[32mFrontend dependencies installed!\033[0m"
 
+echo -e "\n\033[33mGenerating buf types...\033[0m"
+pnpm type-gen
+if [ $? -ne 0 ]; then
+    echo -e "\033[0;31mCould not generate buf types! Exiting.\033[0m"
+    exit 1
+fi
+echo -e "\033[32mbuf types generated!\033[0m"
+
 echo -e "\n\033[33mBuilding frontend...\033[0m"
 pnpm build
 if [ $? -ne 0 ]; then
