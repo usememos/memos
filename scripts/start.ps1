@@ -18,24 +18,43 @@ foreach ($dir in @(".", "../")) {
 $frontendPort = 3001
 # Tasks to run, in order
 $runTasks = @(
+    @{ 
+        Desc = "install frontend dependencies";
+        Exe  = "powershell.exe";
+        Args = (
+            "-Command", 
+            "pnpm i"
+        );
+        Dir  = "$repoRoot/web"
+        Wait = $true;
+    },
+    @{ 
+        Desc = "generate buf types";
+        Exe  = "powershell.exe";
+        Args = (
+            "-Command", 
+            "pnpm type-gen"
+        );
+        Dir  = "$repoRoot/web"
+        Wait = $true;
+    },
     @{
         Desc = "start backend with live reload";
         Exe  = "air.exe";
-        Args = "-c .\scripts\.air-windows.toml";
+        Args = (
+            "-c", 
+            ".\scripts\.air-windows.toml"
+        );
         Dir  = "$repoRoot";
         Wait = $false;
     },
     @{ 
-        Desc = "install frontend dependencies";
-        Exe  = "pnpm.exe";
-        Args = "i";
-        Dir  = "$repoRoot/web"
-        Wait = $true;
-    }
-    @{ 
         Desc = "start frontend with live reload";
-        Exe  = "pnpm.exe";
-        Args = "dev";
+        Exe  = "powershell.exe";
+        Args = (
+            "-Command", 
+            "pnpm dev"
+        );
         Dir  = "$repoRoot/web";
         Wait = $false;
     }

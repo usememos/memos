@@ -73,6 +73,17 @@ if (!$?) {
     Write-Host "Frontend built!" -f green
 }
 
+Write-Host "`nGenerating buf types..." -f DarkYellow
+$frontendTime = Measure-Command {
+    &pnpm type-gen | Out-Host
+}
+if (!$?) {
+    Write-Host -BackgroundColor red -ForegroundColor white "Could not generate buf types. See above."
+    Exit 1
+} else {
+    Write-Host "buf types generated!" -f green
+}
+
 Write-Host "`nBacking up frontend placeholder..." -f Magenta
 Move-Item "$repoRoot/server/dist" "$repoRoot/server/dist.bak" -Force -ErrorAction Stop
 if (!$?) {
