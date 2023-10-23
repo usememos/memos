@@ -7,6 +7,7 @@ import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "../AppearanceSelect";
 import LearnMore from "../LearnMore";
 import LocaleSelect from "../LocaleSelect";
+import VisibilityIcon from "../VisibilityIcon";
 import "@/less/settings/preferences-section.less";
 
 const PreferencesSection = () => {
@@ -16,12 +17,6 @@ const PreferencesSection = () => {
   const { appearance, locale } = globalStore.state;
   const { setting, localSetting } = userStore.state.user as User;
   const [telegramUserId, setTelegramUserId] = useState<string>(setting.telegramUserId);
-  const visibilitySelectorItems = VISIBILITY_SELECTOR_ITEMS.map((item) => {
-    return {
-      value: item.value,
-      text: t(`memo.visibility.${item.value.toLowerCase() as Lowercase<typeof item.value>}`),
-    };
-  });
 
   const dailyReviewTimeOffsetOptions: number[] = [...Array(24).keys()];
 
@@ -78,15 +73,16 @@ const PreferencesSection = () => {
         <Select
           className="!min-w-fit"
           value={setting.memoVisibility}
+          startDecorator={<VisibilityIcon visibility={setting.memoVisibility} />}
           onChange={(_, visibility) => {
             if (visibility) {
               handleDefaultMemoVisibilityChanged(visibility);
             }
           }}
         >
-          {visibilitySelectorItems.map((item) => (
-            <Option key={item.value} value={item.value}>
-              {item.text}
+          {VISIBILITY_SELECTOR_ITEMS.map((item) => (
+            <Option key={item} value={item} className="whitespace-nowrap">
+              {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
             </Option>
           ))}
         </Select>
