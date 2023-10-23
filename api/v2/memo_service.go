@@ -73,6 +73,22 @@ func (s *MemoService) ListMemos(ctx context.Context, request *apiv2pb.ListMemosR
 	if user == nil {
 		memoFind.VisibilityList = []store.Visibility{store.Public}
 	}
+
+	if request.CreatorId != nil {
+		memoFind.CreatorID = request.CreatorId
+	}
+
+	// Remove the private memos from the list if the user is not the creator.
+	if user != nil && request.CreatorId != nil && *request.CreatorId != user.ID {
+		var filteredVisibility []store.Visibility
+		for _, v := range memoFind.VisibilityList {
+			if v != store.Private {
+				filteredVisibility = append(filteredVisibility, v)
+			}
+		}
+		memoFind.VisibilityList = filteredVisibility
+	}
+
 	if request.PageSize != 0 {
 		offset := int(request.Page * request.PageSize)
 		limit := int(request.PageSize)

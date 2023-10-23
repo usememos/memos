@@ -78,6 +78,8 @@ message ListMemosRequest {
 
   // Filter is used to filter memos returned in the list.
   string filter = 3;
+
+  optional int32 creator_id = 4;
 }
 
 message ListMemosResponse {

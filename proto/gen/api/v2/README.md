@@ -249,6 +249,7 @@
 | page | [int32](#int32) |  |  |
 | page_size | [int32](#int32) |  |  |
 | filter | [string](#string) |  | Filter is used to filter memos returned in the list. |
+| creator_id | [int32](#int32) | optional |  |
 
 
 
