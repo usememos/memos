@@ -4,9 +4,10 @@
 
 A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.
 
-<a href="https://usememos.com/docs">Documentation</a> •
-<a href="https://demo.usememos.com/">Live Demo</a> •
-Discuss in <a href="https://discord.gg/tfPJa4UmAv">Discord</a> / <a href="https://t.me/+-_tNF1k70UU4ZTc9">Telegram</a>
+<a href="https://usememos.com">Home Page</a> •
+<a href="https://usememos.com/blog">Blogs</a> •
+<a href="https://usememos.com/docs">Docs</a> •
+<a href="https://demo.usememos.com/">Live Demo</a>
 
 <p>
   <a href="https://github.com/usememos/memos/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos?logo=github" /></a>
