@@ -161,7 +161,7 @@ func (s *UserService) ListUserAccessTokens(ctx context.Context, request *apiv2pb
 	}
 
 	// Normal user can only list its own access tokens.
-	if currentUser.Role == store.RoleUser && user.Username != request.Username {
+	if user.Role == store.RoleUser && user.Username != request.Username {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
