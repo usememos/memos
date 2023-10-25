@@ -60,7 +60,7 @@ services:
     profiles: ["tools"]
     image: node:18-alpine
     working_dir: /work
-    command: npm run lint
+    command: npm --no-update-notifier run lint
     volumes:
       - ./web:/work
       - ./.air/node_modules/:/work/node_modules/
