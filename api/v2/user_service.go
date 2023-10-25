@@ -231,7 +231,22 @@ func (s *UserService) CreateUserAccessToken(ctx context.Context, request *apiv2p
 	if request.ExpiresAt != nil {
 		expiresAt = request.ExpiresAt.AsTime()
 	}
-	accessToken, err := auth.GenerateAccessToken(user.Username, user.ID, expiresAt, []byte(s.Secret))
+
+	// Create access token for other users need to be verified.
+	if user.Username != request.Username {
+		// Normal users can only create access tokens for others.
+		if user.Role == store.RoleUser {
+			return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+		}
+
+		// The request user must be exist.
+		requestUser, err := s.Store.GetUser(ctx, &store.FindUser{Username: &request.Username})
+		if requestUser == nil || err != nil {
+			return nil, status.Errorf(codes.NotFound, "fail to find user %s", request.Username)
+		}
+	}
+
+	accessToken, err := auth.GenerateAccessToken(request.Username, user.ID, expiresAt, []byte(s.Secret))
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to generate access token: %v", err)
 	}
