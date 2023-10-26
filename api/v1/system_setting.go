@@ -20,6 +20,8 @@ const (
 	SystemSettingSecretSessionName SystemSettingName = "secret-session"
 	// SystemSettingAllowSignUpName is the name of allow signup setting.
 	SystemSettingAllowSignUpName SystemSettingName = "allow-signup"
+	// SystemSettingAllowMetricName is the name of allow metric setting.
+	SystemSettingAllowMetricName SystemSettingName = "allow-metric"
 	// SystemSettingDisablePasswordLoginName is the name of disable password login setting.
 	SystemSettingDisablePasswordLoginName SystemSettingName = "disable-password-login"
 	// SystemSettingDisablePublicMemosName is the name of disable public memos setting.
@@ -42,8 +44,6 @@ const (
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
 	// SystemSettingAutoBackupIntervalName is the name of auto backup interval as seconds.
 	SystemSettingAutoBackupIntervalName SystemSettingName = "auto-backup-interval"
-	// SystemSettingEnableMetric is the name of enable metric switch.
-	SystemSettingEnableMetric SystemSettingName = "enable-metric"
 )
 const systemSettingUnmarshalError = `failed to unmarshal value from system setting "%v"`
 
@@ -191,6 +191,11 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 	case SystemSettingServerIDName:
 		return errors.Errorf("updating %v is not allowed", settingName)
 	case SystemSettingAllowSignUpName:
+		var value bool
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return errors.Errorf(systemSettingUnmarshalError, settingName)
+		}
+	case SystemSettingAllowMetricName:
 		var value bool
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)

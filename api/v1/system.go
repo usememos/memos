@@ -20,6 +20,8 @@ type SystemStatus struct {
 	// System settings
 	// Allow sign up.
 	AllowSignUp bool `json:"allowSignUp"`
+	// Allow metric.
+	AllowMetric bool `json:"allowMetric"`
 	// Disable password login.
 	DisablePasswordLogin bool `json:"disablePasswordLogin"`
 	// Disable public memos.
@@ -78,6 +80,7 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		},
 		// Allow sign up by default.
 		AllowSignUp:      true,
+		AllowMetric:      false,
 		MaxUploadSizeMiB: 32,
 		CustomizedProfile: CustomizedProfile{
 			Name:       "memos",
@@ -118,6 +121,8 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		switch systemSetting.Name {
 		case SystemSettingAllowSignUpName.String():
 			systemStatus.AllowSignUp = baseValue.(bool)
+		case SystemSettingAllowMetricName.String():
+			systemStatus.AllowMetric = baseValue.(bool)
 		case SystemSettingDisablePasswordLoginName.String():
 			systemStatus.DisablePasswordLogin = baseValue.(bool)
 		case SystemSettingDisablePublicMemosName.String():

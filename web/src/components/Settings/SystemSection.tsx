@@ -15,6 +15,7 @@ import "@/less/settings/system-section.less";
 interface State {
   dbSize: number;
   allowSignUp: boolean;
+  allowMetric: boolean;
   disablePasswordLogin: boolean;
   disablePublicMemos: boolean;
   additionalStyle: string;
@@ -31,6 +32,7 @@ const SystemSection = () => {
   const [state, setState] = useState<State>({
     dbSize: systemStatus.dbSize,
     allowSignUp: systemStatus.allowSignUp,
+    allowMetric: systemStatus.allowMetric,
     disablePasswordLogin: systemStatus.disablePasswordLogin,
     additionalStyle: systemStatus.additionalStyle,
     additionalScript: systemStatus.additionalScript,
@@ -59,6 +61,7 @@ const SystemSection = () => {
       ...state,
       dbSize: systemStatus.dbSize,
       allowSignUp: systemStatus.allowSignUp,
+      allowMetric: systemStatus.allowMetric,
       disablePasswordLogin: systemStatus.disablePasswordLogin,
       additionalStyle: systemStatus.additionalStyle,
       additionalScript: systemStatus.additionalScript,
@@ -77,6 +80,18 @@ const SystemSection = () => {
     globalStore.setSystemStatus({ allowSignUp: value });
     await api.upsertSystemSetting({
       name: "allow-signup",
+      value: JSON.stringify(value),
+    });
+  };
+
+  const handleAllowMetricChanged = async (value: boolean) => {
+    setState({
+      ...state,
+      allowMetric: value,
+    });
+    globalStore.setSystemStatus({ allowMetric: value });
+    await api.upsertSystemSetting({
+      name: "allow-metric",
       value: JSON.stringify(value),
     });
   };
@@ -266,6 +281,15 @@ const SystemSection = () => {
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
         <Switch checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
+      </div>
+      <div className="form-label">
+        <div className="flex flex-row items-center">
+          <div className="w-auto flex items-center">
+            <span className="normal-text">{t("setting.system-section.allow-metric")}</span>
+            <LearnMore url="https://www.usememos.com/legal/privacy-policy" />
+          </div>
+        </div>
+        <Switch checked={state.allowMetric} onChange={(event) => handleAllowMetricChanged(event.target.checked)} />
       </div>
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.disable-password-login")}</span>

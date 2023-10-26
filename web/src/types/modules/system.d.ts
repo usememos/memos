@@ -18,6 +18,7 @@ interface SystemStatus {
   dbSize: number;
   // System settings
   allowSignUp: boolean;
+  allowMetric: boolean;
   disablePasswordLogin: boolean;
   disablePublicMemos: boolean;
   maxUploadSizeMiB: number;

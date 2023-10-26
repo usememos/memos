@@ -66,7 +66,7 @@ var (
 				return
 			}
 
-			enableMetricSettingVal := store.GetSystemSettingValueWithDefault(&ctx, string(apiv1.SystemSettingEnableMetric), "false")
+			enableMetricSettingVal := store.GetSystemSettingValueWithDefault(&ctx, string(apiv1.SystemSettingAllowMetricName), "false")
 			if "true" == enableMetricSettingVal {
 				_, _ = metric.NewMetricClient(s.ID, *profile)
 			}
