@@ -84,7 +84,7 @@ const StorageSection = () => {
       <Divider className="!my-4" />
       <div className="mb-2 w-full flex flex-row justify-start items-center gap-1">
         <span className="font-mono text-sm text-gray-400">{t("setting.storage-section.storage-services-list")}</span>
-        <LearnMore url="https://usememos.com/docs/storage" />
+        <LearnMore url="https://usememos.com/docs/get-started/cloudflare-r2" />
         <button className="btn-normal px-2 py-0 ml-1" onClick={() => showCreateStorageServiceDialog(undefined, fetchStorageList)}>
           {t("common.create")}
         </button>

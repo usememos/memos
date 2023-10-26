@@ -26,7 +26,7 @@ const DemoBanner: React.FC = () => {
     <div className="z-10 flex flex-row items-center justify-center w-full py-2 text-sm sm:text-lg font-medium dark:text-gray-300 bg-white dark:bg-zinc-700 shadow">
       <div className="w-full max-w-6xl px-4 flex flex-row justify-between items-center gap-x-3">
         <span>✨ A lightweight, self-hosted memo hub. Open Source and Free forever. ✨</span>
-        <a className="btn-primary shadow" href="https://usememos.com/docs/install/docker" target="_blank">
+        <a className="btn-primary shadow" href="https://usememos.com/docs/install/self-hosted" target="_blank">
           Install
           <Icon.ExternalLink className="w-4 h-auto ml-1" />
         </a>
