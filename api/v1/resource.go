@@ -187,7 +187,7 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	}
 
 	// This is the backend default max upload size limit.
-	maxUploadSetting := s.Store.GetSystemSettingValueWithDefault(&ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
+	maxUploadSetting := s.Store.GetSystemSettingValueWithDefault(ctx, SystemSettingMaxUploadSizeMiBName.String(), "32")
 	var settingMaxUploadSizeBytes int
 	if settingMaxUploadSizeMiB, err := strconv.Atoi(maxUploadSetting); err == nil {
 		settingMaxUploadSizeBytes = settingMaxUploadSizeMiB * MebiByte
