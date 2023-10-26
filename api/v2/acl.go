@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"github.com/usememos/memos/api/auth"
-	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/internal/util"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )

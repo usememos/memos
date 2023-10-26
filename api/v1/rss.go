@@ -15,7 +15,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/yuin/goldmark"
 
-	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/store"
 )
 

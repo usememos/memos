@@ -7,7 +7,7 @@ import (
 
 	"github.com/labstack/echo/v4"
 
-	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/store"
 )
 

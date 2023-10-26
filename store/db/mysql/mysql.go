@@ -8,7 +8,7 @@ import (
 	"github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/common/log"
+	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )

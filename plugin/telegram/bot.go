@@ -9,7 +9,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"github.com/usememos/memos/common/log"
+	"github.com/usememos/memos/internal/log"
 )
 
 type Handler interface {

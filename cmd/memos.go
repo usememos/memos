@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
-	"github.com/usememos/memos/common/log"
+	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/service/metric"

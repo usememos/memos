@@ -9,7 +9,7 @@ import (
 	"go.uber.org/zap"
 
 	apiv1 "github.com/usememos/memos/api/v1"
-	"github.com/usememos/memos/common/log"
+	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/store"
 )
 

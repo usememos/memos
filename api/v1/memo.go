@@ -12,8 +12,8 @@ import (
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 
-	"github.com/usememos/memos/common/log"
-	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/internal/log"
+	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )

@@ -10,7 +10,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/api/auth"
-	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/internal/util"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )

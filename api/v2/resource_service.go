@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/common/log"
+	"github.com/usememos/memos/internal/log"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"

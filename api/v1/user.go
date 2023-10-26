@@ -11,7 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/bcrypt"
 
-	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )

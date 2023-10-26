@@ -18,7 +18,7 @@ import (
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	apiv2 "github.com/usememos/memos/api/v2"
-	"github.com/usememos/memos/common/log"
+	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"

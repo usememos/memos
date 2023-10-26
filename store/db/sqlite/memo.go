@@ -8,7 +8,7 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/common/util"
+	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/store"
 )
 
