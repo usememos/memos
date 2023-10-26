@@ -22,7 +22,7 @@ type Driver interface {
 
 	// Activity model related methods.
 	CreateActivity(ctx context.Context, create *Activity) (*Activity, error)
-	ListActivity(ctx context.Context, find *FindActivity) ([]*Activity, error)
+	ListActivities(ctx context.Context, find *FindActivity) ([]*Activity, error)
 
 	// Resource model related methods.
 	CreateResource(ctx context.Context, create *Resource) (*Resource, error)

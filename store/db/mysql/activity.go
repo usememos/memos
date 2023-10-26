@@ -39,7 +39,7 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 
 	id32 := int32(id)
 
-	list, err := d.ListActivity(ctx, &store.FindActivity{ID: &id32})
+	list, err := d.ListActivities(ctx, &store.FindActivity{ID: &id32})
 	if err != nil || len(list) == 0 {
 		return nil, errors.Wrap(err, "failed to find activity")
 	}
@@ -47,7 +47,7 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 	return list[0], nil
 }
 
-func (d *DB) ListActivity(ctx context.Context, find *store.FindActivity) ([]*store.Activity, error) {
+func (d *DB) ListActivities(ctx context.Context, find *store.FindActivity) ([]*store.Activity, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if find.ID != nil {

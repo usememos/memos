@@ -108,7 +108,7 @@ func copydb(fromProfile, toProfile *_profile.Profile) error {
 
 func copyActivity(ctx context.Context, fromDriver, toDriver store.Driver) error {
 	println("Copying Activity...")
-	list, err := fromDriver.ListActivity(ctx, &store.FindActivity{})
+	list, err := fromDriver.ListActivities(ctx, &store.FindActivity{})
 	if err != nil {
 		return err
 	}

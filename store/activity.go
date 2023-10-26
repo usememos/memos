@@ -26,5 +26,5 @@ func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity
 }
 
 func (s *Store) ListActivity(ctx context.Context, find *FindActivity) ([]*Activity, error) {
-	return s.driver.ListActivity(ctx, find)
+	return s.driver.ListActivities(ctx, find)
 }
