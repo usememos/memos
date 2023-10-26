@@ -51,8 +51,8 @@ func (s *Store) GetSystemSetting(ctx context.Context, find *FindSystemSetting) (
 	return systemSettingMessage, nil
 }
 
-func (s *Store) GetSystemSettingValueWithDefault(ctx *context.Context, settingName string, defaultValue string) string {
-	if setting, err := s.GetSystemSetting(*ctx, &FindSystemSetting{
+func (s *Store) GetSystemSettingValueWithDefault(ctx context.Context, settingName string, defaultValue string) string {
+	if setting, err := s.GetSystemSetting(ctx, &FindSystemSetting{
 		Name: settingName,
 	}); err == nil && setting != nil {
 		return setting.Value
