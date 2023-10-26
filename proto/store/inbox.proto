@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package memos.store;
+
+option go_package = "gen/store";
+
+message InboxMessage {
+  string title = 1;
+  string content = 2;
+  string link = 3;
+  optional int32 activity_id = 4;
+}

@@ -5,6 +5,9 @@
 
 - [store/activity.proto](#store_activity-proto)
 - [store/common.proto](#store_common-proto)
+- [store/inbox.proto](#store_inbox-proto)
+    - [InboxMessage](#memos-store-InboxMessage)
+  
 - [store/system_setting.proto](#store_system_setting-proto)
     - [BackupConfig](#memos-store-BackupConfig)
   
@@ -41,6 +44,40 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## store/common.proto
+
+
+ 
+
+ 
+
+ 
+
+ 
+
+
+
+<a name="store_inbox-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## store/inbox.proto
+
+
+
+<a name="memos-store-InboxMessage"></a>
+
+### InboxMessage
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| title | [string](#string) |  |  |
+| content | [string](#string) |  |  |
+| link | [string](#string) |  |  |
+| activity_id | [int32](#int32) | optional |  |
+
+
+
 
 
  

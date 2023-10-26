@@ -81,4 +81,10 @@ type Driver interface {
 	GetStorage(ctx context.Context, find *FindStorage) (*Storage, error)
 	UpdateStorage(ctx context.Context, update *UpdateStorage) (*Storage, error)
 	DeleteStorage(ctx context.Context, delete *DeleteStorage) error
+
+	// Inbox model related methods.
+	CreateInbox(ctx context.Context, create *Inbox) (*Inbox, error)
+	ListInboxes(ctx context.Context, find *FindInbox) ([]*Inbox, error)
+	UpdateInbox(ctx context.Context, update *UpdateInbox) (*Inbox, error)
+	DeleteInbox(ctx context.Context, delete *DeleteInbox) error
 }

@@ -133,3 +133,13 @@ CREATE TABLE idp (
   identifier_filter TEXT NOT NULL DEFAULT '',
   config TEXT NOT NULL DEFAULT '{}'
 );
+
+-- inbox
+CREATE TABLE inbox (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  sender_id INTEGER NOT NULL,
+  receiver_id INTEGER NOT NULL,
+  status TEXT NOT NULL CHECK (row_status IN ('UNREAD', 'READ', 'ARCHIVED')) DEFAULT 'UNREAD',
+  message TEXT NOT NULL DEFAULT '{}'
+);
