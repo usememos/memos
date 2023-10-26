@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/viper"
 	"go.uber.org/zap"
 
+	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/server"
 	_profile "github.com/usememos/memos/server/profile"
@@ -65,8 +66,10 @@ var (
 				return
 			}
 
-			// nolint
-			metric.NewMetricClient(s.ID, *profile)
+			enableMetricSettingVal := store.GetSystemSettingValueWithDefault(&ctx, string(apiv1.SystemSettingEnableMetric), "false")
+			if "true" == enableMetricSettingVal {
+				metric.NewMetricClient(s.ID, *profile)
+			}
 
 			c := make(chan os.Signal, 1)
 			// Trigger graceful shutdown on SIGINT or SIGTERM.
