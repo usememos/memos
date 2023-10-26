@@ -68,7 +68,7 @@ var (
 
 			enableMetricSettingVal := store.GetSystemSettingValueWithDefault(&ctx, string(apiv1.SystemSettingEnableMetric), "false")
 			if "true" == enableMetricSettingVal {
-				metric.NewMetricClient(s.ID, *profile)
+				_, _ = metric.NewMetricClient(s.ID, *profile)
 			}
 
 			c := make(chan os.Signal, 1)
