@@ -12,6 +12,7 @@ services:
       - "MEMOS_DRIVER=mysql"
     volumes:
       - .:/work/
+      - .air/go-build:/root/.cache/go-build
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
   web:
     image: node:18-alpine
@@ -53,6 +54,7 @@ services:
     command: golangci-lint run -v
     volumes:
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
+      - .air/go-build:/root/.cache/go-build
       - .:/work/
 
   # Do javascript lint before create PR
