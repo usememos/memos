@@ -30,6 +30,8 @@ type Profile struct {
 	Driver string `json:"-"`
 	// Version is the current version of server
 	Version string `json:"version"`
+	// Metric indicate the metric collection is enabled or not
+	Metric bool `json:"-"`
 }
 
 func (p *Profile) IsDev() bool {
