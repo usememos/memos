@@ -4,6 +4,7 @@ import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, getDateString, getTimeStampByDate } from "@/helpers/datetime";
 import * as utils from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useGlobalStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { useFilterStore, useMemoStore } from "../store/module";
@@ -37,7 +38,9 @@ const UsageHeatMap = () => {
   const user = useCurrentUser();
   const memoStore = useMemoStore();
   const todayTimeStamp = getDateStampByDate(Date.now());
-  const todayDay = new Date(todayTimeStamp).getDay() + 1;
+  const weekDay = new Date(todayTimeStamp).getDay();
+  const weekFromMonday = ["zh-Hans", "ko"].includes(useGlobalStore().state.locale);
+  const todayDay = weekFromMonday ? (weekDay == 0 ? 7 : weekDay) : weekDay + 1;
   const nullCell = new Array(7 - todayDay).fill(0);
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
   const beginDayTimestamp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
@@ -157,13 +160,13 @@ const UsageHeatMap = () => {
           ))}
         </div>
         <div className="day-tip-text-container">
-          <span className="tip-text">{t("days.sun")}</span>
+          <span className="tip-text">{t(weekFromMonday ? "days.sun" : "days.mon")}</span>
           <span className="tip-text"></span>
-          <span className="tip-text">{t("days.tue")}</span>
+          <span className="tip-text">{t(weekFromMonday ? "days.tue" : "days.wed")}</span>
           <span className="tip-text"></span>
-          <span className="tip-text">{t("days.thu")}</span>
+          <span className="tip-text">{t(weekFromMonday ? "days.thu" : "days.fri")}</span>
           <span className="tip-text"></span>
-          <span className="tip-text">{t("days.sat")}</span>
+          <span className="tip-text">{t(weekFromMonday ? "days.sat" : "days.sun")}</span>
         </div>
       </div>
       <p className="w-full pl-4 text-xs -mt-2 mb-3 text-gray-400 dark:text-zinc-400">
