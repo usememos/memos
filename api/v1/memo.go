@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
 	"time"
 
@@ -717,6 +719,18 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 			}
 		}
 		for _, resourceID := range removedResourceIDList {
+			resource, _ := s.Store.GetResource(ctx, &store.FindResource{ID: &resourceID})
+			if resource != nil {
+				if resource.InternalPath != "" {
+					_ = os.Remove(resource.InternalPath)
+				}
+
+				if util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
+					ext := filepath.Ext(resource.Filename)
+					thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
+					_ = os.Remove(thumbnailPath)
+				}
+			}
 			if err := s.Store.DeleteResource(ctx, &store.DeleteResource{
 				ID: resourceID,
 			}); err != nil {
