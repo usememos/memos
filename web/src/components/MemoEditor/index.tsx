@@ -338,7 +338,6 @@ const MemoEditor = (props: Props) => {
     setState((prevState) => ({
       ...prevState,
       resourceList: [],
-      relationList: [],
     }));
     editorRef.current?.setContent("");
     clearContentQueryParam();
