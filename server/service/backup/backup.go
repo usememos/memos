@@ -32,8 +32,13 @@ func (r *BackupRunner) Run(ctx context.Context) {
 	}
 
 	interval, err := strconv.Atoi(intervalStr)
-	if err != nil || interval <= 0 {
+	if err != nil || interval < 0 {
 		log.Error(fmt.Sprintf("invalid SystemSettingAutoBackupIntervalName value %s, disable auto backup", intervalStr), zap.Error(err))
+		return
+	}
+
+	if interval == 0 {
+		println("AutoBackupIntervalName value is 0, disable auto backup")
 		return
 	}
 
