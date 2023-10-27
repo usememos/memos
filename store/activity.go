@@ -50,3 +50,14 @@ func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity
 func (s *Store) ListActivities(ctx context.Context, find *FindActivity) ([]*Activity, error) {
 	return s.driver.ListActivities(ctx, find)
 }
+
+func (s *Store) GetActivity(ctx context.Context, find *FindActivity) (*Activity, error) {
+	list, err := s.ListActivities(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) == 0 {
+		return nil, nil
+	}
+	return list[0], nil
+}

@@ -23,6 +23,7 @@ type APIV2Service struct {
 	apiv2pb.UnimplementedResourceServiceServer
 	apiv2pb.UnimplementedTagServiceServer
 	apiv2pb.UnimplementedInboxServiceServer
+	apiv2pb.UnimplementedActivityServiceServer
 
 	Secret  string
 	Profile *profile.Profile
@@ -54,6 +55,7 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 	apiv2pb.RegisterTagServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterResourceServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterInboxServiceServer(grpcServer, apiv2Service)
+	apiv2pb.RegisterActivityServiceServer(grpcServer, apiv2Service)
 	reflection.Register(grpcServer)
 
 	return apiv2Service
@@ -93,6 +95,9 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 		return err
 	}
 	if err := apiv2pb.RegisterInboxServiceHandler(context.Background(), gwMux, conn); err != nil {
+		return err
+	}
+	if err := apiv2pb.RegisterActivityServiceHandler(context.Background(), gwMux, conn); err != nil {
 		return err
 	}
 	e.Any("/api/v2/*", echo.WrapHandler(gwMux))

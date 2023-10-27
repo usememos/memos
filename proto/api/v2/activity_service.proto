@@ -1,0 +1,45 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v2";
+
+service ActivityService {
+  rpc GetActivity(GetActivityRequest) returns (GetActivityResponse) {
+    option (google.api.http) = {get: "/v2/activities"};
+  }
+}
+
+message Activity {
+  int32 id = 1;
+
+  int32 creator_id = 2;
+
+  string type = 3;
+
+  string level = 4;
+
+  google.protobuf.Timestamp create_time = 5;
+
+  ActivityPayload payload = 6;
+}
+
+message ActivityMemoCommentPayload {
+  int32 memo_id = 1;
+  int32 related_memo_id = 2;
+}
+
+message ActivityPayload {
+  ActivityMemoCommentPayload memo_comment = 1;
+}
+
+message GetActivityRequest {
+  int32 id = 1;
+}
+
+message GetActivityResponse {
+  Activity activity = 1;
+}

@@ -3,6 +3,15 @@
 
 ## Table of Contents
 
+- [api/v2/activity_service.proto](#api_v2_activity_service-proto)
+    - [Activity](#memos-api-v2-Activity)
+    - [ActivityMemoCommentPayload](#memos-api-v2-ActivityMemoCommentPayload)
+    - [ActivityPayload](#memos-api-v2-ActivityPayload)
+    - [GetActivityRequest](#memos-api-v2-GetActivityRequest)
+    - [GetActivityResponse](#memos-api-v2-GetActivityResponse)
+  
+    - [ActivityService](#memos-api-v2-ActivityService)
+  
 - [api/v2/common.proto](#api_v2_common-proto)
     - [RowStatus](#memos-api-v2-RowStatus)
   
@@ -91,6 +100,113 @@
     - [UserService](#memos-api-v2-UserService)
   
 - [Scalar Value Types](#scalar-value-types)
+
+
+
+<a name="api_v2_activity_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/activity_service.proto
+
+
+
+<a name="memos-api-v2-Activity"></a>
+
+### Activity
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| creator_id | [int32](#int32) |  |  |
+| type | [string](#string) |  |  |
+| level | [string](#string) |  |  |
+| create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
+| payload | [ActivityPayload](#memos-api-v2-ActivityPayload) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ActivityMemoCommentPayload"></a>
+
+### ActivityMemoCommentPayload
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo_id | [int32](#int32) |  |  |
+| related_memo_id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ActivityPayload"></a>
+
+### ActivityPayload
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo_comment | [ActivityMemoCommentPayload](#memos-api-v2-ActivityMemoCommentPayload) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetActivityRequest"></a>
+
+### GetActivityRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetActivityResponse"></a>
+
+### GetActivityResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| activity | [Activity](#memos-api-v2-Activity) |  |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-ActivityService"></a>
+
+### ActivityService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| GetActivity | [GetActivityRequest](#memos-api-v2-GetActivityRequest) | [GetActivityResponse](#memos-api-v2-GetActivityResponse) |  |
+
+ 
 
 
 
