@@ -5,14 +5,24 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
 
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store.Activity, error) {
+	payloadString := "{}"
+	if create.Payload != nil {
+		bytes, err := protojson.Marshal(create.Payload)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to marshal activity payload")
+		}
+		payloadString = string(bytes)
+	}
 	fields := []string{"`creator_id`", "`type`", "`level`", "`payload`"}
 	placeholder := []string{"?", "?", "?", "?"}
-	args := []any{create.CreatorID, create.Type, create.Level, create.Payload}
+	args := []any{create.CreatorID, create.Type.String(), create.Level.String(), payloadString}
 
 	if create.ID != 0 {
 		fields = append(fields, "`id`")
@@ -64,17 +74,23 @@ func (d *DB) ListActivities(ctx context.Context, find *store.FindActivity) ([]*s
 	list := []*store.Activity{}
 	for rows.Next() {
 		activity := &store.Activity{}
+		var payloadBytes []byte
 		if err := rows.Scan(
 			&activity.ID,
 			&activity.CreatorID,
 			&activity.Type,
 			&activity.Level,
-			&activity.Payload,
+			&payloadBytes,
 			&activity.CreatedTs,
 		); err != nil {
 			return nil, err
 		}
 
+		payload := &storepb.ActivityPayload{}
+		if err := protojsonUnmarshaler.Unmarshal(payloadBytes, payload); err != nil {
+			return nil, err
+		}
+		activity.Payload = payload
 		list = append(list, activity)
 	}
 
