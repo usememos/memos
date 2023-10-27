@@ -167,9 +167,6 @@ func (s *APIV1Service) CreateUser(c echo.Context) error {
 	}
 
 	userMessage := convertUserFromStore(user)
-	if err := s.createUserCreateActivity(c, userMessage); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-	}
 	metric.Enqueue("user create")
 	return c.JSON(http.StatusOK, userMessage)
 }
@@ -471,29 +468,6 @@ func (update UpdateUserRequest) Validate() error {
 	}
 
 	return nil
-}
-
-func (s *APIV1Service) createUserCreateActivity(c echo.Context, user *User) error {
-	ctx := c.Request().Context()
-	payload := ActivityUserCreatePayload{
-		UserID:   user.ID,
-		Username: user.Username,
-		Role:     user.Role,
-	}
-	payloadBytes, err := json.Marshal(payload)
-	if err != nil {
-		return errors.Wrap(err, "failed to marshal activity payload")
-	}
-	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
-		CreatorID: user.ID,
-		Type:      ActivityUserCreate.String(),
-		Level:     ActivityInfo.String(),
-		Payload:   string(payloadBytes),
-	})
-	if err != nil || activity == nil {
-		return errors.Wrap(err, "failed to create activity")
-	}
-	return err
 }
 
 func convertUserFromStore(user *store.User) *User {

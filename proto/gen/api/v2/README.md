@@ -16,6 +16,7 @@
     - [UpdateInboxResponse](#memos-api-v2-UpdateInboxResponse)
   
     - [Inbox.Status](#memos-api-v2-Inbox-Status)
+    - [Inbox.Type](#memos-api-v2-Inbox-Type)
   
     - [InboxService](#memos-api-v2-InboxService)
   
@@ -166,9 +167,8 @@
 | sender | [string](#string) |  | Format: users/{username} |
 | receiver | [string](#string) |  | Format: users/{username} |
 | status | [Inbox.Status](#memos-api-v2-Inbox-Status) |  |  |
-| title | [string](#string) |  |  |
-| content | [string](#string) |  |  |
-| link | [string](#string) |  |  |
+| type | [Inbox.Type](#memos-api-v2-Inbox-Type) |  |  |
+| activity_id | [int32](#int32) | optional |  |
 
 
 
@@ -249,6 +249,18 @@
 | UNREAD | 1 |  |
 | READ | 2 |  |
 | ARCHIVED | 3 |  |
+
+
+
+<a name="memos-api-v2-Inbox-Type"></a>
+
+### Inbox.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| TYPE_MEMO_COMMENT | 1 |  |
 
 
  

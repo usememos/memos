@@ -117,9 +117,6 @@ func (s *APIV1Service) SignIn(c echo.Context) error {
 	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert access token, err: %s", err)).SetInternal(err)
 	}
-	if err := s.createAuthSignInActivity(c, user); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-	}
 	cookieExp := time.Now().Add(auth.CookieExpDuration)
 	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
 	userMessage := convertUserFromStore(user)
@@ -240,9 +237,6 @@ func (s *APIV1Service) SignInSSO(c echo.Context) error {
 	}
 	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert access token, err: %s", err)).SetInternal(err)
-	}
-	if err := s.createAuthSignInActivity(c, user); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 	}
 	cookieExp := time.Now().Add(auth.CookieExpDuration)
 	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
@@ -366,9 +360,6 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 	if err := s.UpsertAccessTokenToStore(ctx, user, accessToken); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert access token, err: %s", err)).SetInternal(err)
 	}
-	if err := s.createAuthSignUpActivity(c, user); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-	}
 	cookieExp := time.Now().Add(auth.CookieExpDuration)
 	setTokenCookie(c, auth.AccessTokenCookieName, accessToken, cookieExp)
 	userMessage := convertUserFromStore(user)
@@ -397,50 +388,6 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert user setting, err: %s", err)).SetInternal(err)
 	}
 	return nil
-}
-
-func (s *APIV1Service) createAuthSignInActivity(c echo.Context, user *store.User) error {
-	ctx := c.Request().Context()
-	payload := ActivityUserAuthSignInPayload{
-		UserID: user.ID,
-		IP:     echo.ExtractIPFromRealIPHeader()(c.Request()),
-	}
-	payloadBytes, err := json.Marshal(payload)
-	if err != nil {
-		return errors.Wrap(err, "failed to marshal activity payload")
-	}
-	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
-		CreatorID: user.ID,
-		Type:      string(ActivityUserAuthSignIn),
-		Level:     string(ActivityInfo),
-		Payload:   string(payloadBytes),
-	})
-	if err != nil || activity == nil {
-		return errors.Wrap(err, "failed to create activity")
-	}
-	return err
-}
-
-func (s *APIV1Service) createAuthSignUpActivity(c echo.Context, user *store.User) error {
-	ctx := c.Request().Context()
-	payload := ActivityUserAuthSignUpPayload{
-		Username: user.Username,
-		IP:       echo.ExtractIPFromRealIPHeader()(c.Request()),
-	}
-	payloadBytes, err := json.Marshal(payload)
-	if err != nil {
-		return errors.Wrap(err, "failed to marshal activity payload")
-	}
-	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
-		CreatorID: user.ID,
-		Type:      string(ActivityUserAuthSignUp),
-		Level:     string(ActivityInfo),
-		Payload:   string(payloadBytes),
-	})
-	if err != nil || activity == nil {
-		return errors.Wrap(err, "failed to create activity")
-	}
-	return err
 }
 
 // removeAccessTokenAndCookies removes the jwt token from the cookies.

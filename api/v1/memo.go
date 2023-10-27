@@ -319,9 +319,6 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo").SetInternal(err)
 	}
-	if err := s.createMemoCreateActivity(ctx, memo); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-	}
 
 	for _, resourceID := range createMemoRequest.ResourceIDList {
 		if _, err := s.Store.UpdateResource(ctx, &store.UpdateResource{
@@ -339,6 +336,18 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 			Type:          store.MemoRelationType(memoRelationUpsert.Type),
 		}); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
+		}
+		if memoRelationUpsert.Type == MemoRelationComment {
+			relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+				ID: &memoRelationUpsert.RelatedMemoID,
+			})
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get related memo").SetInternal(err)
+			}
+			// nolint
+			if relatedMemo.CreatorID != memo.CreatorID {
+				// TODO: When a memo is commented by others, send notification to the memo creator.
+			}
 		}
 	}
 
@@ -567,9 +576,6 @@ func (s *APIV1Service) GetMemo(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusForbidden, "this memo is protected, missing user in session")
 		}
 	}
-	if err := s.createMemoViewActivity(c, memo, userID); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-	}
 	memoResponse, err := s.convertMemoFromStore(ctx, memo)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
@@ -764,47 +770,6 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
 	}
 	return c.JSON(http.StatusOK, memoResponse)
-}
-
-func (s *APIV1Service) createMemoCreateActivity(ctx context.Context, memo *store.Memo) error {
-	payload := ActivityMemoCreatePayload{
-		MemoID: memo.ID,
-	}
-	payloadBytes, err := json.Marshal(payload)
-	if err != nil {
-		return errors.Wrap(err, "failed to marshal activity payload")
-	}
-	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
-		CreatorID: memo.CreatorID,
-		Type:      ActivityMemoCreate.String(),
-		Level:     ActivityInfo.String(),
-		Payload:   string(payloadBytes),
-	})
-	if err != nil || activity == nil {
-		return errors.Wrap(err, "failed to create activity")
-	}
-	return err
-}
-
-func (s *APIV1Service) createMemoViewActivity(c echo.Context, memo *store.Memo, userID int32) error {
-	ctx := c.Request().Context()
-	payload := ActivityMemoViewPayload{
-		MemoID: memo.ID,
-	}
-	payloadBytes, err := json.Marshal(payload)
-	if err != nil {
-		return errors.Wrap(err, "failed to marshal activity payload")
-	}
-	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
-		CreatorID: userID,
-		Type:      string(ActivityMemoView),
-		Level:     string(ActivityInfo),
-		Payload:   string(payloadBytes),
-	})
-	if err != nil || activity == nil {
-		return errors.Wrap(err, "failed to create activity")
-	}
-	return err
 }
 
 func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*Memo, error) {

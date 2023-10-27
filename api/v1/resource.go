@@ -161,9 +161,6 @@ func (s *APIV1Service) CreateResource(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
 	}
-	if err := s.createResourceCreateActivity(ctx, resource); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
-	}
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 }
 
@@ -232,9 +229,6 @@ func (s *APIV1Service) UploadResource(c echo.Context) error {
 	resource, err := s.Store.CreateResource(ctx, create)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create resource").SetInternal(err)
-	}
-	if err := s.createResourceCreateActivity(ctx, resource); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 	}
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
 }
@@ -351,28 +345,6 @@ func (s *APIV1Service) UpdateResource(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch resource").SetInternal(err)
 	}
 	return c.JSON(http.StatusOK, convertResourceFromStore(resource))
-}
-
-func (s *APIV1Service) createResourceCreateActivity(ctx context.Context, resource *store.Resource) error {
-	payload := ActivityResourceCreatePayload{
-		Filename: resource.Filename,
-		Type:     resource.Type,
-		Size:     resource.Size,
-	}
-	payloadBytes, err := json.Marshal(payload)
-	if err != nil {
-		return errors.Wrap(err, "failed to marshal activity payload")
-	}
-	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
-		CreatorID: resource.CreatorID,
-		Type:      ActivityResourceCreate.String(),
-		Level:     ActivityInfo.String(),
-		Payload:   string(payloadBytes),
-	})
-	if err != nil || activity == nil {
-		return errors.Wrap(err, "failed to create activity")
-	}
-	return err
 }
 
 func replacePathTemplate(path, filename string) string {

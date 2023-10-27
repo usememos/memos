@@ -4,9 +4,14 @@
 ## Table of Contents
 
 - [store/activity.proto](#store_activity-proto)
+    - [ActivityMemoCommentPayload](#memos-store-ActivityMemoCommentPayload)
+    - [ActivityPayload](#memos-store-ActivityPayload)
+  
 - [store/common.proto](#store_common-proto)
 - [store/inbox.proto](#store_inbox-proto)
     - [InboxMessage](#memos-store-InboxMessage)
+  
+    - [InboxMessage.Type](#memos-store-InboxMessage-Type)
   
 - [store/system_setting.proto](#store_system_setting-proto)
     - [BackupConfig](#memos-store-BackupConfig)
@@ -28,6 +33,37 @@
 <p align="right"><a href="#top">Top</a></p>
 
 ## store/activity.proto
+
+
+
+<a name="memos-store-ActivityMemoCommentPayload"></a>
+
+### ActivityMemoCommentPayload
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo_id | [int32](#int32) |  |  |
+| related_memo_id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-store-ActivityPayload"></a>
+
+### ActivityPayload
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo_comment | [ActivityMemoCommentPayload](#memos-store-ActivityMemoCommentPayload) |  |  |
+
+
+
 
 
  
@@ -71,9 +107,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| title | [string](#string) |  |  |
-| content | [string](#string) |  |  |
-| link | [string](#string) |  |  |
+| type | [InboxMessage.Type](#memos-store-InboxMessage-Type) |  |  |
 | activity_id | [int32](#int32) | optional |  |
 
 
@@ -81,6 +115,18 @@
 
 
  
+
+
+<a name="memos-store-InboxMessage-Type"></a>
+
+### InboxMessage.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| TYPE_MEMO_COMMENT | 1 |  |
+
 
  
 

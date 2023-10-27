@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -87,14 +88,27 @@ func (s *APIV2Service) DeleteInbox(ctx context.Context, request *apiv2pb.DeleteI
 	return &apiv2pb.DeleteInboxResponse{}, nil
 }
 
-func (*APIV2Service) convertInboxFromStore(_ context.Context, inbox *store.Inbox) (*apiv2pb.Inbox, error) {
-	// TODO: convert sender and receiver.
+func (s *APIV2Service) convertInboxFromStore(ctx context.Context, inbox *store.Inbox) (*apiv2pb.Inbox, error) {
+	sender, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &inbox.SenderID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get sender")
+	}
+	receiver, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &inbox.ReceiverID,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get receiver")
+	}
+
 	return &apiv2pb.Inbox{
-		Name:    fmt.Sprintf("inbox/%d", inbox.ID),
-		Status:  convertInboxStatusFromStore(inbox.Status),
-		Title:   inbox.Message.Title,
-		Content: inbox.Message.Content,
-		Link:    inbox.Message.Link,
+		Name:       fmt.Sprintf("inbox/%d", inbox.ID),
+		Sender:     fmt.Sprintf("users/%s", sender.Username),
+		Receiver:   fmt.Sprintf("users/%s", receiver.Username),
+		Status:     convertInboxStatusFromStore(inbox.Status),
+		Type:       apiv2pb.Inbox_Type(inbox.Message.Type),
+		ActivityId: inbox.Message.ActivityId,
 	}, nil
 }
 

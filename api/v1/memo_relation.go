@@ -14,8 +14,8 @@ import (
 type MemoRelationType string
 
 const (
-	MemoRelationReference  MemoRelationType = "REFERENCE"
-	MemoRelationAdditional MemoRelationType = "ADDITIONAL"
+	MemoRelationReference MemoRelationType = "REFERENCE"
+	MemoRelationComment   MemoRelationType = "COMMENT"
 )
 
 type MemoRelation struct {

@@ -44,11 +44,13 @@ message Inbox {
   }
   Status status = 4;
 
-  string title = 5;
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    TYPE_MEMO_COMMENT = 1;
+  }
+  Type type = 5;
 
-  string content = 6;
-
-  string link = 7;
+  optional int32 activity_id = 6;
 }
 
 message ListInboxRequest {

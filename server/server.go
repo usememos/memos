@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -112,10 +111,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 }
 
 func (s *Server) Start(ctx context.Context) error {
-	if err := s.createServerStartActivity(ctx); err != nil {
-		return errors.Wrap(err, "failed to create activity")
-	}
-
 	go s.telegramBot.Start(ctx)
 	go s.backupRunner.Run(ctx)
 
@@ -180,26 +175,6 @@ func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error)
 		}
 	}
 	return secretSessionNameValue.Value, nil
-}
-
-func (s *Server) createServerStartActivity(ctx context.Context) error {
-	payload := apiv1.ActivityServerStartPayload{
-		ServerID: s.ID,
-		Profile:  s.Profile,
-	}
-	payloadBytes, err := json.Marshal(payload)
-	if err != nil {
-		return errors.Wrap(err, "failed to marshal activity payload")
-	}
-	activity, err := s.Store.CreateActivity(ctx, &store.Activity{
-		Type:    apiv1.ActivityServerStart.String(),
-		Level:   apiv1.ActivityInfo.String(),
-		Payload: string(payloadBytes),
-	})
-	if err != nil || activity == nil {
-		return errors.Wrap(err, "failed to create activity")
-	}
-	return err
 }
 
 func grpcRequestSkipper(c echo.Context) bool {
