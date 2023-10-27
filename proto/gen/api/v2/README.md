@@ -364,8 +364,7 @@
 | ---- | ------ | ----------- |
 | STATUS_UNSPECIFIED | 0 |  |
 | UNREAD | 1 |  |
-| READ | 2 |  |
-| ARCHIVED | 3 |  |
+| ARCHIVED | 2 |  |
 
 
 

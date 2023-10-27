@@ -11,7 +11,6 @@ type InboxStatus string
 
 const (
 	UNREAD   InboxStatus = "UNREAD"
-	READ     InboxStatus = "READ"
 	ARCHIVED InboxStatus = "ARCHIVED"
 )
 

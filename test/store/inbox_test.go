@@ -36,11 +36,11 @@ func TestInboxStore(t *testing.T) {
 	require.Equal(t, inbox, inboxes[0])
 	updatedInbox, err := ts.UpdateInbox(ctx, &store.UpdateInbox{
 		ID:     inbox.ID,
-		Status: store.READ,
+		Status: store.ARCHIVED,
 	})
 	require.NoError(t, err)
 	require.NotNil(t, updatedInbox)
-	require.Equal(t, store.READ, updatedInbox.Status)
+	require.Equal(t, store.ARCHIVED, updatedInbox.Status)
 	err = ts.DeleteInbox(ctx, &store.DeleteInbox{
 		ID: inbox.ID,
 	})

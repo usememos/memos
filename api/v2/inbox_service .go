@@ -119,8 +119,6 @@ func convertInboxStatusFromStore(status store.InboxStatus) apiv2pb.Inbox_Status 
 	switch status {
 	case store.UNREAD:
 		return apiv2pb.Inbox_UNREAD
-	case store.READ:
-		return apiv2pb.Inbox_READ
 	case store.ARCHIVED:
 		return apiv2pb.Inbox_ARCHIVED
 	default:
@@ -132,8 +130,6 @@ func convertInboxStatusToStore(status apiv2pb.Inbox_Status) store.InboxStatus {
 	switch status {
 	case apiv2pb.Inbox_UNREAD:
 		return store.UNREAD
-	case apiv2pb.Inbox_READ:
-		return store.READ
 	case apiv2pb.Inbox_ARCHIVED:
 		return store.ARCHIVED
 	default:
