@@ -30,7 +30,7 @@ func TestInboxStore(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, inbox)
 	require.Equal(t, create.Message, inbox.Message)
-	inboxes, err := ts.ListInboxes(ctx, &store.FindInbox{
+	inboxes, err := ts.ListInbox(ctx, &store.FindInbox{
 		ReceiverID: &user.ID,
 	})
 	require.NoError(t, err)
@@ -47,7 +47,7 @@ func TestInboxStore(t *testing.T) {
 		ID: inbox.ID,
 	})
 	require.NoError(t, err)
-	inboxes, err = ts.ListInboxes(ctx, &store.FindInbox{
+	inboxes, err = ts.ListInbox(ctx, &store.FindInbox{
 		ReceiverID: &user.ID,
 	})
 	require.NoError(t, err)

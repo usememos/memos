@@ -84,7 +84,7 @@ type Driver interface {
 
 	// Inbox model related methods.
 	CreateInbox(ctx context.Context, create *Inbox) (*Inbox, error)
-	ListInboxes(ctx context.Context, find *FindInbox) ([]*Inbox, error)
+	ListInbox(ctx context.Context, find *FindInbox) ([]*Inbox, error)
 	UpdateInbox(ctx context.Context, update *UpdateInbox) (*Inbox, error)
 	DeleteInbox(ctx context.Context, delete *DeleteInbox) error
 }
