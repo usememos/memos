@@ -12,6 +12,7 @@ services:
       - "MEMOS_DRIVER=mysql"
     volumes:
       - .:/work/
+      - .air/go-build:/root/.cache/go-build
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
   web:
     image: node:18-alpine
@@ -50,17 +51,20 @@ services:
     profiles: ["tools"]
     image: golangci/golangci-lint:v1.54.2
     working_dir: /work/
-    command: golangci-lint run -v
+    entrypoint: golangci-lint
+    command: run -v
     volumes:
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
+      - .air/go-build:/root/.cache/go-build
       - .:/work/
 
-  # Do javascript lint before create PR
-  lint:
+  # run npm
+  npm:
     profiles: ["tools"]
     image: node:18-alpine
     working_dir: /work
-    command: npm --no-update-notifier run lint
+    environment: ["NPM_CONFIG_UPDATE_NOTIFIER=false"]
+    entrypoint: "npm"
     volumes:
       - ./web:/work
       - ./.air/node_modules/:/work/node_modules/
