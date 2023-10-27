@@ -1,18 +1,21 @@
 {
   "about": {
-    "about-memos": "Memos에 대해서",
-    "memos-description": "Memos는 노트를 쓰고 공유하는 웹 기반의 노트 기록 플랫폼입니다.",
+    "about-memos": "memos에 대해서",
+    "memos-description": "memos는 노트를 쓰고 공유하는 웹 기반의 노트 기록 플랫폼입니다.",
     "no-server-description": "서버 설명이 없습니다.",
     "other-projects": "다른 프로젝트",
-    "powered-by": "제공: "
+    "powered-by": "Powered by"
   },
   "amount-text": {
-    "memo_other": "MEMOS"
+    "memo": "메모"
   },
   "auth": {
+    "create-your-account": "계정 만들기",
     "host-tip": "사이트 주인으로서의 계정을 등록합니다.",
     "new-password": "새 비밀번호",
-    "repeat-new-password": "새 비밀번호 재확인"
+    "repeat-new-password": "새 비밀번호 재확인",
+    "sign-in-tip": "이미 계정이 있으신가요?",
+    "sign-up-tip": "아직 계정이 없으신가요?"
   },
   "common": {
     "about": "정보",
@@ -52,6 +55,8 @@
     "password": "비밀번호",
     "pin": "고정",
     "preview": "미리 보기",
+    "profile": "프로필",
+    "remember-me": "로그인 정보 기억하기",
     "rename": "이름 바꾸기",
     "reset": "재설정",
     "resources": "리소스",
@@ -108,28 +113,32 @@
   "heatmap": {
     "day": "일간 작성",
     "days": "일간 작성",
-    "memo-in": "개 메모를",
+    "memo-in": "개 메모를 {{period}}",
     "memo-on": "{{date}} - 메모 {{amount}}개",
-    "memos-in": "개 메모를",
+    "memos-in": "개 메모를 {{period}}",
     "memos-on": "{{date}} - 메모 {{amount}}개"
   },
   "memo": {
     "archived-at": "보관된 날짜",
     "archived-memos": "보관처리된 메모",
+    "comment": {
+      "no-comment": "댓글 없음",
+      "self": "댓글"
+    },
     "copy-link": "링크 복사",
-    "delete-confirm": "이 메모를 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다❗",
+    "delete-confirm": "이 메모를 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다",
     "delete-memo": "메모 삭제",
     "embed": "임베드",
     "fetch-more": "더 불러오려면 여기를 누르세요",
-    "fetching-data": "불러오는 중...",
+    "fetching-data": "불러오는 중…",
     "no-archived-memos": "보관처리된 메모가 없습니다.",
     "search-placeholder": "메모 검색하기",
     "view-detail": "자세히 보기",
     "visibility": {
       "disabled": "공개 메모는 비활성화됨",
       "private": "나만 볼 수 있음",
-      "protected": "멤버들만 볼 수 있음",
-      "public": "모두가 볼 수 있음"
+      "protected": "멤버 전용",
+      "public": "공개"
     }
   },
   "message": {
@@ -142,7 +151,7 @@
     "fill-all": "모든 칸을 채워 주세요.",
     "fill-form": "이 칸들을 채워 주세요",
     "fill-server-name": "서버 이름을 적어주세요",
-    "generating-the-screenshot": "스크린샷을 생성하는 중...",
+    "generating-the-screenshot": "스크린샷을 생성하는 중…",
     "image-load-failed": "이미지를 불러오지 못했습니다",
     "invalid-created-datetime": "생성 시각이 올바르지 않습니다.",
     "invalid-resource-filename": "올바르지 않은 파일명입니다.",
@@ -150,32 +159,32 @@
     "maximum-upload-size-is": "업로드 최대 크기는 {{size}} MiB입니다",
     "memo-not-found": "메모를 찾을 수 없습니다.",
     "memo-updated-datetime": "메모 생성 시각이 변경되었습니다.",
-    "memos-ready": "모든 메모가 준비되었습니다 🎉",
+    "memos-ready": "모든 메모가 준비되었습니다",
     "new-password-not-match": "새 비밀번호가 서로 맞지 않습니다.",
     "no-data": "데이터가 없습니다.",
-    "page-not-found": "404 - 페이지를 찾을 수 없습니다 😥",
+    "page-not-found": "404 - 페이지를 찾을 수 없습니다",
     "password-changed": "비밀번호를 변경했습니다",
-    "password-login-disabled": "비밀번호 로그인이 비활성화되어 있으면 마지막으로 남은 SSO를 삭제할 수 없습니다.",
+    "password-login-disabled": "비밀번호 로그인이 비활성화되어 있어서 마지막으로 남은 SSO를 삭제할 수 없습니다",
     "password-not-match": "비밀번호가 맞지 않습니다.",
     "private-only": "이 메모는 비공개 전용입니다.",
     "resource-filename-updated": "리소스 파일명을 변경했습니다.",
-    "resource-ready": "모든 리소스가 준비되었습니다 🎉",
+    "resource-ready": "모든 리소스가 준비되었습니다",
     "restored-successfully": "성공적으로 복구했습니다",
     "signup-failed": "회원등록 실패",
     "succeed-copy-code": "코드를 클립보드에 복사했습니다.",
     "succeed-copy-content": "내용을 클립보드에 복사했습니다.",
     "succeed-copy-link": "링크를 클립보드에 복사했습니다.",
-    "succeed-copy-resource-link": "리소스 링크 복사 성공",
-    "succeed-update-additional-script": "추가적인 스크립트 적용 성공",
-    "succeed-update-additional-style": "추가적인 스타일 적용 성공",
-    "succeed-update-customized-profile": "프로필 정보 적용 성공",
-    "succeed-vacuum-database": "데이터베이스 최적화 성공",
+    "succeed-copy-resource-link": "리소스 링크를 복사했습니다.",
+    "succeed-update-additional-script": "추가적인 스크립트를 성공적으로 적용했습니다.",
+    "succeed-update-additional-style": "추가적인 스타일을 성공적으로 적용했습니다.",
+    "succeed-update-customized-profile": "프로필 정보를 변경했습니다.",
+    "succeed-vacuum-database": "데이터베이스 최적화를 마쳤습니다.",
     "update-succeed": "업데이트 성공",
-    "updating-setting-failed": "설정을 업데이트하지 못했습니다.",
+    "updating-setting-failed": "설정을 업데이트하지 못했습니다",
     "user-not-found": "회원을 찾을 수 없습니다"
   },
   "resource": {
-    "clear": "Clear",
+    "clear": "클리어",
     "copy-link": "링크 복사",
     "create-dialog": {
       "external-link": {
@@ -188,7 +197,7 @@
         "type-placeholder": "파일 종류"
       },
       "local-file": {
-        "choose": "파일을 선택하세요...",
+        "choose": "파일을 선택하세요…",
         "option": "내 컴퓨터에서"
       },
       "title": "리소스 생성",
@@ -196,19 +205,23 @@
     },
     "delete-resource": "리소스 삭제",
     "delete-selected-resources": "선택된 리소스 삭제",
-    "fetching-data": "불러오는 중...",
+    "fetching-data": "불러오는 중…",
     "file-drag-drop-prompt": "업로드할 파일을 여기에 드래그하세요",
     "linked-amount": "연결된 메모 수",
-    "no-files-selected": "파일을 선택하지 않았습니다❗",
+    "no-files-selected": "파일을 선택하지 않았습니다",
     "no-resources": "리소스 없음.",
     "no-unused-resources": "사용되지 않는 리소스 없음",
     "reset-link": "링크 초기화",
-    "reset-link-prompt": "이 리소스의 링크를 초기화하시겠습니까?\n리소스를 링크 형태로 참조하는 모든 곳에서 문제가 생길 수 있습니다.\n\n이 행동은 되돌릴 수 없습니다❗",
+    "reset-link-prompt": "이 리소스의 링크를 초기화하시겠습니까?\n리소스를 링크 형태로 참조하는 모든 곳에서 문제가 생길 수 있습니다.\n\n이 행동은 되돌릴 수 없습니다",
     "reset-resource-link": "리소스 링크 초기화",
     "search-bar-placeholder": "리소스 검색하기",
     "upload-successfully": "성공적으로 업로드했습니다",
-    "warning-text": "이 리소스를 완전히 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다❗",
-    "warning-text-unused": "사용된 적 없는 다음 리소스들을 완전히 삭제하시겠습니까? 이 행동은 되돌릴 수 없습니다❗"
+    "warning-text": "이 리소스를 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다",
+    "warning-text-unused": "사용된 적 없는 다음 리소스들을 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다"
+  },
+  "router": {
+    "back-to-top": "맨 위로 돌아가기",
+    "go-to-home": "홈으로"
   },
   "setting": {
     "account-section": {
@@ -232,10 +245,10 @@
     "member-list": "멤버 목록",
     "member-section": {
       "archive-member": "멤버 보관처리",
-      "archive-warning": "❗ 멤버 {{username}} 의 계정을 보관처리하시겠습니까?",
+      "archive-warning": "멤버 {{username}} 의 계정을 보관처리하시겠습니까?",
       "create-a-member": "새 멤버 등록",
       "delete-member": "멤버 계정 삭제",
-      "delete-warning": "❗ 멤버 {{username}} 의 계정을 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다❗"
+      "delete-warning": "멤버 {{username}} 의 계정을 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다"
     },
     "my-account": "내 계정",
     "preference": "개인 설정",
@@ -260,11 +273,11 @@
       "authorization-endpoint": "인증 엔드포인트",
       "client-id": "클라이언트 ID",
       "client-secret": "클라이언트 비밀키",
-      "confirm-delete": "SSO 설정 \"{{name}}\"을 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다❗",
+      "confirm-delete": "SSO 설정 \"{{name}}\"을 완전히 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다",
       "create-sso": "SSO 생성",
       "custom": "사용자 지정",
       "delete-sso": "삭제 확인",
-      "disabled-password-login-warning": "비밀번호 로그인이 비활성화되어 있습니다. SSO를 지울 때는 더 조심하세요❗",
+      "disabled-password-login-warning": "비밀번호 로그인이 비활성화되어 있습니다. SSO를 지울 때에는 특히 조심해주세요",
       "display-name": "보여줄 이름",
       "identifier": "식별자",
       "identifier-filter": "식별자 필터",
@@ -291,7 +304,7 @@
       "endpoint": "엔드포인트",
       "local-storage-path": "로컬 저장소 경로",
       "path": "저장소 경로",
-      "path-description": "{filename} 등 로컬 저장소에서와 같은 변수를 사용할 수 있습니다.",
+      "path-description": "{filename} 등 로컬 저장소에서와 같은 변수를 사용할 수 있습니다",
       "path-placeholder": "custom/path",
       "region": "리전",
       "region-placeholder": "리전 이름",
@@ -300,16 +313,16 @@
       "secretkey-placeholder": "비밀 키 / 비밀 액세스 키",
       "storage-services-list": "저장소 서비스 목록",
       "type-database": "데이터베이스",
-      "type-local": "로컬",
+      "type-local": "로컬 파일시스템",
       "update-a-service": "서비스 편집",
       "update-local-path": "로컬 저장소 경로 수정",
-      "update-local-path-description": "로컬 저장소 경로는 DB 파일으로부터의 상대 경로입니다.",
+      "update-local-path-description": "로컬 저장소 경로는 DB 파일으로부터의 상대 경로입니다",
       "update-storage": "저장소 수정",
       "url-prefix": "URL 접두사",
       "url-prefix-placeholder": "URL 앞에 붙을 커스텀 접두사, 선택 사항",
       "url-suffix": "URL 접미사",
       "url-suffix-placeholder": "URL 뒤에 붙을 커스텀 접미사, 선택 사항",
-      "warning-text": "저장소 서비스 \"{{name}}\"을(를) 삭제 하시겠습니까? 이 행동은 되돌릴 수 없습니다❗"
+      "warning-text": "저장소 서비스 \"{{name}}\"을(를) 삭제하시겠습니까?\n\n이 행동은 되돌릴 수 없습니다"
     },
     "system": "시스템",
     "system-section": {
@@ -331,25 +344,29 @@
       "database-file-size": "데이터베이스 파일 크기",
       "disable-password-login": "비밀번호 로그인 금지",
       "disable-password-login-final-warning": "이로부터 발생할 수 있는 모든 상황을 이해했다면, 아래에 \"CONFIRM\"을 입력해 주세요.",
-      "disable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인하지 못하게 합니다. 설정된 SSO에 문제가 생겼을 경우, 데이터베이스를 직접 조작해서 이 설정을 끄지 않는 한 절대로 로그인하지 못하게 됩니다. SSO 설정을 수정/제거할 때에는 특히 더 조심해 주세요❗",
+      "disable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인하지 못하게 합니다. 설정된 SSO에 문제가 생겼을 경우, 데이터베이스를 직접 조작해서 이 설정을 끄지 않는 한 절대로 로그인하지 못하게 됩니다. SSO 설정을 수정/제거할 때에는 특히 조심해 주세요",
       "disable-public-memos": "공개된 메모 금지",
       "display-with-updated-time": "수정된 시각을 표시",
       "enable-password-login": "비밀번호 로그인 허용",
-      "enable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인할 수 있게 합니다. 사용자들이 SSO와 비밀번호 둘 다 사용할 수 있게 하고 싶은 경우에만 켜 주세요❗",
+      "enable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인할 수 있게 합니다. 사용자들이 SSO와 비밀번호 둘 다 사용할 수 있게 하고 싶은 경우에만 켜 주세요",
       "ignore-version-upgrade": "업그레이드 알림 무시",
       "max-upload-size": "최대 업로드 크기 (MiB)",
       "max-upload-size-hint": "권장값은 32 MiB입니다.",
       "server-name": "서버 이름",
       "telegram-bot-token": "텔레그램 봇 연동",
-      "telegram-bot-token-description": "텔레그램 @BotFather 에서 얻을 수 있습니다",
+      "telegram-bot-token-description": "`http…/bot<token>` 형태의 API 프록시 또는 텔레그램 봇 토큰",
       "telegram-bot-token-placeholder": "서버의 텔레그램 봇 토큰"
     }
   },
   "tag-list": {
     "all-tags": "모든 태그",
     "create-tag": "태그 생성",
+    "hide": "숨기기",
     "invalid-tag-name": "잘못된 태그명입니다",
+    "save-all": "모두 저장",
+    "show": "보기",
     "tag-name": "TAG_NAME",
+    "tag-suggestions": "추천 태그",
     "tip-text": "`#태그명`을 입력하세요"
   }
 }
