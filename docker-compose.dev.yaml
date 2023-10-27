@@ -57,12 +57,13 @@ services:
       - .air/go-build:/root/.cache/go-build
       - .:/work/
 
-  # Do javascript lint before create PR
-  lint:
+  # run npm
+  npm:
     profiles: ["tools"]
     image: node:18-alpine
     working_dir: /work
-    command: npm --no-update-notifier run lint
+    environment: ["NPM_CONFIG_UPDATE_NOTIFIER=false"]
+    entrypoint: "npm"
     volumes:
       - ./web:/work
       - ./.air/node_modules/:/work/node_modules/
