@@ -66,9 +66,12 @@ var (
 				return
 			}
 
-			if enableMetric {
+			if profile.Metric {
+				println("metric collection is enabled")
 				// nolint
 				metric.NewMetricClient(s.ID, *profile)
+			} else {
+				println("metric collection is disabled")
 			}
 
 			c := make(chan os.Signal, 1)
@@ -169,6 +172,7 @@ func initConfig() {
 	println("mode:", profile.Mode)
 	println("driver:", profile.Driver)
 	println("version:", profile.Version)
+	println("metric:", profile.Metric)
 	println("---")
 }
 
