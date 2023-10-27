@@ -51,7 +51,8 @@ services:
     profiles: ["tools"]
     image: golangci/golangci-lint:v1.54.2
     working_dir: /work/
-    command: golangci-lint run -v
+    entrypoint: golangci-lint
+    command: run -v
     volumes:
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
       - .air/go-build:/root/.cache/go-build
