@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"net"
 	"net/http"
 	"strings"
 	"time"
@@ -14,11 +13,9 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"go.uber.org/zap"
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	apiv2 "github.com/usememos/memos/api/v2"
-	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/plugin/telegram"
 	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
@@ -121,17 +118,6 @@ func (s *Server) Start(ctx context.Context) error {
 
 	go s.telegramBot.Start(ctx)
 	go s.backupRunner.Run(ctx)
-
-	// Start gRPC server.
-	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port+1))
-	if err != nil {
-		return err
-	}
-	go func() {
-		if err := s.apiV2Service.GetGRPCServer().Serve(listen); err != nil {
-			log.Error("grpc server listen error", zap.Error(err))
-		}
-	}()
 
 	metric.Enqueue("server start")
 	return s.e.Start(fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port))
