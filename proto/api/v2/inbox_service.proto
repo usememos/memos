@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+import "google/api/client.proto";
+import "google/protobuf/field_mask.proto";
+
+option go_package = "gen/api/v2";
+
+service InboxService {
+  rpc ListInbox(ListInboxRequest) returns (ListInboxResponse) {
+    option (google.api.http) = {get: "/api/v2/inbox"};
+  }
+
+  rpc UpdateInbox(UpdateInboxRequest) returns (UpdateInboxResponse) {
+    option (google.api.http) = {
+      patch: "/v2/inbox"
+      body: "inbox"
+    };
+    option (google.api.method_signature) = "inbox,update_mask";
+  }
+
+  rpc DeleteInbox(DeleteInboxRequest) returns (DeleteInboxResponse) {
+    option (google.api.http) = {delete: "/v2/{name=inbox/*}"};
+    option (google.api.method_signature) = "name";
+  }
+}
+
+message Inbox {
+  // The name of the inbox.
+  // Format: inbox/{id}
+  string name = 1;
+  // Format: users/{username}
+  string sender = 2;
+  // Format: users/{username}
+  string receiver = 3;
+
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+    UNREAD = 1;
+    READ = 2;
+    ARCHIVED = 3;
+  }
+  Status status = 4;
+
+  string title = 5;
+
+  string content = 6;
+
+  string link = 7;
+}
+
+message ListInboxRequest {
+  // Format: /users/{username}
+  string user = 1;
+}
+
+message ListInboxResponse {
+  repeated Inbox inbox = 1;
+}
+
+message UpdateInboxRequest {
+  Inbox inbox = 1;
+
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UpdateInboxResponse {
+  Inbox inbox = 1;
+}
+
+message DeleteInboxRequest {
+  // The name of the inbox to delete.
+  // Format: inbox/{inbox}
+  string name = 1;
+}
+
+message DeleteInboxResponse {}

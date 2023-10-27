@@ -6,6 +6,19 @@
 - [api/v2/common.proto](#api_v2_common-proto)
     - [RowStatus](#memos-api-v2-RowStatus)
   
+- [api/v2/inbox_service.proto](#api_v2_inbox_service-proto)
+    - [DeleteInboxRequest](#memos-api-v2-DeleteInboxRequest)
+    - [DeleteInboxResponse](#memos-api-v2-DeleteInboxResponse)
+    - [Inbox](#memos-api-v2-Inbox)
+    - [ListInboxRequest](#memos-api-v2-ListInboxRequest)
+    - [ListInboxResponse](#memos-api-v2-ListInboxResponse)
+    - [UpdateInboxRequest](#memos-api-v2-UpdateInboxRequest)
+    - [UpdateInboxResponse](#memos-api-v2-UpdateInboxResponse)
+  
+    - [Inbox.Status](#memos-api-v2-Inbox-Status)
+  
+    - [InboxService](#memos-api-v2-InboxService)
+  
 - [api/v2/memo_service.proto](#api_v2_memo_service-proto)
     - [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest)
     - [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse)
@@ -104,6 +117,155 @@
  
 
  
+
+ 
+
+
+
+<a name="api_v2_inbox_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/inbox_service.proto
+
+
+
+<a name="memos-api-v2-DeleteInboxRequest"></a>
+
+### DeleteInboxRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the inbox to delete. Format: inbox/{inbox} |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteInboxResponse"></a>
+
+### DeleteInboxResponse
+
+
+
+
+
+
+
+<a name="memos-api-v2-Inbox"></a>
+
+### Inbox
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the inbox. Format: inbox/{id} |
+| sender | [string](#string) |  | Format: users/{username} |
+| receiver | [string](#string) |  | Format: users/{username} |
+| status | [Inbox.Status](#memos-api-v2-Inbox-Status) |  |  |
+| title | [string](#string) |  |  |
+| content | [string](#string) |  |  |
+| link | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListInboxRequest"></a>
+
+### ListInboxRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [string](#string) |  | Format: /users/{username} |
+
+
+
+
+
+
+<a name="memos-api-v2-ListInboxResponse"></a>
+
+### ListInboxResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| inbox | [Inbox](#memos-api-v2-Inbox) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateInboxRequest"></a>
+
+### UpdateInboxRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| inbox | [Inbox](#memos-api-v2-Inbox) |  |  |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateInboxResponse"></a>
+
+### UpdateInboxResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| inbox | [Inbox](#memos-api-v2-Inbox) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-api-v2-Inbox-Status"></a>
+
+### Inbox.Status
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| STATUS_UNSPECIFIED | 0 |  |
+| UNREAD | 1 |  |
+| READ | 2 |  |
+| ARCHIVED | 3 |  |
+
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-InboxService"></a>
+
+### InboxService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| ListInbox | [ListInboxRequest](#memos-api-v2-ListInboxRequest) | [ListInboxResponse](#memos-api-v2-ListInboxResponse) |  |
+| UpdateInbox | [UpdateInboxRequest](#memos-api-v2-UpdateInboxRequest) | [UpdateInboxResponse](#memos-api-v2-UpdateInboxResponse) |  |
+| DeleteInbox | [DeleteInboxRequest](#memos-api-v2-DeleteInboxRequest) | [DeleteInboxResponse](#memos-api-v2-DeleteInboxResponse) |  |
 
  
 

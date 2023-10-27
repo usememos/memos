@@ -17,6 +17,8 @@ import (
 )
 
 type APIV2Service struct {
+	apiv2pb.UnimplementedInboxServiceServer
+
 	Secret  string
 	Profile *profile.Profile
 	Store   *store.Store
@@ -33,20 +35,23 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 			authProvider.AuthenticationInterceptor,
 		),
 	)
-	apiv2pb.RegisterSystemServiceServer(grpcServer, NewSystemService(profile, store))
-	apiv2pb.RegisterUserServiceServer(grpcServer, NewUserService(store, secret))
-	apiv2pb.RegisterMemoServiceServer(grpcServer, NewMemoService(store))
-	apiv2pb.RegisterTagServiceServer(grpcServer, NewTagService(store))
-	apiv2pb.RegisterResourceServiceServer(grpcServer, NewResourceService(profile, store))
-	reflection.Register(grpcServer)
-
-	return &APIV2Service{
+	apiv2Service := &APIV2Service{
 		Secret:         secret,
 		Profile:        profile,
 		Store:          store,
 		grpcServer:     grpcServer,
 		grpcServerPort: grpcServerPort,
 	}
+
+	apiv2pb.RegisterSystemServiceServer(grpcServer, NewSystemService(profile, store))
+	apiv2pb.RegisterUserServiceServer(grpcServer, NewUserService(store, secret))
+	apiv2pb.RegisterMemoServiceServer(grpcServer, NewMemoService(store))
+	apiv2pb.RegisterTagServiceServer(grpcServer, NewTagService(store))
+	apiv2pb.RegisterResourceServiceServer(grpcServer, NewResourceService(profile, store))
+	apiv2pb.RegisterInboxServiceServer(grpcServer, apiv2Service)
+	reflection.Register(grpcServer)
+
+	return apiv2Service
 }
 
 func (s *APIV2Service) GetGRPCServer() *grpc.Server {
@@ -80,6 +85,9 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 		return err
 	}
 	if err := apiv2pb.RegisterResourceServiceHandler(context.Background(), gwMux, conn); err != nil {
+		return err
+	}
+	if err := apiv2pb.RegisterInboxServiceHandler(context.Background(), gwMux, conn); err != nil {
 		return err
 	}
 	e.Any("/api/v2/*", echo.WrapHandler(gwMux))
