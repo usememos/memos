@@ -21,9 +21,7 @@ func TestInboxStore(t *testing.T) {
 		ReceiverID: user.ID,
 		Status:     store.UNREAD,
 		Message: &storepb.InboxMessage{
-			Title:   "title",
-			Content: "content",
-			Link:    "link",
+			Type: storepb.InboxMessage_TYPE_MEMO_COMMENT,
 		},
 	}
 	inbox, err := ts.CreateInbox(ctx, create)
