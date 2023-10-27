@@ -13,20 +13,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-type MemoService struct {
-	apiv2pb.UnimplementedMemoServiceServer
-
-	Store *store.Store
-}
-
-// NewMemoService creates a new MemoService.
-func NewMemoService(store *store.Store) *MemoService {
-	return &MemoService{
-		Store: store,
-	}
-}
-
-func (s *MemoService) CreateMemo(ctx context.Context, request *apiv2pb.CreateMemoRequest) (*apiv2pb.CreateMemoResponse, error) {
+func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMemoRequest) (*apiv2pb.CreateMemoResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
@@ -51,7 +38,7 @@ func (s *MemoService) CreateMemo(ctx context.Context, request *apiv2pb.CreateMem
 	return response, nil
 }
 
-func (s *MemoService) ListMemos(ctx context.Context, request *apiv2pb.ListMemosRequest) (*apiv2pb.ListMemosResponse, error) {
+func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemosRequest) (*apiv2pb.ListMemosResponse, error) {
 	memoFind := &store.FindMemo{}
 	if request.Filter != "" {
 		filter, err := parseListMemosFilter(request.Filter)
@@ -111,7 +98,7 @@ func (s *MemoService) ListMemos(ctx context.Context, request *apiv2pb.ListMemosR
 	return response, nil
 }
 
-func (s *MemoService) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequest) (*apiv2pb.GetMemoResponse, error) {
+func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequest) (*apiv2pb.GetMemoResponse, error) {
 	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 		ID: &request.Id,
 	})
@@ -140,7 +127,7 @@ func (s *MemoService) GetMemo(ctx context.Context, request *apiv2pb.GetMemoReque
 	return response, nil
 }
 
-func (s *MemoService) CreateMemoComment(ctx context.Context, request *apiv2pb.CreateMemoCommentRequest) (*apiv2pb.CreateMemoCommentResponse, error) {
+func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.CreateMemoCommentRequest) (*apiv2pb.CreateMemoCommentResponse, error) {
 	// Create the comment memo first.
 	createMemoResponse, err := s.CreateMemo(ctx, request.Create)
 	if err != nil {
@@ -164,7 +151,7 @@ func (s *MemoService) CreateMemoComment(ctx context.Context, request *apiv2pb.Cr
 	return response, nil
 }
 
-func (s *MemoService) ListMemoComments(ctx context.Context, request *apiv2pb.ListMemoCommentsRequest) (*apiv2pb.ListMemoCommentsResponse, error) {
+func (s *APIV2Service) ListMemoComments(ctx context.Context, request *apiv2pb.ListMemoCommentsRequest) (*apiv2pb.ListMemoCommentsResponse, error) {
 	memoRelationComment := store.MemoRelationComment
 	memoRelations, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
 		RelatedMemoID: &request.Id,

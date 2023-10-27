@@ -14,7 +14,6 @@ import (
 
 	"github.com/usememos/memos/internal/log"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
-	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
 
@@ -23,22 +22,7 @@ const (
 	thumbnailImagePath = ".thumbnail_cache"
 )
 
-type ResourceService struct {
-	apiv2pb.UnimplementedResourceServiceServer
-
-	Profile *profile.Profile
-	Store   *store.Store
-}
-
-// NewResourceService creates a new ResourceService.
-func NewResourceService(profile *profile.Profile, store *store.Store) *ResourceService {
-	return &ResourceService{
-		Profile: profile,
-		Store:   store,
-	}
-}
-
-func (s *ResourceService) ListResources(ctx context.Context, _ *apiv2pb.ListResourcesRequest) (*apiv2pb.ListResourcesResponse, error) {
+func (s *APIV2Service) ListResources(ctx context.Context, _ *apiv2pb.ListResourcesRequest) (*apiv2pb.ListResourcesResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -57,7 +41,7 @@ func (s *ResourceService) ListResources(ctx context.Context, _ *apiv2pb.ListReso
 	return response, nil
 }
 
-func (s *ResourceService) UpdateResource(ctx context.Context, request *apiv2pb.UpdateResourceRequest) (*apiv2pb.UpdateResourceResponse, error) {
+func (s *APIV2Service) UpdateResource(ctx context.Context, request *apiv2pb.UpdateResourceRequest) (*apiv2pb.UpdateResourceResponse, error) {
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
@@ -84,7 +68,7 @@ func (s *ResourceService) UpdateResource(ctx context.Context, request *apiv2pb.U
 	}, nil
 }
 
-func (s *ResourceService) DeleteResource(ctx context.Context, request *apiv2pb.DeleteResourceRequest) (*apiv2pb.DeleteResourceResponse, error) {
+func (s *APIV2Service) DeleteResource(ctx context.Context, request *apiv2pb.DeleteResourceRequest) (*apiv2pb.DeleteResourceResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -119,7 +103,7 @@ func (s *ResourceService) DeleteResource(ctx context.Context, request *apiv2pb.D
 	return &apiv2pb.DeleteResourceResponse{}, nil
 }
 
-func (s *ResourceService) convertResourceFromStore(ctx context.Context, resource *store.Resource) *apiv2pb.Resource {
+func (s *APIV2Service) convertResourceFromStore(ctx context.Context, resource *store.Resource) *apiv2pb.Resource {
 	var memoID *int32
 	if resource.MemoID != nil {
 		memo, _ := s.Store.GetMemo(ctx, &store.FindMemo{

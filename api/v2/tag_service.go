@@ -10,20 +10,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-type TagService struct {
-	apiv2pb.UnimplementedTagServiceServer
-
-	Store *store.Store
-}
-
-// NewTagService creates a new TagService.
-func NewTagService(store *store.Store) *TagService {
-	return &TagService{
-		Store: store,
-	}
-}
-
-func (s *TagService) UpsertTag(ctx context.Context, request *apiv2pb.UpsertTagRequest) (*apiv2pb.UpsertTagResponse, error) {
+func (s *APIV2Service) UpsertTag(ctx context.Context, request *apiv2pb.UpsertTagRequest) (*apiv2pb.UpsertTagResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
@@ -42,7 +29,7 @@ func (s *TagService) UpsertTag(ctx context.Context, request *apiv2pb.UpsertTagRe
 	}, nil
 }
 
-func (s *TagService) ListTags(ctx context.Context, request *apiv2pb.ListTagsRequest) (*apiv2pb.ListTagsResponse, error) {
+func (s *APIV2Service) ListTags(ctx context.Context, request *apiv2pb.ListTagsRequest) (*apiv2pb.ListTagsResponse, error) {
 	tags, err := s.Store.ListTags(ctx, &store.FindTag{
 		CreatorID: request.CreatorId,
 	})
@@ -57,7 +44,7 @@ func (s *TagService) ListTags(ctx context.Context, request *apiv2pb.ListTagsRequ
 	return response, nil
 }
 
-func (s *TagService) DeleteTag(ctx context.Context, request *apiv2pb.DeleteTagRequest) (*apiv2pb.DeleteTagResponse, error) {
+func (s *APIV2Service) DeleteTag(ctx context.Context, request *apiv2pb.DeleteTagRequest) (*apiv2pb.DeleteTagResponse, error) {
 	err := s.Store.DeleteTag(ctx, &store.DeleteTag{
 		Name:      request.Tag.Name,
 		CreatorID: request.Tag.CreatorId,

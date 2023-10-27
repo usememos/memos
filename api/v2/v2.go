@@ -17,6 +17,11 @@ import (
 )
 
 type APIV2Service struct {
+	apiv2pb.UnimplementedSystemServiceServer
+	apiv2pb.UnimplementedUserServiceServer
+	apiv2pb.UnimplementedMemoServiceServer
+	apiv2pb.UnimplementedResourceServiceServer
+	apiv2pb.UnimplementedTagServiceServer
 	apiv2pb.UnimplementedInboxServiceServer
 
 	Secret  string
@@ -43,11 +48,11 @@ func NewAPIV2Service(secret string, profile *profile.Profile, store *store.Store
 		grpcServerPort: grpcServerPort,
 	}
 
-	apiv2pb.RegisterSystemServiceServer(grpcServer, NewSystemService(profile, store))
-	apiv2pb.RegisterUserServiceServer(grpcServer, NewUserService(store, secret))
-	apiv2pb.RegisterMemoServiceServer(grpcServer, NewMemoService(store))
-	apiv2pb.RegisterTagServiceServer(grpcServer, NewTagService(store))
-	apiv2pb.RegisterResourceServiceServer(grpcServer, NewResourceService(profile, store))
+	apiv2pb.RegisterSystemServiceServer(grpcServer, apiv2Service)
+	apiv2pb.RegisterUserServiceServer(grpcServer, apiv2Service)
+	apiv2pb.RegisterMemoServiceServer(grpcServer, apiv2Service)
+	apiv2pb.RegisterTagServiceServer(grpcServer, apiv2Service)
+	apiv2pb.RegisterResourceServiceServer(grpcServer, apiv2Service)
 	apiv2pb.RegisterInboxServiceServer(grpcServer, apiv2Service)
 	reflection.Register(grpcServer)
 
