@@ -12,7 +12,7 @@ func (d *DB) CreateInbox(ctx context.Context, create *store.Inbox) (*store.Inbox
 }
 
 // nolint
-func (d *DB) ListInbox(ctx context.Context, find *store.FindInbox) ([]*store.Inbox, error) {
+func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.Inbox, error) {
 	return nil, nil
 }
 

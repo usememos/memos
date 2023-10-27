@@ -19,7 +19,7 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	InboxService_ListInbox_FullMethodName   = "/memos.api.v2.InboxService/ListInbox"
+	InboxService_ListInboxes_FullMethodName = "/memos.api.v2.InboxService/ListInboxes"
 	InboxService_UpdateInbox_FullMethodName = "/memos.api.v2.InboxService/UpdateInbox"
 	InboxService_DeleteInbox_FullMethodName = "/memos.api.v2.InboxService/DeleteInbox"
 )
@@ -28,7 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type InboxServiceClient interface {
-	ListInbox(ctx context.Context, in *ListInboxRequest, opts ...grpc.CallOption) (*ListInboxResponse, error)
+	ListInboxes(ctx context.Context, in *ListInboxesRequest, opts ...grpc.CallOption) (*ListInboxesResponse, error)
 	UpdateInbox(ctx context.Context, in *UpdateInboxRequest, opts ...grpc.CallOption) (*UpdateInboxResponse, error)
 	DeleteInbox(ctx context.Context, in *DeleteInboxRequest, opts ...grpc.CallOption) (*DeleteInboxResponse, error)
 }
@@ -41,9 +41,9 @@ func NewInboxServiceClient(cc grpc.ClientConnInterface) InboxServiceClient {
 	return &inboxServiceClient{cc}
 }
 
-func (c *inboxServiceClient) ListInbox(ctx context.Context, in *ListInboxRequest, opts ...grpc.CallOption) (*ListInboxResponse, error) {
-	out := new(ListInboxResponse)
-	err := c.cc.Invoke(ctx, InboxService_ListInbox_FullMethodName, in, out, opts...)
+func (c *inboxServiceClient) ListInboxes(ctx context.Context, in *ListInboxesRequest, opts ...grpc.CallOption) (*ListInboxesResponse, error) {
+	out := new(ListInboxesResponse)
+	err := c.cc.Invoke(ctx, InboxService_ListInboxes_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (c *inboxServiceClient) DeleteInbox(ctx context.Context, in *DeleteInboxReq
 // All implementations must embed UnimplementedInboxServiceServer
 // for forward compatibility
 type InboxServiceServer interface {
-	ListInbox(context.Context, *ListInboxRequest) (*ListInboxResponse, error)
+	ListInboxes(context.Context, *ListInboxesRequest) (*ListInboxesResponse, error)
 	UpdateInbox(context.Context, *UpdateInboxRequest) (*UpdateInboxResponse, error)
 	DeleteInbox(context.Context, *DeleteInboxRequest) (*DeleteInboxResponse, error)
 	mustEmbedUnimplementedInboxServiceServer()
@@ -82,8 +82,8 @@ type InboxServiceServer interface {
 type UnimplementedInboxServiceServer struct {
 }
 
-func (UnimplementedInboxServiceServer) ListInbox(context.Context, *ListInboxRequest) (*ListInboxResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ListInbox not implemented")
+func (UnimplementedInboxServiceServer) ListInboxes(context.Context, *ListInboxesRequest) (*ListInboxesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListInboxes not implemented")
 }
 func (UnimplementedInboxServiceServer) UpdateInbox(context.Context, *UpdateInboxRequest) (*UpdateInboxResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateInbox not implemented")
@@ -104,20 +104,20 @@ func RegisterInboxServiceServer(s grpc.ServiceRegistrar, srv InboxServiceServer)
 	s.RegisterService(&InboxService_ServiceDesc, srv)
 }
 
-func _InboxService_ListInbox_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ListInboxRequest)
+func _InboxService_ListInboxes_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListInboxesRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(InboxServiceServer).ListInbox(ctx, in)
+		return srv.(InboxServiceServer).ListInboxes(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: InboxService_ListInbox_FullMethodName,
+		FullMethod: InboxService_ListInboxes_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(InboxServiceServer).ListInbox(ctx, req.(*ListInboxRequest))
+		return srv.(InboxServiceServer).ListInboxes(ctx, req.(*ListInboxesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -166,8 +166,8 @@ var InboxService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*InboxServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "ListInbox",
-			Handler:    _InboxService_ListInbox_Handler,
+			MethodName: "ListInboxes",
+			Handler:    _InboxService_ListInboxes_Handler,
 		},
 		{
 			MethodName: "UpdateInbox",

@@ -3,37 +3,39 @@ package v2
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/store"
 )
 
-func (s *APIV2Service) ListInbox(ctx context.Context, _ *apiv2pb.ListInboxRequest) (*apiv2pb.ListInboxResponse, error) {
+func (s *APIV2Service) ListInboxes(ctx context.Context, _ *apiv2pb.ListInboxesRequest) (*apiv2pb.ListInboxesResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user")
 	}
 
-	inboxList, err := s.Store.ListInbox(ctx, &store.FindInbox{
+	inboxes, err := s.Store.ListInboxes(ctx, &store.FindInbox{
 		ReceiverID: &user.ID,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list inbox: %v", err)
 	}
 
-	response := &apiv2pb.ListInboxResponse{
-		Inbox: []*apiv2pb.Inbox{},
+	response := &apiv2pb.ListInboxesResponse{
+		Inboxes: []*apiv2pb.Inbox{},
 	}
-	for _, inbox := range inboxList {
+	for _, inbox := range inboxes {
 		inboxMessage, err := s.convertInboxFromStore(ctx, inbox)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to convert inbox from store: %v", err)
 		}
-		response.Inbox = append(response.Inbox, inboxMessage)
+		response.Inboxes = append(response.Inboxes, inboxMessage)
 	}
 
 	return response, nil
@@ -103,10 +105,11 @@ func (s *APIV2Service) convertInboxFromStore(ctx context.Context, inbox *store.I
 	}
 
 	return &apiv2pb.Inbox{
-		Name:       fmt.Sprintf("inbox/%d", inbox.ID),
+		Name:       fmt.Sprintf("inboxes/%d", inbox.ID),
 		Sender:     fmt.Sprintf("users/%s", sender.Username),
 		Receiver:   fmt.Sprintf("users/%s", receiver.Username),
 		Status:     convertInboxStatusFromStore(inbox.Status),
+		CreateTime: timestamppb.New(time.Unix(inbox.CreatedTs, 0)),
 		Type:       apiv2pb.Inbox_Type(inbox.Message.Type),
 		ActivityId: inbox.Message.ActivityId,
 	}, nil

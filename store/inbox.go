@@ -44,8 +44,8 @@ func (s *Store) CreateInbox(ctx context.Context, create *Inbox) (*Inbox, error) 
 	return s.driver.CreateInbox(ctx, create)
 }
 
-func (s *Store) ListInbox(ctx context.Context, find *FindInbox) ([]*Inbox, error) {
-	return s.driver.ListInbox(ctx, find)
+func (s *Store) ListInboxes(ctx context.Context, find *FindInbox) ([]*Inbox, error) {
+	return s.driver.ListInboxes(ctx, find)
 }
 
 func (s *Store) UpdateInbox(ctx context.Context, update *UpdateInbox) (*Inbox, error) {

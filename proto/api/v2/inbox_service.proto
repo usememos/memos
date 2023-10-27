@@ -5,31 +5,32 @@ package memos.api.v2;
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v2";
 
 service InboxService {
-  rpc ListInbox(ListInboxRequest) returns (ListInboxResponse) {
-    option (google.api.http) = {get: "/api/v2/inbox"};
+  rpc ListInboxes(ListInboxesRequest) returns (ListInboxesResponse) {
+    option (google.api.http) = {get: "/api/v2/inboxes"};
   }
 
   rpc UpdateInbox(UpdateInboxRequest) returns (UpdateInboxResponse) {
     option (google.api.http) = {
-      patch: "/v2/inbox"
+      patch: "/v2/inboxes"
       body: "inbox"
     };
     option (google.api.method_signature) = "inbox,update_mask";
   }
 
   rpc DeleteInbox(DeleteInboxRequest) returns (DeleteInboxResponse) {
-    option (google.api.http) = {delete: "/v2/{name=inbox/*}"};
+    option (google.api.http) = {delete: "/v2/{name=inboxes/*}"};
     option (google.api.method_signature) = "name";
   }
 }
 
 message Inbox {
   // The name of the inbox.
-  // Format: inbox/{id}
+  // Format: inboxes/{id}
   string name = 1;
   // Format: users/{username}
   string sender = 2;
@@ -44,22 +45,24 @@ message Inbox {
   }
   Status status = 4;
 
+  google.protobuf.Timestamp create_time = 5;
+
   enum Type {
     TYPE_UNSPECIFIED = 0;
     TYPE_MEMO_COMMENT = 1;
   }
-  Type type = 5;
+  Type type = 6;
 
-  optional int32 activity_id = 6;
+  optional int32 activity_id = 7;
 }
 
-message ListInboxRequest {
-  // Format: /users/{username}
+message ListInboxesRequest {
+  // Format: users/{username}
   string user = 1;
 }
 
-message ListInboxResponse {
-  repeated Inbox inbox = 1;
+message ListInboxesResponse {
+  repeated Inbox inboxes = 1;
 }
 
 message UpdateInboxRequest {
@@ -74,7 +77,7 @@ message UpdateInboxResponse {
 
 message DeleteInboxRequest {
   // The name of the inbox to delete.
-  // Format: inbox/{inbox}
+  // Format: inboxes/{inbox}
   string name = 1;
 }
 

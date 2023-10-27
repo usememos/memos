@@ -36,7 +36,7 @@ func (d *DB) CreateInbox(ctx context.Context, create *store.Inbox) (*store.Inbox
 	return create, nil
 }
 
-func (d *DB) ListInbox(ctx context.Context, find *store.FindInbox) ([]*store.Inbox, error) {
+func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.Inbox, error) {
 	where, args := []string{"1 = 1"}, []any{}
 
 	if find.ID != nil {

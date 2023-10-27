@@ -10,8 +10,8 @@
     - [DeleteInboxRequest](#memos-api-v2-DeleteInboxRequest)
     - [DeleteInboxResponse](#memos-api-v2-DeleteInboxResponse)
     - [Inbox](#memos-api-v2-Inbox)
-    - [ListInboxRequest](#memos-api-v2-ListInboxRequest)
-    - [ListInboxResponse](#memos-api-v2-ListInboxResponse)
+    - [ListInboxesRequest](#memos-api-v2-ListInboxesRequest)
+    - [ListInboxesResponse](#memos-api-v2-ListInboxesResponse)
     - [UpdateInboxRequest](#memos-api-v2-UpdateInboxRequest)
     - [UpdateInboxResponse](#memos-api-v2-UpdateInboxResponse)
   
@@ -138,7 +138,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the inbox to delete. Format: inbox/{inbox} |
+| name | [string](#string) |  | The name of the inbox to delete. Format: inboxes/{inbox} |
 
 
 
@@ -163,10 +163,11 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| name | [string](#string) |  | The name of the inbox. Format: inbox/{id} |
+| name | [string](#string) |  | The name of the inbox. Format: inboxes/{id} |
 | sender | [string](#string) |  | Format: users/{username} |
 | receiver | [string](#string) |  | Format: users/{username} |
 | status | [Inbox.Status](#memos-api-v2-Inbox-Status) |  |  |
+| create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | type | [Inbox.Type](#memos-api-v2-Inbox-Type) |  |  |
 | activity_id | [int32](#int32) | optional |  |
 
@@ -175,30 +176,30 @@
 
 
 
-<a name="memos-api-v2-ListInboxRequest"></a>
+<a name="memos-api-v2-ListInboxesRequest"></a>
 
-### ListInboxRequest
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| user | [string](#string) |  | Format: /users/{username} |
-
-
-
-
-
-
-<a name="memos-api-v2-ListInboxResponse"></a>
-
-### ListInboxResponse
+### ListInboxesRequest
 
 
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| inbox | [Inbox](#memos-api-v2-Inbox) | repeated |  |
+| user | [string](#string) |  | Format: users/{username} |
+
+
+
+
+
+
+<a name="memos-api-v2-ListInboxesResponse"></a>
+
+### ListInboxesResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| inboxes | [Inbox](#memos-api-v2-Inbox) | repeated |  |
 
 
 
@@ -275,7 +276,7 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| ListInbox | [ListInboxRequest](#memos-api-v2-ListInboxRequest) | [ListInboxResponse](#memos-api-v2-ListInboxResponse) |  |
+| ListInboxes | [ListInboxesRequest](#memos-api-v2-ListInboxesRequest) | [ListInboxesResponse](#memos-api-v2-ListInboxesResponse) |  |
 | UpdateInbox | [UpdateInboxRequest](#memos-api-v2-UpdateInboxRequest) | [UpdateInboxResponse](#memos-api-v2-UpdateInboxResponse) |  |
 | DeleteInbox | [DeleteInboxRequest](#memos-api-v2-DeleteInboxRequest) | [DeleteInboxResponse](#memos-api-v2-DeleteInboxResponse) |  |
 
