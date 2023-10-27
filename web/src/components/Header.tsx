@@ -52,6 +52,12 @@ const Header = () => {
     title: t("common.resources"),
     icon: <Icon.Paperclip className="mr-3 w-6 h-auto opacity-70" />,
   };
+  const inboxNavLink: NavLinkItem = {
+    id: "header-inbox",
+    path: "/inbox",
+    title: t("common.inbox"),
+    icon: <Icon.Bell className="mr-3 w-6 h-auto opacity-70" />,
+  };
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",
     path: "/explore",
@@ -78,7 +84,7 @@ const Header = () => {
   };
 
   const navLinks: NavLinkItem[] = user
-    ? [homeNavLink, dailyReviewNavLink, resourcesNavLink, exploreNavLink, archivedNavLink, settingNavLink]
+    ? [homeNavLink, dailyReviewNavLink, resourcesNavLink, inboxNavLink, exploreNavLink, archivedNavLink, settingNavLink]
     : [exploreNavLink, signInNavLink];
 
   return (

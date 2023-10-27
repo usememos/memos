@@ -15,6 +15,10 @@ const (
 	ARCHIVED InboxStatus = "ARCHIVED"
 )
 
+func (s InboxStatus) String() string {
+	return string(s)
+}
+
 type Inbox struct {
 	ID         int32
 	CreatedTs  int64

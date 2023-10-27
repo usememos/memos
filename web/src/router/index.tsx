@@ -15,6 +15,7 @@ const EmbedMemo = lazy(() => import("@/pages/EmbedMemo"));
 const Archived = lazy(() => import("@/pages/Archived"));
 const DailyReview = lazy(() => import("@/pages/DailyReview"));
 const Resources = lazy(() => import("@/pages/Resources"));
+const Inboxes = lazy(() => import("@/pages/Inboxes"));
 const Setting = lazy(() => import("@/pages/Setting"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
 
@@ -81,6 +82,11 @@ const router = createBrowserRouter([
           {
             path: "resources",
             element: <Resources />,
+            loader: () => initialUserStateLoader(),
+          },
+          {
+            path: "inbox",
+            element: <Inboxes />,
             loader: () => initialUserStateLoader(),
           },
           {

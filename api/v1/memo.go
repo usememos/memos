@@ -14,6 +14,7 @@ import (
 
 	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/internal/util"
+	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
@@ -344,9 +345,32 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 			if err != nil {
 				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get related memo").SetInternal(err)
 			}
-			// nolint
 			if relatedMemo.CreatorID != memo.CreatorID {
-				// TODO: When a memo is commented by others, send notification to the memo creator.
+				activity, err := s.Store.CreateActivity(ctx, &store.Activity{
+					CreatorID: memo.CreatorID,
+					Type:      store.ActivityTypeMemoComment,
+					Level:     store.ActivityLevelInfo,
+					Payload: &storepb.ActivityPayload{
+						MemoComment: &storepb.ActivityMemoCommentPayload{
+							MemoId:        memo.ID,
+							RelatedMemoId: memoRelationUpsert.RelatedMemoID,
+						},
+					},
+				})
+				if err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
+				}
+				if _, err := s.Store.CreateInbox(ctx, &store.Inbox{
+					SenderID:   memo.CreatorID,
+					ReceiverID: relatedMemo.CreatorID,
+					Status:     store.UNREAD,
+					Message: &storepb.InboxMessage{
+						Type:       storepb.InboxMessage_TYPE_MEMO_COMMENT,
+						ActivityId: &activity.ID,
+					},
+				}); err != nil {
+					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create inbox").SetInternal(err)
+				}
 			}
 		}
 	}

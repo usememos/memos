@@ -52,7 +52,7 @@ func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.I
 		where, args = append(where, "`status` = ?"), append(args, *find.Status)
 	}
 
-	query := "SELECT `id`, `created_ts`, `sender_id`, `receiver_id`, `status`, `message` FROM `inbox` WHERE " + strings.Join(where, " AND ")
+	query := "SELECT `id`, `created_ts`, `sender_id`, `receiver_id`, `status`, `message` FROM `inbox` WHERE " + strings.Join(where, " AND ") + " ORDER BY created_ts DESC"
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -90,7 +90,7 @@ func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.I
 }
 
 func (d *DB) UpdateInbox(ctx context.Context, update *store.UpdateInbox) (*store.Inbox, error) {
-	set, args := []string{"status"}, []any{update.Status}
+	set, args := []string{"status"}, []any{update.Status.String()}
 	args = append(args, update.ID)
 	query := "UPDATE inbox SET " + strings.Join(set, " = ?, ") + " = ? WHERE id = ? RETURNING `id`, `created_ts`, `sender_id`, `receiver_id`, `status`, `message`"
 	inbox := &store.Inbox{}

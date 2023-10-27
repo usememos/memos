@@ -9,7 +9,7 @@ import (
 )
 
 const (
-	InboxNamePrefix = "inbox/"
+	InboxNamePrefix = "inboxes/"
 )
 
 // GetNameParentTokens returns the tokens from a resource name.

@@ -61,7 +61,8 @@
     "beta": "Beta",
     "new": "New",
     "mark": "Mark",
-    "profile": "Profile"
+    "profile": "Profile",
+    "inbox": "Inbox"
   },
   "router": {
     "go-to-home": "Go to Home",
