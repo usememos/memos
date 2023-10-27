@@ -20,6 +20,8 @@ jobs:
           fetch-depth: 0
       - name: Setup buf
         uses: bufbuild/buf-setup-action@v1
+        with:
+          github_token: ${{ github.token }}
       - name: buf lint
         uses: bufbuild/buf-lint-action@v1
         with:
