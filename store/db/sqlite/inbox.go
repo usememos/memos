@@ -25,7 +25,7 @@ func (d *DB) CreateInbox(ctx context.Context, create *store.Inbox) (*store.Inbox
 	placeholder := []string{"?", "?", "?", "?"}
 	args := []any{create.SenderID, create.ReceiverID, create.Status, messageString}
 
-	stmt := "INSERT INTO inbox (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`"
+	stmt := "INSERT INTO `inbox` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,
 		&create.CreatedTs,
@@ -52,7 +52,7 @@ func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.I
 		where, args = append(where, "`status` = ?"), append(args, *find.Status)
 	}
 
-	query := "SELECT `id`, `created_ts`, `sender_id`, `receiver_id`, `status`, `message` FROM `inbox` WHERE " + strings.Join(where, " AND ") + " ORDER BY created_ts DESC"
+	query := "SELECT `id`, `created_ts`, `sender_id`, `receiver_id`, `status`, `message` FROM `inbox` WHERE " + strings.Join(where, " AND ") + " ORDER BY `created_ts` DESC"
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -90,9 +90,9 @@ func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.I
 }
 
 func (d *DB) UpdateInbox(ctx context.Context, update *store.UpdateInbox) (*store.Inbox, error) {
-	set, args := []string{"status"}, []any{update.Status.String()}
+	set, args := []string{"`status` = ?"}, []any{update.Status.String()}
 	args = append(args, update.ID)
-	query := "UPDATE inbox SET " + strings.Join(set, " = ?, ") + " = ? WHERE id = ? RETURNING `id`, `created_ts`, `sender_id`, `receiver_id`, `status`, `message`"
+	query := "UPDATE `inbox` SET " + strings.Join(set, ", ") + " WHERE `id` = ? RETURNING `id`, `created_ts`, `sender_id`, `receiver_id`, `status`, `message`"
 	inbox := &store.Inbox{}
 	var messageBytes []byte
 	if err := d.db.QueryRowContext(ctx, query, args...).Scan(
@@ -114,7 +114,7 @@ func (d *DB) UpdateInbox(ctx context.Context, update *store.UpdateInbox) (*store
 }
 
 func (d *DB) DeleteInbox(ctx context.Context, delete *store.DeleteInbox) error {
-	result, err := d.db.ExecContext(ctx, "DELETE FROM inbox WHERE id = ?", delete.ID)
+	result, err := d.db.ExecContext(ctx, "DELETE FROM `inbox` WHERE `id` = ?", delete.ID)
 	if err != nil {
 		return err
 	}

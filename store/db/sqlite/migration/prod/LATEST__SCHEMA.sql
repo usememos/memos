@@ -11,6 +11,7 @@ DROP TABLE IF EXISTS tag;
 DROP TABLE IF EXISTS activity;
 DROP TABLE IF EXISTS storage;
 DROP TABLE IF EXISTS idp;
+DROP TABLE IF EXISTS inbox;
 
 -- migration_history
 CREATE TABLE migration_history (
@@ -132,4 +133,14 @@ CREATE TABLE idp (
   type TEXT NOT NULL,
   identifier_filter TEXT NOT NULL DEFAULT '',
   config TEXT NOT NULL DEFAULT '{}'
+);
+
+-- inbox
+CREATE TABLE inbox (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  created_ts BIGINT NOT NULL DEFAULT (strftime('%s', 'now')),
+  sender_id INTEGER NOT NULL,
+  receiver_id INTEGER NOT NULL,
+  status TEXT NOT NULL,
+  message TEXT NOT NULL DEFAULT '{}'
 );

@@ -49,8 +49,8 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 		return nil, err
 	}
 
-	id64 := int32(id)
-	list, err := d.ListUsers(ctx, &store.FindUser{ID: &id64})
+	id32 := int32(id)
+	list, err := d.ListUsers(ctx, &store.FindUser{ID: &id32})
 	if err != nil {
 		return nil, err
 	}
@@ -91,23 +91,10 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 		return nil, err
 	}
 
-	user := &store.User{}
-	query = "SELECT `id`, `username`, `role`, `email`, `nickname`, `password_hash`, `avatar_url`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status` FROM `user` WHERE `id` = ?"
-	if err := d.db.QueryRowContext(ctx, query, update.ID).Scan(
-		&user.ID,
-		&user.Username,
-		&user.Role,
-		&user.Email,
-		&user.Nickname,
-		&user.PasswordHash,
-		&user.AvatarURL,
-		&user.CreatedTs,
-		&user.UpdatedTs,
-		&user.RowStatus,
-	); err != nil {
+	user, err := d.GetUser(ctx, &store.FindUser{ID: &update.ID})
+	if err != nil {
 		return nil, err
 	}
-
 	return user, nil
 }
 
@@ -162,6 +149,17 @@ func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User
 	}
 
 	return list, nil
+}
+
+func (d *DB) GetUser(ctx context.Context, find *store.FindUser) (*store.User, error) {
+	list, err := d.ListUsers(ctx, find)
+	if err != nil {
+		return nil, err
+	}
+	if len(list) != 1 {
+		return nil, errors.Wrapf(nil, "unexpected user count: %d", len(list))
+	}
+	return list[0], nil
 }
 
 func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) error {
