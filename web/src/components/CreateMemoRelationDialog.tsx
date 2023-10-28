@@ -89,7 +89,7 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
           onChange={handleMemoIdChanged}
           onKeyDown={handleMemoIdInputKeyDown}
           fullWidth
-          endDecorator={<Icon.PlusCircle onClick={handleSaveBtnClick} className="w-4 h-auto cursor-pointer hover:opacity-80" />}
+          endDecorator={<Icon.Check onClick={handleSaveBtnClick} className="w-4 h-auto cursor-pointer hover:opacity-80" />}
         />
         {memoList.length > 0 && (
           <>
