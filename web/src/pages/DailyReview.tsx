@@ -116,10 +116,12 @@ const DailyReview = () => {
                 <MemoResourceListView resourceList={memo.resourceList} />
                 <MemoRelationListView memo={memo} relationList={memo.relationList.filter((relation) => relation.type === "REFERENCE")} />
                 <div className="absolute left-1 sm:left-2 top-3 h-full">
-                  <Icon.Circle className="w-4 h-auto bg-gray-400 text-gray-400 dark:bg-gray-500 dark:text-gray-500 rounded-full" />
                   {index !== dailyMemos.length - 1 && (
-                    <div className="absolute top-2 left-1.5 h-full w-1 bg-gray-400 dark:bg-gray-500 block"></div>
+                    <div className="absolute top-2 left-[7px] h-full w-0.5 bg-gray-400 dark:bg-gray-500 block"></div>
                   )}
+                  <div className="border-4 rounded-full border-white relative dark:border-zinc-700">
+                    <Icon.Circle className="w-2 h-auto bg-gray-400 text-gray-400 dark:bg-gray-500 dark:text-gray-500 rounded-full" />
+                  </div>
                 </div>
               </div>
             ))}

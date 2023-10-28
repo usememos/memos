@@ -369,5 +369,8 @@
     "file-exceeds-upload-limit-of": "File {{file}} exceeds upload limit of {{size}} MiB",
     "updating-setting-failed": "Updating setting failed",
     "password-login-disabled": "Can't remove last identity provider when password login is disabled"
+  },
+  "inbox": {
+    "memo-comment": "{{user}} has a comment on your {{memo}}."
   }
 }

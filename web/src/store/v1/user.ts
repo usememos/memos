@@ -57,4 +57,8 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
   },
 }));
 
+export const extractUsernameFromName = (name: string) => {
+  return name.split("/")[1];
+};
+
 export default useUserV1Store;

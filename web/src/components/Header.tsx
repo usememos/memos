@@ -50,8 +50,12 @@ const Header = () => {
         layoutStore.setHeaderStatus(true);
       }
     };
-    window.addEventListener("resize", handleWindowResize);
     handleWindowResize();
+    window.addEventListener("resize", handleWindowResize);
+
+    return () => {
+      window.removeEventListener("resize", handleWindowResize);
+    };
   }, [location]);
 
   const homeNavLink: NavLinkItem = {
@@ -111,7 +115,7 @@ const Header = () => {
   };
 
   const navLinks: NavLinkItem[] = user
-    ? [homeNavLink, dailyReviewNavLink, resourcesNavLink, inboxNavLink, exploreNavLink, archivedNavLink, settingNavLink]
+    ? [homeNavLink, dailyReviewNavLink, resourcesNavLink, exploreNavLink, inboxNavLink, archivedNavLink, settingNavLink]
     : [exploreNavLink, signInNavLink];
 
   return (

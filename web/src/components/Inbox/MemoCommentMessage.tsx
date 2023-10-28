@@ -5,8 +5,10 @@ import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useInboxStore from "@/store/v1/inbox";
+import { extractUsernameFromName } from "@/store/v1/user";
 import { Activity } from "@/types/proto/api/v2/activity_service";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v2/inbox_service";
+import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 
 interface Props {
@@ -14,6 +16,7 @@ interface Props {
 }
 
 const MemoCommentMessage = ({ inbox }: Props) => {
+  const t = useTranslate();
   const navigateTo = useNavigateTo();
   const inboxStore = useInboxStore();
   const [activity, setActivity] = useState<Activity | undefined>(undefined);
@@ -90,7 +93,10 @@ const MemoCommentMessage = ({ inbox }: Props) => {
           className="text-base leading-tight cursor-pointer text-gray-500 dark:text-gray-400 hover:underline hover:text-blue-600"
           onClick={handleNavigateToMemo}
         >
-          {inbox.sender} has a comment in your memo #{activity?.payload?.memoComment?.relatedMemoId}.
+          {t("inbox.memo-comment", {
+            user: extractUsernameFromName(inbox.sender),
+            memo: `memo#${activity?.payload?.memoComment?.relatedMemoId}`,
+          })}
         </p>
       </div>
     </div>
