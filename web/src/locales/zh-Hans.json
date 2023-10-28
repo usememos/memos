@@ -79,7 +79,8 @@
     "vacuum": "清理未使用资源",
     "version": "版本",
     "visibility": "可见性",
-    "yourself": "您自己"
+    "yourself": "您自己",
+    "inbox": "通知"
   },
   "daily-review": {
     "no-memos": "哎呀，空无一物。",

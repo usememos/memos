@@ -68,19 +68,21 @@ const MemoCommentMessage = ({ inbox }: Props) => {
             : "border-gray-400 text-gray-400 bg-gray-50 dark:bg-zinc-800"
         )}
       >
-        <Icon.MessageCircle className="w-4 sm:w-5 h-auto" />
+        <Tooltip title={"Comment"} placement="bottom">
+          <Icon.MessageCircle className="w-4 sm:w-5 h-auto" />
+        </Tooltip>
       </div>
       <div
         className={classNames(
-          "border w-full p-3 sm:p-4 rounded-lg flex flex-col justify-start items-start gap-2 dark:border-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-800",
+          "border w-full p-3 px-4 rounded-lg flex flex-col justify-start items-start gap-2 dark:border-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-800",
           inbox.status !== Inbox_Status.UNREAD && "opacity-60"
         )}
       >
         <div className="w-full flex flex-row justify-between items-center">
-          <span className="text-sm text-gray-500">{inbox.createTime?.toLocaleString()}</span>
+          <span className="text-xs text-gray-500">{inbox.createTime?.toLocaleString()}</span>
           <div>
             {inbox.status === Inbox_Status.UNREAD && (
-              <Tooltip title="Archive" placement="top">
+              <Tooltip title={t("common.archive")} placement="top">
                 <Icon.Inbox
                   className="w-4 h-auto cursor-pointer text-gray-400 hover:text-blue-600"
                   onClick={() => handleArchiveMessage()}

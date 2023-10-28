@@ -71,10 +71,10 @@
     "vacuum": "清理",
     "version": "版本",
     "visibility": "可見度",
-    "yourself": "你自己"
+    "yourself": "你自己",
+    "inbox": "通知"
   },
   "daily-review": {
-    "no-memos": "啊咧，這裡啥都沒有。",
     "title": "每日回顧"
   },
   "days": {
