@@ -3,6 +3,8 @@ import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useLayoutStore } from "@/store/module";
+import useInboxStore from "@/store/v1/inbox";
+import { Inbox_Status } from "@/types/proto/api/v2/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
 import Icon from "./Icon";
@@ -19,8 +21,26 @@ const Header = () => {
   const t = useTranslate();
   const location = useLocation();
   const layoutStore = useLayoutStore();
-  const showHeader = layoutStore.state.showHeader;
   const user = useCurrentUser();
+  const inboxStore = useInboxStore();
+  const showHeader = layoutStore.state.showHeader;
+  const hasUnreadInbox = inboxStore.inboxes.some((inbox) => inbox.status === Inbox_Status.UNREAD);
+
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    inboxStore.fetchInboxes();
+    // Fetch inboxes every 5 minutes.
+    const timer = setInterval(async () => {
+      await inboxStore.fetchInboxes();
+    }, 1000 * 60 * 5);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   useEffect(() => {
     const handleWindowResize = () => {
@@ -56,7 +76,14 @@ const Header = () => {
     id: "header-inbox",
     path: "/inbox",
     title: t("common.inbox"),
-    icon: <Icon.Bell className="mr-3 w-6 h-auto opacity-70" />,
+    icon: (
+      <>
+        <div className="relative">
+          <Icon.Bell className="mr-3 w-6 h-auto opacity-70" />
+          {hasUnreadInbox && <div className="absolute top-0 left-5 w-2 h-2 rounded-full bg-blue-500"></div>}
+        </div>
+      </>
+    ),
   };
   const exploreNavLink: NavLinkItem = {
     id: "header-explore",

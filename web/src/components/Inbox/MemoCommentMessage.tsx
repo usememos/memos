@@ -37,9 +37,12 @@ const MemoCommentMessage = ({ inbox }: Props) => {
       return;
     }
     navigateTo(`/m/${activity?.payload?.memoComment?.relatedMemoId}`);
+    if (inbox.status === Inbox_Status.UNREAD) {
+      handleArchiveMessage(true);
+    }
   };
 
-  const handleArchiveMessage = async () => {
+  const handleArchiveMessage = async (silence = false) => {
     await inboxStore.updateInbox(
       {
         name: inbox.name,
@@ -47,7 +50,9 @@ const MemoCommentMessage = ({ inbox }: Props) => {
       },
       ["status"]
     );
-    toast.success("Archived");
+    if (!silence) {
+      toast.success("Archived");
+    }
   };
 
   return (
@@ -73,7 +78,10 @@ const MemoCommentMessage = ({ inbox }: Props) => {
           <div>
             {inbox.status === Inbox_Status.UNREAD && (
               <Tooltip title="Archive" placement="top">
-                <Icon.Inbox className="w-4 h-auto cursor-pointer text-gray-400 hover:text-blue-600" onClick={handleArchiveMessage} />
+                <Icon.Inbox
+                  className="w-4 h-auto cursor-pointer text-gray-400 hover:text-blue-600"
+                  onClick={() => handleArchiveMessage()}
+                />
               </Tooltip>
             )}
           </div>

@@ -338,7 +338,7 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 		}); err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to upsert memo relation").SetInternal(err)
 		}
-		if memoRelationUpsert.Type == MemoRelationComment {
+		if memo.Visibility != store.Private && memoRelationUpsert.Type == MemoRelationComment {
 			relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 				ID: &memoRelationUpsert.RelatedMemoID,
 			})
