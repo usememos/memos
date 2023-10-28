@@ -63,9 +63,6 @@ const (
 	// This is unrelated to maximum upload size limit, which is now set through system setting.
 	maxUploadBufferSizeBytes = 32 << 20
 	MebiByte                 = 1024 * 1024
-
-	// thumbnailImagePath is the directory to store image thumbnails.
-	thumbnailImagePath = ".thumbnail_cache"
 )
 
 var fileKeyPattern = regexp.MustCompile(`\{[a-z]{1,9}\}`)
@@ -266,18 +263,6 @@ func (s *APIV1Service) DeleteResource(c echo.Context) error {
 	}
 	if resource == nil {
 		return echo.NewHTTPError(http.StatusNotFound, fmt.Sprintf("Resource not found: %d", resourceID))
-	}
-
-	if resource.InternalPath != "" {
-		if err := os.Remove(resource.InternalPath); err != nil {
-			log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
-		}
-	}
-
-	ext := filepath.Ext(resource.Filename)
-	thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
-	if err := os.Remove(thumbnailPath); err != nil {
-		log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
 	}
 
 	if err := s.Store.DeleteResource(ctx, &store.DeleteResource{

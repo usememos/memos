@@ -2,24 +2,14 @@ package v2
 
 import (
 	"context"
-	"fmt"
-	"os"
-	"path/filepath"
 	"time"
 
-	"go.uber.org/zap"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	"github.com/usememos/memos/internal/log"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/store"
-)
-
-const (
-	// thumbnailImagePath is the directory to store image thumbnails.
-	thumbnailImagePath = ".thumbnail_cache"
 )
 
 func (s *APIV2Service) ListResources(ctx context.Context, _ *apiv2pb.ListResourcesRequest) (*apiv2pb.ListResourcesResponse, error) {
@@ -82,17 +72,6 @@ func (s *APIV2Service) DeleteResource(ctx context.Context, request *apiv2pb.Dele
 	}
 	if resource == nil {
 		return nil, status.Errorf(codes.NotFound, "resource not found")
-	}
-	// Delete the local file synchronously if it exists.
-	if resource.InternalPath != "" {
-		if err := os.Remove(resource.InternalPath); err != nil {
-			log.Warn(fmt.Sprintf("failed to delete local file with path %s", resource.InternalPath), zap.Error(err))
-		}
-	}
-	// Delete the local thumbnail synchronously if it exists.
-	thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, filepath.Ext(resource.Filename)))
-	if err := os.Remove(thumbnailPath); err != nil {
-		log.Warn(fmt.Sprintf("failed to delete local thumbnail with path %s", thumbnailPath), zap.Error(err))
 	}
 	// Delete the resource from the database.
 	if err := s.Store.DeleteResource(ctx, &store.DeleteResource{

@@ -2,6 +2,18 @@ package store
 
 import (
 	"context"
+	"fmt"
+	"os"
+	"path/filepath"
+
+	"github.com/pkg/errors"
+
+	"github.com/usememos/memos/internal/util"
+)
+
+const (
+	// thumbnailImagePath is the directory to store image thumbnails.
+	thumbnailImagePath = ".thumbnail_cache"
 )
 
 type Resource struct {
@@ -73,5 +85,20 @@ func (s *Store) UpdateResource(ctx context.Context, update *UpdateResource) (*Re
 }
 
 func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) error {
+	resource, err := s.GetResource(ctx, &FindResource{ID: &delete.ID})
+	if err != nil {
+		return errors.Wrap(err, "failed to get resource")
+	}
+
+	// Delete the local file.
+	if resource.InternalPath != "" {
+		_ = os.Remove(resource.InternalPath)
+	}
+	// Delete the thumbnail.
+	if util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
+		ext := filepath.Ext(resource.Filename)
+		thumbnailPath := filepath.Join(s.Profile.Data, thumbnailImagePath, fmt.Sprintf("%d%s", resource.ID, ext))
+		_ = os.Remove(thumbnailPath)
+	}
 	return s.driver.DeleteResource(ctx, delete)
 }
