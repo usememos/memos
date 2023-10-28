@@ -2,10 +2,11 @@ package v2
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
+
+	"github.com/usememos/memos/internal/util"
 )
 
 const (
@@ -38,9 +39,9 @@ func GetInboxID(name string) (int32, error) {
 	if err != nil {
 		return 0, err
 	}
-	id, err := strconv.Atoi(tokens[0])
+	id, err := util.ConvertStringToInt32(tokens[0])
 	if err != nil {
 		return 0, errors.Errorf("invalid inbox ID %q", tokens[0])
 	}
-	return int32(id), nil
+	return id, nil
 }

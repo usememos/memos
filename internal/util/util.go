@@ -12,11 +12,11 @@ import (
 
 // ConvertStringToInt32 converts a string to int32.
 func ConvertStringToInt32(src string) (int32, error) {
-	i, err := strconv.Atoi(src)
+	parsed, err := strconv.ParseInt(src, 10, 32)
 	if err != nil {
 		return 0, err
 	}
-	return int32(i), nil
+	return int32(parsed), nil
 }
 
 // HasPrefixes returns true if the string s has any of the given prefixes.
