@@ -190,7 +190,7 @@ const CreateStorageServiceDialog: React.FC<Props> = (props: Props) => {
           <LearnMore
             className="ml-1"
             title={t("setting.storage-section.path-description")}
-            url="https://usememos.com/docs/get-started/local-storage"
+            url="https://usememos.com/docs/advanced-settings/local-storage"
           />
         </div>
         <Input
