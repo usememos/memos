@@ -60,7 +60,7 @@ const SSOSection = () => {
     <div className="section-container">
       <div className="mb-2 w-full flex flex-row justify-start items-center gap-1">
         <span className="font-mono text-sm text-gray-400">{t("setting.sso-section.sso-list")}</span>
-        <LearnMore url="https://usememos.com/docs/get-started/keycloak" />
+        <LearnMore url="https://usememos.com/docs/advanced-settings/keycloak" />
         <button
           className="btn-normal px-2 py-0 ml-1"
           onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}
@@ -110,7 +110,7 @@ const SSOSection = () => {
         <p className="text-sm">{t("common.learn-more")}</p>
         <List component="ul" marker="disc" size="sm">
           <ListItem>
-            <Link className="text-sm hover:underline hover:text-blue-600" to="https://www.usememos.com/docs/get-started/keycloak">
+            <Link className="text-sm hover:underline hover:text-blue-600" to="https://www.usememos.com/docs/advanced-settings/keycloak">
               Configuring Keycloak for Authentication
             </Link>
           </ListItem>

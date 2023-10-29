@@ -374,7 +374,7 @@ const SystemSection = () => {
       <div className="w-full">
         <Link
           className="text-gray-500 text-sm flex flex-row justify-start items-center mt-2 hover:underline hover:text-blue-600"
-          to="https://usememos.com/docs/get-started/custom-style-and-script"
+          to="https://usememos.com/docs/advanced-settings/custom-style-and-script"
           target="_blank"
         >
           {t("common.learn-more")}
