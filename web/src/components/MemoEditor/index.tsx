@@ -1,4 +1,4 @@
-import { Select, Option, Button, IconButton } from "@mui/joy";
+import { Select, Option, Button, IconButton, Divider } from "@mui/joy";
 import { isNumber, last, uniq, uniqBy } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -424,23 +424,26 @@ const MemoEditor = (props: Props) => {
         <div className="flex flex-row justify-start items-center">
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
           <IconButton
-            onClick={handleUploadFileBtnClick}
             className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+            onClick={handleUploadFileBtnClick}
           >
             <Icon.Image className="w-5 h-5 mx-auto" />
           </IconButton>
           <IconButton
-            onClick={handleAddMemoRelationBtnClick}
             className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+            onClick={handleAddMemoRelationBtnClick}
           >
             <Icon.Link className="w-5 h-5 mx-auto" />
           </IconButton>
-          <IconButton onClick={handleCheckBoxBtnClick}>
+          <IconButton
+            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+            onClick={handleCheckBoxBtnClick}
+          >
             <Icon.CheckSquare className="w-5 h-5 mx-auto" />
           </IconButton>
           <IconButton
-            onClick={handleCodeBlockBtnClick}
             className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+            onClick={handleCodeBlockBtnClick}
           >
             <Icon.Code className="w-5 h-5 mx-auto" />
           </IconButton>
@@ -448,7 +451,8 @@ const MemoEditor = (props: Props) => {
       </div>
       <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
       <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
-      <div className="w-full flex flex-row justify-between items-center py-3 mt-2 border-t border-t-gray-100 dark:border-t-zinc-500">
+      <Divider className="!mt-2" />
+      <div className="w-full flex flex-row justify-between items-center py-3 dark:border-t-zinc-500">
         <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
           <Select
             variant="plain"
