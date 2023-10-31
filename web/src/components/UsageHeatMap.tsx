@@ -6,7 +6,7 @@ import * as utils from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useGlobalStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
-import { useTranslate } from "@/utils/i18n";
+import { useTranslate, Translations } from "@/utils/i18n";
 import { useFilterStore, useMemoStore } from "../store/module";
 import "@/less/usage-heat-map.less";
 
@@ -40,6 +40,7 @@ const UsageHeatMap = () => {
   const todayTimeStamp = getDateStampByDate(Date.now());
   const weekDay = new Date(todayTimeStamp).getDay();
   const weekFromMonday = ["zh-Hans", "ko"].includes(useGlobalStore().state.locale);
+  const dayTips = weekFromMonday ? ["mon", "", "wed", "", "fri", "", "sun"] : ["sun", "", "tue", "", "thu", "", "sat"];
   const todayDay = weekFromMonday ? (weekDay == 0 ? 7 : weekDay) : weekDay + 1;
   const nullCell = new Array(7 - todayDay).fill(0);
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
@@ -160,13 +161,11 @@ const UsageHeatMap = () => {
           ))}
         </div>
         <div className="day-tip-text-container">
-          <span className="tip-text">{t(weekFromMonday ? "days.sun" : "days.mon")}</span>
-          <span className="tip-text"></span>
-          <span className="tip-text">{t(weekFromMonday ? "days.tue" : "days.wed")}</span>
-          <span className="tip-text"></span>
-          <span className="tip-text">{t(weekFromMonday ? "days.thu" : "days.fri")}</span>
-          <span className="tip-text"></span>
-          <span className="tip-text">{t(weekFromMonday ? "days.sat" : "days.sun")}</span>
+          {dayTips.map((v, i) => (
+            <span className="tip-text" key={i}>
+              {v && t(("days." + v) as Translations)}
+            </span>
+          ))}
         </div>
       </div>
       <p className="w-full pl-4 text-xs -mt-2 mb-3 text-gray-400 dark:text-zinc-400">
