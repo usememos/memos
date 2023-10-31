@@ -43,13 +43,20 @@ const Memo: React.FC<Props> = (props: Props) => {
   const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(memo.displayTs));
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const readonly = memo.creatorUsername !== user?.username;
-  const creator = userV1Store.getUserByUsername(memo.creatorUsername);
+  const [creator, setCreator] = useState(userV1Store.getUserByUsername(memo.creatorUsername));
   const referenceRelations = memo.relationList.filter((relation) => relation.type === "REFERENCE");
   const commentRelations = memo.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT");
 
   // Prepare memo creator.
   useEffect(() => {
-    userV1Store.getOrFetchUserByUsername(memo.creatorUsername);
+    if (creator) return;
+
+    const fn = async () => {
+      const user = await userV1Store.getOrFetchUserByUsername(memo.creatorUsername);
+      setCreator(user);
+    };
+
+    fn();
   }, [memo.creatorUsername]);
 
   // Update display time string.
@@ -68,30 +75,23 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   // Lazy rendering.
   useEffect(() => {
-    if (shouldRender) {
-      return;
-    }
+    if (shouldRender) return;
+    if (!memoContainerRef.current) return;
 
-    const root = document.body.querySelector("#root");
-    if (root) {
-      const checkShouldRender = () => {
-        if (root.scrollTop + window.innerHeight > (memoContainerRef.current?.offsetTop || 0)) {
-          setShouldRender(true);
-          root.removeEventListener("scroll", checkShouldRender);
-          return true;
-        }
-      };
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
 
-      if (checkShouldRender()) {
-        return;
-      }
-      root.addEventListener("scroll", checkShouldRender);
-    }
+      setShouldRender(true);
+    });
+    observer.observe(memoContainerRef.current);
+
+    return () => observer.disconnect();
   }, [lazyRendering, filterStore.state]);
 
   if (!shouldRender) {
     // Render a placeholder to occupy the space.
-    return <div className={`w-full h-32 !bg-transparent ${"memos-" + memo.id}`} ref={memoContainerRef}></div>;
+    return <div className={`w-full h-32 !bg-transparent ${"memos-" + memo.id}`} ref={memoContainerRef} />;
   }
 
   const handleGotoMemoDetailPage = (event: React.MouseEvent<HTMLDivElement>) => {
@@ -299,7 +299,9 @@ const Memo: React.FC<Props> = (props: Props) => {
                   <Tooltip title={"Creator"} placement="top">
                     <span className="flex flex-row justify-start items-center">
                       <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
-                      <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator.nickname}</span>
+                      <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">
+                        {creator.nickname || creator.username}
+                      </span>
                     </span>
                   </Tooltip>
                 </Link>
