@@ -1,0 +1,3 @@
+ALTER TABLE `system_setting` MODIFY `value` LONGTEXT NOT NULL;
+ALTER TABLE `user_setting` MODIFY `value` LONGTEXT NOT NULL;
+ALTER TABLE `user` MODIFY `avatar_url` LONGTEXT NOT NULL;
