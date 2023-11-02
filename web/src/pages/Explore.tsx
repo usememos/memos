@@ -6,7 +6,7 @@ import MemoFilter from "@/components/MemoFilter";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { TAG_REG } from "@/labs/marked/parser";
-import { useFilterStore, useMemoStore, LoadingStatus } from "@/store/module";
+import { useFilterStore, useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 
 const Explore = () => {
@@ -82,14 +82,14 @@ const Explore = () => {
           <Memo key={memo.id} memo={memo} lazyRendering />
         ))}
 
-        {loadingStatus === LoadingStatus.Fetching ? (
+        {loadingStatus === "fetching" ? (
           <div className="flex flex-col justify-start items-center w-full mt-2 mb-1">
             <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
           </div>
         ) : (
           <div className="flex flex-col justify-start items-center w-full my-6">
             <div className="text-sm text-gray-400 italic">
-              {loadingStatus === LoadingStatus.Complete ? (
+              {loadingStatus === "complete" ? (
                 sortedMemos.length === 0 && (
                   <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
                     <Empty />

@@ -1,11 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { uniqBy } from "lodash-es";
 
-export enum LoadingStatus {
-  Incomplete = 0,
-  Fetching = 1,
-  Complete = 2,
-}
+type LoadingStatus = "incomplete" | "fetching" | "complete";
 
 interface State {
   loadingStatus: LoadingStatus;
@@ -15,7 +11,7 @@ interface State {
 const memoSlice = createSlice({
   name: "memo",
   initialState: {
-    loadingStatus: LoadingStatus.Incomplete,
+    loadingStatus: "incomplete",
     memos: [],
   } as State,
   reducers: {
