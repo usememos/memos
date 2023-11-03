@@ -1,4 +1,4 @@
-import { Select, Tooltip, Option, IconButton } from "@mui/joy";
+import { Select, Tooltip, Option, IconButton, Typography } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -100,6 +100,13 @@ const MemoDetail = () => {
     await memoStore.fetchMemoById(memoId);
   };
 
+  const disableOption = (v: string) => {
+    if (v === "PUBLIC") {
+      return systemStatus.disablePublicMemos;
+    }
+    return false;
+  };
+
   return (
     <>
       <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-zinc-100 dark:bg-zinc-900">
@@ -142,7 +149,7 @@ const MemoDetail = () => {
                   </Tooltip>
                 </Link>
                 {allowEdit && (
-                  <>
+                  <div className="flex items-center space-x-4">
                     <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                     <Select
                       className="w-auto text-sm"
@@ -156,12 +163,15 @@ const MemoDetail = () => {
                       }}
                     >
                       {VISIBILITY_SELECTOR_ITEMS.map((item) => (
-                        <Option key={item} value={item} className="whitespace-nowrap">
+                        <Option key={item} value={item} className="whitespace-nowrap" disabled={disableOption(item)}>
                           {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
                         </Option>
                       ))}
                     </Select>
-                  </>
+                    <div className="flex-grow">
+                      {systemStatus.disablePublicMemos && <Typography color="warning">Public memos are disabled</Typography>}
+                    </div>
+                  </div>
                 )}
               </div>
               <div className="flex flex-row sm:justify-end items-center">

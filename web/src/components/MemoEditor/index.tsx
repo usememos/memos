@@ -1,4 +1,4 @@
-import { Select, Option, Button, IconButton, Divider } from "@mui/joy";
+import { Select, Option, Button, IconButton, Divider, Tooltip, Typography } from "@mui/joy";
 import { isNumber, last, uniq, uniqBy } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -407,6 +407,13 @@ const MemoEditor = (props: Props) => {
 
   const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
 
+  const disableOption = (v: string) => {
+    if (v === "PUBLIC") {
+      return systemStatus.disablePublicMemos;
+    }
+    return false;
+  };
+
   return (
     <div
       className={`${
@@ -452,7 +459,7 @@ const MemoEditor = (props: Props) => {
       <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
       <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
       <Divider className="!mt-2" />
-      <div className="w-full flex flex-row justify-between items-center py-3 dark:border-t-zinc-500">
+      <div className="w-full flex flex-row justify-between items-center py-3 dark:border-t-zinc-500 space-x-4">
         <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
           <Select
             variant="plain"
@@ -464,19 +471,15 @@ const MemoEditor = (props: Props) => {
               }
             }}
           >
-            {VISIBILITY_SELECTOR_ITEMS.filter((v) => {
-              // Hide public option if public memo is disabled.
-              if (v === "PUBLIC") {
-                return !systemStatus.disablePublicMemos;
-              }
-
-              return true;
-            }).map((item) => (
-              <Option key={item} value={item} className="whitespace-nowrap">
+            {VISIBILITY_SELECTOR_ITEMS.map((item) => (
+              <Option key={item} value={item} className="whitespace-nowrap" disabled={disableOption(item)}>
                 {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
               </Option>
             ))}
           </Select>
+        </div>
+        <div className="flex-grow">
+          {systemStatus.disablePublicMemos && <Typography color="warning">Public memos are disabled</Typography>}
         </div>
         <div className="shrink-0 flex flex-row justify-end items-center">
           <Button color="success" disabled={!allowSave} onClick={handleSaveBtnClick}>
