@@ -313,6 +313,11 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 				createMemoRequest.Visibility = Private
 			}
 		}
+
+		// sanity check for visibility
+		if createMemoRequest.Visibility == Public && disablePublicMemos {
+			return echo.NewHTTPError(http.StatusBadRequest, "Public memos are disabled").SetInternal(errors.New("public memos are disabled"))
+		}
 	}
 
 	createMemoRequest.CreatorID = userID
