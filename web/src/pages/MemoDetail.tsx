@@ -101,7 +101,9 @@ const MemoDetail = () => {
   };
 
   const disableOption = (v: string) => {
-    if (v === "PUBLIC" && currentUser.role !== User_Role.ADMIN) {
+    const isAdminOrHost = currentUser.role === User_Role.ADMIN || currentUser.role === User_Role.HOST;
+
+    if (v === "PUBLIC" && !isAdminOrHost) {
       return systemStatus.disablePublicMemos;
     }
     return false;

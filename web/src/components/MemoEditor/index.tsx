@@ -411,7 +411,9 @@ const MemoEditor = (props: Props) => {
   const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
 
   const disableOption = (v: string) => {
-    if (v === "PUBLIC" && currentUser.role !== User_Role.ADMIN) {
+    const isAdminOrHost = currentUser.role === User_Role.ADMIN || currentUser.role === User_Role.HOST;
+
+    if (v === "PUBLIC" && !isAdminOrHost) {
       return systemStatus.disablePublicMemos;
     }
     return false;
