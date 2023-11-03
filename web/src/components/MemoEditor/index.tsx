@@ -479,7 +479,7 @@ const MemoEditor = (props: Props) => {
           </Select>
         </div>
         <div className="flex-grow">
-          {systemStatus.disablePublicMemos && <Typography color="warning">Public memos are disabled</Typography>}
+          {systemStatus.disablePublicMemos && <Typography color="warning">{t("memo.visibility.disabled")}</Typography>}
         </div>
         <div className="shrink-0 flex flex-row justify-end items-center">
           <Button color="success" disabled={!allowSave} onClick={handleSaveBtnClick}>

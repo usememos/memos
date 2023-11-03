@@ -169,7 +169,7 @@ const MemoDetail = () => {
                       ))}
                     </Select>
                     <div className="flex-grow">
-                      {systemStatus.disablePublicMemos && <Typography color="warning">Public memos are disabled</Typography>}
+                      {systemStatus.disablePublicMemos && <Typography color="warning">{t("memo.visibility.disabled")}</Typography>}
                     </div>
                   </div>
                 )}
