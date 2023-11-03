@@ -464,7 +464,14 @@ const MemoEditor = (props: Props) => {
               }
             }}
           >
-            {VISIBILITY_SELECTOR_ITEMS.map((item) => (
+            {VISIBILITY_SELECTOR_ITEMS.filter((v) => {
+              // Hide public option if public memo is disabled.
+              if (v === "PUBLIC") {
+                return !systemStatus.disablePublicMemos;
+              }
+
+              return true;
+            }).map((item) => (
               <Option key={item} value={item} className="whitespace-nowrap">
                 {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
               </Option>
