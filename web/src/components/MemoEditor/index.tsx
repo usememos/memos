@@ -6,9 +6,11 @@ import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { clearContentQueryParam } from "@/helpers/utils";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { getMatchedNodes } from "@/labs/marked";
 import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
 import { Resource } from "@/types/proto/api/v2/resource_service";
+import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateMemoRelationDialog from "../CreateMemoRelationDialog";
 import showCreateResourceDialog from "../CreateResourceDialog";
@@ -52,6 +54,7 @@ const MemoEditor = (props: Props) => {
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
   const resourceStore = useResourceStore();
+  const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
     memoVisibility: "PRIVATE",
     resourceList: [],
@@ -408,7 +411,7 @@ const MemoEditor = (props: Props) => {
   const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
 
   const disableOption = (v: string) => {
-    if (v === "PUBLIC") {
+    if (v === "PUBLIC" && currentUser.role !== User_Role.ADMIN) {
       return systemStatus.disablePublicMemos;
     }
     return false;
@@ -459,7 +462,7 @@ const MemoEditor = (props: Props) => {
       <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
       <RelationListView relationList={referenceRelations} setRelationList={handleSetRelationList} />
       <Divider className="!mt-2" />
-      <div className="w-full flex flex-row justify-between items-center py-3 dark:border-t-zinc-500 space-x-4">
+      <div className="w-full flex flex-row justify-between items-center py-3 dark:border-t-zinc-500">
         <div className="relative flex flex-row justify-start items-center" onFocus={(e) => e.stopPropagation()}>
           <Select
             variant="plain"
@@ -477,9 +480,6 @@ const MemoEditor = (props: Props) => {
               </Option>
             ))}
           </Select>
-        </div>
-        <div className="flex-grow">
-          {systemStatus.disablePublicMemos && <Typography color="warning">{t("memo.visibility.disabled")}</Typography>}
         </div>
         <div className="shrink-0 flex flex-row justify-end items-center">
           <Button color="success" disabled={!allowSave} onClick={handleSaveBtnClick}>

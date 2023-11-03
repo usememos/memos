@@ -20,7 +20,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore, useMemoStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
-import { User } from "@/types/proto/api/v2/user_service";
+import { User, User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
@@ -101,7 +101,7 @@ const MemoDetail = () => {
   };
 
   const disableOption = (v: string) => {
-    if (v === "PUBLIC") {
+    if (v === "PUBLIC" && currentUser.role !== User_Role.ADMIN) {
       return systemStatus.disablePublicMemos;
     }
     return false;
