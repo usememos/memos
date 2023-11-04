@@ -20,7 +20,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore, useMemoStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
-import { User } from "@/types/proto/api/v2/user_service";
+import { User, User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 const MemoDetail = () => {
@@ -100,6 +100,15 @@ const MemoDetail = () => {
     await memoStore.fetchMemoById(memoId);
   };
 
+  const disableOption = (v: string) => {
+    const isAdminOrHost = currentUser.role === User_Role.ADMIN || currentUser.role === User_Role.HOST;
+
+    if (v === "PUBLIC" && !isAdminOrHost) {
+      return systemStatus.disablePublicMemos;
+    }
+    return false;
+  };
+
   return (
     <>
       <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-zinc-100 dark:bg-zinc-900">
@@ -156,7 +165,7 @@ const MemoDetail = () => {
                       }}
                     >
                       {VISIBILITY_SELECTOR_ITEMS.map((item) => (
-                        <Option key={item} value={item} className="whitespace-nowrap">
+                        <Option key={item} value={item} className="whitespace-nowrap" disabled={disableOption(item)}>
                           {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
                         </Option>
                       ))}

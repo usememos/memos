@@ -6,9 +6,11 @@ import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { clearContentQueryParam } from "@/helpers/utils";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { getMatchedNodes } from "@/labs/marked";
 import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
 import { Resource } from "@/types/proto/api/v2/resource_service";
+import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateMemoRelationDialog from "../CreateMemoRelationDialog";
 import showCreateResourceDialog from "../CreateResourceDialog";
@@ -52,6 +54,7 @@ const MemoEditor = (props: Props) => {
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
   const resourceStore = useResourceStore();
+  const currentUser = useCurrentUser();
   const [state, setState] = useState<State>({
     memoVisibility: "PRIVATE",
     resourceList: [],
@@ -407,6 +410,15 @@ const MemoEditor = (props: Props) => {
 
   const allowSave = (hasContent || state.resourceList.length > 0) && !state.isUploadingResource && !state.isRequesting;
 
+  const disableOption = (v: string) => {
+    const isAdminOrHost = currentUser.role === User_Role.ADMIN || currentUser.role === User_Role.HOST;
+
+    if (v === "PUBLIC" && !isAdminOrHost) {
+      return systemStatus.disablePublicMemos;
+    }
+    return false;
+  };
+
   return (
     <div
       className={`${
@@ -465,7 +477,7 @@ const MemoEditor = (props: Props) => {
             }}
           >
             {VISIBILITY_SELECTOR_ITEMS.map((item) => (
-              <Option key={item} value={item} className="whitespace-nowrap">
+              <Option key={item} value={item} className="whitespace-nowrap" disabled={disableOption(item)}>
                 {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
               </Option>
             ))}
