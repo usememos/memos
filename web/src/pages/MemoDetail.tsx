@@ -1,4 +1,4 @@
-import { Select, Tooltip, Option, IconButton, Typography } from "@mui/joy";
+import { Select, Tooltip, Option, IconButton } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -151,7 +151,7 @@ const MemoDetail = () => {
                   </Tooltip>
                 </Link>
                 {allowEdit && (
-                  <div className="flex items-center space-x-4">
+                  <>
                     <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                     <Select
                       className="w-auto text-sm"
@@ -170,10 +170,7 @@ const MemoDetail = () => {
                         </Option>
                       ))}
                     </Select>
-                    <div className="flex-grow">
-                      {systemStatus.disablePublicMemos && <Typography color="warning">{t("memo.visibility.disabled")}</Typography>}
-                    </div>
-                  </div>
+                  </>
                 )}
               </div>
               <div className="flex flex-row sm:justify-end items-center">
