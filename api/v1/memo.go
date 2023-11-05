@@ -360,6 +360,7 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 				if err != nil {
 					return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create activity").SetInternal(err)
 				}
+				metric.Enqueue("memo comment create")
 				if _, err := s.Store.CreateInbox(ctx, &store.Inbox{
 					SenderID:   memo.CreatorID,
 					ReceiverID: relatedMemo.CreatorID,
