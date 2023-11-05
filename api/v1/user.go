@@ -88,6 +88,23 @@ func (s *APIV1Service) registerUserRoutes(g *echo.Group) {
 //	@Router		/api/v1/user [GET]
 func (s *APIV1Service) GetUserList(c echo.Context) error {
 	ctx := c.Request().Context()
+	userID, ok := c.Get(userIDContextKey).(int32)
+	if !ok {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
+	}
+	currentUser, err := s.Store.GetUser(ctx, &store.FindUser{
+		ID: &userID,
+	})
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user by id").SetInternal(err)
+	}
+	if currentUser == nil {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
+	}
+	if currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+		return echo.NewHTTPError(http.StatusUnauthorized, "Unauthorized to list users")
+	}
+
 	list, err := s.Store.ListUsers(ctx, &store.FindUser{})
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch user list").SetInternal(err)
