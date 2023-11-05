@@ -61,8 +61,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 			`"status":${status},"error":"${error}"}` + "\n",
 	}))
 
-	e.Use(middleware.Gzip())
-
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		Skipper:      grpcRequestSkipper,
 		AllowOrigins: []string{"*"},

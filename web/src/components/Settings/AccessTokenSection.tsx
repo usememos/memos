@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractUsernameFromName } from "@/store/v1";
+import { UserNamePrefix, extractUsernameFromName } from "@/store/v1";
 import { UserAccessToken } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateAccessTokenDialog from "../CreateAccessTokenDialog";
@@ -13,7 +13,7 @@ import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 
 const listAccessTokens = async (username: string) => {
-  const { accessTokens } = await userServiceClient.listUserAccessTokens({ name: `${UserAccessToken}${username}` });
+  const { accessTokens } = await userServiceClient.listUserAccessTokens({ name: `${UserNamePrefix}${username}` });
   return accessTokens;
 };
 
