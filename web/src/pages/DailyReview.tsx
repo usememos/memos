@@ -127,7 +127,7 @@ const DailyReview = () => {
             ))}
 
             {selectedDateStamp === currentDateStamp && (
-              <div className="w-full pl-0 sm:pl-10 sm:mt-4">
+              <div className="w-full pl-0 sm:pl-12 sm:mt-4">
                 <MemoEditor className="!border" cacheKey="daily-review-editor" />
               </div>
             )}
