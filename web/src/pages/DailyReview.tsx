@@ -15,7 +15,7 @@ import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getDateStampByDate, getNormalizedDateString, getTimeStampByDate, getTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore, useUserStore } from "@/store/module";
-import { extractUsernameFromName } from "@/store/v1/resourceName";
+import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const DailyReview = () => {

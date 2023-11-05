@@ -19,8 +19,7 @@ import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore, useMemoStore } from "@/store/module";
-import { useUserV1Store } from "@/store/v1";
-import { extractUsernameFromName } from "@/store/v1/resourceName";
+import { useUserV1Store, extractUsernameFromName } from "@/store/v1";
 import { User, User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 

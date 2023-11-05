@@ -13,7 +13,7 @@ interface UserV1Store {
 // Request cache is used to prevent multiple requests.
 const requestCache = new Map<string, Promise<any>>();
 
-const useUserV1Store = create<UserV1Store>()((set, get) => ({
+export const useUserV1Store = create<UserV1Store>()((set, get) => ({
   userMapByUsername: {},
   getOrFetchUserByUsername: async (username: string) => {
     const userMap = get().userMapByUsername;
@@ -58,5 +58,3 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
     return updatedUser;
   },
 }));
-
-export default useUserV1Store;

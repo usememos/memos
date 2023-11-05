@@ -8,7 +8,7 @@ interface InboxStore {
   updateInbox: (inbox: Partial<Inbox>, updateMask: string[]) => Promise<Inbox>;
 }
 
-const useInboxStore = create<InboxStore>()((set, get) => ({
+export const useInboxStore = create<InboxStore>()((set, get) => ({
   inboxes: [],
   fetchInboxes: async () => {
     const { inboxes } = await inboxServiceClient.listInboxes({});
@@ -28,5 +28,3 @@ const useInboxStore = create<InboxStore>()((set, get) => ({
     return updatedInbox;
   },
 }));
-
-export default useInboxStore;

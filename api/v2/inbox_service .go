@@ -46,7 +46,7 @@ func (s *APIV2Service) UpdateInbox(ctx context.Context, request *apiv2pb.UpdateI
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
 	}
 
-	inboxID, err := GetInboxID(request.Inbox.Name)
+	inboxID, err := ExtractInboxIDFromName(request.Inbox.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid inbox name: %v", err)
 	}
@@ -77,7 +77,7 @@ func (s *APIV2Service) UpdateInbox(ctx context.Context, request *apiv2pb.UpdateI
 }
 
 func (s *APIV2Service) DeleteInbox(ctx context.Context, request *apiv2pb.DeleteInboxRequest) (*apiv2pb.DeleteInboxResponse, error) {
-	inboxID, err := GetInboxID(request.Name)
+	inboxID, err := ExtractInboxIDFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid inbox name: %v", err)
 	}

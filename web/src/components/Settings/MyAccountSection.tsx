@@ -1,6 +1,6 @@
 import { Button } from "@mui/joy";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractUsernameFromName } from "@/store/v1/resourceName";
+import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showChangePasswordDialog from "../ChangePasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";

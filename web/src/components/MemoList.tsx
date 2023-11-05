@@ -7,7 +7,7 @@ import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { TAG_REG } from "@/labs/marked/parser";
 import { useFilterStore, useMemoStore } from "@/store/module";
-import { extractUsernameFromName } from "@/store/v1/resourceName";
+import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "./Empty";
 import Memo from "./Memo";

@@ -1,7 +1,7 @@
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore, useUserStore } from "@/store/module";
-import { extractUsernameFromName } from "@/store/v1/resourceName";
+import { extractUsernameFromName } from "@/store/v1";
 import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showAboutSiteDialog from "./AboutSiteDialog";

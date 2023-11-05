@@ -5,7 +5,7 @@ import { getMemoStats } from "@/helpers/api";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, isFutureDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractUsernameFromName } from "@/store/v1/resourceName";
+import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 import "@/less/common/date-picker.less";

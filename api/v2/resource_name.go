@@ -34,8 +34,8 @@ func GetNameParentTokens(name string, tokenPrefixes ...string) ([]string, error)
 	return tokens, nil
 }
 
-// GetUsername returns the username from a resource name.
-func GetUsername(name string) (string, error) {
+// ExtractUsernameFromName returns the username from a resource name.
+func ExtractUsernameFromName(name string) (string, error) {
 	tokens, err := GetNameParentTokens(name, UserNamePrefix)
 	if err != nil {
 		return "", err
@@ -43,8 +43,8 @@ func GetUsername(name string) (string, error) {
 	return tokens[0], nil
 }
 
-// GetInboxID returns the inbox ID from a resource name.
-func GetInboxID(name string) (int32, error) {
+// ExtractInboxIDFromName returns the inbox ID from a resource name.
+func ExtractInboxIDFromName(name string) (int32, error) {
 	tokens, err := GetNameParentTokens(name, InboxNamePrefix)
 	if err != nil {
 		return 0, err

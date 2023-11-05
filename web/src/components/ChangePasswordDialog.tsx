@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useGlobalStore, useUserStore } from "@/store/module";
-import { useUserV1Store } from "@/store/v1";
-import { UserNamePrefix } from "@/store/v1/resourceName";
+import { useUserV1Store, UserNamePrefix } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";

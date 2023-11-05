@@ -3,7 +3,7 @@ import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
 import MobileHeader from "@/components/MobileHeader";
-import useInboxStore from "@/store/v1/inbox";
+import { useInboxStore } from "@/store/v1";
 import { Inbox_Type } from "@/types/proto/api/v2/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 

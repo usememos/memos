@@ -28,7 +28,7 @@ var (
 )
 
 func (s *APIV2Service) GetUser(ctx context.Context, request *apiv2pb.GetUserRequest) (*apiv2pb.GetUserResponse, error) {
-	username, err := GetUsername(request.Name)
+	username, err := ExtractUsernameFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "name is required")
 	}
@@ -58,7 +58,7 @@ func (s *APIV2Service) CreateUser(ctx context.Context, request *apiv2pb.CreateUs
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
-	username, err := GetUsername(request.User.Name)
+	username, err := ExtractUsernameFromName(request.User.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "name is required")
 	}
@@ -88,7 +88,7 @@ func (s *APIV2Service) CreateUser(ctx context.Context, request *apiv2pb.CreateUs
 }
 
 func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUserRequest) (*apiv2pb.UpdateUserResponse, error) {
-	username, err := GetUsername(request.User.Name)
+	username, err := ExtractUsernameFromName(request.User.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "name is required")
 	}
@@ -159,7 +159,7 @@ func (s *APIV2Service) ListUserAccessTokens(ctx context.Context, request *apiv2p
 	}
 
 	userID := user.ID
-	username, err := GetUsername(request.Name)
+	username, err := ExtractUsernameFromName(request.Name)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "name is required")
 	}

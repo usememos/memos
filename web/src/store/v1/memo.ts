@@ -3,7 +3,7 @@ import { combine } from "zustand/middleware";
 import * as api from "@/helpers/api";
 import { convertResponseModelMemo } from "../module";
 
-const useMemoCacheStore = create(
+export const useMemoCacheStore = create(
   combine({ memoById: new Map<MemoId, Memo>() }, (set, get) => ({
     getState: () => get(),
     getOrFetchMemoById: async (memoId: MemoId) => {
@@ -39,5 +39,3 @@ const useMemoCacheStore = create(
     },
   }))
 );
-
-export default useMemoCacheStore;

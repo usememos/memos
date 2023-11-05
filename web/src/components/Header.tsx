@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useLayoutStore } from "@/store/module";
-import useInboxStore from "@/store/v1/inbox";
+import { useInboxStore } from "@/store/v1";
 import { Inbox_Status } from "@/types/proto/api/v2/inbox_service";
 import { useTranslate } from "@/utils/i18n";
 import { resolution } from "@/utils/layout";
