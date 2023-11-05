@@ -39,9 +39,8 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   }, [user.username]);
 
   const firstDate = new Date(currentDateStamp);
-  const firstDateDay = firstDate.getDay() === 0 ? 7 : firstDate.getDay();
   const dayList = [];
-  for (let i = 1; i < firstDateDay; i++) {
+  for (let i = 0; i < firstDate.getDay(); i++) {
     dayList.push({
       date: 0,
       datestamp: firstDate.getTime() - DAILY_TIMESTAMP * (7 - i),
