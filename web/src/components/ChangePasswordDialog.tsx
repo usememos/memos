@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
+import { UserNamePrefix } from "@/store/v1/resourceName";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -54,7 +55,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       const user = userStore.getState().user as User;
       await userV1Store.updateUser(
         {
-          username: user.username,
+          name: `${UserNamePrefix}${user.username}`,
           password: newPassword,
         },
         ["password"]

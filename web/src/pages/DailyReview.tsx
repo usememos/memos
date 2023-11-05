@@ -15,6 +15,7 @@ import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getDateStampByDate, getNormalizedDateString, getTimeStampByDate, getTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore, useUserStore } from "@/store/module";
+import { extractUsernameFromName } from "@/store/v1/resourceName";
 import { useTranslate } from "@/utils/i18n";
 
 const DailyReview = () => {
@@ -32,7 +33,7 @@ const DailyReview = () => {
       const selectedDateStampWithOffset = selectedDateStamp + localSetting.dailyReviewTimeOffset * 60 * 60 * 1000;
       return (
         m.rowStatus === "NORMAL" &&
-        m.creatorUsername === user.username &&
+        m.creatorUsername === extractUsernameFromName(user.name) &&
         displayTimestamp >= selectedDateStampWithOffset &&
         displayTimestamp < selectedDateStampWithOffset + DAILY_TIMESTAMP
       );

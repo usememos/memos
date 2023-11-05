@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { activityServiceClient } from "@/grpcweb";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import useInboxStore from "@/store/v1/inbox";
-import { extractUsernameFromName } from "@/store/v1/user";
+import { extractUsernameFromName } from "@/store/v1/resourceName";
 import { Activity } from "@/types/proto/api/v2/activity_service";
 import { Inbox, Inbox_Status } from "@/types/proto/api/v2/inbox_service";
 import { useTranslate } from "@/utils/i18n";

@@ -9,6 +9,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
+import { extractUsernameFromName } from "@/store/v1/resourceName";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
@@ -42,7 +43,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const [shouldRender, setShouldRender] = useState<boolean>(lazyRendering ? false : true);
   const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(memo.displayTs));
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const readonly = memo.creatorUsername !== user?.username;
+  const readonly = memo.creatorUsername !== extractUsernameFromName(user?.name);
   const [creator, setCreator] = useState(userV1Store.getUserByUsername(memo.creatorUsername));
   const referenceRelations = memo.relationList.filter((relation) => relation.type === "REFERENCE");
   const commentRelations = memo.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT");
@@ -300,7 +301,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                     <span className="flex flex-row justify-start items-center">
                       <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
                       <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">
-                        {creator.nickname || creator.username}
+                        {creator.nickname || extractUsernameFromName(creator.name)}
                       </span>
                     </span>
                   </Tooltip>

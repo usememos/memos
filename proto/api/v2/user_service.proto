@@ -13,8 +13,8 @@ option go_package = "gen/api/v2";
 
 service UserService {
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
-    option (google.api.http) = {get: "/api/v2/users/{username}"};
-    option (google.api.method_signature) = "username";
+    option (google.api.http) = {get: "/api/v2/{name=users/*}"};
+    option (google.api.method_signature) = "name";
   }
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
@@ -25,35 +25,37 @@ service UserService {
   }
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
-      patch: "/api/v2/users/{user.username}"
+      patch: "/api/v2/{user.name=users/*}"
       body: "user"
     };
     option (google.api.method_signature) = "user,update_mask";
   }
   // ListUserAccessTokens returns a list of access tokens for a user.
   rpc ListUserAccessTokens(ListUserAccessTokensRequest) returns (ListUserAccessTokensResponse) {
-    option (google.api.http) = {get: "/api/v2/users/{username}/access_tokens"};
-    option (google.api.method_signature) = "username";
+    option (google.api.http) = {get: "/api/v2/{name=users/*}/access_tokens"};
+    option (google.api.method_signature) = "name";
   }
   // CreateUserAccessToken creates a new access token for a user.
   rpc CreateUserAccessToken(CreateUserAccessTokenRequest) returns (CreateUserAccessTokenResponse) {
     option (google.api.http) = {
-      post: "/api/v2/users/{username}/access_tokens"
+      post: "/api/v2/{name=users/*}/access_tokens"
       body: "*"
     };
-    option (google.api.method_signature) = "username";
+    option (google.api.method_signature) = "name";
   }
   // DeleteUserAccessToken deletes an access token for a user.
   rpc DeleteUserAccessToken(DeleteUserAccessTokenRequest) returns (DeleteUserAccessTokenResponse) {
-    option (google.api.http) = {delete: "/api/v2/users/{username}/access_tokens/{access_token}"};
-    option (google.api.method_signature) = "username,access_token";
+    option (google.api.http) = {delete: "/api/v2/{name=users/*}/access_tokens/{access_token}"};
+    option (google.api.method_signature) = "name,access_token";
   }
 }
 
 message User {
-  int32 id = 1;
+  // The name of the user.
+  // Format: users/{username}
+  string name = 1;
 
-  string username = 2;
+  int32 id = 2;
 
   enum Role {
     ROLE_UNSPECIFIED = 0;
@@ -79,7 +81,9 @@ message User {
 }
 
 message GetUserRequest {
-  string username = 1;
+  // The name of the user.
+  // Format: users/{username}
+  string name = 1;
 }
 
 message GetUserResponse {
@@ -105,7 +109,9 @@ message UpdateUserResponse {
 }
 
 message ListUserAccessTokensRequest {
-  string username = 1;
+  // The name of the user.
+  // Format: users/{username}
+  string name = 1;
 }
 
 message ListUserAccessTokensResponse {
@@ -113,7 +119,9 @@ message ListUserAccessTokensResponse {
 }
 
 message CreateUserAccessTokenRequest {
-  string username = 1;
+  // The name of the user.
+  // Format: users/{username}
+  string name = 1;
 
   string description = 2;
 
@@ -125,7 +133,9 @@ message CreateUserAccessTokenResponse {
 }
 
 message DeleteUserAccessTokenRequest {
-  string username = 1;
+  // The name of the user.
+  // Format: users/{username}
+  string name = 1;
   // access_token is the access token to delete.
   string access_token = 2;
 }

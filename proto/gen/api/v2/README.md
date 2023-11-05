@@ -1032,7 +1032,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| username | [string](#string) |  |  |
+| name | [string](#string) |  | The name of the user. Format: users/{username} |
 | description | [string](#string) |  |  |
 | expires_at | [google.protobuf.Timestamp](#google-protobuf-Timestamp) | optional |  |
 
@@ -1094,7 +1094,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| username | [string](#string) |  |  |
+| name | [string](#string) |  | The name of the user. Format: users/{username} |
 | access_token | [string](#string) |  | access_token is the access token to delete. |
 
 
@@ -1120,7 +1120,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| username | [string](#string) |  |  |
+| name | [string](#string) |  | The name of the user. Format: users/{username} |
 
 
 
@@ -1150,7 +1150,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| username | [string](#string) |  |  |
+| name | [string](#string) |  | The name of the user. Format: users/{username} |
 
 
 
@@ -1211,8 +1211,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the user. Format: users/{username} |
 | id | [int32](#int32) |  |  |
-| username | [string](#string) |  |  |
 | role | [User.Role](#memos-api-v2-User-Role) |  |  |
 | email | [string](#string) |  |  |
 | nickname | [string](#string) |  |  |

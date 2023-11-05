@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { extractUsernameFromName } from "@/store/v1/resourceName";
 import { UserAccessToken } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateAccessTokenDialog from "../CreateAccessTokenDialog";
@@ -12,7 +13,7 @@ import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 
 const listAccessTokens = async (username: string) => {
-  const { accessTokens } = await userServiceClient.listUserAccessTokens({ username: username });
+  const { accessTokens } = await userServiceClient.listUserAccessTokens({ name: `${UserAccessToken}${username}` });
   return accessTokens;
 };
 
@@ -22,13 +23,13 @@ const AccessTokenSection = () => {
   const [userAccessTokens, setUserAccessTokens] = useState<UserAccessToken[]>([]);
 
   useEffect(() => {
-    listAccessTokens(currentUser.username).then((accessTokens) => {
+    listAccessTokens(extractUsernameFromName(currentUser.name)).then((accessTokens) => {
       setUserAccessTokens(accessTokens);
     });
   }, []);
 
   const handleCreateAccessTokenDialogConfirm = async () => {
-    const accessTokens = await listAccessTokens(currentUser.username);
+    const accessTokens = await listAccessTokens(extractUsernameFromName(currentUser.name));
     setUserAccessTokens(accessTokens);
   };
 
@@ -44,7 +45,7 @@ const AccessTokenSection = () => {
       style: "danger",
       dialogName: "delete-access-token-dialog",
       onConfirm: async () => {
-        await userServiceClient.deleteUserAccessToken({ username: currentUser.username, accessToken: accessToken });
+        await userServiceClient.deleteUserAccessToken({ name: currentUser.name, accessToken: accessToken });
         setUserAccessTokens(userAccessTokens.filter((token) => token.accessToken !== accessToken));
       },
     });

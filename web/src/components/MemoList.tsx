@@ -7,6 +7,7 @@ import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { TAG_REG } from "@/labs/marked/parser";
 import { useFilterStore, useMemoStore } from "@/store/module";
+import { extractUsernameFromName } from "@/store/v1/resourceName";
 import { useTranslate } from "@/utils/i18n";
 import Empty from "./Empty";
 import Memo from "./Memo";
@@ -21,7 +22,7 @@ const MemoList: React.FC = () => {
   const user = useCurrentUser();
   const { tag: tagQuery, duration, text: textQuery, visibility } = filter;
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || textQuery || visibility);
-  const username = params.username || user?.username || "";
+  const username = params.username || extractUsernameFromName(user.name) || "";
 
   const fetchMoreRef = useRef<HTMLSpanElement>(null);
 

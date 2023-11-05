@@ -6,6 +6,7 @@ import { getDateTimeString } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
 import { useUserV1Store } from "@/store/v1";
+import { extractUsernameFromName } from "@/store/v1/resourceName";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import showEmbedMemoDialog from "./EmbedMemoDialog";
@@ -120,7 +121,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
                 <UserAvatar className="mr-2" avatarUrl={user.avatarUrl} />
                 <div className="w-auto grow truncate flex mr-2 flex-col justify-center items-start">
                   <span className="w-full text truncate font-medium text-gray-600 dark:text-gray-300">
-                    {user.nickname || user.username}
+                    {user.nickname || extractUsernameFromName(user.name)}
                   </span>
                 </div>
               </div>

@@ -5,6 +5,7 @@ import { getMemoStats } from "@/helpers/api";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, isFutureDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { extractUsernameFromName } from "@/store/v1/resourceName";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 import "@/less/common/date-picker.less";
@@ -28,7 +29,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   }, [datestamp]);
 
   useEffect(() => {
-    getMemoStats(user.username).then(({ data }) => {
+    getMemoStats(extractUsernameFromName(user.name)).then(({ data }) => {
       const m = new Map();
       for (const record of data) {
         const date = getDateStampByDate(record * 1000);
@@ -36,7 +37,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
       }
       setCountByDate(m);
     });
-  }, [user.username]);
+  }, [user.name]);
 
   const firstDate = new Date(currentDateStamp);
   const dayList = [];

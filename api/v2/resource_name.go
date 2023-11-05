@@ -10,6 +10,7 @@ import (
 )
 
 const (
+	UserNamePrefix  = "users/"
 	InboxNamePrefix = "inboxes/"
 )
 
@@ -31,6 +32,15 @@ func GetNameParentTokens(name string, tokenPrefixes ...string) ([]string, error)
 		tokens = append(tokens, parts[2*i+1])
 	}
 	return tokens, nil
+}
+
+// GetUsername returns the username from a resource name.
+func GetUsername(name string) (string, error) {
+	tokens, err := GetNameParentTokens(name, UserNamePrefix)
+	if err != nil {
+		return "", err
+	}
+	return tokens[0], nil
 }
 
 // GetInboxID returns the inbox ID from a resource name.

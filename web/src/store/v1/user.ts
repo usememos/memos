@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { userServiceClient } from "@/grpcweb";
 import { User } from "@/types/proto/api/v2/user_service";
+import { UserNamePrefix, extractUsernameFromName } from "./resourceName";
 
 interface UserV1Store {
   userMapByUsername: Record<string, User>;
@@ -25,7 +26,7 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
 
     const promisedUser = userServiceClient
       .getUser({
-        username: username,
+        name: `${UserNamePrefix}${username}`,
       })
       .then(({ user }) => user);
     requestCache.set(username, promisedUser);
@@ -50,15 +51,12 @@ const useUserV1Store = create<UserV1Store>()((set, get) => ({
     if (!updatedUser) {
       throw new Error("User not found");
     }
+    const username = extractUsernameFromName(updatedUser.name);
     const userMap = get().userMapByUsername;
-    userMap[updatedUser.username] = updatedUser;
+    userMap[username] = updatedUser;
     set(userMap);
     return updatedUser;
   },
 }));
-
-export const extractUsernameFromName = (name: string) => {
-  return name.split("/")[1];
-};
 
 export default useUserV1Store;
