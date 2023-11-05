@@ -124,21 +124,15 @@ const StorageSection = () => {
         ))}
       </div>
       <div className="w-full mt-4">
-        <p className="text-sm">{t("common.learn-more")}</p>
+        <p className="text-sm">{t("common.learn-more")}:</p>
         <List component="ul" marker="disc" size="sm">
           <ListItem>
-            <Link
-              className="text-sm hover:underline hover:text-blue-600"
-              to="https://www.usememos.com/docs/advanced-settings/local-storage"
-            >
+            <Link className="text-sm text-blue-600 hover:underline" to="https://www.usememos.com/docs/advanced-settings/local-storage">
               Docs - Local storage
             </Link>
           </ListItem>
           <ListItem>
-            <Link
-              className="text-sm hover:underline hover:text-blue-600"
-              to="https://www.usememos.com/blog/choosing-a-storage-for-your-resource"
-            >
+            <Link className="text-sm text-blue-600 hover:underline" to="https://www.usememos.com/blog/choosing-a-storage-for-your-resource">
               Choosing a Storage for Your Resource: Database, S3 or Local Storage?
             </Link>
           </ListItem>

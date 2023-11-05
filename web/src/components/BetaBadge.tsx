@@ -10,7 +10,9 @@ const BetaBadge: React.FC<Props> = (props: Props) => {
 
   return (
     <span
-      className={`mx-1 px-1 leading-5 text-xs border dark:border-zinc-600 rounded-full text-gray-500 dark:text-gray-400 ${className ?? ""}`}
+      className={`mx-1 px-1 leading-5 text-xs border font-normal dark:border-zinc-600 rounded-full text-gray-500 dark:text-gray-400 ${
+        className ?? ""
+      }`}
     >
       {t("common.beta")}
     </span>

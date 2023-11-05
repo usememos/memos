@@ -107,10 +107,10 @@ const SSOSection = () => {
       ))}
 
       <div className="w-full mt-8">
-        <p className="text-sm">{t("common.learn-more")}</p>
+        <p className="text-sm">{t("common.learn-more")}:</p>
         <List component="ul" marker="disc" size="sm">
           <ListItem>
-            <Link className="text-sm hover:underline hover:text-blue-600" to="https://www.usememos.com/docs/advanced-settings/keycloak">
+            <Link className="text-sm text-blue-600 hover:underline" to="https://www.usememos.com/docs/advanced-settings/keycloak">
               Configuring Keycloak for Authentication
             </Link>
           </ListItem>
