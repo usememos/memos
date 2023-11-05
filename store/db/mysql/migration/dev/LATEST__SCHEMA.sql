@@ -131,5 +131,5 @@ CREATE TABLE `inbox` (
   `sender_id` INT NOT NULL,
   `receiver_id` INT NOT NULL,
   `status` TEXT NOT NULL,
-  `message` TEXT NOT NULL DEFAULT '{}'
+  `message` TEXT NOT NULL
 );
