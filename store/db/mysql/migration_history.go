@@ -2,7 +2,6 @@ package mysql
 
 import (
 	"context"
-	"strings"
 )
 
 type MigrationHistory struct {
@@ -15,18 +14,11 @@ type MigrationHistoryUpsert struct {
 }
 
 type MigrationHistoryFind struct {
-	Version *string
 }
 
-func (d *DB) FindMigrationHistoryList(ctx context.Context, find *MigrationHistoryFind) ([]*MigrationHistory, error) {
-	where, args := []string{"1 = 1"}, []any{}
-
-	if v := find.Version; v != nil {
-		where, args = append(where, "`version` = ?"), append(args, *v)
-	}
-
-	query := "SELECT `version`, UNIX_TIMESTAMP(`created_ts`) FROM `migration_history` WHERE " + strings.Join(where, " AND ") + " ORDER BY `created_ts` DESC"
-	rows, err := d.db.QueryContext(ctx, query, args...)
+func (d *DB) FindMigrationHistoryList(ctx context.Context, _ *MigrationHistoryFind) ([]*MigrationHistory, error) {
+	query := "SELECT `version`, UNIX_TIMESTAMP(`created_ts`) FROM `migration_history` ORDER BY `created_ts` DESC"
+	rows, err := d.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
