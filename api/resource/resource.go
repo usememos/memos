@@ -106,8 +106,9 @@ func (s *Service) streamResource(c echo.Context) error {
 		}
 	}
 
-	c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
-	c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'self'")
+	c.Response().Writer.Header().Set(echo.HeaderCacheControl, "max-age=3600")
+	c.Response().Writer.Header().Set(echo.HeaderContentSecurityPolicy, "default-src 'none'; script-src 'none'; img-src 'self'; media-src 'self'; sandbox;")
+	c.Response().Writer.Header().Set("Content-Disposition", fmt.Sprintf(`filename="%s"`, resource.Filename))
 	resourceType := strings.ToLower(resource.Type)
 	if strings.HasPrefix(resourceType, "text") {
 		resourceType = echo.MIMETextPlainCharsetUTF8
@@ -115,7 +116,6 @@ func (s *Service) streamResource(c echo.Context) error {
 		http.ServeContent(c.Response(), c.Request(), resource.Filename, time.Unix(resource.UpdatedTs, 0), bytes.NewReader(blob))
 		return nil
 	}
-	c.Response().Writer.Header().Set("Content-Disposition", fmt.Sprintf(`filename="%s"`, resource.Filename))
 	return c.Stream(http.StatusOK, resourceType, bytes.NewReader(blob))
 }
 
