@@ -349,7 +349,6 @@
       "display-with-updated-time": "수정된 시각을 표시",
       "enable-password-login": "비밀번호 로그인 허용",
       "enable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인할 수 있게 합니다. 사용자들이 SSO와 비밀번호 둘 다 사용할 수 있게 하고 싶은 경우에만 켜 주세요",
-      "ignore-version-upgrade": "업그레이드 알림 무시",
       "max-upload-size": "최대 업로드 크기 (MiB)",
       "max-upload-size-hint": "권장값은 32 MiB입니다.",
       "server-name": "서버 이름",

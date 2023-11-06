@@ -338,7 +338,6 @@
       "display-with-updated-time": "Mostra con tempo aggiornato",
       "enable-password-login": "Abilita login password",
       "enable-password-login-warning": "Ciò consentirà l'accesso tramite password per tutti gli utenti. Continua solo se desideri che gli utenti possano accedere utilizzando sia SSO che password❗",
-      "ignore-version-upgrade": "Ignora aggiornamento versione",
       "max-upload-size": "Dimensione massima caricamento (MiB)",
       "max-upload-size-hint": "Valore consigliato di 32 MiB.",
       "server-name": "Nome server",

@@ -328,7 +328,6 @@
       "database-file-size": "Размер файла базы данных",
       "disable-public-memos": "Отключить публичные записи",
       "display-with-updated-time": "Отображать время обновления записи",
-      "ignore-version-upgrade": "Игнорировать версию",
       "max-upload-size": "Максимальный размер загрузки (МБ)",
       "max-upload-size-hint": "Рекомендуемое значение 32 MБ.",
       "server-name": "Имя сервера",

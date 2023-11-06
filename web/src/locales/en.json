@@ -252,7 +252,6 @@
       "disable-password-login-final-warning": "Please type \"CONFIRM\" if you know what you are doing.",
       "enable-password-login": "Enable password login",
       "enable-password-login-warning": "This will enable password login for all users. Continue only if you want to users to be able to log in using both SSO and password",
-      "ignore-version-upgrade": "Ignore version upgrade",
       "disable-public-memos": "Disable public memos",
       "max-upload-size": "Maximum upload size (MiB)",
       "max-upload-size-hint": "Recommended value is 32 MiB.",

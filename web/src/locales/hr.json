@@ -346,7 +346,6 @@
       "disable-public-memos": "Onemogući javne memoe",
       "display-with-updated-time": "Prikaži sa obnovljenim vremenom",
       "enable-password-login": "Omogući prijavu lozinkom",
-      "ignore-version-upgrade": "Ignoriraj nadogradnju",
       "max-upload-size": "Maximalna veličina uploada (MiB)",
       "max-upload-size-hint": "Preporučena vrijednost je 32 MiB.",
       "server-name": "Ime servera",

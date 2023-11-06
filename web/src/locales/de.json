@@ -349,7 +349,6 @@
       "display-with-updated-time": "Anzeige mit aktualisierter Zeit",
       "enable-password-login": "Anmeldung mit Passwort aktivieren",
       "enable-password-login-warning": "Dadurch wird die Passwortanmeldung für alle Benutzer aktiviert. Fahre nur fort, wenn du möchtest, dass sich Benutzer sowohl mit SSO als auch mit einem Passwort anmelden können",
-      "ignore-version-upgrade": "Versions-Upgrade ignorieren",
       "max-upload-size": "Maximale Uploadgröße (MiB)",
       "max-upload-size-hint": "Empfohlene Wert ist 32 MiB.",
       "server-name": "Servername",

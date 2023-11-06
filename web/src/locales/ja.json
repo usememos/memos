@@ -336,7 +336,6 @@
       "display-with-updated-time": "更新日時を表示する",
       "enable-password-login": "パスワードでのログインを有効にする",
       "enable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが有効になります。SSOとパスワードの両方を使用してログインできるようにしたい場合のみ、続行してください❗",
-      "ignore-version-upgrade": "アップデートを無効にする",
       "max-upload-size": "最大ファイルサイズ(MiB)",
       "max-upload-size-hint": "推奨サイズは32 MiBです。",
       "server-name": "サーバーの名前",

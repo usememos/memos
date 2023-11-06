@@ -350,7 +350,6 @@
       "display-with-updated-time": "显示最后修改时间",
       "enable-password-login": "启用密码登录",
       "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用单点登录和密码登录，请开启密码登录",
-      "ignore-version-upgrade": "忽略版本升级",
       "max-upload-size": "最大上传大小 (MiB)",
       "max-upload-size-hint": "建议值为 32 MiB。",
       "server-name": "服务名称",

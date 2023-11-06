@@ -351,7 +351,6 @@
       "display-with-updated-time": "Exibir hora de atualização nos memos",
       "enable-password-login": "Habilitar login com senha",
       "enable-password-login-warning": "Isso permitirá o login com senha para todos os usuários. Continue apenas se desejar que os usuários possam fazer login usando SSO e senha local❗",
-      "ignore-version-upgrade": "Ignorar atualização de versão",
       "max-upload-size": "Tamanho máximo de upload (MiB)",
       "max-upload-size-hint": "O valor recomendado é 32 MiB.",
       "server-name": "Nome do servidor",
