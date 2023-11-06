@@ -7,6 +7,6 @@ import (
 )
 
 func TestGetLatestVersion(t *testing.T) {
-	_, err := NewVersionChecker(nil).GetLatestVersion()
+	_, err := NewVersionChecker(nil, nil).GetLatestVersion()
 	require.NoError(t, err)
 }

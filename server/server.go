@@ -110,7 +110,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 }
 
 func (s *Server) Start(ctx context.Context) error {
-	go versionchecker.NewVersionChecker(s.Store).Start(ctx)
+	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
 	go s.telegramBot.Start(ctx)
 	go s.backupRunner.Run(ctx)
 

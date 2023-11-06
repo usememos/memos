@@ -11,18 +11,21 @@ import (
 	"github.com/pkg/errors"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/version"
 	"github.com/usememos/memos/store"
 )
 
 // nolint
 type VersionChecker struct {
-	Store *store.Store
+	Store   *store.Store
+	Profile *profile.Profile
 }
 
-func NewVersionChecker(store *store.Store) *VersionChecker {
+func NewVersionChecker(store *store.Store, profile *profile.Profile) *VersionChecker {
 	return &VersionChecker{
-		Store: store,
+		Store:   store,
+		Profile: profile,
 	}
 }
 
@@ -47,20 +50,11 @@ func (*VersionChecker) GetLatestVersion() (string, error) {
 }
 
 func (c *VersionChecker) Check(ctx context.Context) {
-	migrationHistories, err := c.Store.FindMigrationHistoryList(ctx, &store.FindMigrationHistory{})
-	if err != nil {
-		return
-	}
-	if len(migrationHistories) == 0 {
-		return
-	}
-
-	lastVersion := migrationHistories[0].Version
 	latestVersion, err := c.GetLatestVersion()
 	if err != nil {
 		return
 	}
-	if !version.IsVersionGreaterThan(latestVersion, lastVersion) {
+	if !version.IsVersionGreaterThan(latestVersion, version.GetCurrentVersion(c.Profile.Mode)) {
 		return
 	}
 
@@ -71,15 +65,16 @@ func (c *VersionChecker) Check(ctx context.Context) {
 	if err != nil {
 		return
 	}
-	if len(list) == 0 {
-		return
+
+	shouldNotify := true
+	if len(list) > 0 {
+		latestVersionUpdateActivity := list[0]
+		if latestVersionUpdateActivity.Payload != nil && version.IsVersionGreaterOrEqualThan(latestVersionUpdateActivity.Payload.VersionUpdate.Version, latestVersion) {
+			shouldNotify = false
+		}
 	}
 
-	latestVersionUpdateActivity := list[0]
-	if latestVersionUpdateActivity.Payload == nil {
-		return
-	}
-	if version.IsVersionGreaterOrEqualThan(latestVersionUpdateActivity.Payload.VersionUpdate.Version, latestVersion) {
+	if !shouldNotify {
 		return
 	}
 
