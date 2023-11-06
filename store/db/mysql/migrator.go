@@ -12,6 +12,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/server/version"
+	"github.com/usememos/memos/store"
 )
 
 const (
@@ -76,7 +77,7 @@ func (d *DB) nonProdMigrate(ctx context.Context) error {
 
 func (d *DB) prodMigrate(ctx context.Context) error {
 	currentVersion := version.GetCurrentVersion(d.profile.Mode)
-	migrationHistoryList, err := d.FindMigrationHistoryList(ctx, &MigrationHistoryFind{})
+	migrationHistoryList, err := d.FindMigrationHistoryList(ctx, &store.FindMigrationHistory{})
 	// If there is no migration history, we should apply the latest schema.
 	if err != nil || len(migrationHistoryList) == 0 {
 		buf, err := migrationFS.ReadFile("migration/prod/" + latestSchemaFileName)
@@ -88,7 +89,7 @@ func (d *DB) prodMigrate(ctx context.Context) error {
 		if _, err := d.db.ExecContext(ctx, stmt); err != nil {
 			return errors.Errorf("failed to exec SQL %s: %s", stmt, err)
 		}
-		if _, err := d.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
+		if _, err := d.UpsertMigrationHistory(ctx, &store.UpsertMigrationHistory{
 			Version: currentVersion,
 		}); err != nil {
 			return errors.Wrap(err, "failed to upsert migration history")
@@ -145,7 +146,7 @@ func (d *DB) applyMigrationForMinorVersion(ctx context.Context, minorVersion str
 
 	// Upsert the newest version to migration_history.
 	version := minorVersion + ".0"
-	if _, err = d.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{Version: version}); err != nil {
+	if _, err = d.UpsertMigrationHistory(ctx, &store.UpsertMigrationHistory{Version: version}); err != nil {
 		return errors.Wrapf(err, "failed to upsert migration history with version: %s", version)
 	}
 

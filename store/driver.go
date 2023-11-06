@@ -20,6 +20,10 @@ type Driver interface {
 	// current file is driver
 	GetCurrentDBSize(ctx context.Context) (int64, error)
 
+	// MigrationHistory model related methods.
+	FindMigrationHistoryList(ctx context.Context, find *FindMigrationHistory) ([]*MigrationHistory, error)
+	UpsertMigrationHistory(ctx context.Context, upsert *UpsertMigrationHistory) (*MigrationHistory, error)
+
 	// Activity model related methods.
 	CreateActivity(ctx context.Context, create *Activity) (*Activity, error)
 	ListActivities(ctx context.Context, find *FindActivity) ([]*Activity, error)

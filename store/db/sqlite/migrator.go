@@ -13,6 +13,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/server/version"
+	"github.com/usememos/memos/store"
 )
 
 //go:embed migration
@@ -33,7 +34,7 @@ func (d *DB) Migrate(ctx context.Context) error {
 					return errors.Wrap(err, "failed to apply latest schema")
 				}
 				// Upsert the newest version to migration_history.
-				if _, err := d.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
+				if _, err := d.UpsertMigrationHistory(ctx, &store.UpsertMigrationHistory{
 					Version: currentVersion,
 				}); err != nil {
 					return errors.Wrap(err, "failed to upsert migration history")
@@ -43,7 +44,7 @@ func (d *DB) Migrate(ctx context.Context) error {
 			}
 		} else {
 			// If db file exists, we should check if we need to migrate the database.
-			migrationHistoryList, err := d.FindMigrationHistoryList(ctx, &MigrationHistoryFind{})
+			migrationHistoryList, err := d.FindMigrationHistoryList(ctx, &store.FindMigrationHistory{})
 			if err != nil {
 				return errors.Wrap(err, "failed to find migration history")
 			}
@@ -53,7 +54,7 @@ func (d *DB) Migrate(ctx context.Context) error {
 				if err := d.applyMigrationForMinorVersion(ctx, minorVersion); err != nil {
 					return errors.Wrapf(err, "failed to apply version %s migration", minorVersion)
 				}
-				_, err := d.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
+				_, err := d.UpsertMigrationHistory(ctx, &store.UpsertMigrationHistory{
 					Version: currentVersion,
 				})
 				if err != nil {
@@ -162,7 +163,7 @@ func (d *DB) applyMigrationForMinorVersion(ctx context.Context, minorVersion str
 
 	// Upsert the newest version to migration_history.
 	version := minorVersion + ".0"
-	if _, err = d.UpsertMigrationHistory(ctx, &MigrationHistoryUpsert{
+	if _, err = d.UpsertMigrationHistory(ctx, &store.UpsertMigrationHistory{
 		Version: version,
 	}); err != nil {
 		return errors.Wrapf(err, "failed to upsert migration history with version: %s", version)
