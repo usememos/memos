@@ -8,6 +8,7 @@ import { useTagStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
+import OverflowTip from "./kit/OverflowTip";
 
 type Props = DialogProps;
 
@@ -108,13 +109,14 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
               {Array.from(tagNameList)
                 .sort()
                 .map((tag) => (
-                  <span
-                    className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60 hover:line-through"
+                  <OverflowTip
                     key={tag}
-                    onClick={() => handleDeleteTag(tag)}
+                    className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer dark:text-gray-300 hover:opacity-60 hover:line-through"
                   >
-                    #{tag}
-                  </span>
+                    <span className="w-full" onClick={() => handleDeleteTag(tag)}>
+                      #{tag}
+                    </span>
+                  </OverflowTip>
                 ))}
             </div>
           </>
@@ -135,13 +137,14 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
               <>
                 <div className="w-full flex flex-row justify-start items-start flex-wrap mb-2">
                   {shownSuggestTagNameList.map((tag) => (
-                    <span
-                      className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer truncate dark:text-gray-300 hover:opacity-60"
+                    <OverflowTip
                       key={tag}
-                      onClick={() => handleUpsertTag(tag)}
+                      className="max-w-[120px] text-sm mr-2 mt-1 font-mono cursor-pointer dark:text-gray-300 hover:opacity-60"
                     >
-                      #{tag}
-                    </span>
+                      <span className="w-full" onClick={() => handleUpsertTag(tag)}>
+                        #{tag}
+                      </span>
+                    </OverflowTip>
                   ))}
                 </div>
                 <Button size="sm" variant="outlined" onClick={handleSaveSuggestTagList}>

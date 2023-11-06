@@ -139,7 +139,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       </div>
       {hasSubTags ? (
         <div
-          className={`w-full flex flex-col justify-start items-start h-auto ml-5 pl-1 border-l-2 border-l-gray-200 dark:border-l-gray-400 ${
+          className={`w-[calc(100%-1rem)] flex flex-col justify-start items-start h-auto ml-4 pl-1 border-l-2 border-l-gray-200 dark:border-l-gray-400 ${
             !showSubTags && "!hidden"
           }`}
         >
