@@ -7,6 +7,7 @@
     - [Activity](#memos-api-v2-Activity)
     - [ActivityMemoCommentPayload](#memos-api-v2-ActivityMemoCommentPayload)
     - [ActivityPayload](#memos-api-v2-ActivityPayload)
+    - [ActivityVersionUpdatePayload](#memos-api-v2-ActivityVersionUpdatePayload)
     - [GetActivityRequest](#memos-api-v2-GetActivityRequest)
     - [GetActivityResponse](#memos-api-v2-GetActivityResponse)
   
@@ -155,6 +156,22 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | memo_comment | [ActivityMemoCommentPayload](#memos-api-v2-ActivityMemoCommentPayload) |  |  |
+| version_update | [ActivityVersionUpdatePayload](#memos-api-v2-ActivityVersionUpdatePayload) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ActivityVersionUpdatePayload"></a>
+
+### ActivityVersionUpdatePayload
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| version | [string](#string) |  |  |
 
 
 
@@ -377,6 +394,7 @@
 | ---- | ------ | ----------- |
 | TYPE_UNSPECIFIED | 0 |  |
 | TYPE_MEMO_COMMENT | 1 |  |
+| TYPE_VERSION_UPDATE | 2 |  |
 
 
  

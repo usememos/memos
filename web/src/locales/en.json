@@ -370,6 +370,7 @@
     "password-login-disabled": "Can't remove last identity provider when password login is disabled"
   },
   "inbox": {
-    "memo-comment": "{{user}} has a comment on your {{memo}}."
+    "memo-comment": "{{user}} has a comment on your {{memo}}.",
+    "version-update": "New version {{version}} is available now!"
   }
 }

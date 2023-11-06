@@ -49,5 +49,10 @@ func convertActivityPayloadFromStore(payload *storepb.ActivityPayload) *apiv2pb.
 			RelatedMemoId: payload.MemoComment.RelatedMemoId,
 		}
 	}
+	if payload.VersionUpdate != nil {
+		v2Payload.VersionUpdate = &apiv2pb.ActivityVersionUpdatePayload{
+			Version: payload.VersionUpdate.Version,
+		}
+	}
 	return v2Payload
 }

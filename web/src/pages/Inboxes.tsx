@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MemoCommentMessage from "@/components/Inbox/MemoCommentMessage";
+import VersionUpdateMessage from "@/components/Inbox/VersionUpdateMessage";
 import MobileHeader from "@/components/MobileHeader";
 import { useInboxStore } from "@/store/v1";
 import { Inbox_Type } from "@/types/proto/api/v2/inbox_service";
@@ -38,6 +39,8 @@ const Inboxes = () => {
             {inboxes.map((inbox) => {
               if (inbox.type === Inbox_Type.TYPE_MEMO_COMMENT) {
                 return <MemoCommentMessage key={`${inbox.name}-${inbox.status}`} inbox={inbox} />;
+              } else if (inbox.type === Inbox_Type.TYPE_VERSION_UPDATE) {
+                return <VersionUpdateMessage key={`${inbox.name}-${inbox.status}`} inbox={inbox} />;
               }
               return undefined;
             })}
