@@ -1,5 +1,5 @@
 export const UserNamePrefix = "users/";
 
-export const extractUsernameFromName = (name: string) => {
-  return name.split("/")[1];
+export const extractUsernameFromName = (name: string = "") => {
+  return name.slice(UserNamePrefix.length);
 };

@@ -65,7 +65,7 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
             : "border-gray-400 text-gray-400 bg-gray-50 dark:bg-zinc-800"
         )}
       >
-        <Tooltip title={"Comment"} placement="bottom">
+        <Tooltip title={"Update"} placement="bottom">
           <Icon.ArrowUp className="w-4 sm:w-5 h-auto" />
         </Tooltip>
       </div>

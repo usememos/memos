@@ -42,7 +42,7 @@ const Memo: React.FC<Props> = (props: Props) => {
   const [shouldRender, setShouldRender] = useState<boolean>(lazyRendering ? false : true);
   const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(memo.displayTs));
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const readonly = memo.creatorUsername !== extractUsernameFromName(user?.name || "");
+  const readonly = memo.creatorUsername !== extractUsernameFromName(user?.name);
   const [creator, setCreator] = useState(userV1Store.getUserByUsername(memo.creatorUsername));
   const referenceRelations = memo.relationList.filter((relation) => relation.type === "REFERENCE");
   const commentRelations = memo.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT");
