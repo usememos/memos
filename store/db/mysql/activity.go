@@ -63,8 +63,11 @@ func (d *DB) ListActivities(ctx context.Context, find *store.FindActivity) ([]*s
 	if find.ID != nil {
 		where, args = append(where, "`id` = ?"), append(args, *find.ID)
 	}
+	if find.Type != nil {
+		where, args = append(where, "`type` = ?"), append(args, find.Type.String())
+	}
 
-	query := "SELECT `id`, `creator_id`, `type`, `level`, `payload`, UNIX_TIMESTAMP(`created_ts`) FROM `activity` WHERE " + strings.Join(where, " AND ")
+	query := "SELECT `id`, `creator_id`, `type`, `level`, `payload`, UNIX_TIMESTAMP(`created_ts`) FROM `activity` WHERE " + strings.Join(where, " AND ") + " ORDER BY `created_ts` DESC"
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err

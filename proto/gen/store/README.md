@@ -6,6 +6,7 @@
 - [store/activity.proto](#store_activity-proto)
     - [ActivityMemoCommentPayload](#memos-store-ActivityMemoCommentPayload)
     - [ActivityPayload](#memos-store-ActivityPayload)
+    - [ActivityVersionUpdatePayload](#memos-store-ActivityVersionUpdatePayload)
   
 - [store/common.proto](#store_common-proto)
 - [store/inbox.proto](#store_inbox-proto)
@@ -61,6 +62,22 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | memo_comment | [ActivityMemoCommentPayload](#memos-store-ActivityMemoCommentPayload) |  |  |
+| version_update | [ActivityVersionUpdatePayload](#memos-store-ActivityVersionUpdatePayload) |  |  |
+
+
+
+
+
+
+<a name="memos-store-ActivityVersionUpdatePayload"></a>
+
+### ActivityVersionUpdatePayload
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| version | [string](#string) |  |  |
 
 
 
@@ -126,6 +143,7 @@
 | ---- | ------ | ----------- |
 | TYPE_UNSPECIFIED | 0 |  |
 | TYPE_MEMO_COMMENT | 1 |  |
+| TYPE_VERSION_UPDATE | 2 |  |
 
 
  

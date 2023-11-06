@@ -8,6 +8,7 @@ message InboxMessage {
   enum Type {
     TYPE_UNSPECIFIED = 0;
     TYPE_MEMO_COMMENT = 1;
+    TYPE_VERSION_UPDATE = 2;
   }
   Type type = 1;
   optional int32 activity_id = 2;

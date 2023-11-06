@@ -9,7 +9,8 @@ import (
 type ActivityType string
 
 const (
-	ActivityTypeMemoComment ActivityType = "MEMO_COMMENT"
+	ActivityTypeMemoComment   ActivityType = "MEMO_COMMENT"
+	ActivityTypeVersionUpdate ActivityType = "VERSION_UPDATE"
 )
 
 func (t ActivityType) String() string {
@@ -40,7 +41,8 @@ type Activity struct {
 }
 
 type FindActivity struct {
-	ID *int32
+	ID   *int32
+	Type *ActivityType
 }
 
 func (s *Store) CreateActivity(ctx context.Context, create *Activity) (*Activity, error) {
