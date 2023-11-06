@@ -20,7 +20,9 @@ service TagService {
 
 message Tag {
   string name = 1;
-  int32 creator_id = 2;
+  // The creator of tags.
+  // Format: users/{username}
+  string creator = 2;
 }
 
 message UpsertTagRequest {
@@ -32,7 +34,9 @@ message UpsertTagResponse {
 }
 
 message ListTagsRequest {
-  int32 creator_id = 1;
+  // The creator of tags.
+  // Format: users/{username}
+  string creator = 1;
 }
 
 message ListTagsResponse {

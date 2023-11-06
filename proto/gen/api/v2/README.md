@@ -928,7 +928,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| creator_id | [int32](#int32) |  |  |
+| creator | [string](#string) |  | The creator of tags. Format: users/{username} |
 
 
 
@@ -959,7 +959,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | name | [string](#string) |  |  |
-| creator_id | [int32](#int32) |  |  |
+| creator | [string](#string) |  | The creator of tags. Format: users/{username} |
 
 
 

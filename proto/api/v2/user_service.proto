@@ -108,6 +108,13 @@ message UpdateUserResponse {
   User user = 1;
 }
 
+message UserAccessToken {
+  string access_token = 1;
+  string description = 2;
+  google.protobuf.Timestamp issued_at = 3;
+  google.protobuf.Timestamp expires_at = 4;
+}
+
 message ListUserAccessTokensRequest {
   // The name of the user.
   // Format: users/{username}
@@ -141,10 +148,3 @@ message DeleteUserAccessTokenRequest {
 }
 
 message DeleteUserAccessTokenResponse {}
-
-message UserAccessToken {
-  string access_token = 1;
-  string description = 2;
-  google.protobuf.Timestamp issued_at = 3;
-  google.protobuf.Timestamp expires_at = 4;
-}
