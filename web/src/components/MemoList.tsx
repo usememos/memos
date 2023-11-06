@@ -22,7 +22,7 @@ const MemoList: React.FC = () => {
   const user = useCurrentUser();
   const { tag: tagQuery, duration, text: textQuery, visibility } = filter;
   const showMemoFilter = Boolean(tagQuery || (duration && duration.from < duration.to) || textQuery || visibility);
-  const username = params.username || extractUsernameFromName(user.name) || "";
+  const username = params.username || extractUsernameFromName(user.name || "");
 
   const fetchMoreRef = useRef<HTMLSpanElement>(null);
 

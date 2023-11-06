@@ -28,8 +28,6 @@ const RelationListView = (props: Props) => {
     setRelationList(relationList.filter((relation) => relation.relatedMemoId !== memo.id));
   };
 
-  console.log("referencingMemoList", referencingMemoList);
-
   return (
     <>
       {referencingMemoList.length > 0 && (

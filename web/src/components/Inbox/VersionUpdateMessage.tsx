@@ -28,7 +28,6 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
         id: inbox.activityId,
       })
       .then(({ activity }) => {
-        console.log("activity", activity);
         setActivity(activity);
       });
   }, [inbox.activityId]);
