@@ -45,6 +45,7 @@
     "fold": "Recolher",
     "home": "Início",
     "image": "Imagem",
+    "inbox": "Caixa de Entrada",
     "language": "Idioma",
     "learn-more": "Saiba mais",
     "link": "Link",
@@ -119,6 +120,9 @@
     "memo-on": "{{amount}} memo em {{date}}",
     "memos-in": "memos em {{period}}",
     "memos-on": "{{amount}} memos em {{date}}"
+  },
+  "inbox": {
+    "memo-comment": "{{user}} tem um comentário sobre o seu {{memo}}."
   },
   "memo": {
     "archived-at": "Arquivado em",
