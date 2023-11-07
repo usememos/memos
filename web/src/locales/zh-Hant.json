@@ -6,10 +6,16 @@
     "other-projects": "其他專案",
     "powered-by": "威力本源"
   },
+  "amount-text": {
+    "memo": "MEMO"
+  },
   "auth": {
+    "create-your-account": "建立您的賬戶",
     "host-tip": "您註冊為此站台之管理員。",
     "new-password": "新密碼",
-    "repeat-new-password": "再次輸入新密碼"
+    "repeat-new-password": "再次輸入新密碼",
+    "sign-in-tip": "已有帳戶？",
+    "sign-up-tip": "還沒有帳戶？"
   },
   "common": {
     "about": "關於",
@@ -37,6 +43,7 @@
     "fold": "折疊",
     "home": "首頁",
     "image": "圖片",
+    "inbox": "通知",
     "language": "語言",
     "learn-more": "了解",
     "link": "連結",
@@ -49,6 +56,8 @@
     "password": "密碼",
     "pin": "釘選",
     "preview": "預覽",
+    "profile": "個人專頁",
+    "remember-me": "記住賬戶",
     "rename": "更名",
     "reset": "重設",
     "resources": "資源庫",
@@ -71,10 +80,10 @@
     "vacuum": "清理",
     "version": "版本",
     "visibility": "可見度",
-    "yourself": "你自己",
-    "inbox": "通知"
+    "yourself": "你自己"
   },
   "daily-review": {
+    "no-memos": "可惜可惜，是日空空如也。",
     "title": "每日回顧"
   },
   "days": {
@@ -110,15 +119,23 @@
     "memos-in": "memos in {{period}}",
     "memos-on": "{{amount}} memos on {{date}}"
   },
+  "inbox": {
+    "memo-comment": "{{user}} 對您的 {{memo}} 發表了評論。",
+    "version-update": "新版本 {{version}} 現已推出！"
+  },
   "memo": {
     "archived-at": "封存於",
     "archived-memos": "封存的備忘錄",
+    "comment": {
+      "no-comment": "沒有評論",
+      "self": "評論"
+    },
     "copy-link": "複製連結",
     "delete-confirm": "您確定要刪除此備忘錄？\n\n此動作為不可逆❗",
     "delete-memo": "刪除備忘錄",
     "embed": "內嵌",
     "fetch-more": "點此以載入更多",
-    "fetching-data": "抓取資料中...",
+    "fetching-data": "抓取資料中…",
     "no-archived-memos": "無封存的備忘錄。",
     "search-placeholder": "搜尋備忘錄",
     "view-detail": "查看詳情",
@@ -139,7 +156,7 @@
     "fill-all": "請填寫所有欄位。",
     "fill-form": "請填寫此表單",
     "fill-server-name": "請填寫伺服器名稱",
-    "generating-the-screenshot": "正在產生截圖...",
+    "generating-the-screenshot": "正在產生截圖…",
     "image-load-failed": "圖片讀取失敗",
     "invalid-created-datetime": "建立的日期時間無效。",
     "invalid-resource-filename": "無效的檔名。",
@@ -185,7 +202,7 @@
         "type-placeholder": "檔案類型"
       },
       "local-file": {
-        "choose": "選擇檔案...",
+        "choose": "選擇檔案…",
         "option": "本機檔案"
       },
       "title": "新增資源",
@@ -193,7 +210,7 @@
     },
     "delete-resource": "刪除資源",
     "delete-selected-resources": "刪除所選的資源",
-    "fetching-data": "抓取資料...",
+    "fetching-data": "抓取資料…",
     "file-drag-drop-prompt": "拖曳您的檔案到此處以上傳檔案",
     "linked-amount": "連結的數量",
     "no-files-selected": "沒有檔案被選取❗",
@@ -208,6 +225,7 @@
     "warning-text-unused": "您確定要刪除這些未使用的資源？\n\n此動作為不可逆❗"
   },
   "router": {
+    "back-to-top": "回到頂部",
     "go-to-home": "回到首頁"
   },
   "setting": {
@@ -264,6 +282,7 @@
       "create-sso": "新增 SSO",
       "custom": "自訂",
       "delete-sso": "確認刪除",
+      "disabled-password-login-warning": "已停用密碼登入，删除身份提供程式時，請格外小心",
       "display-name": "顯示名稱",
       "identifier": "識別碼",
       "identifier-filter": "識別碼過濾器",
