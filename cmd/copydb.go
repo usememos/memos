@@ -59,6 +59,13 @@ func copydb(fromProfile, toProfile *_profile.Profile) error {
 		return errors.Wrap(err, "fail to create `to` driver")
 	}
 
+	// Check if `to` driver has been created before
+	if history, err := toDriver.FindMigrationHistoryList(ctx, nil); err != nil {
+		return errors.New("fail to check migration history of `to` driver")
+	} else if len(history) == 0 {
+		return errors.New("migration history of `to` driver should not be empty")
+	}
+
 	if err := toDriver.Migrate(ctx); err != nil {
 		return errors.Wrap(err, "fail to migrate db")
 	}
