@@ -18,6 +18,7 @@ import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
 import showPreviewImageDialog from "./PreviewImageDialog";
+import showShareMemoDialog from "./ShareMemoDialog";
 import UserAvatar from "./UserAvatar";
 import VisibilityIcon from "./VisibilityIcon";
 import "@/less/memo.less";
@@ -263,6 +264,10 @@ const Memo: React.FC<Props> = (props: Props) => {
                         {t("common.mark")}
                       </span>
                     )}
+                    <span className="btn" onClick={() => showShareMemoDialog(memo)}>
+                      <Icon.Share className="w-4 h-auto mr-2" />
+                      {t("common.share")}
+                    </span>
                     <Divider className="!my-1" />
                     <span className="btn text-orange-500" onClick={handleArchiveMemoClick}>
                       <Icon.Archive className="w-4 h-auto mr-2" />
