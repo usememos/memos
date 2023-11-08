@@ -52,6 +52,10 @@ const UsageHeatMap = () => {
   const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
   const containerElRef = useRef<HTMLDivElement>(null);
 
+  if (!user) {
+    return;
+  }
+
   useEffect(() => {
     userV1Store.getOrFetchUserByUsername(extractUsernameFromName(user.name)).then((user) => {
       if (!user) {
