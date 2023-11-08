@@ -20,9 +20,6 @@ dependencies:
   '@reduxjs/toolkit':
     specifier: ^1.9.7
     version: 1.9.7(react-redux@8.1.3)(react@18.2.0)
-  '@tailwindcss/container-queries':
-    specifier: ^0.1.1
-    version: 0.1.1(tailwindcss@3.3.5)
   axios:
     specifier: ^1.6.0
     version: 1.6.0
@@ -1300,14 +1297,6 @@ packages:
   /@swc/types@0.1.5:
     resolution: {integrity: sha512-myfUej5naTBWnqOCc/MdVOLVjXUXtIA+NpDrDBKJtLLg2shUjBu3cZmB/85RyitKc55+lUUyl7oRfLOvkr2hsw==}
     dev: true
-
-  /@tailwindcss/container-queries@0.1.1(tailwindcss@3.3.5):
-    resolution: {integrity: sha512-p18dswChx6WnTSaJCSGx6lTmrGzNNvm2FtXmiO6AuA1V4U5REyoqwmT6kgAsIMdjo07QdAfYXHJ4hnMtfHzWgA==}
-    peerDependencies:
-      tailwindcss: '>=3.2.0'
-    dependencies:
-      tailwindcss: 3.3.5
-    dev: false
 
   /@trivago/prettier-plugin-sort-imports@3.4.0(prettier@2.6.2):
     resolution: {integrity: sha512-485Iailw8X5f7KetzRka20RF1kPBEINR5LJMNwlBZWY1gRAlVnv5dZzyNPnLxSP0Qcia8HETa9Cdd8LlX9o+pg==}

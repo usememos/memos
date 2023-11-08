@@ -21,7 +21,7 @@ const HeaderDrawer = () => {
   };
 
   return (
-    <div>
+    <div className="sm:hidden">
       <IconButton onClick={toggleDrawer(true)}>
         <Icon.Menu className="w-5 h-auto dark:text-gray-200" />
       </IconButton>
