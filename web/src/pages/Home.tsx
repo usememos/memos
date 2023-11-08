@@ -11,7 +11,9 @@ const Home = () => {
         <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
         <MemoList />
       </div>
-      <HomeSidebar />
+      <div className="hidden md:block sticky top-0 left-0 w-56">
+        <HomeSidebar />
+      </div>
     </div>
   );
 };

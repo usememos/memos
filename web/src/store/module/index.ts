@@ -5,4 +5,3 @@ export * from "./tag";
 export * from "./resource";
 export * from "./user";
 export * from "./dialog";
-export * from "./layout";

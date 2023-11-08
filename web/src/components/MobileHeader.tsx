@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useLayoutStore } from "@/store/module";
 import HeaderDrawer from "./HeaderDrawer";
-import Icon from "./Icon";
+import HomeSidebarDrawer from "./HomeSidebarDrawer";
 
 interface Props {
   showSearch?: boolean;
@@ -9,7 +8,6 @@ interface Props {
 
 const MobileHeader = (props: Props) => {
   const { showSearch = true } = props;
-  const layoutStore = useLayoutStore();
   const [titleText] = useState("MEMOS");
 
   return (
@@ -24,7 +22,7 @@ const MobileHeader = (props: Props) => {
         </span>
       </div>
       <div className={`${showSearch ? "flex" : "hidden"} flex-row justify-end items-center pr-1`}>
-        <Icon.Search className="w-5 h-auto dark:text-gray-200" onClick={() => layoutStore.setHomeSidebarStatus(true)} />
+        <HomeSidebarDrawer />
       </div>
     </div>
   );
