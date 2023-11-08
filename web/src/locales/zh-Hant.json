@@ -1,15 +1,21 @@
 {
   "about": {
-    "about-memos": "關於 Memos",
-    "memos-description": "Memos 是一個網頁式的筆記應用程式，您可用它記錄、組織以及分享你的筆記",
+    "about-memos": "關於 memos",
+    "memos-description": "memos 是一個網頁式的筆記應用程式，您可用它記錄、組織以及分享你的筆記。",
     "no-server-description": "此伺服器未設置說明。",
     "other-projects": "其他專案",
-    "powered-by": "威力本源"
+    "powered-by": "Powered By"
+  },
+  "amount-text": {
+    "memo": "MEMO"
   },
   "auth": {
+    "create-your-account": "建立您的賬戶",
     "host-tip": "您註冊為此站台之管理員。",
     "new-password": "新密碼",
-    "repeat-new-password": "再次輸入新密碼"
+    "repeat-new-password": "再次輸入新密碼",
+    "sign-in-tip": "已有帳戶？",
+    "sign-up-tip": "還沒有帳戶？"
   },
   "common": {
     "about": "關於",
@@ -37,6 +43,7 @@
     "fold": "折疊",
     "home": "首頁",
     "image": "圖片",
+    "inbox": "通知",
     "language": "語言",
     "learn-more": "了解",
     "link": "連結",
@@ -49,6 +56,8 @@
     "password": "密碼",
     "pin": "釘選",
     "preview": "預覽",
+    "profile": "個人專頁",
+    "remember-me": "記住賬戶",
     "rename": "更名",
     "reset": "重設",
     "resources": "資源庫",
@@ -67,14 +76,14 @@
     "unpin": "解除釘選",
     "update": "更新",
     "upload": "上傳",
-    "username": "帳號",
+    "username": "賬戶",
     "vacuum": "清理",
     "version": "版本",
     "visibility": "可見度",
-    "yourself": "你自己",
-    "inbox": "通知"
+    "yourself": "你自己"
   },
   "daily-review": {
+    "no-memos": "可惜可惜，是日空空如也。",
     "title": "每日回顧"
   },
   "days": {
@@ -105,20 +114,28 @@
   "heatmap": {
     "day": "天",
     "days": "天",
-    "memo-in": "memo in {{period}}",
-    "memo-on": "{{amount}} memo on {{date}}",
-    "memos-in": "memos in {{period}}",
-    "memos-on": "{{amount}} memos on {{date}}"
+    "memo-in": "條 memo，在過去的 {{period}}",
+    "memo-on": "在 {{date}} 有 {{amount}} 條 memo",
+    "memos-in": "條 memo，在過去的 {{period}}",
+    "memos-on": "在 {{date}} 有 {{amount}} 條 memos"
+  },
+  "inbox": {
+    "memo-comment": "{{user}} 對您的 {{memo}} 發表了評論。",
+    "version-update": "新版本 {{version}} 現已推出！"
   },
   "memo": {
     "archived-at": "封存於",
     "archived-memos": "封存的備忘錄",
+    "comment": {
+      "no-comment": "沒有評論",
+      "self": "評論"
+    },
     "copy-link": "複製連結",
-    "delete-confirm": "您確定要刪除此備忘錄？\n\n此動作為不可逆❗",
+    "delete-confirm": "您確定要刪除此備忘錄？\n\n此操作無法逆轉",
     "delete-memo": "刪除備忘錄",
     "embed": "內嵌",
     "fetch-more": "點此以載入更多",
-    "fetching-data": "抓取資料中...",
+    "fetching-data": "抓取資料中…",
     "no-archived-memos": "無封存的備忘錄。",
     "search-placeholder": "搜尋備忘錄",
     "view-detail": "查看詳情",
@@ -139,7 +156,7 @@
     "fill-all": "請填寫所有欄位。",
     "fill-form": "請填寫此表單",
     "fill-server-name": "請填寫伺服器名稱",
-    "generating-the-screenshot": "正在產生截圖...",
+    "generating-the-screenshot": "正在產生截圖…",
     "image-load-failed": "圖片讀取失敗",
     "invalid-created-datetime": "建立的日期時間無效。",
     "invalid-resource-filename": "無效的檔名。",
@@ -147,25 +164,25 @@
     "maximum-upload-size-is": "最大允許檔案上傳大小 {{size}} MiB",
     "memo-not-found": "找不到備忘錄。",
     "memo-updated-datetime": "備忘錄建立日期時間已變更。",
-    "memos-ready": "所有備忘錄已就緒 🎉",
+    "memos-ready": "所有備忘錄已就緒",
     "new-password-not-match": "新密碼不一致。",
     "no-data": "或許尋覓虛空，或者改換選擇之軌跡。",
-    "page-not-found": "404 - 網頁無法顯示 😥",
+    "page-not-found": "404 - 網頁無法顯示",
     "password-changed": "密碼變更完成",
     "password-login-disabled": "在禁用密碼登入時無法移除最後一個身份識別提供者",
     "password-not-match": "密碼不一致。",
     "private-only": "此備忘錄僅自己可見。",
     "resource-filename-updated": "資源檔名變更成功。",
-    "resource-ready": "所有資源已就緒 🎉",
+    "resource-ready": "所有資源已就緒",
     "restored-successfully": "還原成功",
     "signup-failed": "註冊失敗",
     "succeed-copy-code": "複製程式碼到剪貼簿成功。",
-    "succeed-copy-content": "複製內容到剪貼板成功。",
+    "succeed-copy-content": "複製內容到剪貼簿成功。",
     "succeed-copy-link": "複製連結到剪貼簿成功。",
     "succeed-copy-resource-link": "複製資源連結到剪貼簿成功。",
     "succeed-update-additional-script": "更新附加腳本成功。",
     "succeed-update-additional-style": "更新附加樣式成功。",
-    "succeed-update-customized-profile": "更新自訂配置文件成功。",
+    "succeed-update-customized-profile": "更新自訂設定文件成功。",
     "succeed-vacuum-database": "清理資料庫成功。",
     "update-succeed": "更新成功",
     "updating-setting-failed": "更新設定失敗",
@@ -185,7 +202,7 @@
         "type-placeholder": "檔案類型"
       },
       "local-file": {
-        "choose": "選擇檔案...",
+        "choose": "選擇檔案…",
         "option": "本機檔案"
       },
       "title": "新增資源",
@@ -193,21 +210,22 @@
     },
     "delete-resource": "刪除資源",
     "delete-selected-resources": "刪除所選的資源",
-    "fetching-data": "抓取資料...",
+    "fetching-data": "抓取資料…",
     "file-drag-drop-prompt": "拖曳您的檔案到此處以上傳檔案",
     "linked-amount": "連結的數量",
-    "no-files-selected": "沒有檔案被選取❗",
+    "no-files-selected": "沒有選取檔案",
     "no-resources": "沒有資源。",
     "no-unused-resources": "無未使用的資源",
     "reset-link": "重設連結",
-    "reset-link-prompt": "您確定要重設連結？\n這將會破壞所有目前的使用中的連結。\n\n此動作為不可逆❗",
+    "reset-link-prompt": "您確定要重設連結？\n這將會破壞所有目前的使用中的連結。\n\n此操作無法逆轉",
     "reset-resource-link": "重設資源連結",
     "search-bar-placeholder": "搜尋資源",
     "upload-successfully": "上傳成功",
-    "warning-text": "您確定要刪除此資源？\n\n此動作為不可逆❗",
-    "warning-text-unused": "您確定要刪除這些未使用的資源？\n\n此動作為不可逆❗"
+    "warning-text": "您確定要刪除此資源？\n\n此操作無法逆轉",
+    "warning-text-unused": "您確定要刪除這些未使用的資源？\n\n此操作無法逆轉"
   },
   "router": {
+    "back-to-top": "回到頂部",
     "go-to-home": "回到首頁"
   },
   "setting": {
@@ -219,7 +237,7 @@
       "openapi-sample-post": "哈囉 來自 {{url}} 的 #memos",
       "openapi-title": "OpenAPI",
       "reset-api": "重設 API",
-      "title": "帳號資訊",
+      "title": "賬戶資訊",
       "update-information": "更新個人資訊",
       "username-note": "為登入用途"
     },
@@ -232,12 +250,12 @@
     "member-list": "使用者列表",
     "member-section": {
       "archive-member": "封存使用者",
-      "archive-warning": "❗ 您確定要封存 {{username}}?",
+      "archive-warning": "您確定要封存 {{username}}?",
       "create-a-member": "新增使用者",
       "delete-member": "刪除使用者",
-      "delete-warning": "❗ A您確定要刪除 {{username}}?\n\n此動作為不可逆❗"
+      "delete-warning": "A您確定要刪除 {{username}}?\n\n此操作無法逆轉"
     },
-    "my-account": "我的帳號",
+    "my-account": "我的賬戶",
     "preference": "偏好設定",
     "preference-section": {
       "auto-collapse": "自動摺疊",
@@ -257,29 +275,30 @@
     },
     "sso": "SSO",
     "sso-section": {
-      "authorization-endpoint": "驗證端點",
-      "client-id": "客戶端 ID",
-      "client-secret": "客戶端密鑰",
-      "confirm-delete": "您確定要刪除 \"{{name}}\" SSO 設定？\n\n此動作為不可逆❗",
+      "authorization-endpoint": "驗證端點（Authorization Endpoint）",
+      "client-id": "客戶端 ID（Client ID）",
+      "client-secret": "客戶端金鑰（Client Secret）",
+      "confirm-delete": "您確定要刪除 \"{{name}}\" SSO 設定？\n\n此操作無法逆轉",
       "create-sso": "新增 SSO",
       "custom": "自訂",
       "delete-sso": "確認刪除",
+      "disabled-password-login-warning": "已停用密碼登入，删除身份提供程式時，請格外小心",
       "display-name": "顯示名稱",
-      "identifier": "識別碼",
-      "identifier-filter": "識別碼過濾器",
+      "identifier": "識別碼（Identifier）",
+      "identifier-filter": "識別碼過濾器（Identifier Filter）",
       "redirect-url": "重新導向網址",
       "scopes": "範圍",
       "sso-created": "SSO {{name}} 新增成功",
       "sso-list": "SSO 列表",
       "sso-updated": "SSO {{name}} 更新成功",
       "template": "範本",
-      "token-endpoint": "權杖端點",
+      "token-endpoint": "權杖端點（Token Endpoint）",
       "update-sso": "更新 SSO",
-      "user-endpoint": "使用者端點"
+      "user-endpoint": "使用者端點（User Endpoint）"
     },
     "storage": "儲存空間",
     "storage-section": {
-      "accesskey": "存取金鑰",
+      "accesskey": "存取金鑰（Access key）",
       "accesskey-placeholder": "存取金鑰 / 存取 ID",
       "bucket": "Bucket",
       "bucket-placeholder": "Bucket 名稱",
@@ -287,7 +306,7 @@
       "create-storage": "新增儲存空間",
       "current-storage": "目前的儲存空間",
       "delete-storage": "刪除儲存",
-      "endpoint": "端點",
+      "endpoint": "端點（Endpoint）",
       "local-storage-path": "本機儲存空間路徑",
       "path": "儲存空間路徑",
       "path-description": "您可以使用與本機儲存空間相同的動態變數，如 {filename}",
@@ -295,8 +314,8 @@
       "region": "地區",
       "region-placeholder": "地區名稱",
       "s3-compatible-url": "S3 相容網址",
-      "secretkey": "密鑰",
-      "secretkey-placeholder": "密鑰 / 存取金鑰",
+      "secretkey": "金鑰",
+      "secretkey-placeholder": "金鑰 / 存取金鑰",
       "storage-services-list": "儲存服務列表",
       "type-database": "資料庫",
       "type-local": "本機",
@@ -308,7 +327,7 @@
       "url-prefix-placeholder": "自訂網址前綴，選填",
       "url-suffix": "網址後綴",
       "url-suffix-placeholder": "自訂網址後綴，選填",
-      "warning-text": "您確定要刪除儲存服務 \"{{name}}\"嗎?\n\n此動作為不可逆❗"
+      "warning-text": "您確定要刪除儲存服務「{{name}}」嗎?\n\n此操作無法逆轉"
     },
     "system": "系統",
     "system-section": {
@@ -318,7 +337,7 @@
       "additional-style-placeholder": "自訂 CSS 代碼",
       "allow-user-signup": "允許使用者註冊",
       "auto-backup-interval": "自動備份間隔(單位：秒)",
-      "auto-backup-interval-hint": "設定為0禁止自動備份，重新啟動後生效",
+      "auto-backup-interval-hint": "設定為 0 則禁止自動備份，需重新啟動後生效。",
       "customize-server": {
         "appearance": "伺服器外觀",
         "default": "預設為 memos",
@@ -329,12 +348,12 @@
       },
       "database-file-size": "資料庫檔案大小",
       "disable-password-login": "禁用密碼登入",
-      "disable-password-login-final-warning": "如果你知道自己在做什麼，請輸入 \"CONFIRM\"",
-      "disable-password-login-warning": "所有使用者將無法使用密碼登入。如果配置的身份識別提供者失效，不在資料庫中恢復此設定將無法登入。刪除身分識別提供者時也要特別小心❗",
+      "disable-password-login-final-warning": "如果你知道自己在做什麼，請輸入「CONFIRM」。",
+      "disable-password-login-warning": "所有使用者將無法使用密碼登入。如果設定的身份識別提供者失效，不在資料庫中恢復此設定將無法登入。刪除身分識別提供者時也要特別小心❗",
       "disable-public-memos": "停用公共備忘錄",
       "display-with-updated-time": "顯示更新時間",
       "enable-password-login": "啟用密碼登入",
-      "enable-password-login-warning": "啟用所有使用者的密碼登入。如果希望使用者同時使用 SSO 和密碼登入，請開啟密碼登入❗",
+      "enable-password-login-warning": "啟用所有使用者的密碼登入。如果希望使用者同時使用 SSO 和密碼登入，請開啟密碼登入",
       "max-upload-size": "最大上傳檔案大小 (MiB)",
       "max-upload-size-hint": "建議值為 32 MiB。",
       "server-name": "伺服器名稱",
