@@ -98,7 +98,7 @@ func copydb(fromProfile, toProfile *_profile.Profile) error {
 		if err != nil {
 			return errors.Wrapf(err, "fail to check '%s'", table)
 		}
-		if cnt > 0 {
+		if cnt > 0 && table != "system_setting" {
 			return errors.Errorf("table '%s' is not empty", table)
 		}
 	}
