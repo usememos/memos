@@ -9,7 +9,9 @@ function Root() {
         <DemoBanner />
       </div>
       <div className="w-full max-w-6xl mx-auto flex flex-row justify-center items-start sm:px-4">
-        <Header />
+        <div className="hidden sm:block sticky top-0 left-0 w-56">
+          <Header />
+        </div>
         <main className="w-full min-h-screen sm:max-w-[calc(100%-14rem)] flex-grow shrink flex flex-col justify-start items-start">
           <Outlet />
         </main>
