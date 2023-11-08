@@ -14,23 +14,21 @@ import DatePicker from "@/components/kit/DatePicker";
 import { DAILY_TIMESTAMP, DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getDateStampByDate, getNormalizedDateString, getTimeStampByDate, getTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoStore, useUserStore } from "@/store/module";
+import { useMemoStore } from "@/store/module";
 import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const DailyReview = () => {
   const t = useTranslate();
   const memoStore = useMemoStore();
-  const userStore = useUserStore();
   const user = useCurrentUser();
-  const { localSetting } = userStore.state.user as User;
   const currentDateStamp = getDateStampByDate(getNormalizedDateString()) as number;
   const [selectedDateStamp, setSelectedDateStamp] = useState<number>(currentDateStamp as number);
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const dailyMemos = memoStore.state.memos
     .filter((m) => {
       const displayTimestamp = getTimeStampByDate(m.displayTs);
-      const selectedDateStampWithOffset = selectedDateStamp + localSetting.dailyReviewTimeOffset * 60 * 60 * 1000;
+      const selectedDateStampWithOffset = selectedDateStamp;
       return (
         m.rowStatus === "NORMAL" &&
         m.creatorUsername === extractUsernameFromName(user.name) &&

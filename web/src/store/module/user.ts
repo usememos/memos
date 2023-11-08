@@ -15,7 +15,6 @@ const defaultSetting: Setting = {
 
 const defaultLocalSetting: LocalSetting = {
   enableDoubleClickEditing: false,
-  dailyReviewTimeOffset: 0,
 };
 
 export const convertResponseModelUser = (user: User): User => {

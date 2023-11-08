@@ -18,8 +18,6 @@ const PreferencesSection = () => {
   const { setting, localSetting } = userStore.state.user as User;
   const [telegramUserId, setTelegramUserId] = useState<string>(setting.telegramUserId);
 
-  const dailyReviewTimeOffsetOptions: number[] = [...Array(24).keys()];
-
   const handleLocaleSelectChange = async (locale: Locale) => {
     await userStore.upsertUserSetting("locale", locale);
     globalStore.setLocale(locale);
@@ -36,10 +34,6 @@ const PreferencesSection = () => {
 
   const handleDoubleClickEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
     userStore.upsertLocalSetting({ ...localSetting, enableDoubleClickEditing: event.target.checked });
-  };
-
-  const handleDailyReviewTimeOffsetChanged = (value: number) => {
-    userStore.upsertLocalSetting({ ...localSetting, dailyReviewTimeOffset: value });
   };
 
   const handleSaveTelegramUserId = async () => {
@@ -86,35 +80,6 @@ const PreferencesSection = () => {
             </Option>
           ))}
         </Select>
-      </div>
-      <div className="form-label selector">
-        <span className="text-sm break-keep text-ellipsis overflow-hidden">{t("setting.preference-section.daily-review-time-offset")}</span>
-        <span className="w-auto inline-flex">
-          <Select
-            placeholder="hh"
-            className="!min-w-fit"
-            value={localSetting.dailyReviewTimeOffset}
-            onChange={(_, value) => {
-              if (value !== null) {
-                handleDailyReviewTimeOffsetChanged(value);
-              }
-            }}
-            slotProps={{
-              listbox: {
-                sx: {
-                  maxHeight: "15rem",
-                  overflow: "auto",
-                },
-              },
-            }}
-          >
-            {dailyReviewTimeOffsetOptions.map((item) => (
-              <Option key={item} value={item} className="whitespace-nowrap">
-                {item.toString().padStart(2, "0")}
-              </Option>
-            ))}
-          </Select>
-        </span>
       </div>
 
       <label className="form-label selector">

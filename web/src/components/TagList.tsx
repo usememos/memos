@@ -132,7 +132,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
               className={`flex flex-row justify-center items-center w-6 h-6 shrink-0 transition-all rotate-0 ${showSubTags && "rotate-90"}`}
               onClick={handleToggleBtnClick}
             >
-              <Icon.ChevronRight className="w-5 h-5 opacity-80 dark:text-gray-400" />
+              <Icon.ChevronRight className="w-5 h-5 opacity-40 dark:text-gray-400" />
             </span>
           ) : null}
         </div>
