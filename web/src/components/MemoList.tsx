@@ -116,12 +116,12 @@ const MemoList: React.FC = () => {
         </div>
       ) : (
         <div className="flex flex-col justify-start items-center w-full my-6">
-          <div className="text-sm text-gray-400 italic">
+          <div className="text-gray-400 italic">
             {loadingStatus === "complete" ? (
               sortedMemos.length === 0 && (
                 <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
                   <Empty />
-                  <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+                  <p className="mt-2 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
                 </div>
               )
             ) : (

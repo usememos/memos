@@ -23,7 +23,7 @@ const initialGlobalStateLoader = async () => {
   try {
     await initialGlobalState();
   } catch (error) {
-    // do nth
+    // do nothing.
   }
   return null;
 };

@@ -15,7 +15,7 @@ interface NavLinkItem {
   icon: React.ReactNode;
 }
 
-const Header = () => {
+const Navigation = () => {
   const t = useTranslate();
   const user = useCurrentUser();
   const inboxStore = useInboxStore();
@@ -123,4 +123,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default Navigation;
