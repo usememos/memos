@@ -70,11 +70,6 @@ const router = createBrowserRouter([
             loader: () => initialUserStateLoader(),
           },
           {
-            path: "explore",
-            element: <Explore />,
-            loader: () => initialUserStateLoader(false),
-          },
-          {
             path: "review",
             element: <DailyReview />,
             loader: () => initialUserStateLoader(),
@@ -98,6 +93,11 @@ const router = createBrowserRouter([
             path: "setting",
             element: <Setting />,
             loader: () => initialUserStateLoader(),
+          },
+          {
+            path: "explore",
+            element: <Explore />,
+            loader: () => initialUserStateLoader(false),
           },
         ],
       },
