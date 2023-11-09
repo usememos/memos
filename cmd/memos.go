@@ -67,11 +67,8 @@ var (
 			}
 
 			if profile.Metric {
-				println("metric collection is enabled")
 				// nolint
 				metric.NewMetricClient(s.ID, *profile)
-			} else {
-				println("metric collection is disabled")
 			}
 
 			c := make(chan os.Signal, 1)
