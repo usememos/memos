@@ -7,7 +7,7 @@ const Home = () => {
   return (
     <div className="w-full flex flex-row justify-start items-start">
       <div className="w-full px-4 md:max-w-[calc(100%-14rem)] sm:px-2 sm:pt-4">
-        <MobileHeader />
+        <MobileHeader showSearch={true} />
         <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
         <MemoList />
       </div>

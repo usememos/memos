@@ -7,7 +7,7 @@ interface Props {
 }
 
 const MobileHeader = (props: Props) => {
-  const { showSearch = true } = props;
+  const { showSearch } = props;
   const [titleText] = useState("MEMOS");
 
   return (
@@ -21,9 +21,7 @@ const MobileHeader = (props: Props) => {
           {titleText}
         </span>
       </div>
-      <div className={`${showSearch ? "flex" : "hidden"} flex-row justify-end items-center pr-1`}>
-        <HomeSidebarDrawer />
-      </div>
+      <div className={`flex flex-row justify-end items-center pr-1`}>{showSearch && <HomeSidebarDrawer />}</div>
     </div>
   );
 };
