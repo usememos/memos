@@ -21,7 +21,7 @@ const NavigationDrawer = () => {
   };
 
   return (
-    <div className="sm:hidden">
+    <>
       <IconButton onClick={toggleDrawer(true)}>
         <Icon.Menu className="w-5 h-auto dark:text-gray-200" />
       </IconButton>
@@ -30,7 +30,7 @@ const NavigationDrawer = () => {
           <Navigation />
         </div>
       </Drawer>
-    </div>
+    </>
   );
 };
 

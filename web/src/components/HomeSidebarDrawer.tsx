@@ -21,7 +21,7 @@ const HomeSidebarDrawer = () => {
   };
 
   return (
-    <div className="md:hidden">
+    <>
       <IconButton onClick={toggleDrawer(true)}>
         <Icon.Search className="w-5 h-auto dark:text-gray-200" />
       </IconButton>
@@ -30,7 +30,7 @@ const HomeSidebarDrawer = () => {
           <HomeSidebar />
         </div>
       </Drawer>
-    </div>
+    </>
   );
 };
 
