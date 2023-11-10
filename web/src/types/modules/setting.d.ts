@@ -13,6 +13,7 @@ interface Setting {
 
 interface LocalSetting {
   enableDoubleClickEditing: boolean;
+  enableEditorAutoFocus: boolean;
 }
 
 interface UserLocaleSetting {

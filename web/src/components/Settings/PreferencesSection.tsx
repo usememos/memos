@@ -36,6 +36,10 @@ const PreferencesSection = () => {
     userStore.upsertLocalSetting({ ...localSetting, enableDoubleClickEditing: event.target.checked });
   };
 
+  const handleEditorAutoFocusEnabledChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+    userStore.upsertLocalSetting({ ...localSetting, enableEditorAutoFocus: event.target.checked });
+  };
+
   const handleSaveTelegramUserId = async () => {
     try {
       await userStore.upsertUserSetting("telegram-user-id", telegramUserId);
@@ -85,6 +89,11 @@ const PreferencesSection = () => {
       <label className="form-label selector">
         <span className="text-sm break-keep">{t("setting.preference-section.enable-double-click")}</span>
         <Switch className="ml-2" checked={localSetting.enableDoubleClickEditing} onChange={handleDoubleClickEnabledChanged} />
+      </label>
+
+      <label className="form-label selector">
+        <span className="text-sm break-keep">{t("setting.preference-section.enable-editor-auto-focus")}</span>
+        <Switch className="ml-2" checked={localSetting.enableEditorAutoFocus} onChange={handleEditorAutoFocusEnabledChanged} />
       </label>
 
       <Divider className="!mt-3 !my-4" />
