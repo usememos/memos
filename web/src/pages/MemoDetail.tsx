@@ -35,7 +35,7 @@ const MemoDetail = () => {
   const { systemStatus } = globalStore.state;
   const memoId = Number(params.memoId);
   const memo = memoStore.state.memos.find((memo) => memo.id === memoId);
-  const allowEdit = memo?.creatorUsername === extractUsernameFromName(currentUser.name);
+  const allowEdit = memo?.creatorUsername === extractUsernameFromName(currentUser?.name);
   const referenceRelations = memo?.relationList.filter((relation) => relation.type === "REFERENCE") || [];
   const commentRelations = memo?.relationList.filter((relation) => relation.relatedMemoId === memo.id && relation.type === "COMMENT") || [];
   const comments = commentRelations
