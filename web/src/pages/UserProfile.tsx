@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import FloatingNavButton from "@/components/FloatingNavButton";
-import MemoFilter from "@/components/MemoFilter";
 import MemoList from "@/components/MemoList";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
@@ -48,9 +47,6 @@ const UserProfile = () => {
                       <div className="w-full flex flex-col justify-start items-center py-8">
                         <UserAvatar className="!w-20 h-auto mb-2 drop-shadow" avatarUrl={user?.avatarUrl} />
                         <p className="text-3xl text-black opacity-80 dark:text-gray-200">{user?.nickname}</p>
-                      </div>
-                      <div className="w-full h-auto flex flex-col justify-start items-start bg-zinc-100 dark:bg-zinc-800 rounded-lg">
-                        <MemoFilter />
                       </div>
                       <MemoList />
                     </div>
