@@ -18,7 +18,7 @@ func (*APIV1Service) registerGetterPublicRoutes(g *echo.Group) {
 // GetImage godoc
 //
 //	@Summary	Get GetImage from URL
-//	@Tags		get
+//	@Tags		image-url
 //	@Produce	GetImage/*
 //	@Param		url	query		string	true	"Image url"
 //	@Success	200	{object}	nil		"Image"
