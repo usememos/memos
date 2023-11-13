@@ -15,7 +15,6 @@ const defaultSetting: Setting = {
 
 const defaultLocalSetting: LocalSetting = {
   enableDoubleClickEditing: false,
-  enableEditorAutoFocus: true,
 };
 
 export const convertResponseModelUser = (user: User): User => {
