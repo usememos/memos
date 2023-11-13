@@ -52,8 +52,11 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 		Profile: profile,
 
 		// Asynchronous runners.
-		backupRunner: backup.NewBackupRunner(store),
-		telegramBot:  telegram.NewBotWithHandler(integration.NewTelegramHandler(store)),
+		telegramBot: telegram.NewBotWithHandler(integration.NewTelegramHandler(store)),
+	}
+
+	if profile.Driver == "sqlite" {
+		s.backupRunner = backup.NewBackupRunner(store)
 	}
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -112,7 +115,10 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 func (s *Server) Start(ctx context.Context) error {
 	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
 	go s.telegramBot.Start(ctx)
-	go s.backupRunner.Run(ctx)
+
+	if s.backupRunner != nil {
+		go s.backupRunner.Run(ctx)
+	}
 
 	metric.Enqueue("server start")
 	return s.e.Start(fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port))
