@@ -45,7 +45,8 @@ const MemoEditor = (props: Props) => {
   const { className, editorClassName, cacheKey, memoId, onConfirm } = props;
   const { i18n } = useTranslation();
   const t = useTranslate();
-  const [contentCache, setContentCache] = useLocalStorage<string>(`memo-editor-${cacheKey}`, "");
+  const contentCacheKey = `memo-editor-${cacheKey}`;
+  const [contentCache, setContentCache] = useLocalStorage<string>(contentCacheKey, "");
   const {
     state: { systemStatus },
   } = useGlobalStore();
@@ -284,7 +285,11 @@ const MemoEditor = (props: Props) => {
 
   const handleContentChange = (content: string) => {
     setHasContent(content !== "");
-    setContentCache(content);
+    if (content !== "") {
+      setContentCache(content);
+    } else {
+      localStorage.removeItem(contentCacheKey);
+    }
   };
 
   const handleSaveBtnClick = async () => {
