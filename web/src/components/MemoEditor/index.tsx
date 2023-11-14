@@ -284,10 +284,10 @@ const MemoEditor = (props: Props) => {
 
   const handleContentChange = (content: string) => {
     setHasContent(content !== "");
-    if (content == "") {
-      localStorage.removeItem(contentCacheKey);
-    } else {
+    if (content !== "") {
       setContentCache(content);
+    } else {
+      localStorage.removeItem(contentCacheKey);
     }
   };
 
