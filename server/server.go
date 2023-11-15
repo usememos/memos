@@ -72,7 +72,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}))
 
 	e.Use(middleware.TimeoutWithConfig(middleware.TimeoutConfig{
-		Skipper: grpcRequestSkipper,
+		Skipper: timeoutSkipper,
 		Timeout: 30 * time.Second,
 	}))
 
@@ -185,4 +185,13 @@ func (s *Server) getSystemSecretSessionName(ctx context.Context) (string, error)
 
 func grpcRequestSkipper(c echo.Context) bool {
 	return strings.HasPrefix(c.Request().URL.Path, "/memos.api.v2.")
+}
+
+func timeoutSkipper(c echo.Context) bool {
+	if grpcRequestSkipper(c) {
+		return true
+	}
+
+	// Skip timeout for blob upload which is frequently timed out.
+	return c.Request().Method == http.MethodPost && c.Request().URL.Path == "/api/v1/resource/blob"
 }
