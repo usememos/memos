@@ -96,7 +96,7 @@ func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUs
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
-	if currentUser.Username != username && currentUser.Role != store.RoleAdmin {
+	if currentUser.Username != username && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
