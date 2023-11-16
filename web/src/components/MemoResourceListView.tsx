@@ -68,7 +68,7 @@ const MemoResourceListView = ({ resourceList = [] }: { resourceList: Resource[] 
       );
     }
 
-    const Cards = resources.map((resource) => (
+    const cards = resources.map((resource) => (
       <SquareDiv
         key={resource.id}
         className="flex justify-center items-center border dark:border-zinc-900 rounded overflow-hidden hide-scrollbar hover:shadow-md"
@@ -78,10 +78,10 @@ const MemoResourceListView = ({ resourceList = [] }: { resourceList: Resource[] 
     ));
 
     if (resources.length === 2 || resources.length === 4) {
-      return <div className="w-full mt-2 grid gap-2 grid-cols-2">{Cards}</div>;
+      return <div className="w-full mt-2 grid gap-2 grid-cols-2">{cards}</div>;
     }
 
-    return <div className="w-full mt-2 grid gap-2 grid-cols-2 sm:grid-cols-3">{Cards}</div>;
+    return <div className="w-full mt-2 grid gap-2 grid-cols-2 sm:grid-cols-3">{cards}</div>;
   };
 
   const OtherList = ({ resources = [] }: { resources: Resource[] }) => {
