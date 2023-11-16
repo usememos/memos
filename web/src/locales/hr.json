@@ -118,6 +118,10 @@
     "memos-in": "memoa u {{period}}",
     "memos-on": "{{amount}} memoa  {{date}}"
   },
+  "inbox": {
+    "memo-comment": "{{user}} je komentirao tvoj {{memo}}.",
+    "version-update": "Nova verzija {{version}} je dostupna!"
+  },
   "memo": {
     "archived-at": "Arhivirano u",
     "archived-memos": "Arhivirani Memoi",
@@ -277,6 +281,7 @@
       "create-sso": "Stvori SSO",
       "custom": "Custom",
       "delete-sso": "Potvrdi brisanje",
+      "disabled-password-login-warning": "Prijava lozinkom je onemogućena,",
       "display-name": "Prikaži ime",
       "identifier": "Identifikator",
       "identifier-filter": "Identifier Filter",
@@ -346,6 +351,7 @@
       "disable-public-memos": "Onemogući javne memoe",
       "display-with-updated-time": "Prikaži sa obnovljenim vremenom",
       "enable-password-login": "Omogući prijavu lozinkom",
+      "enable-password-login-warning": "Ovo će omogućiti prijavu lozinkom za sve korisnike.",
       "max-upload-size": "Maximalna veličina uploada (MiB)",
       "max-upload-size-hint": "Preporučena vrijednost je 32 MiB.",
       "server-name": "Ime servera",
