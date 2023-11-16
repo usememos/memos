@@ -77,11 +77,7 @@ const MemoResourceListView = ({ resourceList = [] }: { resourceList: Resource[] 
       </SquareDiv>
     ));
 
-    if (resources.length === 2) {
-      return <div className="w-full mt-2 grid gap-2 grid-cols-2">{Cards}</div>;
-    }
-
-    if (resources.length === 4) {
+    if (resources.length === 2 || resources.length === 4) {
       return <div className="w-full mt-2 grid gap-2 grid-cols-2">{Cards}</div>;
     }
 
