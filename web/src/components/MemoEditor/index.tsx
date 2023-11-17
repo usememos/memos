@@ -326,6 +326,8 @@ const MemoEditor = (props: Props) => {
         });
         filterStore.clearFilter();
       }
+      editorRef.current?.setContent("");
+      clearContentQueryParam();
     } catch (error: any) {
       console.error(error);
       toast.error(error.response.data.message);
@@ -348,8 +350,6 @@ const MemoEditor = (props: Props) => {
       ...prevState,
       resourceList: [],
     }));
-    editorRef.current?.setContent("");
-    clearContentQueryParam();
     if (onConfirm) {
       onConfirm();
     }
