@@ -11,6 +11,7 @@ const fileTypeAutocompleteOptions = ["image/*", "text/*", "audio/*", "video/*", 
 
 interface Props extends DialogProps {
   onCancel?: () => void;
+  imageOnly?: boolean;
   onConfirm?: (resourceList: Resource[]) => void;
 }
 
@@ -23,7 +24,7 @@ interface State {
 
 const CreateResourceDialog: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
-  const { destroy, onCancel, onConfirm } = props;
+  const { destroy, onCancel, onConfirm, imageOnly } = props;
   const resourceStore = useResourceStore();
   const [state, setState] = useState<State>({
     selectedMode: "local-file",
@@ -211,7 +212,7 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
                 type="file"
                 id="files"
                 multiple={true}
-                accept="*"
+                accept={imageOnly ? ".png, .jpg, .jpeg, .bmp, .gif" : "*"}
               />
             </div>
             <List size="sm" sx={{ width: "100%" }}>

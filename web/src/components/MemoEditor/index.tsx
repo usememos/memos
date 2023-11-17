@@ -177,8 +177,9 @@ const MemoEditor = (props: Props) => {
     }));
   };
 
-  const handleUploadFileBtnClick = () => {
+  const handleUploadFileBtnClick = (imageOnly: boolean) => {
     showCreateResourceDialog({
+      imageOnly: imageOnly,
       onConfirm: (resourceList) => {
         setState((prevState) => ({
           ...prevState,
@@ -443,9 +444,15 @@ const MemoEditor = (props: Props) => {
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
           <IconButton
             className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
-            onClick={handleUploadFileBtnClick}
+            onClick={() => handleUploadFileBtnClick(true)}
           >
             <Icon.Image className="w-5 h-5 mx-auto" />
+          </IconButton>
+          <IconButton
+            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+            onClick={() => handleUploadFileBtnClick(false)}
+          >
+            <Icon.Paperclip className="w-5 h-5 mx-auto" />
           </IconButton>
           <IconButton
             className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
