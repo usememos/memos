@@ -1,5 +1,6 @@
 import { IconButton } from "@mui/joy";
 import Icon from "@/components/Icon";
+import OverflowTip from "@/components/kit/OverflowTip";
 import { useTagStore } from "@/store/module";
 
 interface Props {
@@ -18,13 +19,13 @@ const TagSelector = (props: Props) => {
         {tags.length > 0 ? (
           tags.map((tag) => {
             return (
-              <span
-                className="w-auto max-w-full truncate text-black dark:text-gray-300 cursor-pointer rounded text-sm leading-6 px-2 hover:bg-zinc-300 dark:hover:bg-zinc-700 shrink-0"
+              <div
+                className="w-auto max-w-full text-black dark:text-gray-300 cursor-pointer rounded text-sm leading-6 px-2 hover:bg-zinc-300 dark:hover:bg-zinc-700 shrink-0"
                 onClick={() => onTagSelectorClick(tag)}
                 key={tag}
               >
-                #{tag}
-              </span>
+                <OverflowTip>#{tag}</OverflowTip>
+              </div>
             );
           })
         ) : (

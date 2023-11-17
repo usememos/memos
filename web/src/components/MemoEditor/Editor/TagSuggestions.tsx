@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { useEffect, useRef, useState } from "react";
 import getCaretCoordinates from "textarea-caret";
+import OverflowTip from "@/components/kit/OverflowTip";
 import { useTagStore } from "@/store/module";
 import { EditorRefActions } from ".";
 
@@ -8,6 +9,7 @@ type Props = {
   editorRef: React.RefObject<HTMLTextAreaElement>;
   editorActions: React.ForwardedRef<EditorRefActions>;
 };
+
 type Position = { left: number; top: number; height: number };
 
 const TagSuggestions = ({ editorRef, editorActions }: Props) => {
@@ -53,7 +55,6 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
     };
 
     const matchedTags = tagsRef.current.filter((tag) => customMatches(tag, input));
-
     return matchedTags.slice(0, 5);
   })();
 
@@ -113,7 +114,7 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
   if (!isVisibleRef.current || !position) return null;
   return (
     <div
-      className="z-20 p-1 mt-1 -ml-2 absolute max-w-[12rem] rounded font-mono shadow bg-zinc-200 dark:bg-zinc-600"
+      className="z-20 p-1 mt-1 -ml-2 absolute max-w-[12rem] gap-px rounded font-mono flex flex-col justify-start items-start overflow-auto shadow bg-zinc-200 dark:bg-zinc-600"
       style={{ left: position.left, top: position.top + position.height }}
     >
       {suggestionsRef.current.map((tag, i) => (
@@ -125,7 +126,7 @@ const TagSuggestions = ({ editorRef, editorActions }: Props) => {
             i === selected ? "bg-zinc-300 dark:bg-zinc-700" : ""
           )}
         >
-          #{tag}
+          <OverflowTip>#{tag}</OverflowTip>
         </div>
       ))}
     </div>
