@@ -103,9 +103,17 @@ func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUs
 		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
 	}
 
+	user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+
 	currentTs := time.Now().Unix()
 	update := &store.UpdateUser{
-		ID:        currentUser.ID,
+		ID:        user.ID,
 		UpdatedTs: &currentTs,
 	}
 	for _, field := range request.UpdateMask.Paths {
@@ -138,13 +146,13 @@ func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUs
 		}
 	}
 
-	user, err := s.Store.UpdateUser(ctx, update)
+	updatedUser, err := s.Store.UpdateUser(ctx, update)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to update user: %v", err)
 	}
 
 	response := &apiv2pb.UpdateUserResponse{
-		User: convertUserFromStore(user),
+		User: convertUserFromStore(updatedUser),
 	}
 	return response, nil
 }
