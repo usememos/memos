@@ -197,7 +197,7 @@ func (s *APIV1Service) SignInSSO(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 		}
 
-		allowSignUpSettingValue := false
+		allowSignUpSettingValue := true
 		if allowSignUpSetting != nil {
 			err = json.Unmarshal([]byte(allowSignUpSetting.Value), &allowSignUpSettingValue)
 			if err != nil {
@@ -333,7 +333,7 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
 		}
 
-		allowSignUpSettingValue := false
+		allowSignUpSettingValue := true
 		if allowSignUpSetting != nil {
 			err = json.Unmarshal([]byte(allowSignUpSetting.Value), &allowSignUpSettingValue)
 			if err != nil {
