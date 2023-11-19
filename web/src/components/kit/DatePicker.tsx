@@ -1,6 +1,7 @@
 import { Badge, Button } from "@mui/joy";
 import classNames from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import useClickAway from "react-use/lib/useClickAway";
 import { getMemoStats } from "@/helpers/api";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, isFutureDate } from "@/helpers/datetime";
@@ -15,14 +16,20 @@ interface DatePickerProps {
   isFutureDateDisabled?: boolean;
   datestamp: number;
   handleDateStampChange: (datestamp: number) => void;
+  handleClickAway: () => void;
 }
 
 const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   const t = useTranslate();
-  const { className, isFutureDateDisabled, datestamp, handleDateStampChange } = props;
+  const { className, isFutureDateDisabled, datestamp, handleDateStampChange, handleClickAway } = props;
+  const containerRef = useRef<HTMLDivElement>(null);
   const [currentDateStamp, setCurrentDateStamp] = useState<number>(getMonthFirstDayDateStamp(datestamp));
   const [countByDate, setCountByDate] = useState(new Map());
   const user = useCurrentUser();
+
+  useClickAway(containerRef, () => {
+    handleClickAway();
+  });
 
   useEffect(() => {
     setCurrentDateStamp(getMonthFirstDayDateStamp(datestamp));
@@ -66,7 +73,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   };
 
   return (
-    <div className={`date-picker-wrapper ${className}`}>
+    <div ref={containerRef} className={`date-picker-wrapper ${className}`}>
       <div className="date-picker-header">
         <Button variant="plain" color="neutral" onClick={() => handleChangeMonthBtnClick(-12)}>
           <Icon.ChevronsLeft className="icon-img" />

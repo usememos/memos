@@ -89,8 +89,9 @@ const DailyReview = () => {
               showDatePicker ? "" : "!hidden"
             }`}
             datestamp={selectedDateStamp}
-            handleDateStampChange={handleDataPickerChange}
             isFutureDateDisabled
+            handleDateStampChange={handleDataPickerChange}
+            handleClickAway={() => toggleShowDatePicker(false)}
           />
         </div>
         <div className="w-full h-auto flex flex-col justify-start items-start px-2 pb-4 bg-white dark:bg-zinc-700">
