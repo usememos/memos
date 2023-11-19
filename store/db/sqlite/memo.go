@@ -96,7 +96,10 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 	}
 
-	orders := []string{"pinned DESC"}
+	orders := []string{}
+	if find.OrderByPinned {
+		orders = append(orders, "pinned DESC")
+	}
 	if find.OrderByUpdatedTs {
 		orders = append(orders, "updated_ts DESC")
 	} else {

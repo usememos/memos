@@ -70,6 +70,7 @@ type FindMemo struct {
 	Limit            *int
 	Offset           *int
 	OrderByUpdatedTs bool
+	OrderByPinned    bool
 }
 
 type UpdateMemo struct {

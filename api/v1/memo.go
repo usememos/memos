@@ -147,47 +147,48 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 func (s *APIV1Service) GetMemoList(c echo.Context) error {
 	ctx := c.Request().Context()
 	hasParentFlag := false
-	findMemoMessage := &store.FindMemo{
-		HasParent: &hasParentFlag,
+	find := &store.FindMemo{
+		HasParent:     &hasParentFlag,
+		OrderByPinned: true,
 	}
 	if userID, err := util.ConvertStringToInt32(c.QueryParam("creatorId")); err == nil {
-		findMemoMessage.CreatorID = &userID
+		find.CreatorID = &userID
 	}
 
 	if username := c.QueryParam("creatorUsername"); username != "" {
 		user, _ := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
 		if user != nil {
-			findMemoMessage.CreatorID = &user.ID
+			find.CreatorID = &user.ID
 		}
 	}
 
 	currentUserID, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
 		// Anonymous use should only fetch PUBLIC memos with specified user
-		if findMemoMessage.CreatorID == nil {
+		if find.CreatorID == nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "Missing user to find memo")
 		}
-		findMemoMessage.VisibilityList = []store.Visibility{store.Public}
+		find.VisibilityList = []store.Visibility{store.Public}
 	} else {
 		// Authorized user can fetch all PUBLIC/PROTECTED memo
 		visibilityList := []store.Visibility{store.Public, store.Protected}
 
 		// If Creator is authorized user (as default), PRIVATE memo is OK
-		if findMemoMessage.CreatorID == nil || *findMemoMessage.CreatorID == currentUserID {
-			findMemoMessage.CreatorID = &currentUserID
+		if find.CreatorID == nil || *find.CreatorID == currentUserID {
+			find.CreatorID = &currentUserID
 			visibilityList = append(visibilityList, store.Private)
 		}
-		findMemoMessage.VisibilityList = visibilityList
+		find.VisibilityList = visibilityList
 	}
 
 	rowStatus := store.RowStatus(c.QueryParam("rowStatus"))
 	if rowStatus != "" {
-		findMemoMessage.RowStatus = &rowStatus
+		find.RowStatus = &rowStatus
 	}
 	pinnedStr := c.QueryParam("pinned")
 	if pinnedStr != "" {
 		pinned := pinnedStr == "true"
-		findMemoMessage.Pinned = &pinned
+		find.Pinned = &pinned
 	}
 
 	contentSearch := []string{}
@@ -199,13 +200,13 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 	if content != "" {
 		contentSearch = append(contentSearch, content)
 	}
-	findMemoMessage.ContentSearch = contentSearch
+	find.ContentSearch = contentSearch
 
 	if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-		findMemoMessage.Limit = &limit
+		find.Limit = &limit
 	}
 	if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-		findMemoMessage.Offset = &offset
+		find.Offset = &offset
 	}
 
 	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
@@ -213,10 +214,10 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
 	}
 	if memoDisplayWithUpdatedTs {
-		findMemoMessage.OrderByUpdatedTs = true
+		find.OrderByUpdatedTs = true
 	}
 
-	list, err := s.Store.ListMemos(ctx, findMemoMessage)
+	list, err := s.Store.ListMemos(ctx, find)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
 	}
