@@ -83,6 +83,10 @@ const MemoList: React.FC = () => {
   }, [filter]);
 
   useEffect(() => {
+    memoStore.setLoadingStatus("incomplete");
+  }, []);
+
+  useEffect(() => {
     if (!fetchMoreRef.current) return;
 
     const observer = new IntersectionObserver(([entry]) => {

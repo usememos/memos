@@ -53,6 +53,10 @@ const Explore = () => {
     .sort((mi, mj) => mj.displayTs - mi.displayTs);
 
   useEffect(() => {
+    memoStore.setLoadingStatus("incomplete");
+  }, []);
+
+  useEffect(() => {
     if (!fetchMoreRef.current) return;
 
     const observer = new IntersectionObserver(([entry]) => {

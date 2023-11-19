@@ -2,7 +2,7 @@ import { omit } from "lodash-es";
 import * as api from "@/helpers/api";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import store, { useAppSelector } from "../";
-import { updateLoadingStatus, createMemo, deleteMemo, patchMemo, upsertMemos } from "../reducer/memo";
+import { updateLoadingStatus, createMemo, deleteMemo, patchMemo, upsertMemos, LoadingStatus } from "../reducer/memo";
 import { useMemoCacheStore } from "../v1";
 
 export const convertResponseModelMemo = (memo: Memo): Memo => {
@@ -81,6 +81,9 @@ export const useMemoStore = () => {
         return convertResponseModelMemo(m);
       });
       return archivedMemos;
+    },
+    setLoadingStatus: (status: LoadingStatus) => {
+      store.dispatch(updateLoadingStatus(status));
     },
     fetchMemoById,
     getMemoById: async (memoId: MemoId) => {

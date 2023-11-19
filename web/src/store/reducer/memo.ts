@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { uniqBy } from "lodash-es";
 
-type LoadingStatus = "incomplete" | "fetching" | "complete";
+export type LoadingStatus = "incomplete" | "fetching" | "complete";
 
 interface State {
   loadingStatus: LoadingStatus;
