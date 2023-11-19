@@ -28,10 +28,7 @@ VALUES
   (
     3,
     "**[Slash](https://github.com/boojack/slash)**: A bookmarking and url shortener, save and share your links very easily.
-![](https://github.com/boojack/slash/raw/main/resources/demo.gif)
-
-**[SQL Chat](https://www.sqlchat.ai)**: Chat-based SQL Client
-![](https://www.sqlchat.ai/chat-logo-and-text.webp)",
+**[SQL Chat](https://www.sqlchat.ai)**: Chat-based SQL Client",
     101,
     'PUBLIC'
   ),
