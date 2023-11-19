@@ -1,4 +1,5 @@
 import { IconButton } from "@mui/joy";
+import { useEffect } from "react";
 import Icon from "@/components/Icon";
 import OverflowTip from "@/components/kit/OverflowTip";
 import { useTagStore } from "@/store/module";
@@ -11,6 +12,16 @@ const TagSelector = (props: Props) => {
   const { onTagSelectorClick } = props;
   const tagStore = useTagStore();
   const tags = tagStore.state.tags;
+
+  useEffect(() => {
+    (async () => {
+      try {
+        await tagStore.fetchTags();
+      } catch (error) {
+        // do nothing.
+      }
+    })();
+  }, []);
 
   return (
     <IconButton className="relative group flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow">
