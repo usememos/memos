@@ -1,6 +1,4 @@
-# memos
-
-<img height="72px" src="https://usememos.com/logo.png" alt="✍️ memos" align="right" />
+<img height="56px" src="https://www.usememos.com/full-logo-landscape.png" alt="Memos" />
 
 A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.
 
