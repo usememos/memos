@@ -72,6 +72,8 @@
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
     - [DeleteTagRequest](#memos-api-v2-DeleteTagRequest)
     - [DeleteTagResponse](#memos-api-v2-DeleteTagResponse)
+    - [GetTagSuggestionsRequest](#memos-api-v2-GetTagSuggestionsRequest)
+    - [GetTagSuggestionsResponse](#memos-api-v2-GetTagSuggestionsResponse)
     - [ListTagsRequest](#memos-api-v2-ListTagsRequest)
     - [ListTagsResponse](#memos-api-v2-ListTagsResponse)
     - [Tag](#memos-api-v2-Tag)
@@ -938,6 +940,36 @@
 
 
 
+<a name="memos-api-v2-GetTagSuggestionsRequest"></a>
+
+### GetTagSuggestionsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [string](#string) |  | The creator of tags. Format: users/{username} |
+
+
+
+
+
+
+<a name="memos-api-v2-GetTagSuggestionsResponse"></a>
+
+### GetTagSuggestionsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tags | [string](#string) | repeated |  |
+
+
+
+
+
+
 <a name="memos-api-v2-ListTagsRequest"></a>
 
 ### ListTagsRequest
@@ -946,7 +978,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| creator | [string](#string) |  | The creator of tags. Format: users/{username} |
+| user | [string](#string) |  | The creator of tags. Format: users/{username} |
 
 
 
@@ -1030,6 +1062,7 @@
 | UpsertTag | [UpsertTagRequest](#memos-api-v2-UpsertTagRequest) | [UpsertTagResponse](#memos-api-v2-UpsertTagResponse) |  |
 | ListTags | [ListTagsRequest](#memos-api-v2-ListTagsRequest) | [ListTagsResponse](#memos-api-v2-ListTagsResponse) |  |
 | DeleteTag | [DeleteTagRequest](#memos-api-v2-DeleteTagRequest) | [DeleteTagResponse](#memos-api-v2-DeleteTagResponse) |  |
+| GetTagSuggestions | [GetTagSuggestionsRequest](#memos-api-v2-GetTagSuggestionsRequest) | [GetTagSuggestionsResponse](#memos-api-v2-GetTagSuggestionsResponse) |  |
 
  
 

@@ -144,10 +144,6 @@ export function createResourceWithBlob(formData: FormData) {
   return axios.post<Resource>("/api/v1/resource/blob", formData);
 }
 
-export function getTagSuggestionList() {
-  return axios.get<string[]>(`/api/v1/tag/suggestion`);
-}
-
 export function getStorageList() {
   return axios.get<ObjectStorage[]>(`/api/v1/storage`);
 }

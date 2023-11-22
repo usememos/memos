@@ -13,7 +13,7 @@ export const useTagStore = () => {
 
   const fetchTags = async () => {
     const { tags } = await tagServiceClient.listTags({
-      creator: currentUser.name,
+      user: currentUser.name,
     });
     store.dispatch(setTags(tags.map((tag) => tag.name)));
   };

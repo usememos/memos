@@ -16,6 +16,9 @@ service TagService {
   rpc DeleteTag(DeleteTagRequest) returns (DeleteTagResponse) {
     option (google.api.http) = {delete: "/api/v2/tags"};
   }
+  rpc GetTagSuggestions(GetTagSuggestionsRequest) returns (GetTagSuggestionsResponse) {
+    option (google.api.http) = {get: "/api/v2/tags/suggestion"};
+  }
 }
 
 message Tag {
@@ -36,7 +39,7 @@ message UpsertTagResponse {
 message ListTagsRequest {
   // The creator of tags.
   // Format: users/{username}
-  string creator = 1;
+  string user = 1;
 }
 
 message ListTagsResponse {
@@ -48,3 +51,13 @@ message DeleteTagRequest {
 }
 
 message DeleteTagResponse {}
+
+message GetTagSuggestionsRequest {
+  // The creator of tags.
+  // Format: users/{username}
+  string user = 1;
+}
+
+message GetTagSuggestionsResponse {
+  repeated string tags = 1;
+}
