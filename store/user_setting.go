@@ -123,3 +123,30 @@ func (s *Store) GetUserAccessTokens(ctx context.Context, userID int32) ([]*store
 	accessTokensUserSetting := userSetting.GetAccessTokens()
 	return accessTokensUserSetting.AccessTokens, nil
 }
+
+// RemoveUserAccessToken remove the access token of the user.
+func (s *Store) RemoveUserAccessToken(ctx context.Context, userID int32, token string) error {
+	oldAccessTokens, err := s.GetUserAccessTokens(ctx, userID)
+	if err != nil {
+		return err
+	}
+
+	newAccessTokens := make([]*storepb.AccessTokensUserSetting_AccessToken, 0, len(oldAccessTokens))
+	for _, t := range oldAccessTokens {
+		if token != t.AccessToken {
+			newAccessTokens = append(newAccessTokens, t)
+		}
+	}
+
+	_, err = s.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+		UserId: userID,
+		Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
+		Value: &storepb.UserSetting_AccessTokens{
+			AccessTokens: &storepb.AccessTokensUserSetting{
+				AccessTokens: newAccessTokens,
+			},
+		},
+	})
+
+	return err
+}
