@@ -5,6 +5,7 @@ import { userServiceClient } from "@/grpcweb";
 import * as api from "@/helpers/api";
 import { useUserStore } from "@/store/module";
 import { UserNamePrefix } from "@/store/v1";
+import { RowStatus } from "@/types/proto/api/v2/common";
 import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
@@ -84,9 +85,12 @@ const MemberSection = () => {
       style: "danger",
       dialogName: "archive-user-dialog",
       onConfirm: async () => {
-        await userStore.patchUser({
-          id: user.id,
-          rowStatus: "ARCHIVED",
+        await userServiceClient.updateUser({
+          user: {
+            name: `${UserNamePrefix}${user.username}`,
+            rowStatus: RowStatus.ARCHIVED,
+          },
+          updateMask: ["row_status"],
         });
         fetchUserList();
       },
@@ -94,9 +98,12 @@ const MemberSection = () => {
   };
 
   const handleRestoreUserClick = async (user: User) => {
-    await userStore.patchUser({
-      id: user.id,
-      rowStatus: "NORMAL",
+    await userServiceClient.updateUser({
+      user: {
+        name: `${UserNamePrefix}${user.username}`,
+        rowStatus: RowStatus.ACTIVE,
+      },
+      updateMask: ["row_status"],
     });
     fetchUserList();
   };

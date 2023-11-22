@@ -56,10 +56,6 @@ export function upsertUserSetting(upsert: UserSettingUpsert) {
   return axios.post<UserSetting>(`/api/v1/user/setting`, upsert);
 }
 
-export function patchUser(userPatch: UserPatch) {
-  return axios.patch<User>(`/api/v1/user/${userPatch.id}`, userPatch);
-}
-
 export function getAllMemos(memoFind?: MemoFind) {
   const queryList = [];
   if (memoFind?.offset) {

@@ -3,6 +3,7 @@ import { userServiceClient } from "@/grpcweb";
 import * as api from "@/helpers/api";
 import storage from "@/helpers/storage";
 import { getSystemColorScheme } from "@/helpers/utils";
+import { User as UserPb } from "@/types/proto/api/v2/user_service";
 import store, { useAppSelector } from "..";
 import { setAppearance, setLocale } from "../reducer/global";
 import { patchUser, setHost, setUser } from "../reducer/user";
@@ -106,10 +107,10 @@ export const useUserStore = () => {
       storage.set({ localSetting });
       store.dispatch(patchUser({ localSetting }));
     },
-    patchUser: async (userPatch: UserPatch): Promise<void> => {
-      await api.patchUser(userPatch);
+    patchUser: async (user: UserPb, updateMask: string[]): Promise<void> => {
+      await userServiceClient.updateUser({ user, updateMask });
       // If the user is the current user and the username is changed, reload the page.
-      if (userPatch.id === store.getState().user.user?.id && userPatch.username) {
+      if (user.id === store.getState().user.user?.id) {
         window.location.reload();
       }
     },
