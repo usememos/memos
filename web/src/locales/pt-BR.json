@@ -122,7 +122,8 @@
     "memos-on": "{{amount}} memos em {{date}}"
   },
   "inbox": {
-    "memo-comment": "{{user}} tem um comentário sobre o seu {{memo}}."
+    "memo-comment": "{{user}} tem um comentário sobre o seu {{memo}}.",
+    "version-update": "A nova versão {{version}} já está disponível!"
   },
   "memo": {
     "archived-at": "Arquivado em",
