@@ -12,10 +12,12 @@ import "google/protobuf/timestamp.proto";
 option go_package = "gen/api/v2";
 
 service UserService {
+  // GetUser gets a user by name.
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {get: "/api/v2/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
+  // CreateUser creates a new user.
   rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
     option (google.api.http) = {
       post: "/v1/users"
@@ -23,12 +25,18 @@ service UserService {
     };
     option (google.api.method_signature) = "user";
   }
+  // UpdateUser updates a user.
   rpc UpdateUser(UpdateUserRequest) returns (UpdateUserResponse) {
     option (google.api.http) = {
       patch: "/api/v2/{user.name=users/*}"
       body: "user"
     };
     option (google.api.method_signature) = "user,update_mask";
+  }
+  // DeleteUser deletes a user.
+  rpc DeleteUser(DeleteUserRequest) returns (DeleteUserResponse) {
+    option (google.api.http) = {delete: "/api/v2/{name=users/*}"};
+    option (google.api.method_signature) = "name";
   }
   // ListUserAccessTokens returns a list of access tokens for a user.
   rpc ListUserAccessTokens(ListUserAccessTokensRequest) returns (ListUserAccessTokensResponse) {
@@ -107,6 +115,14 @@ message UpdateUserRequest {
 message UpdateUserResponse {
   User user = 1;
 }
+
+message DeleteUserRequest {
+  // The name of the user.
+  // Format: users/{username}
+  string name = 1;
+}
+
+message DeleteUserResponse {}
 
 message UserAccessToken {
   string access_token = 1;

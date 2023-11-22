@@ -64,10 +64,6 @@ export function patchUser(userPatch: UserPatch) {
   return axios.patch<User>(`/api/v1/user/${userPatch.id}`, userPatch);
 }
 
-export function deleteUser(userDelete: UserDelete) {
-  return axios.delete(`/api/v1/user/${userDelete.id}`);
-}
-
 export function getAllMemos(memoFind?: MemoFind) {
   const queryList = [];
   if (memoFind?.offset) {

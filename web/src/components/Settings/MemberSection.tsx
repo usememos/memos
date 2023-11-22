@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import * as api from "@/helpers/api";
 import { useUserStore } from "@/store/module";
+import { UserNamePrefix } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
@@ -105,9 +106,7 @@ const MemberSection = () => {
       style: "danger",
       dialogName: "delete-user-dialog",
       onConfirm: async () => {
-        await userStore.deleteUser({
-          id: user.id,
-        });
+        await userStore.deleteUser(`${UserNamePrefix}${user.username}`);
         fetchUserList();
       },
     });

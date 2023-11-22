@@ -1,4 +1,5 @@
 import { camelCase } from "lodash-es";
+import { userServiceClient } from "@/grpcweb";
 import * as api from "@/helpers/api";
 import storage from "@/helpers/storage";
 import { getSystemColorScheme } from "@/helpers/utils";
@@ -112,8 +113,10 @@ export const useUserStore = () => {
         window.location.reload();
       }
     },
-    deleteUser: async (userDelete: UserDelete) => {
-      await api.deleteUser(userDelete);
+    deleteUser: async (name: string) => {
+      await userServiceClient.deleteUser({
+        name,
+      });
     },
   };
 };
