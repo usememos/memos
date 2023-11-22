@@ -44,10 +44,6 @@ export function signout() {
   return axios.post("/api/v1/auth/signout");
 }
 
-export function createUser(userCreate: UserCreate) {
-  return axios.post<User>("/api/v1/user", userCreate);
-}
-
 export function getMyselfUser() {
   return axios.get<User>("/api/v1/user/me");
 }
