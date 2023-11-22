@@ -13,9 +13,9 @@ const inlineRenderer = (rawStr: string) => {
       latexCode = matchResult[2];
     }
     return (
-      <div className="max-w-full overflow-x-auto">
+      <span className="max-w-full overflow-x-auto">
         <TeX key={latexCode}>{latexCode}</TeX>
-      </div>
+      </span>
     );
   }
   return rawStr;
