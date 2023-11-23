@@ -281,8 +281,12 @@ func (s *APIV1Service) GetUserByID(c echo.Context) error {
 	}
 
 	userMessage := convertUserFromStore(user)
-	// data desensitize
-	userMessage.Email = ""
+	userID, ok := c.Get(userIDContextKey).(int32)
+	if !ok || userID != user.ID {
+		// Data desensitize.
+		userMessage.Email = ""
+	}
+
 	return c.JSON(http.StatusOK, userMessage)
 }
 

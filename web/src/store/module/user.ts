@@ -58,10 +58,8 @@ export const initialUserState = async () => {
     store.dispatch(setHost(convertResponseModelUser(systemStatus.host)));
   }
 
-  const { data } = await api.getMyselfUser();
-  if (data) {
-    const user = convertResponseModelUser(data);
-    store.dispatch(setUser(user));
+  const user = await fetchCurrentUser();
+  if (user) {
     if (user.setting.locale) {
       store.dispatch(setLocale(user.setting.locale));
     }
@@ -72,18 +70,21 @@ export const initialUserState = async () => {
   }
 };
 
-const doSignIn = async () => {
-  const { data: user } = await api.getMyselfUser();
-  if (user) {
-    store.dispatch(setUser(convertResponseModelUser(user)));
-  } else {
-    doSignOut();
-  }
-  return user;
-};
-
 const doSignOut = async () => {
   await api.signout();
+  localStorage.removeItem("userId");
+};
+
+const fetchCurrentUser = async () => {
+  const userId = localStorage.getItem("userId");
+  if (userId) {
+    const { data } = await api.getUserById(Number(userId));
+    const user = convertResponseModelUser(data);
+    if (user) {
+      store.dispatch(setUser(user));
+      return user;
+    }
+  }
 };
 
 export const useUserStore = () => {
@@ -94,14 +95,17 @@ export const useUserStore = () => {
     getState: () => {
       return store.getState().user;
     },
-    doSignIn,
     doSignOut,
+    fetchCurrentUser,
+    setCurrentUser: async (user: User) => {
+      localStorage.setItem("userId", String(user.id));
+    },
     upsertUserSetting: async (key: string, value: any) => {
       await api.upsertUserSetting({
         key: key as any,
         value: JSON.stringify(value),
       });
-      await doSignIn();
+      await fetchCurrentUser();
     },
     upsertLocalSetting: async (localSetting: LocalSetting) => {
       storage.set({ localSetting });

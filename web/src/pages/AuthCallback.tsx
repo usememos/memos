@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import Icon from "@/components/Icon";
 import * as api from "@/helpers/api";
 import { absolutifyLink } from "@/helpers/utils";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 
@@ -15,6 +16,7 @@ interface State {
 
 const AuthCallback = () => {
   const t = useTranslate();
+  const navigateTo = useNavigateTo();
   const [searchParams] = useSearchParams();
   const userStore = useUserStore();
   const [state, setState] = useState<State>({
@@ -32,14 +34,15 @@ const AuthCallback = () => {
       if (identityProviderId) {
         api
           .signinWithSSO(identityProviderId, code, redirectUri)
-          .then(async () => {
+          .then(async ({ data: user }) => {
             setState({
               loading: false,
               errorMessage: "",
             });
-            const user = await userStore.doSignIn();
             if (user) {
-              window.location.href = "/";
+              userStore.setCurrentUser(user);
+              await userStore.fetchCurrentUser();
+              navigateTo("/");
             } else {
               toast.error(t("message.login-failed"));
             }

@@ -18,7 +18,7 @@ export function vacuumDatabase() {
 }
 
 export function signin(username: string, password: string, remember: boolean) {
-  return axios.post("/api/v1/auth/signin", {
+  return axios.post<User>("/api/v1/auth/signin", {
     username,
     password,
     remember,
@@ -26,7 +26,7 @@ export function signin(username: string, password: string, remember: boolean) {
 }
 
 export function signinWithSSO(identityProviderId: IdentityProviderId, code: string, redirectUri: string) {
-  return axios.post("/api/v1/auth/signin/sso", {
+  return axios.post<User>("/api/v1/auth/signin/sso", {
     identityProviderId,
     code,
     redirectUri,
@@ -34,7 +34,7 @@ export function signinWithSSO(identityProviderId: IdentityProviderId, code: stri
 }
 
 export function signup(username: string, password: string) {
-  return axios.post("/api/v1/auth/signup", {
+  return axios.post<User>("/api/v1/auth/signup", {
     username,
     password,
   });
@@ -44,12 +44,12 @@ export function signout() {
   return axios.post("/api/v1/auth/signout");
 }
 
-export function getMyselfUser() {
-  return axios.get<User>("/api/v1/user/me");
-}
-
 export function getUserList() {
   return axios.get<User[]>("/api/v1/user");
+}
+
+export function getUserById(id: number) {
+  return axios.get<User>(`/api/v1/user/${id}`);
 }
 
 export function upsertUserSetting(upsert: UserSettingUpsert) {
