@@ -64,13 +64,17 @@ func NewClient(ctx context.Context, config *Config) (*Client, error) {
 
 func (client *Client) UploadFile(ctx context.Context, filename string, fileType string, src io.Reader) (string, error) {
 	uploader := manager.NewUploader(client.Client)
-	uploadOutput, err := uploader.Upload(ctx, &awss3.PutObjectInput{
+	// set ACL according to if user set prefix
+	obj := awss3.PutObjectInput{
 		Bucket:      aws.String(client.Config.Bucket),
 		Key:         aws.String(filename),
 		Body:        src,
 		ContentType: aws.String(fileType),
-		ACL:         types.ObjectCannedACL(*aws.String("public-read")),
-	})
+	}
+	if client.Config.URLPrefix == "" {
+		obj.ACL = types.ObjectCannedACL(*aws.String("public-read"))
+	}
+	uploadOutput, err := uploader.Upload(ctx, &obj)
 	if err != nil {
 		return "", err
 	}
