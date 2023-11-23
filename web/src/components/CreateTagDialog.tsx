@@ -1,7 +1,8 @@
 import { Button, Input } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { getTagSuggestionList } from "@/helpers/api";
+import { tagServiceClient } from "@/grpcweb";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import { matcher } from "@/labs/marked/matcher";
 import Tag from "@/labs/marked/parser/Tag";
 import { useTagStore } from "@/store/module";
@@ -22,8 +23,9 @@ const validateTagName = (tagName: string): boolean => {
 
 const CreateTagDialog: React.FC<Props> = (props: Props) => {
   const { destroy } = props;
-  const tagStore = useTagStore();
   const t = useTranslate();
+  const currentUser = useCurrentUser();
+  const tagStore = useTagStore();
   const [tagName, setTagName] = useState<string>("");
   const [suggestTagNameList, setSuggestTagNameList] = useState<string[]>([]);
   const [showTagSuggestions, setShowTagSuggestions] = useState<boolean>(false);
@@ -31,9 +33,13 @@ const CreateTagDialog: React.FC<Props> = (props: Props) => {
   const shownSuggestTagNameList = suggestTagNameList.filter((tag) => !tagNameList.includes(tag));
 
   useEffect(() => {
-    getTagSuggestionList().then(({ data }) => {
-      setSuggestTagNameList(data.filter((tag) => validateTagName(tag)));
-    });
+    tagServiceClient
+      .getTagSuggestions({
+        user: currentUser.name,
+      })
+      .then(({ tags }) => {
+        setSuggestTagNameList(tags.filter((tag) => validateTagName(tag)));
+      });
   }, [tagNameList]);
 
   const handleTagNameInputKeyDown = (event: React.KeyboardEvent) => {

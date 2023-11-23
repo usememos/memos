@@ -254,33 +254,14 @@ func (s *APIV1Service) SignInSSO(c echo.Context) error {
 //	@Success	200	{boolean}	true	"Sign-out success"
 //	@Router		/api/v1/auth/signout [POST]
 func (s *APIV1Service) SignOut(c echo.Context) error {
-	ctx := c.Request().Context()
 	accessToken := findAccessToken(c)
 	userID, _ := getUserIDFromAccessToken(accessToken, s.Secret)
-	userAccessTokens, err := s.Store.GetUserAccessTokens(ctx, userID)
-	// Auto remove the current access token from the user access tokens.
-	if err == nil && len(userAccessTokens) != 0 {
-		accessTokens := []*storepb.AccessTokensUserSetting_AccessToken{}
-		for _, userAccessToken := range userAccessTokens {
-			if accessToken != userAccessToken.AccessToken {
-				accessTokens = append(accessTokens, userAccessToken)
-			}
-		}
 
-		if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
-			UserId: userID,
-			Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
-			Value: &storepb.UserSetting_AccessTokens{
-				AccessTokens: &storepb.AccessTokensUserSetting{
-					AccessTokens: accessTokens,
-				},
-			},
-		}); err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to upsert user setting, err: %s", err)).SetInternal(err)
-		}
+	err := removeAccessTokenAndCookies(c, s.Store, userID, accessToken)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("failed to remove access token, err: %s", err)).SetInternal(err)
 	}
 
-	removeAccessTokenAndCookies(c)
 	return c.JSON(http.StatusOK, true)
 }
 
@@ -393,9 +374,15 @@ func (s *APIV1Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 }
 
 // removeAccessTokenAndCookies removes the jwt token from the cookies.
-func removeAccessTokenAndCookies(c echo.Context) {
+func removeAccessTokenAndCookies(c echo.Context, s *store.Store, userID int32, token string) error {
+	err := s.RemoveUserAccessToken(c.Request().Context(), userID, token)
+	if err != nil {
+		return err
+	}
+
 	cookieExp := time.Now().Add(-1 * time.Hour)
 	setTokenCookie(c, auth.AccessTokenCookieName, "", cookieExp)
+	return nil
 }
 
 // setTokenCookie sets the token to the cookie.

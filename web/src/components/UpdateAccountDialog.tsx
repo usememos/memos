@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { convertFileToBase64 } from "@/helpers/utils";
 import { useUserStore } from "@/store/module";
+import { UserNamePrefix } from "@/store/v1";
+import { User as UserPb } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -94,22 +96,29 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     try {
       const user = userStore.getState().user as User;
-      const userPatch: UserPatch = {
-        id: user.id,
-      };
+      const updateMask = [];
       if (!isEqual(user.avatarUrl, state.avatarUrl)) {
-        userPatch.avatarUrl = state.avatarUrl;
+        updateMask.push("avatar_url");
       }
       if (!isEqual(user.nickname, state.nickname)) {
-        userPatch.nickname = state.nickname;
+        updateMask.push("nickname");
       }
       if (!isEqual(user.username, state.username)) {
-        userPatch.username = state.username;
+        updateMask.push("username");
       }
       if (!isEqual(user.email, state.email)) {
-        userPatch.email = state.email;
+        updateMask.push("email");
       }
-      await userStore.patchUser(userPatch);
+      await userStore.patchUser(
+        UserPb.fromPartial({
+          name: `${UserNamePrefix}${state.username}`,
+          id: user.id,
+          nickname: state.nickname,
+          email: state.email,
+          avatarUrl: state.avatarUrl,
+        }),
+        updateMask
+      );
       toast.success(t("message.update-succeed"));
       handleCloseBtnClick();
     } catch (error: any) {

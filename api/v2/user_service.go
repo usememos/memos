@@ -157,6 +157,36 @@ func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUs
 	return response, nil
 }
 
+func (s *APIV2Service) DeleteUser(ctx context.Context, request *apiv2pb.DeleteUserRequest) (*apiv2pb.DeleteUserResponse, error) {
+	username, err := ExtractUsernameFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "name is required")
+	}
+	currentUser, err := getCurrentUser(ctx, s.Store)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser.Username != username && currentUser.Role != store.RoleAdmin && currentUser.Role != store.RoleHost {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	user, err := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+
+	if err := s.Store.DeleteUser(ctx, &store.DeleteUser{
+		ID: user.ID,
+	}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete user: %v", err)
+	}
+
+	return &apiv2pb.DeleteUserResponse{}, nil
+}
+
 func (s *APIV2Service) ListUserAccessTokens(ctx context.Context, request *apiv2pb.ListUserAccessTokensRequest) (*apiv2pb.ListUserAccessTokensResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {

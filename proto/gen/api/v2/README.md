@@ -72,6 +72,8 @@
 - [api/v2/tag_service.proto](#api_v2_tag_service-proto)
     - [DeleteTagRequest](#memos-api-v2-DeleteTagRequest)
     - [DeleteTagResponse](#memos-api-v2-DeleteTagResponse)
+    - [GetTagSuggestionsRequest](#memos-api-v2-GetTagSuggestionsRequest)
+    - [GetTagSuggestionsResponse](#memos-api-v2-GetTagSuggestionsResponse)
     - [ListTagsRequest](#memos-api-v2-ListTagsRequest)
     - [ListTagsResponse](#memos-api-v2-ListTagsResponse)
     - [Tag](#memos-api-v2-Tag)
@@ -87,6 +89,8 @@
     - [CreateUserResponse](#memos-api-v2-CreateUserResponse)
     - [DeleteUserAccessTokenRequest](#memos-api-v2-DeleteUserAccessTokenRequest)
     - [DeleteUserAccessTokenResponse](#memos-api-v2-DeleteUserAccessTokenResponse)
+    - [DeleteUserRequest](#memos-api-v2-DeleteUserRequest)
+    - [DeleteUserResponse](#memos-api-v2-DeleteUserResponse)
     - [GetUserRequest](#memos-api-v2-GetUserRequest)
     - [GetUserResponse](#memos-api-v2-GetUserResponse)
     - [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest)
@@ -938,6 +942,36 @@
 
 
 
+<a name="memos-api-v2-GetTagSuggestionsRequest"></a>
+
+### GetTagSuggestionsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| user | [string](#string) |  | The creator of tags. Format: users/{username} |
+
+
+
+
+
+
+<a name="memos-api-v2-GetTagSuggestionsResponse"></a>
+
+### GetTagSuggestionsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| tags | [string](#string) | repeated |  |
+
+
+
+
+
+
 <a name="memos-api-v2-ListTagsRequest"></a>
 
 ### ListTagsRequest
@@ -946,7 +980,7 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| creator | [string](#string) |  | The creator of tags. Format: users/{username} |
+| user | [string](#string) |  | The creator of tags. Format: users/{username} |
 
 
 
@@ -1030,6 +1064,7 @@
 | UpsertTag | [UpsertTagRequest](#memos-api-v2-UpsertTagRequest) | [UpsertTagResponse](#memos-api-v2-UpsertTagResponse) |  |
 | ListTags | [ListTagsRequest](#memos-api-v2-ListTagsRequest) | [ListTagsResponse](#memos-api-v2-ListTagsResponse) |  |
 | DeleteTag | [DeleteTagRequest](#memos-api-v2-DeleteTagRequest) | [DeleteTagResponse](#memos-api-v2-DeleteTagResponse) |  |
+| GetTagSuggestions | [GetTagSuggestionsRequest](#memos-api-v2-GetTagSuggestionsRequest) | [GetTagSuggestionsResponse](#memos-api-v2-GetTagSuggestionsResponse) |  |
 
  
 
@@ -1123,6 +1158,31 @@
 <a name="memos-api-v2-DeleteUserAccessTokenResponse"></a>
 
 ### DeleteUserAccessTokenResponse
+
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteUserRequest"></a>
+
+### DeleteUserRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the user. Format: users/{username} |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteUserResponse"></a>
+
+### DeleteUserResponse
 
 
 
@@ -1290,9 +1350,10 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| GetUser | [GetUserRequest](#memos-api-v2-GetUserRequest) | [GetUserResponse](#memos-api-v2-GetUserResponse) |  |
-| CreateUser | [CreateUserRequest](#memos-api-v2-CreateUserRequest) | [CreateUserResponse](#memos-api-v2-CreateUserResponse) |  |
-| UpdateUser | [UpdateUserRequest](#memos-api-v2-UpdateUserRequest) | [UpdateUserResponse](#memos-api-v2-UpdateUserResponse) |  |
+| GetUser | [GetUserRequest](#memos-api-v2-GetUserRequest) | [GetUserResponse](#memos-api-v2-GetUserResponse) | GetUser gets a user by name. |
+| CreateUser | [CreateUserRequest](#memos-api-v2-CreateUserRequest) | [CreateUserResponse](#memos-api-v2-CreateUserResponse) | CreateUser creates a new user. |
+| UpdateUser | [UpdateUserRequest](#memos-api-v2-UpdateUserRequest) | [UpdateUserResponse](#memos-api-v2-UpdateUserResponse) | UpdateUser updates a user. |
+| DeleteUser | [DeleteUserRequest](#memos-api-v2-DeleteUserRequest) | [DeleteUserResponse](#memos-api-v2-DeleteUserResponse) | DeleteUser deletes a user. |
 | ListUserAccessTokens | [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest) | [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse) | ListUserAccessTokens returns a list of access tokens for a user. |
 | CreateUserAccessToken | [CreateUserAccessTokenRequest](#memos-api-v2-CreateUserAccessTokenRequest) | [CreateUserAccessTokenResponse](#memos-api-v2-CreateUserAccessTokenResponse) | CreateUserAccessToken creates a new access token for a user. |
 | DeleteUserAccessToken | [DeleteUserAccessTokenRequest](#memos-api-v2-DeleteUserAccessTokenRequest) | [DeleteUserAccessTokenResponse](#memos-api-v2-DeleteUserAccessTokenResponse) | DeleteUserAccessToken deletes an access token for a user. |

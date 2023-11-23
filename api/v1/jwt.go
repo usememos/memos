@@ -8,8 +8,10 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 
 	"github.com/usememos/memos/api/auth"
+	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/internal/util"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
@@ -60,7 +62,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 		}
 
 		// Skip validation for server status endpoints.
-		if util.HasPrefixes(path, "/api/v1/ping", "/api/v1/idp", "/api/v1/status", "/api/v1/user") && path != "/api/v1/user/me" && path != "/api/v1/user" && method == http.MethodGet {
+		if util.HasPrefixes(path, "/api/v1/ping", "/api/v1/idp", "/api/v1/status") && method == http.MethodGet {
 			return next(c)
 		}
 
@@ -71,7 +73,7 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 				return next(c)
 			}
 			// When the request is not authenticated, we allow the user to access the memo endpoints for those public memos.
-			if util.HasPrefixes(path, "/api/v1/memo") && method == http.MethodGet {
+			if util.HasPrefixes(path, "/api/v1/memo", "/api/v1/user") && path != "/api/v1/user" && method == http.MethodGet {
 				return next(c)
 			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Missing access token")
@@ -79,7 +81,10 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 
 		userID, err := getUserIDFromAccessToken(accessToken, secret)
 		if err != nil {
-			removeAccessTokenAndCookies(c)
+			err = removeAccessTokenAndCookies(c, server.Store, userID, accessToken)
+			if err != nil {
+				log.Error("fail to remove AccessToken and Cookies", zap.Error(err))
+			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid or expired access token")
 		}
 
@@ -88,7 +93,10 @@ func JWTMiddleware(server *APIV1Service, next echo.HandlerFunc, secret string) e
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get user access tokens.").WithInternal(err)
 		}
 		if !validateAccessToken(accessToken, accessTokens) {
-			removeAccessTokenAndCookies(c)
+			err = removeAccessTokenAndCookies(c, server.Store, userID, accessToken)
+			if err != nil {
+				log.Error("fail to remove AccessToken and Cookies", zap.Error(err))
+			}
 			return echo.NewHTTPError(http.StatusUnauthorized, "Invalid access token.")
 		}
 

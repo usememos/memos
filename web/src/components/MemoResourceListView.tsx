@@ -62,7 +62,7 @@ const MemoResourceListView = ({ resourceList = [] }: { resourceList: Resource[] 
 
     if (resources.length === 1) {
       return (
-        <div className="mt-2 max-w-full max-h-72 flex justify-center items-center border dark:border-zinc-800 rounded overflow-hidden hide-scrollbar hover:shadow-md">
+        <div className="mt-2 max-w-full flex justify-center items-center border dark:border-zinc-800 rounded overflow-hidden hide-scrollbar hover:shadow-md">
           <MediaCard resource={mediaResources[0]} />
         </div>
       );

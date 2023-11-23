@@ -7,11 +7,13 @@ import LocaleSelect from "@/components/LocaleSelect";
 import * as api from "@/helpers/api";
 import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore, useUserStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 
 const SignIn = () => {
   const t = useTranslate();
+  const navigateTo = useNavigateTo();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
@@ -72,10 +74,11 @@ const SignIn = () => {
 
     try {
       actionBtnLoadingState.setLoading();
-      await api.signin(username, password, remember);
-      const user = await userStore.doSignIn();
+      const { data: user } = await api.signin(username, password, remember);
       if (user) {
-        window.location.href = "/";
+        userStore.setCurrentUser(user);
+        await userStore.fetchCurrentUser();
+        navigateTo("/");
       } else {
         toast.error(t("message.login-failed"));
       }

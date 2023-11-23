@@ -19,9 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	TagService_UpsertTag_FullMethodName = "/memos.api.v2.TagService/UpsertTag"
-	TagService_ListTags_FullMethodName  = "/memos.api.v2.TagService/ListTags"
-	TagService_DeleteTag_FullMethodName = "/memos.api.v2.TagService/DeleteTag"
+	TagService_UpsertTag_FullMethodName         = "/memos.api.v2.TagService/UpsertTag"
+	TagService_ListTags_FullMethodName          = "/memos.api.v2.TagService/ListTags"
+	TagService_DeleteTag_FullMethodName         = "/memos.api.v2.TagService/DeleteTag"
+	TagService_GetTagSuggestions_FullMethodName = "/memos.api.v2.TagService/GetTagSuggestions"
 )
 
 // TagServiceClient is the client API for TagService service.
@@ -31,6 +32,7 @@ type TagServiceClient interface {
 	UpsertTag(ctx context.Context, in *UpsertTagRequest, opts ...grpc.CallOption) (*UpsertTagResponse, error)
 	ListTags(ctx context.Context, in *ListTagsRequest, opts ...grpc.CallOption) (*ListTagsResponse, error)
 	DeleteTag(ctx context.Context, in *DeleteTagRequest, opts ...grpc.CallOption) (*DeleteTagResponse, error)
+	GetTagSuggestions(ctx context.Context, in *GetTagSuggestionsRequest, opts ...grpc.CallOption) (*GetTagSuggestionsResponse, error)
 }
 
 type tagServiceClient struct {
@@ -68,6 +70,15 @@ func (c *tagServiceClient) DeleteTag(ctx context.Context, in *DeleteTagRequest, 
 	return out, nil
 }
 
+func (c *tagServiceClient) GetTagSuggestions(ctx context.Context, in *GetTagSuggestionsRequest, opts ...grpc.CallOption) (*GetTagSuggestionsResponse, error) {
+	out := new(GetTagSuggestionsResponse)
+	err := c.cc.Invoke(ctx, TagService_GetTagSuggestions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TagServiceServer is the server API for TagService service.
 // All implementations must embed UnimplementedTagServiceServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type TagServiceServer interface {
 	UpsertTag(context.Context, *UpsertTagRequest) (*UpsertTagResponse, error)
 	ListTags(context.Context, *ListTagsRequest) (*ListTagsResponse, error)
 	DeleteTag(context.Context, *DeleteTagRequest) (*DeleteTagResponse, error)
+	GetTagSuggestions(context.Context, *GetTagSuggestionsRequest) (*GetTagSuggestionsResponse, error)
 	mustEmbedUnimplementedTagServiceServer()
 }
 
@@ -90,6 +102,9 @@ func (UnimplementedTagServiceServer) ListTags(context.Context, *ListTagsRequest)
 }
 func (UnimplementedTagServiceServer) DeleteTag(context.Context, *DeleteTagRequest) (*DeleteTagResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteTag not implemented")
+}
+func (UnimplementedTagServiceServer) GetTagSuggestions(context.Context, *GetTagSuggestionsRequest) (*GetTagSuggestionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTagSuggestions not implemented")
 }
 func (UnimplementedTagServiceServer) mustEmbedUnimplementedTagServiceServer() {}
 
@@ -158,6 +173,24 @@ func _TagService_DeleteTag_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TagService_GetTagSuggestions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTagSuggestionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TagServiceServer).GetTagSuggestions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TagService_GetTagSuggestions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TagServiceServer).GetTagSuggestions(ctx, req.(*GetTagSuggestionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TagService_ServiceDesc is the grpc.ServiceDesc for TagService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +209,10 @@ var TagService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteTag",
 			Handler:    _TagService_DeleteTag_Handler,
+		},
+		{
+			MethodName: "GetTagSuggestions",
+			Handler:    _TagService_GetTagSuggestions_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
