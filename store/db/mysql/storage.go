@@ -68,18 +68,6 @@ func (d *DB) ListStorages(ctx context.Context, find *store.FindStorage) ([]*stor
 	return list, nil
 }
 
-func (d *DB) GetStorage(ctx context.Context, find *store.FindStorage) (*store.Storage, error) {
-	list, err := d.ListStorages(ctx, find)
-	if err != nil {
-		return nil, err
-	}
-	if len(list) == 0 {
-		return nil, nil
-	}
-
-	return list[0], nil
-}
-
 func (d *DB) UpdateStorage(ctx context.Context, update *store.UpdateStorage) (*store.Storage, error) {
 	set, args := []string{}, []any{}
 	if update.Name != nil {

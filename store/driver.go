@@ -70,7 +70,6 @@ type Driver interface {
 	// IdentityProvider model related methods.
 	CreateIdentityProvider(ctx context.Context, create *IdentityProvider) (*IdentityProvider, error)
 	ListIdentityProviders(ctx context.Context, find *FindIdentityProvider) ([]*IdentityProvider, error)
-	GetIdentityProvider(ctx context.Context, find *FindIdentityProvider) (*IdentityProvider, error)
 	UpdateIdentityProvider(ctx context.Context, update *UpdateIdentityProvider) (*IdentityProvider, error)
 	DeleteIdentityProvider(ctx context.Context, delete *DeleteIdentityProvider) error
 
@@ -82,7 +81,6 @@ type Driver interface {
 	// Storage model related methods.
 	CreateStorage(ctx context.Context, create *Storage) (*Storage, error)
 	ListStorages(ctx context.Context, find *FindStorage) ([]*Storage, error)
-	GetStorage(ctx context.Context, find *FindStorage) (*Storage, error)
 	UpdateStorage(ctx context.Context, update *UpdateStorage) (*Storage, error)
 	DeleteStorage(ctx context.Context, delete *DeleteStorage) error
 
@@ -91,4 +89,10 @@ type Driver interface {
 	ListInboxes(ctx context.Context, find *FindInbox) ([]*Inbox, error)
 	UpdateInbox(ctx context.Context, update *UpdateInbox) (*Inbox, error)
 	DeleteInbox(ctx context.Context, delete *DeleteInbox) error
+
+	// Webhook model related methods.
+	CreateWebhook(ctx context.Context, create *storepb.Webhook) (*storepb.Webhook, error)
+	ListWebhooks(ctx context.Context, find *FindWebhook) ([]*storepb.Webhook, error)
+	UpdateWebhook(ctx context.Context, update *UpdateWebhook) (*storepb.Webhook, error)
+	DeleteWebhook(ctx context.Context, delete *DeleteWebhook) error
 }

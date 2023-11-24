@@ -133,3 +133,14 @@ CREATE TABLE `inbox` (
   `status` TEXT NOT NULL,
   `message` TEXT NOT NULL
 );
+
+-- webhook
+CREATE TABLE `webhook` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `row_status` TEXT NOT NULL DEFAULT 'NORMAL',
+  `creator_id` INT NOT NULL,
+  `name` TEXT NOT NULL,
+  `url` TEXT NOT NULL
+);

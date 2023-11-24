@@ -97,19 +97,6 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 	return identityProviders, nil
 }
 
-func (d *DB) GetIdentityProvider(ctx context.Context, find *store.FindIdentityProvider) (*store.IdentityProvider, error) {
-	list, err := d.ListIdentityProviders(ctx, find)
-	if err != nil {
-		return nil, err
-	}
-	if len(list) == 0 {
-		return nil, nil
-	}
-
-	identityProvider := list[0]
-	return identityProvider, nil
-}
-
 func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIdentityProvider) (*store.IdentityProvider, error) {
 	set, args := []string{}, []any{}
 	if v := update.Name; v != nil {
