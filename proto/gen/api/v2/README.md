@@ -104,6 +104,21 @@
   
     - [UserService](#memos-api-v2-UserService)
   
+- [api/v2/webhook_service.proto](#api_v2_webhook_service-proto)
+    - [CreateWebhookRequest](#memos-api-v2-CreateWebhookRequest)
+    - [CreateWebhookResponse](#memos-api-v2-CreateWebhookResponse)
+    - [DeleteWebhookRequest](#memos-api-v2-DeleteWebhookRequest)
+    - [DeleteWebhookResponse](#memos-api-v2-DeleteWebhookResponse)
+    - [GetWebhookRequest](#memos-api-v2-GetWebhookRequest)
+    - [GetWebhookResponse](#memos-api-v2-GetWebhookResponse)
+    - [ListWebhooksRequest](#memos-api-v2-ListWebhooksRequest)
+    - [ListWebhooksResponse](#memos-api-v2-ListWebhooksResponse)
+    - [UpdateWebhookRequest](#memos-api-v2-UpdateWebhookRequest)
+    - [UpdateWebhookResponse](#memos-api-v2-UpdateWebhookResponse)
+    - [Webhook](#memos-api-v2-Webhook)
+  
+    - [WebhookService](#memos-api-v2-WebhookService)
+  
 - [Scalar Value Types](#scalar-value-types)
 
 
@@ -1357,6 +1372,204 @@
 | ListUserAccessTokens | [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest) | [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse) | ListUserAccessTokens returns a list of access tokens for a user. |
 | CreateUserAccessToken | [CreateUserAccessTokenRequest](#memos-api-v2-CreateUserAccessTokenRequest) | [CreateUserAccessTokenResponse](#memos-api-v2-CreateUserAccessTokenResponse) | CreateUserAccessToken creates a new access token for a user. |
 | DeleteUserAccessToken | [DeleteUserAccessTokenRequest](#memos-api-v2-DeleteUserAccessTokenRequest) | [DeleteUserAccessTokenResponse](#memos-api-v2-DeleteUserAccessTokenResponse) | DeleteUserAccessToken deletes an access token for a user. |
+
+ 
+
+
+
+<a name="api_v2_webhook_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/webhook_service.proto
+
+
+
+<a name="memos-api-v2-CreateWebhookRequest"></a>
+
+### CreateWebhookRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  |  |
+| url | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-CreateWebhookResponse"></a>
+
+### CreateWebhookResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| webhook | [Webhook](#memos-api-v2-Webhook) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteWebhookRequest"></a>
+
+### DeleteWebhookRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteWebhookResponse"></a>
+
+### DeleteWebhookResponse
+
+
+
+
+
+
+
+<a name="memos-api-v2-GetWebhookRequest"></a>
+
+### GetWebhookRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-GetWebhookResponse"></a>
+
+### GetWebhookResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| webhook | [Webhook](#memos-api-v2-Webhook) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListWebhooksRequest"></a>
+
+### ListWebhooksRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| creator_id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListWebhooksResponse"></a>
+
+### ListWebhooksResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| webhooks | [Webhook](#memos-api-v2-Webhook) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateWebhookRequest"></a>
+
+### UpdateWebhookRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| webhook | [Webhook](#memos-api-v2-Webhook) |  |  |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateWebhookResponse"></a>
+
+### UpdateWebhookResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| webhook | [Webhook](#memos-api-v2-Webhook) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-Webhook"></a>
+
+### Webhook
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| creator_id | [int32](#int32) |  |  |
+| created_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
+| updated_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
+| row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
+| name | [string](#string) |  |  |
+| url | [string](#string) |  |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-WebhookService"></a>
+
+### WebhookService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| CreateWebhook | [CreateWebhookRequest](#memos-api-v2-CreateWebhookRequest) | [CreateWebhookResponse](#memos-api-v2-CreateWebhookResponse) |  |
+| GetWebhook | [GetWebhookRequest](#memos-api-v2-GetWebhookRequest) | [GetWebhookResponse](#memos-api-v2-GetWebhookResponse) |  |
+| ListWebhooks | [ListWebhooksRequest](#memos-api-v2-ListWebhooksRequest) | [ListWebhooksResponse](#memos-api-v2-ListWebhooksResponse) |  |
+| UpdateWebhook | [UpdateWebhookRequest](#memos-api-v2-UpdateWebhookRequest) | [UpdateWebhookResponse](#memos-api-v2-UpdateWebhookResponse) |  |
+| DeleteWebhook | [DeleteWebhookRequest](#memos-api-v2-DeleteWebhookRequest) | [DeleteWebhookResponse](#memos-api-v2-DeleteWebhookResponse) |  |
 
  
 

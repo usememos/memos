@@ -1,0 +1,92 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "api/v2/common.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+
+option go_package = "gen/api/v2";
+
+service WebhookService {
+  rpc CreateWebhook(CreateWebhookRequest) returns (CreateWebhookResponse) {
+    option (google.api.http) = {
+      post: "/api/v2/webhooks"
+      body: "*"
+    };
+  }
+  rpc GetWebhook(GetWebhookRequest) returns (GetWebhookResponse) {
+    option (google.api.http) = {get: "/api/v2/webhooks/{id}"};
+  }
+  rpc ListWebhooks(ListWebhooksRequest) returns (ListWebhooksResponse) {
+    option (google.api.http) = {get: "/api/v2/webhooks"};
+  }
+  rpc UpdateWebhook(UpdateWebhookRequest) returns (UpdateWebhookResponse) {
+    option (google.api.http) = {
+      patch: "/api/v2/webhooks/{webhook.id}"
+      body: "*"
+    };
+  }
+  rpc DeleteWebhook(DeleteWebhookRequest) returns (DeleteWebhookResponse) {
+    option (google.api.http) = {delete: "/api/v2/webhooks/{id}"};
+  }
+}
+
+message Webhook {
+  int32 id = 1;
+
+  int32 creator_id = 2;
+
+  google.protobuf.Timestamp created_time = 3;
+
+  google.protobuf.Timestamp updated_time = 4;
+
+  RowStatus row_status = 5;
+
+  string name = 6;
+
+  string url = 7;
+}
+
+message CreateWebhookRequest {
+  string name = 1;
+
+  string url = 2;
+}
+
+message CreateWebhookResponse {
+  Webhook webhook = 1;
+}
+
+message GetWebhookRequest {
+  int32 id = 1;
+}
+
+message GetWebhookResponse {
+  Webhook webhook = 1;
+}
+
+message ListWebhooksRequest {
+  int32 creator_id = 1;
+}
+
+message ListWebhooksResponse {
+  repeated Webhook webhooks = 1;
+}
+
+message UpdateWebhookRequest {
+  Webhook webhook = 1;
+
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UpdateWebhookResponse {
+  Webhook webhook = 1;
+}
+
+message DeleteWebhookRequest {
+  int32 id = 1;
+}
+
+message DeleteWebhookResponse {}
