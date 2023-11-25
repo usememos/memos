@@ -36,7 +36,7 @@ INSERT INTO
 VALUES
   (
     3,
-    "**[Slash](https://github.com/boojack/slash)**: A bookmarking and url shortener, save and share your links very easily.
+    "**[Slash](https://github.com/yourselfhosted/slash)**: A bookmarking and url shortener, save and share your links very easily.
 **[TechStack](https://github.com/Get-Tech-Stack/TechStack)**: A browser extension that will display the technology stack of the GitHub repository.",
     101,
     'PUBLIC'
