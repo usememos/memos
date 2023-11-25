@@ -14,6 +14,7 @@ import (
 
 	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/plugin/webhook"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
@@ -392,7 +393,7 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
 	}
 
-	// send notification by telegram bot if memo is not Private
+	// Send notification to telegram if memo is not private.
 	if memoResponse.Visibility != Private {
 		// fetch all telegram UserID
 		userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{Key: UserSettingTelegramUserIDKey.String()})
@@ -423,6 +424,11 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 			}
 		}
 	}
+	// Try to dispatch webhook when memo is created.
+	if err := s.DispatchMemoCreatedWebhook(ctx, memoResponse); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to dispatch memo created webhook").SetInternal(err)
+	}
+
 	metric.Enqueue("memo create")
 	return c.JSON(http.StatusOK, memoResponse)
 }
@@ -795,6 +801,11 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
 	}
+	// Try to dispatch webhook when memo is created.
+	if err := s.DispatchMemoCreatedWebhook(ctx, memoResponse); err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to dispatch memo created webhook").SetInternal(err)
+	}
+
 	return c.JSON(http.StatusOK, memoResponse)
 }
 
@@ -945,4 +956,77 @@ func getIDListDiff(oldList, newList []int32) (addedList, removedList []int32) {
 		}
 	}
 	return addedList, removedList
+}
+
+// DispatchMemoCreatedWebhook dispatches webhook when memo is created.
+func (s *APIV1Service) DispatchMemoCreatedWebhook(ctx context.Context, memo *Memo) error {
+	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.created")
+}
+
+// DispatchMemoUpdatedWebhook dispatches webhook when memo is updated.
+func (s *APIV1Service) DispatchMemoUpdatedWebhook(ctx context.Context, memo *Memo) error {
+	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.updated")
+}
+
+func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *Memo, activityType string) error {
+	webhooks, err := s.Store.ListWebhooks(ctx, &store.FindWebhook{
+		CreatorID: &memo.CreatorID,
+	})
+	if err != nil {
+		return err
+	}
+	for _, wb := range webhooks {
+		payload := convertMemoToWebhookPayload(memo)
+		payload.ActivityType = activityType
+		payload.URL = wb.Url
+		err := webhook.Post(*payload)
+		if err != nil {
+			return errors.Wrap(err, "failed to post webhook")
+		}
+	}
+	return nil
+}
+
+func convertMemoToWebhookPayload(memo *Memo) *webhook.WebhookPayload {
+	return &webhook.WebhookPayload{
+		CreatorID: memo.CreatorID,
+		CreatedTs: time.Now().Unix(),
+		Memo: &webhook.Memo{
+			ID:         memo.ID,
+			CreatorID:  memo.CreatorID,
+			CreatedTs:  memo.CreatedTs,
+			UpdatedTs:  memo.UpdatedTs,
+			Content:    memo.Content,
+			Visibility: memo.Visibility.String(),
+			Pinned:     memo.Pinned,
+			ResourceList: func() []*webhook.Resource {
+				resources := []*webhook.Resource{}
+				for _, resource := range memo.ResourceList {
+					resources = append(resources, &webhook.Resource{
+						ID:           resource.ID,
+						CreatorID:    resource.CreatorID,
+						CreatedTs:    resource.CreatedTs,
+						UpdatedTs:    resource.UpdatedTs,
+						Filename:     resource.Filename,
+						InternalPath: resource.InternalPath,
+						ExternalLink: resource.ExternalLink,
+						Type:         resource.Type,
+						Size:         resource.Size,
+					})
+				}
+				return resources
+			}(),
+			RelationList: func() []*webhook.MemoRelation {
+				relations := []*webhook.MemoRelation{}
+				for _, relation := range memo.RelationList {
+					relations = append(relations, &webhook.MemoRelation{
+						MemoID:        relation.MemoID,
+						RelatedMemoID: relation.RelatedMemoID,
+						Type:          relation.Type.String(),
+					})
+				}
+				return relations
+			}(),
+		},
+	}
 }

@@ -18,6 +18,10 @@ const (
 	MemoRelationComment   MemoRelationType = "COMMENT"
 )
 
+func (t MemoRelationType) String() string {
+	return string(t)
+}
+
 type MemoRelation struct {
 	MemoID        int32            `json:"memoId"`
 	RelatedMemoID int32            `json:"relatedMemoId"`
