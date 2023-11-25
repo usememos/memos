@@ -7,6 +7,7 @@ import * as api from "@/helpers/api";
 import { absolutifyLink } from "@/helpers/utils";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserStore } from "@/store/module";
+import { useUserV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 interface State {
@@ -19,6 +20,7 @@ const AuthCallback = () => {
   const navigateTo = useNavigateTo();
   const [searchParams] = useSearchParams();
   const userStore = useUserStore();
+  const userV1Store = useUserV1Store();
   const [state, setState] = useState<State>({
     loading: true,
     errorMessage: "",
@@ -42,6 +44,7 @@ const AuthCallback = () => {
             if (user) {
               userStore.setCurrentUser(user);
               await userStore.fetchCurrentUser();
+              await userV1Store.getOrFetchUserByUsername(user.username);
               navigateTo("/");
             } else {
               toast.error(t("message.login-failed"));

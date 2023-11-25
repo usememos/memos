@@ -9,6 +9,7 @@ import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore, useUserStore } from "@/store/module";
+import { useUserV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const SignIn = () => {
@@ -16,6 +17,7 @@ const SignIn = () => {
   const navigateTo = useNavigateTo();
   const globalStore = useGlobalStore();
   const userStore = useUserStore();
+  const userV1Store = useUserV1Store();
   const actionBtnLoadingState = useLoading(false);
   const { appearance, locale, systemStatus } = globalStore.state;
   const mode = systemStatus.profile.mode;
@@ -78,6 +80,7 @@ const SignIn = () => {
       if (user) {
         userStore.setCurrentUser(user);
         await userStore.fetchCurrentUser();
+        await userV1Store.getOrFetchUserByUsername(user.username);
         navigateTo("/");
       } else {
         toast.error(t("message.login-failed"));
