@@ -99,6 +99,12 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 	s.Secret = secret
 
+	// Register healthz endpoint.
+	e.GET("/healthz", func(c echo.Context) error {
+		return c.String(http.StatusOK, "OK!\n")
+	})
+
+	// Register API v1 endpoints.
 	rootGroup := e.Group("")
 	apiV1Service := apiv1.NewAPIV1Service(s.Secret, profile, store, s.telegramBot)
 	apiV1Service.Register(rootGroup)
