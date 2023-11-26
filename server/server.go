@@ -101,7 +101,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	// Register healthz endpoint.
 	e.GET("/healthz", func(c echo.Context) error {
-		return c.String(http.StatusOK, "OK!\n")
+		return c.String(http.StatusOK, "Service ready.")
 	})
 
 	// Register API v1 endpoints.
