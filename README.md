@@ -39,7 +39,7 @@ Learn more about [other installation methods](https://www.usememos.com/docs/inst
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. We greatly appreciate any contributions you make. Thank you for being a part of our community! 🥰
 
 <a href="https://github.com/usememos/memos/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=usememos/memos" />
+  <img src="https://contri-graphy.yourselfhosted.com/api/graph?repo=usememos/memos" />
 </a>
 
 ---
