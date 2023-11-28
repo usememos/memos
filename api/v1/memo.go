@@ -426,7 +426,7 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 	}
 	// Try to dispatch webhook when memo is created.
 	if err := s.DispatchMemoCreatedWebhook(ctx, memoResponse); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to dispatch memo created webhook").SetInternal(err)
+		log.Warn("Failed to dispatch memo created webhook", zap.Error(err))
 	}
 
 	metric.Enqueue("memo create")
@@ -801,9 +801,9 @@ func (s *APIV1Service) UpdateMemo(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
 	}
-	// Try to dispatch webhook when memo is created.
-	if err := s.DispatchMemoCreatedWebhook(ctx, memoResponse); err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to dispatch memo created webhook").SetInternal(err)
+	// Try to dispatch webhook when memo is updated.
+	if err := s.DispatchMemoUpdatedWebhook(ctx, memoResponse); err != nil {
+		log.Warn("Failed to dispatch memo updated webhook", zap.Error(err))
 	}
 
 	return c.JSON(http.StatusOK, memoResponse)

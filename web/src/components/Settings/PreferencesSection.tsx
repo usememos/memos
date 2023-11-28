@@ -8,6 +8,7 @@ import AppearanceSelect from "../AppearanceSelect";
 import LearnMore from "../LearnMore";
 import LocaleSelect from "../LocaleSelect";
 import VisibilityIcon from "../VisibilityIcon";
+import WebhookSection from "./WebhookSection";
 import "@/less/settings/preferences-section.less";
 
 const PreferencesSection = () => {
@@ -106,6 +107,10 @@ const PreferencesSection = () => {
         onChange={(event) => handleTelegramUserIdChanged(event.target.value)}
         placeholder={t("setting.preference-section.telegram-user-id-placeholder")}
       />
+
+      <Divider className="!mt-3 !my-4" />
+
+      <WebhookSection />
     </div>
   );
 };
