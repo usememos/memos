@@ -95,7 +95,9 @@ const PreferencesSection = () => {
           <span className="text-sm mr-1">{t("setting.preference-section.telegram-user-id")}</span>
           <LearnMore url="https://usememos.com/docs/integration/telegram-bot" />
         </div>
-        <Button onClick={handleSaveTelegramUserId}>{t("common.save")}</Button>
+        <Button variant="outlined" color="neutral" onClick={handleSaveTelegramUserId}>
+          {t("common.save")}
+        </Button>
       </div>
       <Input
         className="w-full"
@@ -108,7 +110,7 @@ const PreferencesSection = () => {
         placeholder={t("setting.preference-section.telegram-user-id-placeholder")}
       />
 
-      <Divider className="!mt-3 !my-4" />
+      <Divider className="!my-4" />
 
       <WebhookSection />
     </div>

@@ -110,15 +110,27 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
             Title <span className="text-red-600">*</span>
           </span>
           <div className="relative w-full">
-            <Input className="w-full" type="text" placeholder="" value={state.name} onChange={handleTitleInputChange} />
+            <Input
+              className="w-full"
+              type="text"
+              placeholder="An easy-to-remember name"
+              value={state.name}
+              onChange={handleTitleInputChange}
+            />
           </div>
         </div>
         <div className="w-full flex flex-col justify-start items-start mb-3">
           <span className="mb-2">
-            Url <span className="text-red-600">*</span>
+            Payload URL <span className="text-red-600">*</span>
           </span>
           <div className="relative w-full">
-            <Input className="w-full" type="text" placeholder="Callback endpoint" value={state.url} onChange={handleUrlInputChange} />
+            <Input
+              className="w-full"
+              type="text"
+              placeholder="https://example.com/postreceive"
+              value={state.url}
+              onChange={handleUrlInputChange}
+            />
           </div>
         </div>
         <div className="w-full flex flex-row justify-end items-center mt-4 space-x-2">
