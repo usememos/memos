@@ -311,7 +311,7 @@
       "s3-compatible-url": "S3과 호환되는 서비스 URL",
       "secretkey": "비밀 액세스 키",
       "secretkey-placeholder": "비밀 키 / 비밀 액세스 키",
-      "storage-services-list": "저장소 서비스 목록",
+      "storage-services": "저장소 서비스 목록",
       "type-database": "데이터베이스",
       "type-local": "로컬 파일시스템",
       "update-a-service": "서비스 편집",

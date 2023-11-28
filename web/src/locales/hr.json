@@ -315,7 +315,7 @@
       "s3-compatible-url": "S3 kompatibilan URL",
       "secretkey": "Tajni ključ",
       "secretkey-placeholder": "Tajni ključ / Pristupni Ključ",
-      "storage-services-list": "Storage service list",
+      "storage-services": "Storage services",
       "type-database": "Databaza",
       "type-local": "Local",
       "update-a-service": "Ažuriraj service",

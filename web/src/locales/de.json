@@ -311,7 +311,7 @@
       "s3-compatible-url": "S3 kompatible URL",
       "secretkey": "Geheimer Schlüssel",
       "secretkey-placeholder": "Geheimer Schlüssel / Zugangsschlüssel",
-      "storage-services-list": "Liste der Speicherdienste",
+      "storage-services": "Liste der Speicherdienste",
       "type-database": "Datenbank",
       "type-local": "Lokales Dateisystem",
       "update-a-service": "Aktualisiere einen Dienst",

@@ -297,7 +297,7 @@
       "s3-compatible-url": "S3 совместимый URL",
       "secretkey": "Секретный ключ",
       "secretkey-placeholder": "Секретный ключ / ключ доступа",
-      "storage-services-list": "Список хранилищ",
+      "storage-services": "Список хранилищ",
       "type-database": "База данных",
       "type-local": "Локальное хранилище",
       "update-a-service": "Обновить сервис",
