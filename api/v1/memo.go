@@ -975,10 +975,11 @@ func (s *APIV1Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *Mem
 	if err != nil {
 		return err
 	}
-	for _, wb := range webhooks {
+	metric.Enqueue("webhook dispatch")
+	for _, hook := range webhooks {
 		payload := convertMemoToWebhookPayload(memo)
 		payload.ActivityType = activityType
-		payload.URL = wb.Url
+		payload.URL = hook.Url
 		err := webhook.Post(*payload)
 		if err != nil {
 			return errors.Wrap(err, "failed to post webhook")
