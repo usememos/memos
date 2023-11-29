@@ -27,6 +27,15 @@ const SearchBar = () => {
     setQueryText(event.currentTarget.value);
   };
 
+  useEffect(() => {
+    document.addEventListener("keydown", function (event) {
+      if (event.metaKey && event.code == "KeyK") {
+        (document.getElementsByClassName("flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200")[0] as HTMLElement).focus();
+      }
+    });
+    alert(1);
+  });
+
   return (
     <div className="w-full h-9 flex flex-row justify-start items-center py-2 px-3 rounded-md bg-gray-200 dark:bg-zinc-700">
       <Icon.Search className="w-4 h-auto opacity-30 dark:text-gray-200" />
