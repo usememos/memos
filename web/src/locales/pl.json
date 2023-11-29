@@ -5,7 +5,10 @@
     "memo_one": "NOTATKA"
   },
   "auth": {
-    "host-tip": "Rejestrujesz się jako właściciel."
+    "create-your-account": "Utwórz swoje konto",
+    "host-tip": "Rejestrujesz się jako właściciel strony.",
+    "new-password": "Nowe hasło",
+    "repeat-new-password": "Powtórz nowe hasło"
   },
   "common": {
     "about": "O aplikacji",
@@ -14,9 +17,11 @@
     "archived": "Zarchiwizowane",
     "avatar": "Awatar",
     "basic": "Podstawowe",
+    "beta": "Beta",
     "cancel": "Anuluj",
     "change": "Zmień",
     "changed": "zmodyfikowano",
+    "clear": "Wyczyść",
     "close": "Zamknij",
     "confirm": "Potwierdź",
     "create": "Utwórz",
@@ -30,15 +35,21 @@
     "filter-period": "{{from}} do {{to}}",
     "fold": "Zwiń",
     "image": "Obrazek",
+    "inbox": "Skrzynka odbiorcza",
     "language": "Język",
     "link": "Link",
     "mark": "Mark",
+    "name": "Nazwa",
+    "new": "Nowy",
     "nickname": "Pseudonim",
     "null": "Null",
     "or": "lub",
     "password": "Hasło",
     "pin": "Przypnij",
+    "preview": "Podgląd",
+    "profile": "Profil",
     "remember-me": "Zapamiętaj mnie",
+    "rename": "Zmień nazwę",
     "reset": "Resetuj",
     "resources": "Zasoby",
     "restore": "Przywróć",
@@ -58,6 +69,7 @@
     "username": "Nazwa użytkownika",
     "vacuum": "Vacuum",
     "version": "Wersja",
+    "visibility": "Widoczność",
     "yourself": "Ty"
   },
   "days": {
@@ -80,13 +92,19 @@
     "save": "Zapisz"
   },
   "memo": {
+    "archived-at": "Zarchiwizowano",
+    "comment": {
+      "no-comment": "Brak komentarzy",
+      "self": "Komentarze"
+    },
     "copy-link": "Kopiuj odnośnik",
+    "delete-memo": "Usuń notatkę",
     "view-detail": "Zobacz szczegóły",
     "visibility": {
       "disabled": "Publiczne notatki są wyłączone",
       "private": "Widoczne tylko dla ciebie",
       "protected": "Widoczne dla użytkowników",
-      "public": "Widoczne dla wszystkich"
+      "public": "Publiczne"
     }
   },
   "message": {
@@ -127,13 +145,30 @@
   "resource": {
     "clear": "Wyczyść",
     "copy-link": "Kopiuj odnośnik",
+    "create-dialog": {
+      "external-link": {
+        "file-name": "Nazwa pliku",
+        "file-name-placeholder": "Nazwa pliku",
+        "link": "Link",
+        "link-placeholder": "https://link.do/twojego/zasobu",
+        "option": "Zewnętrzny odnośnik",
+        "type": "Typ",
+        "type-placeholder": "Typ pliku"
+      },
+      "local-file": {
+        "choose": "Wybierz plik…",
+        "option": "Plik lokalny"
+      }
+    },
     "delete-resource": "Usuń zasób",
-    "fetching-data": "pobieranie danych...",
+    "fetching-data": "Pobieranie danych…",
     "linked-amount": "Liczba kwalifikujących się notatek",
     "no-resources": "Brak zasobów.",
     "no-unused-resources": "Brak nieużywanych zasobów",
-    "warning-text": "Czy na pewno chcesz usunąć zasób? To działanie jest nieodwracalne❗",
-    "warning-text-unused": "Czy na pewno chcesz usunąć nieużywany zasób? To działanie jest nieodwracalne❗"
+    "reset-link": "Resetuj odnośnik",
+    "reset-resource-link": "Resetuj odnośnik zasobu",
+    "warning-text": "Czy na pewno chcesz usunąć zasób?\n\nTo działanie jest nieodwracalne!",
+    "warning-text-unused": "Czy na pewno chcesz usunąć te nieużywane zasoby?\n\nTo działanie jest nieodwracalne!"
   },
   "setting": {
     "account-section": {
