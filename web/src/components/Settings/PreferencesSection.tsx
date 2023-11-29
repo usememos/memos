@@ -8,6 +8,7 @@ import AppearanceSelect from "../AppearanceSelect";
 import LearnMore from "../LearnMore";
 import LocaleSelect from "../LocaleSelect";
 import VisibilityIcon from "../VisibilityIcon";
+import WebhookSection from "./WebhookSection";
 import "@/less/settings/preferences-section.less";
 
 const PreferencesSection = () => {
@@ -94,7 +95,9 @@ const PreferencesSection = () => {
           <span className="text-sm mr-1">{t("setting.preference-section.telegram-user-id")}</span>
           <LearnMore url="https://usememos.com/docs/integration/telegram-bot" />
         </div>
-        <Button onClick={handleSaveTelegramUserId}>{t("common.save")}</Button>
+        <Button variant="outlined" color="neutral" onClick={handleSaveTelegramUserId}>
+          {t("common.save")}
+        </Button>
       </div>
       <Input
         className="w-full"
@@ -106,6 +109,10 @@ const PreferencesSection = () => {
         onChange={(event) => handleTelegramUserIdChanged(event.target.value)}
         placeholder={t("setting.preference-section.telegram-user-id-placeholder")}
       />
+
+      <Divider className="!my-4" />
+
+      <WebhookSection />
     </div>
   );
 };

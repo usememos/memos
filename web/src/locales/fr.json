@@ -1,190 +1,190 @@
 {
-    "common": {
-        "about": "À propos",
-        "email": "Email",
-        "password": "Mot de passe",
-        "username": "Nom d'utilisateur",
-        "nickname": "Surnom",
-        "save": "Enregistrer",
-        "close": "Fermer",
-        "cancel": "Annuler",
-        "create": "Créer",
-        "change": "Changer",
-        "confirm": "Confirmer",
-        "reset": "Réinitialiser",
-        "language": "Langue",
-        "version": "Version",
-        "pin": "Épinglé",
-        "unpin": "Détacher",
-        "edit": "Modifier",
-        "restore": "Restaurer",
-        "delete": "Supprimer",
-        "null": "Nulle",
-        "share": "Partager",
-        "archive": "Archive",
-        "basic": "Base",
-        "admin": "Admin",
-        "explore": "Explorez",
-        "sign-in": "Se connecter",
-        "sign-up": "S'inscrire",
-        "sign-out": "Se déconnecter",
-        "type": "Type",
-        "title": "Titre",
-        "filter": "Filtre",
-        "tags": "Étiquettes",
-        "yourself": "Vous-même",
-        "changed": "modifié",
-        "fold": "Plier",
-        "expand": "Développer",
-        "image": "Image",
-        "link": "Lien",
-        "vacuum": "Nettoyer",
-        "select": "Select",
-        "avatar": "Avatar",
-        "database": "Base de données",
-        "mark": "Marquer"
-    },
-    "auth": {
-        "host-tip": "Vous vous inscrivez en tant qu'hébergeur du site."
-    },
-    "resource": {
-        "no-resources": "Aucune ressource.",
-        "fetching-data": "récupération des données...",
-        "copy-link": "Copier le lien",
-        "delete-resource": "Supprimer la ressource",
-        "warning-text": "Êtes-vous sûr de vouloir supprimer cette ressource ? CETTE ACTION EST IRRÉVERSIBLE❗",
-        "linked-amount": "Montant du mémo lié",
-        "warning-text-unused": "Etes-vous sûr de vouloir supprimer ces ressources inutilisées ? CETTE ACTION EST IRRÉVERSIBLE❗",
-        "no-unused-resources": "Aucune ressource inutilisée",
-        "clear": "Nettoyer"
-    },
-    "editor": {
-        "editing": "Édition...",
-        "cancel-edit": "Annuler l'édition",
-        "save": "Sauvegarder",
-        "placeholder": "Une idée...",
-        "only-image-supported": "Seul le fichier image est pris en charge.",
-        "cant-empty": "Le contenu ne doit pas être vide",
-        "local": "Local",
-        "resources": "Ressources"
-    },
-    "memo": {
-        "view-detail": "Voir le détail",
-        "copy-link": "Copier le lien",
-        "visibility": {
-            "private": "Privé",
-            "protected": "Visible par les membres",
-            "public": "Tous peuvent voir",
-            "disabled": "Les mémos publics sont désactivés"
-        }
-    },
-    "tag-list": {
-        "tip-text": "Entrez `#tag ` pour créer"
-    },
-    "setting": {
-        "my-account": "Mon compte",
-        "preference": "Préférences",
-        "member": "Membre",
-        "member-list": "Liste des membres",
-        "system": "Système",
-        "account-section": {
-            "title": "Informations sur le compte",
-            "update-information": "Mettre à jour les informations",
-            "change-password": "Modifier le mot de passe"
-        },
-        "preference-section": {
-            "theme": "Thème",
-            "default-memo-visibility": "Visibilité du mémo par défaut",
-            "enable-folding-memo": "Activer le mémo pliable",
-            "editor-font-style": "Style de police de l'éditeur",
-            "mobile-editor-style": "Style de l'éditeur mobile",
-            "default-memo-sort-option": "Tri par défaut des mémos",
-            "created_ts": "Heure de création",
-            "updated_ts": "Heure de mise à jour",
-            "enable-double-click": "Activer le double-clic",
-            "auto-collapse": "Réduction automatique"
-        },
-        "member-section": {
-            "create-a-member": "Créer un membre"
-        },
-        "system-section": {
-            "server-name": "Nom du serveur",
-            "customize-server": {
-                "title": "Serveur personnalisé",
-                "default": "Par défaut memos",
-                "icon-url": "URL de l'icône"
-            },
-            "database-file-size": "Taille de la base de données",
-            "allow-user-signup": "Autoriser l'inscription des utilisateurs",
-            "additional-style": "Style supplémentaire",
-            "additional-script": "Script supplémentaire",
-            "additional-style-placeholder": "Codes CSS supplémentaires",
-            "additional-script-placeholder": "Codes JavaScript supplémentaires",
-            "disable-public-memos": "Désactiver les commentaires publics",
-            "display-with-updated-time": "Afficher avec l'horodatage"
-        },
-        "storage-section": {
-            "delete-storage": "Effacer le stockage",
-            "storage-services-list": "Liste des services de stockage",
-            "create-a-service": "Créer un service",
-            "update-a-service": "Mettre à jour un service",
-            "warning-text": "Etes-vous sûr de vouloir supprimer ce service de stockage ? CETTE ACTION EST IRRÉVERSIBLE❗"
-        },
-        "storage": "Stockage",
-        "sso": "SSO",
-        "appearance-option": {
-            "system": "Identique au système",
-            "light": "Toujours clair",
-            "dark": "Toujours sombre"
-        }
-    },
-    "amount-text": {
-        "memo_one": "MEMO",
-        "memo_many": "",
-        "memo_other": "ETIQUETTES"
-    },
-    "message": {
-        "memos-ready": "tous les mémos sont prêts 🎉",
-        "restored-successfully": "Restauré avec succès",
-        "memo-updated-datetime": "La date et l'heure de création du mémo ont été modifiées.",
-        "invalid-created-datetime": "Date/heure de création non valide.",
-        "change-memo-created-time": "Modifier l'heure de création du mémo",
-        "memo-not-found": "Mémo introuvable",
-        "fill-all": "Veuillez remplir tous les champs.",
-        "new-password-not-match": "Les mots de passe ne correspondent pas",
-        "image-load-failed": "Le chargement de l'image a échoué",
-        "fill-form": "Veuillez remplir ce formulaire",
-        "login-failed": "Connexion échouée",
-        "signup-failed": "L'inscription a échoué",
-        "user-not-found": "Utilisateur introuvable",
-        "password-not-match": "Passwords do not match.",
-        "password-changed": "Mot de passe modifié",
-        "private-only": "Ce mémo est uniquement privé.",
-        "copied": "Copié",
-        "succeed-copy-content": "La copie dans le presse-papiers a été effectuée avec succès",
-        "succeed-copy-link": "Succeed to copy link to clipboard.",
-        "change-resource-filename": "Changer le nom du fichier de ressources",
-        "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
-        "invalid-resource-filename": "Nom de fichier invalide.",
-        "click-to-save-the-image": "Cliquez pour enregistrer l'image",
-        "generating-the-screenshot": "Génération de la capture d'écran...",
-        "count-selected-resources": "Total de la sélection",
-        "succeed-vacuum-database": "Nettoyage de la base de données effectuée",
-        "succeed-update-additional-style": "Mise à jour des styles additionnels effectuée",
-        "succeed-copy-resource-link": "Copie du lien vers le presse-papier effectuée",
-        "succeed-update-customized-profile": "Mise à jour du profil effectuée",
-        "succeed-update-additional-script": "Mise à jour des scripts additionnels effectuée",
-        "update-succeed": "Mise à jour effectuée",
-        "succeed-copy-code": "Copie du code dans le presse-papier effectuée.",
-        "page-not-found": "404 - Page non trouvée 😥"
-    },
-    "days": {
-        "mon": "Lu",
-        "tue": "Ma",
-        "wed": "Me",
-        "thu": "Je",
-        "fri": "Ve",
-        "sat": "Sa",
-        "sun": "Di"
+  "common": {
+    "about": "À propos",
+    "email": "Email",
+    "password": "Mot de passe",
+    "username": "Nom d'utilisateur",
+    "nickname": "Surnom",
+    "save": "Enregistrer",
+    "close": "Fermer",
+    "cancel": "Annuler",
+    "create": "Créer",
+    "change": "Changer",
+    "confirm": "Confirmer",
+    "reset": "Réinitialiser",
+    "language": "Langue",
+    "version": "Version",
+    "pin": "Épinglé",
+    "unpin": "Détacher",
+    "edit": "Modifier",
+    "restore": "Restaurer",
+    "delete": "Supprimer",
+    "null": "Nulle",
+    "share": "Partager",
+    "archive": "Archive",
+    "basic": "Base",
+    "admin": "Admin",
+    "explore": "Explorez",
+    "sign-in": "Se connecter",
+    "sign-up": "S'inscrire",
+    "sign-out": "Se déconnecter",
+    "type": "Type",
+    "title": "Titre",
+    "filter": "Filtre",
+    "tags": "Étiquettes",
+    "yourself": "Vous-même",
+    "changed": "modifié",
+    "fold": "Plier",
+    "expand": "Développer",
+    "image": "Image",
+    "link": "Lien",
+    "vacuum": "Nettoyer",
+    "select": "Select",
+    "avatar": "Avatar",
+    "database": "Base de données",
+    "mark": "Marquer"
+  },
+  "auth": {
+    "host-tip": "Vous vous inscrivez en tant qu'hébergeur du site."
+  },
+  "resource": {
+    "no-resources": "Aucune ressource.",
+    "fetching-data": "récupération des données...",
+    "copy-link": "Copier le lien",
+    "delete-resource": "Supprimer la ressource",
+    "warning-text": "Êtes-vous sûr de vouloir supprimer cette ressource ? CETTE ACTION EST IRRÉVERSIBLE❗",
+    "linked-amount": "Montant du mémo lié",
+    "warning-text-unused": "Etes-vous sûr de vouloir supprimer ces ressources inutilisées ? CETTE ACTION EST IRRÉVERSIBLE❗",
+    "no-unused-resources": "Aucune ressource inutilisée",
+    "clear": "Nettoyer"
+  },
+  "editor": {
+    "editing": "Édition...",
+    "cancel-edit": "Annuler l'édition",
+    "save": "Sauvegarder",
+    "placeholder": "Une idée...",
+    "only-image-supported": "Seul le fichier image est pris en charge.",
+    "cant-empty": "Le contenu ne doit pas être vide",
+    "local": "Local",
+    "resources": "Ressources"
+  },
+  "memo": {
+    "view-detail": "Voir le détail",
+    "copy-link": "Copier le lien",
+    "visibility": {
+      "private": "Privé",
+      "protected": "Visible par les membres",
+      "public": "Tous peuvent voir",
+      "disabled": "Les mémos publics sont désactivés"
     }
+  },
+  "tag-list": {
+    "tip-text": "Entrez `#tag ` pour créer"
+  },
+  "setting": {
+    "my-account": "Mon compte",
+    "preference": "Préférences",
+    "member": "Membre",
+    "member-list": "Liste des membres",
+    "system": "Système",
+    "account-section": {
+      "title": "Informations sur le compte",
+      "update-information": "Mettre à jour les informations",
+      "change-password": "Modifier le mot de passe"
+    },
+    "preference-section": {
+      "theme": "Thème",
+      "default-memo-visibility": "Visibilité du mémo par défaut",
+      "enable-folding-memo": "Activer le mémo pliable",
+      "editor-font-style": "Style de police de l'éditeur",
+      "mobile-editor-style": "Style de l'éditeur mobile",
+      "default-memo-sort-option": "Tri par défaut des mémos",
+      "created_ts": "Heure de création",
+      "updated_ts": "Heure de mise à jour",
+      "enable-double-click": "Activer le double-clic",
+      "auto-collapse": "Réduction automatique"
+    },
+    "member-section": {
+      "create-a-member": "Créer un membre"
+    },
+    "system-section": {
+      "server-name": "Nom du serveur",
+      "customize-server": {
+        "title": "Serveur personnalisé",
+        "default": "Par défaut memos",
+        "icon-url": "URL de l'icône"
+      },
+      "database-file-size": "Taille de la base de données",
+      "allow-user-signup": "Autoriser l'inscription des utilisateurs",
+      "additional-style": "Style supplémentaire",
+      "additional-script": "Script supplémentaire",
+      "additional-style-placeholder": "Codes CSS supplémentaires",
+      "additional-script-placeholder": "Codes JavaScript supplémentaires",
+      "disable-public-memos": "Désactiver les commentaires publics",
+      "display-with-updated-time": "Afficher avec l'horodatage"
+    },
+    "storage-section": {
+      "delete-storage": "Effacer le stockage",
+      "storage-services": "Liste des services de stockage",
+      "create-a-service": "Créer un service",
+      "update-a-service": "Mettre à jour un service",
+      "warning-text": "Etes-vous sûr de vouloir supprimer ce service de stockage ? CETTE ACTION EST IRRÉVERSIBLE❗"
+    },
+    "storage": "Stockage",
+    "sso": "SSO",
+    "appearance-option": {
+      "system": "Identique au système",
+      "light": "Toujours clair",
+      "dark": "Toujours sombre"
+    }
+  },
+  "amount-text": {
+    "memo_one": "MEMO",
+    "memo_many": "",
+    "memo_other": "ETIQUETTES"
+  },
+  "message": {
+    "memos-ready": "tous les mémos sont prêts 🎉",
+    "restored-successfully": "Restauré avec succès",
+    "memo-updated-datetime": "La date et l'heure de création du mémo ont été modifiées.",
+    "invalid-created-datetime": "Date/heure de création non valide.",
+    "change-memo-created-time": "Modifier l'heure de création du mémo",
+    "memo-not-found": "Mémo introuvable",
+    "fill-all": "Veuillez remplir tous les champs.",
+    "new-password-not-match": "Les mots de passe ne correspondent pas",
+    "image-load-failed": "Le chargement de l'image a échoué",
+    "fill-form": "Veuillez remplir ce formulaire",
+    "login-failed": "Connexion échouée",
+    "signup-failed": "L'inscription a échoué",
+    "user-not-found": "Utilisateur introuvable",
+    "password-not-match": "Passwords do not match.",
+    "password-changed": "Mot de passe modifié",
+    "private-only": "Ce mémo est uniquement privé.",
+    "copied": "Copié",
+    "succeed-copy-content": "La copie dans le presse-papiers a été effectuée avec succès",
+    "succeed-copy-link": "Succeed to copy link to clipboard.",
+    "change-resource-filename": "Changer le nom du fichier de ressources",
+    "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
+    "invalid-resource-filename": "Nom de fichier invalide.",
+    "click-to-save-the-image": "Cliquez pour enregistrer l'image",
+    "generating-the-screenshot": "Génération de la capture d'écran...",
+    "count-selected-resources": "Total de la sélection",
+    "succeed-vacuum-database": "Nettoyage de la base de données effectuée",
+    "succeed-update-additional-style": "Mise à jour des styles additionnels effectuée",
+    "succeed-copy-resource-link": "Copie du lien vers le presse-papier effectuée",
+    "succeed-update-customized-profile": "Mise à jour du profil effectuée",
+    "succeed-update-additional-script": "Mise à jour des scripts additionnels effectuée",
+    "update-succeed": "Mise à jour effectuée",
+    "succeed-copy-code": "Copie du code dans le presse-papier effectuée.",
+    "page-not-found": "404 - Page non trouvée 😥"
+  },
+  "days": {
+    "mon": "Lu",
+    "tue": "Ma",
+    "wed": "Me",
+    "thu": "Je",
+    "fri": "Ve",
+    "sat": "Sa",
+    "sun": "Di"
+  }
 }

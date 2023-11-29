@@ -255,7 +255,7 @@
       "local-storage-path": "स्थानीय संग्रहण मार्ग",
       "region": "क्षेत्र",
       "region-placeholder": "जैसे: ap-northeast-1",
-      "storage-services-list": "स्टोरेज सेवा सूची",
+      "storage-services": "स्टोरेज सेवा सूची",
       "type-database": "डेटाबेस",
       "type-local": "स्थानीय",
       "update-a-service": "सेवा अपडेट करें",

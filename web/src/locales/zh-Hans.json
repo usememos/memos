@@ -312,7 +312,7 @@
       "s3-compatible-url": "S3 兼容 URL",
       "secretkey": "Secret key",
       "secretkey-placeholder": "Secret key / Access Key",
-      "storage-services-list": "存储服务列表",
+      "storage-services": "存储服务列表",
       "type-database": "数据库",
       "type-local": "本地文件系统",
       "update-a-service": "更新服务",
