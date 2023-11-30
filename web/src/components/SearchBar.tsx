@@ -28,12 +28,46 @@ const SearchBar = () => {
   };
 
   useEffect(() => {
-    document.addEventListener("keydown", function (event) {
-      if (event.metaKey && event.code == "KeyK") {
-        (document.getElementsByClassName("flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200")[0] as HTMLElement).focus();
+    // Using `/` as shortcut
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "/") {
+        document.addEventListener("keyup", () => {
+          (
+            document.getElementsByClassName("flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200")[0] as HTMLElement
+          ).focus();
+        });
+        document.removeEventListener("keyup", () => {
+          (
+            document.getElementsByClassName("flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200")[0] as HTMLElement
+          ).focus();
+        });
       }
     });
-    alert(1);
+
+    // Using `cmd or ctrl + k` as shortcut
+    // let modifierKeyPrefix = "^"; // control key
+    // if (navigator.platform.indexOf("Mac") === 1 || navigator.platform === "iPhone") {
+    //   modifierKeyPrefix = "⌘"; // command key
+    // }
+    // // On mac platform
+    // document.addEventListener("keydown", (event) => {
+    //   if (event.metaKey && event.key === "k") {
+    //     (
+    //       document.getElementsByClassName("flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200")[0] as HTMLElement
+    //     ).focus();
+    //     event.preventDefault();
+    //   }
+    // });
+
+    // // On windows platform
+    // document.addEventListener("keydown", (event) => {
+    //   if (event.ctrlKey && event.key === "k") {
+    //     (
+    //       document.getElementsByClassName("flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200")[0] as HTMLElement
+    //     ).focus();
+    //     event.preventDefault();
+    //   }
+    // });
   });
 
   return (
