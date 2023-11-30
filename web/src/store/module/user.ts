@@ -78,16 +78,16 @@ const doSignOut = async () => {
 const fetchCurrentUser = async () => {
   const userId = localStorage.getItem("userId");
   if (userId) {
-    const { ok } = await authServiceClient.getAuthStatus({});
-    if (!ok) {
+    const { user } = await authServiceClient.getAuthStatus({});
+    if (!user) {
       localStorage.removeItem("userId");
       return;
     }
     const { data } = await api.getUserById(Number(userId));
-    const user = convertResponseModelUser(data);
-    if (user) {
-      store.dispatch(setUser(user));
-      return user;
+    const userMessage = convertResponseModelUser(data);
+    if (userMessage) {
+      store.dispatch(setUser(userMessage));
+      return userMessage;
     }
   }
 };
