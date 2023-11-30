@@ -266,6 +266,10 @@
 | user_id | [int32](#int32) |  |  |
 | key | [UserSettingKey](#memos-store-UserSettingKey) |  |  |
 | access_tokens | [AccessTokensUserSetting](#memos-store-AccessTokensUserSetting) |  |  |
+| locale | [string](#string) |  |  |
+| appearance | [string](#string) |  |  |
+| memo_visibility | [string](#string) |  |  |
+| telegram_user_id | [string](#string) |  |  |
 
 
 
@@ -283,6 +287,10 @@
 | ---- | ------ | ----------- |
 | USER_SETTING_KEY_UNSPECIFIED | 0 |  |
 | USER_SETTING_ACCESS_TOKENS | 1 | Access tokens for the user. |
+| USER_SETTING_LOCALE | 2 | The locale of the user. |
+| USER_SETTING_APPEARANCE | 3 | The appearance of the user. |
+| USER_SETTING_MEMO_VISIBILITY | 4 | The visibility of the memo. |
+| USER_SETTING_TELEGRAM_USER_ID | 5 | The telegram user id of the user. |
 
 
  

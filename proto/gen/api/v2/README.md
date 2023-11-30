@@ -27,12 +27,17 @@
     - [DeleteUserResponse](#memos-api-v2-DeleteUserResponse)
     - [GetUserRequest](#memos-api-v2-GetUserRequest)
     - [GetUserResponse](#memos-api-v2-GetUserResponse)
+    - [GetUserSettingsRequest](#memos-api-v2-GetUserSettingsRequest)
+    - [GetUserSettingsResponse](#memos-api-v2-GetUserSettingsResponse)
     - [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest)
     - [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse)
     - [UpdateUserRequest](#memos-api-v2-UpdateUserRequest)
     - [UpdateUserResponse](#memos-api-v2-UpdateUserResponse)
+    - [UpdateUserSettingsRequest](#memos-api-v2-UpdateUserSettingsRequest)
+    - [UpdateUserSettingsResponse](#memos-api-v2-UpdateUserSettingsResponse)
     - [User](#memos-api-v2-User)
     - [UserAccessToken](#memos-api-v2-UserAccessToken)
+    - [UserSetting](#memos-api-v2-UserSetting)
   
     - [User.Role](#memos-api-v2-User-Role)
   
@@ -431,6 +436,36 @@
 
 
 
+<a name="memos-api-v2-GetUserSettingsRequest"></a>
+
+### GetUserSettingsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the user. Format: users/{username} |
+
+
+
+
+
+
+<a name="memos-api-v2-GetUserSettingsResponse"></a>
+
+### GetUserSettingsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| settings | [UserSetting](#memos-api-v2-UserSetting) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-ListUserAccessTokensRequest"></a>
 
 ### ListUserAccessTokensRequest
@@ -492,6 +527,37 @@
 
 
 
+<a name="memos-api-v2-UpdateUserSettingsRequest"></a>
+
+### UpdateUserSettingsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| settings | [UserSetting](#memos-api-v2-UserSetting) |  |  |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateUserSettingsResponse"></a>
+
+### UpdateUserSettingsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| settings | [UserSetting](#memos-api-v2-UserSetting) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-User"></a>
 
 ### User
@@ -533,6 +599,25 @@
 
 
 
+
+<a name="memos-api-v2-UserSetting"></a>
+
+### UserSetting
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | The name of the user. Format: users/{username} |
+| locale | [string](#string) |  | The preferred locale of the user. |
+| appearance | [string](#string) |  | The preferred appearance of the user. |
+| memo_visibility | [string](#string) |  | The default visibility of the memo. |
+| telegram_user_id | [string](#string) |  | The telegram user id of the user. |
+
+
+
+
+
  
 
 
@@ -565,6 +650,8 @@
 | CreateUser | [CreateUserRequest](#memos-api-v2-CreateUserRequest) | [CreateUserResponse](#memos-api-v2-CreateUserResponse) | CreateUser creates a new user. |
 | UpdateUser | [UpdateUserRequest](#memos-api-v2-UpdateUserRequest) | [UpdateUserResponse](#memos-api-v2-UpdateUserResponse) | UpdateUser updates a user. |
 | DeleteUser | [DeleteUserRequest](#memos-api-v2-DeleteUserRequest) | [DeleteUserResponse](#memos-api-v2-DeleteUserResponse) | DeleteUser deletes a user. |
+| GetUserSettings | [GetUserSettingsRequest](#memos-api-v2-GetUserSettingsRequest) | [GetUserSettingsResponse](#memos-api-v2-GetUserSettingsResponse) |  |
+| UpdateUserSettings | [UpdateUserSettingsRequest](#memos-api-v2-UpdateUserSettingsRequest) | [UpdateUserSettingsResponse](#memos-api-v2-UpdateUserSettingsResponse) |  |
 | ListUserAccessTokens | [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest) | [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse) | ListUserAccessTokens returns a list of access tokens for a user. |
 | CreateUserAccessToken | [CreateUserAccessTokenRequest](#memos-api-v2-CreateUserAccessTokenRequest) | [CreateUserAccessTokenResponse](#memos-api-v2-CreateUserAccessTokenResponse) | CreateUserAccessToken creates a new access token for a user. |
 | DeleteUserAccessToken | [DeleteUserAccessTokenRequest](#memos-api-v2-DeleteUserAccessTokenRequest) | [DeleteUserAccessTokenResponse](#memos-api-v2-DeleteUserAccessTokenResponse) | DeleteUserAccessToken deletes an access token for a user. |

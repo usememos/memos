@@ -187,6 +187,94 @@ func (s *APIV2Service) DeleteUser(ctx context.Context, request *apiv2pb.DeleteUs
 	return &apiv2pb.DeleteUserResponse{}, nil
 }
 
+func (s *APIV2Service) GetUserSettings(ctx context.Context, _ *apiv2pb.GetUserSettingsRequest) (*apiv2pb.GetUserSettingsResponse, error) {
+	user, err := getCurrentUser(ctx, s.Store)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+
+	userSettings, err := s.Store.ListUserSettingsV1(ctx, &store.FindUserSettingV1{
+		UserID: &user.ID,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)
+	}
+	userSetting := &apiv2pb.UserSetting{}
+	for _, setting := range userSettings {
+		if setting.Key == storepb.UserSettingKey_USER_SETTING_LOCALE {
+			userSetting.Locale = setting.GetLocale()
+		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_APPEARANCE {
+			userSetting.Appearance = setting.GetAppearance()
+		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY {
+			userSetting.MemoVisibility = setting.GetMemoVisibility()
+		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID {
+			userSetting.TelegramUserId = setting.GetTelegramUserId()
+		}
+	}
+	return &apiv2pb.GetUserSettingsResponse{
+		Settings: userSetting,
+	}, nil
+}
+
+func (s *APIV2Service) UpdateUserSettings(ctx context.Context, request *apiv2pb.UpdateUserSettingsRequest) (*apiv2pb.UpdateUserSettingsResponse, error) {
+	user, err := getCurrentUser(ctx, s.Store)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+
+	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "update mask is empty")
+	}
+
+	for _, field := range request.UpdateMask.Paths {
+		if field == "locale" {
+			if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+				UserId: user.ID,
+				Key:    storepb.UserSettingKey_USER_SETTING_LOCALE,
+				Value: &storepb.UserSetting_Locale{
+					Locale: request.Settings.Locale,
+				},
+			}); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
+			}
+		} else if field == "appearance" {
+			if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+				UserId: user.ID,
+				Key:    storepb.UserSettingKey_USER_SETTING_APPEARANCE,
+				Value: &storepb.UserSetting_Appearance{
+					Appearance: request.Settings.Appearance,
+				},
+			}); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
+			}
+		} else if field == "memo_visibility" {
+			if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+				UserId: user.ID,
+				Key:    storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY,
+				Value: &storepb.UserSetting_MemoVisibility{
+					MemoVisibility: request.Settings.MemoVisibility,
+				},
+			}); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
+			}
+		} else if field == "telegram_user_id" {
+			if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+				UserId: user.ID,
+				Key:    storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID,
+				Value: &storepb.UserSetting_TelegramUserId{
+					TelegramUserId: request.Settings.TelegramUserId,
+				},
+			}); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
+			}
+		} else {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid update path: %s", field)
+		}
+	}
+
+	return &apiv2pb.UpdateUserSettingsResponse{}, nil
+}
+
 func (s *APIV2Service) ListUserAccessTokens(ctx context.Context, request *apiv2pb.ListUserAccessTokensRequest) (*apiv2pb.ListUserAccessTokensResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {

@@ -76,8 +76,8 @@ func (s *APIV2Service) UpdateWebhook(ctx context.Context, request *apiv2pb.Updat
 	}
 
 	update := &store.UpdateWebhook{}
-	for _, path := range request.UpdateMask.Paths {
-		switch path {
+	for _, field := range request.UpdateMask.Paths {
+		switch field {
 		case "row_status":
 			rowStatus := storepb.RowStatus(storepb.RowStatus_value[request.Webhook.RowStatus.String()])
 			update.RowStatus = &rowStatus
