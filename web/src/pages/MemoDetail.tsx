@@ -114,7 +114,7 @@ const MemoDetail = () => {
       <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-zinc-100 dark:bg-zinc-900">
         <div className="relative w-full h-auto mx-auto flex flex-col justify-start items-center bg-white dark:bg-zinc-700">
           <div className="w-full flex flex-col justify-start items-center pt-16 pb-8">
-            <UserAvatar className="!w-20 h-auto mb-2 drop-shadow" avatarUrl={systemStatus.customizedProfile.logoUrl} />
+            <UserAvatar className="!w-20 h-20 mb-2 drop-shadow" avatarUrl={systemStatus.customizedProfile.logoUrl} />
             <p className="text-3xl text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
           </div>
           <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4 pb-6">
@@ -145,7 +145,7 @@ const MemoDetail = () => {
                 <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
                   <Tooltip title={"Creator"} placement="top">
                     <span className="flex flex-row justify-start items-center">
-                      <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator?.avatarUrl} />
+                      <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator?.avatarUrl} />
                       <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator?.nickname}</span>
                     </span>
                   </Tooltip>

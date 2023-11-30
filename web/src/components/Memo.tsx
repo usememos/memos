@@ -303,7 +303,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                 <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
                   <Tooltip title={"Creator"} placement="top">
                     <span className="flex flex-row justify-start items-center">
-                      <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
+                      <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator.avatarUrl} />
                       <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">
                         {creator.nickname || extractUsernameFromName(creator.name)}
                       </span>
