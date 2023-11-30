@@ -1,5 +1,5 @@
 import { camelCase } from "lodash-es";
-import { userServiceClient } from "@/grpcweb";
+import { authServiceClient, userServiceClient } from "@/grpcweb";
 import * as api from "@/helpers/api";
 import storage from "@/helpers/storage";
 import { getSystemColorScheme } from "@/helpers/utils";
@@ -78,6 +78,11 @@ const doSignOut = async () => {
 const fetchCurrentUser = async () => {
   const userId = localStorage.getItem("userId");
   if (userId) {
+    const { ok } = await authServiceClient.getAuthStatus({});
+    if (!ok) {
+      localStorage.removeItem("userId");
+      return;
+    }
     const { data } = await api.getUserById(Number(userId));
     const user = convertResponseModelUser(data);
     if (user) {

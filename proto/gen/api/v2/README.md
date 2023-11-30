@@ -13,6 +13,12 @@
   
     - [ActivityService](#memos-api-v2-ActivityService)
   
+- [api/v2/auth_service.proto](#api_v2_auth_service-proto)
+    - [GetAuthStatusRequest](#memos-api-v2-GetAuthStatusRequest)
+    - [GetAuthStatusResponse](#memos-api-v2-GetAuthStatusResponse)
+  
+    - [AuthService](#memos-api-v2-AuthService)
+  
 - [api/v2/common.proto](#api_v2_common-proto)
     - [RowStatus](#memos-api-v2-RowStatus)
   
@@ -241,6 +247,57 @@
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
 | GetActivity | [GetActivityRequest](#memos-api-v2-GetActivityRequest) | [GetActivityResponse](#memos-api-v2-GetActivityResponse) |  |
+
+ 
+
+
+
+<a name="api_v2_auth_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/auth_service.proto
+
+
+
+<a name="memos-api-v2-GetAuthStatusRequest"></a>
+
+### GetAuthStatusRequest
+
+
+
+
+
+
+
+<a name="memos-api-v2-GetAuthStatusResponse"></a>
+
+### GetAuthStatusResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| ok | [bool](#bool) |  |  |
+
+
+
+
+
+ 
+
+ 
+
+ 
+
+
+<a name="memos-api-v2-AuthService"></a>
+
+### AuthService
+
+
+| Method Name | Request Type | Response Type | Description |
+| ----------- | ------------ | ------------- | ------------|
+| GetAuthStatus | [GetAuthStatusRequest](#memos-api-v2-GetAuthStatusRequest) | [GetAuthStatusResponse](#memos-api-v2-GetAuthStatusResponse) |  |
 
  
 

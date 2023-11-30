@@ -68,6 +68,9 @@ func (in *GRPCAuthInterceptor) AuthenticationInterceptor(ctx context.Context, re
 	if user == nil {
 		return nil, errors.Errorf("user %q not exists", username)
 	}
+	if user.RowStatus == store.Archived {
+		return nil, errors.Errorf("user %q is archived", username)
+	}
 	if isOnlyForAdminAllowedMethod(serverInfo.FullMethod) && user.Role != store.RoleHost && user.Role != store.RoleAdmin {
 		return nil, errors.Errorf("user %q is not admin", username)
 	}
