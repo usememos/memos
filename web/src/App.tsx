@@ -6,7 +6,6 @@ import storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import useNavigateTo from "./hooks/useNavigateTo";
 import Loading from "./pages/Loading";
-import store from "./store";
 import { useGlobalStore } from "./store/module";
 import { useUserV1Store } from "./store/v1";
 
@@ -28,9 +27,11 @@ const App = () => {
 
   useEffect(() => {
     const initialState = async () => {
-      const { user } = store.getState().user;
-      if (user) {
-        await userV1Store.getOrFetchUserByUsername(user.username);
+      try {
+        await userV1Store.fetchCurrentUser();
+        console.log("here");
+      } catch (error) {
+        // Skip.
       }
       setLoading(false);
     };

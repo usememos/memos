@@ -1,14 +1,28 @@
 import { create } from "zustand";
-import { userServiceClient } from "@/grpcweb";
-import { User } from "@/types/proto/api/v2/user_service";
+import { authServiceClient, userServiceClient } from "@/grpcweb";
+import { User, UserSetting } from "@/types/proto/api/v2/user_service";
 import { UserNamePrefix, extractUsernameFromName } from "./resourceName";
 
 interface UserV1Store {
   userMapByUsername: Record<string, User>;
+  currentUser?: User;
+  userSetting?: UserSetting;
   getOrFetchUserByUsername: (username: string) => Promise<User>;
   getUserByUsername: (username: string) => User;
   updateUser: (user: Partial<User>, updateMask: string[]) => Promise<User>;
+  deleteUser: (name: string) => Promise<void>;
+  fetchCurrentUser: () => Promise<User>;
+  setCurrentUser: (user: User) => void;
+  updateUserSetting: (userSetting: Partial<UserSetting>, updateMark: string[]) => Promise<UserSetting>;
 }
+
+const getDefaultUserSetting = () => {
+  return UserSetting.fromPartial({
+    locale: "en",
+    appearance: "auto",
+    memoVisibility: "PRIVATE",
+  });
+};
 
 // Request cache is used to prevent multiple requests.
 const requestCache = new Map<string, Promise<any>>();
@@ -56,5 +70,39 @@ export const useUserV1Store = create<UserV1Store>()((set, get) => ({
     userMap[username] = updatedUser;
     set(userMap);
     return updatedUser;
+  },
+  deleteUser: async (name: string) => {
+    await userServiceClient.deleteUser({
+      name,
+    });
+  },
+  fetchCurrentUser: async () => {
+    const { user } = await authServiceClient.getAuthStatus({});
+    if (!user) {
+      throw new Error("User not found");
+    }
+    set({ currentUser: user });
+    const { setting } = await userServiceClient.getUserSetting({});
+    set({
+      userSetting: UserSetting.fromPartial({
+        ...getDefaultUserSetting(),
+        ...setting,
+      }),
+    });
+    return user;
+  },
+  setCurrentUser: (user: User) => {
+    set({ currentUser: user });
+  },
+  updateUserSetting: async (userSetting: Partial<UserSetting>, updateMask: string[]) => {
+    const { setting: updatedUserSetting } = await userServiceClient.updateUserSetting({
+      setting: userSetting,
+      updateMask: updateMask,
+    });
+    if (!updatedUserSetting) {
+      throw new Error("User setting not found");
+    }
+    set({ userSetting: updatedUserSetting });
+    return updatedUserSetting;
   },
 }));

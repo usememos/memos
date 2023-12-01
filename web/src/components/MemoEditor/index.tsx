@@ -8,9 +8,10 @@ import { TAB_SPACE_WIDTH, UNKNOWN_ID, VISIBILITY_SELECTOR_ITEMS } from "@/helper
 import { clearContentQueryParam } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { getMatchedNodes } from "@/labs/marked";
-import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore, useUserStore } from "@/store/module";
+import { useFilterStore, useGlobalStore, useMemoStore, useResourceStore, useTagStore } from "@/store/module";
+import { useUserV1Store } from "@/store/v1";
 import { Resource } from "@/types/proto/api/v2/resource_service";
-import { User_Role } from "@/types/proto/api/v2/user_service";
+import { UserSetting, User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateMemoRelationDialog from "../CreateMemoRelationDialog";
 import showCreateResourceDialog from "../CreateResourceDialog";
@@ -50,7 +51,7 @@ const MemoEditor = (props: Props) => {
   const {
     state: { systemStatus },
   } = useGlobalStore();
-  const userStore = useUserStore();
+  const userV1Store = useUserV1Store();
   const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const tagStore = useTagStore();
@@ -66,8 +67,7 @@ const MemoEditor = (props: Props) => {
   const [hasContent, setHasContent] = useState<boolean>(false);
   const [isInIME, setIsInIME] = useState(false);
   const editorRef = useRef<EditorRefActions>(null);
-  const user = userStore.state.user as User;
-  const setting = user.setting;
+  const userSetting = userV1Store.userSetting as UserSetting;
   const referenceRelations = memoId
     ? state.relationList.filter(
         (relation) => relation.memoId === memoId && relation.relatedMemoId !== memoId && relation.type === "REFERENCE"
@@ -80,15 +80,15 @@ const MemoEditor = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    let visibility = setting.memoVisibility;
+    let visibility = userSetting.memoVisibility;
     if (systemStatus.disablePublicMemos && visibility === "PUBLIC") {
       visibility = "PRIVATE";
     }
     setState((prevState) => ({
       ...prevState,
-      memoVisibility: visibility,
+      memoVisibility: visibility as Visibility,
     }));
-  }, [setting.memoVisibility, systemStatus.disablePublicMemos]);
+  }, [userSetting.memoVisibility, systemStatus.disablePublicMemos]);
 
   useEffect(() => {
     if (memoId) {

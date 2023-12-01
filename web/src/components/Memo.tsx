@@ -7,7 +7,7 @@ import { UNKNOWN_ID } from "@/helpers/consts";
 import { getRelativeTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
+import { useFilterStore, useMemoStore } from "@/store/module";
 import { useUserV1Store, extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
@@ -36,7 +36,6 @@ const Memo: React.FC<Props> = (props: Props) => {
   const navigateTo = useNavigateTo();
   const { i18n } = useTranslation();
   const filterStore = useFilterStore();
-  const userStore = useUserStore();
   const memoStore = useMemoStore();
   const userV1Store = useUserV1Store();
   const user = useCurrentUser();
@@ -209,11 +208,6 @@ const Memo: React.FC<Props> = (props: Props) => {
 
   const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
     if (readonly) {
-      return;
-    }
-
-    const loginUser = userStore.state.user;
-    if (loginUser && !loginUser.localSetting.enableDoubleClickEditing) {
       return;
     }
     const targetEl = e.target as HTMLElement;

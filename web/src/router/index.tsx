@@ -1,7 +1,7 @@
 import { lazy } from "react";
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
-import { initialGlobalState, initialUserState } from "@/store/module";
+import { initialGlobalState } from "@/store/module";
 
 const Root = lazy(() => import("@/layouts/Root"));
 const SignIn = lazy(() => import("@/pages/SignIn"));
@@ -24,20 +24,6 @@ const initialGlobalStateLoader = async () => {
     await initialGlobalState();
   } catch (error) {
     // do nothing.
-  }
-  return null;
-};
-
-const initialUserStateLoader = async (redirectWhenNotFound = true) => {
-  let user = undefined;
-  try {
-    user = await initialUserState();
-  } catch (error) {
-    // do nothing.
-  }
-
-  if (!user && redirectWhenNotFound) {
-    return redirect("/explore");
   }
   return null;
 };
@@ -67,54 +53,44 @@ const router = createBrowserRouter([
           {
             path: "",
             element: <Home />,
-            loader: () => initialUserStateLoader(),
           },
           {
             path: "review",
             element: <DailyReview />,
-            loader: () => initialUserStateLoader(),
           },
           {
             path: "resources",
             element: <Resources />,
-            loader: () => initialUserStateLoader(),
           },
           {
             path: "inbox",
             element: <Inboxes />,
-            loader: () => initialUserStateLoader(),
           },
           {
             path: "archived",
             element: <Archived />,
-            loader: () => initialUserStateLoader(),
           },
           {
             path: "setting",
             element: <Setting />,
-            loader: () => initialUserStateLoader(),
           },
           {
             path: "explore",
             element: <Explore />,
-            loader: () => initialUserStateLoader(false),
           },
         ],
       },
       {
         path: "/m/:memoId",
         element: <MemoDetail />,
-        loader: () => initialUserStateLoader(false),
       },
       {
         path: "/m/:memoId/embed",
         element: <EmbedMemo />,
-        loader: () => initialUserStateLoader(false),
       },
       {
         path: "/u/:username",
         element: <UserProfile />,
-        loader: () => initialUserStateLoader(false),
       },
       {
         path: "*",

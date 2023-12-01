@@ -1,6 +1,7 @@
+import * as api from "@/helpers/api";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useGlobalStore, useUserStore } from "@/store/module";
+import { useGlobalStore } from "@/store/module";
 import { extractUsernameFromName } from "@/store/v1";
 import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -13,7 +14,6 @@ const UserBanner = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const globalStore = useGlobalStore();
-  const userStore = useUserStore();
   const { systemStatus } = globalStore.state;
   const user = useCurrentUser();
   const title = user ? user.nickname : systemStatus.customizedProfile.name || "memos";
@@ -27,7 +27,8 @@ const UserBanner = () => {
   };
 
   const handleSignOutBtnClick = async () => {
-    await userStore.doSignOut();
+    await api.signout();
+    localStorage.removeItem("userId");
     window.location.href = "/auth";
   };
 

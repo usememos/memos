@@ -12,7 +12,7 @@ interface Props extends DialogProps {
 const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
   const { user, destroy } = props;
   const t = useTranslate();
-  const userStore = useUserV1Store();
+  const userV1Store = useUserV1Store();
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordAgain, setNewPasswordAgain] = useState("");
 
@@ -47,7 +47,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
     }
 
     try {
-      await userStore.updateUser(
+      await userV1Store.updateUser(
         {
           name: `${UserNamePrefix}${user.username}`,
           password: newPassword,

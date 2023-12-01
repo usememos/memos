@@ -2,8 +2,8 @@ import { isEqual } from "lodash-es";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { convertFileToBase64 } from "@/helpers/utils";
-import { useUserStore } from "@/store/module";
-import { UserNamePrefix } from "@/store/v1";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { UserNamePrefix, useUserV1Store } from "@/store/v1";
 import { User as UserPb } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
@@ -21,13 +21,13 @@ interface State {
 
 const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
   const t = useTranslate();
-  const userStore = useUserStore();
-  const user = userStore.state.user as User;
+  const currentUser = useCurrentUser();
+  const userV1Store = useUserV1Store();
   const [state, setState] = useState<State>({
-    avatarUrl: user.avatarUrl,
-    username: user.username,
-    nickname: user.nickname,
-    email: user.email,
+    avatarUrl: currentUser.avatarUrl,
+    username: currentUser.name.replace(UserNamePrefix, ""),
+    nickname: currentUser.nickname,
+    email: currentUser.email,
   });
 
   useEffect(() => {
@@ -95,24 +95,23 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     }
 
     try {
-      const user = userStore.getState().user as User;
       const updateMask = [];
-      if (!isEqual(user.avatarUrl, state.avatarUrl)) {
+      if (!isEqual(currentUser.avatarUrl, state.avatarUrl)) {
         updateMask.push("avatar_url");
       }
-      if (!isEqual(user.nickname, state.nickname)) {
+      if (!isEqual(currentUser.nickname, state.nickname)) {
         updateMask.push("nickname");
       }
-      if (!isEqual(user.username, state.username)) {
+      if (!isEqual(currentUser.name.replace(UserNamePrefix, ""), state.username)) {
         updateMask.push("username");
       }
-      if (!isEqual(user.email, state.email)) {
+      if (!isEqual(currentUser.email, state.email)) {
         updateMask.push("email");
       }
-      await userStore.patchUser(
+      await userV1Store.updateUser(
         UserPb.fromPartial({
           name: `${UserNamePrefix}${state.username}`,
-          id: user.id,
+          id: currentUser.id,
           nickname: state.nickname,
           email: state.email,
           avatarUrl: state.avatarUrl,
