@@ -295,9 +295,9 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	// I don't know why delete memo needs to vacuum. so I commented out.
 	// REVIEWERS LOOK AT ME: please check this.
 
-	// if err := d.Vacuum(ctx); err != nil {
-	// 	return err
-	// }
+	if err := d.Vacuum(ctx); err != nil {
+		return err
+	}
 
 	return nil
 }
