@@ -10,14 +10,80 @@ import (
 )
 
 func (d *DB) UpsertMemoOrganizer(ctx context.Context, upsert *store.MemoOrganizer) (*store.MemoOrganizer, error) {
-	return nil, nil
+	qb := squirrel.Insert("memo_organizer").
+		Columns("memo_id", "user_id", "pinned").
+		Values(upsert.MemoID, upsert.UserID, upsert.Pinned).
+		// Suffix("ON CONFLICT (memo_id, user_id) DO UPDATE SET pinned = EXCLUDED.pinned").
+		PlaceholderFormat(squirrel.Dollar)
+
+	stmt, args, err := qb.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err = d.db.ExecContext(ctx, stmt, args...); err != nil {
+		return nil, err
+	}
+
+	return upsert, nil
 }
 
 func (d *DB) ListMemoOrganizer(ctx context.Context, find *store.FindMemoOrganizer) ([]*store.MemoOrganizer, error) {
-	return nil, nil
+	qb := squirrel.Select("memo_id", "user_id", "pinned").
+		From("memo_organizer").
+		Where("1 = 1").
+		PlaceholderFormat(squirrel.Dollar)
+
+	if find.MemoID != 0 {
+		qb = qb.Where(squirrel.Eq{"memo_id": find.MemoID})
+	}
+	if find.UserID != 0 {
+		qb = qb.Where(squirrel.Eq{"user_id": find.UserID})
+	}
+
+	query, args, err := qb.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := d.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []*store.MemoOrganizer
+	for rows.Next() {
+		memoOrganizer := &store.MemoOrganizer{}
+		if err := rows.Scan(&memoOrganizer.MemoID, &memoOrganizer.UserID, &memoOrganizer.Pinned); err != nil {
+			return nil, err
+		}
+		list = append(list, memoOrganizer)
+	}
+
+	return list, rows.Err()
 }
 
 func (d *DB) DeleteMemoOrganizer(ctx context.Context, delete *store.DeleteMemoOrganizer) error {
+	qb := squirrel.Delete("memo_organizer").
+		PlaceholderFormat(squirrel.Dollar)
+
+	if v := delete.MemoID; v != nil {
+		qb = qb.Where(squirrel.Eq{"memo_id": *v})
+	}
+	if v := delete.UserID; v != nil {
+		qb = qb.Where(squirrel.Eq{"user_id": *v})
+	}
+
+	stmt, args, err := qb.ToSql()
+	if err != nil {
+		return err
+	}
+
+	if _, err = d.db.ExecContext(ctx, stmt, args...); err != nil {
+		return err
+	}
+
 	return nil
 }
 
