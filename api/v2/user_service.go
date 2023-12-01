@@ -187,7 +187,7 @@ func (s *APIV2Service) DeleteUser(ctx context.Context, request *apiv2pb.DeleteUs
 	return &apiv2pb.DeleteUserResponse{}, nil
 }
 
-func (s *APIV2Service) GetUserSettings(ctx context.Context, _ *apiv2pb.GetUserSettingsRequest) (*apiv2pb.GetUserSettingsResponse, error) {
+func (s *APIV2Service) GetUserSetting(ctx context.Context, _ *apiv2pb.GetUserSettingRequest) (*apiv2pb.GetUserSettingResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -199,24 +199,24 @@ func (s *APIV2Service) GetUserSettings(ctx context.Context, _ *apiv2pb.GetUserSe
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)
 	}
-	userSetting := &apiv2pb.UserSetting{}
+	userSettingMessage := &apiv2pb.UserSetting{}
 	for _, setting := range userSettings {
 		if setting.Key == storepb.UserSettingKey_USER_SETTING_LOCALE {
-			userSetting.Locale = setting.GetLocale()
+			userSettingMessage.Locale = setting.GetLocale()
 		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_APPEARANCE {
-			userSetting.Appearance = setting.GetAppearance()
+			userSettingMessage.Appearance = setting.GetAppearance()
 		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY {
-			userSetting.MemoVisibility = setting.GetMemoVisibility()
+			userSettingMessage.MemoVisibility = setting.GetMemoVisibility()
 		} else if setting.Key == storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID {
-			userSetting.TelegramUserId = setting.GetTelegramUserId()
+			userSettingMessage.TelegramUserId = setting.GetTelegramUserId()
 		}
 	}
-	return &apiv2pb.GetUserSettingsResponse{
-		Settings: userSetting,
+	return &apiv2pb.GetUserSettingResponse{
+		Setting: userSettingMessage,
 	}, nil
 }
 
-func (s *APIV2Service) UpdateUserSettings(ctx context.Context, request *apiv2pb.UpdateUserSettingsRequest) (*apiv2pb.UpdateUserSettingsResponse, error) {
+func (s *APIV2Service) UpdateUserSetting(ctx context.Context, request *apiv2pb.UpdateUserSettingRequest) (*apiv2pb.UpdateUserSettingResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
@@ -232,7 +232,7 @@ func (s *APIV2Service) UpdateUserSettings(ctx context.Context, request *apiv2pb.
 				UserId: user.ID,
 				Key:    storepb.UserSettingKey_USER_SETTING_LOCALE,
 				Value: &storepb.UserSetting_Locale{
-					Locale: request.Settings.Locale,
+					Locale: request.Setting.Locale,
 				},
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
@@ -242,7 +242,7 @@ func (s *APIV2Service) UpdateUserSettings(ctx context.Context, request *apiv2pb.
 				UserId: user.ID,
 				Key:    storepb.UserSettingKey_USER_SETTING_APPEARANCE,
 				Value: &storepb.UserSetting_Appearance{
-					Appearance: request.Settings.Appearance,
+					Appearance: request.Setting.Appearance,
 				},
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
@@ -252,7 +252,7 @@ func (s *APIV2Service) UpdateUserSettings(ctx context.Context, request *apiv2pb.
 				UserId: user.ID,
 				Key:    storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY,
 				Value: &storepb.UserSetting_MemoVisibility{
-					MemoVisibility: request.Settings.MemoVisibility,
+					MemoVisibility: request.Setting.MemoVisibility,
 				},
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
@@ -262,7 +262,7 @@ func (s *APIV2Service) UpdateUserSettings(ctx context.Context, request *apiv2pb.
 				UserId: user.ID,
 				Key:    storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID,
 				Value: &storepb.UserSetting_TelegramUserId{
-					TelegramUserId: request.Settings.TelegramUserId,
+					TelegramUserId: request.Setting.TelegramUserId,
 				},
 			}); err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
@@ -272,7 +272,13 @@ func (s *APIV2Service) UpdateUserSettings(ctx context.Context, request *apiv2pb.
 		}
 	}
 
-	return &apiv2pb.UpdateUserSettingsResponse{}, nil
+	userSettingResponse, err := s.GetUserSetting(ctx, &apiv2pb.GetUserSettingRequest{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user setting: %v", err)
+	}
+	return &apiv2pb.UpdateUserSettingResponse{
+		Setting: userSettingResponse.Setting,
+	}, nil
 }
 
 func (s *APIV2Service) ListUserAccessTokens(ctx context.Context, request *apiv2pb.ListUserAccessTokensRequest) (*apiv2pb.ListUserAccessTokensResponse, error) {

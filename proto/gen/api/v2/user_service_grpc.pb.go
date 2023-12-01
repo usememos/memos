@@ -23,8 +23,8 @@ const (
 	UserService_CreateUser_FullMethodName            = "/memos.api.v2.UserService/CreateUser"
 	UserService_UpdateUser_FullMethodName            = "/memos.api.v2.UserService/UpdateUser"
 	UserService_DeleteUser_FullMethodName            = "/memos.api.v2.UserService/DeleteUser"
-	UserService_GetUserSettings_FullMethodName       = "/memos.api.v2.UserService/GetUserSettings"
-	UserService_UpdateUserSettings_FullMethodName    = "/memos.api.v2.UserService/UpdateUserSettings"
+	UserService_GetUserSetting_FullMethodName        = "/memos.api.v2.UserService/GetUserSetting"
+	UserService_UpdateUserSetting_FullMethodName     = "/memos.api.v2.UserService/UpdateUserSetting"
 	UserService_ListUserAccessTokens_FullMethodName  = "/memos.api.v2.UserService/ListUserAccessTokens"
 	UserService_CreateUserAccessToken_FullMethodName = "/memos.api.v2.UserService/CreateUserAccessToken"
 	UserService_DeleteUserAccessToken_FullMethodName = "/memos.api.v2.UserService/DeleteUserAccessToken"
@@ -42,8 +42,8 @@ type UserServiceClient interface {
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	// DeleteUser deletes a user.
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...grpc.CallOption) (*DeleteUserResponse, error)
-	GetUserSettings(ctx context.Context, in *GetUserSettingsRequest, opts ...grpc.CallOption) (*GetUserSettingsResponse, error)
-	UpdateUserSettings(ctx context.Context, in *UpdateUserSettingsRequest, opts ...grpc.CallOption) (*UpdateUserSettingsResponse, error)
+	GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*GetUserSettingResponse, error)
+	UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UpdateUserSettingResponse, error)
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(ctx context.Context, in *ListUserAccessTokensRequest, opts ...grpc.CallOption) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
@@ -96,18 +96,18 @@ func (c *userServiceClient) DeleteUser(ctx context.Context, in *DeleteUserReques
 	return out, nil
 }
 
-func (c *userServiceClient) GetUserSettings(ctx context.Context, in *GetUserSettingsRequest, opts ...grpc.CallOption) (*GetUserSettingsResponse, error) {
-	out := new(GetUserSettingsResponse)
-	err := c.cc.Invoke(ctx, UserService_GetUserSettings_FullMethodName, in, out, opts...)
+func (c *userServiceClient) GetUserSetting(ctx context.Context, in *GetUserSettingRequest, opts ...grpc.CallOption) (*GetUserSettingResponse, error) {
+	out := new(GetUserSettingResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserSetting_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *userServiceClient) UpdateUserSettings(ctx context.Context, in *UpdateUserSettingsRequest, opts ...grpc.CallOption) (*UpdateUserSettingsResponse, error) {
-	out := new(UpdateUserSettingsResponse)
-	err := c.cc.Invoke(ctx, UserService_UpdateUserSettings_FullMethodName, in, out, opts...)
+func (c *userServiceClient) UpdateUserSetting(ctx context.Context, in *UpdateUserSettingRequest, opts ...grpc.CallOption) (*UpdateUserSettingResponse, error) {
+	out := new(UpdateUserSettingResponse)
+	err := c.cc.Invoke(ctx, UserService_UpdateUserSetting_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -153,8 +153,8 @@ type UserServiceServer interface {
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	// DeleteUser deletes a user.
 	DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error)
-	GetUserSettings(context.Context, *GetUserSettingsRequest) (*GetUserSettingsResponse, error)
-	UpdateUserSettings(context.Context, *UpdateUserSettingsRequest) (*UpdateUserSettingsResponse, error)
+	GetUserSetting(context.Context, *GetUserSettingRequest) (*GetUserSettingResponse, error)
+	UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UpdateUserSettingResponse, error)
 	// ListUserAccessTokens returns a list of access tokens for a user.
 	ListUserAccessTokens(context.Context, *ListUserAccessTokensRequest) (*ListUserAccessTokensResponse, error)
 	// CreateUserAccessToken creates a new access token for a user.
@@ -180,11 +180,11 @@ func (UnimplementedUserServiceServer) UpdateUser(context.Context, *UpdateUserReq
 func (UnimplementedUserServiceServer) DeleteUser(context.Context, *DeleteUserRequest) (*DeleteUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteUser not implemented")
 }
-func (UnimplementedUserServiceServer) GetUserSettings(context.Context, *GetUserSettingsRequest) (*GetUserSettingsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method GetUserSettings not implemented")
+func (UnimplementedUserServiceServer) GetUserSetting(context.Context, *GetUserSettingRequest) (*GetUserSettingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserSetting not implemented")
 }
-func (UnimplementedUserServiceServer) UpdateUserSettings(context.Context, *UpdateUserSettingsRequest) (*UpdateUserSettingsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserSettings not implemented")
+func (UnimplementedUserServiceServer) UpdateUserSetting(context.Context, *UpdateUserSettingRequest) (*UpdateUserSettingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateUserSetting not implemented")
 }
 func (UnimplementedUserServiceServer) ListUserAccessTokens(context.Context, *ListUserAccessTokensRequest) (*ListUserAccessTokensResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListUserAccessTokens not implemented")
@@ -280,38 +280,38 @@ func _UserService_DeleteUser_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_GetUserSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetUserSettingsRequest)
+func _UserService_GetUserSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserSettingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).GetUserSettings(ctx, in)
+		return srv.(UserServiceServer).GetUserSetting(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_GetUserSettings_FullMethodName,
+		FullMethod: UserService_GetUserSetting_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).GetUserSettings(ctx, req.(*GetUserSettingsRequest))
+		return srv.(UserServiceServer).GetUserSetting(ctx, req.(*GetUserSettingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _UserService_UpdateUserSettings_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(UpdateUserSettingsRequest)
+func _UserService_UpdateUserSetting_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateUserSettingRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(UserServiceServer).UpdateUserSettings(ctx, in)
+		return srv.(UserServiceServer).UpdateUserSetting(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: UserService_UpdateUserSettings_FullMethodName,
+		FullMethod: UserService_UpdateUserSetting_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(UserServiceServer).UpdateUserSettings(ctx, req.(*UpdateUserSettingsRequest))
+		return srv.(UserServiceServer).UpdateUserSetting(ctx, req.(*UpdateUserSettingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -394,12 +394,12 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _UserService_DeleteUser_Handler,
 		},
 		{
-			MethodName: "GetUserSettings",
-			Handler:    _UserService_GetUserSettings_Handler,
+			MethodName: "GetUserSetting",
+			Handler:    _UserService_GetUserSetting_Handler,
 		},
 		{
-			MethodName: "UpdateUserSettings",
-			Handler:    _UserService_UpdateUserSettings_Handler,
+			MethodName: "UpdateUserSetting",
+			Handler:    _UserService_UpdateUserSetting_Handler,
 		},
 		{
 			MethodName: "ListUserAccessTokens",
