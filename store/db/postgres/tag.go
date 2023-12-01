@@ -10,14 +10,83 @@ import (
 )
 
 func (d *DB) UpsertTag(ctx context.Context, upsert *store.Tag) (*store.Tag, error) {
-	return nil, nil
+	builder := squirrel.Insert("tag").
+		Columns("name", "creator_id").
+		Values(upsert.Name, upsert.CreatorID). // on conflict is not necessary, as only the pair of name and creator_id is unique
+		PlaceholderFormat(squirrel.Dollar)
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	if _, err := d.db.ExecContext(ctx, query, args...); err != nil {
+		return nil, err
+	}
+
+	return upsert, nil
 }
 
 func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, error) {
-	return nil, nil
+	builder := squirrel.Select("name", "creator_id").From("tag").
+		Where("1 = 1").
+		OrderBy("name ASC").
+		PlaceholderFormat(squirrel.Dollar)
+
+	if find.CreatorID != 0 {
+		builder = builder.Where("creator_id = ?", find.CreatorID)
+	}
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return nil, err
+	}
+
+	rows, err := d.db.QueryContext(ctx, query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	list := []*store.Tag{}
+	for rows.Next() {
+		tag := &store.Tag{}
+		if err := rows.Scan(
+			&tag.Name,
+			&tag.CreatorID,
+		); err != nil {
+			return nil, err
+		}
+
+		list = append(list, tag)
+	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return list, nil
 }
 
 func (d *DB) DeleteTag(ctx context.Context, delete *store.DeleteTag) error {
+	builder := squirrel.Delete("tag").
+		Where(squirrel.Eq{"name": delete.Name, "creator_id": delete.CreatorID}).
+		PlaceholderFormat(squirrel.Dollar)
+
+	query, args, err := builder.ToSql()
+	if err != nil {
+		return err
+	}
+
+	result, err := d.db.ExecContext(ctx, query, args...)
+	if err != nil {
+		return err
+	}
+
+	if _, err = result.RowsAffected(); err != nil {
+		return err
+	}
+
 	return nil
 }
 
