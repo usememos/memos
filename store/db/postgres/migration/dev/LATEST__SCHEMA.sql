@@ -59,7 +59,8 @@ CREATE TABLE user_setting (
   user_id INT NOT NULL,
   key VARCHAR(255) NOT NULL,
   value TEXT NOT NULL,
-  UNIQUE(user_id, key)
+  UNIQUE(user_id, key),
+  FOREIGN KEY (user_id) REFERENCES "user"(id) ON DELETE CASCADE
 );
 
 -- memo
@@ -86,7 +87,9 @@ CREATE TABLE memo_relation (
   memo_id INT NOT NULL,
   related_memo_id INT NOT NULL,
   type VARCHAR(256) NOT NULL,
-  UNIQUE(memo_id, related_memo_id, type)
+  UNIQUE(memo_id, related_memo_id, type),
+  FOREIGN KEY (memo_id) REFERENCES memo(id) ON DELETE CASCADE,
+  FOREIGN KEY (related_memo_id) REFERENCES memo(id) ON DELETE CASCADE
 );
 
 -- resource
