@@ -118,15 +118,15 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 
 	if v := find.VisibilityList; len(v) != 0 {
-		visibilityStrings := make([]string, len(v))
+		placeholders := make([]string, len(v))
+		args := make([]interface{}, len(v))
 		for i, visibility := range v {
-			visibilityStrings[i] = string(visibility)
+			placeholders[i] = "?"
+			args[i] = visibility // Assuming visibility can be directly used as an argument
 		}
-
-		inClause := "'" + strings.Join(visibilityStrings, "','") + "'"
-		builder = builder.Where("memo.visibility IN (" + inClause + ")")
+		inClause := strings.Join(placeholders, ",")
+		builder = builder.Where("memo.visibility IN ("+inClause+")", args...)
 	}
-
 	// Add order by clauses
 	if find.OrderByPinned {
 		builder = builder.OrderBy("pinned DESC")
