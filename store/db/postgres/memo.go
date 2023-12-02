@@ -19,26 +19,32 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		PlaceholderFormat(squirrel.Dollar).
 		Columns("creator_id", "content", "visibility")
 
-	// Add values for the columns
+	// Add initial values for the columns
 	values := []interface{}{create.CreatorID, create.Content, create.Visibility}
-	builder = builder.Values(values...)
 
 	// Conditionally add other fields and values
 	if create.ID != 0 {
-		builder = builder.Columns("id").Values(create.ID)
+		builder = builder.Columns("id")
+		values = append(values, create.ID)
 	}
 
 	if create.CreatedTs != 0 {
-		builder = builder.Columns("created_ts").Values(squirrel.Expr("to_timestamp(?)", create.CreatedTs))
+		builder = builder.Columns("created_ts")
+		values = append(values, squirrel.Expr("to_timestamp(?)", create.CreatedTs))
 	}
 
 	if create.UpdatedTs != 0 {
-		builder = builder.Columns("updated_ts").Values(squirrel.Expr("to_timestamp(?)", create.UpdatedTs))
+		builder = builder.Columns("updated_ts")
+		values = append(values, squirrel.Expr("to_timestamp(?)", create.UpdatedTs))
 	}
 
 	if create.RowStatus != "" {
-		builder = builder.Columns("row_status").Values(create.RowStatus)
+		builder = builder.Columns("row_status")
+		values = append(values, create.RowStatus)
 	}
+
+	// Add all the values at once
+	builder = builder.Values(values...)
 
 	// Add the RETURNING clause to get the ID of the inserted row
 	builder = builder.Suffix("RETURNING id")
@@ -63,6 +69,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 	if memo == nil {
 		return nil, errors.Errorf("failed to create memo")
 	}
+
 	return memo, nil
 }
 
@@ -109,8 +116,15 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			builder = builder.Where("memo.content LIKE ?", "%"+s+"%")
 		}
 	}
+
 	if v := find.VisibilityList; len(v) != 0 {
-		builder = builder.Where("memo.visibility IN (?)", v)
+		visibilityStrings := make([]string, len(v))
+		for i, visibility := range v {
+			visibilityStrings[i] = string(visibility)
+		}
+
+		inClause := "'" + strings.Join(visibilityStrings, "','") + "'"
+		builder = builder.Where("memo.visibility IN (" + inClause + ")")
 	}
 
 	// Add order by clauses
