@@ -10,10 +10,13 @@ import (
 )
 
 func (d *DB) UpsertMemoOrganizer(ctx context.Context, upsert *store.MemoOrganizer) (*store.MemoOrganizer, error) {
+	pinnedValue := 0
+	if upsert.Pinned {
+		pinnedValue = 1
+	}
 	qb := squirrel.Insert("memo_organizer").
 		Columns("memo_id", "user_id", "pinned").
-		Values(upsert.MemoID, upsert.UserID, upsert.Pinned).
-		// Suffix("ON CONFLICT (memo_id, user_id) DO UPDATE SET pinned = EXCLUDED.pinned").
+		Values(upsert.MemoID, upsert.UserID, pinnedValue).
 		PlaceholderFormat(squirrel.Dollar)
 
 	stmt, args, err := qb.ToSql()
