@@ -3,9 +3,9 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"log"
 
+	// Import the PostgreSQL driver
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 	"github.com/usememos/memos/server/profile"
@@ -27,7 +27,7 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	db, err := sql.Open("postgres", profile.DSN)
 	if err != nil {
 		log.Printf("Failed to open database: %s", err)
-		return nil, fmt.Errorf("failed to open database: %v", err)
+		return nil, errors.Wrapf(err, "failed to open database: %s", profile.DSN)
 	}
 
 	var driver store.Driver = &DB{
@@ -77,12 +77,10 @@ func (*DB) BackupTo(context.Context, string) error {
 	return errors.New("Please use postgresdump to backup")
 }
 
-func (d *DB) GetCurrentDBSize(ctx context.Context) (int64, error) {
+func (d *DB) GetCurrentDBSize(context.Context) (int64, error) {
 	return 0, errors.New("unimplemented")
 }
 
 func (d *DB) Close() error {
 	return d.db.Close()
 }
-
-//=======================================================

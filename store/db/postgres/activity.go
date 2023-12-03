@@ -25,7 +25,7 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 		Columns("creator_id", "type", "level", "payload").
 		PlaceholderFormat(squirrel.Dollar)
 
-	values := []interface{}{create.CreatorID, create.Type.String(), create.Level.String(), payloadString}
+	values := []any{create.CreatorID, create.Type.String(), create.Level.String(), payloadString}
 
 	if create.ID != 0 {
 		qb = qb.Columns("id")
