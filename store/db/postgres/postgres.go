@@ -78,7 +78,7 @@ func (*DB) BackupTo(context.Context, string) error {
 	return errors.New("Please use postgresdump to backup")
 }
 
-func (_ *DB) GetCurrentDBSize(context.Context) (int64, error) {
+func (*DB) GetCurrentDBSize(context.Context) (int64, error) {
 	return 0, errors.New("unimplemented")
 }
 
