@@ -20,8 +20,8 @@ const renderer = (rawStr: string) => {
   }
   const headerContents = splitPipeDelimiter(matchResult[1]);
   const cellStyles: CSSProperties[] = splitPipeDelimiter(matchResult[2]).map((cell) => {
-    const left = cell.trim().startsWith(":");
-    const right = cell.trim().endsWith(":");
+    const left = cell.startsWith(":");
+    const right = cell.endsWith(":");
     // github markdown spec says that by default, content is left aligned
     return {
       textAlign: left && right ? "center" : right ? "right" : "left",
