@@ -17,6 +17,7 @@ import Paragraph from "./Paragraph";
 import PlainLink from "./PlainLink";
 import PlainText from "./PlainText";
 import Strikethrough from "./Strikethrough";
+import Table from "./Table";
 import Tag from "./Tag";
 import TodoList from "./TodoList";
 import UnorderedList from "./UnorderedList";
@@ -32,6 +33,7 @@ export const blockElementParserList = [
   CodeBlock,
   Blockquote,
   Heading,
+  Table,
   TodoList,
   DoneList,
   OrderedList,
