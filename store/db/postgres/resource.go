@@ -14,7 +14,7 @@ import (
 
 func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store.Resource, error) {
 	qb := squirrel.Insert("resource").Columns("filename", "blob", "external_link", "type", "size", "creator_id", "internal_path")
-	values := []interface{}{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath}
+	values := []any{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath}
 
 	if create.ID != 0 {
 		qb = qb.Columns("id")

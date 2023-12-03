@@ -120,9 +120,9 @@ func vacuumMemoRelations(ctx context.Context, tx *sql.Tx) error {
 	}
 
 	// Combine the arguments for both instances of the same subquery
-	combinedArgs := append(args, subArgsMemo...)
+	args = append(args, subArgsMemo...)
 
 	// Execute the query
-	_, err = tx.ExecContext(ctx, query, combinedArgs...)
+	_, err = tx.ExecContext(ctx, query, args...)
 	return err
 }

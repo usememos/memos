@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"log"
 
-	// Import the PostgreSQL driver
+	// Import the PostgreSQL driver.
 	_ "github.com/lib/pq"
 	"github.com/pkg/errors"
 
@@ -78,7 +78,7 @@ func (*DB) BackupTo(context.Context, string) error {
 	return errors.New("Please use postgresdump to backup")
 }
 
-func (d *DB) GetCurrentDBSize(context.Context) (int64, error) {
+func (_ *DB) GetCurrentDBSize(context.Context) (int64, error) {
 	return 0, errors.New("unimplemented")
 }
 

@@ -21,7 +21,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 		Columns("creator_id", "content", "visibility")
 
 	// Add initial values for the columns
-	values := []interface{}{create.CreatorID, create.Content, create.Visibility}
+	values := []any{create.CreatorID, create.Content, create.Visibility}
 
 	// Conditionally add other fields and values
 	if create.ID != 0 {
@@ -120,7 +120,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	if v := find.VisibilityList; len(v) != 0 {
 		placeholders := make([]string, len(v))
-		args := make([]interface{}, len(v))
+		args := make([]any, len(v))
 		for i, visibility := range v {
 			placeholders[i] = "?"
 			args[i] = visibility // Assuming visibility can be directly used as an argument
