@@ -3,7 +3,7 @@ import { inlineElementParserList } from ".";
 import { marked } from "..";
 import { matcher } from "../matcher";
 
-export const TABLE_REG = /^((?:\|[^|\r\n]+)+)\|\r?\n((?:[ -:]*\|[ -:]*)+)((?:\r?\n\|[^\r\n]+)+)/;
+export const TABLE_REG = /^((?:\|[^|\r\n]+)+)\|?\r?\n([ -:]*(?:\|[ -:]*)+)((?:\r?\n\|[^\r\n]+)+)/;
 
 const splitMarkdownTablePipes = (lineString: string) => {
   // should take care of escaped pipes, like
