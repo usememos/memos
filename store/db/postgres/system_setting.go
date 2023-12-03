@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/Masterminds/squirrel"
+
 	"github.com/usememos/memos/store"
 )
 

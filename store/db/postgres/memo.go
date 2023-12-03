@@ -9,6 +9,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/store"
 )
@@ -309,11 +310,7 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	// I don't know why delete memo needs to vacuum. so I commented out.
 	// REVIEWERS LOOK AT ME: please check this.
 
-	if err := d.Vacuum(ctx); err != nil {
-		return err
-	}
-
-	return nil
+	return d.Vacuum(ctx)
 }
 
 func (d *DB) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]store.Visibility, error) {

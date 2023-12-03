@@ -5,13 +5,14 @@ import (
 	"time"
 
 	"github.com/Masterminds/squirrel"
+
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) CreateWebhook(ctx context.Context, create *storepb.Webhook) (*storepb.Webhook, error) {
 	qb := squirrel.Insert("webhook").Columns("name", "url", "creator_id")
-	values := []interface{}{create.Name, create.Url, create.CreatorId}
+	values := []any{create.Name, create.Url, create.CreatorId}
 
 	if create.Id != 0 {
 		qb = qb.Columns("id")

@@ -6,9 +6,10 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (d *DB) CreateInbox(ctx context.Context, create *store.Inbox) (*store.Inbox, error) {
@@ -39,7 +40,6 @@ func (d *DB) CreateInbox(ctx context.Context, create *store.Inbox) (*store.Inbox
 	}
 
 	return d.GetInbox(ctx, &store.FindInbox{ID: &id})
-
 }
 
 func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.Inbox, error) {
@@ -92,7 +92,6 @@ func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.I
 	}
 
 	return list, rows.Err()
-
 }
 
 func (d *DB) GetInbox(ctx context.Context, find *store.FindInbox) (*store.Inbox, error) {
@@ -104,7 +103,6 @@ func (d *DB) GetInbox(ctx context.Context, find *store.FindInbox) (*store.Inbox,
 		return nil, errors.Wrapf(nil, "unexpected inbox count: %d", len(list))
 	}
 	return list[0], nil
-
 }
 
 func (d *DB) UpdateInbox(ctx context.Context, update *store.UpdateInbox) (*store.Inbox, error) {
@@ -124,7 +122,6 @@ func (d *DB) UpdateInbox(ctx context.Context, update *store.UpdateInbox) (*store
 	}
 
 	return d.GetInbox(ctx, &store.FindInbox{ID: &update.ID})
-
 }
 
 func (d *DB) DeleteInbox(ctx context.Context, delete *store.DeleteInbox) error {
@@ -144,5 +141,4 @@ func (d *DB) DeleteInbox(ctx context.Context, delete *store.DeleteInbox) error {
 
 	_, err = result.RowsAffected()
 	return err
-
 }

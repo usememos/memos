@@ -5,6 +5,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/store"
 )
 
@@ -15,7 +16,7 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 	columns := []string{"username", "role", "email", "nickname", "password_hash", "avatar_url"}
 	builder = builder.Columns(columns...)
 
-	values := []interface{}{create.Username, create.Role, create.Email, create.Nickname, create.PasswordHash, create.AvatarURL}
+	values := []any{create.Username, create.Role, create.Email, create.Nickname, create.PasswordHash, create.AvatarURL}
 
 	if create.RowStatus != "" {
 		builder = builder.Columns("row_status")

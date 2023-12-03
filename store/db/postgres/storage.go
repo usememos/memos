@@ -4,12 +4,13 @@ import (
 	"context"
 
 	"github.com/Masterminds/squirrel"
+
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) CreateStorage(ctx context.Context, create *store.Storage) (*store.Storage, error) {
 	qb := squirrel.Insert("storage").Columns("name", "type", "config")
-	values := []interface{}{create.Name, create.Type, create.Config}
+	values := []any{create.Name, create.Type, create.Config}
 
 	if create.ID != 0 {
 		qb = qb.Columns("id")

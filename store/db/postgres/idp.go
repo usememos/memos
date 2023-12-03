@@ -6,6 +6,7 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/store"
 )
 
@@ -22,7 +23,7 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 	}
 
 	qb := squirrel.Insert("idp").Columns("name", "type", "identifier_filter", "config")
-	values := []interface{}{create.Name, create.Type, create.IdentifierFilter, string(configBytes)}
+	values := []any{create.Name, create.Type, create.IdentifierFilter, string(configBytes)}
 
 	if create.ID != 0 {
 		qb = qb.Columns("id")
@@ -46,7 +47,6 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 	create.ID = id
 	return create, nil
 }
-
 func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentityProvider) ([]*store.IdentityProvider, error) {
 	qb := squirrel.Select("id", "name", "type", "identifier_filter", "config").
 		From("idp").
@@ -101,7 +101,6 @@ func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentity
 	}
 
 	return identityProviders, nil
-
 }
 
 func (d *DB) GetIdentityProvider(ctx context.Context, find *store.FindIdentityProvider) (*store.IdentityProvider, error) {
@@ -114,7 +113,6 @@ func (d *DB) GetIdentityProvider(ctx context.Context, find *store.FindIdentityPr
 	}
 
 	return list[0], nil
-
 }
 
 func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIdentityProvider) (*store.IdentityProvider, error) {
@@ -155,7 +153,6 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 	}
 
 	return d.GetIdentityProvider(ctx, &store.FindIdentityProvider{ID: &update.ID})
-
 }
 
 func (d *DB) DeleteIdentityProvider(ctx context.Context, delete *store.DeleteIdentityProvider) error {
@@ -178,5 +175,4 @@ func (d *DB) DeleteIdentityProvider(ctx context.Context, delete *store.DeleteIde
 	}
 
 	return nil
-
 }

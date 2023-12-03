@@ -10,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
+
 	"github.com/usememos/memos/server/version"
 	"github.com/usememos/memos/store"
 )

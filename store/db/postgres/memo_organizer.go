@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/Masterminds/squirrel"
+
 	"github.com/usememos/memos/store"
 )
 
@@ -114,9 +115,9 @@ func vacuumMemoOrganizer(ctx context.Context, tx *sql.Tx) error {
 	}
 
 	// Combine the arguments from both subqueries
-	combinedArgs := append(args, subArgsUser...)
+	args = append(args, subArgsUser...)
 
 	// Execute the query
-	_, err = tx.ExecContext(ctx, query, combinedArgs...)
+	_, err = tx.ExecContext(ctx, query, args...)
 	return err
 }

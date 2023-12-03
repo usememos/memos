@@ -6,9 +6,10 @@ import (
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
+	"google.golang.org/protobuf/encoding/protojson"
+
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
-	"google.golang.org/protobuf/encoding/protojson"
 )
 
 func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store.Activity, error) {
