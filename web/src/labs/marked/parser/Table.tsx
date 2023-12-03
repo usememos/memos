@@ -10,7 +10,7 @@ const splitPipeDelimiter = (rawStr: string) => {
   // | aaaa | bbbb | cc\|cc |
   // will return:
   // ["aaaa", "bbbb", "cc|cc"]
-  return (rawStr.match(/(?:\\\||[^|])+/g) || []).map((cell) => cell.replaceAll("\\|", "|"));
+  return (rawStr.match(/(?:\\\||[^|])+/g) || []).map((cell) => cell.replaceAll("\\|", "|").trim());
 };
 
 const renderer = (rawStr: string) => {
@@ -27,6 +27,9 @@ const renderer = (rawStr: string) => {
       textAlign: left && right ? "center" : right ? "right" : "left",
     };
   });
+  const defaultCellStyle: CSSProperties = {
+    textAlign: "left",
+  };
   const rowContents = matchResult[3]
     .split(/\r?\n/)
     .map(splitPipeDelimiter)
@@ -45,7 +48,7 @@ const renderer = (rawStr: string) => {
         {rowContents.map((row, rowIndex) => (
           <tr key={"tr-" + rowIndex}>
             {row.map((cell, cellIndex) => (
-              <td key={"td-" + rowIndex + "-" + cellIndex} style={cellIndex < cellStyles.length ? cellStyles[cellIndex] : {}}>
+              <td key={"td-" + rowIndex + "-" + cellIndex} style={cellIndex < cellStyles.length ? cellStyles[cellIndex] : defaultCellStyle}>
                 {marked(cell, [], inlineElementParserList)}
               </td>
             ))}
