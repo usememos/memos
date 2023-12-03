@@ -49,10 +49,9 @@ func (d *DB) nonProdMigrate(ctx context.Context) error {
 		tables = append(tables, table)
 	}
 
-	// for testing purpose, comment should be removed
-	// if len(tables) != 0 {
-	// 	return nil
-	// }
+	if len(tables) != 0 {
+		return nil
+	}
 
 	println("no tables in the database. start migration")
 
