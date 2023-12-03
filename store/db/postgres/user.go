@@ -12,27 +12,35 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 	// Start building the insert statement
 	builder := squirrel.Insert("\"user\"").PlaceholderFormat(squirrel.Dollar)
 
-	// Add fields and values to the insert statement
-	builder = builder.Columns("username", "role", "email", "nickname", "password_hash", "avatar_url").
-		Values(create.Username, create.Role, create.Email, create.Nickname, create.PasswordHash, create.AvatarURL)
+	columns := []string{"username", "role", "email", "nickname", "password_hash", "avatar_url"}
+	builder = builder.Columns(columns...)
+
+	values := []interface{}{create.Username, create.Role, create.Email, create.Nickname, create.PasswordHash, create.AvatarURL}
 
 	if create.RowStatus != "" {
-		builder = builder.Columns("row_status").Values(create.RowStatus)
+		builder = builder.Columns("row_status")
+		values = append(values, create.RowStatus)
 	}
 
 	if create.CreatedTs != 0 {
-		builder = builder.Columns("created_ts").Values(squirrel.Expr("FROM_UNIXTIME(?)", create.CreatedTs))
+		builder = builder.Columns("created_ts")
+		values = append(values, squirrel.Expr("TO_TIMESTAMP(?)", create.CreatedTs))
 	}
 
 	if create.UpdatedTs != 0 {
-		builder = builder.Columns("updated_ts").Values(squirrel.Expr("FROM_UNIXTIME(?)", create.UpdatedTs))
+		builder = builder.Columns("updated_ts")
+		values = append(values, squirrel.Expr("TO_TIMESTAMP(?)", create.UpdatedTs))
 	}
 
 	if create.ID != 0 {
-		builder = builder.Columns("id").Values(create.ID)
+		builder = builder.Columns("id")
+		values = append(values, create.ID)
 	}
 
+	builder = builder.Values(values...)
+
 	builder = builder.Suffix("RETURNING id")
+
 	// Prepare the final query
 	query, args, err := builder.ToSql()
 	if err != nil {
@@ -51,6 +59,7 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 	if err != nil {
 		return nil, err
 	}
+
 	return user, nil
 }
 

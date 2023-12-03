@@ -8,13 +8,15 @@ import (
 )
 
 func (d *DB) CreateStorage(ctx context.Context, create *store.Storage) (*store.Storage, error) {
-	qb := squirrel.Insert("storage").Columns("name", "type", "config").Values(create.Name, create.Type, create.Config)
+	qb := squirrel.Insert("storage").Columns("name", "type", "config")
+	values := []interface{}{create.Name, create.Type, create.Config}
 
 	if create.ID != 0 {
-		qb = qb.Columns("id").Values(create.ID)
+		qb = qb.Columns("id")
+		values = append(values, create.ID)
 	}
 
-	qb = qb.Suffix("RETURNING id")
+	qb = qb.Values(values...).Suffix("RETURNING id")
 	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return nil, err

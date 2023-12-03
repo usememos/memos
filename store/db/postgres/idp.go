@@ -21,15 +21,15 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 		return nil, errors.Errorf("unsupported idp type %s", string(create.Type))
 	}
 
-	qb := squirrel.Insert("idp").
-		Columns("name", "type", "identifier_filter", "config").
-		Values(create.Name, create.Type, create.IdentifierFilter, string(configBytes)).
-		PlaceholderFormat(squirrel.Dollar)
+	qb := squirrel.Insert("idp").Columns("name", "type", "identifier_filter", "config")
+	values := []interface{}{create.Name, create.Type, create.IdentifierFilter, string(configBytes)}
 
 	if create.ID != 0 {
-		qb = qb.Columns("id").Values(create.ID)
+		qb = qb.Columns("id")
+		values = append(values, create.ID)
 	}
 
+	qb = qb.Values(values...).PlaceholderFormat(squirrel.Dollar)
 	qb = qb.Suffix("RETURNING id")
 
 	stmt, args, err := qb.ToSql()

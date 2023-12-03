@@ -10,8 +10,7 @@ import (
 func (d *DB) UpsertSystemSetting(ctx context.Context, upsert *store.SystemSetting) (*store.SystemSetting, error) {
 	qb := squirrel.Insert("system_setting").
 		Columns("name", "value", "description").
-		Values(upsert.Name, upsert.Value, upsert.Description).
-		Suffix("ON CONFLICT (name) DO UPDATE SET value = ?, description = ?", upsert.Value, upsert.Description)
+		Values(upsert.Name, upsert.Value, upsert.Description)
 
 	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {

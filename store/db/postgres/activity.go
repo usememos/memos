@@ -23,18 +23,21 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 
 	qb := squirrel.Insert("activity").
 		Columns("creator_id", "type", "level", "payload").
-		Values(create.CreatorID, create.Type.String(), create.Level.String(), payloadString).
 		PlaceholderFormat(squirrel.Dollar)
 
+	values := []interface{}{create.CreatorID, create.Type.String(), create.Level.String(), payloadString}
+
 	if create.ID != 0 {
-		qb = qb.Columns("id").Values(create.ID)
+		qb = qb.Columns("id")
+		values = append(values, create.ID)
 	}
 
 	if create.CreatedTs != 0 {
-		qb = qb.Columns("created_ts").Values(create.CreatedTs) // Assuming created_ts is a timestamp
+		qb = qb.Columns("created_ts")
+		values = append(values, squirrel.Expr("TO_TIMESTAMP(?)", create.CreatedTs))
 	}
 
-	qb = qb.Suffix("RETURNING id")
+	qb = qb.Values(values...).Suffix("RETURNING id")
 
 	stmt, args, err := qb.ToSql()
 	if err != nil {
