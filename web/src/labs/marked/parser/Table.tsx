@@ -40,15 +40,15 @@ const renderer = (rawStr: string) => {
       <thead>
         <tr>
           {headerContents.map((header, index) => (
-            <th key={"th-" + index}>{marked(header, [], inlineElementParserList)}</th>
+            <th key={index}>{marked(header, [], inlineElementParserList)}</th>
           ))}
         </tr>
       </thead>
       <tbody>
         {rowContents.map((row, rowIndex) => (
-          <tr key={"tr-" + rowIndex}>
+          <tr key={rowIndex} className="dark:even:bg-zinc-600 even:bg-zinc-100">
             {row.map((cell, cellIndex) => (
-              <td key={"td-" + rowIndex + "-" + cellIndex} style={cellIndex < cellStyles.length ? cellStyles[cellIndex] : defaultCellStyle}>
+              <td key={cellIndex} style={cellIndex < cellStyles.length ? cellStyles[cellIndex] : defaultCellStyle}>
                 {marked(cell, [], inlineElementParserList)}
               </td>
             ))}
