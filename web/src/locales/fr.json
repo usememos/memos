@@ -41,6 +41,7 @@
     "expand": "Développer",
     "explore": "Explorez",
     "filter": "Filtre",
+    "filter-period": "{{from}} à {{to}}",
     "fold": "Plier",
     "home": "Accueil",
     "image": "Image",
