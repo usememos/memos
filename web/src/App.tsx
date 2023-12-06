@@ -29,7 +29,6 @@ const App = () => {
     const initialState = async () => {
       try {
         await userV1Store.fetchCurrentUser();
-        console.log("here");
       } catch (error) {
         // Skip.
       }
