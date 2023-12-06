@@ -80,7 +80,7 @@ const MemoEditor = (props: Props) => {
   }, []);
 
   useEffect(() => {
-    let visibility = userSetting.memoVisibility;
+    let visibility = userSetting.memoVisibility || "PRIVATE";
     if (systemStatus.disablePublicMemos && visibility === "PUBLIC") {
       visibility = "PRIVATE";
     }
