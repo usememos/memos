@@ -10,7 +10,6 @@ import (
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/store"
 )
 
@@ -84,9 +83,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"memo.row_status AS row_status",
 		"memo.content AS content",
 		"memo.visibility AS visibility",
-		"MAX(CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END) AS pinned",
-		"string_agg(CAST(resource.id AS TEXT), ',') AS resource_id_list", // Cast to TEXT
-		"(SELECT string_agg(CAST(memo_id AS TEXT) || ':' || CAST(related_memo_id AS TEXT) || ':' || type, ',') FROM memo_relation WHERE memo_relation.memo_id = memo.id OR memo_relation.related_memo_id = memo.id) AS relation_list"). // Cast IDs to TEXT
+		"MAX(CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END) AS pinned").
 		From("memo").
 		LeftJoin("memo_organizer ON memo.id = memo_organizer.memo_id").
 		LeftJoin("resource ON memo.id = resource.memo_id").
@@ -164,8 +161,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	updatedTsPlaceHolder, createdTsPlaceHolder := make([]uint8, 8), make([]uint8, 8)
 	for rows.Next() {
 		var memo store.Memo
-		var memoResourceIDList sql.NullString
-		var memoRelationList sql.NullString
 		if err := rows.Scan(
 			&memo.ID,
 			&memo.CreatorID,
@@ -175,8 +170,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.Content,
 			&memo.Visibility,
 			&memo.Pinned,
-			&memoResourceIDList,
-			&memoRelationList,
 		); err != nil {
 			return nil, err
 		}
@@ -185,45 +178,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		memo.CreatedTs = int64(binary.BigEndian.Uint64(createdTsPlaceHolder))
 		memo.UpdatedTs = int64(binary.BigEndian.Uint64(updatedTsPlaceHolder))
 
-		if memoResourceIDList.Valid {
-			idStringList := strings.Split(memoResourceIDList.String, ",")
-			memo.ResourceIDList = make([]int32, 0, len(idStringList))
-			for _, idString := range idStringList {
-				id, err := util.ConvertStringToInt32(idString)
-				if err != nil {
-					return nil, err
-				}
-				memo.ResourceIDList = append(memo.ResourceIDList, id)
-			}
-		}
-		if memoRelationList.Valid {
-			memo.RelationList = make([]*store.MemoRelation, 0)
-			relatedMemoTypeList := strings.Split(memoRelationList.String, ",")
-			for _, relatedMemoType := range relatedMemoTypeList {
-				relatedMemoTypeList := strings.Split(relatedMemoType, ":")
-				if len(relatedMemoTypeList) != 3 {
-					return nil, errors.Errorf("invalid relation format")
-				}
-				memoID, err := util.ConvertStringToInt32(relatedMemoTypeList[0])
-				if err != nil {
-					return nil, err
-				}
-				relatedMemoID, err := util.ConvertStringToInt32(relatedMemoTypeList[1])
-				if err != nil {
-					return nil, err
-				}
-				relationType := store.MemoRelationType(relatedMemoTypeList[2])
-				memo.RelationList = append(memo.RelationList, &store.MemoRelation{
-					MemoID:        memoID,
-					RelatedMemoID: relatedMemoID,
-					Type:          relationType,
-				})
-				// Set the first parent ID if relation type is comment.
-				if memo.ParentID == nil && memoID == memo.ID && relationType == store.MemoRelationComment {
-					memo.ParentID = &relatedMemoID
-				}
-			}
-		}
 		list = append(list, &memo)
 	}
 
