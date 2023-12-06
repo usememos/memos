@@ -14,6 +14,9 @@ func (s *APIV2Service) GetAuthStatus(ctx context.Context, _ *apiv2pb.GetAuthStat
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "failed to get current user: %v", err)
 	}
+	if user == nil {
+		return nil, status.Errorf(codes.Unauthenticated, "user not found")
+	}
 	return &apiv2pb.GetAuthStatusResponse{
 		User: convertUserFromStore(user),
 	}, nil

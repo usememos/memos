@@ -27,10 +27,10 @@ const MemoDetail = () => {
   const t = useTranslate();
   const params = useParams();
   const navigateTo = useNavigateTo();
+  const currentUser = useCurrentUser();
   const globalStore = useGlobalStore();
   const memoStore = useMemoStore();
   const userV1Store = useUserV1Store();
-  const currentUser = useCurrentUser();
   const [creator, setCreator] = useState<User>();
   const { systemStatus } = globalStore.state;
   const memoId = Number(params.memoId);
@@ -101,7 +101,7 @@ const MemoDetail = () => {
   };
 
   const disableOption = (v: string) => {
-    const isAdminOrHost = currentUser.role === User_Role.ADMIN || currentUser.role === User_Role.HOST;
+    const isAdminOrHost = currentUser?.role === User_Role.ADMIN || currentUser?.role === User_Role.HOST;
 
     if (v === "PUBLIC" && !isAdminOrHost) {
       return systemStatus.disablePublicMemos;

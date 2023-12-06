@@ -2,6 +2,7 @@ import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
 import { initialGlobalState } from "@/store/module";
+import AuthStatusProvider from "./AuthStatusProvider";
 
 const Root = lazy(() => import("@/layouts/Root"));
 const SignIn = lazy(() => import("@/pages/SignIn"));
@@ -52,27 +53,51 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <Home />,
+            element: (
+              <AuthStatusProvider>
+                <Home />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "review",
-            element: <DailyReview />,
+            element: (
+              <AuthStatusProvider>
+                <DailyReview />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "resources",
-            element: <Resources />,
+            element: (
+              <AuthStatusProvider>
+                <Resources />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "inbox",
-            element: <Inboxes />,
+            element: (
+              <AuthStatusProvider>
+                <Inboxes />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "archived",
-            element: <Archived />,
+            element: (
+              <AuthStatusProvider>
+                <Archived />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "setting",
-            element: <Setting />,
+            element: (
+              <AuthStatusProvider>
+                <Setting />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "explore",
