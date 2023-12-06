@@ -3,14 +3,33 @@ import { inlineElementParserList } from ".";
 import { marked } from "..";
 import { matcher } from "../matcher";
 
-export const TABLE_REG = /^((?:\|[^|\r\n]+)+)\|?\r?\n([ -:]*(?:\|[ -:]*)+)((?:\r?\n[^|\r\n]*\|[^\r\n]*)+)/;
+class TableRegExp extends RegExp {
+  [Symbol.match](str: string): RegExpMatchArray | null {
+    const result = RegExp.prototype[Symbol.match].call(this, str);
+    // regex will only be considered valid if headers and delimiters column count matches
+    if (!result || splitPipeDelimiter(result[1]).length != splitPipeDelimiter(result[2]).length) {
+      return null;
+    }
+    return result;
+  }
+}
+
+export const TABLE_REG = new TableRegExp(/^([^\n|]*\|[^\n]*)\n([ :-]*(?<!\\)\|[ :|-]*)((?:\n[^\n|]*\|[^\n]*)+)/);
 
 const splitPipeDelimiter = (rawStr: string) => {
-  // should take care of escaped pipes, like
-  // | aaaa | bbbb | cc\|cc |
-  // will return:
-  // ["aaaa", "bbbb", "cc|cc"]
-  return (rawStr.match(/(?:\\\||[^|])+/g) || []).map((cell) => cell.replaceAll("\\|", "|").trim());
+  // loose pipe delimiter for markdown tables. escaped pipes are supported. some examples:
+  // | aaaa | bbbb | cc\|cc | => ["aaaa", "bbbb", "cc|cc"]
+  // aaaa | bbbb | cc\|cc => ["aaaa", "bbbb", "cc|cc"]
+  // |a|f => ["a", "f"]
+  // ||a|f| => ["", "a", "f"]
+  // |||| => ["", "", ""]
+  // |\||\||\|| => ["|", "|", "|"]
+  return (
+    rawStr
+      .replaceAll(/(?<!\\)\|/g, "| ")
+      .trim()
+      .match(/(?:\\\||[^|])+/g) || []
+  ).map((cell) => cell.replaceAll("\\|", "|").trim());
 };
 
 const renderer = (rawStr: string) => {
@@ -27,13 +46,7 @@ const renderer = (rawStr: string) => {
       textAlign: left && right ? "center" : right ? "right" : "left",
     };
   });
-  const defaultCellStyle: CSSProperties = {
-    textAlign: "left",
-  };
-  const rowContents = matchResult[3]
-    .split(/\r?\n/)
-    .map(splitPipeDelimiter)
-    .filter((array) => array.length > 0);
+  const rowContents = matchResult[3].substring(1).split(/\r?\n/).map(splitPipeDelimiter);
 
   return (
     <table>
@@ -47,9 +60,9 @@ const renderer = (rawStr: string) => {
       <tbody>
         {rowContents.map((row, rowIndex) => (
           <tr key={rowIndex} className="dark:even:bg-zinc-600 even:bg-zinc-100">
-            {row.map((cell, cellIndex) => (
-              <td key={cellIndex} style={cellIndex < cellStyles.length ? cellStyles[cellIndex] : defaultCellStyle}>
-                {marked(cell, [], inlineElementParserList)}
+            {headerContents.map((_, cellIndex) => (
+              <td key={cellIndex} style={cellStyles[cellIndex]}>
+                {cellIndex < row.length ? marked(row[cellIndex], [], inlineElementParserList) : null}
               </td>
             ))}
           </tr>
