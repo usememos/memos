@@ -14,7 +14,7 @@ class TableRegExp extends RegExp {
   }
 }
 
-export const TABLE_REG = new TableRegExp(/^([^\n|]*\|[^\n]*)\n([ :-]*(?<!\\)\|[ :|-]*)((?:\n[^\n|]*\|[^\n]*)+)/);
+export const TABLE_REG = new TableRegExp(/^([^\n|]*\|[^\n]*)\n([ \t:-]*(?<!\\)\|[ \t:|-]*)((?:\n[^\n|]*\|[^\n]*)+)/);
 
 const splitPipeDelimiter = (rawStr: string) => {
   // loose pipe delimiter for markdown tables. escaped pipes are supported. some examples:
@@ -30,6 +30,8 @@ const splitPipeDelimiter = (rawStr: string) => {
       .trim()
       .match(/(?:\\\||[^|])+/g) || []
   ).map((cell) => cell.replaceAll("\\|", "|").trim());
+  // TODO: Need to move backslash escaping (to PlainText ?) for all characters
+  // described in markdown spec (\`*_{}[]()#+-.!), and not just the pipe symbol here
 };
 
 const renderer = (rawStr: string) => {
