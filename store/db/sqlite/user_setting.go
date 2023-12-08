@@ -166,7 +166,7 @@ func (d *DB) ListUserSettingsV1(ctx context.Context, find *store.FindUserSetting
 				TelegramUserId: valueString,
 			}
 		} else {
-			// Skip unknown user setting v1 key.
+			// Skip unknown user setting key.
 			continue
 		}
 		userSettingList = append(userSettingList, userSetting)

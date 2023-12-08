@@ -183,7 +183,8 @@ func (d *DB) ListUserSettingsV1(ctx context.Context, find *store.FindUserSetting
 				TelegramUserId: valueString,
 			}
 		} else {
-			return nil, errors.Errorf("unknown user setting key: %s", userSetting.Key.String())
+			// Skip unknown user setting key.
+			continue
 		}
 		userSettingList = append(userSettingList, userSetting)
 	}
