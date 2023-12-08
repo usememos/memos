@@ -11,6 +11,10 @@ message UserSetting {
 
   oneof value {
     AccessTokensUserSetting access_tokens = 3;
+    string locale = 4;
+    string appearance = 5;
+    string memo_visibility = 6;
+    string telegram_user_id = 7;
   }
 }
 
@@ -19,6 +23,18 @@ enum UserSettingKey {
 
   // Access tokens for the user.
   USER_SETTING_ACCESS_TOKENS = 1;
+
+  // The locale of the user.
+  USER_SETTING_LOCALE = 2;
+
+  // The appearance of the user.
+  USER_SETTING_APPEARANCE = 3;
+
+  // The visibility of the memo.
+  USER_SETTING_MEMO_VISIBILITY = 4;
+
+  // The telegram user id of the user.
+  USER_SETTING_TELEGRAM_USER_ID = 5;
 }
 
 message AccessTokensUserSetting {

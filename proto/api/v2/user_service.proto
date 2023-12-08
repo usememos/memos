@@ -38,6 +38,17 @@ service UserService {
     option (google.api.http) = {delete: "/api/v2/{name=users/*}"};
     option (google.api.method_signature) = "name";
   }
+  rpc GetUserSetting(GetUserSettingRequest) returns (GetUserSettingResponse) {
+    option (google.api.http) = {get: "/api/v2/{name=users/*}/setting"};
+    option (google.api.method_signature) = "name";
+  }
+  rpc UpdateUserSetting(UpdateUserSettingRequest) returns (UpdateUserSettingResponse) {
+    option (google.api.http) = {
+      patch: "/api/v2/{setting.name=users/*/setting}"
+      body: "setting"
+    };
+    option (google.api.method_signature) = "setting,update_mask";
+  }
   // ListUserAccessTokens returns a list of access tokens for a user.
   rpc ListUserAccessTokens(ListUserAccessTokensRequest) returns (ListUserAccessTokensResponse) {
     option (google.api.http) = {get: "/api/v2/{name=users/*}/access_tokens"};
@@ -123,6 +134,40 @@ message DeleteUserRequest {
 }
 
 message DeleteUserResponse {}
+
+message UserSetting {
+  // The name of the user.
+  // Format: users/{username}
+  string name = 1;
+  // The preferred locale of the user.
+  string locale = 2;
+  // The preferred appearance of the user.
+  string appearance = 3;
+  // The default visibility of the memo.
+  string memo_visibility = 4;
+  // The telegram user id of the user.
+  string telegram_user_id = 5;
+}
+
+message GetUserSettingRequest {
+  // The name of the user.
+  // Format: users/{username}
+  string name = 1;
+}
+
+message GetUserSettingResponse {
+  UserSetting setting = 1;
+}
+
+message UpdateUserSettingRequest {
+  UserSetting setting = 1 [(google.api.field_behavior) = REQUIRED];
+
+  google.protobuf.FieldMask update_mask = 2;
+}
+
+message UpdateUserSettingResponse {
+  UserSetting setting = 1;
+}
 
 message UserAccessToken {
   string access_token = 1;

@@ -45,7 +45,7 @@ const UserProfile = () => {
                   <div className="w-full flex flex-row justify-start items-start">
                     <div className="flex-grow shrink w-full">
                       <div className="w-full flex flex-col justify-start items-center py-8">
-                        <UserAvatar className="!w-20 h-auto mb-2 drop-shadow" avatarUrl={user?.avatarUrl} />
+                        <UserAvatar className="!w-20 !h-20 mb-2 drop-shadow" avatarUrl={user?.avatarUrl} />
                         <p className="text-3xl text-black opacity-80 dark:text-gray-200">{user?.nickname}</p>
                       </div>
                       <MemoList />

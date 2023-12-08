@@ -8,7 +8,6 @@ import (
 
 	"github.com/pkg/errors"
 
-	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/store"
 )
 
@@ -107,7 +106,17 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	orders = append(orders, "`id` DESC")
 
-	query := "SELECT `memo`.`id` AS `id`, `memo`.`creator_id` AS `creator_id`, UNIX_TIMESTAMP(`memo`.`created_ts`) AS `created_ts`, UNIX_TIMESTAMP(`memo`.`updated_ts`) AS `updated_ts`, `memo`.`row_status` AS `row_status`, `memo`.`content` AS `content`, `memo`.`visibility` AS `visibility`, MAX(CASE WHEN `memo_organizer`.`pinned` = 1 THEN 1 ELSE 0 END) AS `pinned`, GROUP_CONCAT(`resource`.`id`) AS `resource_id_list`, (SELECT GROUP_CONCAT(`memo_id`,':',`related_memo_id`,':',`type`) FROM `memo_relation` WHERE `memo_relation`.`memo_id` = `memo`.`id` OR `memo_relation`.`related_memo_id` = `memo`.`id` ) AS `relation_list` FROM `memo` LEFT JOIN `memo_organizer` ON `memo`.`id` = `memo_organizer`.`memo_id` LEFT JOIN `resource` ON `memo`.`id` = `resource`.`memo_id` WHERE " + strings.Join(where, " AND ") + " GROUP BY `memo`.`id` ORDER BY " + strings.Join(orders, ", ")
+	fields := []string{
+		"`memo`.`id` AS `id`",
+		"`memo`.`creator_id` AS `creator_id`",
+		"UNIX_TIMESTAMP(`memo`.`created_ts`) AS `created_ts`",
+		"UNIX_TIMESTAMP(`memo`.`updated_ts`) AS `updated_ts`",
+		"`memo`.`row_status` AS `row_status`",
+		"`memo`.`content` AS `content`",
+		"`memo`.`visibility` AS `visibility`",
+		"MAX(CASE WHEN `memo_organizer`.`pinned` = 1 THEN 1 ELSE 0 END) AS `pinned`",
+	}
+	query := "SELECT " + strings.Join(fields, ",\n") + " FROM `memo` LEFT JOIN `memo_organizer` ON `memo`.`id` = `memo_organizer`.`memo_id` WHERE " + strings.Join(where, " AND ") + " GROUP BY `memo`.`id` ORDER BY " + strings.Join(orders, ", ")
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {
@@ -124,8 +133,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	list := make([]*store.Memo, 0)
 	for rows.Next() {
 		var memo store.Memo
-		var memoResourceIDList sql.NullString
-		var memoRelationList sql.NullString
 		if err := rows.Scan(
 			&memo.ID,
 			&memo.CreatorID,
@@ -135,50 +142,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.Content,
 			&memo.Visibility,
 			&memo.Pinned,
-			&memoResourceIDList,
-			&memoRelationList,
 		); err != nil {
 			return nil, err
-		}
-
-		if memoResourceIDList.Valid {
-			idStringList := strings.Split(memoResourceIDList.String, ",")
-			memo.ResourceIDList = make([]int32, 0, len(idStringList))
-			for _, idString := range idStringList {
-				id, err := util.ConvertStringToInt32(idString)
-				if err != nil {
-					return nil, err
-				}
-				memo.ResourceIDList = append(memo.ResourceIDList, id)
-			}
-		}
-		if memoRelationList.Valid {
-			memo.RelationList = make([]*store.MemoRelation, 0)
-			relatedMemoTypeList := strings.Split(memoRelationList.String, ",")
-			for _, relatedMemoType := range relatedMemoTypeList {
-				relatedMemoTypeList := strings.Split(relatedMemoType, ":")
-				if len(relatedMemoTypeList) != 3 {
-					return nil, errors.Errorf("invalid relation format")
-				}
-				memoID, err := util.ConvertStringToInt32(relatedMemoTypeList[0])
-				if err != nil {
-					return nil, err
-				}
-				relatedMemoID, err := util.ConvertStringToInt32(relatedMemoTypeList[1])
-				if err != nil {
-					return nil, err
-				}
-				relationType := store.MemoRelationType(relatedMemoTypeList[2])
-				memo.RelationList = append(memo.RelationList, &store.MemoRelation{
-					MemoID:        memoID,
-					RelatedMemoID: relatedMemoID,
-					Type:          relationType,
-				})
-				// Set the first parent ID if relation type is comment.
-				if memo.ParentID == nil && memoID == memo.ID && relationType == store.MemoRelationComment {
-					memo.ParentID = &relatedMemoID
-				}
-			}
 		}
 		list = append(list, &memo)
 	}

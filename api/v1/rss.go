@@ -12,7 +12,6 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
-	"github.com/pkg/errors"
 	"github.com/yuin/goldmark"
 
 	"github.com/usememos/memos/internal/util"
@@ -114,25 +113,19 @@ func (s *APIV1Service) generateRSSFromMemoList(ctx context.Context, memoList []*
 	var itemCountLimit = util.Min(len(memoList), maxRSSItemCount)
 	feed.Items = make([]*feeds.Item, itemCountLimit)
 	for i := 0; i < itemCountLimit; i++ {
-		memo := memoList[i]
-		feed.Items[i] = &feeds.Item{
-			Title:       getRSSItemTitle(memo.Content),
-			Link:        &feeds.Link{Href: baseURL + "/m/" + fmt.Sprintf("%d", memo.ID)},
-			Description: getRSSItemDescription(memo.Content),
-			Created:     time.Unix(memo.CreatedTs, 0),
-			Enclosure:   &feeds.Enclosure{Url: baseURL + "/m/" + fmt.Sprintf("%d", memo.ID) + "/image"},
+		memoMessage, err := s.convertMemoFromStore(ctx, memoList[i])
+		if err != nil {
+			return "", err
 		}
-		if len(memo.ResourceIDList) > 0 {
-			resourceID := memo.ResourceIDList[0]
-			resource, err := s.Store.GetResource(ctx, &store.FindResource{
-				ID: &resourceID,
-			})
-			if err != nil {
-				return "", err
-			}
-			if resource == nil {
-				return "", errors.Errorf("Resource not found: %d", resourceID)
-			}
+		feed.Items[i] = &feeds.Item{
+			Title:       getRSSItemTitle(memoMessage.Content),
+			Link:        &feeds.Link{Href: baseURL + "/m/" + fmt.Sprintf("%d", memoMessage.ID)},
+			Description: getRSSItemDescription(memoMessage.Content),
+			Created:     time.Unix(memoMessage.CreatedTs, 0),
+			Enclosure:   &feeds.Enclosure{Url: baseURL + "/m/" + fmt.Sprintf("%d", memoMessage.ID) + "/image"},
+		}
+		if len(memoMessage.ResourceList) > 0 {
+			resource := memoMessage.ResourceList[0]
 			enclosure := feeds.Enclosure{}
 			if resource.ExternalLink != "" {
 				enclosure.Url = resource.ExternalLink

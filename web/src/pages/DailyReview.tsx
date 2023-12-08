@@ -21,7 +21,7 @@ import { useTranslate } from "@/utils/i18n";
 const DailyReview = () => {
   const t = useTranslate();
   const memoStore = useMemoStore();
-  const user = useCurrentUser();
+  const currentUser = useCurrentUser();
   const currentDateStamp = getDateStampByDate(getNormalizedDateString()) as number;
   const [selectedDateStamp, setSelectedDateStamp] = useState<number>(currentDateStamp as number);
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
@@ -31,7 +31,7 @@ const DailyReview = () => {
       const selectedDateStampWithOffset = selectedDateStamp;
       return (
         m.rowStatus === "NORMAL" &&
-        m.creatorUsername === extractUsernameFromName(user.name) &&
+        m.creatorUsername === extractUsernameFromName(currentUser.name) &&
         displayTimestamp >= selectedDateStampWithOffset &&
         displayTimestamp < selectedDateStampWithOffset + DAILY_TIMESTAMP
       );

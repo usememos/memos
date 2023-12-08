@@ -39,19 +39,6 @@ func (s *Store) ListMemoRelations(ctx context.Context, find *FindMemoRelation) (
 	return s.driver.ListMemoRelations(ctx, find)
 }
 
-func (s *Store) GetMemoRelation(ctx context.Context, find *FindMemoRelation) (*MemoRelation, error) {
-	list, err := s.ListMemoRelations(ctx, find)
-	if err != nil {
-		return nil, err
-	}
-
-	if len(list) == 0 {
-		return nil, nil
-	}
-
-	return list[0], nil
-}
-
 func (s *Store) DeleteMemoRelation(ctx context.Context, delete *DeleteMemoRelation) error {
 	return s.driver.DeleteMemoRelation(ctx, delete)
 }

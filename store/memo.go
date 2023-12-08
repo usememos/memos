@@ -42,12 +42,7 @@ type Memo struct {
 	Visibility Visibility
 
 	// Composed fields
-	// For those comment memos, the parent ID is the memo ID of the memo being commented.
-	// If the parent ID is nil, then this memo is not a comment.
-	ParentID       *int32
-	Pinned         bool
-	ResourceIDList []int32
-	RelationList   []*MemoRelation
+	Pinned bool
 }
 
 type FindMemo struct {
@@ -63,7 +58,6 @@ type FindMemo struct {
 	ContentSearch  []string
 	VisibilityList []Visibility
 	Pinned         *bool
-	HasParent      *bool
 	ExcludeContent bool
 
 	// Pagination

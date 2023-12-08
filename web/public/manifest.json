@@ -2,15 +2,32 @@
   "short_name": "memos",
   "name": "memos",
   "description": "usememos/memos",
-  "icons": [
-    {
-      "src": "/logo.png",
-      "type": "image/png"
-    }
-  ],
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#f4f4f5",
-  "background_color": "#f4f4f5"
+  "background_color": "#f4f4f5",
+  "icons": [
+    {
+        "src": "/logo.png",
+        "type": "image/png",
+        "sizes": "16x16"
+    },
+    {
+        "src": "/logo.png",
+        "type": "image/png",
+        "sizes": "32x32"
+    },
+    {
+        "src": "/logo.png",
+        "sizes": "192x192",
+        "type": "image/png"
+    },
+    {
+        "src": "/logo.png",
+        "sizes": "512x512",
+        "type": "image/png",
+        "purpose": "any maskable"
+    }
+  ]
 }
