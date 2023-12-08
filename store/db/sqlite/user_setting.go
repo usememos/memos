@@ -5,9 +5,9 @@ import (
 	"database/sql"
 	"strings"
 
+	"github.com/pkg/errors"
 	"google.golang.org/protobuf/encoding/protojson"
 
-	"github.com/pkg/errors"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
