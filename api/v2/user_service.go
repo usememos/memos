@@ -201,7 +201,7 @@ func (s *APIV2Service) GetUserSetting(ctx context.Context, _ *apiv2pb.GetUserSet
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 
-	userSettings, err := s.Store.ListUserSettingsV1(ctx, &store.FindUserSettingV1{
+	userSettings, err := s.Store.ListUserSettingsV1(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
 	})
 	if err != nil {

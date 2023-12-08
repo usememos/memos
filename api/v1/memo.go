@@ -265,20 +265,15 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 	}
 
 	if createMemoRequest.Visibility == "" {
-		userMemoVisibilitySetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
+		userMemoVisibilitySetting, err := s.Store.GetUserSettingV1(ctx, &store.FindUserSetting{
 			UserID: &userID,
-			Key:    UserSettingMemoVisibilityKey.String(),
+			Key:    storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY,
 		})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find user setting").SetInternal(err)
 		}
 		if userMemoVisibilitySetting != nil {
-			memoVisibility := Private
-			err := json.Unmarshal([]byte(userMemoVisibilitySetting.Value), &memoVisibility)
-			if err != nil {
-				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal user setting value").SetInternal(err)
-			}
-			createMemoRequest.Visibility = memoVisibility
+			createMemoRequest.Visibility = Visibility(userMemoVisibilitySetting.GetMemoVisibility())
 		} else {
 			// Private is the default memo visibility.
 			createMemoRequest.Visibility = Private
@@ -394,20 +389,12 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 	// Send notification to telegram if memo is not private.
 	if memoResponse.Visibility != Private {
 		// fetch all telegram UserID
-		userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{Key: UserSettingTelegramUserIDKey.String()})
+		userSettings, err := s.Store.ListUserSettingsV1(ctx, &store.FindUserSetting{Key: storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to ListUserSettings").SetInternal(err)
 		}
 		for _, userSetting := range userSettings {
-			// parse telegram UserID setting value into a int64
-			var tgUserIDStr string
-			err := json.Unmarshal([]byte(userSetting.Value), &tgUserIDStr)
-			if err != nil {
-				log.Error("failed to parse Telegram UserID", zap.Error(err))
-				continue
-			}
-
-			tgUserID, err := strconv.ParseInt(tgUserIDStr, 10, 64)
+			tgUserID, err := strconv.ParseInt(userSetting.GetTelegramUserId(), 10, 64)
 			if err != nil {
 				log.Error("failed to parse Telegram UserID", zap.Error(err))
 				continue

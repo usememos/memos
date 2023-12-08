@@ -13,74 +13,7 @@ import (
 	"github.com/usememos/memos/store"
 )
 
-func (d *DB) UpsertUserSetting(ctx context.Context, upsert *store.UserSetting) (*store.UserSetting, error) {
-	// Construct the query using Squirrel
-	query, args, err := squirrel.
-		Insert("user_setting").
-		Columns("user_id", "key", "value").
-		Values(upsert.UserID, upsert.Key, upsert.Value).
-		PlaceholderFormat(squirrel.Dollar).
-		// no need to specify ON CONFLICT clause, as the primary key is (user_id, key)
-		ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	// Execute the query
-	if _, err := d.db.ExecContext(ctx, query, args...); err != nil {
-		return nil, err
-	}
-
-	return upsert, nil
-}
-
-func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) ([]*store.UserSetting, error) {
-	// Start building the query
-	qb := squirrel.Select("user_id", "key", "value").From("user_setting").Where("1 = 1").PlaceholderFormat(squirrel.Dollar)
-
-	// Add conditions based on the provided find parameters
-	if v := find.Key; v != "" {
-		qb = qb.Where(squirrel.Eq{"key": v})
-	}
-	if v := find.UserID; v != nil {
-		qb = qb.Where(squirrel.Eq{"user_id": *v})
-	}
-
-	// Finalize the query
-	query, args, err := qb.ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	// Execute the query
-	rows, err := d.db.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	// Process the rows
-	userSettingList := make([]*store.UserSetting, 0)
-	for rows.Next() {
-		var userSetting store.UserSetting
-		if err := rows.Scan(
-			&userSetting.UserID,
-			&userSetting.Key,
-			&userSetting.Value,
-		); err != nil {
-			return nil, err
-		}
-		userSettingList = append(userSettingList, &userSetting)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return userSettingList, nil
-}
-
-func (d *DB) UpsertUserSettingV1(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
+func (d *DB) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
 	var valueString string
 	if upsert.Key == storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS {
 		valueBytes, err := protojson.Marshal(upsert.GetAccessTokens())
@@ -120,7 +53,7 @@ func (d *DB) UpsertUserSettingV1(ctx context.Context, upsert *storepb.UserSettin
 	return upsert, nil
 }
 
-func (d *DB) ListUserSettingsV1(ctx context.Context, find *store.FindUserSettingV1) ([]*storepb.UserSetting, error) {
+func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) ([]*storepb.UserSetting, error) {
 	// Start building the query using Squirrel
 	qb := squirrel.Select("user_id", "key", "value").From("user_setting").PlaceholderFormat(squirrel.Dollar)
 

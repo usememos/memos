@@ -375,11 +375,7 @@ func copyUserSettings(ctx context.Context, fromDriver, toDriver store.Driver) er
 
 	fmt.Printf("\tTotal %d records\n", len(list))
 	for _, item := range list {
-		_, err := toDriver.UpsertUserSetting(ctx, &store.UserSetting{
-			Key:    item.Key,
-			Value:  item.Value,
-			UserID: item.UserID,
-		})
+		_, err := toDriver.UpsertUserSetting(ctx, item)
 		if err != nil {
 			return err
 		}

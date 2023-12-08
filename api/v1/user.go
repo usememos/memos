@@ -41,13 +41,12 @@ type User struct {
 	UpdatedTs int64     `json:"updatedTs"`
 
 	// Domain specific fields
-	Username        string         `json:"username"`
-	Role            Role           `json:"role"`
-	Email           string         `json:"email"`
-	Nickname        string         `json:"nickname"`
-	PasswordHash    string         `json:"-"`
-	AvatarURL       string         `json:"avatarUrl"`
-	UserSettingList []*UserSetting `json:"userSettingList"`
+	Username     string `json:"username"`
+	Role         Role   `json:"role"`
+	Email        string `json:"email"`
+	Nickname     string `json:"nickname"`
+	PasswordHash string `json:"-"`
+	AvatarURL    string `json:"avatarUrl"`
 }
 
 type CreateUserRequest struct {
@@ -212,18 +211,7 @@ func (s *APIV1Service) GetCurrentUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusUnauthorized, "Missing auth session")
 	}
 
-	list, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
-		UserID: &userID,
-	})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
-	}
-	userSettingList := []*UserSetting{}
-	for _, userSetting := range list {
-		userSettingList = append(userSettingList, convertUserSettingFromStore(userSetting))
-	}
 	userMessage := convertUserFromStore(user)
-	userMessage.UserSettingList = userSettingList
 	return c.JSON(http.StatusOK, userMessage)
 }
 
@@ -415,18 +403,7 @@ func (s *APIV1Service) UpdateUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to patch user").SetInternal(err)
 	}
 
-	list, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
-		UserID: &userID,
-	})
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find userSettingList").SetInternal(err)
-	}
-	userSettingList := []*UserSetting{}
-	for _, userSetting := range list {
-		userSettingList = append(userSettingList, convertUserSettingFromStore(userSetting))
-	}
 	userMessage := convertUserFromStore(user)
-	userMessage.UserSettingList = userSettingList
 	return c.JSON(http.StatusOK, userMessage)
 }
 
