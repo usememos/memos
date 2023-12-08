@@ -31,16 +31,10 @@ const SearchBar = () => {
     // Using `/` as shortcut
     document.addEventListener("keydown", (event) => {
       if (event.key === "/") {
-        document.addEventListener("keyup", () => {
-          (
-            document.getElementsByClassName("flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200")[0] as HTMLElement
-          ).focus();
-        });
-        document.removeEventListener("keyup", () => {
-          (
-            document.getElementsByClassName("flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200")[0] as HTMLElement
-          ).focus();
-        });
+        (
+          document.getElementsByClassName("flex ml-2 w-24 grow text-sm outline-none bg-transparent dark:text-gray-200")[0] as HTMLElement
+        ).focus();
+        event.preventDefault();
       }
     });
 
@@ -81,6 +75,7 @@ const SearchBar = () => {
         value={queryText}
         onChange={handleTextQueryInput}
       />
+      <kbd className="dark:bg-zinc-700 rounded-lg border-2 border-gray-200 dark:border-zinc-600">/</kbd>
     </div>
   );
 };
