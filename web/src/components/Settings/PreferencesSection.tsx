@@ -85,7 +85,7 @@ const PreferencesSection = () => {
         <span className="text-sm break-keep text-ellipsis overflow-hidden">{t("setting.preference-section.default-memo-visibility")}</span>
         <Select
           className="!min-w-fit"
-          value={setting.memoVisibility || "PRIVATE"}
+          value={setting.memoVisibility}
           startDecorator={<VisibilityIcon visibility={setting.memoVisibility as Visibility} />}
           onChange={(_, visibility) => {
             if (visibility) {

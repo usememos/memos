@@ -67,8 +67,16 @@ func (d *DB) UpsertUserSettingV1(ctx context.Context, upsert *storepb.UserSettin
 			return nil, err
 		}
 		valueString = string(valueBytes)
+	} else if upsert.Key == storepb.UserSettingKey_USER_SETTING_LOCALE {
+		valueString = upsert.GetLocale()
+	} else if upsert.Key == storepb.UserSettingKey_USER_SETTING_APPEARANCE {
+		valueString = upsert.GetAppearance()
+	} else if upsert.Key == storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY {
+		valueString = upsert.GetMemoVisibility()
+	} else if upsert.Key == storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID {
+		valueString = upsert.GetTelegramUserId()
 	} else {
-		return nil, errors.New("invalid user setting key")
+		return nil, errors.Errorf("unknown user setting key: %s", upsert.Key.String())
 	}
 
 	if _, err := d.db.ExecContext(ctx, stmt, upsert.UserId, upsert.Key.String(), valueString, valueString); err != nil {
@@ -115,9 +123,24 @@ func (d *DB) ListUserSettingsV1(ctx context.Context, find *store.FindUserSetting
 			userSetting.Value = &storepb.UserSetting_AccessTokens{
 				AccessTokens: accessTokensUserSetting,
 			}
+		} else if userSetting.Key == storepb.UserSettingKey_USER_SETTING_LOCALE {
+			userSetting.Value = &storepb.UserSetting_Locale{
+				Locale: valueString,
+			}
+		} else if userSetting.Key == storepb.UserSettingKey_USER_SETTING_APPEARANCE {
+			userSetting.Value = &storepb.UserSetting_Appearance{
+				Appearance: valueString,
+			}
+		} else if userSetting.Key == storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY {
+			userSetting.Value = &storepb.UserSetting_MemoVisibility{
+				MemoVisibility: valueString,
+			}
+		} else if userSetting.Key == storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID {
+			userSetting.Value = &storepb.UserSetting_TelegramUserId{
+				TelegramUserId: valueString,
+			}
 		} else {
-			// Skip unknown user setting v1 key.
-			continue
+			return nil, errors.Errorf("unknown user setting key: %s", userSetting.Key.String())
 		}
 		userSettingList = append(userSettingList, userSetting)
 	}

@@ -187,6 +187,14 @@ func (s *APIV2Service) DeleteUser(ctx context.Context, request *apiv2pb.DeleteUs
 	return &apiv2pb.DeleteUserResponse{}, nil
 }
 
+func getDefaultUserSetting() *apiv2pb.UserSetting {
+	return &apiv2pb.UserSetting{
+		Locale:         "en",
+		Appearance:     "system",
+		MemoVisibility: "PRIVATE",
+	}
+}
+
 func (s *APIV2Service) GetUserSetting(ctx context.Context, _ *apiv2pb.GetUserSettingRequest) (*apiv2pb.GetUserSettingResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
@@ -199,7 +207,7 @@ func (s *APIV2Service) GetUserSetting(ctx context.Context, _ *apiv2pb.GetUserSet
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list user settings: %v", err)
 	}
-	userSettingMessage := &apiv2pb.UserSetting{}
+	userSettingMessage := getDefaultUserSetting()
 	for _, setting := range userSettings {
 		if setting.Key == storepb.UserSettingKey_USER_SETTING_LOCALE {
 			userSettingMessage.Locale = setting.GetLocale()
