@@ -75,7 +75,7 @@ const SearchBar = () => {
         value={queryText}
         onChange={handleTextQueryInput}
       />
-      <kbd className="dark:bg-zinc-700 rounded-lg border-2 border-gray-200 dark:border-zinc-600">/</kbd>
+      <kbd className="dark:bg-zinc-700 rounded-lg border-2 border-gray-200 dark:border-zinc-600 text-sm dark:text-gray-200">/</kbd>
     </div>
   );
 };
