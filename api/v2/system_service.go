@@ -46,8 +46,8 @@ func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.Up
 	}
 
 	// Update system settings.
-	for _, path := range request.UpdateMask.Paths {
-		if path == "allow_registration" {
+	for _, field := range request.UpdateMask.Paths {
+		if field == "allow_registration" {
 			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 				Name:  "allow-signup",
 				Value: strconv.FormatBool(request.SystemInfo.AllowRegistration),
@@ -55,7 +55,7 @@ func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.Up
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to update allow_registration system setting: %v", err)
 			}
-		} else if path == "disable_password_login" {
+		} else if field == "disable_password_login" {
 			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 				Name:  "disable-password-login",
 				Value: strconv.FormatBool(request.SystemInfo.DisablePasswordLogin),
@@ -63,7 +63,7 @@ func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.Up
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to update disable_password_login system setting: %v", err)
 			}
-		} else if path == "additional_script" {
+		} else if field == "additional_script" {
 			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 				Name:  "additional-script",
 				Value: request.SystemInfo.AdditionalScript,
@@ -71,7 +71,7 @@ func (s *APIV2Service) UpdateSystemInfo(ctx context.Context, request *apiv2pb.Up
 			if err != nil {
 				return nil, status.Errorf(codes.Internal, "failed to update additional_script system setting: %v", err)
 			}
-		} else if path == "additional_style" {
+		} else if field == "additional_style" {
 			_, err := s.Store.UpsertSystemSetting(ctx, &store.SystemSetting{
 				Name:  "additional-style",
 				Value: request.SystemInfo.AdditionalStyle,

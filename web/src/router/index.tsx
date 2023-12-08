@@ -1,7 +1,8 @@
 import { lazy } from "react";
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
-import { initialGlobalState, initialUserState } from "@/store/module";
+import { initialGlobalState } from "@/store/module";
+import AuthStatusProvider from "./AuthStatusProvider";
 
 const Root = lazy(() => import("@/layouts/Root"));
 const SignIn = lazy(() => import("@/pages/SignIn"));
@@ -24,20 +25,6 @@ const initialGlobalStateLoader = async () => {
     await initialGlobalState();
   } catch (error) {
     // do nothing.
-  }
-  return null;
-};
-
-const initialUserStateLoader = async (redirectWhenNotFound = true) => {
-  let user = undefined;
-  try {
-    user = await initialUserState();
-  } catch (error) {
-    // do nothing.
-  }
-
-  if (!user && redirectWhenNotFound) {
-    return redirect("/explore");
   }
   return null;
 };
@@ -66,55 +53,69 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <Home />,
-            loader: () => initialUserStateLoader(),
+            element: (
+              <AuthStatusProvider>
+                <Home />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "review",
-            element: <DailyReview />,
-            loader: () => initialUserStateLoader(),
+            element: (
+              <AuthStatusProvider>
+                <DailyReview />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "resources",
-            element: <Resources />,
-            loader: () => initialUserStateLoader(),
+            element: (
+              <AuthStatusProvider>
+                <Resources />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "inbox",
-            element: <Inboxes />,
-            loader: () => initialUserStateLoader(),
+            element: (
+              <AuthStatusProvider>
+                <Inboxes />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "archived",
-            element: <Archived />,
-            loader: () => initialUserStateLoader(),
+            element: (
+              <AuthStatusProvider>
+                <Archived />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "setting",
-            element: <Setting />,
-            loader: () => initialUserStateLoader(),
+            element: (
+              <AuthStatusProvider>
+                <Setting />
+              </AuthStatusProvider>
+            ),
           },
           {
             path: "explore",
             element: <Explore />,
-            loader: () => initialUserStateLoader(false),
           },
         ],
       },
       {
         path: "/m/:memoId",
         element: <MemoDetail />,
-        loader: () => initialUserStateLoader(false),
       },
       {
         path: "/m/:memoId/embed",
         element: <EmbedMemo />,
-        loader: () => initialUserStateLoader(false),
       },
       {
         path: "/u/:username",
         element: <UserProfile />,
-        loader: () => initialUserStateLoader(false),
       },
       {
         path: "*",

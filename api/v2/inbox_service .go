@@ -53,8 +53,8 @@ func (s *APIV2Service) UpdateInbox(ctx context.Context, request *apiv2pb.UpdateI
 	update := &store.UpdateInbox{
 		ID: inboxID,
 	}
-	for _, path := range request.UpdateMask.Paths {
-		if path == "status" {
+	for _, field := range request.UpdateMask.Paths {
+		if field == "status" {
 			if request.Inbox.Status == apiv2pb.Inbox_STATUS_UNSPECIFIED {
 				return nil, status.Errorf(codes.InvalidArgument, "status is required")
 			}

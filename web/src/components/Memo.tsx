@@ -7,7 +7,7 @@ import { UNKNOWN_ID } from "@/helpers/consts";
 import { getRelativeTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useFilterStore, useMemoStore, useUserStore } from "@/store/module";
+import { useFilterStore, useMemoStore } from "@/store/module";
 import { useUserV1Store, extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
@@ -36,7 +36,6 @@ const Memo: React.FC<Props> = (props: Props) => {
   const navigateTo = useNavigateTo();
   const { i18n } = useTranslation();
   const filterStore = useFilterStore();
-  const userStore = useUserStore();
   const memoStore = useMemoStore();
   const userV1Store = useUserV1Store();
   const user = useCurrentUser();
@@ -211,11 +210,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     if (readonly) {
       return;
     }
-
-    const loginUser = userStore.state.user;
-    if (loginUser && !loginUser.localSetting.enableDoubleClickEditing) {
-      return;
-    }
     const targetEl = e.target as HTMLElement;
 
     if (targetEl.className === "tag-span") {
@@ -303,7 +297,7 @@ const Memo: React.FC<Props> = (props: Props) => {
                 <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
                   <Tooltip title={"Creator"} placement="top">
                     <span className="flex flex-row justify-start items-center">
-                      <UserAvatar className="!w-5 !h-auto mr-1" avatarUrl={creator.avatarUrl} />
+                      <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator.avatarUrl} />
                       <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">
                         {creator.nickname || extractUsernameFromName(creator.name)}
                       </span>

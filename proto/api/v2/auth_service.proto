@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "api/v2/user_service.proto";
+import "google/api/annotations.proto";
+
+option go_package = "gen/api/v2";
+
+service AuthService {
+  rpc GetAuthStatus(GetAuthStatusRequest) returns (GetAuthStatusResponse) {
+    option (google.api.http) = {post: "/api/v2/auth/status"};
+  }
+}
+
+message GetAuthStatusRequest {}
+
+message GetAuthStatusResponse {
+  User user = 1;
+}
