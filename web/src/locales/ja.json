@@ -298,7 +298,7 @@
       "s3-compatible-url": "S3 Compatible URL",
       "secretkey": "Secret key",
       "secretkey-placeholder": "Secret key / Access Key",
-      "storage-services-list": "登録済みのストレージサービス",
+      "storage-services": "登録済みのストレージサービス",
       "type-database": "Database",
       "type-local": "Local",
       "update-a-service": "ストレージを更新",

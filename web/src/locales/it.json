@@ -300,7 +300,7 @@
       "s3-compatible-url": "URL compatibile S3",
       "secretkey": "Secret key",
       "secretkey-placeholder": "Secret key / Access Key",
-      "storage-services-list": "Lista servizi di archiviazione",
+      "storage-services": "Lista servizi di archiviazione",
       "type-database": "Database",
       "type-local": "Locale",
       "update-a-service": "Aggiorna un servizio",

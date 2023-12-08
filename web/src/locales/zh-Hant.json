@@ -316,7 +316,7 @@
       "s3-compatible-url": "S3 相容網址",
       "secretkey": "金鑰",
       "secretkey-placeholder": "金鑰 / 存取金鑰",
-      "storage-services-list": "儲存服務列表",
+      "storage-services": "儲存服務列表",
       "type-database": "資料庫",
       "type-local": "本機",
       "update-a-service": "更新服務",

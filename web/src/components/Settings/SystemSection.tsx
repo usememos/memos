@@ -325,7 +325,9 @@ const SystemSection = () => {
             />
           </div>
         </div>
-        <Button onClick={handleSaveTelegramBotToken}>{t("common.save")}</Button>
+        <Button variant="outlined" color="neutral" onClick={handleSaveTelegramBotToken}>
+          {t("common.save")}
+        </Button>
       </div>
       <Input
         className="w-full"
@@ -340,7 +342,9 @@ const SystemSection = () => {
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <span className="normal-text">{t("setting.system-section.additional-style")}</span>
-        <Button onClick={handleSaveAdditionalStyle}>{t("common.save")}</Button>
+        <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalStyle}>
+          {t("common.save")}
+        </Button>
       </div>
       <Textarea
         className="w-full"
@@ -356,7 +360,9 @@ const SystemSection = () => {
       />
       <div className="form-label mt-2">
         <span className="normal-text">{t("setting.system-section.additional-script")}</span>
-        <Button onClick={handleSaveAdditionalScript}>{t("common.save")}</Button>
+        <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalScript}>
+          {t("common.save")}
+        </Button>
       </div>
       <Textarea
         className="w-full"

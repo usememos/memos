@@ -226,7 +226,7 @@
       "current-storage": "Huidige objectopslag",
       "type-database": "Database",
       "type-local": "Lokaal bestandssysteem",
-      "storage-services-list": "Opslagdiensten",
+      "storage-services": "Opslagdiensten",
       "create-a-service": "Opslagdienst instellen",
       "update-a-service": "Opslagdienst bijwerken",
       "warning-text": "Weet je zeker dat je \"{{name}}\" wilt verwijderen?\n\nDeze actie is niet terug te draaien!",

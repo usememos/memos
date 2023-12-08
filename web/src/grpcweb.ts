@@ -6,6 +6,7 @@ import { ResourceServiceDefinition } from "./types/proto/api/v2/resource_service
 import { SystemServiceDefinition } from "./types/proto/api/v2/system_service";
 import { TagServiceDefinition } from "./types/proto/api/v2/tag_service";
 import { UserServiceDefinition } from "./types/proto/api/v2/user_service";
+import { WebhookServiceDefinition } from "./types/proto/api/v2/webhook_service";
 
 const channel = createChannel(
   window.location.origin,
@@ -29,3 +30,5 @@ export const tagServiceClient = clientFactory.create(TagServiceDefinition, chann
 export const inboxServiceClient = clientFactory.create(InboxServiceDefinition, channel);
 
 export const activityServiceClient = clientFactory.create(ActivityServiceDefinition, channel);
+
+export const webhookServiceClient = clientFactory.create(WebhookServiceDefinition, channel);

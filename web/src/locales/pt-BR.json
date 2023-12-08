@@ -318,7 +318,7 @@
       "s3-compatible-url": "URL compatível com S3",
       "secretkey": "Chave secreta",
       "secretkey-placeholder": "Chave secreta / Chave de acesso",
-      "storage-services-list": "Lista de serviços de armazenamento",
+      "storage-services": "Lista de serviços de armazenamento",
       "type-database": "Banco de dados",
       "type-local": "Sistema de arquivos local",
       "update-a-service": "Atualizar um serviço",
