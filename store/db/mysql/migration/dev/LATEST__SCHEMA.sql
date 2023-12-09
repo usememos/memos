@@ -12,16 +12,17 @@ DROP TABLE IF EXISTS `activity`;
 DROP TABLE IF EXISTS `storage`;
 DROP TABLE IF EXISTS `idp`;
 DROP TABLE IF EXISTS `inbox`;
+DROP TABLE IF EXISTS `webhook`;
 
 -- migration_history
 CREATE TABLE `migration_history` (
-  `version` VARCHAR(255) NOT NULL PRIMARY KEY,
+  `version` VARCHAR(256) NOT NULL PRIMARY KEY,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
 -- system_setting
 CREATE TABLE `system_setting` (
-  `name` VARCHAR(255) NOT NULL PRIMARY KEY,
+  `name` VARCHAR(256) NOT NULL PRIMARY KEY,
   `value` LONGTEXT NOT NULL,
   `description` TEXT NOT NULL
 );
@@ -31,19 +32,19 @@ CREATE TABLE `user` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `row_status` VARCHAR(255) NOT NULL DEFAULT 'NORMAL',
-  `username` VARCHAR(255) NOT NULL UNIQUE,
-  `role` VARCHAR(255) NOT NULL DEFAULT 'USER',
-  `email` VARCHAR(255) NOT NULL DEFAULT '',
-  `nickname` VARCHAR(255) NOT NULL DEFAULT '',
-  `password_hash` VARCHAR(255) NOT NULL,
+  `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
+  `username` VARCHAR(256) NOT NULL UNIQUE,
+  `role` VARCHAR(256) NOT NULL DEFAULT 'USER',
+  `email` VARCHAR(256) NOT NULL DEFAULT '',
+  `nickname` VARCHAR(256) NOT NULL DEFAULT '',
+  `password_hash` VARCHAR(256) NOT NULL,
   `avatar_url` LONGTEXT NOT NULL
 );
 
 -- user_setting
 CREATE TABLE `user_setting` (
   `user_id` INT NOT NULL,
-  `key` VARCHAR(255) NOT NULL,
+  `key` VARCHAR(256) NOT NULL,
   `value` LONGTEXT NOT NULL,
   UNIQUE(`user_id`,`key`)
 );
@@ -54,9 +55,9 @@ CREATE TABLE `memo` (
   `creator_id` INT NOT NULL,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `row_status` VARCHAR(255) NOT NULL DEFAULT 'NORMAL',
+  `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
   `content` TEXT NOT NULL,
-  `visibility` VARCHAR(255) NOT NULL DEFAULT 'PRIVATE'
+  `visibility` VARCHAR(256) NOT NULL DEFAULT 'PRIVATE'
 );
 
 -- memo_organizer
@@ -84,15 +85,15 @@ CREATE TABLE `resource` (
   `filename` TEXT NOT NULL,
   `blob` MEDIUMBLOB,
   `external_link` TEXT NOT NULL,
-  `type` VARCHAR(255) NOT NULL DEFAULT '',
+  `type` VARCHAR(256) NOT NULL DEFAULT '',
   `size` INT NOT NULL DEFAULT '0',
-  `internal_path` VARCHAR(255) NOT NULL DEFAULT '',
+  `internal_path` VARCHAR(256) NOT NULL DEFAULT '',
   `memo_id` INT DEFAULT NULL
 );
 
 -- tag
 CREATE TABLE `tag` (
-  `name` VARCHAR(255) NOT NULL,
+  `name` VARCHAR(256) NOT NULL,
   `creator_id` INT NOT NULL,
   UNIQUE(`name`,`creator_id`)
 );
@@ -102,8 +103,8 @@ CREATE TABLE `activity` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `creator_id` INT NOT NULL,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `type` VARCHAR(255) NOT NULL DEFAULT '',
-  `level` VARCHAR(255) NOT NULL DEFAULT 'INFO',
+  `type` VARCHAR(256) NOT NULL DEFAULT '',
+  `level` VARCHAR(256) NOT NULL DEFAULT 'INFO',
   `payload` TEXT NOT NULL
 );
 
@@ -139,7 +140,7 @@ CREATE TABLE `webhook` (
   `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `row_status` VARCHAR(255) NOT NULL DEFAULT 'NORMAL',
+  `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
   `creator_id` INT NOT NULL,
   `name` TEXT NOT NULL,
   `url` TEXT NOT NULL
