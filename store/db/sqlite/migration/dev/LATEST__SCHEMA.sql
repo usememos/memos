@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS activity;
 DROP TABLE IF EXISTS storage;
 DROP TABLE IF EXISTS idp;
 DROP TABLE IF EXISTS inbox;
+DROP TABLE IF EXISTS webhook;
 
 -- migration_history
 CREATE TABLE migration_history (

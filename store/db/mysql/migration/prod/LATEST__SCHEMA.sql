@@ -12,6 +12,7 @@ DROP TABLE IF EXISTS `activity`;
 DROP TABLE IF EXISTS `storage`;
 DROP TABLE IF EXISTS `idp`;
 DROP TABLE IF EXISTS `inbox`;
+DROP TABLE IF EXISTS `webhook`;
 
 -- migration_history
 CREATE TABLE `migration_history` (
@@ -132,4 +133,15 @@ CREATE TABLE `inbox` (
   `receiver_id` INT NOT NULL,
   `status` TEXT NOT NULL,
   `message` TEXT NOT NULL
+);
+
+-- webhook
+CREATE TABLE `webhook` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `created_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_ts` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `row_status` VARCHAR(256) NOT NULL DEFAULT 'NORMAL',
+  `creator_id` INT NOT NULL,
+  `name` TEXT NOT NULL,
+  `url` TEXT NOT NULL
 );
