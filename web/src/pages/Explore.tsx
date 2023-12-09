@@ -83,7 +83,7 @@ const Explore = () => {
       <div className="relative w-full h-auto flex flex-col justify-start items-start">
         <MemoFilter />
         {sortedMemos.map((memo) => (
-          <Memo key={memo.id} memo={memo} lazyRendering showCreator />
+          <Memo key={memo.id} memo={memo} lazyRendering showCreator showParent />
         ))}
 
         {loadingStatus === "fetching" ? (

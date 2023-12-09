@@ -111,7 +111,7 @@ const MemoList: React.FC = () => {
     <div className="flex flex-col justify-start items-start w-full max-w-full overflow-y-scroll pb-28 hide-scrollbar">
       <MemoFilter />
       {sortedMemos.map((memo) => (
-        <Memo key={memo.id} memo={memo} lazyRendering showVisibility showPinnedStyle />
+        <Memo key={memo.id} memo={memo} lazyRendering showVisibility showPinnedStyle showParent />
       ))}
 
       {loadingStatus === "fetching" ? (

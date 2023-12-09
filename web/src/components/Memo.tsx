@@ -26,6 +26,7 @@ import "@/less/memo.less";
 interface Props {
   memo: Memo;
   showCreator?: boolean;
+  showParent?: boolean;
   showVisibility?: boolean;
   showPinnedStyle?: boolean;
   lazyRendering?: boolean;
@@ -228,7 +229,7 @@ const Memo: React.FC<Props> = (props: Props) => {
     >
       <div className="memo-top-wrapper">
         <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
-          {props.showCreator && (
+          {props.showCreator && creator && (
             <>
               <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
                 <Tooltip title={"Creator"} placement="top">
@@ -246,6 +247,14 @@ const Memo: React.FC<Props> = (props: Props) => {
           <span className="text-sm text-gray-400 select-none" onClick={handleGotoMemoDetailPage}>
             {displayTime}
           </span>
+          {props.showPinnedStyle && memo.pinned && (
+            <>
+              <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
+              <Tooltip title={"Pinned"} placement="top">
+                <Icon.Bookmark className="w-4 h-auto text-green-600" />
+              </Tooltip>
+            </>
+          )}
           <div className="w-auto hidden group-hover:flex flex-row justify-between items-center">
             <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
             <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}`}>
@@ -253,14 +262,6 @@ const Memo: React.FC<Props> = (props: Props) => {
                 <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
               </Tooltip>
             </Link>
-            {memo.pinned && props.showPinnedStyle && (
-              <>
-                <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-                <Tooltip title={"Pinned"} placement="top">
-                  <Icon.Bookmark className="w-4 h-auto text-green-600" />
-                </Tooltip>
-              </>
-            )}
             {props.showVisibility && memo.visibility !== "PRIVATE" && (
               <>
                 <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
@@ -316,6 +317,18 @@ const Memo: React.FC<Props> = (props: Props) => {
           )}
         </div>
       </div>
+      {props.showParent && memo.parent && (
+        <div className="w-auto max-w-full mt-1">
+          <Link
+            className="px-2 py-0.5 border rounded-full max-w-xs w-auto text-xs flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
+            to={`/m/${memo.parent.id}`}
+          >
+            <Icon.ArrowUpRightFromCircle className="w-3 h-auto shrink-0 opacity-60" />
+            <span className="mx-1 opacity-60">#{memo.parent.id}</span>
+            <span className="truncate">{memo.parent.content}</span>
+          </Link>
+        </div>
+      )}
       <MemoContent
         content={memo.content}
         onMemoContentClick={handleMemoContentClick}
