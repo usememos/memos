@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"time"
 
 	"github.com/Masterminds/squirrel"
 
@@ -63,12 +62,10 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 	for rows.Next() {
 		webhook := &storepb.Webhook{}
 		var rowStatus string
-		var createdTs, updatedTs time.Time
-
 		if err := rows.Scan(
 			&webhook.Id,
-			&createdTs,
-			&updatedTs,
+			&webhook.CreatedTs,
+			&webhook.UpdatedTs,
 			&rowStatus,
 			&webhook.CreatorId,
 			&webhook.Name,
@@ -77,8 +74,6 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 			return nil, err
 		}
 
-		webhook.CreatedTs = createdTs.UnixNano()
-		webhook.UpdatedTs = updatedTs.UnixNano()
 		webhook.RowStatus = storepb.RowStatus(storepb.RowStatus_value[rowStatus])
 
 		list = append(list, webhook)

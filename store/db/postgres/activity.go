@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
@@ -35,7 +34,7 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 
 	if create.CreatedTs != 0 {
 		qb = qb.Columns("created_ts")
-		values = append(values, squirrel.Expr("TO_TIMESTAMP(?)", create.CreatedTs))
+		values = append(values, create.CreatedTs)
 	}
 
 	qb = qb.Values(values...).Suffix("RETURNING id")
@@ -60,7 +59,7 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 }
 
 func (d *DB) ListActivities(ctx context.Context, find *store.FindActivity) ([]*store.Activity, error) {
-	qb := squirrel.Select("id", "creator_id", "type", "level", "payload", "created_ts").
+	qb := squirrel.Select("id", "created_ts", "creator_id", "type", "level", "payload").
 		From("activity").
 		Where("1 = 1").
 		PlaceholderFormat(squirrel.Dollar)
@@ -87,19 +86,16 @@ func (d *DB) ListActivities(ctx context.Context, find *store.FindActivity) ([]*s
 	for rows.Next() {
 		activity := &store.Activity{}
 		var payloadBytes []byte
-		createdTsPlaceHolder := time.Time{}
 		if err := rows.Scan(
 			&activity.ID,
+			&activity.CreatedTs,
 			&activity.CreatorID,
 			&activity.Type,
 			&activity.Level,
 			&payloadBytes,
-			&createdTsPlaceHolder,
 		); err != nil {
 			return nil, err
 		}
-
-		activity.CreatedTs = createdTsPlaceHolder.Unix()
 
 		payload := &storepb.ActivityPayload{}
 		if err := protojson.Unmarshal(payloadBytes, payload); err != nil {

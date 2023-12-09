@@ -23,12 +23,12 @@ func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store
 
 	if create.CreatedTs != 0 {
 		qb = qb.Columns("created_ts")
-		values = append(values, time.Unix(0, create.CreatedTs))
+		values = append(values, create.CreatedTs)
 	}
 
 	if create.UpdatedTs != 0 {
 		qb = qb.Columns("updated_ts")
-		values = append(values, time.Unix(0, create.UpdatedTs))
+		values = append(values, create.UpdatedTs)
 	}
 
 	if create.MemoID != nil {
@@ -105,7 +105,6 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 	for rows.Next() {
 		resource := store.Resource{}
 		var memoID sql.NullInt32
-		var createdTs, updatedTs time.Time
 		dests := []any{
 			&resource.ID,
 			&resource.Filename,
@@ -113,8 +112,8 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 			&resource.Type,
 			&resource.Size,
 			&resource.CreatorID,
-			&createdTs,
-			&updatedTs,
+			&resource.CreatedTs,
+			&resource.UpdatedTs,
 			&resource.InternalPath,
 			&memoID,
 		}
@@ -124,9 +123,6 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		if err := rows.Scan(dests...); err != nil {
 			return nil, err
 		}
-
-		resource.CreatedTs = createdTs.UnixNano()
-		resource.UpdatedTs = updatedTs.UnixNano()
 
 		if memoID.Valid {
 			resource.MemoID = &memoID.Int32

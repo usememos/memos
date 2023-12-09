@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"encoding/binary"
 	"fmt"
 	"strings"
 
@@ -30,12 +29,12 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 
 	if create.CreatedTs != 0 {
 		builder = builder.Columns("created_ts")
-		values = append(values, squirrel.Expr("to_timestamp(?)", create.CreatedTs))
+		values = append(values, create.CreatedTs)
 	}
 
 	if create.UpdatedTs != 0 {
 		builder = builder.Columns("updated_ts")
-		values = append(values, squirrel.Expr("to_timestamp(?)", create.UpdatedTs))
+		values = append(values, create.UpdatedTs)
 	}
 
 	if create.RowStatus != "" {
@@ -78,8 +77,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	builder := squirrel.Select(
 		"memo.id AS id",
 		"memo.creator_id AS creator_id",
-		"EXTRACT(EPOCH FROM memo.created_ts) AS created_ts",
-		"EXTRACT(EPOCH FROM memo.updated_ts) AS updated_ts",
+		"memo.created_ts AS created_ts",
+		"memo.updated_ts AS updated_ts",
 		"memo.row_status AS row_status",
 		"memo.content AS content",
 		"memo.visibility AS visibility",
@@ -101,10 +100,10 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		builder = builder.Where("memo.row_status = ?", *v)
 	}
 	if v := find.CreatedTsBefore; v != nil {
-		builder = builder.Where("EXTRACT(EPOCH FROM memo.created_ts) < ?", *v)
+		builder = builder.Where("memo.created_ts < ?", *v)
 	}
 	if v := find.CreatedTsAfter; v != nil {
-		builder = builder.Where("EXTRACT(EPOCH FROM memo.created_ts) > ?", *v)
+		builder = builder.Where("memo.created_ts > ?", *v)
 	}
 	if v := find.Pinned; v != nil {
 		builder = builder.Where("memo_organizer.pinned = 1")
@@ -158,14 +157,13 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	// Process the result set
 	list := make([]*store.Memo, 0)
-	updatedTsPlaceHolder, createdTsPlaceHolder := make([]uint8, 8), make([]uint8, 8)
 	for rows.Next() {
 		var memo store.Memo
 		if err := rows.Scan(
 			&memo.ID,
 			&memo.CreatorID,
-			&createdTsPlaceHolder,
-			&updatedTsPlaceHolder,
+			&memo.CreatedTs,
+			&memo.UpdatedTs,
 			&memo.RowStatus,
 			&memo.Content,
 			&memo.Visibility,
@@ -173,10 +171,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		); err != nil {
 			return nil, err
 		}
-
-		// Convert the timestamps from Postgres to Go
-		memo.CreatedTs = int64(binary.BigEndian.Uint64(createdTsPlaceHolder))
-		memo.UpdatedTs = int64(binary.BigEndian.Uint64(updatedTsPlaceHolder))
 
 		list = append(list, &memo)
 	}
@@ -209,10 +203,10 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 
 	// Conditionally add set clauses
 	if v := update.CreatedTs; v != nil {
-		builder = builder.Set("created_ts", squirrel.Expr("to_timestamp(?)", *v))
+		builder = builder.Set("created_ts", *v)
 	}
 	if v := update.UpdatedTs; v != nil {
-		builder = builder.Set("updated_ts", squirrel.Expr("to_timestamp(?)", *v))
+		builder = builder.Set("updated_ts", *v)
 	}
 	if v := update.RowStatus; v != nil {
 		builder = builder.Set("row_status", *v)

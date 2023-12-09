@@ -11,7 +11,7 @@ import (
 
 func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, error) {
 	// Start building the insert statement
-	builder := squirrel.Insert("\"user\"").PlaceholderFormat(squirrel.Dollar)
+	builder := squirrel.Insert(`"user"`).PlaceholderFormat(squirrel.Dollar)
 
 	columns := []string{"username", "role", "email", "nickname", "password_hash", "avatar_url"}
 	builder = builder.Columns(columns...)
@@ -25,12 +25,12 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 
 	if create.CreatedTs != 0 {
 		builder = builder.Columns("created_ts")
-		values = append(values, squirrel.Expr("TO_TIMESTAMP(?)", create.CreatedTs))
+		values = append(values, create.CreatedTs)
 	}
 
 	if create.UpdatedTs != 0 {
 		builder = builder.Columns("updated_ts")
-		values = append(values, squirrel.Expr("TO_TIMESTAMP(?)", create.UpdatedTs))
+		values = append(values, create.UpdatedTs)
 	}
 
 	if create.ID != 0 {
@@ -66,7 +66,7 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 
 func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.User, error) {
 	// Start building the update statement
-	builder := squirrel.Update("\"user\"").PlaceholderFormat(squirrel.Dollar)
+	builder := squirrel.Update(`"user"`).PlaceholderFormat(squirrel.Dollar)
 
 	// Conditionally add set clauses
 	if v := update.UpdatedTs; v != nil {
@@ -115,9 +115,8 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 
 func (d *DB) ListUsers(ctx context.Context, find *store.FindUser) ([]*store.User, error) {
 	// Start building the SELECT statement
-	builder := squirrel.Select("id", "username", "role", "email", "nickname", "password_hash", "avatar_url",
-		"FLOOR(EXTRACT(EPOCH FROM created_ts)) AS created_ts", "FLOOR(EXTRACT(EPOCH FROM updated_ts)) AS updated_ts", "row_status").
-		From("\"user\"").
+	builder := squirrel.Select("id", "username", "role", "email", "nickname", "password_hash", "avatar_url", "created_ts", "updated_ts", "row_status").
+		From(`"user"`).
 		PlaceholderFormat(squirrel.Dollar)
 
 	// 1 = 1 is often used as a no-op in SQL, ensuring there's always a WHERE clause
@@ -196,7 +195,7 @@ func (d *DB) GetUser(ctx context.Context, find *store.FindUser) (*store.User, er
 
 func (d *DB) DeleteUser(ctx context.Context, delete *store.DeleteUser) error {
 	// Start building the DELETE statement
-	builder := squirrel.Delete("\"user\"").
+	builder := squirrel.Delete(`"user"`).
 		PlaceholderFormat(squirrel.Dollar).
 		Where(squirrel.Eq{"id": delete.ID})
 

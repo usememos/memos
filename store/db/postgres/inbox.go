@@ -2,7 +2,6 @@ package postgres
 
 import (
 	"context"
-	"time"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
@@ -76,12 +75,9 @@ func (d *DB) ListInboxes(ctx context.Context, find *store.FindInbox) ([]*store.I
 	for rows.Next() {
 		inbox := &store.Inbox{}
 		var messageBytes []byte
-		createdTsPlaceHolder := time.Time{}
-		if err := rows.Scan(&inbox.ID, &createdTsPlaceHolder, &inbox.SenderID, &inbox.ReceiverID, &inbox.Status, &messageBytes); err != nil {
+		if err := rows.Scan(&inbox.ID, &inbox.CreatedTs, &inbox.SenderID, &inbox.ReceiverID, &inbox.Status, &messageBytes); err != nil {
 			return nil, err
 		}
-
-		inbox.CreatedTs = createdTsPlaceHolder.Unix()
 
 		message := &storepb.InboxMessage{}
 		if err := protojsonUnmarshaler.Unmarshal(messageBytes, message); err != nil {
