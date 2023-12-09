@@ -1,13 +1,14 @@
 import { Button, Divider, Input, Option, Select } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { Link } from "react-router-dom";
 import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { useGlobalStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
 import { UserSetting } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import AppearanceSelect from "../AppearanceSelect";
-import LearnMore from "../LearnMore";
+import Icon from "../Icon";
 import LocaleSelect from "../LocaleSelect";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
@@ -103,25 +104,36 @@ const PreferencesSection = () => {
 
       <Divider className="!mt-3 !my-4" />
 
-      <div className="mb-2 w-full flex flex-row justify-between items-center">
-        <div className="w-auto flex items-center">
-          <span className="text-sm mr-1">{t("setting.preference-section.telegram-user-id")}</span>
-          <LearnMore url="https://usememos.com/docs/integration/telegram-bot" />
+      <div className="w-full flex flex-col justify-start items-start">
+        <div className="mb-2 w-full flex flex-row justify-between items-center">
+          <div className="w-auto flex items-center">
+            <span className="text-sm mr-1">{t("setting.preference-section.telegram-user-id")}</span>
+          </div>
+          <Button variant="outlined" color="neutral" onClick={handleSaveTelegramUserId}>
+            {t("common.save")}
+          </Button>
         </div>
-        <Button variant="outlined" color="neutral" onClick={handleSaveTelegramUserId}>
-          {t("common.save")}
-        </Button>
+        <Input
+          className="w-full"
+          sx={{
+            fontFamily: "monospace",
+            fontSize: "14px",
+          }}
+          value={telegramUserId}
+          onChange={(event) => handleTelegramUserIdChanged(event.target.value)}
+          placeholder={t("setting.preference-section.telegram-user-id-placeholder")}
+        />
+        <div className="w-full">
+          <Link
+            className="text-gray-500 text-sm inline-flex flex-row justify-start items-center mt-2 hover:underline hover:text-blue-600"
+            to="https://usememos.com/docs/integration/telegram-bot"
+            target="_blank"
+          >
+            {t("common.learn-more")}
+            <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
+          </Link>
+        </div>
       </div>
-      <Input
-        className="w-full"
-        sx={{
-          fontFamily: "monospace",
-          fontSize: "14px",
-        }}
-        value={telegramUserId}
-        onChange={(event) => handleTelegramUserIdChanged(event.target.value)}
-        placeholder={t("setting.preference-section.telegram-user-id-placeholder")}
-      />
 
       <Divider className="!my-4" />
 

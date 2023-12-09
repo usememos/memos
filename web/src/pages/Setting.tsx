@@ -1,6 +1,5 @@
 import { Option, Select } from "@mui/joy";
 import { useState } from "react";
-import BetaBadge from "@/components/BetaBadge";
 import Icon from "@/components/Icon";
 import MobileHeader from "@/components/MobileHeader";
 import MemberSection from "@/components/Settings/MemberSection";
@@ -82,13 +81,13 @@ const Setting = () => {
                   onClick={() => handleSectionSelectorItemClick("storage")}
                   className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
                 >
-                  <Icon.Database className="w-4 h-auto mr-2 opacity-80" /> {t("setting.storage")} <BetaBadge />
+                  <Icon.Database className="w-4 h-auto mr-2 opacity-80" /> {t("setting.storage")}
                 </span>
                 <span
                   onClick={() => handleSectionSelectorItemClick("sso")}
                   className={`section-item ${state.selectedSection === "sso" ? "selected" : ""}`}
                 >
-                  <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> {t("setting.sso")} <BetaBadge />
+                  <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> {t("setting.sso")}
                 </span>
               </div>
             </>

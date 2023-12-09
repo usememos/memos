@@ -64,7 +64,7 @@ const MemoList: React.FC = () => {
           return shouldShow;
         })
       : memos
-  ).filter((memo) => memo.creatorUsername === username && memo.rowStatus === "NORMAL" && !memo.parent);
+  ).filter((memo) => memo.creatorUsername === username && memo.rowStatus === "NORMAL");
 
   const pinnedMemos = shownMemos.filter((m) => m.pinned);
   const unpinnedMemos = shownMemos.filter((m) => !m.pinned);
