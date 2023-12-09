@@ -210,7 +210,7 @@ const MemoDetail = () => {
                   <span className="text-gray-400 text-sm ml-0.5">({comments.length})</span>
                 </div>
                 {comments.map((comment) => (
-                  <Memo key={comment.id} memo={comment} />
+                  <Memo key={comment.id} memo={comment} showCreator />
                 ))}
               </>
             )}

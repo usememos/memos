@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { getDateTimeString } from "@/helpers/datetime";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import "@/less/preview-image-dialog.less";
@@ -33,13 +32,6 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
 
   const handleCloseBtnClick = () => {
     destroy();
-  };
-
-  const handleDownloadBtnClick = () => {
-    const a = document.createElement("a");
-    a.href = imgUrls[currentIndex];
-    a.download = `memos-${getDateTimeString(Date.now())}.png`;
-    a.click();
   };
 
   const handleTouchStart = (event: React.TouchEvent) => {
@@ -125,9 +117,6 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
       <div className="btns-container">
         <button className="btn" onClick={handleCloseBtnClick}>
           <Icon.X className="icon-img" />
-        </button>
-        <button className="btn" onClick={handleDownloadBtnClick}>
-          <Icon.Download className="icon-img" />
         </button>
       </div>
       <div className="img-container" onClick={handleImgContainerClick}>
