@@ -11,20 +11,10 @@ import (
 )
 
 func (d *DB) UpsertTag(ctx context.Context, upsert *store.Tag) (*store.Tag, error) {
-	builder := squirrel.Insert("tag").
-		Columns("name", "creator_id").
-		Values(upsert.Name, upsert.CreatorID). // on conflict is not necessary, as only the pair of name and creator_id is unique
-		PlaceholderFormat(squirrel.Dollar)
-
-	query, args, err := builder.ToSql()
-	if err != nil {
+	stmt := "INSERT INTO tag (name, creator_id) VALUES ($1, $2) ON CONFLICT (name, creator_id) DO UPDATE SET name = $3"
+	if _, err := d.db.ExecContext(ctx, stmt, upsert.Name, upsert.CreatorID, upsert.Name); err != nil {
 		return nil, err
 	}
-
-	if _, err := d.db.ExecContext(ctx, query, args...); err != nil {
-		return nil, err
-	}
-
 	return upsert, nil
 }
 

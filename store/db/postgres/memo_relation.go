@@ -14,6 +14,7 @@ func (d *DB) UpsertMemoRelation(ctx context.Context, create *store.MemoRelation)
 	qb := squirrel.Insert("memo_relation").
 		Columns("memo_id", "related_memo_id", "type").
 		Values(create.MemoID, create.RelatedMemoID, create.Type).
+		Suffix("ON CONFLICT (version) DO NOTHING").
 		PlaceholderFormat(squirrel.Dollar)
 
 	stmt, args, err := qb.ToSql()

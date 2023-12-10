@@ -11,24 +11,14 @@ import (
 )
 
 func (d *DB) UpsertMemoOrganizer(ctx context.Context, upsert *store.MemoOrganizer) (*store.MemoOrganizer, error) {
-	pinnedValue := 0
+	pinned := 0
 	if upsert.Pinned {
-		pinnedValue = 1
+		pinned = 1
 	}
-	qb := squirrel.Insert("memo_organizer").
-		Columns("memo_id", "user_id", "pinned").
-		Values(upsert.MemoID, upsert.UserID, pinnedValue).
-		PlaceholderFormat(squirrel.Dollar)
-
-	stmt, args, err := qb.ToSql()
-	if err != nil {
+	stmt := "INSERT INTO memo_organizer (memo_id, user_id, pinned) VALUES ($1, $2, $3) ON CONFLICT (memo_id, user_id) DO UPDATE SET pinned = $4"
+	if _, err := d.db.ExecContext(ctx, stmt, upsert.MemoID, upsert.UserID, pinned, pinned); err != nil {
 		return nil, err
 	}
-
-	if _, err = d.db.ExecContext(ctx, stmt, args...); err != nil {
-		return nil, err
-	}
-
 	return upsert, nil
 }
 

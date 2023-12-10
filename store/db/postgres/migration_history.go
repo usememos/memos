@@ -44,9 +44,10 @@ func (d *DB) UpsertMigrationHistory(ctx context.Context, upsert *store.UpsertMig
 	qb := squirrel.Insert("migration_history").
 		Columns("version").
 		Values(upsert.Version).
-		Suffix("ON CONFLICT (version) DO UPDATE SET version = ?", upsert.Version)
+		Suffix("ON CONFLICT (version) DO NOTHING").
+		PlaceholderFormat(squirrel.Dollar)
 
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
+	query, args, err := qb.ToSql()
 	if err != nil {
 		return nil, err
 	}
