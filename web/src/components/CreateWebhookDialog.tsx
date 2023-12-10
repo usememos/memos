@@ -133,7 +133,7 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
             />
           </div>
         </div>
-        <div className="w-full flex flex-row justify-end items-center mt-4 space-x-2">
+        <div className="w-full flex flex-row justify-end items-center mt-2 space-x-2">
           <Button color="neutral" variant="plain" disabled={requestState.isLoading} loading={requestState.isLoading} onClick={destroy}>
             {t("common.cancel")}
           </Button>
