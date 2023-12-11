@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 
@@ -94,8 +95,15 @@ func copydb(fromProfile, toProfile *_profile.Profile) error {
 	for table := range copyMap {
 		println("Checking " + table + "...")
 		var cnt int
-		err := toDb.QueryRowContext(ctx, "SELECT COUNT(*) FROM "+table).Scan(&cnt)
+		if toProfile.Driver == "postgres" && table == "user" {
+			table = `"user"`
+		}
+		builder := squirrel.Select("COUNT(*)").From(table)
+		query, args, err := builder.ToSql()
 		if err != nil {
+			return errors.Wrapf(err, "fail to build query '%s'", table)
+		}
+		if err := toDb.QueryRowContext(ctx, query, args...).Scan(&cnt); err != nil {
 			return errors.Wrapf(err, "fail to check '%s'", table)
 		}
 		if cnt > 0 && table != "system_setting" {
