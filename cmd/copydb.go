@@ -95,6 +95,9 @@ func copydb(fromProfile, toProfile *_profile.Profile) error {
 	for table := range copyMap {
 		println("Checking " + table + "...")
 		var cnt int
+		if toProfile.Driver == "postgres" && table == "user" {
+			table = `"user"`
+		}
 		builder := squirrel.Select("COUNT(*)").From(table)
 		query, args, err := builder.ToSql()
 		if err != nil {
