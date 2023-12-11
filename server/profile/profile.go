@@ -67,11 +67,6 @@ func GetProfile() (*Profile, error) {
 		return nil, err
 	}
 
-	profile.Driver = "postgres"
-	profile.DSN = "postgresql://postgres:4eOcgrWWRpsjBZsR@db.qqlgcifdwzjwcqcrxypg.supabase.co:5432/memos"
-	profile.Mode = "prod"
-	profile.Data = "./"
-
 	if profile.Mode != "demo" && profile.Mode != "dev" && profile.Mode != "prod" {
 		profile.Mode = "demo"
 	}
