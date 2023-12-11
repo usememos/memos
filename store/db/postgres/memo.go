@@ -21,27 +21,6 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 	// Add initial values for the columns
 	values := []any{create.CreatorID, create.Content, create.Visibility}
 
-	// Conditionally add other fields and values
-	if create.ID != 0 {
-		builder = builder.Columns("id")
-		values = append(values, create.ID)
-	}
-
-	if create.CreatedTs != 0 {
-		builder = builder.Columns("created_ts")
-		values = append(values, create.CreatedTs)
-	}
-
-	if create.UpdatedTs != 0 {
-		builder = builder.Columns("updated_ts")
-		values = append(values, create.UpdatedTs)
-	}
-
-	if create.RowStatus != "" {
-		builder = builder.Columns("row_status")
-		values = append(values, create.RowStatus)
-	}
-
 	// Add all the values at once
 	builder = builder.Values(values...)
 

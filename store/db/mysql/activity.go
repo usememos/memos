@@ -24,18 +24,6 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 	placeholder := []string{"?", "?", "?", "?"}
 	args := []any{create.CreatorID, create.Type.String(), create.Level.String(), payloadString}
 
-	if create.ID != 0 {
-		fields = append(fields, "`id`")
-		placeholder = append(placeholder, "?")
-		args = append(args, create.ID)
-	}
-
-	if create.CreatedTs != 0 {
-		fields = append(fields, "`created_ts`")
-		placeholder = append(placeholder, "FROM_UNIXTIME(?)")
-		args = append(args, create.CreatedTs)
-	}
-
 	stmt := "INSERT INTO activity (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {

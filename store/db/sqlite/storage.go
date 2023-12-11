@@ -12,12 +12,6 @@ func (d *DB) CreateStorage(ctx context.Context, create *store.Storage) (*store.S
 	placeholder := []string{"?", "?", "?"}
 	args := []any{create.Name, create.Type, create.Config}
 
-	if create.ID != 0 {
-		fields = append(fields, "`id`")
-		placeholder = append(placeholder, "?")
-		args = append(args, create.ID)
-	}
-
 	stmt := "INSERT INTO `storage` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
 		&create.ID,

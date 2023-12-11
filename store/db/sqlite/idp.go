@@ -27,10 +27,6 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 	fields := []string{"`name`", "`type`", "`identifier_filter`", "`config`"}
 	args := []any{create.Name, create.Type, create.IdentifierFilter, string(configBytes)}
 
-	if create.ID != 0 {
-		fields, placeholders, args = append(fields, "`id`"), append(placeholders, "?"), append(args, create.ID)
-	}
-
 	stmt := "INSERT INTO `idp` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholders, ", ") + ") RETURNING `id`"
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID); err != nil {
 		return nil, err

@@ -26,17 +26,6 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 		PlaceholderFormat(squirrel.Dollar)
 
 	values := []any{create.CreatorID, create.Type.String(), create.Level.String(), payloadString}
-
-	if create.ID != 0 {
-		qb = qb.Columns("id")
-		values = append(values, create.ID)
-	}
-
-	if create.CreatedTs != 0 {
-		qb = qb.Columns("created_ts")
-		values = append(values, create.CreatedTs)
-	}
-
 	qb = qb.Values(values...).Suffix("RETURNING id")
 
 	stmt, args, err := qb.ToSql()

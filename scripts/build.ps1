@@ -114,7 +114,7 @@ $backendTime = Measure-Command {
         }
 
         Write-Host "Building $os/$arch to $output..." -f Blue
-        &go build -trimpath -o $output -ldflags="$($ldFlags -join " ")" ./main.go | Out-Host
+        &go build -trimpath -o $output -ldflags="$($ldFlags -join " ")" ./bin/memos/main.go | Out-Host
         if (!$?) {
             Write-Host -BackgroundColor red -ForegroundColor white "'go build' failed for $build ($outputBinary)!. See above."
             continue

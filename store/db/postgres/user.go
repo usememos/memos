@@ -18,28 +18,7 @@ func (d *DB) CreateUser(ctx context.Context, create *store.User) (*store.User, e
 
 	values := []any{create.Username, create.Role, create.Email, create.Nickname, create.PasswordHash, create.AvatarURL}
 
-	if create.RowStatus != "" {
-		builder = builder.Columns("row_status")
-		values = append(values, create.RowStatus)
-	}
-
-	if create.CreatedTs != 0 {
-		builder = builder.Columns("created_ts")
-		values = append(values, create.CreatedTs)
-	}
-
-	if create.UpdatedTs != 0 {
-		builder = builder.Columns("updated_ts")
-		values = append(values, create.UpdatedTs)
-	}
-
-	if create.ID != 0 {
-		builder = builder.Columns("id")
-		values = append(values, create.ID)
-	}
-
 	builder = builder.Values(values...)
-
 	builder = builder.Suffix("RETURNING id")
 
 	// Prepare the final query

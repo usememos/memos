@@ -12,11 +12,6 @@ func (d *DB) CreateStorage(ctx context.Context, create *store.Storage) (*store.S
 	qb := squirrel.Insert("storage").Columns("name", "type", "config")
 	values := []any{create.Name, create.Type, create.Config}
 
-	if create.ID != 0 {
-		qb = qb.Columns("id")
-		values = append(values, create.ID)
-	}
-
 	qb = qb.Values(values...).Suffix("RETURNING id")
 	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {

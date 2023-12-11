@@ -25,11 +25,6 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 	qb := squirrel.Insert("idp").Columns("name", "type", "identifier_filter", "config")
 	values := []any{create.Name, create.Type, create.IdentifierFilter, string(configBytes)}
 
-	if create.ID != 0 {
-		qb = qb.Columns("id")
-		values = append(values, create.ID)
-	}
-
 	qb = qb.Values(values...).PlaceholderFormat(squirrel.Dollar)
 	qb = qb.Suffix("RETURNING id")
 

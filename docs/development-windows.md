@@ -69,7 +69,7 @@ Move-Item "./web/dist" "./server/" -Force
 ### Backend
 
 ```powershell
-go build -o ./build/memos.exe ./main.go
+go build -o ./build/memos.exe ./bin/memos/main.go
 ```
 
 ## ❕ Notes

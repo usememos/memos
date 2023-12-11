@@ -12,13 +12,6 @@ func (d *DB) CreateWebhook(ctx context.Context, create *storepb.Webhook) (*store
 	fields := []string{"`name`", "`url`", "`creator_id`"}
 	placeholder := []string{"?", "?", "?"}
 	args := []any{create.Name, create.Url, create.CreatorId}
-
-	if create.Id != 0 {
-		fields = append(fields, "`id`")
-		placeholder = append(placeholder, "?")
-		args = append(args, create.Id)
-	}
-
 	stmt := "INSERT INTO `webhook` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ") RETURNING `id`, `created_ts`, `updated_ts`, `row_status`"
 	var rowStatus string
 	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(

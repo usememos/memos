@@ -13,11 +13,6 @@ func (d *DB) CreateWebhook(ctx context.Context, create *storepb.Webhook) (*store
 	qb := squirrel.Insert("webhook").Columns("name", "url", "creator_id")
 	values := []any{create.Name, create.Url, create.CreatorId}
 
-	if create.Id != 0 {
-		qb = qb.Columns("id")
-		values = append(values, create.Id)
-	}
-
 	qb = qb.Values(values...).Suffix("RETURNING id")
 	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {

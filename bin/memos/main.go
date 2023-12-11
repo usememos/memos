@@ -1,4 +1,4 @@
-package cmd
+package main
 
 import (
 	"context"
@@ -185,4 +185,11 @@ func printGreetings() {
 	fmt.Printf("👉Website: %s\n", "https://usememos.com")
 	fmt.Printf("👉GitHub: %s\n", "https://github.com/usememos/memos")
 	println("---")
+}
+
+func main() {
+	err := Execute()
+	if err != nil {
+		panic(err)
+	}
 }
