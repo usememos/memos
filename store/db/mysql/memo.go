@@ -212,38 +212,6 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	return nil
 }
 
-func (d *DB) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]store.Visibility, error) {
-	args := make([]any, 0, len(memoIDs))
-	list := make([]string, 0, len(memoIDs))
-	for _, memoID := range memoIDs {
-		args = append(args, memoID)
-		list = append(list, "?")
-	}
-
-	where := fmt.Sprintf("`id` in (%s)", strings.Join(list, ","))
-	query := "SELECT DISTINCT(`visibility`) FROM `memo` WHERE " + where
-	rows, err := d.db.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	visibilityList := make([]store.Visibility, 0)
-	for rows.Next() {
-		var visibility store.Visibility
-		if err := rows.Scan(&visibility); err != nil {
-			return nil, err
-		}
-		visibilityList = append(visibilityList, visibility)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return visibilityList, nil
-}
-
 func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
 	stmt := "DELETE FROM `memo` WHERE `creator_id` NOT IN (SELECT `id` FROM `user`)"
 	_, err := tx.ExecContext(ctx, stmt)

@@ -108,7 +108,3 @@ func (s *Store) UpdateMemo(ctx context.Context, update *UpdateMemo) error {
 func (s *Store) DeleteMemo(ctx context.Context, delete *DeleteMemo) error {
 	return s.driver.DeleteMemo(ctx, delete)
 }
-
-func (s *Store) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]Visibility, error) {
-	return s.driver.FindMemosVisibilityList(ctx, memoIDs)
-}

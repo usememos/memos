@@ -39,7 +39,6 @@ type Driver interface {
 	ListMemos(ctx context.Context, find *FindMemo) ([]*Memo, error)
 	UpdateMemo(ctx context.Context, update *UpdateMemo) error
 	DeleteMemo(ctx context.Context, delete *DeleteMemo) error
-	FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]Visibility, error)
 
 	// MemoRelation model related methods.
 	UpsertMemoRelation(ctx context.Context, create *MemoRelation) (*MemoRelation, error)

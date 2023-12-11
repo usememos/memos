@@ -232,19 +232,8 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 }
 
 func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
-	// Start building the DELETE statement
-	builder := squirrel.Delete("memo").
-		PlaceholderFormat(squirrel.Dollar).
-		Where(squirrel.Eq{"id": delete.ID})
-
-	// Prepare the final query
-	query, args, err := builder.ToSql()
-	if err != nil {
-		return err
-	}
-
-	// Execute the query with the context
-	result, err := d.db.ExecContext(ctx, query, args...)
+	stmt := `DELETE FROM memo WHERE id = $1`
+	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
 	if err != nil {
 		return err
 	}
@@ -253,47 +242,7 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 		return err
 	}
 
-	// Perform any additional cleanup or operations such as vacuuming
-	// irving: wait, why do we need to vacuum here?
-	// I don't know why delete memo needs to vacuum. so I commented out.
-	// REVIEWERS LOOK AT ME: please check this.
-
 	return d.Vacuum(ctx)
-}
-
-func (d *DB) FindMemosVisibilityList(ctx context.Context, memoIDs []int32) ([]store.Visibility, error) {
-	// Start building the SELECT statement
-	builder := squirrel.Select("DISTINCT(visibility)").From("memo").
-		PlaceholderFormat(squirrel.Dollar).
-		Where(squirrel.Eq{"id": memoIDs})
-
-	// Prepare the final query
-	query, args, err := builder.ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	// Execute the query with the context
-	rows, err := d.db.QueryContext(ctx, query, args...)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	visibilityList := make([]store.Visibility, 0)
-	for rows.Next() {
-		var visibility store.Visibility
-		if err := rows.Scan(&visibility); err != nil {
-			return nil, err
-		}
-		visibilityList = append(visibilityList, visibility)
-	}
-
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return visibilityList, nil
 }
 
 func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
