@@ -67,6 +67,8 @@ linters-settings:
         disabled: true
       - name: early-return
         disabled: true
+      - name: use-any
+        disabled: true
   gocritic:
     disabled-checks:
       - ifElseChain

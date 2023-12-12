@@ -5,13 +5,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 
+	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
 
 func TestCodeBlockParser(t *testing.T) {
 	tests := []struct {
 		text      string
-		codeBlock *CodeBlockParser
+		codeBlock ast.Node
 	}{
 		{
 			text:      "```Hello world!```",
@@ -19,21 +20,21 @@ func TestCodeBlockParser(t *testing.T) {
 		},
 		{
 			text: "```\nHello\n```",
-			codeBlock: &CodeBlockParser{
+			codeBlock: &ast.CodeBlock{
 				Language: "",
 				Content:  "Hello",
 			},
 		},
 		{
 			text: "```\nHello world!\n```",
-			codeBlock: &CodeBlockParser{
+			codeBlock: &ast.CodeBlock{
 				Language: "",
 				Content:  "Hello world!",
 			},
 		},
 		{
 			text: "```java\nHello \n world!\n```",
-			codeBlock: &CodeBlockParser{
+			codeBlock: &ast.CodeBlock{
 				Language: "java",
 				Content:  "Hello \n world!",
 			},
@@ -48,7 +49,7 @@ func TestCodeBlockParser(t *testing.T) {
 		},
 		{
 			text: "```java\nHello \n world!\n```\n123123",
-			codeBlock: &CodeBlockParser{
+			codeBlock: &ast.CodeBlock{
 				Language: "java",
 				Content:  "Hello \n world!",
 			},
@@ -57,7 +58,7 @@ func TestCodeBlockParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		codeBlock := NewCodeBlockParser()
-		require.Equal(t, test.codeBlock, codeBlock.Match(tokens))
+		parser := NewCodeBlockParser()
+		require.Equal(t, test.codeBlock, parser.Parse(tokens))
 	}
 }

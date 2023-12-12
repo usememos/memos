@@ -1,12 +1,20 @@
 package ast
 
-func NewNode(tp, text string) *Node {
-	return &Node{
-		Type: tp,
-		Text: text,
-	}
+type Node interface {
+	Type() NodeType
 }
 
-func (n *Node) AddChild(child *Node) {
-	n.Children = append(n.Children, child)
+type NodeType int
+
+func (t NodeType) String() string {
+	return nodeTypeNames[t]
+}
+
+var nodeTypeIndex NodeType
+var nodeTypeNames = []string{""}
+
+func NewNodeType(name string) NodeType {
+	nodeTypeNames = append(nodeTypeNames, name)
+	nodeTypeIndex++
+	return nodeTypeIndex
 }

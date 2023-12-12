@@ -72,3 +72,15 @@ func Tokenize(text string) []*Token {
 	}
 	return tokens
 }
+
+func (t *Token) String() string {
+	return t.Value
+}
+
+func Stringify(tokens []*Token) string {
+	text := ""
+	for _, token := range tokens {
+		text += token.String()
+	}
+	return text
+}
