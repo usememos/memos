@@ -61,6 +61,30 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			text: "Hello **world**!\n```javascript\nconsole.log(\"Hello world!\");\n```",
+			nodes: []ast.Node{
+				&ast.Paragraph{
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "Hello ",
+						},
+						&ast.Bold{
+							Symbol:  "*",
+							Content: "world",
+						},
+						&ast.Text{
+							Content: "!",
+						},
+					},
+				},
+				&ast.LineBreak{},
+				&ast.CodeBlock{
+					Language: "javascript",
+					Content:  "console.log(\"Hello world!\");",
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {

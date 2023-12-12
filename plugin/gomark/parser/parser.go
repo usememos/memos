@@ -26,7 +26,9 @@ type BlockParser interface {
 func Parse(tokens []*tokenizer.Token) []ast.Node {
 	nodes := []ast.Node{}
 	blockParsers := []BlockParser{
+		NewCodeBlockParser(),
 		NewParagraphParser(),
+		NewLineBreakParser(),
 	}
 	for len(tokens) > 0 {
 		for _, blockParser := range blockParsers {

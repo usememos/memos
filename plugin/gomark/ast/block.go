@@ -3,6 +3,20 @@ package ast
 type BaseBlock struct {
 }
 
+type LineBreak struct {
+	BaseBlock
+}
+
+var NodeTypeLineBreak = NewNodeType("LineBreak")
+
+func NewLineBreak() *LineBreak {
+	return &LineBreak{}
+}
+
+func (*LineBreak) Type() NodeType {
+	return NodeTypeLineBreak
+}
+
 type Paragraph struct {
 	BaseBlock
 
