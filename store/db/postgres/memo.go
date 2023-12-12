@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"strings"
 
 	"github.com/Masterminds/squirrel"
@@ -216,32 +215,14 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	if err != nil {
 		return err
 	}
-
 	if _, err := result.RowsAffected(); err != nil {
 		return err
 	}
-
 	return d.Vacuum(ctx)
 }
 
 func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
-	// First, build the subquery
-	// select from user is select the DB users, not the memos users.
-	subQuery, subArgs, err := squirrel.Select("id").From("public.user").PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
-		return err
-	}
-
-	// Now, build the main delete query using the subquery
-	query, args, err := squirrel.Delete("memo").
-		Where(fmt.Sprintf("creator_id NOT IN (%s)", subQuery), subArgs...).
-		PlaceholderFormat(squirrel.Dollar).
-		ToSql()
-	if err != nil {
-		return err
-	}
-
-	// Execute the query
-	_, err = tx.ExecContext(ctx, query, args...)
+	stmt := `DELETE FROM memo WHERE creator_id NOT IN (SELECT id FROM "user")`
+	_, err := tx.ExecContext(ctx, stmt)
 	return err
 }
