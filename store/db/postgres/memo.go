@@ -226,7 +226,8 @@ func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 
 func vacuumMemo(ctx context.Context, tx *sql.Tx) error {
 	// First, build the subquery
-	subQuery, subArgs, err := squirrel.Select("id").From("user").PlaceholderFormat(squirrel.Dollar).ToSql()
+	// select from user is select the DB users, not the memos users.
+	subQuery, subArgs, err := squirrel.Select("id").From("public.user").PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return err
 	}
