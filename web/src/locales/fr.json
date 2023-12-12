@@ -1,7 +1,7 @@
 {
   "about": {
     "about-memos": "À propos des memos",
-    "memos-description": "memos est une application web de prise de notes que vous pouvez utiliser pour écrire, organiser et partager des notes.",
+    "memos-description": "Memos est une application web de prise de notes que vous pouvez utiliser pour écrire, organiser et partager des notes.",
     "no-server-description": "Aucune description n'est configurée pour ce serveur.",
     "other-projects": "Autres projets",
     "powered-by": "Propulsé par"
@@ -22,7 +22,7 @@
   "common": {
     "about": "À propos",
     "admin": "Admin",
-    "archive": "Archive",
+    "archive": "Archiver",
     "archived": "Archivés",
     "avatar": "Avatar",
     "basic": "Base",
@@ -38,25 +38,25 @@
     "delete": "Supprimer",
     "edit": "Modifier",
     "email": "Email",
-    "expand": "Développer",
-    "explore": "Explorez",
+    "expand": "Agrandir",
+    "explore": "Explorer",
     "filter": "Filtre",
     "filter-period": "{{from}} à {{to}}",
-    "fold": "Plier",
+    "fold": "Rétracter",
     "home": "Accueil",
     "image": "Image",
     "inbox": "Boîte de réception",
     "language": "Langue",
     "learn-more": "En savoir plus",
     "link": "Lien",
-    "mark": "Marquer",
+    "mark": "Lier",
     "name": "Nom",
     "new": "Nouveau",
     "nickname": "Surnom",
     "null": "Nulle",
     "or": "ou",
     "password": "Mot de passe",
-    "pin": "Épinglé",
+    "pin": "Épingler",
     "preview": "Aperçu",
     "profile": "Profil",
     "remember-me": "Se souvenir de moi",
@@ -76,7 +76,7 @@
     "tags": "Étiquettes",
     "title": "Titre",
     "type": "Type",
-    "unpin": "Détacher",
+    "unpin": "Désépingler",
     "update": "Mise à jour",
     "upload": "Téléverser",
     "username": "Nom d'utilisateur",
@@ -87,7 +87,7 @@
   },
   "daily-review": {
     "no-memos": "Oups, il n'y a rien.",
-    "title": "Récap Journalier"
+    "title": "Résumé journalier"
   },
   "days": {
     "fri": "Ve",
@@ -106,7 +106,7 @@
     "only-image-supported": "Seul le fichier image est pris en charge.",
     "placeholder": "Une idée...",
     "resources": "Ressources",
-    "save": "Sauvegarder"
+    "save": "Enregistrer"
   },
   "embed-memo": {
     "copy": "Copier",
@@ -127,7 +127,7 @@
     "version-update": "Une nouvelle version {{version}} est disponible dès maintenant !"
   },
   "memo": {
-    "archived-at": "Archivé à",
+    "archived-at": "Archivé le",
     "archived-memos": "Memos Archivés",
     "comment": {
       "no-comment": "Pas de commentaires",
@@ -143,14 +143,14 @@
     "search-placeholder": "Recherche de memos",
     "view-detail": "Voir le détail",
     "visibility": {
-      "disabled": "Les mémos publics sont désactivés",
+      "disabled": "Les memos publics sont désactivés",
       "private": "Privé",
       "protected": "Accès aux membres",
       "public": "Public"
     }
   },
   "message": {
-    "change-memo-created-time": "Modifier l'heure de création du mémo",
+    "change-memo-created-time": "Modifier l'heure de création du memo",
     "change-resource-filename": "Changer le nom du fichier de ressources",
     "click-to-save-the-image": "Cliquez pour enregistrer l'image",
     "copied": "Copié",
@@ -166,7 +166,7 @@
     "login-failed": "Connexion échouée",
     "maximum-upload-size-is": "La taille maximale autorisée pour le téléversement est {{size}} MiB",
     "memo-not-found": "Memo introuvable.",
-    "memo-updated-datetime": "La date et l'heure de création du mémo ont été modifiées.",
+    "memo-updated-datetime": "La date et l'heure de création du memo ont été modifiées.",
     "memos-ready": "tous les memos sont prêts",
     "new-password-not-match": "Les nouveaux mots de passe ne correspondent pas.",
     "no-data": "Aucune donnée n'a été trouvée.",
@@ -174,7 +174,7 @@
     "password-changed": "Mot de passe modifié",
     "password-login-disabled": "Impossible de supprimer le dernier fournisseur d'identité lorsque la connexion par mot de passe est désactivée",
     "password-not-match": "Les mots de passe ne correspondent pas.",
-    "private-only": "Ce mémo est uniquement privé.",
+    "private-only": "Ce memo est uniquement privé.",
     "resource-filename-updated": "Le nom de fichier de la ressource a changé.",
     "resource-ready": "toutes les ressources sont prêtes",
     "restored-successfully": "Restauré avec succès",
@@ -215,7 +215,7 @@
     "delete-selected-resources": "Supprimer les ressources sélectionnées",
     "fetching-data": "Récupération des données…",
     "file-drag-drop-prompt": "Glissez-déposez votre fichier ici pour le téléverser",
-    "linked-amount": "Montant du mémo lié",
+    "linked-amount": "Quantité lié",
     "no-files-selected": "Aucun fichier sélectionné",
     "no-resources": "Aucune ressource.",
     "no-unused-resources": "Aucune ressource inutilisée",
@@ -235,7 +235,7 @@
     "account-section": {
       "change-password": "Modifier le mot de passe",
       "email-note": "Optionnel",
-      "nickname-note": "Affiché dans la bannière",
+      "nickname-note": "Affiché dans le profil",
       "openapi-reset": "Réinitialiser la clé OpenAPI",
       "openapi-sample-post": "Bonjour #memos de {{url}}",
       "openapi-title": "OpenAPI",
@@ -252,7 +252,7 @@
     "member": "Membre",
     "member-list": "Liste des membres",
     "member-section": {
-      "archive-member": "Membre Archivé",
+      "archive-member": "Membre archivé",
       "archive-warning": "Êtes-vous sûr d'archiver {{username}} ?",
       "create-a-member": "Créer un membre",
       "delete-member": "Supprimer un membre",
@@ -263,13 +263,13 @@
     "preference-section": {
       "auto-collapse": "Réduction automatique",
       "created_ts": "Heure de création",
-      "daily-review-time-offset": "Décalage horaire du Récap Journalier",
-      "default-memo-sort-option": "Tri par défaut des mémos",
-      "default-memo-visibility": "Visibilité du mémo par défaut",
+      "daily-review-time-offset": "Décalage horaire du résumé journalier",
+      "default-memo-sort-option": "Temps d'affichage des memos",
+      "default-memo-visibility": "Visibilité par défaut des memos",
       "default-resource-visibility": "Visibilité par défaut des ressources",
       "editor-font-style": "Style de police de l'éditeur",
       "enable-double-click": "Activer le double-clic",
-      "enable-folding-memo": "Activer le mémo pliable",
+      "enable-folding-memo": "Activer le memo pliable",
       "mobile-editor-style": "Style de l'éditeur mobile",
       "telegram-user-id": "Telegram UserID",
       "telegram-user-id-placeholder": "Envoyez n'importe quel mot à votre Bot Telegram en tant que memo",
@@ -353,8 +353,8 @@
       "disable-password-login": "Désactiver la connexion par mot de passe",
       "disable-password-login-final-warning": "Veuillez taper \"CONFIRM\" si vous savez ce que vous faites.",
       "disable-password-login-warning": "Cela désactivera la connexion par mot de passe pour tous les utilisateurs. Il n'est pas possible de se connecter sans revenir sur ce paramètre dans la base de données si les fournisseurs d'identité configurés échouent. Vous devrez également être très prudent lorsque vous supprimez un fournisseur d'identité",
-      "disable-public-memos": "Désactiver les commentaires publics",
-      "display-with-updated-time": "Afficher avec l'horodatage",
+      "disable-public-memos": "Désactiver les memos publics",
+      "display-with-updated-time": "Mettre à jour l'heure des memos lorsqu'ils sont modifiés",
       "enable-password-login": "Activer la connexion par mot de passe",
       "enable-password-login-warning": "Ceci activera la connexion par mot de passe pour tous les utilisateurs. Ne continuez que si vous souhaitez que les utilisateurs puissent se connecter à la fois par SSO et par mot de passe",
       "max-upload-size": "Taille maximale du téléversement (MiB)",
