@@ -49,7 +49,7 @@ func (d *DB) UpdateUser(ctx context.Context, update *store.UpdateUser) (*store.U
 
 	// Conditionally add set clauses
 	if v := update.UpdatedTs; v != nil {
-		builder = builder.Set("updated_ts", squirrel.Expr("to_timestamp(?)", *v))
+		builder = builder.Set("updated_ts", *v)
 	}
 	if v := update.RowStatus; v != nil {
 		builder = builder.Set("row_status", *v)
