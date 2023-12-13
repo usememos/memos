@@ -39,11 +39,11 @@ func (p *ParagraphParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	}
 
 	contentTokens := tokens[:size]
-	paragraph := &ast.Paragraph{}
-	children, err := ParseInline(paragraph, contentTokens)
+	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err
 	}
-	paragraph.Children = children
-	return paragraph, nil
+	return &ast.Paragraph{
+		Children: children,
+	}, nil
 }

@@ -42,11 +42,11 @@ func (p *BlockquoteParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	}
 
 	contentTokens := tokens[2:size]
-	blockquote := &ast.Blockquote{}
-	children, err := ParseInline(blockquote, contentTokens)
+	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err
 	}
-	blockquote.Children = children
-	return blockquote, nil
+	return &ast.Blockquote{
+		Children: children,
+	}, nil
 }

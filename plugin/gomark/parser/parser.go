@@ -73,7 +73,7 @@ var defaultInlineParsers = []InlineParser{
 	NewTextParser(),
 }
 
-func ParseInline(parent ast.Node, tokens []*tokenizer.Token) ([]ast.Node, error) {
+func ParseInline(tokens []*tokenizer.Token) ([]ast.Node, error) {
 	nodes := []ast.Node{}
 	var prevNode ast.Node
 	for len(tokens) > 0 {
@@ -86,8 +86,8 @@ func ParseInline(parent ast.Node, tokens []*tokenizer.Token) ([]ast.Node, error)
 				}
 
 				tokens = tokens[size:]
-				node.SetParent(parent)
 				if prevNode != nil {
+					// Merge text nodes if possible.
 					if prevNode.Type() == ast.NodeTypeText && node.Type() == ast.NodeTypeText {
 						prevNode.(*ast.Text).Content += node.(*ast.Text).Content
 						break
@@ -96,13 +96,11 @@ func ParseInline(parent ast.Node, tokens []*tokenizer.Token) ([]ast.Node, error)
 					prevNode.SetNextSibling(node)
 					node.SetPrevSibling(prevNode)
 				}
-
 				nodes = append(nodes, node)
 				prevNode = node
 				break
 			}
 		}
 	}
-	parent.SetChildren(nodes)
 	return nodes, nil
 }

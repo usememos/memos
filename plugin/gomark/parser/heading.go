@@ -65,13 +65,12 @@ func (p *HeadingParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	}
 
 	contentTokens := tokens[level+1 : size]
-	heading := &ast.Heading{
-		Level: level,
-	}
-	children, err := ParseInline(heading, contentTokens)
+	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err
 	}
-	heading.Children = children
-	return heading, nil
+	return &ast.Heading{
+		Level:    level,
+		Children: children,
+	}, nil
 }
