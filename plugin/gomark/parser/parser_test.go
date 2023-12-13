@@ -89,7 +89,6 @@ func TestParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		nodes := Parse(tokens)
-		require.Equal(t, test.nodes, nodes)
+		require.Equal(t, test.nodes, Parse(tokens))
 	}
 }

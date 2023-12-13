@@ -9,10 +9,6 @@ type LineBreak struct {
 
 var NodeTypeLineBreak = NewNodeType("LineBreak")
 
-func NewLineBreak() *LineBreak {
-	return &LineBreak{}
-}
-
 func (*LineBreak) Type() NodeType {
 	return NodeTypeLineBreak
 }
@@ -24,12 +20,6 @@ type Paragraph struct {
 }
 
 var NodeTypeParagraph = NewNodeType("Paragraph")
-
-func NewParagraph(children []Node) *Paragraph {
-	return &Paragraph{
-		Children: children,
-	}
-}
 
 func (*Paragraph) Type() NodeType {
 	return NodeTypeParagraph
@@ -44,13 +34,19 @@ type CodeBlock struct {
 
 var NodeTypeCodeBlock = NewNodeType("CodeBlock")
 
-func NewCodeBlock(language, content string) *CodeBlock {
-	return &CodeBlock{
-		Language: language,
-		Content:  content,
-	}
-}
-
 func (*CodeBlock) Type() NodeType {
 	return NodeTypeCodeBlock
+}
+
+type Heading struct {
+	BaseBlock
+
+	Level    int
+	Children []Node
+}
+
+var NodeTypeHeading = NewNodeType("Heading")
+
+func (*Heading) Type() NodeType {
+	return NodeTypeHeading
 }

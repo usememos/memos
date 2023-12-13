@@ -29,5 +29,5 @@ func (p *LineBreakParser) Parse(tokens []*tokenizer.Token) ast.Node {
 		return nil
 	}
 
-	return ast.NewLineBreak()
+	return &ast.LineBreak{}
 }

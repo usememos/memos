@@ -24,7 +24,9 @@ func (*TextParser) Match(tokens []*tokenizer.Token) (int, bool) {
 
 func (*TextParser) Parse(tokens []*tokenizer.Token) ast.Node {
 	if len(tokens) == 0 {
-		return ast.NewText("")
+		return &ast.Text{}
 	}
-	return ast.NewText(tokens[0].String())
+	return &ast.Text{
+		Content: tokens[0].String(),
+	}
 }

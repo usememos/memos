@@ -42,5 +42,7 @@ func (p *ParagraphParser) Parse(tokens []*tokenizer.Token) ast.Node {
 		NewBoldParser(),
 		NewTextParser(),
 	})
-	return ast.NewParagraph(children)
+	return &ast.Paragraph{
+		Children: children,
+	}
 }

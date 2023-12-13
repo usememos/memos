@@ -89,7 +89,6 @@ func TestItalicParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		italic := NewItalicParser()
-		require.Equal(t, test.italic, italic.Match(tokens))
+		require.Equal(t, test.italic, NewItalicParser().Match(tokens))
 	}
 }

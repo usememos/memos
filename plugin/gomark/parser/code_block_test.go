@@ -58,7 +58,6 @@ func TestCodeBlockParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		parser := NewCodeBlockParser()
-		require.Equal(t, test.codeBlock, parser.Parse(tokens))
+		require.Equal(t, test.codeBlock, NewCodeBlockParser().Parse(tokens))
 	}
 }

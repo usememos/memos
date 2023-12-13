@@ -32,7 +32,6 @@ func TestParagraphParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		parser := NewParagraphParser()
-		require.Equal(t, test.paragraph, parser.Parse(tokens))
+		require.Equal(t, test.paragraph, NewParagraphParser().Parse(tokens))
 	}
 }
