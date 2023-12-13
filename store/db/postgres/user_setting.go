@@ -131,7 +131,7 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 
 func vacuumUserSetting(ctx context.Context, tx *sql.Tx) error {
 	// First, build the subquery
-	subQuery, subArgs, err := squirrel.Select("id").From("\"user\"").PlaceholderFormat(squirrel.Dollar).ToSql()
+	subQuery, subArgs, err := squirrel.Select("id").From(`"user"`).PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return err
 	}

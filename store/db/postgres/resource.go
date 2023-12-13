@@ -185,7 +185,7 @@ func (d *DB) DeleteResource(ctx context.Context, delete *store.DeleteResource) e
 
 func vacuumResource(ctx context.Context, tx *sql.Tx) error {
 	// First, build the subquery
-	subQuery, subArgs, err := squirrel.Select("id").From("user").PlaceholderFormat(squirrel.Dollar).ToSql()
+	subQuery, subArgs, err := squirrel.Select("id").From(`"user"`).PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return err
 	}

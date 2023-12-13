@@ -1,4 +1,4 @@
 TRUNCATE TABLE memo_organizer;
 TRUNCATE TABLE resource;
 TRUNCATE TABLE memo;
-TRUNCATE TABLE user;
+TRUNCATE TABLE "user";

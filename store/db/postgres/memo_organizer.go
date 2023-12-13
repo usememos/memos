@@ -89,7 +89,7 @@ func vacuumMemoOrganizer(ctx context.Context, tx *sql.Tx) error {
 	}
 
 	// Build the subquery for user_id
-	subQueryUser, subArgsUser, err := squirrel.Select("id").From("\"user\"").PlaceholderFormat(squirrel.Dollar).ToSql()
+	subQueryUser, subArgsUser, err := squirrel.Select("id").From(`"user"`).PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return err
 	}

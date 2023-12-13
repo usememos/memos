@@ -83,7 +83,7 @@ func (d *DB) DeleteTag(ctx context.Context, delete *store.DeleteTag) error {
 
 func vacuumTag(ctx context.Context, tx *sql.Tx) error {
 	// First, build the subquery for creator_id
-	subQuery, subArgs, err := squirrel.Select("id").From("\"user\"").PlaceholderFormat(squirrel.Dollar).ToSql()
+	subQuery, subArgs, err := squirrel.Select("id").From(`"user"`).PlaceholderFormat(squirrel.Dollar).ToSql()
 	if err != nil {
 		return err
 	}
