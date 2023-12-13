@@ -1,6 +1,8 @@
 package ast
 
-type BaseInline struct{}
+type BaseInline struct {
+	Node
+}
 
 type Text struct {
 	BaseInline
@@ -26,6 +28,34 @@ var NodeTypeBold = NewNodeType("Bold")
 
 func (*Bold) Type() NodeType {
 	return NodeTypeBold
+}
+
+type Italic struct {
+	BaseInline
+
+	// Symbol is "*" or "_"
+	Symbol  string
+	Content string
+}
+
+var NodeTypeItalic = NewNodeType("Italic")
+
+func (*Italic) Type() NodeType {
+	return NodeTypeItalic
+}
+
+type BoldItalic struct {
+	BaseInline
+
+	// Symbol is "*" or "_"
+	Symbol  string
+	Content string
+}
+
+var NodeTypeBoldItalic = NewNodeType("BoldItalic")
+
+func (*BoldItalic) Type() NodeType {
+	return NodeTypeBoldItalic
 }
 
 type Code struct {
@@ -66,20 +96,6 @@ func (*Link) Type() NodeType {
 	return NodeTypeLink
 }
 
-type Italic struct {
-	BaseInline
-
-	// Symbol is "*" or "_"
-	Symbol  string
-	Content string
-}
-
-var NodeTypeItalic = NewNodeType("Italic")
-
-func (*Italic) Type() NodeType {
-	return NodeTypeItalic
-}
-
 type Tag struct {
 	BaseInline
 
@@ -90,4 +106,16 @@ var NodeTypeTag = NewNodeType("Tag")
 
 func (*Tag) Type() NodeType {
 	return NodeTypeTag
+}
+
+type Strikethrough struct {
+	BaseInline
+
+	Content string
+}
+
+var NodeTypeStrikethrough = NewNodeType("Strikethrough")
+
+func (*Strikethrough) Type() NodeType {
+	return NodeTypeStrikethrough
 }

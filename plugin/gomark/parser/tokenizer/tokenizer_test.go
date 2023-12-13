@@ -15,7 +15,7 @@ func TestTokenize(t *testing.T) {
 			text: "*Hello world!",
 			tokens: []*Token{
 				{
-					Type:  Star,
+					Type:  Asterisk,
 					Value: "*",
 				},
 				{

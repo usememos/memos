@@ -9,10 +9,8 @@ type ParagraphParser struct {
 	ContentTokens []*tokenizer.Token
 }
 
-var defaultParagraphParser = &ParagraphParser{}
-
 func NewParagraphParser() *ParagraphParser {
-	return defaultParagraphParser
+	return &ParagraphParser{}
 }
 
 func (*ParagraphParser) Match(tokens []*tokenizer.Token) (int, bool) {
@@ -38,10 +36,7 @@ func (p *ParagraphParser) Parse(tokens []*tokenizer.Token) ast.Node {
 	}
 
 	contentTokens := tokens[:size]
-	children := ParseInline(contentTokens, []InlineParser{
-		NewBoldParser(),
-		NewTextParser(),
-	})
+	children := ParseInline(contentTokens)
 	return &ast.Paragraph{
 		Children: children,
 	}

@@ -9,10 +9,8 @@ type TextParser struct {
 	Content string
 }
 
-var defaultTextParser = &TextParser{}
-
 func NewTextParser() *TextParser {
-	return defaultTextParser
+	return &TextParser{}
 }
 
 func (*TextParser) Match(tokens []*tokenizer.Token) (int, bool) {

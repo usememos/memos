@@ -5,23 +5,17 @@ import (
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
 
-type BoldParser struct{}
+type StrikethroughParser struct{}
 
-func NewBoldParser() InlineParser {
-	return &BoldParser{}
+func NewStrikethroughParser() *StrikethroughParser {
+	return &StrikethroughParser{}
 }
 
-func (*BoldParser) Match(tokens []*tokenizer.Token) (int, bool) {
+func (*StrikethroughParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if len(tokens) < 5 {
 		return 0, false
 	}
-
-	prefixTokens := tokens[:2]
-	if prefixTokens[0].Type != prefixTokens[1].Type {
-		return 0, false
-	}
-	prefixTokenType := prefixTokens[0].Type
-	if prefixTokenType != tokenizer.Asterisk && prefixTokenType != tokenizer.Underline {
+	if tokens[0].Type != tokenizer.Tilde || tokens[1].Type != tokenizer.Tilde {
 		return 0, false
 	}
 
@@ -31,7 +25,7 @@ func (*BoldParser) Match(tokens []*tokenizer.Token) (int, bool) {
 		if token.Type == tokenizer.Newline || nextToken.Type == tokenizer.Newline {
 			return 0, false
 		}
-		if token.Type == prefixTokenType && nextToken.Type == prefixTokenType {
+		if token.Type == tokenizer.Tilde && nextToken.Type == tokenizer.Tilde {
 			matched = true
 			break
 		}
@@ -39,20 +33,17 @@ func (*BoldParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if !matched {
 		return 0, false
 	}
-
 	return cursor + 2, true
 }
 
-func (p *BoldParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (p *StrikethroughParser) Parse(tokens []*tokenizer.Token) ast.Node {
 	size, ok := p.Match(tokens)
 	if size == 0 || !ok {
 		return nil
 	}
 
-	prefixTokenType := tokens[0].Type
 	contentTokens := tokens[2 : size-2]
-	return &ast.Bold{
-		Symbol:  prefixTokenType,
+	return &ast.Strikethrough{
 		Content: tokenizer.Stringify(contentTokens),
 	}
 }

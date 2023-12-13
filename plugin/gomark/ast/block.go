@@ -1,6 +1,7 @@
 package ast
 
 type BaseBlock struct {
+	Node
 }
 
 type LineBreak struct {
@@ -49,4 +50,29 @@ var NodeTypeHeading = NewNodeType("Heading")
 
 func (*Heading) Type() NodeType {
 	return NodeTypeHeading
+}
+
+type HorizontalRule struct {
+	BaseBlock
+
+	// Symbol is "*" or "-" or "_".
+	Symbol string
+}
+
+var NodeTypeHorizontalRule = NewNodeType("HorizontalRule")
+
+func (*HorizontalRule) Type() NodeType {
+	return NodeTypeHorizontalRule
+}
+
+type Blockquote struct {
+	BaseBlock
+
+	Children []Node
+}
+
+var NodeTypeBlockquote = NewNodeType("Blockquote")
+
+func (*Blockquote) Type() NodeType {
+	return NodeTypeBlockquote
 }

@@ -7,10 +7,8 @@ import (
 
 type LineBreakParser struct{}
 
-var defaultLineBreakParser = &LineBreakParser{}
-
 func NewLineBreakParser() *LineBreakParser {
-	return defaultLineBreakParser
+	return &LineBreakParser{}
 }
 
 func (*LineBreakParser) Match(tokens []*tokenizer.Token) (int, bool) {

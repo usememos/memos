@@ -7,10 +7,8 @@ import (
 
 type ImageParser struct{}
 
-var defaultImageParser = &ImageParser{}
-
 func NewImageParser() *ImageParser {
-	return defaultImageParser
+	return &ImageParser{}
 }
 
 func (*ImageParser) Match(tokens []*tokenizer.Token) (int, bool) {

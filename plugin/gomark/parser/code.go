@@ -7,10 +7,8 @@ import (
 
 type CodeParser struct{}
 
-var defaultCodeParser = &CodeParser{}
-
 func NewCodeParser() *CodeParser {
-	return defaultCodeParser
+	return &CodeParser{}
 }
 
 func (*CodeParser) Match(tokens []*tokenizer.Token) (int, bool) {

@@ -10,10 +10,8 @@ type CodeBlockParser struct {
 	Content  string
 }
 
-var defaultCodeBlockParser = &CodeBlockParser{}
-
 func NewCodeBlockParser() *CodeBlockParser {
-	return defaultCodeBlockParser
+	return &CodeBlockParser{}
 }
 
 func (*CodeBlockParser) Match(tokens []*tokenizer.Token) (int, bool) {

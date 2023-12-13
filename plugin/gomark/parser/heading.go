@@ -62,11 +62,7 @@ func (p *HeadingParser) Parse(tokens []*tokenizer.Token) ast.Node {
 		}
 	}
 	contentTokens := tokens[level+1 : size]
-	children := ParseInline(contentTokens, []InlineParser{
-		NewBoldParser(),
-		NewCodeParser(),
-		NewTextParser(),
-	})
+	children := ParseInline(contentTokens)
 	return &ast.Heading{
 		Level:    level,
 		Children: children,

@@ -1,58 +1,72 @@
 package parser
 
-import "github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+import (
+	"github.com/usememos/memos/plugin/gomark/ast"
+	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+)
 
-type LinkParser struct {
-	ContentTokens []*tokenizer.Token
-	URL           string
-}
+type LinkParser struct{}
 
 func NewLinkParser() *LinkParser {
 	return &LinkParser{}
 }
 
-func (*LinkParser) Match(tokens []*tokenizer.Token) *LinkParser {
-	if len(tokens) < 4 {
-		return nil
+func (*LinkParser) Match(tokens []*tokenizer.Token) (int, bool) {
+	if len(tokens) < 5 {
+		return 0, false
 	}
 	if tokens[0].Type != tokenizer.LeftSquareBracket {
-		return nil
+		return 0, false
 	}
-	cursor, contentTokens := 1, []*tokenizer.Token{}
-	for ; cursor < len(tokens)-2; cursor++ {
-		if tokens[cursor].Type == tokenizer.Newline {
-			return nil
+	textTokens := []*tokenizer.Token{}
+	for _, token := range tokens[1:] {
+		if token.Type == tokenizer.Newline {
+			return 0, false
 		}
-		if tokens[cursor].Type == tokenizer.RightSquareBracket {
+		if token.Type == tokenizer.RightSquareBracket {
 			break
 		}
-		contentTokens = append(contentTokens, tokens[cursor])
+		textTokens = append(textTokens, token)
 	}
-	if tokens[cursor+1].Type != tokenizer.LeftParenthesis {
-		return nil
+	if len(textTokens)+4 >= len(tokens) {
+		return 0, false
 	}
-	matched, url := false, ""
-	for _, token := range tokens[cursor+2:] {
+	if tokens[2+len(textTokens)].Type != tokenizer.LeftParenthesis {
+		return 0, false
+	}
+	urlTokens := []*tokenizer.Token{}
+	for _, token := range tokens[3+len(textTokens):] {
 		if token.Type == tokenizer.Newline || token.Type == tokenizer.Space {
-			return nil
+			return 0, false
 		}
 		if token.Type == tokenizer.RightParenthesis {
-			matched = true
 			break
 		}
-		url += token.Value
+		urlTokens = append(urlTokens, token)
 	}
-	if !matched || url == "" {
+	if 4+len(urlTokens)+len(textTokens) > len(tokens) {
+		return 0, false
+	}
+
+	return 4 + len(urlTokens) + len(textTokens), true
+}
+
+func (p *LinkParser) Parse(tokens []*tokenizer.Token) ast.Node {
+	size, ok := p.Match(tokens)
+	if size == 0 || !ok {
 		return nil
 	}
-	if len(contentTokens) == 0 {
-		contentTokens = append(contentTokens, &tokenizer.Token{
-			Type:  tokenizer.Text,
-			Value: url,
-		})
+
+	textTokens := []*tokenizer.Token{}
+	for _, token := range tokens[1:] {
+		if token.Type == tokenizer.RightSquareBracket {
+			break
+		}
+		textTokens = append(textTokens, token)
 	}
-	return &LinkParser{
-		ContentTokens: contentTokens,
-		URL:           url,
+	urlTokens := tokens[2+len(textTokens)+1 : size-1]
+	return &ast.Link{
+		Text: tokenizer.Stringify(textTokens),
+		URL:  tokenizer.Stringify(urlTokens),
 	}
 }
