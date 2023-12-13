@@ -19,12 +19,38 @@ func TestParagraphParser(t *testing.T) {
 			paragraph: nil,
 		},
 		{
+			text:      "\n",
+			paragraph: nil,
+		},
+		{
 			text: "Hello world!",
 			paragraph: &ast.Paragraph{
 				Children: []ast.Node{
 					&ast.Text{
 						Content: "Hello world!",
 					},
+				},
+			},
+		},
+		{
+			text: "Hello world!\n",
+			paragraph: &ast.Paragraph{
+				Children: []ast.Node{
+					&ast.Text{
+						Content: "Hello world!",
+					},
+					&ast.LineBreak{},
+				},
+			},
+		},
+		{
+			text: "Hello world!\n\nNew paragraph.",
+			paragraph: &ast.Paragraph{
+				Children: []ast.Node{
+					&ast.Text{
+						Content: "Hello world!",
+					},
+					&ast.LineBreak{},
 				},
 			},
 		},

@@ -17,15 +17,16 @@ func NewParagraphParser() *ParagraphParser {
 
 func (*ParagraphParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	contentTokens := []*tokenizer.Token{}
-	cursor := 0
-	for ; cursor < len(tokens); cursor++ {
-		token := tokens[cursor]
+	for _, token := range tokens {
+		contentTokens = append(contentTokens, token)
 		if token.Type == tokenizer.Newline {
 			break
 		}
-		contentTokens = append(contentTokens, token)
 	}
 	if len(contentTokens) == 0 {
+		return 0, false
+	}
+	if len(contentTokens) == 1 && contentTokens[0].Type == tokenizer.Newline {
 		return 0, false
 	}
 	return len(contentTokens), true

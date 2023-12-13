@@ -57,9 +57,9 @@ func TestParser(t *testing.T) {
 						&ast.Text{
 							Content: "!",
 						},
+						&ast.LineBreak{},
 					},
 				},
-				&ast.LineBreak{},
 				&ast.Paragraph{
 					Children: []ast.Node{
 						&ast.Text{
@@ -84,12 +84,33 @@ func TestParser(t *testing.T) {
 						&ast.Text{
 							Content: "!",
 						},
+						&ast.LineBreak{},
 					},
 				},
-				&ast.LineBreak{},
 				&ast.CodeBlock{
 					Language: "javascript",
 					Content:  "console.log(\"Hello world!\");",
+				},
+			},
+		},
+		{
+			text: "Hello world!\n\nNew paragraph.",
+			nodes: []ast.Node{
+				&ast.Paragraph{
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "Hello world!",
+						},
+						&ast.LineBreak{},
+					},
+				},
+				&ast.LineBreak{},
+				&ast.Paragraph{
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "New paragraph.",
+						},
+					},
 				},
 			},
 		},

@@ -11,17 +11,17 @@ import (
 // nolint
 type HTMLRenderer struct {
 	output  *bytes.Buffer
-	context *renderContext
+	context *RendererContext
 }
 
-type renderContext struct {
+type RendererContext struct {
 }
 
 // NewHTMLRenderer creates a new HTMLRenderer.
 func NewHTMLRenderer() *HTMLRenderer {
 	return &HTMLRenderer{
 		output:  new(bytes.Buffer),
-		context: &renderContext{},
+		context: &RendererContext{},
 	}
 }
 
@@ -57,6 +57,43 @@ func (r *HTMLRenderer) RenderNode(node ast.Node) {
 		if prevSibling == nil || prevSibling.Type() != ast.NodeTypeBlockquote {
 			r.output.WriteString("</blockquote>")
 		}
+	case *ast.BoldItalic:
+		r.output.WriteString("<strong><em>")
+		r.output.WriteString(n.Content)
+		r.output.WriteString("</em></strong>")
+	case *ast.Bold:
+		r.output.WriteString("<strong>")
+		r.output.WriteString(n.Content)
+		r.output.WriteString("</strong>")
+	case *ast.Italic:
+		r.output.WriteString("<em>")
+		r.output.WriteString(n.Content)
+		r.output.WriteString("</em>")
+	case *ast.Code:
+		r.output.WriteString("<code>")
+		r.output.WriteString(n.Content)
+		r.output.WriteString("</code>")
+	case *ast.Link:
+		r.output.WriteString(`<a href="`)
+		r.output.WriteString(n.URL)
+		r.output.WriteString(`">`)
+		r.output.WriteString(n.Text)
+		r.output.WriteString("</a>")
+	case *ast.Image:
+		r.output.WriteString(`<img src="`)
+		r.output.WriteString(n.URL)
+		r.output.WriteString(`" alt="`)
+		r.output.WriteString(n.AltText)
+		r.output.WriteString(`" />`)
+	case *ast.Tag:
+		r.output.WriteString(`<span>`)
+		r.output.WriteString(`# `)
+		r.output.WriteString(n.Content)
+		r.output.WriteString(`</span>`)
+	case *ast.Strikethrough:
+		r.output.WriteString(`<del>`)
+		r.output.WriteString(n.Content)
+		r.output.WriteString(`</del>`)
 	case *ast.Text:
 		r.output.WriteString(n.Content)
 	default:
