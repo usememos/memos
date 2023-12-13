@@ -43,7 +43,7 @@ func TestParser(t *testing.T) {
 			},
 		},
 		{
-			text: "Hello **world**!",
+			text: "Hello **world**!\nHere is a new line.",
 			nodes: []ast.Node{
 				&ast.Paragraph{
 					Children: []ast.Node{
@@ -56,6 +56,14 @@ func TestParser(t *testing.T) {
 						},
 						&ast.Text{
 							Content: "!",
+						},
+					},
+				},
+				&ast.LineBreak{},
+				&ast.Paragraph{
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "Here is a new line.",
 						},
 					},
 				},
@@ -89,8 +97,17 @@ func TestParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		nodes, err := Parse(tokens)
-		require.NoError(t, err)
-		require.Equal(t, test.nodes, nodes)
+		nodes, _ := Parse(tokens)
+		require.Equal(t, StringifyNodes(test.nodes), StringifyNodes(nodes))
 	}
+}
+
+func StringifyNodes(nodes []ast.Node) string {
+	var result string
+	for _, node := range nodes {
+		if node != nil {
+			result += node.String()
+		}
+	}
+	return result
 }

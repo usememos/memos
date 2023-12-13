@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -47,10 +49,10 @@ func (*HeadingParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	return cursor, true
 }
 
-func (p *HeadingParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (p *HeadingParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	size, ok := p.Match(tokens)
 	if size == 0 || !ok {
-		return nil
+		return nil, errors.New("not matched")
 	}
 
 	level := 0
@@ -61,10 +63,15 @@ func (p *HeadingParser) Parse(tokens []*tokenizer.Token) ast.Node {
 			break
 		}
 	}
+
 	contentTokens := tokens[level+1 : size]
-	children := ParseInline(contentTokens)
-	return &ast.Heading{
-		Level:    level,
-		Children: children,
+	heading := &ast.Heading{
+		Level: level,
 	}
+	children, err := ParseInline(heading, contentTokens)
+	if err != nil {
+		return nil, err
+	}
+	heading.Children = children
+	return heading, nil
 }

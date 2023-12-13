@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -21,11 +23,11 @@ func (*LineBreakParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	return 1, true
 }
 
-func (p *LineBreakParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (p *LineBreakParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	size, ok := p.Match(tokens)
 	if size == 0 || !ok {
-		return nil
+		return nil, errors.New("not matched")
 	}
 
-	return &ast.LineBreak{}
+	return &ast.LineBreak{}, nil
 }

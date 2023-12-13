@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -21,10 +23,10 @@ func (*BlockquoteParser) Match(tokens []*tokenizer.Token) (int, bool) {
 
 	contentTokens := []*tokenizer.Token{}
 	for _, token := range tokens[2:] {
+		contentTokens = append(contentTokens, token)
 		if token.Type == tokenizer.Newline {
 			break
 		}
-		contentTokens = append(contentTokens, token)
 	}
 	if len(contentTokens) == 0 {
 		return 0, false
@@ -33,15 +35,18 @@ func (*BlockquoteParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	return len(contentTokens) + 2, true
 }
 
-func (p *BlockquoteParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (p *BlockquoteParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	size, ok := p.Match(tokens)
 	if size == 0 || !ok {
-		return nil
+		return nil, errors.New("not matched")
 	}
 
 	contentTokens := tokens[2:size]
-	children := ParseInline(contentTokens)
-	return &ast.Blockquote{
-		Children: children,
+	blockquote := &ast.Blockquote{}
+	children, err := ParseInline(blockquote, contentTokens)
+	if err != nil {
+		return nil, err
 	}
+	blockquote.Children = children
+	return blockquote, nil
 }

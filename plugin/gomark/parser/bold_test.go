@@ -44,6 +44,7 @@ func TestBoldParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		require.Equal(t, test.bold, NewBoldParser().Parse(tokens))
+		node, _ := NewBoldParser().Parse(tokens)
+		require.Equal(t, StringifyNodes([]ast.Node{test.bold}), StringifyNodes([]ast.Node{node}))
 	}
 }

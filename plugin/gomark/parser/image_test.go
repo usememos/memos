@@ -39,6 +39,7 @@ func TestImageParser(t *testing.T) {
 	}
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		require.Equal(t, test.image, NewImageParser().Parse(tokens))
+		node, _ := NewImageParser().Parse(tokens)
+		require.Equal(t, StringifyNodes([]ast.Node{test.image}), StringifyNodes([]ast.Node{node}))
 	}
 }

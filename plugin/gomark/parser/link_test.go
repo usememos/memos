@@ -39,6 +39,7 @@ func TestLinkParser(t *testing.T) {
 	}
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		require.Equal(t, test.link, NewLinkParser().Parse(tokens))
+		node, _ := NewLinkParser().Parse(tokens)
+		require.Equal(t, StringifyNodes([]ast.Node{test.link}), StringifyNodes([]ast.Node{node}))
 	}
 }

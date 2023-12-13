@@ -38,6 +38,7 @@ func TestTagParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		require.Equal(t, test.tag, NewTagParser().Parse(tokens))
+		node, _ := NewTagParser().Parse(tokens)
+		require.Equal(t, StringifyNodes([]ast.Node{test.tag}), StringifyNodes([]ast.Node{node}))
 	}
 }

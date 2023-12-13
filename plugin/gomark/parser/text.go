@@ -20,11 +20,11 @@ func (*TextParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	return 1, true
 }
 
-func (*TextParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (*TextParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	if len(tokens) == 0 {
-		return &ast.Text{}
+		return &ast.Text{}, nil
 	}
 	return &ast.Text{
 		Content: tokens[0].String(),
-	}
+	}, nil
 }

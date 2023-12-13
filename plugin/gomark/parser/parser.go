@@ -14,7 +14,7 @@ type Context struct {
 
 type BaseParser interface {
 	Match(tokens []*tokenizer.Token) (int, bool)
-	Parse(tokens []*tokenizer.Token) ast.Node
+	Parse(tokens []*tokenizer.Token) (ast.Node, error)
 }
 
 type InlineParser interface {
@@ -36,16 +36,23 @@ var defaultBlockParsers = []BlockParser{
 
 func Parse(tokens []*tokenizer.Token) ([]ast.Node, error) {
 	nodes := []ast.Node{}
+	var prevNode ast.Node
 	for len(tokens) > 0 {
 		for _, blockParser := range defaultBlockParsers {
-			cursor, matched := blockParser.Match(tokens)
+			size, matched := blockParser.Match(tokens)
 			if matched {
-				node := blockParser.Parse(tokens)
-				if node == nil {
+				node, err := blockParser.Parse(tokens)
+				if err != nil {
 					return nil, errors.New("parse error")
 				}
+
+				tokens = tokens[size:]
+				if prevNode != nil {
+					prevNode.SetNextSibling(node)
+					node.SetPrevSibling(prevNode)
+				}
+				prevNode = node
 				nodes = append(nodes, node)
-				tokens = tokens[cursor:]
 				break
 			}
 		}
@@ -62,27 +69,40 @@ var defaultInlineParsers = []InlineParser{
 	NewCodeParser(),
 	NewTagParser(),
 	NewStrikethroughParser(),
+	NewLineBreakParser(),
 	NewTextParser(),
 }
 
-func ParseInline(tokens []*tokenizer.Token) []ast.Node {
+func ParseInline(parent ast.Node, tokens []*tokenizer.Token) ([]ast.Node, error) {
 	nodes := []ast.Node{}
-	var lastNode ast.Node
+	var prevNode ast.Node
 	for len(tokens) > 0 {
 		for _, inlineParser := range defaultInlineParsers {
-			cursor, matched := inlineParser.Match(tokens)
+			size, matched := inlineParser.Match(tokens)
 			if matched {
-				node := inlineParser.Parse(tokens)
-				if node.Type() == ast.NodeTypeText && lastNode != nil && lastNode.Type() == ast.NodeTypeText {
-					lastNode.(*ast.Text).Content += node.(*ast.Text).Content
-				} else {
-					nodes = append(nodes, node)
-					lastNode = node
+				node, err := inlineParser.Parse(tokens)
+				if err != nil {
+					return nil, errors.New("parse error")
 				}
-				tokens = tokens[cursor:]
+
+				tokens = tokens[size:]
+				node.SetParent(parent)
+				if prevNode != nil {
+					if prevNode.Type() == ast.NodeTypeText && node.Type() == ast.NodeTypeText {
+						prevNode.(*ast.Text).Content += node.(*ast.Text).Content
+						break
+					}
+
+					prevNode.SetNextSibling(node)
+					node.SetPrevSibling(prevNode)
+				}
+
+				nodes = append(nodes, node)
+				prevNode = node
 				break
 			}
 		}
 	}
-	return nodes
+	parent.SetChildren(nodes)
+	return nodes, nil
 }

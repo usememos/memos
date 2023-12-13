@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -36,14 +38,14 @@ func (*CodeParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	return len(contentTokens) + 2, true
 }
 
-func (p *CodeParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (p *CodeParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	size, ok := p.Match(tokens)
 	if size == 0 || !ok {
-		return nil
+		return nil, errors.New("not matched")
 	}
 
 	contentTokens := tokens[1 : size-1]
 	return &ast.Code{
 		Content: tokenizer.Stringify(contentTokens),
-	}
+	}, nil
 }

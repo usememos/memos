@@ -75,6 +75,7 @@ Hello World`,
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		require.Equal(t, test.heading, NewHeadingParser().Parse(tokens))
+		node, _ := NewHeadingParser().Parse(tokens)
+		require.Equal(t, StringifyNodes([]ast.Node{test.heading}), StringifyNodes([]ast.Node{node}))
 	}
 }

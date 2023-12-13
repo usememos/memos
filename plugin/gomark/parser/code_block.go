@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -51,10 +53,10 @@ func (*CodeBlockParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	return cursor, true
 }
 
-func (p *CodeBlockParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (p *CodeBlockParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	size, ok := p.Match(tokens)
 	if size == 0 || !ok {
-		return nil
+		return nil, errors.New("not matched")
 	}
 
 	languageToken := tokens[3]
@@ -73,5 +75,5 @@ func (p *CodeBlockParser) Parse(tokens []*tokenizer.Token) ast.Node {
 	if languageToken != nil {
 		codeBlock.Language = languageToken.String()
 	}
-	return codeBlock
+	return codeBlock, nil
 }

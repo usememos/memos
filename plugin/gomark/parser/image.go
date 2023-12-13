@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -52,10 +54,10 @@ func (*ImageParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	return cursor + len(contentTokens) + 1, true
 }
 
-func (p *ImageParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (p *ImageParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	size, ok := p.Match(tokens)
 	if size == 0 || !ok {
-		return nil
+		return nil, errors.New("not matched")
 	}
 
 	altTextTokens := []*tokenizer.Token{}
@@ -69,5 +71,5 @@ func (p *ImageParser) Parse(tokens []*tokenizer.Token) ast.Node {
 	return &ast.Image{
 		AltText: tokenizer.Stringify(altTextTokens),
 		URL:     tokenizer.Stringify(contentTokens),
-	}
+	}, nil
 }

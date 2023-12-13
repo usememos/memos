@@ -1,7 +1,9 @@
 package ast
 
+import "fmt"
+
 type BaseBlock struct {
-	Node
+	BaseNode
 }
 
 type LineBreak struct {
@@ -14,6 +16,10 @@ func (*LineBreak) Type() NodeType {
 	return NodeTypeLineBreak
 }
 
+func (n *LineBreak) String() string {
+	return n.Type().String()
+}
+
 type Paragraph struct {
 	BaseBlock
 
@@ -24,6 +30,14 @@ var NodeTypeParagraph = NewNodeType("Paragraph")
 
 func (*Paragraph) Type() NodeType {
 	return NodeTypeParagraph
+}
+
+func (n *Paragraph) String() string {
+	str := n.Type().String()
+	for _, child := range n.Children {
+		str += " " + child.String()
+	}
+	return str
 }
 
 type CodeBlock struct {
@@ -39,6 +53,10 @@ func (*CodeBlock) Type() NodeType {
 	return NodeTypeCodeBlock
 }
 
+func (n *CodeBlock) String() string {
+	return n.Type().String() + " " + n.Language + " " + n.Content
+}
+
 type Heading struct {
 	BaseBlock
 
@@ -50,6 +68,14 @@ var NodeTypeHeading = NewNodeType("Heading")
 
 func (*Heading) Type() NodeType {
 	return NodeTypeHeading
+}
+
+func (n *Heading) String() string {
+	str := n.Type().String() + " " + fmt.Sprintf("%d", n.Level)
+	for _, child := range n.Children {
+		str += " " + child.String()
+	}
+	return str
 }
 
 type HorizontalRule struct {
@@ -65,6 +91,10 @@ func (*HorizontalRule) Type() NodeType {
 	return NodeTypeHorizontalRule
 }
 
+func (n *HorizontalRule) String() string {
+	return n.Type().String()
+}
+
 type Blockquote struct {
 	BaseBlock
 
@@ -75,4 +105,12 @@ var NodeTypeBlockquote = NewNodeType("Blockquote")
 
 func (*Blockquote) Type() NodeType {
 	return NodeTypeBlockquote
+}
+
+func (n *Blockquote) String() string {
+	str := n.Type().String()
+	for _, child := range n.Children {
+		str += " " + child.String()
+	}
+	return str
 }

@@ -31,6 +31,7 @@ func TestBlockquoteParser(t *testing.T) {
 					&ast.Text{
 						Content: "Hello",
 					},
+					&ast.LineBreak{},
 				},
 			},
 		},
@@ -42,6 +43,7 @@ func TestBlockquoteParser(t *testing.T) {
 
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
-		require.Equal(t, test.blockquote, NewBlockquoteParser().Parse(tokens))
+		node, _ := NewBlockquoteParser().Parse(tokens)
+		require.Equal(t, StringifyNodes([]ast.Node{test.blockquote}), StringifyNodes([]ast.Node{node}))
 	}
 }

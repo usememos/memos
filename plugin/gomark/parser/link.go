@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -51,10 +53,10 @@ func (*LinkParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	return 4 + len(urlTokens) + len(textTokens), true
 }
 
-func (p *LinkParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (p *LinkParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	size, ok := p.Match(tokens)
 	if size == 0 || !ok {
-		return nil
+		return nil, errors.New("not matched")
 	}
 
 	textTokens := []*tokenizer.Token{}
@@ -68,5 +70,5 @@ func (p *LinkParser) Parse(tokens []*tokenizer.Token) ast.Node {
 	return &ast.Link{
 		Text: tokenizer.Stringify(textTokens),
 		URL:  tokenizer.Stringify(urlTokens),
-	}
+	}, nil
 }

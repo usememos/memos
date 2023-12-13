@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"errors"
+
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
@@ -42,10 +44,10 @@ func (*ItalicParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	return len(contentTokens) + 2, true
 }
 
-func (p *ItalicParser) Parse(tokens []*tokenizer.Token) ast.Node {
+func (p *ItalicParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	size, ok := p.Match(tokens)
 	if size == 0 || !ok {
-		return nil
+		return nil, errors.New("not matched")
 	}
 
 	prefixTokenType := tokens[0].Type
@@ -53,5 +55,5 @@ func (p *ItalicParser) Parse(tokens []*tokenizer.Token) ast.Node {
 	return &ast.Italic{
 		Symbol:  prefixTokenType,
 		Content: tokenizer.Stringify(contentTokens),
-	}
+	}, nil
 }
