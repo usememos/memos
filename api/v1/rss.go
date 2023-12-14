@@ -1,7 +1,6 @@
 package v1
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -12,9 +11,11 @@ import (
 
 	"github.com/gorilla/feeds"
 	"github.com/labstack/echo/v4"
-	"github.com/yuin/goldmark"
 
 	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/plugin/gomark/parser"
+	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+	"github.com/usememos/memos/plugin/gomark/render/html"
 	"github.com/usememos/memos/store"
 )
 
@@ -117,10 +118,14 @@ func (s *APIV1Service) generateRSSFromMemoList(ctx context.Context, memoList []*
 		if err != nil {
 			return "", err
 		}
+		description, err := getRSSItemDescription(memoMessage.Content)
+		if err != nil {
+			return "", err
+		}
 		feed.Items[i] = &feeds.Item{
 			Title:       getRSSItemTitle(memoMessage.Content),
 			Link:        &feeds.Link{Href: baseURL + "/m/" + fmt.Sprintf("%d", memoMessage.ID)},
-			Description: getRSSItemDescription(memoMessage.Content),
+			Description: description,
 			Created:     time.Unix(memoMessage.CreatedTs, 0),
 			Enclosure:   &feeds.Enclosure{Url: baseURL + "/m/" + fmt.Sprintf("%d", memoMessage.ID) + "/image"},
 		}
@@ -182,7 +187,7 @@ func getRSSItemTitle(content string) string {
 	return title
 }
 
-func getRSSItemDescription(content string) string {
+func getRSSItemDescription(content string) (string, error) {
 	var description string
 	if isTitleDefined(content) {
 		var firstLineEnd = strings.Index(content, "\n")
@@ -191,12 +196,13 @@ func getRSSItemDescription(content string) string {
 		description = content
 	}
 
-	// TODO: use our `./plugin/gomark` parser to handle markdown-like content.
-	var buf bytes.Buffer
-	if err := goldmark.Convert([]byte(description), &buf); err != nil {
-		panic(err)
+	tokens := tokenizer.Tokenize(description)
+	nodes, err := parser.Parse(tokens)
+	if err != nil {
+		return "", err
 	}
-	return buf.String()
+	result := html.NewHTMLRender().Render(nodes)
+	return result, nil
 }
 
 func isTitleDefined(content string) bool {
