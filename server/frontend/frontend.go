@@ -1,9 +1,10 @@
-package server
+package frontend
 
 import (
 	"embed"
 	"io/fs"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
@@ -14,16 +15,10 @@ import (
 //go:embed dist
 var embeddedFiles embed.FS
 
-func getFileSystem(path string) http.FileSystem {
-	fs, err := fs.Sub(embeddedFiles, path)
-	if err != nil {
-		panic(err)
-	}
+//go:embed dist/index.html
+var rawIndexHTML string
 
-	return http.FS(fs)
-}
-
-func embedFrontend(e *echo.Echo) {
+func Serve(e *echo.Echo) {
 	// Use echo static middleware to serve the built dist folder
 	// refer: https://github.com/labstack/echo/blob/master/middleware/static.go
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
@@ -33,6 +28,10 @@ func embedFrontend(e *echo.Echo) {
 	}))
 
 	assetsGroup := e.Group("assets")
+	assetsGroup.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Skipper: defaultAPIRequestSkipper,
+		Level:   5,
+	}))
 	assetsGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			c.Response().Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
@@ -44,6 +43,23 @@ func embedFrontend(e *echo.Echo) {
 		HTML5:      true,
 		Filesystem: getFileSystem("dist/assets"),
 	}))
+
+	registerRoutes(e)
+}
+
+func registerRoutes(e *echo.Echo) {
+	e.GET("/m/:memoID", func(c echo.Context) error {
+		indexHTML := strings.ReplaceAll(rawIndexHTML, "<!-- memos.metadata -->", "<meta name=\"memos-memo-id\" content=\""+c.Param("memoID")+"\">"+"\n")
+		return c.HTML(http.StatusOK, indexHTML)
+	})
+}
+
+func getFileSystem(path string) http.FileSystem {
+	fs, err := fs.Sub(embeddedFiles, path)
+	if err != nil {
+		panic(err)
+	}
+	return http.FS(fs)
 }
 
 func defaultAPIRequestSkipper(c echo.Context) bool {

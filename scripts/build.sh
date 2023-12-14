@@ -93,13 +93,13 @@ echo -e "\033[32mFrontend built!\033[0m"
 cd $repo_root
 
 echo -e "\n\033[35mBacking up frontend placeholder...\033[0m"
-mv -f "$repo_root/server/dist" "$repo_root/server/dist.bak"
+mv -f "$repo_root/server/frontend/dist" "$repo_root/server/frontend/dist.bak"
 if [ $? -ne 0 ]; then
     echo -e "\033[0;31mFailed to backup frontend placeholder! Exiting.\033[0m"
     exit 1
 fi
 
-echo -e "\033[35mMoving frontend build to ./server/dist...\033[0m"
+echo -e "\033[35mMoving frontend build to ./server/frontend/dist...\033[0m"
 mv -f "$repo_root/web/dist" "$repo_root/server/"
 if [ $? -ne 0 ]; then
     echo -e "\033[0;31mFailed to move frontend build! Exiting.\033[0m"
@@ -129,16 +129,16 @@ done
 
 echo -e "\033[32mBackend built!\033[0m"
 
-echo -e "\n\033[35mRemoving frontend from ./server/dist...\033[0m"
-rm -rf $repo_root/server/dist
+echo -e "\n\033[35mRemoving frontend from ./server/frontend/dist...\033[0m"
+rm -rf $repo_root/server/frontend/dist
 if [ $? -ne 0 ]
 then
-    echo -e "\033[93mCould not remove frontend from /server/dist.\033[0m"
+    echo -e "\033[93mCould not remove frontend from /server/frontend/dist.\033[0m"
     exit 1
 fi
 
 echo -e "\033[35mRestoring frontend placeholder...\033[0m"
-mv $repo_root/server/dist.bak $repo_root/server/dist
+mv $repo_root/server/frontend/dist.bak $repo_root/server/frontend/dist
 if [ $? -ne 0 ]
 then
     echo -e "\033[93mCould not restore frontend placeholder.\033e[0m"

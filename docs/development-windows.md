@@ -56,12 +56,12 @@ Memos should now be running at [http://localhost:3001](http://localhost:3001) an
 
 ## Building
 
-Frontend must be built before backend. The built frontend must be placed in the backend ./server/dist directory. Otherwise, you will get a "No frontend embeded" error.
+Frontend must be built before backend. The built frontend must be placed in the backend ./server/frontend/dist directory. Otherwise, you will get a "No frontend embeded" error.
 
 ### Frontend
 
 ```powershell
-Move-Item "./server/dist" "./server/dist.bak"
+Move-Item "./server/frontend/dist" "./server/frontend/dist.bak"
 cd web; pnpm i --frozen-lockfile; pnpm build; cd ..;
 Move-Item "./web/dist" "./server/" -Force
 ```

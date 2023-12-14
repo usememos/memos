@@ -6,7 +6,6 @@ tmp
 
 # Frontend asset
 web/dist
-server/dist
 
 # build folder
 build

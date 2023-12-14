@@ -85,16 +85,16 @@ if (!$?) {
 }
 
 Write-Host "`nBacking up frontend placeholder..." -f Magenta
-Move-Item "$repoRoot/server/dist" "$repoRoot/server/dist.bak" -Force -ErrorAction Stop
+Move-Item "$repoRoot/server/frontend/dist" "$repoRoot/server/frontend/dist.bak" -Force -ErrorAction Stop
 if (!$?) {
     Write-Host -BackgroundColor red -ForegroundColor white "Could not backup frontend placeholder. See above."
     Exit 1
 }
 
-Write-Host "Moving frontend build to ./server/dist..." -f Magenta
+Write-Host "Moving frontend build to ./server/frontend/dist..." -f Magenta
 Move-Item "$repoRoot/web/dist" "$repoRoot/server/" -Force -ErrorAction Stop
 if (!$?) {
-    Write-Host -BackgroundColor red -ForegroundColor white "Could not move frontend build to /server/dist. See above."
+    Write-Host -BackgroundColor red -ForegroundColor white "Could not move frontend build to /server/frontend/dist. See above."
     Exit 1
 }
 
@@ -126,15 +126,15 @@ Write-Host "Backend built!" -f green
 Write-Host "`nFrontend build took $($frontendTime.TotalSeconds) seconds." -f Cyan
 Write-Host "Backend builds took $($backendTime.TotalSeconds) seconds." -f Cyan
 
-Write-Host "`nRemoving frontend from ./server/dist ..." -f Magenta
-Remove-Item "$repoRoot/server/dist" -Recurse -Force -ErrorAction SilentlyContinue
+Write-Host "`nRemoving frontend from ./server/frontend/dist ..." -f Magenta
+Remove-Item "$repoRoot/server/frontend/dist" -Recurse -Force -ErrorAction SilentlyContinue
 if (!$?) {
-    Write-Host -BackgroundColor red -ForegroundColor white "Could not remove frontend from /server/dist. See above."
+    Write-Host -BackgroundColor red -ForegroundColor white "Could not remove frontend from /server/frontend/dist. See above."
     Exit 1
 }
 
 Write-Host "Restoring frontend placeholder..." -f Magenta
-Move-Item "$repoRoot/server/dist.bak" "$repoRoot/server/dist" -Force -ErrorAction Stop
+Move-Item "$repoRoot/server/frontend/dist.bak" "$repoRoot/server/frontend/dist" -Force -ErrorAction Stop
 if (!$?) {
     Write-Host -BackgroundColor red -ForegroundColor white "Could not restore frontend placeholder. See above."
     Exit 1

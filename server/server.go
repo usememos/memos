@@ -16,6 +16,7 @@ import (
 	apiv1 "github.com/usememos/memos/api/v1"
 	apiv2 "github.com/usememos/memos/api/v2"
 	"github.com/usememos/memos/plugin/telegram"
+	"github.com/usememos/memos/server/frontend"
 	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/service/backup"
@@ -83,7 +84,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	s.ID = serverID
 
 	// Serve frontend.
-	embedFrontend(e)
+	frontend.Serve(e)
 
 	// Serve swagger in dev/demo mode.
 	if profile.Mode == "dev" || profile.Mode == "demo" {
