@@ -36,11 +36,11 @@ func (*HeadingParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	cursor++
 	contentTokens := []*tokenizer.Token{}
 	for _, token := range tokens[cursor:] {
+		contentTokens = append(contentTokens, token)
+		cursor++
 		if token.Type == tokenizer.Newline {
 			break
 		}
-		contentTokens = append(contentTokens, token)
-		cursor++
 	}
 	if len(contentTokens) == 0 {
 		return 0, false

@@ -53,6 +53,7 @@ Hello World`,
 					&ast.Text{
 						Content: "123 ",
 					},
+					&ast.LineBreak{},
 				},
 			},
 		},

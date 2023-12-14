@@ -21,6 +21,12 @@ func TestHorizontalRuleParser(t *testing.T) {
 			},
 		},
 		{
+			text: "---\naaa",
+			horizontalRule: &ast.HorizontalRule{
+				Symbol: "-",
+			},
+		},
+		{
 			text:           "****",
 			horizontalRule: nil,
 		},
