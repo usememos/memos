@@ -68,14 +68,14 @@ func Tokenize(text string) []*Token {
 		case ' ':
 			tokens = append(tokens, NewToken(Space, " "))
 		default:
-			var lastToken *Token
+			var prevToken *Token
 			if len(tokens) > 0 {
-				lastToken = tokens[len(tokens)-1]
+				prevToken = tokens[len(tokens)-1]
 			}
-			if lastToken == nil || lastToken.Type != Text {
+			if prevToken == nil || prevToken.Type != Text {
 				tokens = append(tokens, NewToken(Text, string(c)))
 			} else {
-				lastToken.Value += string(c)
+				prevToken.Value += string(c)
 			}
 		}
 	}

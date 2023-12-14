@@ -1,18 +1,37 @@
 package ast
 
+type NodeType uint32
+
+const (
+	UnknownNode NodeType = iota
+	// Block nodes.
+	LineBreakNode
+	ParagraphNode
+	CodeBlockNode
+	HeadingNode
+	HorizontalRuleNode
+	BlockquoteNode
+	// Inline nodes.
+	TextNode
+	BoldNode
+	ItalicNode
+	BoldItalicNode
+	CodeNode
+	ImageNode
+	LinkNode
+	TagNode
+	StrikethroughNode
+)
+
 type Node interface {
 	// Type returns a node type.
 	Type() NodeType
 
-	// String returns a string representation of this node.
-	// This method is used for debugging.
-	String() string
+	// PrevSibling returns a previous sibling node of this node.
+	PrevSibling() Node
 
-	// GetPrevSibling returns a previous sibling node of this node.
-	GetPrevSibling() Node
-
-	// GetNextSibling returns a next sibling node of this node.
-	GetNextSibling() Node
+	// NextSibling returns a next sibling node of this node.
+	NextSibling() Node
 
 	// SetPrevSibling sets a previous sibling node to this node.
 	SetPrevSibling(Node)
@@ -21,32 +40,17 @@ type Node interface {
 	SetNextSibling(Node)
 }
 
-type NodeType int
-
-func (t NodeType) String() string {
-	return nodeTypeNames[t]
-}
-
-var nodeTypeIndex NodeType
-var nodeTypeNames = []string{""}
-
-func NewNodeType(name string) NodeType {
-	nodeTypeNames = append(nodeTypeNames, name)
-	nodeTypeIndex++
-	return nodeTypeIndex
-}
-
 type BaseNode struct {
 	prevSibling Node
 
 	nextSibling Node
 }
 
-func (n *BaseNode) GetPrevSibling() Node {
+func (n *BaseNode) PrevSibling() Node {
 	return n.prevSibling
 }
 
-func (n *BaseNode) GetNextSibling() Node {
+func (n *BaseNode) NextSibling() Node {
 	return n.nextSibling
 }
 

@@ -127,8 +127,44 @@ func StringifyNodes(nodes []ast.Node) string {
 	var result string
 	for _, node := range nodes {
 		if node != nil {
-			result += node.String()
+			result += StringifyNode(node)
 		}
 	}
 	return result
+}
+
+func StringifyNode(node ast.Node) string {
+	switch n := node.(type) {
+	case *ast.LineBreak:
+		return "LineBreak()"
+	case *ast.CodeBlock:
+		return "CodeBlock(" + n.Language + ", " + n.Content + ")"
+	case *ast.Paragraph:
+		return "Paragraph(" + StringifyNodes(n.Children) + ")"
+	case *ast.Heading:
+		return "Heading(" + StringifyNodes(n.Children) + ")"
+	case *ast.HorizontalRule:
+		return "HorizontalRule(" + n.Symbol + ")"
+	case *ast.Blockquote:
+		return "Blockquote(" + StringifyNodes(n.Children) + ")"
+	case *ast.Text:
+		return "Text(" + n.Content + ")"
+	case *ast.Bold:
+		return "Bold(" + n.Symbol + n.Content + n.Symbol + ")"
+	case *ast.Italic:
+		return "Italic(" + n.Symbol + n.Content + n.Symbol + ")"
+	case *ast.BoldItalic:
+		return "BoldItalic(" + n.Symbol + n.Content + n.Symbol + ")"
+	case *ast.Code:
+		return "Code(" + n.Content + ")"
+	case *ast.Image:
+		return "Image(" + n.URL + ", " + n.AltText + ")"
+	case *ast.Link:
+		return "Link(" + n.Text + ", " + n.URL + ")"
+	case *ast.Tag:
+		return "Tag(" + n.Content + ")"
+	case *ast.Strikethrough:
+		return "Strikethrough(" + n.Content + ")"
+	}
+	return ""
 }

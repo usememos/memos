@@ -88,7 +88,7 @@ func ParseInline(tokens []*tokenizer.Token) ([]ast.Node, error) {
 				tokens = tokens[size:]
 				if prevNode != nil {
 					// Merge text nodes if possible.
-					if prevNode.Type() == ast.NodeTypeText && node.Type() == ast.NodeTypeText {
+					if prevNode.Type() == ast.TextNode && node.Type() == ast.TextNode {
 						prevNode.(*ast.Text).Content += node.(*ast.Text).Content
 						break
 					}
