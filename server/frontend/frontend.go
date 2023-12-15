@@ -80,9 +80,6 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 		if memo == nil {
 			return c.HTML(http.StatusOK, rawIndexHTML)
 		}
-		if memo.Visibility != store.Public {
-			return c.HTML(http.StatusOK, rawIndexHTML)
-		}
 		creator, err := s.Store.GetUser(ctx, &store.FindUser{
 			ID: &memo.CreatorID,
 		})
@@ -97,15 +94,21 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 }
 
 func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
+	description := memo.Content
+	if memo.Visibility == store.Private {
+		description = "This memo is private."
+	} else if memo.Visibility == store.Protected {
+		description = "This memo is protected."
+	}
 	metadataList := []string{
-		fmt.Sprintf(`<meta name="description" content="%s" />`, memo.Content),
+		fmt.Sprintf(`<meta name="description" content="%s" />`, description),
 		fmt.Sprintf(`<meta property="og:title" content="%s" />`, fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username)),
-		fmt.Sprintf(`<meta property="og:description" content="%s" />`, memo.Content),
+		fmt.Sprintf(`<meta property="og:description" content="%s" />`, description),
 		fmt.Sprintf(`<meta property="og:image" content="%s" />`, "https://www.usememos.com/logo.png"),
 		`<meta property="og:type" content="website" />`,
 		// Twitter related metadata.
 		fmt.Sprintf(`<meta name="twitter:title" content="%s" />`, fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username)),
-		fmt.Sprintf(`<meta name="twitter:description" content="%s" />`, memo.Content),
+		fmt.Sprintf(`<meta name="twitter:description" content="%s" />`, description),
 		fmt.Sprintf(`<meta name="twitter:image" content="%s" />`, "https://www.usememos.com/logo.png"),
 		`<meta name="twitter:card" content="summary" />`,
 	}
