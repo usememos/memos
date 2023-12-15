@@ -15,7 +15,7 @@ services:
       - .air/go-build:/root/.cache/go-build
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
   web:
-    image: node:18-alpine
+    image: node:20-alpine
     working_dir: /work
     depends_on: ["api"]
     ports: ["3001:3001"]
@@ -61,7 +61,7 @@ services:
   # run npm
   npm:
     profiles: ["tools"]
-    image: node:18-alpine
+    image: node:20-alpine
     working_dir: /work
     environment: ["NPM_CONFIG_UPDATE_NOTIFIER=false"]
     entrypoint: "npm"

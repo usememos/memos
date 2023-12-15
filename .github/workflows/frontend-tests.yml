@@ -20,7 +20,7 @@ jobs:
           version: 8
       - uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: pnpm
           cache-dependency-path: "web/pnpm-lock.yaml"
       - run: pnpm install
@@ -40,7 +40,7 @@ jobs:
           version: 8
       - uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           cache: pnpm
           cache-dependency-path: "web/pnpm-lock.yaml"
       - run: pnpm install

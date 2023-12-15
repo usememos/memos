@@ -1,5 +1,5 @@
 # Build frontend dist.
-FROM node:18-alpine AS frontend
+FROM node:20-alpine AS frontend
 WORKDIR /frontend-build
 
 COPY . .
