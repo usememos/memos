@@ -67,35 +67,44 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 		ctx := c.Request().Context()
 		memoID, err := util.ConvertStringToInt32(c.Param("memoID"))
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "invalid memo id")
+			// Redirect to `index.html` if any error occurs.
+			return c.HTML(http.StatusOK, rawIndexHTML)
 		}
 
 		memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
 			ID: &memoID,
 		})
 		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "failed to retrieve memo")
+			return c.HTML(http.StatusOK, rawIndexHTML)
 		}
 		if memo == nil {
-			return echo.NewHTTPError(http.StatusNotFound, "memo not found")
+			return c.HTML(http.StatusOK, rawIndexHTML)
 		}
 		if memo.Visibility != store.Public {
-			return echo.NewHTTPError(http.StatusForbidden, "memo is not public")
+			return c.HTML(http.StatusOK, rawIndexHTML)
 		}
-		indexHTML := strings.ReplaceAll(rawIndexHTML, "<!-- memos.metadata -->", generateMemoMetadata(memo))
+		creator, err := s.Store.GetUser(ctx, &store.FindUser{
+			ID: &memo.CreatorID,
+		})
+		if err != nil {
+			return c.HTML(http.StatusOK, rawIndexHTML)
+		}
+
+		// Inject memo metadata into `index.html`.
+		indexHTML := strings.ReplaceAll(rawIndexHTML, "<!-- memos.metadata -->", generateMemoMetadata(memo, creator))
 		return c.HTML(http.StatusOK, indexHTML)
 	})
 }
 
-func generateMemoMetadata(memo *store.Memo) string {
+func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
 	metadataList := []string{
 		fmt.Sprintf(`<meta name="description" content="%s" />`, memo.Content),
-		fmt.Sprintf(`<meta property="og:title" content="%s" />`, fmt.Sprintf("Memos - %d", memo.ID)),
+		fmt.Sprintf(`<meta property="og:title" content="%s" />`, fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username)),
 		fmt.Sprintf(`<meta property="og:description" content="%s" />`, memo.Content),
 		fmt.Sprintf(`<meta property="og:image" content="%s" />`, "https://www.usememos.com/logo.png"),
 		`<meta property="og:type" content="website" />`,
 		// Twitter related metadata.
-		fmt.Sprintf(`<meta name="twitter:title" content="%s" />`, fmt.Sprintf("Memos - %d", memo.ID)),
+		fmt.Sprintf(`<meta name="twitter:title" content="%s" />`, fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username)),
 		fmt.Sprintf(`<meta name="twitter:description" content="%s" />`, memo.Content),
 		fmt.Sprintf(`<meta name="twitter:image" content="%s" />`, "https://www.usememos.com/logo.png"),
 		`<meta name="twitter:card" content="summary" />`,
