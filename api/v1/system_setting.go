@@ -42,6 +42,8 @@ const (
 	SystemSettingMemoDisplayWithUpdatedTsName SystemSettingName = "memo-display-with-updated-ts"
 	// SystemSettingAutoBackupIntervalName is the name of auto backup interval as seconds.
 	SystemSettingAutoBackupIntervalName SystemSettingName = "auto-backup-interval"
+	// SystemSettingInstanceURLName is the name of instance url setting.
+	SystemSettingInstanceURLName SystemSettingName = "instance-url"
 )
 const systemSettingUnmarshalError = `failed to unmarshal value from system setting "%v"`
 
@@ -271,6 +273,7 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)
 		}
+	case SystemSettingInstanceURLName:
 	default:
 		return errors.New("invalid system setting name")
 	}

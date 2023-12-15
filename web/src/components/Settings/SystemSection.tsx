@@ -40,6 +40,7 @@ const SystemSection = () => {
     memoDisplayWithUpdatedTs: systemStatus.memoDisplayWithUpdatedTs,
   });
   const [telegramBotToken, setTelegramBotToken] = useState<string>("");
+  const [instanceUrl, setInstanceUrl] = useState<string>("");
 
   useEffect(() => {
     globalStore.fetchSystemStatus();
@@ -50,6 +51,10 @@ const SystemSection = () => {
       const telegramBotSetting = systemSettings.find((setting) => setting.name === "telegram-bot-token");
       if (telegramBotSetting) {
         setTelegramBotToken(telegramBotSetting.value);
+      }
+      const instanceUrlSetting = systemSettings.find((setting) => setting.name === "instance-url");
+      if (instanceUrlSetting) {
+        setInstanceUrl(instanceUrlSetting.value);
       }
     });
   }, []);
@@ -115,6 +120,24 @@ const SystemSection = () => {
       return;
     }
     toast.success(t("message.succeed-vacuum-database"));
+  };
+
+  const handleInstanceUrlChanged = (value: string) => {
+    setInstanceUrl(value);
+  };
+
+  const handleSaveInstanceUrl = async () => {
+    try {
+      await api.upsertSystemSetting({
+        name: "instance-url",
+        value: instanceUrl,
+      });
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
+      return;
+    }
+    toast.success("Instance URL updated");
   };
 
   const handleTelegramBotTokenChanged = (value: string) => {
@@ -313,6 +336,27 @@ const SystemSection = () => {
           onChange={handleAutoBackupIntervalChanged}
         />
       </div>
+      <Divider className="!mt-3 !my-4" />
+      <div className="form-label">
+        <div className="flex flex-row items-center">
+          <div className="w-auto flex items-center">
+            <span className="text-sm mr-1">Instance URL</span>
+          </div>
+        </div>
+        <Button variant="outlined" color="neutral" onClick={handleSaveInstanceUrl}>
+          {t("common.save")}
+        </Button>
+      </div>
+      <Input
+        className="w-full"
+        sx={{
+          fontFamily: "monospace",
+          fontSize: "14px",
+        }}
+        placeholder={"Your instance url, should be started with http:// or https://"}
+        value={instanceUrl}
+        onChange={(event) => handleInstanceUrlChanged(event.target.value)}
+      />
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <div className="flex flex-row items-center">
