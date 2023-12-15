@@ -425,7 +425,7 @@ const MemoEditor = (props: Props) => {
     <div
       className={`${
         className ?? ""
-      } relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-700 px-4 pt-4 rounded-lg border-2 border-gray-200 dark:border-zinc-600`}
+      } relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-700 px-4 pt-4 rounded-lg border border-gray-200 dark:border-zinc-600`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}

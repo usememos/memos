@@ -353,10 +353,20 @@ const SystemSection = () => {
           fontFamily: "monospace",
           fontSize: "14px",
         }}
-        placeholder={"Your instance url, should be started with http:// or https://"}
+        placeholder={"Should be started with http:// or https://"}
         value={instanceUrl}
         onChange={(event) => handleInstanceUrlChanged(event.target.value)}
       />
+      <div className="w-full">
+        <Link
+          className="text-gray-500 text-sm inline-flex flex-row justify-start items-center mt-2 hover:underline hover:text-blue-600"
+          to="https://usememos.com/docs/advanced-settings/seo"
+          target="_blank"
+        >
+          {t("common.learn-more")}
+          <Icon.ExternalLink className="inline w-4 h-auto ml-1" />
+        </Link>
+      </div>
       <Divider className="!mt-3 !my-4" />
       <div className="form-label">
         <div className="flex flex-row items-center">
