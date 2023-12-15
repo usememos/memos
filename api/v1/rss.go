@@ -158,12 +158,9 @@ func (s *APIV1Service) getSystemCustomizedProfile(ctx context.Context) (*Customi
 		return nil, err
 	}
 	customizedProfile := &CustomizedProfile{
-		Name:        "memos",
-		LogoURL:     "",
-		Description: "",
-		Locale:      "en",
-		Appearance:  "system",
-		ExternalURL: "",
+		Name:       "Memos",
+		Locale:     "en",
+		Appearance: "system",
 	}
 	if systemSetting != nil {
 		if err := json.Unmarshal([]byte(systemSetting.Value), customizedProfile); err != nil {

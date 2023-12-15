@@ -80,7 +80,7 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		AllowSignUp:      true,
 		MaxUploadSizeMiB: 32,
 		CustomizedProfile: CustomizedProfile{
-			Name:       "memos",
+			Name:       "Memos",
 			Locale:     "en",
 			Appearance: "system",
 		},
