@@ -7,8 +7,8 @@ import (
 	"github.com/usememos/memos/plugin/gomark/ast"
 )
 
-// HTMLRender is a simple renderer that converts AST to HTML.
-type HTMLRender struct {
+// HTMLRenderer is a simple renderer that converts AST to HTML.
+type HTMLRenderer struct {
 	output  *bytes.Buffer
 	context *RendererContext
 }
@@ -16,16 +16,16 @@ type HTMLRender struct {
 type RendererContext struct {
 }
 
-// NewHTMLRender creates a new HTMLRender.
-func NewHTMLRender() *HTMLRender {
-	return &HTMLRender{
+// NewHTMLRenderer creates a new HTMLRender.
+func NewHTMLRenderer() *HTMLRenderer {
+	return &HTMLRenderer{
 		output:  new(bytes.Buffer),
 		context: &RendererContext{},
 	}
 }
 
 // RenderNode renders a single AST node to HTML.
-func (r *HTMLRender) RenderNode(node ast.Node) {
+func (r *HTMLRenderer) RenderNode(node ast.Node) {
 	switch n := node.(type) {
 	case *ast.LineBreak:
 		r.renderLineBreak(n)
@@ -69,46 +69,46 @@ func (r *HTMLRender) RenderNode(node ast.Node) {
 }
 
 // RenderNodes renders a slice of AST nodes to HTML.
-func (r *HTMLRender) RenderNodes(nodes []ast.Node) {
+func (r *HTMLRenderer) RenderNodes(nodes []ast.Node) {
 	for _, node := range nodes {
 		r.RenderNode(node)
 	}
 }
 
 // Render renders the AST to HTML.
-func (r *HTMLRender) Render(astRoot []ast.Node) string {
+func (r *HTMLRenderer) Render(astRoot []ast.Node) string {
 	r.RenderNodes(astRoot)
 	return r.output.String()
 }
 
-func (r *HTMLRender) renderLineBreak(_ *ast.LineBreak) {
+func (r *HTMLRenderer) renderLineBreak(_ *ast.LineBreak) {
 	r.output.WriteString("<br>")
 }
 
-func (r *HTMLRender) renderParagraph(node *ast.Paragraph) {
+func (r *HTMLRenderer) renderParagraph(node *ast.Paragraph) {
 	r.output.WriteString("<p>")
 	r.RenderNodes(node.Children)
 	r.output.WriteString("</p>")
 }
 
-func (r *HTMLRender) renderCodeBlock(node *ast.CodeBlock) {
+func (r *HTMLRenderer) renderCodeBlock(node *ast.CodeBlock) {
 	r.output.WriteString("<pre><code>")
 	r.output.WriteString(node.Content)
 	r.output.WriteString("</code></pre>")
 }
 
-func (r *HTMLRender) renderHeading(node *ast.Heading) {
+func (r *HTMLRenderer) renderHeading(node *ast.Heading) {
 	element := fmt.Sprintf("h%d", node.Level)
 	r.output.WriteString(fmt.Sprintf("<%s>", element))
 	r.RenderNodes(node.Children)
 	r.output.WriteString(fmt.Sprintf("</%s>", element))
 }
 
-func (r *HTMLRender) renderHorizontalRule(_ *ast.HorizontalRule) {
+func (r *HTMLRenderer) renderHorizontalRule(_ *ast.HorizontalRule) {
 	r.output.WriteString("<hr>")
 }
 
-func (r *HTMLRender) renderBlockquote(node *ast.Blockquote) {
+func (r *HTMLRenderer) renderBlockquote(node *ast.Blockquote) {
 	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
 	if prevSibling == nil || prevSibling.Type() != ast.BlockquoteNode {
 		r.output.WriteString("<blockquote>")
@@ -119,7 +119,7 @@ func (r *HTMLRender) renderBlockquote(node *ast.Blockquote) {
 	}
 }
 
-func (r *HTMLRender) renderUnorderedList(node *ast.UnorderedList) {
+func (r *HTMLRenderer) renderUnorderedList(node *ast.UnorderedList) {
 	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
 	if prevSibling == nil || prevSibling.Type() != ast.UnorderedListNode {
 		r.output.WriteString("<ul>")
@@ -132,7 +132,7 @@ func (r *HTMLRender) renderUnorderedList(node *ast.UnorderedList) {
 	}
 }
 
-func (r *HTMLRender) renderOrderedList(node *ast.OrderedList) {
+func (r *HTMLRenderer) renderOrderedList(node *ast.OrderedList) {
 	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
 	if prevSibling == nil || prevSibling.Type() != ast.OrderedListNode {
 		r.output.WriteString("<ol>")
@@ -145,35 +145,35 @@ func (r *HTMLRender) renderOrderedList(node *ast.OrderedList) {
 	}
 }
 
-func (r *HTMLRender) renderText(node *ast.Text) {
+func (r *HTMLRenderer) renderText(node *ast.Text) {
 	r.output.WriteString(node.Content)
 }
 
-func (r *HTMLRender) renderBold(node *ast.Bold) {
+func (r *HTMLRenderer) renderBold(node *ast.Bold) {
 	r.output.WriteString("<strong>")
 	r.RenderNodes(node.Children)
 	r.output.WriteString("</strong>")
 }
 
-func (r *HTMLRender) renderItalic(node *ast.Italic) {
+func (r *HTMLRenderer) renderItalic(node *ast.Italic) {
 	r.output.WriteString("<em>")
 	r.output.WriteString(node.Content)
 	r.output.WriteString("</em>")
 }
 
-func (r *HTMLRender) renderBoldItalic(node *ast.BoldItalic) {
+func (r *HTMLRenderer) renderBoldItalic(node *ast.BoldItalic) {
 	r.output.WriteString("<strong><em>")
 	r.output.WriteString(node.Content)
 	r.output.WriteString("</em></strong>")
 }
 
-func (r *HTMLRender) renderCode(node *ast.Code) {
+func (r *HTMLRenderer) renderCode(node *ast.Code) {
 	r.output.WriteString("<code>")
 	r.output.WriteString(node.Content)
 	r.output.WriteString("</code>")
 }
 
-func (r *HTMLRender) renderImage(node *ast.Image) {
+func (r *HTMLRenderer) renderImage(node *ast.Image) {
 	r.output.WriteString(`<img src="`)
 	r.output.WriteString(node.URL)
 	r.output.WriteString(`" alt="`)
@@ -181,7 +181,7 @@ func (r *HTMLRender) renderImage(node *ast.Image) {
 	r.output.WriteString(`" />`)
 }
 
-func (r *HTMLRender) renderLink(node *ast.Link) {
+func (r *HTMLRenderer) renderLink(node *ast.Link) {
 	r.output.WriteString(`<a href="`)
 	r.output.WriteString(node.URL)
 	r.output.WriteString(`">`)
@@ -189,20 +189,20 @@ func (r *HTMLRender) renderLink(node *ast.Link) {
 	r.output.WriteString("</a>")
 }
 
-func (r *HTMLRender) renderTag(node *ast.Tag) {
+func (r *HTMLRenderer) renderTag(node *ast.Tag) {
 	r.output.WriteString(`<span>`)
 	r.output.WriteString(`#`)
 	r.output.WriteString(node.Content)
 	r.output.WriteString(`</span>`)
 }
 
-func (r *HTMLRender) renderStrikethrough(node *ast.Strikethrough) {
+func (r *HTMLRenderer) renderStrikethrough(node *ast.Strikethrough) {
 	r.output.WriteString(`<del>`)
 	r.output.WriteString(node.Content)
 	r.output.WriteString(`</del>`)
 }
 
-func (r *HTMLRender) renderEscapingCharacter(node *ast.EscapingCharacter) {
+func (r *HTMLRenderer) renderEscapingCharacter(node *ast.EscapingCharacter) {
 	r.output.WriteString("\\")
 	r.output.WriteString(node.Symbol)
 }

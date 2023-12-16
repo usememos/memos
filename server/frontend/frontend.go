@@ -14,7 +14,7 @@ import (
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
-	"github.com/usememos/memos/plugin/gomark/render"
+	"github.com/usememos/memos/plugin/gomark/renderer"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -162,7 +162,7 @@ func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
 	} else {
 		tokens := tokenizer.Tokenize(memo.Content)
 		nodes, _ := parser.Parse(tokens)
-		description = render.NewStringRender().Render(nodes)
+		description = renderer.NewStringRenderer().Render(nodes)
 		if len(description) == 0 {
 			description = memo.Content
 		}

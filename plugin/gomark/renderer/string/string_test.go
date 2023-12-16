@@ -40,7 +40,7 @@ func TestStringRender(t *testing.T) {
 		tokens := tokenizer.Tokenize(test.text)
 		nodes, err := parser.Parse(tokens)
 		require.NoError(t, err)
-		actual := NewStringRender().Render(nodes)
+		actual := NewStringRenderer().Render(nodes)
 		require.Equal(t, test.expected, actual)
 	}
 }

@@ -7,8 +7,8 @@ import (
 	"github.com/usememos/memos/plugin/gomark/ast"
 )
 
-// StringRender renders AST to raw string.
-type StringRender struct {
+// StringRenderer renders AST to raw string.
+type StringRenderer struct {
 	output  *bytes.Buffer
 	context *RendererContext
 }
@@ -16,16 +16,16 @@ type StringRender struct {
 type RendererContext struct {
 }
 
-// NewStringRender creates a new StringRender.
-func NewStringRender() *StringRender {
-	return &StringRender{
+// NewStringRenderer creates a new StringRender.
+func NewStringRenderer() *StringRenderer {
+	return &StringRenderer{
 		output:  new(bytes.Buffer),
 		context: &RendererContext{},
 	}
 }
 
 // RenderNode renders a single AST node to raw string.
-func (r *StringRender) RenderNode(node ast.Node) {
+func (r *StringRenderer) RenderNode(node ast.Node) {
 	switch n := node.(type) {
 	case *ast.LineBreak:
 		r.renderLineBreak(n)
@@ -69,98 +69,98 @@ func (r *StringRender) RenderNode(node ast.Node) {
 }
 
 // RenderNodes renders a slice of AST nodes to raw string.
-func (r *StringRender) RenderNodes(nodes []ast.Node) {
+func (r *StringRenderer) RenderNodes(nodes []ast.Node) {
 	for _, node := range nodes {
 		r.RenderNode(node)
 	}
 }
 
 // Render renders the AST to raw string.
-func (r *StringRender) Render(astRoot []ast.Node) string {
+func (r *StringRenderer) Render(astRoot []ast.Node) string {
 	r.RenderNodes(astRoot)
 	return r.output.String()
 }
 
-func (r *StringRender) renderLineBreak(_ *ast.LineBreak) {
+func (r *StringRenderer) renderLineBreak(_ *ast.LineBreak) {
 	r.output.WriteString("\n")
 }
 
-func (r *StringRender) renderParagraph(node *ast.Paragraph) {
+func (r *StringRenderer) renderParagraph(node *ast.Paragraph) {
 	r.RenderNodes(node.Children)
 	r.output.WriteString("\n")
 }
 
-func (r *StringRender) renderCodeBlock(node *ast.CodeBlock) {
+func (r *StringRenderer) renderCodeBlock(node *ast.CodeBlock) {
 	r.output.WriteString(node.Content)
 }
 
-func (r *StringRender) renderHeading(node *ast.Heading) {
+func (r *StringRenderer) renderHeading(node *ast.Heading) {
 	r.RenderNodes(node.Children)
 	r.output.WriteString("\n")
 }
 
-func (r *StringRender) renderHorizontalRule(_ *ast.HorizontalRule) {
+func (r *StringRenderer) renderHorizontalRule(_ *ast.HorizontalRule) {
 	r.output.WriteString("\n---\n")
 }
 
-func (r *StringRender) renderBlockquote(node *ast.Blockquote) {
+func (r *StringRenderer) renderBlockquote(node *ast.Blockquote) {
 	r.output.WriteString("\n")
 	r.RenderNodes(node.Children)
 	r.output.WriteString("\n")
 }
 
-func (r *StringRender) renderUnorderedList(node *ast.UnorderedList) {
+func (r *StringRenderer) renderUnorderedList(node *ast.UnorderedList) {
 	r.output.WriteString(node.Symbol)
 	r.RenderNodes(node.Children)
 	r.output.WriteString("\n")
 }
 
-func (r *StringRender) renderOrderedList(node *ast.OrderedList) {
+func (r *StringRenderer) renderOrderedList(node *ast.OrderedList) {
 	r.output.WriteString(fmt.Sprintf("%s. ", node.Number))
 	r.RenderNodes(node.Children)
 	r.output.WriteString("\n")
 }
 
-func (r *StringRender) renderText(node *ast.Text) {
+func (r *StringRenderer) renderText(node *ast.Text) {
 	r.output.WriteString(node.Content)
 }
 
-func (r *StringRender) renderBold(node *ast.Bold) {
+func (r *StringRenderer) renderBold(node *ast.Bold) {
 	r.RenderNodes(node.Children)
 }
 
-func (r *StringRender) renderItalic(node *ast.Italic) {
+func (r *StringRenderer) renderItalic(node *ast.Italic) {
 	r.output.WriteString(node.Content)
 }
 
-func (r *StringRender) renderBoldItalic(node *ast.BoldItalic) {
+func (r *StringRenderer) renderBoldItalic(node *ast.BoldItalic) {
 	r.output.WriteString(node.Content)
 }
 
-func (r *StringRender) renderCode(node *ast.Code) {
+func (r *StringRenderer) renderCode(node *ast.Code) {
 	r.output.WriteString("`")
 	r.output.WriteString(node.Content)
 	r.output.WriteString("`")
 }
 
-func (r *StringRender) renderImage(node *ast.Image) {
+func (r *StringRenderer) renderImage(node *ast.Image) {
 	r.output.WriteString(node.AltText)
 }
 
-func (r *StringRender) renderLink(node *ast.Link) {
+func (r *StringRenderer) renderLink(node *ast.Link) {
 	r.output.WriteString(node.Text)
 }
 
-func (r *StringRender) renderTag(node *ast.Tag) {
+func (r *StringRenderer) renderTag(node *ast.Tag) {
 	r.output.WriteString(`#`)
 	r.output.WriteString(node.Content)
 }
 
-func (r *StringRender) renderStrikethrough(node *ast.Strikethrough) {
+func (r *StringRenderer) renderStrikethrough(node *ast.Strikethrough) {
 	r.output.WriteString(node.Content)
 }
 
-func (r *StringRender) renderEscapingCharacter(node *ast.EscapingCharacter) {
+func (r *StringRenderer) renderEscapingCharacter(node *ast.EscapingCharacter) {
 	r.output.WriteString("\\")
 	r.output.WriteString(node.Symbol)
 }

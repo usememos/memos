@@ -9,7 +9,7 @@ import (
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 )
 
-func TestHTMLRender(t *testing.T) {
+func TestHTMLRenderer(t *testing.T) {
 	tests := []struct {
 		text     string
 		expected string
@@ -60,7 +60,7 @@ func TestHTMLRender(t *testing.T) {
 		tokens := tokenizer.Tokenize(test.text)
 		nodes, err := parser.Parse(tokens)
 		require.NoError(t, err)
-		actual := NewHTMLRender().Render(nodes)
+		actual := NewHTMLRenderer().Render(nodes)
 		require.Equal(t, test.expected, actual)
 	}
 }
