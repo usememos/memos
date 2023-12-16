@@ -41,7 +41,7 @@ func TestTokenize(t *testing.T) {
  world`,
 			tokens: []*Token{
 				{
-					Type:  Hash,
+					Type:  PoundSign,
 					Value: "#",
 				},
 				{

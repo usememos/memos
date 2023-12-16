@@ -30,6 +30,10 @@ func TestHTMLRender(t *testing.T) {
 			text:     "**Hello** world!",
 			expected: `<p><strong>Hello</strong> world!</p>`,
 		},
+		{
+			text:     "#article #memo",
+			expected: `<p><span>#article</span> <span>#memo</span></p>`,
+		},
 	}
 
 	for _, test := range tests {

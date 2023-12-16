@@ -159,7 +159,7 @@ func (r *HTMLRender) renderLink(node *ast.Link) {
 
 func (r *HTMLRender) renderTag(node *ast.Tag) {
 	r.output.WriteString(`<span>`)
-	r.output.WriteString(`# `)
+	r.output.WriteString(`#`)
 	r.output.WriteString(node.Content)
 	r.output.WriteString(`</span>`)
 }

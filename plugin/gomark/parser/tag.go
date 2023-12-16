@@ -17,12 +17,12 @@ func (*TagParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if len(tokens) < 2 {
 		return 0, false
 	}
-	if tokens[0].Type != tokenizer.Hash {
+	if tokens[0].Type != tokenizer.PoundSign {
 		return 0, false
 	}
 	contentTokens := []*tokenizer.Token{}
 	for _, token := range tokens[1:] {
-		if token.Type == tokenizer.Newline || token.Type == tokenizer.Space || token.Type == tokenizer.Hash {
+		if token.Type == tokenizer.Newline || token.Type == tokenizer.Space || token.Type == tokenizer.PoundSign {
 			break
 		}
 		contentTokens = append(contentTokens, token)

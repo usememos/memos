@@ -16,7 +16,7 @@ func NewHeadingParser() *HeadingParser {
 func (*HeadingParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	cursor := 0
 	for _, token := range tokens {
-		if token.Type == tokenizer.Hash {
+		if token.Type == tokenizer.PoundSign {
 			cursor++
 		} else {
 			break
@@ -57,7 +57,7 @@ func (p *HeadingParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 
 	level := 0
 	for _, token := range tokens {
-		if token.Type == tokenizer.Hash {
+		if token.Type == tokenizer.PoundSign {
 			level++
 		} else {
 			break

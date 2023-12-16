@@ -21,7 +21,7 @@ func (*ItalicParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	}
 
 	prefixTokens := tokens[:1]
-	if prefixTokens[0].Type != tokenizer.Asterisk && prefixTokens[0].Type != tokenizer.Underline {
+	if prefixTokens[0].Type != tokenizer.Asterisk && prefixTokens[0].Type != tokenizer.Underscore {
 		return 0, false
 	}
 	prefixTokenType := prefixTokens[0].Type

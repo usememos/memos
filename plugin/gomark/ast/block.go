@@ -64,3 +64,26 @@ type Blockquote struct {
 func (*Blockquote) Type() NodeType {
 	return BlockquoteNode
 }
+
+type OrderedList struct {
+	BaseBlock
+
+	Number   string
+	Children []Node
+}
+
+func (*OrderedList) Type() NodeType {
+	return OrderedListNode
+}
+
+type UnorderedList struct {
+	BaseBlock
+
+	// Symbol is "*" or "-" or "+".
+	Symbol   string
+	Children []Node
+}
+
+func (*UnorderedList) Type() NodeType {
+	return UnorderedListNode
+}

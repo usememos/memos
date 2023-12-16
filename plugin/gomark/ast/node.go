@@ -11,6 +11,8 @@ const (
 	HeadingNode
 	HorizontalRuleNode
 	BlockquoteNode
+	OrderedListNode
+	UnorderedListNode
 	// Inline nodes.
 	TextNode
 	BoldNode

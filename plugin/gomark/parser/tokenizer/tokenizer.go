@@ -3,9 +3,9 @@ package tokenizer
 type TokenType = string
 
 const (
-	Underline          TokenType = "_"
+	Underscore         TokenType = "_"
 	Asterisk           TokenType = "*"
-	Hash               TokenType = "#"
+	PoundSign          TokenType = "#"
 	Backtick           TokenType = "`"
 	LeftSquareBracket  TokenType = "["
 	RightSquareBracket TokenType = "]"
@@ -13,14 +13,17 @@ const (
 	RightParenthesis   TokenType = ")"
 	ExclamationMark    TokenType = "!"
 	Tilde              TokenType = "~"
-	Dash               TokenType = "-"
+	Hyphen             TokenType = "-"
+	PlusSign           TokenType = "+"
+	Dot                TokenType = "."
 	GreaterThan        TokenType = ">"
 	Newline            TokenType = "\n"
 	Space              TokenType = " "
 )
 
 const (
-	Text TokenType = ""
+	Number TokenType = "number"
+	Text   TokenType = ""
 )
 
 type Token struct {
@@ -40,11 +43,11 @@ func Tokenize(text string) []*Token {
 	for _, c := range text {
 		switch c {
 		case '_':
-			tokens = append(tokens, NewToken(Underline, "_"))
+			tokens = append(tokens, NewToken(Underscore, "_"))
 		case '*':
 			tokens = append(tokens, NewToken(Asterisk, "*"))
 		case '#':
-			tokens = append(tokens, NewToken(Hash, "#"))
+			tokens = append(tokens, NewToken(PoundSign, "#"))
 		case '`':
 			tokens = append(tokens, NewToken(Backtick, "`"))
 		case '[':
@@ -60,9 +63,13 @@ func Tokenize(text string) []*Token {
 		case '~':
 			tokens = append(tokens, NewToken(Tilde, "~"))
 		case '-':
-			tokens = append(tokens, NewToken(Dash, "-"))
+			tokens = append(tokens, NewToken(Hyphen, "-"))
 		case '>':
 			tokens = append(tokens, NewToken(GreaterThan, ">"))
+		case '+':
+			tokens = append(tokens, NewToken(PlusSign, "+"))
+		case '.':
+			tokens = append(tokens, NewToken(Dot, "."))
 		case '\n':
 			tokens = append(tokens, NewToken(Newline, "\n"))
 		case ' ':
@@ -72,10 +79,19 @@ func Tokenize(text string) []*Token {
 			if len(tokens) > 0 {
 				prevToken = tokens[len(tokens)-1]
 			}
-			if prevToken == nil || prevToken.Type != Text {
-				tokens = append(tokens, NewToken(Text, string(c)))
+
+			isNumber := c >= '0' && c <= '9'
+			if prevToken != nil {
+				if (prevToken.Type == Text && !isNumber) || (prevToken.Type == Number && isNumber) {
+					prevToken.Value += string(c)
+					continue
+				}
+			}
+
+			if isNumber {
+				tokens = append(tokens, NewToken(Number, string(c)))
 			} else {
-				prevToken.Value += string(c)
+				tokens = append(tokens, NewToken(Text, string(c)))
 			}
 		}
 	}
