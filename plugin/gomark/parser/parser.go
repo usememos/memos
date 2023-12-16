@@ -37,10 +37,18 @@ var defaultBlockParsers = []BlockParser{
 }
 
 func Parse(tokens []*tokenizer.Token) ([]ast.Node, error) {
+	return ParseBlock(tokens)
+}
+
+func ParseBlock(tokens []*tokenizer.Token) ([]ast.Node, error) {
+	return ParseBlockWithParsers(tokens, defaultBlockParsers)
+}
+
+func ParseBlockWithParsers(tokens []*tokenizer.Token, blockParsers []BlockParser) ([]ast.Node, error) {
 	nodes := []ast.Node{}
 	var prevNode ast.Node
 	for len(tokens) > 0 {
-		for _, blockParser := range defaultBlockParsers {
+		for _, blockParser := range blockParsers {
 			size, matched := blockParser.Match(tokens)
 			if matched {
 				node, err := blockParser.Parse(tokens)

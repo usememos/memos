@@ -166,8 +166,8 @@ func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
 		if len(description) == 0 {
 			description = memo.Content
 		}
-		if len(description) > 100 {
-			description = description[:100] + "..."
+		if len(description) > 200 {
+			description = description[:200] + "..."
 		}
 	}
 
