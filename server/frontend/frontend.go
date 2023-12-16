@@ -80,7 +80,7 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 		}
 		instanceURL := instanceURLSetting.Value
 		robotsTxt := fmt.Sprintf(`User-agent: *
-Allow: /
+Disallow: /
 Host: %s
 Sitemap: %s/sitemap.xml`, instanceURL, instanceURL)
 		return c.String(http.StatusOK, robotsTxt)
