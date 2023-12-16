@@ -96,7 +96,7 @@ func (r *HTMLRender) renderCodeBlock(node *ast.CodeBlock) {
 }
 
 func (r *HTMLRender) renderHeading(node *ast.Heading) {
-	element := fmt.Sprintf("<h%d>", node.Level)
+	element := fmt.Sprintf("h%d", node.Level)
 	r.output.WriteString(fmt.Sprintf("<%s>", element))
 	r.RenderNodes(node.Children)
 	r.output.WriteString(fmt.Sprintf("</%s>", element))
