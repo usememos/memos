@@ -15,7 +15,7 @@ import (
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
-	"github.com/usememos/memos/plugin/gomark/render/html"
+	"github.com/usememos/memos/plugin/gomark/render"
 	"github.com/usememos/memos/store"
 )
 
@@ -198,7 +198,7 @@ func getRSSItemDescription(content string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	result := html.NewHTMLRender().Render(nodes)
+	result := render.NewHTMLRender().Render(nodes)
 	return result, nil
 }
 

@@ -12,6 +12,9 @@ import (
 
 	v1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/plugin/gomark/parser"
+	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+	"github.com/usememos/memos/plugin/gomark/render"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
@@ -151,12 +154,23 @@ Sitemap: %s/sitemap.xml`, instanceURL, instanceURL)
 }
 
 func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
-	description := memo.Content
+	description := ""
 	if memo.Visibility == store.Private {
 		description = "This memo is private."
 	} else if memo.Visibility == store.Protected {
 		description = "This memo is protected."
+	} else {
+		tokens := tokenizer.Tokenize(memo.Content)
+		nodes, _ := parser.Parse(tokens)
+		description = render.NewStringRender().Render(nodes)
+		if len(description) == 0 {
+			description = memo.Content
+		}
+		if len(description) > 100 {
+			description = description[:100] + "..."
+		}
 	}
+
 	metadataList := []string{
 		fmt.Sprintf(`<meta name="description" content="%s" />`, description),
 		fmt.Sprintf(`<meta property="og:title" content="%s" />`, fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username)),
