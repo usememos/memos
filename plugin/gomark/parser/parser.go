@@ -30,6 +30,8 @@ var defaultBlockParsers = []BlockParser{
 	NewHorizontalRuleParser(),
 	NewHeadingParser(),
 	NewBlockquoteParser(),
+	NewUnorderedListParser(),
+	NewOrderedListParser(),
 	NewParagraphParser(),
 	NewLineBreakParser(),
 }

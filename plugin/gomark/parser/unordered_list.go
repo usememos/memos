@@ -24,10 +24,10 @@ func (*UnorderedListParser) Match(tokens []*tokenizer.Token) (int, bool) {
 
 	contentTokens := []*tokenizer.Token{}
 	for _, token := range tokens[2:] {
+		contentTokens = append(contentTokens, token)
 		if token.Type == tokenizer.Newline {
 			break
 		}
-		contentTokens = append(contentTokens, token)
 	}
 	if len(contentTokens) == 0 {
 		return 0, false
@@ -44,6 +44,10 @@ func (p *UnorderedListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error)
 
 	symbolToken := tokens[0]
 	contentTokens := tokens[2:size]
+	lastToken := contentTokens[len(contentTokens)-1]
+	if lastToken.Type == tokenizer.Newline {
+		contentTokens = contentTokens[:len(contentTokens)-1]
+	}
 	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err

@@ -39,6 +39,10 @@ func (r *HTMLRender) RenderNode(node ast.Node) {
 		r.renderHorizontalRule(n)
 	case *ast.Blockquote:
 		r.renderBlockquote(n)
+	case *ast.UnorderedList:
+		r.renderUnorderedList(n)
+	case *ast.OrderedList:
+		r.renderOrderedList(n)
 	case *ast.Bold:
 		r.renderBold(n)
 	case *ast.Italic:
@@ -110,6 +114,32 @@ func (r *HTMLRender) renderBlockquote(node *ast.Blockquote) {
 	r.RenderNodes(node.Children)
 	if nextSibling == nil || nextSibling.Type() != ast.BlockquoteNode {
 		r.output.WriteString("</blockquote>")
+	}
+}
+
+func (r *HTMLRender) renderUnorderedList(node *ast.UnorderedList) {
+	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
+	if prevSibling == nil || prevSibling.Type() != ast.UnorderedListNode {
+		r.output.WriteString("<ul>")
+	}
+	r.output.WriteString("<li>")
+	r.RenderNodes(node.Children)
+	r.output.WriteString("</li>")
+	if nextSibling == nil || nextSibling.Type() != ast.UnorderedListNode {
+		r.output.WriteString("</ul>")
+	}
+}
+
+func (r *HTMLRender) renderOrderedList(node *ast.OrderedList) {
+	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
+	if prevSibling == nil || prevSibling.Type() != ast.OrderedListNode {
+		r.output.WriteString("<ol>")
+	}
+	r.output.WriteString("<li>")
+	r.RenderNodes(node.Children)
+	r.output.WriteString("</li>")
+	if nextSibling == nil || nextSibling.Type() != ast.OrderedListNode {
+		r.output.WriteString("</ol>")
 	}
 }
 
