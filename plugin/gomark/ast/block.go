@@ -87,3 +87,16 @@ type UnorderedList struct {
 func (*UnorderedList) Type() NodeType {
 	return UnorderedListNode
 }
+
+type TaskList struct {
+	BaseBlock
+
+	// Symbol is "*" or "-" or "+".
+	Symbol   string
+	Complete bool
+	Children []Node
+}
+
+func (*TaskList) Type() NodeType {
+	return TaskListNode
+}

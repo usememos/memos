@@ -13,6 +13,7 @@ const (
 	BlockquoteNode
 	OrderedListNode
 	UnorderedListNode
+	TaskListNode
 	// Inline nodes.
 	TextNode
 	BoldNode

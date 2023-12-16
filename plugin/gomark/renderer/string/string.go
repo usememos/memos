@@ -39,6 +39,8 @@ func (r *StringRenderer) RenderNode(node ast.Node) {
 		r.renderHorizontalRule(n)
 	case *ast.Blockquote:
 		r.renderBlockquote(n)
+	case *ast.TaskList:
+		r.renderTaskList(n)
 	case *ast.UnorderedList:
 		r.renderUnorderedList(n)
 	case *ast.OrderedList:
@@ -105,6 +107,12 @@ func (r *StringRenderer) renderHorizontalRule(_ *ast.HorizontalRule) {
 
 func (r *StringRenderer) renderBlockquote(node *ast.Blockquote) {
 	r.output.WriteString("\n")
+	r.RenderNodes(node.Children)
+	r.output.WriteString("\n")
+}
+
+func (r *StringRenderer) renderTaskList(node *ast.TaskList) {
+	r.output.WriteString(node.Symbol)
 	r.RenderNodes(node.Children)
 	r.output.WriteString("\n")
 }

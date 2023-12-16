@@ -54,6 +54,14 @@ func TestHTMLRenderer(t *testing.T) {
 			text:     "1. Hello\n2. world\n* !",
 			expected: `<ol><li>Hello</li><li>world</li></ol><ul><li>!</li></ul>`,
 		},
+		{
+			text:     "- [ ] hello\n- [x] world",
+			expected: `<ul><li><input type="checkbox" disabled>hello</li><li><input type="checkbox" checked disabled>world</li></ul>`,
+		},
+		{
+			text:     "1. ordered\n* unorder\n- [ ] checkbox\n- [x] checked",
+			expected: `<ol><li>ordered</li></ol><ul><li>unorder</li></ul><ul><li><input type="checkbox" disabled>checkbox</li><li><input type="checkbox" checked disabled>checked</li></ul>`,
+		},
 	}
 
 	for _, test := range tests {

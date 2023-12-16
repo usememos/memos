@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -151,6 +152,51 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			text: "1. hello\n- [ ] world",
+			nodes: []ast.Node{
+				&ast.OrderedList{
+					Number: "1",
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "hello",
+						},
+					},
+				},
+				&ast.TaskList{
+					Symbol:   tokenizer.Hyphen,
+					Complete: false,
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "world",
+						},
+					},
+				},
+			},
+		},
+		{
+			text: "- [ ] hello\n- [x] world",
+			nodes: []ast.Node{
+				&ast.TaskList{
+					Symbol:   tokenizer.Hyphen,
+					Complete: false,
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "hello",
+						},
+					},
+				},
+				&ast.TaskList{
+					Symbol:   tokenizer.Hyphen,
+					Complete: true,
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "world",
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
@@ -184,6 +230,12 @@ func StringifyNode(node ast.Node) string {
 		return "HorizontalRule(" + n.Symbol + ")"
 	case *ast.Blockquote:
 		return "Blockquote(" + StringifyNodes(n.Children) + ")"
+	case *ast.OrderedList:
+		return "OrderedList(" + n.Number + ", " + StringifyNodes(n.Children) + ")"
+	case *ast.UnorderedList:
+		return "UnorderedList(" + n.Symbol + ", " + StringifyNodes(n.Children) + ")"
+	case *ast.TaskList:
+		return "TaskList(" + n.Symbol + ", " + strconv.FormatBool(n.Complete) + ", " + StringifyNodes(n.Children) + ")"
 	case *ast.Text:
 		return "Text(" + n.Content + ")"
 	case *ast.Bold:
@@ -202,6 +254,8 @@ func StringifyNode(node ast.Node) string {
 		return "Tag(" + n.Content + ")"
 	case *ast.Strikethrough:
 		return "Strikethrough(" + n.Content + ")"
+	case *ast.EscapingCharacter:
+		return "EscapingCharacter(" + n.Symbol + ")"
 	}
 	return ""
 }

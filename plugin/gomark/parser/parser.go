@@ -25,19 +25,20 @@ type BlockParser interface {
 	BaseParser
 }
 
+func Parse(tokens []*tokenizer.Token) ([]ast.Node, error) {
+	return ParseBlock(tokens)
+}
+
 var defaultBlockParsers = []BlockParser{
 	NewCodeBlockParser(),
 	NewHorizontalRuleParser(),
 	NewHeadingParser(),
 	NewBlockquoteParser(),
+	NewTaskListParser(),
 	NewUnorderedListParser(),
 	NewOrderedListParser(),
 	NewParagraphParser(),
 	NewLineBreakParser(),
-}
-
-func Parse(tokens []*tokenizer.Token) ([]ast.Node, error) {
-	return ParseBlock(tokens)
 }
 
 func ParseBlock(tokens []*tokenizer.Token) ([]ast.Node, error) {

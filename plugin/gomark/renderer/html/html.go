@@ -43,6 +43,8 @@ func (r *HTMLRenderer) RenderNode(node ast.Node) {
 		r.renderUnorderedList(n)
 	case *ast.OrderedList:
 		r.renderOrderedList(n)
+	case *ast.TaskList:
+		r.renderTaskList(n)
 	case *ast.Bold:
 		r.renderBold(n)
 	case *ast.Italic:
@@ -116,6 +118,24 @@ func (r *HTMLRenderer) renderBlockquote(node *ast.Blockquote) {
 	r.RenderNodes(node.Children)
 	if nextSibling == nil || nextSibling.Type() != ast.BlockquoteNode {
 		r.output.WriteString("</blockquote>")
+	}
+}
+
+func (r *HTMLRenderer) renderTaskList(node *ast.TaskList) {
+	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
+	if prevSibling == nil || prevSibling.Type() != ast.TaskListNode {
+		r.output.WriteString("<ul>")
+	}
+	r.output.WriteString("<li>")
+	r.output.WriteString("<input type=\"checkbox\"")
+	if node.Complete {
+		r.output.WriteString(" checked")
+	}
+	r.output.WriteString(" disabled>")
+	r.RenderNodes(node.Children)
+	r.output.WriteString("</li>")
+	if nextSibling == nil || nextSibling.Type() != ast.TaskListNode {
+		r.output.WriteString("</ul>")
 	}
 }
 
