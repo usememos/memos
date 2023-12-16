@@ -201,7 +201,7 @@ func (s *APIV2Service) GetUserSetting(ctx context.Context, _ *apiv2pb.GetUserSet
 		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
 	}
 
-	userSettings, err := s.Store.ListUserSettingsV1(ctx, &store.FindUserSetting{
+	userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{
 		UserID: &user.ID,
 	})
 	if err != nil {
@@ -236,7 +236,7 @@ func (s *APIV2Service) UpdateUserSetting(ctx context.Context, request *apiv2pb.U
 
 	for _, field := range request.UpdateMask.Paths {
 		if field == "locale" {
-			if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 				UserId: user.ID,
 				Key:    storepb.UserSettingKey_USER_SETTING_LOCALE,
 				Value: &storepb.UserSetting_Locale{
@@ -246,7 +246,7 @@ func (s *APIV2Service) UpdateUserSetting(ctx context.Context, request *apiv2pb.U
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
 			}
 		} else if field == "appearance" {
-			if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 				UserId: user.ID,
 				Key:    storepb.UserSettingKey_USER_SETTING_APPEARANCE,
 				Value: &storepb.UserSetting_Appearance{
@@ -256,7 +256,7 @@ func (s *APIV2Service) UpdateUserSetting(ctx context.Context, request *apiv2pb.U
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
 			}
 		} else if field == "memo_visibility" {
-			if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 				UserId: user.ID,
 				Key:    storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY,
 				Value: &storepb.UserSetting_MemoVisibility{
@@ -266,7 +266,7 @@ func (s *APIV2Service) UpdateUserSetting(ctx context.Context, request *apiv2pb.U
 				return nil, status.Errorf(codes.Internal, "failed to upsert user setting: %v", err)
 			}
 		} else if field == "telegram_user_id" {
-			if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+			if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 				UserId: user.ID,
 				Key:    storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID,
 				Value: &storepb.UserSetting_TelegramUserId{
@@ -431,7 +431,7 @@ func (s *APIV2Service) DeleteUserAccessToken(ctx context.Context, request *apiv2
 		}
 		updatedUserAccessTokens = append(updatedUserAccessTokens, userAccessToken)
 	}
-	if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
 		Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
 		Value: &storepb.UserSetting_AccessTokens{
@@ -456,7 +456,7 @@ func (s *APIV2Service) UpsertAccessTokenToStore(ctx context.Context, user *store
 		Description: description,
 	}
 	userAccessTokens = append(userAccessTokens, &userAccessToken)
-	if _, err := s.Store.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+	if _, err := s.Store.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: user.ID,
 		Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
 		Value: &storepb.UserSetting_AccessTokens{

@@ -39,7 +39,7 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 	}
 
 	var creatorID int32
-	userSettingList, err := t.store.ListUserSettingsV1(ctx, &store.FindUserSetting{
+	userSettingList, err := t.store.ListUserSettings(ctx, &store.FindUserSetting{
 		Key: storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID,
 	})
 	if err != nil {

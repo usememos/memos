@@ -11,7 +11,7 @@ type FindUserSetting struct {
 	Key    storepb.UserSettingKey
 }
 
-func (s *Store) UpsertUserSettingV1(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
+func (s *Store) UpsertUserSetting(ctx context.Context, upsert *storepb.UserSetting) (*storepb.UserSetting, error) {
 	userSettingMessage, err := s.driver.UpsertUserSetting(ctx, upsert)
 	if err != nil {
 		return nil, err
@@ -21,7 +21,7 @@ func (s *Store) UpsertUserSettingV1(ctx context.Context, upsert *storepb.UserSet
 	return userSettingMessage, nil
 }
 
-func (s *Store) ListUserSettingsV1(ctx context.Context, find *FindUserSetting) ([]*storepb.UserSetting, error) {
+func (s *Store) ListUserSettings(ctx context.Context, find *FindUserSetting) ([]*storepb.UserSetting, error) {
 	userSettingList, err := s.driver.ListUserSettings(ctx, find)
 	if err != nil {
 		return nil, err
@@ -33,14 +33,14 @@ func (s *Store) ListUserSettingsV1(ctx context.Context, find *FindUserSetting) (
 	return userSettingList, nil
 }
 
-func (s *Store) GetUserSettingV1(ctx context.Context, find *FindUserSetting) (*storepb.UserSetting, error) {
+func (s *Store) GetUserSetting(ctx context.Context, find *FindUserSetting) (*storepb.UserSetting, error) {
 	if find.UserID != nil {
 		if cache, ok := s.userSettingCache.Load(getUserSettingV1CacheKey(*find.UserID, find.Key.String())); ok {
 			return cache.(*storepb.UserSetting), nil
 		}
 	}
 
-	list, err := s.ListUserSettingsV1(ctx, find)
+	list, err := s.ListUserSettings(ctx, find)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (s *Store) GetUserSettingV1(ctx context.Context, find *FindUserSetting) (*s
 
 // GetUserAccessTokens returns the access tokens of the user.
 func (s *Store) GetUserAccessTokens(ctx context.Context, userID int32) ([]*storepb.AccessTokensUserSetting_AccessToken, error) {
-	userSetting, err := s.GetUserSettingV1(ctx, &FindUserSetting{
+	userSetting, err := s.GetUserSetting(ctx, &FindUserSetting{
 		UserID: &userID,
 		Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
 	})
@@ -85,7 +85,7 @@ func (s *Store) RemoveUserAccessToken(ctx context.Context, userID int32, token s
 		}
 	}
 
-	_, err = s.UpsertUserSettingV1(ctx, &storepb.UserSetting{
+	_, err = s.UpsertUserSetting(ctx, &storepb.UserSetting{
 		UserId: userID,
 		Key:    storepb.UserSettingKey_USER_SETTING_ACCESS_TOKENS,
 		Value: &storepb.UserSetting_AccessTokens{

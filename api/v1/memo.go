@@ -265,7 +265,7 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 	}
 
 	if createMemoRequest.Visibility == "" {
-		userMemoVisibilitySetting, err := s.Store.GetUserSettingV1(ctx, &store.FindUserSetting{
+		userMemoVisibilitySetting, err := s.Store.GetUserSetting(ctx, &store.FindUserSetting{
 			UserID: &userID,
 			Key:    storepb.UserSettingKey_USER_SETTING_MEMO_VISIBILITY,
 		})
@@ -389,7 +389,7 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 	// Send notification to telegram if memo is not private.
 	if memoResponse.Visibility != Private {
 		// fetch all telegram UserID
-		userSettings, err := s.Store.ListUserSettingsV1(ctx, &store.FindUserSetting{Key: storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID})
+		userSettings, err := s.Store.ListUserSettings(ctx, &store.FindUserSetting{Key: storepb.UserSettingKey_USER_SETTING_TELEGRAM_USER_ID})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to ListUserSettings").SetInternal(err)
 		}
