@@ -31,6 +31,18 @@ const findMatchingParser = (parsers: Parser[], markdownStr: string): Parser | un
   return matchedParser;
 };
 
+const addStrikethroughToTask = (markdown: string): string => {
+  const regex = /- \[x\] (.*)/;
+  const match = markdown.match(regex);
+
+  if (match && match[1]) {
+    const stringPart = match[1].trim();
+    return markdown.replace(stringPart, `~~${stringPart}~~`);
+  }
+
+  return markdown;
+};
+
 export const marked = (
   markdownStr: string,
   blockParsers = blockElementParserList,
@@ -40,8 +52,12 @@ export const marked = (
   if (matchedBlockParser) {
     const matchResult = matcher(markdownStr, matchedBlockParser.regexp);
     if (matchResult) {
-      const matchedStr = matchResult[0];
+      let matchedStr = matchResult[0];
       const retainContent = markdownStr.slice(matchedStr.length);
+
+      if (matchedBlockParser.name === "done list") {
+        matchedStr = addStrikethroughToTask(matchedStr);
+      }
 
       if (matchedBlockParser.name === "br") {
         return (
