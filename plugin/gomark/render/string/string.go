@@ -59,6 +59,8 @@ func (r *StringRender) RenderNode(node ast.Node) {
 		r.renderTag(n)
 	case *ast.Strikethrough:
 		r.renderStrikethrough(n)
+	case *ast.EscapingCharacter:
+		r.renderEscapingCharacter(n)
 	case *ast.Text:
 		r.renderText(n)
 	default:
@@ -156,4 +158,9 @@ func (r *StringRender) renderTag(node *ast.Tag) {
 
 func (r *StringRender) renderStrikethrough(node *ast.Strikethrough) {
 	r.output.WriteString(node.Content)
+}
+
+func (r *StringRender) renderEscapingCharacter(node *ast.EscapingCharacter) {
+	r.output.WriteString("\\")
+	r.output.WriteString(node.Symbol)
 }

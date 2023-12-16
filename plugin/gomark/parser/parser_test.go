@@ -27,6 +27,34 @@ func TestParser(t *testing.T) {
 			},
 		},
 		{
+			text: "# Hello world!",
+			nodes: []ast.Node{
+				&ast.Heading{
+					Level: 1,
+					Children: []ast.Node{
+						&ast.Text{
+							Content: "Hello world!",
+						},
+					},
+				},
+			},
+		},
+		{
+			text: "\\# Hello world!",
+			nodes: []ast.Node{
+				&ast.Paragraph{
+					Children: []ast.Node{
+						&ast.EscapingCharacter{
+							Symbol: "#",
+						},
+						&ast.Text{
+							Content: " Hello world!",
+						},
+					},
+				},
+			},
+		},
+		{
 			text: "**Hello** world!",
 			nodes: []ast.Node{
 				&ast.Paragraph{

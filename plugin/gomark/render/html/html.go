@@ -59,6 +59,8 @@ func (r *HTMLRender) RenderNode(node ast.Node) {
 		r.renderTag(n)
 	case *ast.Strikethrough:
 		r.renderStrikethrough(n)
+	case *ast.EscapingCharacter:
+		r.renderEscapingCharacter(n)
 	case *ast.Text:
 		r.renderText(n)
 	default:
@@ -198,4 +200,9 @@ func (r *HTMLRender) renderStrikethrough(node *ast.Strikethrough) {
 	r.output.WriteString(`<del>`)
 	r.output.WriteString(node.Content)
 	r.output.WriteString(`</del>`)
+}
+
+func (r *HTMLRender) renderEscapingCharacter(node *ast.EscapingCharacter) {
+	r.output.WriteString("\\")
+	r.output.WriteString(node.Symbol)
 }

@@ -101,3 +101,13 @@ type Strikethrough struct {
 func (*Strikethrough) Type() NodeType {
 	return StrikethroughNode
 }
+
+type EscapingCharacter struct {
+	BaseInline
+
+	Symbol string
+}
+
+func (*EscapingCharacter) Type() NodeType {
+	return EscapingCharacterNode
+}

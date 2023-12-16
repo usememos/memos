@@ -23,6 +23,7 @@ const (
 	LinkNode
 	TagNode
 	StrikethroughNode
+	EscapingCharacterNode
 )
 
 type Node interface {

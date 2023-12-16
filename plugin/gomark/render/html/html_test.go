@@ -43,6 +43,10 @@ func TestHTMLRender(t *testing.T) {
 			expected: `<p><span>#article</span> <span>#memo</span></p>`,
 		},
 		{
+			text:     "#article \\#memo",
+			expected: `<p><span>#article</span> \#memo</p>`,
+		},
+		{
 			text:     "* Hello\n* world!",
 			expected: `<ul><li>Hello</li><li>world!</li></ul>`,
 		},
