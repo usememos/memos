@@ -44,8 +44,7 @@ func (p *UnorderedListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error)
 
 	symbolToken := tokens[0]
 	contentTokens := tokens[2:size]
-	lastToken := contentTokens[len(contentTokens)-1]
-	if lastToken.Type == tokenizer.Newline {
+	if contentTokens[len(contentTokens)-1].Type == tokenizer.Newline {
 		contentTokens = contentTokens[:len(contentTokens)-1]
 	}
 	children, err := ParseInline(contentTokens)

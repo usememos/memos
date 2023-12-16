@@ -39,6 +39,9 @@ func (p *ParagraphParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	}
 
 	contentTokens := tokens[:size]
+	if contentTokens[len(contentTokens)-1].Type == tokenizer.Newline {
+		contentTokens = contentTokens[:len(contentTokens)-1]
+	}
 	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err

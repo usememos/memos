@@ -2,6 +2,7 @@ package string
 
 import (
 	"bytes"
+	"fmt"
 
 	"github.com/usememos/memos/plugin/gomark/ast"
 )
@@ -84,6 +85,7 @@ func (r *StringRender) renderLineBreak(_ *ast.LineBreak) {
 
 func (r *StringRender) renderParagraph(node *ast.Paragraph) {
 	r.RenderNodes(node.Children)
+	r.output.WriteString("\n")
 }
 
 func (r *StringRender) renderCodeBlock(node *ast.CodeBlock) {
@@ -106,27 +108,15 @@ func (r *StringRender) renderBlockquote(node *ast.Blockquote) {
 }
 
 func (r *StringRender) renderUnorderedList(node *ast.UnorderedList) {
-	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
-	if prevSibling == nil || prevSibling.Type() != ast.UnorderedListNode {
-		r.output.WriteString("\n")
-	}
-	r.output.WriteString("* ")
+	r.output.WriteString(node.Symbol)
 	r.RenderNodes(node.Children)
-	if nextSibling == nil || nextSibling.Type() != ast.UnorderedListNode {
-		r.output.WriteString("\n")
-	}
+	r.output.WriteString("\n")
 }
 
 func (r *StringRender) renderOrderedList(node *ast.OrderedList) {
-	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
-	if prevSibling == nil || prevSibling.Type() != ast.OrderedListNode {
-		r.output.WriteString("\n")
-	}
-	r.output.WriteString("1. ")
+	r.output.WriteString(fmt.Sprintf("%s. ", node.Number))
 	r.RenderNodes(node.Children)
-	if nextSibling == nil || nextSibling.Type() != ast.OrderedListNode {
-		r.output.WriteString("\n")
-	}
+	r.output.WriteString("\n")
 }
 
 func (r *StringRender) renderText(node *ast.Text) {

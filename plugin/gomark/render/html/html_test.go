@@ -24,11 +24,15 @@ func TestHTMLRender(t *testing.T) {
 		},
 		{
 			text:     "> Hello\n> world!",
-			expected: `<blockquote>Hello<br>world!</blockquote>`,
+			expected: `<blockquote><p>Hello</p><p>world!</p></blockquote>`,
 		},
 		{
 			text:     "*Hello* world!",
 			expected: `<p><em>Hello</em> world!</p>`,
+		},
+		{
+			text:     "Hello world!\n\nNew paragraph.",
+			expected: "<p>Hello world!</p><br><p>New paragraph.</p>",
 		},
 		{
 			text:     "**Hello** world!",

@@ -14,30 +14,27 @@ func NewHeadingParser() *HeadingParser {
 }
 
 func (*HeadingParser) Match(tokens []*tokenizer.Token) (int, bool) {
-	cursor := 0
+	level := 0
 	for _, token := range tokens {
 		if token.Type == tokenizer.PoundSign {
-			cursor++
+			level++
 		} else {
 			break
 		}
 	}
-	if len(tokens) <= cursor+1 {
+	if len(tokens) <= level+1 {
 		return 0, false
 	}
-	if tokens[cursor].Type != tokenizer.Space {
+	if tokens[level].Type != tokenizer.Space {
 		return 0, false
 	}
-	level := cursor
 	if level == 0 || level > 6 {
 		return 0, false
 	}
 
-	cursor++
 	contentTokens := []*tokenizer.Token{}
-	for _, token := range tokens[cursor:] {
+	for _, token := range tokens[level+1:] {
 		contentTokens = append(contentTokens, token)
-		cursor++
 		if token.Type == tokenizer.Newline {
 			break
 		}
@@ -46,7 +43,7 @@ func (*HeadingParser) Match(tokens []*tokenizer.Token) (int, bool) {
 		return 0, false
 	}
 
-	return cursor, true
+	return len(contentTokens) + level + 1, true
 }
 
 func (p *HeadingParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
@@ -65,6 +62,9 @@ func (p *HeadingParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	}
 
 	contentTokens := tokens[level+1 : size]
+	if contentTokens[len(contentTokens)-1].Type == tokenizer.Newline {
+		contentTokens = contentTokens[:len(contentTokens)-1]
+	}
 	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err

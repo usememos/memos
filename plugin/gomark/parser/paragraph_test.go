@@ -39,7 +39,6 @@ func TestParagraphParser(t *testing.T) {
 					&ast.Text{
 						Content: "Hello world!",
 					},
-					&ast.LineBreak{},
 				},
 			},
 		},
@@ -50,7 +49,6 @@ func TestParagraphParser(t *testing.T) {
 					&ast.Text{
 						Content: "Hello world!",
 					},
-					&ast.LineBreak{},
 				},
 			},
 		},

@@ -65,7 +65,6 @@ func TestParser(t *testing.T) {
 						&ast.Text{
 							Content: "!",
 						},
-						&ast.LineBreak{},
 					},
 				},
 				&ast.Paragraph{
@@ -96,7 +95,6 @@ func TestParser(t *testing.T) {
 						&ast.Text{
 							Content: "!",
 						},
-						&ast.LineBreak{},
 					},
 				},
 				&ast.CodeBlock{
@@ -113,7 +111,6 @@ func TestParser(t *testing.T) {
 						&ast.Text{
 							Content: "Hello world!",
 						},
-						&ast.LineBreak{},
 					},
 				},
 				&ast.LineBreak{},

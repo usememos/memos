@@ -42,7 +42,7 @@ func (p *BlockquoteParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	}
 
 	contentTokens := tokens[2:size]
-	children, err := ParseInline(contentTokens)
+	children, err := ParseBlockWithParsers(contentTokens, []BlockParser{NewParagraphParser(), NewLineBreakParser()})
 	if err != nil {
 		return nil, err
 	}

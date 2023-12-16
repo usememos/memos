@@ -19,7 +19,7 @@ func TestHeadingParser(t *testing.T) {
 			heading: nil,
 		},
 		{
-			text: "## Hello World",
+			text: "## Hello World\n123",
 			heading: &ast.Heading{
 				Level: 2,
 				Children: []ast.Node{
@@ -53,7 +53,6 @@ Hello World`,
 					&ast.Text{
 						Content: "123 ",
 					},
-					&ast.LineBreak{},
 				},
 			},
 		},
