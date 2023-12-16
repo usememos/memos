@@ -63,8 +63,12 @@ Hello World`,
 				Level: 3,
 				Children: []ast.Node{
 					&ast.Bold{
-						Symbol:  "*",
-						Content: "Hello",
+						Symbol: "*",
+						Children: []ast.Node{
+							&ast.Text{
+								Content: "Hello",
+							},
+						},
 					},
 					&ast.Text{
 						Content: " World",

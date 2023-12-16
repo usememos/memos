@@ -22,6 +22,10 @@ func TestStringRender(t *testing.T) {
 			text:     "**Hello** world!",
 			expected: `Hello world!`,
 		},
+		{
+			text:     "**[your/slash](https://example.com)** world!",
+			expected: `your/slash world!`,
+		},
 	}
 
 	for _, test := range tests {

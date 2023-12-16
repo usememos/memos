@@ -30,6 +30,13 @@ func TestLinkParser(t *testing.T) {
 			link: nil,
 		},
 		{
+			text: "[your/slash](https://example.com)",
+			link: &ast.Link{
+				Text: "your/slash",
+				URL:  "https://example.com",
+			},
+		},
+		{
 			text: "[hello world](https://example.com)",
 			link: &ast.Link{
 				Text: "hello world",

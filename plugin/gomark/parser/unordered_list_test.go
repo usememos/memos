@@ -35,8 +35,12 @@ func TestUnorderedListParser(t *testing.T) {
 				Symbol: tokenizer.Asterisk,
 				Children: []ast.Node{
 					&ast.Bold{
-						Symbol:  "*",
-						Content: "Hello",
+						Symbol: "*",
+						Children: []ast.Node{
+							&ast.Text{
+								Content: "Hello",
+							},
+						},
 					},
 				},
 			},

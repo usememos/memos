@@ -21,15 +21,23 @@ func TestBoldParser(t *testing.T) {
 		{
 			text: "**Hello**",
 			bold: &ast.Bold{
-				Symbol:  "*",
-				Content: "Hello",
+				Symbol: "*",
+				Children: []ast.Node{
+					&ast.Text{
+						Content: "Hello",
+					},
+				},
 			},
 		},
 		{
 			text: "** Hello **",
 			bold: &ast.Bold{
-				Symbol:  "*",
-				Content: " Hello ",
+				Symbol: "*",
+				Children: []ast.Node{
+					&ast.Text{
+						Content: " Hello ",
+					},
+				},
 			},
 		},
 		{

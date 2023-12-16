@@ -134,7 +134,7 @@ func (r *StringRender) renderText(node *ast.Text) {
 }
 
 func (r *StringRender) renderBold(node *ast.Bold) {
-	r.output.WriteString(node.Content)
+	r.RenderNodes(node.Children)
 }
 
 func (r *StringRender) renderItalic(node *ast.Italic) {
@@ -151,12 +151,12 @@ func (r *StringRender) renderCode(node *ast.Code) {
 	r.output.WriteString("`")
 }
 
-func (*StringRender) renderImage(*ast.Image) {
-	// Do nothing.
+func (r *StringRender) renderImage(node *ast.Image) {
+	r.output.WriteString(node.AltText)
 }
 
-func (*StringRender) renderLink(*ast.Link) {
-	// Do nothing.
+func (r *StringRender) renderLink(node *ast.Link) {
+	r.output.WriteString(node.Text)
 }
 
 func (r *StringRender) renderTag(node *ast.Tag) {

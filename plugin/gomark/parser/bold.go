@@ -53,8 +53,12 @@ func (p *BoldParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 
 	prefixTokenType := tokens[0].Type
 	contentTokens := tokens[2 : size-2]
+	children, err := ParseInlineWithParsers(contentTokens, []InlineParser{NewLinkParser(), NewTextParser()})
+	if err != nil {
+		return nil, err
+	}
 	return &ast.Bold{
-		Symbol:  prefixTokenType,
-		Content: tokenizer.Stringify(contentTokens),
+		Symbol:   prefixTokenType,
+		Children: children,
 	}, nil
 }

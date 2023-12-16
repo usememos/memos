@@ -32,8 +32,12 @@ func TestParser(t *testing.T) {
 				&ast.Paragraph{
 					Children: []ast.Node{
 						&ast.Bold{
-							Symbol:  "*",
-							Content: "Hello",
+							Symbol: "*",
+							Children: []ast.Node{
+								&ast.Text{
+									Content: "Hello",
+								},
+							},
 						},
 						&ast.Text{
 							Content: " world!",
@@ -51,8 +55,12 @@ func TestParser(t *testing.T) {
 							Content: "Hello ",
 						},
 						&ast.Bold{
-							Symbol:  "*",
-							Content: "world",
+							Symbol: "*",
+							Children: []ast.Node{
+								&ast.Text{
+									Content: "world",
+								},
+							},
 						},
 						&ast.Text{
 							Content: "!",
@@ -78,8 +86,12 @@ func TestParser(t *testing.T) {
 							Content: "Hello ",
 						},
 						&ast.Bold{
-							Symbol:  "*",
-							Content: "world",
+							Symbol: "*",
+							Children: []ast.Node{
+								&ast.Text{
+									Content: "world",
+								},
+							},
 						},
 						&ast.Text{
 							Content: "!",
@@ -150,7 +162,7 @@ func StringifyNode(node ast.Node) string {
 	case *ast.Text:
 		return "Text(" + n.Content + ")"
 	case *ast.Bold:
-		return "Bold(" + n.Symbol + n.Content + n.Symbol + ")"
+		return "Bold(" + n.Symbol + StringifyNodes(n.Children) + n.Symbol + ")"
 	case *ast.Italic:
 		return "Italic(" + n.Symbol + n.Content + n.Symbol + ")"
 	case *ast.BoldItalic:

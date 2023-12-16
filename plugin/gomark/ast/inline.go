@@ -18,8 +18,8 @@ type Bold struct {
 	BaseInline
 
 	// Symbol is "*" or "_".
-	Symbol  string
-	Content string
+	Symbol   string
+	Children []Node
 }
 
 func (*Bold) Type() NodeType {

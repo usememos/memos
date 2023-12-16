@@ -76,10 +76,14 @@ var defaultInlineParsers = []InlineParser{
 }
 
 func ParseInline(tokens []*tokenizer.Token) ([]ast.Node, error) {
+	return ParseInlineWithParsers(tokens, defaultInlineParsers)
+}
+
+func ParseInlineWithParsers(tokens []*tokenizer.Token, inlineParsers []InlineParser) ([]ast.Node, error) {
 	nodes := []ast.Node{}
 	var prevNode ast.Node
 	for len(tokens) > 0 {
-		for _, inlineParser := range defaultInlineParsers {
+		for _, inlineParser := range inlineParsers {
 			size, matched := inlineParser.Match(tokens)
 			if matched {
 				node, err := inlineParser.Parse(tokens)

@@ -149,7 +149,7 @@ func (r *HTMLRender) renderText(node *ast.Text) {
 
 func (r *HTMLRender) renderBold(node *ast.Bold) {
 	r.output.WriteString("<strong>")
-	r.output.WriteString(node.Content)
+	r.RenderNodes(node.Children)
 	r.output.WriteString("</strong>")
 }
 
