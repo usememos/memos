@@ -3,6 +3,7 @@ package frontend
 import (
 	"embed"
 	"fmt"
+	"html/template"
 	"io/fs"
 	"net/http"
 	"strings"
@@ -172,14 +173,14 @@ func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
 	}
 
 	metadataList := []string{
-		fmt.Sprintf(`<meta name="description" content="%s" />`, description),
-		fmt.Sprintf(`<meta property="og:title" content="%s" />`, fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username)),
-		fmt.Sprintf(`<meta property="og:description" content="%s" />`, description),
+		fmt.Sprintf(`<meta name="description" content="%s" />`, template.HTMLEscapeString(description)),
+		fmt.Sprintf(`<meta property="og:title" content="%s" />`, template.HTMLEscapeString(fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username))),
+		fmt.Sprintf(`<meta property="og:description" content="%s" />`, template.HTMLEscapeString(description)),
 		fmt.Sprintf(`<meta property="og:image" content="%s" />`, "https://www.usememos.com/logo.png"),
 		`<meta property="og:type" content="website" />`,
 		// Twitter related metadata.
-		fmt.Sprintf(`<meta name="twitter:title" content="%s" />`, fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username)),
-		fmt.Sprintf(`<meta name="twitter:description" content="%s" />`, description),
+		fmt.Sprintf(`<meta name="twitter:title" content="%s" />`, template.HTMLEscapeString(fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username))),
+		fmt.Sprintf(`<meta name="twitter:description" content="%s" />`, template.HTMLEscapeString(description)),
 		fmt.Sprintf(`<meta name="twitter:image" content="%s" />`, "https://www.usememos.com/logo.png"),
 		`<meta name="twitter:card" content="summary" />`,
 	}

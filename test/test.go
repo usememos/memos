@@ -33,7 +33,6 @@ func GetTestingProfile(t *testing.T) *profile.Profile {
 	if driver == "sqlite" {
 		dsn = fmt.Sprintf("%s/memos_%s.db", dir, mode)
 	}
-	println("dsn", dsn, driver)
 	return &profile.Profile{
 		Mode:    mode,
 		Port:    port,
