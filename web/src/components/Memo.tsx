@@ -13,7 +13,7 @@ import { useTranslate } from "@/utils/i18n";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
-import MemoContent from "./MemoContent";
+import MemoContentV1 from "./MemoContentV1";
 import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
 import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
@@ -207,21 +207,6 @@ const Memo: React.FC<Props> = (props: Props) => {
     }
   };
 
-  const handleMemoContentDoubleClick = (e: React.MouseEvent) => {
-    if (readonly) {
-      return;
-    }
-    const targetEl = e.target as HTMLElement;
-
-    if (targetEl.className === "tag-span") {
-      return;
-    } else if (targetEl.classList.contains("todo-block")) {
-      return;
-    }
-
-    handleEditMemoClick();
-  };
-
   return (
     <div
       className={`group memo-wrapper ${"memos-" + memo.id} ${memo.pinned && props.showPinnedStyle ? "pinned" : ""}`}
@@ -329,11 +314,7 @@ const Memo: React.FC<Props> = (props: Props) => {
           </Link>
         </div>
       )}
-      <MemoContent
-        content={memo.content}
-        onMemoContentClick={handleMemoContentClick}
-        onMemoContentDoubleClick={handleMemoContentDoubleClick}
-      />
+      <MemoContentV1 content={memo.content} onMemoContentClick={handleMemoContentClick} />
       <MemoResourceListView resourceList={memo.resourceList} />
       <MemoRelationListView memo={memo} relationList={referenceRelations} />
     </div>

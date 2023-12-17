@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import MemoContent from "@/components/MemoContent";
+import MemoContentV1 from "@/components/MemoContentV1";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import { UNKNOWN_ID } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
@@ -50,7 +50,7 @@ const EmbedMemo = () => {
                 @{state.memo.creatorName}
               </a>
             </div>
-            <MemoContent className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
+            <MemoContentV1 className="memo-content" content={state.memo.content} onMemoContentClick={() => undefined} />
             <MemoResourceListView resourceList={state.memo.resourceList} />
           </div>
         </div>

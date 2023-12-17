@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import useToggle from "react-use/lib/useToggle";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
-import MemoContent from "@/components/MemoContent";
+import MemoContentV1 from "@/components/MemoContentV1";
 import MemoEditor from "@/components/MemoEditor";
 import MemoRelationListView from "@/components/MemoRelationListView";
 import MemoResourceListView from "@/components/MemoResourceListView";
@@ -112,7 +112,7 @@ const DailyReview = () => {
                   <Icon.Dot className="w-5 h-auto opacity-60" />
                   <span className="opacity-60">#{memo.id}</span>
                 </div>
-                <MemoContent content={memo.content} />
+                <MemoContentV1 content={memo.content} />
                 <MemoResourceListView resourceList={memo.resourceList} />
                 <MemoRelationListView memo={memo} relationList={memo.relationList.filter((relation) => relation.type === "REFERENCE")} />
                 <div className="absolute left-1 sm:left-2 top-3 h-full">

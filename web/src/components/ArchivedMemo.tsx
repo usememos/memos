@@ -5,7 +5,7 @@ import { useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
-import MemoContent from "./MemoContent";
+import MemoContentV1 from "./MemoContentV1";
 import MemoResourceListView from "./MemoResourceListView";
 import "@/less/memo.less";
 
@@ -63,7 +63,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
           </Tooltip>
         </div>
       </div>
-      <MemoContent content={memo.content} />
+      <MemoContentV1 content={memo.content} />
       <MemoResourceListView resourceList={memo.resourceList} />
     </div>
   );

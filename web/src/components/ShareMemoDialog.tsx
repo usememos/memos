@@ -10,7 +10,7 @@ import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import showEmbedMemoDialog from "./EmbedMemoDialog";
 import Icon from "./Icon";
-import MemoContent from "./MemoContent";
+import MemoContentV1 from "./MemoContentV1";
 import MemoResourceListView from "./MemoResourceListView";
 import UserAvatar from "./UserAvatar";
 import "@/less/share-memo-dialog.less";
@@ -112,7 +112,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
           >
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{memo.displayTsStr}</span>
             <div className="w-full px-6 text-base pb-4">
-              <MemoContent content={memo.content} />
+              <MemoContentV1 content={memo.content} />
               <MemoResourceListView resourceList={memo.resourceList} />
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-4 px-6">
