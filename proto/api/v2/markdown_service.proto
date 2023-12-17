@@ -46,7 +46,6 @@ enum NodeType {
   ESCAPING_CHARACTER = 19;
 }
 
-// Define the Node message.
 message Node {
   NodeType type = 1;
   oneof node {

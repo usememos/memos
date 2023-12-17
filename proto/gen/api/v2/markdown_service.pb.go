@@ -215,7 +215,6 @@ func (x *ParseMarkdownResponse) GetNodes() []*Node {
 	return nil
 }
 
-// Define the Node message.
 type Node struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

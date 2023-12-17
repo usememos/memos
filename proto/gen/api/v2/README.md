@@ -1092,7 +1092,7 @@
 <a name="memos-api-v2-Node"></a>
 
 ### Node
-Define the Node message.
+
 
 
 | Field | Type | Label | Description |

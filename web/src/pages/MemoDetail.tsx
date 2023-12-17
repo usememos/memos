@@ -6,7 +6,7 @@ import { Link, useParams } from "react-router-dom";
 import FloatingNavButton from "@/components/FloatingNavButton";
 import Icon from "@/components/Icon";
 import Memo from "@/components/Memo";
-import MemoContent from "@/components/MemoContent";
+import MemoContentV1 from "@/components/MemoContentV1";
 import MemoEditor from "@/components/MemoEditor";
 import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
 import MemoRelationListView from "@/components/MemoRelationListView";
@@ -133,7 +133,7 @@ const MemoDetail = () => {
             <div className="w-full mb-4 flex flex-row justify-start items-center mr-1">
               <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTs)}</span>
             </div>
-            <MemoContent content={memo.content} />
+            <MemoContentV1 content={memo.content} />
             <MemoResourceListView resourceList={memo.resourceList} />
             <MemoRelationListView memo={memo} relationList={referenceRelations} />
             <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">

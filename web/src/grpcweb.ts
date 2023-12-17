@@ -2,6 +2,7 @@ import { createChannel, createClientFactory, FetchTransport } from "nice-grpc-we
 import { ActivityServiceDefinition } from "./types/proto/api/v2/activity_service";
 import { AuthServiceDefinition } from "./types/proto/api/v2/auth_service";
 import { InboxServiceDefinition } from "./types/proto/api/v2/inbox_service";
+import { MarkdownServiceDefinition } from "./types/proto/api/v2/markdown_service";
 import { MemoServiceDefinition } from "./types/proto/api/v2/memo_service";
 import { ResourceServiceDefinition } from "./types/proto/api/v2/resource_service";
 import { SystemServiceDefinition } from "./types/proto/api/v2/system_service";
@@ -35,3 +36,5 @@ export const inboxServiceClient = clientFactory.create(InboxServiceDefinition, c
 export const activityServiceClient = clientFactory.create(ActivityServiceDefinition, channel);
 
 export const webhookServiceClient = clientFactory.create(WebhookServiceDefinition, channel);
+
+export const markdownServiceClient = clientFactory.create(MarkdownServiceDefinition, channel);
