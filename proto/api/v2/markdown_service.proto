@@ -1,0 +1,158 @@
+syntax = "proto3";
+
+package memos.api.v2;
+
+import "google/api/annotations.proto";
+
+option go_package = "gen/api/v2";
+
+service MarkdownService {
+  rpc ParseMarkdown(ParseMarkdownRequest) returns (ParseMarkdownResponse) {
+    option (google.api.http) = {
+      post: "/api/v2/markdown"
+      body: "*"
+    };
+  }
+}
+
+message ParseMarkdownRequest {
+  string markdown = 1;
+}
+
+message ParseMarkdownResponse {
+  repeated Node nodes = 1;
+}
+
+enum NodeType {
+  NODE_UNSPECIFIED = 0;
+  LINE_BREAK = 1;
+  PARAGRAPH = 2;
+  CODE_BLOCK = 3;
+  HEADING = 4;
+  HORIZONTAL_RULE = 5;
+  BLOCKQUOTE = 6;
+  ORDERED_LIST = 7;
+  UNORDERED_LIST = 8;
+  TASK_LIST = 9;
+  TEXT = 10;
+  BOLD = 11;
+  ITALIC = 12;
+  BOLD_ITALIC = 13;
+  CODE = 14;
+  IMAGE = 15;
+  LINK = 16;
+  TAG = 17;
+  STRIKETHROUGH = 18;
+  ESCAPING_CHARACTER = 19;
+}
+
+// Define the Node message.
+message Node {
+  NodeType type = 1;
+  oneof node {
+    LineBreakNode line_break_node = 2;
+    ParagraphNode paragraph_node = 3;
+    CodeBlockNode code_block_node = 4;
+    HeadingNode heading_node = 5;
+    HorizontalRuleNode horizontal_rule_node = 6;
+    BlockquoteNode blockquote_node = 7;
+    OrderedListNode ordered_list_node = 8;
+    UnorderedListNode unordered_list_node = 9;
+    TaskListNode task_list_node = 10;
+    TextNode text_node = 11;
+    BoldNode bold_node = 12;
+    ItalicNode italic_node = 13;
+    BoldItalicNode bold_italic_node = 14;
+    CodeNode code_node = 15;
+    ImageNode image_node = 16;
+    LinkNode link_node = 17;
+    TagNode tag_node = 18;
+    StrikethroughNode strikethrough_node = 19;
+    EscapingCharacterNode escaping_character_node = 20;
+  }
+}
+
+message LineBreakNode {}
+
+message ParagraphNode {
+  repeated Node children = 1;
+}
+
+message CodeBlockNode {
+  string language = 1;
+  string content = 2;
+}
+
+message HeadingNode {
+  int32 level = 1;
+  repeated Node children = 2;
+}
+
+message HorizontalRuleNode {
+  string symbol = 1;
+}
+
+message BlockquoteNode {
+  repeated Node children = 1;
+}
+
+message OrderedListNode {
+  string number = 1;
+  repeated Node children = 2;
+}
+
+message UnorderedListNode {
+  string symbol = 1;
+  repeated Node children = 2;
+}
+
+message TaskListNode {
+  string symbol = 1;
+  bool complete = 2;
+  repeated Node children = 3;
+}
+
+message TextNode {
+  string content = 1;
+}
+
+message BoldNode {
+  string symbol = 1;
+  repeated Node children = 2;
+}
+
+message ItalicNode {
+  string symbol = 1;
+  string content = 2;
+}
+
+message BoldItalicNode {
+  string symbol = 1;
+  string content = 2;
+}
+
+message CodeNode {
+  string content = 1;
+}
+
+message ImageNode {
+  string alt_text = 1;
+  string url = 2;
+}
+
+message LinkNode {
+  string text = 1;
+  string url = 2;
+}
+
+message TagNode {
+  string content = 1;
+}
+
+message StrikethroughNode {
+  string content = 1;
+}
+
+message EscapingCharacterNode {
+  string symbol = 1;
+}

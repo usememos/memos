@@ -3,6 +3,7 @@ syntax = "proto3";
 package memos.api.v2;
 
 import "api/v2/common.proto";
+import "api/v2/markdown_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
 
@@ -56,9 +57,11 @@ message Memo {
 
   string content = 6;
 
-  Visibility visibility = 7;
+  repeated Node nodes = 7;
 
-  bool pinned = 8;
+  Visibility visibility = 8;
+
+  bool pinned = 9;
 }
 
 message CreateMemoRequest {

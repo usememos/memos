@@ -5,7 +5,7 @@ import (
 
 	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
-	v1alpha1 "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
+	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
@@ -32,8 +32,12 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		return nil, err
 	}
 
+	memoMessage, err := convertMemoFromStore(memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert memo")
+	}
 	response := &apiv2pb.CreateMemoResponse{
-		Memo: convertMemoFromStore(memo),
+		Memo: memoMessage,
 	}
 	return response, nil
 }
@@ -89,7 +93,11 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 
 	memoMessages := make([]*apiv2pb.Memo, len(memos))
 	for i, memo := range memos {
-		memoMessages[i] = convertMemoFromStore(memo)
+		memoMessage, err := convertMemoFromStore(memo)
+		if err != nil {
+			return nil, errors.Wrap(err, "failed to convert memo")
+		}
+		memoMessages[i] = memoMessage
 	}
 
 	response := &apiv2pb.ListMemosResponse{
@@ -121,8 +129,12 @@ func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequ
 		}
 	}
 
+	memoMessage, err := convertMemoFromStore(memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert memo")
+	}
 	response := &apiv2pb.GetMemoResponse{
-		Memo: convertMemoFromStore(memo),
+		Memo: memoMessage,
 	}
 	return response, nil
 }
@@ -170,7 +182,11 @@ func (s *APIV2Service) ListMemoComments(ctx context.Context, request *apiv2pb.Li
 			return nil, status.Errorf(codes.Internal, "failed to get memo")
 		}
 		if memo != nil {
-			memos = append(memos, convertMemoFromStore(memo))
+			memoMessage, err := convertMemoFromStore(memo)
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to convert memo")
+			}
+			memos = append(memos, memoMessage)
 		}
 	}
 
@@ -212,7 +228,7 @@ func parseListMemosFilter(expression string) (*ListMemosFilter, error) {
 	return filter, nil
 }
 
-func findField(callExpr *v1alpha1.Expr_Call, filter *ListMemosFilter) {
+func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 	if len(callExpr.Args) == 2 {
 		idExpr := callExpr.Args[0].GetIdentExpr()
 		if idExpr != nil {
@@ -239,7 +255,7 @@ func findField(callExpr *v1alpha1.Expr_Call, filter *ListMemosFilter) {
 	}
 }
 
-func convertMemoFromStore(memo *store.Memo) *apiv2pb.Memo {
+func convertMemoFromStore(memo *store.Memo) (*apiv2pb.Memo, error) {
 	return &apiv2pb.Memo{
 		Id:         int32(memo.ID),
 		RowStatus:  convertRowStatusFromStore(memo.RowStatus),
@@ -249,7 +265,7 @@ func convertMemoFromStore(memo *store.Memo) *apiv2pb.Memo {
 		Content:    memo.Content,
 		Visibility: convertVisibilityFromStore(memo.Visibility),
 		Pinned:     memo.Pinned,
-	}
+	}, nil
 }
 
 func convertVisibilityFromStore(visibility store.Visibility) apiv2pb.Visibility {
