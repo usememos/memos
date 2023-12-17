@@ -5,9 +5,9 @@ import Memo from "@/components/Memo";
 import MemoFilter from "@/components/MemoFilter";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
-import { TAG_REG } from "@/labs/marked/parser";
 import { useFilterStore, useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
+import { TAG_REG } from "@/utils/tag";
 
 const Explore = () => {
   const t = useTranslate();

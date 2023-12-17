@@ -3,10 +3,9 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { tagServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { matcher } from "@/labs/marked/matcher";
-import Tag from "@/labs/marked/parser/Tag";
 import { useTagStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
+import { TAG_REG } from "@/utils/tag";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 import OverflowTip from "./kit/OverflowTip";
@@ -14,7 +13,7 @@ import OverflowTip from "./kit/OverflowTip";
 type Props = DialogProps;
 
 const validateTagName = (tagName: string): boolean => {
-  const matchResult = matcher(`#${tagName}`, Tag.regexp);
+  const matchResult = `#${tagName}`.match(TAG_REG);
   if (!matchResult || matchResult[1] !== tagName) {
     return false;
   }

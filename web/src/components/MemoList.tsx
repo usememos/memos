@@ -5,10 +5,10 @@ import MemoFilter from "@/components/MemoFilter";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { TAG_REG } from "@/labs/marked/parser";
 import { useFilterStore, useMemoStore } from "@/store/module";
 import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
+import { TAG_REG } from "@/utils/tag";
 import Empty from "./Empty";
 import Memo from "./Memo";
 
