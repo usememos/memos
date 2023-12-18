@@ -157,9 +157,8 @@
     "hide": "Hide",
     "save-all": "Save all"
   },
-  "daily-review": {
-    "title": "Daily Review",
-    "no-memos": "Oops, there is nothing."
+  "timeline": {
+    "title": "Timeline"
   },
   "setting": {
     "my-account": "My Account",

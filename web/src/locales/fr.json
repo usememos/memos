@@ -85,10 +85,6 @@
     "visibility": "Visibilité",
     "yourself": "Vous-même"
   },
-  "daily-review": {
-    "no-memos": "Oups, il n'y a rien.",
-    "title": "Résumé journalier"
-  },
   "days": {
     "fri": "Ve",
     "mon": "Lu",

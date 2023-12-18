@@ -55,9 +55,7 @@ VALUES
     '#TODO 
 - [x] Take more photos about **🌄 sunset**;
 - [ ] Clean the classroom;
-- [ ] Watch *👦 The Boys*;
-(👆 click to toggle status)
-',
+- [ ] Watch *👦 The Boys*;',
     102,
     'PROTECTED'
   );

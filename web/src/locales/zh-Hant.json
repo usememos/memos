@@ -82,9 +82,8 @@
     "visibility": "可見度",
     "yourself": "你自己"
   },
-  "daily-review": {
-    "no-memos": "可惜可惜，是日空空如也。",
-    "title": "每日回顧"
+  "timeline": {
+    "title": "时间线"
   },
   "days": {
     "fri": "五",

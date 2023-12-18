@@ -13,7 +13,7 @@ const Home = lazy(() => import("@/pages/Home"));
 const UserProfile = lazy(() => import("@/pages/UserProfile"));
 const MemoDetail = lazy(() => import("@/pages/MemoDetail"));
 const Archived = lazy(() => import("@/pages/Archived"));
-const DailyReview = lazy(() => import("@/pages/DailyReview"));
+const Timeline = lazy(() => import("@/pages/Timeline"));
 const Resources = lazy(() => import("@/pages/Resources"));
 const Inboxes = lazy(() => import("@/pages/Inboxes"));
 const Setting = lazy(() => import("@/pages/Setting"));
@@ -59,10 +59,10 @@ const router = createBrowserRouter([
             ),
           },
           {
-            path: "review",
+            path: "timeline",
             element: (
               <AuthStatusProvider>
-                <DailyReview />
+                <Timeline />
               </AuthStatusProvider>
             ),
           },

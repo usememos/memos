@@ -18,7 +18,7 @@ import { useMemoStore } from "@/store/module";
 import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
-const DailyReview = () => {
+const Timeline = () => {
   const t = useTranslate();
   const memoStore = useMemoStore();
   const currentUser = useCurrentUser();
@@ -128,7 +128,7 @@ const DailyReview = () => {
 
             {selectedDateStamp === currentDateStamp && (
               <div className="w-full pl-0 sm:pl-12 sm:mt-4">
-                <MemoEditor cacheKey="daily-review-editor" />
+                <MemoEditor cacheKey="timeline-editor" />
               </div>
             )}
           </div>
@@ -138,4 +138,4 @@ const DailyReview = () => {
   );
 };
 
-export default DailyReview;
+export default Timeline;

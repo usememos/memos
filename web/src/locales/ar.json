@@ -70,10 +70,6 @@
     "visibility": "الرؤية",
     "yourself": "نفسك"
   },
-  "daily-review": {
-    "no-memos": "عفوًا، لا يوجد شيء.",
-    "title": "المراجعة اليومية"
-  },
   "editor": {
     "cancel-edit": "إلغاء التعديل",
     "cant-empty": "المحتوى لا يمكن أن يكون فارغ",

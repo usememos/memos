@@ -123,10 +123,6 @@
     "tag-name": "LABEL_NAAM",
     "invalid-tag-name": "Onjuiste label naam"
   },
-  "daily-review": {
-    "title": "Dagelijks",
-    "no-memos": "Oeps, er is niks."
-  },
   "setting": {
     "my-account": "Mijn account",
     "preference": "Voorkeuren",

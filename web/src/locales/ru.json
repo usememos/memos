@@ -78,10 +78,6 @@
     "visibility": "Видимость",
     "yourself": "Вы"
   },
-  "daily-review": {
-    "no-memos": "Записей нет.",
-    "title": "По дням"
-  },
   "days": {
     "fri": "Пт.",
     "mon": "Пон.",

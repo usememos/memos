@@ -212,7 +212,7 @@ const Memo: React.FC<Props> = (props: Props) => {
       className={`group memo-wrapper ${"memos-" + memo.id} ${memo.pinned && props.showPinnedStyle ? "pinned" : ""}`}
       ref={memoContainerRef}
     >
-      <div className="memo-top-wrapper">
+      <div className="memo-top-wrapper mb-1">
         <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
           {props.showCreator && creator && (
             <>
@@ -303,7 +303,7 @@ const Memo: React.FC<Props> = (props: Props) => {
         </div>
       </div>
       {props.showParent && memo.parent && (
-        <div className="w-auto max-w-full mt-1">
+        <div className="w-auto max-w-full mb-1">
           <Link
             className="px-2 py-0.5 border rounded-full max-w-xs w-auto text-xs flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
             to={`/m/${memo.parent.id}`}
