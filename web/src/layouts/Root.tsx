@@ -1,5 +1,4 @@
 import { Outlet } from "react-router-dom";
-import DemoBanner from "@/components/DemoBanner";
 import Navigation from "@/components/Navigation";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 
@@ -15,9 +14,6 @@ function Root() {
           </div>
         )}
         <main className="w-full sm:px-4 h-auto flex-grow shrink flex flex-col justify-start items-center">
-          <div className="w-full px-4 sm:px-2 h-auto flex flex-col justify-start items-center">
-            <DemoBanner />
-          </div>
           <Outlet />
         </main>
       </div>
