@@ -71,10 +71,6 @@
     "visibility": "Láthatóság",
     "yourself": "Magad"
   },
-  "daily-review": {
-    "no-memos": "Hoppá, nincs itt semmi.",
-    "title": "Napi kimutatás"
-  },
   "editor": {
     "cancel-edit": "Szerkesztés visszavonása",
     "cant-empty": "A tartalom nem lehet üres",
