@@ -435,34 +435,34 @@ func (s *APIV1Service) CreateMemo(c echo.Context) error {
 //	- creatorUsername is listed at ./web/src/helpers/api.ts:82, but it's not present here
 func (s *APIV1Service) GetAllMemos(c echo.Context) error {
 	ctx := c.Request().Context()
-	findMemoMessage := &store.FindMemo{}
+	memoFind := &store.FindMemo{}
 	_, ok := c.Get(userIDContextKey).(int32)
 	if !ok {
-		findMemoMessage.VisibilityList = []store.Visibility{store.Public}
+		memoFind.VisibilityList = []store.Visibility{store.Public}
 	} else {
-		findMemoMessage.VisibilityList = []store.Visibility{store.Public, store.Protected}
+		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
 	if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-		findMemoMessage.Limit = &limit
+		memoFind.Limit = &limit
 	}
 	if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-		findMemoMessage.Offset = &offset
+		memoFind.Offset = &offset
 	}
 
 	// Only fetch normal status memos.
 	normalStatus := store.Normal
-	findMemoMessage.RowStatus = &normalStatus
+	memoFind.RowStatus = &normalStatus
 
 	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
 	}
 	if memoDisplayWithUpdatedTs {
-		findMemoMessage.OrderByUpdatedTs = true
+		memoFind.OrderByUpdatedTs = true
 	}
 
-	list, err := s.Store.ListMemos(ctx, findMemoMessage)
+	list, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch all memo list").SetInternal(err)
 	}

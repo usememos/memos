@@ -313,10 +313,9 @@ func (s *APIV1Service) DeleteUser(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("id"))).SetInternal(err)
 	}
 
-	userDelete := &store.DeleteUser{
+	if err := s.Store.DeleteUser(ctx, &store.DeleteUser{
 		ID: userID,
-	}
-	if err := s.Store.DeleteUser(ctx, userDelete); err != nil {
+	}); err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to delete user").SetInternal(err)
 	}
 	return c.JSON(http.StatusOK, true)

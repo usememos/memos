@@ -51,12 +51,12 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 	}
 	if v := find.VisibilityList; len(v) != 0 {
-		list := []string{}
+		placeholder := []string{}
 		for _, visibility := range v {
-			list = append(list, fmt.Sprintf("$%d", len(args)+1))
-			args = append(args, visibility)
+			placeholder = append(placeholder, "?")
+			args = append(args, visibility.String())
 		}
-		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(list, ",")))
+		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(placeholder, ",")))
 	}
 	if v := find.Pinned; v != nil {
 		where = append(where, "memo_organizer.pinned = 1")
