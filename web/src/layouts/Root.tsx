@@ -1,18 +1,23 @@
 import { Outlet } from "react-router-dom";
 import DemoBanner from "@/components/DemoBanner";
 import Navigation from "@/components/Navigation";
+import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 
 function Root() {
+  const { sm } = useResponsiveWidth();
+
   return (
-    <div className="w-full min-h-full bg-zinc-100 dark:bg-zinc-800">
+    <div className="w-full min-h-full">
       <div className="w-full h-auto flex flex-col justify-start items-center">
         <DemoBanner />
       </div>
-      <div className="w-full max-w-6xl mx-auto flex flex-row justify-center items-start sm:px-4">
-        <div className="hidden sm:block sticky top-0 left-0 w-56">
-          <Navigation />
-        </div>
-        <main className="w-full min-h-screen sm:max-w-[calc(100%-14rem)] flex-grow shrink flex flex-col justify-start items-start">
+      <div className="w-full sm:pl-56 mx-auto flex flex-row justify-center items-start">
+        {sm && (
+          <div className="hidden sm:block fixed top-0 left-0 w-56 border-r dark:border-zinc-800 h-full bg-zinc-50 dark:bg-zinc-700 dark:bg-opacity-40 transition-all hover:shadow-xl">
+            <Navigation />
+          </div>
+        )}
+        <main className="w-full sm:px-4 min-h-screen flex-grow shrink flex flex-col justify-start items-center">
           <Outlet />
         </main>
       </div>

@@ -12,7 +12,7 @@ const MobileHeader = (props: Props) => {
   const [titleText] = useState("MEMOS");
 
   return (
-    <div className="sticky top-0 pt-4 sm:pt-1 pb-1 mb-1 backdrop-blur bg-zinc-100 dark:bg-zinc-800 bg-opacity-70 flex md:hidden flex-row justify-between items-center w-full h-auto flex-nowrap shrink-0 z-2">
+    <div className="sticky top-0 pt-4 sm:pt-1 pb-1 mb-1 backdrop-blur flex md:hidden flex-row justify-between items-center w-full h-auto flex-nowrap shrink-0 z-2">
       <div className="flex flex-row justify-start items-center mr-2 shrink-0 overflow-hidden">
         {!sm && <NavigationDrawer />}
         <span

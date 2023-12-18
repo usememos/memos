@@ -16,7 +16,7 @@ const UserBanner = () => {
   const globalStore = useGlobalStore();
   const { systemStatus } = globalStore.state;
   const user = useCurrentUser();
-  const title = user ? user.nickname : systemStatus.customizedProfile.name || "memos";
+  const title = user ? user.nickname || extractUsernameFromName(user.name) : systemStatus.customizedProfile.name || "memos";
 
   const handleMyAccountClick = () => {
     navigateTo(`/u/${encodeURIComponent(extractUsernameFromName(user.name))}`);

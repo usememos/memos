@@ -72,7 +72,7 @@ const Navigation = () => {
     id: "header-explore",
     path: "/explore",
     title: t("common.explore"),
-    icon: <Icon.Hash className="mr-3 w-6 h-auto opacity-70" />,
+    icon: <Icon.Globe2 className="mr-3 w-6 h-auto opacity-70" />,
   };
   const archivedNavLink: NavLinkItem = {
     id: "header-archived",
@@ -108,7 +108,7 @@ const Navigation = () => {
             id={navLink.id}
             className={({ isActive }) =>
               classNames(
-                "px-4 pr-5 py-2 rounded-2xl border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
+                "w-full px-4 pr-5 py-2 rounded-2xl border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
                 isActive ? "bg-white drop-shadow-sm dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
               )
             }

@@ -36,7 +36,7 @@ const UserProfile = () => {
 
   return (
     <>
-      <section className="relative top-0 w-full min-h-full overflow-x-hidden bg-zinc-100 dark:bg-zinc-800">
+      <section className="relative top-0 w-full min-h-full overflow-x-hidden">
         <div className="relative w-full min-h-full mx-auto flex flex-col justify-start items-center">
           {!loadingState.isLoading &&
             (user ? (

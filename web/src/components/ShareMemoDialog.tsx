@@ -8,7 +8,6 @@ import toImage from "@/labs/html2image";
 import { useUserV1Store, extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
-import showEmbedMemoDialog from "./EmbedMemoDialog";
 import Icon from "./Icon";
 import MemoContentV1 from "./MemoContentV1";
 import MemoResourceListView from "./MemoResourceListView";
@@ -65,10 +64,6 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       });
   };
 
-  const handleShowEmbedMemoDialog = () => {
-    showEmbedMemoDialog(memo.id);
-  };
-
   const handleCopyLinkBtnClick = () => {
     copy(`${window.location.origin}/m/${memo.id}`);
     toast.success(t("message.succeed-copy-link"));
@@ -95,10 +90,6 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
               <Icon.Download className="w-4 h-auto mr-1" />
             )}
             {t("common.image")}
-          </Button>
-          <Button color="neutral" variant="outlined" onClick={handleShowEmbedMemoDialog}>
-            <Icon.Code className="w-4 h-auto mr-1" />
-            {t("memo.embed")}
           </Button>
           <Button color="neutral" variant="outlined" onClick={handleCopyLinkBtnClick}>
             <Icon.Link className="w-4 h-auto mr-1" />
