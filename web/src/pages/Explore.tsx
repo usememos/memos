@@ -7,7 +7,6 @@ import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { useFilterStore, useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
-import { TAG_REG } from "@/utils/tag";
 
 const Explore = () => {
   const t = useTranslate();
@@ -15,38 +14,15 @@ const Explore = () => {
   const memoStore = useMemoStore();
   const filter = filterStore.state;
   const { loadingStatus, memos } = memoStore.state;
-  const { tag: tagQuery, text: textQuery } = filter;
-  const showMemoFilter = Boolean(tagQuery || textQuery);
+  const { text: textQuery } = filter;
   const fetchMoreRef = useRef<HTMLSpanElement>(null);
 
-  const fetchedMemos = showMemoFilter
-    ? memos.filter((memo) => {
-        let shouldShow = true;
-
-        if (tagQuery) {
-          const tagsSet = new Set<string>();
-          for (const t of Array.from(memo.content.match(new RegExp(TAG_REG, "g")) ?? [])) {
-            const tag = t.replace(TAG_REG, "$1").trim();
-            const items = tag.split("/");
-            let temp = "";
-            for (const i of items) {
-              temp += i;
-              tagsSet.add(temp);
-              temp += "/";
-            }
-          }
-          if (!tagsSet.has(tagQuery)) {
-            shouldShow = false;
-          }
-        }
-
-        if (textQuery && !memo.content.toLowerCase().includes(textQuery.toLowerCase())) {
-          shouldShow = false;
-        }
-
-        return shouldShow;
-      })
-    : memos;
+  const fetchedMemos = memos.filter((memo) => {
+    if (textQuery && !memo.content.toLowerCase().includes(textQuery.toLowerCase())) {
+      return false;
+    }
+    return true;
+  });
 
   const sortedMemos = fetchedMemos
     .filter((m) => m.rowStatus === "NORMAL" && m.visibility !== "PRIVATE")
@@ -71,7 +47,7 @@ const Explore = () => {
 
   const handleFetchMoreClick = async () => {
     try {
-      await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, memos.length);
+      await memoStore.fetchAllMemos(DEFAULT_MEMO_LIMIT, sortedMemos.length);
     } catch (error: any) {
       toast.error(error.response.data.message);
     }
