@@ -1,11 +1,7 @@
-html {
-  @apply w-full h-full p-0 m-0;
-}
-
 body {
   @apply text-base w-full min-h-full p-0 m-0 bg-zinc-100 dark:bg-zinc-800;
 }
 
 #root {
-  @apply w-full min-h-full overflow-auto;
+  @apply relative w-full min-h-full;
 }

@@ -105,7 +105,7 @@ const SignIn = () => {
 
   return (
     <div className="flex flex-row justify-center items-center w-full h-full dark:bg-zinc-800">
-      <div className="w-80 max-w-full h-full py-4 flex flex-col justify-start items-center">
+      <div className="w-80 max-w-full h-full min-h-screen py-4 flex flex-col justify-start items-center">
         <div className="w-full py-4 grow flex flex-col justify-center items-center">
           <div className="w-full flex flex-row justify-center items-center mb-6">
             <img className="h-14 w-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
