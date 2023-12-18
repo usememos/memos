@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
-import FloatingNavButton from "@/components/FloatingNavButton";
 import MemoList from "@/components/MemoList";
+import MobileHeader from "@/components/MobileHeader";
 import UserAvatar from "@/components/UserAvatar";
 import useLoading from "@/hooks/useLoading";
 import { useUserV1Store } from "@/store/v1";
@@ -35,34 +35,31 @@ const UserProfile = () => {
   }, [params.username]);
 
   return (
-    <>
-      <section className="relative top-0 w-full min-h-full overflow-x-hidden">
-        <div className="relative w-full min-h-full mx-auto flex flex-col justify-start items-center">
-          {!loadingState.isLoading &&
-            (user ? (
-              <>
-                <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
-                  <div className="w-full flex flex-row justify-start items-start">
-                    <div className="flex-grow shrink w-full">
-                      <div className="w-full flex flex-col justify-start items-center py-8">
-                        <UserAvatar className="!w-20 !h-20 mb-2 drop-shadow" avatarUrl={user?.avatarUrl} />
-                        <p className="text-3xl text-black opacity-80 dark:text-gray-200">{user?.nickname}</p>
-                      </div>
-                      <MemoList />
+    <section className="relative top-0 w-full min-h-full overflow-x-hidden">
+      <MobileHeader />
+      <div className="relative w-full min-h-full mx-auto flex flex-col justify-start items-center">
+        {!loadingState.isLoading &&
+          (user ? (
+            <>
+              <div className="relative flex-grow max-w-2xl w-full min-h-full flex flex-col justify-start items-start px-4">
+                <div className="w-full flex flex-row justify-start items-start">
+                  <div className="flex-grow shrink w-full">
+                    <div className="w-full flex flex-col justify-start items-center py-8">
+                      <UserAvatar className="!w-20 !h-20 mb-2 drop-shadow" avatarUrl={user?.avatarUrl} />
+                      <p className="text-3xl text-black opacity-80 dark:text-gray-200">{user?.nickname}</p>
                     </div>
+                    <MemoList />
                   </div>
                 </div>
-              </>
-            ) : (
-              <>
-                <p>Not found</p>
-              </>
-            ))}
-        </div>
-      </section>
-
-      <FloatingNavButton />
-    </>
+              </div>
+            </>
+          ) : (
+            <>
+              <p>Not found</p>
+            </>
+          ))}
+      </div>
+    </section>
   );
 };
 

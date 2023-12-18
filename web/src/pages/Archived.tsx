@@ -2,10 +2,9 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import ArchivedMemo from "@/components/ArchivedMemo";
 import Empty from "@/components/Empty";
-import MemoFilter from "@/components/MemoFilter";
 import MobileHeader from "@/components/MobileHeader";
 import useLoading from "@/hooks/useLoading";
-import { useFilterStore, useMemoStore } from "@/store/module";
+import { useMemoStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 
 const Archived = () => {
@@ -14,16 +13,12 @@ const Archived = () => {
   const loadingState = useLoading();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
   const memos = memoStore.state.memos;
-  const filterStore = useFilterStore();
-  const filter = filterStore.state;
-  const { text: textQuery } = filter;
 
   useEffect(() => {
     memoStore
       .fetchArchivedMemos()
       .then((result) => {
-        const filteredMemos = textQuery ? result.filter((memo) => memo.content.toLowerCase().includes(textQuery.toLowerCase())) : result;
-        setArchivedMemos(filteredMemos);
+        setArchivedMemos(result);
       })
       .catch((error) => {
         console.error(error);
@@ -32,12 +27,11 @@ const Archived = () => {
       .finally(() => {
         loadingState.setFinish();
       });
-  }, [memos, textQuery]);
+  }, [memos]);
 
   return (
     <section className="@container w-full max-w-3xl min-h-full flex flex-col justify-start items-start px-4 sm:px-2 sm:pt-4 pb-8">
       <MobileHeader />
-      <MemoFilter />
       {loadingState.isLoading ? (
         <div className="w-full h-32 flex flex-col justify-center items-center">
           <p className="opacity-70">{t("memo.fetching-data")}</p>
