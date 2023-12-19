@@ -1,7 +1,9 @@
+import { IconButton } from "@mui/joy";
 import classNames from "classnames";
 import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import toast from "react-hot-toast";
+import Icon from "../Icon";
 
 interface Props {
   language: string;
@@ -27,14 +29,21 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   };
 
   return (
-    <pre className="group w-full my-1 p-3 rounded bg-gray-100 dark:bg-zinc-600 whitespace-pre-wrap relative">
-      <button
-        className="text-xs font-mono italic absolute top-0 right-0 px-2 leading-6 border btn-text rounded opacity-0 group-hover:opacity-60"
+    <pre className="w-full my-1 p-3 rounded bg-gray-100 dark:bg-zinc-600 whitespace-pre-wrap relative">
+      <IconButton
+        size="sm"
+        className="!absolute top-0.5 right-0.5 opacity-50"
+        sx={{
+          "--IconButton-size": "24px",
+        }}
         onClick={handleCopyButtonClick}
       >
-        copy
-      </button>
-      <code className={classNames(`language-${formatedLanguage}`, "block")} dangerouslySetInnerHTML={{ __html: highlightedCode }}></code>
+        <Icon.Copy className="w-4 h-auto" />
+      </IconButton>
+      <code
+        className={classNames(`language-${formatedLanguage}`, "block text-sm")}
+        dangerouslySetInnerHTML={{ __html: highlightedCode }}
+      ></code>
     </pre>
   );
 };
