@@ -424,7 +424,7 @@ const MemoEditor = (props: Props) => {
       onCompositionEnd={() => setIsInIME(false)}
     >
       <Editor ref={editorRef} {...editorConfig} />
-      <div className="relative w-full flex flex-row justify-between items-center pt-2 z-1">
+      <div className="relative w-full flex flex-row justify-between items-center pt-2">
         <div className="flex flex-row justify-start items-center">
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
           <IconButton

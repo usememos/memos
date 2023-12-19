@@ -10,7 +10,7 @@ const Home = () => {
 
   return (
     <div className="w-full max-w-5xl flex flex-row justify-center items-start">
-      <div className="w-full sm:pt-6">
+      <div className="w-full sm:pt-3 md:pt-6">
         <MobileHeader>{!md && <HomeSidebarDrawer />}</MobileHeader>
         <div className="w-full px-4 sm:px-6 md:pr-2">
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />

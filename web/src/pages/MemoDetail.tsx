@@ -110,9 +110,9 @@ const MemoDetail = () => {
   };
 
   return (
-    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-6 pb-8">
+    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
-      <div className="w-full px-4">
+      <div className="w-full px-4 sm:px-6">
         <div className="relative flex-grow w-full min-h-full flex flex-col justify-start items-start border dark:border-zinc-700 bg-white dark:bg-zinc-700 shadow hover:shadow-xl transition-all p-4 pb-3 rounded-lg">
           {memo.parent && (
             <div className="w-auto mb-2">

@@ -35,9 +35,9 @@ const UserProfile = () => {
   }, [params.username]);
 
   return (
-    <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-6 pb-8">
+    <section className="w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
-      <div className="w-full px-4 flex flex-col justify-start items-center">
+      <div className="w-full px-4 sm:px-6 flex flex-col justify-start items-center">
         {!loadingState.isLoading &&
           (user ? (
             <>

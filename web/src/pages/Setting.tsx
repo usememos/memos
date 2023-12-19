@@ -42,9 +42,9 @@ const Setting = () => {
   };
 
   return (
-    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-6 pb-8">
+    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
-      <div className="w-full px-4">
+      <div className="w-full px-4 sm:px-6">
         <div className="setting-page-wrapper">
           <div className="section-selector-container">
             <span className="section-title">{t("common.basic")}</span>
