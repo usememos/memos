@@ -1,6 +1,6 @@
 import classNames from "classnames";
 import { useState } from "react";
-import { useWindowScroll } from "react-use";
+import useWindowScroll from "react-use/lib/useWindowScroll";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import NavigationDrawer from "./NavigationDrawer";
 
