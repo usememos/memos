@@ -320,8 +320,6 @@
       "additional-style": "Stile aggiuntivo",
       "additional-style-placeholder": "Codice CSS aggiuntivo",
       "allow-user-signup": "Consenti registrazione utente",
-      "auto-backup-interval": "Intervallo auto backup (secondi)",
-      "auto-backup-interval-hint": "Inserire 0 per disattivare backup automatici. È richiesto il riavvio per salvare l'impostazione.",
       "customize-server": {
         "appearance": "Aspetto server",
         "default": "Preferinito è Memos",

@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"testing"
 
-	// mysql driver.
-	_ "github.com/go-sql-driver/mysql"
 	// sqlite driver.
 	_ "modernc.org/sqlite"
 

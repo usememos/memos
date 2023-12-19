@@ -318,8 +318,6 @@
       "additional-style": "追加CSS",
       "additional-style-placeholder": "CSSのコードを追加してください。",
       "allow-user-signup": "ユーザー登録を有効にする",
-      "auto-backup-interval": "自動バックアップの間隔（秒）",
-      "auto-backup-interval-hint": "自動バックアップを無効にするには0を設定してください。この値を変更した後、再起動が必要です。",
       "customize-server": {
         "appearance": "サーバーの外観",
         "default": "デフォルトではmemosです",

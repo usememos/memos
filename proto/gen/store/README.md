@@ -17,8 +17,6 @@
     - [InboxMessage.Type](#memos-store-InboxMessage-Type)
   
 - [store/system_setting.proto](#store_system_setting-proto)
-    - [BackupConfig](#memos-store-BackupConfig)
-  
     - [SystemSettingKey](#memos-store-SystemSettingKey)
   
 - [store/user_setting.proto](#store_user_setting-proto)
@@ -178,23 +176,6 @@
 ## store/system_setting.proto
 
 
-
-<a name="memos-store-BackupConfig"></a>
-
-### BackupConfig
-
-
-
-| Field | Type | Label | Description |
-| ----- | ---- | ----- | ----------- |
-| enabled | [bool](#bool) |  | enabled indicates whether backup is enabled. |
-| cron | [string](#string) |  | cron is the cron expression for backup. See https://godoc.org/github.com/robfig/cron#hdr-CRON_Expression_Format |
-| max_keep | [int32](#int32) |  | max_keep is the maximum number of backups to keep. |
-
-
-
-
-
  
 
 
@@ -206,7 +187,6 @@
 | Name | Number | Description |
 | ---- | ------ | ----------- |
 | SYSTEM_SETTING_KEY_UNSPECIFIED | 0 |  |
-| BACKUP_CONFIG | 1 | BackupConfig is the key for auto-backup configuration. |
 
 
  

@@ -74,10 +74,6 @@ func (d *DB) Vacuum(ctx context.Context) error {
 	return tx.Commit()
 }
 
-func (*DB) BackupTo(context.Context, string) error {
-	return errors.New("Please use postgresdump to backup")
-}
-
 func (*DB) GetCurrentDBSize(context.Context) (int64, error) {
 	return 0, errors.New("unimplemented")
 }

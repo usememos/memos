@@ -331,8 +331,6 @@
       "additional-style": "自定义样式",
       "additional-style-placeholder": "自定义 CSS 代码",
       "allow-user-signup": "允许用户注册",
-      "auto-backup-interval": "自动备份间隔（单位：秒）",
-      "auto-backup-interval-hint": "设置为 0 禁止自动备份，重启后生效。",
       "customize-server": {
         "appearance": "服务器外观",
         "default": "默认为 memos",

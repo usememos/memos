@@ -8,7 +8,9 @@ import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"modernc.org/sqlite"
+
+	// Import the SQLite driver.
+	_ "modernc.org/sqlite"
 
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -98,43 +100,6 @@ func vacuumImpl(ctx context.Context, tx *sql.Tx) error {
 	if err := vacuumTag(ctx, tx); err != nil {
 		// Prevent revive warning.
 		return err
-	}
-
-	return nil
-}
-
-func (d *DB) BackupTo(ctx context.Context, filename string) error {
-	conn, err := d.db.Conn(ctx)
-	if err != nil {
-		return errors.Wrap(err, "fail to open new connection")
-	}
-	defer conn.Close()
-
-	err = conn.Raw(func(driverConn any) error {
-		type backuper interface {
-			NewBackup(string) (*sqlite.Backup, error)
-		}
-		backupConn, ok := driverConn.(backuper)
-		if !ok {
-			return errors.New("db connection is not a sqlite backuper")
-		}
-
-		bck, err := backupConn.NewBackup(filename)
-		if err != nil {
-			return errors.Wrap(err, "fail to create sqlite backup")
-		}
-
-		for more := true; more; {
-			more, err = bck.Step(-1)
-			if err != nil {
-				return errors.Wrap(err, "fail to execute sqlite backup")
-			}
-		}
-
-		return bck.Finish()
-	})
-	if err != nil {
-		return errors.Wrap(err, "fail to backup")
 	}
 
 	return nil

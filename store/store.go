@@ -25,10 +25,6 @@ func New(driver Driver, profile *profile.Profile) *Store {
 	}
 }
 
-func (s *Store) BackupTo(ctx context.Context, filename string) error {
-	return s.driver.BackupTo(ctx, filename)
-}
-
 func (s *Store) Vacuum(ctx context.Context) error {
 	return s.driver.Vacuum(ctx)
 }

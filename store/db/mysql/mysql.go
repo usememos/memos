@@ -75,10 +75,6 @@ func (d *DB) Vacuum(ctx context.Context) error {
 	return tx.Commit()
 }
 
-func (*DB) BackupTo(context.Context, string) error {
-	return errors.New("Please use mysqldump to backup")
-}
-
 func (d *DB) GetCurrentDBSize(ctx context.Context) (int64, error) {
 	query := "SELECT SUM(`data_length` + `index_length`) AS `size` " +
 		" FROM information_schema.TABLES" +

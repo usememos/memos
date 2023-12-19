@@ -335,8 +335,6 @@
       "additional-style": "Estilo adicional",
       "additional-style-placeholder": "Código CSS adicional",
       "allow-user-signup": "Permitir registro de usuário",
-      "auto-backup-interval": "Intervalo para backup automático (segundos)",
-      "auto-backup-interval-hint": "Defina como 0 para desabilitar o backup automático. É necessário reiniciar após alterar esse valor.",
       "customize-server": {
         "appearance": "Aparência do servidor",
         "default": "O padrão é memos",

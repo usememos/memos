@@ -335,8 +335,6 @@
       "additional-style": "Style supplémentaire",
       "additional-style-placeholder": "Codes CSS supplémentaires",
       "allow-user-signup": "Autoriser l'inscription des utilisateurs",
-      "auto-backup-interval": "Intervalle de sauvegarde automatique (secondes)",
-      "auto-backup-interval-hint": "La valeur 0 désactive la sauvegarde automatique. Un redémarrage est nécessaire après avoir modifié cette valeur.",
       "customize-server": {
         "appearance": "Apparence du Serveur",
         "default": "Par défaut memos",

@@ -15,7 +15,6 @@ type Driver interface {
 
 	Migrate(ctx context.Context) error
 	Vacuum(ctx context.Context) error
-	BackupTo(ctx context.Context, filename string) error
 
 	// current file is driver
 	GetCurrentDBSize(ctx context.Context) (int64, error)

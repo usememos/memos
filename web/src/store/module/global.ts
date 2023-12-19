@@ -16,7 +16,6 @@ export const initialGlobalState = async () => {
       disablePasswordLogin: false,
       disablePublicMemos: false,
       maxUploadSizeMiB: 0,
-      autoBackupInterval: 0,
       additionalStyle: "",
       additionalScript: "",
       memoDisplayWithUpdatedTs: false,

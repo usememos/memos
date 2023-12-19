@@ -335,8 +335,6 @@
       "additional-style": "自訂樣式",
       "additional-style-placeholder": "自訂 CSS 代碼",
       "allow-user-signup": "允許使用者註冊",
-      "auto-backup-interval": "自動備份間隔(單位：秒)",
-      "auto-backup-interval-hint": "設定為 0 則禁止自動備份，需重新啟動後生效。",
       "customize-server": {
         "appearance": "伺服器外觀",
         "default": "預設為 memos",

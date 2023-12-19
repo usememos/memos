@@ -72,7 +72,7 @@ func (d *DB) Migrate(ctx context.Context) error {
 
 			if version.IsVersionGreaterThan(version.GetSchemaVersion(currentVersion), latestMigrationHistoryVersion) {
 				minorVersionList := getMinorVersionList()
-				// backup the raw database file before migration
+				// Backup the raw database file before migration.
 				rawBytes, err := os.ReadFile(d.profile.DSN)
 				if err != nil {
 					return errors.Wrap(err, "failed to read raw database file")
@@ -94,7 +94,7 @@ func (d *DB) Migrate(ctx context.Context) error {
 				}
 				println("end migrate")
 
-				// remove the created backup db file after migrate succeed
+				// Remove the created backup db file after migrate succeed.
 				if err := os.Remove(backupDBFilePath); err != nil {
 					println(fmt.Sprintf("Failed to remove temp database file, err %v", err))
 				}

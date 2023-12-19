@@ -19,7 +19,6 @@ import (
 	"github.com/usememos/memos/server/frontend"
 	"github.com/usememos/memos/server/integration"
 	"github.com/usememos/memos/server/profile"
-	"github.com/usememos/memos/server/service/backup"
 	"github.com/usememos/memos/server/service/metric"
 	versionchecker "github.com/usememos/memos/server/service/version_checker"
 	"github.com/usememos/memos/store"
@@ -34,8 +33,7 @@ type Server struct {
 	Store   *store.Store
 
 	// Asynchronous runners.
-	backupRunner *backup.BackupRunner
-	telegramBot  *telegram.Bot
+	telegramBot *telegram.Bot
 }
 
 func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store) (*Server, error) {
@@ -51,10 +49,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 		// Asynchronous runners.
 		telegramBot: telegram.NewBotWithHandler(integration.NewTelegramHandler(store)),
-	}
-
-	if profile.Driver == "sqlite" {
-		s.backupRunner = backup.NewBackupRunner(store)
 	}
 
 	e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
@@ -120,10 +114,6 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 func (s *Server) Start(ctx context.Context) error {
 	go versionchecker.NewVersionChecker(s.Store, s.Profile).Start(ctx)
 	go s.telegramBot.Start(ctx)
-
-	if s.backupRunner != nil {
-		go s.backupRunner.Run(ctx)
-	}
 
 	metric.Enqueue("server start")
 	return s.e.Start(fmt.Sprintf("%s:%d", s.Profile.Addr, s.Profile.Port))

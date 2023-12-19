@@ -26,8 +26,6 @@ type SystemStatus struct {
 	DisablePublicMemos bool `json:"disablePublicMemos"`
 	// Max upload size.
 	MaxUploadSizeMiB int `json:"maxUploadSizeMiB"`
-	// Auto Backup Interval.
-	AutoBackupInterval int `json:"autoBackupInterval"`
 	// Additional style.
 	AdditionalStyle string `json:"additionalStyle"`
 	// Additional script.
@@ -124,8 +122,6 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 			systemStatus.DisablePublicMemos = baseValue.(bool)
 		case SystemSettingMaxUploadSizeMiBName.String():
 			systemStatus.MaxUploadSizeMiB = int(baseValue.(float64))
-		case SystemSettingAutoBackupIntervalName.String():
-			systemStatus.AutoBackupInterval = int(baseValue.(float64))
 		case SystemSettingAdditionalStyleName.String():
 			systemStatus.AdditionalStyle = baseValue.(string)
 		case SystemSettingAdditionalScriptName.String():

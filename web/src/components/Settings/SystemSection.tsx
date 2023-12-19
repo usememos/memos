@@ -20,7 +20,6 @@ interface State {
   additionalStyle: string;
   additionalScript: string;
   maxUploadSizeMiB: number;
-  autoBackupInterval: number;
   memoDisplayWithUpdatedTs: boolean;
 }
 
@@ -36,7 +35,6 @@ const SystemSection = () => {
     additionalScript: systemStatus.additionalScript,
     disablePublicMemos: systemStatus.disablePublicMemos,
     maxUploadSizeMiB: systemStatus.maxUploadSizeMiB,
-    autoBackupInterval: systemStatus.autoBackupInterval,
     memoDisplayWithUpdatedTs: systemStatus.memoDisplayWithUpdatedTs,
   });
   const [telegramBotToken, setTelegramBotToken] = useState<string>("");
@@ -69,7 +67,6 @@ const SystemSection = () => {
       additionalScript: systemStatus.additionalScript,
       disablePublicMemos: systemStatus.disablePublicMemos,
       maxUploadSizeMiB: systemStatus.maxUploadSizeMiB,
-      autoBackupInterval: systemStatus.autoBackupInterval,
       memoDisplayWithUpdatedTs: systemStatus.memoDisplayWithUpdatedTs,
     });
   }, [systemStatus]);
@@ -246,30 +243,6 @@ const SystemSection = () => {
     event.target.select();
   };
 
-  const handleAutoBackupIntervalChanged = async (event: React.FocusEvent<HTMLInputElement>) => {
-    // fixes cursor skipping position on mobile
-    event.target.selectionEnd = event.target.value.length;
-
-    let num = parseInt(event.target.value);
-    if (Number.isNaN(num)) {
-      num = 0;
-    }
-    setState({
-      ...state,
-      autoBackupInterval: num,
-    });
-    event.target.value = num.toString();
-    globalStore.setSystemStatus({ autoBackupInterval: num });
-    await api.upsertSystemSetting({
-      name: "auto-backup-interval",
-      value: JSON.stringify(num),
-    });
-  };
-
-  const handleAutoBackupIntervalFocus = (event: React.FocusEvent<HTMLInputElement>) => {
-    event.target.select();
-  };
-
   return (
     <div className="section-container system-section-container">
       <p className="title-text">{t("common.basic")}</p>
@@ -317,23 +290,6 @@ const SystemSection = () => {
           defaultValue={state.maxUploadSizeMiB}
           onFocus={handleMaxUploadSizeFocus}
           onChange={handleMaxUploadSizeChanged}
-        />
-      </div>
-      <div className="form-label">
-        <div className="flex flex-row items-center">
-          <span className="text-sm mr-1">{t("setting.system-section.auto-backup-interval")}</span>
-          <Tooltip title={t("setting.system-section.auto-backup-interval-hint")} placement="top">
-            <Icon.HelpCircle className="w-4 h-auto" />
-          </Tooltip>
-        </div>
-        <Input
-          className="w-16"
-          sx={{
-            fontFamily: "monospace",
-          }}
-          defaultValue={state.autoBackupInterval}
-          onFocus={handleAutoBackupIntervalFocus}
-          onChange={handleAutoBackupIntervalChanged}
         />
       </div>
       <Divider className="!mt-3 !my-4" />

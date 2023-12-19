@@ -335,8 +335,6 @@
       "additional-style": "Dodatni stil",
       "additional-style-placeholder": "Dodatni CSS kod",
       "allow-user-signup": "Dopusti registraciju drugih korisnika",
-      "auto-backup-interval": "Interval u kojem će se izvršavati automatski backup (u sekundama)",
-      "auto-backup-interval-hint": "Unesi 0 kako bi onemogućio automatski backup. Nakon mijenjanja ove vrijednosti potreban je reboot.",
       "customize-server": {
         "appearance": "Izgled Servera",
         "default": "Osnovno je memoi",
