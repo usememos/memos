@@ -3,22 +3,23 @@ import toast from "react-hot-toast";
 import ArchivedMemo from "@/components/ArchivedMemo";
 import Empty from "@/components/Empty";
 import MobileHeader from "@/components/MobileHeader";
+import { memoServiceClient } from "@/grpcweb";
 import useLoading from "@/hooks/useLoading";
-import { useMemoStore } from "@/store/module";
+import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 
 const Archived = () => {
   const t = useTranslate();
-  const memoStore = useMemoStore();
   const loadingState = useLoading();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
-  const memos = memoStore.state.memos;
 
   useEffect(() => {
-    memoStore
-      .fetchArchivedMemos()
-      .then((result) => {
-        setArchivedMemos(result);
+    memoServiceClient
+      .listMemos({
+        filter: "row_status == 'ARCHIVED'",
+      })
+      .then(({ memos }) => {
+        setArchivedMemos(memos);
       })
       .catch((error) => {
         console.error(error);
@@ -27,7 +28,7 @@ const Archived = () => {
       .finally(() => {
         loadingState.setFinish();
       });
-  }, [memos]);
+  }, []);
 
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
@@ -45,7 +46,7 @@ const Archived = () => {
         ) : (
           <div className="w-full flex flex-col justify-start items-start">
             {archivedMemos.map((memo) => (
-              <ArchivedMemo key={`${memo.id}-${memo.updatedTs}`} memo={memo} />
+              <ArchivedMemo key={`${memo.id}-${memo.updateTime}`} memo={memo} />
             ))}
           </div>
         )}

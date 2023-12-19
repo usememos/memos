@@ -1,41 +1,33 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
-import * as api from "@/helpers/api";
-import { convertResponseModelMemo } from "../module";
+import { memoServiceClient } from "@/grpcweb";
+import { Memo } from "@/types/proto/api/v2/memo_service";
 
-export const useMemoCacheStore = create(
-  combine({ memoById: new Map<MemoId, Memo>() }, (set, get) => ({
+export const useMemoV1Store = create(
+  combine({ memoById: new Map<number, Memo>() }, (set, get) => ({
     getState: () => get(),
-    getOrFetchMemoById: async (memoId: MemoId) => {
-      const memo = get().memoById.get(memoId);
+    getOrFetchMemoById: async (id: MemoId) => {
+      const memo = get().memoById.get(id);
       if (memo) {
         return memo;
       }
 
-      const { data } = await api.getMemoById(memoId);
-      const formatedMemo = convertResponseModelMemo(data);
+      const res = await memoServiceClient.getMemo({
+        id,
+      });
+      if (!res.memo) {
+        throw new Error("Memo not found");
+      }
 
       set((state) => {
-        state.memoById.set(memoId, formatedMemo);
+        state.memoById.set(id, res.memo as Memo);
         return state;
       });
 
-      return formatedMemo;
+      return res.memo;
     },
-    getMemoById: (memoId: MemoId) => {
-      return get().memoById.get(memoId);
-    },
-    setMemoCache: (memo: Memo) => {
-      set((state) => {
-        state.memoById.set(memo.id, memo);
-        return state;
-      });
-    },
-    deleteMemoCache: (memoId: MemoId) => {
-      set((state) => {
-        state.memoById.delete(memoId);
-        return state;
-      });
+    getMemoById: (id: number) => {
+      return get().memoById.get(id);
     },
   }))
 );

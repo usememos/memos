@@ -1,3 +1,4 @@
+import { isUndefined } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { markdownServiceClient } from "@/grpcweb";
 import { Node } from "@/types/proto/api/v2/markdown_service";
@@ -5,16 +6,21 @@ import Renderer from "./Renderer";
 
 interface Props {
   content: string;
+  nodes?: Node[];
   className?: string;
   onMemoContentClick?: (e: React.MouseEvent) => void;
 }
 
 const MemoContentV1: React.FC<Props> = (props: Props) => {
   const { className, content, onMemoContentClick } = props;
-  const [nodes, setNodes] = useState<Node[]>([]);
+  const [nodes, setNodes] = useState<Node[]>(props.nodes ?? []);
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isUndefined(props.nodes)) {
+      return;
+    }
+
     markdownServiceClient
       .parseMarkdown({
         markdown: content,
@@ -22,7 +28,7 @@ const MemoContentV1: React.FC<Props> = (props: Props) => {
       .then(({ nodes }) => {
         setNodes(nodes);
       });
-  }, [content]);
+  }, [content, props.nodes]);
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     if (onMemoContentClick) {

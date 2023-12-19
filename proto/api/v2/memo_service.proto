@@ -6,6 +6,7 @@ import "api/v2/common.proto";
 import "api/v2/markdown_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v2";
 
@@ -51,17 +52,19 @@ message Memo {
 
   int32 creator_id = 3;
 
-  int64 created_ts = 4;
+  google.protobuf.Timestamp create_time = 4;
 
-  int64 updated_ts = 5;
+  google.protobuf.Timestamp update_time = 5;
 
-  string content = 6;
+  google.protobuf.Timestamp display_time = 6;
 
-  repeated Node nodes = 7;
+  string content = 7;
 
-  Visibility visibility = 8;
+  repeated Node nodes = 8;
 
-  bool pinned = 9;
+  Visibility visibility = 9;
+
+  bool pinned = 10;
 }
 
 message CreateMemoRequest {
@@ -81,8 +84,6 @@ message ListMemosRequest {
 
   // Filter is used to filter memos returned in the list.
   string filter = 3;
-
-  optional int32 creator_id = 4;
 }
 
 message ListMemosResponse {

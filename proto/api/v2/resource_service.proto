@@ -31,7 +31,7 @@ service ResourceService {
 
 message Resource {
   int32 id = 1;
-  google.protobuf.Timestamp created_ts = 2;
+  google.protobuf.Timestamp create_time = 2;
   string filename = 3;
   string external_link = 4;
   string type = 5;

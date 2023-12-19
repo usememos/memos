@@ -16,7 +16,7 @@ import { useTranslate } from "@/utils/i18n";
 function groupResourcesByDate(resources: Resource[]) {
   const grouped = new Map<number, Resource[]>();
   resources.forEach((item) => {
-    const date = new Date(item.createdTs as any);
+    const date = new Date(item.createTime as any);
     const year = date.getFullYear();
     const month = date.getMonth() + 1;
     const timestamp = Date.UTC(year, month - 1, 1);

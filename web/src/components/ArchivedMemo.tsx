@@ -2,11 +2,11 @@ import { Tooltip } from "@mui/joy";
 import { toast } from "react-hot-toast";
 import { getDateTimeString } from "@/helpers/datetime";
 import { useMemoStore } from "@/store/module";
+import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import MemoContentV1 from "./MemoContentV1";
-import MemoResourceListView from "./MemoResourceListView";
 import "@/less/memo.less";
 
 interface Props {
@@ -48,7 +48,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
     <div className={`memo-wrapper archived ${"memos-" + memo.id}`}>
       <div className="memo-top-wrapper">
         <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
-          <span className="text-sm text-gray-400 select-none">{getDateTimeString(memo.displayTs)}</span>
+          <span className="text-sm text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</span>
         </div>
         <div className="flex flex-row justify-end items-center gap-x-2">
           <Tooltip title={t("common.restore")} placement="top">
@@ -63,8 +63,7 @@ const ArchivedMemo: React.FC<Props> = (props: Props) => {
           </Tooltip>
         </div>
       </div>
-      <MemoContentV1 content={memo.content} />
-      <MemoResourceListView resourceList={memo.resourceList} />
+      <MemoContentV1 content={memo.content} nodes={memo.nodes} />
     </div>
   );
 };

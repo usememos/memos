@@ -1451,7 +1451,6 @@
 | page | [int32](#int32) |  |  |
 | page_size | [int32](#int32) |  |  |
 | filter | [string](#string) |  | Filter is used to filter memos returned in the list. |
-| creator_id | [int32](#int32) | optional |  |
 
 
 
@@ -1484,8 +1483,9 @@
 | id | [int32](#int32) |  |  |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
 | creator_id | [int32](#int32) |  |  |
-| created_ts | [int64](#int64) |  |  |
-| updated_ts | [int64](#int64) |  |  |
+| create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
+| update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
+| display_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | content | [string](#string) |  |  |
 | nodes | [Node](#memos-api-v2-Node) | repeated |  |
 | visibility | [Visibility](#memos-api-v2-Visibility) |  |  |
@@ -1632,7 +1632,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | id | [int32](#int32) |  |  |
-| created_ts | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
+| create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | filename | [string](#string) |  |  |
 | external_link | [string](#string) |  |  |
 | type | [string](#string) |  |  |
