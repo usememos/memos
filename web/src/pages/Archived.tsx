@@ -30,7 +30,7 @@ const Archived = () => {
   }, [memos]);
 
   return (
-    <section className="@container w-full max-w-4xl min-h-full flex flex-col justify-start items-start sm:pt-4 pb-8">
+    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-6 pb-8">
       <MobileHeader />
       <div className="w-full px-4">
         {loadingState.isLoading ? (

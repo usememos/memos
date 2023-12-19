@@ -9,10 +9,10 @@ const Home = () => {
   const { md } = useResponsiveWidth();
 
   return (
-    <div className="w-full max-w-4xl flex flex-row justify-center items-start">
-      <div className="w-full sm:pt-4">
+    <div className="w-full max-w-5xl flex flex-row justify-center items-start">
+      <div className="w-full sm:pt-6">
         <MobileHeader>{!md && <HomeSidebarDrawer />}</MobileHeader>
-        <div className="w-full px-4 md:pr-2">
+        <div className="w-full px-4 sm:px-6 md:pr-2">
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
           <MemoList />
         </div>

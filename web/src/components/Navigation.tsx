@@ -98,9 +98,9 @@ const Navigation = () => {
     : [exploreNavLink, signInNavLink];
 
   return (
-    <header className="w-full h-full overflow-auto flex flex-col justify-start items-start py-4 z-30">
+    <header className="w-full h-full overflow-auto flex flex-col justify-start items-start py-4 sm:pt-6 z-30">
       <UserBanner />
-      <div className="w-full px-2 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
+      <div className="w-full px-1 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
         {navLinks.map((navLink) => (
           <NavLink
             key={navLink.id}

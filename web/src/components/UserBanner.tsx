@@ -33,7 +33,7 @@ const UserBanner = () => {
   };
 
   return (
-    <div className="relative w-full h-auto px-2 shrink-0">
+    <div className="relative w-full h-auto px-1 shrink-0">
       <Dropdown
         className="w-auto"
         trigger={
