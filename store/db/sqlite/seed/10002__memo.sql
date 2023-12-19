@@ -20,8 +20,7 @@ VALUES
     '#TODO 
 - [x] Take more photos about **🌄 sunset**;
 - [x] Clean the room;
-- [ ] Read *📖 The Little Prince*;
-(👆 click to toggle status)',
+- [ ] Read *📖 The Little Prince*;',
     101,
     'PROTECTED'
   );

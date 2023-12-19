@@ -72,7 +72,6 @@ const MemoEditor = (props: Props) => {
 
   useEffect(() => {
     editorRef.current?.setContent(contentCache || "");
-    handleEditorFocus();
   }, []);
 
   useEffect(() => {

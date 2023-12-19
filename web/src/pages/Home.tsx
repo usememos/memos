@@ -9,14 +9,16 @@ const Home = () => {
   const { md } = useResponsiveWidth();
 
   return (
-    <div className="w-full flex flex-row justify-center items-start">
-      <div className="w-full px-4 max-w-3xl sm:px-2 sm:pt-4">
+    <div className="w-full max-w-4xl flex flex-row justify-center items-start">
+      <div className="w-full sm:pt-4">
         <MobileHeader>{!md && <HomeSidebarDrawer />}</MobileHeader>
-        <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
-        <MemoList />
+        <div className="w-full px-4 md:pr-2">
+          <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
+          <MemoList />
+        </div>
       </div>
       {md && (
-        <div className="hidden md:block sticky top-0 left-0 w-56">
+        <div className="hidden md:block sticky top-0 left-0 shrink-0 w-56">
           <HomeSidebar />
         </div>
       )}

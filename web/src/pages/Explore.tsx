@@ -54,9 +54,9 @@ const Explore = () => {
   };
 
   return (
-    <section className="@container w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8">
+    <section className="@container w-full max-w-4xl min-h-full flex flex-col justify-start items-center sm:pt-4 pb-8">
       <MobileHeader />
-      <div className="relative w-full h-auto flex flex-col justify-start items-start">
+      <div className="relative w-full h-auto flex flex-col justify-start items-start px-4">
         <MemoFilter />
         {sortedMemos.map((memo) => (
           <Memo key={memo.id} memo={memo} lazyRendering showCreator showParent />

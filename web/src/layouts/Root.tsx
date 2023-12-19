@@ -13,7 +13,7 @@ function Root() {
             <Navigation />
           </div>
         )}
-        <main className="w-full sm:px-4 h-auto flex-grow shrink flex flex-col justify-start items-center">
+        <main className="w-full h-auto flex-grow shrink flex flex-col justify-start items-center">
           <Outlet />
         </main>
       </div>

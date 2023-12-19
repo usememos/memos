@@ -42,82 +42,84 @@ const Setting = () => {
   };
 
   return (
-    <section className="@container w-full max-w-3xl min-h-full flex flex-col justify-start items-start px-4 sm:px-2 sm:pt-4 pb-8">
+    <section className="@container w-full max-w-4xl min-h-full flex flex-col justify-start items-start sm:pt-4 pb-8">
       <MobileHeader />
-      <div className="setting-page-wrapper">
-        <div className="section-selector-container">
-          <span className="section-title">{t("common.basic")}</span>
-          <div className="section-items-container">
-            <span
-              onClick={() => handleSectionSelectorItemClick("my-account")}
-              className={`section-item ${state.selectedSection === "my-account" ? "selected" : ""}`}
-            >
-              <Icon.User className="w-4 h-auto mr-2 opacity-80" /> {t("setting.my-account")}
-            </span>
-            <span
-              onClick={() => handleSectionSelectorItemClick("preference")}
-              className={`section-item ${state.selectedSection === "preference" ? "selected" : ""}`}
-            >
-              <Icon.Cog className="w-4 h-auto mr-2 opacity-80" /> {t("setting.preference")}
-            </span>
+      <div className="w-full px-4">
+        <div className="setting-page-wrapper">
+          <div className="section-selector-container">
+            <span className="section-title">{t("common.basic")}</span>
+            <div className="section-items-container">
+              <span
+                onClick={() => handleSectionSelectorItemClick("my-account")}
+                className={`section-item ${state.selectedSection === "my-account" ? "selected" : ""}`}
+              >
+                <Icon.User className="w-4 h-auto mr-2 opacity-80" /> {t("setting.my-account")}
+              </span>
+              <span
+                onClick={() => handleSectionSelectorItemClick("preference")}
+                className={`section-item ${state.selectedSection === "preference" ? "selected" : ""}`}
+              >
+                <Icon.Cog className="w-4 h-auto mr-2 opacity-80" /> {t("setting.preference")}
+              </span>
+            </div>
+            {isHost ? (
+              <>
+                <span className="section-title">{t("common.admin")}</span>
+                <div className="section-items-container">
+                  <span
+                    onClick={() => handleSectionSelectorItemClick("member")}
+                    className={`section-item ${state.selectedSection === "member" ? "selected" : ""}`}
+                  >
+                    <Icon.Users className="w-4 h-auto mr-2 opacity-80" /> {t("setting.member")}
+                  </span>
+                  <span
+                    onClick={() => handleSectionSelectorItemClick("system")}
+                    className={`section-item ${state.selectedSection === "system" ? "selected" : ""}`}
+                  >
+                    <Icon.Settings2 className="w-4 h-auto mr-2 opacity-80" /> {t("setting.system")}
+                  </span>
+                  <span
+                    onClick={() => handleSectionSelectorItemClick("storage")}
+                    className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
+                  >
+                    <Icon.Database className="w-4 h-auto mr-2 opacity-80" /> {t("setting.storage")}
+                  </span>
+                  <span
+                    onClick={() => handleSectionSelectorItemClick("sso")}
+                    className={`section-item ${state.selectedSection === "sso" ? "selected" : ""}`}
+                  >
+                    <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> {t("setting.sso")}
+                  </span>
+                </div>
+              </>
+            ) : null}
           </div>
-          {isHost ? (
-            <>
-              <span className="section-title">{t("common.admin")}</span>
-              <div className="section-items-container">
-                <span
-                  onClick={() => handleSectionSelectorItemClick("member")}
-                  className={`section-item ${state.selectedSection === "member" ? "selected" : ""}`}
-                >
-                  <Icon.Users className="w-4 h-auto mr-2 opacity-80" /> {t("setting.member")}
-                </span>
-                <span
-                  onClick={() => handleSectionSelectorItemClick("system")}
-                  className={`section-item ${state.selectedSection === "system" ? "selected" : ""}`}
-                >
-                  <Icon.Settings2 className="w-4 h-auto mr-2 opacity-80" /> {t("setting.system")}
-                </span>
-                <span
-                  onClick={() => handleSectionSelectorItemClick("storage")}
-                  className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
-                >
-                  <Icon.Database className="w-4 h-auto mr-2 opacity-80" /> {t("setting.storage")}
-                </span>
-                <span
-                  onClick={() => handleSectionSelectorItemClick("sso")}
-                  className={`section-item ${state.selectedSection === "sso" ? "selected" : ""}`}
-                >
-                  <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> {t("setting.sso")}
-                </span>
-              </div>
-            </>
-          ) : null}
-        </div>
-        <div className="section-content-container sm:max-w-[calc(100%-12rem)]">
-          <Select
-            className="block mb-2 sm:!hidden"
-            value={state.selectedSection}
-            onChange={(_, value) => handleSectionSelectorItemClick(value as SettingSection)}
-          >
-            {getSettingSectionList().map((settingSection) => (
-              <Option key={settingSection} value={settingSection}>
-                {t(`setting.${settingSection}`)}
-              </Option>
-            ))}
-          </Select>
-          {state.selectedSection === "my-account" ? (
-            <MyAccountSection />
-          ) : state.selectedSection === "preference" ? (
-            <PreferencesSection />
-          ) : state.selectedSection === "member" ? (
-            <MemberSection />
-          ) : state.selectedSection === "system" ? (
-            <SystemSection />
-          ) : state.selectedSection === "storage" ? (
-            <StorageSection />
-          ) : state.selectedSection === "sso" ? (
-            <SSOSection />
-          ) : null}
+          <div className="section-content-container sm:max-w-[calc(100%-12rem)]">
+            <Select
+              className="block mb-2 sm:!hidden"
+              value={state.selectedSection}
+              onChange={(_, value) => handleSectionSelectorItemClick(value as SettingSection)}
+            >
+              {getSettingSectionList().map((settingSection) => (
+                <Option key={settingSection} value={settingSection}>
+                  {t(`setting.${settingSection}`)}
+                </Option>
+              ))}
+            </Select>
+            {state.selectedSection === "my-account" ? (
+              <MyAccountSection />
+            ) : state.selectedSection === "preference" ? (
+              <PreferencesSection />
+            ) : state.selectedSection === "member" ? (
+              <MemberSection />
+            ) : state.selectedSection === "system" ? (
+              <SystemSection />
+            ) : state.selectedSection === "storage" ? (
+              <StorageSection />
+            ) : state.selectedSection === "sso" ? (
+              <SSOSection />
+            ) : null}
+          </div>
         </div>
       </div>
     </section>

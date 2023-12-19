@@ -110,114 +110,116 @@ const MemoDetail = () => {
   };
 
   return (
-    <section className="@container w-full max-w-3xl min-h-full flex flex-col justify-start items-center px-4 sm:px-2 sm:pt-4 pb-8">
+    <section className="@container w-full max-w-4xl min-h-full flex flex-col justify-start items-center sm:pt-4 pb-8">
       <MobileHeader />
-      <div className="relative flex-grow w-full min-h-full flex flex-col justify-start items-start border dark:border-zinc-700 bg-white dark:bg-zinc-700 shadow hover:shadow-xl transition-all p-4 pb-3 rounded-lg">
-        {memo.parent && (
-          <div className="w-auto mb-2">
-            <Link
-              className="px-3 py-1 border rounded-full max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
-              to={`/m/${memo.parent.id}`}
-            >
-              <Icon.ArrowUpLeftFromCircle className="w-4 h-auto shrink-0 opacity-60" />
-              <span className="mx-1 opacity-60">#{memo.parent.id}</span>
-              <span className="truncate">{memo.parent.content}</span>
-            </Link>
+      <div className="w-full px-4">
+        <div className="relative flex-grow w-full min-h-full flex flex-col justify-start items-start border dark:border-zinc-700 bg-white dark:bg-zinc-700 shadow hover:shadow-xl transition-all p-4 pb-3 rounded-lg">
+          {memo.parent && (
+            <div className="w-auto mb-2">
+              <Link
+                className="px-3 py-1 border rounded-full max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
+                to={`/m/${memo.parent.id}`}
+              >
+                <Icon.ArrowUpLeftFromCircle className="w-4 h-auto shrink-0 opacity-60" />
+                <span className="mx-1 opacity-60">#{memo.parent.id}</span>
+                <span className="truncate">{memo.parent.content}</span>
+              </Link>
+            </div>
+          )}
+          <div className="w-full mb-2 flex flex-row justify-start items-center">
+            <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTs)}</span>
           </div>
-        )}
-        <div className="w-full mb-2 flex flex-row justify-start items-center">
-          <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTs)}</span>
-        </div>
-        <MemoContentV1 content={memo.content} />
-        <MemoResourceListView resourceList={memo.resourceList} />
-        <MemoRelationListView memo={memo} relationList={referenceRelations} />
-        <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
-          <div className="flex flex-row justify-start items-center">
-            <Tooltip title={"Identifier"} placement="top">
-              <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
-            </Tooltip>
-            <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-            <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
-              <Tooltip title={"Creator"} placement="top">
-                <span className="flex flex-row justify-start items-center">
-                  <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator?.avatarUrl} />
-                  <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator?.nickname}</span>
-                </span>
+          <MemoContentV1 content={memo.content} />
+          <MemoResourceListView resourceList={memo.resourceList} />
+          <MemoRelationListView memo={memo} relationList={referenceRelations} />
+          <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
+            <div className="flex flex-row justify-start items-center">
+              <Tooltip title={"Identifier"} placement="top">
+                <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
               </Tooltip>
-            </Link>
-            {allowEdit && (
-              <>
-                <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-                <Select
-                  className="w-auto text-sm"
-                  variant="plain"
-                  value={memo.visibility}
-                  startDecorator={<VisibilityIcon visibility={memo.visibility} />}
-                  onChange={(_, visibility) => {
-                    if (visibility) {
-                      handleMemoVisibilityOptionChanged(visibility);
-                    }
-                  }}
-                >
-                  {VISIBILITY_SELECTOR_ITEMS.map((item) => (
-                    <Option key={item} value={item} className="whitespace-nowrap" disabled={disableOption(item)}>
-                      {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
-                    </Option>
-                  ))}
-                </Select>
-              </>
-            )}
-          </div>
-          <div className="flex flex-row sm:justify-end items-center">
-            {allowEdit && (
-              <Tooltip title={"Edit"} placement="top">
-                <IconButton size="sm" onClick={handleEditMemoClick}>
-                  <Icon.Edit3 className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+              <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
+              <Link to={`/u/${encodeURIComponent(memo.creatorUsername)}`}>
+                <Tooltip title={"Creator"} placement="top">
+                  <span className="flex flex-row justify-start items-center">
+                    <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator?.avatarUrl} />
+                    <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">{creator?.nickname}</span>
+                  </span>
+                </Tooltip>
+              </Link>
+              {allowEdit && (
+                <>
+                  <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
+                  <Select
+                    className="w-auto text-sm"
+                    variant="plain"
+                    value={memo.visibility}
+                    startDecorator={<VisibilityIcon visibility={memo.visibility} />}
+                    onChange={(_, visibility) => {
+                      if (visibility) {
+                        handleMemoVisibilityOptionChanged(visibility);
+                      }
+                    }}
+                  >
+                    {VISIBILITY_SELECTOR_ITEMS.map((item) => (
+                      <Option key={item} value={item} className="whitespace-nowrap" disabled={disableOption(item)}>
+                        {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
+                      </Option>
+                    ))}
+                  </Select>
+                </>
+              )}
+            </div>
+            <div className="flex flex-row sm:justify-end items-center">
+              {allowEdit && (
+                <Tooltip title={"Edit"} placement="top">
+                  <IconButton size="sm" onClick={handleEditMemoClick}>
+                    <Icon.Edit3 className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                  </IconButton>
+                </Tooltip>
+              )}
+              <Tooltip title={"Copy link"} placement="top">
+                <IconButton size="sm" onClick={handleCopyLinkBtnClick}>
+                  <Icon.Link className="w-4 h-auto text-gray-600 dark:text-gray-400" />
                 </IconButton>
               </Tooltip>
-            )}
-            <Tooltip title={"Copy link"} placement="top">
-              <IconButton size="sm" onClick={handleCopyLinkBtnClick}>
-                <Icon.Link className="w-4 h-auto text-gray-600 dark:text-gray-400" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title={"Share"} placement="top">
-              <IconButton size="sm" onClick={() => showShareMemoDialog(memo)}>
-                <Icon.Share className="w-4 h-auto text-gray-600 dark:text-gray-400" />
-              </IconButton>
-            </Tooltip>
+              <Tooltip title={"Share"} placement="top">
+                <IconButton size="sm" onClick={() => showShareMemoDialog(memo)}>
+                  <Icon.Share className="w-4 h-auto text-gray-600 dark:text-gray-400" />
+                </IconButton>
+              </Tooltip>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="pt-8 pb-16 w-full">
-        <div className="relative mx-auto flex-grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
-          {comments.length === 0 ? (
-            <div className="w-full flex flex-col justify-center items-center py-6 mb-2">
-              <Icon.MessageCircle strokeWidth={1} className="w-8 h-auto text-gray-400" />
-              <p className="text-gray-400 italic text-sm">{t("memo.comment.no-comment")}</p>
-            </div>
-          ) : (
-            <>
-              <div className="w-full flex flex-row justify-start items-center pl-3 mb-3">
-                <Icon.MessageCircle className="w-5 h-auto text-gray-400 mr-1" />
-                <span className="text-gray-400 text-sm">{t("memo.comment.self")}</span>
-                <span className="text-gray-400 text-sm ml-0.5">({comments.length})</span>
+        <div className="pt-8 pb-16 w-full">
+          <div className="relative mx-auto flex-grow w-full min-h-full flex flex-col justify-start items-start gap-y-1">
+            {comments.length === 0 ? (
+              <div className="w-full flex flex-col justify-center items-center py-6 mb-2">
+                <Icon.MessageCircle strokeWidth={1} className="w-8 h-auto text-gray-400" />
+                <p className="text-gray-400 italic text-sm">{t("memo.comment.no-comment")}</p>
               </div>
-              {comments.map((comment) => (
-                <Memo key={comment.id} memo={comment} showCreator />
-              ))}
-            </>
-          )}
+            ) : (
+              <>
+                <div className="w-full flex flex-row justify-start items-center pl-3 mb-3">
+                  <Icon.MessageCircle className="w-5 h-auto text-gray-400 mr-1" />
+                  <span className="text-gray-400 text-sm">{t("memo.comment.self")}</span>
+                  <span className="text-gray-400 text-sm ml-0.5">({comments.length})</span>
+                </div>
+                {comments.map((comment) => (
+                  <Memo key={comment.id} memo={comment} showCreator />
+                ))}
+              </>
+            )}
 
-          {/* Only show comment editor when user login */}
-          {currentUser && (
-            <MemoEditor
-              key={memo.id}
-              cacheKey={`comment-editor-${memo.id}`}
-              relationList={[{ memoId: UNKNOWN_ID, relatedMemoId: memo.id, type: "COMMENT" }]}
-              onConfirm={handleCommentCreated}
-            />
-          )}
+            {/* Only show comment editor when user login */}
+            {currentUser && (
+              <MemoEditor
+                key={memo.id}
+                cacheKey={`comment-editor-${memo.id}`}
+                relationList={[{ memoId: UNKNOWN_ID, relatedMemoId: memo.id, type: "COMMENT" }]}
+                onConfirm={handleCommentCreated}
+              />
+            )}
+          </div>
         </div>
       </div>
     </section>
