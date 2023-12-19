@@ -225,8 +225,6 @@
       "additional-style": "Egyedi stílus",
       "additional-style-placeholder": "Egyedi CSS kód",
       "allow-user-signup": "Regisztráció engedélyezése",
-      "auto-backup-interval": "Automatikus biztonsági mentés időköze (másodperc)",
-      "auto-backup-interval-hint": "A 0 érték kikapcsolja az automatikus mentést. Az érték megváltoztatása után újraindítás szükséges.",
       "customize-server": {
         "appearance": "Szerver témája",
         "default": "Alapértelmezett: memos",
