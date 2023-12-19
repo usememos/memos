@@ -1,24 +1,867 @@
 basePath: /
 definitions:
-  github_com_usememos_memos_store.UserSetting:
+  api_v1.CreateIdentityProviderRequest:
     properties:
-      key:
+      config:
+        $ref: '#/definitions/api_v1.IdentityProviderConfig'
+      identifierFilter:
         type: string
-      userID:
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/api_v1.IdentityProviderType'
+    type: object
+  api_v1.CreateMemoRequest:
+    properties:
+      content:
+        type: string
+      createdTs:
         type: integer
+      relationList:
+        items:
+          $ref: '#/definitions/api_v1.UpsertMemoRelationRequest'
+        type: array
+      resourceIdList:
+        description: Related fields
+        items:
+          type: integer
+        type: array
+      visibility:
+        allOf:
+        - $ref: '#/definitions/api_v1.Visibility'
+        description: Domain specific fields
+    type: object
+  api_v1.CreateResourceRequest:
+    properties:
+      externalLink:
+        type: string
+      filename:
+        type: string
+      type:
+        type: string
+    type: object
+  api_v1.CreateStorageRequest:
+    properties:
+      config:
+        $ref: '#/definitions/api_v1.StorageConfig'
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/api_v1.StorageType'
+    type: object
+  api_v1.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      role:
+        $ref: '#/definitions/api_v1.Role'
+      username:
+        type: string
+    type: object
+  api_v1.CustomizedProfile:
+    properties:
+      appearance:
+        description: Appearance is the server default appearance.
+        type: string
+      description:
+        description: Description is the server description.
+        type: string
+      externalUrl:
+        description: ExternalURL is the external url of server. e.g. https://usermemos.com
+        type: string
+      locale:
+        description: Locale is the server default locale.
+        type: string
+      logoUrl:
+        description: LogoURL is the url of logo image.
+        type: string
+      name:
+        description: Name is the server name, default is `memos`
+        type: string
+    type: object
+  api_v1.DeleteTagRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  api_v1.FieldMapping:
+    properties:
+      displayName:
+        type: string
+      email:
+        type: string
+      identifier:
+        type: string
+    type: object
+  api_v1.IdentityProvider:
+    properties:
+      config:
+        $ref: '#/definitions/api_v1.IdentityProviderConfig'
+      id:
+        type: integer
+      identifierFilter:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/api_v1.IdentityProviderType'
+    type: object
+  api_v1.IdentityProviderConfig:
+    properties:
+      oauth2Config:
+        $ref: '#/definitions/api_v1.IdentityProviderOAuth2Config'
+    type: object
+  api_v1.IdentityProviderOAuth2Config:
+    properties:
+      authUrl:
+        type: string
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+      fieldMapping:
+        $ref: '#/definitions/api_v1.FieldMapping'
+      scopes:
+        items:
+          type: string
+        type: array
+      tokenUrl:
+        type: string
+      userInfoUrl:
+        type: string
+    type: object
+  api_v1.IdentityProviderType:
+    enum:
+    - OAUTH2
+    type: string
+    x-enum-varnames:
+    - IdentityProviderOAuth2Type
+  api_v1.MemoRelationType:
+    enum:
+    - REFERENCE
+    - COMMENT
+    type: string
+    x-enum-varnames:
+    - MemoRelationReference
+    - MemoRelationComment
+  api_v1.PatchMemoRequest:
+    properties:
+      content:
+        description: Domain specific fields
+        type: string
+      createdTs:
+        description: Standard fields
+        type: integer
+      relationList:
+        items:
+          $ref: '#/definitions/api_v1.UpsertMemoRelationRequest'
+        type: array
+      resourceIdList:
+        description: Related fields
+        items:
+          type: integer
+        type: array
+      rowStatus:
+        $ref: '#/definitions/api_v1.RowStatus'
+      updatedTs:
+        type: integer
+      visibility:
+        $ref: '#/definitions/api_v1.Visibility'
+    type: object
+  api_v1.Role:
+    enum:
+    - HOST
+    - ADMIN
+    - USER
+    type: string
+    x-enum-varnames:
+    - RoleHost
+    - RoleAdmin
+    - RoleUser
+  api_v1.RowStatus:
+    enum:
+    - NORMAL
+    - ARCHIVED
+    type: string
+    x-enum-varnames:
+    - Normal
+    - Archived
+  api_v1.SSOSignIn:
+    properties:
+      code:
+        type: string
+      identityProviderId:
+        type: integer
+      redirectUri:
+        type: string
+    type: object
+  api_v1.SignIn:
+    properties:
+      password:
+        type: string
+      remember:
+        type: boolean
+      username:
+        type: string
+    type: object
+  api_v1.SignUp:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  api_v1.StorageConfig:
+    properties:
+      s3Config:
+        $ref: '#/definitions/api_v1.StorageS3Config'
+    type: object
+  api_v1.StorageS3Config:
+    properties:
+      accessKey:
+        type: string
+      bucket:
+        type: string
+      endPoint:
+        type: string
+      path:
+        type: string
+      region:
+        type: string
+      secretKey:
+        type: string
+      urlPrefix:
+        type: string
+      urlSuffix:
+        type: string
+    type: object
+  api_v1.StorageType:
+    enum:
+    - S3
+    type: string
+    x-enum-varnames:
+    - StorageS3
+  api_v1.SystemSetting:
+    properties:
+      description:
+        type: string
+      name:
+        $ref: '#/definitions/api_v1.SystemSettingName'
+      value:
+        description: Value is a JSON string with basic value.
+        type: string
+    type: object
+  api_v1.SystemSettingName:
+    enum:
+    - server-id
+    - secret-session
+    - allow-signup
+    - disable-password-login
+    - disable-public-memos
+    - max-upload-size-mib
+    - additional-style
+    - additional-script
+    - customized-profile
+    - storage-service-id
+    - local-storage-path
+    - telegram-bot-token
+    - memo-display-with-updated-ts
+    - instance-url
+    type: string
+    x-enum-varnames:
+    - SystemSettingServerIDName
+    - SystemSettingSecretSessionName
+    - SystemSettingAllowSignUpName
+    - SystemSettingDisablePasswordLoginName
+    - SystemSettingDisablePublicMemosName
+    - SystemSettingMaxUploadSizeMiBName
+    - SystemSettingAdditionalStyleName
+    - SystemSettingAdditionalScriptName
+    - SystemSettingCustomizedProfileName
+    - SystemSettingStorageServiceIDName
+    - SystemSettingLocalStoragePathName
+    - SystemSettingTelegramBotTokenName
+    - SystemSettingMemoDisplayWithUpdatedTsName
+    - SystemSettingInstanceURLName
+  api_v1.SystemStatus:
+    properties:
+      additionalScript:
+        description: Additional script.
+        type: string
+      additionalStyle:
+        description: Additional style.
+        type: string
+      allowSignUp:
+        description: |-
+          System settings
+          Allow sign up.
+        type: boolean
+      customizedProfile:
+        allOf:
+        - $ref: '#/definitions/api_v1.CustomizedProfile'
+        description: Customized server profile, including server name and external
+          url.
+      dbSize:
+        type: integer
+      disablePasswordLogin:
+        description: Disable password login.
+        type: boolean
+      disablePublicMemos:
+        description: Disable public memos.
+        type: boolean
+      host:
+        $ref: '#/definitions/api_v1.User'
+      localStoragePath:
+        description: Local storage path.
+        type: string
+      maxUploadSizeMiB:
+        description: Max upload size.
+        type: integer
+      memoDisplayWithUpdatedTs:
+        description: Memo display with updated timestamp.
+        type: boolean
+      profile:
+        $ref: '#/definitions/profile.Profile'
+      storageServiceId:
+        description: Storage service ID.
+        type: integer
+    type: object
+  api_v1.UpdateIdentityProviderRequest:
+    properties:
+      config:
+        $ref: '#/definitions/api_v1.IdentityProviderConfig'
+      identifierFilter:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/api_v1.IdentityProviderType'
+    type: object
+  api_v1.UpdateResourceRequest:
+    properties:
+      filename:
+        type: string
+    type: object
+  api_v1.UpdateStorageRequest:
+    properties:
+      config:
+        $ref: '#/definitions/api_v1.StorageConfig'
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/api_v1.StorageType'
+    type: object
+  api_v1.UpdateUserRequest:
+    properties:
+      avatarUrl:
+        type: string
+      email:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      rowStatus:
+        $ref: '#/definitions/api_v1.RowStatus'
+      username:
+        type: string
+    type: object
+  api_v1.UpsertMemoOrganizerRequest:
+    properties:
+      pinned:
+        type: boolean
+    type: object
+  api_v1.UpsertMemoRelationRequest:
+    properties:
+      relatedMemoId:
+        type: integer
+      type:
+        $ref: '#/definitions/api_v1.MemoRelationType'
+    type: object
+  api_v1.UpsertSystemSettingRequest:
+    properties:
+      description:
+        type: string
+      name:
+        $ref: '#/definitions/api_v1.SystemSettingName'
       value:
         type: string
     type: object
+  api_v1.UpsertTagRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  api_v1.User:
+    properties:
+      avatarUrl:
+        type: string
+      createdTs:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      role:
+        $ref: '#/definitions/api_v1.Role'
+      rowStatus:
+        allOf:
+        - $ref: '#/definitions/api_v1.RowStatus'
+        description: Standard fields
+      updatedTs:
+        type: integer
+      username:
+        description: Domain specific fields
+        type: string
+    type: object
+  api_v1.Visibility:
+    enum:
+    - PUBLIC
+    - PROTECTED
+    - PRIVATE
+    type: string
+    x-enum-varnames:
+    - Public
+    - Protected
+    - Private
+  github_com_usememos_memos_api_v1.CreateIdentityProviderRequest:
+    properties:
+      config:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.IdentityProviderConfig'
+      identifierFilter:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.IdentityProviderType'
+    type: object
+  github_com_usememos_memos_api_v1.CreateMemoRequest:
+    properties:
+      content:
+        type: string
+      createdTs:
+        type: integer
+      relationList:
+        items:
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpsertMemoRelationRequest'
+        type: array
+      resourceIdList:
+        description: Related fields
+        items:
+          type: integer
+        type: array
+      visibility:
+        allOf:
+        - $ref: '#/definitions/github_com_usememos_memos_api_v1.Visibility'
+        description: Domain specific fields
+    type: object
+  github_com_usememos_memos_api_v1.CreateResourceRequest:
+    properties:
+      externalLink:
+        type: string
+      filename:
+        type: string
+      type:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.CreateStorageRequest:
+    properties:
+      config:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.StorageConfig'
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.StorageType'
+    type: object
+  github_com_usememos_memos_api_v1.CreateUserRequest:
+    properties:
+      email:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      role:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.Role'
+      username:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.CustomizedProfile:
+    properties:
+      appearance:
+        description: Appearance is the server default appearance.
+        type: string
+      description:
+        description: Description is the server description.
+        type: string
+      externalUrl:
+        description: ExternalURL is the external url of server. e.g. https://usermemos.com
+        type: string
+      locale:
+        description: Locale is the server default locale.
+        type: string
+      logoUrl:
+        description: LogoURL is the url of logo image.
+        type: string
+      name:
+        description: Name is the server name, default is `memos`
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.DeleteTagRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.FieldMapping:
+    properties:
+      displayName:
+        type: string
+      email:
+        type: string
+      identifier:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.IdentityProvider:
+    properties:
+      config:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.IdentityProviderConfig'
+      id:
+        type: integer
+      identifierFilter:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.IdentityProviderType'
+    type: object
+  github_com_usememos_memos_api_v1.IdentityProviderConfig:
+    properties:
+      oauth2Config:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.IdentityProviderOAuth2Config'
+    type: object
+  github_com_usememos_memos_api_v1.IdentityProviderOAuth2Config:
+    properties:
+      authUrl:
+        type: string
+      clientId:
+        type: string
+      clientSecret:
+        type: string
+      fieldMapping:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.FieldMapping'
+      scopes:
+        items:
+          type: string
+        type: array
+      tokenUrl:
+        type: string
+      userInfoUrl:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.IdentityProviderType:
+    enum:
+    - OAUTH2
+    type: string
+    x-enum-varnames:
+    - IdentityProviderOAuth2Type
+  github_com_usememos_memos_api_v1.MemoRelationType:
+    enum:
+    - REFERENCE
+    - COMMENT
+    type: string
+    x-enum-varnames:
+    - MemoRelationReference
+    - MemoRelationComment
+  github_com_usememos_memos_api_v1.PatchMemoRequest:
+    properties:
+      content:
+        description: Domain specific fields
+        type: string
+      createdTs:
+        description: Standard fields
+        type: integer
+      relationList:
+        items:
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpsertMemoRelationRequest'
+        type: array
+      resourceIdList:
+        description: Related fields
+        items:
+          type: integer
+        type: array
+      rowStatus:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.RowStatus'
+      updatedTs:
+        type: integer
+      visibility:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.Visibility'
+    type: object
+  github_com_usememos_memos_api_v1.Role:
+    enum:
+    - HOST
+    - ADMIN
+    - USER
+    type: string
+    x-enum-varnames:
+    - RoleHost
+    - RoleAdmin
+    - RoleUser
+  github_com_usememos_memos_api_v1.RowStatus:
+    enum:
+    - NORMAL
+    - ARCHIVED
+    type: string
+    x-enum-varnames:
+    - Normal
+    - Archived
+  github_com_usememos_memos_api_v1.SSOSignIn:
+    properties:
+      code:
+        type: string
+      identityProviderId:
+        type: integer
+      redirectUri:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.SignIn:
+    properties:
+      password:
+        type: string
+      remember:
+        type: boolean
+      username:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.SignUp:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.StorageConfig:
+    properties:
+      s3Config:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.StorageS3Config'
+    type: object
+  github_com_usememos_memos_api_v1.StorageS3Config:
+    properties:
+      accessKey:
+        type: string
+      bucket:
+        type: string
+      endPoint:
+        type: string
+      path:
+        type: string
+      region:
+        type: string
+      secretKey:
+        type: string
+      urlPrefix:
+        type: string
+      urlSuffix:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.StorageType:
+    enum:
+    - S3
+    type: string
+    x-enum-varnames:
+    - StorageS3
+  github_com_usememos_memos_api_v1.SystemSetting:
+    properties:
+      description:
+        type: string
+      name:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.SystemSettingName'
+      value:
+        description: Value is a JSON string with basic value.
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.SystemSettingName:
+    enum:
+    - server-id
+    - secret-session
+    - allow-signup
+    - disable-password-login
+    - disable-public-memos
+    - max-upload-size-mib
+    - additional-style
+    - additional-script
+    - customized-profile
+    - storage-service-id
+    - local-storage-path
+    - telegram-bot-token
+    - memo-display-with-updated-ts
+    - instance-url
+    type: string
+    x-enum-varnames:
+    - SystemSettingServerIDName
+    - SystemSettingSecretSessionName
+    - SystemSettingAllowSignUpName
+    - SystemSettingDisablePasswordLoginName
+    - SystemSettingDisablePublicMemosName
+    - SystemSettingMaxUploadSizeMiBName
+    - SystemSettingAdditionalStyleName
+    - SystemSettingAdditionalScriptName
+    - SystemSettingCustomizedProfileName
+    - SystemSettingStorageServiceIDName
+    - SystemSettingLocalStoragePathName
+    - SystemSettingTelegramBotTokenName
+    - SystemSettingMemoDisplayWithUpdatedTsName
+    - SystemSettingInstanceURLName
+  github_com_usememos_memos_api_v1.SystemStatus:
+    properties:
+      additionalScript:
+        description: Additional script.
+        type: string
+      additionalStyle:
+        description: Additional style.
+        type: string
+      allowSignUp:
+        description: |-
+          System settings
+          Allow sign up.
+        type: boolean
+      customizedProfile:
+        allOf:
+        - $ref: '#/definitions/github_com_usememos_memos_api_v1.CustomizedProfile'
+        description: Customized server profile, including server name and external
+          url.
+      dbSize:
+        type: integer
+      disablePasswordLogin:
+        description: Disable password login.
+        type: boolean
+      disablePublicMemos:
+        description: Disable public memos.
+        type: boolean
+      host:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.User'
+      localStoragePath:
+        description: Local storage path.
+        type: string
+      maxUploadSizeMiB:
+        description: Max upload size.
+        type: integer
+      memoDisplayWithUpdatedTs:
+        description: Memo display with updated timestamp.
+        type: boolean
+      profile:
+        $ref: '#/definitions/profile.Profile'
+      storageServiceId:
+        description: Storage service ID.
+        type: integer
+    type: object
+  github_com_usememos_memos_api_v1.UpdateIdentityProviderRequest:
+    properties:
+      config:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.IdentityProviderConfig'
+      identifierFilter:
+        type: string
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.IdentityProviderType'
+    type: object
+  github_com_usememos_memos_api_v1.UpdateResourceRequest:
+    properties:
+      filename:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.UpdateStorageRequest:
+    properties:
+      config:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.StorageConfig'
+      name:
+        type: string
+      type:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.StorageType'
+    type: object
+  github_com_usememos_memos_api_v1.UpdateUserRequest:
+    properties:
+      avatarUrl:
+        type: string
+      email:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      rowStatus:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.RowStatus'
+      username:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.UpsertMemoOrganizerRequest:
+    properties:
+      pinned:
+        type: boolean
+    type: object
+  github_com_usememos_memos_api_v1.UpsertMemoRelationRequest:
+    properties:
+      relatedMemoId:
+        type: integer
+      type:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.MemoRelationType'
+    type: object
+  github_com_usememos_memos_api_v1.UpsertSystemSettingRequest:
+    properties:
+      description:
+        type: string
+      name:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.SystemSettingName'
+      value:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.UpsertTagRequest:
+    properties:
+      name:
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.User:
+    properties:
+      avatarUrl:
+        type: string
+      createdTs:
+        type: integer
+      email:
+        type: string
+      id:
+        type: integer
+      nickname:
+        type: string
+      role:
+        $ref: '#/definitions/github_com_usememos_memos_api_v1.Role'
+      rowStatus:
+        allOf:
+        - $ref: '#/definitions/github_com_usememos_memos_api_v1.RowStatus'
+        description: Standard fields
+      updatedTs:
+        type: integer
+      username:
+        description: Domain specific fields
+        type: string
+    type: object
+  github_com_usememos_memos_api_v1.Visibility:
+    enum:
+    - PUBLIC
+    - PROTECTED
+    - PRIVATE
+    type: string
+    x-enum-varnames:
+    - Public
+    - Protected
+    - Private
   profile.Profile:
     properties:
-      driver:
-        description: |-
-          Driver is the database driver
-          sqlite, mysql
-        type: string
-      dsn:
-        description: DSN points to where Memos stores its own data
-        type: string
       mode:
         description: Mode can be "prod" or "dev" or "demo"
         type: string
@@ -89,22 +932,9 @@ definitions:
         type: integer
       id:
         type: integer
-      parentID:
-        description: |-
-          Composed fields
-          For those comment memos, the parent ID is the memo ID of the memo being commented.
-          If the parent ID is nil, then this memo is not a comment.
-        type: integer
       pinned:
+        description: Composed fields
         type: boolean
-      relationList:
-        items:
-          $ref: '#/definitions/store.MemoRelation'
-        type: array
-      resourceIDList:
-        items:
-          type: integer
-        type: array
       rowStatus:
         allOf:
         - $ref: '#/definitions/store.RowStatus'
@@ -234,469 +1064,6 @@ definitions:
     - Public
     - Protected
     - Private
-  v1.CreateIdentityProviderRequest:
-    properties:
-      config:
-        $ref: '#/definitions/v1.IdentityProviderConfig'
-      identifierFilter:
-        type: string
-      name:
-        type: string
-      type:
-        $ref: '#/definitions/v1.IdentityProviderType'
-    type: object
-  v1.CreateMemoRequest:
-    properties:
-      content:
-        type: string
-      createdTs:
-        type: integer
-      relationList:
-        items:
-          $ref: '#/definitions/v1.UpsertMemoRelationRequest'
-        type: array
-      resourceIdList:
-        description: Related fields
-        items:
-          type: integer
-        type: array
-      visibility:
-        allOf:
-        - $ref: '#/definitions/v1.Visibility'
-        description: Domain specific fields
-    type: object
-  v1.CreateResourceRequest:
-    properties:
-      externalLink:
-        type: string
-      filename:
-        type: string
-      type:
-        type: string
-    type: object
-  v1.CreateStorageRequest:
-    properties:
-      config:
-        $ref: '#/definitions/v1.StorageConfig'
-      name:
-        type: string
-      type:
-        $ref: '#/definitions/v1.StorageType'
-    type: object
-  v1.CreateUserRequest:
-    properties:
-      email:
-        type: string
-      nickname:
-        type: string
-      password:
-        type: string
-      role:
-        $ref: '#/definitions/v1.Role'
-      username:
-        type: string
-    type: object
-  v1.CustomizedProfile:
-    properties:
-      appearance:
-        description: Appearance is the server default appearance.
-        type: string
-      description:
-        description: Description is the server description.
-        type: string
-      externalUrl:
-        description: ExternalURL is the external url of server. e.g. https://usermemos.com
-        type: string
-      locale:
-        description: Locale is the server default locale.
-        type: string
-      logoUrl:
-        description: LogoURL is the url of logo image.
-        type: string
-      name:
-        description: Name is the server name, default is `memos`
-        type: string
-    type: object
-  v1.DeleteTagRequest:
-    properties:
-      name:
-        type: string
-    type: object
-  v1.FieldMapping:
-    properties:
-      displayName:
-        type: string
-      email:
-        type: string
-      identifier:
-        type: string
-    type: object
-  v1.IdentityProvider:
-    properties:
-      config:
-        $ref: '#/definitions/v1.IdentityProviderConfig'
-      id:
-        type: integer
-      identifierFilter:
-        type: string
-      name:
-        type: string
-      type:
-        $ref: '#/definitions/v1.IdentityProviderType'
-    type: object
-  v1.IdentityProviderConfig:
-    properties:
-      oauth2Config:
-        $ref: '#/definitions/v1.IdentityProviderOAuth2Config'
-    type: object
-  v1.IdentityProviderOAuth2Config:
-    properties:
-      authUrl:
-        type: string
-      clientId:
-        type: string
-      clientSecret:
-        type: string
-      fieldMapping:
-        $ref: '#/definitions/v1.FieldMapping'
-      scopes:
-        items:
-          type: string
-        type: array
-      tokenUrl:
-        type: string
-      userInfoUrl:
-        type: string
-    type: object
-  v1.IdentityProviderType:
-    enum:
-    - OAUTH2
-    type: string
-    x-enum-varnames:
-    - IdentityProviderOAuth2Type
-  v1.MemoRelationType:
-    enum:
-    - REFERENCE
-    - ADDITIONAL
-    type: string
-    x-enum-varnames:
-    - MemoRelationReference
-    - MemoRelationAdditional
-  v1.PatchMemoRequest:
-    properties:
-      content:
-        description: Domain specific fields
-        type: string
-      createdTs:
-        description: Standard fields
-        type: integer
-      relationList:
-        items:
-          $ref: '#/definitions/v1.UpsertMemoRelationRequest'
-        type: array
-      resourceIdList:
-        description: Related fields
-        items:
-          type: integer
-        type: array
-      rowStatus:
-        $ref: '#/definitions/v1.RowStatus'
-      updatedTs:
-        type: integer
-      visibility:
-        $ref: '#/definitions/v1.Visibility'
-    type: object
-  v1.Role:
-    enum:
-    - HOST
-    - ADMIN
-    - USER
-    type: string
-    x-enum-varnames:
-    - RoleHost
-    - RoleAdmin
-    - RoleUser
-  v1.RowStatus:
-    enum:
-    - NORMAL
-    - ARCHIVED
-    type: string
-    x-enum-varnames:
-    - Normal
-    - Archived
-  v1.SSOSignIn:
-    properties:
-      code:
-        type: string
-      identityProviderId:
-        type: integer
-      redirectUri:
-        type: string
-    type: object
-  v1.SignIn:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    type: object
-  v1.SignUp:
-    properties:
-      password:
-        type: string
-      username:
-        type: string
-    type: object
-  v1.StorageConfig:
-    properties:
-      s3Config:
-        $ref: '#/definitions/v1.StorageS3Config'
-    type: object
-  v1.StorageS3Config:
-    properties:
-      accessKey:
-        type: string
-      bucket:
-        type: string
-      endPoint:
-        type: string
-      path:
-        type: string
-      region:
-        type: string
-      secretKey:
-        type: string
-      urlPrefix:
-        type: string
-      urlSuffix:
-        type: string
-    type: object
-  v1.StorageType:
-    enum:
-    - S3
-    type: string
-    x-enum-varnames:
-    - StorageS3
-  v1.SystemSetting:
-    properties:
-      description:
-        type: string
-      name:
-        $ref: '#/definitions/v1.SystemSettingName'
-      value:
-        description: Value is a JSON string with basic value.
-        type: string
-    type: object
-  v1.SystemSettingName:
-    enum:
-    - server-id
-    - secret-session
-    - allow-signup
-    - disable-password-login
-    - disable-public-memos
-    - max-upload-size-mib
-    - additional-style
-    - additional-script
-    - customized-profile
-    - storage-service-id
-    - local-storage-path
-    - telegram-bot-token
-    - memo-display-with-updated-ts
-    - auto-backup-interval
-    type: string
-    x-enum-varnames:
-    - SystemSettingServerIDName
-    - SystemSettingSecretSessionName
-    - SystemSettingAllowSignUpName
-    - SystemSettingDisablePasswordLoginName
-    - SystemSettingDisablePublicMemosName
-    - SystemSettingMaxUploadSizeMiBName
-    - SystemSettingAdditionalStyleName
-    - SystemSettingAdditionalScriptName
-    - SystemSettingCustomizedProfileName
-    - SystemSettingStorageServiceIDName
-    - SystemSettingLocalStoragePathName
-    - SystemSettingTelegramBotTokenName
-    - SystemSettingMemoDisplayWithUpdatedTsName
-    - SystemSettingAutoBackupIntervalName
-  v1.SystemStatus:
-    properties:
-      additionalScript:
-        description: Additional script.
-        type: string
-      additionalStyle:
-        description: Additional style.
-        type: string
-      allowSignUp:
-        description: |-
-          System settings
-          Allow sign up.
-        type: boolean
-      autoBackupInterval:
-        description: Auto Backup Interval.
-        type: integer
-      customizedProfile:
-        allOf:
-        - $ref: '#/definitions/v1.CustomizedProfile'
-        description: Customized server profile, including server name and external
-          url.
-      dbSize:
-        type: integer
-      disablePasswordLogin:
-        description: Disable password login.
-        type: boolean
-      disablePublicMemos:
-        description: Disable public memos.
-        type: boolean
-      host:
-        $ref: '#/definitions/v1.User'
-      localStoragePath:
-        description: Local storage path.
-        type: string
-      maxUploadSizeMiB:
-        description: Max upload size.
-        type: integer
-      memoDisplayWithUpdatedTs:
-        description: Memo display with updated timestamp.
-        type: boolean
-      profile:
-        $ref: '#/definitions/profile.Profile'
-      storageServiceId:
-        description: Storage service ID.
-        type: integer
-    type: object
-  v1.UpdateIdentityProviderRequest:
-    properties:
-      config:
-        $ref: '#/definitions/v1.IdentityProviderConfig'
-      identifierFilter:
-        type: string
-      name:
-        type: string
-      type:
-        $ref: '#/definitions/v1.IdentityProviderType'
-    type: object
-  v1.UpdateResourceRequest:
-    properties:
-      filename:
-        type: string
-    type: object
-  v1.UpdateStorageRequest:
-    properties:
-      config:
-        $ref: '#/definitions/v1.StorageConfig'
-      name:
-        type: string
-      type:
-        $ref: '#/definitions/v1.StorageType'
-    type: object
-  v1.UpdateUserRequest:
-    properties:
-      avatarUrl:
-        type: string
-      email:
-        type: string
-      nickname:
-        type: string
-      password:
-        type: string
-      rowStatus:
-        $ref: '#/definitions/v1.RowStatus'
-      username:
-        type: string
-    type: object
-  v1.UpsertMemoOrganizerRequest:
-    properties:
-      pinned:
-        type: boolean
-    type: object
-  v1.UpsertMemoRelationRequest:
-    properties:
-      relatedMemoId:
-        type: integer
-      type:
-        $ref: '#/definitions/v1.MemoRelationType'
-    type: object
-  v1.UpsertSystemSettingRequest:
-    properties:
-      description:
-        type: string
-      name:
-        $ref: '#/definitions/v1.SystemSettingName'
-      value:
-        type: string
-    type: object
-  v1.UpsertTagRequest:
-    properties:
-      name:
-        type: string
-    type: object
-  v1.UpsertUserSettingRequest:
-    properties:
-      key:
-        $ref: '#/definitions/v1.UserSettingKey'
-      value:
-        type: string
-    type: object
-  v1.User:
-    properties:
-      avatarUrl:
-        type: string
-      createdTs:
-        type: integer
-      email:
-        type: string
-      id:
-        type: integer
-      nickname:
-        type: string
-      role:
-        $ref: '#/definitions/v1.Role'
-      rowStatus:
-        allOf:
-        - $ref: '#/definitions/v1.RowStatus'
-        description: Standard fields
-      updatedTs:
-        type: integer
-      userSettingList:
-        items:
-          $ref: '#/definitions/v1.UserSetting'
-        type: array
-      username:
-        description: Domain specific fields
-        type: string
-    type: object
-  v1.UserSetting:
-    properties:
-      key:
-        $ref: '#/definitions/v1.UserSettingKey'
-      userId:
-        type: integer
-      value:
-        type: string
-    type: object
-  v1.UserSettingKey:
-    enum:
-    - locale
-    - appearance
-    - memo-visibility
-    - telegram-user-id
-    type: string
-    x-enum-varnames:
-    - UserSettingLocaleKey
-    - UserSettingAppearanceKey
-    - UserSettingMemoVisibilityKey
-    - UserSettingTelegramUserIDKey
-  v1.Visibility:
-    enum:
-    - PUBLIC
-    - PROTECTED
-    - PRIVATE
-    type: string
-    x-enum-varnames:
-    - Public
-    - Protected
-    - Private
 externalDocs:
   description: Find out more about Memos.
   url: https://usememos.com/
@@ -721,7 +1088,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.SignIn'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.SignIn'
       produces:
       - application/json
       responses:
@@ -753,7 +1120,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.SSOSignIn'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.SSOSignIn'
       produces:
       - application/json
       responses:
@@ -801,7 +1168,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.SignUp'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.SignUp'
       produces:
       - application/json
       responses:
@@ -834,7 +1201,7 @@ paths:
           description: List of available identity providers
           schema:
             items:
-              $ref: '#/definitions/v1.IdentityProvider'
+              $ref: '#/definitions/github_com_usememos_memos_api_v1.IdentityProvider'
             type: array
         "500":
           description: Failed to find identity provider list | Failed to find user
@@ -850,7 +1217,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.CreateIdentityProviderRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateIdentityProviderRequest'
       produces:
       - application/json
       responses:
@@ -935,7 +1302,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.UpdateIdentityProviderRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpdateIdentityProviderRequest'
       produces:
       - application/json
       responses:
@@ -1020,7 +1387,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.CreateMemoRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateMemoRequest'
       produces:
       - application/json
       responses:
@@ -1117,7 +1484,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.PatchMemoRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.PatchMemoRequest'
       produces:
       - application/json
       responses:
@@ -1154,7 +1521,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.UpsertMemoOrganizerRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpsertMemoOrganizerRequest'
       produces:
       - application/json
       responses:
@@ -1216,7 +1583,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.UpsertMemoRelationRequest'
+          $ref: '#/definitions/api_v1.UpsertMemoRelationRequest'
       produces:
       - application/json
       responses:
@@ -1250,7 +1617,7 @@ paths:
       - description: Type of relation to remove
         enum:
         - REFERENCE
-        - ADDITIONAL
+        - COMMENT
         in: path
         name: relationType
         required: true
@@ -1376,7 +1743,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.CreateResourceRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateResourceRequest'
       produces:
       - application/json
       responses:
@@ -1434,7 +1801,7 @@ paths:
         name: patch
         required: true
         schema:
-          $ref: '#/definitions/v1.UpdateResourceRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpdateResourceRequest'
       produces:
       - application/json
       responses:
@@ -1489,7 +1856,7 @@ paths:
         "200":
           description: System GetSystemStatus
           schema:
-            $ref: '#/definitions/v1.SystemStatus'
+            $ref: '#/definitions/github_com_usememos_memos_api_v1.SystemStatus'
         "401":
           description: Missing user in session | Unauthorized
         "500":
@@ -1525,7 +1892,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.CreateStorageRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateStorageRequest'
       produces:
       - application/json
       responses:
@@ -1580,7 +1947,7 @@ paths:
         name: patch
         required: true
         schema:
-          $ref: '#/definitions/v1.UpdateStorageRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpdateStorageRequest'
       produces:
       - application/json
       responses:
@@ -1608,7 +1975,7 @@ paths:
           description: System setting list
           schema:
             items:
-              $ref: '#/definitions/v1.SystemSetting'
+              $ref: '#/definitions/api_v1.SystemSetting'
             type: array
         "401":
           description: Missing user in session | Unauthorized
@@ -1626,7 +1993,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.UpsertSystemSettingRequest'
+          $ref: '#/definitions/api_v1.UpsertSystemSettingRequest'
       produces:
       - application/json
       responses:
@@ -1688,7 +2055,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.UpsertTagRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpsertTagRequest'
       produces:
       - application/json
       responses:
@@ -1715,7 +2082,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.DeleteTagRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.DeleteTagRequest'
       produces:
       - application/json
       responses:
@@ -1775,7 +2142,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/v1.CreateUserRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateUserRequest'
       produces:
       - application/json
       responses:
@@ -1857,7 +2224,7 @@ paths:
         name: patch
         required: true
         schema:
-          $ref: '#/definitions/v1.UpdateUserRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpdateUserRequest'
       produces:
       - application/json
       responses:
@@ -1916,34 +2283,6 @@ paths:
       summary: Get user by username
       tags:
       - user
-  /api/v1/user/setting:
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: Request object.
-        in: body
-        name: body
-        required: true
-        schema:
-          $ref: '#/definitions/v1.UpsertUserSettingRequest'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Created user setting
-          schema:
-            $ref: '#/definitions/github_com_usememos_memos_store.UserSetting'
-        "400":
-          description: Malformatted post user setting upsert request | Invalid user
-            setting format
-        "401":
-          description: Missing auth session
-        "500":
-          description: Failed to upsert user setting
-      summary: Upsert user setting
-      tags:
-      - user-setting
   /explore/rss.xml:
     get:
       produces:
@@ -1977,38 +2316,7 @@ paths:
           description: Failed to write GetImage blob
       summary: Get GetImage from URL
       tags:
-      - get
-  /o/r/{resourceId}:
-    get:
-      description: '*Swagger UI may have problems displaying other file types than
-        images'
-      parameters:
-      - description: Resource ID
-        in: path
-        name: resourceId
-        required: true
-        type: integer
-      - description: Thumbnail
-        in: query
-        name: thumbnail
-        type: integer
-      produces:
-      - application/octet-stream
-      responses:
-        "200":
-          description: Requested resource
-        "400":
-          description: 'ID is not a number: %s | Failed to get resource visibility'
-        "401":
-          description: Resource visibility not match
-        "404":
-          description: 'Resource not found: %d'
-        "500":
-          description: 'Failed to find resource by ID: %v | Failed to open the local
-            resource: %s | Failed to read the local resource: %s'
-      summary: Stream a resource
-      tags:
-      - resource
+      - image-url
   /u/{id}/rss.xml:
     get:
       parameters:

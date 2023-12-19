@@ -42,7 +42,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.SignIn"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SignIn"
                         }
                     }
                 ],
@@ -87,7 +87,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.SSOSignIn"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SSOSignIn"
                         }
                     }
                 ],
@@ -154,7 +154,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.SignUp"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SignUp"
                         }
                     }
                 ],
@@ -199,7 +199,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/v1.IdentityProvider"
+                                "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProvider"
                             }
                         }
                     },
@@ -226,7 +226,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.CreateIdentityProviderRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateIdentityProviderRequest"
                         }
                     }
                 ],
@@ -354,7 +354,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.UpdateIdentityProviderRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateIdentityProviderRequest"
                         }
                     }
                 ],
@@ -477,7 +477,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.CreateMemoRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateMemoRequest"
                         }
                     }
                 ],
@@ -695,7 +695,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.PatchMemoRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.PatchMemoRequest"
                         }
                     }
                 ],
@@ -747,7 +747,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.UpsertMemoOrganizerRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertMemoOrganizerRequest"
                         }
                     }
                 ],
@@ -838,7 +838,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.UpsertMemoRelationRequest"
+                            "$ref": "#/definitions/api_v1.UpsertMemoRelationRequest"
                         }
                     }
                 ],
@@ -889,7 +889,7 @@ const docTemplate = `{
                     {
                         "enum": [
                             "REFERENCE",
-                            "ADDITIONAL"
+                            "COMMENT"
                         ],
                         "type": "string",
                         "description": "Type of relation to remove",
@@ -992,7 +992,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.CreateResourceRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateResourceRequest"
                         }
                     }
                 ],
@@ -1116,7 +1116,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.UpdateResourceRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateResourceRequest"
                         }
                     }
                 ],
@@ -1155,7 +1155,7 @@ const docTemplate = `{
                     "200": {
                         "description": "System GetSystemStatus",
                         "schema": {
-                            "$ref": "#/definitions/v1.SystemStatus"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemStatus"
                         }
                     },
                     "401": {
@@ -1212,7 +1212,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.CreateStorageRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateStorageRequest"
                         }
                     }
                 ],
@@ -1293,7 +1293,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.UpdateStorageRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateStorageRequest"
                         }
                     }
                 ],
@@ -1331,7 +1331,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/v1.SystemSetting"
+                                "$ref": "#/definitions/api_v1.SystemSetting"
                             }
                         }
                     },
@@ -1361,7 +1361,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.UpsertSystemSettingRequest"
+                            "$ref": "#/definitions/api_v1.UpsertSystemSettingRequest"
                         }
                     }
                 ],
@@ -1457,7 +1457,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.UpsertTagRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertTagRequest"
                         }
                     }
                 ],
@@ -1499,7 +1499,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.DeleteTagRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.DeleteTagRequest"
                         }
                     }
                 ],
@@ -1592,7 +1592,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.CreateUserRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateUserRequest"
                         }
                     }
                 ],
@@ -1673,48 +1673,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to find user"
-                    }
-                }
-            }
-        },
-        "/api/v1/user/setting": {
-            "post": {
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "user-setting"
-                ],
-                "summary": "Upsert user setting",
-                "parameters": [
-                    {
-                        "description": "Request object.",
-                        "name": "body",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/v1.UpsertUserSettingRequest"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Created user setting",
-                        "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_store.UserSetting"
-                        }
-                    },
-                    "400": {
-                        "description": "Malformatted post user setting upsert request | Invalid user setting format"
-                    },
-                    "401": {
-                        "description": "Missing auth session"
-                    },
-                    "500": {
-                        "description": "Failed to upsert user setting"
                     }
                 }
             }
@@ -1815,7 +1773,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/v1.UpdateUserRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateUserRequest"
                         }
                     }
                 ],
@@ -1866,7 +1824,7 @@ const docTemplate = `{
                     "GetImage/*"
                 ],
                 "tags": [
-                    "get"
+                    "image-url"
                 ],
                 "summary": "Get GetImage from URL",
                 "parameters": [
@@ -1887,50 +1845,6 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to write GetImage blob"
-                    }
-                }
-            }
-        },
-        "/o/r/{resourceId}": {
-            "get": {
-                "description": "*Swagger UI may have problems displaying other file types than images",
-                "produces": [
-                    "application/octet-stream"
-                ],
-                "tags": [
-                    "resource"
-                ],
-                "summary": "Stream a resource",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "Resource ID",
-                        "name": "resourceId",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Thumbnail",
-                        "name": "thumbnail",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Requested resource"
-                    },
-                    "400": {
-                        "description": "ID is not a number: %s | Failed to get resource visibility"
-                    },
-                    "401": {
-                        "description": "Resource visibility not match"
-                    },
-                    "404": {
-                        "description": "Resource not found: %d"
-                    },
-                    "500": {
-                        "description": "Failed to find resource by ID: %v | Failed to open the local resource: %s | Failed to read the local resource: %s"
                     }
                 }
             }
@@ -1968,31 +1882,1271 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "github_com_usememos_memos_store.UserSetting": {
+        "api_v1.CreateIdentityProviderRequest": {
             "type": "object",
             "properties": {
-                "key": {
+                "config": {
+                    "$ref": "#/definitions/api_v1.IdentityProviderConfig"
+                },
+                "identifierFilter": {
                     "type": "string"
                 },
-                "userID": {
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/api_v1.IdentityProviderType"
+                }
+            }
+        },
+        "api_v1.CreateMemoRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createdTs": {
                     "type": "integer"
+                },
+                "relationList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api_v1.UpsertMemoRelationRequest"
+                    }
+                },
+                "resourceIdList": {
+                    "description": "Related fields",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "visibility": {
+                    "description": "Domain specific fields",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/api_v1.Visibility"
+                        }
+                    ]
+                }
+            }
+        },
+        "api_v1.CreateResourceRequest": {
+            "type": "object",
+            "properties": {
+                "externalLink": {
+                    "type": "string"
+                },
+                "filename": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.CreateStorageRequest": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/api_v1.StorageConfig"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/api_v1.StorageType"
+                }
+            }
+        },
+        "api_v1.CreateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/api_v1.Role"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.CustomizedProfile": {
+            "type": "object",
+            "properties": {
+                "appearance": {
+                    "description": "Appearance is the server default appearance.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description is the server description.",
+                    "type": "string"
+                },
+                "externalUrl": {
+                    "description": "ExternalURL is the external url of server. e.g. https://usermemos.com",
+                    "type": "string"
+                },
+                "locale": {
+                    "description": "Locale is the server default locale.",
+                    "type": "string"
+                },
+                "logoUrl": {
+                    "description": "LogoURL is the url of logo image.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name is the server name, default is ` + "`" + `memos` + "`" + `",
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.DeleteTagRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.FieldMapping": {
+            "type": "object",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.IdentityProvider": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/api_v1.IdentityProviderConfig"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "identifierFilter": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/api_v1.IdentityProviderType"
+                }
+            }
+        },
+        "api_v1.IdentityProviderConfig": {
+            "type": "object",
+            "properties": {
+                "oauth2Config": {
+                    "$ref": "#/definitions/api_v1.IdentityProviderOAuth2Config"
+                }
+            }
+        },
+        "api_v1.IdentityProviderOAuth2Config": {
+            "type": "object",
+            "properties": {
+                "authUrl": {
+                    "type": "string"
+                },
+                "clientId": {
+                    "type": "string"
+                },
+                "clientSecret": {
+                    "type": "string"
+                },
+                "fieldMapping": {
+                    "$ref": "#/definitions/api_v1.FieldMapping"
+                },
+                "scopes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tokenUrl": {
+                    "type": "string"
+                },
+                "userInfoUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.IdentityProviderType": {
+            "type": "string",
+            "enum": [
+                "OAUTH2"
+            ],
+            "x-enum-varnames": [
+                "IdentityProviderOAuth2Type"
+            ]
+        },
+        "api_v1.MemoRelationType": {
+            "type": "string",
+            "enum": [
+                "REFERENCE",
+                "COMMENT"
+            ],
+            "x-enum-varnames": [
+                "MemoRelationReference",
+                "MemoRelationComment"
+            ]
+        },
+        "api_v1.PatchMemoRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "Domain specific fields",
+                    "type": "string"
+                },
+                "createdTs": {
+                    "description": "Standard fields",
+                    "type": "integer"
+                },
+                "relationList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api_v1.UpsertMemoRelationRequest"
+                    }
+                },
+                "resourceIdList": {
+                    "description": "Related fields",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "rowStatus": {
+                    "$ref": "#/definitions/api_v1.RowStatus"
+                },
+                "updatedTs": {
+                    "type": "integer"
+                },
+                "visibility": {
+                    "$ref": "#/definitions/api_v1.Visibility"
+                }
+            }
+        },
+        "api_v1.Role": {
+            "type": "string",
+            "enum": [
+                "HOST",
+                "ADMIN",
+                "USER"
+            ],
+            "x-enum-varnames": [
+                "RoleHost",
+                "RoleAdmin",
+                "RoleUser"
+            ]
+        },
+        "api_v1.RowStatus": {
+            "type": "string",
+            "enum": [
+                "NORMAL",
+                "ARCHIVED"
+            ],
+            "x-enum-varnames": [
+                "Normal",
+                "Archived"
+            ]
+        },
+        "api_v1.SSOSignIn": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "identityProviderId": {
+                    "type": "integer"
+                },
+                "redirectUri": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.SignIn": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "remember": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.SignUp": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.StorageConfig": {
+            "type": "object",
+            "properties": {
+                "s3Config": {
+                    "$ref": "#/definitions/api_v1.StorageS3Config"
+                }
+            }
+        },
+        "api_v1.StorageS3Config": {
+            "type": "object",
+            "properties": {
+                "accessKey": {
+                    "type": "string"
+                },
+                "bucket": {
+                    "type": "string"
+                },
+                "endPoint": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "secretKey": {
+                    "type": "string"
+                },
+                "urlPrefix": {
+                    "type": "string"
+                },
+                "urlSuffix": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.StorageType": {
+            "type": "string",
+            "enum": [
+                "S3"
+            ],
+            "x-enum-varnames": [
+                "StorageS3"
+            ]
+        },
+        "api_v1.SystemSetting": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "$ref": "#/definitions/api_v1.SystemSettingName"
+                },
+                "value": {
+                    "description": "Value is a JSON string with basic value.",
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.SystemSettingName": {
+            "type": "string",
+            "enum": [
+                "server-id",
+                "secret-session",
+                "allow-signup",
+                "disable-password-login",
+                "disable-public-memos",
+                "max-upload-size-mib",
+                "additional-style",
+                "additional-script",
+                "customized-profile",
+                "storage-service-id",
+                "local-storage-path",
+                "telegram-bot-token",
+                "memo-display-with-updated-ts",
+                "instance-url"
+            ],
+            "x-enum-varnames": [
+                "SystemSettingServerIDName",
+                "SystemSettingSecretSessionName",
+                "SystemSettingAllowSignUpName",
+                "SystemSettingDisablePasswordLoginName",
+                "SystemSettingDisablePublicMemosName",
+                "SystemSettingMaxUploadSizeMiBName",
+                "SystemSettingAdditionalStyleName",
+                "SystemSettingAdditionalScriptName",
+                "SystemSettingCustomizedProfileName",
+                "SystemSettingStorageServiceIDName",
+                "SystemSettingLocalStoragePathName",
+                "SystemSettingTelegramBotTokenName",
+                "SystemSettingMemoDisplayWithUpdatedTsName",
+                "SystemSettingInstanceURLName"
+            ]
+        },
+        "api_v1.SystemStatus": {
+            "type": "object",
+            "properties": {
+                "additionalScript": {
+                    "description": "Additional script.",
+                    "type": "string"
+                },
+                "additionalStyle": {
+                    "description": "Additional style.",
+                    "type": "string"
+                },
+                "allowSignUp": {
+                    "description": "System settings\nAllow sign up.",
+                    "type": "boolean"
+                },
+                "customizedProfile": {
+                    "description": "Customized server profile, including server name and external url.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/api_v1.CustomizedProfile"
+                        }
+                    ]
+                },
+                "dbSize": {
+                    "type": "integer"
+                },
+                "disablePasswordLogin": {
+                    "description": "Disable password login.",
+                    "type": "boolean"
+                },
+                "disablePublicMemos": {
+                    "description": "Disable public memos.",
+                    "type": "boolean"
+                },
+                "host": {
+                    "$ref": "#/definitions/api_v1.User"
+                },
+                "localStoragePath": {
+                    "description": "Local storage path.",
+                    "type": "string"
+                },
+                "maxUploadSizeMiB": {
+                    "description": "Max upload size.",
+                    "type": "integer"
+                },
+                "memoDisplayWithUpdatedTs": {
+                    "description": "Memo display with updated timestamp.",
+                    "type": "boolean"
+                },
+                "profile": {
+                    "$ref": "#/definitions/profile.Profile"
+                },
+                "storageServiceId": {
+                    "description": "Storage service ID.",
+                    "type": "integer"
+                }
+            }
+        },
+        "api_v1.UpdateIdentityProviderRequest": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/api_v1.IdentityProviderConfig"
+                },
+                "identifierFilter": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/api_v1.IdentityProviderType"
+                }
+            }
+        },
+        "api_v1.UpdateResourceRequest": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.UpdateStorageRequest": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/api_v1.StorageConfig"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/api_v1.StorageType"
+                }
+            }
+        },
+        "api_v1.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "rowStatus": {
+                    "$ref": "#/definitions/api_v1.RowStatus"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.UpsertMemoOrganizerRequest": {
+            "type": "object",
+            "properties": {
+                "pinned": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "api_v1.UpsertMemoRelationRequest": {
+            "type": "object",
+            "properties": {
+                "relatedMemoId": {
+                    "type": "integer"
+                },
+                "type": {
+                    "$ref": "#/definitions/api_v1.MemoRelationType"
+                }
+            }
+        },
+        "api_v1.UpsertSystemSettingRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "$ref": "#/definitions/api_v1.SystemSettingName"
                 },
                 "value": {
                     "type": "string"
                 }
             }
         },
+        "api_v1.UpsertTagRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.User": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "createdTs": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/api_v1.Role"
+                },
+                "rowStatus": {
+                    "description": "Standard fields",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/api_v1.RowStatus"
+                        }
+                    ]
+                },
+                "updatedTs": {
+                    "type": "integer"
+                },
+                "username": {
+                    "description": "Domain specific fields",
+                    "type": "string"
+                }
+            }
+        },
+        "api_v1.Visibility": {
+            "type": "string",
+            "enum": [
+                "PUBLIC",
+                "PROTECTED",
+                "PRIVATE"
+            ],
+            "x-enum-varnames": [
+                "Public",
+                "Protected",
+                "Private"
+            ]
+        },
+        "github_com_usememos_memos_api_v1.CreateIdentityProviderRequest": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProviderConfig"
+                },
+                "identifierFilter": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProviderType"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.CreateMemoRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "type": "string"
+                },
+                "createdTs": {
+                    "type": "integer"
+                },
+                "relationList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertMemoRelationRequest"
+                    }
+                },
+                "resourceIdList": {
+                    "description": "Related fields",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "visibility": {
+                    "description": "Domain specific fields",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.Visibility"
+                        }
+                    ]
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.CreateResourceRequest": {
+            "type": "object",
+            "properties": {
+                "externalLink": {
+                    "type": "string"
+                },
+                "filename": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.CreateStorageRequest": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.StorageConfig"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.StorageType"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.CreateUserRequest": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.Role"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.CustomizedProfile": {
+            "type": "object",
+            "properties": {
+                "appearance": {
+                    "description": "Appearance is the server default appearance.",
+                    "type": "string"
+                },
+                "description": {
+                    "description": "Description is the server description.",
+                    "type": "string"
+                },
+                "externalUrl": {
+                    "description": "ExternalURL is the external url of server. e.g. https://usermemos.com",
+                    "type": "string"
+                },
+                "locale": {
+                    "description": "Locale is the server default locale.",
+                    "type": "string"
+                },
+                "logoUrl": {
+                    "description": "LogoURL is the url of logo image.",
+                    "type": "string"
+                },
+                "name": {
+                    "description": "Name is the server name, default is ` + "`" + `memos` + "`" + `",
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.DeleteTagRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.FieldMapping": {
+            "type": "object",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "identifier": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.IdentityProvider": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProviderConfig"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "identifierFilter": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProviderType"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.IdentityProviderConfig": {
+            "type": "object",
+            "properties": {
+                "oauth2Config": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProviderOAuth2Config"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.IdentityProviderOAuth2Config": {
+            "type": "object",
+            "properties": {
+                "authUrl": {
+                    "type": "string"
+                },
+                "clientId": {
+                    "type": "string"
+                },
+                "clientSecret": {
+                    "type": "string"
+                },
+                "fieldMapping": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.FieldMapping"
+                },
+                "scopes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "tokenUrl": {
+                    "type": "string"
+                },
+                "userInfoUrl": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.IdentityProviderType": {
+            "type": "string",
+            "enum": [
+                "OAUTH2"
+            ],
+            "x-enum-varnames": [
+                "IdentityProviderOAuth2Type"
+            ]
+        },
+        "github_com_usememos_memos_api_v1.MemoRelationType": {
+            "type": "string",
+            "enum": [
+                "REFERENCE",
+                "COMMENT"
+            ],
+            "x-enum-varnames": [
+                "MemoRelationReference",
+                "MemoRelationComment"
+            ]
+        },
+        "github_com_usememos_memos_api_v1.PatchMemoRequest": {
+            "type": "object",
+            "properties": {
+                "content": {
+                    "description": "Domain specific fields",
+                    "type": "string"
+                },
+                "createdTs": {
+                    "description": "Standard fields",
+                    "type": "integer"
+                },
+                "relationList": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertMemoRelationRequest"
+                    }
+                },
+                "resourceIdList": {
+                    "description": "Related fields",
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
+                "rowStatus": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.RowStatus"
+                },
+                "updatedTs": {
+                    "type": "integer"
+                },
+                "visibility": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.Visibility"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.Role": {
+            "type": "string",
+            "enum": [
+                "HOST",
+                "ADMIN",
+                "USER"
+            ],
+            "x-enum-varnames": [
+                "RoleHost",
+                "RoleAdmin",
+                "RoleUser"
+            ]
+        },
+        "github_com_usememos_memos_api_v1.RowStatus": {
+            "type": "string",
+            "enum": [
+                "NORMAL",
+                "ARCHIVED"
+            ],
+            "x-enum-varnames": [
+                "Normal",
+                "Archived"
+            ]
+        },
+        "github_com_usememos_memos_api_v1.SSOSignIn": {
+            "type": "object",
+            "properties": {
+                "code": {
+                    "type": "string"
+                },
+                "identityProviderId": {
+                    "type": "integer"
+                },
+                "redirectUri": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.SignIn": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "remember": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.SignUp": {
+            "type": "object",
+            "properties": {
+                "password": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.StorageConfig": {
+            "type": "object",
+            "properties": {
+                "s3Config": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.StorageS3Config"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.StorageS3Config": {
+            "type": "object",
+            "properties": {
+                "accessKey": {
+                    "type": "string"
+                },
+                "bucket": {
+                    "type": "string"
+                },
+                "endPoint": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "region": {
+                    "type": "string"
+                },
+                "secretKey": {
+                    "type": "string"
+                },
+                "urlPrefix": {
+                    "type": "string"
+                },
+                "urlSuffix": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.StorageType": {
+            "type": "string",
+            "enum": [
+                "S3"
+            ],
+            "x-enum-varnames": [
+                "StorageS3"
+            ]
+        },
+        "github_com_usememos_memos_api_v1.SystemSetting": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemSettingName"
+                },
+                "value": {
+                    "description": "Value is a JSON string with basic value.",
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.SystemSettingName": {
+            "type": "string",
+            "enum": [
+                "server-id",
+                "secret-session",
+                "allow-signup",
+                "disable-password-login",
+                "disable-public-memos",
+                "max-upload-size-mib",
+                "additional-style",
+                "additional-script",
+                "customized-profile",
+                "storage-service-id",
+                "local-storage-path",
+                "telegram-bot-token",
+                "memo-display-with-updated-ts",
+                "instance-url"
+            ],
+            "x-enum-varnames": [
+                "SystemSettingServerIDName",
+                "SystemSettingSecretSessionName",
+                "SystemSettingAllowSignUpName",
+                "SystemSettingDisablePasswordLoginName",
+                "SystemSettingDisablePublicMemosName",
+                "SystemSettingMaxUploadSizeMiBName",
+                "SystemSettingAdditionalStyleName",
+                "SystemSettingAdditionalScriptName",
+                "SystemSettingCustomizedProfileName",
+                "SystemSettingStorageServiceIDName",
+                "SystemSettingLocalStoragePathName",
+                "SystemSettingTelegramBotTokenName",
+                "SystemSettingMemoDisplayWithUpdatedTsName",
+                "SystemSettingInstanceURLName"
+            ]
+        },
+        "github_com_usememos_memos_api_v1.SystemStatus": {
+            "type": "object",
+            "properties": {
+                "additionalScript": {
+                    "description": "Additional script.",
+                    "type": "string"
+                },
+                "additionalStyle": {
+                    "description": "Additional style.",
+                    "type": "string"
+                },
+                "allowSignUp": {
+                    "description": "System settings\nAllow sign up.",
+                    "type": "boolean"
+                },
+                "customizedProfile": {
+                    "description": "Customized server profile, including server name and external url.",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CustomizedProfile"
+                        }
+                    ]
+                },
+                "dbSize": {
+                    "type": "integer"
+                },
+                "disablePasswordLogin": {
+                    "description": "Disable password login.",
+                    "type": "boolean"
+                },
+                "disablePublicMemos": {
+                    "description": "Disable public memos.",
+                    "type": "boolean"
+                },
+                "host": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.User"
+                },
+                "localStoragePath": {
+                    "description": "Local storage path.",
+                    "type": "string"
+                },
+                "maxUploadSizeMiB": {
+                    "description": "Max upload size.",
+                    "type": "integer"
+                },
+                "memoDisplayWithUpdatedTs": {
+                    "description": "Memo display with updated timestamp.",
+                    "type": "boolean"
+                },
+                "profile": {
+                    "$ref": "#/definitions/profile.Profile"
+                },
+                "storageServiceId": {
+                    "description": "Storage service ID.",
+                    "type": "integer"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.UpdateIdentityProviderRequest": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProviderConfig"
+                },
+                "identifierFilter": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProviderType"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.UpdateResourceRequest": {
+            "type": "object",
+            "properties": {
+                "filename": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.UpdateStorageRequest": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.StorageConfig"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.StorageType"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.UpdateUserRequest": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "rowStatus": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.RowStatus"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.UpsertMemoOrganizerRequest": {
+            "type": "object",
+            "properties": {
+                "pinned": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.UpsertMemoRelationRequest": {
+            "type": "object",
+            "properties": {
+                "relatedMemoId": {
+                    "type": "integer"
+                },
+                "type": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.MemoRelationType"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.UpsertSystemSettingRequest": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemSettingName"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.UpsertTagRequest": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.User": {
+            "type": "object",
+            "properties": {
+                "avatarUrl": {
+                    "type": "string"
+                },
+                "createdTs": {
+                    "type": "integer"
+                },
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "nickname": {
+                    "type": "string"
+                },
+                "role": {
+                    "$ref": "#/definitions/github_com_usememos_memos_api_v1.Role"
+                },
+                "rowStatus": {
+                    "description": "Standard fields",
+                    "allOf": [
+                        {
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.RowStatus"
+                        }
+                    ]
+                },
+                "updatedTs": {
+                    "type": "integer"
+                },
+                "username": {
+                    "description": "Domain specific fields",
+                    "type": "string"
+                }
+            }
+        },
+        "github_com_usememos_memos_api_v1.Visibility": {
+            "type": "string",
+            "enum": [
+                "PUBLIC",
+                "PROTECTED",
+                "PRIVATE"
+            ],
+            "x-enum-varnames": [
+                "Public",
+                "Protected",
+                "Private"
+            ]
+        },
         "profile.Profile": {
             "type": "object",
             "properties": {
-                "driver": {
-                    "description": "Driver is the database driver\nsqlite, mysql",
-                    "type": "string"
-                },
-                "dsn": {
-                    "description": "DSN points to where Memos stores its own data",
-                    "type": "string"
-                },
                 "mode": {
                     "description": "Mode can be \"prod\" or \"dev\" or \"demo\"",
                     "type": "string"
@@ -2099,24 +3253,9 @@ const docTemplate = `{
                 "id": {
                     "type": "integer"
                 },
-                "parentID": {
-                    "description": "Composed fields\nFor those comment memos, the parent ID is the memo ID of the memo being commented.\nIf the parent ID is nil, then this memo is not a comment.",
-                    "type": "integer"
-                },
                 "pinned": {
+                    "description": "Composed fields",
                     "type": "boolean"
-                },
-                "relationList": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/store.MemoRelation"
-                    }
-                },
-                "resourceIDList": {
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
                 },
                 "rowStatus": {
                     "description": "Standard fields",
@@ -2299,684 +3438,6 @@ const docTemplate = `{
             }
         },
         "store.Visibility": {
-            "type": "string",
-            "enum": [
-                "PUBLIC",
-                "PROTECTED",
-                "PRIVATE"
-            ],
-            "x-enum-varnames": [
-                "Public",
-                "Protected",
-                "Private"
-            ]
-        },
-        "v1.CreateIdentityProviderRequest": {
-            "type": "object",
-            "properties": {
-                "config": {
-                    "$ref": "#/definitions/v1.IdentityProviderConfig"
-                },
-                "identifierFilter": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/v1.IdentityProviderType"
-                }
-            }
-        },
-        "v1.CreateMemoRequest": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "type": "string"
-                },
-                "createdTs": {
-                    "type": "integer"
-                },
-                "relationList": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.UpsertMemoRelationRequest"
-                    }
-                },
-                "resourceIdList": {
-                    "description": "Related fields",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "visibility": {
-                    "description": "Domain specific fields",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.Visibility"
-                        }
-                    ]
-                }
-            }
-        },
-        "v1.CreateResourceRequest": {
-            "type": "object",
-            "properties": {
-                "externalLink": {
-                    "type": "string"
-                },
-                "filename": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.CreateStorageRequest": {
-            "type": "object",
-            "properties": {
-                "config": {
-                    "$ref": "#/definitions/v1.StorageConfig"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/v1.StorageType"
-                }
-            }
-        },
-        "v1.CreateUserRequest": {
-            "type": "object",
-            "properties": {
-                "email": {
-                    "type": "string"
-                },
-                "nickname": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/v1.Role"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.CustomizedProfile": {
-            "type": "object",
-            "properties": {
-                "appearance": {
-                    "description": "Appearance is the server default appearance.",
-                    "type": "string"
-                },
-                "description": {
-                    "description": "Description is the server description.",
-                    "type": "string"
-                },
-                "externalUrl": {
-                    "description": "ExternalURL is the external url of server. e.g. https://usermemos.com",
-                    "type": "string"
-                },
-                "locale": {
-                    "description": "Locale is the server default locale.",
-                    "type": "string"
-                },
-                "logoUrl": {
-                    "description": "LogoURL is the url of logo image.",
-                    "type": "string"
-                },
-                "name": {
-                    "description": "Name is the server name, default is ` + "`" + `memos` + "`" + `",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.DeleteTagRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.FieldMapping": {
-            "type": "object",
-            "properties": {
-                "displayName": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "identifier": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.IdentityProvider": {
-            "type": "object",
-            "properties": {
-                "config": {
-                    "$ref": "#/definitions/v1.IdentityProviderConfig"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "identifierFilter": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/v1.IdentityProviderType"
-                }
-            }
-        },
-        "v1.IdentityProviderConfig": {
-            "type": "object",
-            "properties": {
-                "oauth2Config": {
-                    "$ref": "#/definitions/v1.IdentityProviderOAuth2Config"
-                }
-            }
-        },
-        "v1.IdentityProviderOAuth2Config": {
-            "type": "object",
-            "properties": {
-                "authUrl": {
-                    "type": "string"
-                },
-                "clientId": {
-                    "type": "string"
-                },
-                "clientSecret": {
-                    "type": "string"
-                },
-                "fieldMapping": {
-                    "$ref": "#/definitions/v1.FieldMapping"
-                },
-                "scopes": {
-                    "type": "array",
-                    "items": {
-                        "type": "string"
-                    }
-                },
-                "tokenUrl": {
-                    "type": "string"
-                },
-                "userInfoUrl": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.IdentityProviderType": {
-            "type": "string",
-            "enum": [
-                "OAUTH2"
-            ],
-            "x-enum-varnames": [
-                "IdentityProviderOAuth2Type"
-            ]
-        },
-        "v1.MemoRelationType": {
-            "type": "string",
-            "enum": [
-                "REFERENCE",
-                "ADDITIONAL"
-            ],
-            "x-enum-varnames": [
-                "MemoRelationReference",
-                "MemoRelationAdditional"
-            ]
-        },
-        "v1.PatchMemoRequest": {
-            "type": "object",
-            "properties": {
-                "content": {
-                    "description": "Domain specific fields",
-                    "type": "string"
-                },
-                "createdTs": {
-                    "description": "Standard fields",
-                    "type": "integer"
-                },
-                "relationList": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.UpsertMemoRelationRequest"
-                    }
-                },
-                "resourceIdList": {
-                    "description": "Related fields",
-                    "type": "array",
-                    "items": {
-                        "type": "integer"
-                    }
-                },
-                "rowStatus": {
-                    "$ref": "#/definitions/v1.RowStatus"
-                },
-                "updatedTs": {
-                    "type": "integer"
-                },
-                "visibility": {
-                    "$ref": "#/definitions/v1.Visibility"
-                }
-            }
-        },
-        "v1.Role": {
-            "type": "string",
-            "enum": [
-                "HOST",
-                "ADMIN",
-                "USER"
-            ],
-            "x-enum-varnames": [
-                "RoleHost",
-                "RoleAdmin",
-                "RoleUser"
-            ]
-        },
-        "v1.RowStatus": {
-            "type": "string",
-            "enum": [
-                "NORMAL",
-                "ARCHIVED"
-            ],
-            "x-enum-varnames": [
-                "Normal",
-                "Archived"
-            ]
-        },
-        "v1.SSOSignIn": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "string"
-                },
-                "identityProviderId": {
-                    "type": "integer"
-                },
-                "redirectUri": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.SignIn": {
-            "type": "object",
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.SignUp": {
-            "type": "object",
-            "properties": {
-                "password": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.StorageConfig": {
-            "type": "object",
-            "properties": {
-                "s3Config": {
-                    "$ref": "#/definitions/v1.StorageS3Config"
-                }
-            }
-        },
-        "v1.StorageS3Config": {
-            "type": "object",
-            "properties": {
-                "accessKey": {
-                    "type": "string"
-                },
-                "bucket": {
-                    "type": "string"
-                },
-                "endPoint": {
-                    "type": "string"
-                },
-                "path": {
-                    "type": "string"
-                },
-                "region": {
-                    "type": "string"
-                },
-                "secretKey": {
-                    "type": "string"
-                },
-                "urlPrefix": {
-                    "type": "string"
-                },
-                "urlSuffix": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.StorageType": {
-            "type": "string",
-            "enum": [
-                "S3"
-            ],
-            "x-enum-varnames": [
-                "StorageS3"
-            ]
-        },
-        "v1.SystemSetting": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "$ref": "#/definitions/v1.SystemSettingName"
-                },
-                "value": {
-                    "description": "Value is a JSON string with basic value.",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.SystemSettingName": {
-            "type": "string",
-            "enum": [
-                "server-id",
-                "secret-session",
-                "allow-signup",
-                "disable-password-login",
-                "disable-public-memos",
-                "max-upload-size-mib",
-                "additional-style",
-                "additional-script",
-                "customized-profile",
-                "storage-service-id",
-                "local-storage-path",
-                "telegram-bot-token",
-                "memo-display-with-updated-ts",
-                "auto-backup-interval"
-            ],
-            "x-enum-varnames": [
-                "SystemSettingServerIDName",
-                "SystemSettingSecretSessionName",
-                "SystemSettingAllowSignUpName",
-                "SystemSettingDisablePasswordLoginName",
-                "SystemSettingDisablePublicMemosName",
-                "SystemSettingMaxUploadSizeMiBName",
-                "SystemSettingAdditionalStyleName",
-                "SystemSettingAdditionalScriptName",
-                "SystemSettingCustomizedProfileName",
-                "SystemSettingStorageServiceIDName",
-                "SystemSettingLocalStoragePathName",
-                "SystemSettingTelegramBotTokenName",
-                "SystemSettingMemoDisplayWithUpdatedTsName",
-                "SystemSettingAutoBackupIntervalName"
-            ]
-        },
-        "v1.SystemStatus": {
-            "type": "object",
-            "properties": {
-                "additionalScript": {
-                    "description": "Additional script.",
-                    "type": "string"
-                },
-                "additionalStyle": {
-                    "description": "Additional style.",
-                    "type": "string"
-                },
-                "allowSignUp": {
-                    "description": "System settings\nAllow sign up.",
-                    "type": "boolean"
-                },
-                "autoBackupInterval": {
-                    "description": "Auto Backup Interval.",
-                    "type": "integer"
-                },
-                "customizedProfile": {
-                    "description": "Customized server profile, including server name and external url.",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.CustomizedProfile"
-                        }
-                    ]
-                },
-                "dbSize": {
-                    "type": "integer"
-                },
-                "disablePasswordLogin": {
-                    "description": "Disable password login.",
-                    "type": "boolean"
-                },
-                "disablePublicMemos": {
-                    "description": "Disable public memos.",
-                    "type": "boolean"
-                },
-                "host": {
-                    "$ref": "#/definitions/v1.User"
-                },
-                "localStoragePath": {
-                    "description": "Local storage path.",
-                    "type": "string"
-                },
-                "maxUploadSizeMiB": {
-                    "description": "Max upload size.",
-                    "type": "integer"
-                },
-                "memoDisplayWithUpdatedTs": {
-                    "description": "Memo display with updated timestamp.",
-                    "type": "boolean"
-                },
-                "profile": {
-                    "$ref": "#/definitions/profile.Profile"
-                },
-                "storageServiceId": {
-                    "description": "Storage service ID.",
-                    "type": "integer"
-                }
-            }
-        },
-        "v1.UpdateIdentityProviderRequest": {
-            "type": "object",
-            "properties": {
-                "config": {
-                    "$ref": "#/definitions/v1.IdentityProviderConfig"
-                },
-                "identifierFilter": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/v1.IdentityProviderType"
-                }
-            }
-        },
-        "v1.UpdateResourceRequest": {
-            "type": "object",
-            "properties": {
-                "filename": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpdateStorageRequest": {
-            "type": "object",
-            "properties": {
-                "config": {
-                    "$ref": "#/definitions/v1.StorageConfig"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "type": {
-                    "$ref": "#/definitions/v1.StorageType"
-                }
-            }
-        },
-        "v1.UpdateUserRequest": {
-            "type": "object",
-            "properties": {
-                "avatarUrl": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "nickname": {
-                    "type": "string"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "rowStatus": {
-                    "$ref": "#/definitions/v1.RowStatus"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpsertMemoOrganizerRequest": {
-            "type": "object",
-            "properties": {
-                "pinned": {
-                    "type": "boolean"
-                }
-            }
-        },
-        "v1.UpsertMemoRelationRequest": {
-            "type": "object",
-            "properties": {
-                "relatedMemoId": {
-                    "type": "integer"
-                },
-                "type": {
-                    "$ref": "#/definitions/v1.MemoRelationType"
-                }
-            }
-        },
-        "v1.UpsertSystemSettingRequest": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "name": {
-                    "$ref": "#/definitions/v1.SystemSettingName"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpsertTagRequest": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UpsertUserSettingRequest": {
-            "type": "object",
-            "properties": {
-                "key": {
-                    "$ref": "#/definitions/v1.UserSettingKey"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.User": {
-            "type": "object",
-            "properties": {
-                "avatarUrl": {
-                    "type": "string"
-                },
-                "createdTs": {
-                    "type": "integer"
-                },
-                "email": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "nickname": {
-                    "type": "string"
-                },
-                "role": {
-                    "$ref": "#/definitions/v1.Role"
-                },
-                "rowStatus": {
-                    "description": "Standard fields",
-                    "allOf": [
-                        {
-                            "$ref": "#/definitions/v1.RowStatus"
-                        }
-                    ]
-                },
-                "updatedTs": {
-                    "type": "integer"
-                },
-                "userSettingList": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/v1.UserSetting"
-                    }
-                },
-                "username": {
-                    "description": "Domain specific fields",
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UserSetting": {
-            "type": "object",
-            "properties": {
-                "key": {
-                    "$ref": "#/definitions/v1.UserSettingKey"
-                },
-                "userId": {
-                    "type": "integer"
-                },
-                "value": {
-                    "type": "string"
-                }
-            }
-        },
-        "v1.UserSettingKey": {
-            "type": "string",
-            "enum": [
-                "locale",
-                "appearance",
-                "memo-visibility",
-                "telegram-user-id"
-            ],
-            "x-enum-varnames": [
-                "UserSettingLocaleKey",
-                "UserSettingAppearanceKey",
-                "UserSettingMemoVisibilityKey",
-                "UserSettingTelegramUserIDKey"
-            ]
-        },
-        "v1.Visibility": {
             "type": "string",
             "enum": [
                 "PUBLIC",
