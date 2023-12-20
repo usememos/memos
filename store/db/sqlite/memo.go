@@ -152,11 +152,7 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 	}
 	args = append(args, update.ID)
 
-	stmt := `
-		UPDATE memo
-		SET ` + strings.Join(set, ", ") + `
-		WHERE id = ?
-	`
+	stmt := `UPDATE memo SET ` + strings.Join(set, ", ") + ` WHERE id = ?`
 	if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
 		return err
 	}

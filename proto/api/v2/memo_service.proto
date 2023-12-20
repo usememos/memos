@@ -6,13 +6,17 @@ import "api/v2/common.proto";
 import "api/v2/markdown_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
 option go_package = "gen/api/v2";
 
 service MemoService {
   rpc CreateMemo(CreateMemoRequest) returns (CreateMemoResponse) {
-    option (google.api.http) = {post: "/api/v2/memos"};
+    option (google.api.http) = {
+      post: "/api/v2/memos"
+      body: "*"
+    };
   }
 
   rpc ListMemos(ListMemosRequest) returns (ListMemosResponse) {
@@ -21,6 +25,19 @@ service MemoService {
 
   rpc GetMemo(GetMemoRequest) returns (GetMemoResponse) {
     option (google.api.http) = {get: "/api/v2/memos/{id}"};
+    option (google.api.method_signature) = "id";
+  }
+
+  rpc UpdateMemo(UpdateMemoRequest) returns (UpdateMemoResponse) {
+    option (google.api.http) = {
+      patch: "/api/v2/memos/{id}"
+      body: "*"
+    };
+    option (google.api.method_signature) = "id, update_mask";
+  }
+
+  rpc DeleteMemo(DeleteMemoRequest) returns (DeleteMemoResponse) {
+    option (google.api.http) = {delete: "/api/v2/memos/{id}"};
     option (google.api.method_signature) = "id";
   }
 
@@ -97,6 +114,24 @@ message GetMemoRequest {
 message GetMemoResponse {
   Memo memo = 1;
 }
+
+message UpdateMemoRequest {
+  int32 id = 1;
+
+  Memo memo = 2;
+
+  google.protobuf.FieldMask update_mask = 3;
+}
+
+message UpdateMemoResponse {
+  Memo memo = 1;
+}
+
+message DeleteMemoRequest {
+  int32 id = 1;
+}
+
+message DeleteMemoResponse {}
 
 message CreateMemoCommentRequest {
   // id is the memo id to create comment for.

@@ -153,6 +153,86 @@ func (s *APIV2Service) GetMemo(ctx context.Context, request *apiv2pb.GetMemoRequ
 	return response, nil
 }
 
+func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMemoRequest) (*apiv2pb.UpdateMemoResponse, error) {
+	if request.UpdateMask == nil || len(request.UpdateMask.Paths) == 0 {
+		return nil, status.Errorf(codes.InvalidArgument, "update mask is required")
+	}
+
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+		ID: &request.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+
+	user, _ := getCurrentUser(ctx, s.Store)
+	if memo.CreatorID != user.ID {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	update := &store.UpdateMemo{
+		ID: request.Id,
+	}
+	for _, path := range request.UpdateMask.Paths {
+		if path == "content" {
+			update.Content = &request.Memo.Content
+		} else if path == "visibility" {
+			visibility := convertVisibilityToStore(request.Memo.Visibility)
+			update.Visibility = &visibility
+		} else if path == "row_status" {
+			rowStatus := convertRowStatusToStore(request.Memo.RowStatus)
+			println("rowStatus", rowStatus)
+			update.RowStatus = &rowStatus
+		}
+	}
+
+	if err = s.Store.UpdateMemo(ctx, update); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to update memo")
+	}
+
+	memo, err = s.Store.GetMemo(ctx, &store.FindMemo{
+		ID: &request.Id,
+	})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get memo")
+	}
+	memoMessage, err := s.convertMemoFromStore(ctx, memo)
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to convert memo")
+	}
+	return &apiv2pb.UpdateMemoResponse{
+		Memo: memoMessage,
+	}, nil
+}
+
+func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMemoRequest) (*apiv2pb.DeleteMemoResponse, error) {
+	memo, err := s.Store.GetMemo(ctx, &store.FindMemo{
+		ID: &request.Id,
+	})
+	if err != nil {
+		return nil, err
+	}
+	if memo == nil {
+		return nil, status.Errorf(codes.NotFound, "memo not found")
+	}
+
+	user, _ := getCurrentUser(ctx, s.Store)
+	if memo.CreatorID != user.ID {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	if err = s.Store.DeleteMemo(ctx, &store.DeleteMemo{
+		ID: request.Id,
+	}); err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to delete memo")
+	}
+
+	return &apiv2pb.DeleteMemoResponse{}, nil
+}
+
 func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.CreateMemoCommentRequest) (*apiv2pb.CreateMemoCommentResponse, error) {
 	// Create the comment memo first.
 	createMemoResponse, err := s.CreateMemo(ctx, request.Create)
@@ -261,6 +341,19 @@ func convertVisibilityFromStore(visibility store.Visibility) apiv2pb.Visibility 
 		return apiv2pb.Visibility_PUBLIC
 	default:
 		return apiv2pb.Visibility_VISIBILITY_UNSPECIFIED
+	}
+}
+
+func convertVisibilityToStore(visibility apiv2pb.Visibility) store.Visibility {
+	switch visibility {
+	case apiv2pb.Visibility_PRIVATE:
+		return store.Private
+	case apiv2pb.Visibility_PROTECTED:
+		return store.Protected
+	case apiv2pb.Visibility_PUBLIC:
+		return store.Public
+	default:
+		return store.Private
 	}
 }
 

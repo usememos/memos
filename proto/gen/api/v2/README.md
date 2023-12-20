@@ -96,6 +96,8 @@
     - [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse)
     - [CreateMemoRequest](#memos-api-v2-CreateMemoRequest)
     - [CreateMemoResponse](#memos-api-v2-CreateMemoResponse)
+    - [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest)
+    - [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse)
     - [GetMemoRequest](#memos-api-v2-GetMemoRequest)
     - [GetMemoResponse](#memos-api-v2-GetMemoResponse)
     - [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest)
@@ -103,6 +105,8 @@
     - [ListMemosRequest](#memos-api-v2-ListMemosRequest)
     - [ListMemosResponse](#memos-api-v2-ListMemosResponse)
     - [Memo](#memos-api-v2-Memo)
+    - [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest)
+    - [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse)
   
     - [Visibility](#memos-api-v2-Visibility)
   
@@ -1380,6 +1384,31 @@
 
 
 
+<a name="memos-api-v2-DeleteMemoRequest"></a>
+
+### DeleteMemoRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-DeleteMemoResponse"></a>
+
+### DeleteMemoResponse
+
+
+
+
+
+
+
 <a name="memos-api-v2-GetMemoRequest"></a>
 
 ### GetMemoRequest
@@ -1495,6 +1524,38 @@
 
 
 
+
+<a name="memos-api-v2-UpdateMemoRequest"></a>
+
+### UpdateMemoRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| memo | [Memo](#memos-api-v2-Memo) |  |  |
+| update_mask | [google.protobuf.FieldMask](#google-protobuf-FieldMask) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-UpdateMemoResponse"></a>
+
+### UpdateMemoResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo | [Memo](#memos-api-v2-Memo) |  |  |
+
+
+
+
+
  
 
 
@@ -1526,6 +1587,8 @@
 | CreateMemo | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) | [CreateMemoResponse](#memos-api-v2-CreateMemoResponse) |  |
 | ListMemos | [ListMemosRequest](#memos-api-v2-ListMemosRequest) | [ListMemosResponse](#memos-api-v2-ListMemosResponse) |  |
 | GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) |  |
+| UpdateMemo | [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest) | [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse) |  |
+| DeleteMemo | [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest) | [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse) |  |
 | CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) |  |
 | ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) |  |
 
