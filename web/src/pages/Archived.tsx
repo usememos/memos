@@ -1,16 +1,23 @@
+import { Tooltip } from "@mui/joy";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import ArchivedMemo from "@/components/ArchivedMemo";
+import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import Empty from "@/components/Empty";
+import Icon from "@/components/Icon";
+import MemoContentV1 from "@/components/MemoContentV1";
 import MobileHeader from "@/components/MobileHeader";
 import { memoServiceClient } from "@/grpcweb";
+import { getDateTimeString } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
+import { useMemoV1Store } from "@/store/v1";
+import { RowStatus } from "@/types/proto/api/v2/common";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 
 const Archived = () => {
   const t = useTranslate();
   const loadingState = useLoading();
+  const memoStore = useMemoV1Store();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
 
   useEffect(() => {
@@ -30,6 +37,36 @@ const Archived = () => {
       });
   }, []);
 
+  const handleDeleteMemoClick = async (memo: Memo) => {
+    showCommonDialog({
+      title: t("memo.delete-memo"),
+      content: t("memo.delete-confirm"),
+      style: "danger",
+      dialogName: "delete-memo-dialog",
+      onConfirm: async () => {
+        await memoStore.deleteMemo(memo);
+        setArchivedMemos((prev) => prev.filter((m) => m.id !== memo.id));
+      },
+    });
+  };
+
+  const handleRestoreMemoClick = async (memo: Memo) => {
+    try {
+      await memoStore.updateMemo(
+        {
+          id: memo.id,
+          rowStatus: RowStatus.ACTIVE,
+        },
+        ["row_status"]
+      );
+      setArchivedMemos((prev) => prev.filter((m) => m.id !== memo.id));
+      toast(t("message.restored-successfully"));
+    } catch (error: any) {
+      console.error(error);
+      toast.error(error.response.data.message);
+    }
+  };
+
   return (
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
@@ -46,7 +83,29 @@ const Archived = () => {
         ) : (
           <div className="w-full flex flex-col justify-start items-start">
             {archivedMemos.map((memo) => (
-              <ArchivedMemo key={`${memo.id}-${memo.updateTime}`} memo={memo} />
+              <div
+                key={memo.id}
+                className="relative flex flex-col justify-start items-start w-full p-4 pt-3 mb-2 bg-white dark:bg-zinc-700 rounded-lg"
+              >
+                <div className="w-full mb-1 flex flex-row justify-between items-center">
+                  <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
+                    <span className="text-sm text-gray-400 select-none">{getDateTimeString(memo.updateTime)}</span>
+                  </div>
+                  <div className="flex flex-row justify-end items-center gap-x-2">
+                    <Tooltip title={t("common.restore")} placement="top">
+                      <button onClick={() => handleRestoreMemoClick(memo)}>
+                        <Icon.ArchiveRestore className="w-4 h-auto cursor-pointer text-gray-500 dark:text-gray-400" />
+                      </button>
+                    </Tooltip>
+                    <Tooltip title={t("common.delete")} placement="top">
+                      <button onClick={() => handleDeleteMemoClick(memo)} className="text-gray-500 dark:text-gray-400">
+                        <Icon.Trash className="w-4 h-auto cursor-pointer" />
+                      </button>
+                    </Tooltip>
+                  </div>
+                </div>
+                <MemoContentV1 content={memo.content} nodes={memo.nodes} />
+              </div>
             ))}
           </div>
         )}

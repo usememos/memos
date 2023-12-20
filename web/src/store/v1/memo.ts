@@ -29,5 +29,31 @@ export const useMemoV1Store = create(
     getMemoById: (id: number) => {
       return get().memoById.get(id);
     },
+    updateMemo: async (update: Partial<Memo>, updateMask: string[]) => {
+      const { memo } = await memoServiceClient.updateMemo({
+        id: update.id!,
+        memo: update,
+        updateMask,
+      });
+      if (!memo) {
+        throw new Error("Memo not found");
+      }
+
+      set((state) => {
+        state.memoById.set(memo.id, memo);
+        return state;
+      });
+
+      return memo;
+    },
+    deleteMemo: async (memo: Memo) => {
+      await memoServiceClient.deleteMemo({
+        id: memo.id,
+      });
+      set((state) => {
+        state.memoById.delete(memo.id);
+        return state;
+      });
+    },
   }))
 );
