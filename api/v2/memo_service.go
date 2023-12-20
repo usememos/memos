@@ -233,6 +233,23 @@ func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMe
 	return &apiv2pb.DeleteMemoResponse{}, nil
 }
 
+func (s *APIV2Service) ListMemoResources(ctx context.Context, request *apiv2pb.ListMemoResourcesRequest) (*apiv2pb.ListMemoResourcesResponse, error) {
+	resources, err := s.Store.ListResources(ctx, &store.FindResource{
+		MemoID: &request.Id,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list resources")
+	}
+
+	response := &apiv2pb.ListMemoResourcesResponse{
+		Resources: []*apiv2pb.Resource{},
+	}
+	for _, resource := range resources {
+		response.Resources = append(response.Resources, s.convertResourceFromStore(ctx, resource))
+	}
+	return response, nil
+}
+
 func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.CreateMemoCommentRequest) (*apiv2pb.CreateMemoCommentResponse, error) {
 	// Create the comment memo first.
 	createMemoResponse, err := s.CreateMemo(ctx, request.Create)
