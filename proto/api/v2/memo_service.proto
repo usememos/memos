@@ -135,7 +135,7 @@ message ListMemosRequest {
   int32 limit = 2;
 
   // Filter is used to filter memos returned in the list.
-  // Format: "creator == users/{username} && visibility == PUBLIC"
+  // Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
   string filter = 3;
 }
 

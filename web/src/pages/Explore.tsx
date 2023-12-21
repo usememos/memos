@@ -1,9 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Empty from "@/components/Empty";
 import MemoFilter from "@/components/MemoFilter";
 import MemoViewV1 from "@/components/MemoViewV1";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
+import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilterStore } from "@/store/module";
 import { useMemoV1Store } from "@/store/v1";
@@ -15,27 +16,37 @@ const Explore = () => {
   const user = useCurrentUser();
   const filterStore = useFilterStore();
   const memoStore = useMemoV1Store();
-  const [memos, setMemos] = useState<Memo[]>([]);
   const [isComplete, setIsComplete] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
+  const memosRef = useRef<Memo[]>([]);
   const { tag: tagQuery, text: textQuery } = filterStore.state;
+  const sortedMemos = memosRef.current.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
 
   useEffect(() => {
+    memosRef.current = [];
     fetchMemos();
   }, [tagQuery, textQuery]);
 
   const fetchMemos = async () => {
     const filters = [`row_status == "NORMAL"`, `visibilities == [${user ? "'PUBLIC', 'PROTECTED'" : "'PUBLIC'"}]`];
-    if (tagQuery) filters.push(`tags == "${tagQuery}"`);
-    if (textQuery) filters.push(`content_search == "${textQuery}"`);
+    const contentSearch: string[] = [];
+    if (tagQuery) {
+      contentSearch.push(`"#${tagQuery}"`);
+    }
+    if (textQuery) {
+      contentSearch.push(`"${textQuery}"`);
+    }
+    if (contentSearch.length > 0) {
+      filters.push(`content_search == [${contentSearch.join(", ")}]`);
+    }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
       limit: DEFAULT_MEMO_LIMIT,
-      offset: memos.length,
+      offset: memosRef.current.length,
       filter: filters.join(" && "),
     });
     setIsRequesting(false);
-    setMemos([...memos, ...data]);
+    memosRef.current = [...memosRef.current, ...data];
     setIsComplete(data.length < DEFAULT_MEMO_LIMIT);
   };
 
@@ -44,7 +55,7 @@ const Explore = () => {
       <MobileHeader />
       <div className="relative w-full h-auto flex flex-col justify-start items-start px-4 sm:px-6">
         <MemoFilter />
-        {memos.map((memo) => (
+        {sortedMemos.map((memo) => (
           <MemoViewV1 key={memo.id} memo={memo} lazyRendering showCreator showParent />
         ))}
 
@@ -54,7 +65,7 @@ const Explore = () => {
           </div>
         )}
         {isComplete ? (
-          memos.length === 0 && (
+          sortedMemos.length === 0 && (
             <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
               <Empty />
               <p className="mt-2 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>

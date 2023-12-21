@@ -56,8 +56,8 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		if err != nil {
 			return nil, status.Errorf(codes.InvalidArgument, "invalid filter: %v", err)
 		}
-		if filter.Visibility != nil {
-			memoFind.VisibilityList = []store.Visibility{*filter.Visibility}
+		if len(filter.ContentSearch) > 0 {
+			memoFind.ContentSearch = filter.ContentSearch
 		}
 		if len(filter.Visibilities) > 0 {
 			memoFind.VisibilityList = filter.Visibilities
@@ -83,12 +83,6 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 				return nil, status.Errorf(codes.NotFound, "user not found")
 			}
 			memoFind.CreatorID = &user.ID
-		}
-		if filter.Tag != nil {
-			memoFind.ContentSearch = append(memoFind.ContentSearch, fmt.Sprintf("#%s", *filter.Tag))
-		}
-		if filter.ContentSearch != nil {
-			memoFind.ContentSearch = append(memoFind.ContentSearch, *filter.ContentSearch)
 		}
 		if filter.RowStatus != nil {
 			memoFind.RowStatus = filter.RowStatus
@@ -198,6 +192,14 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 		} else if path == "created_ts" {
 			createdTs := request.Memo.CreateTime.AsTime().Unix()
 			update.CreatedTs = &createdTs
+		} else if path == "pinned" {
+			if _, err := s.Store.UpsertMemoOrganizer(ctx, &store.MemoOrganizer{
+				MemoID: request.Id,
+				UserID: user.ID,
+				Pinned: request.Memo.Pinned,
+			}); err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to upsert memo organizer")
+			}
 		}
 	}
 
@@ -512,22 +514,20 @@ func convertVisibilityToStore(visibility apiv2pb.Visibility) store.Visibility {
 
 // ListMemosFilterCELAttributes are the CEL attributes for ListMemosFilter.
 var ListMemosFilterCELAttributes = []cel.EnvOption{
-	cel.Variable("visibility", cel.StringType),
 	cel.Variable("visibilities", cel.ListType(cel.StringType)),
 	cel.Variable("created_ts_before", cel.IntType),
 	cel.Variable("created_ts_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
+	cel.Variable("content_search", cel.ListType(cel.StringType)),
 	cel.Variable("row_status", cel.StringType),
 }
 
 type ListMemosFilter struct {
-	Visibility      *store.Visibility
+	ContentSearch   []string
 	Visibilities    []store.Visibility
 	CreatedTsBefore *int64
 	CreatedTsAfter  *int64
 	Creator         *string
-	Tag             *string
-	ContentSearch   *string
 	RowStatus       *store.RowStatus
 }
 
@@ -554,39 +554,30 @@ func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 	if len(callExpr.Args) == 2 {
 		idExpr := callExpr.Args[0].GetIdentExpr()
 		if idExpr != nil {
-			if idExpr.Name == "visibility" {
-				visibility := store.Visibility(callExpr.Args[1].GetConstExpr().GetStringValue())
-				filter.Visibility = &visibility
-			}
-			if idExpr.Name == "visibilities" {
+			if idExpr.Name == "content_search" {
+				contentSearch := []string{}
+				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
+					value := expr.GetConstExpr().GetStringValue()
+					contentSearch = append(contentSearch, value)
+				}
+				filter.ContentSearch = contentSearch
+			} else if idExpr.Name == "visibilities" {
 				visibilities := []store.Visibility{}
 				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
 					value := expr.GetConstExpr().GetStringValue()
 					visibilities = append(visibilities, store.Visibility(value))
 				}
 				filter.Visibilities = visibilities
-			}
-			if idExpr.Name == "created_ts_before" {
+			} else if idExpr.Name == "created_ts_before" {
 				createdTsBefore := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.CreatedTsBefore = &createdTsBefore
-			}
-			if idExpr.Name == "created_ts_after" {
+			} else if idExpr.Name == "created_ts_after" {
 				createdTsAfter := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.CreatedTsAfter = &createdTsAfter
-			}
-			if idExpr.Name == "creator" {
+			} else if idExpr.Name == "creator" {
 				creator := callExpr.Args[1].GetConstExpr().GetStringValue()
 				filter.Creator = &creator
-			}
-			if idExpr.Name == "tag" {
-				tag := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.Tag = &tag
-			}
-			if idExpr.Name == "content_search" {
-				contentSearch := callExpr.Args[1].GetConstExpr().GetStringValue()
-				filter.ContentSearch = &contentSearch
-			}
-			if idExpr.Name == "row_status" {
+			} else if idExpr.Name == "row_status" {
 				rowStatus := store.RowStatus(callExpr.Args[1].GetConstExpr().GetStringValue())
 				filter.RowStatus = &rowStatus
 			}

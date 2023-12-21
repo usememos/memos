@@ -316,7 +316,7 @@ type ListMemosRequest struct {
 	// limit is the maximum number of memos to return.
 	Limit int32 `protobuf:"varint,2,opt,name=limit,proto3" json:"limit,omitempty"`
 	// Filter is used to filter memos returned in the list.
-	// Format: "creator == users/{username} && visibility == PUBLIC"
+	// Format: "creator == users/{username} && visibilities == ['PUBLIC', 'PROTECTED']"
 	Filter string `protobuf:"bytes,3,opt,name=filter,proto3" json:"filter,omitempty"`
 }
 
