@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"path"
 	"strconv"
 	"unicode/utf16"
 
@@ -84,7 +85,7 @@ func (t *TelegramHandler) MessageHandle(ctx context.Context, bot *telegram.Bot, 
 		// Fill the common field of create
 		create := store.Resource{
 			CreatorID: creatorID,
-			Filename:  attachment.FileName,
+			Filename:  path.Base(attachment.FileName),
 			Type:      attachment.GetMimeType(),
 			Size:      attachment.FileSize,
 			MemoID:    &memoMessage.ID,
