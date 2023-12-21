@@ -12,9 +12,9 @@ import (
 )
 
 func (d *DB) CreateResource(ctx context.Context, create *store.Resource) (*store.Resource, error) {
-	fields := []string{"`filename`", "`blob`", "`external_link`", "`type`", "`size`", "`creator_id`", "`internal_path`"}
-	placeholder := []string{"?", "?", "?", "?", "?", "?", "?"}
-	args := []any{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath}
+	fields := []string{"`filename`", "`blob`", "`external_link`", "`type`", "`size`", "`creator_id`", "`internal_path`", "`memo_id`"}
+	placeholder := []string{"?", "?", "?", "?", "?", "?", "?", "?"}
+	args := []any{create.Filename, create.Blob, create.ExternalLink, create.Type, create.Size, create.CreatorID, create.InternalPath, create.MemoID}
 
 	stmt := "INSERT INTO `resource` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
