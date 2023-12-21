@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { useMemoCacheStore } from "@/store/v1";
+import { useMemoV1Store } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
+import { Memo } from "@/types/proto/api/v2/memo_service";
 import Icon from "../Icon";
 
 interface Props {
@@ -10,7 +11,7 @@ interface Props {
 
 const RelationListView = (props: Props) => {
   const { relationList, setRelationList } = props;
-  const memoCacheStore = useMemoCacheStore();
+  const memoStore = useMemoV1Store();
   const [referencingMemoList, setReferencingMemoList] = useState<Memo[]>([]);
 
   useEffect(() => {
@@ -18,7 +19,7 @@ const RelationListView = (props: Props) => {
       const requests = relationList
         .filter((relation) => relation.type === MemoRelation_Type.REFERENCE)
         .map(async (relation) => {
-          return await memoCacheStore.getOrFetchMemoById(relation.relatedMemoId);
+          return await memoStore.getOrFetchMemoById(relation.relatedMemoId);
         });
       const list = await Promise.all(requests);
       setReferencingMemoList(list);

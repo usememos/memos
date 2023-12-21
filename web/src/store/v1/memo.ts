@@ -10,7 +10,7 @@ export const useMemoV1Store = create(
       const { memos } = await memoServiceClient.listMemos(request);
       return memos;
     },
-    getOrFetchMemoById: async (id: MemoId) => {
+    getOrFetchMemoById: async (id: number) => {
       const memo = get().memoById.get(id);
       if (memo) {
         return memo;

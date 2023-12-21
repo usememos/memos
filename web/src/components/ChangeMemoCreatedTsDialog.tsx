@@ -2,26 +2,26 @@ import { Button } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getNormalizedTimeString, getUnixTime } from "@/helpers/datetime";
-import { useMemoStore } from "@/store/module";
+import { useMemoV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
 
 interface Props extends DialogProps {
-  memoId: MemoId;
+  memoId: number;
 }
 
 const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
   const { destroy, memoId } = props;
-  const memoStore = useMemoStore();
+  const memoStore = useMemoV1Store();
   const [createdAt, setCreatedAt] = useState("");
   const maxDatetimeValue = getNormalizedTimeString();
 
   useEffect(() => {
-    memoStore.getMemoById(memoId).then((memo) => {
+    memoStore.getOrFetchMemoById(memoId).then((memo) => {
       if (memo) {
-        const datetime = getNormalizedTimeString(memo.createdTs);
+        const datetime = getNormalizedTimeString(memo.createTime);
         setCreatedAt(datetime);
       } else {
         toast.error(t("message.memo-not-found"));
@@ -41,18 +41,19 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
 
   const handleSaveBtnClick = async () => {
     const nowTs = getUnixTime();
-    const createdTs = getUnixTime(createdAt);
-
-    if (createdTs > nowTs) {
+    if (getUnixTime(createdAt) > nowTs) {
       toast.error(t("message.invalid-created-datetime"));
       return;
     }
 
     try {
-      await memoStore.patchMemo({
-        id: memoId,
-        createdTs,
-      });
+      await memoStore.updateMemo(
+        {
+          id: memoId,
+          createTime: new Date(createdAt),
+        },
+        ["created_ts"]
+      );
       toast.success(t("message.memo-updated-datetime"));
       handleCloseBtnClick();
     } catch (error: any) {
@@ -90,7 +91,7 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   );
 };
 
-function showChangeMemoCreatedTsDialog(memoId: MemoId) {
+function showChangeMemoCreatedTsDialog(memoId: number) {
   generateDialog(
     {
       className: "change-memo-created-ts-dialog",

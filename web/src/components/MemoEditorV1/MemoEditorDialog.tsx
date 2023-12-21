@@ -6,7 +6,7 @@ import { generateDialog } from "../Dialog";
 import Icon from "../Icon";
 
 interface Props extends DialogProps {
-  memoId?: MemoId;
+  memoId?: number;
   relationList?: MemoRelation[];
 }
 

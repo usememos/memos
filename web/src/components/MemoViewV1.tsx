@@ -19,7 +19,7 @@ import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
 import MemoContentV1 from "./MemoContentV1";
-import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
+import showMemoEditorDialog from "./MemoEditorV1/MemoEditorDialog";
 import MemoRelationListViewV1 from "./MemoRelationListViewV1";
 import MemoResourceListView from "./MemoResourceListView";
 import showPreviewImageDialog from "./PreviewImageDialog";
@@ -55,23 +55,6 @@ const MemoViewV1: React.FC<Props> = (props: Props) => {
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referenceRelations = memoRelations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const readonly = memo.creator !== user?.name;
-
-  useEffect(() => {
-    memoStore.fetchMemoResources(memo.id).then((resources: Resource[]) => {
-      setResources(resources);
-    });
-    memoStore.fetchMemoRelations(memo.id).then((relations: MemoRelation[]) => {
-      setMemoRelations(relations);
-      const parentMemoId = relations.find(
-        (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
-      )?.relatedMemoId;
-      if (parentMemoId) {
-        memoStore.getOrFetchMemoById(parentMemoId).then((memo: Memo) => {
-          setParentMemo(memo);
-        });
-      }
-    });
-  }, []);
 
   // Prepare memo creator.
   useEffect(() => {
@@ -112,6 +95,27 @@ const MemoViewV1: React.FC<Props> = (props: Props) => {
 
     return () => observer.disconnect();
   }, [lazyRendering, filterStore.state]);
+
+  useEffect(() => {
+    if (!shouldRender) {
+      return;
+    }
+
+    memoStore.fetchMemoResources(memo.id).then((resources: Resource[]) => {
+      setResources(resources);
+    });
+    memoStore.fetchMemoRelations(memo.id).then((relations: MemoRelation[]) => {
+      setMemoRelations(relations);
+      const parentMemoId = relations.find(
+        (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
+      )?.relatedMemoId;
+      if (parentMemoId) {
+        memoStore.getOrFetchMemoById(parentMemoId).then((memo: Memo) => {
+          setParentMemo(memo);
+        });
+      }
+    });
+  }, [shouldRender]);
 
   if (!shouldRender) {
     // Render a placeholder to occupy the space.
@@ -162,7 +166,7 @@ const MemoViewV1: React.FC<Props> = (props: Props) => {
         {
           memoId: UNKNOWN_ID,
           relatedMemoId: memo.id,
-          type: "REFERENCE",
+          type: MemoRelation_Type.REFERENCE,
         },
       ],
     });

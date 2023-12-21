@@ -1760,8 +1760,8 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| page | [int32](#int32) |  |  |
-| page_size | [int32](#int32) |  |  |
+| offset | [int32](#int32) |  | offset is the offset of the first memo to return. |
+| limit | [int32](#int32) |  | limit is the maximum number of memos to return. |
 | filter | [string](#string) |  | Filter is used to filter memos returned in the list. Format: &#34;creator == users/{username} &amp;&amp; visibility == PUBLIC&#34; |
 
 

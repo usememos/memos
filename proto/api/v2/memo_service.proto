@@ -128,9 +128,11 @@ message CreateMemoResponse {
 }
 
 message ListMemosRequest {
-  int32 page = 1;
+  // offset is the offset of the first memo to return.
+  int32 offset = 1;
 
-  int32 page_size = 2;
+  // limit is the maximum number of memos to return.
+  int32 limit = 2;
 
   // Filter is used to filter memos returned in the list.
   // Format: "creator == users/{username} && visibility == PUBLIC"

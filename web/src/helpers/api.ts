@@ -56,72 +56,8 @@ export function upsertUserSetting(upsert: UserSettingUpsert) {
   return axios.post<UserSetting>(`/api/v1/user/setting`, upsert);
 }
 
-export function getAllMemos(memoFind?: MemoFind) {
-  const queryList = [];
-  if (memoFind?.offset) {
-    queryList.push(`offset=${memoFind.offset}`);
-  }
-  if (memoFind?.limit) {
-    queryList.push(`limit=${memoFind.limit}`);
-  }
-
-  if (memoFind?.creatorUsername) {
-    queryList.push(`creatorUsername=${memoFind.creatorUsername}`);
-  }
-
-  return axios.get<Memo[]>(`/api/v1/memo/all?${queryList.join("&")}`);
-}
-
-export function getMemoList(memoFind?: MemoFind) {
-  const queryList = [];
-  if (memoFind?.creatorUsername) {
-    queryList.push(`creatorUsername=${memoFind.creatorUsername}`);
-  }
-  if (memoFind?.rowStatus) {
-    queryList.push(`rowStatus=${memoFind.rowStatus}`);
-  }
-  if (memoFind?.pinned) {
-    queryList.push(`pinned=${memoFind.pinned}`);
-  }
-  if (memoFind?.offset) {
-    queryList.push(`offset=${memoFind.offset}`);
-  }
-  if (memoFind?.limit) {
-    queryList.push(`limit=${memoFind.limit}`);
-  }
-  return axios.get<Memo[]>(`/api/v1/memo?${queryList.join("&")}`);
-}
-
 export function getMemoStats(username: string) {
   return axios.get<number[]>(`/api/v1/memo/stats?creatorUsername=${username}`);
-}
-
-export function getMemoById(id: MemoId) {
-  return axios.get<Memo>(`/api/v1/memo/${id}`);
-}
-
-export function createMemo(memoCreate: MemoCreate) {
-  return axios.post<Memo>("/api/v1/memo", memoCreate);
-}
-
-export function patchMemo(memoPatch: MemoPatch) {
-  return axios.patch<Memo>(`/api/v1/memo/${memoPatch.id}`, memoPatch);
-}
-
-export function pinMemo(memoId: MemoId) {
-  return axios.post(`/api/v1/memo/${memoId}/organizer`, {
-    pinned: true,
-  });
-}
-
-export function unpinMemo(memoId: MemoId) {
-  return axios.post(`/api/v1/memo/${memoId}/organizer`, {
-    pinned: false,
-  });
-}
-
-export function deleteMemo(memoId: MemoId) {
-  return axios.delete(`/api/v1/memo/${memoId}`);
 }
 
 export function createResource(resourceCreate: ResourceCreate) {

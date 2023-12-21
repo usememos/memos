@@ -5,9 +5,9 @@ import { getDateStampByDate, getDateString, getTimeStampByDate } from "@/helpers
 import * as utils from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useGlobalStore } from "@/store/module";
-import { useUserV1Store, extractUsernameFromName } from "@/store/v1";
+import { useUserV1Store, extractUsernameFromName, useMemoV1Store } from "@/store/v1";
 import { useTranslate, Translations } from "@/utils/i18n";
-import { useFilterStore, useMemoStore } from "../store/module";
+import { useFilterStore } from "../store/module";
 import "@/less/usage-heat-map.less";
 
 const tableConfig = {
@@ -36,7 +36,7 @@ const UsageHeatMap = () => {
   const filterStore = useFilterStore();
   const userV1Store = useUserV1Store();
   const user = useCurrentUser();
-  const memoStore = useMemoStore();
+  const memoStore = useMemoV1Store();
   const todayTimeStamp = getDateStampByDate(Date.now());
   const weekDay = new Date(todayTimeStamp).getDay();
   const weekFromMonday = ["zh-Hans", "ko"].includes(useGlobalStore().state.locale);
@@ -45,12 +45,12 @@ const UsageHeatMap = () => {
   const nullCell = new Array(7 - todayDay).fill(0);
   const usedDaysAmount = (tableConfig.width - 1) * tableConfig.height + todayDay;
   const beginDayTimestamp = todayTimeStamp - usedDaysAmount * DAILY_TIMESTAMP;
-  const memos = memoStore.state.memos;
   const [memoAmount, setMemoAmount] = useState(0);
   const [createdDays, setCreatedDays] = useState(0);
   const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestamp));
   const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
   const containerElRef = useRef<HTMLDivElement>(null);
+  const memos = Array.from(memoStore.getState().memoById.values());
 
   useEffect(() => {
     userV1Store.getOrFetchUserByUsername(extractUsernameFromName(user.name)).then((user) => {

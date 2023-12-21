@@ -59,6 +59,9 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		if filter.Visibility != nil {
 			memoFind.VisibilityList = []store.Visibility{*filter.Visibility}
 		}
+		if len(filter.Visibilities) > 0 {
+			memoFind.VisibilityList = filter.Visibilities
+		}
 		if filter.CreatedTsBefore != nil {
 			memoFind.CreatedTsBefore = filter.CreatedTsBefore
 		}
@@ -81,6 +84,12 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 			}
 			memoFind.CreatorID = &user.ID
 		}
+		if filter.Tag != nil {
+			memoFind.ContentSearch = append(memoFind.ContentSearch, fmt.Sprintf("#%s", *filter.Tag))
+		}
+		if filter.ContentSearch != nil {
+			memoFind.ContentSearch = append(memoFind.ContentSearch, *filter.ContentSearch)
+		}
 		if filter.RowStatus != nil {
 			memoFind.RowStatus = filter.RowStatus
 		}
@@ -95,9 +104,8 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
-	if request.PageSize != 0 {
-		offset := int(request.Page * request.PageSize)
-		limit := int(request.PageSize)
+	if request.Limit != 0 {
+		offset, limit := int(request.Offset), int(request.Limit)
 		memoFind.Offset = &offset
 		memoFind.Limit = &limit
 	}
@@ -187,6 +195,9 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 			rowStatus := convertRowStatusToStore(request.Memo.RowStatus)
 			println("rowStatus", rowStatus)
 			update.RowStatus = &rowStatus
+		} else if path == "created_ts" {
+			createdTs := request.Memo.CreateTime.AsTime().Unix()
+			update.CreatedTs = &createdTs
 		}
 	}
 
@@ -502,6 +513,7 @@ func convertVisibilityToStore(visibility apiv2pb.Visibility) store.Visibility {
 // ListMemosFilterCELAttributes are the CEL attributes for ListMemosFilter.
 var ListMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("visibility", cel.StringType),
+	cel.Variable("visibilities", cel.ListType(cel.StringType)),
 	cel.Variable("created_ts_before", cel.IntType),
 	cel.Variable("created_ts_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
@@ -510,9 +522,12 @@ var ListMemosFilterCELAttributes = []cel.EnvOption{
 
 type ListMemosFilter struct {
 	Visibility      *store.Visibility
+	Visibilities    []store.Visibility
 	CreatedTsBefore *int64
 	CreatedTsAfter  *int64
 	Creator         *string
+	Tag             *string
+	ContentSearch   *string
 	RowStatus       *store.RowStatus
 }
 
@@ -543,6 +558,14 @@ func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 				visibility := store.Visibility(callExpr.Args[1].GetConstExpr().GetStringValue())
 				filter.Visibility = &visibility
 			}
+			if idExpr.Name == "visibilities" {
+				visibilities := []store.Visibility{}
+				for _, expr := range callExpr.Args[1].GetListExpr().GetElements() {
+					value := expr.GetConstExpr().GetStringValue()
+					visibilities = append(visibilities, store.Visibility(value))
+				}
+				filter.Visibilities = visibilities
+			}
 			if idExpr.Name == "created_ts_before" {
 				createdTsBefore := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.CreatedTsBefore = &createdTsBefore
@@ -554,6 +577,14 @@ func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 			if idExpr.Name == "creator" {
 				creator := callExpr.Args[1].GetConstExpr().GetStringValue()
 				filter.Creator = &creator
+			}
+			if idExpr.Name == "tag" {
+				tag := callExpr.Args[1].GetConstExpr().GetStringValue()
+				filter.Tag = &tag
+			}
+			if idExpr.Name == "content_search" {
+				contentSearch := callExpr.Args[1].GetConstExpr().GetStringValue()
+				filter.ContentSearch = &contentSearch
 			}
 			if idExpr.Name == "row_status" {
 				rowStatus := store.RowStatus(callExpr.Args[1].GetConstExpr().GetStringValue())
