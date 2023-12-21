@@ -14,22 +14,23 @@ import "google/protobuf/timestamp.proto";
 option go_package = "gen/api/v2";
 
 service MemoService {
+  // CreateMemo creates a memo.
   rpc CreateMemo(CreateMemoRequest) returns (CreateMemoResponse) {
     option (google.api.http) = {
       post: "/api/v2/memos"
       body: "*"
     };
   }
-
+  // ListMemos lists memos with pagination and filter.
   rpc ListMemos(ListMemosRequest) returns (ListMemosResponse) {
     option (google.api.http) = {get: "/api/v2/memos"};
   }
-
+  // GetMemo gets a memo by id.
   rpc GetMemo(GetMemoRequest) returns (GetMemoResponse) {
     option (google.api.http) = {get: "/api/v2/memos/{id}"};
     option (google.api.method_signature) = "id";
   }
-
+  // UpdateMemo updates a memo.
   rpc UpdateMemo(UpdateMemoRequest) returns (UpdateMemoResponse) {
     option (google.api.http) = {
       patch: "/api/v2/memos/{id}"
@@ -37,12 +38,12 @@ service MemoService {
     };
     option (google.api.method_signature) = "id, update_mask";
   }
-
+  // DeleteMemo deletes a memo by id.
   rpc DeleteMemo(DeleteMemoRequest) returns (DeleteMemoResponse) {
     option (google.api.http) = {delete: "/api/v2/memos/{id}"};
     option (google.api.method_signature) = "id";
   }
-
+  // SetMemoResources sets resources for a memo.
   rpc SetMemoResources(SetMemoResourcesRequest) returns (SetMemoResourcesResponse) {
     option (google.api.http) = {
       post: "/api/v2/memos/{id}/resources"
@@ -50,12 +51,12 @@ service MemoService {
     };
     option (google.api.method_signature) = "id";
   }
-
+  // ListMemoResources lists resources for a memo.
   rpc ListMemoResources(ListMemoResourcesRequest) returns (ListMemoResourcesResponse) {
     option (google.api.http) = {get: "/api/v2/memos/{id}/resources"};
     option (google.api.method_signature) = "id";
   }
-
+  // SetMemoRelations sets relations for a memo.
   rpc SetMemoRelations(SetMemoRelationsRequest) returns (SetMemoRelationsResponse) {
     option (google.api.http) = {
       post: "/api/v2/memos/{id}/relations"
@@ -63,17 +64,17 @@ service MemoService {
     };
     option (google.api.method_signature) = "id";
   }
-
+  // ListMemoRelations lists relations for a memo.
   rpc ListMemoRelations(ListMemoRelationsRequest) returns (ListMemoRelationsResponse) {
     option (google.api.http) = {get: "/api/v2/memos/{id}/relations"};
     option (google.api.method_signature) = "id";
   }
-
+  // CreateMemoComment creates a comment for a memo.
   rpc CreateMemoComment(CreateMemoCommentRequest) returns (CreateMemoCommentResponse) {
     option (google.api.http) = {post: "/api/v2/memos/{id}/comments"};
     option (google.api.method_signature) = "id";
   }
-
+  // ListMemoComments lists comments for a memo.
   rpc ListMemoComments(ListMemoCommentsRequest) returns (ListMemoCommentsResponse) {
     option (google.api.http) = {get: "/api/v2/memos/{id}/comments"};
     option (google.api.method_signature) = "id";
@@ -95,21 +96,25 @@ message Memo {
 
   RowStatus row_status = 2;
 
-  int32 creator_id = 3;
+  // The name of the creator.
+  // Format: users/{username}
+  string creator = 3;
 
-  google.protobuf.Timestamp create_time = 4;
+  int32 creator_id = 4;
 
-  google.protobuf.Timestamp update_time = 5;
+  google.protobuf.Timestamp create_time = 5;
 
-  google.protobuf.Timestamp display_time = 6;
+  google.protobuf.Timestamp update_time = 6;
 
-  string content = 7;
+  google.protobuf.Timestamp display_time = 7;
 
-  repeated Node nodes = 8;
+  string content = 8;
 
-  Visibility visibility = 9;
+  repeated Node nodes = 9;
 
-  bool pinned = 10;
+  Visibility visibility = 10;
+
+  bool pinned = 11;
 }
 
 message CreateMemoRequest {
@@ -128,6 +133,7 @@ message ListMemosRequest {
   int32 page_size = 2;
 
   // Filter is used to filter memos returned in the list.
+  // Format: "creator == users/{username} && visibility == PUBLIC"
   string filter = 3;
 }
 

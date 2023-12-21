@@ -62,12 +62,12 @@ export const useMemoV1Store = create(
 
       return memo;
     },
-    deleteMemo: async (memo: Memo) => {
+    deleteMemo: async (id: number) => {
       await memoServiceClient.deleteMemo({
-        id: memo.id,
+        id: id,
       });
       set((state) => {
-        state.memoById.delete(memo.id);
+        state.memoById.delete(id);
         return state;
       });
     },

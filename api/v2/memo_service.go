@@ -3,6 +3,7 @@ package v2
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/google/cel-go/cel"
@@ -289,7 +290,12 @@ func (s *APIV2Service) ListMemoResources(ctx context.Context, request *apiv2pb.L
 }
 
 func (s *APIV2Service) SetMemoRelations(ctx context.Context, request *apiv2pb.SetMemoRelationsRequest) (*apiv2pb.SetMemoRelationsResponse, error) {
-	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{MemoID: &request.Id}); err != nil {
+	referenceType := store.MemoRelationReference
+	// Delete all reference relations first.
+	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{
+		MemoID: &request.Id,
+		Type:   &referenceType,
+	}); err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to delete memo relation")
 	}
 
@@ -400,13 +406,19 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		displayTs = memo.UpdatedTs
 	}
 
+	creator, err := s.Store.GetUser(ctx, &store.FindUser{ID: &memo.CreatorID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to get creator")
+	}
+
 	return &apiv2pb.Memo{
 		Id:          int32(memo.ID),
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
+		Creator:     fmt.Sprintf("%s%s", UserNamePrefix, creator.Username),
+		CreatorId:   int32(memo.CreatorID),
 		CreateTime:  timestamppb.New(time.Unix(memo.CreatedTs, 0)),
 		UpdateTime:  timestamppb.New(time.Unix(memo.UpdatedTs, 0)),
 		DisplayTime: timestamppb.New(time.Unix(displayTs, 0)),
-		CreatorId:   int32(memo.CreatorID),
 		Content:     memo.Content,
 		Nodes:       convertFromASTNodes(rawNodes),
 		Visibility:  convertVisibilityFromStore(memo.Visibility),

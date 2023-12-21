@@ -36,16 +36,27 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MemoServiceClient interface {
+	// CreateMemo creates a memo.
 	CreateMemo(ctx context.Context, in *CreateMemoRequest, opts ...grpc.CallOption) (*CreateMemoResponse, error)
+	// ListMemos lists memos with pagination and filter.
 	ListMemos(ctx context.Context, in *ListMemosRequest, opts ...grpc.CallOption) (*ListMemosResponse, error)
+	// GetMemo gets a memo by id.
 	GetMemo(ctx context.Context, in *GetMemoRequest, opts ...grpc.CallOption) (*GetMemoResponse, error)
+	// UpdateMemo updates a memo.
 	UpdateMemo(ctx context.Context, in *UpdateMemoRequest, opts ...grpc.CallOption) (*UpdateMemoResponse, error)
+	// DeleteMemo deletes a memo by id.
 	DeleteMemo(ctx context.Context, in *DeleteMemoRequest, opts ...grpc.CallOption) (*DeleteMemoResponse, error)
+	// SetMemoResources sets resources for a memo.
 	SetMemoResources(ctx context.Context, in *SetMemoResourcesRequest, opts ...grpc.CallOption) (*SetMemoResourcesResponse, error)
+	// ListMemoResources lists resources for a memo.
 	ListMemoResources(ctx context.Context, in *ListMemoResourcesRequest, opts ...grpc.CallOption) (*ListMemoResourcesResponse, error)
+	// SetMemoRelations sets relations for a memo.
 	SetMemoRelations(ctx context.Context, in *SetMemoRelationsRequest, opts ...grpc.CallOption) (*SetMemoRelationsResponse, error)
+	// ListMemoRelations lists relations for a memo.
 	ListMemoRelations(ctx context.Context, in *ListMemoRelationsRequest, opts ...grpc.CallOption) (*ListMemoRelationsResponse, error)
+	// CreateMemoComment creates a comment for a memo.
 	CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*CreateMemoCommentResponse, error)
+	// ListMemoComments lists comments for a memo.
 	ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error)
 }
 
@@ -160,16 +171,27 @@ func (c *memoServiceClient) ListMemoComments(ctx context.Context, in *ListMemoCo
 // All implementations must embed UnimplementedMemoServiceServer
 // for forward compatibility
 type MemoServiceServer interface {
+	// CreateMemo creates a memo.
 	CreateMemo(context.Context, *CreateMemoRequest) (*CreateMemoResponse, error)
+	// ListMemos lists memos with pagination and filter.
 	ListMemos(context.Context, *ListMemosRequest) (*ListMemosResponse, error)
+	// GetMemo gets a memo by id.
 	GetMemo(context.Context, *GetMemoRequest) (*GetMemoResponse, error)
+	// UpdateMemo updates a memo.
 	UpdateMemo(context.Context, *UpdateMemoRequest) (*UpdateMemoResponse, error)
+	// DeleteMemo deletes a memo by id.
 	DeleteMemo(context.Context, *DeleteMemoRequest) (*DeleteMemoResponse, error)
+	// SetMemoResources sets resources for a memo.
 	SetMemoResources(context.Context, *SetMemoResourcesRequest) (*SetMemoResourcesResponse, error)
+	// ListMemoResources lists resources for a memo.
 	ListMemoResources(context.Context, *ListMemoResourcesRequest) (*ListMemoResourcesResponse, error)
+	// SetMemoRelations sets relations for a memo.
 	SetMemoRelations(context.Context, *SetMemoRelationsRequest) (*SetMemoRelationsResponse, error)
+	// ListMemoRelations lists relations for a memo.
 	ListMemoRelations(context.Context, *ListMemoRelationsRequest) (*ListMemoRelationsResponse, error)
+	// CreateMemoComment creates a comment for a memo.
 	CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*CreateMemoCommentResponse, error)
+	// ListMemoComments lists comments for a memo.
 	ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error)
 	mustEmbedUnimplementedMemoServiceServer()
 }

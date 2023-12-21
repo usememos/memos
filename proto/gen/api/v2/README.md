@@ -1762,7 +1762,7 @@
 | ----- | ---- | ----- | ----------- |
 | page | [int32](#int32) |  |  |
 | page_size | [int32](#int32) |  |  |
-| filter | [string](#string) |  | Filter is used to filter memos returned in the list. |
+| filter | [string](#string) |  | Filter is used to filter memos returned in the list. Format: &#34;creator == users/{username} &amp;&amp; visibility == PUBLIC&#34; |
 
 
 
@@ -1794,6 +1794,7 @@
 | ----- | ---- | ----- | ----------- |
 | id | [int32](#int32) |  |  |
 | row_status | [RowStatus](#memos-api-v2-RowStatus) |  |  |
+| creator | [string](#string) |  | The name of the creator. Format: users/{username} |
 | creator_id | [int32](#int32) |  |  |
 | create_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
 | update_time | [google.protobuf.Timestamp](#google-protobuf-Timestamp) |  |  |
@@ -1919,17 +1920,17 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
-| CreateMemo | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) | [CreateMemoResponse](#memos-api-v2-CreateMemoResponse) |  |
-| ListMemos | [ListMemosRequest](#memos-api-v2-ListMemosRequest) | [ListMemosResponse](#memos-api-v2-ListMemosResponse) |  |
-| GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) |  |
-| UpdateMemo | [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest) | [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse) |  |
-| DeleteMemo | [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest) | [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse) |  |
-| SetMemoResources | [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest) | [SetMemoResourcesResponse](#memos-api-v2-SetMemoResourcesResponse) |  |
-| ListMemoResources | [ListMemoResourcesRequest](#memos-api-v2-ListMemoResourcesRequest) | [ListMemoResourcesResponse](#memos-api-v2-ListMemoResourcesResponse) |  |
-| SetMemoRelations | [SetMemoRelationsRequest](#memos-api-v2-SetMemoRelationsRequest) | [SetMemoRelationsResponse](#memos-api-v2-SetMemoRelationsResponse) |  |
-| ListMemoRelations | [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest) | [ListMemoRelationsResponse](#memos-api-v2-ListMemoRelationsResponse) |  |
-| CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) |  |
-| ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) |  |
+| CreateMemo | [CreateMemoRequest](#memos-api-v2-CreateMemoRequest) | [CreateMemoResponse](#memos-api-v2-CreateMemoResponse) | CreateMemo creates a memo. |
+| ListMemos | [ListMemosRequest](#memos-api-v2-ListMemosRequest) | [ListMemosResponse](#memos-api-v2-ListMemosResponse) | ListMemos lists memos with pagination and filter. |
+| GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) | GetMemo gets a memo by id. |
+| UpdateMemo | [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest) | [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse) | UpdateMemo updates a memo. |
+| DeleteMemo | [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest) | [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse) | DeleteMemo deletes a memo by id. |
+| SetMemoResources | [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest) | [SetMemoResourcesResponse](#memos-api-v2-SetMemoResourcesResponse) | SetMemoResources sets resources for a memo. |
+| ListMemoResources | [ListMemoResourcesRequest](#memos-api-v2-ListMemoResourcesRequest) | [ListMemoResourcesResponse](#memos-api-v2-ListMemoResourcesResponse) | ListMemoResources lists resources for a memo. |
+| SetMemoRelations | [SetMemoRelationsRequest](#memos-api-v2-SetMemoRelationsRequest) | [SetMemoRelationsResponse](#memos-api-v2-SetMemoRelationsResponse) | SetMemoRelations sets relations for a memo. |
+| ListMemoRelations | [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest) | [ListMemoRelationsResponse](#memos-api-v2-ListMemoRelationsResponse) | ListMemoRelations lists relations for a memo. |
+| CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) | CreateMemoComment creates a comment for a memo. |
+| ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) | ListMemoComments lists comments for a memo. |
 
  
 

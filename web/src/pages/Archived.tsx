@@ -44,7 +44,7 @@ const Archived = () => {
       style: "danger",
       dialogName: "delete-memo-dialog",
       onConfirm: async () => {
-        await memoStore.deleteMemo(memo);
+        await memoStore.deleteMemo(memo.id);
         setArchivedMemos((prev) => prev.filter((m) => m.id !== memo.id));
       },
     });
