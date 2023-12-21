@@ -4,6 +4,7 @@ package memos.api.v2;
 
 import "api/v2/common.proto";
 import "api/v2/markdown_service.proto";
+import "api/v2/memo_relation_service.proto";
 import "api/v2/resource_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
@@ -42,8 +43,29 @@ service MemoService {
     option (google.api.method_signature) = "id";
   }
 
+  rpc SetMemoResources(SetMemoResourcesRequest) returns (SetMemoResourcesResponse) {
+    option (google.api.http) = {
+      post: "/api/v2/memos/{id}/resources"
+      body: "*"
+    };
+    option (google.api.method_signature) = "id";
+  }
+
   rpc ListMemoResources(ListMemoResourcesRequest) returns (ListMemoResourcesResponse) {
     option (google.api.http) = {get: "/api/v2/memos/{id}/resources"};
+    option (google.api.method_signature) = "id";
+  }
+
+  rpc SetMemoRelations(SetMemoRelationsRequest) returns (SetMemoRelationsResponse) {
+    option (google.api.http) = {
+      post: "/api/v2/memos/{id}/relations"
+      body: "*"
+    };
+    option (google.api.method_signature) = "id";
+  }
+
+  rpc ListMemoRelations(ListMemoRelationsRequest) returns (ListMemoRelationsResponse) {
+    option (google.api.http) = {get: "/api/v2/memos/{id}/relations"};
     option (google.api.method_signature) = "id";
   }
 
@@ -139,12 +161,36 @@ message DeleteMemoRequest {
 
 message DeleteMemoResponse {}
 
+message SetMemoResourcesRequest {
+  int32 id = 1;
+
+  repeated Resource resources = 2;
+}
+
+message SetMemoResourcesResponse {}
+
 message ListMemoResourcesRequest {
   int32 id = 1;
 }
 
 message ListMemoResourcesResponse {
   repeated Resource resources = 1;
+}
+
+message SetMemoRelationsRequest {
+  int32 id = 1;
+
+  repeated MemoRelation relations = 2;
+}
+
+message SetMemoRelationsResponse {}
+
+message ListMemoRelationsRequest {
+  int32 id = 1;
+}
+
+message ListMemoRelationsResponse {
+  repeated MemoRelation relations = 1;
 }
 
 message CreateMemoCommentRequest {

@@ -91,6 +91,11 @@
   
     - [MarkdownService](#memos-api-v2-MarkdownService)
   
+- [api/v2/memo_relation_service.proto](#api_v2_memo_relation_service-proto)
+    - [MemoRelation](#memos-api-v2-MemoRelation)
+  
+    - [MemoRelation.Type](#memos-api-v2-MemoRelation-Type)
+  
 - [api/v2/resource_service.proto](#api_v2_resource_service-proto)
     - [CreateResourceRequest](#memos-api-v2-CreateResourceRequest)
     - [CreateResourceResponse](#memos-api-v2-CreateResourceResponse)
@@ -115,11 +120,17 @@
     - [GetMemoResponse](#memos-api-v2-GetMemoResponse)
     - [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest)
     - [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse)
+    - [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest)
+    - [ListMemoRelationsResponse](#memos-api-v2-ListMemoRelationsResponse)
     - [ListMemoResourcesRequest](#memos-api-v2-ListMemoResourcesRequest)
     - [ListMemoResourcesResponse](#memos-api-v2-ListMemoResourcesResponse)
     - [ListMemosRequest](#memos-api-v2-ListMemosRequest)
     - [ListMemosResponse](#memos-api-v2-ListMemosResponse)
     - [Memo](#memos-api-v2-Memo)
+    - [SetMemoRelationsRequest](#memos-api-v2-SetMemoRelationsRequest)
+    - [SetMemoRelationsResponse](#memos-api-v2-SetMemoRelationsResponse)
+    - [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest)
+    - [SetMemoResourcesResponse](#memos-api-v2-SetMemoResourcesResponse)
     - [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest)
     - [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse)
   
@@ -1317,6 +1328,52 @@
 
 
 
+<a name="api_v2_memo_relation_service-proto"></a>
+<p align="right"><a href="#top">Top</a></p>
+
+## api/v2/memo_relation_service.proto
+
+
+
+<a name="memos-api-v2-MemoRelation"></a>
+
+### MemoRelation
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo_id | [int32](#int32) |  |  |
+| related_memo_id | [int32](#int32) |  |  |
+| type | [MemoRelation.Type](#memos-api-v2-MemoRelation-Type) |  |  |
+
+
+
+
+
+ 
+
+
+<a name="memos-api-v2-MemoRelation-Type"></a>
+
+### MemoRelation.Type
+
+
+| Name | Number | Description |
+| ---- | ------ | ----------- |
+| TYPE_UNSPECIFIED | 0 |  |
+| REFERENCE | 1 |  |
+| COMMENT | 2 |  |
+
+
+ 
+
+ 
+
+ 
+
+
+
 <a name="api_v2_resource_service-proto"></a>
 <p align="right"><a href="#top">Top</a></p>
 
@@ -1635,6 +1692,36 @@
 
 
 
+<a name="memos-api-v2-ListMemoRelationsRequest"></a>
+
+### ListMemoRelationsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-ListMemoRelationsResponse"></a>
+
+### ListMemoRelationsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| relations | [MemoRelation](#memos-api-v2-MemoRelation) | repeated |  |
+
+
+
+
+
+
 <a name="memos-api-v2-ListMemoResourcesRequest"></a>
 
 ### ListMemoResourcesRequest
@@ -1721,6 +1808,58 @@
 
 
 
+<a name="memos-api-v2-SetMemoRelationsRequest"></a>
+
+### SetMemoRelationsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| relations | [MemoRelation](#memos-api-v2-MemoRelation) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SetMemoRelationsResponse"></a>
+
+### SetMemoRelationsResponse
+
+
+
+
+
+
+
+<a name="memos-api-v2-SetMemoResourcesRequest"></a>
+
+### SetMemoResourcesRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| id | [int32](#int32) |  |  |
+| resources | [Resource](#memos-api-v2-Resource) | repeated |  |
+
+
+
+
+
+
+<a name="memos-api-v2-SetMemoResourcesResponse"></a>
+
+### SetMemoResourcesResponse
+
+
+
+
+
+
+
 <a name="memos-api-v2-UpdateMemoRequest"></a>
 
 ### UpdateMemoRequest
@@ -1785,7 +1924,10 @@
 | GetMemo | [GetMemoRequest](#memos-api-v2-GetMemoRequest) | [GetMemoResponse](#memos-api-v2-GetMemoResponse) |  |
 | UpdateMemo | [UpdateMemoRequest](#memos-api-v2-UpdateMemoRequest) | [UpdateMemoResponse](#memos-api-v2-UpdateMemoResponse) |  |
 | DeleteMemo | [DeleteMemoRequest](#memos-api-v2-DeleteMemoRequest) | [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse) |  |
+| SetMemoResources | [SetMemoResourcesRequest](#memos-api-v2-SetMemoResourcesRequest) | [SetMemoResourcesResponse](#memos-api-v2-SetMemoResourcesResponse) |  |
 | ListMemoResources | [ListMemoResourcesRequest](#memos-api-v2-ListMemoResourcesRequest) | [ListMemoResourcesResponse](#memos-api-v2-ListMemoResourcesResponse) |  |
+| SetMemoRelations | [SetMemoRelationsRequest](#memos-api-v2-SetMemoRelationsRequest) | [SetMemoRelationsResponse](#memos-api-v2-SetMemoRelationsResponse) |  |
+| ListMemoRelations | [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest) | [ListMemoRelationsResponse](#memos-api-v2-ListMemoRelationsResponse) |  |
 | CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) |  |
 | ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) |  |
 

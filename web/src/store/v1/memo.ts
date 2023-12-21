@@ -1,11 +1,15 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { memoServiceClient } from "@/grpcweb";
-import { Memo } from "@/types/proto/api/v2/memo_service";
+import { CreateMemoRequest, ListMemosRequest, Memo } from "@/types/proto/api/v2/memo_service";
 
 export const useMemoV1Store = create(
   combine({ memoById: new Map<number, Memo>() }, (set, get) => ({
     getState: () => get(),
+    fetchMemos: async (request: Partial<ListMemosRequest>) => {
+      const { memos } = await memoServiceClient.listMemos(request);
+      return memos;
+    },
     getOrFetchMemoById: async (id: MemoId) => {
       const memo = get().memoById.get(id);
       if (memo) {
@@ -28,6 +32,18 @@ export const useMemoV1Store = create(
     },
     getMemoById: (id: number) => {
       return get().memoById.get(id);
+    },
+    createMemo: async (request: CreateMemoRequest) => {
+      const { memo } = await memoServiceClient.createMemo(request);
+      if (!memo) {
+        throw new Error("Memo not found");
+      }
+
+      set((state) => {
+        state.memoById.set(memo.id, memo);
+        return state;
+      });
+      return memo;
     },
     updateMemo: async (update: Partial<Memo>, updateMask: string[]) => {
       const { memo } = await memoServiceClient.updateMemo({
@@ -54,6 +70,18 @@ export const useMemoV1Store = create(
         state.memoById.delete(memo.id);
         return state;
       });
+    },
+    fetchMemoResources: async (id: number) => {
+      const { resources } = await memoServiceClient.listMemoResources({
+        id,
+      });
+      return resources;
+    },
+    fetchMemoRelations: async (id: number) => {
+      const { relations } = await memoServiceClient.listMemoRelations({
+        id,
+      });
+      return relations;
     },
   }))
 );
