@@ -1,13 +1,12 @@
 import { Button } from "@mui/joy";
 import copy from "copy-to-clipboard";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { getDateTimeString, getTimeString } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
-import { useUserV1Store, extractUsernameFromName, useMemoV1Store } from "@/store/v1";
+import { useUserV1Store, extractUsernameFromName } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
-import { Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -24,16 +23,13 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const { memo, destroy } = props;
   const t = useTranslate();
   const userV1Store = useUserV1Store();
-  const memoStore = useMemoV1Store();
   const downloadingImageState = useLoading(false);
   const loadingState = useLoading();
   const memoElRef = useRef<HTMLDivElement>(null);
-  const [resources, setResources] = useState<Resource[]>([]);
   const user = userV1Store.getUserByUsername(extractUsernameFromName(memo.creator));
 
   useEffect(() => {
     (async () => {
-      setResources(await memoStore.fetchMemoResources(memo.id));
       await userV1Store.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
       loadingState.setFinish();
     })();
@@ -105,7 +101,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{getTimeString(memo.displayTime)}</span>
             <div className="w-full px-6 text-base pb-4">
               <MemoContent content={memo.content} />
-              <MemoResourceListView resourceList={resources} />
+              <MemoResourceListView resourceList={memo.resources} />
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-4 px-6">
               <div className="flex flex-row justify-start items-center">

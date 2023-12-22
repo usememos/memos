@@ -8,6 +8,7 @@ import "api/v2/memo_relation_service.proto";
 import "api/v2/resource_service.proto";
 import "google/api/annotations.proto";
 import "google/api/client.proto";
+import "google/api/field_behavior.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/timestamp.proto";
 
@@ -115,6 +116,10 @@ message Memo {
   Visibility visibility = 10;
 
   bool pinned = 11;
+
+  repeated Resource resources = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  repeated MemoRelation relations = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {

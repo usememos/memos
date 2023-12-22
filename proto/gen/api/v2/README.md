@@ -1803,6 +1803,8 @@
 | nodes | [Node](#memos-api-v2-Node) | repeated |  |
 | visibility | [Visibility](#memos-api-v2-Visibility) |  |  |
 | pinned | [bool](#bool) |  |  |
+| resources | [Resource](#memos-api-v2-Resource) | repeated |  |
+| relations | [MemoRelation](#memos-api-v2-MemoRelation) | repeated |  |
 
 
 

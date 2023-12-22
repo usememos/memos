@@ -10,9 +10,8 @@ import useNavigateTo from "@/hooks/useNavigateTo";
 import { useFilterStore } from "@/store/module";
 import { useUserV1Store, extractUsernameFromName, useMemoV1Store } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
-import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
+import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
-import { Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
@@ -50,10 +49,8 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(getTimeStampByDate(memo.displayTime)));
   const [creator, setCreator] = useState(userV1Store.getUserByUsername(extractUsernameFromName(memo.creator)));
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [memoRelations, setMemoRelations] = useState<MemoRelation[]>([]);
   const memoContainerRef = useRef<HTMLDivElement>(null);
-  const referenceRelations = memoRelations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
+  const referenceRelations = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const readonly = memo.creator !== user?.name;
 
   // Prepare memo creator.
@@ -101,20 +98,14 @@ const MemoView: React.FC<Props> = (props: Props) => {
       return;
     }
 
-    memoStore.fetchMemoResources(memo.id).then((resources: Resource[]) => {
-      setResources(resources);
-    });
-    memoStore.fetchMemoRelations(memo.id).then((relations: MemoRelation[]) => {
-      setMemoRelations(relations);
-      const parentMemoId = relations.find(
-        (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
-      )?.relatedMemoId;
-      if (parentMemoId) {
-        memoStore.getOrFetchMemoById(parentMemoId).then((memo: Memo) => {
-          setParentMemo(memo);
-        });
-      }
-    });
+    const parentMemoId = memo.relations.find(
+      (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
+    )?.relatedMemoId;
+    if (parentMemoId) {
+      memoStore.getOrFetchMemoById(parentMemoId).then((memo: Memo) => {
+        setParentMemo(memo);
+      });
+    }
   }, [shouldRender]);
 
   if (!shouldRender) {
@@ -326,7 +317,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
         </div>
       )}
       <MemoContent content={memo.content} nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
-      <MemoResourceListView resourceList={resources} />
+      <MemoResourceListView resourceList={memo.resources} />
       <MemoRelationListView memo={memo} relationList={referenceRelations} />
     </div>
   );

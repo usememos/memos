@@ -19,9 +19,8 @@ import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useUserV1Store, useMemoV1Store, extractUsernameFromName } from "@/store/v1";
-import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
+import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
-import { Resource } from "@/types/proto/api/v2/resource_service";
 import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
@@ -38,12 +37,9 @@ const MemoDetail = () => {
   const memo = memoStore.getMemoById(memoId);
   const allowEdit = memo?.creatorId === currentUser.id;
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [memoRelations, setMemoRelations] = useState<MemoRelation[]>([]);
-  const referenceRelations = memoRelations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
-  const commentRelations = memoRelations.filter(
-    (relation) => relation.relatedMemoId === memo?.id && relation.type === MemoRelation_Type.COMMENT
-  );
+  const referenceRelations = memo?.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE) || [];
+  const commentRelations =
+    memo?.relations.filter((relation) => relation.relatedMemoId === memo?.id && relation.type === MemoRelation_Type.COMMENT) || [];
   const comments = commentRelations.map((relation) => memoStore.getMemoById(relation.memoId)).filter((memo) => memo) as any as Memo[];
 
   // Prepare memo.
@@ -71,13 +67,7 @@ const MemoDetail = () => {
     }
 
     (async () => {
-      const resources = await memoStore.fetchMemoResources(memo.id);
-      setResources(resources);
-      const memoRelations = await memoStore.fetchMemoRelations(memo.id);
-      const commentRelations = memoRelations.filter(
-        (relation) => relation.relatedMemoId === memo.id && relation.type === MemoRelation_Type.COMMENT
-      );
-      const parentMemoId = memoRelations.find(
+      const parentMemoId = memo.relations.find(
         (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
       )?.relatedMemoId;
       if (parentMemoId) {
@@ -85,9 +75,7 @@ const MemoDetail = () => {
           setParentMemo(memo);
         });
       }
-      const requests = commentRelations.map((relation) => memoStore.getOrFetchMemoById(relation.memoId));
-      await Promise.all(requests);
-      setMemoRelations(memoRelations);
+      await Promise.all(commentRelations.map((relation) => memoStore.getOrFetchMemoById(relation.memoId)));
     })();
   }, [memo]);
 
@@ -118,7 +106,7 @@ const MemoDetail = () => {
 
   const handleCommentCreated = async (commentId: number) => {
     await memoStore.getOrFetchMemoById(commentId);
-    setMemoRelations(await memoStore.fetchMemoRelations(memo.id));
+    await memoStore.getOrFetchMemoById(memo.id, true /* skip cache */);
   };
 
   return (
@@ -142,7 +130,7 @@ const MemoDetail = () => {
             <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</span>
           </div>
           <MemoContent content={memo.content} />
-          <MemoResourceListView resourceList={resources} />
+          <MemoResourceListView resourceList={memo.resources} />
           <MemoRelationListView memo={memo} relationList={referenceRelations} />
           <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
             <div className="flex flex-row justify-start items-center">

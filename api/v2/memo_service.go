@@ -429,6 +429,16 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		return nil, errors.Wrap(err, "failed to get creator")
 	}
 
+	listMemoRelationsResponse, err := s.ListMemoRelations(ctx, &apiv2pb.ListMemoRelationsRequest{Id: memo.ID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list memo relations")
+	}
+
+	listMemoResourcesResponse, err := s.ListMemoResources(ctx, &apiv2pb.ListMemoResourcesRequest{Id: memo.ID})
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to list memo resources")
+	}
+
 	return &apiv2pb.Memo{
 		Id:          int32(memo.ID),
 		RowStatus:   convertRowStatusFromStore(memo.RowStatus),
@@ -441,6 +451,8 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Nodes:       convertFromASTNodes(rawNodes),
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
+		Relations:   listMemoRelationsResponse.Relations,
+		Resources:   listMemoResourcesResponse.Resources,
 	}, nil
 }
 

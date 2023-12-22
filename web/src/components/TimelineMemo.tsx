@@ -1,12 +1,9 @@
-import { useEffect, useState } from "react";
 import Icon from "@/components/Icon";
 import MemoContent from "@/components/MemoContent";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import { getTimeString } from "@/helpers/datetime";
-import { useMemoV1Store } from "@/store/v1";
-import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
+import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo } from "@/types/proto/api/v2/memo_service";
-import { Resource } from "@/types/proto/api/v2/resource_service";
 import MemoRelationListView from "./MemoRelationListView";
 
 interface Props {
@@ -15,18 +12,7 @@ interface Props {
 
 const TimelineMemo = (props: Props) => {
   const { memo } = props;
-  const memoStore = useMemoV1Store();
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [relations, setRelations] = useState<MemoRelation[]>([]);
-
-  useEffect(() => {
-    memoStore.fetchMemoResources(memo.id).then((resources: Resource[]) => {
-      setResources(resources);
-    });
-    memoStore.fetchMemoRelations(memo.id).then((relations: MemoRelation[]) => {
-      setRelations(relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE));
-    });
-  }, [memo.id]);
+  const relations = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
 
   return (
     <div className="relative w-full flex flex-col justify-start items-start">
@@ -36,7 +22,7 @@ const TimelineMemo = (props: Props) => {
         <span className="opacity-60">#{memo.id}</span>
       </div>
       <MemoContent content={memo.content} nodes={memo.nodes} />
-      <MemoResourceListView resourceList={resources} />
+      <MemoResourceListView resourceList={memo.resources} />
       <MemoRelationListView memo={memo} relationList={relations} />
     </div>
   );

@@ -22,9 +22,9 @@ export const useMemoV1Store = create(
       });
       return memos;
     },
-    getOrFetchMemoById: async (id: number) => {
+    getOrFetchMemoById: async (id: number, skipCache = false) => {
       const memo = get().memoById.get(id);
-      if (memo) {
+      if (memo && !skipCache) {
         return memo;
       }
 
@@ -81,18 +81,6 @@ export const useMemoV1Store = create(
         state.memoById.delete(id);
         return cloneDeep(state);
       });
-    },
-    fetchMemoResources: async (id: number) => {
-      const { resources } = await memoServiceClient.listMemoResources({
-        id,
-      });
-      return resources;
-    },
-    fetchMemoRelations: async (id: number) => {
-      const { relations } = await memoServiceClient.listMemoRelations({
-        id,
-      });
-      return relations;
     },
   }))
 );
