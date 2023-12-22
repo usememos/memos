@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import HomeSidebar from "@/components/HomeSidebar";
 import HomeSidebarDrawer from "@/components/HomeSidebarDrawer";
@@ -11,8 +11,7 @@ import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useFilterStore } from "@/store/module";
-import { useMemoV1Store } from "@/store/v1";
-import { Memo } from "@/types/proto/api/v2/memo_service";
+import { useMemoList, useMemoV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
@@ -23,14 +22,14 @@ const Home = () => {
   const memoStore = useMemoV1Store();
   const [isComplete, setIsComplete] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
-  const memosRef = useRef<Memo[]>([]);
+  const memoList = useMemoList();
   const { tag: tagQuery, text: textQuery } = filterStore.state;
-  const sortedMemos = memosRef.current
+  const sortedMemos = memoList.value
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
-    memosRef.current = [];
+    memoList.reset();
     fetchMemos();
   }, [tagQuery, textQuery]);
 
@@ -49,17 +48,11 @@ const Home = () => {
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
       limit: DEFAULT_MEMO_LIMIT,
-      offset: memosRef.current.length,
+      offset: memoList.size(),
       filter: filters.join(" && "),
     });
     setIsRequesting(false);
-    memosRef.current = [...memosRef.current, ...data];
     setIsComplete(data.length < DEFAULT_MEMO_LIMIT);
-  };
-
-  const handleMemoCreated = async (memoId: number) => {
-    const memo = await memoStore.getOrFetchMemoById(memoId);
-    memosRef.current = [memo, ...memosRef.current];
   };
 
   return (
@@ -67,18 +60,17 @@ const Home = () => {
       <div className="w-full sm:pt-3 md:pt-6">
         <MobileHeader>{!md && <HomeSidebarDrawer />}</MobileHeader>
         <div className="w-full px-4 sm:px-6 md:pr-2">
-          <MemoEditor className="mb-2" cacheKey="home-memo-editor" onConfirm={handleMemoCreated} />
+          <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
           <div className="flex flex-col justify-start items-start w-full max-w-full overflow-y-scroll pb-28 hide-scrollbar">
             <MemoFilter />
             {sortedMemos.map((memo) => (
-              <MemoView key={memo.id} memo={memo} lazyRendering showVisibility showPinnedStyle showParent />
+              <MemoView key={`${memo.id}-${memo.updateTime}`} memo={memo} lazyRendering showVisibility showPinnedStyle showParent />
             ))}
-            {isRequesting && (
+            {isRequesting ? (
               <div className="flex flex-col justify-start items-center w-full my-8">
                 <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
               </div>
-            )}
-            {isComplete ? (
+            ) : isComplete ? (
               sortedMemos.length === 0 && (
                 <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
                   <Empty />

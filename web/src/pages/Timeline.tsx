@@ -10,44 +10,34 @@ import DatePicker from "@/components/kit/DatePicker";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, getNormalizedDateString, getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoV1Store } from "@/store/v1";
-import { Memo } from "@/types/proto/api/v2/memo_service";
+import { useMemoList, useMemoV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const Timeline = () => {
   const t = useTranslate();
-  const memoStore = useMemoV1Store();
   const currentUser = useCurrentUser();
+  const memoStore = useMemoV1Store();
+  const memoList = useMemoList();
   const currentDateStamp = getDateStampByDate(getNormalizedDateString()) as number;
   const [selectedDateStamp, setSelectedDateStamp] = useState<number>(currentDateStamp as number);
-  const [memos, setMemos] = useState<Memo[]>([]);
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
-  const sortedMemos = memos.sort((a, b) => getTimeStampByDate(a.createTime) - getTimeStampByDate(b.createTime));
+  const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(a.createTime) - getTimeStampByDate(b.createTime));
 
   useEffect(() => {
+    memoList.reset();
     const filters = [
       `creator == "${currentUser.name}"`,
       `created_ts_after == ${selectedDateStamp / 1000}`,
       `created_ts_before == ${(selectedDateStamp + DAILY_TIMESTAMP) / 1000}`,
     ];
-    memoStore
-      .fetchMemos({
-        filter: filters.join(" && "),
-      })
-      .then((memos: Memo[]) => {
-        setMemos(memos);
-      });
+    memoStore.fetchMemos({
+      filter: filters.join(" && "),
+    });
   }, [selectedDateStamp]);
 
   const handleDataPickerChange = (datestamp: number): void => {
     setSelectedDateStamp(datestamp);
     toggleShowDatePicker(false);
-  };
-
-  const handleMemoCreate = async (id: number) => {
-    await memoStore.getOrFetchMemoById(id).then((memo: Memo) => {
-      setMemos([memo, ...memos]);
-    });
   };
 
   return (
@@ -108,7 +98,7 @@ const Timeline = () => {
               ))}
               {selectedDateStamp === currentDateStamp && (
                 <div className="w-full pl-0 sm:pl-12 sm:mt-4">
-                  <MemoEditor cacheKey="timeline-editor" onConfirm={handleMemoCreate} />
+                  <MemoEditor cacheKey="timeline-editor" />
                 </div>
               )}
             </div>

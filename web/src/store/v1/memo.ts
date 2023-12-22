@@ -1,13 +1,25 @@
+import { cloneDeep } from "lodash-es";
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { memoServiceClient } from "@/grpcweb";
 import { CreateMemoRequest, ListMemosRequest, Memo } from "@/types/proto/api/v2/memo_service";
 
+interface State {
+  memoById: Map<number, Memo>;
+}
+
 export const useMemoV1Store = create(
   combine({ memoById: new Map<number, Memo>() }, (set, get) => ({
+    setState: (state: State) => set(state),
     getState: () => get(),
     fetchMemos: async (request: Partial<ListMemosRequest>) => {
       const { memos } = await memoServiceClient.listMemos(request);
+      set((state) => {
+        for (const memo of memos) {
+          state.memoById.set(memo.id, memo);
+        }
+        return cloneDeep(state);
+      });
       return memos;
     },
     getOrFetchMemoById: async (id: number) => {
@@ -25,9 +37,8 @@ export const useMemoV1Store = create(
 
       set((state) => {
         state.memoById.set(id, res.memo as Memo);
-        return state;
+        return cloneDeep(state);
       });
-
       return res.memo;
     },
     getMemoById: (id: number) => {
@@ -41,7 +52,7 @@ export const useMemoV1Store = create(
 
       set((state) => {
         state.memoById.set(memo.id, memo);
-        return state;
+        return cloneDeep(state);
       });
       return memo;
     },
@@ -57,18 +68,18 @@ export const useMemoV1Store = create(
 
       set((state) => {
         state.memoById.set(memo.id, memo);
-        return state;
+        return cloneDeep(state);
       });
-
       return memo;
     },
     deleteMemo: async (id: number) => {
       await memoServiceClient.deleteMemo({
         id: id,
       });
+
       set((state) => {
         state.memoById.delete(id);
-        return state;
+        return cloneDeep(state);
       });
     },
     fetchMemoResources: async (id: number) => {
@@ -85,3 +96,22 @@ export const useMemoV1Store = create(
     },
   }))
 );
+
+export const useMemoList = () => {
+  const memoStore = useMemoV1Store();
+  const memos = Array.from(memoStore.getState().memoById.values());
+
+  const reset = () => {
+    memoStore.setState({ memoById: new Map<number, Memo>() });
+  };
+
+  const size = () => {
+    return memoStore.getState().memoById.size;
+  };
+
+  return {
+    value: memos,
+    reset,
+    size,
+  };
+};

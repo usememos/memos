@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
@@ -7,8 +7,7 @@ import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useFilterStore } from "@/store/module";
-import { useMemoV1Store } from "@/store/v1";
-import { Memo } from "@/types/proto/api/v2/memo_service";
+import { useMemoList, useMemoV1Store } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const Explore = () => {
@@ -16,14 +15,14 @@ const Explore = () => {
   const user = useCurrentUser();
   const filterStore = useFilterStore();
   const memoStore = useMemoV1Store();
+  const memoList = useMemoList();
   const [isComplete, setIsComplete] = useState(false);
   const [isRequesting, setIsRequesting] = useState(false);
-  const memosRef = useRef<Memo[]>([]);
   const { tag: tagQuery, text: textQuery } = filterStore.state;
-  const sortedMemos = memosRef.current.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
+  const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
 
   useEffect(() => {
-    memosRef.current = [];
+    memoList.reset();
     fetchMemos();
   }, [tagQuery, textQuery]);
 
@@ -42,11 +41,10 @@ const Explore = () => {
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
       limit: DEFAULT_MEMO_LIMIT,
-      offset: memosRef.current.length,
+      offset: memoList.size(),
       filter: filters.join(" && "),
     });
     setIsRequesting(false);
-    memosRef.current = [...memosRef.current, ...data];
     setIsComplete(data.length < DEFAULT_MEMO_LIMIT);
   };
 
@@ -59,12 +57,11 @@ const Explore = () => {
           <MemoView key={memo.id} memo={memo} lazyRendering showCreator showParent />
         ))}
 
-        {isRequesting && (
+        {isRequesting ? (
           <div className="flex flex-col justify-start items-center w-full my-8">
             <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
           </div>
-        )}
-        {isComplete ? (
+        ) : isComplete ? (
           sortedMemos.length === 0 && (
             <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
               <Empty />
