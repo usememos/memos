@@ -202,7 +202,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
-    if (targetEl.className === "tag-span") {
+    if (targetEl.classList.contains("tag-container")) {
       const tagName = targetEl.innerText.slice(1);
       const currTagQuery = filterStore.getState().tag;
       if (currTagQuery === tagName) {

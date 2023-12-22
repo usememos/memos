@@ -48,16 +48,16 @@ const UserProfile = () => {
   }, [params.username]);
 
   useEffect(() => {
-    memoList.reset();
-    fetchMemos();
-  }, [tagQuery, textQuery]);
-
-  const fetchMemos = async () => {
     if (!user) {
       return;
     }
 
-    const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
+    memoList.reset();
+    fetchMemos();
+  }, [user, tagQuery, textQuery]);
+
+  const fetchMemos = async () => {
+    const filters = [`creator == "${user!.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
     if (tagQuery) {
       contentSearch.push(`"#${tagQuery}"`);

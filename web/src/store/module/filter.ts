@@ -16,7 +16,6 @@ export const useFilterStore = () => {
       store.dispatch(
         setFilter({
           tag: undefined,
-          duration: undefined,
           text: undefined,
           visibility: undefined,
         })
@@ -33,20 +32,6 @@ export const useFilterStore = () => {
       store.dispatch(
         setFilter({
           tag: tag,
-        })
-      );
-    },
-    setFromAndToFilter: (from?: number, to?: number) => {
-      let duration = undefined;
-      if (from && to && from < to) {
-        duration = {
-          from,
-          to,
-        };
-      }
-      store.dispatch(
-        setFilter({
-          duration,
         })
       );
     },

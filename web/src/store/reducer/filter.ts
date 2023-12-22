@@ -1,13 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Duration {
-  from: number;
-  to: number;
-}
-
 interface State {
   tag?: string;
-  duration?: Duration;
   text?: string;
   visibility?: Visibility;
 }

@@ -1,5 +1,6 @@
 import { Button } from "@mui/joy";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import useToggle from "react-use/lib/useToggle";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
@@ -15,14 +16,21 @@ import { useTranslate } from "@/utils/i18n";
 
 const Timeline = () => {
   const t = useTranslate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const user = useCurrentUser();
   const memoStore = useMemoV1Store();
   const memoList = useMemoList();
   const currentDateStamp = getDateStampByDate(getNormalizedDateString()) as number;
-  const [selectedDateStamp, setSelectedDateStamp] = useState<number>(currentDateStamp as number);
+  const [selectedDateStamp, setSelectedDateStamp] = useState<number>(
+    (searchParams.get("timestamp") ? Number(searchParams.get("timestamp")) : currentDateStamp) as number
+  );
   const [isRequesting, setIsRequesting] = useState(true);
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(a.createTime) - getTimeStampByDate(b.createTime));
+
+  useEffect(() => {
+    setSearchParams();
+  }, []);
 
   useEffect(() => {
     memoList.reset();
