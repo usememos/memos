@@ -1,11 +1,10 @@
 import { useColorScheme } from "@mui/joy";
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 import storage from "./helpers/storage";
 import { getSystemColorScheme } from "./helpers/utils";
 import useNavigateTo from "./hooks/useNavigateTo";
-import Loading from "./pages/Loading";
 import { useGlobalStore } from "./store/module";
 import { useUserV1Store } from "./store/v1";
 
@@ -117,13 +116,7 @@ const App = () => {
     }
   }, [mode]);
 
-  return loading ? (
-    <Loading />
-  ) : (
-    <Suspense fallback={<Loading />}>
-      <Outlet />
-    </Suspense>
-  );
+  return loading ? null : <Outlet />;
 };
 
 export default App;

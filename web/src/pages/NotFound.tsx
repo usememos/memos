@@ -1,23 +1,14 @@
-import { Button } from "@mui/joy";
-import { Link } from "react-router-dom";
-import Icon from "@/components/Icon";
-import { useTranslate } from "@/utils/i18n";
+import MobileHeader from "@/components/MobileHeader";
 
 const NotFound = () => {
-  const t = useTranslate();
-
   return (
-    <div className="w-full h-full overflow-y-auto overflow-x-hidden">
-      <div className="w-full h-full flex flex-col justify-center items-center">
-        <Icon.Meh strokeWidth={1} className="w-20 h-auto opacity-80 dark:text-gray-300" />
-        <p className="mt-4 text-5xl font-mono dark:text-gray-300">404</p>
-        <Link className="mt-4" to="/">
-          <Button variant="outlined" startDecorator={<Icon.Home className="w-4 h-auto" />}>
-            {t("router.go-to-home")}
-          </Button>
-        </Link>
+    <section className="@container w-full max-w-5xl min-h-[100svh] flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
+      <MobileHeader />
+      <div className="w-full px-4 grow flex flex-col justify-center items-center sm:px-6">
+        <p className="font-medium">{"The page you are looking for can't be found."}</p>
+        <p className="mt-4 text-[8rem] font-mono dark:text-gray-300">404</p>
       </div>
-    </div>
+    </section>
   );
 };
 
