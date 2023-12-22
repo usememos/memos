@@ -21,7 +21,7 @@ Memos is built with a curated tech stack. It is optimized for developer experien
    git clone https://github.com/usememos/memos
    ```
 
-2. Start backend server with `air`(with live reload)
+2. Start backend server with [`air`](https://github.com/cosmtrek/air) (with live reload)
 
    ```bash
    air -c scripts/.air.toml

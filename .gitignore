@@ -17,3 +17,5 @@ build
 .idea
 
 bin/air
+
+dev-dist
