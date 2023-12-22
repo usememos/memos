@@ -8,6 +8,7 @@ import MemoContent from "@/components/MemoContent";
 import MobileHeader from "@/components/MobileHeader";
 import { memoServiceClient } from "@/grpcweb";
 import { getDateTimeString } from "@/helpers/datetime";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
 import { useMemoV1Store } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
@@ -17,13 +18,14 @@ import { useTranslate } from "@/utils/i18n";
 const Archived = () => {
   const t = useTranslate();
   const loadingState = useLoading();
+  const user = useCurrentUser();
   const memoStore = useMemoV1Store();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
 
   useEffect(() => {
     memoServiceClient
       .listMemos({
-        filter: "row_status == 'ARCHIVED'",
+        filter: [`creator == "${user.name}"`, "row_status == 'ARCHIVED'"].join(" && "),
       })
       .then(({ memos }) => {
         setArchivedMemos(memos);

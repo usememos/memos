@@ -16,8 +16,8 @@ const Explore = () => {
   const filterStore = useFilterStore();
   const memoStore = useMemoV1Store();
   const memoList = useMemoList();
+  const [isRequesting, setIsRequesting] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
-  const [isRequesting, setIsRequesting] = useState(false);
   const { tag: tagQuery, text: textQuery } = filterStore.state;
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime));
 
