@@ -102,7 +102,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
       (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
     )?.relatedMemoId;
     if (parentMemoId) {
-      memoStore.getOrFetchMemoById(parentMemoId).then((memo: Memo) => {
+      memoStore.getOrFetchMemoById(parentMemoId, { skipStore: true }).then((memo: Memo) => {
         setParentMemo(memo);
       });
     }

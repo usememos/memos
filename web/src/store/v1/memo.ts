@@ -22,9 +22,9 @@ export const useMemoV1Store = create(
       });
       return memos;
     },
-    getOrFetchMemoById: async (id: number, skipCache = false) => {
+    getOrFetchMemoById: async (id: number, options?: { skipCache?: boolean; skipStore?: boolean }) => {
       const memo = get().memoById.get(id);
-      if (memo && !skipCache) {
+      if (memo && !options?.skipCache) {
         return memo;
       }
 
@@ -35,10 +35,12 @@ export const useMemoV1Store = create(
         throw new Error("Memo not found");
       }
 
-      set((state) => {
-        state.memoById.set(id, res.memo as Memo);
-        return cloneDeep(state);
-      });
+      if (!options?.skipStore) {
+        set((state) => {
+          state.memoById.set(id, res.memo as Memo);
+          return cloneDeep(state);
+        });
+      }
       return res.memo;
     },
     getMemoById: (id: number) => {

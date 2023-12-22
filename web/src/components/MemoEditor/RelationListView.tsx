@@ -19,7 +19,7 @@ const RelationListView = (props: Props) => {
       const requests = relationList
         .filter((relation) => relation.type === MemoRelation_Type.REFERENCE)
         .map(async (relation) => {
-          return await memoStore.getOrFetchMemoById(relation.relatedMemoId);
+          return await memoStore.getOrFetchMemoById(relation.relatedMemoId, { skipStore: true });
         });
       const list = await Promise.all(requests);
       setReferencingMemoList(list);

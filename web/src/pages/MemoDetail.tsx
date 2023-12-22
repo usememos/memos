@@ -106,7 +106,7 @@ const MemoDetail = () => {
 
   const handleCommentCreated = async (commentId: number) => {
     await memoStore.getOrFetchMemoById(commentId);
-    await memoStore.getOrFetchMemoById(memo.id, true /* skip cache */);
+    await memoStore.getOrFetchMemoById(memo.id, { skipCache: true });
   };
 
   return (
