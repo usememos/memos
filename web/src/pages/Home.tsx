@@ -2,9 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import Empty from "@/components/Empty";
 import HomeSidebar from "@/components/HomeSidebar";
 import HomeSidebarDrawer from "@/components/HomeSidebarDrawer";
-import MemoEditorV1 from "@/components/MemoEditorV1";
+import MemoEditor from "@/components/MemoEditor";
 import MemoFilter from "@/components/MemoFilter";
-import MemoViewV1 from "@/components/MemoViewV1";
+import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
@@ -67,11 +67,11 @@ const Home = () => {
       <div className="w-full sm:pt-3 md:pt-6">
         <MobileHeader>{!md && <HomeSidebarDrawer />}</MobileHeader>
         <div className="w-full px-4 sm:px-6 md:pr-2">
-          <MemoEditorV1 className="mb-2" cacheKey="home-memo-editor" onConfirm={handleMemoCreated} />
+          <MemoEditor className="mb-2" cacheKey="home-memo-editor" onConfirm={handleMemoCreated} />
           <div className="flex flex-col justify-start items-start w-full max-w-full overflow-y-scroll pb-28 hide-scrollbar">
             <MemoFilter />
             {sortedMemos.map((memo) => (
-              <MemoViewV1 key={memo.id} memo={memo} lazyRendering showVisibility showPinnedStyle showParent />
+              <MemoView key={memo.id} memo={memo} lazyRendering showVisibility showPinnedStyle showParent />
             ))}
             {isRequesting && (
               <div className="flex flex-col justify-start items-center w-full my-8">

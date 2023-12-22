@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import Empty from "@/components/Empty";
 import MemoFilter from "@/components/MemoFilter";
-import MemoViewV1 from "@/components/MemoViewV1";
+import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
@@ -56,7 +56,7 @@ const Explore = () => {
       <div className="relative w-full h-auto flex flex-col justify-start items-start px-4 sm:px-6">
         <MemoFilter />
         {sortedMemos.map((memo) => (
-          <MemoViewV1 key={memo.id} memo={memo} lazyRendering showCreator showParent />
+          <MemoView key={memo.id} memo={memo} lazyRendering showCreator showParent />
         ))}
 
         {isRequesting && (

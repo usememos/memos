@@ -11,7 +11,7 @@ interface Props {
   onMemoContentClick?: (e: React.MouseEvent) => void;
 }
 
-const MemoContentV1: React.FC<Props> = (props: Props) => {
+const MemoContent: React.FC<Props> = (props: Props) => {
   const { className, content, onMemoContentClick } = props;
   const [nodes, setNodes] = useState<Node[]>(props.nodes ?? []);
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
@@ -51,4 +51,4 @@ const MemoContentV1: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default MemoContentV1;
+export default MemoContent;

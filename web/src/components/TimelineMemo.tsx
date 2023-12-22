@@ -1,13 +1,13 @@
 import { useEffect, useState } from "react";
 import Icon from "@/components/Icon";
-import MemoContentV1 from "@/components/MemoContentV1";
+import MemoContent from "@/components/MemoContent";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import { getTimeString } from "@/helpers/datetime";
 import { useMemoV1Store } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { Resource } from "@/types/proto/api/v2/resource_service";
-import MemoRelationListViewV1 from "./MemoRelationListViewV1";
+import MemoRelationListView from "./MemoRelationListView";
 
 interface Props {
   memo: Memo;
@@ -35,9 +35,9 @@ const TimelineMemo = (props: Props) => {
         <Icon.Dot className="w-5 h-auto opacity-60" />
         <span className="opacity-60">#{memo.id}</span>
       </div>
-      <MemoContentV1 content={memo.content} nodes={memo.nodes} />
+      <MemoContent content={memo.content} nodes={memo.nodes} />
       <MemoResourceListView resourceList={resources} />
-      <MemoRelationListViewV1 memo={memo} relationList={relations} />
+      <MemoRelationListView memo={memo} relationList={relations} />
     </div>
   );
 };

@@ -4,16 +4,16 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
 import Icon from "@/components/Icon";
-import MemoContentV1 from "@/components/MemoContentV1";
-import MemoEditorV1 from "@/components/MemoEditorV1";
-import showMemoEditorDialog from "@/components/MemoEditorV1/MemoEditorDialog";
-import MemoRelationListViewV1 from "@/components/MemoRelationListViewV1";
+import MemoContent from "@/components/MemoContent";
+import MemoEditor from "@/components/MemoEditor";
+import showMemoEditorDialog from "@/components/MemoEditor/MemoEditorDialog";
+import MemoRelationListView from "@/components/MemoRelationListView";
 import MemoResourceListView from "@/components/MemoResourceListView";
-import MemoViewV1 from "@/components/MemoViewV1";
+import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
-import showShareMemoDialogV1 from "@/components/ShareMemoDialogV1";
+import showShareMemoDialog from "@/components/ShareMemoDialog";
 import UserAvatar from "@/components/UserAvatar";
-import VisibilityIconV1 from "@/components/VisibilityIconV1";
+import VisibilityIcon from "@/components/VisibilityIcon";
 import { UNKNOWN_ID } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -141,9 +141,9 @@ const MemoDetail = () => {
           <div className="w-full mb-2 flex flex-row justify-start items-center">
             <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</span>
           </div>
-          <MemoContentV1 content={memo.content} />
+          <MemoContent content={memo.content} />
           <MemoResourceListView resourceList={resources} />
-          <MemoRelationListViewV1 memo={memo} relationList={referenceRelations} />
+          <MemoRelationListView memo={memo} relationList={referenceRelations} />
           <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
             <div className="flex flex-row justify-start items-center">
               <Tooltip title={"Identifier"} placement="top">
@@ -165,7 +165,7 @@ const MemoDetail = () => {
                     className="w-auto text-sm"
                     variant="plain"
                     value={memo.visibility}
-                    startDecorator={<VisibilityIconV1 visibility={memo.visibility} />}
+                    startDecorator={<VisibilityIcon visibility={memo.visibility} />}
                     onChange={(_, visibility) => {
                       if (visibility) {
                         handleMemoVisibilityOptionChanged(visibility);
@@ -195,7 +195,7 @@ const MemoDetail = () => {
                 </IconButton>
               </Tooltip>
               <Tooltip title={"Share"} placement="top">
-                <IconButton size="sm" onClick={() => showShareMemoDialogV1(memo)}>
+                <IconButton size="sm" onClick={() => showShareMemoDialog(memo)}>
                   <Icon.Share className="w-4 h-auto text-gray-600 dark:text-gray-400" />
                 </IconButton>
               </Tooltip>
@@ -217,14 +217,14 @@ const MemoDetail = () => {
                   <span className="text-gray-400 text-sm ml-0.5">({comments.length})</span>
                 </div>
                 {comments.map((comment) => (
-                  <MemoViewV1 key={comment.id} memo={comment} showCreator />
+                  <MemoView key={comment.id} memo={comment} showCreator />
                 ))}
               </>
             )}
 
             {/* Only show comment editor when user login */}
             {currentUser && (
-              <MemoEditorV1
+              <MemoEditor
                 key={memo.id}
                 cacheKey={`comment-editor-${memo.id}`}
                 relationList={[{ memoId: UNKNOWN_ID, relatedMemoId: memo.id, type: MemoRelation_Type.COMMENT }]}

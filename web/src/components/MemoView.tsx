@@ -18,14 +18,14 @@ import { convertVisibilityToString } from "@/utils/memo";
 import showChangeMemoCreatedTsDialog from "./ChangeMemoCreatedTsDialog";
 import { showCommonDialog } from "./Dialog/CommonDialog";
 import Icon from "./Icon";
-import MemoContentV1 from "./MemoContentV1";
-import showMemoEditorDialog from "./MemoEditorV1/MemoEditorDialog";
-import MemoRelationListViewV1 from "./MemoRelationListViewV1";
+import MemoContent from "./MemoContent";
+import showMemoEditorDialog from "./MemoEditor/MemoEditorDialog";
+import MemoRelationListView from "./MemoRelationListView";
 import MemoResourceListView from "./MemoResourceListView";
 import showPreviewImageDialog from "./PreviewImageDialog";
-import showShareMemoDialogV1 from "./ShareMemoDialogV1";
+import showShareMemoDialog from "./ShareMemoDialog";
 import UserAvatar from "./UserAvatar";
-import VisibilityIconV1 from "./VisibilityIconV1";
+import VisibilityIcon from "./VisibilityIcon";
 import "@/less/memo.less";
 
 interface Props {
@@ -37,7 +37,7 @@ interface Props {
   lazyRendering?: boolean;
 }
 
-const MemoViewV1: React.FC<Props> = (props: Props) => {
+const MemoView: React.FC<Props> = (props: Props) => {
   const { memo, lazyRendering } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
@@ -263,7 +263,7 @@ const MemoViewV1: React.FC<Props> = (props: Props) => {
                 <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
                 <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility)}` as any)} placement="top">
                   <span>
-                    <VisibilityIconV1 visibility={memo.visibility} />
+                    <VisibilityIcon visibility={memo.visibility} />
                   </span>
                 </Tooltip>
               </>
@@ -294,7 +294,7 @@ const MemoViewV1: React.FC<Props> = (props: Props) => {
                       {t("common.mark")}
                     </span>
                   )}
-                  <span className="btn" onClick={() => showShareMemoDialogV1(memo)}>
+                  <span className="btn" onClick={() => showShareMemoDialog(memo)}>
                     <Icon.Share className="w-4 h-auto mr-2" />
                     {t("common.share")}
                   </span>
@@ -325,11 +325,11 @@ const MemoViewV1: React.FC<Props> = (props: Props) => {
           </Link>
         </div>
       )}
-      <MemoContentV1 content={memo.content} nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
+      <MemoContent content={memo.content} nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
       <MemoResourceListView resourceList={resources} />
-      <MemoRelationListViewV1 memo={memo} relationList={referenceRelations} />
+      <MemoRelationListView memo={memo} relationList={referenceRelations} />
     </div>
   );
 };
 
-export default memo(MemoViewV1);
+export default memo(MemoView);

@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import Empty from "@/components/Empty";
-import MemoViewV1 from "@/components/MemoViewV1";
+import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import UserAvatar from "@/components/UserAvatar";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
@@ -79,7 +79,7 @@ const UserProfile = () => {
                 <p className="text-3xl text-black opacity-80 dark:text-gray-200">{user?.nickname}</p>
               </div>
               {memos.map((memo) => (
-                <MemoViewV1 key={memo.id} memo={memo} lazyRendering showVisibility showPinnedStyle showParent />
+                <MemoView key={memo.id} memo={memo} lazyRendering showVisibility showPinnedStyle showParent />
               ))}
               {isRequesting && (
                 <div className="flex flex-col justify-start items-center w-full my-8">

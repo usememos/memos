@@ -11,7 +11,7 @@ import { Resource } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
-import MemoContentV1 from "./MemoContentV1";
+import MemoContent from "./MemoContent";
 import MemoResourceListView from "./MemoResourceListView";
 import UserAvatar from "./UserAvatar";
 import "@/less/share-memo-dialog.less";
@@ -20,7 +20,7 @@ interface Props extends DialogProps {
   memo: Memo;
 }
 
-const ShareMemoDialogV1: React.FC<Props> = (props: Props) => {
+const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const { memo, destroy } = props;
   const t = useTranslate();
   const userV1Store = useUserV1Store();
@@ -104,7 +104,7 @@ const ShareMemoDialogV1: React.FC<Props> = (props: Props) => {
           >
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{getTimeString(memo.displayTime)}</span>
             <div className="w-full px-6 text-base pb-4">
-              <MemoContentV1 content={memo.content} />
+              <MemoContent content={memo.content} />
               <MemoResourceListView resourceList={resources} />
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-4 px-6">
@@ -125,13 +125,13 @@ const ShareMemoDialogV1: React.FC<Props> = (props: Props) => {
   );
 };
 
-export default function showShareMemoDialogV1(memo: Memo): void {
+export default function showShareMemoDialog(memo: Memo): void {
   generateDialog(
     {
-      className: "share-memo-dialog-v1",
-      dialogName: "share-memo-dialog-v1",
+      className: "share-memo-dialog",
+      dialogName: "share-memo-dialog",
     },
-    ShareMemoDialogV1,
+    ShareMemoDialog,
     { memo }
   );
 }

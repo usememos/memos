@@ -2,11 +2,12 @@ import { Button, Divider, Input, Option, Select } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
-import { VISIBILITY_SELECTOR_ITEMS } from "@/helpers/consts";
 import { useGlobalStore } from "@/store/module";
 import { useUserV1Store } from "@/store/v1";
+import { Visibility } from "@/types/proto/api/v2/memo_service";
 import { UserSetting } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
+import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/memo";
 import AppearanceSelect from "../AppearanceSelect";
 import Icon from "../Icon";
 import LocaleSelect from "../LocaleSelect";
@@ -87,18 +88,20 @@ const PreferencesSection = () => {
         <Select
           className="!min-w-fit"
           value={setting.memoVisibility}
-          startDecorator={<VisibilityIcon visibility={setting.memoVisibility as Visibility} />}
+          startDecorator={<VisibilityIcon visibility={convertVisibilityFromString(setting.memoVisibility)} />}
           onChange={(_, visibility) => {
             if (visibility) {
               handleDefaultMemoVisibilityChanged(visibility);
             }
           }}
         >
-          {VISIBILITY_SELECTOR_ITEMS.map((item) => (
-            <Option key={item} value={item} className="whitespace-nowrap">
-              {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
-            </Option>
-          ))}
+          {[Visibility.PRIVATE, Visibility.PROTECTED, Visibility.PUBLIC]
+            .map((v) => convertVisibilityToString(v))
+            .map((item) => (
+              <Option key={item} value={item} className="whitespace-nowrap">
+                {t(`memo.visibility.${item.toLowerCase() as Lowercase<typeof item>}`)}
+              </Option>
+            ))}
         </Select>
       </div>
 

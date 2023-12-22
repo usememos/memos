@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
-import MemoEditorV1 from "@/components/MemoEditorV1";
+import MemoEditor from "@/components/MemoEditor";
 import MobileHeader from "@/components/MobileHeader";
 import TimelineMemo from "@/components/TimelineMemo";
 import DatePicker from "@/components/kit/DatePicker";
@@ -108,7 +108,7 @@ const Timeline = () => {
               ))}
               {selectedDateStamp === currentDateStamp && (
                 <div className="w-full pl-0 sm:pl-12 sm:mt-4">
-                  <MemoEditorV1 cacheKey="timeline-editor" onConfirm={handleMemoCreate} />
+                  <MemoEditor cacheKey="timeline-editor" onConfirm={handleMemoCreate} />
                 </div>
               )}
             </div>

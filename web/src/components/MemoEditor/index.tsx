@@ -17,7 +17,7 @@ import { convertVisibilityFromString, convertVisibilityToString } from "@/utils/
 import showCreateMemoRelationDialog from "../CreateMemoRelationDialog";
 import showCreateResourceDialog from "../CreateResourceDialog";
 import Icon from "../Icon";
-import VisibilityIconV1 from "../VisibilityIconV1";
+import VisibilityIcon from "../VisibilityIcon";
 import TagSelector from "./ActionButton/TagSelector";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
@@ -427,7 +427,7 @@ const MemoEditor = (props: Props) => {
           <Select
             variant="plain"
             value={state.memoVisibility}
-            startDecorator={<VisibilityIconV1 visibility={state.memoVisibility} />}
+            startDecorator={<VisibilityIcon visibility={state.memoVisibility} />}
             onChange={(_, visibility) => {
               if (visibility) {
                 handleMemoVisibilityChange(visibility);

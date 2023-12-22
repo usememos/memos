@@ -11,7 +11,7 @@ interface Props {
   relationList: MemoRelation[];
 }
 
-const MemoRelationListViewV1 = (props: Props) => {
+const MemoRelationListView = (props: Props) => {
   const { memo, relationList } = props;
   const memoStore = useMemoV1Store();
   const [referencingMemoList, setReferencingMemoList] = useState<Memo[]>([]);
@@ -80,4 +80,4 @@ const MemoRelationListViewV1 = (props: Props) => {
   );
 };
 
-export default MemoRelationListViewV1;
+export default MemoRelationListView;
