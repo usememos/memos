@@ -34,7 +34,7 @@ const Home = () => {
   }, [tagQuery, textQuery]);
 
   const fetchMemos = async () => {
-    const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
+    const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
     if (tagQuery) {
       contentSearch.push(`"#${tagQuery}"`);

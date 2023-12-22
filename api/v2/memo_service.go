@@ -62,6 +62,9 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		if len(filter.Visibilities) > 0 {
 			memoFind.VisibilityList = filter.Visibilities
 		}
+		if filter.OrderByPinned {
+			memoFind.OrderByPinned = filter.OrderByPinned
+		}
 		if filter.CreatedTsBefore != nil {
 			memoFind.CreatedTsBefore = filter.CreatedTsBefore
 		}
@@ -516,17 +519,19 @@ func convertVisibilityToStore(visibility apiv2pb.Visibility) store.Visibility {
 
 // ListMemosFilterCELAttributes are the CEL attributes for ListMemosFilter.
 var ListMemosFilterCELAttributes = []cel.EnvOption{
+	cel.Variable("content_search", cel.ListType(cel.StringType)),
 	cel.Variable("visibilities", cel.ListType(cel.StringType)),
+	cel.Variable("order_by_pinned", cel.BoolType),
 	cel.Variable("created_ts_before", cel.IntType),
 	cel.Variable("created_ts_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
-	cel.Variable("content_search", cel.ListType(cel.StringType)),
 	cel.Variable("row_status", cel.StringType),
 }
 
 type ListMemosFilter struct {
 	ContentSearch   []string
 	Visibilities    []store.Visibility
+	OrderByPinned   bool
 	CreatedTsBefore *int64
 	CreatedTsAfter  *int64
 	Creator         *string
@@ -570,6 +575,9 @@ func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 					visibilities = append(visibilities, store.Visibility(value))
 				}
 				filter.Visibilities = visibilities
+			} else if idExpr.Name == "order_by_pinned" {
+				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
+				filter.OrderByPinned = value
 			} else if idExpr.Name == "created_ts_before" {
 				createdTsBefore := callExpr.Args[1].GetConstExpr().GetInt64Value()
 				filter.CreatedTsBefore = &createdTsBefore
