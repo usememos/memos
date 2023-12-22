@@ -48,14 +48,6 @@ export function getUserList() {
   return axios.get<User[]>("/api/v1/user");
 }
 
-export function getUserById(id: number) {
-  return axios.get<User>(`/api/v1/user/${id}`);
-}
-
-export function upsertUserSetting(upsert: UserSettingUpsert) {
-  return axios.post<UserSetting>(`/api/v1/user/setting`, upsert);
-}
-
 export function getMemoStats(username: string) {
   return axios.get<number[]>(`/api/v1/memo/stats?creatorUsername=${username}`);
 }
