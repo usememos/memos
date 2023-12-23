@@ -312,6 +312,9 @@ func (s *APIV1Service) DeleteUser(c echo.Context) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, fmt.Sprintf("ID is not a number: %s", c.Param("id"))).SetInternal(err)
 	}
+	if currentUserID == userID {
+		return echo.NewHTTPError(http.StatusBadRequest, "Cannot delete current user")
+	}
 
 	if err := s.Store.DeleteUser(ctx, &store.DeleteUser{
 		ID: userID,
@@ -371,6 +374,9 @@ func (s *APIV1Service) UpdateUser(c echo.Context) error {
 	if request.RowStatus != nil {
 		rowStatus := store.RowStatus(request.RowStatus.String())
 		userUpdate.RowStatus = &rowStatus
+		if rowStatus == store.Archived && currentUserID == userID {
+			return echo.NewHTTPError(http.StatusBadRequest, "Cannot archive current user")
+		}
 	}
 	if request.Username != nil {
 		if !usernameMatcher.MatchString(strings.ToLower(*request.Username)) {
