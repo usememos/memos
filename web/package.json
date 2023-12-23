@@ -59,8 +59,7 @@
     "postcss": "^8.4.32",
     "prettier": "2.6.2",
     "typescript": "^5.3.3",
-    "vite": "^5.0.10",
-    "vite-plugin-pwa": "^0.17.4"
+    "vite": "^5.0.10"
   },
   "resolutions": {
     "csstype": "3.1.2"
