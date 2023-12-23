@@ -13,14 +13,17 @@ import (
 	"github.com/labstack/echo/v4"
 
 	"github.com/usememos/memos/internal/util"
+	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 	"github.com/usememos/memos/plugin/gomark/renderer"
 	"github.com/usememos/memos/store"
 )
 
-const maxRSSItemCount = 100
-const maxRSSItemTitleLength = 100
+const (
+	maxRSSItemCount       = 100
+	maxRSSItemTitleLength = 128
+)
 
 func (s *APIV1Service) registerRSSRoutes(g *echo.Group) {
 	g.GET("/explore/rss.xml", s.GetExploreRSS)
@@ -171,37 +174,28 @@ func (s *APIV1Service) getSystemCustomizedProfile(ctx context.Context) (*Customi
 }
 
 func getRSSItemTitle(content string) string {
-	var title string
-	if isTitleDefined(content) {
-		title = strings.Split(content, "\n")[0][2:]
-	} else {
-		title = strings.Split(content, "\n")[0]
-		var titleLengthLimit = util.Min(len(title), maxRSSItemTitleLength)
-		if titleLengthLimit < len(title) {
-			title = title[:titleLengthLimit] + "..."
-		}
+	tokens := tokenizer.Tokenize(content)
+	nodes, _ := parser.Parse(tokens)
+	if len(nodes) > 0 {
+		firstNode := nodes[0]
+		title := renderer.NewStringRenderer().Render([]ast.Node{firstNode})
+		return title
+	}
+
+	title := strings.Split(content, "\n")[0]
+	var titleLengthLimit = util.Min(len(title), maxRSSItemTitleLength)
+	if titleLengthLimit < len(title) {
+		title = title[:titleLengthLimit] + "..."
 	}
 	return title
 }
 
 func getRSSItemDescription(content string) (string, error) {
-	var description string
-	if isTitleDefined(content) {
-		var firstLineEnd = strings.Index(content, "\n")
-		description = strings.Trim(content[firstLineEnd+1:], " ")
-	} else {
-		description = content
-	}
-
-	tokens := tokenizer.Tokenize(description)
+	tokens := tokenizer.Tokenize(content)
 	nodes, err := parser.Parse(tokens)
 	if err != nil {
 		return "", err
 	}
 	result := renderer.NewHTMLRenderer().Render(nodes)
 	return result, nil
-}
-
-func isTitleDefined(content string) bool {
-	return strings.HasPrefix(content, "# ")
 }

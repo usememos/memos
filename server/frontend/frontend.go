@@ -1,6 +1,7 @@
 package frontend
 
 import (
+	"context"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -10,13 +11,18 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 
-	v1 "github.com/usememos/memos/api/v1"
+	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/util"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 	"github.com/usememos/memos/plugin/gomark/renderer"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
+)
+
+const (
+	// maxMetadataDescriptionLength is the maximum length of metadata description.
+	maxMetadataDescriptionLength = 256
 )
 
 type FrontendService struct {
@@ -31,85 +37,23 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 	}
 }
 
-func (s *FrontendService) Serve(e *echo.Echo) {
+func (s *FrontendService) Serve(ctx context.Context, e *echo.Echo) {
 	// Use echo static middleware to serve the built dist folder.
 	// refer: https://github.com/labstack/echo/blob/master/middleware/static.go
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		HTML5:      true,
-		Filesystem: http.Dir("dist"),
+		Root:  "dist",
+		HTML5: true,
 		Skipper: func(c echo.Context) bool {
 			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v2", "/robots.txt", "/sitemap.xml", "/m/:memoID")
 		},
 	}))
 
 	s.registerRoutes(e)
+	s.registerFileRoutes(ctx, e)
 }
 
 func (s *FrontendService) registerRoutes(e *echo.Echo) {
 	rawIndexHTML := getRawIndexHTML()
-
-	e.GET("/robots.txt", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		instanceURLSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
-			Name: v1.SystemSettingInstanceURLName.String(),
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get instance URL system setting").SetInternal(err)
-		}
-		if instanceURLSetting == nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Instance URL system setting is not set")
-		}
-		instanceURL := instanceURLSetting.Value
-		if instanceURL == "" {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Instance URL system setting is not set")
-		}
-
-		robotsTxt := fmt.Sprintf(`User-agent: *
-Allow: /
-Host: %s
-Sitemap: %s/sitemap.xml`, instanceURL, instanceURL)
-		return c.String(http.StatusOK, robotsTxt)
-	})
-
-	e.GET("/sitemap.xml", func(c echo.Context) error {
-		ctx := c.Request().Context()
-		instanceURLSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
-			Name: v1.SystemSettingInstanceURLName.String(),
-		})
-		if err != nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get instance URL system setting").SetInternal(err)
-		}
-		if instanceURLSetting == nil {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Instance URL system setting is not set")
-		}
-		instanceURL := instanceURLSetting.Value
-		if instanceURL == "" {
-			return echo.NewHTTPError(http.StatusInternalServerError, "Instance URL system setting is not set")
-		}
-
-		urlsets := []string{}
-		// Append memo list.
-		memoList, err := s.Store.ListMemos(ctx, &store.FindMemo{
-			VisibilityList: []store.Visibility{store.Public},
-		})
-		if err != nil {
-			return err
-		}
-		for _, memo := range memoList {
-			urlsets = append(urlsets, fmt.Sprintf(`<url><loc>%s</loc></url>`, fmt.Sprintf("%s/m/%d", instanceURL, memo.ID)))
-		}
-		// Append user list.
-		userList, err := s.Store.ListUsers(ctx, &store.FindUser{})
-		if err != nil {
-			return err
-		}
-		for _, user := range userList {
-			urlsets = append(urlsets, fmt.Sprintf(`<url><loc>%s</loc></url>`, fmt.Sprintf("%s/u/%s", instanceURL, user.Username)))
-		}
-
-		sitemap := fmt.Sprintf(`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">%s</urlset>`, strings.Join(urlsets, "\n"))
-		return c.XMLBlob(http.StatusOK, []byte(sitemap))
-	})
 
 	e.GET("/m/:memoID", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -141,6 +85,53 @@ Sitemap: %s/sitemap.xml`, instanceURL, instanceURL)
 	})
 }
 
+func (s *FrontendService) registerFileRoutes(ctx context.Context, e *echo.Echo) {
+	instanceURLSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+		Name: apiv1.SystemSettingInstanceURLName.String(),
+	})
+	if err != nil || instanceURLSetting == nil {
+		return
+	}
+	instanceURL := instanceURLSetting.Value
+	if instanceURL == "" {
+		return
+	}
+
+	e.GET("/robots.txt", func(c echo.Context) error {
+		robotsTxt := fmt.Sprintf(`User-agent: *
+Allow: /
+Host: %s
+Sitemap: %s/sitemap.xml`, instanceURL, instanceURL)
+		return c.String(http.StatusOK, robotsTxt)
+	})
+
+	e.GET("/sitemap.xml", func(c echo.Context) error {
+		ctx := c.Request().Context()
+		urlsets := []string{}
+		// Append memo list.
+		memoList, err := s.Store.ListMemos(ctx, &store.FindMemo{
+			VisibilityList: []store.Visibility{store.Public},
+		})
+		if err != nil {
+			return err
+		}
+		for _, memo := range memoList {
+			urlsets = append(urlsets, fmt.Sprintf(`<url><loc>%s</loc></url>`, fmt.Sprintf("%s/m/%d", instanceURL, memo.ID)))
+		}
+		// Append user list.
+		userList, err := s.Store.ListUsers(ctx, &store.FindUser{})
+		if err != nil {
+			return err
+		}
+		for _, user := range userList {
+			urlsets = append(urlsets, fmt.Sprintf(`<url><loc>%s</loc></url>`, fmt.Sprintf("%s/u/%s", instanceURL, user.Username)))
+		}
+
+		sitemap := fmt.Sprintf(`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">%s</urlset>`, strings.Join(urlsets, "\n"))
+		return c.XMLBlob(http.StatusOK, []byte(sitemap))
+	})
+}
+
 func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
 	description := ""
 	if memo.Visibility == store.Private {
@@ -154,8 +145,8 @@ func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
 		if len(description) == 0 {
 			description = memo.Content
 		}
-		if len(description) > 200 {
-			description = description[:200] + "..."
+		if len(description) > maxMetadataDescriptionLength {
+			description = description[:maxMetadataDescriptionLength] + "..."
 		}
 	}
 
