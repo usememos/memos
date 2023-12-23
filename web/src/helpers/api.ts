@@ -44,10 +44,6 @@ export function signout() {
   return axios.post("/api/v1/auth/signout");
 }
 
-export function getMemoStats(username: string) {
-  return axios.get<number[]>(`/api/v1/memo/stats?creatorUsername=${username}`);
-}
-
 export function createResource(resourceCreate: ResourceCreate) {
   return axios.post<Resource>("/api/v1/resource", resourceCreate);
 }

@@ -2,11 +2,10 @@ import { Badge, Button } from "@mui/joy";
 import classNames from "classnames";
 import { useEffect, useRef, useState } from "react";
 import useClickAway from "react-use/lib/useClickAway";
-import { getMemoStats } from "@/helpers/api";
+import { memoServiceClient } from "@/grpcweb";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, isFutureDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
 import "@/less/common/date-picker.less";
@@ -36,14 +35,17 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
   }, [datestamp]);
 
   useEffect(() => {
-    getMemoStats(extractUsernameFromName(user.name)).then(({ data }) => {
+    (async () => {
+      const { memoCreationStats } = await memoServiceClient.getUserMemosStats({
+        name: user.name,
+      });
       const m = new Map();
-      for (const record of data) {
-        const date = getDateStampByDate(record * 1000);
+      Object.entries(memoCreationStats).forEach(([k]) => {
+        const date = getDateStampByDate(k);
         m.set(date, true);
-      }
+      });
       setCountByDate(m);
-    });
+    })();
   }, [user.name]);
 
   const firstDate = new Date(currentDateStamp);

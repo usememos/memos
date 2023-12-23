@@ -358,6 +358,40 @@ func (s *APIV2Service) ListMemoComments(ctx context.Context, request *apiv2pb.Li
 	return response, nil
 }
 
+func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.GetUserMemosStatsRequest) (*apiv2pb.GetUserMemosStatsResponse, error) {
+	username, err := ExtractUsernameFromName(request.Name)
+	if err != nil {
+		return nil, status.Errorf(codes.InvalidArgument, "invalid username")
+	}
+	user, err := s.Store.GetUser(ctx, &store.FindUser{
+		Username: &username,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user")
+	}
+	if user == nil {
+		return nil, status.Errorf(codes.NotFound, "user not found")
+	}
+	normalRowStatus := store.Normal
+	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
+		CreatorID: &user.ID,
+		RowStatus: &normalRowStatus,
+	})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list memos")
+	}
+
+	creationStats := make(map[string]int32)
+	for _, memo := range memos {
+		creationStats[time.Unix(memo.CreatedTs, 0).Format("2006-01-02")]++
+	}
+
+	response := &apiv2pb.GetUserMemosStatsResponse{
+		MemoCreationStats: creationStats,
+	}
+	return response, nil
+}
+
 func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Memo) (*apiv2pb.Memo, error) {
 	rawNodes, err := parser.Parse(tokenizer.Tokenize(memo.Content))
 	if err != nil {

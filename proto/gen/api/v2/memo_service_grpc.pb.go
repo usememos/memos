@@ -30,6 +30,7 @@ const (
 	MemoService_ListMemoRelations_FullMethodName = "/memos.api.v2.MemoService/ListMemoRelations"
 	MemoService_CreateMemoComment_FullMethodName = "/memos.api.v2.MemoService/CreateMemoComment"
 	MemoService_ListMemoComments_FullMethodName  = "/memos.api.v2.MemoService/ListMemoComments"
+	MemoService_GetUserMemosStats_FullMethodName = "/memos.api.v2.MemoService/GetUserMemosStats"
 )
 
 // MemoServiceClient is the client API for MemoService service.
@@ -58,6 +59,8 @@ type MemoServiceClient interface {
 	CreateMemoComment(ctx context.Context, in *CreateMemoCommentRequest, opts ...grpc.CallOption) (*CreateMemoCommentResponse, error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(ctx context.Context, in *ListMemoCommentsRequest, opts ...grpc.CallOption) (*ListMemoCommentsResponse, error)
+	// GetUserMemosStats gets stats of memos for a user.
+	GetUserMemosStats(ctx context.Context, in *GetUserMemosStatsRequest, opts ...grpc.CallOption) (*GetUserMemosStatsResponse, error)
 }
 
 type memoServiceClient struct {
@@ -167,6 +170,15 @@ func (c *memoServiceClient) ListMemoComments(ctx context.Context, in *ListMemoCo
 	return out, nil
 }
 
+func (c *memoServiceClient) GetUserMemosStats(ctx context.Context, in *GetUserMemosStatsRequest, opts ...grpc.CallOption) (*GetUserMemosStatsResponse, error) {
+	out := new(GetUserMemosStatsResponse)
+	err := c.cc.Invoke(ctx, MemoService_GetUserMemosStats_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MemoServiceServer is the server API for MemoService service.
 // All implementations must embed UnimplementedMemoServiceServer
 // for forward compatibility
@@ -193,6 +205,8 @@ type MemoServiceServer interface {
 	CreateMemoComment(context.Context, *CreateMemoCommentRequest) (*CreateMemoCommentResponse, error)
 	// ListMemoComments lists comments for a memo.
 	ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error)
+	// GetUserMemosStats gets stats of memos for a user.
+	GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error)
 	mustEmbedUnimplementedMemoServiceServer()
 }
 
@@ -232,6 +246,9 @@ func (UnimplementedMemoServiceServer) CreateMemoComment(context.Context, *Create
 }
 func (UnimplementedMemoServiceServer) ListMemoComments(context.Context, *ListMemoCommentsRequest) (*ListMemoCommentsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListMemoComments not implemented")
+}
+func (UnimplementedMemoServiceServer) GetUserMemosStats(context.Context, *GetUserMemosStatsRequest) (*GetUserMemosStatsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserMemosStats not implemented")
 }
 func (UnimplementedMemoServiceServer) mustEmbedUnimplementedMemoServiceServer() {}
 
@@ -444,6 +461,24 @@ func _MemoService_ListMemoComments_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MemoService_GetUserMemosStats_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserMemosStatsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemoServiceServer).GetUserMemosStats(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MemoService_GetUserMemosStats_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemoServiceServer).GetUserMemosStats(ctx, req.(*GetUserMemosStatsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MemoService_ServiceDesc is the grpc.ServiceDesc for MemoService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -494,6 +529,10 @@ var MemoService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListMemoComments",
 			Handler:    _MemoService_ListMemoComments_Handler,
+		},
+		{
+			MethodName: "GetUserMemosStats",
+			Handler:    _MemoService_GetUserMemosStats_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

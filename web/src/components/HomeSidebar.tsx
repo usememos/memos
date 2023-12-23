@@ -1,6 +1,6 @@
+import MemoCreationHeatMap from "./MemoCreationHeatMap";
 import SearchBar from "./SearchBar";
 import TagList from "./TagList";
-import UsageHeatMap from "./UsageHeatMap";
 
 const HomeSidebar = () => {
   return (
@@ -8,7 +8,7 @@ const HomeSidebar = () => {
       <div className="px-4 pr-8 mb-4 w-full">
         <SearchBar />
       </div>
-      <UsageHeatMap />
+      <MemoCreationHeatMap />
       <TagList />
     </aside>
   );

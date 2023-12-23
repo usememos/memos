@@ -120,6 +120,9 @@
     - [DeleteMemoResponse](#memos-api-v2-DeleteMemoResponse)
     - [GetMemoRequest](#memos-api-v2-GetMemoRequest)
     - [GetMemoResponse](#memos-api-v2-GetMemoResponse)
+    - [GetUserMemosStatsRequest](#memos-api-v2-GetUserMemosStatsRequest)
+    - [GetUserMemosStatsResponse](#memos-api-v2-GetUserMemosStatsResponse)
+    - [GetUserMemosStatsResponse.MemoCreationStatsEntry](#memos-api-v2-GetUserMemosStatsResponse-MemoCreationStatsEntry)
     - [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest)
     - [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse)
     - [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest)
@@ -1690,6 +1693,52 @@
 
 
 
+<a name="memos-api-v2-GetUserMemosStatsRequest"></a>
+
+### GetUserMemosStatsRequest
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| name | [string](#string) |  | name is the name of the user to get stats for. Format: users/{username} |
+
+
+
+
+
+
+<a name="memos-api-v2-GetUserMemosStatsResponse"></a>
+
+### GetUserMemosStatsResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| memo_creation_stats | [GetUserMemosStatsResponse.MemoCreationStatsEntry](#memos-api-v2-GetUserMemosStatsResponse-MemoCreationStatsEntry) | repeated | memo_creation_stats is the stats of memo creation. key is the year-month-day string. e.g. &#34;2020-01-01&#34;. value is the count of memos created. |
+
+
+
+
+
+
+<a name="memos-api-v2-GetUserMemosStatsResponse-MemoCreationStatsEntry"></a>
+
+### GetUserMemosStatsResponse.MemoCreationStatsEntry
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| key | [string](#string) |  |  |
+| value | [int32](#int32) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-ListMemoCommentsRequest"></a>
 
 ### ListMemoCommentsRequest
@@ -1961,6 +2010,7 @@
 | ListMemoRelations | [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest) | [ListMemoRelationsResponse](#memos-api-v2-ListMemoRelationsResponse) | ListMemoRelations lists relations for a memo. |
 | CreateMemoComment | [CreateMemoCommentRequest](#memos-api-v2-CreateMemoCommentRequest) | [CreateMemoCommentResponse](#memos-api-v2-CreateMemoCommentResponse) | CreateMemoComment creates a comment for a memo. |
 | ListMemoComments | [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest) | [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse) | ListMemoComments lists comments for a memo. |
+| GetUserMemosStats | [GetUserMemosStatsRequest](#memos-api-v2-GetUserMemosStatsRequest) | [GetUserMemosStatsResponse](#memos-api-v2-GetUserMemosStatsResponse) | GetUserMemosStats gets stats of memos for a user. |
 
  
 

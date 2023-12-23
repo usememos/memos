@@ -80,6 +80,11 @@ service MemoService {
     option (google.api.http) = {get: "/api/v2/memos/{id}/comments"};
     option (google.api.method_signature) = "id";
   }
+  // GetUserMemosStats gets stats of memos for a user.
+  rpc GetUserMemosStats(GetUserMemosStatsRequest) returns (GetUserMemosStatsResponse) {
+    option (google.api.http) = {get: "/api/v2/memos/stats"};
+    option (google.api.method_signature) = "username";
+  }
 }
 
 enum Visibility {
@@ -223,4 +228,16 @@ message ListMemoCommentsRequest {
 
 message ListMemoCommentsResponse {
   repeated Memo memos = 1;
+}
+
+message GetUserMemosStatsRequest {
+  // name is the name of the user to get stats for.
+  // Format: users/{username}
+  string name = 1;
+}
+
+message GetUserMemosStatsResponse {
+  // memo_creation_stats is the stats of memo creation.
+  // key is the year-month-day string. e.g. "2020-01-01". value is the count of memos created.
+  map<string, int32> memo_creation_stats = 1;
 }
