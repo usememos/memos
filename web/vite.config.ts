@@ -21,7 +21,7 @@ export default defineConfig({
       },
       manifest: {
         short_name: "memos",
-        name: "memos",
+        name: "Memos",
         description: "usememos/memos",
         start_url: "/",
         scope: "/",
