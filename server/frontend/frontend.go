@@ -118,15 +118,6 @@ Sitemap: %s/sitemap.xml`, instanceURL, instanceURL)
 		for _, memo := range memoList {
 			urlsets = append(urlsets, fmt.Sprintf(`<url><loc>%s</loc></url>`, fmt.Sprintf("%s/m/%d", instanceURL, memo.ID)))
 		}
-		// Append user list.
-		userList, err := s.Store.ListUsers(ctx, &store.FindUser{})
-		if err != nil {
-			return err
-		}
-		for _, user := range userList {
-			urlsets = append(urlsets, fmt.Sprintf(`<url><loc>%s</loc></url>`, fmt.Sprintf("%s/u/%s", instanceURL, user.Username)))
-		}
-
 		sitemap := fmt.Sprintf(`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">%s</urlset>`, strings.Join(urlsets, "\n"))
 		return c.XMLBlob(http.StatusOK, []byte(sitemap))
 	})
