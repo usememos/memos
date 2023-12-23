@@ -218,7 +218,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
         <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
           {props.showCreator && creator && (
             <>
-              <Link to={`/u/${encodeURIComponent(extractUsernameFromName(memo.creator))}`}>
+              <Link to={`/u/${encodeURIComponent(extractUsernameFromName(memo.creator))}`} unstable_viewTransition>
                 <Tooltip title={"Creator"} placement="top">
                   <span className="flex flex-row justify-start items-center">
                     <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator.avatarUrl} />
@@ -244,7 +244,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           )}
           <div className="w-auto hidden group-hover:flex flex-row justify-between items-center">
             <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-            <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}`}>
+            <Link className="flex flex-row justify-start items-center" to={`/m/${memo.id}`} unstable_viewTransition>
               <Tooltip title={"Identifier"} placement="top">
                 <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
               </Tooltip>
@@ -309,6 +309,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           <Link
             className="px-2 py-0.5 border rounded-full max-w-xs w-auto text-xs flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
             to={`/m/${parentMemo.id}`}
+            unstable_viewTransition
           >
             <Icon.ArrowUpRightFromCircle className="w-3 h-auto shrink-0 opacity-60" />
             <span className="mx-1 opacity-60">#{parentMemo.id}</span>

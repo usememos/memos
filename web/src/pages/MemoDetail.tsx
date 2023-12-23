@@ -119,6 +119,7 @@ const MemoDetail = () => {
               <Link
                 className="px-3 py-1 border rounded-full max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
                 to={`/m/${parentMemo.id}`}
+                unstable_viewTransition
               >
                 <Icon.ArrowUpLeftFromCircle className="w-4 h-auto shrink-0 opacity-60" />
                 <span className="mx-1 opacity-60">#{parentMemo.id}</span>
@@ -138,7 +139,7 @@ const MemoDetail = () => {
                 <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
               </Tooltip>
               <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-              <Link to={`/u/${encodeURIComponent(memo.creator)}`}>
+              <Link to={`/u/${encodeURIComponent(memo.creator)}`} unstable_viewTransition>
                 <Tooltip title={"Creator"} placement="top">
                   <span className="flex flex-row justify-start items-center">
                     <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator?.avatarUrl} />

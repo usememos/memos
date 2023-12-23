@@ -44,6 +44,7 @@ const MemoRelationListView = (props: Props) => {
                 <Link
                   className="px-2 border rounded-md w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-300 dark:border-gray-600 hover:shadow hover:opacity-80"
                   to={`/m/${memo.id}`}
+                  unstable_viewTransition
                 >
                   <Tooltip title="Reference" placement="top">
                     <Icon.Link className="w-4 h-auto shrink-0 opacity-70" />
@@ -64,6 +65,7 @@ const MemoRelationListView = (props: Props) => {
                 <Link
                   className="px-2 border rounded-md w-auto text-sm leading-6 flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-300 dark:border-gray-600 hover:shadow hover:opacity-80"
                   to={`/m/${memo.id}`}
+                  unstable_viewTransition
                 >
                   <Tooltip title="Backlink" placement="top">
                     <Icon.Milestone className="w-4 h-auto shrink-0 opacity-70" />
