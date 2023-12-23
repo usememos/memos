@@ -1,11 +1,10 @@
 package frontend
 
 import (
-	"embed"
 	"fmt"
 	"html/template"
-	"io/fs"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -19,12 +18,6 @@ import (
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
 )
-
-//go:embed dist
-var embeddedFiles embed.FS
-
-//go:embed dist/index.html
-var rawIndexHTML string
 
 type FrontendService struct {
 	Profile *profile.Profile
@@ -42,32 +35,18 @@ func (s *FrontendService) Serve(e *echo.Echo) {
 	// Use echo static middleware to serve the built dist folder.
 	// refer: https://github.com/labstack/echo/blob/master/middleware/static.go
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Skipper:    defaultAPIRequestSkipper,
-		HTML5:      true,
-		Filesystem: getFileSystem("dist"),
-	}))
-
-	assetsGroup := e.Group("assets")
-	assetsGroup.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Root:    "dist",
 		Skipper: defaultAPIRequestSkipper,
-		Level:   5,
-	}))
-	assetsGroup.Use(func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			c.Response().Header().Set(echo.HeaderCacheControl, "max-age=31536000, immutable")
-			return next(c)
-		}
-	})
-	assetsGroup.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Skipper:    defaultAPIRequestSkipper,
-		HTML5:      true,
-		Filesystem: getFileSystem("dist/assets"),
+		HTML5:   true,
 	}))
 
 	s.registerRoutes(e)
 }
 
 func (s *FrontendService) registerRoutes(e *echo.Echo) {
+	rawIndexHTMLBytes, _ := os.ReadFile("dist/index.html")
+	rawIndexHTML := string(rawIndexHTMLBytes)
+
 	e.GET("/robots.txt", func(c echo.Context) error {
 		ctx := c.Request().Context()
 		instanceURLSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
@@ -192,14 +171,6 @@ func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
 		`<meta name="twitter:card" content="summary" />`,
 	}
 	return strings.Join(metadataList, "\n")
-}
-
-func getFileSystem(path string) http.FileSystem {
-	fs, err := fs.Sub(embeddedFiles, path)
-	if err != nil {
-		panic(err)
-	}
-	return http.FS(fs)
 }
 
 func defaultAPIRequestSkipper(c echo.Context) bool {

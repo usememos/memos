@@ -15,7 +15,6 @@ FROM golang:1.21-alpine AS backend
 WORKDIR /backend-build
 
 COPY . .
-COPY --from=frontend /frontend-build/web/dist ./server/frontend/dist
 
 RUN CGO_ENABLED=0 go build -o memos ./bin/memos/main.go
 
@@ -26,6 +25,7 @@ WORKDIR /usr/local/memos
 RUN apk add --no-cache tzdata
 ENV TZ="UTC"
 
+COPY --from=frontend /frontend-build/web/dist /usr/local/memos/dist
 COPY --from=backend /backend-build/memos /usr/local/memos/
 
 EXPOSE 5230
