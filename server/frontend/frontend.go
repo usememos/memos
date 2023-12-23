@@ -39,7 +39,7 @@ func NewFrontendService(profile *profile.Profile, store *store.Store) *FrontendS
 }
 
 func (s *FrontendService) Serve(e *echo.Echo) {
-	// Use echo static middleware to serve the built dist folder
+	// Use echo static middleware to serve the built dist folder.
 	// refer: https://github.com/labstack/echo/blob/master/middleware/static.go
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
 		Skipper:    defaultAPIRequestSkipper,
@@ -80,6 +80,10 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Instance URL system setting is not set")
 		}
 		instanceURL := instanceURLSetting.Value
+		if instanceURL == "" {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Instance URL system setting is not set")
+		}
+
 		robotsTxt := fmt.Sprintf(`User-agent: *
 Allow: /
 Host: %s
@@ -98,8 +102,11 @@ Sitemap: %s/sitemap.xml`, instanceURL, instanceURL)
 		if instanceURLSetting == nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Instance URL system setting is not set")
 		}
-
 		instanceURL := instanceURLSetting.Value
+		if instanceURL == "" {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Instance URL system setting is not set")
+		}
+
 		urlsets := []string{}
 		// Append memo list.
 		memoList, err := s.Store.ListMemos(ctx, &store.FindMemo{

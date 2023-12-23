@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
-import { useUserV1Store, UserNamePrefix } from "@/store/v1";
+import { useUserV1Store } from "@/store/v1";
+import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -49,7 +50,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
     try {
       await userV1Store.updateUser(
         {
-          name: `${UserNamePrefix}${user.username}`,
+          name: user.name,
           password: newPassword,
         },
         ["password"]
@@ -66,7 +67,7 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container !w-64">
         <p className="title-text">
-          {t("setting.account-section.change-password")} ({user.username})
+          {t("setting.account-section.change-password")} ({user.nickname})
         </p>
         <button className="btn close-btn" onClick={handleCloseBtnClick}>
           <Icon.X />

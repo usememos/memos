@@ -31,6 +31,8 @@
     - [GetUserSettingResponse](#memos-api-v2-GetUserSettingResponse)
     - [ListUserAccessTokensRequest](#memos-api-v2-ListUserAccessTokensRequest)
     - [ListUserAccessTokensResponse](#memos-api-v2-ListUserAccessTokensResponse)
+    - [ListUsersRequest](#memos-api-v2-ListUsersRequest)
+    - [ListUsersResponse](#memos-api-v2-ListUsersResponse)
     - [UpdateUserRequest](#memos-api-v2-UpdateUserRequest)
     - [UpdateUserResponse](#memos-api-v2-UpdateUserResponse)
     - [UpdateUserSettingRequest](#memos-api-v2-UpdateUserSettingRequest)
@@ -541,6 +543,31 @@
 
 
 
+<a name="memos-api-v2-ListUsersRequest"></a>
+
+### ListUsersRequest
+
+
+
+
+
+
+
+<a name="memos-api-v2-ListUsersResponse"></a>
+
+### ListUsersResponse
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| users | [User](#memos-api-v2-User) | repeated |  |
+
+
+
+
+
+
 <a name="memos-api-v2-UpdateUserRequest"></a>
 
 ### UpdateUserRequest
@@ -691,6 +718,7 @@
 
 | Method Name | Request Type | Response Type | Description |
 | ----------- | ------------ | ------------- | ------------|
+| ListUsers | [ListUsersRequest](#memos-api-v2-ListUsersRequest) | [ListUsersResponse](#memos-api-v2-ListUsersResponse) | ListUsers returns a list of users. |
 | GetUser | [GetUserRequest](#memos-api-v2-GetUserRequest) | [GetUserResponse](#memos-api-v2-GetUserResponse) | GetUser gets a user by name. |
 | CreateUser | [CreateUserRequest](#memos-api-v2-CreateUserRequest) | [CreateUserResponse](#memos-api-v2-CreateUserResponse) | CreateUser creates a new user. |
 | UpdateUser | [UpdateUserRequest](#memos-api-v2-UpdateUserRequest) | [UpdateUserResponse](#memos-api-v2-UpdateUserResponse) | UpdateUser updates a user. |

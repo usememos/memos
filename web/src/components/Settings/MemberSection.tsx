@@ -2,11 +2,10 @@ import { Button, Dropdown, Input, Menu, MenuButton } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
-import * as api from "@/helpers/api";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { UserNamePrefix, useUserV1Store } from "@/store/v1";
+import { UserNamePrefix, extractUsernameFromName, useUserV1Store } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
-import { User_Role } from "@/types/proto/api/v2/user_service";
+import { User, User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showChangeMemberPasswordDialog from "../ChangeMemberPasswordDialog";
 import { showCommonDialog } from "../Dialog/CommonDialog";
@@ -32,8 +31,8 @@ const MemberSection = () => {
   }, []);
 
   const fetchUserList = async () => {
-    const { data } = await api.getUserList();
-    setUserList(data.sort((a, b) => a.id - b.id));
+    const users = await userV1Store.fetchUsers();
+    setUserList(users);
   };
 
   const handleUsernameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,13 +80,13 @@ const MemberSection = () => {
   const handleArchiveUserClick = (user: User) => {
     showCommonDialog({
       title: t("setting.member-section.archive-member"),
-      content: t("setting.member-section.archive-warning", { username: user.username }),
+      content: t("setting.member-section.archive-warning", { username: user.nickname }),
       style: "danger",
       dialogName: "archive-user-dialog",
       onConfirm: async () => {
         await userServiceClient.updateUser({
           user: {
-            name: `${UserNamePrefix}${user.username}`,
+            name: user.name,
             rowStatus: RowStatus.ARCHIVED,
           },
           updateMask: ["row_status"],
@@ -100,7 +99,7 @@ const MemberSection = () => {
   const handleRestoreUserClick = async (user: User) => {
     await userServiceClient.updateUser({
       user: {
-        name: `${UserNamePrefix}${user.username}`,
+        name: user.name,
         rowStatus: RowStatus.ACTIVE,
       },
       updateMask: ["row_status"],
@@ -111,11 +110,11 @@ const MemberSection = () => {
   const handleDeleteUserClick = (user: User) => {
     showCommonDialog({
       title: t("setting.member-section.delete-member"),
-      content: t("setting.member-section.delete-warning", { username: user.username }),
+      content: t("setting.member-section.delete-warning", { username: user.nickname }),
       style: "danger",
       dialogName: "delete-user-dialog",
       onConfirm: async () => {
-        await userV1Store.deleteUser(`${UserNamePrefix}${user.username}`);
+        await userV1Store.deleteUser(user.name);
         fetchUserList();
       },
     });
@@ -165,8 +164,8 @@ const MemberSection = () => {
                 <tr key={user.id}>
                   <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-300">{user.id}</td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-300">
-                    {user.username}
-                    <span className="ml-1 italic">{user.rowStatus === "ARCHIVED" && "(Archived)"}</span>
+                    {extractUsernameFromName(user.name)}
+                    <span className="ml-1 italic">{user.rowStatus === RowStatus.ARCHIVED && "(Archived)"}</span>
                   </td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-300">{user.nickname}</td>
                   <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-300">{user.email}</td>
@@ -185,7 +184,7 @@ const MemberSection = () => {
                           >
                             {t("setting.account-section.change-password")}
                           </button>
-                          {user.rowStatus === "NORMAL" ? (
+                          {user.rowStatus === RowStatus.ACTIVE ? (
                             <button
                               className="w-full text-left text-sm leading-6 py-1 px-3 cursor-pointer rounded hover:bg-gray-100 dark:hover:bg-zinc-600"
                               onClick={() => handleArchiveUserClick(user)}

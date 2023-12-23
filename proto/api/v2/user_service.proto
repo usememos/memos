@@ -12,6 +12,10 @@ import "google/protobuf/timestamp.proto";
 option go_package = "gen/api/v2";
 
 service UserService {
+  // ListUsers returns a list of users.
+  rpc ListUsers(ListUsersRequest) returns (ListUsersResponse) {
+    option (google.api.http) = {get: "/api/v2/users"};
+  }
   // GetUser gets a user by name.
   rpc GetUser(GetUserRequest) returns (GetUserResponse) {
     option (google.api.http) = {get: "/api/v2/{name=users/*}"};
@@ -97,6 +101,12 @@ message User {
   google.protobuf.Timestamp create_time = 9;
 
   google.protobuf.Timestamp update_time = 10;
+}
+
+message ListUsersRequest {}
+
+message ListUsersResponse {
+  repeated User users = 1;
 }
 
 message GetUserRequest {
