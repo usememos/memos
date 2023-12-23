@@ -1,5 +1,6 @@
 import { Button } from "@mui/joy";
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import useToggle from "react-use/lib/useToggle";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
@@ -10,30 +11,46 @@ import DatePicker from "@/components/kit/DatePicker";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, getNormalizedDateString, getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoList, useMemoV1Store } from "@/store/v1";
+import { useMemoList, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const Timeline = () => {
   const t = useTranslate();
-  const currentUser = useCurrentUser();
-  const memoStore = useMemoV1Store();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const user = useCurrentUser();
+  const memoStore = useMemoStore();
   const memoList = useMemoList();
   const currentDateStamp = getDateStampByDate(getNormalizedDateString()) as number;
-  const [selectedDateStamp, setSelectedDateStamp] = useState<number>(currentDateStamp as number);
+  const [selectedDateStamp, setSelectedDateStamp] = useState<number>(
+    (searchParams.get("timestamp") ? Number(searchParams.get("timestamp")) : currentDateStamp) as number
+  );
+  const [isRequesting, setIsRequesting] = useState(true);
   const [showDatePicker, toggleShowDatePicker] = useToggle(false);
   const sortedMemos = memoList.value.sort((a, b) => getTimeStampByDate(a.createTime) - getTimeStampByDate(b.createTime));
 
   useEffect(() => {
+    setSearchParams();
+  }, []);
+
+  useEffect(() => {
     memoList.reset();
+    fetchMemos();
+  }, [selectedDateStamp]);
+
+  const fetchMemos = async () => {
     const filters = [
-      `creator == "${currentUser.name}"`,
+      `creator == "${user.name}"`,
+      `row_status == "NORMAL"`,
       `created_ts_after == ${selectedDateStamp / 1000}`,
       `created_ts_before == ${(selectedDateStamp + DAILY_TIMESTAMP) / 1000}`,
     ];
-    memoStore.fetchMemos({
+    setIsRequesting(true);
+    await memoStore.fetchMemos({
+      offset: memoList.size(),
       filter: filters.join(" && "),
     });
-  }, [selectedDateStamp]);
+    setIsRequesting(false);
+  };
 
   const handleDataPickerChange = (datestamp: number): void => {
     setSelectedDateStamp(datestamp);
@@ -73,12 +90,6 @@ const Timeline = () => {
             />
           </div>
           <div className="w-full h-auto flex flex-col justify-start items-start px-2 pb-4 bg-white dark:bg-zinc-700">
-            {sortedMemos.length === 0 && (
-              <div className="w-full mt-4 mb-8 flex flex-col justify-center items-center italic">
-                <Empty />
-                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
-              </div>
-            )}
             <div className="flex flex-col justify-start items-start w-full mt-2">
               {sortedMemos.map((memo, index) => (
                 <div
@@ -102,6 +113,12 @@ const Timeline = () => {
                 </div>
               )}
             </div>
+            {!isRequesting && sortedMemos.length === 0 && (
+              <div className="w-full mt-4 mb-8 flex flex-col justify-center items-center italic">
+                <Empty />
+                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

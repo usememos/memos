@@ -103,15 +103,16 @@ const Navigation = () => {
       <div className="w-full px-1 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
         {navLinks.map((navLink) => (
           <NavLink
-            key={navLink.id}
-            to={navLink.path}
-            id={navLink.id}
             className={({ isActive }) =>
               classNames(
                 "w-full px-4 pr-5 py-2 rounded-2xl border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
                 isActive ? "bg-white drop-shadow-sm dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
               )
             }
+            key={navLink.id}
+            to={navLink.path}
+            id={navLink.id}
+            unstable_viewTransition
           >
             <>
               {navLink.icon} {navLink.title}

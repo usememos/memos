@@ -1,5 +1,6 @@
 import { Select, Tooltip, Option, IconButton } from "@mui/joy";
 import copy from "copy-to-clipboard";
+import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
@@ -14,14 +15,12 @@ import MobileHeader from "@/components/MobileHeader";
 import showShareMemoDialog from "@/components/ShareMemoDialog";
 import UserAvatar from "@/components/UserAvatar";
 import VisibilityIcon from "@/components/VisibilityIcon";
-import { UNKNOWN_ID } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserV1Store, useMemoV1Store, extractUsernameFromName } from "@/store/v1";
-import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
+import { useUserStore, useMemoStore, extractUsernameFromName } from "@/store/v1";
+import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
-import { Resource } from "@/types/proto/api/v2/resource_service";
 import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import { convertVisibilityToString } from "@/utils/memo";
@@ -31,19 +30,16 @@ const MemoDetail = () => {
   const params = useParams();
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
-  const memoStore = useMemoV1Store();
-  const userV1Store = useUserV1Store();
+  const memoStore = useMemoStore();
+  const userStore = useUserStore();
   const [creator, setCreator] = useState<User>();
   const memoId = Number(params.memoId);
   const memo = memoStore.getMemoById(memoId);
-  const allowEdit = memo?.creatorId === currentUser.id;
+  const allowEdit = memo?.creatorId === currentUser?.id;
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [memoRelations, setMemoRelations] = useState<MemoRelation[]>([]);
-  const referenceRelations = memoRelations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
-  const commentRelations = memoRelations.filter(
-    (relation) => relation.relatedMemoId === memo?.id && relation.type === MemoRelation_Type.COMMENT
-  );
+  const referenceRelations = memo?.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE) || [];
+  const commentRelations =
+    memo?.relations.filter((relation) => relation.relatedMemoId === memo?.id && relation.type === MemoRelation_Type.COMMENT) || [];
   const comments = commentRelations.map((relation) => memoStore.getMemoById(relation.memoId)).filter((memo) => memo) as any as Memo[];
 
   // Prepare memo.
@@ -52,12 +48,12 @@ const MemoDetail = () => {
       memoStore
         .getOrFetchMemoById(memoId)
         .then(async (memo) => {
-          const user = await userV1Store.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
+          const user = await userStore.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
           setCreator(user);
         })
-        .catch((error) => {
-          console.error(error);
-          toast.error(error.response.data.message);
+        .catch((error: ClientError) => {
+          toast.error(error.details);
+          navigateTo("/403");
         });
     } else {
       navigateTo("/404");
@@ -71,13 +67,7 @@ const MemoDetail = () => {
     }
 
     (async () => {
-      const resources = await memoStore.fetchMemoResources(memo.id);
-      setResources(resources);
-      const memoRelations = await memoStore.fetchMemoRelations(memo.id);
-      const commentRelations = memoRelations.filter(
-        (relation) => relation.relatedMemoId === memo.id && relation.type === MemoRelation_Type.COMMENT
-      );
-      const parentMemoId = memoRelations.find(
+      const parentMemoId = memo.relations.find(
         (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
       )?.relatedMemoId;
       if (parentMemoId) {
@@ -85,9 +75,7 @@ const MemoDetail = () => {
           setParentMemo(memo);
         });
       }
-      const requests = commentRelations.map((relation) => memoStore.getOrFetchMemoById(relation.memoId));
-      await Promise.all(requests);
-      setMemoRelations(memoRelations);
+      await Promise.all(commentRelations.map((relation) => memoStore.getOrFetchMemoById(relation.memoId)));
     })();
   }, [memo]);
 
@@ -118,7 +106,7 @@ const MemoDetail = () => {
 
   const handleCommentCreated = async (commentId: number) => {
     await memoStore.getOrFetchMemoById(commentId);
-    setMemoRelations(await memoStore.fetchMemoRelations(memo.id));
+    await memoStore.getOrFetchMemoById(memo.id, { skipCache: true });
   };
 
   return (
@@ -131,6 +119,7 @@ const MemoDetail = () => {
               <Link
                 className="px-3 py-1 border rounded-full max-w-xs w-auto text-sm flex flex-row justify-start items-center flex-nowrap text-gray-600 dark:text-gray-400 dark:border-gray-500 hover:shadow hover:opacity-80"
                 to={`/m/${parentMemo.id}`}
+                unstable_viewTransition
               >
                 <Icon.ArrowUpLeftFromCircle className="w-4 h-auto shrink-0 opacity-60" />
                 <span className="mx-1 opacity-60">#{parentMemo.id}</span>
@@ -142,7 +131,7 @@ const MemoDetail = () => {
             <span className="text-gray-400 select-none">{getDateTimeString(memo.displayTime)}</span>
           </div>
           <MemoContent content={memo.content} />
-          <MemoResourceListView resourceList={resources} />
+          <MemoResourceListView resourceList={memo.resources} />
           <MemoRelationListView memo={memo} relationList={referenceRelations} />
           <div className="w-full mt-4 flex flex-col sm:flex-row justify-start sm:justify-between sm:items-center gap-2">
             <div className="flex flex-row justify-start items-center">
@@ -150,7 +139,7 @@ const MemoDetail = () => {
                 <span className="text-sm text-gray-500 dark:text-gray-400">#{memo.id}</span>
               </Tooltip>
               <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
-              <Link to={`/u/${encodeURIComponent(memo.creator)}`}>
+              <Link to={`/u/${encodeURIComponent(memo.creator)}`} unstable_viewTransition>
                 <Tooltip title={"Creator"} placement="top">
                   <span className="flex flex-row justify-start items-center">
                     <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator?.avatarUrl} />
@@ -224,12 +213,7 @@ const MemoDetail = () => {
 
             {/* Only show comment editor when user login */}
             {currentUser && (
-              <MemoEditor
-                key={memo.id}
-                cacheKey={`comment-editor-${memo.id}`}
-                relationList={[{ memoId: UNKNOWN_ID, relatedMemoId: memo.id, type: MemoRelation_Type.COMMENT }]}
-                onConfirm={handleCommentCreated}
-              />
+              <MemoEditor key={memo.id} cacheKey={`comment-editor-${memo.id}`} parentMemoId={memo.id} onConfirm={handleCommentCreated} />
             )}
           </div>
         </div>

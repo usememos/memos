@@ -1,4 +1,5 @@
 import { Tooltip } from "@mui/joy";
+import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { showCommonDialog } from "@/components/Dialog/CommonDialog";
@@ -8,8 +9,9 @@ import MemoContent from "@/components/MemoContent";
 import MobileHeader from "@/components/MobileHeader";
 import { memoServiceClient } from "@/grpcweb";
 import { getDateTimeString } from "@/helpers/datetime";
+import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
-import { useMemoV1Store } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
@@ -17,24 +19,23 @@ import { useTranslate } from "@/utils/i18n";
 const Archived = () => {
   const t = useTranslate();
   const loadingState = useLoading();
-  const memoStore = useMemoV1Store();
+  const user = useCurrentUser();
+  const memoStore = useMemoStore();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
 
   useEffect(() => {
-    memoServiceClient
-      .listMemos({
-        filter: "row_status == 'ARCHIVED'",
-      })
-      .then(({ memos }) => {
+    (async () => {
+      try {
+        const filters = [`creator == "${user.name}"`, "row_status == 'ARCHIVED'"];
+        const { memos } = await memoServiceClient.listMemos({
+          filter: filters.join(" && "),
+        });
         setArchivedMemos(memos);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error(error.response.data.message);
-      })
-      .finally(() => {
-        loadingState.setFinish();
-      });
+      } catch (error: unknown) {
+        toast.error((error as ClientError).details);
+      }
+      loadingState.setFinish();
+    })();
   }, []);
 
   const handleDeleteMemoClick = async (memo: Memo) => {
@@ -61,9 +62,9 @@ const Archived = () => {
       );
       setArchivedMemos((prev) => prev.filter((m) => m.id !== memo.id));
       toast(t("message.restored-successfully"));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error(error.response.data.message);
+      toast.error((error as ClientError).details);
     }
   };
 

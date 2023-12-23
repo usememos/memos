@@ -3,7 +3,7 @@ import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { useGlobalStore } from "@/store/module";
-import { useUserV1Store } from "@/store/v1";
+import { useUserStore } from "@/store/v1";
 import { Visibility } from "@/types/proto/api/v2/memo_service";
 import { UserSetting } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -18,13 +18,13 @@ import "@/less/settings/preferences-section.less";
 const PreferencesSection = () => {
   const t = useTranslate();
   const globalStore = useGlobalStore();
-  const userV1Store = useUserV1Store();
+  const userStore = useUserStore();
   const { appearance, locale } = globalStore.state;
-  const setting = userV1Store.userSetting as UserSetting;
+  const setting = userStore.userSetting as UserSetting;
   const [telegramUserId, setTelegramUserId] = useState<string>(setting.telegramUserId);
 
   const handleLocaleSelectChange = async (locale: Locale) => {
-    await userV1Store.updateUserSetting(
+    await userStore.updateUserSetting(
       {
         locale,
       },
@@ -34,7 +34,7 @@ const PreferencesSection = () => {
   };
 
   const handleAppearanceSelectChange = async (appearance: Appearance) => {
-    await userV1Store.updateUserSetting(
+    await userStore.updateUserSetting(
       {
         appearance,
       },
@@ -44,7 +44,7 @@ const PreferencesSection = () => {
   };
 
   const handleDefaultMemoVisibilityChanged = async (value: string) => {
-    await userV1Store.updateUserSetting(
+    await userStore.updateUserSetting(
       {
         memoVisibility: value,
       },
@@ -54,7 +54,7 @@ const PreferencesSection = () => {
 
   const handleSaveTelegramUserId = async () => {
     try {
-      await userV1Store.updateUserSetting(
+      await userStore.updateUserSetting(
         {
           telegramUserId: telegramUserId,
         },

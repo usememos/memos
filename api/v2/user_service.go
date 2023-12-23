@@ -27,6 +27,29 @@ var (
 	usernameMatcher = regexp.MustCompile("^[a-z0-9]([a-z0-9-]{1,30}[a-z0-9])$")
 )
 
+func (s *APIV2Service) ListUsers(ctx context.Context, _ *apiv2pb.ListUsersRequest) (*apiv2pb.ListUsersResponse, error) {
+	currentUser, err := getCurrentUser(ctx, s.Store)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+	if currentUser.Role != store.RoleHost && currentUser.Role != store.RoleAdmin {
+		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+
+	users, err := s.Store.ListUsers(ctx, &store.FindUser{})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to list users: %v", err)
+	}
+
+	response := &apiv2pb.ListUsersResponse{
+		Users: []*apiv2pb.User{},
+	}
+	for _, user := range users {
+		response.Users = append(response.Users, convertUserFromStore(user))
+	}
+	return response, nil
+}
+
 func (s *APIV2Service) GetUser(ctx context.Context, request *apiv2pb.GetUserRequest) (*apiv2pb.GetUserResponse, error) {
 	username, err := ExtractUsernameFromName(request.Name)
 	if err != nil {

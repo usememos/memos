@@ -1,6 +1,8 @@
+import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 import Navigation from "@/components/Navigation";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
+import Loading from "@/pages/Loading";
 
 function Root() {
   const { sm } = useResponsiveWidth();
@@ -14,7 +16,9 @@ function Root() {
           </div>
         )}
         <main className="w-full h-auto flex-grow shrink flex flex-col justify-start items-center">
-          <Outlet />
+          <Suspense fallback={<Loading />}>
+            <Outlet />
+          </Suspense>
         </main>
       </div>
     </div>

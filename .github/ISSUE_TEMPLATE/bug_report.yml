@@ -1,11 +1,11 @@
 name: Bug Report
-description: Create a report to help us improve
+description: If something isn't working as expected
 labels: [bug]
 body:
   - type: markdown
     attributes:
       value: |
-        If you are reporting a new issue, make sure that we do not have any duplicates already open. You can ensure this by searching the issue list for this repository. If there is a duplicate, please close your issue and add a comment to the existing issue instead.
+        Before submitting a bug report, please check if the issue is already present in the issues. If it is, please add a reaction to the issue. If it isn't, please fill out the form below.
   - type: textarea
     attributes:
       label: Describe the bug
@@ -24,8 +24,15 @@ body:
         3. See error
     validations:
       required: true
+  - type: input
+    attributes:
+      label: The version of Memos you're using
+      description: |
+        Provide the version of Memos you're using.
+    validations:
+      required: true
   - type: textarea
     attributes:
       label: Screenshots or additional context
       description: |
-        Add screenshots or any other context about the problem.
+        If applicable, add screenshots to help explain your problem. And add any other context about the problem here. Such as the device you're using, etc.

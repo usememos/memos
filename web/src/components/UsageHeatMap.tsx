@@ -4,10 +4,10 @@ import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, getDateString, getTimeStampByDate } from "@/helpers/datetime";
 import * as utils from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore } from "@/store/module";
-import { useUserV1Store, extractUsernameFromName, useMemoV1Store } from "@/store/v1";
+import { useUserStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
 import { useTranslate, Translations } from "@/utils/i18n";
-import { useFilterStore } from "../store/module";
 import "@/less/usage-heat-map.less";
 
 const tableConfig = {
@@ -33,10 +33,10 @@ interface DailyUsageStat {
 
 const UsageHeatMap = () => {
   const t = useTranslate();
-  const filterStore = useFilterStore();
-  const userV1Store = useUserV1Store();
+  const navigateTo = useNavigateTo();
+  const userStore = useUserStore();
   const user = useCurrentUser();
-  const memoStore = useMemoV1Store();
+  const memoStore = useMemoStore();
   const todayTimeStamp = getDateStampByDate(Date.now());
   const weekDay = new Date(todayTimeStamp).getDay();
   const weekFromMonday = ["zh-Hans", "ko"].includes(useGlobalStore().state.locale);
@@ -48,12 +48,11 @@ const UsageHeatMap = () => {
   const [memoAmount, setMemoAmount] = useState(0);
   const [createdDays, setCreatedDays] = useState(0);
   const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestamp));
-  const [currentStat, setCurrentStat] = useState<DailyUsageStat | null>(null);
   const containerElRef = useRef<HTMLDivElement>(null);
-  const memos = Array.from(memoStore.getState().memoById.values());
+  const memos = Object.values(memoStore.getState().memoMapById);
 
   useEffect(() => {
-    userV1Store.getOrFetchUserByUsername(extractUsernameFromName(user.name)).then((user) => {
+    userStore.getOrFetchUserByUsername(extractUsernameFromName(user.name)).then((user) => {
       if (!user) {
         return;
       }
@@ -108,13 +107,7 @@ const UsageHeatMap = () => {
   }, []);
 
   const handleUsageStatItemClick = useCallback((item: DailyUsageStat) => {
-    if (filterStore.getState().duration?.from === item.timestamp) {
-      filterStore.setFromAndToFilter();
-      setCurrentStat(null);
-    } else if (item.count > 0) {
-      filterStore.setFromAndToFilter(item.timestamp, item.timestamp + DAILY_TIMESTAMP);
-      setCurrentStat(item);
-    }
+    navigateTo(`/timeline?timestamp=${item.timestamp}`);
   }, []);
 
   // This interpolation is not being used because of the current styling,
@@ -146,11 +139,7 @@ const UsageHeatMap = () => {
                 onMouseLeave={handleUsageStatItemMouseLeave}
                 onClick={() => handleUsageStatItemClick(v)}
               >
-                <span
-                  className={`stat-container ${colorLevel} ${currentStat === v ? "current" : ""} ${
-                    todayTimeStamp === v.timestamp ? "today" : ""
-                  }`}
-                ></span>
+                <span className={`stat-container ${colorLevel} ${todayTimeStamp === v.timestamp ? "today" : ""}`}></span>
               </div>
             );
           })}

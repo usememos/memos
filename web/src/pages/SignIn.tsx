@@ -9,14 +9,14 @@ import { absolutifyLink } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore } from "@/store/module";
-import { useUserV1Store } from "@/store/v1";
+import { useUserStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const SignIn = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const globalStore = useGlobalStore();
-  const userV1Store = useUserV1Store();
+  const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
   const { appearance, locale, systemStatus } = globalStore.state;
   const mode = systemStatus.profile.mode;
@@ -77,7 +77,7 @@ const SignIn = () => {
       actionBtnLoadingState.setLoading();
       const { data: user } = await api.signin(username, password, remember);
       if (user) {
-        await userV1Store.fetchCurrentUser();
+        await userStore.fetchCurrentUser();
         navigateTo("/");
       } else {
         toast.error(t("message.login-failed"));
@@ -160,7 +160,7 @@ const SignIn = () => {
             {systemStatus.allowSignUp && (
               <p className="w-full mt-4 text-sm">
                 <span className="dark:text-gray-500">{t("auth.sign-up-tip")}</span>
-                <Link to="/auth/signup" className="cursor-pointer ml-2 text-blue-600 hover:underline">
+                <Link to="/auth/signup" className="cursor-pointer ml-2 text-blue-600 hover:underline" unstable_viewTransition>
                   {t("common.sign-up")}
                 </Link>
               </p>

@@ -1,18 +1,18 @@
 name: Feature Request
-description: Suggest an idea for this project
+description: If you have a suggestion for a new feature
 labels: [enhancement]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to suggest an idea for memos!
+        Before submitting a feature request, please check if the issue is already present in the issues. If it is, please add a reaction to the issue. If it isn't, please fill out the form below.
   - type: textarea
     attributes:
-      label: Is your feature request related to a problem?
+      label: Is your feature request related to a problem? Please describe.
       description: |
-        A clear and concise description of what the problem is.
+        A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
       placeholder: |
-        I'm always frustrated when [...]
+        It would be great if [...]
     validations:
       required: true
   - type: textarea
@@ -20,9 +20,12 @@ body:
       label: Describe the solution you'd like
       description: |
         A clear and concise description of what you want to happen.
+      placeholder: |
+        I'd like to be able to [...]
     validations:
       required: true
   - type: textarea
     attributes:
       label: Additional context
-      description: Add any other context or screenshots about the feature request.
+      description: |
+        What are you trying to do? Why is this important to you?

@@ -44,10 +44,6 @@ export function signout() {
   return axios.post("/api/v1/auth/signout");
 }
 
-export function getUserList() {
-  return axios.get<User[]>("/api/v1/user");
-}
-
 export function getMemoStats(username: string) {
   return axios.get<number[]>(`/api/v1/memo/stats?creatorUsername=${username}`);
 }

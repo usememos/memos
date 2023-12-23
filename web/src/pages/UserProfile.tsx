@@ -6,25 +6,28 @@ import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
 import UserAvatar from "@/components/UserAvatar";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
+import { getTimeStampByDate } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
 import { useFilterStore } from "@/store/module";
-import { useMemoV1Store, useUserV1Store } from "@/store/v1";
-import { Memo } from "@/types/proto/api/v2/memo_service";
+import { useMemoList, useMemoStore, useUserStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = () => {
   const t = useTranslate();
   const params = useParams();
-  const userV1Store = useUserV1Store();
+  const userStore = useUserStore();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
   const filterStore = useFilterStore();
-  const memoStore = useMemoV1Store();
-  const [memos, setMemos] = useState<Memo[]>([]);
+  const memoStore = useMemoStore();
+  const memoList = useMemoList();
+  const [isRequesting, setIsRequesting] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
-  const [isRequesting, setIsRequesting] = useState(false);
   const { tag: tagQuery, text: textQuery } = filterStore.state;
+  const sortedMemos = memoList.value
+    .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
+    .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
   useEffect(() => {
     const username = params.username;
@@ -32,7 +35,7 @@ const UserProfile = () => {
       throw new Error("username is required");
     }
 
-    userV1Store
+    userStore
       .getOrFetchUserByUsername(username)
       .then((user) => {
         setUser(user);
@@ -45,25 +48,33 @@ const UserProfile = () => {
   }, [params.username]);
 
   useEffect(() => {
-    fetchMemos();
-  }, [tagQuery, textQuery]);
-
-  const fetchMemos = async () => {
     if (!user) {
       return;
     }
 
-    const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`];
-    if (tagQuery) filters.push(`tags == "${tagQuery}"`);
-    if (textQuery) filters.push(`content_search == "${textQuery}"`);
+    memoList.reset();
+    fetchMemos();
+  }, [user, tagQuery, textQuery]);
+
+  const fetchMemos = async () => {
+    const filters = [`creator == "${user!.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
+    const contentSearch: string[] = [];
+    if (tagQuery) {
+      contentSearch.push(`"#${tagQuery}"`);
+    }
+    if (textQuery) {
+      contentSearch.push(`"${textQuery}"`);
+    }
+    if (contentSearch.length > 0) {
+      filters.push(`content_search == [${contentSearch.join(", ")}]`);
+    }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
       limit: DEFAULT_MEMO_LIMIT,
-      offset: memos.length,
+      offset: memoList.size(),
       filter: filters.join(" && "),
     });
     setIsRequesting(false);
-    setMemos([...memos, ...data]);
     setIsComplete(data.length < DEFAULT_MEMO_LIMIT);
   };
 
@@ -78,16 +89,15 @@ const UserProfile = () => {
                 <UserAvatar className="!w-20 !h-20 mb-2 drop-shadow" avatarUrl={user?.avatarUrl} />
                 <p className="text-3xl text-black opacity-80 dark:text-gray-200">{user?.nickname}</p>
               </div>
-              {memos.map((memo) => (
+              {sortedMemos.map((memo) => (
                 <MemoView key={memo.id} memo={memo} lazyRendering showVisibility showPinnedStyle showParent />
               ))}
-              {isRequesting && (
+              {isRequesting ? (
                 <div className="flex flex-col justify-start items-center w-full my-8">
                   <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
                 </div>
-              )}
-              {isComplete ? (
-                memos.length === 0 && (
+              ) : isComplete ? (
+                sortedMemos.length === 0 && (
                   <div className="w-full mt-12 mb-8 flex flex-col justify-center items-center italic">
                     <Empty />
                     <p className="mt-2 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
