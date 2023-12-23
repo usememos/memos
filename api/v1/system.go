@@ -109,7 +109,7 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 		var baseValue any
 		err := json.Unmarshal([]byte(systemSetting.Value), &baseValue)
 		if err != nil {
-			log.Warn("Failed to unmarshal system setting value", zap.String("setting name", systemSetting.Name))
+			// Skip invalid value.
 			continue
 		}
 
