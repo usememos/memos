@@ -8,15 +8,20 @@ import (
 
 	"github.com/google/cel-go/cel"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	expr "google.golang.org/genproto/googleapis/api/expr/v1alpha1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	apiv1 "github.com/usememos/memos/api/v1"
+	"github.com/usememos/memos/internal/log"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+	"github.com/usememos/memos/plugin/webhook"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
+	storepb "github.com/usememos/memos/proto/gen/store"
+	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
 )
 
@@ -38,11 +43,17 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	if err != nil {
 		return nil, err
 	}
+	metric.Enqueue("memo create")
 
 	memoMessage, err := s.convertMemoFromStore(ctx, memo)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
+	// Try to dispatch webhook when memo is created.
+	if err := s.DispatchMemoCreatedWebhook(ctx, memoMessage); err != nil {
+		log.Warn("Failed to dispatch memo created webhook", zap.Error(err))
+	}
+
 	response := &apiv2pb.CreateMemoResponse{
 		Memo: memoMessage,
 	}
@@ -222,6 +233,11 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to convert memo")
 	}
+	// Try to dispatch webhook when memo is updated.
+	if err := s.DispatchMemoUpdatedWebhook(ctx, memoMessage); err != nil {
+		log.Warn("Failed to dispatch memo updated webhook", zap.Error(err))
+	}
+
 	return &apiv2pb.UpdateMemoResponse{
 		Memo: memoMessage,
 	}, nil
@@ -252,112 +268,12 @@ func (s *APIV2Service) DeleteMemo(ctx context.Context, request *apiv2pb.DeleteMe
 	return &apiv2pb.DeleteMemoResponse{}, nil
 }
 
-func (s *APIV2Service) SetMemoResources(ctx context.Context, request *apiv2pb.SetMemoResourcesRequest) (*apiv2pb.SetMemoResourcesResponse, error) {
-	resources, err := s.Store.ListResources(ctx, &store.FindResource{MemoID: &request.Id})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list resources")
-	}
-
-	// Delete resources that are not in the request.
-	for _, resource := range resources {
-		found := false
-		for _, requestResource := range request.Resources {
-			if resource.ID == int32(requestResource.Id) {
-				found = true
-				break
-			}
-		}
-		if !found {
-			if err = s.Store.DeleteResource(ctx, &store.DeleteResource{
-				ID:     int32(resource.ID),
-				MemoID: &request.Id,
-			}); err != nil {
-				return nil, status.Errorf(codes.Internal, "failed to delete resource")
-			}
-		}
-	}
-
-	// Update resources' memo_id in the request.
-	for _, resource := range request.Resources {
-		if _, err := s.Store.UpdateResource(ctx, &store.UpdateResource{
-			ID:     resource.Id,
-			MemoID: &request.Id,
-		}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to update resource")
-		}
-	}
-
-	return &apiv2pb.SetMemoResourcesResponse{}, nil
-}
-
-func (s *APIV2Service) ListMemoResources(ctx context.Context, request *apiv2pb.ListMemoResourcesRequest) (*apiv2pb.ListMemoResourcesResponse, error) {
-	resources, err := s.Store.ListResources(ctx, &store.FindResource{
-		MemoID: &request.Id,
-	})
-	if err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to list resources")
-	}
-
-	response := &apiv2pb.ListMemoResourcesResponse{
-		Resources: []*apiv2pb.Resource{},
-	}
-	for _, resource := range resources {
-		response.Resources = append(response.Resources, s.convertResourceFromStore(ctx, resource))
-	}
-	return response, nil
-}
-
-func (s *APIV2Service) SetMemoRelations(ctx context.Context, request *apiv2pb.SetMemoRelationsRequest) (*apiv2pb.SetMemoRelationsResponse, error) {
-	referenceType := store.MemoRelationReference
-	// Delete all reference relations first.
-	if err := s.Store.DeleteMemoRelation(ctx, &store.DeleteMemoRelation{
-		MemoID: &request.Id,
-		Type:   &referenceType,
-	}); err != nil {
-		return nil, status.Errorf(codes.Internal, "failed to delete memo relation")
-	}
-
-	for _, relation := range request.Relations {
-		if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
-			MemoID:        request.Id,
-			RelatedMemoID: relation.RelatedMemoId,
-			Type:          convertMemoRelationTypeToStore(relation.Type),
-		}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to upsert memo relation")
-		}
-	}
-
-	return &apiv2pb.SetMemoRelationsResponse{}, nil
-}
-
-func (s *APIV2Service) ListMemoRelations(ctx context.Context, request *apiv2pb.ListMemoRelationsRequest) (*apiv2pb.ListMemoRelationsResponse, error) {
-	relationList := []*apiv2pb.MemoRelation{}
-	tempList, err := s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		MemoID: &request.Id,
-	})
-	if err != nil {
-		return nil, err
-	}
-	for _, relation := range tempList {
-		relationList = append(relationList, convertMemoRelationFromStore(relation))
-	}
-	tempList, err = s.Store.ListMemoRelations(ctx, &store.FindMemoRelation{
-		RelatedMemoID: &request.Id,
-	})
-	if err != nil {
-		return nil, err
-	}
-	for _, relation := range tempList {
-		relationList = append(relationList, convertMemoRelationFromStore(relation))
-	}
-
-	response := &apiv2pb.ListMemoRelationsResponse{
-		Relations: relationList,
-	}
-	return response, nil
-}
-
 func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.CreateMemoCommentRequest) (*apiv2pb.CreateMemoCommentResponse, error) {
+	relatedMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{ID: &request.Id})
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo")
+	}
+
 	// Create the comment memo first.
 	createMemoResponse, err := s.CreateMemo(ctx, request.Create)
 	if err != nil {
@@ -374,6 +290,34 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo relation")
 	}
+	if memo.Visibility != apiv2pb.Visibility_PRIVATE {
+		activity, err := s.Store.CreateActivity(ctx, &store.Activity{
+			CreatorID: memo.CreatorId,
+			Type:      store.ActivityTypeMemoComment,
+			Level:     store.ActivityLevelInfo,
+			Payload: &storepb.ActivityPayload{
+				MemoComment: &storepb.ActivityMemoCommentPayload{
+					MemoId:        memo.Id,
+					RelatedMemoId: request.Id,
+				},
+			},
+		})
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to create activity")
+		}
+		if _, err := s.Store.CreateInbox(ctx, &store.Inbox{
+			SenderID:   memo.CreatorId,
+			ReceiverID: relatedMemo.CreatorID,
+			Status:     store.UNREAD,
+			Message: &storepb.InboxMessage{
+				Type:       storepb.InboxMessage_TYPE_MEMO_COMMENT,
+				ActivityId: &activity.ID,
+			},
+		}); err != nil {
+			return nil, status.Errorf(codes.Internal, "failed to create inbox")
+		}
+	}
+	metric.Enqueue("memo comment create")
 
 	response := &apiv2pb.CreateMemoCommentResponse{
 		Memo: memo,
@@ -471,36 +415,6 @@ func (s *APIV2Service) getMemoDisplayWithUpdatedTsSettingValue(ctx context.Conte
 		}
 	}
 	return memoDisplayWithUpdatedTs, nil
-}
-
-func convertMemoRelationFromStore(memoRelation *store.MemoRelation) *apiv2pb.MemoRelation {
-	return &apiv2pb.MemoRelation{
-		MemoId:        memoRelation.MemoID,
-		RelatedMemoId: memoRelation.RelatedMemoID,
-		Type:          convertMemoRelationTypeFromStore(memoRelation.Type),
-	}
-}
-
-func convertMemoRelationTypeFromStore(relationType store.MemoRelationType) apiv2pb.MemoRelation_Type {
-	switch relationType {
-	case store.MemoRelationReference:
-		return apiv2pb.MemoRelation_REFERENCE
-	case store.MemoRelationComment:
-		return apiv2pb.MemoRelation_COMMENT
-	default:
-		return apiv2pb.MemoRelation_TYPE_UNSPECIFIED
-	}
-}
-
-func convertMemoRelationTypeToStore(relationType apiv2pb.MemoRelation_Type) store.MemoRelationType {
-	switch relationType {
-	case apiv2pb.MemoRelation_REFERENCE:
-		return store.MemoRelationReference
-	case apiv2pb.MemoRelation_COMMENT:
-		return store.MemoRelationComment
-	default:
-		return store.MemoRelationReference
-	}
 }
 
 func convertVisibilityFromStore(visibility store.Visibility) apiv2pb.Visibility {
@@ -611,5 +525,75 @@ func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 		if callExpr != nil {
 			findField(callExpr, filter)
 		}
+	}
+}
+
+// DispatchMemoCreatedWebhook dispatches webhook when memo is created.
+func (s *APIV2Service) DispatchMemoCreatedWebhook(ctx context.Context, memo *apiv2pb.Memo) error {
+	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.created")
+}
+
+// DispatchMemoUpdatedWebhook dispatches webhook when memo is updated.
+func (s *APIV2Service) DispatchMemoUpdatedWebhook(ctx context.Context, memo *apiv2pb.Memo) error {
+	return s.dispatchMemoRelatedWebhook(ctx, memo, "memos.memo.updated")
+}
+
+func (s *APIV2Service) dispatchMemoRelatedWebhook(ctx context.Context, memo *apiv2pb.Memo, activityType string) error {
+	webhooks, err := s.Store.ListWebhooks(ctx, &store.FindWebhook{
+		CreatorID: &memo.CreatorId,
+	})
+	if err != nil {
+		return err
+	}
+	metric.Enqueue("webhook dispatch")
+	for _, hook := range webhooks {
+		payload := convertMemoToWebhookPayload(memo)
+		payload.ActivityType = activityType
+		payload.URL = hook.Url
+		err := webhook.Post(*payload)
+		if err != nil {
+			return errors.Wrap(err, "failed to post webhook")
+		}
+	}
+	return nil
+}
+
+func convertMemoToWebhookPayload(memo *apiv2pb.Memo) *webhook.WebhookPayload {
+	return &webhook.WebhookPayload{
+		CreatorID: memo.CreatorId,
+		CreatedTs: time.Now().Unix(),
+		Memo: &webhook.Memo{
+			ID:         memo.Id,
+			CreatorID:  memo.CreatorId,
+			CreatedTs:  memo.CreateTime.Seconds,
+			UpdatedTs:  memo.UpdateTime.Seconds,
+			Content:    memo.Content,
+			Visibility: memo.Visibility.String(),
+			Pinned:     memo.Pinned,
+			ResourceList: func() []*webhook.Resource {
+				resources := []*webhook.Resource{}
+				for _, resource := range memo.Resources {
+					resources = append(resources, &webhook.Resource{
+						ID:           resource.Id,
+						Filename:     resource.Filename,
+						ExternalLink: resource.ExternalLink,
+						Type:         resource.Type,
+						Size:         resource.Size,
+					})
+				}
+				return resources
+			}(),
+			RelationList: func() []*webhook.MemoRelation {
+				relations := []*webhook.MemoRelation{}
+				for _, relation := range memo.Relations {
+					relations = append(relations, &webhook.MemoRelation{
+						MemoID:        relation.MemoId,
+						RelatedMemoID: relation.RelatedMemoId,
+						Type:          relation.Type.String(),
+					})
+				}
+				return relations
+			}(),
+		},
 	}
 }

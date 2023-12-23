@@ -9,7 +9,7 @@ import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { useGlobalStore, useResourceStore } from "@/store/module";
 import { useMemoStore, useUserStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
-import { Visibility } from "@/types/proto/api/v2/memo_service";
+import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { Resource } from "@/types/proto/api/v2/resource_service";
 import { UserSetting } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -28,6 +28,7 @@ interface Props {
   editorClassName?: string;
   cacheKey?: string;
   memoId?: number;
+  parentMemoId?: number;
   relationList?: MemoRelation[];
   onConfirm?: (memoId: number) => void;
 }
@@ -41,7 +42,7 @@ interface State {
 }
 
 const MemoEditor = (props: Props) => {
-  const { className, editorClassName, cacheKey, memoId, onConfirm } = props;
+  const { className, editorClassName, cacheKey, memoId, parentMemoId, onConfirm } = props;
   const { i18n } = useTranslation();
   const t = useTranslate();
   const contentCacheKey = `memo-editor-${cacheKey}`;
@@ -260,6 +261,7 @@ const MemoEditor = (props: Props) => {
     });
     const content = editorRef.current?.getContent() ?? "";
     try {
+      // Update memo.
       if (memoId && memoId !== UNKNOWN_ID) {
         const prevMemo = await memoStore.getOrFetchMemoById(memoId ?? UNKNOWN_ID);
         if (prevMemo) {
@@ -284,10 +286,22 @@ const MemoEditor = (props: Props) => {
           }
         }
       } else {
-        const memo = await memoStore.createMemo({
-          content,
-          visibility: state.memoVisibility,
-        });
+        // Create memo or memo comment.
+        const request = !parentMemoId
+          ? memoStore.createMemo({
+              content,
+              visibility: state.memoVisibility,
+            })
+          : memoServiceClient
+              .createMemoComment({
+                id: parentMemoId,
+                create: {
+                  content,
+                  visibility: state.memoVisibility,
+                },
+              })
+              .then(({ memo }) => memo as Memo);
+        const memo = await request;
         await memoServiceClient.setMemoResources({
           id: memo.id,
           resources: state.resourceList,

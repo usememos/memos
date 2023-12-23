@@ -15,7 +15,6 @@ import MobileHeader from "@/components/MobileHeader";
 import showShareMemoDialog from "@/components/ShareMemoDialog";
 import UserAvatar from "@/components/UserAvatar";
 import VisibilityIcon from "@/components/VisibilityIcon";
-import { UNKNOWN_ID } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
@@ -214,12 +213,7 @@ const MemoDetail = () => {
 
             {/* Only show comment editor when user login */}
             {currentUser && (
-              <MemoEditor
-                key={memo.id}
-                cacheKey={`comment-editor-${memo.id}`}
-                relationList={[{ memoId: UNKNOWN_ID, relatedMemoId: memo.id, type: MemoRelation_Type.COMMENT }]}
-                onConfirm={handleCommentCreated}
-              />
+              <MemoEditor key={memo.id} cacheKey={`comment-editor-${memo.id}`} parentMemoId={memo.id} onConfirm={handleCommentCreated} />
             )}
           </div>
         </div>
