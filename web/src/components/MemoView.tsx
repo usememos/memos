@@ -8,7 +8,7 @@ import { getRelativeTimeString, getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useFilterStore } from "@/store/module";
-import { useUserV1Store, extractUsernameFromName, useMemoV1Store } from "@/store/v1";
+import { useUserStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
@@ -42,12 +42,12 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const navigateTo = useNavigateTo();
   const { i18n } = useTranslation();
   const filterStore = useFilterStore();
-  const memoStore = useMemoV1Store();
-  const userV1Store = useUserV1Store();
+  const memoStore = useMemoStore();
+  const userStore = useUserStore();
   const user = useCurrentUser();
   const [shouldRender, setShouldRender] = useState<boolean>(lazyRendering ? false : true);
   const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(getTimeStampByDate(memo.displayTime)));
-  const [creator, setCreator] = useState(userV1Store.getUserByUsername(extractUsernameFromName(memo.creator)));
+  const [creator, setCreator] = useState(userStore.getUserByUsername(extractUsernameFromName(memo.creator)));
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const memoContainerRef = useRef<HTMLDivElement>(null);
   const referenceRelations = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
@@ -58,7 +58,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
     if (creator) return;
 
     (async () => {
-      const user = await userV1Store.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
+      const user = await userStore.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
       setCreator(user);
     })();
   }, [memo.creator]);

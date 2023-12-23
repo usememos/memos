@@ -9,18 +9,18 @@ import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
 import { useFilterStore } from "@/store/module";
-import { useMemoList, useMemoV1Store, useUserV1Store } from "@/store/v1";
+import { useMemoList, useMemoStore, useUserStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 
 const UserProfile = () => {
   const t = useTranslate();
   const params = useParams();
-  const userV1Store = useUserV1Store();
+  const userStore = useUserStore();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
   const filterStore = useFilterStore();
-  const memoStore = useMemoV1Store();
+  const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
@@ -35,7 +35,7 @@ const UserProfile = () => {
       throw new Error("username is required");
     }
 
-    userV1Store
+    userStore
       .getOrFetchUserByUsername(username)
       .then((user) => {
         setUser(user);

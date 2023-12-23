@@ -11,7 +11,7 @@ import { getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useFilterStore } from "@/store/module";
-import { useMemoList, useMemoV1Store } from "@/store/v1";
+import { useMemoList, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
@@ -19,7 +19,7 @@ const Home = () => {
   const { md } = useResponsiveWidth();
   const user = useCurrentUser();
   const filterStore = useFilterStore();
-  const memoStore = useMemoV1Store();
+  const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
   const [isComplete, setIsComplete] = useState(false);

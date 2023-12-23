@@ -27,7 +27,7 @@ const getDefaultUserSetting = () => {
 // Request cache is used to prevent multiple requests.
 const requestCache = new Map<string, Promise<any>>();
 
-export const useUserV1Store = create(
+export const useUserStore = create(
   combine(getDefaultState(), (set, get) => ({
     fetchUsers: async () => {
       const { users } = await userServiceClient.listUsers({});

@@ -11,14 +11,14 @@ import DatePicker from "@/components/kit/DatePicker";
 import { DAILY_TIMESTAMP } from "@/helpers/consts";
 import { getDateStampByDate, getNormalizedDateString, getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { useMemoList, useMemoV1Store } from "@/store/v1";
+import { useMemoList, useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const Timeline = () => {
   const t = useTranslate();
   const [searchParams, setSearchParams] = useSearchParams();
   const user = useCurrentUser();
-  const memoStore = useMemoV1Store();
+  const memoStore = useMemoStore();
   const memoList = useMemoList();
   const currentDateStamp = getDateStampByDate(getNormalizedDateString()) as number;
   const [selectedDateStamp, setSelectedDateStamp] = useState<number>(

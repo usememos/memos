@@ -18,7 +18,7 @@ import { UNKNOWN_ID } from "@/helpers/consts";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useUserV1Store, useMemoV1Store, extractUsernameFromName } from "@/store/v1";
+import { useUserStore, useMemoStore, extractUsernameFromName } from "@/store/v1";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo, Visibility } from "@/types/proto/api/v2/memo_service";
 import { User } from "@/types/proto/api/v2/user_service";
@@ -30,8 +30,8 @@ const MemoDetail = () => {
   const params = useParams();
   const navigateTo = useNavigateTo();
   const currentUser = useCurrentUser();
-  const memoStore = useMemoV1Store();
-  const userV1Store = useUserV1Store();
+  const memoStore = useMemoStore();
+  const userStore = useUserStore();
   const [creator, setCreator] = useState<User>();
   const memoId = Number(params.memoId);
   const memo = memoStore.getMemoById(memoId);
@@ -48,7 +48,7 @@ const MemoDetail = () => {
       memoStore
         .getOrFetchMemoById(memoId)
         .then(async (memo) => {
-          const user = await userV1Store.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
+          const user = await userStore.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
           setCreator(user);
         })
         .catch((error) => {

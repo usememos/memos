@@ -6,7 +6,7 @@ import * as utils from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore } from "@/store/module";
-import { useUserV1Store, extractUsernameFromName, useMemoV1Store } from "@/store/v1";
+import { useUserStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
 import { useTranslate, Translations } from "@/utils/i18n";
 import "@/less/usage-heat-map.less";
 
@@ -34,9 +34,9 @@ interface DailyUsageStat {
 const UsageHeatMap = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
-  const userV1Store = useUserV1Store();
+  const userStore = useUserStore();
   const user = useCurrentUser();
-  const memoStore = useMemoV1Store();
+  const memoStore = useMemoStore();
   const todayTimeStamp = getDateStampByDate(Date.now());
   const weekDay = new Date(todayTimeStamp).getDay();
   const weekFromMonday = ["zh-Hans", "ko"].includes(useGlobalStore().state.locale);
@@ -49,10 +49,10 @@ const UsageHeatMap = () => {
   const [createdDays, setCreatedDays] = useState(0);
   const [allStat, setAllStat] = useState<DailyUsageStat[]>(getInitialUsageStat(usedDaysAmount, beginDayTimestamp));
   const containerElRef = useRef<HTMLDivElement>(null);
-  const memos = Array.from(memoStore.getState().memoById.values());
+  const memos = Object.values(memoStore.getState().memoMapById);
 
   useEffect(() => {
-    userV1Store.getOrFetchUserByUsername(extractUsernameFromName(user.name)).then((user) => {
+    userStore.getOrFetchUserByUsername(extractUsernameFromName(user.name)).then((user) => {
       if (!user) {
         return;
       }

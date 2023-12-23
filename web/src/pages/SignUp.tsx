@@ -8,14 +8,14 @@ import * as api from "@/helpers/api";
 import useLoading from "@/hooks/useLoading";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore } from "@/store/module";
-import { useUserV1Store } from "@/store/v1";
+import { useUserStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 
 const SignUp = () => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const globalStore = useGlobalStore();
-  const userV1Store = useUserV1Store();
+  const userStore = useUserStore();
   const actionBtnLoadingState = useLoading(false);
   const { appearance, locale, systemStatus } = globalStore.state;
   const [username, setUsername] = useState("");
@@ -57,7 +57,7 @@ const SignUp = () => {
       actionBtnLoadingState.setLoading();
       const { data: user } = await api.signup(username, password);
       if (user) {
-        await userV1Store.fetchCurrentUser();
+        await userStore.fetchCurrentUser();
         navigateTo("/");
       } else {
         toast.error(t("message.signup-failed"));

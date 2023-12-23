@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { UserNamePrefix, extractUsernameFromName, useUserV1Store } from "@/store/v1";
+import { UserNamePrefix, extractUsernameFromName, useUserStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { User, User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -19,7 +19,7 @@ interface State {
 const MemberSection = () => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const userV1Store = useUserV1Store();
+  const userStore = useUserStore();
   const [state, setState] = useState<State>({
     createUserUsername: "",
     createUserPassword: "",
@@ -31,7 +31,7 @@ const MemberSection = () => {
   }, []);
 
   const fetchUserList = async () => {
-    const users = await userV1Store.fetchUsers();
+    const users = await userStore.fetchUsers();
     setUserList(users);
   };
 
@@ -114,7 +114,7 @@ const MemberSection = () => {
       style: "danger",
       dialogName: "delete-user-dialog",
       onConfirm: async () => {
-        await userV1Store.deleteUser(user.name);
+        await userStore.deleteUser(user.name);
         fetchUserList();
       },
     });

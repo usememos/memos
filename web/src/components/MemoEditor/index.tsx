@@ -7,7 +7,7 @@ import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
 import { useGlobalStore, useResourceStore } from "@/store/module";
-import { useMemoV1Store, useUserV1Store } from "@/store/v1";
+import { useMemoStore, useUserStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Visibility } from "@/types/proto/api/v2/memo_service";
 import { Resource } from "@/types/proto/api/v2/resource_service";
@@ -49,8 +49,8 @@ const MemoEditor = (props: Props) => {
   const {
     state: { systemStatus },
   } = useGlobalStore();
-  const userV1Store = useUserV1Store();
-  const memoStore = useMemoV1Store();
+  const userStore = useUserStore();
+  const memoStore = useMemoStore();
   const resourceStore = useResourceStore();
   const [state, setState] = useState<State>({
     memoVisibility: Visibility.PRIVATE,
@@ -61,7 +61,7 @@ const MemoEditor = (props: Props) => {
   });
   const [hasContent, setHasContent] = useState<boolean>(false);
   const editorRef = useRef<EditorRefActions>(null);
-  const userSetting = userV1Store.userSetting as UserSetting;
+  const userSetting = userStore.userSetting as UserSetting;
   const referenceRelations = memoId
     ? state.relationList.filter(
         (relation) => relation.memoId === memoId && relation.relatedMemoId !== memoId && relation.type === MemoRelation_Type.REFERENCE

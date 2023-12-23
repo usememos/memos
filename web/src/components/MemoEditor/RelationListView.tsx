@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useMemoV1Store } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import Icon from "../Icon";
@@ -11,7 +11,7 @@ interface Props {
 
 const RelationListView = (props: Props) => {
   const { relationList, setRelationList } = props;
-  const memoStore = useMemoV1Store();
+  const memoStore = useMemoStore();
   const [referencingMemoList, setReferencingMemoList] = useState<Memo[]>([]);
 
   useEffect(() => {

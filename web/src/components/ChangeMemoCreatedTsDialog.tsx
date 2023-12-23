@@ -2,7 +2,7 @@ import { Button } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getNormalizedTimeString, getUnixTime } from "@/helpers/datetime";
-import { useMemoV1Store } from "@/store/v1";
+import { useMemoStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -14,7 +14,7 @@ interface Props extends DialogProps {
 const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
   const { destroy, memoId } = props;
-  const memoStore = useMemoV1Store();
+  const memoStore = useMemoStore();
   const [createdAt, setCreatedAt] = useState("");
   const maxDatetimeValue = getNormalizedTimeString();
 

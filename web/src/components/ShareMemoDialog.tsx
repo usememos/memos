@@ -5,7 +5,7 @@ import { toast } from "react-hot-toast";
 import { getDateTimeString, getTimeString } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
-import { useUserV1Store, extractUsernameFromName } from "@/store/v1";
+import { useUserStore, extractUsernameFromName } from "@/store/v1";
 import { Memo } from "@/types/proto/api/v2/memo_service";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
@@ -22,15 +22,15 @@ interface Props extends DialogProps {
 const ShareMemoDialog: React.FC<Props> = (props: Props) => {
   const { memo, destroy } = props;
   const t = useTranslate();
-  const userV1Store = useUserV1Store();
+  const userStore = useUserStore();
   const downloadingImageState = useLoading(false);
   const loadingState = useLoading();
   const memoElRef = useRef<HTMLDivElement>(null);
-  const user = userV1Store.getUserByUsername(extractUsernameFromName(memo.creator));
+  const user = userStore.getUserByUsername(extractUsernameFromName(memo.creator));
 
   useEffect(() => {
     (async () => {
-      await userV1Store.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
+      await userStore.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
       loadingState.setFinish();
     })();
   }, []);

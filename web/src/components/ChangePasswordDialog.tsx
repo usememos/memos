@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useGlobalStore } from "@/store/module";
-import { useUserV1Store } from "@/store/v1";
+import { useUserStore } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
 import Icon from "./Icon";
@@ -12,7 +12,7 @@ type Props = DialogProps;
 const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   const t = useTranslate();
   const currentUser = useCurrentUser();
-  const userV1Store = useUserV1Store();
+  const userStore = useUserStore();
   const globalStore = useGlobalStore();
   const profile = globalStore.state.systemStatus.profile;
   const [newPassword, setNewPassword] = useState("");
@@ -52,7 +52,7 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
     }
 
     try {
-      await userV1Store.updateUser(
+      await userStore.updateUser(
         {
           name: currentUser.name,
           password: newPassword,
