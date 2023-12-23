@@ -1,4 +1,5 @@
 import { Tooltip } from "@mui/joy";
+import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { showCommonDialog } from "@/components/Dialog/CommonDialog";
@@ -23,20 +24,18 @@ const Archived = () => {
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
 
   useEffect(() => {
-    memoServiceClient
-      .listMemos({
-        filter: [`creator == "${user.name}"`, "row_status == 'ARCHIVED'"].join(" && "),
-      })
-      .then(({ memos }) => {
+    (async () => {
+      try {
+        const filters = [`creator == "${user.name}"`, "row_status == 'ARCHIVED'"];
+        const { memos } = await memoServiceClient.listMemos({
+          filter: filters.join(" && "),
+        });
         setArchivedMemos(memos);
-      })
-      .catch((error) => {
-        console.error(error);
-        toast.error(error.response.data.message);
-      })
-      .finally(() => {
-        loadingState.setFinish();
-      });
+      } catch (error: unknown) {
+        toast.error((error as ClientError).details);
+      }
+      loadingState.setFinish();
+    })();
   }, []);
 
   const handleDeleteMemoClick = async (memo: Memo) => {
@@ -63,9 +62,9 @@ const Archived = () => {
       );
       setArchivedMemos((prev) => prev.filter((m) => m.id !== memo.id));
       toast(t("message.restored-successfully"));
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error(error);
-      toast.error(error.response.data.message);
+      toast.error((error as ClientError).details);
     }
   };
 

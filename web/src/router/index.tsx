@@ -18,6 +18,7 @@ const Resources = lazy(() => import("@/pages/Resources"));
 const Inboxes = lazy(() => import("@/pages/Inboxes"));
 const Setting = lazy(() => import("@/pages/Setting"));
 const NotFound = lazy(() => import("@/pages/NotFound"));
+const PermissionDenied = lazy(() => import("@/pages/PermissionDenied"));
 
 const initialGlobalStateLoader = async () => {
   try {
@@ -109,6 +110,14 @@ const router = createBrowserRouter([
           {
             path: "u/:username",
             element: <UserProfile />,
+          },
+          {
+            path: "403",
+            element: <PermissionDenied />,
+          },
+          {
+            path: "404",
+            element: <NotFound />,
           },
           {
             path: "*",

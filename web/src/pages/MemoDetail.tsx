@@ -1,5 +1,6 @@
 import { Select, Tooltip, Option, IconButton } from "@mui/joy";
 import copy from "copy-to-clipboard";
+import { ClientError } from "nice-grpc-web";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link, useParams } from "react-router-dom";
@@ -35,7 +36,7 @@ const MemoDetail = () => {
   const [creator, setCreator] = useState<User>();
   const memoId = Number(params.memoId);
   const memo = memoStore.getMemoById(memoId);
-  const allowEdit = memo?.creatorId === currentUser.id;
+  const allowEdit = memo?.creatorId === currentUser?.id;
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const referenceRelations = memo?.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE) || [];
   const commentRelations =
@@ -51,9 +52,9 @@ const MemoDetail = () => {
           const user = await userStore.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
           setCreator(user);
         })
-        .catch((error) => {
-          console.error(error);
-          toast.error(error.response.data.message);
+        .catch((error: ClientError) => {
+          toast.error(error.details);
+          navigateTo("/403");
         });
     } else {
       navigateTo("/404");
