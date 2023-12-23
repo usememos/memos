@@ -88,19 +88,21 @@ message User {
   }
   Role role = 3;
 
-  string email = 4;
+  string username = 4;
 
-  string nickname = 5;
+  string email = 5;
 
-  string avatar_url = 6;
+  string nickname = 6;
 
-  string password = 7 [(google.api.field_behavior) = INPUT_ONLY];
+  string avatar_url = 7;
 
-  RowStatus row_status = 8;
+  string password = 8 [(google.api.field_behavior) = INPUT_ONLY];
 
-  google.protobuf.Timestamp create_time = 9;
+  RowStatus row_status = 9;
 
-  google.protobuf.Timestamp update_time = 10;
+  google.protobuf.Timestamp create_time = 10;
+
+  google.protobuf.Timestamp update_time = 11;
 }
 
 message ListUsersRequest {}

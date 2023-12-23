@@ -644,6 +644,7 @@
 | name | [string](#string) |  | The name of the user. Format: users/{username} |
 | id | [int32](#int32) |  |  |
 | role | [User.Role](#memos-api-v2-User-Role) |  |  |
+| username | [string](#string) |  |  |
 | email | [string](#string) |  |  |
 | nickname | [string](#string) |  |  |
 | avatar_url | [string](#string) |  |  |

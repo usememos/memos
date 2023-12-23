@@ -1,3 +1,4 @@
+import { Button, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -30,13 +31,11 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
   };
 
   const handleNewPasswordChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value as string;
-    setNewPassword(text);
+    setNewPassword(e.target.value);
   };
 
   const handleNewPasswordAgainChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const text = e.target.value as string;
-    setNewPasswordAgain(text);
+    setNewPasswordAgain(e.target.value);
   };
 
   const handleSaveBtnClick = async () => {
@@ -77,30 +76,28 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
       </div>
       <div className="dialog-content-container">
         <p className="text-sm mb-1">{t("auth.new-password")}</p>
-        <input
+        <Input
+          className="w-full"
           type="password"
-          autoComplete="new-password"
-          className="input-text"
           placeholder={t("auth.new-password")}
           value={newPassword}
           onChange={handleNewPasswordChanged}
         />
         <p className="text-sm mb-1 mt-2">{t("auth.repeat-new-password")}</p>
-        <input
+        <Input
+          className="w-full"
           type="password"
-          autoComplete="new-password"
-          className="input-text"
           placeholder={t("auth.repeat-new-password")}
           value={newPasswordAgain}
           onChange={handleNewPasswordAgainChanged}
         />
-        <div className="mt-4 w-full flex flex-row justify-end items-center space-x-2">
-          <span className="btn-text" onClick={handleCloseBtnClick}>
+        <div className="w-full flex flex-row justify-end items-center pt-4 space-x-2">
+          <Button color="neutral" variant="plain" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
-          </span>
-          <span className="btn-primary" onClick={handleSaveBtnClick}>
+          </Button>
+          <Button color="primary" onClick={handleSaveBtnClick}>
             {t("common.save")}
-          </span>
+          </Button>
         </div>
       </div>
     </>

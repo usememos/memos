@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { userServiceClient } from "@/grpcweb";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { UserNamePrefix, extractUsernameFromName } from "@/store/v1";
 import { UserAccessToken } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showCreateAccessTokenDialog from "../CreateAccessTokenDialog";
@@ -12,8 +11,8 @@ import { showCommonDialog } from "../Dialog/CommonDialog";
 import Icon from "../Icon";
 import LearnMore from "../LearnMore";
 
-const listAccessTokens = async (username: string) => {
-  const { accessTokens } = await userServiceClient.listUserAccessTokens({ name: `${UserNamePrefix}${username}` });
+const listAccessTokens = async (name: string) => {
+  const { accessTokens } = await userServiceClient.listUserAccessTokens({ name });
   return accessTokens;
 };
 
@@ -23,13 +22,13 @@ const AccessTokenSection = () => {
   const [userAccessTokens, setUserAccessTokens] = useState<UserAccessToken[]>([]);
 
   useEffect(() => {
-    listAccessTokens(extractUsernameFromName(currentUser.name)).then((accessTokens) => {
+    listAccessTokens(currentUser.name).then((accessTokens) => {
       setUserAccessTokens(accessTokens);
     });
   }, []);
 
   const handleCreateAccessTokenDialogConfirm = async () => {
-    const accessTokens = await listAccessTokens(extractUsernameFromName(currentUser.name));
+    const accessTokens = await listAccessTokens(currentUser.name);
     setUserAccessTokens(accessTokens);
   };
 

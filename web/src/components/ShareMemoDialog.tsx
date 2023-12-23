@@ -108,7 +108,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
                 <UserAvatar className="mr-2" avatarUrl={user.avatarUrl} />
                 <div className="w-auto grow truncate flex mr-2 flex-col justify-center items-start">
                   <span className="w-full text truncate font-medium text-gray-600 dark:text-gray-300">
-                    {user.nickname || extractUsernameFromName(user.name)}
+                    {user.nickname || user.username}
                   </span>
                 </div>
               </div>

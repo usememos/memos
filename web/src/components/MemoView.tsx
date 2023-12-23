@@ -33,11 +33,10 @@ interface Props {
   showParent?: boolean;
   showVisibility?: boolean;
   showPinnedStyle?: boolean;
-  lazyRendering?: boolean;
 }
 
 const MemoView: React.FC<Props> = (props: Props) => {
-  const { memo, lazyRendering } = props;
+  const { memo } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const { i18n } = useTranslation();
@@ -45,7 +44,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const memoStore = useMemoStore();
   const userStore = useUserStore();
   const user = useCurrentUser();
-  const [shouldRender, setShouldRender] = useState<boolean>(lazyRendering ? false : true);
   const [displayTime, setDisplayTime] = useState<string>(getRelativeTimeString(getTimeStampByDate(memo.displayTime)));
   const [creator, setCreator] = useState(userStore.getUserByUsername(extractUsernameFromName(memo.creator)));
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
@@ -53,15 +51,21 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const referenceRelations = memo.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE);
   const readonly = memo.creator !== user?.name;
 
-  // Prepare memo creator.
   useEffect(() => {
-    if (creator) return;
-
     (async () => {
       const user = await userStore.getOrFetchUserByUsername(extractUsernameFromName(memo.creator));
       setCreator(user);
     })();
-  }, [memo.creator]);
+
+    const parentMemoId = memo.relations.find(
+      (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
+    )?.relatedMemoId;
+    if (parentMemoId) {
+      memoStore.getOrFetchMemoById(parentMemoId, { skipStore: true }).then((memo: Memo) => {
+        setParentMemo(memo);
+      });
+    }
+  }, []);
 
   // Update display time string.
   useEffect(() => {
@@ -76,42 +80,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
       clearInterval(intervalFlag);
     };
   }, [i18n.language]);
-
-  // Lazy rendering.
-  useEffect(() => {
-    if (shouldRender) return;
-    if (!memoContainerRef.current) return;
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      observer.disconnect();
-
-      setShouldRender(true);
-    });
-    observer.observe(memoContainerRef.current);
-
-    return () => observer.disconnect();
-  }, [lazyRendering, filterStore.state]);
-
-  useEffect(() => {
-    if (!shouldRender) {
-      return;
-    }
-
-    const parentMemoId = memo.relations.find(
-      (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
-    )?.relatedMemoId;
-    if (parentMemoId) {
-      memoStore.getOrFetchMemoById(parentMemoId, { skipStore: true }).then((memo: Memo) => {
-        setParentMemo(memo);
-      });
-    }
-  }, [shouldRender]);
-
-  if (!shouldRender) {
-    // Render a placeholder to occupy the space.
-    return <div className={`w-full h-32 !bg-transparent ${"memos-" + memo.id}`} ref={memoContainerRef} />;
-  }
 
   const handleGotoMemoDetailPage = (event: React.MouseEvent<HTMLDivElement>) => {
     if (event.altKey) {
@@ -223,7 +191,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
                   <span className="flex flex-row justify-start items-center">
                     <UserAvatar className="!w-5 !h-5 mr-1" avatarUrl={creator.avatarUrl} />
                     <span className="text-sm text-gray-600 max-w-[8em] truncate dark:text-gray-400">
-                      {creator.nickname || extractUsernameFromName(creator.name)}
+                      {creator.nickname || creator.username}
                     </span>
                   </span>
                 </Tooltip>

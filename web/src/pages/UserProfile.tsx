@@ -57,7 +57,11 @@ const UserProfile = () => {
   }, [user, tagQuery, textQuery]);
 
   const fetchMemos = async () => {
-    const filters = [`creator == "${user!.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
+    if (!user) {
+      return;
+    }
+
+    const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
     const contentSearch: string[] = [];
     if (tagQuery) {
       contentSearch.push(`"#${tagQuery}"`);
@@ -90,7 +94,7 @@ const UserProfile = () => {
                 <p className="text-3xl text-black opacity-80 dark:text-gray-200">{user?.nickname}</p>
               </div>
               {sortedMemos.map((memo) => (
-                <MemoView key={memo.id} memo={memo} lazyRendering showVisibility showPinnedStyle showParent />
+                <MemoView key={memo.id} memo={memo} showVisibility showPinnedStyle showParent />
               ))}
               {isRequesting ? (
                 <div className="flex flex-col justify-start items-center w-full my-8">

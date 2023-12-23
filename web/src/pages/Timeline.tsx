@@ -107,18 +107,18 @@ const Timeline = () => {
                   </div>
                 </div>
               ))}
+              {!isRequesting && sortedMemos.length === 0 && (
+                <div className="w-full mt-4 mb-8 flex flex-col justify-center items-center italic">
+                  <Empty />
+                  <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+                </div>
+              )}
               {selectedDateStamp === currentDateStamp && (
                 <div className="w-full pl-0 sm:pl-12 sm:mt-4">
                   <MemoEditor cacheKey="timeline-editor" />
                 </div>
               )}
             </div>
-            {!isRequesting && sortedMemos.length === 0 && (
-              <div className="w-full mt-4 mb-8 flex flex-col justify-center items-center italic">
-                <Empty />
-                <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
-              </div>
-            )}
           </div>
         </div>
       </div>

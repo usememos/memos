@@ -33,8 +33,7 @@ export const useUserStore = create(
       const { users } = await userServiceClient.listUsers({});
       const userMap = get().userMapByUsername;
       for (const user of users) {
-        const username = extractUsernameFromName(user.name);
-        userMap[username] = user;
+        userMap[user.username] = user;
       }
       set({ userMapByUsername: userMap });
       return users;
@@ -75,9 +74,8 @@ export const useUserStore = create(
       if (!updatedUser) {
         throw new Error("User not found");
       }
-      const username = extractUsernameFromName(updatedUser.name);
       const userMap = get().userMapByUsername;
-      userMap[username] = updatedUser;
+      userMap[updatedUser.username] = updatedUser;
       set({ userMapByUsername: userMap });
       return updatedUser;
     },
@@ -85,13 +83,19 @@ export const useUserStore = create(
       await userServiceClient.deleteUser({
         name,
       });
+      const username = extractUsernameFromName(name);
+      const userMap = get().userMapByUsername;
+      delete userMap[username];
+      set({ userMapByUsername: userMap });
     },
     fetchCurrentUser: async () => {
       const { user } = await authServiceClient.getAuthStatus({});
       if (!user) {
         throw new Error("User not found");
       }
-      set({ currentUser: user });
+      const userMap = get().userMapByUsername;
+      userMap[user.username] = user;
+      set({ currentUser: user, userMapByUsername: userMap });
       const { setting } = await userServiceClient.getUserSetting({});
       set({
         userSetting: UserSetting.fromPartial({

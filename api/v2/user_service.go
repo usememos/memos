@@ -141,10 +141,10 @@ func (s *APIV2Service) UpdateUser(ctx context.Context, request *apiv2pb.UpdateUs
 	}
 	for _, field := range request.UpdateMask.Paths {
 		if field == "username" {
-			if !usernameMatcher.MatchString(strings.ToLower(username)) {
-				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", username)
+			if !usernameMatcher.MatchString(strings.ToLower(request.User.Username)) {
+				return nil, status.Errorf(codes.InvalidArgument, "invalid username: %s", request.User.Username)
 			}
-			update.Username = &username
+			update.Username = &request.User.Username
 		} else if field == "nickname" {
 			update.Nickname = &request.User.Nickname
 		} else if field == "email" {
@@ -501,6 +501,7 @@ func convertUserFromStore(user *store.User) *apiv2pb.User {
 		CreateTime: timestamppb.New(time.Unix(user.CreatedTs, 0)),
 		UpdateTime: timestamppb.New(time.Unix(user.UpdatedTs, 0)),
 		Role:       convertUserRoleFromStore(user.Role),
+		Username:   user.Username,
 		Email:      user.Email,
 		Nickname:   user.Nickname,
 		AvatarUrl:  user.AvatarURL,

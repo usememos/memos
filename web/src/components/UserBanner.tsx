@@ -2,7 +2,6 @@ import * as api from "@/helpers/api";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore } from "@/store/module";
-import { extractUsernameFromName } from "@/store/v1";
 import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showAboutSiteDialog from "./AboutSiteDialog";
@@ -16,10 +15,10 @@ const UserBanner = () => {
   const globalStore = useGlobalStore();
   const { systemStatus } = globalStore.state;
   const user = useCurrentUser();
-  const title = user ? user.nickname || extractUsernameFromName(user.name) : systemStatus.customizedProfile.name || "memos";
+  const title = user ? user.nickname || user.username : systemStatus.customizedProfile.name || "memos";
 
   const handleMyAccountClick = () => {
-    navigateTo(`/u/${encodeURIComponent(extractUsernameFromName(user.name))}`);
+    navigateTo(`/u/${encodeURIComponent(user.username)}`);
   };
 
   const handleAboutBtnClick = () => {

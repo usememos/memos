@@ -1,6 +1,5 @@
 import { Button } from "@mui/joy";
 import useCurrentUser from "@/hooks/useCurrentUser";
-import { extractUsernameFromName } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showChangePasswordDialog from "../ChangePasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
@@ -19,7 +18,7 @@ const MyAccountSection = () => {
           <UserAvatar className="mr-2 w-14 h-14" avatarUrl={user.avatarUrl} />
           <div className="flex flex-col justify-center items-start">
             <span className="text-2xl font-medium">{user.nickname}</span>
-            <span className="-mt-2 text-base text-gray-500 dark:text-gray-400">({extractUsernameFromName(user.name)})</span>
+            <span className="-mt-2 text-base text-gray-500 dark:text-gray-400">({user.username})</span>
           </div>
         </div>
         <div className="w-full flex flex-row justify-start items-center mt-4 space-x-2">

@@ -54,7 +54,7 @@ const Explore = () => {
       <div className="relative w-full h-auto flex flex-col justify-start items-start px-4 sm:px-6">
         <MemoFilter />
         {sortedMemos.map((memo) => (
-          <MemoView key={memo.id} memo={memo} lazyRendering showCreator showParent />
+          <MemoView key={memo.id} memo={memo} showCreator showParent />
         ))}
 
         {isRequesting ? (
