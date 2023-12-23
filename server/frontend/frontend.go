@@ -35,17 +35,18 @@ func (s *FrontendService) Serve(e *echo.Echo) {
 	// Use echo static middleware to serve the built dist folder.
 	// refer: https://github.com/labstack/echo/blob/master/middleware/static.go
 	e.Use(middleware.StaticWithConfig(middleware.StaticConfig{
-		Root:    "dist",
-		Skipper: defaultAPIRequestSkipper,
-		HTML5:   true,
+		HTML5:      true,
+		Filesystem: http.Dir("dist"),
+		Skipper: func(c echo.Context) bool {
+			return util.HasPrefixes(c.Path(), "/api", "/memos.api.v2", "/robots.txt", "/sitemap.xml", "/m/:memoID")
+		},
 	}))
 
 	s.registerRoutes(e)
 }
 
 func (s *FrontendService) registerRoutes(e *echo.Echo) {
-	rawIndexHTMLBytes, _ := os.ReadFile("dist/index.html")
-	rawIndexHTML := string(rawIndexHTMLBytes)
+	rawIndexHTML := getRawIndexHTML()
 
 	e.GET("/robots.txt", func(c echo.Context) error {
 		ctx := c.Request().Context()
@@ -173,7 +174,7 @@ func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
 	return strings.Join(metadataList, "\n")
 }
 
-func defaultAPIRequestSkipper(c echo.Context) bool {
-	path := c.Request().URL.Path
-	return util.HasPrefixes(path, "/api", "/memos.api.v2")
+func getRawIndexHTML() string {
+	bytes, _ := os.ReadFile("dist/index.html")
+	return string(bytes)
 }

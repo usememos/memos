@@ -11,7 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/pkg/errors"
-	echoSwagger "github.com/swaggo/echo-swagger"
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	apiv2 "github.com/usememos/memos/api/v2"
@@ -74,14 +73,9 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 	}
 	s.ID = serverID
 
-	// Serve frontend.
+	// Register frontend service.
 	frontendService := frontend.NewFrontendService(profile, store)
 	frontendService.Serve(e)
-
-	// Serve swagger in dev/demo mode.
-	if profile.Mode == "dev" || profile.Mode == "demo" {
-		e.GET("/api/*", echoSwagger.WrapHandler)
-	}
 
 	secret := "usememos"
 	if profile.Mode == "prod" {
