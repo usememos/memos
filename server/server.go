@@ -75,7 +75,7 @@ func NewServer(ctx context.Context, profile *profile.Profile, store *store.Store
 
 	// Register frontend service.
 	frontendService := frontend.NewFrontendService(profile, store)
-	frontendService.Serve(e)
+	frontendService.Serve(ctx, e)
 
 	secret := "usememos"
 	if profile.Mode == "prod" {
