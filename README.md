@@ -6,8 +6,7 @@ A privacy-first, lightweight note-taking service. Easily capture and share your 
 <a href="https://www.usememos.com/blog">Blogs</a> •
 <a href="https://www.usememos.com/docs">Docs</a> •
 <a href="https://demo.usememos.com/">Live Demo</a> •
-<a href="README.md">Chinese Readme</a>
-
+[Readme_zn](README_zn.md)
 
 <p>
   <a href="https://github.com/usememos/memos/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/usememos/memos?logo=github" /></a>
