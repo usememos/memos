@@ -1,6 +1,6 @@
-import { Button } from "@mui/joy";
+import { Button, Input } from "@mui/joy";
 import { isEqual } from "lodash-es";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "react-hot-toast";
 import { convertFileToBase64 } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -30,10 +30,6 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     nickname: currentUser.nickname,
     email: currentUser.email,
   });
-
-  useEffect(() => {
-    // do nth
-  }, []);
 
   const handleCloseBtnClick = () => {
     destroy();
@@ -97,17 +93,17 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
 
     try {
       const updateMask = [];
-      if (!isEqual(currentUser.avatarUrl, state.avatarUrl)) {
-        updateMask.push("avatar_url");
+      if (!isEqual(currentUser.name.replace(UserNamePrefix, ""), state.username)) {
+        updateMask.push("username");
       }
       if (!isEqual(currentUser.nickname, state.nickname)) {
         updateMask.push("nickname");
       }
-      if (!isEqual(currentUser.name.replace(UserNamePrefix, ""), state.username)) {
-        updateMask.push("username");
-      }
       if (!isEqual(currentUser.email, state.email)) {
         updateMask.push("email");
+      }
+      if (!isEqual(currentUser.avatarUrl, state.avatarUrl)) {
+        updateMask.push("avatar_url");
       }
       await userStore.updateUser(
         UserPb.fromPartial({
@@ -123,7 +119,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
       handleCloseBtnClick();
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.error);
+      toast.error(error.details);
     }
   };
 
@@ -139,7 +135,7 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
         <div className="w-full flex flex-row justify-start items-center">
           <span className="text-sm mr-2">{t("common.avatar")}</span>
           <label className="relative cursor-pointer hover:opacity-80">
-            <UserAvatar className="!w-12 !h-12" avatarUrl={state.avatarUrl} />
+            <UserAvatar className="!w-10 !h-10" avatarUrl={state.avatarUrl} />
             <input type="file" accept="image/*" className="absolute invisible w-full h-full inset-0" onChange={handleAvatarChanged} />
           </label>
           {state.avatarUrl && (
@@ -155,19 +151,19 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
         </div>
         <p className="text-sm">
           {t("common.username")}
-          <span className="text-sm text-gray-400 ml-1">{t("setting.account-section.username-note")}</span>
+          <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.username-note")})</span>
         </p>
-        <input type="text" className="input-text" value={state.username} onChange={handleUsernameChanged} />
+        <Input className="w-full" value={state.username} onChange={handleUsernameChanged} />
         <p className="text-sm">
           {t("common.nickname")}
-          <span className="text-sm text-gray-400 ml-1">{t("setting.account-section.nickname-note")}</span>
+          <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.nickname-note")})</span>
         </p>
-        <input type="text" className="input-text" value={state.nickname} onChange={handleNicknameChanged} />
+        <Input className="w-full" value={state.nickname} onChange={handleNicknameChanged} />
         <p className="text-sm">
           {t("common.email")}
-          <span className="text-sm text-gray-400 ml-1">{t("setting.account-section.email-note")}</span>
+          <span className="text-sm text-gray-400 ml-1">({t("setting.account-section.email-note")})</span>
         </p>
-        <input type="text" className="input-text" value={state.email} onChange={handleEmailChanged} />
+        <Input className="w-full" type="email" value={state.email} onChange={handleEmailChanged} />
         <div className="w-full flex flex-row justify-end items-center pt-4 space-x-2">
           <Button color="neutral" variant="plain" onClick={handleCloseBtnClick}>
             {t("common.cancel")}

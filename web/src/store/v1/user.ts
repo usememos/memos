@@ -6,7 +6,8 @@ import { UserNamePrefix, extractUsernameFromName } from "./resourceName";
 
 interface State {
   userMapByUsername: Record<string, User>;
-  currentUser?: User;
+  // The name of current user. Format: `users/${username}`
+  currentUser?: string;
   userSetting?: UserSetting;
 }
 
@@ -75,8 +76,14 @@ export const useUserStore = create(
         throw new Error("User not found");
       }
       const userMap = get().userMapByUsername;
+      if (user.name !== updatedUser.name) {
+        delete userMap[extractUsernameFromName(user.name)];
+      }
       userMap[updatedUser.username] = updatedUser;
       set({ userMapByUsername: userMap });
+      if (user.name === get().currentUser) {
+        set({ currentUser: updatedUser.name });
+      }
       return updatedUser;
     },
     deleteUser: async (name: string) => {
@@ -95,7 +102,7 @@ export const useUserStore = create(
       }
       const userMap = get().userMapByUsername;
       userMap[user.username] = user;
-      set({ currentUser: user, userMapByUsername: userMap });
+      set({ currentUser: user.name, userMapByUsername: userMap });
       const { setting } = await userServiceClient.getUserSetting({});
       set({
         userSetting: UserSetting.fromPartial({
@@ -104,9 +111,6 @@ export const useUserStore = create(
         }),
       });
       return user;
-    },
-    setCurrentUser: (user: User) => {
-      set({ currentUser: user });
     },
     updateUserSetting: async (userSetting: Partial<UserSetting>, updateMask: string[]) => {
       const { setting: updatedUserSetting } = await userServiceClient.updateUserSetting({
