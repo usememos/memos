@@ -98,7 +98,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
             className="w-full h-auto select-none relative flex flex-col justify-start items-start bg-white dark:bg-zinc-800"
             ref={memoElRef}
           >
-            <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{getTimeString(memo.displayTime)}</span>
+            <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{getDateTimeString(memo.displayTime)}</span>
             <div className="w-full px-6 text-base pb-4">
               <MemoContent content={memo.content} />
               <MemoResourceListView resourceList={memo.resources} />
