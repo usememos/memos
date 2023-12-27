@@ -77,7 +77,6 @@ const Resources = () => {
             <div>
               <Input
                 className="max-w-[8rem]"
-                variant="plain"
                 placeholder={t("common.search")}
                 startDecorator={<Icon.Search className="w-4 h-auto" />}
                 value={state.searchQuery}

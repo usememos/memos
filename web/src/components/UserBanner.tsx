@@ -2,7 +2,6 @@ import * as api from "@/helpers/api";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
 import { useGlobalStore } from "@/store/module";
-import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
 import showAboutSiteDialog from "./AboutSiteDialog";
 import Icon from "./Icon";
@@ -36,12 +35,9 @@ const UserBanner = () => {
       <Dropdown
         className="w-auto"
         trigger={
-          <div className="px-4 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-2xl hover:shadow hover:bg-white dark:hover:bg-zinc-700">
-            <UserAvatar className="shadow shrink-0" avatarUrl={user?.avatarUrl} />
-            <span className="px-1 text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{title}</span>
-            {user?.role === User_Role.HOST ? (
-              <span className="text-xs px-1 bg-blue-600 dark:bg-blue-800 rounded text-white dark:text-gray-200 shadow">MOD</span>
-            ) : null}
+          <div className="px-3 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-2xl hover:shadow hover:bg-white dark:hover:bg-zinc-700">
+            <UserAvatar className="shadow shrink-0 mr-2" avatarUrl={user?.avatarUrl} />
+            <span className="text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{title}</span>
           </div>
         }
         actionsClassName="min-w-[128px] max-w-full"

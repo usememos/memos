@@ -36,6 +36,7 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
     if (!activity?.payload?.versionUpdate?.version) {
       return;
     }
+
     window.open(`https://github.com/usememos/memos/releases/tag/v${activity?.payload?.versionUpdate?.version}`);
     if (inbox.status === Inbox_Status.UNREAD) {
       handleArchiveMessage(true);

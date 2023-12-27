@@ -1,4 +1,4 @@
-import { Divider } from "@mui/joy";
+import { Divider, IconButton } from "@mui/joy";
 import { useGlobalStore } from "@/store/module";
 import { useTranslate } from "@/utils/i18n";
 import { generateDialog } from "./Dialog";
@@ -22,9 +22,9 @@ const AboutSiteDialog: React.FC<Props> = ({ destroy }: Props) => {
         <p className="title-text flex items-center">
           {t("common.about")} {customizedProfile.name}
         </p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="opacity-70" />
+        </IconButton>
       </div>
       <div className="flex flex-col justify-start items-start max-w-full w-96">
         <p className="text-xs">{t("about.memos-description")}</p>
