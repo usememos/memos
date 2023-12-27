@@ -74,9 +74,9 @@ const UserProfile = () => {
     }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
+      filter: filters.join(" && "),
       limit: DEFAULT_MEMO_LIMIT,
       offset: memoList.size(),
-      filter: filters.join(" && "),
     });
     setIsRequesting(false);
     setIsComplete(data.length < DEFAULT_MEMO_LIMIT);

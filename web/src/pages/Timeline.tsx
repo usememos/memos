@@ -46,8 +46,8 @@ const Timeline = () => {
     ];
     setIsRequesting(true);
     await memoStore.fetchMemos({
-      offset: memoList.size(),
       filter: filters.join(" && "),
+      offset: memoList.size(),
     });
     setIsRequesting(false);
   };
