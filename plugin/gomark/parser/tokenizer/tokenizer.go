@@ -16,6 +16,7 @@ const (
 	Hyphen             TokenType = "-"
 	PlusSign           TokenType = "+"
 	Dot                TokenType = "."
+	LessThan           TokenType = "<"
 	GreaterThan        TokenType = ">"
 	Backslash          TokenType = "\\"
 	Newline            TokenType = "\n"
@@ -65,6 +66,8 @@ func Tokenize(text string) []*Token {
 			tokens = append(tokens, NewToken(Tilde, "~"))
 		case '-':
 			tokens = append(tokens, NewToken(Hyphen, "-"))
+		case '<':
+			tokens = append(tokens, NewToken(LessThan, "<"))
 		case '>':
 			tokens = append(tokens, NewToken(GreaterThan, ">"))
 		case '+':

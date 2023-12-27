@@ -22,6 +22,7 @@ const (
 	CodeNode
 	ImageNode
 	LinkNode
+	AutoLinkNode
 	TagNode
 	StrikethroughNode
 	EscapingCharacterNode
@@ -61,6 +62,8 @@ func (t NodeType) String() string {
 		return "ImageNode"
 	case LinkNode:
 		return "LinkNode"
+	case AutoLinkNode:
+		return "AutoLinkNode"
 	case TagNode:
 		return "TagNode"
 	case StrikethroughNode:

@@ -66,6 +66,7 @@
     - [InboxService](#memos-api-v2-InboxService)
   
 - [api/v2/markdown_service.proto](#api_v2_markdown_service-proto)
+    - [AutoLinkNode](#memos-api-v2-AutoLinkNode)
     - [BlockquoteNode](#memos-api-v2-BlockquoteNode)
     - [BoldItalicNode](#memos-api-v2-BoldItalicNode)
     - [BoldNode](#memos-api-v2-BoldNode)
@@ -956,6 +957,21 @@
 
 
 
+<a name="memos-api-v2-AutoLinkNode"></a>
+
+### AutoLinkNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| url | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-BlockquoteNode"></a>
 
 ### BlockquoteNode
@@ -1163,6 +1179,7 @@
 | code_node | [CodeNode](#memos-api-v2-CodeNode) |  |  |
 | image_node | [ImageNode](#memos-api-v2-ImageNode) |  |  |
 | link_node | [LinkNode](#memos-api-v2-LinkNode) |  |  |
+| auto_link_node | [AutoLinkNode](#memos-api-v2-AutoLinkNode) |  |  |
 | tag_node | [TagNode](#memos-api-v2-TagNode) |  |  |
 | strikethrough_node | [StrikethroughNode](#memos-api-v2-StrikethroughNode) |  |  |
 | escaping_character_node | [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode) |  |  |
@@ -1337,9 +1354,10 @@
 | CODE | 14 |  |
 | IMAGE | 15 |  |
 | LINK | 16 |  |
-| TAG | 17 |  |
-| STRIKETHROUGH | 18 |  |
-| ESCAPING_CHARACTER | 19 |  |
+| AUTO_LINK | 17 |  |
+| TAG | 18 |  |
+| STRIKETHROUGH | 19 |  |
+| ESCAPING_CHARACTER | 20 |  |
 
 
  

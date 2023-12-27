@@ -41,9 +41,10 @@ enum NodeType {
   CODE = 14;
   IMAGE = 15;
   LINK = 16;
-  TAG = 17;
-  STRIKETHROUGH = 18;
-  ESCAPING_CHARACTER = 19;
+  AUTO_LINK = 17;
+  TAG = 18;
+  STRIKETHROUGH = 19;
+  ESCAPING_CHARACTER = 20;
 }
 
 message Node {
@@ -65,9 +66,10 @@ message Node {
     CodeNode code_node = 15;
     ImageNode image_node = 16;
     LinkNode link_node = 17;
-    TagNode tag_node = 18;
-    StrikethroughNode strikethrough_node = 19;
-    EscapingCharacterNode escaping_character_node = 20;
+    AutoLinkNode auto_link_node = 18;
+    TagNode tag_node = 19;
+    StrikethroughNode strikethrough_node = 20;
+    EscapingCharacterNode escaping_character_node = 21;
   }
 }
 
@@ -142,6 +144,10 @@ message ImageNode {
 message LinkNode {
   string text = 1;
   string url = 2;
+}
+
+message AutoLinkNode {
+  string url = 1;
 }
 
 message TagNode {

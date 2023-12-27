@@ -250,6 +250,8 @@ func StringifyNode(node ast.Node) string {
 		return "Image(" + n.URL + ", " + n.AltText + ")"
 	case *ast.Link:
 		return "Link(" + n.Text + ", " + n.URL + ")"
+	case *ast.AutoLink:
+		return "AutoLink(" + n.URL + ")"
 	case *ast.Tag:
 		return "Tag(" + n.Content + ")"
 	case *ast.Strikethrough:

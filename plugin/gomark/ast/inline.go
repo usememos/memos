@@ -82,6 +82,16 @@ func (*Link) Type() NodeType {
 	return LinkNode
 }
 
+type AutoLink struct {
+	BaseInline
+
+	URL string
+}
+
+func (*AutoLink) Type() NodeType {
+	return AutoLinkNode
+}
+
 type Tag struct {
 	BaseInline
 

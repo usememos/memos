@@ -76,6 +76,7 @@ var defaultInlineParsers = []InlineParser{
 	NewBoldItalicParser(),
 	NewImageParser(),
 	NewLinkParser(),
+	NewAutoLinkParser(),
 	NewBoldParser(),
 	NewItalicParser(),
 	NewCodeParser(),
