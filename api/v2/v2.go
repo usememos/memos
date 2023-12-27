@@ -3,14 +3,18 @@ package v2
 import (
 	"context"
 	"fmt"
+	"net"
 
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/improbable-eng/grpc-web/go/grpcweb"
 	"github.com/labstack/echo/v4"
+	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/reflection"
 
+	"github.com/usememos/memos/internal/log"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/store"
@@ -126,6 +130,17 @@ func (s *APIV2Service) RegisterGateway(ctx context.Context, e *echo.Echo) error 
 	}
 	wrappedGrpc := grpcweb.WrapServer(s.grpcServer, options...)
 	e.Any("/memos.api.v2.*", echo.WrapHandler(wrappedGrpc))
+
+	// Start gRPC server.
+	listen, err := net.Listen("tcp", fmt.Sprintf("%s:%d", s.Profile.Addr, s.grpcServerPort))
+	if err != nil {
+		return errors.Wrap(err, "failed to start gRPC server")
+	}
+	go func() {
+		if err := s.grpcServer.Serve(listen); err != nil {
+			log.Error("grpc server listen error", zap.Error(err))
+		}
+	}()
 
 	return nil
 }
