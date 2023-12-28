@@ -3,6 +3,7 @@ package v1
 import (
 	"encoding/json"
 	"net/http"
+	"path/filepath"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -241,6 +242,24 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 		value := ""
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)
+		}
+
+		trimmedValue := strings.TrimSpace(value)
+		switch {
+		case trimmedValue != value:
+			return errors.New("local storage path must not contain leading or trailing whitespace")
+		case trimmedValue == "":
+			return errors.New("local storage path can't be empty")
+		case strings.Contains(trimmedValue, "\\"):
+			return errors.New("local storage path must use forward slashes `/`")
+		case strings.Contains(trimmedValue, "../"):
+			return errors.New("local storage path is not allowed to contain `../`")
+		case strings.HasPrefix(trimmedValue, "./"):
+			return errors.New("local storage path is not allowed to start with `./`")
+		case filepath.IsAbs(trimmedValue) || trimmedValue[0] == '/':
+			return errors.New("local storage path must be a relative path")
+		case !strings.Contains(trimmedValue, "{filename}"):
+			return errors.New("local storage path must contain `{filename}`")
 		}
 	case SystemSettingTelegramBotTokenName:
 		if upsert.Value == "" {

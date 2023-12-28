@@ -6,7 +6,6 @@ import (
 	"io"
 	"net/http"
 	"os"
-	"path"
 	"path/filepath"
 	"strings"
 	"sync/atomic"
@@ -83,7 +82,11 @@ func (s *Service) streamResource(c echo.Context) error {
 
 	blob := resource.Blob
 	if resource.InternalPath != "" {
-		resourcePath := resource.InternalPath
+		resourcePath := filepath.FromSlash(resource.InternalPath)
+		if !filepath.IsAbs(resourcePath) {
+			resourcePath = filepath.Join(s.Profile.Data, resourcePath)
+		}
+
 		src, err := os.Open(resourcePath)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, fmt.Sprintf("Failed to open the local resource: %s", resourcePath)).SetInternal(err)
@@ -142,7 +145,7 @@ func getOrGenerateThumbnailImage(srcBlob []byte, dstPath string) ([]byte, error)
 		}
 		thumbnailImage := imaging.Resize(src, 512, 0, imaging.Lanczos)
 
-		dstDir := path.Dir(dstPath)
+		dstDir := filepath.Dir(dstPath)
 		if err := os.MkdirAll(dstDir, os.ModePerm); err != nil {
 			return nil, errors.Wrap(err, "failed to create thumbnail dir")
 		}

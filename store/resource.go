@@ -95,7 +95,11 @@ func (s *Store) DeleteResource(ctx context.Context, delete *DeleteResource) erro
 
 	// Delete the local file.
 	if resource.InternalPath != "" {
-		_ = os.Remove(resource.InternalPath)
+		resourcePath := filepath.FromSlash(resource.InternalPath)
+		if !filepath.IsAbs(resourcePath) {
+			resourcePath = filepath.Join(s.Profile.Data, resourcePath)
+		}
+		_ = os.Remove(resourcePath)
 	}
 	// Delete the thumbnail.
 	if util.HasPrefixes(resource.Type, "image/png", "image/jpeg") {
