@@ -27,12 +27,21 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
     try {
       await api.upsertSystemSetting({
         name: "local-storage-path",
-        value: JSON.stringify(path),
+        value: JSON.stringify(path.trim()),
       });
       await globalStore.fetchSystemStatus();
     } catch (error: any) {
       console.error(error);
-      toast.error(error.response.data.message);
+      if (error.response.data.error) {
+        const errorText = error.response.data.error as string;
+        const internalIndex = errorText.indexOf("internal=");
+        if (internalIndex !== -1) {
+          const internalError = errorText.substring(internalIndex + 9);
+          toast.error(internalError);
+        }
+      } else {
+        toast.error(error.response.data.message);
+      }
     }
     if (confirmCallback) {
       confirmCallback();

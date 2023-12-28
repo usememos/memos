@@ -416,17 +416,24 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 				return errors.Wrap(err, "Failed to unmarshal SystemSettingLocalStoragePathName")
 			}
 		}
-		filePath := filepath.FromSlash(localStoragePath)
-		if !strings.Contains(filePath, "{filename}") {
-			filePath = filepath.Join(filePath, "{filename}")
-		}
-		filePath = filepath.Join(s.Profile.Data, replacePathTemplate(filePath, create.Filename))
 
-		dir := filepath.Dir(filePath)
+		internalPath := localStoragePath
+		if !strings.Contains(internalPath, "{filename}") {
+			internalPath = filepath.Join(internalPath, "{filename}")
+		}
+		internalPath = replacePathTemplate(internalPath, create.Filename)
+		internalPath = filepath.ToSlash(internalPath)
+		create.InternalPath = internalPath
+
+		osPath := filepath.FromSlash(internalPath)
+		if !filepath.IsAbs(osPath) {
+			osPath = filepath.Join(s.Profile.Data, osPath)
+		}
+		dir := filepath.Dir(osPath)
 		if err = os.MkdirAll(dir, os.ModePerm); err != nil {
 			return errors.Wrap(err, "Failed to create directory")
 		}
-		dst, err := os.Create(filePath)
+		dst, err := os.Create(osPath)
 		if err != nil {
 			return errors.Wrap(err, "Failed to create file")
 		}
@@ -436,7 +443,6 @@ func SaveResourceBlob(ctx context.Context, s *store.Store, create *store.Resourc
 			return errors.Wrap(err, "Failed to copy file")
 		}
 
-		create.InternalPath = filePath
 		return nil
 	}
 
