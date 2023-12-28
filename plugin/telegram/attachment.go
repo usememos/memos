@@ -1,7 +1,7 @@
 package telegram
 
 import (
-	"path"
+	"path/filepath"
 
 	"go.uber.org/zap"
 
@@ -27,7 +27,7 @@ func (b Attachment) GetMimeType() string {
 		return b.MimeType
 	}
 
-	mime, ok := mimeTypes[path.Ext(b.FileName)]
+	mime, ok := mimeTypes[filepath.Ext(b.FileName)]
 	if !ok {
 		// Handle unknown file extension
 		log.Warn("Unknown file type for ", zap.String("filename", b.FileName))
