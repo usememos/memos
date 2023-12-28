@@ -7,6 +7,7 @@ import (
 
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+	"github.com/usememos/memos/plugin/gomark/restore"
 )
 
 func TestStrikethroughParser(t *testing.T) {
@@ -41,6 +42,6 @@ func TestStrikethroughParser(t *testing.T) {
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
 		node, _ := NewStrikethroughParser().Parse(tokens)
-		require.Equal(t, StringifyNodes([]ast.Node{test.strikethrough}), StringifyNodes([]ast.Node{node}))
+		require.Equal(t, restore.Restore([]ast.Node{test.strikethrough}), restore.Restore([]ast.Node{node}))
 	}
 }

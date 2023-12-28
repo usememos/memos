@@ -34,10 +34,10 @@ func (*HeadingParser) Match(tokens []*tokenizer.Token) (int, bool) {
 
 	contentTokens := []*tokenizer.Token{}
 	for _, token := range tokens[level+1:] {
-		contentTokens = append(contentTokens, token)
 		if token.Type == tokenizer.Newline {
 			break
 		}
+		contentTokens = append(contentTokens, token)
 	}
 	if len(contentTokens) == 0 {
 		return 0, false
@@ -62,9 +62,6 @@ func (p *HeadingParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	}
 
 	contentTokens := tokens[level+1 : size]
-	if contentTokens[len(contentTokens)-1].Type == tokenizer.Newline {
-		contentTokens = contentTokens[:len(contentTokens)-1]
-	}
 	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err

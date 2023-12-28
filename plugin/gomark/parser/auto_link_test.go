@@ -7,6 +7,7 @@ import (
 
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+	"github.com/usememos/memos/plugin/gomark/restore"
 )
 
 func TestAutoLinkParser(t *testing.T) {
@@ -27,7 +28,8 @@ func TestAutoLinkParser(t *testing.T) {
 		{
 			text: "https://example.com",
 			link: &ast.AutoLink{
-				URL: "https://example.com",
+				URL:       "https://example.com",
+				IsRawText: true,
 			},
 		},
 	}
@@ -35,6 +37,6 @@ func TestAutoLinkParser(t *testing.T) {
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
 		node, _ := NewAutoLinkParser().Parse(tokens)
-		require.Equal(t, StringifyNodes([]ast.Node{test.link}), StringifyNodes([]ast.Node{node}))
+		require.Equal(t, restore.Restore([]ast.Node{test.link}), restore.Restore([]ast.Node{node}))
 	}
 }

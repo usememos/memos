@@ -23,10 +23,10 @@ func (*BlockquoteParser) Match(tokens []*tokenizer.Token) (int, bool) {
 
 	contentTokens := []*tokenizer.Token{}
 	for _, token := range tokens[2:] {
-		contentTokens = append(contentTokens, token)
 		if token.Type == tokenizer.Newline {
 			break
 		}
+		contentTokens = append(contentTokens, token)
 	}
 	if len(contentTokens) == 0 {
 		return 0, false

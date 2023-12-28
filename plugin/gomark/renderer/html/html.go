@@ -83,7 +83,7 @@ func (r *HTMLRenderer) Render(astRoot []ast.Node) string {
 	return r.output.String()
 }
 
-func (r *HTMLRenderer) renderLineBreak(_ *ast.LineBreak) {
+func (r *HTMLRenderer) renderLineBreak(*ast.LineBreak) {
 	r.output.WriteString("<br>")
 }
 

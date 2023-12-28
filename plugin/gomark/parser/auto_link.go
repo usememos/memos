@@ -57,10 +57,13 @@ func (p *AutoLinkParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	}
 
 	url := tokenizer.Stringify(tokens[:size])
+	isRawText := true
 	if tokens[0].Type == tokenizer.LessThan && tokens[len(tokens)-1].Type == tokenizer.GreaterThan {
+		isRawText = false
 		url = tokenizer.Stringify(tokens[1 : len(tokens)-1])
 	}
 	return &ast.AutoLink{
-		URL: url,
+		URL:       url,
+		IsRawText: isRawText,
 	}, nil
 }
