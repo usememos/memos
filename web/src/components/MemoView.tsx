@@ -205,7 +205,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           <div className="w-auto hidden group-hover:flex flex-row justify-between items-center">
             {props.showVisibility && memo.visibility !== Visibility.PRIVATE && (
               <>
-                <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility)}` as any)} placement="top">
+                <Tooltip title={t(`memo.visibility.${convertVisibilityToString(memo.visibility).toLowerCase()}` as any)} placement="top">
                   <span>
                     <VisibilityIcon visibility={memo.visibility} />
                   </span>
@@ -251,7 +251,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           )}
         </div>
       </div>
-      <MemoContent content={memo.content} nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
+      <MemoContent nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
       <MemoResourceListView resourceList={memo.resources} />
       <MemoRelationListView memo={memo} relationList={referenceRelations} />
     </div>

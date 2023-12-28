@@ -28,56 +28,12 @@ const (
 	EscapingCharacterNode
 )
 
-func (t NodeType) String() string {
-	switch t {
-	case LineBreakNode:
-		return "LineBreakNode"
-	case ParagraphNode:
-		return "ParagraphNode"
-	case CodeBlockNode:
-		return "CodeBlockNode"
-	case HeadingNode:
-		return "HeadingNode"
-	case HorizontalRuleNode:
-		return "HorizontalRuleNode"
-	case BlockquoteNode:
-		return "BlockquoteNode"
-	case OrderedListNode:
-		return "OrderedListNode"
-	case UnorderedListNode:
-		return "UnorderedListNode"
-	case TaskListNode:
-		return "TaskListNode"
-	case TextNode:
-		return "TextNode"
-	case BoldNode:
-		return "BoldNode"
-	case ItalicNode:
-		return "ItalicNode"
-	case BoldItalicNode:
-		return "BoldItalicNode"
-	case CodeNode:
-		return "CodeNode"
-	case ImageNode:
-		return "ImageNode"
-	case LinkNode:
-		return "LinkNode"
-	case AutoLinkNode:
-		return "AutoLinkNode"
-	case TagNode:
-		return "TagNode"
-	case StrikethroughNode:
-		return "StrikethroughNode"
-	case EscapingCharacterNode:
-		return "EscapingCharacterNode"
-	default:
-		return "UnknownNode"
-	}
-}
-
 type Node interface {
 	// Type returns a node type.
 	Type() NodeType
+
+	// Restore returns a string representation of this node.
+	Restore() string
 
 	// PrevSibling returns a previous sibling node of this node.
 	PrevSibling() Node
@@ -112,4 +68,13 @@ func (n *BaseNode) SetPrevSibling(node Node) {
 
 func (n *BaseNode) SetNextSibling(node Node) {
 	n.nextSibling = node
+}
+
+func IsBlockNode(node Node) bool {
+	switch node.Type() {
+	case ParagraphNode, CodeBlockNode, HeadingNode, HorizontalRuleNode, BlockquoteNode, OrderedListNode, UnorderedListNode, TaskListNode:
+		return true
+	default:
+		return false
+	}
 }

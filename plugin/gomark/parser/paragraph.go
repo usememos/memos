@@ -18,10 +18,10 @@ func NewParagraphParser() *ParagraphParser {
 func (*ParagraphParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	contentTokens := []*tokenizer.Token{}
 	for _, token := range tokens {
-		contentTokens = append(contentTokens, token)
 		if token.Type == tokenizer.Newline {
 			break
 		}
+		contentTokens = append(contentTokens, token)
 	}
 	if len(contentTokens) == 0 {
 		return 0, false
@@ -38,11 +38,7 @@ func (p *ParagraphParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 		return nil, errors.New("not matched")
 	}
 
-	contentTokens := tokens[:size]
-	if contentTokens[len(contentTokens)-1].Type == tokenizer.Newline {
-		contentTokens = contentTokens[:len(contentTokens)-1]
-	}
-	children, err := ParseInline(contentTokens)
+	children, err := ParseInline(tokens[:size])
 	if err != nil {
 		return nil, err
 	}

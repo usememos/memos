@@ -139,7 +139,7 @@ const MemoDetail = () => {
               </Link>
             </div>
           )}
-          <MemoContent content={memo.content} />
+          <MemoContent nodes={memo.nodes} />
           <MemoResourceListView resourceList={memo.resources} />
           <MemoRelationListView memo={memo} relationList={referenceRelations} />
           <div className="w-full mt-3 flex flex-row justify-between items-center gap-2">

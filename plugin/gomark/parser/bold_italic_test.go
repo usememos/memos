@@ -7,6 +7,7 @@ import (
 
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+	"github.com/usememos/memos/plugin/gomark/restore"
 )
 
 func TestBoldItalicParser(t *testing.T) {
@@ -45,6 +46,6 @@ func TestBoldItalicParser(t *testing.T) {
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
 		node, _ := NewBoldItalicParser().Parse(tokens)
-		require.Equal(t, StringifyNodes([]ast.Node{test.boldItalic}), StringifyNodes([]ast.Node{node}))
+		require.Equal(t, restore.Restore([]ast.Node{test.boldItalic}), restore.Restore([]ast.Node{node}))
 	}
 }

@@ -40,7 +40,7 @@ func (*CodeBlockParser) Match(tokens []*tokenizer.Token) (int, bool) {
 				matched = true
 				break
 			} else if tokens[cursor+4].Type == tokenizer.Newline {
-				cursor += 5
+				cursor += 4
 				matched = true
 				break
 			}
@@ -64,9 +64,6 @@ func (p *CodeBlockParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 	if languageToken.Type == tokenizer.Newline {
 		languageToken = nil
 		contentStart = 4
-	}
-	if tokens[size-1].Type == tokenizer.Newline {
-		contentEnd = size - 5
 	}
 
 	codeBlock := &ast.CodeBlock{

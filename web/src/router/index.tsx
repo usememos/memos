@@ -1,6 +1,7 @@
 import { lazy } from "react";
 import { createBrowserRouter } from "react-router-dom";
 import App from "@/App";
+import SuspenseWrapper from "@/layouts/SuspenseWrapper";
 import { initialGlobalState } from "@/store/module";
 import AuthStatusProvider from "./AuthStatusProvider";
 
@@ -36,16 +37,22 @@ const router = createBrowserRouter([
     loader: () => initialGlobalStateLoader(),
     children: [
       {
-        path: "/auth",
-        element: <SignIn />,
-      },
-      {
-        path: "/auth/signup",
-        element: <SignUp />,
-      },
-      {
-        path: "/auth/callback",
-        element: <AuthCallback />,
+        path: "/auth/",
+        element: <SuspenseWrapper />,
+        children: [
+          {
+            path: "",
+            element: <SignIn />,
+          },
+          {
+            path: "signup",
+            element: <SignUp />,
+          },
+          {
+            path: "callback",
+            element: <AuthCallback />,
+          },
+        ],
       },
       {
         path: "/",

@@ -105,7 +105,7 @@ const Archived = () => {
                     </Tooltip>
                   </div>
                 </div>
-                <MemoContent content={memo.content} nodes={memo.nodes} />
+                <MemoContent nodes={memo.nodes} />
               </div>
             ))}
           </div>
