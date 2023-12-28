@@ -21,7 +21,7 @@ const TimelineMemo = (props: Props) => {
         <Icon.Dot className="w-5 h-auto opacity-60" />
         <span className="opacity-60">#{memo.id}</span>
       </div>
-      <MemoContent content={memo.content} nodes={memo.nodes} />
+      <MemoContent nodes={memo.nodes} />
       <MemoResourceListView resourceList={memo.resources} />
       <MemoRelationListView memo={memo} relationList={relations} />
     </div>
