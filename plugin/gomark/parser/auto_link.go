@@ -2,6 +2,7 @@ package parser
 
 import (
 	"errors"
+	"net/url"
 
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
@@ -17,24 +18,36 @@ func (*AutoLinkParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if len(tokens) < 3 {
 		return 0, false
 	}
-	if tokens[0].Type != tokenizer.LessThan {
-		return 0, false
+
+	hasAngleBrackets := false
+	if tokens[0].Type == tokenizer.LessThan {
+		hasAngleBrackets = true
 	}
-	urlTokens := []*tokenizer.Token{}
-	for _, token := range tokens[1:] {
+
+	contentTokens := []*tokenizer.Token{}
+	for _, token := range tokens {
 		if token.Type == tokenizer.Newline || token.Type == tokenizer.Space {
-			return 0, false
-		}
-		if token.Type == tokenizer.GreaterThan {
 			break
 		}
-		urlTokens = append(urlTokens, token)
+		contentTokens = append(contentTokens, token)
+		if hasAngleBrackets && token.Type == tokenizer.GreaterThan {
+			break
+		}
 	}
-	if 2+len(urlTokens) > len(tokens) {
+
+	if hasAngleBrackets && contentTokens[len(contentTokens)-1].Type != tokenizer.GreaterThan {
 		return 0, false
 	}
 
-	return 2 + len(urlTokens), true
+	content := tokenizer.Stringify(contentTokens)
+	if !hasAngleBrackets {
+		u, err := url.Parse(content)
+		if err != nil || u.Scheme == "" || u.Host == "" {
+			return 0, false
+		}
+	}
+
+	return len(contentTokens), true
 }
 
 func (p *AutoLinkParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
@@ -43,8 +56,11 @@ func (p *AutoLinkParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 		return nil, errors.New("not matched")
 	}
 
-	urlTokens := tokens[1 : size-1]
+	url := tokenizer.Stringify(tokens[:size])
+	if tokens[0].Type == tokenizer.LessThan && tokens[len(tokens)-1].Type == tokenizer.GreaterThan {
+		url = tokenizer.Stringify(tokens[1 : len(tokens)-1])
+	}
 	return &ast.AutoLink{
-		URL: tokenizer.Stringify(urlTokens),
+		URL: url,
 	}, nil
 }

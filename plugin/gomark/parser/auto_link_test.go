@@ -24,7 +24,14 @@ func TestAutoLinkParser(t *testing.T) {
 				URL: "https://example.com",
 			},
 		},
+		{
+			text: "https://example.com",
+			link: &ast.AutoLink{
+				URL: "https://example.com",
+			},
+		},
 	}
+
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)
 		node, _ := NewAutoLinkParser().Parse(tokens)
