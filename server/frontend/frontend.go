@@ -79,7 +79,8 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 		}
 
 		// Inject memo metadata into `index.html`.
-		indexHTML := strings.ReplaceAll(rawIndexHTML, "<!-- memos.metadata -->", generateMemoMetadata(memo, creator).String())
+		indexHTML := strings.ReplaceAll(rawIndexHTML, "<!-- memos.metadata.head -->", generateMemoMetadata(memo, creator).String())
+		indexHTML = strings.ReplaceAll(indexHTML, "<!-- memos.metadata.body -->", fmt.Sprintf("<!-- memos.memo.%d -->", memo.ID))
 		return c.HTML(http.StatusOK, indexHTML)
 	})
 }
