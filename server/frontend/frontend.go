@@ -3,7 +3,6 @@ package frontend
 import (
 	"context"
 	"fmt"
-	"html/template"
 	"net/http"
 	"os"
 	"strings"
@@ -80,7 +79,7 @@ func (s *FrontendService) registerRoutes(e *echo.Echo) {
 		}
 
 		// Inject memo metadata into `index.html`.
-		indexHTML := strings.ReplaceAll(rawIndexHTML, "<!-- memos.metadata -->", generateMemoMetadata(memo, creator))
+		indexHTML := strings.ReplaceAll(rawIndexHTML, "<!-- memos.metadata -->", generateMemoMetadata(memo, creator).String())
 		return c.HTML(http.StatusOK, indexHTML)
 	})
 }
@@ -123,40 +122,57 @@ Sitemap: %s/sitemap.xml`, instanceURL, instanceURL)
 	})
 }
 
-func generateMemoMetadata(memo *store.Memo, creator *store.User) string {
-	description := ""
-	if memo.Visibility == store.Private {
-		description = "This memo is private."
-	} else if memo.Visibility == store.Protected {
-		description = "This memo is protected."
-	} else {
+func generateMemoMetadata(memo *store.Memo, creator *store.User) *Metadata {
+	metadata := getDefaultMetadata()
+	metadata.Title = fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username)
+	if memo.Visibility == store.Public {
 		tokens := tokenizer.Tokenize(memo.Content)
 		nodes, _ := parser.Parse(tokens)
-		description = renderer.NewStringRenderer().Render(nodes)
+		description := renderer.NewStringRenderer().Render(nodes)
 		if len(description) == 0 {
 			description = memo.Content
 		}
 		if len(description) > maxMetadataDescriptionLength {
 			description = description[:maxMetadataDescriptionLength] + "..."
 		}
+		metadata.Description = description
 	}
 
-	metadataList := []string{
-		fmt.Sprintf(`<meta name="description" content="%s" />`, template.HTMLEscapeString(description)),
-		fmt.Sprintf(`<meta property="og:title" content="%s" />`, template.HTMLEscapeString(fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username))),
-		fmt.Sprintf(`<meta property="og:description" content="%s" />`, template.HTMLEscapeString(description)),
-		fmt.Sprintf(`<meta property="og:image" content="%s" />`, "https://www.usememos.com/logo.png"),
-		`<meta property="og:type" content="website" />`,
-		// Twitter related metadata.
-		fmt.Sprintf(`<meta name="twitter:title" content="%s" />`, template.HTMLEscapeString(fmt.Sprintf("%s(@%s) on Memos", creator.Nickname, creator.Username))),
-		fmt.Sprintf(`<meta name="twitter:description" content="%s" />`, template.HTMLEscapeString(description)),
-		fmt.Sprintf(`<meta name="twitter:image" content="%s" />`, "https://www.usememos.com/logo.png"),
-		`<meta name="twitter:card" content="summary" />`,
-	}
-	return strings.Join(metadataList, "\n")
+	return metadata
 }
 
 func getRawIndexHTML() string {
 	bytes, _ := os.ReadFile("dist/index.html")
 	return string(bytes)
+}
+
+type Metadata struct {
+	Title       string
+	Description string
+	ImageURL    string
+}
+
+func getDefaultMetadata() *Metadata {
+	return &Metadata{
+		Title:       "Memos",
+		Description: "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
+		ImageURL:    "https://www.usememos.com/logo.png",
+	}
+}
+
+func (m *Metadata) String() string {
+	metadataList := []string{
+		fmt.Sprintf(`<meta name="description" content="%s" />`, m.Description),
+		fmt.Sprintf(`<meta property="og:title" content="%s" />`, m.Title),
+		fmt.Sprintf(`<meta property="og:description" content="%s" />`, m.Description),
+		fmt.Sprintf(`<meta property="og:image" content="%s" />`, m.ImageURL),
+		`<meta property="og:type" content="website" />`,
+		// Twitter related fields.
+		fmt.Sprintf(`<meta property="twitter:title" content="%s" />`, m.Title),
+		fmt.Sprintf(`<meta property="twitter:description" content="%s" />`, m.Description),
+		fmt.Sprintf(`<meta property="twitter:image" content="%s" />`, m.ImageURL),
+		`<meta name="twitter:card" content="summary" />`,
+		`<meta name="twitter:creator" content="memos" />`,
+	}
+	return strings.Join(metadataList, "\n")
 }
