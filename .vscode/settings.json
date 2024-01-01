@@ -1,5 +1,0 @@
-{
-  "json.schemaDownload.enable":true,
-  "go.lintOnSave": "workspace",
-  "go.lintTool": "golangci-lint",
-}
