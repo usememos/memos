@@ -58,7 +58,7 @@ const Explore = () => {
         ))}
 
         {isRequesting ? (
-          <div className="flex flex-col justify-start items-center w-full my-8">
+          <div className="flex flex-col justify-start items-center w-full my-4">
             <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
           </div>
         ) : isComplete ? (
@@ -69,7 +69,7 @@ const Explore = () => {
             </div>
           )
         ) : (
-          <div className="w-full flex flex-row justify-center items-center my-2">
+          <div className="w-full flex flex-row justify-center items-center my-4">
             <span className="cursor-pointer text-sm italic text-gray-500  hover:text-green-600" onClick={fetchMemos}>
               {t("memo.fetch-more")}
             </span>

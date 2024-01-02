@@ -16,6 +16,7 @@ import (
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/log"
+	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
 	"github.com/usememos/memos/plugin/webhook"
@@ -34,6 +35,11 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
 	}
 
+	nodes, err := parser.Parse(tokenizer.Tokenize(request.Content))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse memo content")
+	}
+
 	create := &store.Memo{
 		CreatorID:  user.ID,
 		Content:    request.Content,
@@ -44,6 +50,18 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		return nil, err
 	}
 	metric.Enqueue("memo create")
+
+	// Dynamically upsert tags from memo content.
+	traverseASTNodes(nodes, func(node ast.Node) {
+		if tag, ok := node.(*ast.Tag); ok {
+			if _, err := s.Store.UpsertTag(ctx, &store.Tag{
+				Name:      tag.Content,
+				CreatorID: user.ID,
+			}); err != nil {
+				log.Warn("Failed to create tag", zap.Error(err))
+			}
+		}
+	})
 
 	memoMessage, err := s.convertMemoFromStore(ctx, memo)
 	if err != nil {
@@ -198,6 +216,22 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 	for _, path := range request.UpdateMask.Paths {
 		if path == "content" {
 			update.Content = &request.Memo.Content
+			nodes, err := parser.Parse(tokenizer.Tokenize(*update.Content))
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to parse memo content")
+			}
+
+			// Dynamically upsert tags from memo content.
+			traverseASTNodes(nodes, func(node ast.Node) {
+				if tag, ok := node.(*ast.Tag); ok {
+					if _, err := s.Store.UpsertTag(ctx, &store.Tag{
+						Name:      tag.Content,
+						CreatorID: user.ID,
+					}); err != nil {
+						log.Warn("Failed to create tag", zap.Error(err))
+					}
+				}
+			})
 		} else if path == "visibility" {
 			visibility := convertVisibilityToStore(request.Memo.Visibility)
 			update.Visibility = &visibility

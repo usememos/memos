@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import useToggle from "react-use/lib/useToggle";
 import { useFilterStore, useTagStore } from "@/store/module";
+import { useMemoList } from "@/store/v1";
 import { useTranslate } from "@/utils/i18n";
 import showCreateTagDialog from "./CreateTagDialog";
 import Icon from "./Icon";
@@ -15,13 +16,14 @@ const TagList = () => {
   const t = useTranslate();
   const filterStore = useFilterStore();
   const tagStore = useTagStore();
+  const memoList = useMemoList();
   const tagsText = tagStore.state.tags;
   const filter = filterStore.state;
   const [tags, setTags] = useState<Tag[]>([]);
 
   useEffect(() => {
     tagStore.fetchTags();
-  }, []);
+  }, [memoList.size()]);
 
   useEffect(() => {
     const sortedTags = Array.from(tagsText).sort();
