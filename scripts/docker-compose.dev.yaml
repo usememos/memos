@@ -1,8 +1,13 @@
+version: "3.0"
+name: memos-dev
 services:
   db:
     image: mysql
     volumes:
-      - ./.air/mysql:/var/lib/mysql
+      - ./../.air/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: yes
+      MYSQL_DATABASE: memos 
   api:
     image: cosmtrek/air
     working_dir: /work
@@ -11,8 +16,8 @@ services:
       - "MEMOS_DSN=root@tcp(db)/memos"
       - "MEMOS_DRIVER=mysql"
     volumes:
-      - .:/work/
-      - .air/go-build:/root/.cache/go-build
+      - ./..:/work/
+      - ./../.air/go-build:/root/.cache/go-build
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
   web:
     image: node:20-alpine
@@ -23,8 +28,7 @@ services:
     entrypoint: ["/bin/sh", "-c"]
     command: ["corepack enable && pnpm install && pnpm dev"]
     volumes:
-      - ./web:/work
-      - ./.air/node_modules/:/work/node_modules/ # Cache for Node Modules
+      - ./../web:/work
 
   # Services below are used for developers to run once
   #
@@ -43,8 +47,8 @@ services:
     working_dir: /work/proto
     command: generate
     volumes:
-      - ./proto:/work/proto
-      - ./web/src/types/:/work/web/src/types/
+      - ./../proto:/work/proto
+      - ./../web/src/types/:/work/web/src/types/
 
   # Do golang static code check before create PR
   golangci-lint:
@@ -55,8 +59,8 @@ services:
     command: run -v
     volumes:
       - $HOME/go/pkg/:/go/pkg/ # Cache for go mod shared with the host
-      - .air/go-build:/root/.cache/go-build
-      - .:/work/
+      - ./../.air/go-build:/root/.cache/go-build
+      - ./..:/work/
 
   # run npm
   npm:
@@ -66,5 +70,4 @@ services:
     environment: ["NPM_CONFIG_UPDATE_NOTIFIER=false"]
     entrypoint: "npm"
     volumes:
-      - ./web:/work
-      - ./.air/node_modules/:/work/node_modules/
+      - ./../web:/work
