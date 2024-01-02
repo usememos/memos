@@ -354,6 +354,8 @@ func replacePathTemplate(path, filename string) string {
 			return fmt.Sprintf("%02d", t.Minute())
 		case "{second}":
 			return fmt.Sprintf("%02d", t.Second())
+		case "{uuid}":
+			return util.GenUUID()
 		}
 		return s
 	})
