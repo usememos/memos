@@ -16,6 +16,9 @@ build
 # Jetbrains
 .idea
 
+# Docker Compose Environment File
+.env
+
 bin/air
 
 dev-dist
