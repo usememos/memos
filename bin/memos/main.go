@@ -59,11 +59,14 @@ var (
 			}
 
 			store := store.New(dbDriver, profile)
-			if err := store.MigrateResourceInternalPath(ctx); err != nil {
-				cancel()
-				log.Error("failed to migrate resource internal path", zap.Error(err))
-				return
-			}
+
+			go func() {
+				if err := store.MigrateResourceInternalPath(ctx); err != nil {
+					cancel()
+					log.Error("failed to migrate resource internal path", zap.Error(err))
+					return
+				}
+			}()
 
 			s, err := server.NewServer(ctx, profile, store)
 			if err != nil {
