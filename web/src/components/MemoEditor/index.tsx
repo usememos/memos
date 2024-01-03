@@ -406,7 +406,12 @@ const MemoEditor = (props: Props) => {
           </Select>
         </div>
         <div className="shrink-0 flex flex-row justify-end items-center">
-          <Button color="success" disabled={!allowSave} loading={state.isRequesting} onClick={handleSaveBtnClick}>
+          <Button
+            disabled={!allowSave}
+            loading={state.isRequesting}
+            endDecorator={<Icon.Send className="w-4 h-auto" />}
+            onClick={handleSaveBtnClick}
+          >
             {t("editor.save")}
           </Button>
         </div>

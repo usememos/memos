@@ -196,7 +196,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             <>
               <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
               <Tooltip title={"Pinned"} placement="top">
-                <Icon.Bookmark className="w-4 h-auto text-green-600" />
+                <Icon.Bookmark className="w-4 h-auto text-amber-500" />
               </Tooltip>
             </>
           )}

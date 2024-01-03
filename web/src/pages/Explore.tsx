@@ -1,5 +1,7 @@
+import { Button } from "@mui/joy";
 import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
+import Icon from "@/components/Icon";
 import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
 import MobileHeader from "@/components/MobileHeader";
@@ -70,9 +72,9 @@ const Explore = () => {
           )
         ) : (
           <div className="w-full flex flex-row justify-center items-center my-4">
-            <span className="cursor-pointer text-sm italic text-gray-500  hover:text-green-600" onClick={fetchMemos}>
+            <Button variant="plain" endDecorator={<Icon.ArrowDown className="w-5 h-auto" />} onClick={fetchMemos}>
               {t("memo.fetch-more")}
-            </span>
+            </Button>
           </div>
         )}
       </div>

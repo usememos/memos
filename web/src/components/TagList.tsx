@@ -122,7 +122,7 @@ const TagItemContainer: React.FC<TagItemContainerProps> = (props: TagItemContain
       >
         <div
           className={`flex flex-row justify-start items-center truncate shrink leading-5 mr-1 text-gray-600 dark:text-gray-400 ${
-            isActive && "text-green-600"
+            isActive && "!text-blue-600"
           }`}
         >
           <Icon.Hash className="w-4 h-auto shrink-0 opacity-60 mr-1" />

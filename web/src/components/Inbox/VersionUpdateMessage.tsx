@@ -62,7 +62,7 @@ const VersionUpdateMessage = ({ inbox }: Props) => {
         className={classNames(
           "shrink-0 mt-2 p-2 rounded-full border",
           inbox.status === Inbox_Status.UNREAD
-            ? "border-green-600 text-green-600 bg-blue-50 dark:bg-zinc-800"
+            ? "border-blue-600 text-blue-600 bg-blue-50 dark:bg-zinc-800"
             : "border-gray-400 text-gray-400 bg-gray-50 dark:bg-zinc-800"
         )}
       >
