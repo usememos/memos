@@ -172,7 +172,6 @@ func initConfig() {
 	println("---")
 	println("Server profile")
 	println("data:", profile.Data)
-	println("dsn:", profile.DSN)
 	println("addr:", profile.Addr)
 	println("port:", profile.Port)
 	println("mode:", profile.Mode)
