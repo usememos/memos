@@ -357,7 +357,7 @@ const MemoEditor = (props: Props) => {
     <div
       className={`${
         className ?? ""
-      } relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-700 px-4 pt-4 rounded-lg border border-gray-200 dark:border-zinc-600`}
+      } relative w-full flex flex-col justify-start items-start bg-white dark:bg-zinc-800 px-4 pt-4 rounded-lg border border-gray-200 dark:border-zinc-700`}
       tabIndex={0}
       onKeyDown={handleKeyDown}
       onDrop={handleDropEvent}
@@ -368,13 +368,15 @@ const MemoEditor = (props: Props) => {
         <div className="flex flex-row justify-start items-center">
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
           <IconButton
-            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:!text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+            size="sm"
             onClick={handleUploadFileBtnClick}
           >
             <Icon.Image className="w-5 h-5 mx-auto" />
           </IconButton>
           <IconButton
-            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:!text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
+            size="sm"
             onClick={handleAddMemoRelationBtnClick}
           >
             <Icon.Link className="w-5 h-5 mx-auto" />

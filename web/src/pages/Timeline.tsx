@@ -61,7 +61,7 @@ const Timeline = () => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
       <div className="w-full px-4 sm:px-6">
-        <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
+        <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-black dark:text-gray-300">
           <div className="relative w-full flex flex-row justify-start items-center">
             <p
               className="px-2 py-1 mr-2 flex flex-row justify-start items-center cursor-pointer select-none rounded opacity-80 hover:bg-gray-100 dark:hover:bg-zinc-700"
@@ -89,7 +89,7 @@ const Timeline = () => {
               handleClickAway={() => toggleShowDatePicker(false)}
             />
           </div>
-          <div className="w-full h-auto flex flex-col justify-start items-start px-2 pb-4 bg-white dark:bg-zinc-700">
+          <div className="w-full h-auto flex flex-col justify-start items-start px-2 pb-4 bg-white dark:bg-zinc-800">
             <div className="flex flex-col justify-start items-start w-full mt-2">
               {sortedMemos.map((memo, index) => (
                 <div
@@ -101,7 +101,7 @@ const Timeline = () => {
                     {index !== sortedMemos.length - 1 && (
                       <div className="absolute top-2 left-[7px] h-full w-0.5 bg-gray-400 dark:bg-gray-500 block"></div>
                     )}
-                    <div className="border-4 rounded-full border-white relative dark:border-zinc-700">
+                    <div className="border-4 rounded-full border-white relative dark:border-zinc-800">
                       <Icon.Circle className="w-2 h-auto bg-gray-400 text-gray-400 dark:bg-gray-500 dark:text-gray-500 rounded-full" />
                     </div>
                   </div>

@@ -3,7 +3,7 @@ interface Props {
 }
 
 const Code: React.FC<Props> = ({ content }: Props) => {
-  return <code>{content}</code>;
+  return <code className="text-sm">`{content}`</code>;
 };
 
 export default Code;

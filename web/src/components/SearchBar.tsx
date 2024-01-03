@@ -30,7 +30,7 @@ const SearchBar = () => {
   return (
     <div className="w-full h-9 flex flex-row justify-start items-center">
       <Input
-        className="w-full !shadow-none !border-gray-200 dark:!border-zinc-800"
+        className="w-full !text-sm !shadow-none !border-gray-200 dark:!border-zinc-800"
         size="md"
         startDecorator={<Icon.Search className="w-4 h-auto opacity-30" />}
         placeholder={t("memo.search-placeholder")}

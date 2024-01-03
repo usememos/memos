@@ -103,7 +103,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
               <MemoContent nodes={memo.nodes} />
               <MemoResourceListView resourceList={memo.resources} />
             </div>
-            <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-700 py-4 px-6">
+            <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-900 py-4 px-6">
               <div className="flex flex-row justify-start items-center">
                 <UserAvatar className="mr-2" avatarUrl={user.avatarUrl} />
                 <div className="w-auto grow truncate flex mr-2 flex-col justify-center items-start">

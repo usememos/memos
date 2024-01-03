@@ -35,32 +35,28 @@ const PersonalStatistics = (props: Props) => {
   }, [memos.length, user.name]);
 
   return (
-    <div className="w-full border mt-2 py-2 px-3 rounded-md space-y-0.5 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
-      <p className="text-sm font-medium text-gray-500">Statistics</p>
+    <div className="w-full border mt-2 py-2 px-3 rounded-md space-y-0.5 text-gray-500 dark:text-gray-400 bg-zinc-50 dark:bg-zinc-900 dark:border-zinc-800">
+      <p className="text-sm font-medium">Statistics</p>
       <div className="w-full flex justify-between items-center">
-        <div className="w-full flex justify-start items-center text-gray-500">
+        <div className="w-full flex justify-start items-center">
           <Icon.CalendarDays className="w-4 h-auto mr-1" />
           <span className="block text-base sm:text-sm">Days</span>
         </div>
-        <span className="text-gray-500 font-mono">{days}</span>
+        <span className="font-mono">{days}</span>
       </div>
       <div className="w-full flex justify-between items-center">
-        <div className="w-full flex justify-start items-center text-gray-500">
+        <div className="w-full flex justify-start items-center">
           <Icon.PencilLine className="w-4 h-auto mr-1" />
           <span className="block text-base sm:text-sm">Memos</span>
         </div>
-        {isRequesting ? (
-          <Icon.Loader className="animate-spin w-4 h-auto text-gray-400" />
-        ) : (
-          <span className="text-gray-500 font-mono">{memoAmount}</span>
-        )}
+        {isRequesting ? <Icon.Loader className="animate-spin w-4 h-auto text-gray-400" /> : <span className="font-mono">{memoAmount}</span>}
       </div>
       <div className="w-full flex justify-between items-center">
-        <div className="w-full flex justify-start items-center text-gray-500">
+        <div className="w-full flex justify-start items-center">
           <Icon.Hash className="w-4 h-auto mr-1" />
           <span className="block text-base sm:text-sm">Tags</span>
         </div>
-        <span className="text-gray-500 font-mono">{tags}</span>
+        <span className="font-mono">{tags}</span>
       </div>
     </div>
   );

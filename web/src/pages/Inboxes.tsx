@@ -23,13 +23,13 @@ const Inboxes = () => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
       <div className="w-full px-4 sm:px-6">
-        <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-700 text-black dark:text-gray-300">
+        <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-black dark:text-gray-300">
           <div className="relative w-full flex flex-row justify-between items-center">
             <p className="px-2 py-1 flex flex-row justify-start items-center select-none opacity-80">
               <Icon.Bell className="w-5 h-auto mr-1" /> {t("common.inbox")}
             </p>
           </div>
-          <div className="w-full h-auto flex flex-col justify-start items-start px-2 pb-4 bg-white dark:bg-zinc-700">
+          <div className="w-full h-auto flex flex-col justify-start items-start px-2 pb-4">
             {inboxes.length === 0 && (
               <div className="w-full mt-4 mb-8 flex flex-col justify-center items-center italic">
                 <Empty />

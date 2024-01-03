@@ -52,7 +52,7 @@ export default function showMemoEditorDialog(props: Pick<Props, "memoId" | "rela
     {
       className: "memo-editor-dialog",
       dialogName: "memo-editor-dialog",
-      containerClassName: "dark:!bg-zinc-700",
+      containerClassName: "dark:!bg-zinc-800",
     },
     MemoEditorDialog,
     props

@@ -86,7 +86,7 @@ const Archived = () => {
             {archivedMemos.map((memo) => (
               <div
                 key={memo.id}
-                className="relative flex flex-col justify-start items-start w-full p-4 pt-3 mb-2 bg-white dark:bg-zinc-700 rounded-lg"
+                className="relative flex flex-col justify-start items-start w-full p-4 pt-3 mb-2 bg-white dark:bg-zinc-800 rounded-lg"
               >
                 <div className="w-full mb-1 flex flex-row justify-between items-center">
                   <div className="w-full max-w-[calc(100%-20px)] flex flex-row justify-start items-center mr-1">
