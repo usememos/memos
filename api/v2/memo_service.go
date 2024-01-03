@@ -324,7 +324,7 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo relation")
 	}
-	if memo.Visibility != apiv2pb.Visibility_PRIVATE {
+	if memo.Visibility != apiv2pb.Visibility_PRIVATE && memo.CreatorId != relatedMemo.CreatorID {
 		activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 			CreatorID: memo.CreatorId,
 			Type:      store.ActivityTypeMemoComment,
