@@ -1,4 +1,3 @@
-import Icon from "@/components/Icon";
 import MemoContent from "@/components/MemoContent";
 import MemoResourceListView from "@/components/MemoResourceListView";
 import { getTimeString } from "@/helpers/datetime";
@@ -18,8 +17,6 @@ const TimelineMemo = (props: Props) => {
     <div className="relative w-full flex flex-col justify-start items-start">
       <div className="w-full flex flex-row justify-start items-center mt-0.5 mb-1 text-sm font-mono text-gray-500 dark:text-gray-400">
         <span className="opacity-80">{getTimeString(memo.displayTime)}</span>
-        <Icon.Dot className="w-5 h-auto opacity-60" />
-        <span className="opacity-60">#{memo.id}</span>
       </div>
       <MemoContent nodes={memo.nodes} />
       <MemoResourceListView resourceList={memo.resources} />

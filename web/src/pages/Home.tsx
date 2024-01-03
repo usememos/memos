@@ -13,6 +13,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useFilterStore } from "@/store/module";
 import { useMemoList, useMemoStore } from "@/store/v1";
+import { RowStatus } from "@/types/proto/api/v2/common";
 import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
@@ -26,6 +27,7 @@ const Home = () => {
   const [isComplete, setIsComplete] = useState(false);
   const { tag: tagQuery, text: textQuery } = filterStore.state;
   const sortedMemos = memoList.value
+    .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
@@ -62,7 +64,7 @@ const Home = () => {
         <MobileHeader>{!md && <HomeSidebarDrawer />}</MobileHeader>
         <div className="w-full px-4 sm:px-6 md:pr-2">
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
-          <div className="flex flex-col justify-start items-start w-full max-w-full overflow-y-scroll pb-28 hide-scrollbar">
+          <div className="flex flex-col justify-start items-start w-full max-w-full pb-28">
             <MemoFilter />
             {sortedMemos.map((memo) => (
               <MemoView key={`${memo.id}-${memo.updateTime}`} memo={memo} showVisibility showPinnedStyle showParent />

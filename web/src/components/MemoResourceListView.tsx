@@ -31,6 +31,7 @@ const MemoResourceListView = ({ resourceList = [] }: { resourceList: Resource[] 
   const MediaCard = ({ resource, thumbnail }: { resource: Resource; thumbnail?: boolean }) => {
     const type = getResourceType(resource);
     const url = getResourceUrl(resource);
+
     if (type === "image/*") {
       return (
         <img
@@ -40,9 +41,7 @@ const MemoResourceListView = ({ resourceList = [] }: { resourceList: Resource[] 
           decoding="async"
         />
       );
-    }
-
-    if (type === "video/*") {
+    } else if (type === "video/*") {
       return (
         <video
           className="cursor-pointer w-full h-full object-contain bg-zinc-100 dark:bg-zinc-800"
@@ -52,9 +51,9 @@ const MemoResourceListView = ({ resourceList = [] }: { resourceList: Resource[] 
           controls
         />
       );
+    } else {
+      return <></>;
     }
-
-    return <></>;
   };
 
   const MediaList = ({ resources = [] }: { resources: Resource[] }) => {
