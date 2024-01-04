@@ -11,6 +11,7 @@ import {
   ImageNode,
   ItalicNode,
   LinkNode,
+  MathNode,
   Node,
   NodeType,
   OrderedListNode,
@@ -34,6 +35,7 @@ import Image from "./Image";
 import Italic from "./Italic";
 import LineBreak from "./LineBreak";
 import Link from "./Link";
+import Math from "./Math";
 import OrderedList from "./OrderedList";
 import Paragraph from "./Paragraph";
 import Strikethrough from "./Strikethrough";
@@ -66,6 +68,8 @@ const Renderer: React.FC<Props> = ({ node }: Props) => {
       return <UnorderedList {...(node.unorderedListNode as UnorderedListNode)} />;
     case NodeType.TASK_LIST:
       return <TaskList {...(node.taskListNode as TaskListNode)} />;
+    case NodeType.MATH_BLOCK:
+      return <Math {...(node.mathBlockNode as MathNode)} block={true} />;
     case NodeType.TEXT:
       return <Text {...(node.textNode as TextNode)} />;
     case NodeType.BOLD:
@@ -86,6 +90,8 @@ const Renderer: React.FC<Props> = ({ node }: Props) => {
       return <Tag {...(node.tagNode as TagNode)} />;
     case NodeType.STRIKETHROUGH:
       return <Strikethrough {...(node.strikethroughNode as StrikethroughNode)} />;
+    case NodeType.MATH:
+      return <Math {...(node.mathNode as MathNode)} />;
     case NodeType.ESCAPING_CHARACTER:
       return <EscapingCharacter {...(node.escapingCharacterNode as EscapingCharacterNode)} />;
     default:

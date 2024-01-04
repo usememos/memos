@@ -37,6 +37,7 @@ var defaultBlockParsers = []BlockParser{
 	NewTaskListParser(),
 	NewUnorderedListParser(),
 	NewOrderedListParser(),
+	NewMathBlockParser(),
 	NewParagraphParser(),
 	NewLineBreakParser(),
 }
@@ -90,6 +91,7 @@ var defaultInlineParsers = []InlineParser{
 	NewBoldParser(),
 	NewItalicParser(),
 	NewCodeParser(),
+	NewMathParser(),
 	NewTagParser(),
 	NewStrikethroughParser(),
 	NewLineBreakParser(),

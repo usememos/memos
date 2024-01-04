@@ -14,6 +14,7 @@ const (
 	OrderedListNode
 	UnorderedListNode
 	TaskListNode
+	MathBlockNode
 	// Inline nodes.
 	TextNode
 	BoldNode
@@ -26,6 +27,7 @@ const (
 	TagNode
 	StrikethroughNode
 	EscapingCharacterNode
+	MathNode
 )
 
 type Node interface {

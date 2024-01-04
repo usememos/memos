@@ -170,3 +170,17 @@ func (n *TaskList) Restore() string {
 	}
 	return fmt.Sprintf("%s [%s] %s", n.Symbol, complete, result)
 }
+
+type MathBlock struct {
+	BaseBlock
+
+	Content string
+}
+
+func (*MathBlock) Type() NodeType {
+	return MathBlockNode
+}
+
+func (n *MathBlock) Restore() string {
+	return fmt.Sprintf("$$\n%s\n$$", n.Content)
+}

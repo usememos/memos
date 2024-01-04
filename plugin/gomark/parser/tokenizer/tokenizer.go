@@ -18,6 +18,7 @@ const (
 	Dot                TokenType = "."
 	LessThan           TokenType = "<"
 	GreaterThan        TokenType = ">"
+	DollarSign         TokenType = "$"
 	Backslash          TokenType = "\\"
 	Newline            TokenType = "\n"
 	Space              TokenType = " "
@@ -74,6 +75,8 @@ func Tokenize(text string) []*Token {
 			tokens = append(tokens, NewToken(PlusSign, "+"))
 		case '.':
 			tokens = append(tokens, NewToken(Dot, "."))
+		case '$':
+			tokens = append(tokens, NewToken(DollarSign, "$"))
 		case '\\':
 			tokens = append(tokens, NewToken(Backslash, `\`))
 		case '\n':

@@ -177,3 +177,17 @@ func (*EscapingCharacter) Type() NodeType {
 func (n *EscapingCharacter) Restore() string {
 	return fmt.Sprintf("\\%s", n.Symbol)
 }
+
+type Math struct {
+	BaseInline
+
+	Content string
+}
+
+func (*Math) Type() NodeType {
+	return MathNode
+}
+
+func (n *Math) Restore() string {
+	return fmt.Sprintf("$%s$", n.Content)
+}

@@ -61,6 +61,8 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 	case *ast.TaskList:
 		children := convertFromASTNodes(n.Children)
 		node.Node = &apiv2pb.Node_TaskListNode{TaskListNode: &apiv2pb.TaskListNode{Symbol: n.Symbol, Complete: n.Complete, Children: children}}
+	case *ast.MathBlock:
+		node.Node = &apiv2pb.Node_MathBlockNode{MathBlockNode: &apiv2pb.MathBlockNode{Content: n.Content}}
 	case *ast.Text:
 		node.Node = &apiv2pb.Node_TextNode{TextNode: &apiv2pb.TextNode{Content: n.Content}}
 	case *ast.Bold:
@@ -84,6 +86,8 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 		node.Node = &apiv2pb.Node_StrikethroughNode{StrikethroughNode: &apiv2pb.StrikethroughNode{Content: n.Content}}
 	case *ast.EscapingCharacter:
 		node.Node = &apiv2pb.Node_EscapingCharacterNode{EscapingCharacterNode: &apiv2pb.EscapingCharacterNode{Symbol: n.Symbol}}
+	case *ast.Math:
+		node.Node = &apiv2pb.Node_MathNode{MathNode: &apiv2pb.MathNode{Content: n.Content}}
 	default:
 		node.Node = &apiv2pb.Node_TextNode{TextNode: &apiv2pb.TextNode{}}
 	}
