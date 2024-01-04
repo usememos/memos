@@ -18,7 +18,7 @@ func (*MathBlockParser) Match(tokens []*tokenizer.Token) (int, bool) {
 		return 0, false
 	}
 
-	if tokens[0].Type != tokenizer.DollarSign && tokens[1].Type != tokenizer.DollarSign && tokens[2].Type != tokenizer.Newline {
+	if tokens[0].Type != tokenizer.DollarSign || tokens[1].Type != tokenizer.DollarSign || tokens[2].Type != tokenizer.Newline {
 		return 0, false
 	}
 

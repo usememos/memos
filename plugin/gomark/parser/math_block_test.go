@@ -21,6 +21,12 @@ func TestMathBlockParser(t *testing.T) {
 				Content: "(1+x)^2",
 			},
 		},
+		{
+			text: "$$\na=3\n$$",
+			link: &ast.MathBlock{
+				Content: "a=3",
+			},
+		},
 	}
 	for _, test := range tests {
 		tokens := tokenizer.Tokenize(test.text)

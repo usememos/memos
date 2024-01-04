@@ -197,6 +197,22 @@ func TestParser(t *testing.T) {
 				},
 			},
 		},
+		{
+			text: "\n\n",
+			nodes: []ast.Node{
+				&ast.LineBreak{},
+				&ast.LineBreak{},
+			},
+		},
+		{
+			text: "\n$$\na=3\n$$",
+			nodes: []ast.Node{
+				&ast.LineBreak{},
+				&ast.MathBlock{
+					Content: "a=3",
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
