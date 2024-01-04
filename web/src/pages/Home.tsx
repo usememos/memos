@@ -61,10 +61,10 @@ const Home = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl flex flex-row justify-center items-start">
+    <div className="w-full max-w-5xl sm:px-6 flex flex-row justify-center items-start sm:gap-6">
       <div className={classNames("w-full sm:pt-3 md:pt-6", md && "max-w-[calc(100%-14rem)]")}>
-        <MobileHeader>{!md && <HomeSidebarDrawer />}</MobileHeader>
-        <div className="w-full px-4 sm:px-6 md:pr-2">
+        <MobileHeader className="sm:px-0">{!md && <HomeSidebarDrawer />}</MobileHeader>
+        <div className="w-full px-4 sm:px-0">
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
           <div className="flex flex-col justify-start items-start w-full max-w-full pb-28">
             <MemoFilter />

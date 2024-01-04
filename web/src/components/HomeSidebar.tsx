@@ -7,7 +7,7 @@ const HomeSidebar = () => {
   const currentUser = useCurrentUser();
 
   return (
-    <aside className="relative w-full px-4 h-full max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start py-4 sm:pt-6">
+    <aside className="relative w-full h-full max-h-screen overflow-auto hide-scrollbar flex flex-col justify-start items-start py-4 sm:pt-6">
       <SearchBar />
       <PersonalStatistics user={currentUser} />
       <TagList />
