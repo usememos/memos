@@ -46,7 +46,7 @@ const PersonalStatistics = (props: Props) => {
       </div>
       <div className="w-full flex justify-between items-center">
         <div className="w-full flex justify-start items-center">
-          <Icon.PencilLine className="w-4 h-auto mr-1" />
+          <Icon.Library className="w-4 h-auto mr-1" />
           <span className="block text-base sm:text-sm">Memos</span>
         </div>
         {isRequesting ? <Icon.Loader className="animate-spin w-4 h-auto text-gray-400" /> : <span className="font-mono">{memoAmount}</span>}

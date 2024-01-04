@@ -55,6 +55,18 @@ const Navigation = () => {
     title: t("common.resources"),
     icon: <Icon.Paperclip className="mr-3 w-6 h-auto opacity-70" />,
   };
+  const exploreNavLink: NavLinkItem = {
+    id: "header-explore",
+    path: "/explore",
+    title: t("common.explore"),
+    icon: <Icon.Globe2 className="mr-3 w-6 h-auto opacity-70" />,
+  };
+  const profileNavLink: NavLinkItem = {
+    id: "header-profile",
+    path: user ? `/u/${encodeURIComponent(user.username)}` : "",
+    title: t("common.profile"),
+    icon: <Icon.User2 className="mr-3 w-6 h-auto opacity-70" />,
+  };
   const inboxNavLink: NavLinkItem = {
     id: "header-inbox",
     path: "/inbox",
@@ -67,12 +79,6 @@ const Navigation = () => {
         </div>
       </>
     ),
-  };
-  const exploreNavLink: NavLinkItem = {
-    id: "header-explore",
-    path: "/explore",
-    title: t("common.explore"),
-    icon: <Icon.Globe2 className="mr-3 w-6 h-auto opacity-70" />,
   };
   const archivedNavLink: NavLinkItem = {
     id: "header-archived",
@@ -94,7 +100,7 @@ const Navigation = () => {
   };
 
   const navLinks: NavLinkItem[] = user
-    ? [homeNavLink, timelineNavLink, resourcesNavLink, exploreNavLink, inboxNavLink, archivedNavLink, settingNavLink]
+    ? [homeNavLink, timelineNavLink, resourcesNavLink, exploreNavLink, profileNavLink, inboxNavLink, archivedNavLink, settingNavLink]
     : [exploreNavLink, signInNavLink];
 
   return (
@@ -105,8 +111,8 @@ const Navigation = () => {
           <NavLink
             className={({ isActive }) =>
               classNames(
-                "w-full px-4 pr-5 py-2 rounded-2xl border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
-                isActive ? "bg-white drop-shadow-sm dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                "w-full px-4 pr-5 py-2 rounded-2xl border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-700 dark:hover:bg-zinc-800",
+                isActive ? "bg-white drop-shadow-sm dark:bg-zinc-800 border-gray-200 dark:border-zinc-700" : "border-transparent"
               )
             }
             key={navLink.id}

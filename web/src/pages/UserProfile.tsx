@@ -93,7 +93,12 @@ const UserProfile = () => {
             <>
               <div className="w-full flex flex-col justify-start items-center py-8">
                 <UserAvatar className="!w-20 !h-20 mb-2 drop-shadow" avatarUrl={user?.avatarUrl} />
-                <p className="text-3xl text-black opacity-80 dark:text-gray-200">{user?.nickname}</p>
+                <div className="w-full flex flex-row justify-center items-center">
+                  <p className="text-3xl text-black leading-none opacity-80 dark:text-gray-200">{user?.nickname}</p>
+                  <a className="ml-1 cursor-pointer text-gray-500" href={`/u/${user?.id}/rss.xml`} target="_blank">
+                    <Icon.Rss className="w-5 h-auto opacity-60 mt-0.5" />
+                  </a>
+                </div>
               </div>
               {sortedMemos.map((memo) => (
                 <MemoView key={memo.id} memo={memo} showVisibility showPinnedStyle showParent />

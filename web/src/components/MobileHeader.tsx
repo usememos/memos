@@ -11,7 +11,7 @@ interface Props {
 const MobileHeader = (props: Props) => {
   const { children } = props;
   const { sm } = useResponsiveWidth();
-  const [titleText] = useState("MEMOS");
+  const [titleText] = useState("Memos");
   const { y: offsetTop } = useWindowScroll();
 
   return (
@@ -24,8 +24,8 @@ const MobileHeader = (props: Props) => {
       <div className="flex flex-row justify-start items-center mr-2 shrink-0 overflow-hidden">
         {!sm && <NavigationDrawer />}
         <span
-          className="font-bold text-lg leading-10 mr-1 text-ellipsis shrink-0 cursor-pointer overflow-hidden text-gray-700 dark:text-gray-200"
-          onClick={() => location.reload()}
+          className="font-bold text-lg leading-10 mr-1 text-ellipsis shrink-0 cursor-pointer overflow-hidden text-gray-700 dark:text-gray-300"
+          onDoubleClick={() => location.reload()}
         >
           {titleText}
         </span>

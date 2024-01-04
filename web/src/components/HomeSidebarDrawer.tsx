@@ -23,7 +23,7 @@ const HomeSidebarDrawer = () => {
   return (
     <>
       <IconButton onClick={toggleDrawer(true)}>
-        <Icon.Search className="w-5 h-auto dark:text-gray-200" />
+        <Icon.Search className="w-5 h-auto dark:text-gray-400" />
       </IconButton>
       <Drawer anchor="right" size="sm" open={open} onClose={toggleDrawer(false)}>
         <div className="w-full px-1">

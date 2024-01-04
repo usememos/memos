@@ -65,8 +65,8 @@ const WebhookSection = () => {
       </div>
       <div className="w-full mt-2 flow-root">
         <div className="overflow-x-auto">
-          <div className="inline-block min-w-full border rounded-lg align-middle">
-            <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-400">
+          <div className="inline-block min-w-full border rounded-lg align-middle dark:border-gray-500">
+            <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-500">
               <thead>
                 <tr>
                   <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">

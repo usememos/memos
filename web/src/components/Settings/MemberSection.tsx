@@ -140,8 +140,8 @@ const MemberSection = () => {
         <div className="title-text">{t("setting.member-list")}</div>
       </div>
       <div className="w-full overflow-x-auto">
-        <div className="inline-block min-w-full align-middle">
-          <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-400">
+        <div className="inline-block min-w-full align-middle border rounded-lg dark:border-gray-500">
+          <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-500">
             <thead>
               <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-300">
                 <th scope="col" className="py-2 pl-4 pr-3">

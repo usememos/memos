@@ -1,4 +1,4 @@
-import { Divider, IconButton, List, ListItem, Radio, RadioGroup } from "@mui/joy";
+import { Button, Divider, IconButton, List, ListItem, Radio, RadioGroup } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -88,9 +88,7 @@ const StorageSection = () => {
           <span className="font-mono text-sm text-gray-400">{t("setting.storage-section.storage-services")}</span>
           <LearnMore url="https://usememos.com/docs/advanced-settings/cloudflare-r2" />
         </div>
-        <button className="btn-normal px-2 py-0 ml-1" onClick={() => showCreateStorageServiceDialog(undefined, fetchStorageList)}>
-          {t("common.create")}
-        </button>
+        <Button onClick={() => showCreateStorageServiceDialog(undefined, fetchStorageList)}>{t("common.create")}</Button>
       </div>
       <div className="mt-2 w-full flex flex-col">
         {storageList.map((storage) => (

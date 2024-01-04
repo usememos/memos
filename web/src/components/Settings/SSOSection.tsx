@@ -1,4 +1,4 @@
-import { Divider, List, ListItem } from "@mui/joy";
+import { Button, Divider, List, ListItem } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Link } from "react-router-dom";
@@ -58,19 +58,14 @@ const SSOSection = () => {
 
   return (
     <div className="section-container">
-      <div className="mb-2 w-full flex flex-row justify-start items-center gap-1">
-        <span className="font-mono text-sm text-gray-400">{t("setting.sso-section.sso-list")}</span>
-        <LearnMore url="https://usememos.com/docs/advanced-settings/keycloak" />
-        <button
-          className="btn-normal px-2 py-0 ml-1"
-          onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}
-        >
-          {t("common.create")}
-        </button>
+      <div className="mb-2 w-full flex flex-row justify-between items-center gap-1">
+        <div className="flex flex-row items-center gap-1">
+          <span className="font-mono text-sm text-gray-400">{t("setting.sso-section.sso-list")}</span>
+          <LearnMore url="https://usememos.com/docs/advanced-settings/keycloak" />
+        </div>
+        <Button onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}>{t("common.create")}</Button>
       </div>
-
       <Divider />
-
       {identityProviderList.map((identityProvider) => (
         <div
           key={identityProvider.id}
