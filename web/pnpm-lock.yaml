@@ -100,6 +100,9 @@ devDependencies:
   '@trivago/prettier-plugin-sort-imports':
     specifier: ^3.4.0
     version: 3.4.0(prettier@2.6.2)
+  '@types/katex':
+    specifier: ^0.16.7
+    version: 0.16.7
   '@types/lodash-es':
     specifier: ^4.17.12
     version: 4.17.12
@@ -1451,6 +1454,10 @@ packages:
 
   /@types/json-schema@7.0.15:
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+    dev: true
+
+  /@types/katex@0.16.7:
+    resolution: {integrity: sha512-HMwFiRujE5PjrgwHQ25+bsLJgowjGjm5Z8FVSf0N6PwgJrwxH0QxzHYDcKsTfV3wva0vzrpqMTJS2jXPr5BMEQ==}
     dev: true
 
   /@types/lodash-es@4.17.12:
