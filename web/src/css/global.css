@@ -1,5 +1,5 @@
 body {
-  @apply text-base w-full min-h-[100svh] p-0 m-0 bg-zinc-100 dark:bg-zinc-900;
+  @apply text-base w-full min-h-[100svh] bg-zinc-100 dark:bg-zinc-900;
 }
 
 #root {
