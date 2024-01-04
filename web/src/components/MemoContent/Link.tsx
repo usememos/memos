@@ -1,6 +1,6 @@
 interface Props {
-  text: string;
   url: string;
+  text?: string;
 }
 
 const Link: React.FC<Props> = ({ text, url }: Props) => {
@@ -9,8 +9,9 @@ const Link: React.FC<Props> = ({ text, url }: Props) => {
       className="text-blue-600 dark:text-blue-400 cursor-pointer underline break-all hover:opacity-80 decoration-1"
       href={url}
       target="_blank"
+      rel="noopener noreferrer"
     >
-      {text}
+      {text || url}
     </a>
   );
 };

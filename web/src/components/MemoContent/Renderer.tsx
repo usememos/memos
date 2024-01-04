@@ -22,7 +22,6 @@ import {
   TextNode,
   UnorderedListNode,
 } from "@/types/proto/api/v2/markdown_service";
-import AutoLink from "./AutoLink";
 import Blockquote from "./Blockquote";
 import Bold from "./Bold";
 import BoldItalic from "./BoldItalic";
@@ -85,7 +84,7 @@ const Renderer: React.FC<Props> = ({ node }: Props) => {
     case NodeType.LINK:
       return <Link {...(node.linkNode as LinkNode)} />;
     case NodeType.AUTO_LINK:
-      return <AutoLink {...(node.autoLinkNode as AutoLinkNode)} />;
+      return <Link {...(node.autoLinkNode as AutoLinkNode)} />;
     case NodeType.TAG:
       return <Tag {...(node.tagNode as TagNode)} />;
     case NodeType.STRIKETHROUGH:
