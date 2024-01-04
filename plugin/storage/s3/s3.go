@@ -49,6 +49,7 @@ func NewClient(ctx context.Context, config *Config) (*Client, error) {
 	awsConfig, err := s3config.LoadDefaultConfig(ctx,
 		s3config.WithEndpointResolverWithOptions(resolver),
 		s3config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(config.AccessKey, config.SecretKey, "")),
+		s3config.WithRegion(config.Region),
 	)
 	if err != nil {
 		return nil, err
