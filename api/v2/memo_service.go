@@ -19,6 +19,7 @@ import (
 	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+	"github.com/usememos/memos/plugin/gomark/restore"
 	"github.com/usememos/memos/plugin/webhook"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
@@ -232,6 +233,10 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 					}
 				}
 			})
+		} else if path == "nodes" {
+			nodes := convertToASTNodes(request.Memo.Nodes)
+			content := restore.Restore(nodes)
+			update.Content = &content
 		} else if path == "visibility" {
 			visibility := convertVisibilityToStore(request.Memo.Visibility)
 			update.Visibility = &visibility

@@ -251,7 +251,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           )}
         </div>
       </div>
-      <MemoContent nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
+      <MemoContent memoId={memo.id} nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
       <MemoResourceListView resourceList={memo.resources} />
       <MemoRelationListView memo={memo} relationList={referenceRelations} />
     </div>

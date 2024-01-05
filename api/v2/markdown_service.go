@@ -95,6 +95,73 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 	return node
 }
 
+func convertToASTNodes(nodes []*apiv2pb.Node) []ast.Node {
+	rawNodes := []ast.Node{}
+	for _, node := range nodes {
+		rawNode := convertToASTNode(node)
+		rawNodes = append(rawNodes, rawNode)
+	}
+	return rawNodes
+}
+
+func convertToASTNode(node *apiv2pb.Node) ast.Node {
+	switch n := node.Node.(type) {
+	case *apiv2pb.Node_LineBreakNode:
+		return &ast.LineBreak{}
+	case *apiv2pb.Node_ParagraphNode:
+		children := convertToASTNodes(n.ParagraphNode.Children)
+		return &ast.Paragraph{Children: children}
+	case *apiv2pb.Node_CodeBlockNode:
+		return &ast.CodeBlock{Language: n.CodeBlockNode.Language, Content: n.CodeBlockNode.Content}
+	case *apiv2pb.Node_HeadingNode:
+		children := convertToASTNodes(n.HeadingNode.Children)
+		return &ast.Heading{Level: int(n.HeadingNode.Level), Children: children}
+	case *apiv2pb.Node_HorizontalRuleNode:
+		return &ast.HorizontalRule{Symbol: n.HorizontalRuleNode.Symbol}
+	case *apiv2pb.Node_BlockquoteNode:
+		children := convertToASTNodes(n.BlockquoteNode.Children)
+		return &ast.Blockquote{Children: children}
+	case *apiv2pb.Node_OrderedListNode:
+		children := convertToASTNodes(n.OrderedListNode.Children)
+		return &ast.OrderedList{Number: n.OrderedListNode.Number, Children: children}
+	case *apiv2pb.Node_UnorderedListNode:
+		children := convertToASTNodes(n.UnorderedListNode.Children)
+		return &ast.UnorderedList{Symbol: n.UnorderedListNode.Symbol, Children: children}
+	case *apiv2pb.Node_TaskListNode:
+		children := convertToASTNodes(n.TaskListNode.Children)
+		return &ast.TaskList{Symbol: n.TaskListNode.Symbol, Complete: n.TaskListNode.Complete, Children: children}
+	case *apiv2pb.Node_MathBlockNode:
+		return &ast.MathBlock{Content: n.MathBlockNode.Content}
+	case *apiv2pb.Node_TextNode:
+		return &ast.Text{Content: n.TextNode.Content}
+	case *apiv2pb.Node_BoldNode:
+		children := convertToASTNodes(n.BoldNode.Children)
+		return &ast.Bold{Symbol: n.BoldNode.Symbol, Children: children}
+	case *apiv2pb.Node_ItalicNode:
+		return &ast.Italic{Symbol: n.ItalicNode.Symbol, Content: n.ItalicNode.Content}
+	case *apiv2pb.Node_BoldItalicNode:
+		return &ast.BoldItalic{Symbol: n.BoldItalicNode.Symbol, Content: n.BoldItalicNode.Content}
+	case *apiv2pb.Node_CodeNode:
+		return &ast.Code{Content: n.CodeNode.Content}
+	case *apiv2pb.Node_ImageNode:
+		return &ast.Image{AltText: n.ImageNode.AltText, URL: n.ImageNode.Url}
+	case *apiv2pb.Node_LinkNode:
+		return &ast.Link{Text: n.LinkNode.Text, URL: n.LinkNode.Url}
+	case *apiv2pb.Node_AutoLinkNode:
+		return &ast.AutoLink{URL: n.AutoLinkNode.Url}
+	case *apiv2pb.Node_TagNode:
+		return &ast.Tag{Content: n.TagNode.Content}
+	case *apiv2pb.Node_StrikethroughNode:
+		return &ast.Strikethrough{Content: n.StrikethroughNode.Content}
+	case *apiv2pb.Node_EscapingCharacterNode:
+		return &ast.EscapingCharacter{Symbol: n.EscapingCharacterNode.Symbol}
+	case *apiv2pb.Node_MathNode:
+		return &ast.Math{Content: n.MathNode.Content}
+	default:
+		return &ast.Text{}
+	}
+}
+
 func traverseASTNodes(nodes []ast.Node, fn func(ast.Node)) {
 	for _, node := range nodes {
 		fn(node)

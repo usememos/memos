@@ -18,7 +18,7 @@ const TimelineMemo = (props: Props) => {
       <div className="w-full flex flex-row justify-start items-center mt-0.5 mb-1 text-sm font-mono text-gray-500 dark:text-gray-400">
         <span className="opacity-80">{getTimeString(memo.displayTime)}</span>
       </div>
-      <MemoContent nodes={memo.nodes} />
+      <MemoContent memoId={memo.id} nodes={memo.nodes} />
       <MemoResourceListView resourceList={memo.resources} />
       <MemoRelationListView memo={memo} relationList={relations} />
     </div>

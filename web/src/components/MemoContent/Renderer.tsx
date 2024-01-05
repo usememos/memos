@@ -44,10 +44,11 @@ import Text from "./Text";
 import UnorderedList from "./UnorderedList";
 
 interface Props {
+  index: string;
   node: Node;
 }
 
-const Renderer: React.FC<Props> = ({ node }: Props) => {
+const Renderer: React.FC<Props> = ({ index, node }: Props) => {
   switch (node.type) {
     case NodeType.LINE_BREAK:
       return <LineBreak />;
@@ -66,7 +67,7 @@ const Renderer: React.FC<Props> = ({ node }: Props) => {
     case NodeType.UNORDERED_LIST:
       return <UnorderedList {...(node.unorderedListNode as UnorderedListNode)} />;
     case NodeType.TASK_LIST:
-      return <TaskList {...(node.taskListNode as TaskListNode)} />;
+      return <TaskList index={index} {...(node.taskListNode as TaskListNode)} />;
     case NodeType.MATH_BLOCK:
       return <Math {...(node.mathBlockNode as MathNode)} block={true} />;
     case NodeType.TEXT:

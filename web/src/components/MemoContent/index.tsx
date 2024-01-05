@@ -1,16 +1,24 @@
 import { useRef } from "react";
+import useCurrentUser from "@/hooks/useCurrentUser";
+import { useMemoStore } from "@/store/v1";
 import { Node } from "@/types/proto/api/v2/markdown_service";
 import Renderer from "./Renderer";
+import { RendererContext } from "./types";
 
 interface Props {
+  memoId: number;
   nodes: Node[];
+  readonly?: boolean;
   className?: string;
   onMemoContentClick?: (e: React.MouseEvent) => void;
 }
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, onMemoContentClick } = props;
+  const { className, memoId, nodes, onMemoContentClick } = props;
+  const currentUser = useCurrentUser();
+  const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
+  const allowEdit = currentUser?.id === memoStore.getMemoById(memoId)?.creatorId && !props.readonly;
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     if (onMemoContentClick) {
@@ -19,17 +27,25 @@ const MemoContent: React.FC<Props> = (props: Props) => {
   };
 
   return (
-    <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-300 ${className || ""}`}>
-      <div
-        ref={memoContentContainerRef}
-        className="w-full max-w-full word-break text-base leading-6 space-y-1"
-        onClick={handleMemoContentClick}
-      >
-        {props.nodes.map((node, index) => (
-          <Renderer key={`${node.type}-${index}`} node={node} />
-        ))}
+    <RendererContext.Provider
+      value={{
+        memoId,
+        nodes,
+        readonly: !allowEdit,
+      }}
+    >
+      <div className={`w-full flex flex-col justify-start items-start text-gray-800 dark:text-gray-300 ${className || ""}`}>
+        <div
+          ref={memoContentContainerRef}
+          className="w-full max-w-full word-break text-base leading-6 space-y-1"
+          onClick={handleMemoContentClick}
+        >
+          {nodes.map((node, index) => (
+            <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />
+          ))}
+        </div>
       </div>
-    </div>
+    </RendererContext.Provider>
   );
 };
 

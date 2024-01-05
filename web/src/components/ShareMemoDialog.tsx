@@ -100,7 +100,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
           >
             <span className="w-full px-6 pt-5 pb-2 text-sm text-gray-500">{getDateTimeString(memo.displayTime)}</span>
             <div className="w-full px-6 text-base pb-4">
-              <MemoContent nodes={memo.nodes} />
+              <MemoContent memoId={memo.id} nodes={memo.nodes} readonly={true} />
               <MemoResourceListView resourceList={memo.resources} />
             </div>
             <div className="flex flex-row justify-between items-center w-full bg-gray-100 dark:bg-zinc-900 py-4 px-6">
