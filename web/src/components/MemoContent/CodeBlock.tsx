@@ -4,8 +4,9 @@ import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import toast from "react-hot-toast";
 import Icon from "../Icon";
+import { BaseProps } from "./types";
 
-interface Props {
+interface Props extends BaseProps {
   language: string;
   content: string;
 }

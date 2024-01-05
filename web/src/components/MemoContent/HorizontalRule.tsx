@@ -1,4 +1,6 @@
-interface Props {
+import { BaseProps } from "./types";
+
+interface Props extends BaseProps {
   symbol: string;
 }
 

@@ -15,7 +15,7 @@ const UnorderedList: React.FC<Props> = ({ children }: Props) => {
         </div>
         <div>
           {children.map((child, index) => (
-            <Renderer key={`${child.type}-${index}`} node={child} />
+            <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />
           ))}
         </div>
       </li>
