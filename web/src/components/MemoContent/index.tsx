@@ -1,7 +1,7 @@
 import { useRef } from "react";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useMemoStore } from "@/store/v1";
-import { Node } from "@/types/proto/api/v2/markdown_service";
+import { Node, NodeType } from "@/types/proto/api/v2/markdown_service";
 import Renderer from "./Renderer";
 import { RendererContext } from "./types";
 
@@ -26,6 +26,9 @@ const MemoContent: React.FC<Props> = (props: Props) => {
     }
   };
 
+  let prevNode: Node | null = null;
+  let skipNextLineBreakFlag = false;
+
   return (
     <RendererContext.Provider
       value={{
@@ -40,9 +43,16 @@ const MemoContent: React.FC<Props> = (props: Props) => {
           className="w-full max-w-full word-break text-base leading-6 space-y-1"
           onClick={handleMemoContentClick}
         >
-          {nodes.map((node, index) => (
-            <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />
-          ))}
+          {nodes.map((node, index) => {
+            if (prevNode?.type !== NodeType.LINE_BREAK && node.type === NodeType.LINE_BREAK && skipNextLineBreakFlag) {
+              skipNextLineBreakFlag = false;
+              return null;
+            }
+
+            prevNode = node;
+            skipNextLineBreakFlag = true;
+            return <Renderer key={`${node.type}-${index}`} index={String(index)} node={node} />;
+          })}
         </div>
       </div>
     </RendererContext.Provider>
