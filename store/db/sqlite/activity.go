@@ -38,7 +38,6 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 
 func (d *DB) ListActivities(ctx context.Context, find *store.FindActivity) ([]*store.Activity, error) {
 	where, args := []string{"1 = 1"}, []any{}
-
 	if find.ID != nil {
 		where, args = append(where, "`id` = ?"), append(args, *find.ID)
 	}

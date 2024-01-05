@@ -3,22 +3,12 @@ package postgres
 import (
 	"context"
 
-	"github.com/Masterminds/squirrel"
-
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) FindMigrationHistoryList(ctx context.Context, _ *store.FindMigrationHistory) ([]*store.MigrationHistory, error) {
-	qb := squirrel.Select("version", "created_ts").
-		From("migration_history").
-		OrderBy("created_ts DESC")
-
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := d.db.QueryContext(ctx, query, args...)
+	query := "SELECT version, created_ts FROM migration_history ORDER BY created_ts DESC"
+	rows, err := d.db.QueryContext(ctx, query)
 	if err != nil {
 		return nil, err
 	}
@@ -27,9 +17,13 @@ func (d *DB) FindMigrationHistoryList(ctx context.Context, _ *store.FindMigratio
 	list := make([]*store.MigrationHistory, 0)
 	for rows.Next() {
 		var migrationHistory store.MigrationHistory
-		if err := rows.Scan(&migrationHistory.Version, &migrationHistory.CreatedTs); err != nil {
+		if err := rows.Scan(
+			&migrationHistory.Version,
+			&migrationHistory.CreatedTs,
+		); err != nil {
 			return nil, err
 		}
+
 		list = append(list, &migrationHistory)
 	}
 
@@ -41,33 +35,21 @@ func (d *DB) FindMigrationHistoryList(ctx context.Context, _ *store.FindMigratio
 }
 
 func (d *DB) UpsertMigrationHistory(ctx context.Context, upsert *store.UpsertMigrationHistory) (*store.MigrationHistory, error) {
-	qb := squirrel.Insert("migration_history").
-		Columns("version").
-		Values(upsert.Version).
-		Suffix("ON CONFLICT (version) DO NOTHING").
-		PlaceholderFormat(squirrel.Dollar)
-
-	query, args, err := qb.ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = d.db.ExecContext(ctx, query, args...)
-	if err != nil {
-		return nil, err
-	}
-
+	stmt := `
+		INSERT INTO migration_history (
+			version
+		)
+		VALUES ($1)
+		ON CONFLICT(version) DO UPDATE
+		SET
+			version=EXCLUDED.version
+		RETURNING version, created_ts
+	`
 	var migrationHistory store.MigrationHistory
-	query, args, err = squirrel.Select("version", "created_ts").
-		From("migration_history").
-		Where(squirrel.Eq{"version": upsert.Version}).
-		PlaceholderFormat(squirrel.Dollar).
-		ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	if err := d.db.QueryRowContext(ctx, query, args...).Scan(&migrationHistory.Version, &migrationHistory.CreatedTs); err != nil {
+	if err := d.db.QueryRowContext(ctx, stmt, upsert.Version).Scan(
+		&migrationHistory.Version,
+		&migrationHistory.CreatedTs,
+	); err != nil {
 		return nil, err
 	}
 

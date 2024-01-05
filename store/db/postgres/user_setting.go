@@ -3,7 +3,6 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fmt"
 
 	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
@@ -130,22 +129,15 @@ func (d *DB) ListUserSettings(ctx context.Context, find *store.FindUserSetting) 
 }
 
 func vacuumUserSetting(ctx context.Context, tx *sql.Tx) error {
-	// First, build the subquery
-	subQuery, subArgs, err := squirrel.Select("id").From(`"user"`).PlaceholderFormat(squirrel.Dollar).ToSql()
+	stmt := `
+	DELETE FROM 
+		user_setting 
+	WHERE 
+		user_id NOT IN (SELECT id FROM "user")`
+	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
 		return err
 	}
 
-	// Now, build the main delete query using the subquery
-	query, args, err := squirrel.Delete("user_setting").
-		Where(fmt.Sprintf("user_id NOT IN (%s)", subQuery), subArgs...).
-		PlaceholderFormat(squirrel.Dollar).
-		ToSql()
-	if err != nil {
-		return err
-	}
-
-	// Execute the query
-	_, err = tx.ExecContext(ctx, query, args...)
-	return err
+	return nil
 }
