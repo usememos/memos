@@ -60,7 +60,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(holders, ", ")))
 	}
 	if find.ExcludeComments {
-		where = append(where, "parent_id IS NULL")
+		where = append(where, "memo_relation.related_memo_id IS NULL")
 	}
 
 	orders := []string{}
@@ -81,8 +81,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		`memo.updated_ts AS updated_ts`,
 		`memo.row_status AS row_status`,
 		`memo.visibility AS visibility`,
-		`MAX(CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END) AS pinned`,
-		"(SELECT related_memo_id from memo_relation where memo_id = id AND type = 'COMMENT' LIMIT 1) as parent_id",
+		`memo_organizer.pinned AS pinned`,
+		`memo_relation.related_memo_id AS parent_id`,
 	}
 	if !find.ExcludeContent {
 		fields = append(fields, `memo.content AS content`)
@@ -90,9 +90,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	query := `SELECT ` + strings.Join(fields, ", ") + `
 		FROM memo
-		LEFT JOIN memo_organizer ON memo.id = memo_organizer.memo_id
+		FULl JOIN memo_organizer ON memo.id = memo_organizer.memo_id AND memo.creator_id = memo_organizer.user_id
+		FULL JOIN memo_relation ON memo.id = memo_relation.memo_id AND memo_relation.type = 'COMMENT'
 		WHERE ` + strings.Join(where, " AND ") + `
-		GROUP BY memo.id
 		ORDER BY ` + strings.Join(orders, ", ")
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
@@ -110,6 +110,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	list := make([]*store.Memo, 0)
 	for rows.Next() {
 		var memo store.Memo
+		pinned := sql.NullBool{}
 		dests := []any{
 			&memo.ID,
 			&memo.CreatorID,
@@ -117,7 +118,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.UpdatedTs,
 			&memo.RowStatus,
 			&memo.Visibility,
-			&memo.Pinned,
+			&pinned,
 			&memo.ParentID,
 		}
 		if !find.ExcludeContent {
@@ -125,6 +126,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		if err := rows.Scan(dests...); err != nil {
 			return nil, err
+		}
+		if pinned.Valid {
+			memo.Pinned = pinned.Bool
 		}
 		list = append(list, &memo)
 	}

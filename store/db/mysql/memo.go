@@ -38,7 +38,7 @@ func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, e
 }
 
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
-	where, args := []string{"1 = 1"}, []any{}
+	where, having, args := []string{"1 = 1"}, []string{"1 = 1"}, []any{}
 
 	if v := find.ID; v != nil {
 		where, args = append(where, "`memo`.`id` = ?"), append(args, *v)
@@ -69,7 +69,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		where = append(where, fmt.Sprintf("`memo`.`visibility` in (%s)", strings.Join(placeholder, ",")))
 	}
 	if find.ExcludeComments {
-		where = append(where, "parent_id IS NULL")
+		having = append(having, "`parent_id` IS NULL")
 	}
 
 	orders := []string{}
@@ -91,10 +91,10 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"`memo`.`row_status` AS `row_status`",
 		"`memo`.`content` AS `content`",
 		"`memo`.`visibility` AS `visibility`",
-		"MAX(CASE WHEN `memo_organizer`.`pinned` = 1 THEN 1 ELSE 0 END) AS `pinned`",
-		"(SELECT `related_memo_id` from `memo_relation` where `memo_id` = `id` AND `type` = \"COMMENT\" LIMIT 1) as `parent_id`",
+		"`memo_organizer`.`pinned` AS `pinned`",
+		"`memo_relation`.`related_memo_id` AS `parent_id`",
 	}
-	query := "SELECT " + strings.Join(fields, ",\n") + " FROM `memo` LEFT JOIN `memo_organizer` ON `memo`.`id` = `memo_organizer`.`memo_id` WHERE " + strings.Join(where, " AND ") + " GROUP BY `memo`.`id` ORDER BY " + strings.Join(orders, ", ")
+	query := "SELECT " + strings.Join(fields, ",\n") + " FROM `memo` LEFT JOIN `memo_organizer` ON `memo`.`id` = `memo_organizer`.`memo_id` AND `memo`.`creator_id` = `memo_organizer`.`user_id` LEFT JOIN `memo_relation` ON `memo`.`id` = `memo_relation`.`memo_id` AND `memo_relation`.`type` = \"COMMENT\" WHERE " + strings.Join(where, " AND ") + " HAVING " + strings.Join(having, " AND ") + " ORDER BY " + strings.Join(orders, ", ")
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {
@@ -111,6 +111,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	list := make([]*store.Memo, 0)
 	for rows.Next() {
 		var memo store.Memo
+		pinned := sql.NullBool{}
 		if err := rows.Scan(
 			&memo.ID,
 			&memo.CreatorID,
@@ -119,10 +120,13 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.RowStatus,
 			&memo.Content,
 			&memo.Visibility,
-			&memo.Pinned,
+			&pinned,
 			&memo.ParentID,
 		); err != nil {
 			return nil, err
+		}
+		if pinned.Valid {
+			memo.Pinned = pinned.Bool
 		}
 		list = append(list, &memo)
 	}
