@@ -92,6 +92,8 @@ const MemoEditor = (props: Props) => {
           setState((prevState) => ({
             ...prevState,
             memoVisibility: memo.visibility,
+            resourceList: memo.resources,
+            relationList: memo.relations,
           }));
           if (!contentCache) {
             editorRef.current?.setContent(memo.content ?? "");
