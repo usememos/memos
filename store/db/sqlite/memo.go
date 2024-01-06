@@ -58,8 +58,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(placeholder, ",")))
 	}
-	if v := find.Pinned; v != nil {
-		where = append(where, "memo_organizer.pinned = 1")
+	if find.ExcludeComments {
+		where = append(where, "parent_id IS NULL")
 	}
 
 	orders := []string{}
@@ -81,6 +81,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		`memo.row_status AS row_status`,
 		`memo.visibility AS visibility`,
 		`CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END AS pinned`,
+		"(SELECT related_memo_id from memo_relation where memo_id = id AND type = \"COMMENT\" LIMIT 1) as parent_id",
 	}
 	if !find.ExcludeContent {
 		fields = append(fields, `memo.content AS content`)
@@ -116,6 +117,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.RowStatus,
 			&memo.Visibility,
 			&memo.Pinned,
+			&memo.ParentID,
 		}
 		if !find.ExcludeContent {
 			dests = append(dests, &memo.Content)

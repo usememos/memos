@@ -122,9 +122,11 @@ message Memo {
 
   bool pinned = 11;
 
-  repeated Resource resources = 12 [(google.api.field_behavior) = OUTPUT_ONLY];
+  optional int32 parent_id = 12;
 
-  repeated MemoRelation relations = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+  repeated Resource resources = 13 [(google.api.field_behavior) = OUTPUT_ONLY];
+
+  repeated MemoRelation relations = 14 [(google.api.field_behavior) = OUTPUT_ONLY];
 }
 
 message CreateMemoRequest {

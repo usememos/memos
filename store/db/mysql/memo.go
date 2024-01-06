@@ -55,9 +55,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if v := find.CreatedTsAfter; v != nil {
 		where, args = append(where, "UNIX_TIMESTAMP(`memo`.`created_ts`) > ?"), append(args, *v)
 	}
-	if v := find.Pinned; v != nil {
-		where = append(where, "`memo_organizer`.`pinned` = 1")
-	}
 	if v := find.ContentSearch; len(v) != 0 {
 		for _, s := range v {
 			where, args = append(where, "`memo`.`content` LIKE ?"), append(args, "%"+s+"%")
@@ -71,6 +68,10 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("`memo`.`visibility` in (%s)", strings.Join(placeholder, ",")))
 	}
+	if find.ExcludeComments {
+		where = append(where, "parent_id IS NULL")
+	}
+
 	orders := []string{}
 	if find.OrderByPinned {
 		orders = append(orders, "`pinned` DESC")
@@ -91,6 +92,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"`memo`.`content` AS `content`",
 		"`memo`.`visibility` AS `visibility`",
 		"MAX(CASE WHEN `memo_organizer`.`pinned` = 1 THEN 1 ELSE 0 END) AS `pinned`",
+		"(SELECT `related_memo_id` from `memo_relation` where `memo_id` = `id` AND `type` = \"COMMENT\" LIMIT 1) as `parent_id`",
 	}
 	query := "SELECT " + strings.Join(fields, ",\n") + " FROM `memo` LEFT JOIN `memo_organizer` ON `memo`.`id` = `memo_organizer`.`memo_id` WHERE " + strings.Join(where, " AND ") + " GROUP BY `memo`.`id` ORDER BY " + strings.Join(orders, ", ")
 	if find.Limit != nil {
@@ -118,6 +120,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.Content,
 			&memo.Visibility,
 			&memo.Pinned,
+			&memo.ParentID,
 		); err != nil {
 			return nil, err
 		}

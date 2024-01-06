@@ -62,16 +62,13 @@ const MemoDetail = () => {
 
   // Prepare memo comments.
   useEffect(() => {
-    if (!memo) {
-      return;
-    }
-
     (async () => {
-      const parentMemoId = memo.relations.find(
-        (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
-      )?.relatedMemoId;
-      if (parentMemoId) {
-        memoStore.getOrFetchMemoById(parentMemoId).then((memo: Memo) => {
+      if (!memo) {
+        return;
+      }
+
+      if (memo.parentId) {
+        memoStore.getOrFetchMemoById(memo.parentId).then((memo: Memo) => {
           setParentMemo(memo);
         });
       } else {
