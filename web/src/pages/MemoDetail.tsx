@@ -62,11 +62,11 @@ const MemoDetail = () => {
 
   // Prepare memo comments.
   useEffect(() => {
-    (async () => {
-      if (!memo) {
-        return;
-      }
+    if (!memo) {
+      return;
+    }
 
+    (async () => {
       if (memo.parentId) {
         memoStore.getOrFetchMemoById(memo.parentId).then((memo: Memo) => {
           setParentMemo(memo);
