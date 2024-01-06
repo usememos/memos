@@ -2,52 +2,54 @@ package postgres
 
 import (
 	"context"
-
-	"github.com/Masterminds/squirrel"
+	"strings"
 
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) CreateWebhook(ctx context.Context, create *storepb.Webhook) (*storepb.Webhook, error) {
-	qb := squirrel.Insert("webhook").Columns("name", "url", "creator_id")
-	values := []any{create.Name, create.Url, create.CreatorId}
-
-	qb = qb.Values(values...).Suffix("RETURNING id")
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
+	fields := []string{"name", "url", "creator_id"}
+	args := []any{create.Name, create.Url, create.CreatorId}
+	stmt := "INSERT INTO webhook (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts, row_status"
+	var rowStatus string
+	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+		&create.Id,
+		&create.CreatedTs,
+		&create.UpdatedTs,
+		&rowStatus,
+	); err != nil {
 		return nil, err
 	}
 
-	err = d.db.QueryRowContext(ctx, query, args...).Scan(&create.Id)
-	if err != nil {
-		return nil, err
-	}
-
-	create, err = d.GetWebhook(ctx, &store.FindWebhook{ID: &create.Id})
-	if err != nil {
-		return nil, err
-	}
-
-	return create, nil
+	create.RowStatus = storepb.RowStatus(storepb.RowStatus_value[rowStatus])
+	webhook := create
+	return webhook, nil
 }
 
 func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*storepb.Webhook, error) {
-	qb := squirrel.Select("id", "created_ts", "updated_ts", "row_status", "creator_id", "name", "url").From("webhook").OrderBy("id DESC")
-
+	where, args := []string{"1 = 1"}, []any{}
 	if find.ID != nil {
-		qb = qb.Where(squirrel.Eq{"id": *find.ID})
+		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *find.ID)
 	}
 	if find.CreatorID != nil {
-		qb = qb.Where(squirrel.Eq{"creator_id": *find.CreatorID})
+		where, args = append(where, "creator_id = "+placeholder(len(args)+1)), append(args, *find.CreatorID)
 	}
 
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := d.db.QueryContext(ctx, query, args...)
+	rows, err := d.db.QueryContext(ctx, `
+		SELECT
+			id,
+			created_ts,
+			updated_ts,
+			row_status,
+			creator_id,
+			name,
+			url
+		FROM webhook
+		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY id DESC`,
+		args...,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -68,9 +70,7 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 		); err != nil {
 			return nil, err
 		}
-
 		webhook.RowStatus = storepb.RowStatus(storepb.RowStatus_value[rowStatus])
-
 		list = append(list, webhook)
 	}
 
@@ -81,58 +81,38 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 	return list, nil
 }
 
-func (d *DB) GetWebhook(ctx context.Context, find *store.FindWebhook) (*storepb.Webhook, error) {
-	list, err := d.ListWebhooks(ctx, find)
-	if err != nil {
-		return nil, err
-	}
-	if len(list) == 0 {
-		return nil, nil
-	}
-	return list[0], nil
-}
-
 func (d *DB) UpdateWebhook(ctx context.Context, update *store.UpdateWebhook) (*storepb.Webhook, error) {
-	qb := squirrel.Update("webhook")
-
+	set, args := []string{}, []any{}
 	if update.RowStatus != nil {
-		qb = qb.Set("row_status", update.RowStatus.String())
+		set, args = append(set, "row_status = "+placeholder(len(args)+1)), append(args, update.RowStatus.String())
 	}
 	if update.Name != nil {
-		qb = qb.Set("name", *update.Name)
+		set, args = append(set, "name = "+placeholder(len(args)+1)), append(args, *update.Name)
 	}
 	if update.URL != nil {
-		qb = qb.Set("url", *update.URL)
+		set, args = append(set, "url = "+placeholder(len(args)+1)), append(args, *update.URL)
 	}
 
-	qb = qb.Where(squirrel.Eq{"id": update.ID})
-
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
+	stmt := "UPDATE webhook SET " + strings.Join(set, ", ") + " WHERE id = " + placeholder(len(args)+1) + " RETURNING id, created_ts, updated_ts, row_status, creator_id, name, url"
+	args = append(args, update.ID)
+	webhook := &storepb.Webhook{}
+	var rowStatus string
+	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+		&webhook.Id,
+		&webhook.CreatedTs,
+		&webhook.UpdatedTs,
+		&rowStatus,
+		&webhook.CreatorId,
+		&webhook.Name,
+		&webhook.Url,
+	); err != nil {
 		return nil, err
 	}
-
-	_, err = d.db.ExecContext(ctx, query, args...)
-	if err != nil {
-		return nil, err
-	}
-
-	webhook, err := d.GetWebhook(ctx, &store.FindWebhook{ID: &update.ID})
-	if err != nil {
-		return nil, err
-	}
-
+	webhook.RowStatus = storepb.RowStatus(storepb.RowStatus_value[rowStatus])
 	return webhook, nil
 }
 
 func (d *DB) DeleteWebhook(ctx context.Context, delete *store.DeleteWebhook) error {
-	qb := squirrel.Delete("webhook").Where(squirrel.Eq{"id": delete.ID})
-
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
-		return err
-	}
-
-	_, err = d.db.ExecContext(ctx, query, args...)
+	_, err := d.db.ExecContext(ctx, "DELETE FROM webhook WHERE id = $1", delete.ID)
 	return err
 }

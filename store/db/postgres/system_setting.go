@@ -2,26 +2,23 @@ package postgres
 
 import (
 	"context"
-
-	"github.com/Masterminds/squirrel"
+	"strings"
 
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) UpsertSystemSetting(ctx context.Context, upsert *store.SystemSetting) (*store.SystemSetting, error) {
-	qb := squirrel.Insert("system_setting").
-		Columns("name", "value", "description").
-		Values(upsert.Name, upsert.Value, upsert.Description).
-		Suffix("ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value, description = EXCLUDED.description").
-		PlaceholderFormat(squirrel.Dollar)
-
-	query, args, err := qb.ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = d.db.ExecContext(ctx, query, args...)
-	if err != nil {
+	stmt := `
+		INSERT INTO system_setting (
+			name, value, description
+		)
+		VALUES ($1, $2, $3)
+		ON CONFLICT(name) DO UPDATE 
+		SET
+			value = EXCLUDED.value,
+			description = EXCLUDED.description
+	`
+	if _, err := d.db.ExecContext(ctx, stmt, upsert.Name, upsert.Value, upsert.Description); err != nil {
 		return nil, err
 	}
 
@@ -29,16 +26,18 @@ func (d *DB) UpsertSystemSetting(ctx context.Context, upsert *store.SystemSettin
 }
 
 func (d *DB) ListSystemSettings(ctx context.Context, find *store.FindSystemSetting) ([]*store.SystemSetting, error) {
-	qb := squirrel.Select("name", "value", "description").From("system_setting")
-
+	where, args := []string{"1 = 1"}, []any{}
 	if find.Name != "" {
-		qb = qb.Where(squirrel.Eq{"name": find.Name})
+		where, args = append(where, "name = "+placeholder(len(args)+1)), append(args, find.Name)
 	}
 
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
-		return nil, err
-	}
+	query := `
+		SELECT
+			name,
+			value,
+			description
+		FROM system_setting
+		WHERE ` + strings.Join(where, " AND ")
 
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
@@ -48,11 +47,15 @@ func (d *DB) ListSystemSettings(ctx context.Context, find *store.FindSystemSetti
 
 	list := []*store.SystemSetting{}
 	for rows.Next() {
-		systemSetting := &store.SystemSetting{}
-		if err := rows.Scan(&systemSetting.Name, &systemSetting.Value, &systemSetting.Description); err != nil {
+		systemSettingMessage := &store.SystemSetting{}
+		if err := rows.Scan(
+			&systemSettingMessage.Name,
+			&systemSettingMessage.Value,
+			&systemSettingMessage.Description,
+		); err != nil {
 			return nil, err
 		}
-		list = append(list, systemSetting)
+		list = append(list, systemSettingMessage)
 	}
 
 	if err := rows.Err(); err != nil {

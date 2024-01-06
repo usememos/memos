@@ -2,43 +2,43 @@ package postgres
 
 import (
 	"context"
-
-	"github.com/Masterminds/squirrel"
+	"strings"
 
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) CreateStorage(ctx context.Context, create *store.Storage) (*store.Storage, error) {
-	qb := squirrel.Insert("storage").Columns("name", "type", "config")
-	values := []any{create.Name, create.Type, create.Config}
+	fields := []string{"name", "type", "config"}
+	args := []any{create.Name, create.Type, create.Config}
 
-	qb = qb.Values(values...).Suffix("RETURNING id")
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
+	stmt := "INSERT INTO storage (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id"
+	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+		&create.ID,
+	); err != nil {
 		return nil, err
 	}
 
-	err = d.db.QueryRowContext(ctx, query, args...).Scan(&create.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return create, nil
+	storage := create
+	return storage, nil
 }
 
 func (d *DB) ListStorages(ctx context.Context, find *store.FindStorage) ([]*store.Storage, error) {
-	qb := squirrel.Select("id", "name", "type", "config").From("storage").OrderBy("id DESC")
-
+	where, args := []string{"1 = 1"}, []any{}
 	if find.ID != nil {
-		qb = qb.Where(squirrel.Eq{"id": *find.ID})
+		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *find.ID)
 	}
 
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := d.db.QueryContext(ctx, query, args...)
+	rows, err := d.db.QueryContext(ctx, `
+		SELECT
+			id,
+			name,
+			type,
+			config
+		FROM storage
+		WHERE `+strings.Join(where, " AND ")+`
+		ORDER BY id DESC`,
+		args...,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -47,7 +47,12 @@ func (d *DB) ListStorages(ctx context.Context, find *store.FindStorage) ([]*stor
 	list := []*store.Storage{}
 	for rows.Next() {
 		storage := &store.Storage{}
-		if err := rows.Scan(&storage.ID, &storage.Name, &storage.Type, &storage.Config); err != nil {
+		if err := rows.Scan(
+			&storage.ID,
+			&storage.Name,
+			&storage.Type,
+			&storage.Config,
+		); err != nil {
 			return nil, err
 		}
 		list = append(list, storage)
@@ -61,38 +66,23 @@ func (d *DB) ListStorages(ctx context.Context, find *store.FindStorage) ([]*stor
 }
 
 func (d *DB) UpdateStorage(ctx context.Context, update *store.UpdateStorage) (*store.Storage, error) {
-	qb := squirrel.Update("storage")
-
+	set, args := []string{}, []any{}
 	if update.Name != nil {
-		qb = qb.Set("name", *update.Name)
+		set, args = append(set, "name = "+placeholder(len(args)+1)), append(args, *update.Name)
 	}
 	if update.Config != nil {
-		qb = qb.Set("config", *update.Config)
+		set, args = append(set, "config = "+placeholder(len(args)+1)), append(args, *update.Config)
 	}
 
-	qb = qb.Where(squirrel.Eq{"id": update.ID})
-
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	_, err = d.db.ExecContext(ctx, query, args...)
-	if err != nil {
-		return nil, err
-	}
-
+	stmt := `UPDATE storage SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1) + ` RETURNING id, name, type, config`
+	args = append(args, update.ID)
 	storage := &store.Storage{}
-	query, args, err = squirrel.Select("id", "name", "type", "config").
-		From("storage").
-		Where(squirrel.Eq{"id": update.ID}).
-		PlaceholderFormat(squirrel.Dollar).
-		ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	if err := d.db.QueryRowContext(ctx, query, args...).Scan(&storage.ID, &storage.Name, &storage.Type, &storage.Config); err != nil {
+	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+		&storage.ID,
+		&storage.Name,
+		&storage.Type,
+		&storage.Config,
+	); err != nil {
 		return nil, err
 	}
 
@@ -100,21 +90,13 @@ func (d *DB) UpdateStorage(ctx context.Context, update *store.UpdateStorage) (*s
 }
 
 func (d *DB) DeleteStorage(ctx context.Context, delete *store.DeleteStorage) error {
-	qb := squirrel.Delete("storage").Where(squirrel.Eq{"id": delete.ID})
-
-	query, args, err := qb.PlaceholderFormat(squirrel.Dollar).ToSql()
+	stmt := `DELETE FROM storage WHERE id = $1`
+	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
 	if err != nil {
 		return err
 	}
-
-	result, err := d.db.ExecContext(ctx, query, args...)
-	if err != nil {
-		return err
-	}
-
 	if _, err := result.RowsAffected(); err != nil {
 		return err
 	}
-
 	return nil
 }
