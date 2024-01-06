@@ -16,6 +16,7 @@ require (
 	github.com/gorilla/feeds v1.1.2
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.19.0
 	github.com/improbable-eng/grpc-web v0.15.0
+	github.com/joho/godotenv v1.5.1
 	github.com/labstack/echo/v4 v4.11.4
 	github.com/lib/pq v1.10.9
 	github.com/microcosm-cc/bluemonday v1.0.26

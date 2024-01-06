@@ -15,12 +15,12 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+//go:embed migration
+var migrationFS embed.FS
+
 const (
 	latestSchemaFileName = "LATEST__SCHEMA.sql"
 )
-
-//go:embed migration
-var migrationFS embed.FS
 
 func (d *DB) Migrate(ctx context.Context) error {
 	if d.profile.IsDev() {
@@ -54,8 +54,6 @@ func (d *DB) nonProdMigrate(ctx context.Context) error {
 		return nil
 	}
 
-	println("no tables in the database. start migration")
-
 	buf, err := migrationFS.ReadFile("migration/dev/" + latestSchemaFileName)
 	if err != nil {
 		return errors.Errorf("failed to read latest schema file: %s", err)
@@ -64,13 +62,6 @@ func (d *DB) nonProdMigrate(ctx context.Context) error {
 	stmt := string(buf)
 	if _, err := d.db.ExecContext(ctx, stmt); err != nil {
 		return errors.Errorf("failed to exec SQL %s: %s", stmt, err)
-	}
-
-	// In demo mode, we should seed the database.
-	if d.profile.Mode == "demo" {
-		if err := d.seed(ctx); err != nil {
-			return errors.Wrap(err, "failed to seed")
-		}
 	}
 	return nil
 }
@@ -84,10 +75,8 @@ func (d *DB) prodMigrate(ctx context.Context) error {
 		if err != nil {
 			return errors.Errorf("failed to read latest schema file: %s", err)
 		}
-
-		stmt := string(buf)
-		if _, err := d.db.ExecContext(ctx, stmt); err != nil {
-			return errors.Errorf("failed to exec SQL %s: %s", stmt, err)
+		if _, err := d.db.ExecContext(ctx, string(buf)); err != nil {
+			return errors.Errorf("failed to exec latest schema: %s", err)
 		}
 		if _, err := d.UpsertMigrationHistory(ctx, &store.UpsertMigrationHistory{
 			Version: currentVersion,
@@ -107,11 +96,11 @@ func (d *DB) prodMigrate(ctx context.Context) error {
 		return nil
 	}
 
-	println("start migrate")
+	println("start to migrate database schema")
 	for _, minorVersion := range getMinorVersionList() {
 		normalizedVersion := minorVersion + ".0"
 		if version.IsVersionGreaterThan(normalizedVersion, latestMigrationHistoryVersion) && version.IsVersionGreaterOrEqualThan(currentVersion, normalizedVersion) {
-			println("applying migration for", normalizedVersion)
+			println("applying migration of", normalizedVersion)
 			if err := d.applyMigrationForMinorVersion(ctx, minorVersion); err != nil {
 				return errors.Wrap(err, "failed to apply minor version migration")
 			}
@@ -150,35 +139,6 @@ func (d *DB) applyMigrationForMinorVersion(ctx context.Context, minorVersion str
 		return errors.Wrapf(err, "failed to upsert migration history with version: %s", version)
 	}
 
-	return nil
-}
-
-//go:embed seed
-var seedFS embed.FS
-
-func (d *DB) seed(ctx context.Context) error {
-	filenames, err := fs.Glob(seedFS, "seed/*.sql")
-	if err != nil {
-		return errors.Wrap(err, "failed to read seed files")
-	}
-
-	sort.Strings(filenames)
-	// Loop over all seed files and execute them in order.
-	for _, filename := range filenames {
-		buf, err := seedFS.ReadFile(filename)
-		if err != nil {
-			return errors.Wrapf(err, "failed to read seed file, filename=%s", filename)
-		}
-
-		for _, stmt := range strings.Split(string(buf), ";") {
-			if strings.TrimSpace(stmt) == "" {
-				continue
-			}
-			if _, err := d.db.ExecContext(ctx, stmt); err != nil {
-				return errors.Wrapf(err, "seed error: %s", stmt)
-			}
-		}
-	}
 	return nil
 }
 

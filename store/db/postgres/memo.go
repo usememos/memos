@@ -181,7 +181,6 @@ func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
 func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
 	where, args := []string{"id = " + placeholder(1)}, []any{delete.ID}
 	stmt := `DELETE FROM memo WHERE ` + strings.Join(where, " AND ")
-	println("stmt", stmt, delete.ID)
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return errors.Wrap(err, "failed to delete memo")
