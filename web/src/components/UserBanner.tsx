@@ -23,7 +23,7 @@ const UserBanner = () => {
       <Dropdown
         className="w-auto inline-flex"
         trigger={
-          <div className="px-3 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-2xl hover:shadow hover:bg-white dark:hover:bg-zinc-700">
+          <div className="px-3 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-2xl border border-transparent text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-700 dark:hover:bg-zinc-800">
             <UserAvatar className="shadow shrink-0 mr-2" avatarUrl={user?.avatarUrl} />
             <span className="text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{title}</span>
           </div>
