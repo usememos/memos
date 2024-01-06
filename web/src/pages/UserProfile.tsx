@@ -10,7 +10,6 @@ import UserAvatar from "@/components/UserAvatar";
 import { DEFAULT_MEMO_LIMIT } from "@/helpers/consts";
 import { getTimeStampByDate } from "@/helpers/datetime";
 import useLoading from "@/hooks/useLoading";
-import { useFilterStore } from "@/store/module";
 import { useMemoList, useMemoStore, useUserStore } from "@/store/v1";
 import { User } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
@@ -21,12 +20,10 @@ const UserProfile = () => {
   const userStore = useUserStore();
   const loadingState = useLoading();
   const [user, setUser] = useState<User>();
-  const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const memoList = useMemoList();
   const [isRequesting, setIsRequesting] = useState(true);
   const [isComplete, setIsComplete] = useState(false);
-  const { tag: tagQuery, text: textQuery } = filterStore.state;
   const sortedMemos = memoList.value
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
@@ -56,7 +53,7 @@ const UserProfile = () => {
 
     memoList.reset();
     fetchMemos();
-  }, [user, tagQuery, textQuery]);
+  }, [user]);
 
   const fetchMemos = async () => {
     if (!user) {
@@ -64,16 +61,6 @@ const UserProfile = () => {
     }
 
     const filters = [`creator == "${user.name}"`, `row_status == "NORMAL"`, `order_by_pinned == true`];
-    const contentSearch: string[] = [];
-    if (tagQuery) {
-      contentSearch.push(`"#${tagQuery}"`);
-    }
-    if (textQuery) {
-      contentSearch.push(`"${textQuery}"`);
-    }
-    if (contentSearch.length > 0) {
-      filters.push(`content_search == [${contentSearch.join(", ")}]`);
-    }
     setIsRequesting(true);
     const data = await memoStore.fetchMemos({
       filter: filters.join(" && "),
@@ -91,18 +78,17 @@ const UserProfile = () => {
         {!loadingState.isLoading &&
           (user ? (
             <>
+              <div className="relative -mt-6 top-8 w-full flex justify-end items-center">
+                <a className="" href={`/u/${user?.id}/rss.xml`} target="_blank" rel="noopener noreferrer">
+                  <Button color="neutral" variant="outlined" endDecorator={<Icon.Rss className="w-4 h-auto opacity-60" />}>
+                    RSS
+                  </Button>
+                </a>
+              </div>
               <div className="w-full flex flex-col justify-start items-center py-8">
                 <UserAvatar className="!w-20 !h-20 mb-2 drop-shadow" avatarUrl={user?.avatarUrl} />
                 <div className="w-full flex flex-row justify-center items-center">
                   <p className="text-3xl text-black leading-none opacity-80 dark:text-gray-200">{user?.nickname}</p>
-                  <a
-                    className="ml-1 cursor-pointer text-gray-500"
-                    href={`/u/${user?.id}/rss.xml`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <Icon.Rss className="w-5 h-auto opacity-60 mt-0.5" />
-                  </a>
                 </div>
               </div>
               {sortedMemos.map((memo) => (

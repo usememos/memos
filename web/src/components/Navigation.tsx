@@ -98,10 +98,16 @@ const Navigation = () => {
     title: t("common.sign-in"),
     icon: <Icon.LogIn className="mr-3 w-6 h-auto opacity-70" />,
   };
+  const aboutNavLink: NavLinkItem = {
+    id: "header-about",
+    path: "/about",
+    title: t("common.about"),
+    icon: <Icon.Smile className="mr-3 w-6 h-auto opacity-70" />,
+  };
 
   const navLinks: NavLinkItem[] = user
     ? [homeNavLink, timelineNavLink, resourcesNavLink, exploreNavLink, profileNavLink, inboxNavLink, archivedNavLink, settingNavLink]
-    : [exploreNavLink, signInNavLink];
+    : [exploreNavLink, signInNavLink, aboutNavLink];
 
   return (
     <header className="w-full h-full overflow-auto flex flex-col justify-start items-start py-4 md:pt-6 z-30">
