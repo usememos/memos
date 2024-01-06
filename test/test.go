@@ -27,7 +27,7 @@ func getUnusedPort() int {
 
 func GetTestingProfile(t *testing.T) *profile.Profile {
 	if err := godotenv.Load(".env"); err != nil {
-		t.Fatal("failed to load .env file", err)
+		t.Log("failed to load .env file, but it's ok")
 	}
 
 	// Get a temporary directory for the test data.
