@@ -156,6 +156,7 @@ message LinkNode {
 
 message AutoLinkNode {
   string url = 1;
+  bool is_raw_text = 2;
 }
 
 message TagNode {

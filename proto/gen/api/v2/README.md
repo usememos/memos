@@ -968,6 +968,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | url | [string](#string) |  |  |
+| is_raw_text | [bool](#bool) |  |  |
 
 
 

@@ -79,7 +79,7 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 	case *ast.Link:
 		node.Node = &apiv2pb.Node_LinkNode{LinkNode: &apiv2pb.LinkNode{Text: n.Text, Url: n.URL}}
 	case *ast.AutoLink:
-		node.Node = &apiv2pb.Node_AutoLinkNode{AutoLinkNode: &apiv2pb.AutoLinkNode{Url: n.URL}}
+		node.Node = &apiv2pb.Node_AutoLinkNode{AutoLinkNode: &apiv2pb.AutoLinkNode{Url: n.URL, IsRawText: n.IsRawText}}
 	case *ast.Tag:
 		node.Node = &apiv2pb.Node_TagNode{TagNode: &apiv2pb.TagNode{Content: n.Content}}
 	case *ast.Strikethrough:
@@ -148,7 +148,7 @@ func convertToASTNode(node *apiv2pb.Node) ast.Node {
 	case *apiv2pb.Node_LinkNode:
 		return &ast.Link{Text: n.LinkNode.Text, URL: n.LinkNode.Url}
 	case *apiv2pb.Node_AutoLinkNode:
-		return &ast.AutoLink{URL: n.AutoLinkNode.Url}
+		return &ast.AutoLink{URL: n.AutoLinkNode.Url, IsRawText: n.AutoLinkNode.IsRawText}
 	case *apiv2pb.Node_TagNode:
 		return &ast.Tag{Content: n.TagNode.Content}
 	case *apiv2pb.Node_StrikethroughNode:
