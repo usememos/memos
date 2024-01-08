@@ -26,10 +26,7 @@ func (*HorizontalRuleParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if len(tokens) > 3 && tokens[3].Type != tokenizer.Newline {
 		return 0, false
 	}
-	if len(tokens) == 3 {
-		return 3, true
-	}
-	return 4, true
+	return 3, true
 }
 
 func (p *HorizontalRuleParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
