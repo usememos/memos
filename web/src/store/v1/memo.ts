@@ -21,6 +21,7 @@ export const useMemoStore = create(
       for (const memo of memos) {
         memoMap[memo.id] = memo;
       }
+      console.log("memos", memos);
       set({ memoMapById: memoMap });
       return memos;
     },

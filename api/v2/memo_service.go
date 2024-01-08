@@ -27,6 +27,10 @@ import (
 	"github.com/usememos/memos/store"
 )
 
+const (
+	MaxContentLength = 8 * 1024
+)
+
 func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMemoRequest) (*apiv2pb.CreateMemoResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)
 	if err != nil {
@@ -34,6 +38,9 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+	if len(request.Content) > MaxContentLength {
+		return nil, status.Errorf(codes.InvalidArgument, "content too long")
 	}
 
 	nodes, err := parser.Parse(tokenizer.Tokenize(request.Content))
@@ -259,6 +266,9 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 				return nil, status.Errorf(codes.Internal, "failed to upsert memo organizer")
 			}
 		}
+	}
+	if update.Content != nil && len(*update.Content) > MaxContentLength {
+		return nil, status.Errorf(codes.InvalidArgument, "content too long")
 	}
 
 	if err = s.Store.UpdateMemo(ctx, update); err != nil {
