@@ -40,6 +40,7 @@
     "email": "Email",
     "expand": "Agrandir",
     "explore": "Explorer",
+    "file": "Fichier",
     "filter": "Filtre",
     "filter-period": "{{from}} à {{to}}",
     "fold": "Rétracter",

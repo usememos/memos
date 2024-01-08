@@ -49,16 +49,24 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       pixelRatio: window.devicePixelRatio * 2,
     })
       .then((url) => {
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `memos-${getDateTimeString(Date.now())}.png`;
-        a.click();
-
+        downloadFileFromUrl(url, `memos-${getDateTimeString(Date.now())}.png`);
         downloadingImageState.setFinish();
       })
       .catch((err) => {
         console.error(err);
       });
+  };
+
+  const handleDownloadTextFileBtnClick = () => {
+    const blob = new Blob([memo.content], { type: "text/plain;charset=utf-8" });
+    downloadFileFromUrl(URL.createObjectURL(blob), `memos-${getDateTimeString(Date.now())}.md`);
+  };
+
+  const downloadFileFromUrl = (url: string, filename: string) => {
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
   };
 
   const handleCopyLinkBtnClick = () => {
@@ -87,6 +95,10 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
               <Icon.Download className="w-4 h-auto mr-1" />
             )}
             {t("common.image")}
+          </Button>
+          <Button color="neutral" variant="outlined" onClick={handleDownloadTextFileBtnClick}>
+            <Icon.File className="w-4 h-auto mr-1" />
+            {t("common.file")}
           </Button>
           <Button color="neutral" variant="outlined" onClick={handleCopyLinkBtnClick}>
             <Icon.Link className="w-4 h-auto mr-1" />
