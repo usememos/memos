@@ -141,6 +141,14 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
+	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+	}
+	if memoDisplayWithUpdatedTs {
+		memoFind.OrderByUpdatedTs = true
+	}
+
 	if request.Limit != 0 {
 		offset, limit := int(request.Offset), int(request.Limit)
 		memoFind.Offset = &offset
