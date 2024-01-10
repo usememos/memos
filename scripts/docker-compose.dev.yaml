@@ -26,7 +26,8 @@ services:
     ports: ["3001:3001"]
     environment: ["DEV_PROXY_SERVER=http://api:8081/"]
     entrypoint: ["/bin/sh", "-c"]
-    command: ["corepack enable && pnpm install && pnpm dev"]
+    command: ["corepack enable && pnpm i --frozen-lockfile && pnpm dev"]
+    tmpfs: /work/node_modules/:exec # To avoid pnpm ERR_PNPM_LINKING_FAILED error
     volumes:
       - ./../web:/work
 
