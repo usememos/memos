@@ -1,4 +1,4 @@
-import { Select, Option, Button, IconButton, Divider } from "@mui/joy";
+import { Select, Option, Button, IconButton, Divider, Switch, FormHelperText } from "@mui/joy";
 import { uniqBy } from "lodash-es";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -20,6 +20,7 @@ import Icon from "../Icon";
 import VisibilityIcon from "../VisibilityIcon";
 import TagSelector from "./ActionButton/TagSelector";
 import Editor, { EditorRefActions } from "./Editor";
+import Preview from "./Preview";
 import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
 
@@ -39,6 +40,7 @@ interface State {
   relationList: MemoRelation[];
   isUploadingResource: boolean;
   isRequesting: boolean;
+  displaysPreview: boolean;
 }
 
 const MemoEditor = (props: Props) => {
@@ -59,6 +61,7 @@ const MemoEditor = (props: Props) => {
     relationList: props.relationList ?? [],
     isUploadingResource: false,
     isRequesting: false,
+    displaysPreview: false,
   });
   const [hasContent, setHasContent] = useState<boolean>(false);
   const editorRef = useRef<EditorRefActions>(null);
@@ -246,8 +249,18 @@ const MemoEditor = (props: Props) => {
     if (content !== "") {
       setContentCache(content);
     } else {
+      setContentCache("");
       localStorage.removeItem(contentCacheKey);
     }
+  };
+
+  const handlePreviewBtnClick = () => {
+    setState((state) => {
+      return {
+        ...state,
+        displaysPreview: !state.displaysPreview,
+      };
+    });
   };
 
   const handleSaveBtnClick = async () => {
@@ -258,6 +271,7 @@ const MemoEditor = (props: Props) => {
     setState((state) => {
       return {
         ...state,
+        displaysPreview: false,
         isRequesting: true,
       };
     });
@@ -366,6 +380,13 @@ const MemoEditor = (props: Props) => {
       onFocus={handleEditorFocus}
     >
       <Editor ref={editorRef} {...editorConfig} />
+      {state.displaysPreview && (
+        <>
+          <Divider className="!mt-2 !mb-2" />
+          <Preview content={contentCache} />
+        </>
+      )}
+
       <div className="relative w-full flex flex-row justify-between items-center pt-2">
         <div className="flex flex-row justify-start items-center">
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
@@ -407,15 +428,23 @@ const MemoEditor = (props: Props) => {
             ))}
           </Select>
         </div>
-        <div className="shrink-0 flex flex-row justify-end items-center">
-          <Button
-            disabled={!allowSave}
-            loading={state.isRequesting}
-            endDecorator={<Icon.Send className="w-4 h-auto" />}
-            onClick={handleSaveBtnClick}
-          >
-            {t("editor.save")}
-          </Button>
+        <div className="flex">
+          <div className="flex flex-row mr-6">
+            <div className="mr-2 m-auto">
+              <FormHelperText>{t("common.preview")}</FormHelperText>
+            </div>
+            <Switch onChange={handlePreviewBtnClick} />
+          </div>
+          <div className="shrink-0 flex flex-row justify-end items-center">
+            <Button
+              disabled={!allowSave}
+              loading={state.isRequesting}
+              endDecorator={<Icon.Send className="w-4 h-auto" />}
+              onClick={handleSaveBtnClick}
+            >
+              {t("editor.save")}
+            </Button>
+          </div>
         </div>
       </div>
     </div>
