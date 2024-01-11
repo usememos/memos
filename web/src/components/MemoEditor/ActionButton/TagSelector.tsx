@@ -29,7 +29,7 @@ const TagSelector = (props: Props) => {
       size="sm"
     >
       <Icon.Hash className="w-5 h-5 mx-auto" />
-      <div className="hidden flex-row justify-start items-start flex-wrap absolute top-8 left-0 mt-1 p-1 z-1 rounded w-52 h-auto max-h-48 overflow-y-auto font-mono shadow bg-zinc-100 dark:bg-zinc-700 group-hover:flex">
+      <div className="hidden flex-row justify-start items-start flex-wrap absolute top-7 left-0 mt-1 p-1 z-1 rounded w-52 h-auto max-h-48 overflow-y-auto font-mono shadow bg-zinc-100 dark:bg-zinc-700 group-hover:flex">
         {tags.length > 0 ? (
           tags.map((tag) => {
             return (
