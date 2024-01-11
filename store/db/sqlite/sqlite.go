@@ -97,6 +97,9 @@ func vacuumImpl(ctx context.Context, tx *sql.Tx) error {
 	if err := vacuumMemoRelations(ctx, tx); err != nil {
 		return err
 	}
+	if err := vacuumInbox(ctx, tx); err != nil {
+		return err
+	}
 	if err := vacuumTag(ctx, tx); err != nil {
 		// Prevent revive warning.
 		return err
