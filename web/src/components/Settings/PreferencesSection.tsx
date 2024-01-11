@@ -13,7 +13,6 @@ import Icon from "../Icon";
 import LocaleSelect from "../LocaleSelect";
 import VisibilityIcon from "../VisibilityIcon";
 import WebhookSection from "./WebhookSection";
-import "@/less/settings/preferences-section.less";
 
 const PreferencesSection = () => {
   const t = useTranslate();
@@ -72,19 +71,19 @@ const PreferencesSection = () => {
   };
 
   return (
-    <div className="section-container preferences-section-container">
-      <p className="title-text">{t("common.basic")}</p>
-      <div className="form-label selector">
-        <span className="text-sm">{t("common.language")}</span>
+    <div className="w-full flex flex-col gap-2 pt-2 pb-4">
+      <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("common.language")}</span>
         <LocaleSelect value={locale} onChange={handleLocaleSelectChange} />
       </div>
-      <div className="form-label selector">
-        <span className="text-sm">{t("setting.preference-section.theme")}</span>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span>{t("setting.preference-section.theme")}</span>
         <AppearanceSelect value={appearance} onChange={handleAppearanceSelectChange} />
       </div>
-      <p className="title-text">{t("setting.preference")}</p>
-      <div className="form-label selector">
-        <span className="text-sm break-keep text-ellipsis overflow-hidden">{t("setting.preference-section.default-memo-visibility")}</span>
+      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.preference")}</p>
+      <div className="w-full flex flex-row justify-between items-center">
+        <span className="truncate">{t("setting.preference-section.default-memo-visibility")}</span>
         <Select
           className="!min-w-fit"
           value={setting.memoVisibility}
@@ -110,7 +109,7 @@ const PreferencesSection = () => {
       <div className="w-full flex flex-col justify-start items-start">
         <div className="mb-2 w-full flex flex-row justify-between items-center">
           <div className="w-auto flex items-center">
-            <span className="text-sm mr-1">{t("setting.preference-section.telegram-user-id")}</span>
+            <span className="mr-1">{t("setting.preference-section.telegram-user-id")}</span>
           </div>
           <Button variant="outlined" color="neutral" onClick={handleSaveTelegramUserId}>
             {t("common.save")}

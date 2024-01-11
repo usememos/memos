@@ -121,8 +121,8 @@ const MemberSection = () => {
   };
 
   return (
-    <div className="section-container member-section-container">
-      <p className="title-text">{t("setting.member-section.create-a-member")}</p>
+    <div className="w-full flex flex-col gap-2 pt-2 pb-4">
+      <p className="font-medium text-gray-700 dark:text-gray-500">{t("setting.member-section.create-a-member")}</p>
       <div className="w-full flex flex-col justify-start items-start gap-2">
         <div className="flex flex-col justify-start items-start gap-1">
           <span className="text-sm">{t("common.username")}</span>
@@ -140,10 +140,10 @@ const MemberSection = () => {
         <div className="title-text">{t("setting.member-list")}</div>
       </div>
       <div className="w-full overflow-x-auto">
-        <div className="inline-block min-w-full align-middle border rounded-lg dark:border-gray-500">
-          <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-500">
+        <div className="inline-block min-w-full align-middle border rounded-lg dark:border-zinc-600">
+          <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
             <thead>
-              <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-300">
+              <tr className="text-sm font-semibold text-left text-gray-900 dark:text-gray-400">
                 <th scope="col" className="py-2 pl-4 pr-3">
                   ID
                 </th>
@@ -159,16 +159,16 @@ const MemberSection = () => {
                 <th scope="col" className="relative py-2 pl-3 pr-4"></th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200 dark:divide-gray-500">
+            <tbody className="divide-y divide-gray-200 dark:divide-zinc-600">
               {userList.map((user) => (
                 <tr key={user.id}>
-                  <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-300">{user.id}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-300">
+                  <td className="whitespace-nowrap py-2 pl-4 pr-3 text-sm text-gray-900 dark:text-gray-400">{user.id}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">
                     {user.username}
                     <span className="ml-1 italic">{user.rowStatus === RowStatus.ARCHIVED && "(Archived)"}</span>
                   </td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-300">{user.nickname}</td>
-                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-300">{user.email}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{user.nickname}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-sm text-gray-500 dark:text-gray-400">{user.email}</td>
                   <td className="relative whitespace-nowrap py-2 pl-3 pr-4 text-right text-sm font-medium flex justify-end">
                     {currentUser?.id === user.id ? (
                       <span>{t("common.yourself")}</span>

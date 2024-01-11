@@ -60,9 +60,9 @@ const StorageSection = () => {
   };
 
   return (
-    <div className="section-container">
-      <div className="mt-4 mb-2 w-full flex flex-row justify-start items-center">
-        <span className="font-mono text-sm text-gray-400 mr-2">{t("setting.storage-section.current-storage")}</span>
+    <div className="w-full flex flex-col gap-2 pt-2 pb-4">
+      <div className="w-full flex flex-row justify-start items-center">
+        <span className="font-mono text-sm text-gray-400 mr-2 dark:text-gray-500">{t("setting.storage-section.current-storage")}</span>
       </div>
       <RadioGroup
         className="w-full"
@@ -82,7 +82,7 @@ const StorageSection = () => {
           <Radio key={storage.id} value={storage.id} label={storage.name} />
         ))}
       </RadioGroup>
-      <Divider className="!my-4" />
+      <Divider className="!my-2" />
       <div className="mb-2 w-full flex flex-row justify-between items-center gap-1">
         <div className="flex items-center gap-1">
           <span className="font-mono text-sm text-gray-400">{t("setting.storage-section.storage-services")}</span>
@@ -90,7 +90,7 @@ const StorageSection = () => {
         </div>
         <Button onClick={() => showCreateStorageServiceDialog(undefined, fetchStorageList)}>{t("common.create")}</Button>
       </div>
-      <div className="mt-2 w-full flex flex-col">
+      <div className="w-full flex flex-col">
         {storageList.map((storage) => (
           <div
             key={storage.id}
@@ -123,7 +123,7 @@ const StorageSection = () => {
           </div>
         ))}
         {storageList.length === 0 && (
-          <div className="pb-2 w-full text-sm dark:border-zinc-700 opacity-60 flex flex-row items-center justify-between">
+          <div className="w-full text-sm dark:border-zinc-700 opacity-60 flex flex-row items-center justify-between">
             <p className="">No storage service found.</p>
           </div>
         )}

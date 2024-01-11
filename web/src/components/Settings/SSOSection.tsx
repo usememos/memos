@@ -57,10 +57,10 @@ const SSOSection = () => {
   };
 
   return (
-    <div className="section-container">
-      <div className="mb-2 w-full flex flex-row justify-between items-center gap-1">
+    <div className="w-full flex flex-col gap-2 pt-2 pb-4">
+      <div className="w-full flex flex-row justify-between items-center gap-1">
         <div className="flex flex-row items-center gap-1">
-          <span className="font-mono text-sm text-gray-400">{t("setting.sso-section.sso-list")}</span>
+          <span className="font-mono text-gray-400">{t("setting.sso-section.sso-list")}</span>
           <LearnMore url="https://usememos.com/docs/advanced-settings/keycloak" />
         </div>
         <Button onClick={() => showCreateIdentityProviderDialog(undefined, fetchIdentityProviderList)}>{t("common.create")}</Button>
@@ -100,8 +100,13 @@ const SSOSection = () => {
           </div>
         </div>
       ))}
+      {identityProviderList.length === 0 && (
+        <div className="w-full mt-2 text-sm dark:border-zinc-700 opacity-60 flex flex-row items-center justify-between">
+          <p className="">No SSO found.</p>
+        </div>
+      )}
 
-      <div className="w-full mt-8">
+      <div className="w-full mt-4">
         <p className="text-sm">{t("common.learn-more")}:</p>
         <List component="ul" marker="disc" size="sm">
           <ListItem>

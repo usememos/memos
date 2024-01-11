@@ -49,7 +49,7 @@ const WebhookSection = () => {
     <div className="w-full flex flex-col justify-start items-start">
       <div className="w-full flex justify-between items-center">
         <div className="flex-auto space-y-1">
-          <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-300">Webhooks</p>
+          <p className="flex flex-row justify-start items-center font-medium text-gray-700 dark:text-gray-400">Webhooks</p>
         </div>
         <div>
           <Button
@@ -65,8 +65,8 @@ const WebhookSection = () => {
       </div>
       <div className="w-full mt-2 flow-root">
         <div className="overflow-x-auto">
-          <div className="inline-block min-w-full border rounded-lg align-middle dark:border-gray-500">
-            <table className="min-w-full divide-y divide-gray-300 dark:divide-gray-500">
+          <div className="inline-block min-w-full border rounded-lg align-middle dark:border-zinc-600">
+            <table className="min-w-full divide-y divide-gray-300 dark:divide-zinc-600">
               <thead>
                 <tr>
                   <th scope="col" className="px-3 py-2 text-left text-sm font-semibold text-gray-900 dark:text-gray-400">
