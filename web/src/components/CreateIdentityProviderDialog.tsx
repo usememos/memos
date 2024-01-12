@@ -21,7 +21,7 @@ const templateList: IdentityProvider[] = [
         authUrl: "https://github.com/login/oauth/authorize",
         tokenUrl: "https://github.com/login/oauth/access_token",
         userInfoUrl: "https://api.github.com/user",
-        scopes: ["user"],
+        scopes: ["read:user"],
         fieldMapping: {
           identifier: "login",
           displayName: "name",
