@@ -21,6 +21,15 @@ func (s *APIV2Service) SetMemoRelations(ctx context.Context, request *apiv2pb.Se
 	}
 
 	for _, relation := range request.Relations {
+		// Ignore reflexive relations.
+		if request.Id == relation.RelatedMemoId {
+			continue
+		}
+		// Ignore comment relations as there's no need to update a comment's relation.
+		// Inserting/Deleting a comment is handled elsewhere.
+		if relation.Type == apiv2pb.MemoRelation_COMMENT {
+			continue
+		}
 		if _, err := s.Store.UpsertMemoRelation(ctx, &store.MemoRelation{
 			MemoID:        request.Id,
 			RelatedMemoID: relation.RelatedMemoId,
