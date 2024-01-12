@@ -61,10 +61,14 @@ const Home = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl sm:px-6 flex flex-row justify-center items-start sm:gap-6">
-      <div className={classNames("w-full sm:pt-3 md:pt-6", md && "max-w-[calc(100%-14rem)]")}>
-        <MobileHeader className="sm:px-0">{!md && <HomeSidebarDrawer />}</MobileHeader>
-        <div className="w-full px-4 sm:px-0">
+    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
+      {!md && (
+        <MobileHeader>
+          <HomeSidebarDrawer />
+        </MobileHeader>
+      )}
+      <div className={classNames("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-6")}>
+        <div className="w-full">
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
           <div className="flex flex-col justify-start items-start w-full max-w-full pb-28">
             <MemoFilter />
@@ -91,13 +95,13 @@ const Home = () => {
             )}
           </div>
         </div>
+        {md && (
+          <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">
+            <HomeSidebar className="py-6" />
+          </div>
+        )}
       </div>
-      {md && (
-        <div className="sticky top-0 left-0 shrink-0 w-56 h-full">
-          <HomeSidebar />
-        </div>
-      )}
-    </div>
+    </section>
   );
 };
 

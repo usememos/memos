@@ -17,6 +17,10 @@ const TaskList: React.FC<Props> = ({ index, complete, children }: Props) => {
   const memoStore = useMemoStore();
 
   const handleCheckboxChange = async (on: boolean) => {
+    if (context.readonly || !context.memoId) {
+      return;
+    }
+
     const nodeIndex = Number(index);
     if (isNaN(nodeIndex)) {
       return;
