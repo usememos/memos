@@ -4,7 +4,7 @@ interface Props {
 }
 
 const Image: React.FC<Props> = ({ altText, url }: Props) => {
-  return <img alt={altText} src={url} />;
+  return <img src={url} alt={altText} decoding="async" loading="lazy" />;
 };
 
 export default Image;

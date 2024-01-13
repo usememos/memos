@@ -39,6 +39,7 @@ const MemoResourceListView = ({ resourceList = [] }: { resourceList: Resource[] 
           src={resource.externalLink ? url : `${url}${thumbnail ? "?thumbnail=1" : ""}`}
           onClick={() => handleImageClick(url)}
           decoding="async"
+          loading="lazy"
         />
       );
     } else if (type === "video/*") {

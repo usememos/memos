@@ -12,6 +12,8 @@ const UserAvatar = (props: Props) => {
       <img
         className="w-full h-auto rounded-full shadow min-w-full min-h-full object-cover dark:opacity-80"
         src={avatarUrl || "/logo.png"}
+        decoding="async"
+        loading="lazy"
         alt=""
       />
     </div>
