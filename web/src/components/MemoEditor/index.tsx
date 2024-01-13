@@ -18,6 +18,7 @@ import showCreateMemoRelationDialog from "../CreateMemoRelationDialog";
 import showCreateResourceDialog from "../CreateResourceDialog";
 import Icon from "../Icon";
 import VisibilityIcon from "../VisibilityIcon";
+import MarkdownMenu from "./ActionButton/MarkdownMenu";
 import TagSelector from "./ActionButton/TagSelector";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
@@ -366,7 +367,7 @@ const MemoEditor = (props: Props) => {
       onFocus={handleEditorFocus}
     >
       <Editor ref={editorRef} {...editorConfig} />
-      <div className="relative w-full flex flex-row justify-between items-center pt-2">
+      <div className="relative w-full flex flex-row justify-between items-center pt-2" onFocus={(e) => e.stopPropagation()}>
         <div className="flex flex-row justify-start items-center">
           <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
           <IconButton
@@ -383,6 +384,7 @@ const MemoEditor = (props: Props) => {
           >
             <Icon.Link className="w-5 h-5 mx-auto" />
           </IconButton>
+          <MarkdownMenu editorRef={editorRef} />
         </div>
       </div>
       <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />
