@@ -1,4 +1,4 @@
-import { Button } from "@mui/joy";
+import { Button, IconButton, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { getNormalizedTimeString, getUnixTime } from "@/helpers/datetime";
@@ -66,16 +66,20 @@ const ChangeMemoCreatedTsDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">{t("message.change-memo-created-time")}</p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="flex flex-col justify-start items-start !w-72 max-w-full">
-        <input
-          className="input-text mt-2"
+        <Input
+          className="w-full"
           type="datetime-local"
           value={createdAt}
-          max={maxDatetimeValue}
+          slotProps={{
+            input: {
+              max: maxDatetimeValue,
+            },
+          }}
           onChange={handleDatetimeInputChange}
         />
         <div className="flex flex-row justify-end items-center mt-4 w-full gap-x-2">

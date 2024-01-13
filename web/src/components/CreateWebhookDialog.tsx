@@ -1,4 +1,4 @@
-import { Button, Input } from "@mui/joy";
+import { Button, IconButton, Input } from "@mui/joy";
 import React, { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { webhookServiceClient } from "@/grpcweb";
@@ -100,9 +100,9 @@ const CreateWebhookDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">{isCreating ? "Create webhook" : "Edit webhook"}</p>
-        <button className="btn close-btn" onClick={() => destroy()}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={() => destroy()}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container !w-80">
         <div className="w-full flex flex-col justify-start items-start mb-3">

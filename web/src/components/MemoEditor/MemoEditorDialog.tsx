@@ -1,3 +1,4 @@
+import { IconButton } from "@mui/joy";
 import { useEffect } from "react";
 import { useGlobalStore, useTagStore } from "@/store/module";
 import { MemoRelation } from "@/types/proto/api/v2/memo_relation_service";
@@ -30,9 +31,9 @@ const MemoEditorDialog: React.FC<Props> = ({ memoId, relationList, destroy }: Pr
           <img className="w-5 h-auto rounded-full shadow" src={systemStatus.customizedProfile.logoUrl} alt="" />
           <p className="ml-1 text-black opacity-80 dark:text-gray-200">{systemStatus.customizedProfile.name}</p>
         </div>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="flex flex-col justify-start items-start max-w-full w-[36rem]">
         <MemoEditorV1

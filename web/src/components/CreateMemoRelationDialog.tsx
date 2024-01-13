@@ -1,4 +1,4 @@
-import { Button, Input } from "@mui/joy";
+import { Button, IconButton, Input } from "@mui/joy";
 import { isNaN, unionBy } from "lodash-es";
 import React, { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -76,9 +76,9 @@ const CreateMemoRelationDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">{"Add references"}</p>
-        <button className="btn close-btn" onClick={() => destroy()}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={() => destroy()}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container !w-80">
         <Input

@@ -1,4 +1,4 @@
-import { Button, Input } from "@mui/joy";
+import { Button, IconButton, Input } from "@mui/joy";
 import { isEqual } from "lodash-es";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
@@ -127,9 +127,9 @@ const UpdateAccountDialog: React.FC<Props> = ({ destroy }: Props) => {
     <>
       <div className="dialog-header-container !w-64">
         <p className="title-text">{t("setting.account-section.update-information")}</p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container space-y-2">
         <div className="w-full flex flex-row justify-start items-center">

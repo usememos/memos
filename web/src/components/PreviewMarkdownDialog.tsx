@@ -1,3 +1,4 @@
+import { IconButton } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { markdownServiceClient } from "@/grpcweb";
 import { Node } from "@/types/proto/api/v2/markdown_service";
@@ -31,12 +32,12 @@ const PreviewMarkdownDialog: React.FC<Props> = ({ content, destroy }: Props) => 
         <div className="flex flex-row justify-start items-center">
           <p className="text-black opacity-80 dark:text-gray-200">Preview</p>
         </div>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="flex flex-col justify-start items-start max-w-full w-[32rem]">
-        <MemoContent nodes={nodes} />
+        {content !== "" ? <MemoContent nodes={nodes} /> : <p className="text-gray-400 dark:text-gray-600">Nothing to preview</p>}
       </div>
     </>
   );

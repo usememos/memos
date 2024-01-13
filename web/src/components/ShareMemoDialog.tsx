@@ -1,4 +1,4 @@
-import { Button } from "@mui/joy";
+import { Button, IconButton } from "@mui/joy";
 import copy from "copy-to-clipboard";
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
@@ -82,9 +82,9 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container py-3 px-4 !mb-0 rounded-t-lg">
         <p className="">{t("common.share")} Memo</p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X className="icon-img" />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container w-full flex flex-col justify-start items-start relative">
         <div className="px-4 pb-3 w-full flex flex-row justify-start items-center space-x-2">

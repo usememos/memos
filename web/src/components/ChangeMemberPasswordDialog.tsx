@@ -1,3 +1,4 @@
+import { Button, IconButton, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useUserStore } from "@/store/v1";
@@ -69,34 +70,34 @@ const ChangeMemberPasswordDialog: React.FC<Props> = (props: Props) => {
         <p className="title-text">
           {t("setting.account-section.change-password")} ({user.nickname})
         </p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container">
         <p className="text-sm mb-1">{t("auth.new-password")}</p>
-        <input
+        <Input
+          className="w-full"
           type="password"
-          className="input-text"
           placeholder={t("auth.new-password")}
           value={newPassword}
           onChange={handleNewPasswordChanged}
         />
         <p className="text-sm mb-1 mt-2">{t("auth.repeat-new-password")}</p>
-        <input
+        <Input
+          className="w-full"
           type="password"
-          className="input-text"
           placeholder={t("auth.repeat-new-password")}
           value={newPasswordAgain}
           onChange={handleNewPasswordAgainChanged}
         />
-        <div className="mt-4 w-full flex flex-row justify-end items-center space-x-2">
-          <span className="btn-text" onClick={handleCloseBtnClick}>
+        <div className="flex flex-row justify-end items-center mt-4 w-full gap-x-2">
+          <Button color="neutral" variant="plain" onClick={handleCloseBtnClick}>
             {t("common.cancel")}
-          </span>
-          <span className="btn-primary" onClick={handleSaveBtnClick}>
+          </Button>
+          <Button color="primary" onClick={handleSaveBtnClick}>
             {t("common.save")}
-          </span>
+          </Button>
         </div>
       </div>
     </>
