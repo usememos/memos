@@ -4,8 +4,9 @@ import copy from "copy-to-clipboard";
 import hljs from "highlight.js";
 import toast from "react-hot-toast";
 import Icon from "../Icon";
+import { BaseProps } from "./types";
 
-interface Props {
+interface Props extends BaseProps {
   language: string;
   content: string;
 }
@@ -29,7 +30,7 @@ const CodeBlock: React.FC<Props> = ({ language, content }: Props) => {
   };
 
   return (
-    <pre className="w-full my-1 p-3 rounded bg-gray-100 dark:bg-zinc-600 whitespace-pre-wrap relative">
+    <pre className="w-full my-1 p-3 rounded bg-gray-100 dark:bg-zinc-700 whitespace-pre-wrap relative">
       <IconButton
         size="sm"
         className="!absolute top-0.5 right-0.5 opacity-50"

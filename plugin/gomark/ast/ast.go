@@ -14,6 +14,7 @@ const (
 	OrderedListNode
 	UnorderedListNode
 	TaskListNode
+	MathBlockNode
 	// Inline nodes.
 	TextNode
 	BoldNode
@@ -26,6 +27,7 @@ const (
 	TagNode
 	StrikethroughNode
 	EscapingCharacterNode
+	MathNode
 )
 
 type Node interface {
@@ -72,7 +74,7 @@ func (n *BaseNode) SetNextSibling(node Node) {
 
 func IsBlockNode(node Node) bool {
 	switch node.Type() {
-	case ParagraphNode, CodeBlockNode, HeadingNode, HorizontalRuleNode, BlockquoteNode, OrderedListNode, UnorderedListNode, TaskListNode:
+	case ParagraphNode, CodeBlockNode, HeadingNode, HorizontalRuleNode, BlockquoteNode, OrderedListNode, UnorderedListNode, TaskListNode, MathBlockNode:
 		return true
 	default:
 		return false

@@ -58,8 +58,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(placeholder, ",")))
 	}
-	if v := find.Pinned; v != nil {
-		where = append(where, "memo_organizer.pinned = 1")
+	if find.ExcludeComments {
+		where = append(where, "parent_id IS NULL")
 	}
 
 	orders := []string{}
@@ -80,7 +80,8 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		`memo.updated_ts AS updated_ts`,
 		`memo.row_status AS row_status`,
 		`memo.visibility AS visibility`,
-		`CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END AS pinned`,
+		`memo_organizer.pinned AS pinned`,
+		`memo_relation.related_memo_id AS parent_id`,
 	}
 	if !find.ExcludeContent {
 		fields = append(fields, `memo.content AS content`)
@@ -88,9 +89,9 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 
 	query := `SELECT ` + strings.Join(fields, ", ") + `
 		FROM memo
-		LEFT JOIN memo_organizer ON memo.id = memo_organizer.memo_id
+		LEFT JOIN memo_organizer ON memo.id = memo_organizer.memo_id AND memo.creator_id = memo_organizer.user_id
+		FULL JOIN memo_relation ON memo.id = memo_relation.memo_id AND memo_relation.type = "COMMENT"
 		WHERE ` + strings.Join(where, " AND ") + `
-		GROUP BY memo.id
 		ORDER BY ` + strings.Join(orders, ", ")
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
@@ -108,6 +109,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	list := make([]*store.Memo, 0)
 	for rows.Next() {
 		var memo store.Memo
+		pinned := sql.NullBool{}
 		dests := []any{
 			&memo.ID,
 			&memo.CreatorID,
@@ -115,13 +117,17 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.UpdatedTs,
 			&memo.RowStatus,
 			&memo.Visibility,
-			&memo.Pinned,
+			&pinned,
+			&memo.ParentID,
 		}
 		if !find.ExcludeContent {
 			dests = append(dests, &memo.Content)
 		}
 		if err := rows.Scan(dests...); err != nil {
 			return nil, err
+		}
+		if pinned.Valid {
+			memo.Pinned = pinned.Bool
 		}
 		list = append(list, &memo)
 	}

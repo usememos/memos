@@ -16,13 +16,19 @@ import (
 
 	apiv1 "github.com/usememos/memos/api/v1"
 	"github.com/usememos/memos/internal/log"
+	"github.com/usememos/memos/plugin/gomark/ast"
 	"github.com/usememos/memos/plugin/gomark/parser"
 	"github.com/usememos/memos/plugin/gomark/parser/tokenizer"
+	"github.com/usememos/memos/plugin/gomark/restore"
 	"github.com/usememos/memos/plugin/webhook"
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	storepb "github.com/usememos/memos/proto/gen/store"
 	"github.com/usememos/memos/server/service/metric"
 	"github.com/usememos/memos/store"
+)
+
+const (
+	MaxContentLength = 8 * 1024
 )
 
 func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMemoRequest) (*apiv2pb.CreateMemoResponse, error) {
@@ -32,6 +38,14 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 	}
 	if user == nil {
 		return nil, status.Errorf(codes.PermissionDenied, "permission denied")
+	}
+	if len(request.Content) > MaxContentLength {
+		return nil, status.Errorf(codes.InvalidArgument, "content too long")
+	}
+
+	nodes, err := parser.Parse(tokenizer.Tokenize(request.Content))
+	if err != nil {
+		return nil, errors.Wrap(err, "failed to parse memo content")
 	}
 
 	create := &store.Memo{
@@ -44,6 +58,18 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 		return nil, err
 	}
 	metric.Enqueue("memo create")
+
+	// Dynamically upsert tags from memo content.
+	traverseASTNodes(nodes, func(node ast.Node) {
+		if tag, ok := node.(*ast.Tag); ok {
+			if _, err := s.Store.UpsertTag(ctx, &store.Tag{
+				Name:      tag.Content,
+				CreatorID: user.ID,
+			}); err != nil {
+				log.Warn("Failed to create tag", zap.Error(err))
+			}
+		}
+	})
 
 	memoMessage, err := s.convertMemoFromStore(ctx, memo)
 	if err != nil {
@@ -61,7 +87,10 @@ func (s *APIV2Service) CreateMemo(ctx context.Context, request *apiv2pb.CreateMe
 }
 
 func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemosRequest) (*apiv2pb.ListMemosResponse, error) {
-	memoFind := &store.FindMemo{}
+	memoFind := &store.FindMemo{
+		// Exclude comments by default.
+		ExcludeComments: true,
+	}
 	if request.Filter != "" {
 		filter, err := parseListMemosFilter(request.Filter)
 		if err != nil {
@@ -110,6 +139,14 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 	}
 	if user != nil && memoFind.CreatorID != nil && *memoFind.CreatorID != user.ID {
 		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
+	}
+
+	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+	}
+	if memoDisplayWithUpdatedTs {
+		memoFind.OrderByUpdatedTs = true
 	}
 
 	if request.Limit != 0 {
@@ -198,6 +235,26 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 	for _, path := range request.UpdateMask.Paths {
 		if path == "content" {
 			update.Content = &request.Memo.Content
+			nodes, err := parser.Parse(tokenizer.Tokenize(*update.Content))
+			if err != nil {
+				return nil, errors.Wrap(err, "failed to parse memo content")
+			}
+
+			// Dynamically upsert tags from memo content.
+			traverseASTNodes(nodes, func(node ast.Node) {
+				if tag, ok := node.(*ast.Tag); ok {
+					if _, err := s.Store.UpsertTag(ctx, &store.Tag{
+						Name:      tag.Content,
+						CreatorID: user.ID,
+					}); err != nil {
+						log.Warn("Failed to create tag", zap.Error(err))
+					}
+				}
+			})
+		} else if path == "nodes" {
+			nodes := convertToASTNodes(request.Memo.Nodes)
+			content := restore.Restore(nodes)
+			update.Content = &content
 		} else if path == "visibility" {
 			visibility := convertVisibilityToStore(request.Memo.Visibility)
 			update.Visibility = &visibility
@@ -217,6 +274,9 @@ func (s *APIV2Service) UpdateMemo(ctx context.Context, request *apiv2pb.UpdateMe
 				return nil, status.Errorf(codes.Internal, "failed to upsert memo organizer")
 			}
 		}
+	}
+	if update.Content != nil && len(*update.Content) > MaxContentLength {
+		return nil, status.Errorf(codes.InvalidArgument, "content too long")
 	}
 
 	if err = s.Store.UpdateMemo(ctx, update); err != nil {
@@ -290,7 +350,7 @@ func (s *APIV2Service) CreateMemoComment(ctx context.Context, request *apiv2pb.C
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to create memo relation")
 	}
-	if memo.Visibility != apiv2pb.Visibility_PRIVATE {
+	if memo.Visibility != apiv2pb.Visibility_PRIVATE && memo.CreatorId != relatedMemo.CreatorID {
 		activity, err := s.Store.CreateActivity(ctx, &store.Activity{
 			CreatorID: memo.CreatorId,
 			Type:      store.ActivityTypeMemoComment,
@@ -372,10 +432,13 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 	if user == nil {
 		return nil, status.Errorf(codes.NotFound, "user not found")
 	}
+
 	normalRowStatus := store.Normal
 	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
-		CreatorID: &user.ID,
-		RowStatus: &normalRowStatus,
+		CreatorID:       &user.ID,
+		RowStatus:       &normalRowStatus,
+		ExcludeComments: true,
+		ExcludeContent:  true,
 	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memos")
@@ -429,6 +492,7 @@ func (s *APIV2Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		Nodes:       convertFromASTNodes(rawNodes),
 		Visibility:  convertVisibilityFromStore(memo.Visibility),
 		Pinned:      memo.Pinned,
+		ParentId:    memo.ParentID,
 		Relations:   listMemoRelationsResponse.Relations,
 		Resources:   listMemoResourcesResponse.Resources,
 	}, nil

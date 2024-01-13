@@ -37,6 +37,7 @@ var defaultBlockParsers = []BlockParser{
 	NewTaskListParser(),
 	NewUnorderedListParser(),
 	NewOrderedListParser(),
+	NewMathBlockParser(),
 	NewParagraphParser(),
 	NewLineBreakParser(),
 }
@@ -48,7 +49,6 @@ func ParseBlock(tokens []*tokenizer.Token) ([]ast.Node, error) {
 func ParseBlockWithParsers(tokens []*tokenizer.Token, blockParsers []BlockParser) ([]ast.Node, error) {
 	nodes := []ast.Node{}
 	var prevNode ast.Node
-	var skipNextLineBreakFlag bool
 	for len(tokens) > 0 {
 		for _, blockParser := range blockParsers {
 			size, matched := blockParser.Match(tokens)
@@ -58,21 +58,12 @@ func ParseBlockWithParsers(tokens []*tokenizer.Token, blockParsers []BlockParser
 					return nil, errors.New("parse error")
 				}
 
-				if node.Type() == ast.LineBreakNode && skipNextLineBreakFlag {
-					if prevNode != nil && ast.IsBlockNode(prevNode) {
-						tokens = tokens[size:]
-						skipNextLineBreakFlag = false
-						break
-					}
-				}
-
 				tokens = tokens[size:]
 				if prevNode != nil {
 					prevNode.SetNextSibling(node)
 					node.SetPrevSibling(prevNode)
 				}
 				prevNode = node
-				skipNextLineBreakFlag = true
 				nodes = append(nodes, node)
 				break
 			}
@@ -90,6 +81,7 @@ var defaultInlineParsers = []InlineParser{
 	NewBoldParser(),
 	NewItalicParser(),
 	NewCodeParser(),
+	NewMathParser(),
 	NewTagParser(),
 	NewStrikethroughParser(),
 	NewLineBreakParser(),

@@ -72,8 +72,19 @@ func (r *StringRenderer) RenderNode(node ast.Node) {
 
 // RenderNodes renders a slice of AST nodes to raw string.
 func (r *StringRenderer) RenderNodes(nodes []ast.Node) {
+	var prevNode ast.Node
+	var skipNextLineBreakFlag bool
 	for _, node := range nodes {
+		if node.Type() == ast.LineBreakNode && skipNextLineBreakFlag {
+			if prevNode != nil && ast.IsBlockNode(prevNode) {
+				skipNextLineBreakFlag = false
+				continue
+			}
+		}
+
 		r.RenderNode(node)
+		prevNode = node
+		skipNextLineBreakFlag = true
 	}
 }
 

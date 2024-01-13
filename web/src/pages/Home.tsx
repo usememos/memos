@@ -1,8 +1,10 @@
+import { Button } from "@mui/joy";
 import classNames from "classnames";
 import { useEffect, useState } from "react";
 import Empty from "@/components/Empty";
 import HomeSidebar from "@/components/HomeSidebar";
 import HomeSidebarDrawer from "@/components/HomeSidebarDrawer";
+import Icon from "@/components/Icon";
 import MemoEditor from "@/components/MemoEditor";
 import MemoFilter from "@/components/MemoFilter";
 import MemoView from "@/components/MemoView";
@@ -13,6 +15,7 @@ import useCurrentUser from "@/hooks/useCurrentUser";
 import useResponsiveWidth from "@/hooks/useResponsiveWidth";
 import { useFilterStore } from "@/store/module";
 import { useMemoList, useMemoStore } from "@/store/v1";
+import { RowStatus } from "@/types/proto/api/v2/common";
 import { useTranslate } from "@/utils/i18n";
 
 const Home = () => {
@@ -26,6 +29,7 @@ const Home = () => {
   const [isComplete, setIsComplete] = useState(false);
   const { tag: tagQuery, text: textQuery } = filterStore.state;
   const sortedMemos = memoList.value
+    .filter((memo) => memo.rowStatus === RowStatus.ACTIVE)
     .sort((a, b) => getTimeStampByDate(b.displayTime) - getTimeStampByDate(a.displayTime))
     .sort((a, b) => Number(b.pinned) - Number(a.pinned));
 
@@ -57,18 +61,22 @@ const Home = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl flex flex-row justify-center items-start">
-      <div className={classNames("w-full sm:pt-3 md:pt-6", md && "max-w-[calc(100%-14rem)]")}>
-        <MobileHeader>{!md && <HomeSidebarDrawer />}</MobileHeader>
-        <div className="w-full px-4 sm:px-6 md:pr-2">
+    <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
+      {!md && (
+        <MobileHeader>
+          <HomeSidebarDrawer />
+        </MobileHeader>
+      )}
+      <div className={classNames("w-full flex flex-row justify-start items-start px-4 sm:px-6 gap-6")}>
+        <div className="w-full">
           <MemoEditor className="mb-2" cacheKey="home-memo-editor" />
-          <div className="flex flex-col justify-start items-start w-full max-w-full overflow-y-scroll pb-28 hide-scrollbar">
+          <div className="flex flex-col justify-start items-start w-full max-w-full pb-28">
             <MemoFilter />
             {sortedMemos.map((memo) => (
               <MemoView key={`${memo.id}-${memo.updateTime}`} memo={memo} showVisibility showPinnedStyle showParent />
             ))}
             {isRequesting ? (
-              <div className="flex flex-col justify-start items-center w-full my-8">
+              <div className="flex flex-col justify-start items-center w-full my-4">
                 <p className="text-sm text-gray-400 italic">{t("memo.fetching-data")}</p>
               </div>
             ) : isComplete ? (
@@ -79,21 +87,21 @@ const Home = () => {
                 </div>
               )
             ) : (
-              <div className="w-full flex flex-row justify-center items-center my-2">
-                <span className="cursor-pointer text-sm italic text-gray-500  hover:text-green-600" onClick={fetchMemos}>
+              <div className="w-full flex flex-row justify-center items-center my-4">
+                <Button variant="plain" endDecorator={<Icon.ArrowDown className="w-5 h-auto" />} onClick={fetchMemos}>
                   {t("memo.fetch-more")}
-                </span>
+                </Button>
               </div>
             )}
           </div>
         </div>
+        {md && (
+          <div className="sticky top-0 left-0 shrink-0 -mt-6 w-56 h-full">
+            <HomeSidebar className="py-6" />
+          </div>
+        )}
       </div>
-      {md && (
-        <div className="sticky top-0 left-0 shrink-0 w-56 h-full">
-          <HomeSidebar />
-        </div>
-      )}
-    </div>
+    </section>
   );
 };
 

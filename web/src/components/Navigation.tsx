@@ -15,7 +15,11 @@ interface NavLinkItem {
   icon: React.ReactNode;
 }
 
-const Navigation = () => {
+interface Props {
+  className?: string;
+}
+
+const Navigation = (props: Props) => {
   const t = useTranslate();
   const user = useCurrentUser();
   const inboxStore = useInboxStore();
@@ -55,6 +59,18 @@ const Navigation = () => {
     title: t("common.resources"),
     icon: <Icon.Paperclip className="mr-3 w-6 h-auto opacity-70" />,
   };
+  const exploreNavLink: NavLinkItem = {
+    id: "header-explore",
+    path: "/explore",
+    title: t("common.explore"),
+    icon: <Icon.Globe2 className="mr-3 w-6 h-auto opacity-70" />,
+  };
+  const profileNavLink: NavLinkItem = {
+    id: "header-profile",
+    path: user ? `/u/${encodeURIComponent(user.username)}` : "",
+    title: t("common.profile"),
+    icon: <Icon.User2 className="mr-3 w-6 h-auto opacity-70" />,
+  };
   const inboxNavLink: NavLinkItem = {
     id: "header-inbox",
     path: "/inbox",
@@ -67,12 +83,6 @@ const Navigation = () => {
         </div>
       </>
     ),
-  };
-  const exploreNavLink: NavLinkItem = {
-    id: "header-explore",
-    path: "/explore",
-    title: t("common.explore"),
-    icon: <Icon.Globe2 className="mr-3 w-6 h-auto opacity-70" />,
   };
   const archivedNavLink: NavLinkItem = {
     id: "header-archived",
@@ -92,21 +102,32 @@ const Navigation = () => {
     title: t("common.sign-in"),
     icon: <Icon.LogIn className="mr-3 w-6 h-auto opacity-70" />,
   };
+  const aboutNavLink: NavLinkItem = {
+    id: "header-about",
+    path: "/about",
+    title: t("common.about"),
+    icon: <Icon.Smile className="mr-3 w-6 h-auto opacity-70" />,
+  };
 
   const navLinks: NavLinkItem[] = user
-    ? [homeNavLink, timelineNavLink, resourcesNavLink, exploreNavLink, inboxNavLink, archivedNavLink, settingNavLink]
-    : [exploreNavLink, signInNavLink];
+    ? [homeNavLink, timelineNavLink, resourcesNavLink, exploreNavLink, profileNavLink, inboxNavLink, archivedNavLink, settingNavLink]
+    : [exploreNavLink, signInNavLink, aboutNavLink];
 
   return (
-    <header className="w-full h-full overflow-auto flex flex-col justify-start items-start py-4 md:pt-6 z-30">
+    <header
+      className={classNames(
+        "w-full h-full overflow-auto flex flex-col justify-start items-start py-4 md:pt-6 z-30 hide-scrollbar",
+        props.className
+      )}
+    >
       <UserBanner />
       <div className="w-full px-1 py-2 flex flex-col justify-start items-start shrink-0 space-y-2">
         {navLinks.map((navLink) => (
           <NavLink
             className={({ isActive }) =>
               classNames(
-                "w-full px-4 pr-5 py-2 rounded-2xl border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-600 dark:hover:bg-zinc-700",
-                isActive ? "bg-white drop-shadow-sm dark:bg-zinc-700 border-gray-200 dark:border-zinc-600" : "border-transparent"
+                "w-full px-4 pr-5 py-2 rounded-2xl border flex flex-row items-center text-lg text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-700 dark:hover:bg-zinc-800",
+                isActive ? "bg-white drop-shadow-sm dark:bg-zinc-800 border-gray-200 dark:border-zinc-700" : "border-transparent"
               )
             }
             key={navLink.id}

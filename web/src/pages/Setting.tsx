@@ -9,9 +9,9 @@ import SSOSection from "@/components/Settings/SSOSection";
 import StorageSection from "@/components/Settings/StorageSection";
 import SystemSection from "@/components/Settings/SystemSection";
 import useCurrentUser from "@/hooks/useCurrentUser";
+import { useGlobalStore } from "@/store/module";
 import { User_Role } from "@/types/proto/api/v2/user_service";
 import { useTranslate } from "@/utils/i18n";
-import "@/less/setting.less";
 
 type SettingSection = "my-account" | "preference" | "member" | "system" | "storage" | "sso";
 
@@ -22,6 +22,7 @@ interface State {
 const Setting = () => {
   const t = useTranslate();
   const user = useCurrentUser();
+  const globalStore = useGlobalStore();
   const [state, setState] = useState<State>({
     selectedSection: "my-account",
   });
@@ -45,58 +46,71 @@ const Setting = () => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
       <div className="w-full px-4 sm:px-6">
-        <div className="setting-page-wrapper">
-          <div className="section-selector-container">
-            <span className="section-title">{t("common.basic")}</span>
-            <div className="section-items-container">
+        <div className="w-full shadow flex flex-row justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-gray-600 dark:text-gray-400">
+          <div className="hidden sm:flex flex-col justify-start items-start w-40 h-auto shrink-0 py-2">
+            <span className="text-sm mt-0.5 pl-3 font-mono text-gray-400 dark:text-gray-500">{t("common.basic")}</span>
+            <div className="w-full flex flex-col justify-start items-start mt-1">
               <span
+                className={`w-auto px-3 leading-8 flex flex-row justify-start items-center cursor-pointer rounded-lg hover:opacity-80 ${
+                  state.selectedSection === "my-account" ? "bg-zinc-100 shadow dark:bg-zinc-900" : ""
+                }`}
                 onClick={() => handleSectionSelectorItemClick("my-account")}
-                className={`section-item ${state.selectedSection === "my-account" ? "selected" : ""}`}
               >
                 <Icon.User className="w-4 h-auto mr-2 opacity-80" /> {t("setting.my-account")}
               </span>
               <span
+                className={`w-auto px-3 leading-8 flex flex-row justify-start items-center cursor-pointer rounded-lg hover:opacity-80 ${
+                  state.selectedSection === "preference" ? "bg-zinc-100 shadow dark:bg-zinc-900" : ""
+                }`}
                 onClick={() => handleSectionSelectorItemClick("preference")}
-                className={`section-item ${state.selectedSection === "preference" ? "selected" : ""}`}
               >
                 <Icon.Cog className="w-4 h-auto mr-2 opacity-80" /> {t("setting.preference")}
               </span>
             </div>
             {isHost ? (
               <>
-                <span className="section-title">{t("common.admin")}</span>
-                <div className="section-items-container">
+                <span className="text-sm mt-4 pl-3 font-mono text-gray-400 dark:text-gray-500">{t("common.admin")}</span>
+                <div className="w-full flex flex-col justify-start items-start mt-1">
                   <span
                     onClick={() => handleSectionSelectorItemClick("member")}
-                    className={`section-item ${state.selectedSection === "member" ? "selected" : ""}`}
+                    className={`w-auto px-3 leading-8 flex flex-row justify-start items-center cursor-pointer rounded-lg hover:opacity-80 ${
+                      state.selectedSection === "member" ? "bg-zinc-100 shadow dark:bg-zinc-900" : ""
+                    }`}
                   >
                     <Icon.Users className="w-4 h-auto mr-2 opacity-80" /> {t("setting.member")}
                   </span>
                   <span
                     onClick={() => handleSectionSelectorItemClick("system")}
-                    className={`section-item ${state.selectedSection === "system" ? "selected" : ""}`}
+                    className={`w-auto px-3 leading-8 flex flex-row justify-start items-center cursor-pointer rounded-lg hover:opacity-80 ${
+                      state.selectedSection === "system" ? "bg-zinc-100 shadow dark:bg-zinc-900" : ""
+                    }`}
                   >
                     <Icon.Settings2 className="w-4 h-auto mr-2 opacity-80" /> {t("setting.system")}
                   </span>
                   <span
                     onClick={() => handleSectionSelectorItemClick("storage")}
-                    className={`section-item ${state.selectedSection === "storage" ? "selected" : ""}`}
+                    className={`w-auto px-3 leading-8 flex flex-row justify-start items-center cursor-pointer rounded-lg hover:opacity-80 ${
+                      state.selectedSection === "storage" ? "bg-zinc-100 shadow dark:bg-zinc-900" : ""
+                    }`}
                   >
                     <Icon.Database className="w-4 h-auto mr-2 opacity-80" /> {t("setting.storage")}
                   </span>
                   <span
                     onClick={() => handleSectionSelectorItemClick("sso")}
-                    className={`section-item ${state.selectedSection === "sso" ? "selected" : ""}`}
+                    className={`w-auto px-3 leading-8 flex flex-row justify-start items-center cursor-pointer rounded-lg hover:opacity-80 ${
+                      state.selectedSection === "sso" ? "bg-zinc-100 shadow dark:bg-zinc-900" : ""
+                    }`}
                   >
                     <Icon.Key className="w-4 h-auto mr-2 opacity-80" /> {t("setting.sso")}
                   </span>
+                  <span className="px-3 mt-2 opacity-70 text-sm">Version: v{globalStore.state.systemStatus.profile.version}</span>
                 </div>
               </>
             ) : null}
           </div>
-          <div className="section-content-container sm:max-w-[calc(100%-12rem)]">
+          <div className="w-full grow sm:pl-4 overflow-x-auto">
             <Select
-              className="block mb-2 sm:!hidden"
+              className="block my-2 sm:!hidden"
               value={state.selectedSection}
               onChange={(_, value) => handleSectionSelectorItemClick(value as SettingSection)}
             >

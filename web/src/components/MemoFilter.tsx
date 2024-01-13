@@ -18,14 +18,14 @@ const MemoFilter = () => {
 
   return (
     <div
-      className={`flex flex-row justify-start items-start w-full flex-wrap px-2 pb-2 text-sm font-mono leading-7 dark:text-gray-300 ${
+      className={`flex flex-row justify-start items-start w-full flex-wrap px-2 pb-2 text-sm font-mono leading-7 dark:text-gray-400 ${
         showFilter ? "" : "!hidden"
       }`}
     >
       <span className="mx-2 text-gray-400">{t("common.filter")}:</span>
       <div
         className={
-          "max-w-xs flex flex-row justify-start items-center px-2 mr-2 cursor-pointer dark:text-gray-300 bg-gray-200 dark:bg-zinc-700 rounded whitespace-nowrap truncate hover:line-through " +
+          "max-w-xs flex flex-row justify-start items-center px-2 mr-2 cursor-pointer dark:text-gray-400 bg-gray-200 dark:bg-zinc-800 rounded whitespace-nowrap truncate hover:line-through " +
           (tagQuery ? "" : "!hidden")
         }
         onClick={() => {
@@ -37,7 +37,7 @@ const MemoFilter = () => {
       </div>
       <div
         className={
-          "max-w-xs flex flex-row justify-start items-center px-2 mr-2 cursor-pointer dark:text-gray-300 bg-gray-200 dark:bg-zinc-700 rounded whitespace-nowrap truncate hover:line-through " +
+          "max-w-xs flex flex-row justify-start items-center px-2 mr-2 cursor-pointer dark:text-gray-400 bg-gray-200 dark:bg-zinc-800 rounded whitespace-nowrap truncate hover:line-through " +
           (visibility ? "" : "!hidden")
         }
         onClick={() => {
@@ -49,7 +49,7 @@ const MemoFilter = () => {
       </div>
       <div
         className={
-          "max-w-xs flex flex-row justify-start items-center px-2 mr-2 cursor-pointer dark:text-gray-300 bg-gray-200 dark:bg-zinc-700 rounded whitespace-nowrap truncate hover:line-through " +
+          "max-w-xs flex flex-row justify-start items-center px-2 mr-2 cursor-pointer dark:text-gray-400 bg-gray-200 dark:bg-zinc-800 rounded whitespace-nowrap truncate hover:line-through " +
           (textQuery ? "" : "!hidden")
         }
         onClick={() => {

@@ -67,11 +67,8 @@ const MemoDetail = () => {
     }
 
     (async () => {
-      const parentMemoId = memo.relations.find(
-        (relation) => relation.memoId === memo.id && relation.type === MemoRelation_Type.COMMENT
-      )?.relatedMemoId;
-      if (parentMemoId) {
-        memoStore.getOrFetchMemoById(parentMemoId).then((memo: Memo) => {
+      if (memo.parentId) {
+        memoStore.getOrFetchMemoById(memo.parentId).then((memo: Memo) => {
           setParentMemo(memo);
         });
       } else {
@@ -115,7 +112,7 @@ const MemoDetail = () => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-center sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
       <div className="w-full px-4 sm:px-6">
-        <div className="relative flex-grow w-full min-h-full flex flex-col justify-start items-start border dark:border-zinc-700 bg-white dark:bg-zinc-700 shadow hover:shadow-xl transition-all p-4 pb-3 rounded-lg">
+        <div className="relative flex-grow w-full min-h-full flex flex-col justify-start items-start border dark:border-zinc-700 bg-white dark:bg-zinc-800 shadow hover:shadow-xl transition-all p-4 pb-3 rounded-lg">
           <div className="mb-3">
             <Link to={`/u/${encodeURIComponent(extractUsernameFromName(memo.creator))}`} unstable_viewTransition>
               <span className="w-full flex flex-row justify-start items-center">
@@ -139,7 +136,7 @@ const MemoDetail = () => {
               </Link>
             </div>
           )}
-          <MemoContent nodes={memo.nodes} />
+          <MemoContent memoId={memo.id} nodes={memo.nodes} readonly={true} />
           <MemoResourceListView resourceList={memo.resources} />
           <MemoRelationListView memo={memo} relationList={referenceRelations} />
           <div className="w-full mt-3 flex flex-row justify-between items-center gap-2">

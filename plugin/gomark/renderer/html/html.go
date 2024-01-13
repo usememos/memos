@@ -72,8 +72,19 @@ func (r *HTMLRenderer) RenderNode(node ast.Node) {
 
 // RenderNodes renders a slice of AST nodes to HTML.
 func (r *HTMLRenderer) RenderNodes(nodes []ast.Node) {
+	var prevNode ast.Node
+	var skipNextLineBreakFlag bool
 	for _, node := range nodes {
+		if node.Type() == ast.LineBreakNode && skipNextLineBreakFlag {
+			if prevNode != nil && ast.IsBlockNode(prevNode) {
+				skipNextLineBreakFlag = false
+				continue
+			}
+		}
+
 		r.RenderNode(node)
+		prevNode = node
+		skipNextLineBreakFlag = true
 	}
 }
 
@@ -111,7 +122,7 @@ func (r *HTMLRenderer) renderHorizontalRule(_ *ast.HorizontalRule) {
 }
 
 func (r *HTMLRenderer) renderBlockquote(node *ast.Blockquote) {
-	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
+	prevSibling, nextSibling := ast.FindPrevSiblingExceptLineBreak(node), ast.FindNextSiblingExceptLineBreak(node)
 	if prevSibling == nil || prevSibling.Type() != ast.BlockquoteNode {
 		r.output.WriteString("<blockquote>")
 	}
@@ -122,7 +133,7 @@ func (r *HTMLRenderer) renderBlockquote(node *ast.Blockquote) {
 }
 
 func (r *HTMLRenderer) renderTaskList(node *ast.TaskList) {
-	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
+	prevSibling, nextSibling := ast.FindPrevSiblingExceptLineBreak(node), ast.FindNextSiblingExceptLineBreak(node)
 	if prevSibling == nil || prevSibling.Type() != ast.TaskListNode {
 		r.output.WriteString("<ul>")
 	}
@@ -140,7 +151,7 @@ func (r *HTMLRenderer) renderTaskList(node *ast.TaskList) {
 }
 
 func (r *HTMLRenderer) renderUnorderedList(node *ast.UnorderedList) {
-	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
+	prevSibling, nextSibling := ast.FindPrevSiblingExceptLineBreak(node), ast.FindNextSiblingExceptLineBreak(node)
 	if prevSibling == nil || prevSibling.Type() != ast.UnorderedListNode {
 		r.output.WriteString("<ul>")
 	}
@@ -153,7 +164,7 @@ func (r *HTMLRenderer) renderUnorderedList(node *ast.UnorderedList) {
 }
 
 func (r *HTMLRenderer) renderOrderedList(node *ast.OrderedList) {
-	prevSibling, nextSibling := node.PrevSibling(), node.NextSibling()
+	prevSibling, nextSibling := ast.FindPrevSiblingExceptLineBreak(node), ast.FindNextSiblingExceptLineBreak(node)
 	if prevSibling == nil || prevSibling.Type() != ast.OrderedListNode {
 		r.output.WriteString("<ol>")
 	}

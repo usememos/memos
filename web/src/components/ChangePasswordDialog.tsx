@@ -1,4 +1,4 @@
-import { Button, Input } from "@mui/joy";
+import { Button, IconButton, Input } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import useCurrentUser from "@/hooks/useCurrentUser";
@@ -70,9 +70,9 @@ const ChangePasswordDialog: React.FC<Props> = ({ destroy }: Props) => {
     <>
       <div className="dialog-header-container !w-64">
         <p className="title-text">{t("setting.account-section.change-password")}</p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container">
         <p className="text-sm mb-1">{t("auth.new-password")}</p>

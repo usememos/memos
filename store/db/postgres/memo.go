@@ -3,128 +3,102 @@ package postgres
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"strings"
 
-	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/store"
 )
 
 func (d *DB) CreateMemo(ctx context.Context, create *store.Memo) (*store.Memo, error) {
-	// Initialize a Squirrel statement builder for PostgreSQL
-	builder := squirrel.Insert("memo").
-		PlaceholderFormat(squirrel.Dollar).
-		Columns("creator_id", "content", "visibility")
+	fields := []string{"creator_id", "content", "visibility"}
+	args := []any{create.CreatorID, create.Content, create.Visibility}
 
-	// Add initial values for the columns
-	values := []any{create.CreatorID, create.Content, create.Visibility}
-
-	// Add all the values at once
-	builder = builder.Values(values...)
-
-	// Add the RETURNING clause to get the ID of the inserted row
-	builder = builder.Suffix("RETURNING id")
-
-	// Prepare and execute the query
-	query, args, err := builder.ToSql()
-	if err != nil {
+	stmt := "INSERT INTO memo (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id, created_ts, updated_ts, row_status"
+	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+		&create.ID,
+		&create.CreatedTs,
+		&create.UpdatedTs,
+		&create.RowStatus,
+	); err != nil {
 		return nil, err
 	}
 
-	var id int32
-	err = d.db.QueryRowContext(ctx, query, args...).Scan(&id)
-	if err != nil {
-		return nil, err
-	}
-
-	// Retrieve the newly created memo
-	memo, err := d.GetMemo(ctx, &store.FindMemo{ID: &id})
-	if err != nil {
-		return nil, err
-	}
-	if memo == nil {
-		return nil, errors.Errorf("failed to create memo")
-	}
-
-	return memo, nil
+	return create, nil
 }
 
 func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo, error) {
-	// Start building the SELECT statement
-	builder := squirrel.Select(
-		"memo.id AS id",
-		"memo.creator_id AS creator_id",
-		"memo.created_ts AS created_ts",
-		"memo.updated_ts AS updated_ts",
-		"memo.row_status AS row_status",
-		"memo.content AS content",
-		"memo.visibility AS visibility",
-		"MAX(CASE WHEN memo_organizer.pinned = 1 THEN 1 ELSE 0 END) AS pinned").
-		From("memo").
-		LeftJoin("memo_organizer ON memo.id = memo_organizer.memo_id").
-		LeftJoin("resource ON memo.id = resource.memo_id").
-		GroupBy("memo.id").
-		PlaceholderFormat(squirrel.Dollar)
+	where, args := []string{"1 = 1"}, []any{}
 
-	// Add conditional where clauses
 	if v := find.ID; v != nil {
-		builder = builder.Where("memo.id = ?", *v)
+		where, args = append(where, "memo.id = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := find.CreatorID; v != nil {
-		builder = builder.Where("memo.creator_id = ?", *v)
+		where, args = append(where, "memo.creator_id = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := find.RowStatus; v != nil {
-		builder = builder.Where("memo.row_status = ?", *v)
+		where, args = append(where, "memo.row_status = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := find.CreatedTsBefore; v != nil {
-		builder = builder.Where("memo.created_ts < ?", *v)
+		where, args = append(where, "memo.created_ts < "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := find.CreatedTsAfter; v != nil {
-		builder = builder.Where("memo.created_ts > ?", *v)
-	}
-	if v := find.Pinned; v != nil {
-		builder = builder.Where("memo_organizer.pinned = 1")
+		where, args = append(where, "memo.created_ts > "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := find.ContentSearch; len(v) != 0 {
 		for _, s := range v {
-			builder = builder.Where("memo.content LIKE ?", "%"+s+"%")
+			where, args = append(where, "memo.content LIKE "+placeholder(len(args)+1)), append(args, fmt.Sprintf("%%%s%%", s))
 		}
+	}
+	if v := find.VisibilityList; len(v) != 0 {
+		holders := []string{}
+		for _, visibility := range v {
+			holders = append(holders, placeholder(len(args)+1))
+			args = append(args, visibility.String())
+		}
+		where = append(where, fmt.Sprintf("memo.visibility in (%s)", strings.Join(holders, ", ")))
+	}
+	if find.ExcludeComments {
+		where = append(where, "memo_relation.related_memo_id IS NULL")
 	}
 
-	if v := find.VisibilityList; len(v) != 0 {
-		placeholders := make([]string, len(v))
-		args := make([]any, len(v))
-		for i, visibility := range v {
-			placeholders[i] = "?"
-			args[i] = visibility // Assuming visibility can be directly used as an argument
-		}
-		inClause := strings.Join(placeholders, ",")
-		builder = builder.Where("memo.visibility IN ("+inClause+")", args...)
-	}
-	// Add order by clauses
+	orders := []string{}
 	if find.OrderByPinned {
-		builder = builder.OrderBy("pinned DESC")
+		orders = append(orders, "pinned DESC")
 	}
 	if find.OrderByUpdatedTs {
-		builder = builder.OrderBy("updated_ts DESC")
+		orders = append(orders, "updated_ts DESC")
 	} else {
-		builder = builder.OrderBy("created_ts DESC")
+		orders = append(orders, "created_ts DESC")
 	}
-	builder = builder.OrderBy("id DESC")
+	orders = append(orders, "id DESC")
 
-	// Handle pagination
+	fields := []string{
+		`memo.id AS id`,
+		`memo.creator_id AS creator_id`,
+		`memo.created_ts AS created_ts`,
+		`memo.updated_ts AS updated_ts`,
+		`memo.row_status AS row_status`,
+		`memo.visibility AS visibility`,
+		`memo_organizer.pinned AS pinned`,
+		`memo_relation.related_memo_id AS parent_id`,
+	}
+	if !find.ExcludeContent {
+		fields = append(fields, `memo.content AS content`)
+	}
+
+	query := `SELECT ` + strings.Join(fields, ", ") + `
+		FROM memo
+		FULl JOIN memo_organizer ON memo.id = memo_organizer.memo_id AND memo.creator_id = memo_organizer.user_id
+		FULL JOIN memo_relation ON memo.id = memo_relation.memo_id AND memo_relation.type = 'COMMENT'
+		WHERE ` + strings.Join(where, " AND ") + `
+		ORDER BY ` + strings.Join(orders, ", ")
 	if find.Limit != nil {
-		builder = builder.Limit(uint64(*find.Limit))
+		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {
-			builder = builder.Offset(uint64(*find.Offset))
+			query = fmt.Sprintf("%s OFFSET %d", query, *find.Offset)
 		}
-	}
-
-	// Prepare and execute the query
-	query, args, err := builder.ToSql()
-	if err != nil {
-		return nil, err
 	}
 
 	rows, err := d.db.QueryContext(ctx, query, args...)
@@ -133,23 +107,29 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	}
 	defer rows.Close()
 
-	// Process the result set
 	list := make([]*store.Memo, 0)
 	for rows.Next() {
 		var memo store.Memo
-		if err := rows.Scan(
+		pinned := sql.NullBool{}
+		dests := []any{
 			&memo.ID,
 			&memo.CreatorID,
 			&memo.CreatedTs,
 			&memo.UpdatedTs,
 			&memo.RowStatus,
-			&memo.Content,
 			&memo.Visibility,
-			&memo.Pinned,
-		); err != nil {
+			&pinned,
+			&memo.ParentID,
+		}
+		if !find.ExcludeContent {
+			dests = append(dests, &memo.Content)
+		}
+		if err := rows.Scan(dests...); err != nil {
 			return nil, err
 		}
-
+		if pinned.Valid {
+			memo.Pinned = pinned.Bool
+		}
 		list = append(list, &memo)
 	}
 
@@ -174,51 +154,41 @@ func (d *DB) GetMemo(ctx context.Context, find *store.FindMemo) (*store.Memo, er
 }
 
 func (d *DB) UpdateMemo(ctx context.Context, update *store.UpdateMemo) error {
-	// Start building the update statement
-	builder := squirrel.Update("memo").
-		PlaceholderFormat(squirrel.Dollar).
-		Where("id = ?", update.ID)
-
-	// Conditionally add set clauses
+	set, args := []string{}, []any{}
 	if v := update.CreatedTs; v != nil {
-		builder = builder.Set("created_ts", *v)
+		set, args = append(set, "created_ts = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := update.UpdatedTs; v != nil {
-		builder = builder.Set("updated_ts", *v)
+		set, args = append(set, "updated_ts = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := update.RowStatus; v != nil {
-		builder = builder.Set("row_status", *v)
+		set, args = append(set, "row_status = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := update.Content; v != nil {
-		builder = builder.Set("content", *v)
+		set, args = append(set, "content = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := update.Visibility; v != nil {
-		builder = builder.Set("visibility", *v)
+		set, args = append(set, "visibility = "+placeholder(len(args)+1)), append(args, *v)
 	}
-
-	// Prepare and execute the query
-	query, args, err := builder.ToSql()
-	if err != nil {
+	stmt := `UPDATE memo SET ` + strings.Join(set, ", ") + ` WHERE id = ` + placeholder(len(args)+1)
+	args = append(args, update.ID)
+	if _, err := d.db.ExecContext(ctx, stmt, args...); err != nil {
 		return err
 	}
-
-	if _, err := d.db.ExecContext(ctx, query, args...); err != nil {
-		return err
-	}
-
 	return nil
 }
 
 func (d *DB) DeleteMemo(ctx context.Context, delete *store.DeleteMemo) error {
-	stmt := `DELETE FROM memo WHERE id = $1`
-	result, err := d.db.ExecContext(ctx, stmt, delete.ID)
+	where, args := []string{"id = " + placeholder(1)}, []any{delete.ID}
+	stmt := `DELETE FROM memo WHERE ` + strings.Join(where, " AND ")
+	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "failed to delete memo")
 	}
 	if _, err := result.RowsAffected(); err != nil {
 		return err
 	}
-	return d.Vacuum(ctx)
+	return nil
 }
 
 func vacuumMemo(ctx context.Context, tx *sql.Tx) error {

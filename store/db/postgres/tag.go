@@ -3,9 +3,7 @@ package postgres
 import (
 	"context"
 	"database/sql"
-	"fmt"
-
-	"github.com/Masterminds/squirrel"
+	"strings"
 
 	"github.com/usememos/memos/store"
 )
@@ -19,20 +17,20 @@ func (d *DB) UpsertTag(ctx context.Context, upsert *store.Tag) (*store.Tag, erro
 }
 
 func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, error) {
-	builder := squirrel.Select("name", "creator_id").From("tag").
-		Where("1 = 1").
-		OrderBy("name ASC").
-		PlaceholderFormat(squirrel.Dollar)
+	where, args := []string{"1 = 1"}, []any{}
 
 	if find.CreatorID != 0 {
-		builder = builder.Where("creator_id = ?", find.CreatorID)
+		where, args = append(where, "creator_id = "+placeholder(len(args)+1)), append(args, find.CreatorID)
 	}
 
-	query, args, err := builder.ToSql()
-	if err != nil {
-		return nil, err
-	}
-
+	query := `
+		SELECT
+			name,
+			creator_id
+		FROM tag
+		WHERE ` + strings.Join(where, " AND ") + `
+		ORDER BY name ASC
+	`
 	rows, err := d.db.QueryContext(ctx, query, args...)
 	if err != nil {
 		return nil, err
@@ -60,44 +58,24 @@ func (d *DB) ListTags(ctx context.Context, find *store.FindTag) ([]*store.Tag, e
 }
 
 func (d *DB) DeleteTag(ctx context.Context, delete *store.DeleteTag) error {
-	builder := squirrel.Delete("tag").
-		Where(squirrel.Eq{"name": delete.Name, "creator_id": delete.CreatorID}).
-		PlaceholderFormat(squirrel.Dollar)
-
-	query, args, err := builder.ToSql()
+	where, args := []string{"name = $1", "creator_id = $2"}, []any{delete.Name, delete.CreatorID}
+	stmt := `DELETE FROM tag WHERE ` + strings.Join(where, " AND ")
+	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
 	}
-
-	result, err := d.db.ExecContext(ctx, query, args...)
-	if err != nil {
-		return err
-	}
-
 	if _, err = result.RowsAffected(); err != nil {
 		return err
 	}
-
 	return nil
 }
 
 func vacuumTag(ctx context.Context, tx *sql.Tx) error {
-	// First, build the subquery for creator_id
-	subQuery, subArgs, err := squirrel.Select("id").From(`"user"`).PlaceholderFormat(squirrel.Dollar).ToSql()
+	stmt := `DELETE FROM tag WHERE creator_id NOT IN (SELECT id FROM "user")`
+	_, err := tx.ExecContext(ctx, stmt)
 	if err != nil {
 		return err
 	}
 
-	// Now, build the main delete query using the subquery
-	query, args, err := squirrel.Delete("tag").
-		Where(fmt.Sprintf("creator_id NOT IN (%s)", subQuery), subArgs...).
-		PlaceholderFormat(squirrel.Dollar).
-		ToSql()
-	if err != nil {
-		return err
-	}
-
-	// Execute the query
-	_, err = tx.ExecContext(ctx, query, args...)
-	return err
+	return nil
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"net/url"
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/pkg/errors"
@@ -23,9 +24,13 @@ func NewDB(profile *profile.Profile) (store.Driver, error) {
 	// Open MySQL connection with parameter.
 	// multiStatements=true is required for migration.
 	// See more in: https://github.com/go-sql-driver/mysql#multistatements
-	dsn := fmt.Sprintf("%s?multiStatements=true", profile.DSN)
+	dsn, err := mergeDSNWithParams(profile.DSN, map[string]string{
+		"multiStatements": "true",
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	var err error
 	driver := DB{profile: profile}
 	driver.config, err = mysql.ParseDSN(dsn)
 	if err != nil {
@@ -67,6 +72,9 @@ func (d *DB) Vacuum(ctx context.Context) error {
 	if err := vacuumMemoRelations(ctx, tx); err != nil {
 		return err
 	}
+	if err := vacuumInbox(ctx, tx); err != nil {
+		return err
+	}
 	if err := vacuumTag(ctx, tx); err != nil {
 		// Prevent revive warning.
 		return err
@@ -103,4 +111,18 @@ func (d *DB) GetCurrentDBSize(ctx context.Context) (int64, error) {
 
 func (d *DB) Close() error {
 	return d.db.Close()
+}
+
+func mergeDSNWithParams(baseDSN string, params map[string]string) (string, error) {
+	parsedDSN, err := url.Parse(baseDSN)
+	if err != nil {
+		return "", errors.Wrapf(err, "failed to parse DSN: %s", baseDSN)
+	}
+
+	existingParams := parsedDSN.Query()
+	for key, value := range params {
+		existingParams.Add(key, value)
+	}
+	parsedDSN.RawQuery = existingParams.Encode()
+	return parsedDSN.String(), nil
 }

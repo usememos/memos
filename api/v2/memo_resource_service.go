@@ -2,6 +2,8 @@ package v2
 
 import (
 	"context"
+	"slices"
+	"time"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -11,7 +13,9 @@ import (
 )
 
 func (s *APIV2Service) SetMemoResources(ctx context.Context, request *apiv2pb.SetMemoResourcesRequest) (*apiv2pb.SetMemoResourcesResponse, error) {
-	resources, err := s.Store.ListResources(ctx, &store.FindResource{MemoID: &request.Id})
+	resources, err := s.Store.ListResources(ctx, &store.FindResource{
+		MemoID: &request.Id,
+	})
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list resources")
 	}
@@ -35,11 +39,14 @@ func (s *APIV2Service) SetMemoResources(ctx context.Context, request *apiv2pb.Se
 		}
 	}
 
+	slices.Reverse(request.Resources)
 	// Update resources' memo_id in the request.
-	for _, resource := range request.Resources {
+	for index, resource := range request.Resources {
+		updatedTs := time.Now().Unix() + int64(index)
 		if _, err := s.Store.UpdateResource(ctx, &store.UpdateResource{
-			ID:     resource.Id,
-			MemoID: &request.Id,
+			ID:        resource.Id,
+			MemoID:    &request.Id,
+			UpdatedTs: &updatedTs,
 		}); err != nil {
 			return nil, status.Errorf(codes.Internal, "failed to update resource")
 		}

@@ -24,7 +24,7 @@ func (d *DB) CreateActivity(ctx context.Context, create *store.Activity) (*store
 	placeholder := []string{"?", "?", "?", "?"}
 	args := []any{create.CreatorID, create.Type.String(), create.Level.String(), payloadString}
 
-	stmt := "INSERT INTO activity (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
+	stmt := "INSERT INTO `activity` (" + strings.Join(fields, ", ") + ") VALUES (" + strings.Join(placeholder, ", ") + ")"
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return nil, errors.Wrap(err, "failed to execute statement")

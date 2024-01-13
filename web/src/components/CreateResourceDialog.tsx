@@ -1,4 +1,4 @@
-import { Autocomplete, Button, Input, List, ListItem, Option, Select, Typography } from "@mui/joy";
+import { Autocomplete, Button, IconButton, Input, List, ListItem, Option, Select, Typography } from "@mui/joy";
 import React, { useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { Resource } from "@/types/proto/api/v2/resource_service";
@@ -180,9 +180,9 @@ const CreateResourceDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">{t("resource.create-dialog.title")}</p>
-        <button className="btn close-btn" onClick={handleCloseDialog}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseDialog}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container !w-80">
         <Typography className="!mb-1" level="body-md">

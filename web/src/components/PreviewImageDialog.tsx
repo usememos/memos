@@ -128,6 +128,8 @@ const PreviewImageDialog: React.FC<Props> = ({ destroy, imgUrls, initialIndex }:
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           onWheel={handleImgContainerScroll}
+          decoding="async"
+          loading="lazy"
         />
       </div>
     </>

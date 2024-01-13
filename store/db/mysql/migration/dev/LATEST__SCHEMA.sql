@@ -1,19 +1,3 @@
--- drop all tables first
-DROP TABLE IF EXISTS `migration_history`;
-DROP TABLE IF EXISTS `system_setting`;
-DROP TABLE IF EXISTS `user`;
-DROP TABLE IF EXISTS `user_setting`;
-DROP TABLE IF EXISTS `memo`;
-DROP TABLE IF EXISTS `memo_organizer`;
-DROP TABLE IF EXISTS `memo_relation`;
-DROP TABLE IF EXISTS `resource`;
-DROP TABLE IF EXISTS `tag`;
-DROP TABLE IF EXISTS `activity`;
-DROP TABLE IF EXISTS `storage`;
-DROP TABLE IF EXISTS `idp`;
-DROP TABLE IF EXISTS `inbox`;
-DROP TABLE IF EXISTS `webhook`;
-
 -- migration_history
 CREATE TABLE `migration_history` (
   `version` VARCHAR(256) NOT NULL PRIMARY KEY,

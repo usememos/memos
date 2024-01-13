@@ -34,17 +34,19 @@ enum NodeType {
   ORDERED_LIST = 7;
   UNORDERED_LIST = 8;
   TASK_LIST = 9;
-  TEXT = 10;
-  BOLD = 11;
-  ITALIC = 12;
-  BOLD_ITALIC = 13;
-  CODE = 14;
-  IMAGE = 15;
-  LINK = 16;
-  AUTO_LINK = 17;
-  TAG = 18;
-  STRIKETHROUGH = 19;
-  ESCAPING_CHARACTER = 20;
+  MATH_BLOCK = 10;
+  TEXT = 11;
+  BOLD = 12;
+  ITALIC = 13;
+  BOLD_ITALIC = 14;
+  CODE = 15;
+  IMAGE = 16;
+  LINK = 17;
+  AUTO_LINK = 18;
+  TAG = 19;
+  STRIKETHROUGH = 20;
+  ESCAPING_CHARACTER = 21;
+  MATH = 22;
 }
 
 message Node {
@@ -59,17 +61,19 @@ message Node {
     OrderedListNode ordered_list_node = 8;
     UnorderedListNode unordered_list_node = 9;
     TaskListNode task_list_node = 10;
-    TextNode text_node = 11;
-    BoldNode bold_node = 12;
-    ItalicNode italic_node = 13;
-    BoldItalicNode bold_italic_node = 14;
-    CodeNode code_node = 15;
-    ImageNode image_node = 16;
-    LinkNode link_node = 17;
-    AutoLinkNode auto_link_node = 18;
-    TagNode tag_node = 19;
-    StrikethroughNode strikethrough_node = 20;
-    EscapingCharacterNode escaping_character_node = 21;
+    MathBlockNode math_block_node = 11;
+    TextNode text_node = 12;
+    BoldNode bold_node = 13;
+    ItalicNode italic_node = 14;
+    BoldItalicNode bold_italic_node = 15;
+    CodeNode code_node = 16;
+    ImageNode image_node = 17;
+    LinkNode link_node = 18;
+    AutoLinkNode auto_link_node = 19;
+    TagNode tag_node = 20;
+    StrikethroughNode strikethrough_node = 21;
+    EscapingCharacterNode escaping_character_node = 22;
+    MathNode math_node = 23;
   }
 }
 
@@ -113,6 +117,10 @@ message TaskListNode {
   repeated Node children = 3;
 }
 
+message MathBlockNode {
+  string content = 1;
+}
+
 message TextNode {
   string content = 1;
 }
@@ -148,6 +156,7 @@ message LinkNode {
 
 message AutoLinkNode {
   string url = 1;
+  bool is_raw_text = 2;
 }
 
 message TagNode {
@@ -160,4 +169,8 @@ message StrikethroughNode {
 
 message EscapingCharacterNode {
   string symbol = 1;
+}
+
+message MathNode {
+  string content = 1;
 }

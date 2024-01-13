@@ -59,3 +59,22 @@ func TestMemoStore(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 0, len(memoList))
 }
+
+func TestDeleteMemoStore(t *testing.T) {
+	ctx := context.Background()
+	ts := NewTestingStore(ctx, t)
+	user, err := createTestingHostUser(ctx, ts)
+	require.NoError(t, err)
+	memoCreate := &store.Memo{
+		CreatorID:  user.ID,
+		Content:    "test_content",
+		Visibility: store.Public,
+	}
+	memo, err := ts.CreateMemo(ctx, memoCreate)
+	require.NoError(t, err)
+	require.Equal(t, memoCreate.Content, memo.Content)
+	err = ts.DeleteMemo(ctx, &store.DeleteMemo{
+		ID: memo.ID,
+	})
+	require.NoError(t, err)
+}

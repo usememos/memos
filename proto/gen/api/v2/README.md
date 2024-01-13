@@ -79,6 +79,8 @@
     - [ItalicNode](#memos-api-v2-ItalicNode)
     - [LineBreakNode](#memos-api-v2-LineBreakNode)
     - [LinkNode](#memos-api-v2-LinkNode)
+    - [MathBlockNode](#memos-api-v2-MathBlockNode)
+    - [MathNode](#memos-api-v2-MathNode)
     - [Node](#memos-api-v2-Node)
     - [OrderedListNode](#memos-api-v2-OrderedListNode)
     - [ParagraphNode](#memos-api-v2-ParagraphNode)
@@ -966,6 +968,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | url | [string](#string) |  |  |
+| is_raw_text | [bool](#bool) |  |  |
 
 
 
@@ -1154,6 +1157,36 @@
 
 
 
+<a name="memos-api-v2-MathBlockNode"></a>
+
+### MathBlockNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
+<a name="memos-api-v2-MathNode"></a>
+
+### MathNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-Node"></a>
 
 ### Node
@@ -1172,6 +1205,7 @@
 | ordered_list_node | [OrderedListNode](#memos-api-v2-OrderedListNode) |  |  |
 | unordered_list_node | [UnorderedListNode](#memos-api-v2-UnorderedListNode) |  |  |
 | task_list_node | [TaskListNode](#memos-api-v2-TaskListNode) |  |  |
+| math_block_node | [MathBlockNode](#memos-api-v2-MathBlockNode) |  |  |
 | text_node | [TextNode](#memos-api-v2-TextNode) |  |  |
 | bold_node | [BoldNode](#memos-api-v2-BoldNode) |  |  |
 | italic_node | [ItalicNode](#memos-api-v2-ItalicNode) |  |  |
@@ -1183,6 +1217,7 @@
 | tag_node | [TagNode](#memos-api-v2-TagNode) |  |  |
 | strikethrough_node | [StrikethroughNode](#memos-api-v2-StrikethroughNode) |  |  |
 | escaping_character_node | [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode) |  |  |
+| math_node | [MathNode](#memos-api-v2-MathNode) |  |  |
 
 
 
@@ -1347,17 +1382,19 @@
 | ORDERED_LIST | 7 |  |
 | UNORDERED_LIST | 8 |  |
 | TASK_LIST | 9 |  |
-| TEXT | 10 |  |
-| BOLD | 11 |  |
-| ITALIC | 12 |  |
-| BOLD_ITALIC | 13 |  |
-| CODE | 14 |  |
-| IMAGE | 15 |  |
-| LINK | 16 |  |
-| AUTO_LINK | 17 |  |
-| TAG | 18 |  |
-| STRIKETHROUGH | 19 |  |
-| ESCAPING_CHARACTER | 20 |  |
+| MATH_BLOCK | 10 |  |
+| TEXT | 11 |  |
+| BOLD | 12 |  |
+| ITALIC | 13 |  |
+| BOLD_ITALIC | 14 |  |
+| CODE | 15 |  |
+| IMAGE | 16 |  |
+| LINK | 17 |  |
+| AUTO_LINK | 18 |  |
+| TAG | 19 |  |
+| STRIKETHROUGH | 20 |  |
+| ESCAPING_CHARACTER | 21 |  |
+| MATH | 22 |  |
 
 
  
@@ -1899,6 +1936,7 @@
 | nodes | [Node](#memos-api-v2-Node) | repeated |  |
 | visibility | [Visibility](#memos-api-v2-Visibility) |  |  |
 | pinned | [bool](#bool) |  |  |
+| parent_id | [int32](#int32) | optional |  |
 | resources | [Resource](#memos-api-v2-Resource) | repeated |  |
 | relations | [MemoRelation](#memos-api-v2-MemoRelation) | repeated |  |
 

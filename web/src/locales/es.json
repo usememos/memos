@@ -1,6 +1,7 @@
 {
   "common": {
     "about": "Acerca de",
+    "home": "Inicio",
     "email": "Email",
     "password": "Contraseña",
     "username": "Usuario",
@@ -37,6 +38,7 @@
     "fold": "Plegar",
     "expand": "Expandir",
     "image": "Imagen",
+    "file": "Archivo",
     "link": "Enlace",
     "vacuum": "Vaciar",
     "select": "Seleccionar",

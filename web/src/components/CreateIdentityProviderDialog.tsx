@@ -1,4 +1,4 @@
-import { Button, Divider, Input, Option, Select, Typography } from "@mui/joy";
+import { Button, Divider, IconButton, Input, Option, Select, Typography } from "@mui/joy";
 import { useEffect, useState } from "react";
 import { toast } from "react-hot-toast";
 import * as api from "@/helpers/api";
@@ -21,7 +21,7 @@ const templateList: IdentityProvider[] = [
         authUrl: "https://github.com/login/oauth/authorize",
         tokenUrl: "https://github.com/login/oauth/access_token",
         userInfoUrl: "https://api.github.com/user",
-        scopes: ["user"],
+        scopes: ["read:user"],
         fieldMapping: {
           identifier: "login",
           displayName: "name",
@@ -237,9 +237,9 @@ const CreateIdentityProviderDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text ml-auto">{t(isCreating ? "setting.sso-section.create-sso" : "setting.sso-section.update-sso")}</p>
-        <button className="btn close-btn ml-auto" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container min-w-[19rem]">
         {isCreating && (

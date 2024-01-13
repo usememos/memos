@@ -142,7 +142,12 @@ const SignIn = () => {
                 </div>
               </div>
               <div className="flex flex-row justify-start items-center w-full mt-6">
-                <Checkbox label={t("common.remember-me")} checked={remember} onChange={(e) => setRemember(e.target.checked)} />
+                <Checkbox
+                  className="dark:!text-gray-400"
+                  label={t("common.remember-me")}
+                  checked={remember}
+                  onChange={(e) => setRemember(e.target.checked)}
+                />
               </div>
               <div className="flex flex-row justify-end items-center w-full mt-6">
                 <Button

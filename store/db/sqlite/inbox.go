@@ -2,6 +2,7 @@ package sqlite
 
 import (
 	"context"
+	"database/sql"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -121,5 +122,24 @@ func (d *DB) DeleteInbox(ctx context.Context, delete *store.DeleteInbox) error {
 	if _, err := result.RowsAffected(); err != nil {
 		return err
 	}
+	return nil
+}
+
+func vacuumInbox(ctx context.Context, tx *sql.Tx) error {
+	stmt := `
+	DELETE FROM
+		inbox
+	WHERE
+		sender_id NOT IN (
+			SELECT
+				id
+			FROM
+				user
+		)`
+	_, err := tx.ExecContext(ctx, stmt)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }

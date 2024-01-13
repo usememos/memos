@@ -10,7 +10,7 @@ const Bold: React.FC<Props> = ({ children }: Props) => {
   return (
     <strong>
       {children.map((child, index) => (
-        <Renderer key={`${child.type}-${index}`} node={child} />
+        <Renderer key={`${child.type}-${index}`} index={String(index)} node={child} />
       ))}
     </strong>
   );

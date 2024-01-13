@@ -1,4 +1,4 @@
-import { Button } from "@mui/joy";
+import { Button, IconButton } from "@mui/joy";
 import { DefaultColorPalette } from "@mui/joy/styles/types";
 import { useTranslate } from "@/utils/i18n";
 import Icon from "../Icon";
@@ -48,9 +48,9 @@ const CommonDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">{title}</p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container">
         <p className="content-text">{content}</p>

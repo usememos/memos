@@ -1,4 +1,4 @@
-import { Button, Input } from "@mui/joy";
+import { Button, IconButton, Input } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import * as api from "@/helpers/api";
@@ -53,9 +53,9 @@ const UpdateLocalStorageDialog: React.FC<Props> = (props: Props) => {
     <>
       <div className="dialog-header-container">
         <p className="title-text">{t("setting.storage-section.update-local-path")}</p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container max-w-xs">
         <p className="text-sm break-words mb-1">{t("setting.storage-section.update-local-path-description")}</p>

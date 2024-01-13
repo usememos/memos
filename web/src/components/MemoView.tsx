@@ -1,4 +1,5 @@
 import { Divider, Tooltip } from "@mui/joy";
+import copy from "copy-to-clipboard";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
@@ -148,6 +149,11 @@ const MemoView: React.FC<Props> = (props: Props) => {
     });
   };
 
+  const handleCopyMemoId = () => {
+    copy(String(memo.id));
+    toast.success("Copied to clipboard!");
+  };
+
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
@@ -196,7 +202,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
             <>
               <Icon.Dot className="w-4 h-auto text-gray-400 dark:text-zinc-400" />
               <Tooltip title={"Pinned"} placement="top">
-                <Icon.Bookmark className="w-4 h-auto text-green-600" />
+                <Icon.Bookmark className="w-4 h-auto text-amber-500" />
               </Tooltip>
             </>
           )}
@@ -245,13 +251,19 @@ const MemoView: React.FC<Props> = (props: Props) => {
                     <Icon.Trash className="w-4 h-auto mr-2" />
                     {t("common.delete")}
                   </span>
+                  <Divider className="!my-1" />
+                  <div className="w-full px-3 text-xs text-gray-400">
+                    <span className="cursor-pointer" onClick={handleCopyMemoId}>
+                      ID: <span className="font-mono">{memo.id}</span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </>
           )}
         </div>
       </div>
-      <MemoContent nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
+      <MemoContent memoId={memo.id} nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
       <MemoResourceListView resourceList={memo.resources} />
       <MemoRelationListView memo={memo} relationList={referenceRelations} />
     </div>

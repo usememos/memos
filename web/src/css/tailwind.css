@@ -18,25 +18,3 @@
     word-break: normal;
   }
 }
-
-@layer components {
-  .btn-normal {
-    @apply select-none flex flex-row justify-center items-center border dark:border-zinc-800 cursor-pointer px-3 text-sm leading-8 rounded-md hover:opacity-80 hover:shadow disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:shadow-none;
-  }
-
-  .btn-primary {
-    @apply btn-normal border-transparent bg-green-600 text-white dark:border-transparent dark:text-gray-200;
-  }
-
-  .btn-danger {
-    @apply btn-normal border-red-600 bg-red-50 text-red-600;
-  }
-
-  .btn-text {
-    @apply btn-normal text-gray-600 border-none dark:text-gray-200 hover:shadow-none;
-  }
-
-  .input-text {
-    @apply w-full px-3 py-2 leading-6 text-sm dark:text-gray-200 rounded border focus:outline focus:outline-2 dark:border-zinc-700 dark:bg-zinc-800;
-  }
-}

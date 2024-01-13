@@ -10,7 +10,6 @@ import { showCommonDialog } from "../Dialog/CommonDialog";
 import showDisablePasswordLoginDialog from "../DisablePasswordLoginDialog";
 import Icon from "../Icon";
 import showUpdateCustomizedProfileDialog from "../UpdateCustomizedProfileDialog";
-import "@/less/settings/system-section.less";
 
 interface State {
   dbSize: number;
@@ -244,38 +243,38 @@ const SystemSection = () => {
   };
 
   return (
-    <div className="section-container system-section-container">
-      <p className="title-text">{t("common.basic")}</p>
-      <div className="form-label">
+    <div className="w-full flex flex-col gap-2 pt-2 pb-4">
+      <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.basic")}</p>
+      <div className="w-full flex flex-row justify-between items-center">
         <div className="normal-text">
           {t("setting.system-section.server-name")}: <span className="font-mono font-bold">{systemStatus.customizedProfile.name}</span>
         </div>
         <Button onClick={handleUpdateCustomizedProfileButtonClick}>{t("common.edit")}</Button>
       </div>
-      <div className="form-label">
+      <div className="w-full flex flex-row justify-between items-center">
         <span className="text-sm">
           {t("setting.system-section.database-file-size")}: <span className="font-mono font-bold">{formatBytes(state.dbSize)}</span>
         </span>
         <Button onClick={handleVacuumBtnClick}>{t("common.vacuum")}</Button>
       </div>
-      <p className="title-text">{t("common.settings")}</p>
-      <div className="form-label">
+      <p className="font-medium text-gray-700 dark:text-gray-500">{t("common.settings")}</p>
+      <div className="w-full flex flex-row justify-between items-center">
         <span className="normal-text">{t("setting.system-section.allow-user-signup")}</span>
         <Switch checked={state.allowSignUp} onChange={(event) => handleAllowSignUpChanged(event.target.checked)} />
       </div>
-      <div className="form-label">
+      <div className="w-full flex flex-row justify-between items-center">
         <span className="normal-text">{t("setting.system-section.disable-password-login")}</span>
         <Switch checked={state.disablePasswordLogin} onChange={(event) => handleDisablePasswordLoginChanged(event.target.checked)} />
       </div>
-      <div className="form-label">
+      <div className="w-full flex flex-row justify-between items-center">
         <span className="normal-text">{t("setting.system-section.disable-public-memos")}</span>
         <Switch checked={state.disablePublicMemos} onChange={(event) => handleDisablePublicMemosChanged(event.target.checked)} />
       </div>
-      <div className="form-label">
+      <div className="w-full flex flex-row justify-between items-center">
         <span className="normal-text">{t("setting.system-section.display-with-updated-time")}</span>
         <Switch checked={state.memoDisplayWithUpdatedTs} onChange={(event) => handleMemoDisplayWithUpdatedTs(event.target.checked)} />
       </div>
-      <div className="form-label">
+      <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">
           <span className="text-sm mr-1">{t("setting.system-section.max-upload-size")}</span>
           <Tooltip title={t("setting.system-section.max-upload-size-hint")} placement="top">
@@ -293,7 +292,7 @@ const SystemSection = () => {
         />
       </div>
       <Divider className="!mt-3 !my-4" />
-      <div className="form-label">
+      <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">
           <div className="w-auto flex items-center">
             <span className="text-sm mr-1">Instance URL</span>
@@ -324,7 +323,7 @@ const SystemSection = () => {
         </Link>
       </div>
       <Divider className="!mt-3 !my-4" />
-      <div className="form-label">
+      <div className="w-full flex flex-row justify-between items-center">
         <div className="flex flex-row items-center">
           <div className="w-auto flex items-center">
             <span className="text-sm mr-1">{t("setting.system-section.telegram-bot-token")}</span>
@@ -355,7 +354,7 @@ const SystemSection = () => {
         </Link>
       </div>
       <Divider className="!mt-3 !my-4" />
-      <div className="form-label">
+      <div className="w-full flex flex-row justify-between items-center">
         <span className="normal-text">{t("setting.system-section.additional-style")}</span>
         <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalStyle}>
           {t("common.save")}
@@ -373,7 +372,7 @@ const SystemSection = () => {
         value={state.additionalStyle}
         onChange={(event) => handleAdditionalStyleChanged(event.target.value)}
       />
-      <div className="form-label mt-2">
+      <div className="w-full flex flex-row justify-between items-center mt-2">
         <span className="normal-text">{t("setting.system-section.additional-script")}</span>
         <Button variant="outlined" color="neutral" onClick={handleSaveAdditionalScript}>
           {t("common.save")}

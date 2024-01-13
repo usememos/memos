@@ -60,7 +60,6 @@ type Memo struct {
 	Pinned     bool       `json:"pinned"`
 
 	// Related fields
-	Parent          *Memo           `json:"parent"`
 	CreatorName     string          `json:"creatorName"`
 	CreatorUsername string          `json:"creatorUsername"`
 	ResourceList    []*Resource     `json:"resourceList"`
@@ -183,11 +182,6 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 	rowStatus := store.RowStatus(c.QueryParam("rowStatus"))
 	if rowStatus != "" {
 		find.RowStatus = &rowStatus
-	}
-	pinnedStr := c.QueryParam("pinned")
-	if pinnedStr != "" {
-		pinned := pinnedStr == "true"
-		find.Pinned = &pinned
 	}
 
 	contentSearch := []string{}
@@ -867,24 +861,6 @@ func (s *APIV1Service) convertMemoFromStore(ctx context.Context, memo *store.Mem
 		relationList = append(relationList, convertMemoRelationFromStore(relation))
 	}
 	memoMessage.RelationList = relationList
-	for _, relation := range memoMessage.RelationList {
-		if relation.MemoID == memoMessage.ID && relation.Type == MemoRelationComment {
-			parentMemo, err := s.Store.GetMemo(ctx, &store.FindMemo{
-				ID: &relation.RelatedMemoID,
-			})
-			if err != nil {
-				return nil, err
-			}
-			if parentMemo != nil {
-				parent, err := s.convertMemoFromStore(ctx, parentMemo)
-				if err != nil {
-					return nil, err
-				}
-				memoMessage.Parent = parent
-			}
-		}
-	}
-
 	return memoMessage, nil
 }
 

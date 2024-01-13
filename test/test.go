@@ -6,6 +6,8 @@ import (
 	"os"
 	"testing"
 
+	"github.com/joho/godotenv"
+
 	"github.com/usememos/memos/server/profile"
 	"github.com/usememos/memos/server/version"
 )
@@ -24,6 +26,10 @@ func getUnusedPort() int {
 }
 
 func GetTestingProfile(t *testing.T) *profile.Profile {
+	if err := godotenv.Load(".env"); err != nil {
+		t.Log("failed to load .env file, but it's ok")
+	}
+
 	// Get a temporary directory for the test data.
 	dir := t.TempDir()
 	mode := "dev"

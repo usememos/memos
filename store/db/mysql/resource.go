@@ -63,7 +63,7 @@ func (d *DB) ListResources(ctx context.Context, find *store.FindResource) ([]*st
 		fields = append(fields, "`blob`")
 	}
 
-	query := fmt.Sprintf("SELECT %s FROM `resource` WHERE %s GROUP BY `id` ORDER BY `created_ts` DESC", strings.Join(fields, ", "), strings.Join(where, " AND "))
+	query := fmt.Sprintf("SELECT %s FROM `resource` WHERE %s ORDER BY `updated_ts` DESC, `created_ts` DESC", strings.Join(fields, ", "), strings.Join(where, " AND "))
 	if find.Limit != nil {
 		query = fmt.Sprintf("%s LIMIT %d", query, *find.Limit)
 		if find.Offset != nil {

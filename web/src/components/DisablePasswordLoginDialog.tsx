@@ -1,4 +1,4 @@
-import { Button } from "@mui/joy";
+import { Button, IconButton, Input } from "@mui/joy";
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 import * as api from "@/helpers/api";
@@ -59,15 +59,15 @@ const DisablePasswordLoginDialog: React.FC<Props> = ({ destroy }: Props) => {
     <>
       <div className="dialog-header-container !w-64">
         <p className="title-text">{t("setting.system-section.disable-password-login")}</p>
-        <button className="btn close-btn" onClick={handleCloseBtnClick}>
-          <Icon.X />
-        </button>
+        <IconButton size="sm" onClick={handleCloseBtnClick}>
+          <Icon.X className="w-5 h-auto" />
+        </IconButton>
       </div>
       <div className="dialog-content-container !w-64">
         {confirmedOnce ? (
           <>
             <p className="content-text">{t("setting.system-section.disable-password-login-final-warning")}</p>
-            <input type="text" className="input-text" value={typingConfirmation} onChange={handleTypingConfirmationChanged} />
+            <Input value={typingConfirmation} onChange={handleTypingConfirmationChanged} />
           </>
         ) : (
           <p className="content-text">{t("setting.system-section.disable-password-login-warning")}</p>

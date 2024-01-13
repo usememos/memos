@@ -3,8 +3,8 @@ package postgres
 import (
 	"context"
 	"encoding/json"
+	"strings"
 
-	"github.com/Masterminds/squirrel"
 	"github.com/pkg/errors"
 
 	"github.com/usememos/memos/store"
@@ -22,42 +22,34 @@ func (d *DB) CreateIdentityProvider(ctx context.Context, create *store.IdentityP
 		return nil, errors.Errorf("unsupported idp type %s", string(create.Type))
 	}
 
-	qb := squirrel.Insert("idp").Columns("name", "type", "identifier_filter", "config")
-	values := []any{create.Name, create.Type, create.IdentifierFilter, string(configBytes)}
-
-	qb = qb.Values(values...).PlaceholderFormat(squirrel.Dollar)
-	qb = qb.Suffix("RETURNING id")
-
-	stmt, args, err := qb.ToSql()
-	if err != nil {
+	fields := []string{"name", "type", "identifier_filter", "config"}
+	args := []any{create.Name, create.Type, create.IdentifierFilter, string(configBytes)}
+	stmt := "INSERT INTO idp (" + strings.Join(fields, ", ") + ") VALUES (" + placeholders(len(args)) + ") RETURNING id"
+	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(&create.ID); err != nil {
 		return nil, err
 	}
 
-	var id int32
-	err = d.db.QueryRowContext(ctx, stmt, args...).Scan(&id)
-	if err != nil {
-		return nil, err
-	}
-
-	create.ID = id
-	return create, nil
+	identityProvider := create
+	return identityProvider, nil
 }
+
 func (d *DB) ListIdentityProviders(ctx context.Context, find *store.FindIdentityProvider) ([]*store.IdentityProvider, error) {
-	qb := squirrel.Select("id", "name", "type", "identifier_filter", "config").
-		From("idp").
-		Where("1 = 1").
-		PlaceholderFormat(squirrel.Dollar)
-
+	where, args := []string{"1 = 1"}, []any{}
 	if v := find.ID; v != nil {
-		qb = qb.Where(squirrel.Eq{"id": *v})
+		where, args = append(where, "id = "+placeholder(len(args)+1)), append(args, *v)
 	}
 
-	query, args, err := qb.ToSql()
-	if err != nil {
-		return nil, err
-	}
-
-	rows, err := d.db.QueryContext(ctx, query, args...)
+	rows, err := d.db.QueryContext(ctx, `
+		SELECT
+			id,
+			name,
+			type,
+			identifier_filter,
+			config
+		FROM idp
+		WHERE `+strings.Join(where, " AND ")+` ORDER BY id ASC`,
+		args...,
+	)
 	if err != nil {
 		return nil, err
 	}
@@ -111,15 +103,12 @@ func (d *DB) GetIdentityProvider(ctx context.Context, find *store.FindIdentityPr
 }
 
 func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIdentityProvider) (*store.IdentityProvider, error) {
-	qb := squirrel.Update("idp").
-		PlaceholderFormat(squirrel.Dollar)
-	var err error
-
+	set, args := []string{}, []any{}
 	if v := update.Name; v != nil {
-		qb = qb.Set("name", *v)
+		set, args = append(set, "name = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := update.IdentifierFilter; v != nil {
-		qb = qb.Set("identifier_filter", *v)
+		set, args = append(set, "identifier_filter = "+placeholder(len(args)+1)), append(args, *v)
 	}
 	if v := update.Config; v != nil {
 		var configBytes []byte
@@ -132,42 +121,53 @@ func (d *DB) UpdateIdentityProvider(ctx context.Context, update *store.UpdateIde
 		} else {
 			return nil, errors.Errorf("unsupported idp type %s", string(update.Type))
 		}
-		qb = qb.Set("config", string(configBytes))
+		set, args = append(set, "config = "+placeholder(len(args)+1)), append(args, string(configBytes))
 	}
 
-	qb = qb.Where(squirrel.Eq{"id": update.ID})
+	stmt := `
+		UPDATE idp
+		SET ` + strings.Join(set, ", ") + `
+		WHERE id = ` + placeholder(len(args)+1) + `
+		RETURNING id, name, type, identifier_filter, config
+	`
+	args = append(args, update.ID)
 
-	stmt, args, err := qb.ToSql()
-	if err != nil {
+	var identityProvider store.IdentityProvider
+	var identityProviderConfig string
+	if err := d.db.QueryRowContext(ctx, stmt, args...).Scan(
+		&identityProvider.ID,
+		&identityProvider.Name,
+		&identityProvider.Type,
+		&identityProvider.IdentifierFilter,
+		&identityProviderConfig,
+	); err != nil {
 		return nil, err
 	}
 
-	_, err = d.db.ExecContext(ctx, stmt, args...)
-	if err != nil {
-		return nil, err
+	if identityProvider.Type == store.IdentityProviderOAuth2Type {
+		oauth2Config := &store.IdentityProviderOAuth2Config{}
+		if err := json.Unmarshal([]byte(identityProviderConfig), oauth2Config); err != nil {
+			return nil, err
+		}
+		identityProvider.Config = &store.IdentityProviderConfig{
+			OAuth2Config: oauth2Config,
+		}
+	} else {
+		return nil, errors.Errorf("unsupported idp type %s", string(identityProvider.Type))
 	}
 
-	return d.GetIdentityProvider(ctx, &store.FindIdentityProvider{ID: &update.ID})
+	return &identityProvider, nil
 }
 
 func (d *DB) DeleteIdentityProvider(ctx context.Context, delete *store.DeleteIdentityProvider) error {
-	qb := squirrel.Delete("idp").
-		Where(squirrel.Eq{"id": delete.ID}).
-		PlaceholderFormat(squirrel.Dollar)
-
-	stmt, args, err := qb.ToSql()
-	if err != nil {
-		return err
-	}
-
+	where, args := []string{"id = $1"}, []any{delete.ID}
+	stmt := `DELETE FROM idp WHERE ` + strings.Join(where, " AND ")
 	result, err := d.db.ExecContext(ctx, stmt, args...)
 	if err != nil {
 		return err
 	}
-
 	if _, err = result.RowsAffected(); err != nil {
 		return err
 	}
-
 	return nil
 }

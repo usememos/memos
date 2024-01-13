@@ -25,7 +25,7 @@ func (d *DB) CreateWebhook(ctx context.Context, create *storepb.Webhook) (*store
 	}
 
 	create.Id = int32(id)
-	return create, nil
+	return d.GetWebhook(ctx, &store.FindWebhook{ID: &create.Id})
 }
 
 func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*storepb.Webhook, error) {
@@ -37,7 +37,7 @@ func (d *DB) ListWebhooks(ctx context.Context, find *store.FindWebhook) ([]*stor
 		where, args = append(where, "`creator_id` = ?"), append(args, *find.CreatorID)
 	}
 
-	rows, err := d.db.QueryContext(ctx, "SELECT `id`, `created_ts`, `updated_ts`, `row_status`, `creator_id`, `name`, `url` FROM `webhook` WHERE "+strings.Join(where, " AND ")+" ORDER BY `id` DESC",
+	rows, err := d.db.QueryContext(ctx, "SELECT `id`, UNIX_TIMESTAMP(`created_ts`), UNIX_TIMESTAMP(`updated_ts`), `row_status`, `creator_id`, `name`, `url` FROM `webhook` WHERE "+strings.Join(where, " AND ")+" ORDER BY `id` DESC",
 		args...,
 	)
 	if err != nil {

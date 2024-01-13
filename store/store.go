@@ -20,8 +20,8 @@ type Store struct {
 // New creates a new instance of Store.
 func New(driver Driver, profile *profile.Profile) *Store {
 	return &Store{
-		Profile: profile,
 		driver:  driver,
+		Profile: profile,
 	}
 }
 

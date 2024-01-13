@@ -64,7 +64,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
           "shrink-0 mt-2 p-2 rounded-full border",
           inbox.status === Inbox_Status.UNREAD
             ? "border-blue-600 text-blue-600 bg-blue-50 dark:bg-zinc-800"
-            : "border-gray-400 text-gray-400 bg-gray-50 dark:bg-zinc-800"
+            : "border-gray-500 text-gray-500 bg-gray-50 dark:bg-zinc-800"
         )}
       >
         <Tooltip title={"Comment"} placement="bottom">
@@ -73,7 +73,7 @@ const MemoCommentMessage = ({ inbox }: Props) => {
       </div>
       <div
         className={classNames(
-          "border w-full p-3 px-4 rounded-lg flex flex-col justify-start items-start gap-2 dark:border-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-800",
+          "border w-full p-3 px-4 rounded-lg flex flex-col justify-start items-start gap-2 dark:border-zinc-700 hover:bg-gray-100 dark:hover:bg-zinc-700",
           inbox.status !== Inbox_Status.UNREAD && "opacity-60"
         )}
       >

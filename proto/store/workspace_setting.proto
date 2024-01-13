@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package memos.store;
+
+option go_package = "gen/store";
+
+enum WorkspaceSettingKey {
+  WORKSPACE_SETTING_KEY_UNSPECIFIED = 0;
+  WORKSPACE_SETTING_PROFILE = 1;
+}
+
+message WorkspaceProfileSetting {
+  string instance_url = 1;
+
+  bool disallow_signup = 2;
+}
