@@ -1,6 +1,6 @@
 import { Select, Option, Button, IconButton, Divider } from "@mui/joy";
 import { uniqBy } from "lodash-es";
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
@@ -335,10 +335,6 @@ const MemoEditor = (props: Props) => {
     });
   };
 
-  const handleTagSelectorClick = useCallback((tag: string) => {
-    editorRef.current?.insertText(`#${tag} `);
-  }, []);
-
   const handleEditorFocus = () => {
     editorRef.current?.focus();
   };
@@ -368,20 +364,12 @@ const MemoEditor = (props: Props) => {
     >
       <Editor ref={editorRef} {...editorConfig} />
       <div className="relative w-full flex flex-row justify-between items-center pt-2" onFocus={(e) => e.stopPropagation()}>
-        <div className="flex flex-row justify-start items-center">
-          <TagSelector onTagSelectorClick={(tag) => handleTagSelectorClick(tag)} />
-          <IconButton
-            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:!text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
-            size="sm"
-            onClick={handleUploadFileBtnClick}
-          >
+        <div className="flex flex-row justify-start items-center opacity-80">
+          <TagSelector editorRef={editorRef} />
+          <IconButton size="sm" onClick={handleUploadFileBtnClick}>
             <Icon.Image className="w-5 h-5 mx-auto" />
           </IconButton>
-          <IconButton
-            className="flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:!text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow"
-            size="sm"
-            onClick={handleAddMemoRelationBtnClick}
-          >
+          <IconButton size="sm" onClick={handleAddMemoRelationBtnClick}>
             <Icon.Link className="w-5 h-5 mx-auto" />
           </IconButton>
           <MarkdownMenu editorRef={editorRef} />

@@ -67,15 +67,13 @@ const MarkdownMenu = (props: Props) => {
         slots={{ root: IconButton }}
         slotProps={{
           root: {
-            className:
-              "flex flex-row justify-center items-center p-1 w-auto h-auto mr-1 select-none rounded cursor-pointer text-gray-600 dark:!text-gray-400 hover:bg-gray-300 dark:hover:bg-zinc-800 hover:shadow",
             size: "sm",
           },
         }}
       >
         <Icon.SquareSlash className="w-5 h-5 mx-auto" />
       </MenuButton>
-      <Menu className="text-sm" size="sm">
+      <Menu className="text-sm" size="sm" placement="bottom-start">
         <MenuItem onClick={handleCodeBlockClick}>
           <Icon.Code2 className="w-4 h-auto" />
           <span>Code block</span>
