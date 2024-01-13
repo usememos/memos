@@ -51,8 +51,8 @@ dependencies:
     specifier: ^5.2.3
     version: 5.2.3
   lucide-react:
-    specifier: ^0.263.1
-    version: 0.263.1(react@18.2.0)
+    specifier: ^0.309.0
+    version: 0.309.0(react@18.2.0)
   nice-grpc-web:
     specifier: ^3.3.2
     version: 3.3.2(ws@8.16.0)
@@ -3252,8 +3252,8 @@ packages:
       yallist: 4.0.0
     dev: true
 
-  /lucide-react@0.263.1(react@18.2.0):
-    resolution: {integrity: sha512-keqxAx97PlaEN89PXZ6ki1N8nRjGWtDa4021GFYLNj0RgruM5odbpl8GHTExj0hhPq3sF6Up0gnxt6TSHu+ovw==}
+  /lucide-react@0.309.0(react@18.2.0):
+    resolution: {integrity: sha512-zNVPczuwFrCfksZH3zbd1UDE6/WYhYAdbe2k7CImVyPAkXLgIwbs6eXQ4loigqDnUFjyFYCI5jZ1y10Kqal0dg==}
     peerDependencies:
       react: ^16.5.1 || ^17.0.0 || ^18.0.0
     dependencies:
