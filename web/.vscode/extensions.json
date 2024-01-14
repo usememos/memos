@@ -1,8 +1,0 @@
-{
-  "recommendations": [
-    "lokalise.i18n-ally",
-    "bradlc.vscode-tailwindcss",
-    "dbaeumer.vscode-eslint",
-    "csstools.postcss"
-  ]
-}
