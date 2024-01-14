@@ -1,6 +1,8 @@
 package v1
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
@@ -120,6 +122,7 @@ const maxContentLength = 1 << 30
 func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 	g.GET("/memo", s.GetMemoList)
 	g.POST("/memo", s.CreateMemo)
+	g.GET("/memo/export", s.ExportMemo)
 	g.GET("/memo/all", s.GetAllMemos)
 	g.GET("/memo/stats", s.GetMemoStats)
 	g.GET("/memo/:memoId", s.GetMemo)
@@ -145,84 +148,42 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 //	@Failure	500				{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to compose memo response"
 //	@Router		/api/v1/memo [GET]
 func (s *APIV1Service) GetMemoList(c echo.Context) error {
-	ctx := c.Request().Context()
-	find := &store.FindMemo{
-		OrderByPinned: true,
-	}
-	if userID, err := util.ConvertStringToInt32(c.QueryParam("creatorId")); err == nil {
-		find.CreatorID = &userID
+	list, httpError := s.getMemoList(c)
+	if httpError != nil {
+		return httpError
 	}
 
-	if username := c.QueryParam("creatorUsername"); username != "" {
-		user, _ := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
-		if user != nil {
-			find.CreatorID = &user.ID
-		}
-	}
-
-	currentUserID, ok := c.Get(userIDContextKey).(int32)
-	if !ok {
-		// Anonymous use should only fetch PUBLIC memos with specified user
-		if find.CreatorID == nil {
-			return echo.NewHTTPError(http.StatusBadRequest, "Missing user to find memo")
-		}
-		find.VisibilityList = []store.Visibility{store.Public}
-	} else {
-		// Authorized user can fetch all PUBLIC/PROTECTED memo
-		visibilityList := []store.Visibility{store.Public, store.Protected}
-
-		// If Creator is authorized user (as default), PRIVATE memo is OK
-		if find.CreatorID == nil || *find.CreatorID == currentUserID {
-			find.CreatorID = &currentUserID
-			visibilityList = append(visibilityList, store.Private)
-		}
-		find.VisibilityList = visibilityList
-	}
-
-	rowStatus := store.RowStatus(c.QueryParam("rowStatus"))
-	if rowStatus != "" {
-		find.RowStatus = &rowStatus
-	}
-
-	contentSearch := []string{}
-	tag := c.QueryParam("tag")
-	if tag != "" {
-		contentSearch = append(contentSearch, "#"+tag)
-	}
-	content := c.QueryParam("content")
-	if content != "" {
-		contentSearch = append(contentSearch, content)
-	}
-	find.ContentSearch = contentSearch
-
-	if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
-		find.Limit = &limit
-	}
-	if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
-		find.Offset = &offset
-	}
-
-	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
-	}
-	if memoDisplayWithUpdatedTs {
-		find.OrderByUpdatedTs = true
-	}
-
-	list, err := s.Store.ListMemos(ctx, find)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
-	}
 	memoResponseList := []*Memo{}
 	for _, memo := range list {
-		memoResponse, err := s.convertMemoFromStore(ctx, memo)
+		memoResponse, err := s.convertMemoFromStore(c.Request().Context(), memo)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to compose memo response").SetInternal(err)
 		}
 		memoResponseList = append(memoResponseList, memoResponse)
 	}
 	return c.JSON(http.StatusOK, memoResponseList)
+}
+
+func (s *APIV1Service) ExportMemo(c echo.Context) error {
+	list, httpError := s.getMemoList(c)
+	if httpError != nil {
+		return httpError
+	}
+
+	buf := new(bytes.Buffer)
+	writer := zip.NewWriter(buf)
+	for _, memo := range list {
+		f, err := writer.Create(time.Unix(memo.CreatedTs, 0).Format(time.RFC3339) + ".md")
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo file").SetInternal(err)
+		}
+		_, err = f.Write([]byte(memo.Content))
+	}
+	err := writer.Close()
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, "Failed to close zip file writer").SetInternal(err)
+	}
+	return c.Blob(http.StatusOK, "application/zip", buf.Bytes())
 }
 
 // CreateMemo godoc
@@ -946,6 +907,80 @@ func getIDListDiff(oldList, newList []int32) (addedList, removedList []int32) {
 		}
 	}
 	return addedList, removedList
+}
+
+func (s *APIV1Service) getMemoList(c echo.Context) ([]*store.Memo, *echo.HTTPError) {
+	ctx := c.Request().Context()
+	find := &store.FindMemo{
+		OrderByPinned: true,
+	}
+	if userID, err := util.ConvertStringToInt32(c.QueryParam("creatorId")); err == nil {
+		find.CreatorID = &userID
+	}
+
+	if username := c.QueryParam("creatorUsername"); username != "" {
+		user, _ := s.Store.GetUser(ctx, &store.FindUser{Username: &username})
+		if user != nil {
+			find.CreatorID = &user.ID
+		}
+	}
+
+	currentUserID, ok := c.Get(userIDContextKey).(int32)
+	if !ok {
+		// Anonymous use should only fetch PUBLIC memos with specified user
+		if find.CreatorID == nil {
+			return nil, echo.NewHTTPError(http.StatusBadRequest, "Missing user to find memo")
+		}
+		find.VisibilityList = []store.Visibility{store.Public}
+	} else {
+		// Authorized user can fetch all PUBLIC/PROTECTED memo
+		visibilityList := []store.Visibility{store.Public, store.Protected}
+
+		// If Creator is authorized user (as default), PRIVATE memo is OK
+		if find.CreatorID == nil || *find.CreatorID == currentUserID {
+			find.CreatorID = &currentUserID
+			visibilityList = append(visibilityList, store.Private)
+		}
+		find.VisibilityList = visibilityList
+	}
+
+	rowStatus := store.RowStatus(c.QueryParam("rowStatus"))
+	if rowStatus != "" {
+		find.RowStatus = &rowStatus
+	}
+
+	contentSearch := []string{}
+	tag := c.QueryParam("tag")
+	if tag != "" {
+		contentSearch = append(contentSearch, "#"+tag)
+	}
+	content := c.QueryParam("content")
+	if content != "" {
+		contentSearch = append(contentSearch, content)
+	}
+	find.ContentSearch = contentSearch
+
+	if limit, err := strconv.Atoi(c.QueryParam("limit")); err == nil {
+		find.Limit = &limit
+	}
+	if offset, err := strconv.Atoi(c.QueryParam("offset")); err == nil {
+		find.Offset = &offset
+	}
+
+	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Failed to get memo display with updated ts setting value").SetInternal(err)
+	}
+	if memoDisplayWithUpdatedTs {
+		find.OrderByUpdatedTs = true
+	}
+
+	list, err := s.Store.ListMemos(ctx, find)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, "Failed to fetch memo list").SetInternal(err)
+	}
+
+	return list, nil
 }
 
 // DispatchMemoCreatedWebhook dispatches webhook when memo is created.
