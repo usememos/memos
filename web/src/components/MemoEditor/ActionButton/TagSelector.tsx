@@ -53,9 +53,9 @@ const TagSelector = (props: Props) => {
               {tags.map((tag) => {
                 return (
                   <div
-                    className="inline-block w-auto max-w-full cursor-pointer rounded text-sm leading-6 px-2 hover:bg-zinc-100 dark:hover:bg-zinc-800 shrink-0"
-                    onClick={() => handleTagClick(tag)}
                     key={tag}
+                    className="inline-flex w-auto max-w-full cursor-pointer rounded text-sm leading-5 px-1 text-gray-500 dark:text-gray-400 hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                    onClick={() => handleTagClick(tag)}
                   >
                     <OverflowTip>#{tag}</OverflowTip>
                   </div>
