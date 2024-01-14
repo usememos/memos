@@ -103,18 +103,21 @@ message BlockquoteNode {
 
 message OrderedListNode {
   string number = 1;
-  repeated Node children = 2;
+  int32 indent = 2;
+  repeated Node children = 3;
 }
 
 message UnorderedListNode {
   string symbol = 1;
-  repeated Node children = 2;
+  int32 indent = 2;
+  repeated Node children = 3;
 }
 
 message TaskListNode {
   string symbol = 1;
-  bool complete = 2;
-  repeated Node children = 3;
+  int32 indent = 2;
+  bool complete = 3;
+  repeated Node children = 4;
 }
 
 message MathBlockNode {

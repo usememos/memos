@@ -1233,6 +1233,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | number | [string](#string) |  |  |
+| indent | [int32](#int32) |  |  |
 | children | [Node](#memos-api-v2-Node) | repeated |  |
 
 
@@ -1324,6 +1325,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | symbol | [string](#string) |  |  |
+| indent | [int32](#int32) |  |  |
 | complete | [bool](#bool) |  |  |
 | children | [Node](#memos-api-v2-Node) | repeated |  |
 
@@ -1356,6 +1358,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | symbol | [string](#string) |  |  |
+| indent | [int32](#int32) |  |  |
 | children | [Node](#memos-api-v2-Node) | repeated |  |
 
 

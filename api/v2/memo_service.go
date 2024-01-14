@@ -130,6 +130,8 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		if filter.RowStatus != nil {
 			memoFind.RowStatus = filter.RowStatus
 		}
+	} else {
+		return nil, status.Errorf(codes.InvalidArgument, "filter is required")
 	}
 
 	user, _ := getCurrentUser(ctx, s.Store)

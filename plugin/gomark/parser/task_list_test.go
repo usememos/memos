@@ -32,6 +32,19 @@ func TestTaskListParser(t *testing.T) {
 			},
 		},
 		{
+			text: "  + [ ] Hello World",
+			node: &ast.TaskList{
+				Symbol:   tokenizer.PlusSign,
+				Indent:   2,
+				Complete: false,
+				Children: []ast.Node{
+					&ast.Text{
+						Content: "Hello World",
+					},
+				},
+			},
+		},
+		{
 			text: "* [x] **Hello**",
 			node: &ast.TaskList{
 				Symbol:   tokenizer.Asterisk,

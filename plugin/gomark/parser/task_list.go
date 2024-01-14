@@ -18,22 +18,30 @@ func (*TaskListParser) Match(tokens []*tokenizer.Token) (int, bool) {
 		return 0, false
 	}
 
-	symbolToken := tokens[0]
+	indent := 0
+	for _, token := range tokens {
+		if token.Type == tokenizer.Space {
+			indent++
+		} else {
+			break
+		}
+	}
+	symbolToken := tokens[indent]
 	if symbolToken.Type != tokenizer.Hyphen && symbolToken.Type != tokenizer.Asterisk && symbolToken.Type != tokenizer.PlusSign {
 		return 0, false
 	}
-	if tokens[1].Type != tokenizer.Space {
+	if tokens[indent+1].Type != tokenizer.Space {
 		return 0, false
 	}
-	if tokens[2].Type != tokenizer.LeftSquareBracket || (tokens[3].Type != tokenizer.Space && tokens[3].Value != "x") || tokens[4].Type != tokenizer.RightSquareBracket {
+	if tokens[indent+2].Type != tokenizer.LeftSquareBracket || (tokens[indent+3].Type != tokenizer.Space && tokens[indent+3].Value != "x") || tokens[indent+4].Type != tokenizer.RightSquareBracket {
 		return 0, false
 	}
-	if tokens[5].Type != tokenizer.Space {
+	if tokens[indent+5].Type != tokenizer.Space {
 		return 0, false
 	}
 
 	contentTokens := []*tokenizer.Token{}
-	for _, token := range tokens[6:] {
+	for _, token := range tokens[indent+6:] {
 		if token.Type == tokenizer.Newline {
 			break
 		}
@@ -43,7 +51,7 @@ func (*TaskListParser) Match(tokens []*tokenizer.Token) (int, bool) {
 		return 0, false
 	}
 
-	return len(contentTokens) + 6, true
+	return indent + len(contentTokens) + 6, true
 }
 
 func (p *TaskListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
@@ -52,15 +60,24 @@ func (p *TaskListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 		return nil, errors.New("not matched")
 	}
 
-	symbolToken := tokens[0]
-	contentTokens := tokens[6:size]
+	indent := 0
+	for _, token := range tokens {
+		if token.Type == tokenizer.Space {
+			indent++
+		} else {
+			break
+		}
+	}
+	symbolToken := tokens[indent]
+	contentTokens := tokens[indent+6 : size]
 	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err
 	}
 	return &ast.TaskList{
 		Symbol:   symbolToken.Type,
-		Complete: tokens[3].Value == "x",
+		Indent:   indent,
+		Complete: tokens[indent+3].Value == "x",
 		Children: children,
 	}, nil
 }
