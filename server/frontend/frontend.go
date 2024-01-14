@@ -157,7 +157,7 @@ func getDefaultMetadata() *Metadata {
 	return &Metadata{
 		Title:       "Memos",
 		Description: "A privacy-first, lightweight note-taking service. Easily capture and share your great thoughts.",
-		ImageURL:    "https://www.usememos.com/logo.png",
+		ImageURL:    "/logo.webp",
 	}
 }
 
