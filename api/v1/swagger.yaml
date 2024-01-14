@@ -1090,7 +1090,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api_v1.SignIn'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.SignIn'
       produces:
       - application/json
       responses:
@@ -1122,7 +1122,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api_v1.SSOSignIn'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.SSOSignIn'
       produces:
       - application/json
       responses:
@@ -1170,7 +1170,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api_v1.SignUp'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.SignUp'
       produces:
       - application/json
       responses:
@@ -1373,8 +1373,8 @@ paths:
           description: Missing user to find memo
         "500":
           description: Failed to get memo display with updated ts setting value |
-            Failed to fetch memo list | Failed to create memo file | Failed to close
-            zip file writer
+            Failed to fetch memo list | Failed to create memo file | "Failed to write
+            to memo file | Failed to close zip file writer
       summary: Get a zip folder of Markdown files containing memos matching optional
         filters
       tags:
@@ -1391,7 +1391,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api_v1.CreateMemoRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateMemoRequest'
       produces:
       - application/json
       responses:
@@ -1488,7 +1488,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api_v1.PatchMemoRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.PatchMemoRequest'
       produces:
       - application/json
       responses:
@@ -1525,7 +1525,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpsertMemoOrganizerRequest'
+          $ref: '#/definitions/api_v1.UpsertMemoOrganizerRequest'
       produces:
       - application/json
       responses:
@@ -1587,7 +1587,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api_v1.UpsertMemoRelationRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpsertMemoRelationRequest'
       produces:
       - application/json
       responses:
@@ -1747,7 +1747,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api_v1.CreateResourceRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateResourceRequest'
       produces:
       - application/json
       responses:
@@ -1805,7 +1805,7 @@ paths:
         name: patch
         required: true
         schema:
-          $ref: '#/definitions/api_v1.UpdateResourceRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpdateResourceRequest'
       produces:
       - application/json
       responses:
@@ -2146,7 +2146,7 @@ paths:
         name: body
         required: true
         schema:
-          $ref: '#/definitions/api_v1.CreateUserRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.CreateUserRequest'
       produces:
       - application/json
       responses:
@@ -2228,7 +2228,7 @@ paths:
         name: patch
         required: true
         schema:
-          $ref: '#/definitions/api_v1.UpdateUserRequest'
+          $ref: '#/definitions/github_com_usememos_memos_api_v1.UpdateUserRequest'
       produces:
       - application/json
       responses:

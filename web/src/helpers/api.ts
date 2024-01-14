@@ -14,7 +14,7 @@ export function upsertSystemSetting(systemSetting: SystemSetting) {
 }
 
 export function exportMemos() {
-  return axios.get("/api/v1/memo/export", {responseType: 'blob'});
+  return axios.get("/api/v1/memo/export", { responseType: "blob" });
 }
 
 export function vacuumDatabase() {

@@ -148,7 +148,7 @@ func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 //	@Failure	500				{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to compose memo response"
 //	@Router		/api/v1/memo [GET]
 func (s *APIV1Service) GetMemoList(c echo.Context) error {
-	list, httpError := s.getMemoList(c)
+	list, httpError := s.getMemosAsList(c)
 	if httpError != nil {
 		return httpError
 	}
@@ -179,10 +179,10 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 //	@Param		offset			query		int				false	"Offset"
 //	@Success	200				{object}	[]byte			"zip folder of Memos Markdown files"
 //	@Failure	400				{object}	nil				"Missing user to find memo"
-//	@Failure	500				{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to create memo file | Failed to close zip file writer"
+//	@Failure	500				{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to create memo file | "Failed to write to memo file | Failed to close zip file writer"
 //	@Router		/api/v1/memo [GET]
 func (s *APIV1Service) ExportMemos(c echo.Context) error {
-	list, httpError := s.getMemoList(c)
+	list, httpError := s.getMemosAsList(c)
 	if httpError != nil {
 		return httpError
 	}
@@ -195,6 +195,9 @@ func (s *APIV1Service) ExportMemos(c echo.Context) error {
 			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to create memo file").SetInternal(err)
 		}
 		_, err = f.Write([]byte(memo.Content))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to write to memo file").SetInternal(err)
+		}
 	}
 	err := writer.Close()
 	if err != nil {
@@ -926,7 +929,7 @@ func getIDListDiff(oldList, newList []int32) (addedList, removedList []int32) {
 	return addedList, removedList
 }
 
-func (s *APIV1Service) getMemoList(c echo.Context) ([]*store.Memo, *echo.HTTPError) {
+func (s *APIV1Service) getMemosAsList(c echo.Context) ([]*store.Memo, *echo.HTTPError) {
 	ctx := c.Request().Context()
 	find := &store.FindMemo{
 		OrderByPinned: true,

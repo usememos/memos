@@ -41,7 +41,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.SignIn"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SignIn"
                         }
                     }
                 ],
@@ -86,7 +86,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.SSOSignIn"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SSOSignIn"
                         }
                     }
                 ],
@@ -153,7 +153,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.SignUp"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SignUp"
                         }
                     }
                 ],
@@ -453,7 +453,7 @@ const docTemplate = `{
                         "description": "Missing user to find memo"
                     },
                     "500": {
-                        "description": "Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to create memo file | Failed to close zip file writer"
+                        "description": "Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to create memo file | \"Failed to write to memo file | Failed to close zip file writer"
                     }
                 }
             },
@@ -476,7 +476,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.CreateMemoRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateMemoRequest"
                         }
                     }
                 ],
@@ -694,7 +694,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.PatchMemoRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.PatchMemoRequest"
                         }
                     }
                 ],
@@ -746,7 +746,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertMemoOrganizerRequest"
+                            "$ref": "#/definitions/api_v1.UpsertMemoOrganizerRequest"
                         }
                     }
                 ],
@@ -837,7 +837,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.UpsertMemoRelationRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertMemoRelationRequest"
                         }
                     }
                 ],
@@ -991,7 +991,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.CreateResourceRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateResourceRequest"
                         }
                     }
                 ],
@@ -1115,7 +1115,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.UpdateResourceRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateResourceRequest"
                         }
                     }
                 ],
@@ -1591,7 +1591,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.CreateUserRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateUserRequest"
                         }
                     }
                 ],
@@ -1772,7 +1772,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.UpdateUserRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateUserRequest"
                         }
                     }
                 ],

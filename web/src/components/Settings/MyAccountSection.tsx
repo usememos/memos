@@ -1,12 +1,12 @@
 import { Button } from "@mui/joy";
+import * as api from "@/helpers/api";
+import { downloadFileFromUrl } from "@/helpers/utils";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import { useTranslate } from "@/utils/i18n";
 import showChangePasswordDialog from "../ChangePasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
 import AccessTokenSection from "./AccessTokenSection";
-import * as api from "@/helpers/api";
-import { downloadFileFromUrl } from "@/helpers/utils";
 
 const MyAccountSection = () => {
   const t = useTranslate();
@@ -40,11 +40,11 @@ const MyAccountSection = () => {
 };
 
 const downloadExportedMemos = () => {
-  api.exportMemos().then(response => {
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      downloadFileFromUrl(url, "memos-export.zip");
-      URL.revokeObjectURL(url);
-  })
-}
+  api.exportMemos().then((response) => {
+    const url = window.URL.createObjectURL(new Blob([response.data]));
+    downloadFileFromUrl(url, "memos-export.zip");
+    URL.revokeObjectURL(url);
+  });
+};
 
 export default MyAccountSection;

@@ -3,6 +3,7 @@ import copy from "copy-to-clipboard";
 import React, { useEffect, useRef } from "react";
 import { toast } from "react-hot-toast";
 import { getDateTimeString } from "@/helpers/datetime";
+import { downloadFileFromUrl } from "@/helpers/utils";
 import useLoading from "@/hooks/useLoading";
 import toImage from "@/labs/html2image";
 import { useUserStore, extractUsernameFromName } from "@/store/v1";
@@ -14,7 +15,6 @@ import MemoContent from "./MemoContent";
 import MemoResourceListView from "./MemoResourceListView";
 import UserAvatar from "./UserAvatar";
 import "@/less/share-memo-dialog.less";
-import { downloadFileFromUrl } from "@/helpers/utils";
 
 interface Props extends DialogProps {
   memo: Memo;
