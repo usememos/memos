@@ -41,7 +41,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SignIn"
+                            "$ref": "#/definitions/api_v1.SignIn"
                         }
                     }
                 ],
@@ -86,7 +86,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SSOSignIn"
+                            "$ref": "#/definitions/api_v1.SSOSignIn"
                         }
                     }
                 ],
@@ -153,7 +153,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SignUp"
+                            "$ref": "#/definitions/api_v1.SignUp"
                         }
                     }
                 ],
@@ -198,7 +198,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_usememos_memos_api_v1.IdentityProvider"
+                                "$ref": "#/definitions/api_v1.IdentityProvider"
                             }
                         }
                     },
@@ -225,7 +225,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateIdentityProviderRequest"
+                            "$ref": "#/definitions/api_v1.CreateIdentityProviderRequest"
                         }
                     }
                 ],
@@ -353,7 +353,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateIdentityProviderRequest"
+                            "$ref": "#/definitions/api_v1.UpdateIdentityProviderRequest"
                         }
                     }
                 ],
@@ -379,12 +379,12 @@ const docTemplate = `{
         "/api/v1/memo": {
             "get": {
                 "produces": [
-                    "application/zip"
+                    "application/json"
                 ],
                 "tags": [
                     "memo"
                 ],
-                "summary": "Get a zip folder of Markdown files containing memos matching optional filters",
+                "summary": "Get a list of memos matching optional filters",
                 "parameters": [
                     {
                         "type": "integer",
@@ -441,11 +441,11 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "zip folder of Memos Markdown files",
+                        "description": "Memo list",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "integer"
+                                "$ref": "#/definitions/store.Memo"
                             }
                         }
                     },
@@ -453,7 +453,7 @@ const docTemplate = `{
                         "description": "Missing user to find memo"
                     },
                     "500": {
-                        "description": "Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to create memo file | \"Failed to write to memo file | Failed to close zip file writer"
+                        "description": "Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to compose memo response"
                     }
                 }
             },
@@ -538,6 +538,88 @@ const docTemplate = `{
                     },
                     "500": {
                         "description": "Failed to get memo display with updated ts setting value | Failed to fetch all memo list | Failed to compose memo response"
+                    }
+                }
+            }
+        },
+        "/api/v1/memo/export": {
+            "get": {
+                "produces": [
+                    "application/zip"
+                ],
+                "tags": [
+                    "memo"
+                ],
+                "summary": "Get a zip folder of Markdown files containing memos matching optional filters",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Creator ID",
+                        "name": "creatorId",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Creator username",
+                        "name": "creatorUsername",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "NORMAL",
+                            "ARCHIVED"
+                        ],
+                        "type": "string",
+                        "description": "Row status",
+                        "name": "rowStatus",
+                        "in": "query"
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Pinned",
+                        "name": "pinned",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search for tag. Do not append #",
+                        "name": "tag",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search for content",
+                        "name": "content",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Limit",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Offset",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "zip folder of Memos Markdown files",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing user to find memo"
+                    },
+                    "500": {
+                        "description": "Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to create memo file | \"Failed to write to memo file | Failed to close zip file writer"
                     }
                 }
             }
@@ -746,7 +828,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_v1.UpsertMemoOrganizerRequest"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertMemoOrganizerRequest"
                         }
                     }
                 ],
@@ -837,7 +919,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertMemoRelationRequest"
+                            "$ref": "#/definitions/api_v1.UpsertMemoRelationRequest"
                         }
                     }
                 ],
@@ -991,7 +1073,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.CreateResourceRequest"
+                            "$ref": "#/definitions/api_v1.CreateResourceRequest"
                         }
                     }
                 ],
@@ -1115,7 +1197,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpdateResourceRequest"
+                            "$ref": "#/definitions/api_v1.UpdateResourceRequest"
                         }
                     }
                 ],
@@ -1154,7 +1236,7 @@ const docTemplate = `{
                     "200": {
                         "description": "System GetSystemStatus",
                         "schema": {
-                            "$ref": "#/definitions/api_v1.SystemStatus"
+                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemStatus"
                         }
                     },
                     "401": {
@@ -1330,7 +1412,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/github_com_usememos_memos_api_v1.SystemSetting"
+                                "$ref": "#/definitions/api_v1.SystemSetting"
                             }
                         }
                     },
@@ -1360,7 +1442,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/github_com_usememos_memos_api_v1.UpsertSystemSettingRequest"
+                            "$ref": "#/definitions/api_v1.UpsertSystemSettingRequest"
                         }
                     }
                 ],

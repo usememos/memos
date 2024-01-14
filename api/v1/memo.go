@@ -180,7 +180,7 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 //	@Success	200				{object}	[]byte			"zip folder of Memos Markdown files"
 //	@Failure	400				{object}	nil				"Missing user to find memo"
 //	@Failure	500				{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to create memo file | "Failed to write to memo file | Failed to close zip file writer"
-//	@Router		/api/v1/memo [GET]
+//	@Router		/api/v1/memo/export [GET]
 func (s *APIV1Service) ExportMemos(c echo.Context) error {
 	list, httpError := s.getMemosAsList(c)
 	if httpError != nil {
