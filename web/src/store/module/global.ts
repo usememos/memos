@@ -21,7 +21,7 @@ export const initialGlobalState = async () => {
       memoDisplayWithUpdatedTs: false,
       customizedProfile: {
         name: "Memos",
-        logoUrl: "/logo.png",
+        logoUrl: "/logo.webp",
         description: "",
         locale: "en",
         appearance: "system",
@@ -37,7 +37,7 @@ export const initialGlobalState = async () => {
       ...data,
       customizedProfile: {
         name: customizedProfile.name || "Memos",
-        logoUrl: customizedProfile.logoUrl || "/logo.png",
+        logoUrl: customizedProfile.logoUrl || "/logo.webp",
         description: customizedProfile.description,
         locale: customizedProfile.locale || "en",
         appearance: customizedProfile.appearance || "system",

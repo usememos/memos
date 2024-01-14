@@ -78,7 +78,7 @@ const App = () => {
   useEffect(() => {
     document.title = systemStatus.customizedProfile.name;
     const link = document.querySelector("link[rel~='icon']") as HTMLLinkElement;
-    link.href = systemStatus.customizedProfile.logoUrl || "/logo.png";
+    link.href = systemStatus.customizedProfile.logoUrl || "/logo.webp";
   }, [systemStatus.customizedProfile]);
 
   useEffect(() => {
