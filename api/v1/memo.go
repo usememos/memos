@@ -122,7 +122,7 @@ const maxContentLength = 1 << 30
 func (s *APIV1Service) registerMemoRoutes(g *echo.Group) {
 	g.GET("/memo", s.GetMemoList)
 	g.POST("/memo", s.CreateMemo)
-	g.GET("/memo/export", s.ExportMemo)
+	g.GET("/memo/export", s.ExportMemos)
 	g.GET("/memo/all", s.GetAllMemos)
 	g.GET("/memo/stats", s.GetMemoStats)
 	g.GET("/memo/:memoId", s.GetMemo)
@@ -164,7 +164,24 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 	return c.JSON(http.StatusOK, memoResponseList)
 }
 
-func (s *APIV1Service) ExportMemo(c echo.Context) error {
+// ExportMemos godoc
+//
+//	@Summary	Get a zip folder of Markdown files containing memos matching optional filters
+//	@Tags		memo
+//	@Produce	zip folder
+//	@Param		creatorId		query		int				false	"Creator ID"
+//	@Param		creatorUsername	query		string			false	"Creator username"
+//	@Param		rowStatus		query		store.RowStatus	false	"Row status"
+//	@Param		pinned			query		bool			false	"Pinned"
+//	@Param		tag				query		string			false	"Search for tag. Do not append #"
+//	@Param		content			query		string			false	"Search for content"
+//	@Param		limit			query		int				false	"Limit"
+//	@Param		offset			query		int				false	"Offset"
+//	@Success	200				{object}	[]byte	        "zip folder of Memos Markdown files"
+//	@Failure	400				{object}	nil				"Missing user to find memo"
+//	@Failure	500				{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to create memo file | Failed to close zip file writer"
+//	@Router		/api/v1/memo [GET]
+func (s *APIV1Service) ExportMemos(c echo.Context) error {
 	list, httpError := s.getMemoList(c)
 	if httpError != nil {
 		return httpError
