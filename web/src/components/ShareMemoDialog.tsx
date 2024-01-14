@@ -14,6 +14,7 @@ import MemoContent from "./MemoContent";
 import MemoResourceListView from "./MemoResourceListView";
 import UserAvatar from "./UserAvatar";
 import "@/less/share-memo-dialog.less";
+import { downloadFileFromUrl } from "@/helpers/utils";
 
 interface Props extends DialogProps {
   memo: Memo;
@@ -51,6 +52,7 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
       .then((url) => {
         downloadFileFromUrl(url, `memos-${getDateTimeString(Date.now())}.png`);
         downloadingImageState.setFinish();
+        URL.revokeObjectURL(url);
       })
       .catch((err) => {
         console.error(err);
@@ -59,14 +61,9 @@ const ShareMemoDialog: React.FC<Props> = (props: Props) => {
 
   const handleDownloadTextFileBtnClick = () => {
     const blob = new Blob([memo.content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
     downloadFileFromUrl(URL.createObjectURL(blob), `memos-${getDateTimeString(Date.now())}.md`);
-  };
-
-  const downloadFileFromUrl = (url: string, filename: string) => {
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    a.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleCopyLinkBtnClick = () => {

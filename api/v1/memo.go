@@ -168,7 +168,7 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 //
 //	@Summary	Get a zip folder of Markdown files containing memos matching optional filters
 //	@Tags		memo
-//	@Produce	zip folder
+//	@Produce	application/zip
 //	@Param		creatorId		query		int				false	"Creator ID"
 //	@Param		creatorUsername	query		string			false	"Creator username"
 //	@Param		rowStatus		query		store.RowStatus	false	"Row status"
@@ -177,7 +177,7 @@ func (s *APIV1Service) GetMemoList(c echo.Context) error {
 //	@Param		content			query		string			false	"Search for content"
 //	@Param		limit			query		int				false	"Limit"
 //	@Param		offset			query		int				false	"Offset"
-//	@Success	200				{object}	[]byte	        "zip folder of Memos Markdown files"
+//	@Success	200				{object}	[]byte			"zip folder of Memos Markdown files"
 //	@Failure	400				{object}	nil				"Missing user to find memo"
 //	@Failure	500				{object}	nil				"Failed to get memo display with updated ts setting value | Failed to fetch memo list | Failed to create memo file | Failed to close zip file writer"
 //	@Router		/api/v1/memo [GET]

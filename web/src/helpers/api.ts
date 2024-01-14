@@ -13,6 +13,10 @@ export function upsertSystemSetting(systemSetting: SystemSetting) {
   return axios.post<SystemSetting>("/api/v1/system/setting", systemSetting);
 }
 
+export function exportMemos() {
+  return axios.get("/api/v1/memo/export", {responseType: 'blob'});
+}
+
 export function vacuumDatabase() {
   return axios.post("/api/v1/system/vacuum");
 }

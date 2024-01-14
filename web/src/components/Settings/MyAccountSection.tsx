@@ -5,6 +5,8 @@ import showChangePasswordDialog from "../ChangePasswordDialog";
 import showUpdateAccountDialog from "../UpdateAccountDialog";
 import UserAvatar from "../UserAvatar";
 import AccessTokenSection from "./AccessTokenSection";
+import * as api from "@/helpers/api";
+import { downloadFileFromUrl } from "@/helpers/utils";
 
 const MyAccountSection = () => {
   const t = useTranslate();
@@ -27,11 +29,22 @@ const MyAccountSection = () => {
         <Button variant="outlined" onClick={showChangePasswordDialog}>
           {t("setting.account-section.change-password")}
         </Button>
+        <Button variant="outlined" onClick={downloadExportedMemos}>
+          {t("setting.account-section.export-memos")}
+        </Button>
       </div>
 
       <AccessTokenSection />
     </div>
   );
 };
+
+const downloadExportedMemos = () => {
+  api.exportMemos().then(response => {
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      downloadFileFromUrl(url, "memos-export.zip");
+      URL.revokeObjectURL(url);
+  })
+}
 
 export default MyAccountSection;
