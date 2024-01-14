@@ -31,6 +31,18 @@ func TestOrderedListParser(t *testing.T) {
 			},
 		},
 		{
+			text: "  1. Hello World",
+			node: &ast.OrderedList{
+				Number: "1",
+				Indent: 2,
+				Children: []ast.Node{
+					&ast.Text{
+						Content: "Hello World",
+					},
+				},
+			},
+		},
+		{
 			text: "1aa. Hello World",
 			node: nil,
 		},

@@ -1,6 +1,9 @@
 package ast
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type BaseBlock struct {
 	BaseNode
@@ -110,7 +113,10 @@ func (n *Blockquote) Restore() string {
 type OrderedList struct {
 	BaseBlock
 
-	Number   string
+	// Number is the number of the list.
+	Number string
+	// Indent is the number of spaces.
+	Indent   int
 	Children []Node
 }
 
@@ -123,14 +129,16 @@ func (n *OrderedList) Restore() string {
 	for _, child := range n.Children {
 		result += child.Restore()
 	}
-	return fmt.Sprintf("%s. %s", n.Number, result)
+	return fmt.Sprintf("%s%s. %s", strings.Repeat(" ", n.Indent), n.Number, result)
 }
 
 type UnorderedList struct {
 	BaseBlock
 
 	// Symbol is "*" or "-" or "+".
-	Symbol   string
+	Symbol string
+	// Indent is the number of spaces.
+	Indent   int
 	Children []Node
 }
 
@@ -143,14 +151,16 @@ func (n *UnorderedList) Restore() string {
 	for _, child := range n.Children {
 		result += child.Restore()
 	}
-	return fmt.Sprintf("%s %s", n.Symbol, result)
+	return fmt.Sprintf("%s%s %s", strings.Repeat(" ", n.Indent), n.Symbol, result)
 }
 
 type TaskList struct {
 	BaseBlock
 
 	// Symbol is "*" or "-" or "+".
-	Symbol   string
+	Symbol string
+	// Indent is the number of spaces.
+	Indent   int
 	Complete bool
 	Children []Node
 }
@@ -168,7 +178,7 @@ func (n *TaskList) Restore() string {
 	if n.Complete {
 		complete = "x"
 	}
-	return fmt.Sprintf("%s [%s] %s", n.Symbol, complete, result)
+	return fmt.Sprintf("%s%s [%s] %s", strings.Repeat(" ", n.Indent), n.Symbol, complete, result)
 }
 
 type MathBlock struct {

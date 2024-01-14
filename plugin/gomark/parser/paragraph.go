@@ -26,9 +26,6 @@ func (*ParagraphParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if len(contentTokens) == 0 {
 		return 0, false
 	}
-	if len(contentTokens) == 1 && contentTokens[0].Type == tokenizer.Newline {
-		return 0, false
-	}
 	return len(contentTokens), true
 }
 

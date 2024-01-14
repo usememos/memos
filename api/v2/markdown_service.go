@@ -54,13 +54,13 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 		node.Node = &apiv2pb.Node_BlockquoteNode{BlockquoteNode: &apiv2pb.BlockquoteNode{Children: children}}
 	case *ast.OrderedList:
 		children := convertFromASTNodes(n.Children)
-		node.Node = &apiv2pb.Node_OrderedListNode{OrderedListNode: &apiv2pb.OrderedListNode{Number: n.Number, Children: children}}
+		node.Node = &apiv2pb.Node_OrderedListNode{OrderedListNode: &apiv2pb.OrderedListNode{Number: n.Number, Indent: int32(n.Indent), Children: children}}
 	case *ast.UnorderedList:
 		children := convertFromASTNodes(n.Children)
-		node.Node = &apiv2pb.Node_UnorderedListNode{UnorderedListNode: &apiv2pb.UnorderedListNode{Symbol: n.Symbol, Children: children}}
+		node.Node = &apiv2pb.Node_UnorderedListNode{UnorderedListNode: &apiv2pb.UnorderedListNode{Symbol: n.Symbol, Indent: int32(n.Indent), Children: children}}
 	case *ast.TaskList:
 		children := convertFromASTNodes(n.Children)
-		node.Node = &apiv2pb.Node_TaskListNode{TaskListNode: &apiv2pb.TaskListNode{Symbol: n.Symbol, Complete: n.Complete, Children: children}}
+		node.Node = &apiv2pb.Node_TaskListNode{TaskListNode: &apiv2pb.TaskListNode{Symbol: n.Symbol, Indent: int32(n.Indent), Complete: n.Complete, Children: children}}
 	case *ast.MathBlock:
 		node.Node = &apiv2pb.Node_MathBlockNode{MathBlockNode: &apiv2pb.MathBlockNode{Content: n.Content}}
 	case *ast.Text:
@@ -123,13 +123,13 @@ func convertToASTNode(node *apiv2pb.Node) ast.Node {
 		return &ast.Blockquote{Children: children}
 	case *apiv2pb.Node_OrderedListNode:
 		children := convertToASTNodes(n.OrderedListNode.Children)
-		return &ast.OrderedList{Number: n.OrderedListNode.Number, Children: children}
+		return &ast.OrderedList{Number: n.OrderedListNode.Number, Indent: int(n.OrderedListNode.Indent), Children: children}
 	case *apiv2pb.Node_UnorderedListNode:
 		children := convertToASTNodes(n.UnorderedListNode.Children)
-		return &ast.UnorderedList{Symbol: n.UnorderedListNode.Symbol, Children: children}
+		return &ast.UnorderedList{Symbol: n.UnorderedListNode.Symbol, Indent: int(n.UnorderedListNode.Indent), Children: children}
 	case *apiv2pb.Node_TaskListNode:
 		children := convertToASTNodes(n.TaskListNode.Children)
-		return &ast.TaskList{Symbol: n.TaskListNode.Symbol, Complete: n.TaskListNode.Complete, Children: children}
+		return &ast.TaskList{Symbol: n.TaskListNode.Symbol, Indent: int(n.TaskListNode.Indent), Complete: n.TaskListNode.Complete, Children: children}
 	case *apiv2pb.Node_MathBlockNode:
 		return &ast.MathBlock{Content: n.MathBlockNode.Content}
 	case *apiv2pb.Node_TextNode:

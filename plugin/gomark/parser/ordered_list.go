@@ -17,12 +17,22 @@ func (*OrderedListParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if len(tokens) < 4 {
 		return 0, false
 	}
-	if tokens[0].Type != tokenizer.Number || tokens[1].Type != tokenizer.Dot || tokens[2].Type != tokenizer.Space {
+
+	indent := 0
+	for _, token := range tokens {
+		if token.Type == tokenizer.Space {
+			indent++
+		} else {
+			break
+		}
+	}
+	corsor := indent
+	if tokens[corsor].Type != tokenizer.Number || tokens[corsor+1].Type != tokenizer.Dot || tokens[corsor+2].Type != tokenizer.Space {
 		return 0, false
 	}
 
 	contentTokens := []*tokenizer.Token{}
-	for _, token := range tokens[3:] {
+	for _, token := range tokens[corsor+3:] {
 		if token.Type == tokenizer.Newline {
 			break
 		}
@@ -33,7 +43,7 @@ func (*OrderedListParser) Match(tokens []*tokenizer.Token) (int, bool) {
 		return 0, false
 	}
 
-	return len(contentTokens) + 3, true
+	return indent + len(contentTokens) + 3, true
 }
 
 func (p *OrderedListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
@@ -42,13 +52,22 @@ func (p *OrderedListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
 		return nil, errors.New("not matched")
 	}
 
-	contentTokens := tokens[3:size]
+	indent := 0
+	for _, token := range tokens {
+		if token.Type == tokenizer.Space {
+			indent++
+		} else {
+			break
+		}
+	}
+	contentTokens := tokens[indent+3 : size]
 	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err
 	}
 	return &ast.OrderedList{
-		Number:   tokens[0].Value,
+		Number:   tokens[indent].Value,
+		Indent:   indent,
 		Children: children,
 	}, nil
 }
