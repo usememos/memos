@@ -45,8 +45,8 @@ export const initialGlobalState = async () => {
       },
     };
     defaultGlobalState.locale =
-      defaultGlobalState.locale || defaultGlobalState.systemStatus.customizedProfile.locale || findNearestLanguageMatch(i18n.language);
-    defaultGlobalState.appearance = defaultGlobalState.appearance || defaultGlobalState.systemStatus.customizedProfile.appearance;
+      defaultGlobalState.systemStatus.customizedProfile.locale || defaultGlobalState.locale || findNearestLanguageMatch(i18n.language);
+    defaultGlobalState.appearance = defaultGlobalState.systemStatus.customizedProfile.appearance || defaultGlobalState.appearance;
   }
   store.dispatch(setGlobalState(defaultGlobalState));
 };
