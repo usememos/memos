@@ -115,6 +115,16 @@ const MemoEditor = (props: Props) => {
         handleSaveBtnClick();
         return;
       }
+      if (event.key === "b") {
+        const boldDelimiter = "**";
+        event.preventDefault();
+        styleHighlightedText(editorRef.current, boldDelimiter);
+      }
+      if (event.key === "i") {
+        const italicsDelimiter = "*";
+        event.preventDefault();
+        styleHighlightedText(editorRef.current, italicsDelimiter);
+      }
     }
     if (event.key === "Tab") {
       event.preventDefault();
@@ -337,6 +347,19 @@ const MemoEditor = (props: Props) => {
 
   const handleEditorFocus = () => {
     editorRef.current?.focus();
+  };
+
+  const styleHighlightedText = (editor: EditorRefActions, delimiter: string) => {
+    const cursorPosition = editor.getCursorPosition();
+    const selectedContent = editor.getSelectedContent();
+    if (selectedContent.startsWith(delimiter) && selectedContent.endsWith(delimiter)) {
+      editor.insertText(selectedContent.slice(delimiter.length, -delimiter.length));
+      const newContentLength = selectedContent.length - delimiter.length * 2;
+      editor.setCursorPosition(cursorPosition, cursorPosition + newContentLength);
+    } else {
+      editor.insertText(`${delimiter}${selectedContent}${delimiter}`);
+      editor.setCursorPosition(cursorPosition + delimiter.length, cursorPosition + delimiter.length + selectedContent.length);
+    }
   };
 
   const editorConfig = useMemo(
