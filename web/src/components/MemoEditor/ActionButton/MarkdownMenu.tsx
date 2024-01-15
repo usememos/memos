@@ -1,4 +1,6 @@
 import { Dropdown, IconButton, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Link } from "@mui/joy";
+import toast from "react-hot-toast";
 import Icon from "@/components/Icon";
 import showPreviewMarkdownDialog from "@/components/PreviewMarkdownDialog";
 import { EditorRefActions } from "../Editor";
@@ -58,6 +60,12 @@ const MarkdownMenu = (props: Props) => {
   };
 
   const handlePreviewClick = () => {
+    const content = editorRef.current?.getContent() ?? "";
+    if (content === "") {
+      toast.error("Nothing to preview");
+      return;
+    }
+
     showPreviewMarkdownDialog(editorRef.current?.getContent() ?? "");
   };
 
@@ -83,9 +91,14 @@ const MarkdownMenu = (props: Props) => {
           <span>Checkbox</span>
         </MenuItem>
         <MenuItem onClick={handlePreviewClick}>
-          <Icon.NotebookText className="w-4 h-auto" />
+          <Icon.GanttSquare className="w-4 h-auto" />
           <span>Preview</span>
         </MenuItem>
+        <div className="-mt-0.5 pl-2">
+          <Link fontSize={12} href="https://www.usememos.com/docs/getting-started/content-syntax" target="_blank">
+            Content syntax
+          </Link>
+        </div>
       </Menu>
     </Dropdown>
   );

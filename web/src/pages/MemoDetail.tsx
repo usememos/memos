@@ -35,12 +35,12 @@ const MemoDetail = () => {
   const [creator, setCreator] = useState<User>();
   const memoId = Number(params.memoId);
   const memo = memoStore.getMemoById(memoId);
-  const allowEdit = memo?.creatorId === currentUser?.id;
   const [parentMemo, setParentMemo] = useState<Memo | undefined>(undefined);
   const referenceRelations = memo?.relations.filter((relation) => relation.type === MemoRelation_Type.REFERENCE) || [];
   const commentRelations =
     memo?.relations.filter((relation) => relation.relatedMemoId === memo?.id && relation.type === MemoRelation_Type.COMMENT) || [];
   const comments = commentRelations.map((relation) => memoStore.getMemoById(relation.memoId)).filter((memo) => memo) as any as Memo[];
+  const readonly = memo?.creatorId !== currentUser?.id;
 
   // Prepare memo.
   useEffect(() => {
@@ -136,12 +136,12 @@ const MemoDetail = () => {
               </Link>
             </div>
           )}
-          <MemoContent memoId={memo.id} nodes={memo.nodes} readonly={true} />
+          <MemoContent memoId={memo.id} nodes={memo.nodes} readonly={readonly} />
           <MemoResourceListView resourceList={memo.resources} />
           <MemoRelationListView memo={memo} relationList={referenceRelations} />
           <div className="w-full mt-3 flex flex-row justify-between items-center gap-2">
             <div className="flex flex-row justify-start items-center">
-              {allowEdit && (
+              {!readonly && (
                 <Select
                   className="w-auto text-sm"
                   variant="plain"
@@ -162,7 +162,7 @@ const MemoDetail = () => {
               )}
             </div>
             <div className="flex flex-row sm:justify-end items-center">
-              {allowEdit && (
+              {!readonly && (
                 <Tooltip title={"Edit"} placement="top">
                   <IconButton size="sm" onClick={handleEditMemoClick}>
                     <Icon.Edit3 className="w-4 h-auto text-gray-600 dark:text-gray-400" />

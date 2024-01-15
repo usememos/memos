@@ -74,6 +74,7 @@
     - [CodeNode](#memos-api-v2-CodeNode)
     - [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode)
     - [HeadingNode](#memos-api-v2-HeadingNode)
+    - [HighlightNode](#memos-api-v2-HighlightNode)
     - [HorizontalRuleNode](#memos-api-v2-HorizontalRuleNode)
     - [ImageNode](#memos-api-v2-ImageNode)
     - [ItalicNode](#memos-api-v2-ItalicNode)
@@ -1084,6 +1085,21 @@
 
 
 
+<a name="memos-api-v2-HighlightNode"></a>
+
+### HighlightNode
+
+
+
+| Field | Type | Label | Description |
+| ----- | ---- | ----- | ----------- |
+| content | [string](#string) |  |  |
+
+
+
+
+
+
 <a name="memos-api-v2-HorizontalRuleNode"></a>
 
 ### HorizontalRuleNode
@@ -1218,6 +1234,7 @@
 | strikethrough_node | [StrikethroughNode](#memos-api-v2-StrikethroughNode) |  |  |
 | escaping_character_node | [EscapingCharacterNode](#memos-api-v2-EscapingCharacterNode) |  |  |
 | math_node | [MathNode](#memos-api-v2-MathNode) |  |  |
+| highlight_node | [HighlightNode](#memos-api-v2-HighlightNode) |  |  |
 
 
 
@@ -1233,6 +1250,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | number | [string](#string) |  |  |
+| indent | [int32](#int32) |  |  |
 | children | [Node](#memos-api-v2-Node) | repeated |  |
 
 
@@ -1324,6 +1342,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | symbol | [string](#string) |  |  |
+| indent | [int32](#int32) |  |  |
 | complete | [bool](#bool) |  |  |
 | children | [Node](#memos-api-v2-Node) | repeated |  |
 
@@ -1356,6 +1375,7 @@
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
 | symbol | [string](#string) |  |  |
+| indent | [int32](#int32) |  |  |
 | children | [Node](#memos-api-v2-Node) | repeated |  |
 
 
@@ -1395,6 +1415,7 @@
 | STRIKETHROUGH | 20 |  |
 | ESCAPING_CHARACTER | 21 |  |
 | MATH | 22 |  |
+| HIGHLIGHT | 23 |  |
 
 
  

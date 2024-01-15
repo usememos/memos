@@ -90,7 +90,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		"UNIX_TIMESTAMP(`memo`.`updated_ts`) AS `updated_ts`",
 		"`memo`.`row_status` AS `row_status`",
 		"`memo`.`visibility` AS `visibility`",
-		"`memo_organizer`.`pinned` AS `pinned`",
+		"IFNULL(`memo_organizer`.`pinned`, 0) AS `pinned`",
 		"`memo_relation`.`related_memo_id` AS `parent_id`",
 	}
 	if !find.ExcludeContent {
@@ -114,7 +114,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	list := make([]*store.Memo, 0)
 	for rows.Next() {
 		var memo store.Memo
-		pinned := sql.NullBool{}
 		dests := []any{
 			&memo.ID,
 			&memo.CreatorID,
@@ -122,7 +121,7 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 			&memo.UpdatedTs,
 			&memo.RowStatus,
 			&memo.Visibility,
-			&pinned,
+			&memo.Pinned,
 			&memo.ParentID,
 		}
 		if !find.ExcludeContent {
@@ -130,9 +129,6 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 		}
 		if err := rows.Scan(dests...); err != nil {
 			return nil, err
-		}
-		if pinned.Valid {
-			memo.Pinned = pinned.Bool
 		}
 		list = append(list, &memo)
 	}

@@ -14,7 +14,7 @@ func NewBlockquoteParser() *BlockquoteParser {
 }
 
 func (*BlockquoteParser) Match(tokens []*tokenizer.Token) (int, bool) {
-	if len(tokens) < 4 {
+	if len(tokens) < 3 {
 		return 0, false
 	}
 	if tokens[0].Type != tokenizer.GreaterThan || tokens[1].Type != tokenizer.Space {

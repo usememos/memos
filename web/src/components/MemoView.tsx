@@ -8,7 +8,6 @@ import { UNKNOWN_ID } from "@/helpers/consts";
 import { getRelativeTimeString, getTimeStampByDate } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useNavigateTo from "@/hooks/useNavigateTo";
-import { useFilterStore } from "@/store/module";
 import { useUserStore, extractUsernameFromName, useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
@@ -41,7 +40,6 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const { i18n } = useTranslation();
-  const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const userStore = useUserStore();
   const user = useCurrentUser();
@@ -157,15 +155,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
   const handleMemoContentClick = async (e: React.MouseEvent) => {
     const targetEl = e.target as HTMLElement;
 
-    if (targetEl.classList.contains("tag-container")) {
-      const tagName = targetEl.innerText.slice(1);
-      const currTagQuery = filterStore.getState().tag;
-      if (currTagQuery === tagName) {
-        filterStore.setTagFilter(undefined);
-      } else {
-        filterStore.setTagFilter(tagName);
-      }
-    } else if (targetEl.tagName === "IMG") {
+    if (targetEl.tagName === "IMG") {
       const imgUrl = targetEl.getAttribute("src");
       if (imgUrl) {
         showPreviewImageDialog([imgUrl], 0);
@@ -263,7 +253,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
           )}
         </div>
       </div>
-      <MemoContent memoId={memo.id} nodes={memo.nodes} onMemoContentClick={handleMemoContentClick} />
+      <MemoContent memoId={memo.id} nodes={memo.nodes} readonly={readonly} onClick={handleMemoContentClick} />
       <MemoResourceListView resourceList={memo.resources} />
       <MemoRelationListView memo={memo} relationList={referenceRelations} />
     </div>

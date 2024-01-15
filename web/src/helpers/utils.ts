@@ -91,3 +91,12 @@ export const downloadFileFromUrl = (url: string, filename: string) => {
   a.click();
   a.remove();
 };
+
+export const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url);
+    return true;
+  } catch (err) {
+    return false;
+  }
+};

@@ -17,13 +17,23 @@ func (*UnorderedListParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	if len(tokens) < 3 {
 		return 0, false
 	}
-	symbolToken := tokens[0]
-	if (symbolToken.Type != tokenizer.Hyphen && symbolToken.Type != tokenizer.Asterisk && symbolToken.Type != tokenizer.PlusSign) || tokens[1].Type != tokenizer.Space {
+
+	indent := 0
+	for _, token := range tokens {
+		if token.Type == tokenizer.Space {
+			indent++
+		} else {
+			break
+		}
+	}
+	corsor := indent
+	symbolToken := tokens[corsor]
+	if (symbolToken.Type != tokenizer.Hyphen && symbolToken.Type != tokenizer.Asterisk && symbolToken.Type != tokenizer.PlusSign) || tokens[corsor+1].Type != tokenizer.Space {
 		return 0, false
 	}
 
 	contentTokens := []*tokenizer.Token{}
-	for _, token := range tokens[2:] {
+	for _, token := range tokens[corsor+2:] {
 		if token.Type == tokenizer.Newline {
 			break
 		}
@@ -33,7 +43,7 @@ func (*UnorderedListParser) Match(tokens []*tokenizer.Token) (int, bool) {
 		return 0, false
 	}
 
-	return len(contentTokens) + 2, true
+	return indent + len(contentTokens) + 2, true
 }
 
 func (p *UnorderedListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error) {
@@ -42,14 +52,23 @@ func (p *UnorderedListParser) Parse(tokens []*tokenizer.Token) (ast.Node, error)
 		return nil, errors.New("not matched")
 	}
 
-	symbolToken := tokens[0]
-	contentTokens := tokens[2:size]
+	indent := 0
+	for _, token := range tokens {
+		if token.Type == tokenizer.Space {
+			indent++
+		} else {
+			break
+		}
+	}
+	symbolToken := tokens[indent]
+	contentTokens := tokens[indent+2 : size]
 	children, err := ParseInline(contentTokens)
 	if err != nil {
 		return nil, err
 	}
 	return &ast.UnorderedList{
 		Symbol:   symbolToken.Type,
+		Indent:   indent,
 		Children: children,
 	}, nil
 }

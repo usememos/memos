@@ -7,6 +7,7 @@ import {
   CodeNode,
   EscapingCharacterNode,
   HeadingNode,
+  HighlightNode,
   HorizontalRuleNode,
   ImageNode,
   ItalicNode,
@@ -29,6 +30,7 @@ import Code from "./Code";
 import CodeBlock from "./CodeBlock";
 import EscapingCharacter from "./EscapingCharacter";
 import Heading from "./Heading";
+import Highlight from "./Highlight";
 import HorizontalRule from "./HorizontalRule";
 import Image from "./Image";
 import Italic from "./Italic";
@@ -92,6 +94,8 @@ const Renderer: React.FC<Props> = ({ index, node }: Props) => {
       return <Strikethrough {...(node.strikethroughNode as StrikethroughNode)} />;
     case NodeType.MATH:
       return <Math {...(node.mathNode as MathNode)} />;
+    case NodeType.HIGHLIGHT:
+      return <Highlight {...(node.highlightNode as HighlightNode)} />;
     case NodeType.ESCAPING_CHARACTER:
       return <EscapingCharacter {...(node.escapingCharacterNode as EscapingCharacterNode)} />;
     default:

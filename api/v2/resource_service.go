@@ -2,6 +2,7 @@ package v2
 
 import (
 	"context"
+	"net/url"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -11,6 +12,40 @@ import (
 	apiv2pb "github.com/usememos/memos/proto/gen/api/v2"
 	"github.com/usememos/memos/store"
 )
+
+func (s *APIV2Service) CreateResource(ctx context.Context, request *apiv2pb.CreateResourceRequest) (*apiv2pb.CreateResourceResponse, error) {
+	user, err := getCurrentUser(ctx, s.Store)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get current user: %v", err)
+	}
+	if request.ExternalLink != "" {
+		// Only allow those external links scheme with http/https
+		linkURL, err := url.Parse(request.ExternalLink)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid external link: %v", err)
+		}
+		if linkURL.Scheme != "http" && linkURL.Scheme != "https" {
+			return nil, status.Errorf(codes.InvalidArgument, "invalid external link scheme: %v", linkURL.Scheme)
+		}
+	}
+
+	create := &store.Resource{
+		CreatorID:    user.ID,
+		Filename:     request.Filename,
+		ExternalLink: request.ExternalLink,
+		Type:         request.Type,
+	}
+	if request.MemoId != nil {
+		create.MemoID = request.MemoId
+	}
+	resource, err := s.Store.CreateResource(ctx, create)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to create resource: %v", err)
+	}
+	return &apiv2pb.CreateResourceResponse{
+		Resource: s.convertResourceFromStore(ctx, resource),
+	}, nil
+}
 
 func (s *APIV2Service) ListResources(ctx context.Context, _ *apiv2pb.ListResourcesRequest) (*apiv2pb.ListResourcesResponse, error) {
 	user, err := getCurrentUser(ctx, s.Store)

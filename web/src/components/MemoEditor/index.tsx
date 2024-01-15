@@ -23,6 +23,7 @@ import TagSelector from "./ActionButton/TagSelector";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
+import { handleEditorKeydownWithMarkdownShortcuts } from "./handlers";
 
 interface Props {
   className?: string;
@@ -115,6 +116,8 @@ const MemoEditor = (props: Props) => {
         handleSaveBtnClick();
         return;
       }
+
+      handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
     }
     if (event.key === "Tab") {
       event.preventDefault();
@@ -365,6 +368,7 @@ const MemoEditor = (props: Props) => {
       <Editor ref={editorRef} {...editorConfig} />
       <div className="relative w-full flex flex-row justify-between items-center pt-2" onFocus={(e) => e.stopPropagation()}>
         <div className="flex flex-row justify-start items-center opacity-80">
+          <MarkdownMenu editorRef={editorRef} />
           <TagSelector editorRef={editorRef} />
           <IconButton size="sm" onClick={handleUploadFileBtnClick}>
             <Icon.Image className="w-5 h-5 mx-auto" />
@@ -372,7 +376,6 @@ const MemoEditor = (props: Props) => {
           <IconButton size="sm" onClick={handleAddMemoRelationBtnClick}>
             <Icon.Link className="w-5 h-5 mx-auto" />
           </IconButton>
-          <MarkdownMenu editorRef={editorRef} />
         </div>
       </div>
       <ResourceListView resourceList={state.resourceList} setResourceList={handleSetResourceList} />

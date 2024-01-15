@@ -116,7 +116,7 @@ func (d *DB) UpdateResource(ctx context.Context, update *store.UpdateResource) (
 	set, args := []string{}, []any{}
 
 	if v := update.UpdatedTs; v != nil {
-		set, args = append(set, "`updated_ts` = ?"), append(args, *v)
+		set, args = append(set, "`updated_ts` = FROM_UNIXTIME(?)"), append(args, *v)
 	}
 	if v := update.Filename; v != nil {
 		set, args = append(set, "`filename` = ?"), append(args, *v)
