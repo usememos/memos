@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
-import { isValidUrl } from "@/helpers/utils";
 import { useGlobalStore, useResourceStore } from "@/store/module";
 import { useMemoStore, useUserStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
@@ -24,6 +23,7 @@ import TagSelector from "./ActionButton/TagSelector";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
+import { handleEditorKeydownWithMarkdownShortcuts } from "./handlers";
 
 interface Props {
   className?: string;
@@ -116,20 +116,8 @@ const MemoEditor = (props: Props) => {
         handleSaveBtnClick();
         return;
       }
-      if (event.key === "b") {
-        const boldDelimiter = "**";
-        event.preventDefault();
-        styleHighlightedText(editorRef.current, boldDelimiter);
-      }
-      if (event.key === "i") {
-        const italicsDelimiter = "*";
-        event.preventDefault();
-        styleHighlightedText(editorRef.current, italicsDelimiter);
-      }
-      if (event.key === "k") {
-        event.preventDefault();
-        hyperlinkHighlightedTest(editorRef.current);
-      }
+
+      handleEditorKeydownWithMarkdownShortcuts(event, editorRef.current);
     }
     if (event.key === "Tab") {
       event.preventDefault();
@@ -254,9 +242,6 @@ const MemoEditor = (props: Props) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
       await uploadMultiFiles(event.clipboardData.files);
-    } else if (editorRef.current != null && isValidUrl(event.clipboardData.getData("Text"))) {
-      event.preventDefault();
-      hyperlinkHighlightedTest(editorRef.current, event.clipboardData.getData("Text"));
     }
   };
 
@@ -355,33 +340,6 @@ const MemoEditor = (props: Props) => {
 
   const handleEditorFocus = () => {
     editorRef.current?.focus();
-  };
-
-  const styleHighlightedText = (editor: EditorRefActions, delimiter: string) => {
-    const cursorPosition = editor.getCursorPosition();
-    const selectedContent = editor.getSelectedContent();
-    if (selectedContent.startsWith(delimiter) && selectedContent.endsWith(delimiter)) {
-      editor.insertText(selectedContent.slice(delimiter.length, -delimiter.length));
-      const newContentLength = selectedContent.length - delimiter.length * 2;
-      editor.setCursorPosition(cursorPosition, cursorPosition + newContentLength);
-    } else {
-      editor.insertText(`${delimiter}${selectedContent}${delimiter}`);
-      editor.setCursorPosition(cursorPosition + delimiter.length, cursorPosition + delimiter.length + selectedContent.length);
-    }
-  };
-
-  const hyperlinkHighlightedTest = (editor: EditorRefActions, url?: string) => {
-    const cursorPosition = editor.getCursorPosition();
-    const selectedContent = editor.getSelectedContent();
-    const blankURL = "url";
-    url = url ?? blankURL;
-
-    editor.insertText(`[${selectedContent}](${url})`);
-
-    if (url === blankURL) {
-      const newCursorStart = cursorPosition + selectedContent.length + 3;
-      editor.setCursorPosition(newCursorStart, newCursorStart + url.length);
-    }
   };
 
   const editorConfig = useMemo(
