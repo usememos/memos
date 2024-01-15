@@ -10,19 +10,19 @@ interface Props {
   memoId?: number;
   readonly?: boolean;
   className?: string;
-  onMemoContentClick?: (e: React.MouseEvent) => void;
+  onClick?: (e: React.MouseEvent) => void;
 }
 
 const MemoContent: React.FC<Props> = (props: Props) => {
-  const { className, memoId, nodes, onMemoContentClick } = props;
+  const { className, memoId, nodes, onClick } = props;
   const currentUser = useCurrentUser();
   const memoStore = useMemoStore();
   const memoContentContainerRef = useRef<HTMLDivElement>(null);
   const allowEdit = !props.readonly && memoId && currentUser?.id === memoStore.getMemoById(memoId)?.creatorId;
 
   const handleMemoContentClick = async (e: React.MouseEvent) => {
-    if (onMemoContentClick) {
-      onMemoContentClick(e);
+    if (onClick) {
+      onClick(e);
     }
   };
 
