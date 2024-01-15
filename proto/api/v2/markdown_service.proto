@@ -47,6 +47,7 @@ enum NodeType {
   STRIKETHROUGH = 20;
   ESCAPING_CHARACTER = 21;
   MATH = 22;
+  HIGHLIGHT = 23;
 }
 
 message Node {
@@ -74,6 +75,7 @@ message Node {
     StrikethroughNode strikethrough_node = 21;
     EscapingCharacterNode escaping_character_node = 22;
     MathNode math_node = 23;
+    HighlightNode highlight_node = 24;
   }
 }
 
@@ -175,5 +177,9 @@ message EscapingCharacterNode {
 }
 
 message MathNode {
+  string content = 1;
+}
+
+message HighlightNode {
   string content = 1;
 }

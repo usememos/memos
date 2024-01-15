@@ -1,4 +1,5 @@
 import { Dropdown, IconButton, Menu, MenuButton, MenuItem } from "@mui/joy";
+import { Link } from "@mui/joy";
 import toast from "react-hot-toast";
 import Icon from "@/components/Icon";
 import showPreviewMarkdownDialog from "@/components/PreviewMarkdownDialog";
@@ -93,6 +94,11 @@ const MarkdownMenu = (props: Props) => {
           <Icon.GanttSquare className="w-4 h-auto" />
           <span>Preview</span>
         </MenuItem>
+        <div className="-mt-0.5 pl-2">
+          <Link fontSize={12} href="https://www.usememos.com/docs/getting-started/content-syntax" target="_blank">
+            Content syntax
+          </Link>
+        </div>
       </Menu>
     </Dropdown>
   );

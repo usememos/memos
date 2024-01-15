@@ -88,6 +88,8 @@ func convertFromASTNode(rawNode ast.Node) *apiv2pb.Node {
 		node.Node = &apiv2pb.Node_EscapingCharacterNode{EscapingCharacterNode: &apiv2pb.EscapingCharacterNode{Symbol: n.Symbol}}
 	case *ast.Math:
 		node.Node = &apiv2pb.Node_MathNode{MathNode: &apiv2pb.MathNode{Content: n.Content}}
+	case *ast.Highlight:
+		node.Node = &apiv2pb.Node_HighlightNode{HighlightNode: &apiv2pb.HighlightNode{Content: n.Content}}
 	default:
 		node.Node = &apiv2pb.Node_TextNode{TextNode: &apiv2pb.TextNode{}}
 	}
@@ -157,6 +159,8 @@ func convertToASTNode(node *apiv2pb.Node) ast.Node {
 		return &ast.EscapingCharacter{Symbol: n.EscapingCharacterNode.Symbol}
 	case *apiv2pb.Node_MathNode:
 		return &ast.Math{Content: n.MathNode.Content}
+	case *apiv2pb.Node_HighlightNode:
+		return &ast.Highlight{Content: n.HighlightNode.Content}
 	default:
 		return &ast.Text{}
 	}
