@@ -44,10 +44,6 @@ export function signout() {
   return axios.post("/api/v1/auth/signout");
 }
 
-export function createResource(resourceCreate: ResourceCreate) {
-  return axios.post<Resource>("/api/v1/resource", resourceCreate);
-}
-
 export function createResourceWithBlob(formData: FormData) {
   return axios.post<Resource>("/api/v1/resource/blob", formData);
 }

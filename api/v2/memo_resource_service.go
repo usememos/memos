@@ -48,7 +48,7 @@ func (s *APIV2Service) SetMemoResources(ctx context.Context, request *apiv2pb.Se
 			MemoID:    &request.Id,
 			UpdatedTs: &updatedTs,
 		}); err != nil {
-			return nil, status.Errorf(codes.Internal, "failed to update resource")
+			return nil, status.Errorf(codes.Internal, "failed to update resource: %v", err)
 		}
 	}
 

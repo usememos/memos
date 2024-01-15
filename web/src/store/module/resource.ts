@@ -1,6 +1,6 @@
 import { resourceServiceClient } from "@/grpcweb";
 import * as api from "@/helpers/api";
-import { Resource, UpdateResourceRequest } from "@/types/proto/api/v2/resource_service";
+import { CreateResourceRequest, Resource, UpdateResourceRequest } from "@/types/proto/api/v2/resource_service";
 import { useTranslate } from "@/utils/i18n";
 import store, { useAppSelector } from "../";
 import { patchResource, setResources } from "../reducer/resource";
@@ -17,8 +17,11 @@ export const useResourceStore = () => {
     getState: () => {
       return store.getState().resource;
     },
-    async createResource(resourceCreate: ResourceCreate): Promise<Resource> {
-      const { data: resource } = await api.createResource(resourceCreate);
+    async createResource(create: CreateResourceRequest): Promise<Resource> {
+      const { resource } = await resourceServiceClient.createResource(create);
+      if (!resource) {
+        throw new Error("resource is null");
+      }
       const resourceList = state.resources;
       store.dispatch(setResources([resource, ...resourceList]));
       return resource;
@@ -36,8 +39,8 @@ export const useResourceStore = () => {
       store.dispatch(setResources([resource, ...resourceList]));
       return resource;
     },
-    async updateResource(request: UpdateResourceRequest): Promise<Resource> {
-      const { resource } = await resourceServiceClient.updateResource(request);
+    async updateResource(update: UpdateResourceRequest): Promise<Resource> {
+      const { resource } = await resourceServiceClient.updateResource(update);
       if (!resource) {
         throw new Error("resource is null");
       }
