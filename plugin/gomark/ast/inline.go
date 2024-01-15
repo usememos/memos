@@ -191,3 +191,17 @@ func (*Math) Type() NodeType {
 func (n *Math) Restore() string {
 	return fmt.Sprintf("$%s$", n.Content)
 }
+
+type Highlight struct {
+	BaseInline
+
+	Content string
+}
+
+func (*Highlight) Type() NodeType {
+	return HighlightNode
+}
+
+func (n *Highlight) Restore() string {
+	return fmt.Sprintf("==%s==", n.Content)
+}

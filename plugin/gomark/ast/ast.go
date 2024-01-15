@@ -28,6 +28,7 @@ const (
 	StrikethroughNode
 	EscapingCharacterNode
 	MathNode
+	HighlightNode
 )
 
 type Node interface {
