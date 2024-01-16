@@ -243,7 +243,11 @@ const MemoEditor = (props: Props) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
       await uploadMultiFiles(event.clipboardData.files);
-    } else if (editorRef.current != null && isValidUrl(event.clipboardData.getData("Text"))) {
+    } else if (
+      editorRef.current != null &&
+      editorRef.current.getSelectedContent().length != 0 &&
+      isValidUrl(event.clipboardData.getData("Text"))
+    ) {
       event.preventDefault();
       hyperlinkHighlightedText(editorRef.current, event.clipboardData.getData("Text"));
     }
