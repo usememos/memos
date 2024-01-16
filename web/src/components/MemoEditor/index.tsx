@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import useLocalStorage from "react-use/lib/useLocalStorage";
 import { memoServiceClient } from "@/grpcweb";
 import { TAB_SPACE_WIDTH, UNKNOWN_ID } from "@/helpers/consts";
+import { isValidUrl } from "@/helpers/utils";
 import { useGlobalStore, useResourceStore } from "@/store/module";
 import { useMemoStore, useUserStore } from "@/store/v1";
 import { MemoRelation, MemoRelation_Type } from "@/types/proto/api/v2/memo_relation_service";
@@ -23,7 +24,7 @@ import TagSelector from "./ActionButton/TagSelector";
 import Editor, { EditorRefActions } from "./Editor";
 import RelationListView from "./RelationListView";
 import ResourceListView from "./ResourceListView";
-import { handleEditorKeydownWithMarkdownShortcuts } from "./handlers";
+import { handleEditorKeydownWithMarkdownShortcuts, hyperlinkHighlightedText } from "./handlers";
 
 interface Props {
   className?: string;
@@ -242,6 +243,13 @@ const MemoEditor = (props: Props) => {
     if (event.clipboardData && event.clipboardData.files.length > 0) {
       event.preventDefault();
       await uploadMultiFiles(event.clipboardData.files);
+    } else if (
+      editorRef.current != null &&
+      editorRef.current.getSelectedContent().length != 0 &&
+      isValidUrl(event.clipboardData.getData("Text"))
+    ) {
+      event.preventDefault();
+      hyperlinkHighlightedText(editorRef.current, event.clipboardData.getData("Text"));
     }
   };
 
