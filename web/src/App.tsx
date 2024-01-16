@@ -82,10 +82,10 @@ const App = () => {
   }, [systemStatus.customizedProfile]);
 
   useEffect(() => {
-    document.documentElement.setAttribute("lang", locale);
     const { locale: storageLocale } = storage.get(["locale"]);
     const currentLocale = storageLocale || userStore?.userSetting?.locale || locale;
     i18n.changeLanguage(currentLocale);
+    document.documentElement.setAttribute("lang", currentLocale);
     if (currentLocale === "ar") {
       document.documentElement.setAttribute("dir", "rtl");
     } else {
