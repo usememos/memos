@@ -1312,8 +1312,8 @@ type GetUserMemosStatsRequest struct {
 	// name is the name of the user to get stats for.
 	// Format: users/{username}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// timezone to use for stats
-	// uses tz identifier
+	// timezone location
+	// Format: uses tz identifier
 	// https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 	Timezone string `protobuf:"bytes,2,opt,name=timezone,proto3" json:"timezone,omitempty"`
 }

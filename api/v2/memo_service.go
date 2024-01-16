@@ -448,7 +448,7 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 
 	location, err := time.LoadLocation(request.Timezone)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "invalid location")
+		return nil, status.Errorf(codes.Internal, "invalid timezone location")
 	}
 
 	creationStats := make(map[string]int32)
