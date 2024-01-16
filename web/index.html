@@ -10,6 +10,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
     <!-- memos.metadata.head -->
     <title>Memos</title>
+    <script>
+      // Prevent flash of light mode.
+      const appearance = localStorage.getItem("appearance");
+      if (appearance === `"dark"`) {
+        document.documentElement.classList.add("dark");
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

@@ -50,12 +50,8 @@ export const initialGlobalState = async () => {
     // Otherwise, use server's default locale, set to storageLocale.
     const { locale: storageLocale, appearance: storageAppearance } = storage.get(["locale", "appearance"]);
     defaultGlobalState.locale =
-      storageLocale ||
-      defaultGlobalState.systemStatus.customizedProfile.locale ||
-      defaultGlobalState.locale ||
-      findNearestLanguageMatch(i18n.language);
-    defaultGlobalState.appearance =
-      storageAppearance || defaultGlobalState.systemStatus.customizedProfile.appearance || defaultGlobalState.appearance;
+      storageLocale || defaultGlobalState.systemStatus.customizedProfile.locale || findNearestLanguageMatch(i18n.language);
+    defaultGlobalState.appearance = storageAppearance || defaultGlobalState.systemStatus.customizedProfile.appearance;
   }
   store.dispatch(setGlobalState(defaultGlobalState));
 };

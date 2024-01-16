@@ -83,7 +83,7 @@ const App = () => {
 
   useEffect(() => {
     const { locale: storageLocale } = storage.get(["locale"]);
-    const currentLocale = storageLocale || userStore?.userSetting?.locale || locale;
+    const currentLocale = userStore.userSetting?.locale || storageLocale || locale;
     i18n.changeLanguage(currentLocale);
     document.documentElement.setAttribute("lang", currentLocale);
     if (currentLocale === "ar") {
@@ -91,17 +91,22 @@ const App = () => {
     } else {
       document.documentElement.setAttribute("dir", "ltr");
     }
-  }, [locale]);
+    storage.set({
+      locale: currentLocale,
+    });
+  }, [locale, userStore.userSetting?.locale]);
 
   useEffect(() => {
     const { appearance: storageAppearance } = storage.get(["appearance"]);
-    let currentAppearance = (storageAppearance || userStore?.userSetting?.appearance || appearance) as Appearance;
+    let currentAppearance = (userStore.userSetting?.appearance || storageAppearance || appearance) as Appearance;
     if (currentAppearance === "system") {
       currentAppearance = getSystemColorScheme();
     }
-
     setMode(currentAppearance);
-  }, [appearance]);
+    storage.set({
+      appearance: currentAppearance,
+    });
+  }, [appearance, userStore.userSetting?.appearance]);
 
   useEffect(() => {
     const root = document.documentElement;
