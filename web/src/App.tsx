@@ -82,12 +82,11 @@ const App = () => {
   }, [systemStatus.customizedProfile]);
 
   useEffect(() => {
-    document.documentElement.setAttribute("lang", locale);
-    i18n.changeLanguage(locale);
-    storage.set({
-      locale: locale,
-    });
-    if (locale === "ar") {
+    const { locale: storageLocale } = storage.get(["locale"]);
+    const currentLocale = storageLocale || userStore?.userSetting?.locale || locale;
+    i18n.changeLanguage(currentLocale);
+    document.documentElement.setAttribute("lang", currentLocale);
+    if (currentLocale === "ar") {
       document.documentElement.setAttribute("dir", "rtl");
     } else {
       document.documentElement.setAttribute("dir", "ltr");
@@ -95,12 +94,9 @@ const App = () => {
   }, [locale]);
 
   useEffect(() => {
-    storage.set({
-      appearance: appearance,
-    });
-
-    let currentAppearance = appearance;
-    if (appearance === "system") {
+    const { appearance: storageAppearance } = storage.get(["appearance"]);
+    let currentAppearance = (storageAppearance || userStore?.userSetting?.appearance || appearance) as Appearance;
+    if (currentAppearance === "system") {
       currentAppearance = getSystemColorScheme();
     }
 

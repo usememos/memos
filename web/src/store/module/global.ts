@@ -7,10 +7,9 @@ import store, { useAppSelector } from "../";
 import { setAppearance, setGlobalState, setLocale } from "../reducer/global";
 
 export const initialGlobalState = async () => {
-  const { locale: storageLocale, appearance: storageAppearance } = storage.get(["locale", "appearance"]);
   const defaultGlobalState = {
-    locale: (storageLocale || "en") as Locale,
-    appearance: (storageAppearance || "system") as Appearance,
+    locale: "en" as Locale,
+    appearance: "system" as Appearance,
     systemStatus: {
       allowSignUp: false,
       disablePasswordLogin: false,
@@ -44,9 +43,19 @@ export const initialGlobalState = async () => {
         externalUrl: "",
       },
     };
+    // Use storageLocale > userLocale > customizedProfile.locale (server's default locale)
+    // Initially, storageLocale is undefined and user is not logged in, so use server's default locale.
+    // User can change locale in login/sign up page, set storageLocale and override userLocale after logged in.
+    // Otherwise, storageLocale remains undefined and if userLocale has value after user logged in, set to storageLocale and re-render.
+    // Otherwise, use server's default locale, set to storageLocale.
+    const { locale: storageLocale, appearance: storageAppearance } = storage.get(["locale", "appearance"]);
     defaultGlobalState.locale =
-      defaultGlobalState.systemStatus.customizedProfile.locale || defaultGlobalState.locale || findNearestLanguageMatch(i18n.language);
-    defaultGlobalState.appearance = defaultGlobalState.systemStatus.customizedProfile.appearance || defaultGlobalState.appearance;
+      storageLocale ||
+      defaultGlobalState.systemStatus.customizedProfile.locale ||
+      defaultGlobalState.locale ||
+      findNearestLanguageMatch(i18n.language);
+    defaultGlobalState.appearance =
+      storageAppearance || defaultGlobalState.systemStatus.customizedProfile.appearance || defaultGlobalState.appearance;
   }
   store.dispatch(setGlobalState(defaultGlobalState));
 };
@@ -83,9 +92,17 @@ export const useGlobalStore = () => {
       );
     },
     setLocale: (locale: Locale) => {
+      // Set storageLocale to user selected locale.
+      storage.set({
+        locale: locale,
+      });
       store.dispatch(setLocale(locale));
     },
     setAppearance: (appearance: Appearance) => {
+      // Set storageAppearance to user selected appearance.
+      storage.set({
+        appearance: appearance,
+      });
       store.dispatch(setAppearance(appearance));
     },
   };
