@@ -35,6 +35,7 @@ func TestUserStore(t *testing.T) {
 	users, err = ts.ListUsers(ctx, &store.FindUser{})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(users))
+	ts.Close()
 }
 
 func createTestingHostUser(ctx context.Context, ts *store.Store) (*store.User, error) {

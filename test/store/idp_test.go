@@ -53,4 +53,5 @@ func TestIdentityProviderStore(t *testing.T) {
 	idpList, err := ts.ListIdentityProviders(ctx, &store.FindIdentityProvider{})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(idpList))
+	ts.Close()
 }

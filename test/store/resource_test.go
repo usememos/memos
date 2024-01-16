@@ -59,4 +59,5 @@ func TestResourceStore(t *testing.T) {
 		ID: 2,
 	})
 	require.NoError(t, err)
+	ts.Close()
 }

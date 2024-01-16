@@ -58,6 +58,7 @@ func TestMemoStore(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(memoList))
+	ts.Close()
 }
 
 func TestDeleteMemoStore(t *testing.T) {
@@ -77,4 +78,5 @@ func TestDeleteMemoStore(t *testing.T) {
 		ID: memo.ID,
 	})
 	require.NoError(t, err)
+	ts.Close()
 }

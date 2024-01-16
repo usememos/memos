@@ -50,4 +50,5 @@ func TestInboxStore(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(inboxes))
+	ts.Close()
 }

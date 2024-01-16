@@ -24,4 +24,5 @@ func TestUserSettingStore(t *testing.T) {
 	list, err := ts.ListUserSettings(ctx, &store.FindUserSetting{})
 	require.NoError(t, err)
 	require.Equal(t, 1, len(list))
+	ts.Close()
 }

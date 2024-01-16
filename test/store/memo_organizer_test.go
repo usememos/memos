@@ -59,4 +59,5 @@ func TestMemoOrganizerStore(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(memoOrganizers))
+	ts.Close()
 }

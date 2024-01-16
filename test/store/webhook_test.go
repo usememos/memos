@@ -47,4 +47,5 @@ func TestWebhookStore(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(webhooks))
+	ts.Close()
 }

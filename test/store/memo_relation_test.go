@@ -55,4 +55,5 @@ func TestMemoRelationStore(t *testing.T) {
 	}
 	_, err = ts.UpsertMemoRelation(ctx, commentRelation)
 	require.NoError(t, err)
+	ts.Close()
 }
