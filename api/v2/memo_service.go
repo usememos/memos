@@ -446,9 +446,14 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 		return nil, status.Errorf(codes.Internal, "failed to list memos")
 	}
 
+	location, err := time.LoadLocation(request.Timezone)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "invalid timezone location")
+	}
+
 	creationStats := make(map[string]int32)
 	for _, memo := range memos {
-		creationStats[time.Unix(memo.CreatedTs, 0).Format("2006-01-02")]++
+		creationStats[time.Unix(memo.CreatedTs, 0).In(location).Format("2006-01-02")]++
 	}
 
 	response := &apiv2pb.GetUserMemosStatsResponse{

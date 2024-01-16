@@ -236,6 +236,11 @@ message GetUserMemosStatsRequest {
   // name is the name of the user to get stats for.
   // Format: users/{username}
   string name = 1;
+
+  // timezone location
+  // Format: uses tz identifier
+  // https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  string timezone = 2;
 }
 
 message GetUserMemosStatsResponse {
