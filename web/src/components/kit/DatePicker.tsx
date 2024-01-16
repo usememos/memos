@@ -38,6 +38,7 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
     (async () => {
       const { memoCreationStats } = await memoServiceClient.getUserMemosStats({
         name: user.name,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       const m = new Map();
       Object.entries(memoCreationStats).forEach(([k]) => {

@@ -28,6 +28,7 @@ const PersonalStatistics = (props: Props) => {
       setIsRequesting(true);
       const { memoCreationStats } = await memoServiceClient.getUserMemosStats({
         name: user.name,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       setIsRequesting(false);
       setMemoAmount(Object.values(memoCreationStats).reduce((acc, cur) => acc + cur, 0));
