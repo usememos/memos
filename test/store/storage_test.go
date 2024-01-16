@@ -36,4 +36,5 @@ func TestStorageStore(t *testing.T) {
 	storageList, err = ts.ListStorages(ctx, &store.FindStorage{})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(storageList))
+	ts.Close()
 }

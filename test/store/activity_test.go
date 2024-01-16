@@ -30,4 +30,5 @@ func TestActivityStore(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, 1, len(activities))
 	require.Equal(t, activity, activities[0])
+	ts.Close()
 }

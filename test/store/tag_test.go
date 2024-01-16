@@ -35,4 +35,5 @@ func TestTagStore(t *testing.T) {
 	tags, err = ts.ListTags(ctx, &store.FindTag{})
 	require.NoError(t, err)
 	require.Equal(t, 0, len(tags))
+	ts.Close()
 }

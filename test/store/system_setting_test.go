@@ -36,4 +36,5 @@ func TestSystemSettingStore(t *testing.T) {
 	list, err := ts.ListSystemSettings(ctx, &store.FindSystemSetting{})
 	require.NoError(t, err)
 	require.Equal(t, 4, len(list))
+	ts.Close()
 }
