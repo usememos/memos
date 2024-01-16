@@ -1,6 +1,9 @@
 import { create } from "zustand";
 import { combine } from "zustand/middleware";
 import { authServiceClient, userServiceClient } from "@/grpcweb";
+import storage from "@/helpers/storage";
+import store from "@/store";
+import { setAppearance, setLocale } from "@/store/reducer/global";
 import { User, UserSetting } from "@/types/proto/api/v2/user_service";
 import { UserNamePrefix, extractUsernameFromName } from "./resourceName";
 
@@ -110,6 +113,22 @@ export const useUserStore = create(
           ...setting,
         }),
       });
+      const userLocale = get().userSetting?.locale;
+      const userAppearance = get().userSetting?.appearance;
+      const { locale: storedLocale, appearance: storedAppearance } = storage.get(["locale", "appearance"]);
+      // Use storageLocale > userLocale > default locale
+      const locale = storedLocale || userLocale || store.getState().global.locale;
+      const appearance = (storedAppearance || userAppearance || store.getState().global.appearance) as Appearance;
+
+      // If storedLocale is undefined, set storageLocale to userLocale.
+      if (storedLocale === undefined && storedAppearance === undefined) {
+        storage.set({ locale: locale });
+        storage.set({ appearance: appearance });
+      }
+
+      store.dispatch(setLocale(locale));
+      store.dispatch(setAppearance(appearance));
+
       return user;
     },
     updateUserSetting: async (userSetting: Partial<UserSetting>, updateMask: string[]) => {
