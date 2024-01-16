@@ -15,20 +15,7 @@ export const handleEditorKeydownWithMarkdownShortcuts = (event: React.KeyboardEv
   }
 };
 
-const styleHighlightedText = (editor: EditorRefActions, delimiter: string) => {
-  const cursorPosition = editor.getCursorPosition();
-  const selectedContent = editor.getSelectedContent();
-  if (selectedContent.startsWith(delimiter) && selectedContent.endsWith(delimiter)) {
-    editor.insertText(selectedContent.slice(delimiter.length, -delimiter.length));
-    const newContentLength = selectedContent.length - delimiter.length * 2;
-    editor.setCursorPosition(cursorPosition, cursorPosition + newContentLength);
-  } else {
-    editor.insertText(`${delimiter}${selectedContent}${delimiter}`);
-    editor.setCursorPosition(cursorPosition + delimiter.length, cursorPosition + delimiter.length + selectedContent.length);
-  }
-};
-
-const hyperlinkHighlightedText = (editor: EditorRefActions, url?: string) => {
+export const hyperlinkHighlightedText = (editor: EditorRefActions, url?: string) => {
   const cursorPosition = editor.getCursorPosition();
   const selectedContent = editor.getSelectedContent();
   const blankURL = "url";
@@ -39,5 +26,18 @@ const hyperlinkHighlightedText = (editor: EditorRefActions, url?: string) => {
   if (url === blankURL) {
     const newCursorStart = cursorPosition + selectedContent.length + 3;
     editor.setCursorPosition(newCursorStart, newCursorStart + url.length);
+  }
+};
+
+const styleHighlightedText = (editor: EditorRefActions, delimiter: string) => {
+  const cursorPosition = editor.getCursorPosition();
+  const selectedContent = editor.getSelectedContent();
+  if (selectedContent.startsWith(delimiter) && selectedContent.endsWith(delimiter)) {
+    editor.insertText(selectedContent.slice(delimiter.length, -delimiter.length));
+    const newContentLength = selectedContent.length - delimiter.length * 2;
+    editor.setCursorPosition(cursorPosition, cursorPosition + newContentLength);
+  } else {
+    editor.insertText(`${delimiter}${selectedContent}${delimiter}`);
+    editor.setCursorPosition(cursorPosition + delimiter.length, cursorPosition + delimiter.length + selectedContent.length);
   }
 };
