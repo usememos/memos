@@ -12,6 +12,7 @@ const UserBanner = () => {
   const { systemStatus } = globalStore.state;
   const user = useCurrentUser();
   const title = user ? user.nickname || user.username : systemStatus.customizedProfile.name || "memos";
+  const avatarUrl = user ? user.avatarUrl : systemStatus.customizedProfile.logoUrl;
 
   const handleSignOutBtnClick = async () => {
     await api.signout();
@@ -24,7 +25,7 @@ const UserBanner = () => {
         className="w-auto inline-flex"
         trigger={
           <div className="px-3 py-2 max-w-full flex flex-row justify-start items-center cursor-pointer rounded-2xl border border-transparent text-gray-800 dark:text-gray-300 hover:bg-white hover:border-gray-200 dark:hover:border-zinc-700 dark:hover:bg-zinc-800">
-            <UserAvatar className="shadow shrink-0 mr-2" avatarUrl={user?.avatarUrl} />
+            <UserAvatar className="shadow shrink-0 mr-2" avatarUrl={avatarUrl} />
             <span className="text-lg font-medium text-slate-800 dark:text-gray-200 shrink truncate">{title}</span>
           </div>
         }
