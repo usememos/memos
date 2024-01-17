@@ -1,4 +1,5 @@
 import { Divider, Tooltip } from "@mui/joy";
+import classNames from "classnames";
 import copy from "copy-to-clipboard";
 import { memo, useEffect, useRef, useState } from "react";
 import { toast } from "react-hot-toast";
@@ -30,13 +31,13 @@ import "@/less/memo.less";
 interface Props {
   memo: Memo;
   showCreator?: boolean;
-  showParent?: boolean;
   showVisibility?: boolean;
   showPinnedStyle?: boolean;
+  className?: string;
 }
 
 const MemoView: React.FC<Props> = (props: Props) => {
-  const { memo } = props;
+  const { memo, className } = props;
   const t = useTranslate();
   const navigateTo = useNavigateTo();
   const { i18n } = useTranslation();
@@ -165,7 +166,7 @@ const MemoView: React.FC<Props> = (props: Props) => {
 
   return (
     <div
-      className={`group memo-wrapper ${"memos-" + memo.id} ${memo.pinned && props.showPinnedStyle ? "pinned" : ""}`}
+      className={classNames("group memo-wrapper", "memos-" + memo.id, memo.pinned && props.showPinnedStyle ? "pinned" : "", className)}
       ref={memoContainerRef}
     >
       <div className="memo-top-wrapper mb-1">

@@ -71,8 +71,9 @@ const Resources = () => {
       <div className="w-full px-4 sm:px-6">
         <div className="w-full shadow flex flex-col justify-start items-start px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 text-black dark:text-gray-300">
           <div className="relative w-full flex flex-row justify-between items-center">
-            <p className="px-2 py-1 flex flex-row justify-start items-center select-none opacity-80">
-              <Icon.Paperclip className="w-5 h-auto mr-1" /> {t("common.resources")}
+            <p className="py-1 flex flex-row justify-start items-center select-none opacity-80">
+              <Icon.Paperclip className="w-6 h-auto mr-1 opacity-80" />
+              <span className="text-lg">{t("common.resources")}</span>
             </p>
             <div>
               <Input

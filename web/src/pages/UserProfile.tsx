@@ -92,7 +92,7 @@ const UserProfile = () => {
                 </div>
               </div>
               {sortedMemos.map((memo) => (
-                <MemoView key={memo.id} memo={memo} showVisibility showPinnedStyle showParent />
+                <MemoView key={memo.id} memo={memo} showVisibility showPinnedStyle />
               ))}
               {isRequesting ? (
                 <div className="flex flex-col justify-start items-center w-full my-4">
