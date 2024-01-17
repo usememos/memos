@@ -36,12 +36,12 @@ const DatePicker: React.FC<DatePickerProps> = (props: DatePickerProps) => {
 
   useEffect(() => {
     (async () => {
-      const { memoCreationStats } = await memoServiceClient.getUserMemosStats({
+      const { stats } = await memoServiceClient.getUserMemosStats({
         name: user.name,
         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       });
       const m = new Map();
-      Object.entries(memoCreationStats).forEach(([k]) => {
+      Object.entries(stats).forEach(([k]) => {
         const utcOffsetMilliseconds = new Date().getTimezoneOffset() * 60 * 1000;
         const date = getDateStampByDate(new Date(getTimeStampByDate(k) + utcOffsetMilliseconds));
         m.set(date, true);

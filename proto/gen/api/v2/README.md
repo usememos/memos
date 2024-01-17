@@ -126,7 +126,7 @@
     - [GetMemoResponse](#memos-api-v2-GetMemoResponse)
     - [GetUserMemosStatsRequest](#memos-api-v2-GetUserMemosStatsRequest)
     - [GetUserMemosStatsResponse](#memos-api-v2-GetUserMemosStatsResponse)
-    - [GetUserMemosStatsResponse.MemoCreationStatsEntry](#memos-api-v2-GetUserMemosStatsResponse-MemoCreationStatsEntry)
+    - [GetUserMemosStatsResponse.StatsEntry](#memos-api-v2-GetUserMemosStatsResponse-StatsEntry)
     - [ListMemoCommentsRequest](#memos-api-v2-ListMemoCommentsRequest)
     - [ListMemoCommentsResponse](#memos-api-v2-ListMemoCommentsResponse)
     - [ListMemoRelationsRequest](#memos-api-v2-ListMemoRelationsRequest)
@@ -1794,16 +1794,16 @@
 
 | Field | Type | Label | Description |
 | ----- | ---- | ----- | ----------- |
-| memo_creation_stats | [GetUserMemosStatsResponse.MemoCreationStatsEntry](#memos-api-v2-GetUserMemosStatsResponse-MemoCreationStatsEntry) | repeated | memo_creation_stats is the stats of memo creation. key is the year-month-day string. e.g. &#34;2020-01-01&#34;. value is the count of memos created. |
+| stats | [GetUserMemosStatsResponse.StatsEntry](#memos-api-v2-GetUserMemosStatsResponse-StatsEntry) | repeated | stats is the stats of memo creating/updating activities. key is the year-month-day string. e.g. &#34;2020-01-01&#34;. |
 
 
 
 
 
 
-<a name="memos-api-v2-GetUserMemosStatsResponse-MemoCreationStatsEntry"></a>
+<a name="memos-api-v2-GetUserMemosStatsResponse-StatsEntry"></a>
 
-### GetUserMemosStatsResponse.MemoCreationStatsEntry
+### GetUserMemosStatsResponse.StatsEntry
 
 
 

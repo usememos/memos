@@ -14,7 +14,7 @@ const UserBanner = () => {
   const title = user ? user.nickname || user.username : systemStatus.customizedProfile.name || "memos";
   const avatarUrl = user ? user.avatarUrl : systemStatus.customizedProfile.logoUrl;
 
-  const handleSignOutBtnClick = async () => {
+  const handleSignOut = async () => {
     await api.signout();
     window.location.href = "/auth";
   };
@@ -37,9 +37,10 @@ const UserBanner = () => {
             {user != undefined && (
               <button
                 className="w-full px-3 truncate text-left leading-10 cursor-pointer rounded flex flex-row justify-start items-center dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-800"
-                onClick={handleSignOutBtnClick}
+                onClick={handleSignOut}
               >
-                <Icon.LogOut className="w-5 h-auto mr-1 opacity-60" /> {t("common.sign-out")}
+                <Icon.LogOut className="w-5 h-auto mr-1 opacity-60 shrink-0" />
+                <span className="truncate">{t("common.sign-out")}</span>
               </button>
             )}
           </>

@@ -143,11 +143,11 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		memoFind.VisibilityList = []store.Visibility{store.Public, store.Protected}
 	}
 
-	memoDisplayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
 	}
-	if memoDisplayWithUpdatedTs {
+	if displayWithUpdatedTs {
 		memoFind.OrderByUpdatedTs = true
 	}
 
@@ -436,12 +436,20 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 	}
 
 	normalRowStatus := store.Normal
-	memos, err := s.Store.ListMemos(ctx, &store.FindMemo{
+	memoFind := &store.FindMemo{
 		CreatorID:       &user.ID,
 		RowStatus:       &normalRowStatus,
 		ExcludeComments: true,
 		ExcludeContent:  true,
-	})
+	}
+	displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+	}
+	if displayWithUpdatedTs {
+		memoFind.OrderByUpdatedTs = true
+	}
+	memos, err := s.Store.ListMemos(ctx, memoFind)
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "failed to list memos")
 	}
@@ -451,13 +459,17 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 		return nil, status.Errorf(codes.Internal, "invalid timezone location")
 	}
 
-	creationStats := make(map[string]int32)
+	stats := make(map[string]int32)
 	for _, memo := range memos {
-		creationStats[time.Unix(memo.CreatedTs, 0).In(location).Format("2006-01-02")]++
+		displayTs := memo.CreatedTs
+		if displayWithUpdatedTs {
+			displayTs = memo.UpdatedTs
+		}
+		stats[time.Unix(displayTs, 0).In(location).Format("2006-01-02")]++
 	}
 
 	response := &apiv2pb.GetUserMemosStatsResponse{
-		MemoCreationStats: creationStats,
+		Stats: stats,
 	}
 	return response, nil
 }
