@@ -324,6 +324,23 @@ func (s *APIV1Service) SignUp(c echo.Context) error {
 		if !allowSignUpSettingValue {
 			return echo.NewHTTPError(http.StatusUnauthorized, "signup is disabled").SetInternal(err)
 		}
+
+		disablePasswordLoginSystemSetting, err := s.Store.GetSystemSetting(ctx, &store.FindSystemSetting{
+			Name: SystemSettingDisablePasswordLoginName.String(),
+		})
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, "Failed to find system setting").SetInternal(err)
+		}
+		if disablePasswordLoginSystemSetting != nil {
+			disablePasswordLogin := false
+			err = json.Unmarshal([]byte(disablePasswordLoginSystemSetting.Value), &disablePasswordLogin)
+			if err != nil {
+				return echo.NewHTTPError(http.StatusInternalServerError, "Failed to unmarshal system setting").SetInternal(err)
+			}
+			if disablePasswordLogin {
+				return echo.NewHTTPError(http.StatusUnauthorized, "password login is deactivated")
+			}
+		}
 	}
 
 	passwordHash, err := bcrypt.GenerateFromPassword([]byte(signup.Password), bcrypt.DefaultCost)
