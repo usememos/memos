@@ -108,7 +108,7 @@ const Timeline = () => {
                 key={group.month}
                 className={classNames("flex justify-start items-start w-full mt-2 mb-4", md ? "flex-row" : "flex-col")}
               >
-                <div className={classNames("flex shrink-0", md ? "flex-col w-32 pr-4 pl-1 pb-8" : "flex-row w-full pl-1 mt-2 mb-2")}>
+                <div className={classNames("flex shrink-0", md ? "flex-col w-32 pr-4 pl-2 pb-8" : "flex-row w-full pl-1 mt-2 mb-2")}>
                   <div className="w-full flex flex-col mt-2 mb-2">
                     <span className="font-medium text-4xl leading-none mb-1">
                       {new Date(group.month).toLocaleString(i18n.language, { month: "short" })}
@@ -122,11 +122,11 @@ const Timeline = () => {
                   {group.memos.map((memo, index) => (
                     <div
                       key={`${memo.id}-${memo.createTime}`}
-                      className="relative w-full flex flex-col justify-start items-start pl-4 sm:pl-8 pt-0"
+                      className={classNames("relative w-full flex flex-col justify-start items-start pl-4 sm:pl-10 pt-0")}
                     >
                       <MemoView className="!border !border-gray-100 dark:!border-zinc-700" memo={memo} />
                       {group.memos.length > 1 && (
-                        <div className="absolute -left-1 sm:left-2 top-4 h-full">
+                        <div className="absolute -left-2 sm:left-2 top-4 h-full">
                           {index !== group.memos.length - 1 && (
                             <div className="absolute top-2 left-[7px] h-full w-0.5 bg-gray-200 dark:bg-gray-700 block"></div>
                           )}

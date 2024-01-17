@@ -49,7 +49,7 @@ const ActivityCalendar = (props: Props) => {
         const date = `${year}-${month}-${day}`;
         const count = data[date] || 0;
         return day ? (
-          <Tooltip className="shrink-0" key={`${date}-${index}`} title={`${count} memos in ${date}`} placement="top">
+          <Tooltip className="shrink-0" key={`${date}-${index}`} title={`${count} memos in ${date}`} placement="top" arrow>
             <div className={classNames("w-3 h-3 rounded flex justify-center items-center", getBgColor(count, maxCount))}></div>
           </Tooltip>
         ) : (
