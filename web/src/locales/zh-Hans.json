@@ -349,6 +349,7 @@
       "enable-password-login-warning": "启用所有用户的密码登录。如果希望用户同时使用单点登录和密码登录，请开启密码登录",
       "max-upload-size": "最大上传大小 (MiB)",
       "max-upload-size-hint": "建议值为 32 MiB。",
+      "max-memo-content-length": "最大备忘录内容长度",
       "server-name": "服务名称",
       "telegram-bot-token": "Telegram 机器人 Token",
       "telegram-bot-token-description": "Telegram 机器人 Token 或 `http…/bot<token>` 格式的代理地址",

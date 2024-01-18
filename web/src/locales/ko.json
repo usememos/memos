@@ -349,6 +349,7 @@
       "enable-password-login-warning": "모든 사용자가 비밀번호를 사용해서 로그인할 수 있게 합니다. 사용자들이 SSO와 비밀번호 둘 다 사용할 수 있게 하고 싶은 경우에만 켜 주세요",
       "max-upload-size": "최대 업로드 크기 (MiB)",
       "max-upload-size-hint": "권장값은 32 MiB입니다.",
+      "max-memo-content-length": "메모 내용 최대 길이",
       "server-name": "서버 이름",
       "telegram-bot-token": "텔레그램 봇 연동",
       "telegram-bot-token-description": "`http…/bot<token>` 형태의 API 프록시 또는 텔레그램 봇 토큰",

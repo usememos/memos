@@ -336,6 +336,7 @@
       "enable-password-login-warning": "これにより、すべてのユーザーのパスワードでのログインが有効になります。SSOとパスワードの両方を使用してログインできるようにしたい場合のみ、続行してください❗",
       "max-upload-size": "最大ファイルサイズ(MiB)",
       "max-upload-size-hint": "推奨サイズは32 MiBです。",
+      "max-memo-content-length": "メモの最大文字数",
       "server-name": "サーバーの名前",
       "telegram-bot-token": "Telegram Bot Token",
       "telegram-bot-token-description": "Telegram Bot TokenかAPI Proxyを`http.../bot<token>`のように入力してください。",

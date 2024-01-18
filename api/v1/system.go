@@ -26,6 +26,8 @@ type SystemStatus struct {
 	DisablePublicMemos bool `json:"disablePublicMemos"`
 	// Max upload size.
 	MaxUploadSizeMiB int `json:"maxUploadSizeMiB"`
+	// Max memo content length.
+	MaxMemoContentLength int `json:"maxMemoContentLength"`
 	// Additional style.
 	AdditionalStyle string `json:"additionalStyle"`
 	// Additional script.
@@ -75,8 +77,9 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 			Version: s.Profile.Version,
 		},
 		// Allow sign up by default.
-		AllowSignUp:      true,
-		MaxUploadSizeMiB: 32,
+		AllowSignUp:          true,
+		MaxUploadSizeMiB:     32,
+		MaxMemoContentLength: 8192,
 		CustomizedProfile: CustomizedProfile{
 			Name:       "Memos",
 			Locale:     "en",
@@ -122,6 +125,8 @@ func (s *APIV1Service) GetSystemStatus(c echo.Context) error {
 			systemStatus.DisablePublicMemos = baseValue.(bool)
 		case SystemSettingMaxUploadSizeMiBName.String():
 			systemStatus.MaxUploadSizeMiB = int(baseValue.(float64))
+		case SystemSettingMaxMemoContentLengthName.String():
+			systemStatus.MaxMemoContentLength = int(baseValue.(float64))
 		case SystemSettingAdditionalStyleName.String():
 			systemStatus.AdditionalStyle = baseValue.(string)
 		case SystemSettingAdditionalScriptName.String():

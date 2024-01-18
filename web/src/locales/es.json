@@ -123,7 +123,8 @@
       "additional-style-placeholder": "Código CSS adicional",
       "additional-script-placeholder": "Código JavaScript adicional",
       "disable-public-memos": "Deshabilitar notas públicas",
-      "display-with-updated-time": "Display with updated time"
+      "display-with-updated-time": "Display with updated time",
+      "max-memo-content-length": "Longitud máxima del contenido de la nota"
     },
     "appearance-option": {
       "system": "Según el sistema",

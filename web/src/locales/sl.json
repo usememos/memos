@@ -161,7 +161,8 @@
       "additional-script": "Dodatne skripte",
       "additional-style-placeholder": "Dodatna CSS koda",
       "additional-script-placeholder": "Dodatna JavaScript koda",
-      "display-with-updated-time": "Display with updated time"
+      "display-with-updated-time": "Display with updated time",
+      "max-memo-content-length": "Največja dolžina vsebine beležke"
     },
     "appearance-option": {
       "system": "Sledi sistemu",

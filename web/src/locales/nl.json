@@ -182,6 +182,7 @@
       "disable-public-memos": "Openbare memos uitzetten",
       "max-upload-size": "Maximum uploadgrootte (MiB)",
       "max-upload-size-hint": "32 MiB wordt aangeraden.",
+      "max-memo-content-length": "Maximum memo inhoudslengte",
       "display-with-updated-time": "Laten zien met bewerkte tijd",
       "telegram-bot-token": "Telegram bot token",
       "telegram-bot-token-description": "Telegram bot token of API proxy zoals `http://.../bot<token>`",

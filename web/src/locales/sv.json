@@ -121,7 +121,8 @@
       "additional-style-placeholder": "Ytterligare CSS kod",
       "additional-script-placeholder": "Ytterligare JavaScript kod",
       "disable-public-memos": "Inaktivera offentliga anteckningar",
-      "display-with-updated-time": "Display with updated time"
+      "display-with-updated-time": "Display with updated time",
+      "max-memo-content-length": "Max anteckningslängd"
     },
     "appearance-option": {
       "system": "Follow system",

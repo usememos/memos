@@ -326,6 +326,7 @@
       "display-with-updated-time": "Отображать время обновления записи",
       "max-upload-size": "Максимальный размер загрузки (МБ)",
       "max-upload-size-hint": "Рекомендуемое значение 32 MБ.",
+      "max-memo-content-length": "Максимальная длина записи",
       "server-name": "Имя сервера",
       "telegram-bot-token": "Токен Telegram бота",
       "telegram-bot-token-description": "Токен Telegram бота или прокси API вида `http.../bot<token>`",

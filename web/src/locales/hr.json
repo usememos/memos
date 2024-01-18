@@ -352,6 +352,7 @@
       "enable-password-login-warning": "Ovo će omogućiti prijavu lozinkom za sve korisnike.",
       "max-upload-size": "Maximalna veličina uploada (MiB)",
       "max-upload-size-hint": "Preporučena vrijednost je 32 MiB.",
+      "max-memo-content-length": "Maximalna duljina sadržaja memoa",
       "server-name": "Ime servera",
       "telegram-bot-token": "Token Telegram Bota",
       "telegram-bot-token-description": "Telegram Bot Token ili API Proxy kao `http.../bot<token>`",

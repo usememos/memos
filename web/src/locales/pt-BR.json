@@ -353,6 +353,7 @@
       "enable-password-login-warning": "Isso permitirá o login com senha para todos os usuários. Continue apenas se desejar que os usuários possam fazer login usando SSO e senha local❗",
       "max-upload-size": "Tamanho máximo de upload (MiB)",
       "max-upload-size-hint": "O valor recomendado é 32 MiB.",
+      "max-memo-content-length": "Tamanho máximo do conteúdo do memo",
       "server-name": "Nome do servidor",
       "telegram-bot-token": "Token de Bot do Telegram",
       "telegram-bot-token-description": "Token de Bot do Telegram ou Proxy de API, tipo `http…/bot<token>`",

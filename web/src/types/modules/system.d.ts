@@ -21,6 +21,7 @@ interface SystemStatus {
   disablePasswordLogin: boolean;
   disablePublicMemos: boolean;
   maxUploadSizeMiB: number;
+  maxMemoContentLength: number;
   additionalStyle: string;
   additionalScript: string;
   customizedProfile: CustomizedProfile;

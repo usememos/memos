@@ -354,6 +354,7 @@
       "enable-password-login-warning": "Ceci activera la connexion par mot de passe pour tous les utilisateurs. Ne continuez que si vous souhaitez que les utilisateurs puissent se connecter à la fois par SSO et par mot de passe",
       "max-upload-size": "Taille maximale du téléversement (MiB)",
       "max-upload-size-hint": "La valeur recommandée est 32 MiB.",
+      "max-memo-content-length": "Longueur maximale du contenu du memo",
       "server-name": "Nom du serveur",
       "telegram-bot-token": "Jeton du Bot Telegram",
       "telegram-bot-token-description": "Jeton du Bot Telegram ou API Proxy comme `http…/bot<token>`",

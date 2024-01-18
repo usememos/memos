@@ -27,6 +27,8 @@ const (
 	SystemSettingDisablePublicMemosName SystemSettingName = "disable-public-memos"
 	// SystemSettingMaxUploadSizeMiBName is the name of max upload size setting.
 	SystemSettingMaxUploadSizeMiBName SystemSettingName = "max-upload-size-mib"
+	// SystemSettingMaxMemoContentLengthName is the name of max memo content length setting.
+	SystemSettingMaxMemoContentLengthName SystemSettingName = "max-memo-content-length"
 	// SystemSettingAdditionalStyleName is the name of additional style.
 	SystemSettingAdditionalStyleName SystemSettingName = "additional-style"
 	// SystemSettingAdditionalScriptName is the name of additional script.
@@ -205,6 +207,11 @@ func (upsert UpsertSystemSettingRequest) Validate() error {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)
 		}
 	case SystemSettingMaxUploadSizeMiBName:
+		var value int
+		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
+			return errors.Errorf(systemSettingUnmarshalError, settingName)
+		}
+	case SystemSettingMaxMemoContentLengthName:
 		var value int
 		if err := json.Unmarshal([]byte(upsert.Value), &value); err != nil {
 			return errors.Errorf(systemSettingUnmarshalError, settingName)

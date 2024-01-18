@@ -121,7 +121,8 @@
       "additional-style-placeholder": "Додатковий CSS",
       "additional-script-placeholder": "Додатковий JavaScript",
       "disable-public-memos": "Disable public memos",
-      "display-with-updated-time": "Display with updated time"
+      "display-with-updated-time": "Display with updated time",
+      "max-memo-content-length": "Максимальна довжина нотатки"
     },
     "appearance-option": {
       "system": "Автоматично",
