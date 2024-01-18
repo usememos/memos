@@ -6,11 +6,14 @@ import { showCommonDialog } from "@/components/Dialog/CommonDialog";
 import Empty from "@/components/Empty";
 import Icon from "@/components/Icon";
 import MemoContent from "@/components/MemoContent";
+import MemoFilter from "@/components/MemoFilter";
 import MobileHeader from "@/components/MobileHeader";
+import SearchBar from "@/components/SearchBar";
 import { memoServiceClient } from "@/grpcweb";
 import { getDateTimeString } from "@/helpers/datetime";
 import useCurrentUser from "@/hooks/useCurrentUser";
 import useLoading from "@/hooks/useLoading";
+import { useFilterStore } from "@/store/module";
 import { useMemoStore } from "@/store/v1";
 import { RowStatus } from "@/types/proto/api/v2/common";
 import { Memo } from "@/types/proto/api/v2/memo_service";
@@ -20,13 +23,25 @@ const Archived = () => {
   const t = useTranslate();
   const loadingState = useLoading();
   const user = useCurrentUser();
+  const filterStore = useFilterStore();
   const memoStore = useMemoStore();
   const [archivedMemos, setArchivedMemos] = useState<Memo[]>([]);
+  const { tag: tagQuery, text: textQuery } = filterStore.state;
 
   useEffect(() => {
     (async () => {
       try {
         const filters = [`creator == "${user.name}"`, "row_status == 'ARCHIVED'"];
+        const contentSearch: string[] = [];
+        if (tagQuery) {
+          contentSearch.push(`"#${tagQuery}"`);
+        }
+        if (textQuery) {
+          contentSearch.push(`"${textQuery}"`);
+        }
+        if (contentSearch.length > 0) {
+          filters.push(`content_search == [${contentSearch.join(", ")}]`);
+        }
         const { memos } = await memoServiceClient.listMemos({
           filter: filters.join(" && "),
         });
@@ -36,7 +51,7 @@ const Archived = () => {
       }
       loadingState.setFinish();
     })();
-  }, []);
+  }, [tagQuery, textQuery]);
 
   const handleDeleteMemoClick = async (memo: Memo) => {
     showCommonDialog({
@@ -72,18 +87,24 @@ const Archived = () => {
     <section className="@container w-full max-w-5xl min-h-full flex flex-col justify-start items-start sm:pt-3 md:pt-6 pb-8">
       <MobileHeader />
       <div className="w-full px-4 sm:px-6">
-        {loadingState.isLoading ? (
-          <div className="w-full h-32 flex flex-col justify-center items-center">
-            <p className="opacity-70">{t("memo.fetching-data")}</p>
+        <div className="w-full flex flex-col justify-start items-start">
+          <div className="w-full flex flex-row justify-end items-center mb-2">
+            <div className="w-40">
+              <SearchBar />
+            </div>
           </div>
-        ) : archivedMemos.length === 0 ? (
-          <div className="w-full mt-16 mb-8 flex flex-col justify-center items-center italic">
-            <Empty />
-            <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
-          </div>
-        ) : (
-          <div className="w-full flex flex-col justify-start items-start">
-            {archivedMemos.map((memo) => (
+          <MemoFilter className="px-2 pb-2" />
+          {loadingState.isLoading ? (
+            <div className="w-full h-32 flex flex-col justify-center items-center">
+              <p className="opacity-70">{t("memo.fetching-data")}</p>
+            </div>
+          ) : archivedMemos.length === 0 ? (
+            <div className="w-full mt-16 mb-8 flex flex-col justify-center items-center italic">
+              <Empty />
+              <p className="mt-4 text-gray-600 dark:text-gray-400">{t("message.no-data")}</p>
+            </div>
+          ) : (
+            archivedMemos.map((memo) => (
               <div
                 key={memo.id}
                 className="relative flex flex-col justify-start items-start w-full p-4 pt-3 mb-2 bg-white dark:bg-zinc-800 rounded-lg"
@@ -107,9 +128,9 @@ const Archived = () => {
                 </div>
                 <MemoContent memoId={memo.id} nodes={memo.nodes} readonly={true} />
               </div>
-            ))}
-          </div>
-        )}
+            ))
+          )}
+        </div>
       </div>
     </section>
   );
