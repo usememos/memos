@@ -18,9 +18,8 @@ func (*TableParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	for _, token := range tokens {
 		if token.Type == tokenizer.Newline {
 			break
-		} else {
-			headerTokens = append(headerTokens, token)
 		}
+		headerTokens = append(headerTokens, token)
 	}
 	if len(headerTokens) < 5 || len(tokens) < len(headerTokens)+3 {
 		return 0, false
@@ -30,9 +29,8 @@ func (*TableParser) Match(tokens []*tokenizer.Token) (int, bool) {
 	for _, token := range tokens[len(headerTokens)+1:] {
 		if token.Type == tokenizer.Newline {
 			break
-		} else {
-			delimiterTokens = append(delimiterTokens, token)
 		}
+		delimiterTokens = append(delimiterTokens, token)
 	}
 	if len(delimiterTokens) < 5 || len(tokens) < len(headerTokens)+len(delimiterTokens)+3 {
 		return 0, false
@@ -43,9 +41,8 @@ func (*TableParser) Match(tokens []*tokenizer.Token) (int, bool) {
 		temp := len(headerTokens) + len(delimiterTokens) + 2 + index
 		if token.Type == tokenizer.Newline && temp != len(tokens)-1 && tokens[temp+1].Type != tokenizer.Pipe {
 			break
-		} else {
-			rowTokens = append(rowTokens, token)
 		}
+		rowTokens = append(rowTokens, token)
 	}
 	if len(rowTokens) < 5 {
 		return 0, false
