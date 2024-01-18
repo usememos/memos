@@ -6,6 +6,7 @@ interface Props {
   // Format: 2021-1
   month: string;
   data: Record<string, number>;
+  onClick?: (date: string) => void;
 }
 
 const getBgColor = (count: number, maxCount: number) => {
@@ -26,7 +27,7 @@ const getBgColor = (count: number, maxCount: number) => {
 };
 
 const ActivityCalendar = (props: Props) => {
-  const { month: monthStr, data } = props;
+  const { month: monthStr, data, onClick } = props;
   const year = new Date(monthStr).getFullYear();
   const month = new Date(monthStr).getMonth() + 1;
   const dayInMonth = new Date(year, month, 0).getDate();
@@ -60,6 +61,7 @@ const ActivityCalendar = (props: Props) => {
                 getBgColor(count, maxCount),
                 isToday && "border-gray-600 dark:!border-gray-400"
               )}
+              onClick={() => count && onClick && onClick(date)}
             ></div>
           </Tooltip>
         ) : (

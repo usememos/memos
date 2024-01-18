@@ -45,6 +45,12 @@ func (d *DB) ListMemos(ctx context.Context, find *store.FindMemo) ([]*store.Memo
 	if v := find.CreatedTsAfter; v != nil {
 		where, args = append(where, "memo.created_ts > ?"), append(args, *v)
 	}
+	if v := find.UpdatedTsBefore; v != nil {
+		where, args = append(where, "memo.updated_ts < ?"), append(args, *v)
+	}
+	if v := find.UpdatedTsAfter; v != nil {
+		where, args = append(where, "memo.updated_ts > ?"), append(args, *v)
+	}
 	if v := find.ContentSearch; len(v) != 0 {
 		for _, s := range v {
 			where, args = append(where, "memo.content LIKE ?"), append(args, fmt.Sprintf("%%%s%%", s))

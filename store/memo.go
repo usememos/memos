@@ -54,6 +54,8 @@ type FindMemo struct {
 	CreatorID       *int32
 	CreatedTsAfter  *int64
 	CreatedTsBefore *int64
+	UpdatedTsAfter  *int64
+	UpdatedTsBefore *int64
 
 	// Domain specific fields
 	ContentSearch   []string

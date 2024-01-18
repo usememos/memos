@@ -105,11 +105,27 @@ func (s *APIV2Service) ListMemos(ctx context.Context, request *apiv2pb.ListMemos
 		if filter.OrderByPinned {
 			memoFind.OrderByPinned = filter.OrderByPinned
 		}
-		if filter.CreatedTsBefore != nil {
-			memoFind.CreatedTsBefore = filter.CreatedTsBefore
+		if filter.DisplayTimeAfter != nil {
+			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+			}
+			if displayWithUpdatedTs {
+				memoFind.UpdatedTsAfter = filter.DisplayTimeAfter
+			} else {
+				memoFind.CreatedTsAfter = filter.DisplayTimeAfter
+			}
 		}
-		if filter.CreatedTsAfter != nil {
-			memoFind.CreatedTsAfter = filter.CreatedTsAfter
+		if filter.DisplayTimeBefore != nil {
+			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+			}
+			if displayWithUpdatedTs {
+				memoFind.UpdatedTsBefore = filter.DisplayTimeBefore
+			} else {
+				memoFind.CreatedTsBefore = filter.DisplayTimeBefore
+			}
 		}
 		if filter.Creator != nil {
 			username, err := ExtractUsernameFromName(*filter.Creator)
@@ -463,11 +479,27 @@ func (s *APIV2Service) GetUserMemosStats(ctx context.Context, request *apiv2pb.G
 		if filter.OrderByPinned {
 			memoFind.OrderByPinned = filter.OrderByPinned
 		}
-		if filter.CreatedTsBefore != nil {
-			memoFind.CreatedTsBefore = filter.CreatedTsBefore
+		if filter.DisplayTimeAfter != nil {
+			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+			}
+			if displayWithUpdatedTs {
+				memoFind.UpdatedTsAfter = filter.DisplayTimeAfter
+			} else {
+				memoFind.CreatedTsAfter = filter.DisplayTimeAfter
+			}
 		}
-		if filter.CreatedTsAfter != nil {
-			memoFind.CreatedTsAfter = filter.CreatedTsAfter
+		if filter.DisplayTimeBefore != nil {
+			displayWithUpdatedTs, err := s.getMemoDisplayWithUpdatedTsSettingValue(ctx)
+			if err != nil {
+				return nil, status.Errorf(codes.Internal, "failed to get memo display with updated ts setting value")
+			}
+			if displayWithUpdatedTs {
+				memoFind.UpdatedTsBefore = filter.DisplayTimeBefore
+			} else {
+				memoFind.CreatedTsBefore = filter.DisplayTimeBefore
+			}
 		}
 		if filter.RowStatus != nil {
 			memoFind.RowStatus = filter.RowStatus
@@ -590,20 +622,20 @@ var ListMemosFilterCELAttributes = []cel.EnvOption{
 	cel.Variable("content_search", cel.ListType(cel.StringType)),
 	cel.Variable("visibilities", cel.ListType(cel.StringType)),
 	cel.Variable("order_by_pinned", cel.BoolType),
-	cel.Variable("created_ts_before", cel.IntType),
-	cel.Variable("created_ts_after", cel.IntType),
+	cel.Variable("display_time_before", cel.IntType),
+	cel.Variable("display_time_after", cel.IntType),
 	cel.Variable("creator", cel.StringType),
 	cel.Variable("row_status", cel.StringType),
 }
 
 type ListMemosFilter struct {
-	ContentSearch   []string
-	Visibilities    []store.Visibility
-	OrderByPinned   bool
-	CreatedTsBefore *int64
-	CreatedTsAfter  *int64
-	Creator         *string
-	RowStatus       *store.RowStatus
+	ContentSearch     []string
+	Visibilities      []store.Visibility
+	OrderByPinned     bool
+	DisplayTimeBefore *int64
+	DisplayTimeAfter  *int64
+	Creator           *string
+	RowStatus         *store.RowStatus
 }
 
 func parseListMemosFilter(expression string) (*ListMemosFilter, error) {
@@ -646,12 +678,12 @@ func findField(callExpr *expr.Expr_Call, filter *ListMemosFilter) {
 			} else if idExpr.Name == "order_by_pinned" {
 				value := callExpr.Args[1].GetConstExpr().GetBoolValue()
 				filter.OrderByPinned = value
-			} else if idExpr.Name == "created_ts_before" {
-				createdTsBefore := callExpr.Args[1].GetConstExpr().GetInt64Value()
-				filter.CreatedTsBefore = &createdTsBefore
-			} else if idExpr.Name == "created_ts_after" {
-				createdTsAfter := callExpr.Args[1].GetConstExpr().GetInt64Value()
-				filter.CreatedTsAfter = &createdTsAfter
+			} else if idExpr.Name == "display_time_before" {
+				displayTimeBefore := callExpr.Args[1].GetConstExpr().GetInt64Value()
+				filter.DisplayTimeBefore = &displayTimeBefore
+			} else if idExpr.Name == "display_time_after" {
+				displayTimeAfter := callExpr.Args[1].GetConstExpr().GetInt64Value()
+				filter.DisplayTimeAfter = &displayTimeAfter
 			} else if idExpr.Name == "creator" {
 				creator := callExpr.Args[1].GetConstExpr().GetStringValue()
 				filter.Creator = &creator
